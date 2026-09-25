@@ -122,8 +122,11 @@ Registry 会在同一事务中把 provider attempt、logical call 和 neutral in
 attempt identity。
 
 当 agent 触及 response-length 或 context-pressure 边界时，context compaction 是一个已
-登记执行步骤。Replacement history 保留 fact capsule 和模型生成的 continuation summary；
-replay 仍绑定到被中断的 semantic slot，不会成为新的 user turn。
+登记执行步骤。Replacement history 保留 fact capsule、针对全部已提交 turn 前缀的模型
+continuation summary，以及按 token 预算保留的最近完整消息尾部。所有源 turn 在 Registry
+中保持不可变。每次压缩为同一 agent 登记连续的 context-session ordinal 转换并开启新的
+模型可见会话，但不创建新 firing；replay 仍绑定到被中断的 semantic slot，不会成为新的
+user turn。
 
 ## Provider 与前端权威
 

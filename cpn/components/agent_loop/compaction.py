@@ -322,7 +322,11 @@ from .action_execution import (
 class CompactionExecutionMixin:
     def agent_context_pressure_requires_compaction_v1(self, execution, loop, catalog, prepared_context, *, pressure_policy):
         self._execution(execution, loop)
-        if prepared_context.loop != loop or prepared_context.target.context_window_tokens != pressure_policy.context_window_tokens:
+        if (prepared_context.loop != loop
+                or prepared_context.target.context_window_tokens
+                != pressure_policy.context_window_tokens
+                or prepared_context.target.max_output_tokens
+                != pressure_policy.reserved_output_tokens):
             raise ResourceIntegrityFault("optional pressure decision crossed prepared context")
         if not prepared_context.semantic_context_turn_refs:
             return False
@@ -751,8 +755,35 @@ class CompactionExecutionMixin:
         invocation = self.mechanical_lifecycle.exact_object_document(
             prepared.attempt.invocation_ref,
             expected_type="llm_invocation_spec/v1")
-        source_messages = json.loads(
+        request_messages = json.loads(
             prepared.attempt.canonical_request_bytes)["messages"]
+        prompt = json.loads(self.kernel._read_firing_registered(
+            context, _resource_from_payload(
+                invocation["semantic_prompt_resource_ref"])))
+        prompt_messages = prompt.get("messages")
+        if (not isinstance(prompt_messages, list)
+                or len(request_messages) < len(prompt_messages) + 2
+                or request_messages[-1] != {
+                    "role": "system",
+                    "content": prepared.reduction_settings.checkpoint_prompt,
+                }):
+            raise ResourceIntegrityFault(
+                "compaction request cannot recover its effective history")
+        effective_history = request_messages[
+            1 + len(prompt_messages):-1]
+        previous_overlay = (
+            self.mechanical_lifecycle.latest_context_overlay(prepared.loop))
+        source_session_ordinal = (
+            previous_overlay.context_session_ordinal
+            if previous_overlay is not None else 0)
+        if previous_overlay is not None:
+            prior_prefix = list(previous_overlay.model_visible_messages[:2])
+            if effective_history[:2] != prior_prefix:
+                raise ResourceIntegrityFault(
+                    "compaction history differs from its current session")
+            retainable_history = effective_history[2:]
+        else:
+            retainable_history = effective_history
 
         def document_factory(waiting, exact_ref):
             first_sequence = 0
@@ -774,6 +805,8 @@ class CompactionExecutionMixin:
                     prepared.subject_agent_ref),
                 "execution_agent_ref": _ref_payload(
                     prepared.execution_agent_ref),
+                "source_context_session_ordinal": source_session_ordinal,
+                "context_session_ordinal": source_session_ordinal + 1,
                 "loop_revision": waiting.revision,
                 "loop_state": waiting.state.value,
                 "trigger_reason": prepared.trigger_reason,
@@ -814,9 +847,9 @@ class CompactionExecutionMixin:
                 "workspace_deleted_paths": [],
             }
             replacement = build_replacement_history(
-                source_messages, observed.text,
-                retained_user_token_limit=(
-                    prepared.reduction_settings.retained_user_token_limit),
+                retainable_history, observed.text,
+                retained_history_token_limit=(
+                    prepared.reduction_settings.retained_history_token_limit),
                 fact_capsule=capsule)
             document = {
                 "agent_context_compaction_id": prepared.compaction_id,
@@ -828,6 +861,8 @@ class CompactionExecutionMixin:
                     prepared.subject_agent_ref),
                 "execution_agent_ref": _ref_payload(
                     prepared.execution_agent_ref),
+                "source_context_session_ordinal": source_session_ordinal,
+                "context_session_ordinal": source_session_ordinal + 1,
                 "trigger_reason": prepared.trigger_reason,
                 "first_turn_sequence": first_sequence,
                 "last_turn_sequence": last_sequence,
@@ -962,17 +997,30 @@ def compact_agent_context_v1(
             or not idempotency_key):
         raise AgentLoopProtocolError(
             "context compaction bridge arguments are invalid")
+    prepared_target = self._registry.prepare_agent_turn_context_v1(
+        execution, loop, catalog).target
+    loop_context_window = prepared_target.context_window_tokens
     pressure_policy = (
-        ContextPressurePolicy(loop_context_window)
+        ContextPressurePolicy(
+            loop_context_window, prepared_target.max_output_tokens)
         if (trigger_reason == "context_pressure"
-            and (loop_context_window := self._registry
-                 .prepare_agent_turn_context_v1(
-                     execution, loop, catalog)
-                 .target.context_window_tokens) is not None)
+            and loop_context_window is not None)
         else None)
     if trigger_reason == "context_pressure" and pressure_policy is None:
         raise AgentLoopProtocolError(
             "context pressure requires registered model capacity")
+    retained_tokens = prepared_target.context_compaction_retained_tokens
+    if retained_tokens is None:
+        retained_tokens = (
+            min(self._reduction_settings.retained_history_token_limit,
+                max(1, loop_context_window // 4))
+            if loop_context_window is not None else
+            self._reduction_settings.retained_history_token_limit)
+    reduction_settings = ContextReductionSettings(
+        checkpoint_prompt=self._reduction_settings.checkpoint_prompt,
+        tool_output_byte_limit=(
+            self._reduction_settings.tool_output_byte_limit),
+        retained_history_token_limit=retained_tokens)
     lifecycle_id: str | None = None
     failed_attempt: LLMCallAttempt | None = None
     current_loop = loop
@@ -980,7 +1028,7 @@ def compact_agent_context_v1(
         prepared = self._registry.prepare_agent_context_compaction_v1(
             execution, current_loop, catalog,
             trigger_reason=trigger_reason, force=force,
-            reduction_settings=self._reduction_settings,
+            reduction_settings=reduction_settings,
             pressure_policy=pressure_policy,
             compaction_id=lifecycle_id,
             idempotency_key=(
@@ -998,8 +1046,7 @@ def compact_agent_context_v1(
                 "Registry returned no prepared current compaction")
         if (prepared.trigger_reason != trigger_reason
                 or prepared.force != force
-                or prepared.reduction_settings
-                != self._reduction_settings
+                or prepared.reduction_settings != reduction_settings
                 or prepared.pressure_policy != pressure_policy
                 or (lifecycle_id is not None
                     and prepared.compaction_id != lifecycle_id)):

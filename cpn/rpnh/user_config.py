@@ -28,6 +28,8 @@ class ExecutionProfile:
     adapter_kind: str
     required_environment: tuple[str, ...]
     recovery: Mapping[str, object] | None
+    context_window_tokens: int | None
+    context_compaction_retained_tokens: int | None
     @property
     def selectable(self) -> bool:
         return True
@@ -57,6 +59,11 @@ class ExecutionProfile:
         }
         if self.recovery is not None:
             result["recovery"] = dict(self.recovery)
+        if self.context_window_tokens is not None:
+            result["context_window_tokens"] = self.context_window_tokens
+        if self.context_compaction_retained_tokens is not None:
+            result["context_compaction_retained_tokens"] = (
+                self.context_compaction_retained_tokens)
         return result
 
 
@@ -174,6 +181,9 @@ def _load_profile(
         adapter_kind=selection.adapter_kind,
         required_environment=_required_environment(adapter),
         recovery=recovery,
+        context_window_tokens=selection.input_target.context_window_tokens,
+        context_compaction_retained_tokens=(
+            selection.input_target.context_compaction_retained_tokens),
     )
 
 

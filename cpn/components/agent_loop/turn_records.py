@@ -220,6 +220,10 @@ class TurnRecordsMechanicsMixin:
             candidates.append((revision, AgentContextOverlay(
                 compaction_ref=ref,
                 loop_id=loop.loop_id,
+                source_context_session_ordinal=int(
+                    exact["source_context_session_ordinal"]),
+                context_session_ordinal=int(
+                    exact["context_session_ordinal"]),
                 trigger_reason=str(exact["trigger_reason"]),
                 first_turn_sequence=int(exact["first_turn_sequence"]),
                 last_turn_sequence=int(exact["last_turn_sequence"]),
@@ -239,6 +243,13 @@ class TurnRecordsMechanicsMixin:
                 and candidates[-2][0] == candidates[-1][0]):
             raise AgentLoopMechanicalLifecycleError(
                 "AgentLoop has multiple context overlays at one revision")
+        expected_source_session = 0
+        for _revision, candidate in candidates:
+            if (candidate.source_context_session_ordinal
+                    != expected_source_session):
+                raise AgentLoopMechanicalLifecycleError(
+                    "AgentLoop context sessions are not one contiguous chain")
+            expected_source_session = candidate.context_session_ordinal
         overlay = candidates[-1][1]
         events = self.turn_events(loop)
         covered = tuple(

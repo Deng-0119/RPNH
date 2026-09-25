@@ -147,8 +147,12 @@ Registry.
 
 When an agent reaches response-length or context-pressure boundaries, context
 compaction is a registered execution step. The replacement history preserves a
-fact capsule and a model-produced continuation summary; replay remains attached
-to the interrupted semantic slot instead of becoming a new user turn.
+fact capsule, a model-produced continuation summary of the complete committed
+turn prefix, and a token-bounded tail of recent complete messages. Every source
+turn remains immutable in Registry. Each compaction records a contiguous
+context-session ordinal transition for the same agent and starts a fresh
+model-visible session without creating a new firing; replay remains attached to
+the interrupted semantic slot instead of becoming a new user turn.
 
 ## Provider and frontend authority
 

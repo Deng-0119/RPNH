@@ -86,6 +86,8 @@ def test_catalog_accepts_arbitrary_provider_and_exact_model_identifiers(
                 "timeout_seconds": 60,
                 "max_output_tokens": 4096,
                 "max_response_bytes": 1048576,
+                "context_window_tokens": 131072,
+                "context_compaction_retained_tokens": 16384,
             }],
         }],
     }), encoding="utf-8")
@@ -105,6 +107,11 @@ def test_catalog_accepts_arbitrary_provider_and_exact_model_identifiers(
             == "vendor/future-model:v9@2026")
     assert adapter_config.recovery.as_document() == _recovery()
     registry_policy = selection.as_registry_policy()
+    assert selection.input_target.context_window_tokens == 131072
+    assert (selection.input_target.context_compaction_retained_tokens
+            == 16384)
+    assert registry_policy["context_window_tokens"] == 131072
+    assert registry_policy["context_compaction_retained_tokens"] == 16384
     assert registry_policy["adapter_profile"]["recovery"] == _recovery()
     route_policy = registry_policy["route_provenance"][0]
     assert route_policy["endpoint"] == (
@@ -141,6 +148,15 @@ def test_catalog_accepts_arbitrary_provider_and_exact_model_identifiers(
         "{}\n", encoding="utf-8")
     with pytest.raises(ValueError, match="out of date"):
         build_provider_catalog(catalog, output, check=True)
+
+    malformed_catalog = json.loads(catalog.read_text(encoding="utf-8"))
+    malformed_catalog["providers"][0]["models"][0][
+        "context_compaction_retained_tokens"] = 131072
+    catalog.write_text(json.dumps(malformed_catalog), encoding="utf-8")
+    with pytest.raises(
+            ValueError,
+            match="context_compaction_retained_tokens must be smaller"):
+        build_provider_catalog(catalog, output)
 
 
 def test_catalog_accepts_loopback_http_but_rejects_remote_plaintext(

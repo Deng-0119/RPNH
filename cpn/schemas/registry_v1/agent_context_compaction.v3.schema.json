@@ -113,13 +113,15 @@
         "agent_loop_ref": {"$ref": "#/definitions/ref"},
         "subject_agent_ref": {"$ref": "#/definitions/ref"},
         "execution_agent_ref": {"$ref": "#/definitions/ref"},
+        "source_context_session_ordinal": {"type": "integer", "minimum": 0},
+        "context_session_ordinal": {"type": "integer", "minimum": 1},
         "loop_revision": {"type": "integer", "minimum": 0},
         "loop_state": {"type": "string", "minLength": 1},
         "trigger_reason": {"enum": ["context_pressure", "response_length", "turn_cap"]},
         "first_turn_sequence": {"type": "integer", "minimum": 0},
         "last_turn_sequence": {"type": "integer", "minimum": -1},
         "covered_turn_count": {"type": "integer", "minimum": 0},
-        "covered_turn_refs": {"type": "array", "maxItems": 2, "items": {"$ref": "#/definitions/agent_turn_ref"}, "uniqueItems": true},
+        "covered_turn_refs": {"type": "array", "items": {"$ref": "#/definitions/agent_turn_ref"}, "uniqueItems": true},
         "semantic_prompt_ref": {"$ref": "#/definitions/resource_ref"},
         "located_inputs": {"type": "array", "items": {"$ref": "#/definitions/located_input"}, "uniqueItems": true},
         "settled_actions": {"type": "array", "maxItems": 0},
@@ -134,7 +136,7 @@
         "workspace_changed_paths": {"type": "array", "maxItems": 0},
         "workspace_deleted_paths": {"type": "array", "maxItems": 0}
       },
-      "required": ["kind", "schema_version", "task_ref", "task_round_ref", "net_instance_ref", "transition_firing_ref", "invocation_ref", "operation_binding_ref", "agent_loop_ref", "subject_agent_ref", "execution_agent_ref", "loop_revision", "loop_state", "trigger_reason", "first_turn_sequence", "last_turn_sequence", "covered_turn_count", "covered_turn_refs", "semantic_prompt_ref", "located_inputs", "settled_actions", "current_candidate_ref", "adopted_candidate_ref", "output_resource_refs", "disposition_ref", "workspace_binding_ref", "workspace_lineage_ref", "workspace_base_revision_ref", "workspace_revision_ref", "workspace_changed_paths", "workspace_deleted_paths"]
+      "required": ["kind", "schema_version", "task_ref", "task_round_ref", "net_instance_ref", "transition_firing_ref", "invocation_ref", "operation_binding_ref", "agent_loop_ref", "subject_agent_ref", "execution_agent_ref", "source_context_session_ordinal", "context_session_ordinal", "loop_revision", "loop_state", "trigger_reason", "first_turn_sequence", "last_turn_sequence", "covered_turn_count", "covered_turn_refs", "semantic_prompt_ref", "located_inputs", "settled_actions", "current_candidate_ref", "adopted_candidate_ref", "output_resource_refs", "disposition_ref", "workspace_binding_ref", "workspace_lineage_ref", "workspace_base_revision_ref", "workspace_revision_ref", "workspace_changed_paths", "workspace_deleted_paths"]
     },
     "replacement_entry": {
       "oneOf": [
@@ -147,6 +149,15 @@
             "content": {"type": "string", "minLength": 1}
           },
           "required": ["kind", "content"]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "kind": {"const": "retained_model_visible_message"},
+            "message": {"type": "object"}
+          },
+          "required": ["kind", "message"]
         }
       ]
     }
@@ -158,6 +169,8 @@
     "agent_loop_ref": {"$ref": "#/definitions/agent_loop_ref"},
     "subject_agent_ref": {"type": "object"},
     "execution_agent_ref": {"type": "object"},
+    "source_context_session_ordinal": {"type": "integer", "minimum": 0},
+    "context_session_ordinal": {"type": "integer", "minimum": 1},
     "trigger_reason": {"enum": ["context_pressure", "response_length", "turn_cap"]},
     "first_turn_sequence": {"type": "integer", "minimum": 0},
     "last_turn_sequence": {"type": "integer", "minimum": -1},
@@ -174,7 +187,6 @@
     "replacement_history": {
       "type": "array",
       "minItems": 2,
-      "maxItems": 2,
       "items": {"$ref": "#/definitions/replacement_entry"},
       "contains": {"$ref": "#/definitions/fact_capsule"}
     }
@@ -186,6 +198,8 @@
     "agent_loop_ref",
     "subject_agent_ref",
     "execution_agent_ref",
+    "source_context_session_ordinal",
+    "context_session_ordinal",
     "trigger_reason",
     "first_turn_sequence",
     "last_turn_sequence",

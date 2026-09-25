@@ -1591,6 +1591,8 @@ class AgentContextOverlay:
 
     compaction_ref: VersionRef
     loop_id: str
+    source_context_session_ordinal: int
+    context_session_ordinal: int
     trigger_reason: str
     first_turn_sequence: int
     last_turn_sequence: int
@@ -1611,6 +1613,15 @@ class AgentContextOverlay:
             "agent_context_compaction_version",
             str(self.compaction_ref.version_id))
         _require_id("agent_loop", self.loop_id)
+        if (isinstance(self.source_context_session_ordinal, bool)
+                or not isinstance(self.source_context_session_ordinal, int)
+                or self.source_context_session_ordinal < 0
+                or isinstance(self.context_session_ordinal, bool)
+                or not isinstance(self.context_session_ordinal, int)
+                or self.context_session_ordinal
+                != self.source_context_session_ordinal + 1):
+            raise AgentLoopProtocolError(
+                "context overlay session boundary is invalid")
         if self.trigger_reason not in {
                 "context_pressure", "response_length", "turn_cap"}:
             raise AgentLoopProtocolError(
@@ -1633,41 +1644,12 @@ class AgentContextOverlay:
         from .compact import copy_replacement_history
 
         replacement = copy_replacement_history(self.replacement_history)
-        summary_count = 0
-        capsule_count = 0
-        for entry in replacement:
-            if entry.get("kind") == "retained_model_visible_message":
-                if (set(entry) != {"kind", "message"}
-                        or not isinstance(entry["message"], Mapping)
-                        or set(entry["message"]) != {"role", "content"}
-                        or entry["message"].get("role") != "user"
-                        or not isinstance(
-                            entry["message"].get("content"), str)
-                        or not entry["message"]["content"]):
-                    raise AgentLoopProtocolError(
-                        "context overlay retained entry is invalid")
-            elif entry.get("kind") == "agent_context_fact_capsule":
-                capsule_count += 1
-                if (entry.get("schema_version")
-                        != "agent_context_fact_capsule/v1"):
-                    raise AgentLoopProtocolError(
-                        "context overlay fact capsule is invalid")
-            elif entry.get("kind") == "compaction_summary":
-                summary_count += 1
-                if (set(entry) != {"kind", "content"}
-                        or not isinstance(entry["content"], str)
-                        or not entry["content"].strip()):
-                    raise AgentLoopProtocolError(
-                        "context overlay summary entry is invalid")
-            else:
-                raise AgentLoopProtocolError(
-                    "context overlay replacement entry is invalid")
-        if (not replacement or summary_count != 1 or capsule_count != 1
-                or replacement[-1].get("kind") != "compaction_summary"
-                or replacement[-2].get("kind")
-                != "agent_context_fact_capsule"):
+        if (replacement[0].get("source_context_session_ordinal")
+                != self.source_context_session_ordinal
+                or replacement[0].get("context_session_ordinal")
+                != self.context_session_ordinal):
             raise AgentLoopProtocolError(
-                "context overlay requires one typed replacement history")
+                "context overlay capsule crosses its session boundary")
         if (not isinstance(self.llm_invocation_ref, VersionRef)
                 or self.llm_invocation_ref.entity_type
                 != "llm_invocation_spec/v1"
@@ -1687,7 +1669,7 @@ class AgentContextOverlay:
     def summary_content(self) -> str:
         """Return the final typed compaction-summary entry."""
 
-        return str(self.replacement_history[-1]["content"])
+        return str(self.replacement_history[1]["content"])
 
     @property
     def fact_capsule(self) -> Mapping[str, Any]:
@@ -1695,7 +1677,7 @@ class AgentContextOverlay:
 
         from .compact import copy_replacement_history
 
-        return copy_replacement_history(self.replacement_history)[-2]
+        return copy_replacement_history(self.replacement_history)[0]
 
     @property
     def model_visible_messages(self) -> tuple[Mapping[str, Any], ...]:

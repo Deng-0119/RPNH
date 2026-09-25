@@ -162,6 +162,7 @@ class LLMInputTarget:
     max_output_tokens: int
     max_response_bytes: int
     context_window_tokens: int | None = None
+    context_compaction_retained_tokens: int | None = None
 
     def __post_init__(self) -> None:
         if (not isinstance(self.model_condition, str)
@@ -179,6 +180,21 @@ class LLMInputTarget:
                      or self.context_window_tokens < 1)):
             raise TypeError(
                 "LLM input target context_window_tokens must be positive")
+        if (self.context_compaction_retained_tokens is not None
+                and (isinstance(
+                    self.context_compaction_retained_tokens, bool)
+                     or not isinstance(
+                         self.context_compaction_retained_tokens, int)
+                     or self.context_compaction_retained_tokens < 1)):
+            raise TypeError(
+                "LLM input target compaction retention must be positive")
+        if (self.context_window_tokens is not None
+                and self.context_compaction_retained_tokens is not None
+                and self.context_compaction_retained_tokens
+                >= self.context_window_tokens):
+            raise TypeError(
+                "LLM input target compaction retention must be smaller than "
+                "the context window")
 
     def as_registry_document(self) -> dict[str, object]:
         document: dict[str, object] = {
@@ -189,6 +205,9 @@ class LLMInputTarget:
         }
         if self.context_window_tokens is not None:
             document["context_window_tokens"] = self.context_window_tokens
+        if self.context_compaction_retained_tokens is not None:
+            document["context_compaction_retained_tokens"] = (
+                self.context_compaction_retained_tokens)
         return document
 
 

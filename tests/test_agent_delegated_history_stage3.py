@@ -1,8 +1,14 @@
 from __future__ import annotations
 
+import json
+
 import pytest
 
-from cpn.components.agent_loop.compact import ContextReductionSettings
+from cpn.components.agent_loop.compact import (
+    ContextReductionSettings,
+    approximate_tokens,
+    build_replacement_history,
+)
 from cpn.components.agent_loop.delegated_history import (
     compact_delegated_subtask_history_after_length as extracted_compaction,
 )
@@ -55,6 +61,36 @@ def test_delegated_length_history_uses_default_reduction_settings() -> None:
     assert len(compacted[0]["content"].encode("utf-8")) <= 10_000
     assert "UTF-8 bytes omitted" in compacted[0]["content"]
     assert compacted[-1] == FINAL_MESSAGE
+
+
+def test_forty_turn_history_is_fully_summarized_with_one_recent_tail() -> None:
+    history = tuple({
+        "role": "assistant",
+        "content": f"turn-{index:02d}-" + "x" * 100,
+    } for index in range(40))
+    one_group_tokens = approximate_tokens(json.dumps(
+        (history[-1],), ensure_ascii=True, allow_nan=False,
+        sort_keys=True, separators=(",", ":")))
+
+    replacement = build_replacement_history(
+        history, "One summary covers the complete forty-turn prefix.",
+        retained_history_token_limit=one_group_tokens * 5,
+        fact_capsule={
+            "kind": "agent_context_fact_capsule",
+            "schema_version": "agent_context_fact_capsule/v1",
+            "source_context_session_ordinal": 0,
+            "context_session_ordinal": 1,
+        },
+    )
+
+    assert replacement[0]["kind"] == "agent_context_fact_capsule"
+    assert replacement[1] == {
+        "kind": "compaction_summary",
+        "content": "One summary covers the complete forty-turn prefix.",
+    }
+    retained = tuple(entry["message"] for entry in replacement[2:])
+    assert retained == history[-5:]
+    assert len(history) == 40
 
 
 @pytest.mark.parametrize("history", [[], ("not-a-mapping",)])

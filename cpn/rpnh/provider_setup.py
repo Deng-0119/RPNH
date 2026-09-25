@@ -203,6 +203,15 @@ def _render(document: Mapping[str, Any]) -> dict[str, bytes]:
             profile = _identifier(raw_model["profile"], label="profile")
             model = _opaque_text(
                 raw_model["model_condition"], label="model_condition")
+            context_window = raw_model.get("context_window_tokens")
+            retained_context = raw_model.get(
+                "context_compaction_retained_tokens")
+            if (context_window is not None
+                    and retained_context is not None
+                    and retained_context >= context_window):
+                raise ValueError(
+                    "context_compaction_retained_tokens must be smaller "
+                    "than context_window_tokens")
             if profile in profiles:
                 raise ValueError(f"duplicate profile: {profile}")
             profiles.add(profile)
@@ -223,6 +232,12 @@ def _render(document: Mapping[str, Any]) -> dict[str, bytes]:
                 "max_output_tokens": raw_model["max_output_tokens"],
                 "max_response_bytes": raw_model["max_response_bytes"],
             }
+            if "context_window_tokens" in raw_model:
+                execution_document["context_window_tokens"] = (
+                    raw_model["context_window_tokens"])
+            if "context_compaction_retained_tokens" in raw_model:
+                execution_document["context_compaction_retained_tokens"] = (
+                    raw_model["context_compaction_retained_tokens"])
             adapter_relative = f"adapters/{adapter_file}"
             execution_relative = f"execution/{profile}.json"
             if adapter_relative in outputs:

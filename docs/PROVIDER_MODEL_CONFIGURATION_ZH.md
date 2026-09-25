@@ -100,7 +100,9 @@ loopback 服务：
           },
           "timeout_seconds": 900,
           "max_output_tokens": 32768,
-          "max_response_bytes": 16777216
+          "max_response_bytes": 16777216,
+          "context_window_tokens": 262144,
+          "context_compaction_retained_tokens": 32768
         }
       ]
     }
@@ -113,6 +115,13 @@ endpoint 不能包含凭据、query 或 fragment。除 hostname 为 `localhost` 
 环境变量映射到 provider 要求的 HTTP header 和可选 prefix。无需凭据时使用
 `"credential": null`。secret value 不会写入 catalog、生成的 profile、用户选择、日志或
 公开 Registry policy。
+
+`context_window_tokens` 是可选字段；填写时必须是所配置精确模型的真实容量。该值会写入
+execution target，并由 `rpnh config show` 展示，从而在当前 90% pressure 边界主动执行
+compaction；如果输出 token 预留要求更早压缩，则采用更早边界。
+`context_compaction_retained_tokens` 可选地约束最近完整消息尾部，且必须小于声明的窗口。
+省略窗口时 RPNH 不猜测 provider 专属容量，而是禁用主动 pressure 判定。压缩后完整历史
+turn 仍保存在 Registry 中。
 
 非秘密静态 header 可写入 `headers`，但不能覆盖 credential header，也不能覆盖
 `Content-Type`、`Host`、`Content-Length` 等 transport-owned header。
@@ -152,7 +161,9 @@ success、workflow operation 或实验结果。现有 external-provider catalog 
   },
   "timeout_seconds": 900,
   "max_output_tokens": 32768,
-  "max_response_bytes": 16777216
+  "max_response_bytes": 16777216,
+  "context_window_tokens": 262144,
+  "context_compaction_retained_tokens": 32768
 }
 ```
 

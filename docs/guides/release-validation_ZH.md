@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: release-validation.md
-  revision: "2026-09-25.1"
+  revision: "2026-09-25.2"
   status: offline-candidate-validated
 ---
 
@@ -30,7 +30,10 @@ model。
 
 | 检查 | 结果 |
 |---|---|
-| OpenCode 整合后的 Python 3.13 完整离线套件 | 673 项通过 |
+| context-session 压缩完成后的 Python 3.13 完整离线套件 | 674 项通过，1 项因环境条件跳过 |
+| context compaction、配置与 terminal evidence 定向集合 | 21 项通过 |
+| 直接受影响的 AgentLoop/Registry/前端集成集合 | 160 项通过 |
+| 文档、schema 与配置回归集合 | 50 项通过 |
 | OpenCode 协议/Registry/PTY 定向集合 | 91 项通过 |
 | Codex/DSH/viewer/registered-host 整合定向集合 | 164 项通过 |
 | config、onboarding、resume、workspace 与 net CLI 定向集合 | 52 项通过 |
@@ -47,8 +50,14 @@ model。
 
 ## 调用与限制
 
-本轮没有真实模型或 provider API 调用。离线通过不能证明用户自有 route 可达。固定版
-OpenCode TUI 测试使用无 provider 的应用替身；真实 provider 测试仍需单独授权。
+本轮没有真实模型或 provider API 调用。离线通过不能证明用户自有 route 可达。完整套件中
+唯一跳过项是固定 OpenCode 1.18.32 可执行文件未安装所对应的 PTY 测试；OpenCode 协议测试
+仍使用无 provider 的应用替身执行。真实 provider 测试仍需单独授权。
+
+压缩检查覆盖了不受固定项数限制的 40-turn 引用前缀、同一 AgentLoop 与 firing 上连续两次
+context-session 转换、源 turn 不可变、最近完整消息保留、输出 token 预留，以及精确模型
+context capacity 的用户 profile 配置路径。这些是确定性离线检查，不证明 provider 宣称的
+context window 容量。
 
 验收环境未安装 Playwright/Chromium，因此没有运行可选浏览器自动化脚本。上述 Python 与
 Node 套件已经覆盖 viewer model/layout、真实 JointJS/ELK 解析、静态打包和只读 HTTP

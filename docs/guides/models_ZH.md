@@ -66,13 +66,15 @@ rpnh config list
       },
       "timeout_seconds": 60,
       "max_output_tokens": 1024,
-      "max_response_bytes": 1048576
+      "max_response_bytes": 1048576,
+      "context_window_tokens": 131072,
+      "context_compaction_retained_tokens": 16384
     }]
   }]
 }
 ```
 
-`profile` 是适合文件名的小写标识，`model_condition` 原样成为 outbound model。每个可选外部 profile 只有一条精确路由，凭据采用环境变量到 header/prefix 的映射或 `null`。endpoint 不得包含 userinfo/query/fragment；远程路由必须使用 HTTPS，明文 HTTP 仅限 `localhost` 或 loopback IP 上的同机 OpenAI-compatible 服务。静态认证/连接类 header、重复凭据 header 会被拒绝。各执行限额为正整数，探测次数与恢复循环次数由 schema 限定在一至三。
+`profile` 是适合文件名的小写标识，`model_condition` 原样成为 outbound model。每个可选外部 profile 只有一条精确路由，凭据采用环境变量到 header/prefix 的映射或 `null`。endpoint 不得包含 userinfo/query/fragment；远程路由必须使用 HTTPS，明文 HTTP 仅限 `localhost` 或 loopback IP 上的同机 OpenAI-compatible 服务。静态认证/连接类 header、重复凭据 header 会被拒绝。各执行限额为正整数。`context_window_tokens` 是用户为精确模型声明的可选容量；提供后，RPNH 会在调用已选路由前主动执行 context-pressure compaction。`context_compaction_retained_tokens` 可选地控制最近完整消息尾部，且必须小于窗口。未提供窗口时，RPNH 不猜测模型容量，只能在实际观察到 response-length 边界后处理。探测次数与恢复循环次数由 schema 限定在一至三。
 
 ## 传输、恢复和外部效果
 catalog 对外暴露的协议是 `openai_chat_completions/v1`，不是所有宣称兼容的 API。另一种 `local_process` 必须声明 `argv`、`probe_argv`、`env`、`inherit_env`；`{model}` 替换保留所选模型。子进程及其 probe 仍可能调用付费模型，不能把“本地进程”等同“离线”。

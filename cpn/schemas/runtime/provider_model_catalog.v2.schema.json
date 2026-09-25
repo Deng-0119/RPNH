@@ -134,7 +134,9 @@
         },
         "timeout_seconds": {"$ref": "#/definitions/positiveInteger"},
         "max_output_tokens": {"$ref": "#/definitions/positiveInteger"},
-        "max_response_bytes": {"$ref": "#/definitions/positiveInteger"}
+        "max_response_bytes": {"$ref": "#/definitions/positiveInteger"},
+        "context_window_tokens": {"$ref": "#/definitions/positiveInteger"},
+        "context_compaction_retained_tokens": {"$ref": "#/definitions/positiveInteger"}
       },
       "required": [
         "profile", "model_condition", "adapter", "timeout_seconds",

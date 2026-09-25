@@ -48,6 +48,8 @@ def _catalog(path: Path) -> None:
                 "timeout_seconds": 60,
                 "max_output_tokens": 4096,
                 "max_response_bytes": 1048576,
+                "context_window_tokens": 131072,
+                "context_compaction_retained_tokens": 16384,
             }],
         }],
     }), encoding="utf-8")
@@ -81,10 +83,15 @@ def test_user_can_build_and_select_any_exact_provider_model_pair(
     assert selection.adapter_config_path.parent.name == "adapters"
     assert selection.as_registry_policy()["adapter_profile"]["recovery"] == (
         _recovery())
+    assert selection.input_target.context_window_tokens == 131072
+    assert (selection.input_target.context_compaction_retained_tokens
+            == 16384)
     assert selected.as_public_dict()["recovery"] == _recovery()
     assert rpnh_main(["config", "show"]) == 0
     shown = json.loads(capsys.readouterr().out)
     assert shown["recovery"] == _recovery()
+    assert shown["context_window_tokens"] == 131072
+    assert shown["context_compaction_retained_tokens"] == 16384
     saved = json.loads((tmp_path / "config.json").read_text(encoding="utf-8"))
     assert saved == {
         "schema_version": "rpnh/cli_config/v3",

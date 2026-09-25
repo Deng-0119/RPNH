@@ -5,8 +5,13 @@ from __future__ import annotations
 from copy import deepcopy
 from dataclasses import dataclass
 from fractions import Fraction
+import json
 import math
 from typing import AbstractSet, Any, Mapping, Sequence
+
+from cpn.components.request_protocol import (
+    validate_llm_request_message_history,
+)
 
 
 CONTEXT_CHECKPOINT_PROMPT = (
@@ -19,6 +24,9 @@ CONTEXT_CHECKPOINT_PROMPT = (
     "- Important registered artifacts and exact Registry references/locators\n"
     "- Unresolved blockers or uncertainties\n"
     "- The immediate next actions needed to continue\n"
+    "The next context session may retain a bounded tail of recent complete "
+    "messages after your summary. Summarize the full governing state anyway, "
+    "while compressing early history most aggressively.\n"
     "Treat early, completed, or non-priority history as supplemental: refer to "
     "its exact Registry locator when useful instead of expanding it into the "
     "forward summary. Be concise and preserve only material needed to continue "
@@ -34,7 +42,7 @@ class ContextReductionSettings:
 
     checkpoint_prompt: str = CONTEXT_CHECKPOINT_PROMPT
     tool_output_byte_limit: int = 10_000
-    retained_user_token_limit: int = 20_000
+    retained_history_token_limit: int = 20_000
 
     def __post_init__(self) -> None:
         if (not isinstance(self.checkpoint_prompt, str)
@@ -45,10 +53,10 @@ class ContextReductionSettings:
                 or not isinstance(self.tool_output_byte_limit, int)
                 or self.tool_output_byte_limit < 128):
             raise ValueError("tool output byte limit is too small")
-        if (isinstance(self.retained_user_token_limit, bool)
-                or not isinstance(self.retained_user_token_limit, int)
-                or self.retained_user_token_limit < 1):
-            raise ValueError("retained user token limit must be positive")
+        if (isinstance(self.retained_history_token_limit, bool)
+                or not isinstance(self.retained_history_token_limit, int)
+                or self.retained_history_token_limit < 1):
+            raise ValueError("retained history token limit must be positive")
 
 
 @dataclass(frozen=True, slots=True)
@@ -56,6 +64,7 @@ class ContextPressurePolicy:
     """Optional pressure trigger available only for known model capacity."""
 
     context_window_tokens: int
+    reserved_output_tokens: int = 0
     trigger_ratio: float = 0.90
 
     def __post_init__(self) -> None:
@@ -63,6 +72,10 @@ class ContextPressurePolicy:
                 or not isinstance(self.context_window_tokens, int)
                 or self.context_window_tokens < 1):
             raise ValueError("context window must be a positive token count")
+        if (isinstance(self.reserved_output_tokens, bool)
+                or not isinstance(self.reserved_output_tokens, int)
+                or self.reserved_output_tokens < 0):
+            raise ValueError("reserved output tokens must be nonnegative")
         if (isinstance(self.trigger_ratio, bool)
                 or not isinstance(self.trigger_ratio, (int, float))
                 or not 0.0 < float(self.trigger_ratio) < 1.0):
@@ -72,7 +85,11 @@ class ContextPressurePolicy:
     @property
     def trigger_tokens(self) -> int:
         exact_ratio = Fraction(str(self.trigger_ratio))
-        return math.floor(self.context_window_tokens * exact_ratio) + 1
+        ratio_boundary = (
+            math.floor(self.context_window_tokens * exact_ratio) + 1)
+        output_boundary = max(
+            1, self.context_window_tokens - self.reserved_output_tokens)
+        return min(ratio_boundary, output_boundary)
 
 
 def approximate_tokens(payload: bytes | str) -> int:
@@ -290,35 +307,56 @@ def prior_tool_result_reference(
     raise ValueError("tool result kind has no reference-only history projection")
 
 
-def retained_recent_user_messages(
+def _message_groups(
+        messages: Sequence[Mapping[str, Any]],
+) -> tuple[tuple[dict[str, Any], ...], ...]:
+    """Return complete assistant/tool groups without splitting tool closure."""
+
+    copied = tuple(dict(message) for message in messages)
+    validate_llm_request_message_history(copied)
+    groups: list[tuple[dict[str, Any], ...]] = []
+    index = 0
+    while index < len(copied):
+        message = copied[index]
+        if message.get("role") == "assistant" and message.get("tool_calls"):
+            cursor = index + 1
+            while (cursor < len(copied)
+                   and copied[cursor].get("role") == "tool"):
+                cursor += 1
+            groups.append(copied[index:cursor])
+            index = cursor
+        else:
+            groups.append((message,))
+            index += 1
+    return tuple(groups)
+
+
+def retained_recent_history(
         messages: Sequence[Mapping[str, Any]], *, token_limit: int,
-) -> tuple[dict[str, str], ...]:
-    """Retain the newest real user messages within the configured retained-user budget."""
+) -> tuple[dict[str, Any], ...]:
+    """Retain the newest complete model-visible groups within one token budget."""
+
     if (isinstance(token_limit, bool) or not isinstance(token_limit, int)
             or token_limit < 1):
-        raise ValueError("retained user token limit must be positive")
-    kept: list[dict[str, str]] = []
+        raise ValueError("retained history token limit must be positive")
+    groups = _message_groups(messages)
+    kept: list[tuple[dict[str, Any], ...]] = []
     used = 0
-    for raw in reversed(messages):
-        if not isinstance(raw, Mapping) or raw.get("role") != "user":
-            continue
-        content = raw.get("content")
-        if not isinstance(content, str) or not content.strip():
-            continue
-        size = approximate_tokens(content)
-        if kept and used + size > token_limit:
+    for group in reversed(groups):
+        size = approximate_tokens(json.dumps(
+            group, ensure_ascii=True, allow_nan=False, sort_keys=True,
+            separators=(",", ":")))
+        if used + size > token_limit:
             break
-        if not kept and size > token_limit:
-            continue
-        kept.append({"role": "user", "content": content})
+        kept.append(group)
         used += size
     kept.reverse()
-    return tuple(kept)
+    return tuple(message for group in kept for message in group)
 
 
 def build_replacement_history(
         messages: Sequence[Mapping[str, Any]], summary: str, *,
-        retained_user_token_limit: int,
+        retained_history_token_limit: int,
         fact_capsule: Mapping[str, Any],
 ) -> tuple[dict[str, Any], ...]:
     """Build the bounded forward-only replacement-history contract."""
@@ -327,18 +365,22 @@ def build_replacement_history(
     if (not isinstance(messages, Sequence)
             or isinstance(messages, (str, bytes))
             or any(not isinstance(message, Mapping) for message in messages)
-            or isinstance(retained_user_token_limit, bool)
-            or not isinstance(retained_user_token_limit, int)
-            or retained_user_token_limit < 1):
+            or isinstance(retained_history_token_limit, bool)
+            or not isinstance(retained_history_token_limit, int)
+            or retained_history_token_limit < 1):
         raise TypeError("context compaction source history is invalid")
     if (not isinstance(fact_capsule, Mapping)
             or fact_capsule.get("kind") != "agent_context_fact_capsule"
             or fact_capsule.get("schema_version")
             != "agent_context_fact_capsule/v1"):
         raise ValueError("context compaction requires one typed fact capsule")
+    retained = retained_recent_history(
+        messages, token_limit=retained_history_token_limit)
     return copy_replacement_history((
         deepcopy(dict(fact_capsule)),
         {"kind": "compaction_summary", "content": summary},
+        *({"kind": "retained_model_visible_message", "message": message}
+          for message in retained),
     ))
 
 
@@ -362,7 +404,7 @@ def copy_replacement_history(
     summary_entries = tuple(
         entry for entry in typed
         if entry.get("kind") == "compaction_summary")
-    if (len(typed) != 2
+    if (len(typed) < 2
             or len(capsule_entries) != 1
             or len(summary_entries) != 1
             or typed[0] is not capsule_entries[0]
@@ -373,8 +415,40 @@ def copy_replacement_history(
             or not isinstance(summary_entries[0].get("content"), str)
             or not summary_entries[0]["content"].strip()):
         raise ValueError(
-            "replacement history requires exactly one capsule followed by "
-            "one final summary")
+            "replacement history requires one capsule and one summary prefix")
+
+    retained_entries = typed[2:]
+    if any(
+            set(entry) != {"kind", "message"}
+            or entry.get("kind") != "retained_model_visible_message"
+            or not isinstance(entry.get("message"), Mapping)
+            for entry in retained_entries):
+        raise ValueError("replacement history retained messages are invalid")
+    retained_messages = tuple(
+        dict(entry["message"]) for entry in retained_entries)
+    for message in retained_messages:
+        role = message.get("role")
+        allowed = {"role", "content"}
+        if role == "assistant":
+            allowed.update({"tool_calls", "reasoning_content"})
+        elif role == "tool":
+            allowed.add("tool_call_id")
+        if (role not in {"user", "assistant", "tool"}
+                or not isinstance(message.get("content"), str)
+                or (role != "assistant" and not message["content"].strip())
+                or not set(message).issubset(allowed)
+                or (role == "tool"
+                    and (not isinstance(message.get("tool_call_id"), str)
+                         or not message["tool_call_id"]))
+                or ("reasoning_content" in message
+                    and not isinstance(message["reasoning_content"], str))):
+            raise ValueError(
+                "replacement history retained message is invalid")
+    try:
+        validate_llm_request_message_history(retained_messages)
+    except ValueError as exc:
+        raise ValueError(
+            "replacement history retained messages break tool closure") from exc
 
     forbidden_capsule_fields = {
         "arguments", "body", "body_content", "content", "message",
@@ -417,6 +491,6 @@ __all__ = [
     "reduce_tool_output",
     "build_replacement_history",
     "copy_replacement_history",
-    "retained_recent_user_messages",
+    "retained_recent_history",
     "should_compact",
 ]

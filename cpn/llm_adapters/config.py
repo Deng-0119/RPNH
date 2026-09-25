@@ -149,18 +149,29 @@ class LLMExecutionSelection:
             "timeout_seconds": self.timeout_seconds,
             "max_output_tokens": self.input_target.max_output_tokens,
             "max_response_bytes": self.input_target.max_response_bytes,
+            **({"context_window_tokens":
+                self.input_target.context_window_tokens}
+               if self.input_target.context_window_tokens is not None else {}),
+            **({"context_compaction_retained_tokens":
+                self.input_target.context_compaction_retained_tokens}
+               if (self.input_target.context_compaction_retained_tokens
+                   is not None) else {}),
             "route_provenance": provenance,
             "adapter_profile": adapter_profile,
         }
 
     @classmethod
     def from_mapping(cls, value: object) -> "LLMExecutionSelection":
-        fields = {
+        required_fields = {
             "schema_version", "adapter_kind", "model_condition",
             "adapter_config_path", "timeout_seconds", "max_output_tokens",
             "max_response_bytes",
         }
-        if not isinstance(value, Mapping) or set(value) != fields:
+        optional_fields = {
+            "context_window_tokens", "context_compaction_retained_tokens"}
+        if (not isinstance(value, Mapping)
+                or not required_fields.issubset(value)
+                or set(value) - required_fields - optional_fields):
             raise LLMExecutionConfigError(
                 "LLM execution selection fields are not current")
         if value["schema_version"] != SCHEMA_VERSION:
@@ -182,6 +193,17 @@ class LLMExecutionSelection:
                     value["max_output_tokens"], label="max_output_tokens"),
                 max_response_bytes=_positive(
                     value["max_response_bytes"], label="max_response_bytes"),
+                context_window_tokens=(
+                    _positive(
+                        value["context_window_tokens"],
+                        label="context_window_tokens")
+                    if "context_window_tokens" in value else None),
+                context_compaction_retained_tokens=(
+                    _positive(
+                        value["context_compaction_retained_tokens"],
+                        label="context_compaction_retained_tokens")
+                    if "context_compaction_retained_tokens" in value
+                    else None),
             )
         except TypeError as exc:
             raise LLMExecutionConfigError(str(exc)) from exc

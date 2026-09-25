@@ -6,11 +6,13 @@ from pathlib import Path
 import pytest
 
 from cpn.components.agent_loop.compact import CONTEXT_CHECKPOINT_PROMPT
+from cpn.components.agent_loop.models import AgentContextOverlay
 from cpn.rpnh.agent_tasks import (
     AgentStage, AgentTaskSpec, agent_task_catalog, run_agent_task,
 )
 from cpn.rpnh.llm_contracts import LLMInputResponseBytes, LLMInputTarget
 from cpn.rpnh.registry._registry import _RegistryCore
+from cpn.rpnh.registry.publication import _version_from_payload
 from cpn.llm_adapters.config import LLMExecutionSelection
 
 
@@ -52,7 +54,7 @@ def _configure_offline_task(
     }), encoding="utf-8")
     selection = LLMExecutionSelection(
         LLMInputTarget(
-            "offline-context-compaction", 1024, 65536,
+            "offline-context-compaction", 128, 65536,
             context_window_tokens),
         "local_process", adapter_path, 30)
     monkeypatch.setattr(
@@ -176,10 +178,56 @@ class _PressureRetryPort:
         combined = "\n".join(
             message.get("content", "") for message in envelope["messages"]
             if isinstance(message.get("content"), str))
-        assert "OLD-COVERED-BODY" not in combined
+        assert "OLD-COVERED-BODY" in combined
         assert "MODEL-SUMMARY-FOR-FORWARD-CONTINUATION" in combined
         assert "agent_context_fact_capsule" in combined
         return _completion_response("pressure compaction complete")
+
+    def close(self):
+        pass
+
+
+class _RollingCompactionPort:
+    def __init__(self) -> None:
+        self.requests: list[dict] = []
+        self.normal_count = 0
+        self.compaction_count = 0
+
+    def request_once(self, attempt):
+        envelope = json.loads(attempt.canonical_request_bytes)
+        self.requests.append(envelope)
+        checkpoint = (
+            envelope["messages"][-1].get("content")
+            == CONTEXT_CHECKPOINT_PROMPT)
+        combined = "\n".join(
+            message.get("content", "") for message in envelope["messages"]
+            if isinstance(message.get("content"), str))
+        if checkpoint:
+            self.compaction_count += 1
+            if self.compaction_count == 1:
+                assert "SESSION-ZERO-TURN" in combined
+                return _response(text="SUMMARY-ZERO", finish_reason="stop")
+            assert self.compaction_count == 2
+            assert "SUMMARY-ZERO" in combined
+            assert "SESSION-ZERO-TURN" in combined
+            assert "SESSION-ONE-TURN" in combined
+            return _response(text="SUMMARY-ALL", finish_reason="stop")
+        self.normal_count += 1
+        if self.normal_count == 1:
+            return _response(
+                text="SESSION-ZERO-TURN", finish_reason="stop",
+                usage={"input_tokens": 950})
+        if self.normal_count == 2:
+            assert "SUMMARY-ZERO" in combined
+            assert "SESSION-ZERO-TURN" in combined
+            return _response(
+                text="SESSION-ONE-TURN", finish_reason="stop",
+                usage={"input_tokens": 950})
+        assert self.normal_count == 3
+        assert "SUMMARY-ALL" in combined
+        assert "SESSION-ZERO-TURN" in combined
+        assert "SESSION-ONE-TURN" in combined
+        return _completion_response("rolling compaction complete")
 
     def close(self):
         pass
@@ -219,19 +267,111 @@ def test_pressure_projection_retry_identity_and_effective_history(
         "agent_context_compaction/v3", category="object",
         instance=compaction)
     assert compaction["trigger_reason"] == "context_pressure"
+    assert compaction["source_context_session_ordinal"] == 0
+    assert compaction["context_session_ordinal"] == 1
     assert compaction["first_turn_sequence"] == 0
     assert compaction["last_turn_sequence"] == 0
     assert len(compaction["covered_turn_refs"]) == 1
-    capsule, summary = compaction["replacement_history"]
+    capsule, summary, retained = compaction["replacement_history"]
     assert capsule["kind"] == "agent_context_fact_capsule"
     assert capsule["covered_turn_refs"] == compaction["covered_turn_refs"]
+    assert capsule["source_context_session_ordinal"] == 0
+    assert capsule["context_session_ordinal"] == 1
     assert summary == {
         "kind": "compaction_summary",
         "content": "MODEL-SUMMARY-FOR-FORWARD-CONTINUATION",
     }
+    assert retained == {
+        "kind": "retained_model_visible_message",
+        "message": {"role": "assistant", "content": "OLD-COVERED-BODY"},
+    }
+
+    # A replacement overlay may cover an arbitrarily long immutable turn
+    # prefix.  The Registry retains every original turn while the model sees
+    # one summary prefix plus a bounded recent-history tail.
+    forty_turn_refs = [{
+        "entity_type": "agent_turn/v1",
+        "logical_id": f"agent_turn:{index + 1:032x}",
+        "version_id": f"agent_turn_version:{index + 101:032x}",
+    } for index in range(40)]
+    expanded = json.loads(json.dumps(compaction))
+    expanded.update({
+        "first_turn_sequence": 0,
+        "last_turn_sequence": 39,
+        "covered_turn_refs": forty_turn_refs,
+    })
+    expanded_capsule = expanded["replacement_history"][0]
+    expanded_capsule.update({
+        "first_turn_sequence": 0,
+        "last_turn_sequence": 39,
+        "covered_turn_count": 40,
+        "covered_turn_refs": forty_turn_refs,
+    })
+    core.catalog.validate_instance(
+        "agent_context_compaction/v3", category="object",
+        instance=expanded)
+    overlay = AgentContextOverlay(
+        compaction_ref=_version_from_payload(
+            expanded["agent_context_compaction_ref"]),
+        loop_id=expanded["agent_loop_ref"]["logical_id"],
+        source_context_session_ordinal=0,
+        context_session_ordinal=1,
+        trigger_reason=expanded["trigger_reason"],
+        first_turn_sequence=0,
+        last_turn_sequence=39,
+        covered_turn_refs=tuple(
+            _version_from_payload(ref) for ref in forty_turn_refs),
+        replacement_history=tuple(expanded["replacement_history"]),
+        llm_invocation_ref=_version_from_payload(
+            expanded["llm_invocation_ref"]),
+        llm_invocation_attempt_ref=_version_from_payload(
+            expanded["llm_invocation_attempt_ref"]),
+    )
+    assert len(overlay.covered_turn_refs) == 40
+    assert len(overlay.model_visible_messages) == 3
 
     failed = core.event_store.list_events_by_type(
         ("llm_invocation_failed/v1",))
     assert len(failed) == 1
     assert failed[0].payload["disposition"] == "protocol_rejected"
     assert failed[0].payload["next_attempt_allowed"] is True
+
+
+def test_repeated_compaction_opens_new_context_sessions_and_keeps_recent_turns(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    port = _RollingCompactionPort()
+    execution_path = _configure_offline_task(
+        tmp_path, monkeypatch, port, context_window_tokens=1000)
+    run_dir = tmp_path / "run"
+
+    result = run_agent_task(AgentTaskSpec(
+        run_dir=run_dir, prompt="Exercise rolling context sessions.",
+        stages=(AgentStage("main", "Produce the requested result."),),
+        execution_config_path=execution_path, max_attempts_per_stage=6,
+    ))
+
+    assert result["stop_reason"] == "terminal"
+    assert result["output"] == "rolling compaction complete"
+    assert port.compaction_count == 2
+    core = _RegistryCore(
+        run_dir, create=False, read_only=True, catalog=agent_task_catalog())
+    compactions = _objects(core, "agent_context_compaction/v3")
+    compactions.sort(key=lambda item: item["context_session_ordinal"])
+    assert [
+        (item["source_context_session_ordinal"],
+         item["context_session_ordinal"])
+        for item in compactions
+    ] == [(0, 1), (1, 2)]
+    assert [len(item["covered_turn_refs"]) for item in compactions] == [1, 2]
+    assert len({
+        item["agent_loop_ref"]["logical_id"] for item in compactions
+    }) == 1
+    assert len({
+        item["replacement_history"][0]["transition_firing_ref"]["logical_id"]
+        for item in compactions
+    }) == 1
+    assert [
+        entry["message"]["content"]
+        for entry in compactions[-1]["replacement_history"][2:]
+    ] == ["SESSION-ZERO-TURN", "SESSION-ONE-TURN"]

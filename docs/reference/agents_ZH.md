@@ -39,7 +39,7 @@ Protocol 方法故意直接声明，因为 gateway 会枚举 `vars(protocol)`。
 | `ExecutionProfile.as_public_dict(selected=False, environ=None)` | 输出身份、凭据变量名、缺失项、ready | ready 不是 endpoint 可用性 |
 | `build_provider_catalog(...)` | 从唯一 catalog 生成配置 | 普通模式写文件，check 校验派生状态，不调用供应商 |
 
-生成器的真实 CLI 参数见[模型配置](../guides/models_ZH.md)。timeout_seconds、max_output_tokens、max_response_bytes 不等于完整费用预算。provider adapter 执行所选传输，Registry ledger 记录物理尝试和恢复证据，不能合并成隐藏 transport retry。
+生成器的真实 CLI 参数见[模型配置](../guides/models_ZH.md)。timeout_seconds、max_output_tokens、max_response_bytes、可选的 context_window_tokens 与 context_compaction_retained_tokens 不等于完整费用预算；声明 context window 会启用主动 compaction，并作为非秘密 profile provenance 展示。provider adapter 执行所选传输，Registry ledger 记录物理尝试和恢复证据，不能合并成隐藏 transport retry。
 
 ## 失败、测试与稳定性
 测试非法响应、length interruption、schema 不符、旧引用、取消/等待以及精确 provider/model 保持。上下文文字和工具结果出现在 prompt 中，并不会获得 Registry 权威。`OptionalAgentLoopRegistryService` 和私有 commit helper 是实现边界，不授权插件作者写 Registry 内部。

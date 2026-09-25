@@ -96,7 +96,9 @@ HTTPS; plain HTTP is accepted only for a loopback service on the same machine:
           },
           "timeout_seconds": 900,
           "max_output_tokens": 32768,
-          "max_response_bytes": 16777216
+          "max_response_bytes": 16777216,
+          "context_window_tokens": 262144,
+          "context_compaction_retained_tokens": 32768
         }
       ]
     }
@@ -111,6 +113,15 @@ environment variable to the required HTTP header and optional prefix. Use
 `"credential": null` when the endpoint does not require one. Secret values are
 never stored in the catalog, generated profiles, user selection, logs, or
 public Registry policy.
+
+`context_window_tokens` is optional but must be the capacity of the exact
+configured model when supplied. It is rendered into the execution target and
+shown by `rpnh config show`; this enables proactive compaction at the current
+90% pressure boundary or earlier when output-token reservation requires it.
+`context_compaction_retained_tokens` optionally bounds the recent complete-message
+tail and must be smaller than the declared window. Omitting the window disables
+proactive pressure decisions rather than making RPNH guess a provider-specific
+value. Full historical turns remain in Registry after compaction.
 
 Static non-secret headers may be placed in `headers`. They cannot override the
 credential header or transport-owned headers such as `Content-Type`, `Host`, or
@@ -165,7 +176,9 @@ A local model catalog entry looks like:
   },
   "timeout_seconds": 900,
   "max_output_tokens": 32768,
-  "max_response_bytes": 16777216
+  "max_response_bytes": 16777216,
+  "context_window_tokens": 262144,
+  "context_compaction_retained_tokens": 32768
 }
 ```
 

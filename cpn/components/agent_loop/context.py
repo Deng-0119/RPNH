@@ -800,8 +800,10 @@ class ContextExecutionMixin:
         ref = _resource_from_payload(binding["llm_input_target_ref"])
         data = json.loads(self.kernel._read_firing_registered(context, ref))
         self.core.catalog.validate_schema_ref("registry_v1/llm_input_target/v1", data)
-        return LLMInputTarget(data["model_condition"], data["max_output_tokens"], data["max_response_bytes"],
-                              data.get("context_window_tokens"))
+        return LLMInputTarget(
+            data["model_condition"], data["max_output_tokens"],
+            data["max_response_bytes"], data.get("context_window_tokens"),
+            data.get("context_compaction_retained_tokens"))
 
     @staticmethod
     def _row_ref(row, object_type, logical_kind, version_kind):
