@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: en
   counterpart: index_ZH.md
-  revision: "2026-09-24.1"
+  revision: "2026-09-25.1"
   status: source-reviewed-not-final-candidate-acceptance
   basis: "core; adapter differences explicitly labelled"
 ---
@@ -25,6 +25,7 @@ Start with installation and exact model configuration. These are source-reviewed
 | Diagnose without losing evidence | [Troubleshooting](guides/troubleshooting.md) |
 | Add workflows, tools, skill resources or MCP bindings | [Customization](guides/customization.md) |
 | Use optional Codex/DSH and understand coexistence | [Adapters](guides/adapters.md) |
+| Use the pinned OpenCode presentation | [OpenCode frontend](guides/opencode.md) |
 | Operate the pinned DSH host | [DSH host adapter](guides/dsh.md) |
 | Inspect runs in the PetriNet dashboard | [PetriNet dashboard](guides/viewer.md) |
 | Understand the closed execution design | [Architecture](architecture/design.md) |
@@ -46,8 +47,8 @@ Declaration contracts, advanced trusted-host interfaces and private implementati
 
 ## Validation status
 
-This tree unifies core, native plugins, Codex compatibility, DSH and the
-read-only viewer. Offline checks establish deterministic behavior and package
-completeness only; they do not prove that a user-owned provider route works.
+This tree unifies core, native plugins, Codex and OpenCode presentation, DSH,
+and the read-only viewer. Offline checks establish deterministic behavior and
+package completeness only; they do not prove that a user-owned provider route works.
 Live API results are kept outside the public source tree and require separate
 authorization.

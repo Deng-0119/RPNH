@@ -1,0 +1,25 @@
+{
+  "schema_version": "rpnh/opencode_validation/v1",
+  "date": "2026-09-25",
+  "upstream": {
+    "version": "1.18.32",
+    "tag_commit": "545f51d26cc39a907d2867492d498d9607ea5fa4"
+  },
+  "checks": {
+    "opencode_focused": {
+      "passed": 91,
+      "failed": 0,
+      "skipped": 0
+    },
+    "pinned_tui": "passed: bootstrap, read-only command, prompt submission",
+    "installed_wheel": "passed",
+    "unified_repository": {
+      "passed": 673,
+      "failed": 0,
+      "skipped": 0
+    }
+  },
+  "real_provider_calls": 0,
+  "github_actions_started": false,
+  "result": "unified_local_offline_acceptance_passed"
+}

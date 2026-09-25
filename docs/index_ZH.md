@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: index.md
-  revision: "2026-09-24.1"
+  revision: "2026-09-25.1"
   status: source-reviewed-not-final-candidate-acceptance
   basis: "core; adapter differences explicitly labelled"
 ---
@@ -25,6 +25,7 @@ metadata:
 | 不破坏证据地定位故障 | [排障](guides/troubleshooting_ZH.md) |
 | 扩展 workflow/tool/skill/MCP | [自定义](guides/customization_ZH.md) |
 | 选用 Codex/DSH、理解共存 | [适配](guides/adapters_ZH.md) |
+| 使用固定版本 OpenCode 展示前端 | [OpenCode 前端](guides/opencode_ZH.md) |
 | 使用固定版本 DSH 宿主 | [DSH 宿主适配器](guides/dsh_ZH.md) |
 | 在 PetriNet 看板中查看 run | [PetriNet 看板](guides/viewer_ZH.md) |
 | 理解执行闭环 | [架构](architecture/design_ZH.md) |
@@ -46,6 +47,6 @@ metadata:
 
 ## 验证状态
 
-当前代码树统一包含 core、原生插件、Codex 兼容、DSH 和只读 viewer。离线检查只能证明
+当前代码树统一包含 core、原生插件、Codex/OpenCode 展示、DSH 和只读 viewer。离线检查只能证明
 确定性行为和打包完整性，不能证明用户自有 provider route 可用。真实 API 结果保存在公开
 源码树之外，并且需要单独授权。

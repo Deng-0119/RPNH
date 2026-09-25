@@ -79,11 +79,12 @@ def owner_socket_path(
         str(control_root.resolve()), task_id, str(run_dir.resolve())))
     digest = hashlib.sha256(identity.encode("utf-8")).hexdigest()
     resolved_control = control_root.resolve()
-    for base in (
-            resolved_control,
-            resolved_control.parent,
-            resolved_control.parent.parent,
-    ):
+    # Frontend adapters may add durable grouping directories above a
+    # MainSession root. Search its ancestors instead of assuming one fixed
+    # nesting depth; never place an owner endpoint at the filesystem root.
+    for base in (resolved_control, *resolved_control.parents):
+        if base == Path(base.anchor):
+            continue
         socket_root = base / ".rpnh-owner"
         socket_path = socket_root / f"{digest[:16]}.sock"
         if len(os.fsencode(str(socket_path))) >= 108:

@@ -1,0 +1,777 @@
+{
+    "schema_version": "rpnh/opencode_compatibility/v1",
+    "status": "source-extracted-subset-not-upstream-generator-output",
+    "upstream": {
+        "repository": "anomalyco/opencode",
+        "commit": "545f51d26cc39a907d2867492d498d9607ea5fa4",
+        "package_version": "1.18.32",
+        "paths": [
+            "packages/sdk/js/src/v2/gen/types.gen.ts",
+            "packages/sdk/js/src/v2/gen/sdk.gen.ts",
+            "packages/tui/src/context/sync.tsx",
+            "packages/tui/src/context/project.tsx",
+            "packages/tui/src/component/prompt/index.tsx"
+        ]
+    },
+    "permission": "unavailable",
+    "attachments": "unavailable",
+    "catalog": "all selectable RPNH profiles; exact provider/model remains RPNH-owned",
+    "metrics": "unavailable; mandatory numeric fields use zero display sentinels",
+    "$defs": {
+        "Time": {
+            "type": "object",
+            "properties": {
+                "created": {
+                    "type": "number"
+                },
+                "updated": {
+                    "type": "number"
+                }
+            },
+            "required": [
+                "created",
+                "updated"
+            ]
+        },
+        "Session": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "slug": {
+                    "type": "string"
+                },
+                "projectID": {
+                    "type": "string"
+                },
+                "directory": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "version": {
+                    "type": "string"
+                },
+                "time": {
+                    "$ref": "#/$defs/Time"
+                }
+            },
+            "required": [
+                "id",
+                "slug",
+                "projectID",
+                "directory",
+                "title",
+                "version",
+                "time"
+            ]
+        },
+        "Model": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "providerID": {
+                    "type": "string"
+                },
+                "api": {
+                    "type": "object",
+                    "properties": {
+                        "id": {
+                            "type": "string"
+                        },
+                        "url": {
+                            "type": "string"
+                        },
+                        "npm": {
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "id",
+                        "url",
+                        "npm"
+                    ]
+                },
+                "name": {
+                    "type": "string"
+                },
+                "capabilities": {
+                    "type": "object",
+                    "properties": {
+                        "temperature": {
+                            "type": "boolean"
+                        },
+                        "reasoning": {
+                            "type": "boolean"
+                        },
+                        "attachment": {
+                            "type": "boolean"
+                        },
+                        "toolcall": {
+                            "type": "boolean"
+                        },
+                        "input": {
+                            "type": "object"
+                        },
+                        "output": {
+                            "type": "object"
+                        },
+                        "interleaved": {}
+                    },
+                    "required": [
+                        "temperature",
+                        "reasoning",
+                        "attachment",
+                        "toolcall",
+                        "input",
+                        "output",
+                        "interleaved"
+                    ]
+                },
+                "cost": {
+                    "type": "object",
+                    "properties": {
+                        "input": {
+                            "type": "number"
+                        },
+                        "output": {
+                            "type": "number"
+                        },
+                        "cache": {
+                            "type": "object",
+                            "properties": {
+                                "read": {
+                                    "type": "number"
+                                },
+                                "write": {
+                                    "type": "number"
+                                }
+                            },
+                            "required": [
+                                "read",
+                                "write"
+                            ]
+                        }
+                    },
+                    "required": [
+                        "input",
+                        "output",
+                        "cache"
+                    ]
+                },
+                "limit": {
+                    "type": "object",
+                    "properties": {
+                        "context": {
+                            "type": "number"
+                        },
+                        "output": {
+                            "type": "number"
+                        }
+                    },
+                    "required": [
+                        "context",
+                        "output"
+                    ]
+                },
+                "status": {
+                    "type": "string"
+                },
+                "options": {
+                    "type": "object"
+                },
+                "headers": {
+                    "type": "object"
+                },
+                "release_date": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "id",
+                "providerID",
+                "api",
+                "name",
+                "capabilities",
+                "cost",
+                "limit",
+                "status",
+                "options",
+                "headers",
+                "release_date"
+            ]
+        },
+        "Provider": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "source": {
+                    "enum": [
+                        "config",
+                        "env",
+                        "api",
+                        "custom"
+                    ]
+                },
+                "env": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "options": {
+                    "type": "object"
+                },
+                "models": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "$ref": "#/$defs/Model"
+                    }
+                }
+            },
+            "required": [
+                "id",
+                "name",
+                "source",
+                "env",
+                "options",
+                "models"
+            ]
+        },
+        "Agent": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "mode": {
+                    "enum": [
+                        "primary",
+                        "subagent",
+                        "all"
+                    ]
+                },
+                "permission": {
+                    "type": "array"
+                },
+                "options": {
+                    "type": "object"
+                }
+            },
+            "required": [
+                "name",
+                "mode",
+                "permission",
+                "options"
+            ]
+        },
+        "Status": {
+            "type": "object",
+            "properties": {
+                "type": {
+                    "enum": [
+                        "idle",
+                        "busy"
+                    ]
+                }
+            },
+            "required": [
+                "type"
+            ]
+        },
+        "Command": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "template": {
+                    "type": "string"
+                },
+                "hints": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            },
+            "required": [
+                "name",
+                "template",
+                "hints"
+            ]
+        },
+        "TextPart": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "sessionID": {
+                    "type": "string"
+                },
+                "messageID": {
+                    "type": "string"
+                },
+                "type": {
+                    "const": "text"
+                },
+                "text": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "id",
+                "sessionID",
+                "messageID",
+                "type",
+                "text"
+            ]
+        },
+        "User": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "sessionID": {
+                    "type": "string"
+                },
+                "role": {
+                    "const": "user"
+                },
+                "time": {
+                    "type": "object",
+                    "properties": {
+                        "created": {
+                            "type": "number"
+                        }
+                    },
+                    "required": [
+                        "created"
+                    ]
+                },
+                "agent": {
+                    "type": "string"
+                },
+                "model": {
+                    "type": "object",
+                    "properties": {
+                        "providerID": {
+                            "type": "string"
+                        },
+                        "modelID": {
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "providerID",
+                        "modelID"
+                    ]
+                }
+            },
+            "required": [
+                "id",
+                "sessionID",
+                "role",
+                "time",
+                "agent",
+                "model"
+            ]
+        },
+        "Assistant": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "sessionID": {
+                    "type": "string"
+                },
+                "role": {
+                    "const": "assistant"
+                },
+                "time": {
+                    "type": "object",
+                    "properties": {
+                        "created": {
+                            "type": "number"
+                        }
+                    },
+                    "required": [
+                        "created"
+                    ]
+                },
+                "parentID": {
+                    "type": "string"
+                },
+                "providerID": {
+                    "type": "string"
+                },
+                "modelID": {
+                    "type": "string"
+                },
+                "agent": {
+                    "type": "string"
+                },
+                "mode": {
+                    "type": "string"
+                },
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "cwd": {
+                            "type": "string"
+                        },
+                        "root": {
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "cwd",
+                        "root"
+                    ]
+                },
+                "cost": {
+                    "type": "number"
+                },
+                "tokens": {
+                    "type": "object",
+                    "properties": {
+                        "input": {
+                            "type": "number"
+                        },
+                        "output": {
+                            "type": "number"
+                        },
+                        "reasoning": {
+                            "type": "number"
+                        },
+                        "cache": {
+                            "type": "object",
+                            "properties": {
+                                "read": {
+                                    "type": "number"
+                                },
+                                "write": {
+                                    "type": "number"
+                                }
+                            },
+                            "required": [
+                                "read",
+                                "write"
+                            ]
+                        }
+                    },
+                    "required": [
+                        "input",
+                        "output",
+                        "reasoning",
+                        "cache"
+                    ]
+                }
+            },
+            "required": [
+                "id",
+                "sessionID",
+                "role",
+                "time",
+                "parentID",
+                "providerID",
+                "modelID",
+                "agent",
+                "mode",
+                "path",
+                "cost",
+                "tokens"
+            ]
+        },
+        "MessageWithParts": {
+            "type": "object",
+            "properties": {
+                "info": {
+                    "oneOf": [
+                        {
+                            "$ref": "#/$defs/User"
+                        },
+                        {
+                            "$ref": "#/$defs/Assistant"
+                        }
+                    ]
+                },
+                "parts": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/TextPart"
+                    }
+                }
+            },
+            "required": [
+                "info",
+                "parts"
+            ]
+        },
+        "AssistantMessageWithParts": {
+            "type": "object",
+            "properties": {
+                "info": {
+                    "$ref": "#/$defs/Assistant"
+                },
+                "parts": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/TextPart"
+                    }
+                }
+            },
+            "required": [
+                "info",
+                "parts"
+            ]
+        }
+    },
+    "responses": {
+        "/config/providers": {
+            "type": "object",
+            "properties": {
+                "providers": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/Provider"
+                    }
+                },
+                "default": {
+                    "type": "object"
+                }
+            },
+            "required": [
+                "providers",
+                "default"
+            ]
+        },
+        "/provider": {
+            "type": "object",
+            "properties": {
+                "all": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/Provider"
+                    }
+                },
+                "default": {
+                    "type": "object"
+                },
+                "connected": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            },
+            "required": [
+                "all",
+                "default",
+                "connected"
+            ]
+        },
+        "/agent": {
+            "type": "array",
+            "items": {
+                "$ref": "#/$defs/Agent"
+            }
+        },
+        "/session": {
+            "type": "array",
+            "items": {
+                "$ref": "#/$defs/Session"
+            }
+        },
+        "/session/status": {
+            "type": "object",
+            "additionalProperties": {
+                "$ref": "#/$defs/Status"
+            }
+        },
+        "/path": {
+            "type": "object",
+            "properties": {
+                "home": {
+                    "type": "string"
+                },
+                "state": {
+                    "type": "string"
+                },
+                "config": {
+                    "type": "string"
+                },
+                "worktree": {
+                    "type": "string"
+                },
+                "directory": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "home",
+                "state",
+                "config",
+                "worktree",
+                "directory"
+            ]
+        },
+        "/project/current": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "worktree": {
+                    "type": "string"
+                },
+                "time": {
+                    "$ref": "#/$defs/Time"
+                },
+                "sandboxes": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            },
+            "required": [
+                "id",
+                "worktree",
+                "time",
+                "sandboxes"
+            ]
+        },
+        "/project/rpnh/directories": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "directory": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "directory"
+                ]
+            }
+        },
+        "/command": {
+            "type": "array",
+            "items": {
+                "$ref": "#/$defs/Command"
+            }
+        },
+        "/config": {
+            "type": "object"
+        },
+        "/experimental/resource": {
+            "type": "object"
+        },
+        "/mcp": {
+            "type": "object"
+        },
+        "/lsp": {
+            "type": "array"
+        },
+        "/formatter": {
+            "type": "array"
+        },
+        "/provider/auth": {
+            "type": "object"
+        },
+        "/vcs": {
+            "type": "object",
+            "properties": {
+                "branch": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "branch"
+            ]
+        },
+        "/experimental/workspace": {
+            "type": "array"
+        },
+        "/experimental/workspace/status": {
+            "type": "array"
+        },
+        "/experimental/capabilities": {
+            "type": "object",
+            "properties": {
+                "backgroundSubagents": {
+                    "const": false
+                }
+            },
+            "required": [
+                "backgroundSubagents"
+            ]
+        },
+        "/global/health": {
+            "type": "object",
+            "properties": {
+                "healthy": {
+                    "const": true
+                },
+                "version": {
+                    "const": "1.18.32"
+                }
+            },
+            "required": [
+                "healthy",
+                "version"
+            ]
+        }
+    },
+    "post_responses": {
+        "/session/:session/message": {
+            "$ref": "#/$defs/AssistantMessageWithParts"
+        }
+    },
+    "events": {
+        "message.part.updated": {
+            "type": "object",
+            "properties": {
+                "type": {
+                    "const": "message.part.updated"
+                },
+                "properties": {
+                    "type": "object",
+                    "properties": {
+                        "sessionID": {
+                            "type": "string"
+                        },
+                        "part": {
+                            "$ref": "#/$defs/TextPart"
+                        },
+                        "time": {
+                            "type": "number"
+                        }
+                    },
+                    "required": [
+                        "sessionID",
+                        "part",
+                        "time"
+                    ]
+                }
+            },
+            "required": [
+                "type",
+                "properties"
+            ]
+        }
+    }
+}

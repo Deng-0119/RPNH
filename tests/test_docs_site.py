@@ -56,7 +56,7 @@ class DocumentationTests(unittest.TestCase):
 
     def test_counterpart_drift_rejected(self):
         path = self.root / 'docs/index_ZH.md'
-        path.write_text(path.read_text().replace('2026-09-24.1', 'older'), encoding='utf-8')
+        path.write_text(path.read_text().replace('2026-09-25.1', 'older'), encoding='utf-8')
         with self.assertRaisesRegex(ValueError, 'counterpart mismatch'):
             docs.check(self.root)
 

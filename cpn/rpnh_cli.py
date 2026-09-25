@@ -59,9 +59,9 @@ def _parser() -> argparse.ArgumentParser:
         "--prompt", help="run one main-session turn and exit the input loop",
     )
     parser.add_argument(
-        "--frontend", choices=("auto", "codex", "basic"), default="auto",
+        "--frontend", choices=("auto", "codex", "basic", "opencode"), default="auto",
         help=("auto uses compatible Codex 0.155.0 when available, "
-              "otherwise the built-in terminal; basic needs no Codex install"),
+              "otherwise the built-in terminal; OpenCode 1.18.32 is explicit"),
     )
     return parser
 
@@ -534,9 +534,22 @@ def main(argv: list[str] | None = None) -> int:
         return 130
     except (OSError, RuntimeError, TypeError, ValueError) as exc:
         parser.error(str(exc))
+    if args.frontend == "opencode" and args.prompt is not None:
+        parser.error(
+            "OpenCode is an interactive attach frontend; use --frontend basic "
+            "for a one-shot prompt")
     frontend = "basic" if args.prompt is not None else _choose_frontend(args.frontend)
     root = (args.resume or args.session_dir or (
-        Path.cwd() / ".rpnh" / "sessions" / ("session-" + uuid4().hex[:12])))
+        Path.cwd() / ".rpnh" / "sessions" / (
+            ("opencode-" if frontend == "opencode" else "session-")
+            + uuid4().hex[:12])))
+    if frontend == "opencode":
+        try:
+            from cpn.frontend.opencode_launcher import run_opencode_frontend
+            return run_opencode_frontend(
+                root, execution, resume=args.resume is not None)
+        except (OSError, RuntimeError, TypeError, ValueError) as exc:
+            parser.error(str(exc))
     if frontend == "codex":
         try:
             from cpn.frontend.codex_app_server import run_codex_frontend

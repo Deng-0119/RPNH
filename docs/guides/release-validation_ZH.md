@@ -19,9 +19,9 @@ metadata:
 
 ## 纳入的源码边界
 
-候选包含 core Registry/PetriNet 执行、basic 与 Codex 前端、原生插件、共享
+候选包含 core Registry/PetriNet 执行、basic、Codex 与 OpenCode 前端、原生插件、共享
 provider/profile 层、可选 DSH 宿主和只读 PetriNet viewer。不包含历史分支证据、真实 API
-campaign、项目 workflow、本地 profile 和 OpenCode。
+campaign、项目 workflow 和本地 profile。
 
 软件包附带的 provider/model catalog 为空，不预选 provider、endpoint、credential 或 exact
 model。
@@ -30,12 +30,13 @@ model。
 
 | 检查 | 结果 |
 |---|---|
-| Python 3.13 完整离线套件 | 581 项通过 |
+| OpenCode 整合后的 Python 3.13 完整离线套件 | 673 项通过 |
+| OpenCode 协议/Registry/PTY 定向集合 | 91 项通过 |
 | Codex/DSH/viewer/registered-host 整合定向集合 | 164 项通过 |
 | config、onboarding、resume、workspace 与 net CLI 定向集合 | 52 项通过 |
 | Viewer Node/JointJS/ELK 测试 | 72 项通过 |
 | 固定上游 DSH 离线集成 | 2 个文件、16 项通过 |
-| 文档链接、配对与代码块语法 | 46 页、23 组语言配对通过 |
+| 文档链接、配对与代码块语法 | 48 页、24 组语言配对通过 |
 | Provider catalog 示例 | 空 catalog 通过；3 种非法变更被拒绝 |
 | Wheel viewer 资源与第三方许可 | 均存在且非空 |
 | 源码目录外 wheel 安装 smoke | Python 3.12、3.13 命令入口通过 |
@@ -46,8 +47,8 @@ model。
 
 ## 调用与限制
 
-本轮没有真实模型或 provider API 调用。离线通过不能证明用户自有 route 可达。Codex TUI
-交互、真实 provider 测试和全部 OpenCode 测试留待单独授权阶段。
+本轮没有真实模型或 provider API 调用。离线通过不能证明用户自有 route 可达。固定版
+OpenCode TUI 测试使用无 provider 的应用替身；真实 provider 测试仍需单独授权。
 
 验收环境未安装 Playwright/Chromium，因此没有运行可选浏览器自动化脚本。上述 Python 与
 Node 套件已经覆盖 viewer model/layout、真实 JointJS/ELK 解析、静态打包和只读 HTTP

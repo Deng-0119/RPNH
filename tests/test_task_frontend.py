@@ -391,6 +391,28 @@ def test_task_control_uses_a_short_stable_owner_socket_for_long_run_paths(
     assert recovered.get(handle.task_id).socket_path == handle.socket_path
 
 
+def test_owner_socket_searches_past_frontend_grouping_depth(
+        tmp_path: Path,
+) -> None:
+    nested = tmp_path
+    for number in range(6):
+        nested /= f"frontend-layer-{number}-" + "x" * 24
+    control = TaskControl(
+        nested / "threads" / ("ses_" + "a" * 32) / "main-turn-control",
+        popen_factory=_Process,
+    )
+    handle = control.start(AgentTaskSpec(
+        run_dir=nested / "runs" / "one",
+        prompt="Exercise a deeply grouped frontend owner.",
+        stages=(AgentStage("worker", "Return one result."),),
+        execution_config_path=tmp_path / "execution.json",
+    ))
+
+    assert len(os.fsencode(str(handle.socket_path))) < 108
+    assert handle.socket_path.parent.name == ".rpnh-owner"
+    assert tmp_path in handle.socket_path.parents
+
+
 def test_task_status_preserves_local_exit_code_without_forging_recovered_code(
         tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
 ) -> None:

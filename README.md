@@ -22,13 +22,15 @@ The unified product currently includes:
 
 - the basic RPNH terminal frontend;
 - the pinned Codex compatibility frontend;
+- the pinned OpenCode presentation frontend;
 - configurable local-process and external provider routes;
 - native managed plugins and workspace resources;
 - a pinned, optional DSH integration;
 - the read-only PetriNet dashboard and host run selectors.
 
-OpenCode frontend support is being developed separately and is not claimed by
-this candidate until its implementation and offline acceptance are incorporated.
+OpenCode 1.18.32 support has local offline acceptance for the real Registry,
+installed wheel, and pinned TUI against a provider-free application double. It
+does not claim a real provider/model call.
 
 ## Install without calling a model
 
@@ -61,6 +63,15 @@ Start the pinned Codex presentation after installing its documented dependency:
 ```bash
 rpnh --frontend codex
 ```
+
+Start the pinned OpenCode presentation after separately installing OpenCode
+1.18.32:
+
+```bash
+rpnh --frontend opencode
+```
+
+Read the [OpenCode frontend boundaries](docs/guides/opencode.md) before use.
 
 Inspect an existing run without acquiring writer authority:
 
@@ -102,6 +113,7 @@ Read [DSH usage](docs/guides/dsh.md) and
 - [Usage, tasks, workflows and recovery](docs/guides/usage.md)
 - [PetriNet dashboard](docs/guides/viewer.md)
 - [Host adapters](docs/guides/adapters.md)
+- [OpenCode frontend](docs/guides/opencode.md)
 - [Customization and plugins](docs/guides/customization.md)
 - [Troubleshooting](docs/guides/troubleshooting.md)
 - [Architecture](docs/architecture/design.md)

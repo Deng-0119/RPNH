@@ -18,12 +18,14 @@ WSL2，需要 Python 3.11 或更高版本；目前不支持原生 Windows 与 ma
 
 - RPNH basic 终端前端；
 - 固定版本的 Codex 兼容前端；
+- 固定版本的 OpenCode 展示前端；
 - 可配置的 local-process 与 external provider 路线；
 - 原生受管插件和 workspace resources；
 - 固定版本、按需启用的 DSH 集成；
 - 只读 PetriNet 看板和宿主 run 选择适配器。
 
-OpenCode 前端正在独立开发；在其实现和离线验收正式并入前，本候选不声明已支持 OpenCode。
+OpenCode 1.18.32 已完成本地离线验收，覆盖真实 Registry、安装后的 wheel，以及固定版 TUI
+连接无 provider 的应用替身；不声称完成了真实 provider/model 调用。
 
 ## 不调用模型的安装
 
@@ -56,6 +58,14 @@ rpnh --frontend basic
 ```bash
 rpnh --frontend codex
 ```
+
+单独安装 OpenCode 1.18.32 后，启动固定 OpenCode 展示前端：
+
+```bash
+rpnh --frontend opencode
+```
+
+使用前请阅读 [OpenCode 前端边界](docs/guides/opencode_ZH.md)。
 
 在不取得 writer 权限的情况下查看已有 run：
 
@@ -95,6 +105,7 @@ rpnh-dsh ../deepseek-harness-rpnh \
 - [使用、task、workflow 与恢复](docs/guides/usage_ZH.md)
 - [PetriNet 看板](docs/guides/viewer_ZH.md)
 - [宿主适配](docs/guides/adapters_ZH.md)
+- [OpenCode 前端](docs/guides/opencode_ZH.md)
 - [自定义与插件](docs/guides/customization_ZH.md)
 - [排障](docs/guides/troubleshooting_ZH.md)
 - [架构](docs/architecture/design_ZH.md)
