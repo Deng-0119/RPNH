@@ -1,0 +1,25 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "registry_v1/agent_turn_recorded/v2",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "agent_loop_id": {"type": "string", "pattern": "^agent_loop:[a-f0-9]{32}$"},
+    "agent_turn_id": {"type": "string", "pattern": "^agent_turn:[a-f0-9]{32}$"},
+    "agent_turn_version_id": {"type": "string", "pattern": "^agent_turn_version:[a-f0-9]{32}$"},
+    "sequence": {"type": "integer", "minimum": 0},
+    "llm_invocation_ref": {"type": "object"},
+    "llm_invocation_attempt_ref": {"type": "object"},
+    "response_resource_ref": {"type": "object"},
+    "response_protocol_ref": {"const": "llm_response_envelope/v1"},
+    "response_size": {"type": "integer", "minimum": 1},
+    "tool_call_count": {"type": "integer", "minimum": 0},
+    "revision": {"type": "integer", "minimum": 1}
+  },
+  "required": [
+    "agent_loop_id", "agent_turn_id", "agent_turn_version_id", "sequence",
+    "llm_invocation_ref", "llm_invocation_attempt_ref",
+    "response_resource_ref", "response_protocol_ref", "response_size",
+    "tool_call_count", "revision"
+  ]
+}

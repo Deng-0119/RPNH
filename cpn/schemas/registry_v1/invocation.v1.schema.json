@@ -1,0 +1,53 @@
+{
+  "$id": "registry_v1/invocation/v1",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "additionalProperties": false,
+  "definitions": {
+    "ref": {
+      "type": "object", "additionalProperties": false,
+      "properties": {
+        "entity_type": {"type": "string"},
+        "logical_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"},
+        "version_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"}
+      },
+      "required": ["entity_type", "logical_id", "version_id"]
+    },
+    "nullable_ref": {"oneOf": [{"$ref": "#/definitions/ref"}, {"type": "null"}]}
+  },
+  "properties": {
+    "task_ref": {"$ref": "#/definitions/ref"},
+    "task_branch_ref": {"$ref": "#/definitions/ref"},
+    "task_round_ref": {"$ref": "#/definitions/ref"},
+    "net_instance_ref": {"$ref": "#/definitions/ref"},
+    "plan_ref": {"$ref": "#/definitions/ref"},
+    "team_design_root_ref": {"$ref": "#/definitions/ref"},
+    "invocation_ref": {"$ref": "#/definitions/ref"},
+    "agent_ref": {"$ref": "#/definitions/nullable_ref"},
+    "operation_binding_ref": {"$ref": "#/definitions/ref"},
+    "authority_decision_ref": {"$ref": "#/definitions/ref"},
+    "admission_marking_checkpoint_ref": {"$ref": "#/definitions/ref"},
+    "budget_witness_ref": {"$ref": "#/definitions/ref"},
+    "principal_ref": {"$ref": "#/definitions/ref"},
+    "operation_execution_lease_ref": {"$ref": "#/definitions/ref"},
+    "origin": {"const": "petri_operation"},
+    "own_node_ref": {"$ref": "#/definitions/nullable_ref"},
+    "own_transition_firing_ref": {"$ref": "#/definitions/nullable_ref"},
+    "sponsoring_transition_firing_ref": {"$ref": "#/definitions/nullable_ref"},
+    "activation_ref": {"$ref": "#/definitions/nullable_ref"},
+    "authorization_lifetime_activation_ref": {"$ref": "#/definitions/nullable_ref"},
+    "parent_invocation_ref": {"$ref": "#/definitions/nullable_ref"},
+    "accounting_parent_invocation_ref": {"$ref": "#/definitions/ref"},
+    "budget_scope": {"type": "string", "minLength": 1},
+    "finalization_scope": {"type": ["string", "null"]}
+  },
+  "required": ["task_ref", "task_branch_ref", "task_round_ref", "net_instance_ref", "plan_ref", "team_design_root_ref", "invocation_ref", "agent_ref", "operation_binding_ref", "authority_decision_ref", "admission_marking_checkpoint_ref", "budget_witness_ref", "principal_ref", "operation_execution_lease_ref", "origin", "own_node_ref", "own_transition_firing_ref", "sponsoring_transition_firing_ref", "activation_ref", "authorization_lifetime_activation_ref", "parent_invocation_ref", "accounting_parent_invocation_ref", "budget_scope", "finalization_scope"],
+  "allOf": [{
+    "properties": {
+      "own_node_ref": {"$ref": "#/definitions/ref"},
+      "own_transition_firing_ref": {"$ref": "#/definitions/ref"},
+      "sponsoring_transition_firing_ref": {"type": "null"},
+      "parent_invocation_ref": {"type": "null"}
+    }
+  }]
+}

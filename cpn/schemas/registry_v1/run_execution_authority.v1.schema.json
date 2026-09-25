@@ -1,0 +1,23 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "registry_v1/run_execution_authority/v1",
+  "title": "One Registry-driven execution authority",
+  "type": "object",
+  "additionalProperties": false,
+  "definitions": {
+    "ref": {"type": "object", "additionalProperties": false, "properties": {"entity_type": {"type": "string"}, "logical_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"}, "version_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"}}, "required": ["entity_type", "logical_id", "version_id"]},
+    "nullable_ref": {"oneOf": [{"$ref": "#/definitions/ref"}, {"type": "null"}]}
+  },
+  "properties": {
+    "run_execution_authority_ref": {"$ref": "#/definitions/ref"},
+    "run_ref": {"$ref": "#/definitions/ref"},
+    "task_ref": {"$ref": "#/definitions/ref"},
+    "declaration_ref": {"$ref": "#/definitions/ref"},
+    "declaration_schema_ref": {"type": "string", "minLength": 1},
+    "latest_checkpoint_ref": {"$ref": "#/definitions/ref"},
+    "model_condition": {"type": "string", "minLength": 1},
+    "status": {"enum": ["ready", "running", "correcting_tool_call", "waiting_llm_retry", "waiting_resource", "blocked_correction_limit", "blocked_llm_retry_limit", "blocked_framework_contract", "blocked_reconciliation", "blocked_resource_cycle", "stopped_by_owner", "terminal"]},
+    "terminal_evidence_ref": {"$ref": "#/definitions/nullable_ref"}
+  },
+  "required": ["run_execution_authority_ref", "run_ref", "task_ref", "declaration_ref", "declaration_schema_ref", "latest_checkpoint_ref", "model_condition", "status", "terminal_evidence_ref"]
+}

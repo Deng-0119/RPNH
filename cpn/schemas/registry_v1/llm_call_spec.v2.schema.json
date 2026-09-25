@@ -1,0 +1,34 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "registry_v1/llm_call_spec/v2",
+  "title": "Current reference-authoritative LLM call specification",
+  "type": "object",
+  "additionalProperties": false,
+  "definitions": {
+    "ref": {"type": "object", "additionalProperties": false, "properties": {"entity_type": {"type": "string", "minLength": 1}, "logical_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"}, "version_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"}}, "required": ["entity_type", "logical_id", "version_id"]},
+    "resource_ref": {"type": "object", "additionalProperties": false, "properties": {"resource_id": {"type": "string", "pattern": "^resource:[a-f0-9]{32}$"}, "resource_version_id": {"type": "string", "pattern": "^resource_version:[a-f0-9]{32}$"}}, "required": ["resource_id", "resource_version_id"]}
+  },
+  "properties": {
+    "llm_call_id": {"type": "string", "pattern": "^llm_call:[a-f0-9]{32}$"},
+    "llm_call_version_id": {"type": "string", "pattern": "^llm_call_version:[a-f0-9]{32}$"},
+    "llm_call_ref": {"$ref": "#/definitions/ref"},
+    "invocation_ref": {"$ref": "#/definitions/ref"},
+    "operation_binding_ref": {"$ref": "#/definitions/ref"},
+    "agent_loop_ref": {"$ref": "#/definitions/ref"},
+    "turn_sequence": {"type": "integer", "minimum": 0},
+    "request_resource_ref": {"$ref": "#/definitions/resource_ref"},
+    "terminal_delivery_ref": {"$ref": "#/definitions/ref"},
+    "semantic_prompt_resource_ref": {"$ref": "#/definitions/resource_ref"},
+    "llm_execution_target_ref": {"$ref": "#/definitions/resource_ref"},
+    "backend": {"type": "string", "minLength": 1},
+    "model": {"type": "string", "minLength": 1},
+    "transport_contract_ref": {"$ref": "#/definitions/resource_ref"},
+    "interaction_protocol_ref": {"type": "string", "minLength": 1},
+    "response_adapter_ref": {"type": "string", "minLength": 1},
+    "tool_catalog_ref": {"$ref": "#/definitions/resource_ref"},
+    "prior_turn_refs": {"type": "array", "items": {"$ref": "#/definitions/ref"}},
+    "timeout_seconds": {"type": "integer", "minimum": 1},
+    "max_response_bytes": {"type": "integer", "minimum": 1}
+  },
+  "required": ["llm_call_id", "llm_call_version_id", "llm_call_ref", "invocation_ref", "operation_binding_ref", "agent_loop_ref", "turn_sequence", "request_resource_ref", "terminal_delivery_ref", "semantic_prompt_resource_ref", "llm_execution_target_ref", "backend", "model", "transport_contract_ref", "interaction_protocol_ref", "response_adapter_ref", "tool_catalog_ref", "prior_turn_refs", "timeout_seconds", "max_response_bytes"]
+}

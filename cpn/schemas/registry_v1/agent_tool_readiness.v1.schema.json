@@ -1,0 +1,72 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "registry_v1/agent_tool_readiness/v1",
+  "title": "Content-neutral process-entry readiness for the exact agent tool surface",
+  "type": "object",
+  "additionalProperties": false,
+  "definitions": {
+    "ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "entity_type": {"type": "string"},
+        "logical_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"},
+        "version_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"}
+      },
+      "required": ["entity_type", "logical_id", "version_id"]
+    },
+    "resource_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "resource_id": {"type": "string", "pattern": "^resource:[a-f0-9]{32}$"},
+        "resource_version_id": {"type": "string", "pattern": "^resource_version:[a-f0-9]{32}$"}
+      },
+      "required": ["resource_id", "resource_version_id"]
+    },
+    "nullable_text": {
+      "oneOf": [{"type": "string", "minLength": 1}, {"type": "null"}]
+    },
+    "tool_result": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "ready": {"type": "boolean"},
+        "failure_code": {"$ref": "#/definitions/nullable_text"},
+        "command_started": {"type": ["boolean", "null"]},
+        "execution_status": {"$ref": "#/definitions/nullable_text"},
+        "exit_code": {"type": ["integer", "null"]},
+        "stdout": {"type": "string", "maxLength": 4096},
+        "stderr": {"type": "string", "maxLength": 4096}
+      },
+      "required": [
+        "name", "ready", "failure_code", "command_started",
+        "execution_status", "exit_code", "stdout", "stderr"
+      ]
+    }
+  },
+  "properties": {
+    "agent_tool_readiness_ref": {"$ref": "#/definitions/ref"},
+    "run_ref": {"$ref": "#/definitions/ref"},
+    "writer_fencing_epoch": {"type": "integer", "minimum": 1},
+    "environment_ref": {"$ref": "#/definitions/ref"},
+    "numerical_profile_ref": {"$ref": "#/definitions/ref"},
+    "tool_catalog_ref": {"$ref": "#/definitions/resource_ref"},
+    "external_resource_index_ref": {"$ref": "#/definitions/ref"},
+    "kb_package_ref": {"$ref": "#/definitions/ref"},
+    "status": {"enum": ["ready", "not_ready"]},
+    "tool_results": {
+      "type": "array",
+      "items": {"$ref": "#/definitions/tool_result"}
+    }
+  },
+  "required": [
+    "agent_tool_readiness_ref", "run_ref", "writer_fencing_epoch",
+    "environment_ref", "numerical_profile_ref", "tool_catalog_ref",
+    "external_resource_index_ref", "kb_package_ref", "status", "tool_results"
+  ]
+}

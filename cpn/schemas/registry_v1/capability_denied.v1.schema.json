@@ -1,0 +1,19 @@
+{
+  "$id": "registry_v1/capability_denied/v1",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "additionalProperties": true,
+  "properties": {
+    "grant_id": {
+      "pattern": "^grant:[a-f0-9]{32}$",
+      "type": "string"
+    },
+    "reason": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "grant_id"
+  ],
+  "title": "capability_denied/v1",
+  "type": "object"
+}

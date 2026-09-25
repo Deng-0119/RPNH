@@ -1,0 +1,61 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "rpnh-harness"
+version = "0.1.0"
+description = "A terminal AI assistant with persistent tasks, configurable models, and execution history"
+readme = "README.md"
+license = "MIT"
+license-files = [
+  "LICENSE",
+  "THIRD_PARTY_NOTICES.md",
+  "integrations/dsh/UPSTREAM_LICENSE",
+]
+requires-python = ">=3.11"
+classifiers = [
+  "Operating System :: POSIX :: Linux",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+]
+dependencies = [
+  "jsonschema>=4.20,<5",
+  "websockets>=12,<16",
+]
+
+[project.optional-dependencies]
+# Existing AgentLoop integration tests capture the numerical environment.
+# Keep these requirements explicit instead of relying on preinstalled packages.
+test = ["pytest>=8,<9", "numpy>=1.26,<3", "scipy>=1.11,<2"]
+
+[project.scripts]
+rpnh = "cpn.rpnh_cli:main"
+rpnh-configure-providers = "cpn.rpnh.provider_setup:main"
+rpnh-dsh = "cpn.dsh.launcher:main"
+
+[tool.setuptools.packages.find]
+include = ["cpn*", "integrations*"]
+
+[tool.setuptools.package-data]
+cpn = [
+  "config/*.json",
+  "frontend/*.json",
+  "frontend/static/*",
+  "frontend/static/assets/*",
+  "llm_adapters/*.json",
+  "schemas/**/*.json",
+]
+integrations = [
+  "dsh/UPSTREAM.json",
+  "dsh/UPSTREAM_LICENSE",
+  "dsh/prepare.sh",
+  "dsh/run.sh",
+  "dsh/verify.sh",
+  "dsh/patch_upstream.py",
+  "dsh/src/*.ts",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

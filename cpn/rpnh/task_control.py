@@ -1,0 +1,584 @@
+"""Thin multi-task control facade shared by the CLI and a future dashboard.
+
+Task execution remains in independent processes and Registry roots.  This
+facade owns only process handles and task-local owner-channel clients; it never
+constructs a Registry writer or settles a firing.
+"""
+from __future__ import annotations
+
+from dataclasses import dataclass, replace
+import hashlib
+import json
+import os
+from pathlib import Path
+import signal
+import subprocess
+import sys
+from typing import Any, Callable, Mapping
+from uuid import uuid4
+
+from .agent_tasks import AgentTaskSpec, agent_task_catalog
+from .control_client import ControlClient
+from .inspection import project_registry_net
+from .registry._registry import _RegistryCore
+from .registry.publication import _version_from_payload
+from .registry.resource_service import _ResourceServiceKernel
+from .registry.resources import ResourceVersionRef
+
+
+@dataclass(slots=True)
+class TaskHandle:
+    """Session-local handle; Registry and process projections remain separate."""
+
+    task_id: str
+    kind: str
+    run_dir: Path
+    socket_path: Path
+    log_path: Path
+    spec: AgentTaskSpec
+    process: Any
+    launch_state: str = "active"
+    launch_mode: str = "fresh"
+
+
+def _process_start_ticks(pid: int) -> int | None:
+    try:
+        value = Path(f"/proc/{pid}/stat").read_text(encoding="utf-8")
+        tail = value[value.rfind(")") + 2:].split()
+        return int(tail[19])
+    except (OSError, ValueError, IndexError):
+        return None
+
+
+@dataclass(slots=True)
+class _DetachedProcess:
+    """Validated process identity for a task recovered by a later frontend."""
+
+    pid: int
+    start_ticks: int
+
+    def poll(self):
+        return None if _process_start_ticks(self.pid) == self.start_ticks else 1
+
+    def send_signal(self, value):
+        if self.poll() is not None:
+            raise ProcessLookupError(self.pid)
+        os.kill(self.pid, value)
+
+
+def owner_socket_path(
+        control_root: Path, task_id: str, run_dir: Path,
+) -> Path:
+    """Return one deterministic short AF_UNIX endpoint for an owner."""
+    if (not isinstance(control_root, Path)
+            or not isinstance(run_dir, Path)
+            or not isinstance(task_id, str)
+            or not task_id):
+        raise TypeError("owner socket identity is invalid")
+    identity = "\0".join((
+        str(control_root.resolve()), task_id, str(run_dir.resolve())))
+    digest = hashlib.sha256(identity.encode("utf-8")).hexdigest()
+    resolved_control = control_root.resolve()
+    for base in (
+            resolved_control,
+            resolved_control.parent,
+            resolved_control.parent.parent,
+    ):
+        socket_root = base / ".rpnh-owner"
+        socket_path = socket_root / f"{digest[:16]}.sock"
+        if len(os.fsencode(str(socket_path))) >= 108:
+            continue
+        try:
+            if socket_root.is_symlink():
+                raise ValueError(
+                    "RPNH owner socket directory must not be a symlink")
+            socket_root.mkdir(mode=0o700, parents=True, exist_ok=True)
+        except OSError:
+            continue
+        return socket_path
+    raise ValueError(
+        "TaskControl has no writable short ancestor for its Unix owner socket")
+
+
+class TaskControl:
+    """Create and control independent RPNH task objects."""
+
+    def __init__(
+            self, root: Path, *,
+            popen_factory: Callable[..., Any] = subprocess.Popen,
+            channel_ready: Callable[[Path], bool] | None = None,
+    ) -> None:
+        if not isinstance(root, Path):
+            raise TypeError("TaskControl root requires pathlib.Path")
+        self.root = root.resolve()
+        self._popen = popen_factory
+        self._channel_ready = channel_ready or (lambda path: path.is_socket())
+        self._tasks: dict[str, TaskHandle] = {}
+        self._load_persisted_tasks()
+        self._recover_pending_launches()
+
+    @property
+    def _manifest_root(self) -> Path:
+        return self.root / "manifests"
+
+    def _owner_socket_path(self, task_id: str, run_dir: Path) -> Path:
+        """Return this task's short, durable owner-channel endpoint."""
+        return owner_socket_path(self.root, task_id, run_dir)
+
+    def _upgrade_legacy_owner_socket(self, handle: TaskHandle) -> None:
+        """Persist the task-local endpoint before relaunching old tasks."""
+        configured = handle.spec.owner_socket_path
+        legacy_global = (
+            configured is not None
+            and configured.parent.parent == Path("/tmp")
+            and configured.parent.name.startswith("rpnh-owner-")
+            and configured.suffix == ".sock")
+        if configured is not None and not legacy_global:
+            return
+        socket_path = self._owner_socket_path(handle.task_id, handle.run_dir)
+        handle.spec = replace(handle.spec, owner_socket_path=socket_path)
+        handle.socket_path = socket_path
+        spec_path = self.root / "specs" / f"{handle.task_id}.json"
+        spec_path.write_text(
+            json.dumps(handle.spec.as_worker_document(), ensure_ascii=False,
+                       indent=2) + "\n",
+            encoding="utf-8")
+
+    def _write_manifest(
+            self, handle: TaskHandle, *, launch_state: str,
+            launch_mode: str, pid: int | None = None,
+            process_start_ticks: int | None = None,
+    ) -> None:
+        if launch_state not in {"pending", "active"}:
+            raise ValueError("task launch state is invalid")
+        if launch_mode not in {"fresh", "resume"}:
+            raise ValueError("task launch mode is invalid")
+        if launch_state == "pending":
+            pid = process_start_ticks = None
+        elif (not isinstance(pid, int)
+              or not isinstance(process_start_ticks, int)):
+            raise ValueError("active task manifest requires exact process identity")
+        self._manifest_root.mkdir(parents=True, exist_ok=True)
+        value = {
+            "schema_version": "rpnh/task_handle/v1",
+            "task_id": handle.task_id,
+            "kind": handle.kind,
+            "run_dir": str(handle.run_dir),
+            "socket_path": str(handle.socket_path),
+            "log_path": str(handle.log_path),
+            "spec_path": str(self.root / "specs" / f"{handle.task_id}.json"),
+            "pid": pid,
+            "process_start_ticks": process_start_ticks,
+            "launch_state": launch_state,
+            "launch_mode": launch_mode,
+        }
+        path = self._manifest_root / f"{handle.task_id}.json"
+        temporary = path.with_suffix(".json.tmp")
+        temporary.write_text(
+            json.dumps(value, ensure_ascii=False, indent=2) + "\n",
+            encoding="utf-8")
+        os.replace(temporary, path)
+        handle.launch_state = launch_state
+        handle.launch_mode = launch_mode
+
+    def _refresh_handle_process(self, handle: TaskHandle) -> None:
+        path = self._manifest_root / f"{handle.task_id}.json"
+        try:
+            value = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, TypeError, ValueError, json.JSONDecodeError):
+            return
+        if (not isinstance(value, Mapping)
+                or value.get("task_id") != handle.task_id):
+            return
+        launch_state = value.get("launch_state", "active")
+        launch_mode = value.get("launch_mode", "fresh")
+        if launch_state not in {"pending", "active"}:
+            return
+        if launch_mode not in {"fresh", "resume"}:
+            return
+        handle.launch_state = launch_state
+        handle.launch_mode = launch_mode
+        pid = value.get("pid")
+        ticks = value.get("process_start_ticks")
+        if (launch_state == "active" and isinstance(pid, int)
+                and isinstance(ticks, int)):
+            current_pid = getattr(handle.process, "pid", None)
+            if (current_pid == pid
+                    and not isinstance(handle.process, _DetachedProcess)):
+                # A locally spawned Popen retains the exact exit code after
+                # /proc has removed the process.  Do not replace that known
+                # result with the detached observer's synthetic "gone" code.
+                return
+            current_ticks = (
+                _process_start_ticks(current_pid)
+                if isinstance(current_pid, int) else None)
+            if current_pid != pid or current_ticks != ticks:
+                handle.process = _DetachedProcess(pid, ticks)
+
+    def _load_persisted_tasks(self) -> None:
+        if not self._manifest_root.is_dir():
+            return
+        for path in sorted(self._manifest_root.glob("task-*.json")):
+            try:
+                value = json.loads(path.read_text(encoding="utf-8"))
+                if (not isinstance(value, Mapping)
+                        or value.get("schema_version")
+                        != "rpnh/task_handle/v1"):
+                    raise ValueError("manifest schema")
+                task_id = value["task_id"]
+                spec_path = Path(value["spec_path"]).resolve()
+                if (not isinstance(task_id, str)
+                        or path.name != f"{task_id}.json"
+                        or spec_path.parent != (self.root / "specs").resolve()):
+                    raise ValueError("manifest identity")
+                spec = AgentTaskSpec.from_worker_document(json.loads(
+                    spec_path.read_text(encoding="utf-8")))
+                pid = value.get("pid")
+                ticks = value.get("process_start_ticks")
+                launch_state = value.get("launch_state", "active")
+                launch_mode = value.get("launch_mode", "fresh")
+                if (launch_state not in {"pending", "active"}
+                        or launch_mode not in {"fresh", "resume"}):
+                    raise ValueError("manifest launch lifecycle")
+                process = (
+                    _DetachedProcess(pid, ticks)
+                    if isinstance(pid, int) and isinstance(ticks, int)
+                    else _DetachedProcess(-1, -1))
+                handle = TaskHandle(
+                    task_id=task_id,
+                    kind=value["kind"],
+                    run_dir=Path(value["run_dir"]).resolve(),
+                    socket_path=Path(value["socket_path"]).resolve(),
+                    log_path=Path(value["log_path"]).resolve(),
+                    spec=spec,
+                    process=process,
+                    launch_state=launch_state,
+                    launch_mode=launch_mode,
+                )
+                if (handle.kind != spec.kind
+                        or handle.run_dir != spec.run_dir.resolve()
+                        or (spec.owner_socket_path is not None
+                            and handle.socket_path != spec.owner_socket_path)
+                        or (spec.owner_socket_path is None
+                            and handle.socket_path
+                            != handle.run_dir / "owner.sock")):
+                    raise ValueError("manifest differs from task spec")
+                self._tasks[task_id] = handle
+            except (KeyError, OSError, TypeError, ValueError,
+                    json.JSONDecodeError):
+                continue
+
+    def _recover_pending_launches(self) -> None:
+        """Compensate durable intents without creating another task identity."""
+        for handle in tuple(self._tasks.values()):
+            if handle.launch_state != "pending":
+                continue
+            self._refresh_handle_process(handle)
+            if handle.launch_state == "active":
+                continue
+            self._upgrade_legacy_owner_socket(handle)
+            spec_path = self.root / "specs" / f"{handle.task_id}.json"
+            self._write_manifest(
+                handle, launch_state="pending", launch_mode=handle.launch_mode)
+            handle.process = self._spawn(
+                handle.task_id, spec_path, handle.log_path,
+                resume=handle.launch_mode == "resume")
+
+    def _spawn(self, task_id: str, spec_path: Path, log_path: Path, *,
+               resume: bool) -> Any:
+        argv = [sys.executable, "-m", "cpn.rpnh.task_worker"]
+        if resume:
+            argv.append("--resume")
+        argv.append(str(spec_path))
+        log = log_path.open("ab", buffering=0)
+        try:
+            return self._popen(
+                argv,
+                stdin=subprocess.DEVNULL,
+                stdout=log,
+                stderr=subprocess.STDOUT,
+                cwd=str(self.root),
+                start_new_session=True,
+            )
+        finally:
+            log.close()
+
+    def start(self, spec: AgentTaskSpec) -> TaskHandle:
+        if not isinstance(spec, AgentTaskSpec):
+            raise TypeError("TaskControl.start requires AgentTaskSpec")
+        task_id = "task-" + uuid4().hex[:12]
+        specs = self.root / "specs"
+        logs = self.root / "logs"
+        specs.mkdir(parents=True, exist_ok=True)
+        logs.mkdir(parents=True, exist_ok=True)
+        spec_path = specs / f"{task_id}.json"
+        log_path = logs / f"{task_id}.log"
+        run_dir = spec.run_dir.resolve()
+        socket_path = self._owner_socket_path(task_id, run_dir)
+        spec = replace(spec, owner_socket_path=socket_path)
+        spec_path.write_text(
+            json.dumps(spec.as_worker_document(), ensure_ascii=False, indent=2)
+            + "\n",
+            encoding="utf-8",
+        )
+        handle = TaskHandle(
+            task_id=task_id,
+            kind=spec.kind,
+            run_dir=run_dir,
+            socket_path=socket_path,
+            log_path=log_path,
+            spec=spec,
+            process=_DetachedProcess(-1, -1),
+            launch_state="pending",
+            launch_mode="fresh",
+        )
+        self._tasks[task_id] = handle
+        # The durable intent precedes process creation.  The worker changes it
+        # to active only after winning the per-task launch lock, before any
+        # Registry/provider work.
+        self._write_manifest(
+            handle, launch_state="pending", launch_mode="fresh")
+        handle.process = self._spawn(
+            task_id, spec_path, log_path, resume=False)
+        return handle
+
+    def get(self, task_id: str) -> TaskHandle:
+        try:
+            handle = self._tasks[task_id]
+        except KeyError as exc:
+            raise ValueError(f"unknown task: {task_id}") from exc
+        self._refresh_handle_process(handle)
+        return handle
+
+    def list(self) -> tuple[dict[str, Any], ...]:
+        return tuple(self.status(task_id) for task_id in self._tasks)
+
+    def status(self, task_id: str) -> dict[str, Any]:
+        handle = self.get(task_id)
+        registry_status = None
+        if (handle.run_dir / ".registry_v1" / "registry.sqlite3").is_file():
+            try:
+                registry_status = self._read_terminal_status(handle.run_dir)
+            except (OSError, RuntimeError, TypeError, ValueError):
+                registry_status = None
+        observed_return_code = handle.process.poll()
+        return_code = (
+            None if isinstance(handle.process, _DetachedProcess)
+            else observed_return_code)
+        process_status = (
+            "EXITED" if registry_status is not None
+            and registry_status.get("execution_status") == "terminal" else
+            "STOPPED" if registry_status is not None
+            and registry_status.get("execution_status") == "stopped_by_owner" else
+            "STARTING" if handle.launch_state == "pending" else
+            "RUNNING" if observed_return_code is None else
+            "EXITED" if observed_return_code == 0 else
+            "FAILED"
+        )
+        result: dict[str, Any] = {
+            "task_id": task_id,
+            "kind": handle.kind,
+            "process_status": process_status,
+            "return_code": return_code,
+            "run_dir": str(handle.run_dir),
+            "socket_ready": self._channel_ready(handle.socket_path),
+            "log_path": str(handle.log_path),
+        }
+        if self._channel_ready(handle.socket_path):
+            try:
+                snapshot = ControlClient(str(handle.socket_path)).snapshot()
+                result["registry"] = {
+                    key: snapshot.get(key) for key in (
+                        "run_ref", "task_ref", "net_ref", "checkpoint_ref",
+                        "enabled_transitions", "active_firings",
+                    )
+                }
+            except (OSError, RuntimeError, ValueError) as exc:
+                result["control_error"] = str(exc)
+        elif (handle.run_dir / ".registry_v1" / "registry.sqlite3").is_file():
+            try:
+                result["registry"] = (
+                    registry_status or self._read_terminal_status(handle.run_dir))
+            except (OSError, RuntimeError, TypeError, ValueError) as exc:
+                result["registry_error"] = str(exc)
+        return result
+
+    @staticmethod
+    def _read_terminal_status(run_dir: Path) -> dict[str, Any]:
+        core = _RegistryCore(
+            run_dir, create=False, read_only=True, catalog=agent_task_catalog())
+        terminal = core.event_store.canonical_object_rows(
+            object_type="run_terminal_evidence/v1")
+        final = core.event_store.canonical_object_rows(
+            object_type="final_result_index/v1")
+        from .registry.run_authority import current_run_execution_authority
+        _authority_ref, authority = current_run_execution_authority(
+            core, _ResourceServiceKernel(core))
+        return {
+            "task_ref": str(core.task_id),
+            "execution_status": authority["status"],
+            "checkpoint_ref": authority["latest_checkpoint_ref"],
+            "terminal_evidence_count": len(terminal),
+            "final_result_index_count": len(final),
+            "actual_model_call_counts": list(
+                core.event_store.actual_model_call_counts()),
+        }
+
+    def snapshot(self, task_id: str) -> Mapping[str, Any]:
+        handle = self.get(task_id)
+        if not self._channel_ready(handle.socket_path):
+            raise RuntimeError("task owner channel is not currently available")
+        return ControlClient(str(handle.socket_path)).snapshot()
+
+    def result(self, task_id: str) -> dict[str, Any]:
+        """Read the exact registered terminal product without opening a writer."""
+        handle = self.get(task_id)
+        database = handle.run_dir / ".registry_v1" / "registry.sqlite3"
+        if not database.is_file():
+            raise RuntimeError("task Registry is not currently available")
+        core = _RegistryCore(
+            handle.run_dir, create=False, read_only=True,
+            catalog=agent_task_catalog())
+        rows = core.event_store.canonical_object_rows(
+            object_type="run_terminal_evidence/v1")
+        if not rows:
+            raise RuntimeError("task has no registered terminal result")
+        if len(rows) != 1:
+            raise RuntimeError("task has multiple registered terminal results")
+        evidence = json.loads(rows[0]["metadata_json"])
+        result_ref = _version_from_payload(evidence["terminal_result_ref"])
+        raw = _ResourceServiceKernel(core)._read_registered(
+            ResourceVersionRef(result_ref.entity_id, result_ref.version_id))
+        return {
+            "task_id": task_id,
+            "kind": handle.kind,
+            "terminal_evidence_ref": evidence["terminal_evidence_ref"],
+            "terminal_result_ref": evidence["terminal_result_ref"],
+            "run_outcome": evidence["run_outcome"],
+            "output": json.loads(raw),
+            "actual_model_call_counts": list(
+                core.event_store.actual_model_call_counts()),
+        }
+
+    def message(
+            self, task_id: str, body: str, *, target: str | None = None,
+    ) -> Mapping[str, Any]:
+        handle = self.get(task_id)
+        if not self._channel_ready(handle.socket_path):
+            raise RuntimeError("task owner channel is not currently available")
+        if target is None:
+            if handle.kind == "workflow":
+                raise ValueError(
+                    "workflow message requires an explicit TARGET transition")
+            target = handle.spec.stages[0].stage_id + ".run"
+        return ControlClient(str(handle.socket_path)).message(target, body)
+
+    def stop(
+            self, task_id: str, *, startup_safe: bool = False,
+    ) -> dict[str, Any]:
+        """Forward an explicit user stop to this exact launched process."""
+        handle = self.get(task_id)
+        if handle.process.poll() is not None:
+            return {"task_id": task_id, "status": "ALREADY_EXITED",
+                    "return_code": handle.process.poll()}
+        if not self._channel_ready(handle.socket_path):
+            if startup_safe:
+                # run_agent_task installs its SIGINT handler before creating
+                # the Registry or owner socket.  This closes the small launch
+                # window without waiting for a control channel that may never
+                # appear; at this point no provider dispatch is reachable yet.
+                handle.process.send_signal(signal.SIGINT)
+                return {
+                    "task_id": task_id,
+                    "status": "STARTUP_STOP_REQUESTED",
+                }
+            return {"task_id": task_id, "status": "OWNER_CHANNEL_NOT_READY"}
+        handle.process.send_signal(signal.SIGINT)
+        return {"task_id": task_id, "status": "STOP_REQUESTED"}
+
+    def resume(self, task_id: str) -> dict[str, Any]:
+        """Resume one owner-stopped task from its Registry checkpoint."""
+        handle = self.get(task_id)
+        if handle.process.poll() is None:
+            return {"task_id": task_id, "status": "ALREADY_RUNNING"}
+        status = self._read_terminal_status(handle.run_dir)
+        if status["execution_status"] == "terminal":
+            return {"task_id": task_id, "status": "ALREADY_TERMINAL"}
+        if status["execution_status"] != "stopped_by_owner":
+            raise RuntimeError(
+                "task resume requires Registry status stopped_by_owner")
+        spec_path = self.root / "specs" / f"{task_id}.json"
+        self._upgrade_legacy_owner_socket(handle)
+        self._write_manifest(
+            handle, launch_state="pending", launch_mode="resume")
+        handle.process = self._spawn(
+            task_id, spec_path, handle.log_path, resume=True)
+        return {"task_id": task_id, "status": "RESUME_STARTED"}
+
+    def net(self, task_id: str) -> dict[str, Any]:
+        handle = self.get(task_id)
+        return project_registry_net(
+            handle.run_dir, catalog=agent_task_catalog())
+
+
+def claim_task_worker_launch(
+        spec_path: Path, spec: AgentTaskSpec, *, resume: bool,
+):
+    """Acquire this task's durable launch identity before executing it.
+
+    The returned open file owns the advisory lock for the worker lifetime.
+    ``None`` means another worker already owns the same task identity.
+    """
+    import fcntl
+
+    path = spec_path.resolve()
+    root = path.parent.parent
+    task_id = path.stem
+    if (path.parent != (root / "specs").resolve()
+            or not task_id.startswith("task-")):
+        raise ValueError("task worker spec path has no task-control identity")
+    lock_root = root / "launch_locks"
+    lock_root.mkdir(parents=True, exist_ok=True)
+    lock = (lock_root / f"{task_id}.lock").open("a+b")
+    try:
+        fcntl.flock(lock.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+    except BlockingIOError:
+        lock.close()
+        return None
+
+    try:
+        manifest_path = root / "manifests" / f"{task_id}.json"
+        value = json.loads(manifest_path.read_text(encoding="utf-8"))
+        expected_mode = "resume" if resume else "fresh"
+        if (not isinstance(value, Mapping)
+                or value.get("schema_version") != "rpnh/task_handle/v1"
+                or value.get("task_id") != task_id
+                or Path(value.get("spec_path", "")).resolve() != path
+                or Path(value.get("run_dir", "")).resolve()
+                != spec.run_dir.resolve()
+                or value.get("kind") != spec.kind
+                or value.get("launch_state") != "pending"
+                or value.get("launch_mode") != expected_mode):
+            raise ValueError("task worker launch differs from durable intent")
+        pid = os.getpid()
+        ticks = _process_start_ticks(pid)
+        if ticks is None:
+            raise RuntimeError("task worker process identity is unavailable")
+        value["pid"] = pid
+        value["process_start_ticks"] = ticks
+        value["launch_state"] = "active"
+        temporary = manifest_path.with_suffix(".json.tmp")
+        temporary.write_text(
+            json.dumps(value, ensure_ascii=False, indent=2) + "\n",
+            encoding="utf-8")
+        os.replace(temporary, manifest_path)
+        return lock
+    except Exception:
+        lock.close()
+        raise
+
+
+__all__ = (
+    "TaskControl", "TaskHandle", "claim_task_worker_launch",
+    "owner_socket_path",
+)

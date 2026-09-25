@@ -1,0 +1,43 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "registry_v1/provider_attempt_owner_interrupted/v1",
+  "title": "provider_attempt_owner_interrupted/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "definitions": {
+    "ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "entity_type": {"type": "string", "minLength": 1},
+        "logical_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"},
+        "version_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"}
+      },
+      "required": ["entity_type", "logical_id", "version_id"]
+    }
+  },
+  "properties": {
+    "provider_attempt_id": {"type": "string", "pattern": "^provider_attempt:[a-f0-9]{32}$"},
+    "llm_invocation_ref": {"$ref": "#/definitions/ref"},
+    "llm_invocation_attempt_ref": {"$ref": "#/definitions/ref"},
+    "provider_attempt_ref": {"$ref": "#/definitions/ref"},
+    "llm_call_ref": {"$ref": "#/definitions/ref"},
+    "invocation_ref": {"$ref": "#/definitions/ref"},
+    "submission_state": {
+      "enum": [
+        "not_submitted",
+        "request_write_started_completion_unknown",
+        "request_write_completed_no_response_headers",
+        "response_headers_received_body_incomplete",
+        "response_complete",
+        "submission_unknown"
+      ]
+    }
+  },
+  "required": [
+    "provider_attempt_id",
+    "llm_invocation_ref", "llm_invocation_attempt_ref",
+    "provider_attempt_ref", "llm_call_ref", "invocation_ref",
+    "submission_state"
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "registry_v1/resource_cycle_evidence/v1",
+  "title": "Minimal live resource wait-for cycle evidence",
+  "type": "object",
+  "additionalProperties": false,
+  "definitions": {
+    "ref": {"type": "object", "additionalProperties": false, "properties": {"entity_type": {"type": "string"}, "logical_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"}, "version_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"}}, "required": ["entity_type", "logical_id", "version_id"]},
+    "edge": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "waiting_lifecycle_ref": {"$ref": "#/definitions/ref"},
+        "request_ref": {"$ref": "#/definitions/ref"},
+        "queue_entry_ref": {"$ref": "#/definitions/ref"},
+        "waiting_firing_ref": {"$ref": "#/definitions/ref"},
+        "resource_ref": {"$ref": "#/definitions/ref"},
+        "held_lifecycle_ref": {"$ref": "#/definitions/ref"},
+        "holder_firing_ref": {"$ref": "#/definitions/ref"},
+        "held_grant_ref": {"$ref": "#/definitions/ref"},
+        "held_lease_ref": {"$ref": "#/definitions/ref"}
+      },
+      "required": ["waiting_lifecycle_ref", "request_ref", "queue_entry_ref", "waiting_firing_ref", "resource_ref", "held_lifecycle_ref", "holder_firing_ref", "held_grant_ref", "held_lease_ref"]
+    }
+  },
+  "properties": {
+    "resource_cycle_evidence_ref": {"$ref": "#/definitions/ref"},
+    "status": {"const": "BLOCKED_RESOURCE_CYCLE"},
+    "detected_at_utc": {"type": "string", "format": "date-time"},
+    "involved_transition_firing_refs": {"type": "array", "minItems": 2, "uniqueItems": true, "items": {"$ref": "#/definitions/ref"}},
+    "wait_edges": {"type": "array", "minItems": 2, "uniqueItems": true, "items": {"$ref": "#/definitions/edge"}},
+    "victim_selected": {"const": false},
+    "firing_failed": {"const": false},
+    "wake_registered": {"const": false}
+  },
+  "required": ["resource_cycle_evidence_ref", "status", "detected_at_utc", "involved_transition_firing_refs", "wait_edges", "victim_selected", "firing_failed", "wake_registered"]
+}

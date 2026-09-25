@@ -1,0 +1,102 @@
+{
+  "schema": "rpnh.codex_frontend_compatibility/v1",
+  "status": "PINNED_PARTIAL_COMPATIBILITY",
+  "frontend": {
+    "package": "@openai/codex",
+    "version": "0.155.0",
+    "reported_cli_version": "codex-cli 0.155.0",
+    "license": "Apache-2.0",
+    "role": "terminal_experience_only"
+  },
+  "connection": {
+    "entry": "codex --remote unix://<rpnh-owned-socket>",
+    "transport": "websocket_text_frames_over_unix_socket",
+    "protocol": "Codex app-server v2",
+    "schema_generation": "codex app-server generate-json-schema --out <directory>"
+  },
+  "backend_authority": "RPNH",
+  "implemented_entry": "cpn.frontend.codex_app_server",
+  "command_visibility": {
+    "disabled_feature_gated_commands": [
+      "goal",
+      "personality",
+      "plugins"
+    ],
+    "fixed_permission_profile": ":danger-full-access",
+    "pinned_frontend_update_prompt": "disabled",
+    "stock_frontend_limit": "codex-cli 0.155.0 has no remote slash-command allowlist; fixed unsupported commands remain client-visible and are rejected without execution",
+    "complete_filtering_requires": "an RPNH-patched Codex TUI",
+    "permission_meaning": "Wire compatibility only. Registry grants, owner policy and runtime isolation remain authoritative."
+  },
+  "agent_projection": {
+    "codex_thread": "RPNH logical main session",
+    "independent_agent_task": "separate Registry and PetriNet; never a subagent thread",
+    "subagent_thread_spawn": "not advertised until a truthful parent-owned delegation bridge exists"
+  },
+  "implemented_methods": [
+    "initialize",
+    "account/read",
+    "model/list",
+    "configRequirements/read",
+    "config/read",
+    "config/batchWrite",
+    "collaborationMode/list",
+    "hooks/list",
+    "skills/list",
+    "plugin/list",
+    "apps/list",
+    "permissionProfile/list",
+    "thread/start",
+    "thread/resume",
+    "thread/loaded/list",
+    "thread/list",
+    "thread/read",
+    "thread/name/set",
+    "thread/settings/update",
+    "turn/start",
+    "turn/interrupt"
+  ],
+  "rpnh_owned": [
+    "main_session",
+    "task_and_workflow_objects",
+    "Registry",
+    "PetriNet",
+    "provider_configuration",
+    "model_selection",
+    "operation_and_tool_execution",
+    "interrupt_and_stop_semantics",
+    "terminal_evidence"
+  ],
+  "excluded": [
+    "Codex_backend_execution",
+    "Codex_owned_provider_credentials",
+    "direct_model_dispatch_by_the_frontend",
+    "multi_version_compatibility"
+  ],
+  "verification": {
+    "policy": "Validation results belong to fixed commits and CI artifacts, not static status claims.",
+    "workflow": ".github/workflows/compatibility-audit.yml",
+    "tests": [
+      "tests/test_codex_compat.py",
+      "tests/test_frontend_boundary.py"
+    ],
+    "live_provider_calls": false
+  },
+  "unsupported_methods": {
+    "thread/attachment/*": "No Registry-backed delivery exists. Requests fail explicitly; historical UI metadata is preserved but not advertised or executed.",
+    "memory/*": "No frontend-owned memory service.",
+    "skills/config/write": "Native RPNH plugins are not Codex backend skills.",
+    "mcpServer/*": "No frontend-owned MCP execution or authentication.",
+    "process/*": "No execution outside the RPNH Registry/Petri gateway."
+  },
+  "method_classes": {
+    "empty_discovery": [
+      "collaborationMode/list",
+      "hooks/list",
+      "skills/list",
+      "plugin/list",
+      "apps/list"
+    ],
+    "meaning": "Empty discovery is a compatibility response, not an installed capability."
+  }
+}

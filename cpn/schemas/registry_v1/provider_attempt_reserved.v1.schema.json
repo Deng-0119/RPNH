@@ -1,0 +1,13 @@
+{
+  "$schema":"http://json-schema.org/draft-07/schema#","$id":"registry_v1/provider_attempt_reserved/v1","title":"provider_attempt_reserved/v1","type":"object","additionalProperties":false,
+  "definitions": {
+    "ref": {"type":"object","additionalProperties":false,"properties":{"entity_type":{"type":"string"},"logical_id":{"type":"string","pattern":"^[a-z][a-z0-9_]*:[a-f0-9]{32}$"},"version_id":{"type":"string","pattern":"^[a-z][a-z0-9_]*:[a-f0-9]{32}$"}},"required":["entity_type","logical_id","version_id"]},
+    "nullable_ref":{"oneOf":[{"$ref":"#/definitions/ref"},{"type":"null"}]},
+    "resource_ref":{"type":"object","additionalProperties":false,"properties":{"resource_id":{"type":"string","pattern":"^resource:[a-f0-9]{32}$"},"resource_version_id":{"type":"string","pattern":"^resource_version:[a-f0-9]{32}$"}},"required":["resource_id","resource_version_id"]}
+  },
+  "properties":{
+    "provider_attempt_id":{"type":"string","pattern":"^provider_attempt:[a-f0-9]{32}$"},"provider_attempt_version_id":{"type":"string","pattern":"^provider_attempt_version:[a-f0-9]{32}$"},
+    "provider_attempt_ref":{"$ref":"#/definitions/ref"},"llm_call_ref":{"$ref":"#/definitions/ref"},"invocation_ref":{"$ref":"#/definitions/ref"},"operation_binding_ref":{"$ref":"#/definitions/ref"},"llm_execution_target_ref":{"$ref":"#/definitions/resource_ref"},"request_resource_ref":{"$ref":"#/definitions/resource_ref"},"terminal_delivery_ref":{"$ref":"#/definitions/ref"},"budget_witness_ref":{"$ref":"#/definitions/ref"},"prior_attempt_ref":{"$ref":"#/definitions/nullable_ref"},
+    "reservation_class":{"type":"string","minLength":1},"finalization_scope":{"type":"boolean"}},
+  "required":["provider_attempt_id","provider_attempt_version_id","provider_attempt_ref","llm_call_ref","invocation_ref","operation_binding_ref","llm_execution_target_ref","request_resource_ref","terminal_delivery_ref","budget_witness_ref","prior_attempt_ref","reservation_class","finalization_scope"]
+}

@@ -1,0 +1,114 @@
+{
+  "$id": "registry_v1/registry_type_catalog/v1",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "additionalProperties": false,
+  "properties": {
+    "catalog_identity": {"const": "rpnh-v1"},
+    "definitions": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "name": {"type": "string", "minLength": 1},
+          "category": {"enum": ["object", "event", "relation"]},
+          "owner": {"type": "string", "minLength": 1},
+          "schema_ref": {"type": "string", "minLength": 1},
+          "criticality": {"type": ["string", "null"]},
+          "permission": {"type": "string", "minLength": 1},
+          "retention": {"type": "string", "minLength": 1},
+          "recovery_rule": {"type": "string", "minLength": 1},
+          "integrity_rule": {"type": "string", "minLength": 1}
+        },
+        "required": [
+          "name", "category", "owner", "schema_ref", "criticality",
+          "permission", "retention", "recovery_rule", "integrity_rule"
+        ]
+      }
+    },
+    "schema_index": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "schema_id": {"type": "string"},
+          "path": {"type": "string"}
+        },
+        "required": ["schema_id", "path"],
+        "oneOf": [
+          {
+            "properties": {
+              "schema_id": {"pattern": "^[a-z][a-z0-9_]*(?:/[a-z][a-z0-9_]*)+/v[1-9][0-9]*$"},
+              "path": {"pattern": "^(?!(?:application/verified_evidence\\.v1\\.schema\\.json|runtime/llm_request_envelope\\.v1\\.schema\\.json|runtime/llm_response_envelope\\.v1\\.schema\\.json)$)[\\s\\S]*$"}
+            }
+          },
+          {
+            "properties": {
+              "schema_id": {"const": "application/verified_evidence/v1"},
+              "path": {"const": "application/verified_evidence.v1.schema.json"}
+            }
+          },
+          {
+            "properties": {
+              "schema_id": {"const": "runtime/llm_request_envelope/v1"},
+              "path": {"const": "runtime/llm_request_envelope.v1.schema.json"}
+            }
+          },
+          {
+            "properties": {
+              "schema_id": {"const": "runtime/llm_response_envelope/v1"},
+              "path": {"const": "runtime/llm_response_envelope.v1.schema.json"}
+            }
+          }
+        ]
+      }
+    },
+    "schemas": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "schema_id": {"type": "string"},
+          "path": {"type": "string"},
+          "source": {"type": "string", "minLength": 1}
+        },
+        "required": ["schema_id", "path", "source"],
+        "oneOf": [
+          {
+            "properties": {
+              "schema_id": {"pattern": "^[a-z][a-z0-9_]*(?:/[a-z][a-z0-9_]*)+/v[1-9][0-9]*$"},
+              "path": {"pattern": "^(?!(?:application/verified_evidence\\.v1\\.schema\\.json|runtime/llm_request_envelope\\.v1\\.schema\\.json|runtime/llm_response_envelope\\.v1\\.schema\\.json)$)[\\s\\S]*$"}
+            }
+          },
+          {
+            "properties": {
+              "schema_id": {"const": "application/verified_evidence/v1"},
+              "path": {"const": "application/verified_evidence.v1.schema.json"}
+            }
+          },
+          {
+            "properties": {
+              "schema_id": {"const": "runtime/llm_request_envelope/v1"},
+              "path": {"const": "runtime/llm_request_envelope.v1.schema.json"}
+            }
+          },
+          {
+            "properties": {
+              "schema_id": {"const": "runtime/llm_response_envelope/v1"},
+              "path": {"const": "runtime/llm_response_envelope.v1.schema.json"}
+            }
+          }
+        ]
+      }
+    }
+  },
+  "required": ["catalog_identity", "definitions", "schema_index", "schemas"],
+  "title": "registry_type_catalog/v1",
+  "type": "object"
+}

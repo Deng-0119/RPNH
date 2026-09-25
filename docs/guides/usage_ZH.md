@@ -1,0 +1,62 @@
+---
+name: rpnh-use-and-resume
+description: "Operate main sessions, independent tasks and read-only net projections."
+metadata:
+  document-kind: how-to
+  audience: operator-and-developer
+  language: zh-CN
+  counterpart: usage.md
+  revision: "2026-09-24.1"
+  status: source-reviewed-not-final-candidate-acceptance
+  basis: "core; adapter differences explicitly labelled"
+---
+
+[English](usage.md) | [中文](usage_ZH.md)
+
+# 会话、任务、工作流与观察
+
+## 执行前
+安装对应范围并选择获得授权的精确 profile。**对话、`/agent`、`/workflow`、`/resume`、`--prompt` 都可能执行模型或工具**，不是安装 smoke。新会话使用新目录，保留返回的任务 ID，运行数据保留在私有位置。
+
+以 `rpnh --frontend basic` 显式启动文本前端。`--execution PATH` 指定执行配置，`--session-dir PATH` 指向尚不存在的新会话目录；后者与 `--resume SESSION_DIR` 互斥。`--prompt TEXT` 执行主会话一轮，不是无害的回显命令。
+
+## 主会话与独立任务
+以下是 **basic 前端**命令，不是给 stock Codex 新增的 slash 命令。
+
+| 命令 | 含义 |
+|---|---|
+| `/tasks`、`/current` | 列出独立子任务、查看当前焦点 |
+| `/agent PROMPT` | 创建并选中独立单 agent 任务 |
+| `/workflow PROMPT` | 请求主 Designer 生成图工作流；设计无效不算已启动 |
+| `/switch ID`、`/switch main` | 只切换焦点，不停止或重启子任务 |
+| `/task ID status`、`/task ID result` | 读取进程/Registry 状态或已注册结果 |
+| `/task ID message TEXT` | 向单 agent 任务排队投递输入 |
+| `/task ID message TARGET :: TEXT` | 明确工作流接收目标 |
+| `/task ID stop`、`/task ID resume` | 请求检查点停止、显式恢复 owner-stopped 任务 |
+| `/quit` | 离开主前端；独立子任务可能继续运行 |
+
+简写 `/status`、`/result`、`/net`、`/message`、`/stop` 作用于选中子任务。普通文本发给主会话或选中单 agent；选中工作流时必须写 `TARGET :: TEXT`。`delegate_leaf` 属于父 agent 内部 action，不是可独立切换的任务。
+
+## 主回合中断
+使用 `rpnh --frontend basic --resume SESSION_DIR` 重开，由 reconciliation 判断权威状态，不能把进程消失当完成。选中 main 后，`/resume` 继续暂停回合，`/rollback` 回到主对话上一个已完成回合。rollback 保留暂停子 Registry，不回退独立子任务，也不补偿外部写入。选中子任务时 `/rollback` 会被拒绝。尚未解决的活跃回合不能直接接受新输入。
+
+## 不执行模型地检查已有 run
+传入真实 run 目录，而不是聊天记录或任意 session 索引：
+
+```bash
+: "${RUN_DIR:?Set an existing run directory}"
+rpnh net --run "$RUN_DIR"
+rpnh net --run "$RUN_DIR" --format json
+rpnh net --run "$RUN_DIR" --show-resources
+rpnh net --run "$RUN_DIR" --resources-only
+rpnh net --run "$RUN_DIR" --view --no-open
+```
+
+最后一条会启动只读本地 viewer 服务，默认 `127.0.0.1` 和自动分配端口。它不是模型调用，但确实创建进程/网络监听；保持 loopback。`--view` 不能组合 `--resources-only`、`--node`、`--output` 或非默认 `--format`。`--output PATH` 写投影文件，不写 Registry。
+
+资源 place 默认隐藏，只有真实声明才显示；没有资源节点的 run，其 resources-only 为空是有效结果。`/task ID net view` 或选中后的 `/net view` 使用同一观察者。图可读、`enabled_transitions` 或界面有答案，都不能证明全局活性或终态成功。
+
+## 预期证据与恢复
+成功依据是子任务权威中的 terminal evidence 与 registered result，不是进程退出、UI 缓存答案或队列为空。一致性备份应保留主/子目录关系，相对 Registry 链接不是子事件库副本。不要为了修复展示启动第二个 writer。owner 冲突、配置漂移和未知结果见[排障](troubleshooting_ZH.md)。
+
+代码：`cpn/rpnh_cli.py:_task_command`、`_run_task_action`、`_net_command`，`cpn/rpnh/main_session.py`、`task_control.py`、`inspection.py`、`registry/main_thread.py`。

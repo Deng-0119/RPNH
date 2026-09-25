@@ -1,0 +1,74 @@
+{
+  "$id": "registry_v1/net_instance/v1",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "additionalProperties": false,
+  "definitions": {
+    "ref": {"type": "object", "additionalProperties": false, "properties": {
+      "entity_type": {"type": "string"},
+      "logical_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"},
+      "version_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"}
+    }, "required": ["entity_type", "logical_id", "version_id"]},
+    "refs": {"type": "array", "items": {"$ref": "#/definitions/ref"}, "uniqueItems": true},
+    "resource_ref": {"type": "object", "additionalProperties": false, "properties": {"resource_id": {"type": "string", "pattern": "^resource:[a-f0-9]{32}$"}, "resource_version_id": {"type": "string", "pattern": "^resource_version:[a-f0-9]{32}$"}}, "required": ["resource_id", "resource_version_id"]},
+    "module_lease_ref": {"allOf": [
+      {"$ref": "#/definitions/ref"},
+      {"oneOf": [
+        {"properties": {"entity_type": {"const": "resource_version/v1"},
+          "logical_id": {"pattern": "^resource:[a-f0-9]{32}$"}, "version_id": {"pattern": "^resource_version:[a-f0-9]{32}$"}}},
+        {"properties": {"entity_type": {"const": "logical_artifact_slot/v1"},
+          "logical_id": {"pattern": "^logical_slot:[a-f0-9]{32}$"}, "version_id": {"pattern": "^logical_slot_version:[a-f0-9]{32}$"}}}
+      ]}
+    ]},
+    "module_slot_binding": {
+      "type": "object", "additionalProperties": false,
+      "properties": {
+        "slot_ref": {"allOf": [{"$ref": "#/definitions/ref"}, {"properties": {"entity_type": {"const": "logical_artifact_slot/v1"}}}]},
+        "producer_node_ref": {"allOf": [{"$ref": "#/definitions/ref"}, {"properties": {"entity_type": {"const": "node_declaration/v1"}}}]},
+        "producer_output_binding_ref": {"allOf": [{"$ref": "#/definitions/ref"}, {"properties": {"entity_type": {"const": "output_binding/v1"}}}]},
+        "producer_transition_id": {"type": "string", "minLength": 1},
+        "output_port_id": {"type": "string", "minLength": 1},
+        "artifact_id": {"type": "string"}, "artifact_synopsis": {"type": "string"},
+        "content_kind": {"type": "string", "minLength": 1},
+        "content_schema_id": {"type": "string", "minLength": 1}
+      },
+      "required": ["slot_ref", "producer_node_ref", "producer_output_binding_ref",
+        "producer_transition_id", "output_port_id", "artifact_id", "artifact_synopsis", "content_kind", "content_schema_id"]
+    },
+    "module_resource_bindings": {
+      "type": "object", "additionalProperties": false,
+      "properties": {
+        "command_id": {"type": "string", "minLength": 1},
+        "slot_bindings": {"type": "object", "additionalProperties": {"$ref": "#/definitions/module_slot_binding"}},
+        "owner_resource_inputs": {"type": "object", "additionalProperties": {"$ref": "#/definitions/resource_ref"}},
+        "lease_refs": {"type": "object", "additionalProperties": {"$ref": "#/definitions/module_lease_ref"}},
+        "slot_refs": {"type": "object", "additionalProperties": {"allOf": [
+          {"$ref": "#/definitions/ref"}, {"properties": {"entity_type": {"const": "logical_artifact_slot/v1"}}}
+        ]}}
+      },
+      "required": ["command_id", "owner_resource_inputs", "lease_refs", "slot_refs"],
+      "if": {"properties": {"slot_refs": {"minProperties": 1}}},
+      "then": {"required": ["slot_bindings"]},
+      "else": {"properties": {"slot_bindings": {"maxProperties": 0}}}
+    }
+  },
+  "properties": {
+    "net_instance_ref": {"$ref": "#/definitions/ref"},
+    "task_round_ref": {"$ref": "#/definitions/ref"},
+    "plan_ref": {"$ref": "#/definitions/ref"},
+    "team_design_root_ref": {"$ref": "#/definitions/ref"},
+    "llm_macro_net_ref": {"$ref": "#/definitions/ref"},
+    "team_net_declaration_resource_ref": {"$ref": "#/definitions/resource_ref"},
+    "executable_transition_binding_refs": {"$ref": "#/definitions/refs", "minItems": 1},
+    "node_refs": {"$ref": "#/definitions/refs", "minItems": 1},
+    "operation_binding_refs": {"$ref": "#/definitions/refs", "minItems": 1},
+    "output_binding_refs": {"$ref": "#/definitions/refs"},
+    "module_resource_bindings": {"$ref": "#/definitions/module_resource_bindings"}
+  },
+  "required": ["net_instance_ref", "task_round_ref", "plan_ref",
+    "team_design_root_ref", "llm_macro_net_ref",
+    "team_net_declaration_resource_ref",
+    "executable_transition_binding_refs",
+    "node_refs", "operation_binding_refs", "output_binding_refs"],
+  "title": "net_instance/v1",
+  "type": "object"
+}

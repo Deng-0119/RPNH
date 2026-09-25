@@ -1,0 +1,20 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "registry_v1/llm_invocation_succeeded/v2",
+  "type": "object",
+  "additionalProperties": false,
+  "definitions": {
+    "ref": {"type": "object", "additionalProperties": false, "properties": {"entity_type": {"type": "string"}, "logical_id": {"type": "string"}, "version_id": {"type": "string"}}, "required": ["entity_type", "logical_id", "version_id"]},
+    "resource_ref": {"type": "object", "additionalProperties": false, "properties": {"resource_id": {"type": "string"}, "resource_version_id": {"type": "string"}}, "required": ["resource_id", "resource_version_id"]}
+  },
+  "properties": {
+    "invocation_kind": {"const": "registered_host"},
+    "invocation_ref": {"$ref": "#/definitions/ref"},
+    "operation_binding_ref": {"$ref": "#/definitions/ref"},
+    "llm_call_ref": {"$ref": "#/definitions/ref"},
+    "registered_host_llm_attempt_ref": {"$ref": "#/definitions/ref"},
+    "provider_attempt_ref": {"$ref": "#/definitions/ref"},
+    "response_resource_ref": {"$ref": "#/definitions/resource_ref"}
+  },
+  "required": ["invocation_kind", "invocation_ref", "operation_binding_ref", "llm_call_ref", "registered_host_llm_attempt_ref", "provider_attempt_ref", "response_resource_ref"]
+}

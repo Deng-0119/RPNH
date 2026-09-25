@@ -1,0 +1,391 @@
+{
+  "$id": "registry_v1/operation_binding/v1",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "additionalProperties": false,
+  "definitions": {
+    "ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "entity_type": {
+          "type": "string"
+        },
+        "logical_id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
+        },
+        "version_id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
+        }
+      },
+      "required": [
+        "entity_type",
+        "logical_id",
+        "version_id"
+      ]
+    },
+    "resource_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "resource_id": {
+          "type": "string",
+          "pattern": "^resource:[a-f0-9]{32}$"
+        },
+        "resource_version_id": {
+          "type": "string",
+          "pattern": "^resource_version:[a-f0-9]{32}$"
+        }
+      },
+      "required": [
+        "resource_id",
+        "resource_version_id"
+      ]
+    },
+    "operation_spec_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "entity_type": {
+          "const": "operation_spec/v1"
+        },
+        "logical_id": {
+          "type": "string",
+          "pattern": "^operation_spec:[a-f0-9]{32}$"
+        },
+        "version_id": {
+          "type": "string",
+          "pattern": "^operation_spec_version:[a-f0-9]{32}$"
+        }
+      },
+      "required": [
+        "entity_type",
+        "logical_id",
+        "version_id"
+      ]
+    },
+    "resource_read_contract": {
+      "title": "Registered pure-data resource read eligibility (not authority)",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "metadata_only",
+        "context_origins",
+        "origin_kinds",
+        "metadata_equals",
+        "descriptor_equals",
+        "extension_key",
+        "extension_equals",
+        "require_producer_invocation",
+        "require_provenance_binding",
+        "single_derived_source_key"
+      ],
+      "properties": {
+        "metadata_only": {
+          "type": "boolean"
+        },
+        "context_origins": {
+          "$ref": "#/definitions/resource_read_contract/definitions/strings"
+        },
+        "origin_kinds": {
+          "$ref": "#/definitions/resource_read_contract/definitions/strings"
+        },
+        "metadata_equals": {
+          "$ref": "#/definitions/resource_read_contract/definitions/opaqueObject"
+        },
+        "descriptor_equals": {
+          "$ref": "#/definitions/resource_read_contract/definitions/opaqueObject"
+        },
+        "extension_key": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "extension_equals": {
+          "$ref": "#/definitions/resource_read_contract/definitions/opaqueObject"
+        },
+        "require_producer_invocation": {
+          "type": "boolean"
+        },
+        "require_provenance_binding": {
+          "type": "boolean"
+        },
+        "single_derived_source_key": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "extension_key": {
+                "type": "null"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "extension_equals": {
+                "maxProperties": 0
+              },
+              "single_derived_source_key": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      ],
+      "definitions": {
+        "strings": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "opaqueObject": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/resource_read_contract/definitions/jsonValue"
+          }
+        },
+        "jsonValue": {
+          "anyOf": [
+            {
+              "type": [
+                "string",
+                "number",
+                "boolean",
+                "null"
+              ]
+            },
+            {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/resource_read_contract/definitions/jsonValue"
+              }
+            },
+            {
+              "$ref": "#/definitions/resource_read_contract/definitions/opaqueObject"
+            }
+          ]
+        }
+      }
+    }
+  },
+  "properties": {
+    "operation_binding_id": {
+      "type": "string",
+      "pattern": "^operation_binding:[a-f0-9]{32}$"
+    },
+    "operation_binding_version_id": {
+      "type": "string",
+      "pattern": "^operation_binding_version:[a-f0-9]{32}$"
+    },
+    "operation_binding_ref": {
+      "$ref": "#/definitions/ref"
+    },
+    "origin": {
+      "const": "petri_operation"
+    },
+    "node_ref": {
+      "oneOf": [
+        {
+          "$ref": "#/definitions/ref"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "principal_ref": {
+      "$ref": "#/definitions/ref"
+    },
+    "team_design_root_ref": {
+      "$ref": "#/definitions/ref"
+    },
+    "operation_spec_ref": {
+      "$ref": "#/definitions/operation_spec_ref"
+    },
+    "authority_decision_ref": {
+      "$ref": "#/definitions/ref"
+    },
+    "code_artifact_ref": {
+      "oneOf": [
+        {
+          "$ref": "#/definitions/ref"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "llm_input_target_ref": {
+      "oneOf": [
+        {
+          "$ref": "#/definitions/resource_ref"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "input_binding_refs": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/ref"
+      },
+      "uniqueItems": true
+    },
+    "input_schema_refs": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/ref"
+      },
+      "uniqueItems": true
+    },
+    "output_schema_refs": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/ref"
+      },
+      "uniqueItems": true
+    },
+    "restartability_policy": {
+      "type": "string",
+      "minLength": 1
+    },
+    "budget_bucket_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "budget_scope": {
+      "type": "string",
+      "minLength": 1
+    },
+    "finalization_scope": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1
+    },
+    "agent_loop_role": {
+      "type": "string",
+      "minLength": 1
+    },
+    "module_artifact_refs": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/ref"
+      },
+      "uniqueItems": true
+    },
+    "discoverable_resource_refs": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/ref"
+      },
+      "uniqueItems": true
+    },
+    "readable_resource_refs": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/ref"
+      },
+      "uniqueItems": true
+    },
+    "workspace_binding_ref": {
+      "oneOf": [
+        {
+          "$ref": "#/definitions/ref"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "output_binding_refs": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/ref"
+      },
+      "uniqueItems": true
+    },
+    "permitted_write_intent_factory_refs": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/ref"
+      },
+      "uniqueItems": true
+    },
+    "task_header_query": {
+      "type": "boolean"
+    },
+    "allowed_publication_origins": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "petri_output",
+          "workspace_write"
+        ]
+      },
+      "uniqueItems": true
+    },
+    "resource_read_contracts": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/resource_read_contract"
+      }
+    }
+  },
+  "required": [
+    "operation_binding_id",
+    "operation_binding_version_id",
+    "operation_binding_ref",
+    "origin",
+    "node_ref",
+    "principal_ref",
+    "team_design_root_ref",
+    "operation_spec_ref",
+    "authority_decision_ref",
+    "code_artifact_ref",
+    "llm_input_target_ref",
+    "input_binding_refs",
+    "input_schema_refs",
+    "output_schema_refs",
+    "restartability_policy",
+    "budget_scope",
+    "finalization_scope",
+    "agent_loop_role",
+    "module_artifact_refs",
+    "discoverable_resource_refs",
+    "readable_resource_refs",
+    "workspace_binding_ref",
+    "output_binding_refs",
+    "permitted_write_intent_factory_refs",
+    "task_header_query",
+    "allowed_publication_origins",
+    "resource_read_contracts"
+  ],
+  "allOf": [
+    {
+      "required": [
+        "budget_bucket_id"
+      ],
+      "properties": {
+        "node_ref": {
+          "$ref": "#/definitions/ref"
+        }
+      }
+    }
+  ]
+}

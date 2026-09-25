@@ -1,0 +1,7 @@
+{
+  "$id": "registry_v1/firing_admitted/v1", "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object", "additionalProperties": false,
+  "definitions": {"ref": {"type": "object", "additionalProperties": false, "properties": {"entity_type": {"type": "string"}, "logical_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"}, "version_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"}}, "required": ["entity_type", "logical_id", "version_id"]}},
+  "properties": {"firing_admission_ref": {"$ref": "#/definitions/ref"}, "transition_firing_ref": {"$ref": "#/definitions/ref"}, "invocation_ref": {"$ref": "#/definitions/ref"}, "operation_execution_lease_ref": {"$ref": "#/definitions/ref"}, "claim_marking_delta_ref": {"$ref": "#/definitions/ref"}, "logical_tau": {"type": ["integer", "number", "string"]}},
+  "required": ["firing_admission_ref", "transition_firing_ref", "invocation_ref", "operation_execution_lease_ref", "claim_marking_delta_ref", "logical_tau"]
+}

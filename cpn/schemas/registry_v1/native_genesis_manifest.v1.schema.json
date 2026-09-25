@@ -1,0 +1,38 @@
+{
+  "$id": "registry_v1/native_genesis_manifest/v1",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "additionalProperties": false,
+  "definitions": {
+    "run_identity_ref": {
+      "type": "object", "additionalProperties": false,
+      "properties": {
+        "entity_type": {"const": "native_run_identity/v1"},
+        "logical_id": {"type": "string", "pattern": "^run:[a-f0-9]{32}$"},
+        "version_id": {"type": "string", "pattern": "^run_version:[a-f0-9]{32}$"}
+      },
+      "required": ["entity_type", "logical_id", "version_id"]
+    },
+    "type_catalog_ref": {
+      "type": "object", "additionalProperties": false,
+      "properties": {
+        "entity_type": {"const": "registry_type_catalog/v1"},
+        "logical_id": {"type": "string", "pattern": "^schema:[a-f0-9]{32}$"},
+        "version_id": {"type": "string", "pattern": "^resource_version:[a-f0-9]{32}$"}
+      },
+      "required": ["entity_type", "logical_id", "version_id"]
+    }
+  },
+  "properties": {
+    "genesis_id": {"type": "string", "pattern": "^native_genesis:[a-f0-9]{32}$"},
+    "genesis_version_id": {"type": "string", "pattern": "^native_genesis_version:[a-f0-9]{32}$"},
+    "run_identity_ref": {"$ref": "#/definitions/run_identity_ref"},
+    "type_catalog_ref": {"$ref": "#/definitions/type_catalog_ref"},
+    "bootstrap_transaction_id": {"type": "string", "pattern": "^transaction:[a-f0-9]{32}$"},
+    "format": {"const": "d1-c-greenfield/v1"}
+  },
+  "required": [
+    "genesis_id", "genesis_version_id", "run_identity_ref", "type_catalog_ref",
+    "bootstrap_transaction_id", "format"
+  ]
+}

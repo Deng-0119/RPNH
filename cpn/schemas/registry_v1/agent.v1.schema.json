@@ -1,0 +1,38 @@
+{
+  "$id": "registry_v1/agent/v1",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Persistent Registry agent identity",
+  "type": "object",
+  "additionalProperties": false,
+  "definitions": {
+    "ref": {
+      "type": "object", "additionalProperties": false,
+      "properties": {
+        "entity_type": {"type": "string"},
+        "logical_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"},
+        "version_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"}
+      },
+      "required": ["entity_type", "logical_id", "version_id"]
+    },
+    "agent_ref": {
+      "type": "object", "additionalProperties": false,
+      "properties": {
+        "entity_type": {"const": "agent/v1"},
+        "logical_id": {"type": "string", "pattern": "^agent:[a-f0-9]{32}$"},
+        "version_id": {"type": "string", "pattern": "^agent_version:[a-f0-9]{32}$"}
+      },
+      "required": ["entity_type", "logical_id", "version_id"]
+    },
+    "declared_id": {"type": "string", "minLength": 1, "maxLength": 128}
+  },
+  "properties": {
+    "agent_id": {"type": "string", "pattern": "^agent:[a-f0-9]{32}$"},
+    "agent_version_id": {"type": "string", "pattern": "^agent_version:[a-f0-9]{32}$"},
+    "agent_ref": {"$ref": "#/definitions/agent_ref"},
+    "team_net_declaration_ref": {"$ref": "#/definitions/ref"},
+    "declared_agent_id": {"$ref": "#/definitions/declared_id"},
+    "shadow_transition_id": {"$ref": "#/definitions/declared_id"},
+    "display_name": {"type": "string", "minLength": 1}
+  },
+  "required": ["agent_id", "agent_version_id", "agent_ref", "team_net_declaration_ref", "declared_agent_id", "shadow_transition_id"]
+}

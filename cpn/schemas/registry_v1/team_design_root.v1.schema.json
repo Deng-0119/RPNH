@@ -1,0 +1,53 @@
+{
+  "$id": "registry_v1/team_design_root/v1",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "team_design_root/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "definitions": {
+    "ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "entity_type": {"type": "string", "pattern": "^[a-z][a-z0-9_]*(?:/v[1-9][0-9]*)$"},
+        "logical_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"},
+        "version_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"}
+      },
+      "required": ["entity_type", "logical_id", "version_id"]
+    },
+    "unique_refs": {
+      "type": "array",
+      "items": {"$ref": "#/definitions/ref"},
+      "uniqueItems": true
+    },
+    "resource_ref": {"type": "object", "additionalProperties": false,
+      "properties": {"resource_id": {"type": "string", "pattern": "^resource:[a-f0-9]{32}$"},
+        "resource_version_id": {"type": "string", "pattern": "^resource_version:[a-f0-9]{32}$"}},
+      "required": ["resource_id", "resource_version_id"]
+    }
+  },
+  "properties": {
+    "team_design_root_ref": {"$ref": "#/definitions/ref"},
+    "owner_principal_ref": {"$ref": "#/definitions/ref"},
+    "run_ref": {"$ref": "#/definitions/ref"},
+    "task_ref": {"$ref": "#/definitions/ref"},
+    "task_round_ref": {"$ref": "#/definitions/ref"},
+    "llm_macro_net_ref": {"$ref": "#/definitions/ref"},
+    "team_net_declaration_resource_ref": {"$ref": "#/definitions/resource_ref"},
+    "executable_transition_binding_refs": {"$ref": "#/definitions/unique_refs", "minItems": 1},
+    "node_refs": {"$ref": "#/definitions/unique_refs", "minItems": 1},
+    "operation_binding_refs": {"$ref": "#/definitions/unique_refs", "minItems": 1},
+    "output_binding_refs": {"$ref": "#/definitions/unique_refs"},
+    "resource_refs": {"$ref": "#/definitions/unique_refs"},
+    "artifact_refs": {"$ref": "#/definitions/unique_refs"},
+    "llm_input_target_ref": {"oneOf": [{"$ref": "#/definitions/resource_ref"}, {"type": "null"}]}
+  },
+  "required": [
+    "team_design_root_ref", "owner_principal_ref", "run_ref", "task_ref",
+    "task_round_ref", "llm_macro_net_ref", "team_net_declaration_resource_ref",
+    "executable_transition_binding_refs",
+    "node_refs", "operation_binding_refs",
+    "output_binding_refs", "resource_refs", "artifact_refs",
+    "llm_input_target_ref"
+  ]
+}

@@ -1,0 +1,51 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "registry_v1/logical_artifact_slot/v1",
+  "title": "Immutable logical artifact slot structural declaration",
+  "type": "object",
+  "additionalProperties": false,
+  "definitions": {
+    "exact_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "entity_type": {"type": "string", "pattern": "^[a-z][a-z0-9_]*(?:/v[1-9][0-9]*)?$"},
+        "logical_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"},
+        "version_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"}
+      },
+      "required": ["entity_type", "logical_id", "version_id"]
+    }
+  },
+  "properties": {
+    "logical_artifact_slot_ref": {
+      "allOf": [
+        {"$ref": "#/definitions/exact_ref"},
+        {"properties": {
+          "entity_type": {"const": "logical_artifact_slot/v1"},
+          "logical_id": {"pattern": "^logical_slot:[a-f0-9]{32}$"},
+          "version_id": {"pattern": "^logical_slot_version:[a-f0-9]{32}$"}
+        }}
+      ]
+    },
+    "team_design_root_ref": {"$ref": "#/definitions/exact_ref"},
+    "authored_index_ref": {"$ref": "#/definitions/exact_ref"},
+    "lexical_slot_id": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)*$"},
+    "artifact_id": {"type": "string"},
+    "artifact_synopsis": {"type": "string"},
+    "content_kind": {"type": "string", "minLength": 1},
+    "producer_output_binding_ref": {
+      "allOf": [
+        {"$ref": "#/definitions/exact_ref"},
+        {"properties": {"entity_type": {"const": "output_binding/v1"}}}
+      ]
+    },
+    "output_port_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*$"},
+    "producer_node_ref": {
+      "allOf": [
+        {"$ref": "#/definitions/exact_ref"},
+        {"properties": {"entity_type": {"const": "node_declaration/v1"}}}
+      ]
+    }
+  },
+  "required": ["logical_artifact_slot_ref", "team_design_root_ref", "authored_index_ref", "lexical_slot_id", "artifact_id", "artifact_synopsis", "content_kind", "producer_node_ref", "producer_output_binding_ref", "output_port_id"]
+}

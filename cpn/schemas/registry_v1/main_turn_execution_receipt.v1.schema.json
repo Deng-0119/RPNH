@@ -1,0 +1,43 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "registry_v1/main_turn_execution_receipt/v1",
+  "title": "Read-only child Registry validation receipt",
+  "type": "object",
+  "additionalProperties": false,
+  "definitions": {
+    "ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "entity_type": {"type": "string"},
+        "logical_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"},
+        "version_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"}
+      },
+      "required": ["entity_type", "logical_id", "version_id"]
+    },
+    "nullable_ref": {"oneOf": [{"$ref": "#/definitions/ref"}, {"type": "null"}]}
+  },
+  "properties": {
+    "main_turn_execution_receipt_ref": {"$ref": "#/definitions/ref"},
+    "main_turn_ref": {"$ref": "#/definitions/ref"},
+    "attempt_relative_path": {"type": "string", "minLength": 1},
+    "validated_through_ordinal": {"type": "integer", "minimum": 1},
+    "child_task_ref": {"$ref": "#/definitions/ref"},
+    "child_run_ref": {"$ref": "#/definitions/ref"},
+    "run_execution_authority_ref": {"$ref": "#/definitions/ref"},
+    "final_checkpoint_ref": {"$ref": "#/definitions/ref"},
+    "outcome": {"enum": ["terminal", "stopped_by_owner", "running"]},
+    "run_outcome": {"type": ["string", "null"], "enum": ["complete", "failed", null]},
+    "terminal_evidence_ref": {"$ref": "#/definitions/nullable_ref"},
+    "terminal_result_ref": {"$ref": "#/definitions/nullable_ref"},
+    "final_result_index_ref": {"$ref": "#/definitions/nullable_ref"}
+  },
+  "required": ["main_turn_execution_receipt_ref", "main_turn_ref", "attempt_relative_path", "validated_through_ordinal", "child_task_ref", "child_run_ref", "run_execution_authority_ref", "final_checkpoint_ref", "outcome", "run_outcome", "terminal_evidence_ref", "terminal_result_ref", "final_result_index_ref"],
+  "allOf": [
+    {
+      "if": {"properties": {"outcome": {"const": "terminal"}}, "required": ["outcome"]},
+      "then": {"properties": {"run_outcome": {"enum": ["complete", "failed"]}, "terminal_evidence_ref": {"$ref": "#/definitions/ref"}, "terminal_result_ref": {"$ref": "#/definitions/ref"}, "final_result_index_ref": {"$ref": "#/definitions/ref"}}},
+      "else": {"properties": {"run_outcome": {"type": "null"}, "terminal_evidence_ref": {"type": "null"}, "terminal_result_ref": {"type": "null"}, "final_result_index_ref": {"type": "null"}}}
+    }
+  ]
+}

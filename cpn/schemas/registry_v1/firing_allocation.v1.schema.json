@@ -1,0 +1,21 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "registry_v1/firing_allocation/v1",
+  "title": "Exact PetriFiringAllocationAuthority",
+  "type": "object",
+  "additionalProperties": false,
+  "definitions": {
+    "ref": {"type": "object", "additionalProperties": false, "properties": {"entity_type": {"type": "string", "minLength": 1}, "logical_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"}, "version_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"}}, "required": ["entity_type", "logical_id", "version_id"]},
+    "token_refs": {"type": "array", "minItems": 0, "items": {"$ref": "#/definitions/ref"}, "uniqueItems": true},
+    "eligible_record": {"type": "object", "additionalProperties": false, "properties": {"transition_id": {"type": "string", "minLength": 1}, "token_refs": {"$ref": "#/definitions/token_refs"}}, "required": ["transition_id", "token_refs"]},
+    "allocation_record": {"type": "object", "additionalProperties": false, "properties": {"local_key": {"oneOf": [{"type": "integer", "minimum": 0}, {"$ref": "#/definitions/ref"}]}, "transition_id": {"type": "string", "minLength": 1}, "claim_epoch": {"type": "integer", "minimum": 0}, "attempt_index": {"type": "integer", "minimum": 1}, "token_refs": {"$ref": "#/definitions/token_refs"}}, "required": ["local_key", "transition_id", "claim_epoch", "attempt_index", "token_refs"]}
+  },
+  "properties": {
+    "net_ref": {"$ref": "#/definitions/ref"},
+    "checkpoint_ref": {"$ref": "#/definitions/ref"},
+    "claim_epoch": {"type": "integer", "minimum": 0},
+    "eligible_queue": {"type": "array", "minItems": 1, "items": {"$ref": "#/definitions/eligible_record"}},
+    "allocations": {"type": "array", "minItems": 1, "items": {"$ref": "#/definitions/allocation_record"}, "uniqueItems": true}
+  },
+  "required": ["net_ref", "checkpoint_ref", "claim_epoch", "eligible_queue", "allocations"]
+}

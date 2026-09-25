@@ -1,0 +1,20 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "registry_v1/logical_provider_request_recipe/v1",
+  "title": "Logical provider request recipe with typed KB placeholders",
+  "type": "object",
+  "additionalProperties": false,
+  "definitions": {
+    "ref": {"type": "object", "additionalProperties": false, "properties": {"entity_type": {"type": "string", "minLength": 1}, "logical_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"}, "version_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"}}, "required": ["entity_type", "logical_id", "version_id"]},
+    "resource_ref": {"type": "object", "additionalProperties": false, "properties": {"resource_id": {"type": "string", "pattern": "^resource:[a-f0-9]{32}$"}, "resource_version_id": {"type": "string", "pattern": "^resource_version:[a-f0-9]{32}$"}}, "required": ["resource_id", "resource_version_id"]},
+    "placeholder_content": {"type": "object", "additionalProperties": false, "properties": {"kind": {"const": "external_kb_query_result_placeholder/v1"}, "placeholder_id": {"type": "string", "pattern": "^provider_request_placeholder:[a-f0-9]{32}$"}}, "required": ["kind", "placeholder_id"]},
+    "provider_tool_call": {"type": "object", "additionalProperties": false, "properties": {"id": {"type": "string", "minLength": 1}, "type": {"const": "function"}, "function": {"type": "object", "additionalProperties": false, "properties": {"name": {"type": "string", "minLength": 1}, "arguments": {"type": "string"}}, "required": ["name", "arguments"]}}, "required": ["id", "type", "function"]},
+    "message": {"type": "object", "additionalProperties": false, "properties": {"role": {"enum": ["system", "user", "assistant", "tool"]}, "content": {"oneOf": [{"type": "string"}, {"$ref": "#/definitions/placeholder_content"}]}, "tool_calls": {"type": "array", "items": {"$ref": "#/definitions/provider_tool_call"}}, "tool_call_id": {"type": "string", "minLength": 1}}, "required": ["role", "content"]},
+    "tool": {"type": "object", "additionalProperties": false, "properties": {"type": {"const": "function"}, "function": {"type": "object", "additionalProperties": false, "properties": {"name": {"type": "string", "minLength": 1}, "description": {"type": "string"}, "parameters": {"type": "object"}}, "required": ["name", "description", "parameters"]}}, "required": ["type", "function"]},
+    "placeholder": {"type": "object", "additionalProperties": false, "properties": {"placeholder_id": {"type": "string", "pattern": "^provider_request_placeholder:[a-f0-9]{32}$"}, "kind": {"const": "external_kb_query_result/v2"}, "agent_action_ref": {"$ref": "#/definitions/ref"}, "query_receipt_ref": {"$ref": "#/definitions/ref"}, "provider_tool_call_id": {"type": "string", "minLength": 1}}, "required": ["placeholder_id", "kind", "agent_action_ref", "query_receipt_ref", "provider_tool_call_id"]}
+  },
+  "properties": {
+    "schema_version": {"const": "logical_provider_request_recipe/v1"}, "model": {"type": "string", "minLength": 1}, "max_tokens": {"type": "integer", "minimum": 1}, "messages": {"type": "array", "minItems": 1, "items": {"$ref": "#/definitions/message"}}, "tools": {"type": "array", "minItems": 1, "items": {"$ref": "#/definitions/tool"}}, "tool_choice": {"const": "auto"}, "source_prompt_ref": {"$ref": "#/definitions/resource_ref"}, "tool_catalog_ref": {"$ref": "#/definitions/resource_ref"}, "placeholders": {"type": "array", "items": {"$ref": "#/definitions/placeholder"}}
+  },
+  "required": ["schema_version", "model", "max_tokens", "messages", "tools", "tool_choice", "source_prompt_ref", "tool_catalog_ref", "placeholders"]
+}

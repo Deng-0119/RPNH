@@ -1,0 +1,60 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "registry_v1/llm_invocation_interrupted/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "definitions": {
+    "ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "entity_type": {"type": "string", "minLength": 1},
+        "logical_id": {"type": "string", "minLength": 1},
+        "version_id": {"type": "string", "minLength": 1}
+      },
+      "required": ["entity_type", "logical_id", "version_id"]
+    },
+    "resource_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "resource_id": {"type": "string", "pattern": "^resource:[a-f0-9]{32}$"},
+        "resource_version_id": {"type": "string", "pattern": "^resource_version:[a-f0-9]{32}$"}
+      },
+      "required": ["resource_id", "resource_version_id"]
+    }
+  },
+  "properties": {
+    "agent_loop_id": {"type": "string", "pattern": "^agent_loop:[a-f0-9]{32}$"},
+    "turn_sequence": {"type": "integer", "minimum": 0},
+    "llm_invocation_ref": {"$ref": "#/definitions/ref"},
+    "llm_invocation_attempt_ref": {"$ref": "#/definitions/ref"},
+    "response_resource_ref": {"$ref": "#/definitions/resource_ref"},
+    "response_size": {"type": "integer", "minimum": 1},
+    "finish_reason": {"const": "length"},
+    "revision": {"type": "integer", "minimum": 1},
+    "child_session_id": {"type": "string", "minLength": 1},
+    "local_sequence": {"type": "integer", "minimum": 0}
+  },
+  "required": [
+    "llm_invocation_ref", "llm_invocation_attempt_ref",
+    "response_resource_ref", "response_size", "finish_reason"
+  ],
+  "oneOf": [
+    {
+      "required": ["agent_loop_id", "turn_sequence", "revision"],
+      "not": {"anyOf": [
+        {"required": ["child_session_id"]},
+        {"required": ["local_sequence"]}
+      ]}
+    },
+    {
+      "required": ["child_session_id", "local_sequence"],
+      "not": {"anyOf": [
+        {"required": ["agent_loop_id"]},
+        {"required": ["turn_sequence"]},
+        {"required": ["revision"]}
+      ]}
+    }
+  ]
+}

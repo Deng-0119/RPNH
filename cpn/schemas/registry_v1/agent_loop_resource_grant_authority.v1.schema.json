@@ -1,0 +1,46 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "registry_v1/agent_loop_resource_grant_authority/v1",
+  "title": "Exact same-firing AgentLoop resource grant and wake authority",
+  "type": "object",
+  "additionalProperties": false,
+  "definitions": {
+    "ref": {"type": "object", "additionalProperties": false, "properties": {"entity_type": {"type": "string", "minLength": 1}, "logical_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"}, "version_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"}}, "required": ["entity_type", "logical_id", "version_id"]},
+    "resource_ref": {"type": "object", "additionalProperties": false, "properties": {"resource_id": {"type": "string", "pattern": "^resource:[a-f0-9]{32}$"}, "resource_version_id": {"type": "string", "pattern": "^resource_version:[a-f0-9]{32}$"}}, "required": ["resource_id", "resource_version_id"]}
+  },
+  "properties": {
+    "transition_firing_ref": {"$ref": "#/definitions/ref"},
+    "invocation_ref": {"$ref": "#/definitions/ref"},
+    "operation_execution_lease_ref": {"$ref": "#/definitions/ref"},
+    "operation_binding_ref": {"$ref": "#/definitions/ref"},
+    "queue_entry_id": {"type": "string", "minLength": 1, "pattern": "^\\S(?:.*\\S)?$"},
+    "resource_ref": {"$ref": "#/definitions/resource_ref"},
+    "writer_fencing_epoch": {"type": "integer", "minimum": 1},
+    "agent_loop_ref": {"$ref": "#/definitions/ref"},
+    "agent_turn_ref": {"$ref": "#/definitions/ref"},
+    "agent_action_ref": {"$ref": "#/definitions/ref"},
+    "lifecycle_ref": {"$ref": "#/definitions/ref"},
+    "request_ref": {"$ref": "#/definitions/ref"},
+    "heartbeat_ref": {"$ref": "#/definitions/ref"},
+    "grant_ref": {"$ref": "#/definitions/ref"},
+    "lease_ref": {"$ref": "#/definitions/ref"},
+    "llm_turns_used": {"type": "integer", "minimum": 1},
+    "access_mode": {"enum": ["read", "edit", "upgrade"]},
+    "access_checkpoint_ref": {"$ref": "#/definitions/ref"},
+    "access_net_ref": {"$ref": "#/definitions/ref"},
+    "access_claim_epoch": {"type": "integer", "minimum": 0},
+    "resource_token_ref": {"$ref": "#/definitions/ref"},
+    "lease_pool_place": {"type": "string", "minLength": 1},
+    "lease_identity_ref": {"$ref": "#/definitions/ref"},
+    "petri_input_arc_mode": {"enum": ["read", "borrow"]},
+    "petri_output_arc_mode": {"enum": ["return", null]},
+    "petri_arc_kind": {"enum": ["read", "borrow"]},
+    "return_arc_required": {"type": "boolean"},
+    "same_firing_continuation": {"const": true}
+  },
+  "required": ["transition_firing_ref", "invocation_ref", "operation_execution_lease_ref", "operation_binding_ref", "queue_entry_id", "resource_ref", "writer_fencing_epoch", "agent_loop_ref", "agent_turn_ref", "agent_action_ref", "lifecycle_ref", "request_ref", "heartbeat_ref", "grant_ref", "lease_ref", "llm_turns_used", "access_mode", "access_checkpoint_ref", "access_net_ref", "access_claim_epoch", "resource_token_ref", "lease_pool_place", "lease_identity_ref", "petri_input_arc_mode", "petri_output_arc_mode", "petri_arc_kind", "return_arc_required", "same_firing_continuation"],
+  "allOf": [
+    {"if": {"properties": {"access_mode": {"const": "read"}}}, "then": {"properties": {"petri_input_arc_mode": {"const": "read"}, "petri_output_arc_mode": {"type": "null"}, "petri_arc_kind": {"const": "read"}, "return_arc_required": {"const": false}}}},
+    {"if": {"properties": {"access_mode": {"enum": ["edit", "upgrade"]}}}, "then": {"properties": {"petri_input_arc_mode": {"const": "borrow"}, "petri_output_arc_mode": {"const": "return"}, "petri_arc_kind": {"const": "borrow"}, "return_arc_required": {"const": true}}}}
+  ]
+}

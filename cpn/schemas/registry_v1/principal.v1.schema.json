@@ -1,0 +1,12 @@
+{
+  "$id": "registry_v1/principal/v1",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "principal_id": {"type": "string", "pattern": "^principal:[a-f0-9]{32}$"},
+    "principal_version_id": {"type": "string", "pattern": "^principal_version:[a-f0-9]{32}$"},
+    "display_name": {"type": "string", "minLength": 1}
+  },
+  "required": ["principal_id", "principal_version_id", "display_name"]
+}

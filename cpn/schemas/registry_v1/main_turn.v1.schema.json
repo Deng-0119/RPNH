@@ -1,0 +1,68 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "registry_v1/main_turn/v1",
+  "title": "Immutable main-turn lineage version",
+  "type": "object",
+  "additionalProperties": false,
+  "definitions": {
+    "ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "entity_type": {"type": "string"},
+        "logical_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"},
+        "version_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"}
+      },
+      "required": ["entity_type", "logical_id", "version_id"]
+    },
+    "turn_ref": {
+      "allOf": [
+        {"$ref": "#/definitions/ref"},
+        {"properties": {"entity_type": {"const": "main_turn/v1"}, "logical_id": {"pattern": "^resource:[a-f0-9]{32}$"}, "version_id": {"pattern": "^resource_version:[a-f0-9]{32}$"}}}
+      ]
+    },
+    "receipt_ref": {
+      "allOf": [
+        {"$ref": "#/definitions/ref"},
+        {"properties": {"entity_type": {"const": "main_turn_execution_receipt/v1"}}}
+      ]
+    },
+    "nullable_turn_ref": {"oneOf": [{"$ref": "#/definitions/turn_ref"}, {"type": "null"}]},
+    "nullable_ref": {"oneOf": [{"$ref": "#/definitions/ref"}, {"type": "null"}]},
+    "nullable_receipt_ref": {"oneOf": [{"$ref": "#/definitions/receipt_ref"}, {"type": "null"}]},
+    "nullable_path": {"oneOf": [{"type": "string", "minLength": 1}, {"type": "null"}]}
+  },
+  "properties": {
+    "main_turn_ref": {"$ref": "#/definitions/turn_ref"},
+    "main_thread_id": {"type": "string", "pattern": "^resource:[a-f0-9]{32}$"},
+    "ordinal": {"type": "integer", "minimum": 1},
+    "state": {"enum": ["accepted", "running", "interrupted", "committed", "failed"]},
+    "previous_version_ref": {"$ref": "#/definitions/nullable_turn_ref"},
+    "predecessor_turn_ref": {"$ref": "#/definitions/nullable_turn_ref"},
+    "user_input": {},
+    "attempt_relative_path": {"$ref": "#/definitions/nullable_path"},
+    "execution_receipt_ref": {"$ref": "#/definitions/nullable_receipt_ref"},
+    "answer": {},
+    "answer_ref": {"$ref": "#/definitions/nullable_ref"},
+    "decision_ref": {"$ref": "#/definitions/nullable_ref"}
+  },
+  "required": ["main_turn_ref", "main_thread_id", "ordinal", "state", "previous_version_ref", "predecessor_turn_ref", "user_input", "attempt_relative_path", "execution_receipt_ref", "answer_ref", "decision_ref"],
+  "allOf": [
+    {
+      "if": {"properties": {"state": {"const": "accepted"}}, "required": ["state"]},
+      "then": {"properties": {"attempt_relative_path": {"type": "null"}, "execution_receipt_ref": {"type": "null"}}, "not": {"required": ["answer"]}}
+    },
+    {
+      "if": {"properties": {"state": {"const": "running"}}, "required": ["state"]},
+      "then": {"properties": {"attempt_relative_path": {"type": "string", "minLength": 1}, "execution_receipt_ref": {"type": "null"}}, "not": {"required": ["answer"]}}
+    },
+    {
+      "if": {"properties": {"state": {"enum": ["interrupted", "failed"]}}, "required": ["state"]},
+      "then": {"properties": {"attempt_relative_path": {"type": "string", "minLength": 1}, "execution_receipt_ref": {"$ref": "#/definitions/receipt_ref"}}, "not": {"required": ["answer"]}}
+    },
+    {
+      "if": {"properties": {"state": {"const": "committed"}}, "required": ["state"]},
+      "then": {"properties": {"attempt_relative_path": {"type": "string", "minLength": 1}, "execution_receipt_ref": {"$ref": "#/definitions/receipt_ref"}}, "required": ["answer"]}
+    }
+  ]
+}

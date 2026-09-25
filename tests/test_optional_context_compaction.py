@@ -1,0 +1,237 @@
+from __future__ import annotations
+
+import json
+from pathlib import Path
+
+import pytest
+
+from cpn.components.agent_loop.compact import CONTEXT_CHECKPOINT_PROMPT
+from cpn.rpnh.agent_tasks import (
+    AgentStage, AgentTaskSpec, agent_task_catalog, run_agent_task,
+)
+from cpn.rpnh.llm_contracts import LLMInputResponseBytes, LLMInputTarget
+from cpn.rpnh.registry._registry import _RegistryCore
+from cpn.llm_adapters.config import LLMExecutionSelection
+
+
+def _response(**values) -> LLMInputResponseBytes:
+    payload = {"protocol": "llm_response_envelope/v1", "tool_calls": []}
+    payload.update(values)
+    return LLMInputResponseBytes(
+        json.dumps(payload, sort_keys=True, separators=(",", ":")).encode(),
+        status_code=None, external_request_id=None)
+
+
+def _completion_response(value: str) -> LLMInputResponseBytes:
+    return _response(tool_calls=[{
+        "id": "write-result", "name": "write_file",
+        "arguments": json.dumps({
+            "path": "outputs/result.txt",
+            "description": "Offline context-compaction result.",
+            "content": json.dumps(value),
+            "output_port_id": "main.result", "outcome_id": "complete",
+        }),
+    }, {
+        "id": "complete-result", "name": "complete_interaction",
+        "arguments": "{}",
+    }], finish_reason="tool_calls")
+
+
+def _configure_offline_task(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch, port,
+        *, context_window_tokens: int | None = None,
+) -> Path:
+    adapter_path = tmp_path / "adapter.json"
+    adapter_path.write_text(json.dumps({
+        "schema_version": "local_process_adapter_config/v1",
+        "adapter_kind": "local_process",
+        "model_condition": "offline-context-compaction",
+        "argv": ["python", "-c", "pass"],
+        "probe_argv": ["python", "-c", "pass"],
+        "env": {}, "inherit_env": [],
+    }), encoding="utf-8")
+    selection = LLMExecutionSelection(
+        LLMInputTarget(
+            "offline-context-compaction", 1024, 65536,
+            context_window_tokens),
+        "local_process", adapter_path, 30)
+    monkeypatch.setattr(
+        "cpn.rpnh.agent_tasks.load_llm_execution_selection",
+        lambda _path: selection)
+    monkeypatch.setattr(
+        "cpn.rpnh.agent_tasks.build_llm_input_port",
+        lambda _selection, *, destination_run_root: port)
+    execution_path = tmp_path / "selection.json"
+    execution_path.write_text("{}", encoding="utf-8")
+    return execution_path
+
+
+def _objects(core: _RegistryCore, object_type: str) -> list[dict]:
+    return [
+        json.loads(row["metadata_json"])
+        for row in core.event_store.object_rows_by_type(object_type)
+    ]
+
+
+class _LengthThenReplayPort:
+    def __init__(self) -> None:
+        self.requests: list[dict] = []
+
+    def request_once(self, attempt):
+        envelope = json.loads(attempt.canonical_request_bytes)
+        self.requests.append(envelope)
+        if len(self.requests) == 1:
+            return _response(finish_reason="length")
+        if envelope["messages"][-1].get("content") == CONTEXT_CHECKPOINT_PROMPT:
+            return _response(
+                text="Resume the interrupted semantic slot and finish it.",
+                finish_reason="stop")
+        assert any(
+            "Resume the interrupted semantic slot" in message.get("content", "")
+            for message in envelope["messages"])
+        assert any(
+            "agent_context_fact_capsule" in message.get("content", "")
+            for message in envelope["messages"])
+        return _completion_response("length replay complete")
+
+    def close(self):
+        pass
+
+
+def test_length_interruption_compacts_before_same_slot_replay(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    port = _LengthThenReplayPort()
+    execution_path = _configure_offline_task(tmp_path, monkeypatch, port)
+    run_dir = tmp_path / "run"
+
+    result = run_agent_task(AgentTaskSpec(
+        run_dir=run_dir, prompt="Complete one offline task.",
+        stages=(AgentStage("main", "Produce the requested result."),),
+        execution_config_path=execution_path, max_attempts_per_stage=3,
+    ))
+
+    assert result["stop_reason"] == "terminal"
+    assert result["output"] == "length replay complete"
+    assert len(port.requests) == 3
+    core = _RegistryCore(
+        run_dir, create=False, read_only=True, catalog=agent_task_catalog())
+    interruptions = core.event_store.list_events_by_type(
+        ("llm_invocation_interrupted/v1",))
+    assert len(interruptions) == 1
+    interruption = interruptions[0].payload
+    assert interruption["finish_reason"] == "length"
+    assert interruption["turn_sequence"] == 0
+
+    compaction, = _objects(core, "agent_context_compaction/v3")
+    core.catalog.validate_instance(
+        "agent_context_compaction/v3", category="object",
+        instance=compaction)
+    assert compaction["trigger_reason"] == "response_length"
+    assert compaction["covered_turn_refs"] == []
+    assert [entry["kind"] for entry in compaction["replacement_history"]] == [
+        "agent_context_fact_capsule", "compaction_summary"]
+    assert compaction["interrupted_llm_invocation_attempt_ref"] == {
+        key: interruption["llm_invocation_attempt_ref"][key]
+        for key in ("entity_type", "logical_id", "version_id")}
+
+    normal_invocations = [
+        item for item in _objects(core, "llm_invocation_spec/v1")
+        if item["invocation_kind"] == "normal_turn"]
+    replay, = [
+        item for item in normal_invocations
+        if "replay_after_compaction_ref" in item]
+    assert replay["turn_sequence"] == interruption["turn_sequence"]
+    assert replay["replay_after_compaction_ref"] == (
+        compaction["agent_context_compaction_ref"])
+    assert replay["replay_interrupted_response_ref"] == (
+        interruption["response_resource_ref"])
+
+
+class _PressureRetryPort:
+    def __init__(self) -> None:
+        self.requests: list[tuple[object, dict]] = []
+
+    def request_once(self, attempt):
+        envelope = json.loads(attempt.canonical_request_bytes)
+        self.requests.append((attempt, envelope))
+        checkpoint = (
+            envelope["messages"][-1].get("content")
+            == CONTEXT_CHECKPOINT_PROMPT)
+        if len(self.requests) == 1:
+            return _response(
+                text="OLD-COVERED-BODY", finish_reason="stop",
+                usage={"input_tokens": 950})
+        if checkpoint and len([
+                value for _attempt, value in self.requests
+                if value["messages"][-1].get("content")
+                == CONTEXT_CHECKPOINT_PROMPT]) == 1:
+            return LLMInputResponseBytes(
+                b'{"not":"a canonical response"}',
+                status_code=None, external_request_id=None)
+        if checkpoint:
+            return _response(
+                text="MODEL-SUMMARY-FOR-FORWARD-CONTINUATION",
+                finish_reason="stop")
+        combined = "\n".join(
+            message.get("content", "") for message in envelope["messages"]
+            if isinstance(message.get("content"), str))
+        assert "OLD-COVERED-BODY" not in combined
+        assert "MODEL-SUMMARY-FOR-FORWARD-CONTINUATION" in combined
+        assert "agent_context_fact_capsule" in combined
+        return _completion_response("pressure compaction complete")
+
+    def close(self):
+        pass
+
+
+def test_pressure_projection_retry_identity_and_effective_history(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    port = _PressureRetryPort()
+    execution_path = _configure_offline_task(
+        tmp_path, monkeypatch, port, context_window_tokens=1000)
+    run_dir = tmp_path / "run"
+
+    result = run_agent_task(AgentTaskSpec(
+        run_dir=run_dir, prompt="Exercise projected context pressure.",
+        stages=(AgentStage("main", "Produce the requested result."),),
+        # Initial turn + rejected compaction + retried compaction + final turn.
+        execution_config_path=execution_path, max_attempts_per_stage=4,
+    ))
+
+    assert result["stop_reason"] == "terminal"
+    assert result["output"] == "pressure compaction complete"
+    checkpoint_attempts = [
+        attempt for attempt, envelope in port.requests
+        if envelope["messages"][-1].get("content")
+        == CONTEXT_CHECKPOINT_PROMPT]
+    assert [attempt.attempt_ordinal for attempt in checkpoint_attempts] == [0, 1]
+    assert (checkpoint_attempts[0].invocation_ref
+            == checkpoint_attempts[1].invocation_ref)
+    assert (checkpoint_attempts[0].attempt_ref
+            != checkpoint_attempts[1].attempt_ref)
+
+    core = _RegistryCore(
+        run_dir, create=False, read_only=True, catalog=agent_task_catalog())
+    compaction, = _objects(core, "agent_context_compaction/v3")
+    core.catalog.validate_instance(
+        "agent_context_compaction/v3", category="object",
+        instance=compaction)
+    assert compaction["trigger_reason"] == "context_pressure"
+    assert compaction["first_turn_sequence"] == 0
+    assert compaction["last_turn_sequence"] == 0
+    assert len(compaction["covered_turn_refs"]) == 1
+    capsule, summary = compaction["replacement_history"]
+    assert capsule["kind"] == "agent_context_fact_capsule"
+    assert capsule["covered_turn_refs"] == compaction["covered_turn_refs"]
+    assert summary == {
+        "kind": "compaction_summary",
+        "content": "MODEL-SUMMARY-FOR-FORWARD-CONTINUATION",
+    }
+
+    failed = core.event_store.list_events_by_type(
+        ("llm_invocation_failed/v1",))
+    assert len(failed) == 1
+    assert failed[0].payload["disposition"] == "protocol_rejected"
+    assert failed[0].payload["next_attempt_allowed"] is True

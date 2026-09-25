@@ -1,0 +1,97 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "registry_v1/workspace_revision/v1",
+  "title": "RPNH workspace lineage revision",
+  "type": "object",
+  "additionalProperties": false,
+  "definitions": {
+    "ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "entity_type": {"type": "string"},
+        "logical_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"},
+        "version_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"}
+      },
+      "required": ["entity_type", "logical_id", "version_id"]
+    },
+    "nullable_ref": {"oneOf": [{"$ref": "#/definitions/ref"}, {"type": "null"}]},
+    "resource_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "resource_id": {"type": "string", "pattern": "^resource:[a-f0-9]{32}$"},
+        "resource_version_id": {"type": "string", "pattern": "^resource_version:[a-f0-9]{32}$"}
+      },
+      "required": ["resource_id", "resource_version_id"]
+    },
+    "path_list": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1, "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$)).+$"}
+    }
+  },
+  "properties": {
+    "workspace_lineage_id": {"type": "string", "pattern": "^workspace_lineage:[a-f0-9]{32}$"},
+    "workspace_revision_id": {"type": "string", "pattern": "^workspace_revision:[a-f0-9]{32}$"},
+    "workspace_revision_ref": {"$ref": "#/definitions/ref"},
+    "run_ref": {"$ref": "#/definitions/ref"},
+    "task_ref": {"$ref": "#/definitions/ref"},
+    "net_instance_ref": {"$ref": "#/definitions/ref"},
+    "parent_revision_ref": {"$ref": "#/definitions/nullable_ref"},
+    "base_revision_ref": {"$ref": "#/definitions/nullable_ref"},
+    "producer_invocation_ref": {"$ref": "#/definitions/nullable_ref"},
+    "transition_firing_ref": {"$ref": "#/definitions/nullable_ref"},
+    "firing_workspace_binding_ref": {"$ref": "#/definitions/nullable_ref"},
+    "disposition": {"enum": ["genesis", "committed", "merged", "conflict"]},
+    "changed_paths": {"$ref": "#/definitions/path_list"},
+    "deleted_paths": {"$ref": "#/definitions/path_list"},
+    "inventory_paths": {"$ref": "#/definitions/path_list"},
+    "conflict_paths": {"$ref": "#/definitions/path_list"},
+    "semantic_output_refs": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/definitions/resource_ref"}},
+    "trace_summary_refs": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/definitions/resource_ref"}},
+    "payload_kind": {"enum": ["full_workspace_tar", "conflict_evidence"]},
+    "settled": {"type": "boolean"}
+  },
+  "required": [
+    "workspace_lineage_id", "workspace_revision_id", "workspace_revision_ref",
+    "run_ref", "task_ref", "net_instance_ref", "parent_revision_ref",
+    "base_revision_ref", "producer_invocation_ref", "transition_firing_ref",
+    "firing_workspace_binding_ref", "disposition", "changed_paths",
+    "deleted_paths", "inventory_paths", "conflict_paths",
+    "semantic_output_refs", "trace_summary_refs", "payload_kind", "settled"
+  ],
+  "allOf": [
+    {
+      "if": {"properties": {"disposition": {"const": "genesis"}}},
+      "then": {
+        "properties": {
+          "parent_revision_ref": {"type": "null"},
+          "base_revision_ref": {"type": "null"},
+          "producer_invocation_ref": {"type": "null"},
+          "transition_firing_ref": {"type": "null"},
+          "firing_workspace_binding_ref": {"type": "null"},
+          "payload_kind": {"const": "full_workspace_tar"},
+          "settled": {"const": true}
+        }
+      }
+    },
+    {
+      "if": {"properties": {"disposition": {"const": "conflict"}}},
+      "then": {
+        "properties": {
+          "conflict_paths": {"minItems": 1},
+          "payload_kind": {"const": "conflict_evidence"},
+          "settled": {"const": false}
+        }
+      },
+      "else": {
+        "properties": {
+          "conflict_paths": {"maxItems": 0},
+          "payload_kind": {"const": "full_workspace_tar"},
+          "settled": {"const": true}
+        }
+      }
+    }
+  ]
+}

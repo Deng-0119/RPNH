@@ -1,0 +1,17 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "registry_v1/llm_input_target/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {"const": "llm_input_target/v1"},
+    "model_condition": {"type": "string", "minLength": 1},
+    "max_output_tokens": {"type": "integer", "minimum": 1},
+    "max_response_bytes": {"type": "integer", "minimum": 1},
+    "context_window_tokens": {"type": "integer", "minimum": 1}
+  },
+  "required": [
+    "schema_version", "model_condition", "max_output_tokens",
+    "max_response_bytes"
+  ]
+}

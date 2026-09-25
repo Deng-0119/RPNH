@@ -1,0 +1,23 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "registry_v1/firing_timing/v1",
+  "title": "Five runtime-observed firing timing buckets",
+  "type": "object",
+  "additionalProperties": false,
+  "definitions": {
+    "ref": {"type": "object", "additionalProperties": false, "properties": {"entity_type": {"type": "string"}, "logical_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"}, "version_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"}}, "required": ["entity_type", "logical_id", "version_id"]},
+    "bucket": {"type": "object", "additionalProperties": false, "properties": {"seconds": {"type": "number", "minimum": 0}, "monotonic_segments": {"type": "array", "items": {"type": "object", "additionalProperties": false, "properties": {"segment_id": {"type": "string", "minLength": 1}, "start": {"type": "number", "minimum": 0}, "end": {"type": "number", "minimum": 0}}, "required": ["segment_id", "start", "end"]}}}, "required": ["seconds", "monotonic_segments"]}
+  },
+  "properties": {
+    "firing_timing_ref": {"$ref": "#/definitions/ref"},
+    "transition_firing_ref": {"$ref": "#/definitions/ref"},
+    "queue": {"$ref": "#/definitions/bucket"},
+    "active": {"$ref": "#/definitions/bucket"},
+    "resource_wait": {"$ref": "#/definitions/bucket"},
+    "blocked": {"$ref": "#/definitions/bucket"},
+    "total_wall": {"$ref": "#/definitions/bucket"},
+    "observed_start_utc": {"type": "string", "format": "date-time"},
+    "observed_end_utc": {"type": "string", "format": "date-time"}
+  },
+  "required": ["firing_timing_ref", "transition_firing_ref", "queue", "active", "resource_wait", "blocked", "total_wall", "observed_start_utc", "observed_end_utc"]
+}

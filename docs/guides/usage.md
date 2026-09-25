@@ -1,0 +1,62 @@
+---
+name: rpnh-use-and-resume
+description: "Operate main sessions, independent tasks and read-only net projections."
+metadata:
+  document-kind: how-to
+  audience: operator-and-developer
+  language: en
+  counterpart: usage_ZH.md
+  revision: "2026-09-24.1"
+  status: source-reviewed-not-final-candidate-acceptance
+  basis: "core; adapter differences explicitly labelled"
+---
+
+[English](usage.md) | [中文](usage_ZH.md)
+
+# Sessions, tasks, workflows and observation
+
+## Before execution
+Install the appropriate surface and select an authorized exact profile. **Conversation, `/agent`, `/workflow`, `/resume` and `--prompt` can execute models/tools.** They are not installation smoke tests. Use a new session directory for a new session, retain returned task IDs, and keep run data private.
+
+Start the explicit basic frontend with `rpnh --frontend basic`. Supply `--execution PATH` to select a file or `--session-dir PATH` for an absent new session directory. `--resume SESSION_DIR` is mutually exclusive with `--session-dir`. `--prompt TEXT` runs a main turn, not a harmless echo.
+
+## Main session and independent task controls
+The following are **basic-frontend** commands. They are not additions to stock Codex's slash-command registry.
+
+| Command | Meaning |
+|---|---|
+| `/tasks`, `/current` | List independent children; inspect focus |
+| `/agent PROMPT` | Create an independent single-agent task and select it |
+| `/workflow PROMPT` | Ask the main Designer for a graph workflow; invalid design does not count as a launched graph |
+| `/switch ID`, `/switch main` | Change focus without stopping or restarting children |
+| `/task ID status`, `/task ID result` | Read process/Registry status or registered result |
+| `/task ID message TEXT` | Queue input for a single-agent task |
+| `/task ID message TARGET :: TEXT` | Explicit workflow recipient |
+| `/task ID stop`, `/task ID resume` | Request checkpoint stop; explicitly resume an owner-stopped task |
+| `/quit` | Leave the main frontend; independent children may continue |
+
+Short `/status`, `/result`, `/net`, `/message`, `/stop` commands act on the selected child. Plain text goes to main or to the selected single-agent; selected workflows require `TARGET :: TEXT`. A parent-owned `delegate_leaf` is an internal action, not an independently switchable task.
+
+## Interrupted main turn
+Reopen with `rpnh --frontend basic --resume SESSION_DIR`. Reconciliation determines the authoritative state; do not treat a missing terminal process as completion. With main selected, `/resume` continues the paused turn and `/rollback` returns the main conversation to its prior completed turn. Rollback retains the paused child Registry; it neither rewinds independent children nor compensates external writes. `/rollback` on a selected child is rejected. An active unreconciled turn must be resolved before accepting new input.
+
+## Inspect existing runs without execution
+Use an actual run directory, not a transcript or arbitrary session index:
+
+```bash
+: "${RUN_DIR:?Set an existing run directory}"
+rpnh net --run "$RUN_DIR"
+rpnh net --run "$RUN_DIR" --format json
+rpnh net --run "$RUN_DIR" --show-resources
+rpnh net --run "$RUN_DIR" --resources-only
+rpnh net --run "$RUN_DIR" --view --no-open
+```
+
+The last command starts a local read-only viewer server, normally on `127.0.0.1` with an allocated port; it is not a model call, but it is a process/network-listener effect. Keep it loopback-bound. `--view` cannot combine with `--resources-only`, `--node`, `--output`, or non-default `--format`. `--output PATH` is a file-writing projection option, not a Registry write.
+
+Resource places are hidden by default and appear only if actually declared. An empty resource-only projection is valid for a run without resource places. `/task ID net view` or selected `/net view` reaches the same observer. A readable graph, `enabled_transitions`, or a displayed answer does not establish global liveness or terminal success.
+
+## Expected evidence and recovery
+Success is registered terminal evidence plus the registered result in the child's authority, not “process exited”, a cached UI answer or an empty work queue. Keep main and child roots together when making a controlled consistent backup; relative Registry links are not copied event stores. Do not start a second writer to repair display issues. Use [troubleshooting](troubleshooting.md) for owner conflict, drift or unknown outcomes.
+
+Sources: `cpn/rpnh_cli.py:_task_command`, `_run_task_action`, `_net_command`; `cpn/rpnh/main_session.py`, `task_control.py`, `inspection.py`, `registry/main_thread.py`.

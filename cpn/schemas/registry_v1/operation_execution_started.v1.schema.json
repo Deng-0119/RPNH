@@ -1,0 +1,60 @@
+{
+  "$id": "registry_v1/operation_execution_started/v1",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "additionalProperties": false,
+  "definitions": {
+    "ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "entity_type": {"type": "string", "pattern": "^[a-z][a-z0-9_]*/v[1-9][0-9]*$"},
+        "logical_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"},
+        "version_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"}
+      },
+      "required": ["entity_type", "logical_id", "version_id"]
+    },
+    "resource_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "resource_id": {"type": "string", "pattern": "^resource:[a-f0-9]{32}$"},
+        "resource_version_id": {"type": "string", "pattern": "^resource_version:[a-f0-9]{32}$"}
+      },
+      "required": ["resource_id", "resource_version_id"]
+    },
+    "nullable_ref": {"oneOf": [{"$ref": "#/definitions/ref"}, {"type": "null"}]}
+  },
+  "properties": {
+    "invocation_ref": {"$ref": "#/definitions/ref"},
+    "operation_execution_lease_ref": {"$ref": "#/definitions/ref"},
+    "operation_spec_ref": {"$ref": "#/definitions/ref"},
+    "operation_binding_ref": {"$ref": "#/definitions/ref"},
+    "transition_firing_ref": {"$ref": "#/definitions/ref"},
+    "executable_transition_binding_ref": {"$ref": "#/definitions/ref"},
+    "agent_ref": {"$ref": "#/definitions/nullable_ref"},
+    "declaration_terminal_delivery_ref": {
+      "oneOf": [
+        {"$ref": "#/definitions/ref"},
+        {"type": "null"}
+      ]
+    },
+    "principal_ref": {"$ref": "#/definitions/ref"},
+    "authority_decision_ref": {"$ref": "#/definitions/ref"},
+    "input_binding_refs": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/definitions/ref"}},
+    "input_resource_refs": {"type": "array", "items": {"$ref": "#/definitions/resource_ref"}},
+    "claimed_input_refs": {"type": "array", "minItems": 0, "uniqueItems": true, "items": {"$ref": "#/definitions/ref"}},
+    "admission_registry_ordinal": {"type": "integer", "minimum": 0},
+    "admission_writer_fencing_epoch": {"type": "integer", "minimum": 0},
+    "admission_task_control_sequence": {"type": "integer", "minimum": 0}
+  },
+  "required": [
+    "invocation_ref", "operation_execution_lease_ref", "operation_spec_ref",
+    "operation_binding_ref", "transition_firing_ref",
+    "executable_transition_binding_ref", "agent_ref", "principal_ref",
+    "authority_decision_ref", "input_binding_refs", "input_resource_refs",
+    "claimed_input_refs", "admission_registry_ordinal",
+    "admission_writer_fencing_epoch", "admission_task_control_sequence",
+    "declaration_terminal_delivery_ref"
+  ]
+}

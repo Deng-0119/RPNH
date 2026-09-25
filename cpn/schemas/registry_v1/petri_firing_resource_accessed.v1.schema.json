@@ -1,0 +1,65 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "registry_v1/petri_firing_resource_accessed/v1",
+  "title": "Harness-owned firing-local Petri resource access",
+  "type": "object",
+  "additionalProperties": false,
+  "definitions": {
+    "ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "entity_type": {"type": "string", "minLength": 1},
+        "logical_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"},
+        "version_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"}
+      },
+      "required": ["entity_type", "logical_id", "version_id"]
+    },
+    "resource_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "resource_id": {"type": "string", "pattern": "^resource:[a-f0-9]{32}$"},
+        "resource_version_id": {"type": "string", "pattern": "^resource_version:[a-f0-9]{32}$"}
+      },
+      "required": ["resource_id", "resource_version_id"]
+    }
+  },
+  "properties": {
+    "transition_firing_ref": {"$ref": "#/definitions/ref"},
+    "transition_id": {"type": "string", "minLength": 1},
+    "resource_ref": {"$ref": "#/definitions/resource_ref"},
+    "access_mode": {"enum": ["read", "edit"]},
+    "access_checkpoint_ref": {"$ref": "#/definitions/ref"},
+    "access_net_ref": {"$ref": "#/definitions/ref"},
+    "access_claim_epoch": {"type": "integer", "minimum": 0},
+    "resource_token_ref": {"$ref": "#/definitions/ref"},
+    "lease_pool_place": {"type": "string", "minLength": 1},
+    "lease_identity_ref": {"$ref": "#/definitions/ref"},
+    "petri_input_arc_mode": {"enum": ["read", "borrow"]},
+    "petri_output_arc_mode": {"enum": ["return", null]},
+    "writer_fencing_epoch": {"type": "integer", "minimum": 1}
+  },
+  "required": [
+    "transition_firing_ref", "transition_id", "resource_ref", "access_mode",
+    "access_checkpoint_ref", "access_net_ref", "access_claim_epoch",
+    "resource_token_ref", "lease_pool_place", "lease_identity_ref",
+    "petri_input_arc_mode", "petri_output_arc_mode", "writer_fencing_epoch"
+  ],
+  "allOf": [
+    {
+      "if": {"properties": {"access_mode": {"const": "read"}}},
+      "then": {"properties": {
+        "petri_input_arc_mode": {"const": "read"},
+        "petri_output_arc_mode": {"type": "null"}
+      }}
+    },
+    {
+      "if": {"properties": {"access_mode": {"const": "edit"}}},
+      "then": {"properties": {
+        "petri_input_arc_mode": {"const": "borrow"},
+        "petri_output_arc_mode": {"const": "return"}
+      }}
+    }
+  ]
+}

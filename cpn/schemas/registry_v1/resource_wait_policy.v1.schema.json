@@ -1,0 +1,15 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "registry_v1/resource_wait_policy/v1",
+  "title": "Registered D-WAIT-04 operational limits without defaults",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "heartbeat_seconds": {"type": "number", "exclusiveMinimum": 0},
+    "lease_seconds": {"type": "number", "exclusiveMinimum": 0},
+    "queue_poll_seconds": {"type": "number", "exclusiveMinimum": 0},
+    "alert_seconds": {"type": "number", "exclusiveMinimum": 0},
+    "wait_threshold_seconds": {"oneOf": [{"type": "number", "exclusiveMinimum": 0}, {"type": "null"}]}
+  },
+  "required": ["heartbeat_seconds", "lease_seconds", "queue_poll_seconds", "alert_seconds", "wait_threshold_seconds"]
+}

@@ -1,0 +1,44 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "rpnh/resource_access_contract/v1",
+  "title": "Registered pure-data resource read eligibility (not authority)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "metadata_only", "context_origins", "origin_kinds", "metadata_equals",
+    "descriptor_equals", "extension_key", "extension_equals",
+    "require_producer_invocation", "require_provenance_binding", "single_derived_source_key"
+  ],
+  "properties": {
+    "metadata_only": {"type": "boolean"},
+    "context_origins": {"$ref": "#/definitions/strings"},
+    "origin_kinds": {"$ref": "#/definitions/strings"},
+    "metadata_equals": {"$ref": "#/definitions/opaqueObject"},
+    "descriptor_equals": {"$ref": "#/definitions/opaqueObject"},
+    "extension_key": {"type": ["string", "null"], "minLength": 1},
+    "extension_equals": {"$ref": "#/definitions/opaqueObject"},
+    "require_producer_invocation": {"type": "boolean"},
+    "require_provenance_binding": {"type": "boolean"},
+    "single_derived_source_key": {"type": ["string", "null"], "minLength": 1}
+  },
+  "allOf": [{
+    "if": {"properties": {"extension_key": {"type": "null"}}},
+    "then": {"properties": {
+      "extension_equals": {"maxProperties": 0},
+      "single_derived_source_key": {"type": "null"}
+    }}
+  }],
+  "definitions": {
+    "strings": {"type": "array", "items": {"type": "string", "minLength": 1}},
+    "opaqueObject": {
+      "type": "object", "additionalProperties": {"$ref": "#/definitions/jsonValue"}
+    },
+    "jsonValue": {
+      "anyOf": [
+        {"type": ["string", "number", "boolean", "null"]},
+        {"type": "array", "items": {"$ref": "#/definitions/jsonValue"}},
+        {"$ref": "#/definitions/opaqueObject"}
+      ]
+    }
+  }
+}

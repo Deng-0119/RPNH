@@ -1,0 +1,21 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+.env
+.env.*
+!.env.example
+build/
+dist/
+*.egg-info/
+.rpnh/
+*.sqlite3
+*.sqlite3-shm
+*.sqlite3-wal
+*.db
+*.log
+
+# Dependencies stay local; lockfile-pinned viewer assets and licenses are committed
+# so an sdist can build a complete wheel without Node or network access.
+frontend/net-viewer/node_modules/

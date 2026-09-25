@@ -1,0 +1,27 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "registry_v1/transition_firing_settled/v1",
+  "title": "One-firing business settlement and publication event",
+  "type": "object",
+  "additionalProperties": false,
+  "definitions": {
+    "ref": {"type": "object", "additionalProperties": false, "properties": {"entity_type": {"type": "string"}, "logical_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"}, "version_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"}}, "required": ["entity_type", "logical_id", "version_id"]},
+    "nullable_ref": {"oneOf": [{"$ref": "#/definitions/ref"}, {"type": "null"}]},
+    "event_record": {"type": "object", "additionalProperties": false, "properties": {"event_id": {"type": "string", "pattern": "^event:[a-f0-9]{32}$"}, "ordinal": {"type": "integer", "minimum": 1}, "event_type": {"type": "string", "minLength": 1}}, "required": ["event_id", "ordinal", "event_type"]}
+  },
+  "properties": {
+    "event_ref": {"$ref": "#/definitions/ref"},
+    "transition_firing_ref": {"$ref": "#/definitions/ref"},
+    "firing_completion_ref": {"$ref": "#/definitions/ref"},
+    "operation_result_ref": {"$ref": "#/definitions/ref"},
+    "business_outcome": {"const": "completed"},
+    "workspace_access_set_ref": {"$ref": "#/definitions/nullable_ref"},
+    "workspace_revision_ref": {"$ref": "#/definitions/nullable_ref"},
+    "marking_delta_ref": {"$ref": "#/definitions/ref"},
+    "successor_checkpoint_ref": {"$ref": "#/definitions/ref"},
+    "transaction_ref": {"$ref": "#/definitions/ref"},
+    "settlement_event_id": {"type": "string", "pattern": "^event:[a-f0-9]{32}$"},
+    "ordered_event_records": {"type": "array", "items": {"$ref": "#/definitions/event_record"}, "uniqueItems": true, "minItems": 1}
+  },
+  "required": ["event_ref", "transition_firing_ref", "firing_completion_ref", "operation_result_ref", "business_outcome", "workspace_access_set_ref", "workspace_revision_ref", "marking_delta_ref", "successor_checkpoint_ref", "transaction_ref"]
+}

@@ -1,0 +1,41 @@
+{
+  "$id": "registry_v1/native_run_identity/v1",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "additionalProperties": false,
+  "definitions": {
+    "task_ref": {
+      "type": "object", "additionalProperties": false,
+      "properties": {
+        "entity_type": {"const": "task/v1"},
+        "logical_id": {"type": "string", "pattern": "^task:[a-f0-9]{32}$"},
+        "version_id": {"type": "string", "pattern": "^task_version:[a-f0-9]{32}$"}
+      },
+      "required": ["entity_type", "logical_id", "version_id"]
+    },
+    "task_branch_ref": {
+      "type": "object", "additionalProperties": false,
+      "properties": {
+        "entity_type": {"const": "task_branch/v1"},
+        "logical_id": {"type": "string", "pattern": "^task_branch:[a-f0-9]{32}$"},
+        "version_id": {"type": "string", "pattern": "^task_branch_version:[a-f0-9]{32}$"}
+      },
+      "required": ["entity_type", "logical_id", "version_id"]
+    }
+  },
+  "properties": {
+    "run_id": {"type": "string", "pattern": "^run:[a-f0-9]{32}$"},
+    "run_version_id": {"type": "string", "pattern": "^run_version:[a-f0-9]{32}$"},
+    "task_ref": {"$ref": "#/definitions/task_ref"},
+    "task_branch_ref": {"$ref": "#/definitions/task_branch_ref"},
+    "branch_id": {"type": "string", "minLength": 1},
+    "protocol_versions": {
+      "type": "array", "items": {"type": "string", "minLength": 1},
+      "minItems": 1, "uniqueItems": true
+    }
+  },
+  "required": [
+    "run_id", "run_version_id", "task_ref", "task_branch_ref", "branch_id",
+    "protocol_versions"
+  ]
+}

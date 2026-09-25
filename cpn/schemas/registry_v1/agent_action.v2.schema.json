@@ -1,0 +1,335 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "registry_v1/agent_action/v2",
+  "title": "Current closed AgentLoop action",
+  "type": "object",
+  "additionalProperties": false,
+  "definitions": {
+    "ref": {"type": "object", "additionalProperties": false, "properties": {"entity_type": {"type": "string", "minLength": 1}, "logical_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"}, "version_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"}}, "required": ["entity_type", "logical_id", "version_id"]},
+    "nullable_ref": {"oneOf": [{"$ref": "#/definitions/ref"}, {"type": "null"}]},
+    "resource_ref": {"type": "object", "additionalProperties": false, "properties": {"resource_id": {"type": "string", "pattern": "^resource:[a-f0-9]{32}$"}, "resource_version_id": {"type": "string", "pattern": "^resource_version:[a-f0-9]{32}$"}}, "required": ["resource_id", "resource_version_id"]},
+    "nullable_body_access_ref": {"oneOf": [{"$ref": "#/definitions/ref"}, {"type": "null"}]},
+    "live_extension": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "kind": {"const": "live_firing_resource_extension/v1"},
+        "transition_firing_ref": {"$ref": "#/definitions/ref"},
+        "transition_id": {"type": "string", "minLength": 1},
+        "invocation_ref": {"$ref": "#/definitions/ref"},
+        "operation_execution_lease_ref": {"$ref": "#/definitions/ref"},
+        "operation_binding_ref": {"$ref": "#/definitions/ref"},
+        "agent_loop_ref": {"$ref": "#/definitions/ref"},
+        "agent_turn_ref": {"$ref": "#/definitions/ref"},
+        "agent_action_ref": {"$ref": "#/definitions/ref"},
+        "resource_use_occurrence_ref": {"$ref": "#/definitions/ref"},
+        "resource_access_lifecycle_ref": {"$ref": "#/definitions/ref"},
+        "resource_access_grant_ref": {"$ref": "#/definitions/nullable_ref"},
+        "resource_access_lease_ref": {"$ref": "#/definitions/nullable_ref"},
+        "logical_resource_id": {"type": "string", "pattern": "^resource:[a-f0-9]{32}$"},
+        "lock_resource_ref": {"$ref": "#/definitions/ref"},
+        "resource_ref": {"$ref": "#/definitions/resource_ref"},
+        "access_mode": {"enum": ["read", "edit"]},
+        "access_checkpoint_ref": {"$ref": "#/definitions/ref"},
+        "access_net_ref": {"$ref": "#/definitions/ref"},
+        "access_claim_epoch": {"type": "integer", "minimum": 0},
+        "resource_token_ref": {"$ref": "#/definitions/ref"},
+        "lease_pool_place": {"type": "string", "minLength": 1},
+        "lease_identity_ref": {"$ref": "#/definitions/ref"},
+        "petri_input_arc_mode": {"enum": ["read", "borrow"]},
+        "petri_output_arc_mode": {"enum": ["return", null]},
+        "petri_arc_kind": {"enum": ["read", "borrow"]},
+        "return_arc_required": {"type": "boolean"},
+        "llm_turns_used": {"type": "integer", "minimum": 1},
+        "writer_fencing_epoch": {"type": "integer", "minimum": 1},
+        "same_firing_continuation": {"const": true},
+        "available_on_next_turn": {"type": "string", "pattern": "^registered_resources/[a-f0-9]{32}/[a-f0-9]{32}/content$"}
+      },
+      "required": ["kind", "transition_firing_ref", "transition_id", "invocation_ref", "operation_execution_lease_ref", "operation_binding_ref", "agent_loop_ref", "agent_turn_ref", "agent_action_ref", "resource_use_occurrence_ref", "resource_access_lifecycle_ref", "resource_access_grant_ref", "resource_access_lease_ref", "logical_resource_id", "lock_resource_ref", "resource_ref", "access_mode", "access_checkpoint_ref", "access_net_ref", "access_claim_epoch", "resource_token_ref", "lease_pool_place", "lease_identity_ref", "petri_input_arc_mode", "petri_output_arc_mode", "petri_arc_kind", "return_arc_required", "llm_turns_used", "writer_fencing_epoch", "same_firing_continuation", "available_on_next_turn"]
+    },
+    "result_metadata": {
+      "oneOf": [
+        {
+          "type": "object", "additionalProperties": false,
+          "properties": {"kind": {"const": "external_kb_query/v2"}, "operation": {"enum": ["search", "read"]}, "result_resource_ref": {"$ref": "#/definitions/resource_ref"}, "body_access_ref": {"$ref": "#/definitions/nullable_body_access_ref"}, "result_count": {"type": "integer", "minimum": 0}},
+          "required": ["kind", "operation", "result_resource_ref", "body_access_ref", "result_count"]
+        },
+        {
+          "type": "object", "additionalProperties": false,
+          "properties": {"kind": {"const": "execution_environment_resources/v1"}, "environment_name": {"const": "research-exp"}, "python_version": {"type": "string", "minLength": 1}, "inventory_complete": {"const": false}, "requested_packages": {"type": "array", "minItems": 1, "maxItems": 16, "uniqueItems": true, "items": {"type": "string", "minLength": 1}}, "installed_resources": {"type": "array", "uniqueItems": true, "items": {"type": "object", "additionalProperties": false, "properties": {"kind": {"const": "python_distribution"}, "name": {"type": "string", "minLength": 1}, "version": {"type": "string", "minLength": 1}}, "required": ["kind", "name", "version"]}}, "not_installed": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}}, "allowed_by_tool": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}}, "resource_ref": {"$ref": "#/definitions/resource_ref"}},
+          "required": ["kind", "environment_name", "python_version", "inventory_complete", "requested_packages", "installed_resources", "not_installed", "allowed_by_tool", "resource_ref"]
+        },
+        {
+          "type": "object", "additionalProperties": false,
+          "properties": {
+            "kind": {"const": "registry_resource_catalog/v1"},
+            "query": {"type": "string", "maxLength": 256},
+            "view": {"enum": ["current", "history"]},
+            "offset": {"type": "integer", "minimum": 0},
+            "page_size": {"type": "integer", "minimum": 1, "maximum": 20},
+            "result_count": {"type": "integer", "minimum": 0, "maximum": 20},
+            "total_count": {"type": "integer", "minimum": 0},
+            "next_offset": {"type": ["integer", "null"], "minimum": 0},
+            "rows": {
+              "type": "array", "maxItems": 20,
+              "items": {
+                "type": "object", "additionalProperties": false,
+                "properties": {
+                  "resource_id": {"type": "string", "pattern": "^resource:[a-f0-9]{32}$"},
+                  "resource_version_id": {"type": "string", "pattern": "^resource_version:[a-f0-9]{32}$"},
+                  "relative_path": {"type": "string", "minLength": 1},
+                  "file_name": {"type": "string", "minLength": 1},
+                  "description_summary": {"type": ["string", "null"], "minLength": 1, "maxLength": 600},
+                  "description_summary_truncated": {"type": "boolean"},
+                  "content_role": {"type": ["string", "null"], "minLength": 1},
+                  "output_port_id": {"type": ["string", "null"], "minLength": 1},
+                  "producer_ref": {"$ref": "#/definitions/nullable_ref"},
+                  "producer_transition_id": {"type": ["string", "null"], "minLength": 1},
+                  "producer_node_ref": {"$ref": "#/definitions/nullable_ref"},
+                  "transition_firing_ref": {"$ref": "#/definitions/nullable_ref"},
+                  "producer_turn": {"type": ["integer", "null"], "minimum": 0},
+                  "settlement_status": {"enum": ["provisional", "settled", "registered", null]},
+                  "document_provenance": {"type": ["object", "null"]},
+                  "source_execution": {"type": ["object", "null"]},
+                  "destination_publication": {
+                    "type": "object", "additionalProperties": false,
+                    "properties": {
+                      "producer_ref": {"$ref": "#/definitions/nullable_ref"},
+                      "transition_firing_ref": {"$ref": "#/definitions/nullable_ref"},
+                      "settlement_status": {"enum": ["provisional", "settled", "registered", null]}
+                    },
+                    "required": ["producer_ref", "transition_firing_ref", "settlement_status"]
+                  },
+                  "lineage": {
+                    "type": "object", "additionalProperties": false,
+                    "properties": {
+                      "input_resource_refs": {"type": ["array", "null"], "uniqueItems": true, "items": {"$ref": "#/definitions/ref"}},
+                      "derived_from_refs": {"type": ["array", "null"], "uniqueItems": true, "items": {"$ref": "#/definitions/ref"}},
+                      "contributor_refs": {"type": ["array", "null"], "uniqueItems": true, "items": {"$ref": "#/definitions/ref"}},
+                      "tool_evidence_refs": {"type": ["array", "null"], "uniqueItems": true, "items": {"$ref": "#/definitions/ref"}},
+                      "supersedes_ref": {"$ref": "#/definitions/nullable_ref"},
+                      "address_binding_ref": {"$ref": "#/definitions/nullable_ref"},
+                      "previous_address_binding_ref": {"$ref": "#/definitions/nullable_ref"}
+                    },
+                    "required": ["input_resource_refs", "derived_from_refs", "contributor_refs", "tool_evidence_refs", "supersedes_ref", "address_binding_ref", "previous_address_binding_ref"]
+                  },
+                  "currentness": {"enum": ["current", "superseded"]},
+                  "attachment_id": {"type": "string", "minLength": 1},
+                  "attachment_ordinal": {"type": "integer", "minimum": 0},
+                  "attachment_package_ref": {"$ref": "#/definitions/resource_ref"},
+                  "media_type": {"type": "string", "minLength": 1},
+                  "size_bytes": {"type": "integer", "minimum": 1},
+                  "availability": {"const": "request_required"}
+                },
+                "required": ["resource_id", "resource_version_id", "relative_path", "file_name", "description_summary", "description_summary_truncated", "content_role", "output_port_id", "producer_ref", "producer_transition_id", "producer_node_ref", "transition_firing_ref", "producer_turn", "settlement_status", "document_provenance", "source_execution", "destination_publication", "lineage", "currentness"],
+                "allOf": [{
+                  "if": {
+                    "properties": {"content_role": {"const": "user_attachment_member"}},
+                    "required": ["content_role"]
+                  },
+                  "then": {
+                    "properties": {
+                      "producer_ref": {"type": "null"},
+                      "producer_transition_id": {"type": "null"},
+                      "producer_node_ref": {"type": "null"},
+                      "transition_firing_ref": {"type": "null"},
+                      "producer_turn": {"type": "null"},
+                      "settlement_status": {"const": "registered"},
+                      "document_provenance": {"type": "null"},
+                      "source_execution": {"type": "null"},
+                      "destination_publication": {
+                        "properties": {
+                          "producer_ref": {"type": "null"},
+                          "transition_firing_ref": {"type": "null"},
+                          "settlement_status": {"const": "registered"}
+                        }
+                      },
+                      "lineage": {
+                        "properties": {
+                          "input_resource_refs": {"type": "null"},
+                          "derived_from_refs": {"type": "null"},
+                          "contributor_refs": {"type": "null"},
+                          "tool_evidence_refs": {"type": "null"},
+                          "supersedes_ref": {"type": "null"},
+                          "address_binding_ref": {"type": "null"},
+                          "previous_address_binding_ref": {"type": "null"}
+                        }
+                      },
+                      "currentness": {"const": "current"}
+                    },
+                    "required": ["attachment_id", "attachment_ordinal", "attachment_package_ref", "media_type", "size_bytes", "availability"]
+                  },
+                  "else": {
+                    "properties": {
+                      "settlement_status": {"enum": ["provisional", "settled", null]},
+                      "destination_publication": {
+                        "properties": {
+                          "settlement_status": {"enum": ["provisional", "settled", null]}
+                        }
+                      },
+                      "lineage": {
+                        "properties": {
+                          "address_binding_ref": {"$ref": "#/definitions/ref"}
+                        }
+                      }
+                    },
+                    "not": {"anyOf": [
+                      {"required": ["attachment_id"]},
+                      {"required": ["attachment_ordinal"]},
+                      {"required": ["attachment_package_ref"]},
+                      {"required": ["media_type"]},
+                      {"required": ["size_bytes"]},
+                      {"required": ["availability"]}
+                    ]}
+                  }
+                }]
+              }
+            }
+          },
+          "required": ["kind", "query", "view", "offset", "page_size", "result_count", "total_count", "next_offset", "rows"]
+        },
+        {
+          "type": "object", "additionalProperties": false,
+          "properties": {"kind": {"const": "registered_file_write/v1"}, "path": {"type": "string", "minLength": 1}, "description": {"type": "string", "minLength": 1, "maxLength": 600}, "output_port_id": {"type": "string", "minLength": 1}, "resource_ref": {"$ref": "#/definitions/resource_ref"}, "registered": {"const": true}},
+          "required": ["kind", "path", "description", "output_port_id", "resource_ref", "registered"]
+        },
+        {
+          "type": "object", "additionalProperties": false,
+          "properties": {"kind": {"const": "registered_file_read/v1"}, "path": {"type": "string", "minLength": 1}, "resource_ref": {"$ref": "#/definitions/resource_ref"}, "use_receipt_ref": {"$ref": "#/definitions/ref"}},
+          "required": ["kind", "path", "resource_ref", "use_receipt_ref"]
+        },
+        {
+          "type": "object", "additionalProperties": false,
+          "properties": {
+            "kind": {"const": "registered_text_search/v1"},
+            "path": {"type": "string", "minLength": 1},
+            "query": {"type": "string", "minLength": 1, "maxLength": 256},
+            "case_sensitive": {"type": "boolean"},
+            "offset_match": {"type": "integer", "minimum": 0},
+            "next_offset_match": {"type": ["integer", "null"], "minimum": 0},
+            "total_matches": {"type": "integer", "minimum": 0},
+            "matches": {
+              "type": "array", "maxItems": 20,
+              "items": {
+                "type": "object", "additionalProperties": false,
+                "properties": {
+                  "match_ordinal": {"type": "integer", "minimum": 0},
+                  "line_number": {"type": "integer", "minimum": 1},
+                  "column_number": {"type": "integer", "minimum": 1},
+                  "match_start_chars": {"type": "integer", "minimum": 0},
+                  "excerpt_start_chars": {"type": "integer", "minimum": 0},
+                  "excerpt": {"type": "string", "maxLength": 768}
+                },
+                "required": ["match_ordinal", "line_number", "column_number", "match_start_chars", "excerpt_start_chars", "excerpt"]
+              }
+            },
+            "resource_ref": {"$ref": "#/definitions/resource_ref"},
+            "use_receipt_ref": {"$ref": "#/definitions/ref"}
+          },
+          "required": ["kind", "path", "query", "case_sensitive", "offset_match", "next_offset_match", "total_matches", "matches", "resource_ref", "use_receipt_ref"]
+        },
+        {
+          "type": "object", "additionalProperties": false,
+          "properties": {
+            "kind": {"const": "workspace_action_output_page/v1"},
+            "agent_action_ref": {
+              "type": "object", "additionalProperties": false,
+              "properties": {
+                "entity_type": {"const": "agent_action/v2"},
+                "logical_id": {"type": "string", "pattern": "^agent_action:[a-f0-9]{32}$"},
+                "version_id": {"type": "string", "pattern": "^agent_action_version:[a-f0-9]{32}$"}
+              },
+              "required": ["entity_type", "logical_id", "version_id"]
+            },
+            "stream": {"enum": ["stdout", "stderr"]},
+            "content": {"type": "string", "maxLength": 32768},
+            "offset_chars": {"type": "integer", "minimum": 0},
+            "next_offset_chars": {"type": ["integer", "null"], "minimum": 0},
+            "total_chars": {"type": "integer", "minimum": 0},
+            "source_output_truncated": {"type": "boolean"}
+          },
+          "required": ["kind", "agent_action_ref", "stream", "content", "offset_chars", "next_offset_chars", "total_chars", "source_output_truncated"]
+        },
+        {"$ref": "#/definitions/live_extension"},
+        {
+          "type": "object", "additionalProperties": false,
+          "properties": {"kind": {"const": "bounded_numerical_result/v1"}, "status": {"const": "ok"}, "result_size_bytes": {"type": "integer", "minimum": 1}, "path": {"type": "string", "minLength": 1}},
+          "required": ["kind", "status", "result_size_bytes", "path"]
+        },
+        {
+          "type": "object", "additionalProperties": false,
+          "properties": {"kind": {"const": "workspace_execution/v1"}, "status": {"enum": ["completed", "timed_out"]}, "exit_code": {"type": "integer"}, "stdout": {"type": "string", "maxLength": 1048576}, "stderr": {"type": "string", "maxLength": 1048576}, "output_truncated": {"type": "boolean"}, "command_started": {"const": true}},
+          "required": ["kind", "status", "exit_code", "stdout", "stderr", "output_truncated", "command_started"]
+        },
+        {
+          "type": "object", "additionalProperties": false,
+          "properties": {"kind": {"const": "interaction_completion/v1"}, "completed": {"const": true}, "selected_outcome_id": {"type": "string", "minLength": 1}, "written_resource_refs": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/definitions/resource_ref"}}},
+          "required": ["kind", "completed", "selected_outcome_id", "written_resource_refs"]
+        },
+        {
+          "type": "object", "additionalProperties": false,
+          "properties": {
+            "kind": {"const": "parent_owned_delegated_subtask_result/v1"},
+            "result_resource_ref": {"$ref": "#/definitions/resource_ref"},
+            "child_session_id": {"type": "string", "pattern": "^delegated_leaf_session:[a-f0-9]{32}$"},
+            "local_sequence": {"type": "integer", "minimum": 0},
+            "llm_invocation_ref": {"$ref": "#/definitions/ref"},
+            "llm_invocation_attempt_ref": {"$ref": "#/definitions/ref"}
+          },
+          "required": ["kind", "result_resource_ref", "child_session_id", "local_sequence", "llm_invocation_ref", "llm_invocation_attempt_ref"]
+        }
+      ]
+    }
+  },
+  "properties": {
+    "agent_action_id": {"type": "string", "pattern": "^agent_action:[a-f0-9]{32}$"},
+    "agent_action_version_id": {"type": "string", "pattern": "^agent_action_version:[a-f0-9]{32}$"},
+    "agent_action_ref": {"$ref": "#/definitions/ref"},
+    "agent_loop_ref": {"$ref": "#/definitions/ref"},
+    "agent_turn_ref": {"$ref": "#/definitions/ref"},
+    "turn_sequence": {"type": "integer", "minimum": 0},
+    "tool_call_ordinal": {"type": "integer", "minimum": 0},
+    "tool_call_id": {"type": ["string", "null"]},
+    "action_identity_kind": {"enum": ["tool_call_id", "malformed_position"]},
+    "action_identity_key": {"type": "string", "minLength": 1},
+    "tool_name": {"type": ["string", "null"]},
+    "raw_arguments": {"type": ["string", "null"]},
+    "arguments": {"type": ["object", "null"]},
+    "expected_revision": {"type": "integer", "minimum": 0},
+    "state": {"enum": ["ACTION_PENDING", "ACTION_APPLIED", "ACTION_REJECTED", "CANDIDATE_COMMITTED", "CANDIDATE_ADOPTED", "DISPOSITION_RECORDED", "COMPACTING", "COMPLETED", "WAITING_RESOURCE"]},
+    "result_refs": {"type": "array", "items": {"$ref": "#/definitions/ref"}, "uniqueItems": true},
+    "tool_error_ref": {"$ref": "#/definitions/nullable_ref"},
+    "result_metadata": {"oneOf": [{"$ref": "#/definitions/result_metadata"}, {"type": "null"}]}
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {"result_metadata": {"type": "null"}},
+        "required": ["result_metadata"]
+      },
+      "then": {
+        "oneOf": [
+          {
+            "properties": {"state": {"const": "ACTION_REJECTED"}},
+            "required": ["state"]
+          },
+          {
+            "properties": {
+              "state": {"const": "ACTION_PENDING"},
+              "tool_name": {"const": "workspace"},
+              "arguments": {
+                "type": "object",
+                "properties": {"execution_mode": {"const": "monitored"}},
+                "required": ["execution_mode"]
+              },
+              "result_refs": {"maxItems": 0},
+              "tool_error_ref": {"type": "null"}
+            },
+            "required": ["state", "tool_name", "arguments", "result_refs", "tool_error_ref"]
+          }
+        ]
+      }
+    }
+  ],
+  "required": ["agent_action_id", "agent_action_version_id", "agent_action_ref", "agent_loop_ref", "agent_turn_ref", "turn_sequence", "tool_call_ordinal", "tool_call_id", "action_identity_kind", "action_identity_key", "tool_name", "raw_arguments", "arguments", "expected_revision", "state", "result_refs", "tool_error_ref", "result_metadata"]
+}

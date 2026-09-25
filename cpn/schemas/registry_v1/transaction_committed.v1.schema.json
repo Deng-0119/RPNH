@@ -1,0 +1,13 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "registry_v1/transaction_committed/v1",
+  "title": "Current Registry transaction commit payload",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "object_count": {"type": "integer", "minimum": 0},
+    "fact_count": {"type": "integer", "minimum": 0},
+    "relation_count": {"type": "integer", "minimum": 0}
+  },
+  "required": ["object_count", "fact_count", "relation_count"]
+}

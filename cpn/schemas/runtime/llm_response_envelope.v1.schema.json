@@ -1,0 +1,31 @@
+{
+  "$id": "runtime/llm_response_envelope/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "protocol": {"const": "llm_response_envelope/v1"},
+    "text": {"type": ["string", "null"]},
+    "tool_calls": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {"type": "string", "minLength": 1, "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"},
+          "name": {"type": "string", "minLength": 1},
+          "arguments": {"type": "string"}
+        },
+        "required": ["id", "name", "arguments"]
+      },
+      "uniqueItems": true
+    },
+    "reasoning_content": {"type": ["string", "null"]},
+    "finish_reason": {"type": ["string", "null"]},
+    "usage": {"type": ["object", "null"]}
+  },
+  "required": ["protocol", "tool_calls"],
+  "anyOf": [
+    {"required": ["text"], "properties": {"text": {"type": "string"}}},
+    {"properties": {"tool_calls": {"minItems": 1}}}
+  ]
+}

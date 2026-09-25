@@ -1,0 +1,44 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "registry_v1/provider_payload_materialization_receipt/v1",
+  "title": "provider_payload_materialization_receipt/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "definitions": {
+    "ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "entity_type": {"type": "string", "minLength": 1},
+        "logical_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"},
+        "version_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"}
+      },
+      "required": ["entity_type", "logical_id", "version_id"]
+    },
+    "resource_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "resource_id": {"type": "string", "pattern": "^resource:[a-f0-9]{32}$"},
+        "resource_version_id": {"type": "string", "pattern": "^resource_version:[a-f0-9]{32}$"}
+      },
+      "required": ["resource_id", "resource_version_id"]
+    }
+  },
+  "properties": {
+    "provider_payload_materialization_receipt_ref": {"$ref": "#/definitions/ref"},
+    "provider_attempt_ref": {"$ref": "#/definitions/ref"},
+    "llm_call_ref": {"$ref": "#/definitions/ref"},
+    "request_recipe_ref": {"$ref": "#/definitions/resource_ref"},
+    "terminal_delivery_ref": {"$ref": "#/definitions/ref"},
+    "byte_count": {"type": "integer", "minimum": 1}
+  },
+  "required": [
+    "provider_payload_materialization_receipt_ref",
+    "provider_attempt_ref",
+    "llm_call_ref",
+    "request_recipe_ref",
+    "terminal_delivery_ref",
+    "byte_count"
+  ]
+}

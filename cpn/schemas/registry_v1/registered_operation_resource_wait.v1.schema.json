@@ -1,0 +1,22 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "registry_v1/registered_operation_resource_wait/v1",
+  "title": "Typed RegisteredOperationResourceWait same-firing boundary",
+  "type": "object",
+  "additionalProperties": false,
+  "definitions": {"ref": {"type": "object", "additionalProperties": false, "properties": {"entity_type": {"type": "string", "minLength": 1}, "logical_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"}, "version_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"}}, "required": ["entity_type", "logical_id", "version_id"]}},
+  "properties": {
+    "transition_firing_ref": {"$ref": "#/definitions/ref"},
+    "invocation_ref": {"$ref": "#/definitions/ref"},
+    "operation_execution_lease_ref": {"$ref": "#/definitions/ref"},
+    "operation_binding_ref": {"$ref": "#/definitions/ref"},
+    "agent_loop_ref": {"$ref": "#/definitions/ref"},
+    "agent_turn_ref": {"$ref": "#/definitions/ref"},
+    "agent_action_ref": {"$ref": "#/definitions/ref"},
+    "resource_access_lifecycle_ref": {"$ref": "#/definitions/ref"},
+    "queue_entry_id": {"type": "string", "minLength": 1, "pattern": "^\\S(?:.*\\S)?$"},
+    "state": {"const": "WAITING_RESOURCE"},
+    "same_firing_continuation": {"const": true}
+  },
+  "required": ["transition_firing_ref", "invocation_ref", "operation_execution_lease_ref", "operation_binding_ref", "agent_loop_ref", "agent_turn_ref", "agent_action_ref", "resource_access_lifecycle_ref", "queue_entry_id", "state", "same_firing_continuation"]
+}

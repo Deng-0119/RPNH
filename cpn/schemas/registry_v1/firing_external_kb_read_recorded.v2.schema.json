@@ -1,0 +1,10 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "registry_v1/firing_external_kb_read_recorded/v2",
+  "title": "Recorded KB access event",
+  "type": "object",
+  "additionalProperties": false,
+  "definitions": {"ref": {"type": "object", "additionalProperties": false, "properties": {"entity_type": {"type": "string"}, "logical_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"}, "version_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"}}, "required": ["entity_type", "logical_id", "version_id"]}},
+  "properties": {"event_ref": {"$ref": "#/definitions/ref"}, "kb_access_ref": {"$ref": "#/definitions/ref"}, "transition_firing_ref": {"$ref": "#/definitions/ref"}, "recorded_at_utc": {"type": "string", "format": "date-time"}},
+  "required": ["event_ref", "kb_access_ref", "transition_firing_ref", "recorded_at_utc"]
+}

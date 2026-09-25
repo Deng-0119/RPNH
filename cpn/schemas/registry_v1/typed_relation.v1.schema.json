@@ -1,0 +1,112 @@
+{
+  "$id": "registry_v1/typed_relation/v1",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "additionalProperties": false,
+  "properties": {
+    "metadata": {
+      "type": "object"
+    },
+    "relation_id": {
+      "pattern": "^relation:[a-f0-9]{32}$",
+      "type": "string"
+    },
+    "relation_type": {
+      "enum": [
+        "produced_by",
+        "contributed_by",
+        "derived_from",
+        "read_by",
+        "declared_by",
+        "reviewed_by",
+        "supersedes",
+        "granted_by",
+        "pinned_import_of",
+        "uses_tool_catalog",
+        "uses_semantic_prompt",
+        "caused_by_tool_result",
+        "firing_of_node",
+        "firing_in_net",
+        "invocation_of_firing",
+        "invocation_in_activation",
+        "sponsored_under_activation",
+        "invocation_as_principal",
+        "invocation_uses_agent",
+        "invocation_uses_binding",
+        "invocation_governed_by_limits",
+        "invocation_uses_lease",
+        "terminal_result_of_invocation",
+        "settled_disposition_documented_by",
+        "call_of_invocation",
+        "bound_to_backend",
+        "uses_transport_contract",
+        "attempt_of_call",
+        "attempt_consumes_resource",
+        "attempt_uses_delivery",
+        "governed_by_call_policy",
+        "retry_of_attempt",
+        "attempt_produced_response",
+        "actual_model_call_recorded_against_limit"
+      ]
+    },
+    "source": {
+      "additionalProperties": false,
+      "properties": {
+        "entity_id": {
+          "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$",
+          "type": "string"
+        },
+        "entity_type": {
+          "pattern": "^[a-z][a-z0-9_]*/v[1-9][0-9]*$",
+          "type": "string"
+        },
+        "version_id": {
+          "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "entity_type",
+        "entity_id"
+      ],
+      "type": "object"
+    },
+    "strength": {
+      "enum": [
+        "strong",
+        "weak"
+      ]
+    },
+    "target": {
+      "additionalProperties": false,
+      "properties": {
+        "entity_id": {
+          "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$",
+          "type": "string"
+        },
+        "entity_type": {
+          "pattern": "^[a-z][a-z0-9_]*/v[1-9][0-9]*$",
+          "type": "string"
+        },
+        "version_id": {
+          "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "entity_type",
+        "entity_id"
+      ],
+      "type": "object"
+    }
+  },
+  "required": [
+    "relation_id",
+    "relation_type",
+    "source",
+    "target",
+    "strength",
+    "metadata"
+  ],
+  "title": "typed_relation/v1",
+  "type": "object"
+}

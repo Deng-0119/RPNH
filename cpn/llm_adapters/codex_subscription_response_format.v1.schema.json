@@ -1,0 +1,43 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "protocol": {
+      "type": "string",
+      "enum": ["llm_response_envelope/v1"]
+    },
+    "text": {
+      "type": ["string", "null"]
+    },
+    "tool_calls": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {"type": "string"},
+          "name": {"type": "string"},
+          "arguments": {"type": "string"}
+        },
+        "required": ["id", "name", "arguments"]
+      }
+    },
+    "reasoning_content": {
+      "type": ["string", "null"]
+    },
+    "finish_reason": {
+      "type": ["string", "null"]
+    },
+    "usage": {
+      "type": "null"
+    }
+  },
+  "required": [
+    "protocol",
+    "text",
+    "tool_calls",
+    "reasoning_content",
+    "finish_reason",
+    "usage"
+  ]
+}

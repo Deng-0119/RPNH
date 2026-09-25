@@ -1,0 +1,16 @@
+{
+  "$id": "registry_v1/capability_allowed/v1",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "additionalProperties": true,
+  "properties": {
+    "grant_id": {
+      "pattern": "^grant:[a-f0-9]{32}$",
+      "type": "string"
+    }
+  },
+  "required": [
+    "grant_id"
+  ],
+  "title": "capability_allowed/v1",
+  "type": "object"
+}

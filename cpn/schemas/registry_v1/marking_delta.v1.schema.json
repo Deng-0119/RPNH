@@ -1,0 +1,177 @@
+{
+  "$id": "registry_v1/marking_delta/v1",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "One-firing marking delta",
+  "type": "object",
+  "additionalProperties": false,
+  "definitions": {
+    "ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "entity_type": {"type": "string"},
+        "logical_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"},
+        "version_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"}
+      },
+      "required": ["entity_type", "logical_id", "version_id"]
+    },
+    "effect": {
+      "type": "object", "additionalProperties": false,
+      "properties": {
+        "effect_index": {"type": "integer", "minimum": 0},
+        "key": {"type": "string", "minLength": 1},
+        "effect_kind": {"enum": ["petri_action", "structural_revision"]},
+        "module_revision": {"$ref": "#/definitions/module_revision"},
+        "petri_structure_delta": {"$ref": "#/definitions/petri_structure_delta"},
+        "activation_witnesses": {"type": "array", "uniqueItems": true, "items": {
+          "type": "object", "additionalProperties": false,
+          "properties": {"token_ref": {"$ref": "#/definitions/ref"},
+            "authority_refs": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/definitions/ref"}}},
+          "required": ["token_ref", "authority_refs"]}},
+        "bound_resources": {"type": "array", "uniqueItems": true, "items": {
+          "type": "object", "additionalProperties": false,
+          "properties": {
+            "binding": {"type": "string", "minLength": 1},
+            "ordinal": {"type": "integer", "minimum": 0},
+            "resource_ref": {"$ref": "#/definitions/ref"},
+            "claimed_token_ref": {"anyOf": [{"type": "null"}, {"$ref": "#/definitions/ref"}]}
+          }, "required": ["binding", "ordinal", "resource_ref", "claimed_token_ref"]
+        }},
+        "reset_references": {"type": "array", "items": {"type": "string", "minLength": 1}},
+        "routes": {"type": "array", "items": {
+          "type": "object", "additionalProperties": false,
+          "properties": {
+            "reference": {"type": "string", "minLength": 1},
+            "binding": {"type": "string", "minLength": 1},
+            "ordinal": {"type": "integer", "minimum": 0},
+            "token_ref": {"$ref": "#/definitions/ref"}
+          }, "required": ["reference", "binding", "ordinal", "token_ref"]
+        }},
+        "outputs": {"type": "array", "items": {
+          "type": "object", "additionalProperties": false,
+          "properties": {
+            "reference": {"type": "string", "minLength": 1},
+            "token_refs": {"type": "array", "minItems": 1,
+              "uniqueItems": true, "items": {"$ref": "#/definitions/ref"}}
+          }, "required": ["reference", "token_refs"]
+        }},
+        "retired_token_refs": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/definitions/ref"}}
+      }, "required": ["effect_index", "key", "effect_kind", "bound_resources", "reset_references", "routes", "outputs", "retired_token_refs"],
+      "allOf": [{"if": {"properties": {"effect_kind": {"const": "structural_revision"}}},
+        "then": {"required": ["module_revision", "petri_structure_delta"], "properties": {
+          "routes": {"maxItems": 0}, "outputs": {"maxItems": 0},
+          "reset_references": {"maxItems": 0}, "retired_token_refs": {"maxItems": 0}}},
+        "else": {"not": {"anyOf": [{"required": ["module_revision"]},
+          {"required": ["petri_structure_delta"]}, {"required": ["activation_witnesses"]}]}}}]
+    },
+    "petri_structure_delta": {"type": "object", "additionalProperties": false,
+      "properties": {"edits": {"type": "array", "uniqueItems": true, "items": {
+        "type": "object", "additionalProperties": false,
+        "properties": {
+          "element_kind": {"enum": ["place", "transition", "operation", "arc", "reset_arc",
+            "port_place_binding", "entry_binding", "exit_binding", "lease_identity",
+            "lease_pool", "variable_resource_arc", "logical_slot"]},
+          "action": {"enum": ["add", "remove", "replace"]},
+          "identity": {},
+          "before": {"type": ["object", "null"]},
+          "after": {"type": ["object", "null"]}
+        },
+        "required": ["element_kind", "action", "identity", "before", "after"],
+        "allOf": [
+          {"if": {"properties": {"element_kind": {"enum": ["arc", "reset_arc"]}},
+                  "required": ["element_kind"]},
+           "then": {"properties": {"identity": {
+             "type": "array", "minItems": 4, "maxItems": 4,
+             "items": [
+               {"type": "string", "minLength": 1},
+               {"type": "string", "minLength": 1},
+               {"type": "string", "minLength": 1},
+               {"type": ["string", "null"]}
+             ]}}},
+           "else": {"properties": {"identity": {
+             "type": "string", "minLength": 1
+           }}}},
+          {"if": {"properties": {"element_kind": {"const": "arc"}},
+                  "required": ["element_kind"]},
+           "then": {"properties": {"identity": {"items": [
+             {}, {}, {"enum": ["input", "output"]}, {}
+           ]}}}},
+          {"if": {"properties": {"element_kind": {"const": "reset_arc"}},
+                  "required": ["element_kind"]},
+           "then": {"properties": {"identity": {"items": [
+             {}, {}, {"type": "string", "minLength": 1}, {}
+           ]}}}}
+        ]
+      }}},
+      "required": ["edits"]},
+    "activation": {"type": "object", "additionalProperties": false,
+      "properties": {
+        "activation_class": {"enum": ["RESOURCE_ENTRY", "IDLE_CAPACITY", "LEASE_POOL", "CONTENTLESS_CONTROL"]},
+        "place": {"type": "string", "minLength": 1}, "count": {"type": "integer", "minimum": 1},
+        "entry_key": {"type": "string", "minLength": 1}, "source_binding": {"type": "string", "minLength": 1},
+        "transition": {"type": "string", "minLength": 1}, "pool": {"type": "string", "minLength": 1},
+        "lease": {"type": "string", "minLength": 1}},
+      "required": ["activation_class", "place", "count"],
+      "oneOf": [
+        {"properties": {"activation_class": {"const": "RESOURCE_ENTRY"}}, "required": ["entry_key"],
+          "oneOf": [{"required": ["source_binding"], "not": {"required": ["lease"]}},
+            {"required": ["lease"], "not": {"required": ["source_binding"]}}],
+          "not": {"anyOf": [{"required": ["transition"]}, {"required": ["pool"]}]}},
+        {"properties": {"activation_class": {"const": "IDLE_CAPACITY"}}, "required": ["transition"],
+          "not": {"anyOf": [{"required": ["entry_key"]}, {"required": ["source_binding"]}, {"required": ["pool"]}, {"required": ["lease"]}]}},
+        {"properties": {"activation_class": {"const": "LEASE_POOL"}, "count": {"const": 1}}, "required": ["pool", "lease"],
+          "not": {"anyOf": [{"required": ["entry_key"]}, {"required": ["source_binding"]}, {"required": ["transition"]}]}},
+        {"properties": {"activation_class": {"const": "CONTENTLESS_CONTROL"}},
+          "not": {"anyOf": [{"required": ["entry_key"]}, {"required": ["source_binding"]}, {"required": ["transition"]}, {"required": ["pool"]}, {"required": ["lease"]}]}}
+      ]},
+    "module_revision": {"type": "object", "additionalProperties": false,
+      "properties": {
+        "source_binding": {"type": "string", "minLength": 1},
+        "source_ordinal": {"type": "integer", "minimum": 0},
+        "module": {"type": "object"},
+        "activations": {"type": "array", "items": {"$ref": "#/definitions/activation"}},
+        "destinations": {"type": "object", "additionalProperties": {"type": "string", "minLength": 1}},
+        "retire_token_refs": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/definitions/ref"}}},
+      "required": ["source_binding", "source_ordinal", "module", "destinations", "retire_token_refs", "activations"]},
+    "business_firing_ref": {
+      "allOf": [
+        {"$ref": "#/definitions/ref"},
+        {"properties": {
+          "entity_type": {"const": "transition_firing/v1"},
+          "logical_id": {"pattern": "^transition_firing:[a-f0-9]{32}$"},
+          "version_id": {"pattern": "^transition_firing_version:[a-f0-9]{32}$"}
+        }}
+      ]
+    },
+    "provider_submission_unknown_ref": {"allOf": [
+      {"$ref": "#/definitions/ref"},
+      {"properties": {
+        "entity_type": {"const": "provider_submission_unknown/v1"},
+        "logical_id": {"pattern": "^provider_submission_unknown:[a-f0-9]{32}$"},
+        "version_id": {"pattern": "^provider_submission_unknown_version:[a-f0-9]{32}$"}
+      }}
+    ]}
+  },
+  "properties": {
+    "marking_delta_ref": {"$ref": "#/definitions/ref"},
+    "net_instance_ref": {"$ref": "#/definitions/ref"},
+    "transition_firing_refs": {"type": "array", "items": {"$ref": "#/definitions/business_firing_ref"}, "uniqueItems": true},
+    "operation_binding_refs": {"type": "array", "items": {"$ref": "#/definitions/ref"}, "uniqueItems": true},
+    "consumed_refs": {"type": "array", "items": {"$ref": "#/definitions/ref"}, "uniqueItems": true},
+    "deposited_refs": {"type": "array", "items": {"$ref": "#/definitions/ref"}, "uniqueItems": true},
+    "phase": {"enum": ["claim", "settlement"]},
+    "declared_effects": {
+      "type": "object", "additionalProperties": false,
+      "properties": {
+        "selected_outcome_id": {"type": "string", "minLength": 1},
+        "effects": {"type": "array", "items": {"$ref": "#/definitions/effect"}}
+      }, "required": ["selected_outcome_id", "effects"]
+    },
+    "provider_submission_unknown_refs": {"type": "array", "items": {"$ref": "#/definitions/provider_submission_unknown_ref"}, "uniqueItems": true}
+  },
+  "required": [
+    "marking_delta_ref", "net_instance_ref", "transition_firing_refs",
+    "operation_binding_refs", "consumed_refs",
+    "deposited_refs", "phase"
+  ]
+}

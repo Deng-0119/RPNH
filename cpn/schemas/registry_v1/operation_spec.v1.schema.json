@@ -1,0 +1,222 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "registry_v1/operation_spec/v1",
+  "title": "operation_spec/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "definitions": {
+    "ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "entity_type": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*/v[1-9][0-9]*$"
+        },
+        "logical_id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
+        },
+        "version_id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
+        }
+      },
+      "required": ["entity_type", "logical_id", "version_id"]
+    },
+    "operation_spec_ref": {
+      "allOf": [
+        {"$ref": "#/definitions/ref"},
+        {"properties": {"entity_type": {"const": "operation_spec/v1"}}}
+      ]
+    },
+    "content_schema_ref": {
+      "oneOf": [
+        {
+          "allOf": [
+            {"$ref": "#/definitions/ref"},
+            {
+              "properties": {
+                "entity_type": {"const": "registry_type_catalog/v1"},
+                "logical_id": {"pattern": "^schema:[a-f0-9]{32}$"},
+                "version_id": {"pattern": "^resource_version:[a-f0-9]{32}$"}
+              }
+            }
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "resource_id": {
+              "type": "string",
+              "pattern": "^resource:[a-f0-9]{32}$"
+            },
+            "resource_version_id": {
+              "type": "string",
+              "pattern": "^resource_version:[a-f0-9]{32}$"
+            }
+          },
+          "required": ["resource_id", "resource_version_id"]
+        }
+      ]
+    },
+    "cardinality": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "minimum": {"type": "integer", "minimum": 0},
+        "maximum": {"type": "integer", "minimum": 0}
+      },
+      "required": ["minimum", "maximum"]
+    },
+    "field_projection": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "producer_path": {
+          "type": "string",
+          "pattern": "^(?:|/[a-z][a-z0-9_]*(?:/[a-z][a-z0-9_]*)*)$"
+        },
+        "consumer_path": {
+          "type": "string",
+          "pattern": "^(?:|/[a-z][a-z0-9_]*(?:/[a-z][a-z0-9_]*)*)$"
+        }
+      },
+      "required": ["producer_path", "consumer_path"]
+    },
+    "input_projection": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "producer_content_schema_ref": {
+          "type": "string",
+          "pattern": "^(?:registry_v1|application|runtime)/[a-z][a-z0-9_]*/v[1-9][0-9]*$"
+        },
+        "field_projection": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/definitions/field_projection"},
+          "uniqueItems": true
+        }
+      },
+      "required": ["producer_content_schema_ref", "field_projection"]
+    },
+    "input_projections": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/definitions/input_projection"},
+      "uniqueItems": true
+    },
+    "port": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "port_id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]{0,63}$"
+        },
+        "place": {"type": "string", "minLength": 1},
+        "schema_ref": {"$ref": "#/definitions/ref"},
+        "content_schema_ref": {"$ref": "#/definitions/content_schema_ref"},
+        "lease_identity_ref": {
+          "oneOf": [
+            {"$ref": "#/definitions/ref"},
+            {"type": "null"}
+          ]
+        },
+        "cardinality": {"$ref": "#/definitions/cardinality"},
+        "input_projections": {"$ref": "#/definitions/input_projections"}
+      },
+      "required": [
+        "port_id", "place", "schema_ref", "content_schema_ref",
+        "cardinality", "lease_identity_ref"
+      ]
+    }
+  },
+  "properties": {
+    "operation_spec_id": {
+      "type": "string",
+      "pattern": "^operation_spec:[a-f0-9]{32}$"
+    },
+    "operation_spec_version_id": {
+      "type": "string",
+      "pattern": "^operation_spec_version:[a-f0-9]{32}$"
+    },
+    "operation_spec_ref": {"$ref": "#/definitions/operation_spec_ref"},
+    "operation_id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]{0,63}$"
+    },
+    "executor_key": {"type": "string", "minLength": 1},
+    "transport": {"enum": ["llm", "deterministic"]},
+    "implementation_identity": {"type": "object", "minProperties": 1},
+    "implementation_contracts": {"type": "object"},
+    "llm_prompt_port_id": {
+      "oneOf": [
+        {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]{0,63}$"
+        },
+        {"type": "null"}
+      ]
+    },
+    "input_ports": {
+      "type": "array",
+      "items": {"$ref": "#/definitions/port"},
+      "uniqueItems": true
+    },
+    "output_ports": {
+      "type": "array",
+      "minItems": 0,
+      "items": {
+        "allOf": [
+          {"$ref": "#/definitions/port"},
+          {"not": {"required": ["input_projections"]}},
+          {"properties": {"lease_identity_ref": {"type": "null"}}}
+        ]
+      },
+      "uniqueItems": true
+    },
+    "allowed_tool_ids": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true
+    }
+  },
+  "required": [
+    "operation_spec_id",
+    "operation_spec_version_id",
+    "operation_spec_ref",
+    "operation_id",
+    "executor_key",
+    "implementation_identity",
+    "implementation_contracts",
+    "transport",
+    "llm_prompt_port_id",
+    "input_ports",
+    "output_ports",
+    "allowed_tool_ids"
+  ],
+  "allOf": [
+    {
+      "if": {
+        "properties": {"transport": {"const": "llm"}},
+        "required": ["transport"]
+      },
+      "then": {
+        "properties": {
+          "llm_prompt_port_id": {"type": "string"}
+        }
+      },
+      "else": {
+        "properties": {
+          "llm_prompt_port_id": {"type": "null"}
+        }
+      }
+    }
+  ]
+}

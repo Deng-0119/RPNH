@@ -1,0 +1,1871 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "rpnh/executable_net/v1",
+  "title": "Compiled RPNH publication inventory (not an authoring schema)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "source",
+    "fragments",
+    "symbolic",
+    "registrations",
+    "operation_handles",
+    "port_handles",
+    "place_aliases",
+    "ports"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "rpnh/executable_net/v1"
+    },
+    "source": {
+      "$ref": "#/definitions/module"
+    },
+    "fragments": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/definitions/fragment"
+      }
+    },
+    "symbolic": {
+      "$ref": "#/definitions/net"
+    },
+    "registrations": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": {
+          "type": "object"
+        }
+      }
+    },
+    "operation_handles": {
+      "$ref": "#/definitions/handles"
+    },
+    "port_handles": {
+      "$ref": "#/definitions/handles"
+    },
+    "place_aliases": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/definitions/symbol"
+      }
+    },
+    "ports": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/compiled_port"
+      }
+    }
+  },
+  "definitions": {
+    "symbol": {
+      "type": "string",
+      "pattern": "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)?$"
+    },
+    "key": {
+      "type": "string",
+      "minLength": 1
+    },
+    "symbols": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/definitions/symbol"
+      }
+    },
+    "keys": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/definitions/key"
+      }
+    },
+    "schema_id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]*(?:/[a-z][a-z0-9_]*)+/v[1-9][0-9]*$"
+    },
+    "handles": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9_]{0,63}$"
+      }
+    },
+    "place": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "schema",
+        "channel",
+        "capacity",
+        "token_kind",
+        "schema_variants",
+        "colours",
+        "initial_tokens",
+        "reusable"
+      ],
+      "properties": {
+        "name": {
+          "$ref": "#/definitions/symbol"
+        },
+        "schema": {
+          "$ref": "#/definitions/schema_id"
+        },
+        "channel": {
+          "enum": [
+            "data",
+            "control"
+          ]
+        },
+        "capacity": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 1
+        },
+        "token_kind": {
+          "enum": [
+            "data",
+            "agent_resource",
+            "counter",
+            "decision",
+            "resource_lease"
+          ]
+        },
+        "schema_variants": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/definitions/schema_id"
+          }
+        },
+        "colours": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/colour"
+          }
+        },
+        "initial_tokens": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/initial_token"
+          }
+        },
+        "reusable": {
+          "type": "boolean"
+        }
+      }
+    },
+    "port": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "direction",
+        "schema",
+        "channel",
+        "cardinality"
+      ],
+      "properties": {
+        "name": {
+          "$ref": "#/definitions/symbol"
+        },
+        "direction": {
+          "enum": [
+            "input",
+            "output"
+          ]
+        },
+        "schema": {
+          "$ref": "#/definitions/schema_id"
+        },
+        "channel": {
+          "enum": [
+            "data",
+            "control"
+          ]
+        },
+        "cardinality": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "cardinality_minimum": {
+          "type": ["integer", "null"],
+          "minimum": 0,
+          "description": "Inclusive minimum; omitted or null uses cardinality."
+        },
+        "cardinality_maximum": {
+          "type": ["integer", "null"],
+          "minimum": 0,
+          "description": "Inclusive maximum; omitted or null uses cardinality."
+        }
+      }
+    },
+    "compiled_port": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "direction",
+        "schema",
+        "channel",
+        "cardinality",
+        "place",
+        "port_id",
+        "public"
+      ],
+      "properties": {
+        "name": {
+          "$ref": "#/definitions/symbol"
+        },
+        "direction": {
+          "enum": [
+            "input",
+            "output"
+          ]
+        },
+        "schema": {
+          "$ref": "#/definitions/schema_id"
+        },
+        "channel": {
+          "enum": [
+            "data",
+            "control"
+          ]
+        },
+        "cardinality": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "cardinality_minimum": {
+          "type": ["integer", "null"],
+          "minimum": 0,
+          "description": "Inclusive minimum; omitted or null uses cardinality."
+        },
+        "cardinality_maximum": {
+          "type": ["integer", "null"],
+          "minimum": 0,
+          "description": "Inclusive maximum; omitted or null uses cardinality."
+        },
+        "place": {
+          "$ref": "#/definitions/symbol"
+        },
+        "port_id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]{0,63}$"
+        },
+        "public": {
+          "type": "boolean"
+        }
+      }
+    },
+    "binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "place"
+      ],
+      "properties": {
+        "name": {
+          "$ref": "#/definitions/symbol"
+        },
+        "place": {
+          "$ref": "#/definitions/symbol"
+        }
+      }
+    },
+    "product": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "port",
+        "minimum",
+        "maximum"
+      ],
+      "properties": {
+        "port": {
+          "$ref": "#/definitions/symbol"
+        },
+        "minimum": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "maximum": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "effect": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "key",
+        "bindings",
+        "config",
+        "references"
+      ],
+      "properties": {
+        "key": {
+          "$ref": "#/definitions/key"
+        },
+        "bindings": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/symbol"
+          }
+        },
+        "config": {
+          "type": "object"
+        },
+        "references": {
+          "type": "object",
+          "propertyNames": {
+            "type": "string",
+            "pattern": "^[A-Za-z][A-Za-z0-9_-]*$"
+          },
+          "additionalProperties": {
+            "$ref": "#/definitions/symbol_reference"
+          }
+        }
+      }
+    },
+    "outcome": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "products",
+        "effects"
+      ],
+      "properties": {
+        "name": {
+          "$ref": "#/definitions/symbol"
+        },
+        "products": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/product"
+          }
+        },
+        "effects": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/effect"
+          }
+        }
+      }
+    },
+    "operation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "executor",
+        "inputs",
+        "outputs",
+        "outcomes",
+        "tools",
+        "config",
+        "request_port",
+        "budget_binding"
+      ],
+      "properties": {
+        "name": {
+          "$ref": "#/definitions/symbol"
+        },
+        "executor": {
+          "$ref": "#/definitions/key"
+        },
+        "inputs": {
+          "$ref": "#/definitions/symbols"
+        },
+        "outputs": {
+          "$ref": "#/definitions/symbols"
+        },
+        "outcomes": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/definitions/outcome"
+          }
+        },
+        "tools": {
+          "$ref": "#/definitions/keys"
+        },
+        "config": {
+          "type": "object"
+        },
+        "request_port": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/symbol"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "budget_binding": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/operationBudgetBinding"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "transition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "operation",
+        "count_guards",
+        "input_verdicts"
+      ],
+      "properties": {
+        "name": {
+          "$ref": "#/definitions/symbol"
+        },
+        "operation": {
+          "$ref": "#/definitions/symbol"
+        },
+        "count_guards": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/count_guard"
+          }
+        },
+        "input_verdicts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/input_verdict"
+          }
+        }
+      }
+    },
+    "arc": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "place",
+        "transition",
+        "direction",
+        "weight",
+        "mode",
+        "outcome",
+        "emit",
+        "forward_source",
+        "colour_expression",
+        "output_predicates",
+        "lease_claims",
+        "lease_claim_exclusions",
+        "lease_claim_set",
+        "effect_selector"
+      ],
+      "properties": {
+        "place": {
+          "$ref": "#/definitions/symbol"
+        },
+        "transition": {
+          "$ref": "#/definitions/symbol"
+        },
+        "direction": {
+          "enum": [
+            "input",
+            "output"
+          ]
+        },
+        "weight": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "mode": {
+          "enum": [
+            "consume",
+            "read",
+            "borrow",
+            "guard",
+            "produce",
+            "return"
+          ]
+        },
+        "outcome": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/symbol"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "emit": {
+          "enum": [
+            "produced",
+            "content_less",
+            "forward",
+            "control_only",
+            "route_selected",
+            "lease_mint"
+          ]
+        },
+        "forward_source": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/symbol"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "colour_expression": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/colour_expression"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "output_predicates": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/input_verdict"
+          }
+        },
+        "lease_claims": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/lease_claim_expression"
+          }
+        },
+        "lease_claim_exclusions": {
+          "$ref": "#/definitions/symbols"
+        },
+        "lease_claim_set": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/lease_claim_set_expression"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "effect_selector": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/symbol"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "reset_arc": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "place",
+        "transition",
+        "selector",
+        "outcome"
+      ],
+      "properties": {
+        "place": {
+          "$ref": "#/definitions/symbol"
+        },
+        "transition": {
+          "$ref": "#/definitions/symbol"
+        },
+        "selector": {
+          "$ref": "#/definitions/symbol"
+        },
+        "outcome": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/symbol"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "fragment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "places",
+        "transitions",
+        "arcs",
+        "ports",
+        "operations",
+        "internal_ports",
+        "internal_bindings",
+        "lease_identities",
+        "lease_pools",
+        "variable_resource_arcs",
+        "logical_slots",
+        "reset_arcs"
+      ],
+      "properties": {
+        "places": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/place"
+          }
+        },
+        "transitions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/transition"
+          }
+        },
+        "arcs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/arc"
+          }
+        },
+        "ports": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/binding"
+          }
+        },
+        "operations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/operation"
+          }
+        },
+        "internal_ports": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/port"
+          }
+        },
+        "internal_bindings": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/binding"
+          }
+        },
+        "lease_identities": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/lease_identity"
+          }
+        },
+        "lease_pools": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/lease_pool"
+          }
+        },
+        "variable_resource_arcs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/variable_resource_arc"
+          }
+        },
+        "logical_slots": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/logical_slot"
+          }
+        },
+        "reset_arcs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/reset_arc"
+          }
+        }
+      }
+    },
+    "net": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "places",
+        "transitions",
+        "arcs",
+        "operations",
+        "port_places",
+        "entry",
+        "exit",
+        "terminal",
+        "required_schemas",
+        "budgets",
+        "designer_constraints",
+        "analyzers",
+        "lease_identities",
+        "lease_pools",
+        "variable_resource_arcs",
+        "logical_slots",
+        "budget_buckets",
+        "terminal_alternatives",
+        "reset_arcs"
+      ],
+      "properties": {
+        "name": {
+          "$ref": "#/definitions/symbol"
+        },
+        "places": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/place"
+          }
+        },
+        "transitions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/transition"
+          }
+        },
+        "arcs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/arc"
+          }
+        },
+        "operations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/operation"
+          }
+        },
+        "port_places": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/symbol"
+          }
+        },
+        "entry": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/symbol"
+          }
+        },
+        "exit": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/symbol"
+          }
+        },
+        "terminal": {
+          "$ref": "#/definitions/module/definitions/terminal"
+        },
+        "required_schemas": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/definitions/schema_id"
+          }
+        },
+        "budgets": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "number",
+            "minimum": 0
+          }
+        },
+        "designer_constraints": {
+          "type": "object"
+        },
+        "analyzers": {
+          "$ref": "#/definitions/keys"
+        },
+        "lease_identities": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/lease_identity"
+          }
+        },
+        "lease_pools": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/lease_pool"
+          }
+        },
+        "variable_resource_arcs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/variable_resource_arc"
+          }
+        },
+        "logical_slots": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/logical_slot"
+          }
+        },
+        "reset_arcs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/reset_arc"
+          }
+        },
+        "budget_buckets": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/budget_bucket"
+          }
+        },
+        "terminal_alternatives": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/module/definitions/terminal"
+          }
+        }
+      }
+    },
+    "module": {
+      "title": "Symbolic RPNH ModuleDeclaration",
+      "description": "Only symbolic identities and registered keys. Mechanical Registry identities are minted by the trusted execution host after lowering.",
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "const": "rpnh/module_declaration/v1"
+        },
+        "name": {
+          "type": "string",
+          "pattern": "^[A-Za-z][A-Za-z0-9_-]*$"
+        },
+        "components": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/module/definitions/component"
+          },
+          "minItems": 1
+        },
+        "links": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/module/definitions/link"
+          },
+          "minItems": 0
+        },
+        "entry": {
+          "type": "object",
+          "propertyNames": {
+            "type": "string",
+            "pattern": "^[A-Za-z][A-Za-z0-9_-]*$"
+          },
+          "additionalProperties": {
+            "$ref": "#/definitions/module/definitions/endpoint"
+          }
+        },
+        "exit": {
+          "type": "object",
+          "propertyNames": {
+            "type": "string",
+            "pattern": "^[A-Za-z][A-Za-z0-9_-]*$"
+          },
+          "additionalProperties": {
+            "$ref": "#/definitions/module/definitions/endpoint"
+          },
+          "minProperties": 1
+        },
+        "terminal": {
+          "$ref": "#/definitions/module/definitions/terminal"
+        },
+        "required_schemas": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]*(?:/[a-z][a-z0-9_]*)+/v[1-9][0-9]*$"
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "budgets": {
+          "type": "object",
+          "propertyNames": {
+            "type": "string",
+            "pattern": "^[A-Za-z][A-Za-z0-9_-]*$"
+          },
+          "additionalProperties": {
+            "type": "number",
+            "minimum": 0
+          }
+        },
+        "designer_constraints": {
+          "type": "object"
+        },
+        "analyzers": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 0,
+          "uniqueItems": true
+        },
+        "budget_buckets": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/module/definitions/budget_bucket"
+          }
+        },
+        "terminal_alternatives": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/module/definitions/terminal"
+          }
+        }
+      },
+      "required": [
+        "schema_version",
+        "name",
+        "components",
+        "links",
+        "entry",
+        "exit",
+        "terminal",
+        "required_schemas",
+        "budgets"
+      ],
+      "additionalProperties": false,
+      "definitions": {
+        "endpoint": {
+          "type": "object",
+          "properties": {
+            "component": {
+              "type": "string",
+              "pattern": "^[A-Za-z][A-Za-z0-9_-]*$"
+            },
+            "port": {
+              "type": "string",
+              "pattern": "^[A-Za-z][A-Za-z0-9_-]*$"
+            }
+          },
+          "required": [
+            "component",
+            "port"
+          ],
+          "additionalProperties": false
+        },
+        "port": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "pattern": "^[A-Za-z][A-Za-z0-9_-]*$"
+            },
+            "direction": {
+              "enum": [
+                "input",
+                "output"
+              ]
+            },
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9_]*(?:/[a-z][a-z0-9_]*)+/v[1-9][0-9]*$"
+            },
+            "channel": {
+              "enum": [
+                "data",
+                "control"
+              ],
+              "default": "data"
+            },
+            "cardinality": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1
+            },
+            "cardinality_minimum": {
+              "type": ["integer", "null"],
+              "minimum": 0,
+              "description": "Inclusive minimum; omitted or null uses cardinality."
+            },
+            "cardinality_maximum": {
+              "type": ["integer", "null"],
+              "minimum": 0,
+              "description": "Inclusive maximum; omitted or null uses cardinality."
+            }
+          },
+          "required": [
+            "name",
+            "direction",
+            "schema"
+          ],
+          "additionalProperties": false
+        },
+        "product": {
+          "type": "object",
+          "properties": {
+            "port": {
+              "type": "string",
+              "pattern": "^[A-Za-z][A-Za-z0-9_-]*$"
+            },
+            "minimum": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 1
+            },
+            "maximum": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 1
+            }
+          },
+          "required": [
+            "port"
+          ],
+          "additionalProperties": false
+        },
+        "effect": {
+          "type": "object",
+          "properties": {
+            "key": {
+              "type": "string",
+              "minLength": 1
+            },
+            "bindings": {
+              "type": "object",
+              "propertyNames": {
+                "type": "string",
+                "pattern": "^[A-Za-z][A-Za-z0-9_-]*$"
+              },
+              "additionalProperties": {
+                "type": "string",
+                "pattern": "^[A-Za-z][A-Za-z0-9_-]*$"
+              }
+            },
+            "config": {
+              "type": "object"
+            },
+            "references": {
+              "type": "object",
+              "propertyNames": {
+                "type": "string",
+                "pattern": "^[A-Za-z][A-Za-z0-9_-]*$"
+              },
+              "additionalProperties": {
+                "$ref": "#/definitions/module/definitions/symbol_reference"
+              }
+            }
+          },
+          "required": [
+            "key"
+          ],
+          "additionalProperties": false
+        },
+        "outcome": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "pattern": "^[A-Za-z][A-Za-z0-9_-]*$"
+            },
+            "products": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/module/definitions/product"
+              },
+              "minItems": 0
+            },
+            "effects": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/module/definitions/effect"
+              },
+              "minItems": 0
+            }
+          },
+          "required": [
+            "name",
+            "products"
+          ],
+          "additionalProperties": false
+        },
+        "operation": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "pattern": "^[A-Za-z][A-Za-z0-9_-]*$"
+            },
+            "executor": {
+              "type": "string",
+              "minLength": 1
+            },
+            "inputs": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^[A-Za-z][A-Za-z0-9_-]*$"
+              },
+              "minItems": 0,
+              "uniqueItems": true
+            },
+            "outputs": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^[A-Za-z][A-Za-z0-9_-]*$"
+              },
+              "minItems": 0,
+              "uniqueItems": true
+            },
+            "outcomes": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/module/definitions/outcome"
+              },
+              "minItems": 1
+            },
+            "tools": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "minItems": 0,
+              "uniqueItems": true
+            },
+            "config": {
+              "type": "object"
+            },
+            "request_port": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^[A-Za-z][A-Za-z0-9_-]*$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "budget_binding": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/module/definitions/operationBudgetBinding"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "name",
+            "executor",
+            "inputs",
+            "outputs",
+            "outcomes"
+          ],
+          "additionalProperties": false
+        },
+        "component": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "pattern": "^[A-Za-z][A-Za-z0-9_-]*$"
+            },
+            "key": {
+              "type": "string",
+              "minLength": 1
+            },
+            "config_schema": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9_]*(?:/[a-z][a-z0-9_]*)+/v[1-9][0-9]*$"
+            },
+            "config": {
+              "type": "object"
+            },
+            "ports": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/module/definitions/port"
+              },
+              "minItems": 0
+            },
+            "operations": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/module/definitions/operation"
+              },
+              "minItems": 0,
+              "description": "Optional explicit operation protocols. Trusted registered lower may supply internal operations; any listed protocol is preserved exactly."
+            }
+          },
+          "required": [
+            "name",
+            "key",
+            "config_schema",
+            "config",
+            "ports"
+          ],
+          "additionalProperties": false
+        },
+        "link": {
+          "type": "object",
+          "properties": {
+            "source": {
+              "$ref": "#/definitions/module/definitions/endpoint"
+            },
+            "target": {
+              "$ref": "#/definitions/module/definitions/endpoint"
+            }
+          },
+          "required": [
+            "source",
+            "target"
+          ],
+          "additionalProperties": false
+        },
+        "terminal": {
+          "type": "object",
+          "properties": {
+            "key": {
+              "type": "string",
+              "minLength": 1
+            },
+            "source": {
+              "$ref": "#/definitions/module/definitions/endpoint"
+            },
+            "operation": {
+              "type": "string",
+              "pattern": "^[A-Za-z][A-Za-z0-9_-]*$"
+            },
+            "outcome": {
+              "type": "string",
+              "pattern": "^[A-Za-z][A-Za-z0-9_-]*$"
+            },
+            "config": {
+              "type": "object"
+            }
+          },
+          "required": [
+            "key",
+            "source",
+            "operation",
+            "outcome",
+            "config"
+          ],
+          "additionalProperties": false
+        },
+        "budget_bucket": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "bucket_id",
+            "budget_scope",
+            "finalization_scope",
+            "max_attempts"
+          ],
+          "properties": {
+            "bucket_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "budget_scope": {
+              "type": "string",
+              "minLength": 1
+            },
+            "finalization_scope": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "max_attempts": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        },
+        "operationBudgetBinding": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "bucket_id",
+            "budget_scope"
+          ],
+          "properties": {
+            "bucket_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "budget_scope": {
+              "type": "string",
+              "minLength": 1
+            },
+            "finalization_scope": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          }
+        },
+        "symbol_reference": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "name"
+          ],
+          "properties": {
+            "kind": {
+              "enum": [
+                "place",
+                "transition",
+                "slot"
+              ]
+            },
+            "name": {
+              "type": "string",
+              "pattern": "^[A-Za-z][A-Za-z0-9_-]*$"
+            }
+          }
+        }
+      }
+    },
+    "colour": {
+      "anyOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "string",
+          "minLength": 1
+        }
+      ]
+    },
+    "initial_token": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "count",
+        "schema",
+        "colour",
+        "value"
+      ],
+      "properties": {
+        "count": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "schema": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/schema_id"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "colour": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/colour"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "value": {}
+      }
+    },
+    "symbol_reference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "name"
+      ],
+      "properties": {
+        "kind": {
+          "enum": [
+            "place",
+            "transition",
+            "slot"
+          ]
+        },
+        "name": {
+          "$ref": "#/definitions/symbol"
+        }
+      }
+    },
+    "operationBudgetBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "bucket_id",
+        "budget_scope"
+      ],
+      "properties": {
+        "bucket_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "budget_scope": {
+          "type": "string",
+          "minLength": 1
+        },
+        "finalization_scope": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "count_guard": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "place",
+        "comparison",
+        "threshold",
+        "scope"
+      ],
+      "properties": {
+        "place": {
+          "$ref": "#/definitions/symbol"
+        },
+        "comparison": {
+          "enum": [
+            "threshold",
+            "inhibitor",
+            "lt",
+            "le",
+            "eq",
+            "ne",
+            "ge",
+            "gt"
+          ]
+        },
+        "threshold": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "scope": {
+          "enum": [
+            "reader",
+            "all"
+          ]
+        }
+      }
+    },
+    "input_verdict": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "place",
+        "expected"
+      ],
+      "properties": {
+        "place": {
+          "$ref": "#/definitions/symbol"
+        },
+        "expected": {
+          "$ref": "#/definitions/colour"
+        }
+      }
+    },
+    "colour_expression": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "value",
+        "source_place",
+        "member",
+        "candidates",
+        "selected",
+        "present",
+        "absent"
+      ],
+      "properties": {
+        "kind": {
+          "enum": [
+            "literal",
+            "input_colour",
+            "membership"
+          ]
+        },
+        "value": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/colour"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "source_place": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/symbol"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "member": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/symbol"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "candidates": {
+          "$ref": "#/definitions/symbols"
+        },
+        "selected": {
+          "$ref": "#/definitions/symbols"
+        },
+        "present": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/colour"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "absent": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/colour"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "lease_identity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "kind",
+        "slot"
+      ],
+      "properties": {
+        "name": {
+          "$ref": "#/definitions/symbol"
+        },
+        "kind": {
+          "enum": [
+            "resource",
+            "slot"
+          ]
+        },
+        "slot": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/symbol"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "lease_claim": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "lease_identity",
+        "expected_resource",
+        "access_mode"
+      ],
+      "properties": {
+        "lease_identity": {
+          "$ref": "#/definitions/symbol"
+        },
+        "expected_resource": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/symbol"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "access_mode": {
+          "enum": [
+            "read",
+            "edit",
+            "produce"
+          ]
+        }
+      }
+    },
+    "lease_claim_expression": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "lease_identity",
+        "access_mode",
+        "expected_resource_source"
+      ],
+      "properties": {
+        "lease_identity": {
+          "$ref": "#/definitions/symbol"
+        },
+        "access_mode": {
+          "enum": [
+            "read",
+            "edit",
+            "produce"
+          ]
+        },
+        "expected_resource_source": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/symbol"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "lease_claim_set_expression": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "inherit_input_claims",
+        "operation_resource_updates",
+        "claim_output_products",
+        "registered_pool_subset",
+        "access_mode"
+      ],
+      "properties": {
+        "inherit_input_claims": {
+          "type": "boolean"
+        },
+        "operation_resource_updates": {
+          "type": "boolean"
+        },
+        "claim_output_products": {
+          "type": "boolean"
+        },
+        "registered_pool_subset": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/symbol"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "access_mode": {
+          "const": "read"
+        }
+      }
+    },
+    "lease_pool": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "place",
+        "initial_resources",
+        "initial_slots"
+      ],
+      "properties": {
+        "name": {
+          "$ref": "#/definitions/symbol"
+        },
+        "place": {
+          "$ref": "#/definitions/symbol"
+        },
+        "initial_resources": {
+          "$ref": "#/definitions/symbols"
+        },
+        "initial_slots": {
+          "$ref": "#/definitions/symbols"
+        }
+      }
+    },
+    "variable_resource_arc": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "transition",
+        "claim_token_place",
+        "lease_pool",
+        "initial_claims",
+        "input_inscription",
+        "output_inscription"
+      ],
+      "properties": {
+        "transition": {
+          "$ref": "#/definitions/symbol"
+        },
+        "claim_token_place": {
+          "$ref": "#/definitions/symbol"
+        },
+        "lease_pool": {
+          "$ref": "#/definitions/symbol"
+        },
+        "initial_claims": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/lease_claim"
+          }
+        },
+        "input_inscription": {
+          "const": "consume_exact_claim_multiset"
+        },
+        "output_inscription": {
+          "const": "return_exact_claim_multiset"
+        }
+      }
+    },
+    "logical_slot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "producer_transition",
+        "output_port",
+        "candidate_place",
+        "published_place",
+        "schema",
+        "reviewer_transition",
+        "route_transitions",
+        "consumer_transitions",
+        "artifact_id",
+        "artifact_synopsis",
+        "content_kind"
+      ],
+      "properties": {
+        "name": {
+          "$ref": "#/definitions/symbol"
+        },
+        "producer_transition": {
+          "$ref": "#/definitions/symbol"
+        },
+        "output_port": {
+          "$ref": "#/definitions/symbol"
+        },
+        "candidate_place": {
+          "$ref": "#/definitions/symbol"
+        },
+        "published_place": {
+          "$ref": "#/definitions/symbol"
+        },
+        "schema": {
+          "$ref": "#/definitions/schema_id"
+        },
+        "reviewer_transition": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/symbol"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "route_transitions": {
+          "$ref": "#/definitions/symbols"
+        },
+        "consumer_transitions": {
+          "$ref": "#/definitions/symbols"
+        },
+        "artifact_id": {
+          "type": "string"
+        },
+        "artifact_synopsis": {
+          "type": "string"
+        },
+        "content_kind": {
+          "type": "string"
+        }
+      }
+    },
+    "budget_bucket": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "bucket_id",
+        "budget_scope",
+        "finalization_scope",
+        "max_attempts"
+      ],
+      "properties": {
+        "bucket_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "budget_scope": {
+          "type": "string",
+          "minLength": 1
+        },
+        "finalization_scope": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "max_attempts": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    }
+  }
+}

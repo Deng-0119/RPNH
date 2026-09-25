@@ -1,0 +1,604 @@
+{
+  "schemas": [
+    {
+      "schema_id": "registry_v1/agent/v1",
+      "path": "registry_v1/agent.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/agent_action/v2",
+      "path": "registry_v1/agent_action.v2.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/agent_action_settled/v1",
+      "path": "registry_v1/agent_action_settled.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/agent_context_compaction/v3",
+      "path": "registry_v1/agent_context_compaction.v3.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/agent_document/v2",
+      "path": "registry_v1/agent_document.v2.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/agent_loop/v1",
+      "path": "registry_v1/agent_loop.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/agent_loop_resource_grant_authority/v1",
+      "path": "registry_v1/agent_loop_resource_grant_authority.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/agent_loop_started/v1",
+      "path": "registry_v1/agent_loop_started.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/agent_loop_terminal/v1",
+      "path": "registry_v1/agent_loop_terminal.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/agent_tool_catalog/v1",
+      "path": "registry_v1/agent_tool_catalog.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/agent_tool_error/v1",
+      "path": "registry_v1/agent_tool_error.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/agent_tool_readiness/v1",
+      "path": "registry_v1/agent_tool_readiness.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/agent_turn_recorded/v2",
+      "path": "registry_v1/agent_turn_recorded.v2.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/bootstrap_command/v1",
+      "path": "registry_v1/bootstrap_command.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/capability_activated/v1",
+      "path": "registry_v1/capability_activated.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/capability_allowed/v1",
+      "path": "registry_v1/capability_allowed.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/capability_denied/v1",
+      "path": "registry_v1/capability_denied.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/capability_grant/v1",
+      "path": "registry_v1/capability_grant.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/capability_issued/v1",
+      "path": "registry_v1/capability_issued.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/capability_revoked/v1",
+      "path": "registry_v1/capability_revoked.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/checkpoint_repair/v1",
+      "path": "registry_v1/checkpoint_repair.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/checkpoint_repair_committed/v1",
+      "path": "registry_v1/checkpoint_repair_committed.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/delivery_boundary_receipt/v1",
+      "path": "registry_v1/delivery_boundary_receipt.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/executable_transition_binding/v1",
+      "path": "registry_v1/executable_transition_binding.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/execution_environment_identity/v1",
+      "path": "registry_v1/execution_environment_identity.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/execution_evidence/v1",
+      "path": "registry_v1/execution_evidence.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/external_kb_package/v1",
+      "path": "registry_v1/external_kb_package.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/external_resource_index/v1",
+      "path": "registry_v1/external_resource_index.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/fact_event_envelope/v1",
+      "path": "registry_v1/fact_event_envelope.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/final_result_index/v1",
+      "path": "registry_v1/final_result_index.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/firing_admission/v1",
+      "path": "registry_v1/firing_admission.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/firing_admitted/v1",
+      "path": "registry_v1/firing_admitted.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/firing_allocation/v1",
+      "path": "registry_v1/firing_allocation.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/firing_completion/v2",
+      "path": "registry_v1/firing_completion.v2.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/firing_external_kb_read/v2",
+      "path": "registry_v1/firing_external_kb_read.v2.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/firing_external_kb_read_recorded/v2",
+      "path": "registry_v1/firing_external_kb_read_recorded.v2.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/firing_resource_transaction_committed/v1",
+      "path": "registry_v1/firing_resource_transaction_committed.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/firing_timing/v1",
+      "path": "registry_v1/firing_timing.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/generic_critic_prompt/v1",
+      "path": "registry_v1/generic_critic_prompt.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/generic_critic_prompt_template/v1",
+      "path": "registry_v1/generic_critic_prompt_template.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/invocation/v1",
+      "path": "registry_v1/invocation.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/invocation_started/v1",
+      "path": "registry_v1/invocation_started.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/live_firing_resource_extension/v1",
+      "path": "registry_v1/live_firing_resource_extension.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/llm_call_owner_interrupted/v1",
+      "path": "registry_v1/llm_call_owner_interrupted.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/llm_call_registered_host_closed/v1",
+      "path": "registry_v1/llm_call_registered_host_closed.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/llm_call_spec/v2",
+      "path": "registry_v1/llm_call_spec.v2.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/llm_call_spec/v3",
+      "path": "registry_v1/llm_call_spec.v3.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/llm_input_target/v1",
+      "path": "registry_v1/llm_input_target.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/llm_invocation_attempt/v1",
+      "path": "registry_v1/llm_invocation_attempt.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/llm_invocation_attempt_reserved/v1",
+      "path": "registry_v1/llm_invocation_attempt_reserved.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/llm_invocation_failed/v1",
+      "path": "registry_v1/llm_invocation_failed.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/llm_invocation_interrupted/v1",
+      "path": "registry_v1/llm_invocation_interrupted.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/llm_invocation_owner_interrupted/v1",
+      "path": "registry_v1/llm_invocation_owner_interrupted.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/llm_invocation_spec/v1",
+      "path": "registry_v1/llm_invocation_spec.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/llm_invocation_succeeded/v1",
+      "path": "registry_v1/llm_invocation_succeeded.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/llm_invocation_succeeded/v2",
+      "path": "registry_v1/llm_invocation_succeeded.v2.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/llm_response_registered/v1",
+      "path": "registry_v1/llm_response_registered.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/llm_response_registered/v2",
+      "path": "registry_v1/llm_response_registered.v2.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/logical_artifact_slot/v1",
+      "path": "registry_v1/logical_artifact_slot.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/logical_provider_request_recipe/v1",
+      "path": "registry_v1/logical_provider_request_recipe.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/main_child_registry_link/v1",
+      "path": "registry_v1/main_child_registry_link.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/main_thread/v1",
+      "path": "registry_v1/main_thread.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/main_turn/v1",
+      "path": "registry_v1/main_turn.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/main_turn_execution_receipt/v1",
+      "path": "registry_v1/main_turn_execution_receipt.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/marking_checkpoint/v1",
+      "path": "registry_v1/marking_checkpoint.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/marking_checkpoint_committed/v1",
+      "path": "registry_v1/marking_checkpoint_committed.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/marking_delta/v1",
+      "path": "registry_v1/marking_delta.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/mechanical_transition_receipt/v1",
+      "path": "registry_v1/mechanical_transition_receipt.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/module_assembly_recorded/v1",
+      "path": "registry_v1/module_assembly_recorded.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/native_genesis_manifest/v1",
+      "path": "registry_v1/native_genesis_manifest.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/native_run_identity/v1",
+      "path": "registry_v1/native_run_identity.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/net_adopted/v1",
+      "path": "registry_v1/net_adopted.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/net_instance/v1",
+      "path": "registry_v1/net_instance.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/node_declaration/v1",
+      "path": "registry_v1/node_declaration.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/numerical_tool_profile/v1",
+      "path": "registry_v1/numerical_tool_profile.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/object_envelope/v1",
+      "path": "registry_v1/object_envelope.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/object_version_published/v1",
+      "path": "registry_v1/object_version_published.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/observed_read/v1",
+      "path": "registry_v1/observed_read.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/operation_binding/v1",
+      "path": "registry_v1/operation_binding.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/operation_dispatch_reserved/v1",
+      "path": "registry_v1/operation_dispatch_reserved.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/operation_execution_lease/v1",
+      "path": "registry_v1/operation_execution_lease.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/operation_execution_started/v1",
+      "path": "registry_v1/operation_execution_started.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/operation_result/v1",
+      "path": "registry_v1/operation_result.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/operation_spec/v1",
+      "path": "registry_v1/operation_spec.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/operation_terminal_ready/v1",
+      "path": "registry_v1/operation_terminal_ready.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/output_binding/v1",
+      "path": "registry_v1/output_binding.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/petri_firing_resource_accessed/v1",
+      "path": "registry_v1/petri_firing_resource_accessed.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/petri_token/v1",
+      "path": "registry_v1/petri_token.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/plan_version/v1",
+      "path": "registry_v1/plan_version.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/principal/v1",
+      "path": "registry_v1/principal.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/provider_attempt_completed/v1",
+      "path": "registry_v1/provider_attempt_completed.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/provider_attempt_dispatch_started/v2",
+      "path": "registry_v1/provider_attempt_dispatch_started.v2.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/provider_attempt_host_closed/v1",
+      "path": "registry_v1/provider_attempt_host_closed.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/provider_attempt_owner_interrupted/v1",
+      "path": "registry_v1/provider_attempt_owner_interrupted.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/provider_attempt_reserved/v1",
+      "path": "registry_v1/provider_attempt_reserved.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/provider_attempt_spec/v1",
+      "path": "registry_v1/provider_attempt_spec.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/provider_attempt_submission_observed/v1",
+      "path": "registry_v1/provider_attempt_submission_observed.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/provider_attempt_submission_permitted/v2",
+      "path": "registry_v1/provider_attempt_submission_permitted.v2.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/provider_payload_materialization_receipt/v1",
+      "path": "registry_v1/provider_payload_materialization_receipt.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/provider_payload_materialization_recorded/v1",
+      "path": "registry_v1/provider_payload_materialization_recorded.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/registered_host_llm_attempt/v1",
+      "path": "registry_v1/registered_host_llm_attempt.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/registered_host_llm_attempt_closed/v1",
+      "path": "registry_v1/registered_host_llm_attempt_closed.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/registered_host_llm_attempt_reserved/v1",
+      "path": "registry_v1/registered_host_llm_attempt_reserved.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/registered_operation_completion_recorded/v1",
+      "path": "registry_v1/registered_operation_completion_recorded.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/registered_operation_resource_wait/v1",
+      "path": "registry_v1/registered_operation_resource_wait.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/registered_run_inputs/v1",
+      "path": "registry_v1/registered_run_inputs.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/registry_type_catalog/v1",
+      "path": "registry_v1/registry_type_catalog.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/relation_published/v1",
+      "path": "registry_v1/relation_published.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/resource_access_lifecycle/v1",
+      "path": "registry_v1/resource_access_lifecycle.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/resource_address_binding/v1",
+      "path": "registry_v1/resource_address_binding.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/resource_address_bound/v1",
+      "path": "registry_v1/resource_address_bound.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/resource_address_unbound/v1",
+      "path": "registry_v1/resource_address_unbound.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/resource_cycle_evidence/v1",
+      "path": "registry_v1/resource_cycle_evidence.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/resource_delivery/v1",
+      "path": "registry_v1/resource_delivery.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/resource_delivery_acknowledged/v1",
+      "path": "registry_v1/resource_delivery_acknowledged.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/resource_delivery_failed/v1",
+      "path": "registry_v1/resource_delivery_failed.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/resource_delivery_prepared/v1",
+      "path": "registry_v1/resource_delivery_prepared.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/resource_delivery_unknown/v1",
+      "path": "registry_v1/resource_delivery_unknown.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/resource_release_authorized/v1",
+      "path": "registry_v1/resource_release_authorized.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/resource_release_witness/v1",
+      "path": "registry_v1/resource_release_witness.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/resource_version/v1",
+      "path": "registry_v1/resource_version.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/resource_wait_policy/v1",
+      "path": "registry_v1/resource_wait_policy.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/route_deposit/v1",
+      "path": "registry_v1/route_deposit.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/run_execution_authority/v1",
+      "path": "registry_v1/run_execution_authority.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/run_terminal_evidence/v1",
+      "path": "registry_v1/run_terminal_evidence.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/semantic_prompt_authority/v1",
+      "path": "registry_v1/semantic_prompt_authority.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/structural_growth_adopted/v1",
+      "path": "registry_v1/structural_growth_adopted.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/task/v1",
+      "path": "registry_v1/task.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/task_branch/v1",
+      "path": "registry_v1/task_branch.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/task_recovery_manifest/v1",
+      "path": "registry_v1/task_recovery_manifest.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/task_round/v1",
+      "path": "registry_v1/task_round.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/team_design_root/v1",
+      "path": "registry_v1/team_design_root.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/transaction_aborted/v1",
+      "path": "registry_v1/transaction_aborted.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/transaction_committed/v1",
+      "path": "registry_v1/transaction_committed.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/transition_firing/v1",
+      "path": "registry_v1/transition_firing.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/transition_firing/v2",
+      "path": "registry_v1/transition_firing.v2.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/transition_firing_settled/v1",
+      "path": "registry_v1/transition_firing_settled.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/transition_firing_started/v1",
+      "path": "registry_v1/transition_firing_started.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/typed_relation/v1",
+      "path": "registry_v1/typed_relation.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/user_authority_decision/v1",
+      "path": "registry_v1/user_authority_decision.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/workspace_access_set/v1",
+      "path": "registry_v1/workspace_access_set.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/workspace_binding/v1",
+      "path": "registry_v1/workspace_binding.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/workspace_revision/v1",
+      "path": "registry_v1/workspace_revision.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/workspace_write_intent/v1",
+      "path": "registry_v1/workspace_write_intent.v1.schema.json"
+    },
+    {
+      "schema_id": "rpnh/executable_net/v1",
+      "path": "rpnh/executable_net.v1.schema.json"
+    },
+    {
+      "schema_id": "rpnh/module_declaration/v1",
+      "path": "rpnh/module_declaration.v1.schema.json"
+    },
+    {
+      "schema_id": "rpnh/owner_control/v1",
+      "path": "rpnh/owner_control.v1.schema.json"
+    },
+    {
+      "schema_id": "rpnh/resource_access_contract/v1",
+      "path": "rpnh/resource_access_contract.v1.schema.json"
+    },
+    {
+      "schema_id": "runtime/llm_request_envelope/v1",
+      "path": "runtime/llm_request_envelope.v1.schema.json"
+    },
+    {
+      "schema_id": "runtime/llm_response_envelope/v1",
+      "path": "runtime/llm_response_envelope.v1.schema.json"
+    }
+  ]
+}

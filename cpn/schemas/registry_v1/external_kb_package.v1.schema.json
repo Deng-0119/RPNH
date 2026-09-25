@@ -1,0 +1,36 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "registry_v1/external_kb_package/v1",
+  "title": "Run-registered external KB package descriptor",
+  "type": "object",
+  "additionalProperties": false,
+  "definitions": {
+    "ref": {"type": "object", "additionalProperties": false, "properties": {"entity_type": {"type": "string"}, "logical_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"}, "version_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"}}, "required": ["entity_type", "logical_id", "version_id"]},
+    "text": {"type": "string", "minLength": 1},
+    "item": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "item_id": {"$ref": "#/definitions/text"},
+        "path": {"$ref": "#/definitions/text"},
+        "byte_size": {"type": "integer", "minimum": 0},
+        "title": {"type": "string"},
+        "kind": {"type": "string"},
+        "tags": {"type": "array", "items": {"type": "string"}},
+        "summary_2_lines": {"type": "string"}
+      },
+      "required": ["item_id", "path", "byte_size", "title", "kind", "tags", "summary_2_lines"]
+    }
+  },
+  "properties": {
+    "external_kb_package_ref": {"$ref": "#/definitions/ref"},
+    "run_ref": {"$ref": "#/definitions/ref"},
+    "package_id": {"$ref": "#/definitions/text"},
+    "version": {"$ref": "#/definitions/text"},
+    "root_anchor": {"type": "string", "pattern": "^/[^\\u0000]*$"},
+    "items": {"type": "array", "items": {"$ref": "#/definitions/item"}},
+    "read_only": {"const": true},
+    "read_concurrency": {"const": "infinite"}
+  },
+  "required": ["external_kb_package_ref", "run_ref", "package_id", "version", "root_anchor", "items", "read_only", "read_concurrency"]
+}

@@ -1,0 +1,80 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "registry_v1/llm_invocation_spec/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "definitions": {
+    "ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "entity_type": {"type": "string"},
+        "logical_id": {"type": "string"},
+        "version_id": {"type": "string"}
+      },
+      "required": ["entity_type", "logical_id", "version_id"]
+    },
+    "resource_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "resource_id": {"type": "string", "pattern": "^resource:[a-f0-9]{32}$"},
+        "resource_version_id": {"type": "string", "pattern": "^resource_version:[a-f0-9]{32}$"}
+      },
+      "required": ["resource_id", "resource_version_id"]
+    }
+  },
+  "properties": {
+    "llm_invocation_id": {"type": "string", "pattern": "^llm_invocation:[a-f0-9]{32}$"},
+    "llm_invocation_version_id": {"type": "string", "pattern": "^llm_invocation_version:[a-f0-9]{32}$"},
+    "llm_invocation_ref": {"$ref": "#/definitions/ref"},
+    "invocation_ref": {"$ref": "#/definitions/ref"},
+    "operation_binding_ref": {"$ref": "#/definitions/ref"},
+    "agent_loop_ref": {"$ref": "#/definitions/ref"},
+    "subject_agent_ref": {"$ref": "#/definitions/ref"},
+    "execution_agent_ref": {"$ref": "#/definitions/ref"},
+    "invocation_kind": {"enum": ["normal_turn", "context_compaction", "delegated_subtask"]},
+    "turn_sequence": {"type": "integer", "minimum": 0},
+    "request_resource_ref": {"$ref": "#/definitions/resource_ref"},
+    "semantic_prompt_resource_ref": {"$ref": "#/definitions/resource_ref"},
+    "llm_input_target_ref": {"$ref": "#/definitions/resource_ref"},
+    "model_condition": {"type": "string", "minLength": 1},
+    "tool_catalog_ref": {"$ref": "#/definitions/resource_ref"},
+    "prior_turn_refs": {
+      "type": "array", "items": {"$ref": "#/definitions/ref"},
+      "uniqueItems": true
+    },
+    "replay_parent_invocation_ref": {"$ref": "#/definitions/ref"},
+    "replay_after_compaction_ref": {"$ref": "#/definitions/ref"},
+    "replay_interrupted_response_ref": {"$ref": "#/definitions/resource_ref"},
+    "child_session_id": {"type": "string", "minLength": 1},
+    "local_sequence": {"type": "integer", "minimum": 0},
+    "max_response_bytes": {"type": "integer", "minimum": 1}
+  },
+  "dependencies": {
+    "replay_parent_invocation_ref": ["replay_after_compaction_ref", "replay_interrupted_response_ref"],
+    "replay_after_compaction_ref": ["replay_parent_invocation_ref", "replay_interrupted_response_ref"],
+    "replay_interrupted_response_ref": ["replay_parent_invocation_ref", "replay_after_compaction_ref"],
+    "child_session_id": ["local_sequence"],
+    "local_sequence": ["child_session_id"]
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"invocation_kind": {"const": "delegated_subtask"}}},
+      "then": {"required": ["child_session_id", "local_sequence"]},
+      "else": {"not": {"anyOf": [
+        {"required": ["child_session_id"]},
+        {"required": ["local_sequence"]}
+      ]}}
+    }
+  ],
+  "required": [
+    "llm_invocation_id", "llm_invocation_version_id", "llm_invocation_ref",
+    "invocation_ref", "operation_binding_ref", "agent_loop_ref",
+    "subject_agent_ref", "execution_agent_ref",
+    "invocation_kind",
+    "turn_sequence", "request_resource_ref", "semantic_prompt_resource_ref",
+    "llm_input_target_ref", "model_condition", "tool_catalog_ref",
+    "prior_turn_refs", "max_response_bytes"
+  ]
+}

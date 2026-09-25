@@ -1,0 +1,8 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "registry_v1/agent_document/v2",
+  "title": "Opaque provider-authored agent document body",
+  "description": "A nonempty provider-authored document body preserved as opaque text. Media type and transport data are Registry metadata, not body fields.",
+  "type": "string",
+  "minLength": 1
+}

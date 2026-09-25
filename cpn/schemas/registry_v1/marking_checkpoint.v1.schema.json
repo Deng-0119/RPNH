@@ -1,0 +1,74 @@
+{
+  "$id": "registry_v1/marking_checkpoint/v1",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Settled Registry Petri marking checkpoint",
+  "type": "object",
+  "additionalProperties": false,
+  "definitions": {
+    "ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "entity_type": {"type": "string"},
+        "logical_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"},
+        "version_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"}
+      },
+      "required": ["entity_type", "logical_id", "version_id"]
+    },
+    "marking_checkpoint_ref": {
+      "allOf": [
+        {"$ref": "#/definitions/ref"},
+        {"properties": {"entity_type": {"const": "marking_checkpoint/v1"}}}
+      ]
+    },
+    "net_instance_ref": {
+      "allOf": [
+        {"$ref": "#/definitions/ref"},
+        {"properties": {"entity_type": {"const": "net_instance/v1"}}}
+      ]
+    },
+    "nullable_ref": {"oneOf": [{"$ref": "#/definitions/ref"}, {"type": "null"}]},
+    "nullable_marking_checkpoint_ref": {
+      "oneOf": [
+        {"$ref": "#/definitions/marking_checkpoint_ref"},
+        {"type": "null"}
+      ]
+    },
+    "business_firing_ref": {"allOf": [{"$ref": "#/definitions/ref"}, {"properties": {"entity_type": {"const": "transition_firing/v1"}}}]},
+    "attempt": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "transition_id": {"type": "string", "minLength": 1},
+        "highest_issued": {"type": "integer", "minimum": 1}
+      },
+      "required": ["transition_id", "highest_issued"]
+    }
+  },
+  "properties": {
+    "owner_command_ref": {"$ref": "#/definitions/ref"},
+    "owner_command_result_ref": {"$ref": "#/definitions/ref"},
+    "marking_checkpoint_ref": {"$ref": "#/definitions/marking_checkpoint_ref"},
+    "net_instance_ref": {"$ref": "#/definitions/net_instance_ref"},
+    "team_design_root_ref": {"$ref": "#/definitions/ref"},
+    "epoch": {"type": "integer", "minimum": 0},
+    "next_token_id": {"type": "integer", "minimum": 0},
+    "attempts": {"type": "array", "items": {"$ref": "#/definitions/attempt"}, "uniqueItems": true},
+    "token_refs": {"type": "array", "items": {"$ref": "#/definitions/ref"}, "uniqueItems": true},
+    "settled": {"const": true},
+    "previous_checkpoint_ref": {"$ref": "#/definitions/nullable_marking_checkpoint_ref"},
+    "settlement_delta_ref": {"$ref": "#/definitions/nullable_ref"},
+    "transition_firing_refs": {"type": "array", "items": {"$ref": "#/definitions/business_firing_ref"}, "uniqueItems": true},
+    "workspace_revision_refs": {"type": "array", "items": {"$ref": "#/definitions/ref"}, "uniqueItems": true}
+  },
+  "allOf": [{"if": {"anyOf": [{"required": ["owner_command_ref"]}, {"required": ["owner_command_result_ref"]}]},
+    "then": {"required": ["owner_command_ref", "owner_command_result_ref"],
+      "properties": {"previous_checkpoint_ref": {"$ref": "#/definitions/ref"},
+        "settlement_delta_ref": {"type": "null"}, "transition_firing_refs": {"maxItems": 0}}}}],
+  "required": [
+    "marking_checkpoint_ref", "net_instance_ref", "team_design_root_ref",
+    "epoch", "next_token_id", "attempts", "token_refs", "settled",
+    "previous_checkpoint_ref", "settlement_delta_ref",
+    "transition_firing_refs"
+  ]
+}

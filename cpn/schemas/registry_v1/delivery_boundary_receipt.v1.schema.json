@@ -1,0 +1,39 @@
+{
+  "$id": "registry_v1/delivery_boundary_receipt/v1",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "additionalProperties": false,
+  "definitions": {
+    "delivery_ref": {
+      "type": "object", "additionalProperties": false,
+      "properties": {
+        "entity_type": {"const": "resource_delivery/v1"},
+        "logical_id": {"type": "string", "pattern": "^resource_delivery:[a-f0-9]{32}$"},
+        "version_id": {"type": "string", "pattern": "^resource_delivery_version:[a-f0-9]{32}$"}
+      }, "required": ["entity_type", "logical_id", "version_id"]
+    },
+    "witness_ref": {
+      "type": "object", "additionalProperties": false,
+      "properties": {
+        "entity_type": {"const": "resource_release_witness/v1"},
+        "logical_id": {"type": "string", "pattern": "^release_witness:[a-f0-9]{32}$"},
+        "version_id": {"type": "string", "pattern": "^release_witness_version:[a-f0-9]{32}$"}
+      }, "required": ["entity_type", "logical_id", "version_id"]
+    }
+  },
+  "properties": {
+    "receipt_id": {"type": "string", "pattern": "^boundary_receipt:[a-f0-9]{32}$"},
+    "receipt_version_id": {"type": "string", "pattern": "^boundary_receipt_version:[a-f0-9]{32}$"},
+    "delivery_ref": {"$ref": "#/definitions/delivery_ref"},
+    "witness_ref": {"oneOf": [{"$ref": "#/definitions/witness_ref"}, {"type": "null"}]},
+    "boundary": {"enum": ["llm_prompt", "tool_result", "subprocess_read", "parent_receipt", "petri_input"]},
+    "outcome": {"enum": ["acknowledged", "failed", "unknown"]},
+    "positive_byte_count": {"type": ["integer", "null"], "minimum": 0},
+    "resource_byte_count": {"type": "integer", "minimum": 0},
+    "consumer_evidence": {"type": "string", "minLength": 1}
+  },
+  "required": [
+    "receipt_id", "receipt_version_id", "delivery_ref", "witness_ref", "boundary", "outcome",
+    "positive_byte_count", "resource_byte_count", "consumer_evidence"
+  ]
+}

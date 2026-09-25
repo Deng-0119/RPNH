@@ -1,0 +1,49 @@
+{
+  "$id": "registry_v1/user_authority_decision/v1",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "additionalProperties": false,
+  "definitions": {
+    "ref": {
+      "type": "object", "additionalProperties": false,
+      "properties": {
+        "entity_type": {"type": "string", "pattern": "^[a-z][a-z0-9_]*/v[1-9][0-9]*$"},
+        "logical_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"},
+        "version_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"}
+      },
+      "required": ["entity_type", "logical_id", "version_id"]
+    }
+  },
+  "properties": {
+    "decision_id": {"type": "string", "pattern": "^user_authority_decision:[a-f0-9]{32}$"},
+    "decision_version_id": {"type": "string", "pattern": "^user_authority_decision_version:[a-f0-9]{32}$"},
+    "decision_ref": {"$ref": "#/definitions/ref"},
+    "authority_kind": {"enum": ["architecture", "scope", "experiment"]},
+    "canonical_statement": {"type": "string", "minLength": 1},
+    "user_principal_ref": {"$ref": "#/definitions/ref"},
+    "governed_artifact_refs": {
+      "type": "array", "minItems": 1, "uniqueItems": true,
+      "items": {"$ref": "#/definitions/ref"}
+    },
+    "selected_choices": {
+      "type": "array", "minItems": 1, "uniqueItems": true,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "properties": {
+          "choice_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*$"},
+          "selected_option": {"type": "string", "minLength": 1}
+        },
+        "required": ["choice_id", "selected_option"]
+      }
+    },
+    "effective_sequence": {"type": "integer", "minimum": 1},
+    "supersedes_ref": {"oneOf": [{"$ref": "#/definitions/ref"}, {"type": "null"}]},
+    "status": {"const": "effective"}
+  },
+  "required": [
+    "decision_id", "decision_version_id", "decision_ref", "authority_kind",
+    "canonical_statement", "user_principal_ref",
+    "governed_artifact_refs", "selected_choices", "effective_sequence",
+    "supersedes_ref", "status"
+  ]
+}

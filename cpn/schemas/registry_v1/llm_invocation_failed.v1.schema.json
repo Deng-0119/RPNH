@@ -1,0 +1,31 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "registry_v1/llm_invocation_failed/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "definitions": {
+    "ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "entity_type": {"type": "string"},
+        "logical_id": {"type": "string"},
+        "version_id": {"type": "string"}
+      },
+      "required": ["entity_type", "logical_id", "version_id"]
+    }
+  },
+  "properties": {
+    "llm_invocation_ref": {"$ref": "#/definitions/ref"},
+    "llm_invocation_attempt_ref": {"$ref": "#/definitions/ref"},
+    "attempt_ordinal": {"type": "integer", "minimum": 0},
+    "disposition": {"enum": ["no_input", "protocol_rejected", "provider_retryable", "provider_failure", "submission_unknown", "adapter_not_submitted"]},
+    "failure_code": {"type": "string", "minLength": 1},
+    "submission_state": {"enum": ["not_submitted", "response_observed", "submission_unknown"]},
+    "next_attempt_allowed": {"type": "boolean"}
+  },
+  "required": [
+    "llm_invocation_ref", "llm_invocation_attempt_ref", "attempt_ordinal",
+    "disposition", "next_attempt_allowed"
+  ]
+}

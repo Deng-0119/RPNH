@@ -1,0 +1,78 @@
+{
+  "$id": "registry_v1/structural_growth_adopted/v1",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Atomic structural-growth adoption",
+  "type": "object",
+  "additionalProperties": false,
+  "definitions": {
+    "ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "entity_type": {"type": "string"},
+        "logical_id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
+        },
+        "version_id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
+        }
+      },
+      "required": ["entity_type", "logical_id", "version_id"]
+    },
+    "resource_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "resource_id": {
+          "type": "string",
+          "pattern": "^resource:[a-f0-9]{32}$"
+        },
+        "resource_version_id": {
+          "type": "string",
+          "pattern": "^resource_version:[a-f0-9]{32}$"
+        }
+      },
+      "required": ["resource_id", "resource_version_id"]
+    },
+    "compiled_prompt_binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "source_prompt_ref": {"$ref": "#/definitions/resource_ref"},
+        "compiled_prompt_ref": {"$ref": "#/definitions/resource_ref"}
+      },
+      "required": ["source_prompt_ref", "compiled_prompt_ref"]
+    }
+  },
+  "properties": {
+    "predecessor_net_ref": {"$ref": "#/definitions/ref"},
+    "predecessor_marking_checkpoint_ref": {"$ref": "#/definitions/ref"},
+    "candidate_net_ref": {"$ref": "#/definitions/ref"},
+    "candidate_marking_checkpoint_ref": {"$ref": "#/definitions/ref"},
+    "settled_design_firing_ref": {"$ref": "#/definitions/ref"},
+    "design_index_ref": {"$ref": "#/definitions/resource_ref"},
+    "lowered_declaration_ref": {"$ref": "#/definitions/resource_ref"},
+    "witness_ref": {"$ref": "#/definitions/resource_ref"},
+    "compiled_prompt_bindings": {
+      "description": "Exactly one ordinary compiled provider-prompt binding per adopted A2C producer node; the immutable generic critic prompt is excluded.",
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/definitions/compiled_prompt_binding"}
+    },
+    "design_handoff_token_ref": {"$ref": "#/definitions/ref"}
+  },
+  "required": [
+    "predecessor_net_ref",
+    "predecessor_marking_checkpoint_ref",
+    "candidate_net_ref",
+    "candidate_marking_checkpoint_ref",
+    "settled_design_firing_ref",
+    "design_index_ref",
+    "lowered_declaration_ref",
+    "witness_ref",
+    "compiled_prompt_bindings",
+    "design_handoff_token_ref"
+  ]
+}

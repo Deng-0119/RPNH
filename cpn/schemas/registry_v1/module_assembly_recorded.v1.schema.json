@@ -1,0 +1,214 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "registry_v1/module_assembly_recorded/v1",
+  "title": "Module assembly provenance receipt",
+  "type": "object",
+  "additionalProperties": false,
+  "definitions": {
+    "version_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "entity_type": {"type": "string", "pattern": "^[a-z][a-z0-9_]*/v[1-9][0-9]*$"},
+        "logical_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"},
+        "version_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"}
+      },
+      "required": ["entity_type", "logical_id", "version_id"]
+    },
+    "resource_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "resource_id": {"type": "string", "pattern": "^resource:[a-f0-9]{32}$"},
+        "resource_version_id": {"type": "string", "pattern": "^resource_version:[a-f0-9]{32}$"}
+      },
+      "required": ["resource_id", "resource_version_id"]
+    },
+    "native_run_ref": {
+      "allOf": [
+        {"$ref": "#/definitions/version_ref"},
+        {"properties": {"entity_type": {"const": "native_run_identity/v1"}}}
+      ]
+    },
+    "checkpoint_ref": {
+      "allOf": [
+        {"$ref": "#/definitions/version_ref"},
+        {"properties": {"entity_type": {"const": "marking_checkpoint/v1"}}}
+      ]
+    },
+    "net_ref": {
+      "allOf": [
+        {"$ref": "#/definitions/version_ref"},
+        {"properties": {"entity_type": {"const": "net_instance/v1"}}}
+      ]
+    },
+    "workspace_ref": {
+      "allOf": [
+        {"$ref": "#/definitions/version_ref"},
+        {"properties": {"entity_type": {"const": "workspace_revision/v1"}}}
+      ]
+    },
+    "task_ref": {
+      "allOf": [
+        {"$ref": "#/definitions/version_ref"},
+        {"properties": {"entity_type": {"const": "task/v1"}}}
+      ]
+    },
+    "petri_token_ref": {
+      "allOf": [
+        {"$ref": "#/definitions/version_ref"},
+        {"properties": {"entity_type": {"const": "petri_token/v1"}}}
+      ]
+    },
+    "resource_version_ref": {
+      "allOf": [
+        {"$ref": "#/definitions/version_ref"},
+        {"properties": {"entity_type": {"const": "resource_version/v1"}}}
+      ]
+    },
+    "operation_binding_ref": {
+      "allOf": [
+        {"$ref": "#/definitions/version_ref"},
+        {"properties": {"entity_type": {"const": "operation_binding/v1"}}}
+      ]
+    },
+    "output_binding_ref": {
+      "allOf": [
+        {"$ref": "#/definitions/version_ref"},
+        {"properties": {"entity_type": {"const": "output_binding/v1"}}}
+      ]
+    },
+    "compaction_ref": {
+      "allOf": [
+        {"$ref": "#/definitions/version_ref"},
+        {"properties": {"entity_type": {"const": "agent_context_compaction/v3"}}}
+      ]
+    },
+    "imported_cap_continuation": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "source_feedback_ref": {"$ref": "#/definitions/resource_version_ref"},
+        "destination_feedback_ref": {"$ref": "#/definitions/resource_ref"},
+        "source_selected_continue_ref": {"$ref": "#/definitions/resource_version_ref"},
+        "source_cap_bundle_ref": {"$ref": "#/definitions/resource_version_ref"},
+        "destination_cap_bundle_ref": {"$ref": "#/definitions/resource_ref"},
+        "source_actor_transition_id": {"type": "string", "minLength": 1},
+        "source_actor_operation_binding_ref": {"$ref": "#/definitions/operation_binding_ref"},
+        "destination_actor_operation_binding_ref": {"$ref": "#/definitions/operation_binding_ref"},
+        "source_continue_output_binding_ref": {"$ref": "#/definitions/output_binding_ref"},
+        "destination_continue_output_binding_ref": {"$ref": "#/definitions/output_binding_ref"},
+        "source_compaction_ref": {"$ref": "#/definitions/compaction_ref"}
+      },
+      "required": [
+        "source_feedback_ref", "destination_feedback_ref",
+        "source_selected_continue_ref",
+        "source_cap_bundle_ref", "destination_cap_bundle_ref",
+        "source_actor_transition_id",
+        "source_actor_operation_binding_ref",
+        "destination_actor_operation_binding_ref",
+        "source_continue_output_binding_ref",
+        "destination_continue_output_binding_ref", "source_compaction_ref"
+      ]
+    },
+    "imported_dynamic_critic_control": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "source_control_token_ref": {"$ref": "#/definitions/petri_token_ref"},
+        "destination_control_token_ref": {"$ref": "#/definitions/petri_token_ref"},
+        "source_cap_bundle_ref": {"$ref": "#/definitions/resource_version_ref"},
+        "destination_cap_bundle_ref": {"$ref": "#/definitions/resource_ref"},
+        "producer_transition_id": {"type": "string", "minLength": 1},
+        "critic_transition_id": {"type": "string", "minLength": 1}
+      },
+      "required": [
+        "source_control_token_ref", "destination_control_token_ref",
+        "source_cap_bundle_ref", "destination_cap_bundle_ref",
+        "producer_transition_id", "critic_transition_id"
+      ]
+    },
+    "imported_disposition_document": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "source_disposition_token_ref": {"$ref": "#/definitions/petri_token_ref"},
+        "destination_disposition_token_ref": {"$ref": "#/definitions/petri_token_ref"},
+        "source_critic_document_ref": {"$ref": "#/definitions/resource_version_ref"},
+        "destination_critic_document_ref": {"$ref": "#/definitions/resource_ref"},
+        "producer_transition_id": {"type": "string", "minLength": 1},
+        "verdict": {"type": "string", "minLength": 1},
+        "disposition_place": {"type": "string", "minLength": 1},
+        "critic_document_place": {"type": "string", "minLength": 1}
+      },
+      "required": [
+        "source_disposition_token_ref", "destination_disposition_token_ref",
+        "source_critic_document_ref", "destination_critic_document_ref",
+        "producer_transition_id", "verdict", "disposition_place",
+        "critic_document_place"
+      ]
+    }
+  },
+  "properties": {
+    "assembly_kind": {
+      "const": "owner_authorized_new_run_checkpoint_reassembly"
+    },
+    "source_run_ref": {"$ref": "#/definitions/native_run_ref"},
+    "source_task_ref": {"$ref": "#/definitions/task_ref"},
+    "source_checkpoint_ref": {"$ref": "#/definitions/checkpoint_ref"},
+    "source_net_ref": {"$ref": "#/definitions/net_ref"},
+    "source_workspace_ref": {"$ref": "#/definitions/workspace_ref"},
+    "destination_run_ref": {"$ref": "#/definitions/native_run_ref"},
+    "destination_task_ref": {"$ref": "#/definitions/task_ref"},
+    "destination_net_ref": {"$ref": "#/definitions/net_ref"},
+    "destination_checkpoint_ref": {"$ref": "#/definitions/checkpoint_ref"},
+    "destination_workspace_revision_ref": {
+      "$ref": "#/definitions/workspace_ref"
+    },
+    "destination_lowered_declaration_ref": {
+      "$ref": "#/definitions/resource_version_ref"
+    },
+    "destination_imported_resource_refs": {
+      "type": "array",
+      "items": {"$ref": "#/definitions/resource_ref"},
+      "uniqueItems": true
+    },
+    "imported_cap_continuations": {
+      "type": "array",
+      "items": {"$ref": "#/definitions/imported_cap_continuation"},
+      "uniqueItems": true
+    },
+    "imported_dynamic_critic_controls": {
+      "type": "array",
+      "items": {"$ref": "#/definitions/imported_dynamic_critic_control"},
+      "uniqueItems": true
+    },
+    "imported_disposition_documents": {
+      "type": "array",
+      "items": {"$ref": "#/definitions/imported_disposition_document"},
+      "uniqueItems": true
+    },
+    "exact_model": {"type": "string", "minLength": 1},
+    "model_calls_used_before_assembly": {"type": "integer", "minimum": 0},
+    "source_provisional_model_calls_excluded": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "replayed_model_calls": {"const": 0},
+    "source_active_execution_state_copied": {"const": false}
+  },
+  "required": [
+    "assembly_kind", "source_run_ref", "source_task_ref",
+    "source_checkpoint_ref",
+    "source_net_ref", "source_workspace_ref", "destination_run_ref",
+    "destination_task_ref", "destination_net_ref",
+    "destination_checkpoint_ref", "destination_workspace_revision_ref",
+    "destination_lowered_declaration_ref",
+    "destination_imported_resource_refs", "imported_cap_continuations",
+    "imported_dynamic_critic_controls", "imported_disposition_documents",
+    "exact_model",
+    "model_calls_used_before_assembly",
+    "source_provisional_model_calls_excluded", "replayed_model_calls",
+    "source_active_execution_state_copied"
+  ]
+}

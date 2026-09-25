@@ -1,0 +1,62 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "registry_v1/registered_operation_completion_recorded/v1",
+  "title": "Durable registered-operation executor return authority",
+  "type": "object",
+  "additionalProperties": false,
+  "definitions": {
+    "ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "entity_type": {"type": "string", "pattern": "^[a-z][a-z0-9_]*/v[1-9][0-9]*$"},
+        "logical_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"},
+        "version_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"}
+      },
+      "required": ["entity_type", "logical_id", "version_id"]
+    },
+    "resource_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "resource_id": {"type": "string", "pattern": "^resource:[a-f0-9]{32}$"},
+        "resource_version_id": {"type": "string", "pattern": "^resource_version:[a-f0-9]{32}$"}
+      },
+      "required": ["resource_id", "resource_version_id"]
+    },
+    "output": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "ordinal": {"type": "integer", "minimum": 0},
+        "port_id": {"type": "string", "minLength": 1},
+        "output_binding_ref": {"$ref": "#/definitions/ref"},
+        "resource_ref": {"$ref": "#/definitions/resource_ref"}
+      },
+      "required": ["ordinal", "port_id", "output_binding_ref", "resource_ref"]
+    }
+  },
+  "properties": {
+    "run_ref": {"$ref": "#/definitions/ref"},
+    "invocation_ref": {"$ref": "#/definitions/ref"},
+    "transition_firing_ref": {"$ref": "#/definitions/ref"},
+    "operation_execution_lease_ref": {"$ref": "#/definitions/ref"},
+    "operation_start_event_id": {"type": "string", "pattern": "^event:[a-f0-9]{32}$"},
+    "firing_admission_ref": {"$ref": "#/definitions/ref"},
+    "net_instance_ref": {"$ref": "#/definitions/ref"},
+    "admission_marking_checkpoint_ref": {"$ref": "#/definitions/ref"},
+    "operation_spec_ref": {"$ref": "#/definitions/ref"},
+    "operation_binding_ref": {"$ref": "#/definitions/ref"},
+    "selected_outcome_id": {"type": "string", "minLength": 1},
+    "ordered_outputs": {"type": "array", "items": {"$ref": "#/definitions/output"}},
+    "admission_writer_fencing_epoch": {"type": "integer", "minimum": 1}
+  },
+  "required": [
+    "run_ref", "invocation_ref", "transition_firing_ref",
+    "operation_execution_lease_ref", "operation_start_event_id",
+    "firing_admission_ref", "net_instance_ref",
+    "admission_marking_checkpoint_ref", "operation_spec_ref",
+    "operation_binding_ref", "selected_outcome_id", "ordered_outputs",
+    "admission_writer_fencing_epoch"
+  ]
+}

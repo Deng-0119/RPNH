@@ -1,0 +1,116 @@
+{
+  "$id": "registry_v1/checkpoint_repair_committed/v1",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Committed operator checkpoint repair",
+  "type": "object",
+  "additionalProperties": false,
+  "definitions": {
+    "ref": {"type": "object", "additionalProperties": false,
+      "properties": {
+        "entity_type": {"type": "string"},
+        "logical_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"},
+        "version_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"}
+      }, "required": ["entity_type", "logical_id", "version_id"]},
+    "shared_read_readdress": {"type": "object", "additionalProperties": false,
+      "properties": {
+        "source_token_ref": {"$ref": "#/definitions/ref"},
+        "replacement_token_ref": {"$ref": "#/definitions/ref"},
+        "previous_consumer_id": {"type": "string", "minLength": 1}
+      }, "required": ["source_token_ref", "replacement_token_ref",
+        "previous_consumer_id"]}
+    ,
+    "mechanical_receipt_repair": {"type": "object", "additionalProperties": false,
+      "properties": {
+        "source_token_ref": {"$ref": "#/definitions/ref"},
+        "replacement_token_ref": {"$ref": "#/definitions/ref"},
+        "source_pool_token_ref": {"$ref": "#/definitions/ref"},
+        "replacement_pool_token_ref": {"$ref": "#/definitions/ref"},
+        "source_resource_ref": {"$ref": "#/definitions/ref"},
+        "replacement_resource_ref": {"$ref": "#/definitions/ref"}
+      }, "required": ["source_token_ref", "replacement_token_ref",
+        "source_pool_token_ref", "replacement_pool_token_ref",
+        "source_resource_ref", "replacement_resource_ref"]}
+    ,
+    "finalization_feedback_repair": {"type": "object", "additionalProperties": false,
+      "properties": {
+        "source_route_firing_ref": {"$ref": "#/definitions/ref"},
+        "review_token_ref": {"$ref": "#/definitions/ref"},
+        "feedback_resource_ref": {"$ref": "#/definitions/ref"},
+        "requested_target_node_refs": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/definitions/ref"}},
+        "resolved_root_places": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+        "resolved_producer_transition_ids": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+        "preserved_route_output_token_refs": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/definitions/ref"}},
+        "preserved_counter_token_refs": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/definitions/ref"}}
+      }, "required": ["source_route_firing_ref", "review_token_ref",
+        "feedback_resource_ref", "requested_target_node_refs",
+        "resolved_root_places", "resolved_producer_transition_ids",
+        "preserved_route_output_token_refs", "preserved_counter_token_refs"]}
+    ,
+    "a2c_indicator_return_repair": {"type": "object", "additionalProperties": false,
+      "properties": {
+        "source_route_firing_ref": {"$ref": "#/definitions/ref"},
+        "target_places": {"type": "array", "minItems": 1,
+          "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+        "added_indicator_token_refs": {"type": "array", "minItems": 1,
+          "uniqueItems": true, "items": {"$ref": "#/definitions/ref"}}
+      }, "required": ["source_route_firing_ref", "target_places",
+        "added_indicator_token_refs"]}
+  },
+  "properties": {
+    "checkpoint_repair_ref": {"$ref": "#/definitions/ref"},
+    "expected_checkpoint_ref": {"$ref": "#/definitions/ref"},
+    "repair_base_checkpoint_ref": {"$ref": "#/definitions/ref"},
+    "successor_checkpoint_ref": {"$ref": "#/definitions/ref"},
+    "operation_fault_ref": {"$ref": "#/definitions/ref"},
+    "shared_read_token_readdresses": {"type": "array", "items": {"$ref": "#/definitions/shared_read_readdress"}, "uniqueItems": true},
+    "mechanical_receipt_repair": {"$ref": "#/definitions/mechanical_receipt_repair"},
+    "finalization_feedback_repair": {"$ref": "#/definitions/finalization_feedback_repair"},
+    "a2c_indicator_return_repair": {"$ref": "#/definitions/a2c_indicator_return_repair"},
+    "repair_authority_ref": {"$ref": "#/definitions/ref"},
+    "repair_kind": {"enum": ["failed_firing", "shared_read", "mechanical_finalization_receipt", "finalization_feedback", "a2c_indicator_return"]},
+    "result_state": {"enum": ["goal", "runnable", "waiting"]}
+  },
+  "required": ["checkpoint_repair_ref", "expected_checkpoint_ref",
+    "repair_base_checkpoint_ref", "successor_checkpoint_ref",
+    "repair_authority_ref", "repair_kind", "result_state"],
+  "oneOf": [
+    {"required": ["operation_fault_ref"], "properties": {
+      "repair_kind": {"const": "failed_firing"},
+      "shared_read_token_readdresses": {"maxItems": 0}},
+      "not": {"anyOf": [
+        {"required": ["mechanical_receipt_repair"]},
+        {"required": ["finalization_feedback_repair"]}
+      ]}},
+    {"not": {"required": ["operation_fault_ref"]},
+      "required": ["shared_read_token_readdresses"], "properties": {
+        "repair_kind": {"const": "shared_read"},
+        "shared_read_token_readdresses": {"minItems": 1}},
+      "not": {"anyOf": [
+        {"required": ["mechanical_receipt_repair"]},
+        {"required": ["finalization_feedback_repair"]}
+      ]}},
+    {"not": {"required": ["operation_fault_ref"]},
+      "required": ["mechanical_receipt_repair"], "properties": {
+        "repair_kind": {"const": "mechanical_finalization_receipt"},
+        "shared_read_token_readdresses": {"maxItems": 0}},
+      "not": {"anyOf": [
+        {"required": ["finalization_feedback_repair"]}
+      ]}},
+    {"not": {"required": ["operation_fault_ref"]},
+      "required": ["finalization_feedback_repair"], "properties": {
+        "repair_kind": {"const": "finalization_feedback"},
+        "shared_read_token_readdresses": {"maxItems": 0}},
+      "not": {"anyOf": [
+        {"required": ["mechanical_receipt_repair"]}
+      ]}}
+    ,{"not": {"required": ["operation_fault_ref"]},
+      "required": ["a2c_indicator_return_repair"], "properties": {
+        "repair_kind": {"const": "a2c_indicator_return"},
+        "shared_read_token_readdresses": {"maxItems": 0},
+        "a2c_indicator_return_repair": {"minProperties": 1}},
+      "not": {"anyOf": [
+        {"required": ["mechanical_receipt_repair"]},
+        {"required": ["finalization_feedback_repair"]}
+      ]}}
+  ]
+}

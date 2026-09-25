@@ -1,0 +1,26 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "registry_v1/agent_loop_terminal/v1",
+  "title": "Terminal AgentLoop evidence",
+  "type": "object",
+  "additionalProperties": false,
+  "definitions": {
+    "ref": {"type": "object", "additionalProperties": false, "properties": {"entity_type": {"type": "string", "minLength": 1}, "logical_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"}, "version_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"}}, "required": ["entity_type", "logical_id", "version_id"]},
+    "nullable_ref": {"oneOf": [{"$ref": "#/definitions/ref"}, {"type": "null"}]}
+  },
+  "properties": {
+    "agent_loop_id": {"type": "string", "pattern": "^agent_loop:[a-f0-9]{32}$"},
+    "state": {"enum": ["COMPLETED", "TIMED_OUT", "EXHAUSTED", "INFRASTRUCTURE_FAILED", "RECONCILIATION_REQUIRED"]},
+    "revision": {"type": "integer", "minimum": 1},
+    "adopted_candidate_version_id": {"type": ["string", "null"], "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"},
+    "disposition_version_id": {"type": ["string", "null"], "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"},
+    "llm_turns_used": {"type": "integer", "minimum": 0},
+    "terminal_reason": {"type": "string"},
+    "workspace_lineage_ref": {"$ref": "#/definitions/ref"},
+    "workspace_base_revision_ref": {"$ref": "#/definitions/ref"},
+    "workspace_revision_ref": {"$ref": "#/definitions/nullable_ref"},
+    "workspace_changed_paths": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "workspace_deleted_paths": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}}
+  },
+  "required": ["agent_loop_id", "state", "revision", "adopted_candidate_version_id", "disposition_version_id", "llm_turns_used", "terminal_reason"]
+}

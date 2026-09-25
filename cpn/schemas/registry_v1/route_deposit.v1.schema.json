@@ -1,0 +1,18 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "registry_v1/route_deposit/v1",
+  "title": "Exact resource route deposit",
+  "type": "object",
+  "additionalProperties": false,
+  "definitions": {"ref": {"type": "object", "additionalProperties": false, "properties": {"entity_type": {"type": "string"}, "logical_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"}, "version_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"}}, "required": ["entity_type", "logical_id", "version_id"]}},
+  "properties": {
+    "route_deposit_ref": {"$ref": "#/definitions/ref"},
+    "producer_firing_ref": {"$ref": "#/definitions/ref"},
+    "source_transition_id": {"type": "string", "minLength": 1},
+    "destination_transition_id": {"type": "string", "minLength": 1},
+    "destination_access": {"enum": ["read", "consume"]},
+    "resource_version_ref": {"$ref": "#/definitions/ref"},
+    "token_occurrence_ref": {"$ref": "#/definitions/ref"}
+  },
+  "required": ["route_deposit_ref", "producer_firing_ref", "source_transition_id", "destination_transition_id", "destination_access", "resource_version_ref", "token_occurrence_ref"]
+}

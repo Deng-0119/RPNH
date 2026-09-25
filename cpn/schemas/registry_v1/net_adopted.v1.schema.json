@@ -1,0 +1,182 @@
+{
+  "$id": "registry_v1/net_adopted/v1",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "additionalProperties": false,
+  "definitions": {"ref": {"type": "object", "additionalProperties": false,
+    "properties": {"entity_type": {"type": "string"},
+      "logical_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"},
+      "version_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"}},
+    "required": ["entity_type", "logical_id", "version_id"]},
+    "refs": {"type": "array", "items": {"$ref": "#/definitions/ref"}, "uniqueItems": true},
+    "nullable_ref": {"oneOf": [{"$ref": "#/definitions/ref"}, {"type": "null"}]},
+    "petri_structure_delta": {"type": "object", "additionalProperties": false,
+      "properties": {"edits": {"type": "array", "uniqueItems": true, "items": {
+        "type": "object", "additionalProperties": false,
+        "properties": {
+          "element_kind": {"enum": ["place", "transition", "operation", "arc", "reset_arc",
+            "port_place_binding", "entry_binding", "exit_binding", "lease_identity",
+            "lease_pool", "variable_resource_arc", "logical_slot"]},
+          "action": {"enum": ["add", "remove", "replace"]},
+          "identity": {},
+          "before": {"type": ["object", "null"]},
+          "after": {"type": ["object", "null"]}
+        },
+        "required": ["element_kind", "action", "identity", "before", "after"],
+        "allOf": [
+          {"if": {"properties": {"element_kind": {"enum": ["arc", "reset_arc"]}},
+                  "required": ["element_kind"]},
+           "then": {"properties": {"identity": {
+             "type": "array", "minItems": 4, "maxItems": 4,
+             "items": [
+               {"type": "string", "minLength": 1},
+               {"type": "string", "minLength": 1},
+               {"type": "string", "minLength": 1},
+               {"type": ["string", "null"]}
+             ]}}},
+           "else": {"properties": {"identity": {
+             "type": "string", "minLength": 1
+           }}}},
+          {"if": {"properties": {"element_kind": {"const": "arc"}},
+                  "required": ["element_kind"]},
+           "then": {"properties": {"identity": {"items": [
+             {}, {}, {"enum": ["input", "output"]}, {}
+           ]}}}},
+          {"if": {"properties": {"element_kind": {"const": "reset_arc"}},
+                  "required": ["element_kind"]},
+           "then": {"properties": {"identity": {"items": [
+             {}, {}, {"type": "string", "minLength": 1}, {}
+           ]}}}}
+        ]
+      }}},
+      "required": ["edits"]}},
+  "properties": {
+    "operation_revision": {"type": "object", "additionalProperties": false,
+      "properties": {
+        "effect_index": {"type": "integer", "minimum": 0}, "key": {"type": "string", "minLength": 1},
+        "source_ref": {"$ref": "#/definitions/ref"},
+        "candidate_declaration_ref": {"$ref": "#/definitions/ref"},
+        "source_firing_ref": {"$ref": "#/definitions/ref"},
+        "operation_result_ref": {"$ref": "#/definitions/ref"},
+        "predecessor_checkpoint_ref": {"$ref": "#/definitions/ref"},
+        "successor_checkpoint_ref": {"$ref": "#/definitions/ref"},
+        "instruction": {"type": "object"},
+        "petri_structure_delta": {"$ref": "#/definitions/petri_structure_delta"},
+        "token_mappings": {"type": "array", "uniqueItems": true, "items": {
+          "type": "object", "additionalProperties": false,
+          "properties": {"source_token_ref": {"$ref": "#/definitions/ref"}, "new_token_ref": {"$ref": "#/definitions/ref"}},
+          "required": ["source_token_ref", "new_token_ref"]}}},
+      "required": ["effect_index", "key", "source_ref", "candidate_declaration_ref", "source_firing_ref",
+        "operation_result_ref", "predecessor_checkpoint_ref", "successor_checkpoint_ref", "instruction",
+        "petri_structure_delta", "token_mappings"]},
+    "petri_structure_delta": {"$ref": "#/definitions/petri_structure_delta"},
+    "owner_input_mappings": {"type": "array", "uniqueItems": true, "items": {
+      "type": "object", "additionalProperties": false,
+      "properties": {
+        "owner_resource_ref": {"allOf": [{"$ref": "#/definitions/ref"}, {"properties": {"entity_type": {"const": "resource_version/v1"}}}]},
+        "source_ref": {"allOf": [{"$ref": "#/definitions/ref"}, {"properties": {"entity_type": {"const": "bootstrap_command/v1"}}}]},
+        "place": {"type": "string", "minLength": 1},
+        "new_token_ref": {"allOf": [{"$ref": "#/definitions/ref"}, {"properties": {"entity_type": {"const": "petri_token/v1"}}}]}},
+      "required": ["owner_resource_ref", "source_ref", "place", "new_token_ref"]}},
+    "owner_command_ref": {"$ref": "#/definitions/ref"},
+    "owner_command_result_ref": {"$ref": "#/definitions/ref"},
+    "candidate_ref": {"$ref": "#/definitions/ref"},
+    "owner_principal_ref": {"$ref": "#/definitions/ref"},
+    "control_authority_ref": {"$ref": "#/definitions/ref"},
+    "submission_checkpoint_ref": {"$ref": "#/definitions/ref"},
+    "owner_predecessor_checkpoint_ref": {"$ref": "#/definitions/ref"},
+    "owner_candidate_checkpoint_ref": {"$ref": "#/definitions/ref"},
+    "token_mappings": {"type": "array", "uniqueItems": true, "items": {
+      "type": "object", "additionalProperties": false,
+      "properties": {"old_token_ref": {"$ref": "#/definitions/ref"}, "new_token_ref": {"$ref": "#/definitions/ref"}},
+      "required": ["old_token_ref", "new_token_ref"]}},
+    "ordinary_retirements": {"type": "array", "uniqueItems": true, "items": {
+      "type": "object", "additionalProperties": false,
+      "properties": {"old_token_ref": {"$ref": "#/definitions/ref"}, "source_checkpoint_ref": {"$ref": "#/definitions/ref"}},
+      "required": ["old_token_ref", "source_checkpoint_ref"]}},
+    "net_instance_ref": {"$ref": "#/definitions/ref"},
+    "team_design_root_ref": {"$ref": "#/definitions/ref"},
+    "llm_macro_net_ref": {"$ref": "#/definitions/ref"},
+    "repair_kind": {"enum": ["a2c_indicator_return"]},
+    "repair_source_firing_ref": {"$ref": "#/definitions/ref"},
+    "repair_predecessor_checkpoint_ref": {"$ref": "#/definitions/ref"},
+    "repair_candidate_checkpoint_ref": {"$ref": "#/definitions/ref"},
+    "node_refs": {"$ref": "#/definitions/refs", "minItems": 1},
+    "operation_binding_refs": {"$ref": "#/definitions/refs", "minItems": 1},
+    "output_binding_refs": {"$ref": "#/definitions/refs", "minItems": 0},
+    "supersedes_net_ref": {"$ref": "#/definitions/nullable_ref"},
+    "growth_proposal_ref": {"$ref": "#/definitions/ref"},
+    "growth_producer_firing_ref": {"$ref": "#/definitions/ref"},
+    "growth_proposal_token_ref": {"$ref": "#/definitions/ref"}
+  },
+  "required": ["net_instance_ref", "team_design_root_ref", "llm_macro_net_ref",
+    "node_refs",
+    "operation_binding_refs", "output_binding_refs",
+    "supersedes_net_ref"],
+  "oneOf": [
+    {
+      "not": {
+        "anyOf": [
+          {"required": ["growth_proposal_ref"]},
+          {"required": ["growth_producer_firing_ref"]},
+          {"required": ["growth_proposal_token_ref"]},
+          {"required": ["owner_command_ref"]},
+          {"required": ["petri_structure_delta"]},
+          {"required": ["repair_kind"]},
+          {"required": ["operation_revision"]}
+        ]
+      }
+    },
+    {
+      "required": ["operation_revision"],
+      "properties": {"supersedes_net_ref": {"$ref": "#/definitions/ref"}},
+      "not": {"anyOf": [{"required": ["owner_command_ref"]}, {"required": ["repair_kind"]},
+        {"required": ["growth_proposal_ref"]}, {"required": ["petri_structure_delta"]},
+        {"required": ["token_mappings"]}]}
+    },
+    {
+      "required": ["owner_command_ref", "owner_command_result_ref", "candidate_ref",
+        "owner_principal_ref", "control_authority_ref", "submission_checkpoint_ref",
+        "owner_predecessor_checkpoint_ref", "owner_candidate_checkpoint_ref", "petri_structure_delta",
+        "token_mappings", "ordinary_retirements", "owner_input_mappings"],
+      "properties": {"supersedes_net_ref": {"$ref": "#/definitions/ref"}},
+      "not": {"anyOf": [{"required": ["repair_kind"]}, {"required": ["repair_source_firing_ref"]},
+        {"required": ["growth_proposal_ref"]}, {"required": ["growth_producer_firing_ref"]},
+        {"required": ["growth_proposal_token_ref"]}]}
+    },
+    {
+      "required": [
+        "growth_proposal_ref", "growth_producer_firing_ref",
+        "growth_proposal_token_ref"
+      ]
+    },
+    {
+      "required": [
+        "repair_kind", "repair_source_firing_ref",
+        "repair_predecessor_checkpoint_ref", "repair_candidate_checkpoint_ref"
+      ],
+      "properties": {"repair_kind": {"const": "a2c_indicator_return"}},
+      "not": {"anyOf": [
+        {"required": ["growth_proposal_ref"]},
+        {"required": ["growth_producer_firing_ref"]},
+        {"required": ["growth_proposal_token_ref"]}
+      ]}
+    }
+  ],
+  "allOf": [{"if": {"anyOf": [
+    {"required": ["owner_command_ref"]}, {"required": ["owner_command_result_ref"]},
+    {"required": ["candidate_ref"]}, {"required": ["owner_principal_ref"]},
+    {"required": ["control_authority_ref"]}, {"required": ["submission_checkpoint_ref"]},
+    {"required": ["owner_predecessor_checkpoint_ref"]}, {"required": ["owner_candidate_checkpoint_ref"]},
+    {"required": ["petri_structure_delta"]}, {"required": ["token_mappings"]},
+    {"required": ["ordinary_retirements"]}, {"required": ["owner_input_mappings"]}]},
+    "then": {"required": ["owner_command_ref", "owner_command_result_ref", "candidate_ref",
+      "owner_principal_ref", "control_authority_ref", "submission_checkpoint_ref",
+      "owner_predecessor_checkpoint_ref", "owner_candidate_checkpoint_ref", "petri_structure_delta",
+      "token_mappings", "ordinary_retirements", "owner_input_mappings"],
+      "not": {"anyOf": [{"required": ["repair_kind"]}, {"required": ["repair_source_firing_ref"]},
+        {"required": ["repair_predecessor_checkpoint_ref"]}, {"required": ["repair_candidate_checkpoint_ref"]},
+        {"required": ["growth_proposal_ref"]}, {"required": ["growth_producer_firing_ref"]},
+        {"required": ["growth_proposal_token_ref"]}]}}}],
+  "title": "net_adopted/v1",
+  "type": "object"
+}

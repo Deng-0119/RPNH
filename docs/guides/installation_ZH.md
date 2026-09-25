@@ -1,0 +1,80 @@
+---
+name: rpnh-install
+description: "Install the core and distinguish optional frontend and source integration paths."
+metadata:
+  document-kind: how-to
+  audience: operator-and-developer
+  language: zh-CN
+  counterpart: installation.md
+  revision: "2026-09-24.1"
+  status: source-reviewed-not-final-candidate-acceptance
+  basis: "core; adapter differences explicitly labelled"
+---
+
+[English](installation.md) | [中文](installation_ZH.md)
+
+# 安装与分发范围
+
+## 目标与前提
+从明确指定的 RPNH 源码或 wheel 安装，不调用模型。当前运行支持范围仍是 **Linux（包括 WSL2）**，不支持原生 Windows 和 macOS。`pyproject.toml` 声明 Python `>=3.11`，不等于每个 Python/平台组合均已测试；运行时涉及 Unix socket、POSIX 进程控制和 Linux 进程检查。basic 文本前端不需要 Codex 或 Node。
+
+发行包名称是 `rpnh-harness`，版本 `0.1.0`，Python 导入包为 `cpn`，用户命令为 `rpnh`。依赖是 `jsonschema>=4.20,<5`、`websockets>=12,<16`。当前**不存在 `codex`、`dsh` pip extra**。不要在同一环境安装来自不同维护线的两套 `cpn`。
+
+本文尚未分配公开仓库、发布产物或包索引地址。请从维护者取得批准的源码或 wheel；以下教程不依赖私有仓库地址，也不声称已公开发布。
+
+## 从批准的源码安装
+在包含 `pyproject.toml` 的源码根目录运行 Bash：
+
+```bash
+python3 -m venv .venv
+. .venv/bin/activate
+python -m pip install .
+rpnh --help
+rpnh config --help
+```
+
+开发时才使用 `python -m pip install -e '.[test]'`。依赖安装可能访问包索引，但不是供应商/模型调用。记录源码提交与依赖版本。basic 使用同一内核，不是另一份执行实现。
+
+## 构建 wheel，并在源码目录外安装
+构建需要单独的 `build` 工具及已声明的 setuptools 后端：
+
+```bash
+python -m pip install build
+python -m build --wheel --outdir dist
+```
+
+把 `WHEEL` 设置为刚构建产物的绝对路径；这是操作者提供的路径，不是公开下载地址：
+
+```bash
+: "${WHEEL:?Set the absolute path of the approved wheel}"
+TEST_ROOT=$(mktemp -d)
+python3 -m venv "$TEST_ROOT/venv"
+"$TEST_ROOT/venv/bin/python" -m pip install "$WHEEL"
+cd "$TEST_ROOT"
+"$TEST_ROOT/venv/bin/rpnh" --help
+"$TEST_ROOT/venv/bin/python" -c 'import cpn; print(cpn.__file__)'
+```
+
+输出应来自新环境的 `site-packages`，不能来自源码目录。[开发维护](development_ZH.md)介绍源码包内 `scripts/check_installed_docs.py` 的受限零模型配置检查；它不验证模型和交互式终端。
+
+## 选择安装范围
+
+| 范围 | 必需内容 | 入口和当前边界 |
+|---|---|---|
+| core/basic | 批准的 Python 包 | `rpnh --frontend basic`；对话仍需选择模型 |
+| Codex 展示 | 核心包和精确 `codex-cli 0.155.0` | `rpnh --frontend codex`；兼容性绑定版本 |
+| 原生插件/引导增量 | 含 `cpn/plugins`、`cpn/rpnh/onboarding.py` 的源码 | 新增 plugins/init/doctor/auto；当前核对的 core main 没有这些增量命令 |
+| 托管 DSH | DSH Python 包、内含 `integrations/dsh`、固定上游及工具链 | `rpnh-dsh`；显式离线数值或共享配置文本模式 |
+| 共存 | 统一源码/wheel，加所需可选宿主 | 不要在同一环境覆盖安装多份同名 wheel |
+
+core main 默认前端是 `codex`，核对的适配增量默认是 `auto`；显式 `--frontend basic` 可避开这个差异。使用可选入口前阅读[适配指南](adapters_ZH.md)。独立 viewer 增强不自动成为本候选范围。
+
+## 验证、升级与卸载
+只有已安装命令、包内 schema/config/static 资源，以及源码目录外的零模型配置流程均通过，才可称安装验证通过。editable 安装成功或链接检查通过都不足以替代。本文档批次单独记录 wheel 验证和站点检查。
+
+升级前按检查点停止受影响任务，保留会话/run 目录与唯一 catalog 的一致性私有备份，再在新环境安装批准的 wheel。由 catalog 重建 profile，复核精确模型身份后恢复。必须核对 schema 兼容；不要靠改版本字符串或清 writer 锁修复历史 Registry。
+
+`python -m pip uninstall rpnh-harness` 不删除用户 catalog、shell 凭据或会话/run 数据。请明确决定保留策略，不删除活跃运行目录。回退环境使用原批准产物，但不会撤销外部效果，也不代表可打开不兼容 Registry。
+
+## 代码对应
+`pyproject.toml`、`cpn/rpnh_cli.py:_parser`、`cpn/rpnh/user_config.py`、适配中的 `integrations/dsh/run.sh`。教程命令不是执行证据，实际完成情况见进展记录。

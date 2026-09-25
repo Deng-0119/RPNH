@@ -1,0 +1,28 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "registry_v1/final_result_index/v1",
+  "title": "Exact current terminal deliverable authority",
+  "type": "object",
+  "additionalProperties": false,
+  "definitions": {
+    "ref": {"type": "object", "additionalProperties": false, "properties": {"entity_type": {"type": "string"}, "logical_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"}, "version_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"}}, "required": ["entity_type", "logical_id", "version_id"]},
+    "resource_ref": {"type": "object", "additionalProperties": false, "properties": {"resource_id": {"type": "string", "pattern": "^resource:[a-f0-9]{32}$"}, "resource_version_id": {"type": "string", "pattern": "^resource_version:[a-f0-9]{32}$"}}, "required": ["resource_id", "resource_version_id"]},
+    "resource_ref_list": {"type": "array", "items": {"$ref": "#/definitions/resource_ref"}, "uniqueItems": true}
+  },
+  "properties": {
+    "final_result_index_ref": {"allOf": [{"$ref": "#/definitions/ref"}, {"properties": {"entity_type": {"const": "final_result_index/v1"}}}]},
+    "authority_kind": {"type": "string", "minLength": 1},
+    "terminal_outcome": {"enum": ["complete", "failed"]},
+    "entries": {"$ref": "#/definitions/resource_ref_list"},
+    "no_deliverable_reason": {"type": "string", "minLength": 1, "pattern": "^\\S(?:.*\\S)?$"},
+    "upstream_outcome": {"type": ["string", "null"], "minLength": 1},
+    "upstream_disposition_refs": {"$ref": "#/definitions/resource_ref_list"},
+    "terminal_result_ref": {"allOf": [{"$ref": "#/definitions/ref"}, {"properties": {"entity_type": {"const": "resource_version/v1"}}}]},
+    "terminal_occurrence_ref": {"allOf": [{"$ref": "#/definitions/ref"}, {"properties": {"entity_type": {"const": "transition_firing/v1"}}}]}
+  },
+  "required": ["final_result_index_ref", "authority_kind", "terminal_outcome", "entries", "upstream_outcome", "upstream_disposition_refs", "terminal_result_ref", "terminal_occurrence_ref"],
+  "allOf": [
+    {"if": {"properties": {"terminal_outcome": {"const": "complete"}}, "required": ["terminal_outcome"]}, "then": {"properties": {"entries": {"minItems": 1}}}},
+    {"if": {"properties": {"terminal_outcome": {"const": "failed"}, "entries": {"maxItems": 0}}, "required": ["terminal_outcome", "entries"]}, "then": {"required": ["no_deliverable_reason"]}}
+  ]
+}

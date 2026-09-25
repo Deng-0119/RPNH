@@ -1,0 +1,35 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "registry_v1/llm_invocation_attempt_reserved/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "definitions": {
+    "ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "entity_type": {"type": "string"},
+        "logical_id": {"type": "string"},
+        "version_id": {"type": "string"}
+      },
+      "required": ["entity_type", "logical_id", "version_id"]
+    }
+  },
+  "properties": {
+    "llm_invocation_attempt_id": {"type": "string", "pattern": "^llm_invocation_attempt:[a-f0-9]{32}$"},
+    "llm_invocation_attempt_version_id": {"type": "string", "pattern": "^llm_invocation_attempt_version:[a-f0-9]{32}$"},
+    "llm_invocation_attempt_ref": {"$ref": "#/definitions/ref"},
+    "llm_invocation_ref": {"$ref": "#/definitions/ref"},
+    "attempt_ordinal": {"type": "integer", "minimum": 0},
+    "prior_attempt_ref": {
+      "oneOf": [{"$ref": "#/definitions/ref"}, {"type": "null"}]
+    },
+    "reservation_class": {"type": "string", "minLength": 1},
+    "finalization_scope": {"type": ["string", "null"]}
+  },
+  "required": [
+    "llm_invocation_attempt_id", "llm_invocation_attempt_version_id",
+    "llm_invocation_attempt_ref", "llm_invocation_ref", "attempt_ordinal",
+    "prior_attempt_ref", "reservation_class", "finalization_scope"
+  ]
+}

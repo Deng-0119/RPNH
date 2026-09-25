@@ -1,0 +1,70 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "registry_v1/main_child_registry_link/v1",
+  "title": "Main-session index link to an independent child Registry",
+  "type": "object",
+  "additionalProperties": false,
+  "definitions": {
+    "ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "entity_type": {"type": "string"},
+        "logical_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"},
+        "version_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"}
+      },
+      "required": ["entity_type", "logical_id", "version_id"]
+    },
+    "link_ref": {
+      "allOf": [
+        {"$ref": "#/definitions/ref"},
+        {"properties": {"entity_type": {"const": "main_child_registry_link/v1"}, "logical_id": {"pattern": "^resource:[a-f0-9]{32}$"}, "version_id": {"pattern": "^resource_version:[a-f0-9]{32}$"}}}
+      ]
+    },
+    "turn_ref": {
+      "allOf": [
+        {"$ref": "#/definitions/ref"},
+        {"properties": {"entity_type": {"const": "main_turn/v1"}, "logical_id": {"pattern": "^resource:[a-f0-9]{32}$"}, "version_id": {"pattern": "^resource_version:[a-f0-9]{32}$"}}}
+      ]
+    },
+    "task_ref": {
+      "allOf": [
+        {"$ref": "#/definitions/ref"},
+        {"properties": {"entity_type": {"const": "task/v1"}, "logical_id": {"pattern": "^task:[a-f0-9]{32}$"}, "version_id": {"pattern": "^task_version:[a-f0-9]{32}$"}}}
+      ]
+    },
+    "run_ref": {
+      "allOf": [
+        {"$ref": "#/definitions/ref"},
+        {"properties": {"entity_type": {"const": "native_run_identity/v1"}, "logical_id": {"pattern": "^run:[a-f0-9]{32}$"}, "version_id": {"pattern": "^run_version:[a-f0-9]{32}$"}}}
+      ]
+    },
+    "nullable_link_ref": {"oneOf": [{"$ref": "#/definitions/link_ref"}, {"type": "null"}]},
+    "nullable_turn_ref": {"oneOf": [{"$ref": "#/definitions/turn_ref"}, {"type": "null"}]},
+    "nullable_task_ref": {"oneOf": [{"$ref": "#/definitions/task_ref"}, {"type": "null"}]},
+    "nullable_run_ref": {"oneOf": [{"$ref": "#/definitions/run_ref"}, {"type": "null"}]}
+  },
+  "properties": {
+    "main_child_registry_link_ref": {"$ref": "#/definitions/link_ref"},
+    "previous_version_ref": {"$ref": "#/definitions/nullable_link_ref"},
+    "main_thread_id": {"type": "string", "pattern": "^resource:[a-f0-9]{32}$"},
+    "origin_main_turn_ref": {"$ref": "#/definitions/nullable_turn_ref"},
+    "task_control_id": {"type": "string", "pattern": "^task-[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"},
+    "task_kind": {"enum": ["single_agent", "workflow"]},
+    "registry_relative_path": {"type": "string", "minLength": 1},
+    "state": {"enum": ["launch_registered", "registry_attached"]},
+    "child_task_ref": {"$ref": "#/definitions/nullable_task_ref"},
+    "child_run_ref": {"$ref": "#/definitions/nullable_run_ref"}
+  },
+  "required": ["main_child_registry_link_ref", "previous_version_ref", "main_thread_id", "origin_main_turn_ref", "task_control_id", "task_kind", "registry_relative_path", "state", "child_task_ref", "child_run_ref"],
+  "allOf": [
+    {
+      "if": {"properties": {"state": {"const": "launch_registered"}}, "required": ["state"]},
+      "then": {"properties": {"previous_version_ref": {"type": "null"}, "child_task_ref": {"type": "null"}, "child_run_ref": {"type": "null"}}}
+    },
+    {
+      "if": {"properties": {"state": {"const": "registry_attached"}}, "required": ["state"]},
+      "then": {"properties": {"previous_version_ref": {"$ref": "#/definitions/link_ref"}, "child_task_ref": {"$ref": "#/definitions/task_ref"}, "child_run_ref": {"$ref": "#/definitions/run_ref"}}}
+    }
+  ]
+}

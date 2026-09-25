@@ -1,0 +1,24 @@
+{
+  "schema_version": "rpnh/viewer_assets/v1",
+  "dependencies": [
+    {
+      "name": "@joint/core",
+      "version": "4.3.1",
+      "license": "MPL-2.0",
+      "source": "https://github.com/clientIO/joint/tree/v4.3.1"
+    },
+    {
+      "name": "elkjs",
+      "version": "0.12.0",
+      "license": "EPL-2.0 OR GPL-3.0-or-later",
+      "source": "https://github.com/kieler/elkjs/tree/0.12.0"
+    }
+  ],
+  "files": [
+    "joint.js",
+    "joint-LICENSE.txt",
+    "elk-api.js",
+    "elk-worker.js",
+    "elk-LICENSE.txt"
+  ]
+}

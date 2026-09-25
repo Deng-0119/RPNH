@@ -1,0 +1,60 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "registry_v1/agent_tool_error/v1",
+  "title": "Exact AgentLoop tool correction or provisional firing block",
+  "type": "object",
+  "additionalProperties": false,
+  "definitions": {
+    "ref": {"type": "object", "additionalProperties": false, "properties": {"entity_type": {"type": "string", "minLength": 1}, "logical_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"}, "version_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"}}, "required": ["entity_type", "logical_id", "version_id"]}
+  },
+  "properties": {
+    "agent_tool_error_id": {"type": "string", "pattern": "^agent_tool_error:[a-f0-9]{32}$"},
+    "agent_tool_error_version_id": {"type": "string", "pattern": "^agent_tool_error_version:[a-f0-9]{32}$"},
+    "agent_tool_error_ref": {"$ref": "#/definitions/ref"},
+    "agent_loop_ref": {"$ref": "#/definitions/ref"},
+    "agent_turn_ref": {"$ref": "#/definitions/ref"},
+    "agent_action_ref": {"$ref": "#/definitions/ref"},
+    "operation_or_tool_identity": {"type": "string", "minLength": 1},
+    "code": {"enum": ["provider_tool_call_invalid", "arguments_not_text", "tool_not_permitted", "arguments_invalid", "loop_ref_mismatch", "permission_denied", "ref_invalid", "revision_conflict", "critic_document_invalid", "structural_closure_failed", "transaction_failed", "owner_interrupted"]},
+    "error_code": {"enum": ["provider_tool_call_invalid", "arguments_not_text", "tool_not_permitted", "arguments_invalid", "loop_ref_mismatch", "permission_denied", "ref_invalid", "revision_conflict", "critic_document_invalid", "structural_closure_failed", "transaction_failed", "owner_interrupted"]},
+    "boundary": {"enum": ["validation", "revision", "authorization", "commit", "execution", "semantic_document_contract", "owner_interruption"]},
+    "classification": {"enum": ["model_correctable_invocation_mismatch", "framework_contract_mismatch", "owner_interruption"]},
+    "detail": {"type": "string", "minLength": 1},
+    "raw_arguments": {"type": ["string", "null"]},
+    "consecutive_count": {"type": "integer", "minimum": 1, "maximum": 1},
+    "disposition": {"enum": ["return_to_same_agent_loop", "block_same_agent_loop", "close_at_owner_checkpoint"]},
+    "block_kind": {"oneOf": [{"const": "framework_repair"}, {"type": "null"}]},
+    "retry_not_before_utc": {"type": "null"},
+    "same_agent_loop": {"type": "boolean"},
+    "mechanical_result": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "command_started": {"const": false},
+        "status": {"enum": ["completed", "timed_out", "setup_failed"]},
+        "exit_code": {"type": ["integer", "null"]},
+        "stdout": {"type": "string", "maxLength": 4096},
+        "stderr": {"type": "string", "maxLength": 4096},
+        "output_truncated": {"type": "boolean"}
+      },
+      "required": ["command_started", "status", "exit_code", "stdout", "stderr", "output_truncated"]
+    }
+  },
+  "required": ["agent_tool_error_id", "agent_tool_error_version_id", "agent_tool_error_ref", "agent_loop_ref", "agent_turn_ref", "agent_action_ref", "operation_or_tool_identity", "code", "error_code", "boundary", "classification", "detail", "raw_arguments", "consecutive_count", "disposition", "block_kind", "retry_not_before_utc", "same_agent_loop"],
+  "allOf": [
+    {
+      "if": {"properties": {"classification": {"const": "model_correctable_invocation_mismatch"}}},
+      "then": {
+        "properties": {"code": {"enum": ["provider_tool_call_invalid", "arguments_not_text", "tool_not_permitted", "arguments_invalid", "loop_ref_mismatch", "permission_denied", "ref_invalid", "revision_conflict", "critic_document_invalid", "structural_closure_failed"]}, "consecutive_count": {"const": 1}, "disposition": {"const": "return_to_same_agent_loop"}, "block_kind": {"type": "null"}}
+      }
+    },
+    {
+      "if": {"properties": {"classification": {"const": "framework_contract_mismatch"}}},
+      "then": {"properties": {"code": {"enum": ["structural_closure_failed", "transaction_failed"]}, "consecutive_count": {"const": 1}, "disposition": {"const": "block_same_agent_loop"}, "block_kind": {"const": "framework_repair"}}}
+    },
+    {
+      "if": {"properties": {"classification": {"const": "owner_interruption"}}},
+      "then": {"properties": {"code": {"const": "owner_interrupted"}, "boundary": {"const": "owner_interruption"}, "consecutive_count": {"const": 1}, "disposition": {"const": "close_at_owner_checkpoint"}, "block_kind": {"type": "null"}, "same_agent_loop": {"const": false}}}
+    }
+  ]
+}

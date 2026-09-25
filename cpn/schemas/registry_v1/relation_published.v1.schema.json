@@ -1,0 +1,31 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "registry_v1/relation_published/v1",
+  "title": "Current typed relation publication payload",
+  "type": "object",
+  "additionalProperties": false,
+  "definitions": {
+    "endpoint": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "entity_type": {"type": "string", "minLength": 1},
+        "entity_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"},
+        "version_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"}
+      },
+      "required": ["entity_type", "entity_id"]
+    }
+  },
+  "properties": {
+    "relation_id": {"type": "string", "pattern": "^relation:[a-f0-9]{32}$"},
+    "relation_type": {"type": "string", "minLength": 1},
+    "source": {"$ref": "#/definitions/endpoint"},
+    "target": {"$ref": "#/definitions/endpoint"},
+    "strength": {"enum": ["strong", "weak"]},
+    "metadata": {"type": "object"}
+  },
+  "required": [
+    "relation_id", "relation_type", "source", "target", "strength",
+    "metadata"
+  ]
+}

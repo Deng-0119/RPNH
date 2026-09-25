@@ -1,0 +1,28 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "registry_v1/transition_firing/v2",
+  "title": "Exact transition firing",
+  "type": "object",
+  "additionalProperties": false,
+  "definitions": {
+    "ref": {"type": "object", "additionalProperties": false, "properties": {"entity_type": {"type": "string"}, "logical_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"}, "version_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"}}, "required": ["entity_type", "logical_id", "version_id"]},
+    "nullable_ref": {"oneOf": [{"$ref": "#/definitions/ref"}, {"type": "null"}]}
+  },
+  "properties": {
+    "transition_firing_ref": {"$ref": "#/definitions/ref"},
+    "occurrence_ref": {"$ref": "#/definitions/ref"},
+    "executable_binding_ref": {"$ref": "#/definitions/ref"},
+    "allocation_ref": {"$ref": "#/definitions/ref"},
+    "net_instance_ref": {"$ref": "#/definitions/ref"},
+    "team_net_declaration_ref": {"$ref": "#/definitions/ref"},
+    "team_net_declaration_schema_ref": {"const": "registry_v1/team_net_declaration/v7"},
+    "transition_id": {"type": "string", "minLength": 1},
+    "admission_checkpoint_ref": {"$ref": "#/definitions/ref"},
+    "claimed_token_occurrence_refs": {"type": "array", "minItems": 1, "items": {"$ref": "#/definitions/ref"}, "uniqueItems": true},
+    "invocation_ref": {"$ref": "#/definitions/nullable_ref"},
+    "status": {"enum": ["open", "settled"]},
+    "settlement_event_ref": {"$ref": "#/definitions/nullable_ref"}
+  },
+  "required": ["transition_firing_ref", "occurrence_ref", "executable_binding_ref", "allocation_ref", "net_instance_ref", "team_net_declaration_ref", "team_net_declaration_schema_ref", "transition_id", "admission_checkpoint_ref", "claimed_token_occurrence_refs", "invocation_ref", "status", "settlement_event_ref"],
+  "allOf": [{"if": {"properties": {"status": {"const": "open"}}}, "then": {"properties": {"settlement_event_ref": {"type": "null"}}}, "else": {"properties": {"settlement_event_ref": {"$ref": "#/definitions/ref"}}}}]
+}

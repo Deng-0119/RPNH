@@ -1,0 +1,26 @@
+{
+  "$id": "rpnh/owner_control/v1",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["kind", "command_id", "source", "target", "data", "lineage"],
+  "properties": {
+    "kind": {"enum": ["command", "message", "candidate", "result", "receipt", "input_revision"]},
+    "command_id": {"type": "string", "minLength": 1},
+    "source": {"$ref": "#/definitions/ref"},
+    "target": {"type": ["string", "null"]},
+    "data": {"type": "object"},
+    "lineage": {"type": "array", "items": {"$ref": "#/definitions/ref"}}
+  },
+  "definitions": {
+    "ref": {
+      "type": "object", "additionalProperties": false,
+      "required": ["entity_type", "logical_id", "version_id"],
+      "properties": {
+        "entity_type": {"type": "string", "minLength": 1},
+        "logical_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"},
+        "version_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"}
+      }
+    }
+  }
+}

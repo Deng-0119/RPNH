@@ -1,0 +1,40 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "registry_v1/agent_loop/v1",
+  "title": "Current AgentLoop state",
+  "type": "object",
+  "additionalProperties": false,
+  "definitions": {
+    "ref": {"type": "object", "additionalProperties": false, "properties": {"entity_type": {"type": "string", "minLength": 1}, "logical_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"}, "version_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"}}, "required": ["entity_type", "logical_id", "version_id"]},
+    "nullable_ref": {"oneOf": [{"$ref": "#/definitions/ref"}, {"type": "null"}]},
+    "resource_ref": {"type": "object", "additionalProperties": false, "properties": {"resource_id": {"type": "string", "pattern": "^resource:[a-f0-9]{32}$"}, "resource_version_id": {"type": "string", "pattern": "^resource_version:[a-f0-9]{32}$"}}, "required": ["resource_id", "resource_version_id"]},
+    "nullable_resource_ref": {"oneOf": [{"$ref": "#/definitions/resource_ref"}, {"type": "null"}]}
+  },
+  "properties": {
+    "agent_loop_id": {"type": "string", "pattern": "^agent_loop:[a-f0-9]{32}$"},
+    "agent_loop_version_id": {"type": "string", "pattern": "^agent_loop_version:[a-f0-9]{32}$"},
+    "agent_loop_ref": {"$ref": "#/definitions/ref"},
+    "invocation_ref": {"$ref": "#/definitions/ref"},
+    "operation_binding_ref": {"$ref": "#/definitions/ref"},
+    "workspace_binding_ref": {"$ref": "#/definitions/ref"},
+    "workspace_lineage_ref": {"$ref": "#/definitions/ref"},
+    "workspace_base_revision_ref": {"$ref": "#/definitions/ref"},
+    "workspace_revision_ref": {"$ref": "#/definitions/nullable_ref"},
+    "workspace_changed_paths": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "workspace_deleted_paths": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "state": {"enum": ["NEW", "WAITING_FOR_LLM", "TURN_STORED", "ACTION_PENDING", "ACTION_APPLIED", "ACTION_REJECTED", "CANDIDATE_COMMITTED", "CANDIDATE_ADOPTED", "DISPOSITION_RECORDED", "COMPACTING", "COMPLETED", "WAITING_RESOURCE", "TIMED_OUT", "EXHAUSTED", "INFRASTRUCTURE_FAILED", "RECONCILIATION_REQUIRED"]},
+    "revision": {"type": "integer", "minimum": 0},
+    "next_turn_sequence": {"type": "integer", "minimum": 0},
+    "llm_turn_budget": {"type": "integer", "minimum": 0},
+    "llm_turns_used": {"type": "integer", "minimum": 0},
+    "model_condition": {"type": "string", "minLength": 1},
+    "tool_catalog_ref": {"$ref": "#/definitions/resource_ref"},
+    "current_candidate_ref": {"$ref": "#/definitions/nullable_ref"},
+    "adopted_candidate_ref": {"$ref": "#/definitions/nullable_ref"},
+    "disposition_ref": {"$ref": "#/definitions/nullable_ref"},
+    "owner_ref": {"$ref": "#/definitions/ref"},
+    "written_resource_refs": {"type": "array", "items": {"$ref": "#/definitions/resource_ref"}, "uniqueItems": true},
+    "cap_review_resource_ref": {"$ref": "#/definitions/nullable_resource_ref"}
+  },
+  "required": ["agent_loop_id", "agent_loop_version_id", "agent_loop_ref", "invocation_ref", "operation_binding_ref", "workspace_binding_ref", "workspace_lineage_ref", "workspace_base_revision_ref", "workspace_revision_ref", "workspace_changed_paths", "workspace_deleted_paths", "state", "revision", "next_turn_sequence", "llm_turn_budget", "llm_turns_used", "model_condition", "tool_catalog_ref", "current_candidate_ref", "adopted_candidate_ref", "disposition_ref", "owner_ref", "written_resource_refs", "cap_review_resource_ref"]
+}

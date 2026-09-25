@@ -1,0 +1,17 @@
+{
+  "repository": "deepseek-ai/deepseek-harness",
+  "revision": "ddefc45fbc7f8e46dd73185e68295696d1297887",
+  "version": "0.1.6-alpha.2",
+  "license": "MIT",
+  "node": "24",
+  "pnpm": "11.7.0",
+  "lockfile": "pnpm-lock.yaml from the pinned upstream revision (frozen install)",
+  "patch": "patch_upstream.py",
+  "profile": "experimental-offline-conformance",
+  "package_manager": "pnpm@11.7.0",
+  "node_engines": "^22.19.0 || >=24.0.0",
+  "tested_node_major": 24,
+  "protocol": "rpnh/dsh/v1",
+  "managed_profile": "rpnh-offline/deterministic-v1",
+  "upstream_factory_file": "packages/core/agent-loop/src/index.ts"
+}

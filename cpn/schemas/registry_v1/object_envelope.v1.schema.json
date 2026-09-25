@@ -1,0 +1,58 @@
+{
+  "$id": "registry_v1/object_envelope/v1",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "additionalProperties": false,
+  "properties": {
+    "logical_id": {
+      "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$",
+      "type": "string"
+    },
+    "media_type": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "metadata": {
+      "type": "object"
+    },
+    "object_type": {
+      "pattern": "^[a-z][a-z0-9_]*/v[1-9][0-9]*$",
+      "type": "string"
+    },
+    "producer_invocation_id": {
+      "pattern": "^invocation:[a-f0-9]{32}$",
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "schema_ref": {
+      "pattern": "^registry_v1/[a-z][a-z0-9_]*/v[1-9][0-9]*$",
+      "type": "string"
+    },
+    "size": {
+      "minimum": 0,
+      "type": "integer"
+    },
+    "storage_locator": {
+      "pattern": "^registry-object:[a-z][a-z0-9_]*:[a-f0-9]{32}$",
+      "type": "string"
+    },
+    "version_id": {
+      "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$",
+      "type": "string"
+    }
+  },
+  "required": [
+    "object_type",
+    "logical_id",
+    "version_id",
+    "size",
+    "media_type",
+    "schema_ref",
+    "producer_invocation_id",
+    "storage_locator",
+    "metadata"
+  ],
+  "title": "object_envelope/v1",
+  "type": "object"
+}

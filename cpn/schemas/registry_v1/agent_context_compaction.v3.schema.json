@@ -1,0 +1,197 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "registry_v1/agent_context_compaction/v3",
+  "title": "Current AgentLoop context compaction",
+  "type": "object",
+  "additionalProperties": false,
+  "definitions": {
+    "compaction_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "entity_type": {"const": "agent_context_compaction/v3"},
+        "logical_id": {"type": "string", "pattern": "^agent_context_compaction:[a-f0-9]{32}$"},
+        "version_id": {"type": "string", "pattern": "^agent_context_compaction_version:[a-f0-9]{32}$"}
+      },
+      "required": ["entity_type", "logical_id", "version_id"]
+    },
+    "agent_loop_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "entity_type": {"const": "agent_loop/v1"},
+        "logical_id": {"type": "string", "pattern": "^agent_loop:[a-f0-9]{32}$"},
+        "version_id": {"type": "string", "pattern": "^agent_loop_version:[a-f0-9]{32}$"}
+      },
+      "required": ["entity_type", "logical_id", "version_id"]
+    },
+    "agent_turn_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "entity_type": {"const": "agent_turn/v1"},
+        "logical_id": {"type": "string", "pattern": "^agent_turn:[a-f0-9]{32}$"},
+        "version_id": {"type": "string", "pattern": "^agent_turn_version:[a-f0-9]{32}$"}
+      },
+      "required": ["entity_type", "logical_id", "version_id"]
+    },
+    "llm_invocation_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "entity_type": {"const": "llm_invocation_spec/v1"},
+        "logical_id": {"type": "string", "pattern": "^llm_invocation:[a-f0-9]{32}$"},
+        "version_id": {"type": "string", "pattern": "^llm_invocation_version:[a-f0-9]{32}$"}
+      },
+      "required": ["entity_type", "logical_id", "version_id"]
+    },
+    "llm_invocation_attempt_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "entity_type": {"const": "llm_invocation_attempt/v1"},
+        "logical_id": {"type": "string", "pattern": "^llm_invocation_attempt:[a-f0-9]{32}$"},
+        "version_id": {"type": "string", "pattern": "^llm_invocation_attempt_version:[a-f0-9]{32}$"}
+      },
+      "required": ["entity_type", "logical_id", "version_id"]
+    },
+    "ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "entity_type": {"type": "string", "minLength": 1},
+        "logical_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"},
+        "version_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"}
+      },
+      "required": ["entity_type", "logical_id", "version_id"]
+    },
+    "nullable_ref": {
+      "oneOf": [{"$ref": "#/definitions/ref"}, {"type": "null"}]
+    },
+    "resource_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "resource_id": {"type": "string", "pattern": "^resource:[a-f0-9]{32}$"},
+        "resource_version_id": {"type": "string", "pattern": "^resource_version:[a-f0-9]{32}$"}
+      },
+      "required": ["resource_id", "resource_version_id"]
+    },
+    "nullable_llm_invocation_ref": {
+      "oneOf": [{"$ref": "#/definitions/llm_invocation_ref"}, {"type": "null"}]
+    },
+    "nullable_llm_invocation_attempt_ref": {
+      "oneOf": [{"$ref": "#/definitions/llm_invocation_attempt_ref"}, {"type": "null"}]
+    },
+    "nullable_resource_ref": {
+      "oneOf": [{"$ref": "#/definitions/resource_ref"}, {"type": "null"}]
+    },
+    "located_input": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "semantic_name": {"type": "string", "minLength": 1},
+        "file_name": {"type": "string", "minLength": 1},
+        "resource_ref": {"$ref": "#/definitions/resource_ref"},
+        "sandbox_path": {"type": "string", "minLength": 1},
+        "source_relative_path": {"oneOf": [{"type": "string", "minLength": 1}, {"type": "null"}]}
+      },
+      "required": ["semantic_name", "file_name", "resource_ref", "sandbox_path", "source_relative_path"]
+    },
+    "fact_capsule": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "kind": {"const": "agent_context_fact_capsule"},
+        "schema_version": {"const": "agent_context_fact_capsule/v1"},
+        "task_ref": {"$ref": "#/definitions/ref"},
+        "task_round_ref": {"$ref": "#/definitions/ref"},
+        "net_instance_ref": {"$ref": "#/definitions/ref"},
+        "transition_firing_ref": {"$ref": "#/definitions/nullable_ref"},
+        "invocation_ref": {"$ref": "#/definitions/ref"},
+        "operation_binding_ref": {"$ref": "#/definitions/ref"},
+        "agent_loop_ref": {"$ref": "#/definitions/ref"},
+        "subject_agent_ref": {"$ref": "#/definitions/ref"},
+        "execution_agent_ref": {"$ref": "#/definitions/ref"},
+        "loop_revision": {"type": "integer", "minimum": 0},
+        "loop_state": {"type": "string", "minLength": 1},
+        "trigger_reason": {"enum": ["context_pressure", "response_length", "turn_cap"]},
+        "first_turn_sequence": {"type": "integer", "minimum": 0},
+        "last_turn_sequence": {"type": "integer", "minimum": -1},
+        "covered_turn_count": {"type": "integer", "minimum": 0},
+        "covered_turn_refs": {"type": "array", "maxItems": 2, "items": {"$ref": "#/definitions/agent_turn_ref"}, "uniqueItems": true},
+        "semantic_prompt_ref": {"$ref": "#/definitions/resource_ref"},
+        "located_inputs": {"type": "array", "items": {"$ref": "#/definitions/located_input"}, "uniqueItems": true},
+        "settled_actions": {"type": "array", "maxItems": 0},
+        "current_candidate_ref": {"$ref": "#/definitions/nullable_ref"},
+        "adopted_candidate_ref": {"$ref": "#/definitions/nullable_ref"},
+        "output_resource_refs": {"type": "array", "items": {"$ref": "#/definitions/resource_ref"}, "uniqueItems": true},
+        "disposition_ref": {"$ref": "#/definitions/nullable_ref"},
+        "workspace_binding_ref": {"$ref": "#/definitions/nullable_ref"},
+        "workspace_lineage_ref": {"$ref": "#/definitions/nullable_ref"},
+        "workspace_base_revision_ref": {"$ref": "#/definitions/nullable_ref"},
+        "workspace_revision_ref": {"$ref": "#/definitions/nullable_ref"},
+        "workspace_changed_paths": {"type": "array", "maxItems": 0},
+        "workspace_deleted_paths": {"type": "array", "maxItems": 0}
+      },
+      "required": ["kind", "schema_version", "task_ref", "task_round_ref", "net_instance_ref", "transition_firing_ref", "invocation_ref", "operation_binding_ref", "agent_loop_ref", "subject_agent_ref", "execution_agent_ref", "loop_revision", "loop_state", "trigger_reason", "first_turn_sequence", "last_turn_sequence", "covered_turn_count", "covered_turn_refs", "semantic_prompt_ref", "located_inputs", "settled_actions", "current_candidate_ref", "adopted_candidate_ref", "output_resource_refs", "disposition_ref", "workspace_binding_ref", "workspace_lineage_ref", "workspace_base_revision_ref", "workspace_revision_ref", "workspace_changed_paths", "workspace_deleted_paths"]
+    },
+    "replacement_entry": {
+      "oneOf": [
+        {"$ref": "#/definitions/fact_capsule"},
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "kind": {"const": "compaction_summary"},
+            "content": {"type": "string", "minLength": 1}
+          },
+          "required": ["kind", "content"]
+        }
+      ]
+    }
+  },
+  "properties": {
+    "agent_context_compaction_id": {"type": "string", "pattern": "^agent_context_compaction:[a-f0-9]{32}$"},
+    "agent_context_compaction_version_id": {"type": "string", "pattern": "^agent_context_compaction_version:[a-f0-9]{32}$"},
+    "agent_context_compaction_ref": {"$ref": "#/definitions/compaction_ref"},
+    "agent_loop_ref": {"$ref": "#/definitions/agent_loop_ref"},
+    "subject_agent_ref": {"type": "object"},
+    "execution_agent_ref": {"type": "object"},
+    "trigger_reason": {"enum": ["context_pressure", "response_length", "turn_cap"]},
+    "first_turn_sequence": {"type": "integer", "minimum": 0},
+    "last_turn_sequence": {"type": "integer", "minimum": -1},
+    "covered_turn_refs": {
+      "type": "array",
+      "items": {"$ref": "#/definitions/agent_turn_ref"},
+      "uniqueItems": true
+    },
+    "llm_invocation_ref": {"$ref": "#/definitions/llm_invocation_ref"},
+    "llm_invocation_attempt_ref": {"$ref": "#/definitions/llm_invocation_attempt_ref"},
+    "interrupted_llm_invocation_ref": {"$ref": "#/definitions/nullable_llm_invocation_ref"},
+    "interrupted_llm_invocation_attempt_ref": {"$ref": "#/definitions/nullable_llm_invocation_attempt_ref"},
+    "interrupted_response_resource_ref": {"$ref": "#/definitions/nullable_resource_ref"},
+    "replacement_history": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 2,
+      "items": {"$ref": "#/definitions/replacement_entry"},
+      "contains": {"$ref": "#/definitions/fact_capsule"}
+    }
+  },
+  "required": [
+    "agent_context_compaction_id",
+    "agent_context_compaction_version_id",
+    "agent_context_compaction_ref",
+    "agent_loop_ref",
+    "subject_agent_ref",
+    "execution_agent_ref",
+    "trigger_reason",
+    "first_turn_sequence",
+    "last_turn_sequence",
+    "covered_turn_refs",
+    "llm_invocation_ref",
+    "llm_invocation_attempt_ref",
+    "replacement_history"
+  ]
+}

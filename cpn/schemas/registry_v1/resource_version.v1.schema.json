@@ -1,0 +1,62 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "registry_v1/resource_version/v1",
+  "title": "Current immutable Registry resource metadata",
+  "type": "object",
+  "additionalProperties": false,
+  "definitions": {
+    "ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "entity_type": {"type": "string", "minLength": 1},
+        "logical_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"},
+        "version_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"}
+      },
+      "required": ["entity_type", "logical_id", "version_id"]
+    },
+    "nullable_ref": {"oneOf": [{"$ref": "#/definitions/ref"}, {"type": "null"}]},
+    "schema_authority": {
+      "oneOf": [
+        {"$ref": "#/definitions/ref"},
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "resource_id": {"type": "string", "pattern": "^resource:[a-f0-9]{32}$"},
+            "resource_version_id": {"type": "string", "pattern": "^resource_version:[a-f0-9]{32}$"}
+          },
+          "required": ["resource_id", "resource_version_id"]
+        },
+        {"type": "null"}
+      ]
+    }
+  },
+  "properties": {
+    "resource_id": {"type": "string", "pattern": "^resource:[a-f0-9]{32}$"},
+    "resource_version_id": {"type": "string", "pattern": "^resource_version:[a-f0-9]{32}$"},
+    "origin_kind": {"type": "string", "minLength": 1},
+    "origin": {"type": "object"},
+    "task_ref": {"$ref": "#/definitions/ref"},
+    "branch_id": {"type": "string", "minLength": 1},
+    "round_ref": {"$ref": "#/definitions/nullable_ref"},
+    "net_ref": {"$ref": "#/definitions/nullable_ref"},
+    "producer_ref": {"$ref": "#/definitions/ref"},
+    "lifetime_ref": {"$ref": "#/definitions/ref"},
+    "size": {"type": "integer", "minimum": 0},
+    "media_type": {"type": "string", "minLength": 1},
+    "content_schema_ref": {"type": ["string", "null"]},
+    "content_schema_authority_ref": {"$ref": "#/definitions/schema_authority"},
+    "summary": {"type": "string"},
+    "descriptors": {"type": "object"},
+    "extensions": {"type": "object"},
+    "reference_provenance": {"type": "object"}
+  },
+  "required": [
+    "resource_id", "resource_version_id", "origin_kind", "origin",
+    "task_ref", "branch_id", "round_ref", "net_ref", "producer_ref",
+    "lifetime_ref", "size", "media_type",
+    "content_schema_ref", "content_schema_authority_ref", "summary",
+    "descriptors", "extensions", "reference_provenance"
+  ]
+}

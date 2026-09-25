@@ -1,0 +1,519 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "rpnh/module_declaration/v1",
+  "title": "Symbolic RPNH ModuleDeclaration",
+  "description": "Only symbolic identities and registered keys. Mechanical Registry identities are minted by the trusted execution host after lowering.",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "const": "rpnh/module_declaration/v1"
+    },
+    "name": {
+      "type": "string",
+      "pattern": "^[A-Za-z][A-Za-z0-9_-]*$"
+    },
+    "components": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/component"
+      },
+      "minItems": 1
+    },
+    "links": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/link"
+      },
+      "minItems": 0
+    },
+    "entry": {
+      "type": "object",
+      "propertyNames": {
+        "type": "string",
+        "pattern": "^[A-Za-z][A-Za-z0-9_-]*$"
+      },
+      "additionalProperties": {
+        "$ref": "#/definitions/endpoint"
+      }
+    },
+    "exit": {
+      "type": "object",
+      "propertyNames": {
+        "type": "string",
+        "pattern": "^[A-Za-z][A-Za-z0-9_-]*$"
+      },
+      "additionalProperties": {
+        "$ref": "#/definitions/endpoint"
+      },
+      "minProperties": 1
+    },
+    "terminal": {
+      "$ref": "#/definitions/terminal"
+    },
+    "required_schemas": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9_]*(?:/[a-z][a-z0-9_]*)+/v[1-9][0-9]*$"
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "budgets": {
+      "type": "object",
+      "propertyNames": {
+        "type": "string",
+        "pattern": "^[A-Za-z][A-Za-z0-9_-]*$"
+      },
+      "additionalProperties": {
+        "type": "number",
+        "minimum": 0
+      }
+    },
+    "designer_constraints": {
+      "type": "object"
+    },
+    "analyzers": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 0,
+      "uniqueItems": true
+    },
+    "budget_buckets": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/budget_bucket"
+      }
+    },
+    "terminal_alternatives": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/terminal"
+      }
+    }
+  },
+  "required": [
+    "schema_version",
+    "name",
+    "components",
+    "links",
+    "entry",
+    "exit",
+    "terminal",
+    "required_schemas",
+    "budgets"
+  ],
+  "additionalProperties": false,
+  "definitions": {
+    "endpoint": {
+      "type": "object",
+      "properties": {
+        "component": {
+          "type": "string",
+          "pattern": "^[A-Za-z][A-Za-z0-9_-]*$"
+        },
+        "port": {
+          "type": "string",
+          "pattern": "^[A-Za-z][A-Za-z0-9_-]*$"
+        }
+      },
+      "required": [
+        "component",
+        "port"
+      ],
+      "additionalProperties": false
+    },
+    "port": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "pattern": "^[A-Za-z][A-Za-z0-9_-]*$"
+        },
+        "direction": {
+          "enum": [
+            "input",
+            "output"
+          ]
+        },
+        "schema": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*(?:/[a-z][a-z0-9_]*)+/v[1-9][0-9]*$"
+        },
+        "channel": {
+          "enum": [
+            "data",
+            "control"
+          ],
+          "default": "data"
+        },
+        "cardinality": {
+          "type": "integer",
+          "minimum": 1,
+          "default": 1
+        },
+        "cardinality_minimum": {
+          "type": ["integer", "null"],
+          "minimum": 0,
+          "description": "Inclusive minimum; omitted or null uses cardinality."
+        },
+        "cardinality_maximum": {
+          "type": ["integer", "null"],
+          "minimum": 0,
+          "description": "Inclusive maximum; omitted or null uses cardinality."
+        }
+      },
+      "required": [
+        "name",
+        "direction",
+        "schema"
+      ],
+      "additionalProperties": false
+    },
+    "product": {
+      "type": "object",
+      "properties": {
+        "port": {
+          "type": "string",
+          "pattern": "^[A-Za-z][A-Za-z0-9_-]*$"
+        },
+        "minimum": {
+          "type": "integer",
+          "minimum": 0,
+          "default": 1
+        },
+        "maximum": {
+          "type": "integer",
+          "minimum": 0,
+          "default": 1
+        }
+      },
+      "required": [
+        "port"
+      ],
+      "additionalProperties": false
+    },
+    "effect": {
+      "type": "object",
+      "properties": {
+        "key": {
+          "type": "string",
+          "minLength": 1
+        },
+        "bindings": {
+          "type": "object",
+          "propertyNames": {
+            "type": "string",
+            "pattern": "^[A-Za-z][A-Za-z0-9_-]*$"
+          },
+          "additionalProperties": {
+            "type": "string",
+            "pattern": "^[A-Za-z][A-Za-z0-9_-]*$"
+          }
+        },
+        "config": {
+          "type": "object"
+        },
+        "references": {
+          "type": "object",
+          "propertyNames": {
+            "type": "string",
+            "pattern": "^[A-Za-z][A-Za-z0-9_-]*$"
+          },
+          "additionalProperties": {
+            "$ref": "#/definitions/symbol_reference"
+          }
+        }
+      },
+      "required": [
+        "key"
+      ],
+      "additionalProperties": false
+    },
+    "outcome": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "pattern": "^[A-Za-z][A-Za-z0-9_-]*$"
+        },
+        "products": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/product"
+          },
+          "minItems": 0
+        },
+        "effects": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/effect"
+          },
+          "minItems": 0
+        }
+      },
+      "required": [
+        "name",
+        "products"
+      ],
+      "additionalProperties": false
+    },
+    "operation": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "pattern": "^[A-Za-z][A-Za-z0-9_-]*$"
+        },
+        "executor": {
+          "type": "string",
+          "minLength": 1
+        },
+        "inputs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Za-z][A-Za-z0-9_-]*$"
+          },
+          "minItems": 0,
+          "uniqueItems": true
+        },
+        "outputs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Za-z][A-Za-z0-9_-]*$"
+          },
+          "minItems": 0,
+          "uniqueItems": true
+        },
+        "outcomes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/outcome"
+          },
+          "minItems": 1
+        },
+        "tools": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 0,
+          "uniqueItems": true
+        },
+        "config": {
+          "type": "object"
+        },
+        "request_port": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[A-Za-z][A-Za-z0-9_-]*$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "budget_binding": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/operationBudgetBinding"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "name",
+        "executor",
+        "inputs",
+        "outputs",
+        "outcomes"
+      ],
+      "additionalProperties": false
+    },
+    "component": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "pattern": "^[A-Za-z][A-Za-z0-9_-]*$"
+        },
+        "key": {
+          "type": "string",
+          "minLength": 1
+        },
+        "config_schema": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*(?:/[a-z][a-z0-9_]*)+/v[1-9][0-9]*$"
+        },
+        "config": {
+          "type": "object"
+        },
+        "ports": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/port"
+          },
+          "minItems": 0
+        },
+        "operations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/operation"
+          },
+          "minItems": 0,
+          "description": "Optional explicit operation protocols. Trusted registered lower may supply internal operations; any listed protocol is preserved exactly."
+        }
+      },
+      "required": [
+        "name",
+        "key",
+        "config_schema",
+        "config",
+        "ports"
+      ],
+      "additionalProperties": false
+    },
+    "link": {
+      "type": "object",
+      "properties": {
+        "source": {
+          "$ref": "#/definitions/endpoint"
+        },
+        "target": {
+          "$ref": "#/definitions/endpoint"
+        }
+      },
+      "required": [
+        "source",
+        "target"
+      ],
+      "additionalProperties": false
+    },
+    "terminal": {
+      "type": "object",
+      "properties": {
+        "key": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source": {
+          "$ref": "#/definitions/endpoint"
+        },
+        "operation": {
+          "type": "string",
+          "pattern": "^[A-Za-z][A-Za-z0-9_-]*$"
+        },
+        "outcome": {
+          "type": "string",
+          "pattern": "^[A-Za-z][A-Za-z0-9_-]*$"
+        },
+        "config": {
+          "type": "object"
+        }
+      },
+      "required": [
+        "key",
+        "source",
+        "operation",
+        "outcome",
+        "config"
+      ],
+      "additionalProperties": false
+    },
+    "budget_bucket": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "bucket_id",
+        "budget_scope",
+        "finalization_scope",
+        "max_attempts"
+      ],
+      "properties": {
+        "bucket_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "budget_scope": {
+          "type": "string",
+          "minLength": 1
+        },
+        "finalization_scope": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "max_attempts": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "operationBudgetBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "bucket_id",
+        "budget_scope"
+      ],
+      "properties": {
+        "bucket_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "budget_scope": {
+          "type": "string",
+          "minLength": 1
+        },
+        "finalization_scope": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "symbol_reference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "name"
+      ],
+      "properties": {
+        "kind": {
+          "enum": [
+            "place",
+            "transition",
+            "slot"
+          ]
+        },
+        "name": {
+          "type": "string",
+          "pattern": "^[A-Za-z][A-Za-z0-9_-]*$"
+        }
+      }
+    }
+  }
+}

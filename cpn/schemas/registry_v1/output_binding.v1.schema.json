@@ -1,0 +1,102 @@
+{
+  "$id": "registry_v1/output_binding/v1",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "additionalProperties": false,
+  "definitions": {
+    "task_round_ref": {
+      "type": "object", "additionalProperties": false,
+      "properties": {
+        "entity_type": {"const": "task_round/v1"},
+        "logical_id": {"type": "string", "pattern": "^task_round:[a-f0-9]{32}$"},
+        "version_id": {"type": "string", "pattern": "^task_round_version:[a-f0-9]{32}$"}
+      },
+      "required": ["entity_type", "logical_id", "version_id"]
+    },
+    "net_ref": {
+      "type": "object", "additionalProperties": false,
+      "properties": {
+        "entity_type": {"const": "net_instance/v1"},
+        "logical_id": {"type": "string", "pattern": "^net_instance:[a-f0-9]{32}$"},
+        "version_id": {"type": "string", "pattern": "^net_instance_version:[a-f0-9]{32}$"}
+      },
+      "required": ["entity_type", "logical_id", "version_id"]
+    },
+    "node_ref": {
+      "type": "object", "additionalProperties": false,
+      "properties": {
+        "entity_type": {"const": "node_declaration/v1"},
+        "logical_id": {"type": "string", "pattern": "^node:[a-f0-9]{32}$"},
+        "version_id": {"type": "string", "pattern": "^node_declaration_version:[a-f0-9]{32}$"}
+      },
+      "required": ["entity_type", "logical_id", "version_id"]
+    },
+    "version_ref": {
+      "type": "object", "additionalProperties": false,
+      "properties": {
+        "entity_type": {"type": "string", "pattern": "^[a-z][a-z0-9_]*(?:/v[1-9][0-9]*)$"},
+        "logical_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"},
+        "version_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"}
+      },
+      "required": ["entity_type", "logical_id", "version_id"]
+    },
+    "resource_ref": {
+      "type": "object", "additionalProperties": false,
+      "properties": {
+        "resource_id": {"type": "string", "pattern": "^resource:[a-f0-9]{32}$"},
+        "resource_version_id": {"type": "string", "pattern": "^resource_version:[a-f0-9]{32}$"}
+      },
+      "required": ["resource_id", "resource_version_id"]
+    },
+    "content_schema_ref": {
+      "oneOf": [
+        {
+          "allOf": [
+            {"$ref": "#/definitions/version_ref"},
+            {"properties": {
+              "entity_type": {"const": "registry_type_catalog/v1"},
+              "logical_id": {"pattern": "^schema:[a-f0-9]{32}$"},
+              "version_id": {"pattern": "^resource_version:[a-f0-9]{32}$"}
+            }}
+          ]
+        },
+        {"$ref": "#/definitions/resource_ref"}
+      ]
+    }
+  },
+  "properties": {
+    "output_binding_id": {"type": "string", "pattern": "^output_binding:[a-f0-9]{32}$"},
+    "output_binding_version_id": {"type": "string", "pattern": "^output_binding_version:[a-f0-9]{32}$"},
+    "output_port_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]{0,63}$"},
+    "task_round_ref": {"$ref": "#/definitions/task_round_ref"},
+    "net_ref": {"$ref": "#/definitions/net_ref"},
+    "node_ref": {"$ref": "#/definitions/node_ref"},
+    "team_design_root_ref": {"$ref": "#/definitions/version_ref"},
+    "opaque_action_ref": {"$ref": "#/definitions/version_ref"},
+    "place": {"type": "string", "minLength": 1},
+    "place_ref": {"$ref": "#/definitions/version_ref"},
+    "content_schema_ref": {"$ref": "#/definitions/content_schema_ref"},
+    "content_schema_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*(?:/[a-z][a-z0-9_]*)+/v[1-9][0-9]*$"},
+    "declared_outcome_id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]{0,63}$"
+    },
+    "petri_outcome_color": {
+      "type": "string",
+      "pattern": "^output_binding_[a-f0-9]+$"
+    },
+    "normal_output_cardinality": {
+      "type": "object", "additionalProperties": false,
+      "properties": {
+        "minimum": {"type": "integer", "minimum": 0},
+        "maximum": {"type": "integer", "minimum": 0}
+      },
+      "required": ["minimum", "maximum"]
+    }
+  },
+  "required": [
+    "output_binding_id", "output_binding_version_id", "output_port_id", "task_round_ref", "net_ref",
+    "node_ref", "team_design_root_ref", "opaque_action_ref", "place", "place_ref",
+    "content_schema_ref", "content_schema_id", "normal_output_cardinality"
+  ]
+}

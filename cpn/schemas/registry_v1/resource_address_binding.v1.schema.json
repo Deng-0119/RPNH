@@ -1,0 +1,123 @@
+{
+  "$id": "registry_v1/resource_address_binding/v1",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "additionalProperties": false,
+  "definitions": {
+    "task_ref": {
+      "type": "object", "additionalProperties": false,
+      "properties": {
+        "entity_type": {"const": "task/v1"},
+        "logical_id": {"type": "string", "pattern": "^task:[a-f0-9]{32}$"},
+        "version_id": {"type": "string", "pattern": "^task_version:[a-f0-9]{32}$"}
+      },
+      "required": ["entity_type", "logical_id", "version_id"]
+    },
+    "task_round_ref": {
+      "type": "object", "additionalProperties": false,
+      "properties": {
+        "entity_type": {"const": "task_round/v1"},
+        "logical_id": {"type": "string", "pattern": "^task_round:[a-f0-9]{32}$"},
+        "version_id": {"type": "string", "pattern": "^task_round_version:[a-f0-9]{32}$"}
+      },
+      "required": ["entity_type", "logical_id", "version_id"]
+    },
+    "net_ref": {
+      "type": "object", "additionalProperties": false,
+      "properties": {
+        "entity_type": {"const": "net_instance/v1"},
+        "logical_id": {"type": "string", "pattern": "^net_instance:[a-f0-9]{32}$"},
+        "version_id": {"type": "string", "pattern": "^net_instance_version:[a-f0-9]{32}$"}
+      },
+      "required": ["entity_type", "logical_id", "version_id"]
+    },
+    "invocation_ref": {
+      "type": "object", "additionalProperties": false,
+      "properties": {
+        "entity_type": {"const": "invocation/v1"},
+        "logical_id": {"type": "string", "pattern": "^invocation:[a-f0-9]{32}$"},
+        "version_id": {"type": "string", "pattern": "^invocation_version:[a-f0-9]{32}$"}
+      },
+      "required": ["entity_type", "logical_id", "version_id"]
+    },
+    "activation_ref": {
+      "type": "object", "additionalProperties": false,
+      "properties": {
+        "entity_type": {"const": "a2c_activation/v1"},
+        "logical_id": {"type": "string", "pattern": "^a2c_activation:[a-f0-9]{32}$"},
+        "version_id": {"type": "string", "pattern": "^a2c_activation_version:[a-f0-9]{32}$"}
+      },
+      "required": ["entity_type", "logical_id", "version_id"]
+    },
+    "scope_ref": {
+      "oneOf": [
+        {"$ref": "#/definitions/task_ref"},
+        {"$ref": "#/definitions/task_round_ref"},
+        {"$ref": "#/definitions/net_ref"},
+        {"$ref": "#/definitions/invocation_ref"},
+        {"$ref": "#/definitions/activation_ref"}
+      ]
+    },
+    "resource_ref": {
+      "type": "object", "additionalProperties": false,
+      "properties": {
+        "resource_id": {"type": "string", "pattern": "^resource:[a-f0-9]{32}$"},
+        "resource_version_id": {"type": "string", "pattern": "^resource_version:[a-f0-9]{32}$"}
+      },
+      "required": ["resource_id", "resource_version_id"]
+    },
+    "binding_ref": {
+      "type": "object", "additionalProperties": false,
+      "properties": {
+        "entity_type": {"const": "resource_address_binding/v1"},
+        "logical_id": {"type": "string", "pattern": "^resource_address_binding:[a-f0-9]{32}$"},
+        "version_id": {"type": "string", "pattern": "^resource_address_binding_version:[a-f0-9]{32}$"}
+      },
+      "required": ["entity_type", "logical_id", "version_id"]
+    },
+    "operation_binding_ref": {
+      "type": "object", "additionalProperties": false,
+      "properties": {
+        "entity_type": {"const": "operation_binding/v1"},
+        "logical_id": {"type": "string", "pattern": "^operation_binding:[a-f0-9]{32}$"},
+        "version_id": {"type": "string", "pattern": "^operation_binding_version:[a-f0-9]{32}$"}
+      },
+      "required": ["entity_type", "logical_id", "version_id"]
+    }
+  },
+  "properties": {
+    "binding_id": {"type": "string", "pattern": "^resource_address_binding:[a-f0-9]{32}$"},
+    "binding_version_id": {"type": "string", "pattern": "^resource_address_binding_version:[a-f0-9]{32}$"},
+    "scope_ref": {"$ref": "#/definitions/scope_ref"},
+    "opaque_name": {"type": "string", "minLength": 1},
+    "resource_ref": {"oneOf": [{"$ref": "#/definitions/resource_ref"}, {"type": "null"}]},
+    "previous_binding_ref": {"oneOf": [{"$ref": "#/definitions/binding_ref"}, {"type": "null"}]},
+    "lifecycle_state": {"enum": ["bound", "tombstoned"]},
+    "authorization_ref": {"$ref": "#/definitions/operation_binding_ref"},
+    "commit_transaction_id": {"type": "string", "pattern": "^transaction:[a-f0-9]{32}$"},
+    "resulting_stream_sequence": {"type": "integer", "minimum": 1},
+    "command_material": {
+      "type": "object", "additionalProperties": false,
+      "properties": {
+        "address": {
+          "type": "object", "additionalProperties": false,
+          "properties": {
+            "scope_ref": {"$ref": "#/definitions/scope_ref"},
+            "opaque_name": {"type": "string", "minLength": 1}
+          },
+          "required": ["scope_ref", "opaque_name"]
+        },
+        "resource_ref": {"oneOf": [{"$ref": "#/definitions/resource_ref"}, {"type": "null"}]},
+        "authorization_ref": {"$ref": "#/definitions/operation_binding_ref"},
+        "expected_binding_ref": {"oneOf": [{"$ref": "#/definitions/binding_ref"}, {"type": "null"}]},
+        "tombstone": {"type": "boolean"}
+      },
+      "required": ["address", "resource_ref", "authorization_ref", "expected_binding_ref", "tombstone"]
+    }
+  },
+  "required": [
+    "binding_id", "binding_version_id", "scope_ref", "opaque_name", "resource_ref",
+    "previous_binding_ref", "lifecycle_state", "authorization_ref", "commit_transaction_id",
+    "resulting_stream_sequence", "command_material"
+  ]
+}

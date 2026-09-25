@@ -1,0 +1,60 @@
+{
+  "$id": "registry_v1/resource_delivery_prepared/v1",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "additionalProperties": false,
+  "definitions": {
+    "delivery_ref": {
+      "type": "object", "additionalProperties": false,
+      "properties": {
+        "entity_type": {"const": "resource_delivery/v1"},
+        "logical_id": {"type": "string", "pattern": "^resource_delivery:[a-f0-9]{32}$"},
+        "version_id": {"type": "string", "pattern": "^resource_delivery_version:[a-f0-9]{32}$"}
+      }, "required": ["entity_type", "logical_id", "version_id"]
+    },
+    "resource_ref": {
+      "type": "object", "additionalProperties": false,
+      "properties": {
+        "resource_id": {"type": "string", "pattern": "^resource:[a-f0-9]{32}$"},
+        "resource_version_id": {"type": "string", "pattern": "^resource_version:[a-f0-9]{32}$"}
+      }, "required": ["resource_id", "resource_version_id"]
+    },
+    "operation_binding_ref": {
+      "type": "object", "additionalProperties": false,
+      "properties": {
+        "entity_type": {"const": "operation_binding/v1"},
+        "logical_id": {"type": "string", "pattern": "^operation_binding:[a-f0-9]{32}$"},
+        "version_id": {"type": "string", "pattern": "^operation_binding_version:[a-f0-9]{32}$"}
+      }, "required": ["entity_type", "logical_id", "version_id"]
+    },
+    "capability_grant_ref": {
+      "type": "object", "additionalProperties": false,
+      "properties": {
+        "entity_type": {"const": "capability_grant/v1"},
+        "logical_id": {"type": "string", "pattern": "^grant:[a-f0-9]{32}$"},
+        "version_id": {"type": "string", "pattern": "^grant:[a-f0-9]{32}$"}
+      }, "required": ["entity_type", "logical_id", "version_id"]
+    },
+    "authorization_ref": {"oneOf": [
+      {"$ref": "#/definitions/operation_binding_ref"},
+      {"$ref": "#/definitions/capability_grant_ref"}
+    ]},
+    "invocation_ref": {
+      "type": "object", "additionalProperties": false,
+      "properties": {
+        "entity_type": {"const": "invocation/v1"},
+        "logical_id": {"type": "string", "pattern": "^invocation:[a-f0-9]{32}$"},
+        "version_id": {"type": "string", "pattern": "^invocation_version:[a-f0-9]{32}$"}
+      }, "required": ["entity_type", "logical_id", "version_id"]
+    }
+  },
+  "properties": {
+    "delivery_ref": {"$ref": "#/definitions/delivery_ref"},
+    "resource_ref": {"$ref": "#/definitions/resource_ref"},
+    "resource_byte_count": {"type": "integer", "minimum": 0},
+    "authorization_ref": {"$ref": "#/definitions/authorization_ref"},
+    "context_ref": {"$ref": "#/definitions/invocation_ref"},
+    "boundary": {"enum": ["llm_prompt", "tool_result", "subprocess_read", "parent_receipt", "petri_input"]}
+  },
+  "required": ["delivery_ref", "resource_ref", "resource_byte_count", "authorization_ref", "context_ref", "boundary"]
+}

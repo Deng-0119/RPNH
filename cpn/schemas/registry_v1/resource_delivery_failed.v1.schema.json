@@ -1,0 +1,40 @@
+{
+  "$id": "registry_v1/resource_delivery_failed/v1",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "additionalProperties": false,
+  "definitions": {
+    "delivery_ref": {
+      "type": "object", "additionalProperties": false,
+      "properties": {
+        "entity_type": {"const": "resource_delivery/v1"},
+        "logical_id": {"type": "string", "pattern": "^resource_delivery:[a-f0-9]{32}$"},
+        "version_id": {"type": "string", "pattern": "^resource_delivery_version:[a-f0-9]{32}$"}
+      }, "required": ["entity_type", "logical_id", "version_id"]
+    },
+    "witness_ref": {
+      "type": "object", "additionalProperties": false,
+      "properties": {
+        "entity_type": {"const": "resource_release_witness/v1"},
+        "logical_id": {"type": "string", "pattern": "^release_witness:[a-f0-9]{32}$"},
+        "version_id": {"type": "string", "pattern": "^release_witness_version:[a-f0-9]{32}$"}
+      }, "required": ["entity_type", "logical_id", "version_id"]
+    },
+    "boundary_receipt_ref": {
+      "type": "object", "additionalProperties": false,
+      "properties": {
+        "entity_type": {"const": "delivery_boundary_receipt/v1"},
+        "logical_id": {"type": "string", "pattern": "^boundary_receipt:[a-f0-9]{32}$"},
+        "version_id": {"type": "string", "pattern": "^boundary_receipt_version:[a-f0-9]{32}$"}
+      }, "required": ["entity_type", "logical_id", "version_id"]
+    }
+  },
+  "properties": {
+    "delivery_ref": {"$ref": "#/definitions/delivery_ref"},
+    "terminal_delivery_ref": {"$ref": "#/definitions/delivery_ref"},
+    "witness_ref": {"oneOf": [{"$ref": "#/definitions/witness_ref"}, {"type": "null"}]},
+    "boundary_receipt_ref": {"$ref": "#/definitions/boundary_receipt_ref"},
+    "outcome": {"const": "failed"}
+  },
+  "required": ["delivery_ref", "terminal_delivery_ref", "witness_ref", "boundary_receipt_ref", "outcome"]
+}

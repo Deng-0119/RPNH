@@ -1,0 +1,50 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "registry_v1/main_thread/v1",
+  "title": "Persistent main-thread authority version",
+  "type": "object",
+  "additionalProperties": false,
+  "definitions": {
+    "ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "entity_type": {"type": "string"},
+        "logical_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"},
+        "version_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"}
+      },
+      "required": ["entity_type", "logical_id", "version_id"]
+    },
+    "thread_ref": {
+      "allOf": [
+        {"$ref": "#/definitions/ref"},
+        {"properties": {"entity_type": {"const": "main_thread/v1"}, "logical_id": {"pattern": "^resource:[a-f0-9]{32}$"}, "version_id": {"pattern": "^resource_version:[a-f0-9]{32}$"}}}
+      ]
+    },
+    "turn_ref": {
+      "allOf": [
+        {"$ref": "#/definitions/ref"},
+        {"properties": {"entity_type": {"const": "main_turn/v1"}, "logical_id": {"pattern": "^resource:[a-f0-9]{32}$"}, "version_id": {"pattern": "^resource_version:[a-f0-9]{32}$"}}}
+      ]
+    },
+    "nullable_thread_ref": {"oneOf": [{"$ref": "#/definitions/thread_ref"}, {"type": "null"}]},
+    "nullable_turn_ref": {"oneOf": [{"$ref": "#/definitions/turn_ref"}, {"type": "null"}]}
+  },
+  "properties": {
+    "main_thread_ref": {"$ref": "#/definitions/thread_ref"},
+    "predecessor_version_ref": {"$ref": "#/definitions/nullable_thread_ref"},
+    "state": {"enum": ["idle", "turn_active", "stopped"]},
+    "next_turn_ordinal": {"type": "integer", "minimum": 1},
+    "active_turn_ref": {"$ref": "#/definitions/nullable_turn_ref"},
+    "latest_turn_ref": {"$ref": "#/definitions/nullable_turn_ref"},
+    "latest_committed_turn_ref": {"$ref": "#/definitions/nullable_turn_ref"}
+  },
+  "required": ["main_thread_ref", "predecessor_version_ref", "state", "next_turn_ordinal", "active_turn_ref", "latest_turn_ref", "latest_committed_turn_ref"],
+  "allOf": [
+    {
+      "if": {"properties": {"state": {"const": "turn_active"}}, "required": ["state"]},
+      "then": {"properties": {"active_turn_ref": {"$ref": "#/definitions/turn_ref"}}},
+      "else": {"properties": {"active_turn_ref": {"type": "null"}}}
+    }
+  ]
+}

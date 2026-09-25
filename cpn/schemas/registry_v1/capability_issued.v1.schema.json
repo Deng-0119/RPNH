@@ -1,0 +1,64 @@
+{
+  "$id": "registry_v1/capability_issued/v1",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "additionalProperties": false,
+  "definitions": {
+    "ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "entity_type": {"type": "string"},
+        "logical_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"},
+        "version_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"}
+      },
+      "required": ["entity_type", "logical_id", "version_id"]
+    }
+  },
+  "properties": {
+    "activation_id": {
+      "pattern": "^a2c_activation:[a-f0-9]{32}$",
+      "type": ["string", "null"]
+    },
+    "grant_id": {
+      "pattern": "^grant:[a-f0-9]{32}$",
+      "type": "string"
+    },
+    "operation_binding_ref": {"$ref": "#/definitions/ref"},
+    "lifetime_ref": {"$ref": "#/definitions/ref"},
+    "parent_grant_id": {
+      "pattern": "^grant:[a-f0-9]{32}$",
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "resource_version_ids": {
+      "items": {
+        "pattern": "^resource_version:[a-f0-9]{32}$",
+        "type": "string"
+      },
+      "minItems": 1,
+      "type": "array",
+      "uniqueItems": true
+    },
+    "revocation_condition": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "target_invocation_id": {
+      "pattern": "^invocation:[a-f0-9]{32}$",
+      "type": "string"
+    }
+  },
+  "required": [
+    "grant_id",
+    "target_invocation_id",
+    "operation_binding_ref",
+    "lifetime_ref",
+    "resource_version_ids",
+    "revocation_condition",
+    "parent_grant_id"
+  ],
+  "title": "capability_issued/v1",
+  "type": "object"
+}

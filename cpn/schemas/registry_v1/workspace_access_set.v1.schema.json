@@ -1,0 +1,18 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "registry_v1/workspace_access_set/v1",
+  "title": "Lagging settled actual workspace/resource access set",
+  "type": "object",
+  "additionalProperties": false,
+  "definitions": {
+    "ref": {"type": "object", "additionalProperties": false, "properties": {"entity_type": {"type": "string"}, "logical_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"}, "version_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"}}, "required": ["entity_type", "logical_id", "version_id"]},
+    "access": {"type": "object", "additionalProperties": false, "properties": {"resource_ref": {"$ref": "#/definitions/ref"}, "logical_slot_ref": {"$ref": "#/definitions/ref"}, "mode": {"enum": ["read", "edit"]}, "path": {"type": "string", "minLength": 1}, "derived_from_ref": {"oneOf": [{"$ref": "#/definitions/ref"}, {"type": "null"}]}}, "required": ["resource_ref", "logical_slot_ref", "mode", "path", "derived_from_ref"]}
+  },
+  "properties": {
+    "workspace_access_set_ref": {"$ref": "#/definitions/ref"},
+    "transition_firing_ref": {"$ref": "#/definitions/ref"},
+    "actual_accesses": {"type": "array", "items": {"$ref": "#/definitions/access"}, "uniqueItems": true},
+    "settled": {"const": true}
+  },
+  "required": ["workspace_access_set_ref", "transition_firing_ref", "actual_accesses", "settled"]
+}
