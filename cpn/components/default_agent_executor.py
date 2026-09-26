@@ -10,6 +10,7 @@ from __future__ import annotations
 import logging
 import sqlite3
 import time
+from collections.abc import Mapping
 from typing import TYPE_CHECKING
 
 from cpn.components.registered_operation_dispatcher import (
@@ -65,6 +66,20 @@ def _optional_workspace_runner(interruption_requested=None):
             **kwargs, interruption_requested=interruption_requested)
 
     return run
+
+
+def _agent_context_policy(input_port):
+    from cpn.components.agent_loop.compact import ContextReductionSettings
+    from cpn.rpnh.runtime_policy import runtime_policy_from_document
+    execution = getattr(input_port, "execution_policy", None)
+    runtime = runtime_policy_from_document(
+        execution.get("runtime") if isinstance(execution, Mapping) else None)
+    return (
+        ContextReductionSettings(
+            tool_output_byte_limit=(
+                runtime.context_tool_output_byte_limit)),
+        runtime.context_pressure_trigger_ratio,
+    )
 
 
 class DefaultAgentExecutor:
@@ -290,8 +305,12 @@ class DefaultAgentExecutor:
         )
         from cpn.rpnh.registry.operations import OperationExecutionResult
         try:
+            reduction, pressure_ratio = _agent_context_policy(
+                self._llm_input_port)
             llm = RegistryAgentLoopLLMPort(
-                self._registry, self._llm_input_port)
+                self._registry, self._llm_input_port,
+                reduction_settings=reduction,
+                context_pressure_trigger_ratio=pressure_ratio)
             completion = AgentLoopService(
                 self._registry, llm=llm,
                 tool_catalog=self._registry.current_agent_tool_catalog_v1(
@@ -400,9 +419,13 @@ class DefaultAgentExecutor:
             from cpn.components.agent_loop.service import (
                 AgentLoopService, RegistryAgentLoopLLMPort,
             )
+            reduction, pressure_ratio = _agent_context_policy(
+                self._llm_input_port)
             llm = RegistryAgentLoopLLMPort(
                 self._registry, self._llm_input_port,
-                timing_origin_ns=operation_timing_origin_ns)
+                timing_origin_ns=operation_timing_origin_ns,
+                reduction_settings=reduction,
+                context_pressure_trigger_ratio=pressure_ratio)
             completion = AgentLoopService(
                 self._registry, llm=llm,
                 tool_catalog=self._registry.current_agent_tool_catalog_v1(

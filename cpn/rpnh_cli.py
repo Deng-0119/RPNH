@@ -200,6 +200,8 @@ def _net_parser() -> argparse.ArgumentParser:
     parser.add_argument("--no-open", action="store_true")
     parser.add_argument("--host", default="127.0.0.1")
     parser.add_argument("--port", type=int, default=0)
+    parser.add_argument("--max-checkpoints", type=int, default=2048)
+    parser.add_argument("--max-firings", type=int, default=2000)
     return parser
 
 
@@ -226,6 +228,9 @@ def _net_command(argv: Sequence[str]) -> int:
         if args.no_open:
             forwarded.append("--no-open")
         forwarded.extend(("--host", args.host, "--port", str(args.port)))
+        forwarded.extend((
+            "--max-checkpoints", str(args.max_checkpoints),
+            "--max-firings", str(args.max_firings)))
     else:
         forwarded.extend(("--format", args.format))
         if args.resources_only:

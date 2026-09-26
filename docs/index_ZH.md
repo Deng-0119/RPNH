@@ -21,7 +21,7 @@ metadata:
 |---|---|
 | 安装 core/basic、源码或 wheel | [安装](guides/installation_ZH.md) |
 | 运行原生、混合、任务与安装版跨宿主案例 | [案例](guides/examples_ZH.md) |
-| 配置精确路由与凭据 | [模型配置](guides/models_ZH.md) |
+| 配置 route、模型与全部受支持运行上限 | [配置总表](guides/configuration_ZH.md)、[模型配置](guides/models_ZH.md) |
 | 控制会话/任务并恢复 | [使用](guides/usage_ZH.md) |
 | 不破坏证据地定位故障 | [排障](guides/troubleshooting_ZH.md) |
 | 扩展 workflow/tool/skill/MCP | [自定义](guides/customization_ZH.md) |

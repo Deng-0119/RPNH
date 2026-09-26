@@ -1002,7 +1002,8 @@ def compact_agent_context_v1(
     loop_context_window = prepared_target.context_window_tokens
     pressure_policy = (
         ContextPressurePolicy(
-            loop_context_window, prepared_target.max_output_tokens)
+            loop_context_window, prepared_target.max_output_tokens,
+            self._context_pressure_trigger_ratio)
         if (trigger_reason == "context_pressure"
             and loop_context_window is not None)
         else None)

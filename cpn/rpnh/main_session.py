@@ -130,9 +130,15 @@ def parse_main_decision(
 def _main_prompt(
         history: tuple[tuple[str, str], ...], user_text: str, *,
         required_task_kind: str | None = None, native_operations=(),
+        history_message_limit: int = 20,
 ) -> str:
+    if (isinstance(history_message_limit, bool)
+            or not isinstance(history_message_limit, int)
+            or history_message_limit < 1):
+        raise ValueError("main history message limit must be positive")
     transcript = "\n".join(
-        f"{role}: {body}" for role, body in history[-20:])
+        f"{role}: {body}"
+        for role, body in history[-history_message_limit:])
     requirement = (
         "This request explicitly requires a workflow task; task must not be null "
         "or single_agent."
@@ -665,17 +671,24 @@ class MainSession:
             # the child Registry.  Never remove any child-owned contents.
             pass
         plugin_settings, operations = self._plugin_settings(turn)
+        from cpn.llm_adapters import load_llm_execution_selection
+        runtime = load_llm_execution_selection(
+            self.execution_config_path).runtime_policy
         return AgentTaskSpec(
             **plugin_settings,
             run_dir=run_dir,
             prompt=_main_prompt(
                 tuple(self.history), user_text,
-                required_task_kind=required_task_kind, native_operations=operations),
+                required_task_kind=required_task_kind,
+                native_operations=operations,
+                history_message_limit=runtime.main_history_message_limit),
             stages=(AgentStage(
                 "main",
                 "Act only as the RPNH main-session agent and emit the declared "
                 "JSON decision."),),
             execution_config_path=self.execution_config_path,
+            max_attempts_per_stage=runtime.max_turns_per_node,
+            max_parallel_nodes=runtime.max_parallel_nodes,
             owner_statement="RPNH interactive main-session turn",
             owner_socket_path=owner_socket_path(
                 self.root, f"main-turn:{relative_path}", run_dir),
@@ -727,6 +740,9 @@ class MainSession:
             "child-" + uuid4().hex[:12])
         native = self._selected_plugins()
         settings, _ = self._plugin_settings({"user_input": {"native_plugins": native}})
+        from cpn.llm_adapters import load_llm_execution_selection
+        runtime = load_llm_execution_selection(
+            self.execution_config_path).runtime_policy
         handle = self.task_control.start(AgentTaskSpec(
             **settings,
             run_dir=run_dir,
@@ -734,6 +750,8 @@ class MainSession:
             stages=stages,
             execution_config_path=self.execution_config_path,
             workflow_graph=workflow_graph,
+            max_attempts_per_stage=runtime.max_turns_per_node,
+            max_parallel_nodes=runtime.max_parallel_nodes,
             owner_statement="RPNH main-session authorized child task",
         ))
         self._index_child_registry(
@@ -812,6 +830,9 @@ class MainSession:
             return handle
         origin_turn = self._turn_document(self._committed_turn_ref(ordinal))
         settings, _ = self._plugin_settings(origin_turn)
+        from cpn.llm_adapters import load_llm_execution_selection
+        runtime = load_llm_execution_selection(
+            self.execution_config_path).runtime_policy
         handle = self.task_control.start(AgentTaskSpec(
             **settings,
             run_dir=run_dir,
@@ -819,6 +840,8 @@ class MainSession:
             stages=task.stages,
             execution_config_path=self.execution_config_path,
             workflow_graph=task.workflow_graph,
+            max_attempts_per_stage=runtime.max_turns_per_node,
+            max_parallel_nodes=runtime.max_parallel_nodes,
             owner_statement="RPNH main-session authorized child task",
         ))
         self._launched_children[ordinal] = handle

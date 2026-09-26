@@ -15,6 +15,7 @@ from collections.abc import Mapping
 from types import MappingProxyType
 
 from cpn.rpnh.llm_contracts import LLMInputTarget
+from cpn.rpnh.runtime_policy import WorkspacePolicy
 from cpn.rpnh.module import ModuleDeclaration
 from cpn.rpnh.registry.identities import new_id
 from cpn.rpnh.registry.models import VersionRef
@@ -76,7 +77,8 @@ def _declared_agent_prompt(operation, target: LLMInputTarget) -> dict:
 def make_optional_agent_host_bindings(llm_input_target: LLMInputTarget, *,
         provider_backend_config: Mapping | None = None,
         transport_contract: Mapping | None = None,
-        execution_profiles: Mapping | None = None):
+        execution_profiles: Mapping | None = None,
+        workspace_policy: WorkspacePolicy | None = None):
     """Return the public ``start_run(host_execution_bindings=...)`` factory.
 
     The owner must pass the same exact model condition to start_run and this
@@ -87,6 +89,9 @@ def make_optional_agent_host_bindings(llm_input_target: LLMInputTarget, *,
     """
     if not isinstance(llm_input_target, LLMInputTarget):
         raise TypeError("optional agent HOST startup requires an exact LLMInputTarget")
+    workspace_policy = workspace_policy or WorkspacePolicy()
+    if not isinstance(workspace_policy, WorkspacePolicy):
+        raise TypeError("optional agent HOST startup requires WorkspacePolicy")
     if (provider_backend_config is None) != (transport_contract is None):
         raise ValueError("optional provider startup requires both exact route and transport documents")
     backend_data = None if provider_backend_config is None else dict(provider_backend_config)
@@ -232,11 +237,11 @@ def make_optional_agent_host_bindings(llm_input_target: LLMInputTarget, *,
             lambda ref: {
                 "profile_ref": ref_payload(ref),
                 "environment_ref": ref_payload(environment),
-                "timeout_seconds": 120,
-                "memory_bytes": 4 * 1024 * 1024 * 1024,
-                "process_limit": 64,
-                "source_size_bytes": 16 * 1024 * 1024,
-                "input_size_bytes": 16 * 1024 * 1024,
+                "timeout_seconds": workspace_policy.timeout_seconds,
+                "memory_bytes": workspace_policy.memory_bytes,
+                "process_limit": workspace_policy.process_limit,
+                "source_size_bytes": workspace_policy.source_size_bytes,
+                "input_size_bytes": workspace_policy.input_size_bytes,
             },
             "workspace-profile",
         )
@@ -248,9 +253,12 @@ def make_optional_agent_host_bindings(llm_input_target: LLMInputTarget, *,
                     os.path.realpath(sys.executable),
                     os.path.realpath(sys.prefix)),
                 profile=NumericalToolProfile(
-                    workspace_profile, environment, 120,
-                    4 * 1024 * 1024 * 1024, 64,
-                    16 * 1024 * 1024, 16 * 1024 * 1024)),
+                    workspace_profile, environment,
+                    workspace_policy.timeout_seconds,
+                    workspace_policy.memory_bytes,
+                    workspace_policy.process_limit,
+                    workspace_policy.source_size_bytes,
+                    workspace_policy.input_size_bytes)),
             "execution_environment_inventory",
         )
         result = {}

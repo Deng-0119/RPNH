@@ -6,13 +6,16 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: PROVIDER_MODEL_CONFIGURATION.md
-  revision: "2026-09-25.1"
+  revision: "2026-09-26.1"
   status: source-reviewed-pre-release
 ---
 
 # Provider 与 model 配置
 
 [English](PROVIDER_MODEL_CONFIGURATION.md)
+
+本页详细说明 provider transport。Agent、workspace、viewer、plugin 及固定兼容上限的
+完整清单见[配置总表](guides/configuration_ZH.md)。
 
 ## 引导式配置
 
@@ -68,6 +71,8 @@ RPNH 仍保持 exact-model 权威：生成的 outbound model 与 `model_conditio
 provider 和 exact model。远程 endpoint 必须使用 HTTPS；明文 HTTP 仅允许连接同机
 loopback 服务：
 
+下例数值用于展示高容量 profile，不是另一组默认值；交互默认值以上文为准。
+
 ```json
 {
   "schema_version": "rpnh/provider_model_catalog/v2",
@@ -122,6 +127,11 @@ compaction；如果输出 token 预留要求更早压缩，则采用更早边界
 `context_compaction_retained_tokens` 可选地约束最近完整消息尾部，且必须小于声明的窗口。
 省略窗口时 RPNH 不猜测 provider 专属容量，而是禁用主动 pressure 判定。压缩后完整历史
 turn 仍保存在 Registry 中。
+
+同一 model 项可增加完整的可选 `runtime` 对象，用于配置每 node 回合预算、workflow
+并发、main history prompt 尾部、context pressure/reduction 与 workspace 资源上限。
+省略时 build 会解析为文档默认值并写入生成 execution profile。全部字段和默认值见配置
+总表；不要手工修改生成 profile。
 
 非秘密静态 header 可写入 `headers`，但不能覆盖 credential header，也不能覆盖
 `Content-Type`、`Host`、`Content-Length` 等 transport-owned header。

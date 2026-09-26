@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: en
   counterpart: models_ZH.md
-  revision: "2026-09-26.1"
+  revision: "2026-09-26.2"
   status: source-reviewed-not-final-candidate-acceptance
   basis: "core; adapter differences explicitly labelled"
 ---
@@ -14,6 +14,10 @@ metadata:
 [English](models.md) | [中文](models_ZH.md)
 
 # Provider and exact-model configuration
+
+The [configuration and limits reference](configuration.md) is the exhaustive
+list of user-settable runtime fields and fixed protocol boundaries. This page
+focuses on model onboarding.
 
 ## Goal and authority
 Create one user-owned catalog and derive all selectable profiles from it. An exact provider/model identity is opaque user input, not a recommendation or a promise of transport compatibility. The catalog ships empty. Configuration validation, credential presence and successful physical execution are three different facts.
@@ -68,13 +72,27 @@ The following is **schema-oriented example data, not a usable service**. Replace
       "max_output_tokens": 1024,
       "max_response_bytes": 1048576,
       "context_window_tokens": 131072,
-      "context_compaction_retained_tokens": 16384
+      "context_compaction_retained_tokens": 16384,
+      "runtime": {
+        "max_turns_per_node": 12,
+        "max_parallel_nodes": 4,
+        "main_history_message_limit": 20,
+        "context_pressure_trigger_ratio": 0.9,
+        "context_tool_output_byte_limit": 10000,
+        "workspace": {
+          "timeout_seconds": 120,
+          "memory_bytes": 4294967296,
+          "process_limit": 64,
+          "source_size_bytes": 16777216,
+          "input_size_bytes": 16777216
+        }
+      }
     }]
   }]
 }
 ```
 
-`profile` is a lowercase file-safe slug. `model_condition` is preserved as the outbound model. The generator accepts exactly one external route per selected profile and generic environment-to-header credentials (or `null`). The endpoint must omit userinfo/query/fragment; remote routes require HTTPS, while plain HTTP is limited to `localhost` or a loopback IP for a same-machine OpenAI-compatible server. Static authentication/connection headers and duplicate credential headers are rejected. All limits are positive integers. `context_window_tokens` is an optional exact-model capacity supplied by the user; when present it enables proactive context-pressure compaction before the configured route is called. `context_compaction_retained_tokens` optionally controls the recent complete-message tail and must be smaller than the window. When the window is absent, RPNH does not invent a capacity and can only react to an observed response-length boundary. The recovery attempt/cycle fields are bounded from one to three by the schema.
+`profile` is a lowercase file-safe slug. `model_condition` is preserved as the outbound model. The generator accepts exactly one external route per selected profile and generic environment-to-header credentials (or `null`). The endpoint must omit userinfo/query/fragment; remote routes require HTTPS, while plain HTTP is limited to `localhost` or a loopback IP for a same-machine OpenAI-compatible server. Static authentication/connection headers and duplicate credential headers are rejected. All integer limits are positive. `context_window_tokens` is an optional exact-model capacity supplied by the user; when present it enables proactive context-pressure compaction before the configured route is called. `context_compaction_retained_tokens` optionally controls the recent complete-message tail and must be smaller than the window. When the window is absent, RPNH does not invent a capacity and can only react to an observed response-length boundary. The complete optional `runtime` object controls task, concurrency, compaction and workspace policy; omission resolves to the documented defaults and generated profiles still record those values. The recovery attempt/cycle fields are bounded from one to three by the schema.
 
 ## Transport, recovery and effects
 The external transport exposed by this catalog is `openai_chat_completions/v1`, not every API marketed as compatible. The alternative `local_process` adapter requires explicit `argv`, `probe_argv`, `env` and `inherit_env`; `{model}` substitution preserves the selected model. A local process or its probe may still call a paid model. Do not treat “local” as “offline”.

@@ -21,7 +21,7 @@ Start with installation and exact model configuration. These are source-reviewed
 |---|---|
 | Install core/basic, source or wheel | [Installation](guides/installation.md) |
 | Run native, hybrid, task and installed cross-host examples | [Examples](guides/examples.md) |
-| Configure exact routes and credentials | [Models](guides/models.md) |
+| Configure routes, models and every supported runtime limit | [Configuration reference](guides/configuration.md), [models](guides/models.md) |
 | Operate sessions/tasks and recover | [Usage](guides/usage.md) |
 | Diagnose without losing evidence | [Troubleshooting](guides/troubleshooting.md) |
 | Add workflows, tools, skill resources or MCP bindings | [Customization](guides/customization.md) |

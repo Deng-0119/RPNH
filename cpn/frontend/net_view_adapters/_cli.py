@@ -24,6 +24,8 @@ def run_cli(host: str, binder: Callable[..., RegistryViewBinding], argv=None) ->
     parser.add_argument('--no-open', action='store_true')
     parser.add_argument('--show-resources', action='store_true')
     parser.add_argument('--port', type=int, default=0)
+    parser.add_argument('--max-checkpoints', type=int, default=2048)
+    parser.add_argument('--max-firings', type=int, default=2000)
     parser.add_argument('--presentation', type=Path, help='Optional exact-topology display metadata; no execution changes')
     args = parser.parse_args(argv)
     if not 0 <= args.port <= 65535:
@@ -43,7 +45,10 @@ def run_cli(host: str, binder: Callable[..., RegistryViewBinding], argv=None) ->
             return 0
         from cpn.frontend.dashboard import RegistryDashboard, load_presentation
         provider = RegistryDashboard(binding.run_dir, catalog=binding.catalog,
-                                     binding=binding, presentation=load_presentation(args.presentation))
+                                     binding=binding,
+                                     presentation=load_presentation(args.presentation),
+                                     max_checkpoints=args.max_checkpoints,
+                                     max_firings=args.max_firings)
         return serve_projection(provider, port=args.port, open_browser=not args.no_open,
                                 show_resources=args.show_resources)
     except (OSError, ValueError, TypeError, RuntimeError) as error:

@@ -695,6 +695,7 @@ def _execute_agent_task(
     try:
         host_bindings = make_optional_agent_host_bindings(
             selection.input_target,
+            workspace_policy=selection.runtime_policy.workspace,
             provider_backend_config=_execution_route(selection),
             transport_contract={
                 "interaction_protocol_ref": "llm_request_envelope/v1",

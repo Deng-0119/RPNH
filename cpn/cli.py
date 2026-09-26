@@ -43,6 +43,8 @@ def build_parser() -> argparse.ArgumentParser:
     view.add_argument("--no-open", action="store_true")
     view.add_argument("--host", default="127.0.0.1")
     view.add_argument("--port", type=int, default=0)
+    view.add_argument("--max-checkpoints", type=int, default=2048)
+    view.add_argument("--max-firings", type=int, default=2000)
     view.set_defaults(handler=_cmd_net_view)
     return parser
 
@@ -178,7 +180,10 @@ def _cmd_net_view(args: argparse.Namespace) -> int:
         raise CLIUserError("--port must be within 0..65535")
     from cpn.frontend.dashboard import RegistryDashboard
     from cpn.rpnh.agent_tasks import agent_task_catalog
-    provider = RegistryDashboard(Path(args.run), catalog=agent_task_catalog())
+    provider = RegistryDashboard(
+        Path(args.run), catalog=agent_task_catalog(),
+        max_checkpoints=args.max_checkpoints,
+        max_firings=args.max_firings)
     from cpn.frontend.server import serve_projection
     serve_projection(
         provider, host=args.host, port=args.port,

@@ -457,10 +457,15 @@ class RegistryFrontendApplication:
             relative = run_dir.relative_to(session.root).as_posix()
             if run_dir.exists() or any(doc.get("registry_relative_path") == relative for _, doc in links):
                 raise FrontendError("unknown_outcome", "An agent Registry lacks its launch handle; no replay.")
+            from cpn.llm_adapters import load_llm_execution_selection
+            runtime = load_llm_execution_selection(
+                session.execution_config_path).runtime_policy
             handle = session.task_control.start(AgentTaskSpec(
                 run_dir=run_dir, prompt=text,
                 stages=(AgentStage("worker", "Complete the requested task and return its result."),),
                 execution_config_path=session.execution_config_path,
+                max_attempts_per_stage=runtime.max_turns_per_node,
+                max_parallel_nodes=runtime.max_parallel_nodes,
                 owner_statement="RPNH application authorized independent agent"))
         session._index_child_registry(handle, run_dir=run_dir, origin_main_turn_ref=None)
         return {"task_id": handle.task_id, "kind": handle.kind, "status": "launch_registered_not_terminal"}

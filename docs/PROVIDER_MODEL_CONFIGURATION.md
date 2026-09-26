@@ -6,13 +6,17 @@ metadata:
   audience: operator-and-developer
   language: en
   counterpart: PROVIDER_MODEL_CONFIGURATION_ZH.md
-  revision: "2026-09-25.1"
+  revision: "2026-09-26.1"
   status: source-reviewed-pre-release
 ---
 
 # Provider and model configuration
 
 [中文](PROVIDER_MODEL_CONFIGURATION_ZH.md)
+
+This page covers provider transport in detail. The exhaustive list of Agent,
+workspace, viewer, plugin and fixed compatibility limits is the
+[configuration reference](guides/configuration.md).
 
 ## Guided setup
 
@@ -63,6 +67,9 @@ model fallback.
 The built-in HTTP adapter accepts any provider and exact model exposed through
 an OpenAI-compatible chat-completions endpoint. Remote endpoints must use
 HTTPS; plain HTTP is accepted only for a loopback service on the same machine:
+
+The numeric values below illustrate a high-capacity profile; they are not
+additional defaults. Interactive defaults are the values stated above.
 
 ```json
 {
@@ -122,6 +129,13 @@ shown by `rpnh config show`; this enables proactive compaction at the current
 tail and must be smaller than the declared window. Omitting the window disables
 proactive pressure decisions rather than making RPNH guess a provider-specific
 value. Full historical turns remain in Registry after compaction.
+
+The optional complete `runtime` object on the same model entry configures
+per-node turn budget, workflow concurrency, main-history prompt tail, context
+pressure/reduction and workspace resource bounds. When omitted, build resolves
+documented defaults and writes them into the generated execution profile. See
+the configuration reference for every field and default; do not hand-edit the
+generated profile.
 
 Static non-secret headers may be placed in `headers`. They cannot override the
 credential header or transport-owned headers such as `Content-Type`, `Host`, or

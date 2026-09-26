@@ -30,6 +30,7 @@ class ExecutionProfile:
     recovery: Mapping[str, object] | None
     context_window_tokens: int | None
     context_compaction_retained_tokens: int | None
+    runtime: Mapping[str, object]
     @property
     def selectable(self) -> bool:
         return True
@@ -64,6 +65,7 @@ class ExecutionProfile:
         if self.context_compaction_retained_tokens is not None:
             result["context_compaction_retained_tokens"] = (
                 self.context_compaction_retained_tokens)
+        result["runtime"] = dict(self.runtime)
         return result
 
 
@@ -184,6 +186,7 @@ def _load_profile(
         context_window_tokens=selection.input_target.context_window_tokens,
         context_compaction_retained_tokens=(
             selection.input_target.context_compaction_retained_tokens),
+        runtime=selection.runtime_policy.as_document(),
     )
 
 

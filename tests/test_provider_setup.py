@@ -88,6 +88,20 @@ def test_catalog_accepts_arbitrary_provider_and_exact_model_identifiers(
                 "max_response_bytes": 1048576,
                 "context_window_tokens": 131072,
                 "context_compaction_retained_tokens": 16384,
+                "runtime": {
+                    "max_turns_per_node": 7,
+                    "max_parallel_nodes": 2,
+                    "main_history_message_limit": 8,
+                    "context_pressure_trigger_ratio": 0.75,
+                    "context_tool_output_byte_limit": 2048,
+                    "workspace": {
+                        "timeout_seconds": 45,
+                        "memory_bytes": 536870912,
+                        "process_limit": 8,
+                        "source_size_bytes": 1048576,
+                        "input_size_bytes": 2097152,
+                    },
+                },
             }],
         }],
     }), encoding="utf-8")
@@ -112,6 +126,23 @@ def test_catalog_accepts_arbitrary_provider_and_exact_model_identifiers(
             == 16384)
     assert registry_policy["context_window_tokens"] == 131072
     assert registry_policy["context_compaction_retained_tokens"] == 16384
+    assert selection.runtime_policy.max_turns_per_node == 7
+    assert selection.runtime_policy.max_parallel_nodes == 2
+    assert selection.runtime_policy.context_pressure_trigger_ratio == 0.75
+    assert registry_policy["runtime"] == {
+        "max_turns_per_node": 7,
+        "max_parallel_nodes": 2,
+        "main_history_message_limit": 8,
+        "context_pressure_trigger_ratio": 0.75,
+        "context_tool_output_byte_limit": 2048,
+        "workspace": {
+            "timeout_seconds": 45,
+            "memory_bytes": 536870912,
+            "process_limit": 8,
+            "source_size_bytes": 1048576,
+            "input_size_bytes": 2097152,
+        },
+    }
     assert registry_policy["adapter_profile"]["recovery"] == _recovery()
     route_policy = registry_policy["route_provenance"][0]
     assert route_policy["endpoint"] == (
@@ -156,6 +187,57 @@ def test_catalog_accepts_arbitrary_provider_and_exact_model_identifiers(
     with pytest.raises(
             ValueError,
             match="context_compaction_retained_tokens must be smaller"):
+        build_provider_catalog(catalog, output)
+
+
+def test_runtime_policy_rejects_partial_or_out_of_range_catalog_values(
+        tmp_path: Path,
+) -> None:
+    catalog = tmp_path / "models.json"
+    output = tmp_path / "generated"
+    base = {
+        "schema_version": "rpnh/provider_model_catalog/v2",
+        "providers": [{
+            "provider": "local",
+            "display_name": "Local",
+            "models": [{
+                "profile": "local-model",
+                "model_condition": "exact-local-model",
+                "adapter": {
+                    "adapter_kind": "local_process",
+                    "argv": ["model", "{model}"],
+                    "probe_argv": ["model", "--version"],
+                    "env": {},
+                    "inherit_env": [],
+                },
+                "timeout_seconds": 10,
+                "max_output_tokens": 64,
+                "max_response_bytes": 4096,
+            }],
+        }],
+    }
+    model = base["providers"][0]["models"][0]
+    model["runtime"] = {"max_turns_per_node": 1}
+    catalog.write_text(json.dumps(base), encoding="utf-8")
+    with pytest.raises(ValueError, match="runtime"):
+        build_provider_catalog(catalog, output)
+
+    model["runtime"] = {
+        "max_turns_per_node": 1,
+        "max_parallel_nodes": 1,
+        "main_history_message_limit": 1,
+        "context_pressure_trigger_ratio": 1.0,
+        "context_tool_output_byte_limit": 128,
+        "workspace": {
+            "timeout_seconds": 1,
+            "memory_bytes": 1,
+            "process_limit": 1,
+            "source_size_bytes": 1,
+            "input_size_bytes": 1,
+        },
+    }
+    catalog.write_text(json.dumps(base), encoding="utf-8")
+    with pytest.raises(ValueError, match="context_pressure_trigger_ratio"):
         build_provider_catalog(catalog, output)
 
 

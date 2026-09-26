@@ -27,6 +27,7 @@ from cpn.rpnh.main_session import (
     MainSessionExecutionFailed,
     MainSessionPaused,
     MainTurnSnapshot,
+    _main_prompt,
 )
 from cpn.rpnh.registry._registry import _RegistryCore
 from cpn.rpnh.registry.bootstrap import (
@@ -313,7 +314,9 @@ def _response(calls: list[dict[str, str]]) -> LLMInputResponseBytes:
         status_code=None, external_request_id=None)
 
 
-def _write_execution_profile(tmp_path: Path) -> Path:
+def _write_execution_profile(
+        tmp_path: Path, *, runtime: dict[str, object] | None = None,
+) -> Path:
     adapter = tmp_path / "adapter.json"
     adapter.write_text(json.dumps({
         "schema_version": "local_process_adapter_config/v1",
@@ -325,7 +328,7 @@ def _write_execution_profile(tmp_path: Path) -> Path:
         "inherit_env": [],
     }), encoding="utf-8")
     execution = tmp_path / "execution.json"
-    execution.write_text(json.dumps({
+    document = {
         "schema_version": "llm_execution_selection/v1",
         "adapter_kind": "local_process",
         "model_condition": "offline-main-session-test",
@@ -333,7 +336,10 @@ def _write_execution_profile(tmp_path: Path) -> Path:
         "timeout_seconds": 30,
         "max_output_tokens": 1024,
         "max_response_bytes": 65536,
-    }), encoding="utf-8")
+    }
+    if runtime is not None:
+        document["runtime"] = runtime
+    execution.write_text(json.dumps(document), encoding="utf-8")
     return execution
 
 
@@ -375,6 +381,40 @@ def test_new_session_registry_and_prepare_retry_use_exact_attempt(
     assert active is not None
     assert active[1]["state"] == "running"
     assert active[1]["attempt_relative_path"] == "main/turn-0001"
+
+
+def test_main_turn_uses_profile_runtime_policy_without_source_edits(
+        tmp_path: Path,
+) -> None:
+    execution = _write_execution_profile(tmp_path, runtime={
+        "max_turns_per_node": 5,
+        "max_parallel_nodes": 3,
+        "main_history_message_limit": 2,
+        "context_pressure_trigger_ratio": 0.8,
+        "context_tool_output_byte_limit": 512,
+        "workspace": {
+            "timeout_seconds": 9,
+            "memory_bytes": 268435456,
+            "process_limit": 4,
+            "source_size_bytes": 4096,
+            "input_size_bytes": 8192,
+        },
+    })
+    session = MainSession(tmp_path / "session", execution)
+    spec = session.prepare_turn("next question")
+    prompt = _main_prompt((
+        ("user", "old user"),
+        ("assistant", "old answer"),
+        ("user", "recent user"),
+        ("assistant", "recent answer"),
+    ), "next question", history_message_limit=2)
+
+    assert spec.max_attempts_per_stage == 5
+    assert spec.max_parallel_nodes == 1  # Main turn itself is single-agent.
+    assert "recent user" in prompt
+    assert "recent answer" in prompt
+    assert "old user" not in prompt
+    assert "old answer" not in prompt
 
 
 def test_long_main_session_uses_short_stable_owner_socket(

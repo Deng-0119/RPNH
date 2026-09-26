@@ -22,6 +22,42 @@
       "pattern": "^[^\\u0000-\\u001f\\u007f]+$"
     },
     "positiveInteger": {"type": "integer", "minimum": 1},
+    "workspacePolicy": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "timeout_seconds": {"$ref": "#/definitions/positiveInteger"},
+        "memory_bytes": {"$ref": "#/definitions/positiveInteger"},
+        "process_limit": {"$ref": "#/definitions/positiveInteger"},
+        "source_size_bytes": {"$ref": "#/definitions/positiveInteger"},
+        "input_size_bytes": {"$ref": "#/definitions/positiveInteger"}
+      },
+      "required": [
+        "timeout_seconds", "memory_bytes", "process_limit",
+        "source_size_bytes", "input_size_bytes"
+      ]
+    },
+    "runtimePolicy": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "max_turns_per_node": {"$ref": "#/definitions/positiveInteger"},
+        "max_parallel_nodes": {"$ref": "#/definitions/positiveInteger"},
+        "main_history_message_limit": {"$ref": "#/definitions/positiveInteger"},
+        "context_pressure_trigger_ratio": {
+          "type": "number", "exclusiveMinimum": 0, "exclusiveMaximum": 1
+        },
+        "context_tool_output_byte_limit": {
+          "type": "integer", "minimum": 128
+        },
+        "workspace": {"$ref": "#/definitions/workspacePolicy"}
+      },
+      "required": [
+        "max_turns_per_node", "max_parallel_nodes",
+        "main_history_message_limit", "context_pressure_trigger_ratio",
+        "context_tool_output_byte_limit", "workspace"
+      ]
+    },
     "externalRecovery": {
       "type": "object",
       "additionalProperties": false,
@@ -136,7 +172,8 @@
         "max_output_tokens": {"$ref": "#/definitions/positiveInteger"},
         "max_response_bytes": {"$ref": "#/definitions/positiveInteger"},
         "context_window_tokens": {"$ref": "#/definitions/positiveInteger"},
-        "context_compaction_retained_tokens": {"$ref": "#/definitions/positiveInteger"}
+        "context_compaction_retained_tokens": {"$ref": "#/definitions/positiveInteger"},
+        "runtime": {"$ref": "#/definitions/runtimePolicy"}
       },
       "required": [
         "profile", "model_condition", "adapter", "timeout_seconds",

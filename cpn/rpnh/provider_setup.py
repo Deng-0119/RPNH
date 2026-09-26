@@ -23,6 +23,7 @@ from cpn.llm_adapters._external_provider_recovery import (
 from cpn.rpnh.user_config import (
     config_path, discover_profiles, profile_directory,
 )
+from cpn.rpnh.runtime_policy import runtime_policy_from_document
 
 
 CATALOG_SCHEMA_VERSION = "rpnh/provider_model_catalog/v2"
@@ -231,6 +232,8 @@ def _render(document: Mapping[str, Any]) -> dict[str, bytes]:
                 "timeout_seconds": raw_model["timeout_seconds"],
                 "max_output_tokens": raw_model["max_output_tokens"],
                 "max_response_bytes": raw_model["max_response_bytes"],
+                "runtime": runtime_policy_from_document(
+                    raw_model.get("runtime")).as_document(),
             }
             if "context_window_tokens" in raw_model:
                 execution_document["context_window_tokens"] = (

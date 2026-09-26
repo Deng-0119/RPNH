@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: en
   counterpart: viewer_ZH.md
-  revision: "2026-09-25.1"
+  revision: "2026-09-26.1"
   status: source-reviewed-pre-release
 ---
 
@@ -36,9 +36,14 @@ those declared resources and their relevant connections.
 ```bash
 rpnh net --run /absolute/path/to/run --view
 rpnh net --run /absolute/path/to/run --view --no-open
+rpnh net --run /absolute/path/to/run --view --no-open \
+  --max-checkpoints 4096 --max-firings 5000
 ```
 
-The second form prints the local address without opening a browser. Use the run
+The second form prints the local address without opening a browser. The optional
+positive bounds default to 2048 canonical checkpoints and 2000 firing rows;
+raise them for a known large run instead of editing source. `--host` accepts
+only a literal loopback IP and `--port` accepts 0–65535. Use the run
 selector documented by an installed host adapter when choosing from main,
 Codex or DSH run roots; the selected run remains the sole source of truth.
 
@@ -57,3 +62,9 @@ The dashboard loads no CDN scripts and performs no provider calls.
 Pass the historical workflow's run directory to `--run`. A main-session
 Registry may contain links to child workflow registries, but each child remains
 independent; viewing or rolling back a main session does not delete the child.
+
+Codex selectors use `--root`, `--thread-id` and either `--turn` or `--task-id`.
+DSH selectors use `--root`, `--session-id` and either `--turn` or
+`--request-id`. Their `--view` mode also accepts `--presentation`,
+`--show-resources`, `--no-open`, `--port`, `--max-checkpoints` and
+`--max-firings`; `--describe` and `--json` do not start HTTP.

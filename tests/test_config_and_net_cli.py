@@ -92,6 +92,9 @@ def test_user_can_build_and_select_any_exact_provider_model_pair(
     assert shown["recovery"] == _recovery()
     assert shown["context_window_tokens"] == 131072
     assert shown["context_compaction_retained_tokens"] == 16384
+    assert shown["runtime"]["max_turns_per_node"] == 12
+    assert shown["runtime"]["max_parallel_nodes"] == 4
+    assert shown["runtime"]["main_history_message_limit"] == 20
     saved = json.loads((tmp_path / "config.json").read_text(encoding="utf-8"))
     assert saved == {
         "schema_version": "rpnh/cli_config/v3",

@@ -750,7 +750,8 @@ class DelegationExecutionMixin:
             return ParentOwnedDelegatedSubtaskLengthReplay(
                 local_sequence=prepared.leaf_turn_sequence,
                 history_messages=compact_delegated_subtask_history_after_length(
-                    prepared.history_messages))
+                    prepared.history_messages,
+                    reduction_settings=self._reduction_settings))
 
         if observed.tool_calls:
             child_schemas = {

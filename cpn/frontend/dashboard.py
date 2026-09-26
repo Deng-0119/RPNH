@@ -18,8 +18,8 @@ from cpn.rpnh.registry.publication import _version_from_payload
 from cpn.rpnh.registry.schema_catalog import SchemaCatalog
 
 SCHEMA = 'rpnh/dashboard/v1'
-MAX_CHAIN = 2048
-MAX_FIRINGS = 2000
+DEFAULT_MAX_CHECKPOINTS = 2048
+DEFAULT_MAX_FIRINGS = 2000
 
 
 def exact(value):
@@ -110,11 +110,16 @@ def load_presentation(path):
 class RegistryDashboard:
     """Callable v1 provider plus optional dashboard/history methods for the server."""
     def __init__(self, run_dir: Path, *, catalog: SchemaCatalog, presentation=None,
-                 binding=None):
+                 binding=None, max_checkpoints: int = DEFAULT_MAX_CHECKPOINTS,
+                 max_firings: int = DEFAULT_MAX_FIRINGS):
         if not isinstance(catalog, SchemaCatalog):
             raise TypeError('an explicit SchemaCatalog is required')
+        if (type(max_checkpoints) is not int or max_checkpoints < 1
+                or type(max_firings) is not int or max_firings < 1):
+            raise ValueError('dashboard limits must be positive integers')
         self.run_dir, self.catalog = Path(run_dir).resolve(), catalog
         self.presentation, self.binding = presentation, binding
+        self.max_checkpoints, self.max_firings = max_checkpoints, max_firings
         core = self._open()
         self.task_id = str(core.task_id)
 
@@ -161,7 +166,7 @@ class RegistryDashboard:
         net_ref = exact(observation['source']['net_ref'])
         ref = exact(observation['net']['marking']['checkpoint_ref'])
         items, seen, end = [], set(), 'initial_checkpoint'
-        while ref is not None and len(items) < MAX_CHAIN:
+        while ref is not None and len(items) < self.max_checkpoints:
             if ref['version_id'] in seen:
                 raise ValueError('checkpoint predecessor cycle')
             seen.add(ref['version_id'])
@@ -177,7 +182,7 @@ class RegistryDashboard:
                           'previous_checkpoint_ref': checkpoint.get('previous_checkpoint_ref'),
                           'checkpoint': checkpoint})
             ref = checkpoint.get('previous_checkpoint_ref')
-        if ref is not None and len(items) == MAX_CHAIN:
+        if ref is not None and len(items) == self.max_checkpoints:
             end = 'reader_limit'
         return items, end
 
@@ -209,7 +214,8 @@ class RegistryDashboard:
                   'items': [{k: v for k, v in x.items() if k != 'checkpoint'} for x in reversed(page)],
                   'next_before': page[-1]['cursor'] if len(eligible) > limit else None,
                   'coverage': 'current_net_canonical_checkpoints', 'end_reason': end,
-                  'provisional_history': 'unsupported', 'max_chain': MAX_CHAIN}
+                  'provisional_history': 'unsupported',
+                  'max_chain': self.max_checkpoints}
         self._stable(core, obs)
         return result
 
@@ -224,7 +230,7 @@ class RegistryDashboard:
             tid = binding['transition_id']
             rows = core.event_store.transition_firing_rows_for_task_net_transition(
                 task_ref=task, net_instance_ref=_version_from_payload(net_ref), transition_id=tid)
-            if total + len(rows) > MAX_FIRINGS:
+            if total + len(rows) > self.max_firings:
                 raise ValueError('run exceeds dashboard firing limit; narrow the run scope')
             total += len(rows)
             records[tid] = []
@@ -365,12 +371,19 @@ def main():
     parser.add_argument('--no-open', action='store_true')
     parser.add_argument('--show-resources', action='store_true')
     parser.add_argument('--port', type=int, default=0)
+    parser.add_argument('--max-checkpoints', type=int,
+                        default=DEFAULT_MAX_CHECKPOINTS)
+    parser.add_argument('--max-firings', type=int,
+                        default=DEFAULT_MAX_FIRINGS)
     args = parser.parse_args()
     from cpn.rpnh.agent_tasks import agent_task_catalog
     from cpn.frontend.server import serve_projection
     try:
         manifest = load_presentation(args.presentation)
-        provider = RegistryDashboard(args.run, catalog=agent_task_catalog(), presentation=manifest)
+        provider = RegistryDashboard(
+            args.run, catalog=agent_task_catalog(), presentation=manifest,
+            max_checkpoints=args.max_checkpoints,
+            max_firings=args.max_firings)
         if args.describe:
             frame = provider.dashboard()
             print(json.dumps({'source': frame['source'], 'presentation': frame['presentation'],

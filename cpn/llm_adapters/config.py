@@ -9,6 +9,9 @@ from typing import Any, Mapping
 from urllib.parse import urlsplit
 
 from cpn.rpnh.llm_contracts import LLMInputTarget
+from cpn.rpnh.runtime_policy import (
+    RuntimePolicy, runtime_policy_from_document,
+)
 
 from ._external_provider_recovery import (
     ExternalProviderRecoveryConfigError,
@@ -53,6 +56,7 @@ class LLMExecutionSelection:
     adapter_kind: str
     adapter_config_path: Path
     timeout_seconds: int
+    runtime_policy: RuntimePolicy = RuntimePolicy()
 
     def as_registry_policy(self) -> dict[str, object]:
         """Return non-secret execution policy/provenance without local paths."""
@@ -158,6 +162,7 @@ class LLMExecutionSelection:
                    is not None) else {}),
             "route_provenance": provenance,
             "adapter_profile": adapter_profile,
+            "runtime": self.runtime_policy.as_document(),
         }
 
     @classmethod
@@ -168,7 +173,8 @@ class LLMExecutionSelection:
             "max_response_bytes",
         }
         optional_fields = {
-            "context_window_tokens", "context_compaction_retained_tokens"}
+            "context_window_tokens", "context_compaction_retained_tokens",
+            "runtime"}
         if (not isinstance(value, Mapping)
                 or not required_fields.issubset(value)
                 or set(value) - required_fields - optional_fields):
@@ -213,6 +219,7 @@ class LLMExecutionSelection:
             adapter_config_path=path,
             timeout_seconds=_positive(
                 value["timeout_seconds"], label="timeout_seconds"),
+            runtime_policy=runtime_policy_from_document(value.get("runtime")),
         )
 
 

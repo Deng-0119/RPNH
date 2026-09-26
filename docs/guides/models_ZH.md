@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: models.md
-  revision: "2026-09-26.1"
+  revision: "2026-09-26.2"
   status: source-reviewed-not-final-candidate-acceptance
   basis: "core; adapter differences explicitly labelled"
 ---
@@ -14,6 +14,9 @@ metadata:
 [English](models.md) | [中文](models_ZH.md)
 
 # 供应商与精确模型配置
+
+[配置与上限总表](configuration_ZH.md)完整列出所有用户可调 runtime 字段和固定协议边界；
+本页重点说明模型接入。
 
 ## 目标和权威
 维护一份用户 catalog，由它派生所有可选 profile。provider/model 是不透明的精确用户输入，不是推荐，也不是任意协议兼容承诺。初始 catalog 为空。配置合法、凭据存在和物理调用成功是三件不同的事。
@@ -68,13 +71,27 @@ rpnh config list
       "max_output_tokens": 1024,
       "max_response_bytes": 1048576,
       "context_window_tokens": 131072,
-      "context_compaction_retained_tokens": 16384
+      "context_compaction_retained_tokens": 16384,
+      "runtime": {
+        "max_turns_per_node": 12,
+        "max_parallel_nodes": 4,
+        "main_history_message_limit": 20,
+        "context_pressure_trigger_ratio": 0.9,
+        "context_tool_output_byte_limit": 10000,
+        "workspace": {
+          "timeout_seconds": 120,
+          "memory_bytes": 4294967296,
+          "process_limit": 64,
+          "source_size_bytes": 16777216,
+          "input_size_bytes": 16777216
+        }
+      }
     }]
   }]
 }
 ```
 
-`profile` 是适合文件名的小写标识，`model_condition` 原样成为 outbound model。每个可选外部 profile 只有一条精确路由，凭据采用环境变量到 header/prefix 的映射或 `null`。endpoint 不得包含 userinfo/query/fragment；远程路由必须使用 HTTPS，明文 HTTP 仅限 `localhost` 或 loopback IP 上的同机 OpenAI-compatible 服务。静态认证/连接类 header、重复凭据 header 会被拒绝。各执行限额为正整数。`context_window_tokens` 是用户为精确模型声明的可选容量；提供后，RPNH 会在调用已选路由前主动执行 context-pressure compaction。`context_compaction_retained_tokens` 可选地控制最近完整消息尾部，且必须小于窗口。未提供窗口时，RPNH 不猜测模型容量，只能在实际观察到 response-length 边界后处理。探测次数与恢复循环次数由 schema 限定在一至三。
+`profile` 是适合文件名的小写标识，`model_condition` 原样成为 outbound model。每个可选外部 profile 只有一条精确路由，凭据采用环境变量到 header/prefix 的映射或 `null`。endpoint 不得包含 userinfo/query/fragment；远程路由必须使用 HTTPS，明文 HTTP 仅限 `localhost` 或 loopback IP 上的同机 OpenAI-compatible 服务。静态认证/连接类 header、重复凭据 header 会被拒绝。各整数执行限额为正数。`context_window_tokens` 是用户为精确模型声明的可选容量；提供后，RPNH 会在调用已选路由前主动执行 context-pressure compaction。`context_compaction_retained_tokens` 可选地控制最近完整消息尾部，且必须小于窗口。未提供窗口时，RPNH 不猜测模型容量，只能在实际观察到 response-length 边界后处理。完整的可选 `runtime` 对象控制 task、并发、压缩和 workspace 策略；省略时解析为文档默认值，生成 profile 仍会明确记录。探测次数与恢复循环次数由 schema 限定在一至三。
 
 ## 传输、恢复和外部效果
 catalog 对外暴露的协议是 `openai_chat_completions/v1`，不是所有宣称兼容的 API。另一种 `local_process` 必须声明 `argv`、`probe_argv`、`env`、`inherit_env`；`{model}` 替换保留所选模型。子进程及其 probe 仍可能调用付费模型，不能把“本地进程”等同“离线”。

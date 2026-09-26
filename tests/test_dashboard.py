@@ -59,6 +59,27 @@ def test_history_paging_and_invalid_cursors(run):
     for limit in [0,101,True]:
         with pytest.raises(ValueError):run.history(limit=limit)
 
+
+def test_dashboard_reader_bounds_are_operator_configurable(run):
+    bounded = RegistryDashboard(
+        run.run_dir, catalog=run.catalog,
+        max_checkpoints=2, max_firings=100)
+    history = bounded.history()
+    assert len(history['items']) == 2
+    assert history['end_reason'] == 'reader_limit'
+    assert history['max_chain'] == 2
+
+    firing_bounded = RegistryDashboard(
+        run.run_dir, catalog=run.catalog,
+        max_checkpoints=100, max_firings=1)
+    with pytest.raises(ValueError, match='firing limit'):
+        firing_bounded.dashboard()
+    for value in (0, True):
+        with pytest.raises(ValueError, match='positive integers'):
+            RegistryDashboard(
+                run.run_dir, catalog=run.catalog,
+                max_checkpoints=value, max_firings=1)
+
 def test_observation_is_not_a_write_or_resume(run,monkeypatch):
     core=run._open();store=core.event_store
     # The established EventStore connection is sqlite; compare logical data,

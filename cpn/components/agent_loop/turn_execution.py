@@ -289,7 +289,8 @@ def request_agent_turn_v1(
     if context_window_tokens is not None:
         pressure_policy = ContextPressurePolicy(
             context_window_tokens,
-            turn_context.target.max_output_tokens)
+            turn_context.target.max_output_tokens,
+            self._context_pressure_trigger_ratio)
         pressure_required = (
             self._registry.agent_context_pressure_requires_compaction_v1(
                 execution, current_loop, catalog, turn_context,

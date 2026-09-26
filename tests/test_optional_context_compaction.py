@@ -13,6 +13,7 @@ from cpn.rpnh.agent_tasks import (
 from cpn.rpnh.llm_contracts import LLMInputResponseBytes, LLMInputTarget
 from cpn.rpnh.registry._registry import _RegistryCore
 from cpn.rpnh.registry.publication import _version_from_payload
+from cpn.rpnh.runtime_policy import RuntimePolicy, WorkspacePolicy
 from cpn.llm_adapters.config import LLMExecutionSelection
 
 
@@ -42,6 +43,7 @@ def _completion_response(value: str) -> LLMInputResponseBytes:
 def _configure_offline_task(
         tmp_path: Path, monkeypatch: pytest.MonkeyPatch, port,
         *, context_window_tokens: int | None = None,
+        runtime_policy: RuntimePolicy | None = None,
 ) -> Path:
     adapter_path = tmp_path / "adapter.json"
     adapter_path.write_text(json.dumps({
@@ -56,7 +58,8 @@ def _configure_offline_task(
         LLMInputTarget(
             "offline-context-compaction", 128, 65536,
             context_window_tokens),
-        "local_process", adapter_path, 30)
+        "local_process", adapter_path, 30,
+        runtime_policy or RuntimePolicy())
     monkeypatch.setattr(
         "cpn.rpnh.agent_tasks.load_llm_execution_selection",
         lambda _path: selection)
@@ -104,7 +107,15 @@ def test_length_interruption_compacts_before_same_slot_replay(
         tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     port = _LengthThenReplayPort()
-    execution_path = _configure_offline_task(tmp_path, monkeypatch, port)
+    execution_path = _configure_offline_task(
+        tmp_path, monkeypatch, port,
+        runtime_policy=RuntimePolicy(workspace=WorkspacePolicy(
+            timeout_seconds=17,
+            memory_bytes=268435456,
+            process_limit=7,
+            source_size_bytes=1048576,
+            input_size_bytes=2097152,
+        )))
     run_dir = tmp_path / "run"
 
     result = run_agent_task(AgentTaskSpec(
@@ -118,6 +129,20 @@ def test_length_interruption_compacts_before_same_slot_replay(
     assert len(port.requests) == 3
     core = _RegistryCore(
         run_dir, create=False, read_only=True, catalog=agent_task_catalog())
+    workspace_profiles = _objects(core, "numerical_tool_profile/v1")
+    assert len(workspace_profiles) == 1
+    assert {
+        key: workspace_profiles[0][key]
+        for key in (
+            "timeout_seconds", "memory_bytes", "process_limit",
+            "source_size_bytes", "input_size_bytes")
+    } == {
+        "timeout_seconds": 17,
+        "memory_bytes": 268435456,
+        "process_limit": 7,
+        "source_size_bytes": 1048576,
+        "input_size_bytes": 2097152,
+    }
     interruptions = core.event_store.list_events_by_type(
         ("llm_invocation_interrupted/v1",))
     assert len(interruptions) == 1

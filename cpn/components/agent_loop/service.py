@@ -587,13 +587,14 @@ class RegistryAgentLoopLLMPort:
 
     __slots__ = (
         "_registry", "_input_port", "_timing_origin_ns",
-        "_reduction_settings")
+        "_reduction_settings", "_context_pressure_trigger_ratio")
 
     def __init__(
             self, registry: AgentLoopRegistryPort,
             input_port: LLMInputPort, *,
             timing_origin_ns: int | None = None,
-            reduction_settings: ContextReductionSettings | None = None) -> None:
+            reduction_settings: ContextReductionSettings | None = None,
+            context_pressure_trigger_ratio: float = 0.90) -> None:
         from cpn.components.operation_gateway import has_port_methods
         if not has_port_methods(registry, AgentLoopRegistryPort):
             raise TypeError("agent LLM port requires the current Registry port")
@@ -603,10 +604,17 @@ class RegistryAgentLoopLLMPort:
                 and not isinstance(
                     reduction_settings, ContextReductionSettings)):
             raise TypeError("agent LLM reduction settings are invalid")
+        if (isinstance(context_pressure_trigger_ratio, bool)
+                or not isinstance(
+                    context_pressure_trigger_ratio, (int, float))
+                or not 0.0 < float(context_pressure_trigger_ratio) < 1.0):
+            raise TypeError("agent context pressure ratio is invalid")
         self._registry = registry
         self._input_port = input_port
         self._reduction_settings = (
             reduction_settings or ContextReductionSettings())
+        self._context_pressure_trigger_ratio = float(
+            context_pressure_trigger_ratio)
         self._timing_origin_ns = (
             timing_origin_ns
             if (isinstance(timing_origin_ns, int)

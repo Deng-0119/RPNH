@@ -67,6 +67,12 @@ class _RegisteredOptionalInputBinding:
                 response, "external_request_id", None))
         return response
 
+    @property
+    def execution_policy(self):
+        """Forward the exact non-secret policy of the shared bound port."""
+
+        return self.input_port.execution_policy
+
     def close(self):
         # No transport is owned by this per-firing, stateless binding. The
         # supplied HOST owns its shared configured port's lifetime.

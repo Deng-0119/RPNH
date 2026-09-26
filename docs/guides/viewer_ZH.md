@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: viewer.md
-  revision: "2026-09-25.1"
+  revision: "2026-09-26.1"
   status: source-reviewed-pre-release
 ---
 
@@ -33,9 +33,13 @@ rpnh net --run /absolute/path/to/run --resources-only
 ```bash
 rpnh net --run /absolute/path/to/run --view
 rpnh net --run /absolute/path/to/run --view --no-open
+rpnh net --run /absolute/path/to/run --view --no-open \
+  --max-checkpoints 4096 --max-firings 5000
 ```
 
-第二种形式只输出本地地址，不自动打开浏览器。从 main、Codex 或 DSH run root 中选择时，
+第二种形式只输出本地地址，不自动打开浏览器。两个可选正数上限默认分别为 2048 个 canonical
+checkpoint 和 2000 条 firing；查看已知大型 run 时直接提高它们，不需要改源码。`--host` 只
+接受显式 loopback IP，`--port` 范围为 0–65535。从 main、Codex 或 DSH run root 中选择时，
 使用已安装宿主适配器提供的 selector；被选中的 run 始终是唯一事实来源。
 
 ## 视图与证据
@@ -51,3 +55,8 @@ provider。
 
 把历史 workflow 的 run 目录传给 `--run`。主会话 Registry 可以保存子 workflow Registry
 的链接，但各子 Registry 保持独立；查看或回退主会话不会删除子 Registry。
+
+Codex selector 使用 `--root`、`--thread-id` 和 `--turn` 或 `--task-id`；DSH selector
+使用 `--root`、`--session-id` 和 `--turn` 或 `--request-id`。它们的 `--view` 也支持
+`--presentation`、`--show-resources`、`--no-open`、`--port`、
+`--max-checkpoints` 与 `--max-firings`；`--describe`、`--json` 不启动 HTTP。
