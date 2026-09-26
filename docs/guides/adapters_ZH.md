@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: adapters.md
-  revision: "2026-09-25.1"
+  revision: "2026-09-26.1"
   status: source-reviewed-not-final-candidate-acceptance
   basis: "core; adapter differences explicitly labelled"
 ---
@@ -83,7 +83,10 @@ rpnh-dsh "$DSH_SOURCE" --execution "$EXECUTION" \
 与 `--execution` 互斥。内部 v2 envelope 可以携带空 `data` 数组，不意味着用户提交文本
 时还必须提供数值快照。
 
-launcher 传递公开 profile 摘要。配置模式的子 Registry 记录 route/model 归属及配置修订，不记录 endpoint、credential binding 或静态 header 值。这不保证任务文本或响应中没有敏感内容，运行数据仍需私下保存。请求／响应整体 frame 上限为 2 MiB；当前请求、历史和所选最大响应需通过派发前上界检查，仅把响应上限设为 2 MiB 并不能保证外层 frame 装得下。
+launcher 传递公开 profile 摘要。配置模式的子 Registry 记录 route/model 归属及配置修订，不记录 endpoint、credential binding 或静态 header 值。这不保证任务文本或响应中没有敏感内容，运行数据仍需私下保存。请求／响应整体 frame 上限为 2 MiB；当前请求、历史和所选最大响应需通过派发前上界检查，仅把响应上限设为 2 MiB 并不能保证外层 frame 装得下。`max_response_bytes` 更大的通用 profile 对 core RPNH 仍然有效，但与 DSH 不兼容；应为同一 provider、credential route 和 exact model 显式构建留有 frame 余量的用户自有 DSH profile，不能静默改写所选 profile。
+
+Registry turn 准入前的拒绝现在会作为明确的 headless 错误和非零退出返回，不再表现为空
+final。它仍未产生 provider 调用，不能记作模型失败。
 
 ## 历史与显式恢复
 记录返回的 session ID。历史查询使用 `--history --root DIR --session-id ID`，不要求模型选择或凭据，不构造模型／工具效果宿主。已安装 runner 仍需要正常宿主环境，并可能准备 checkout。“Registry 权威只读”不等于没有文件系统或进程操作。

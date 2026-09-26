@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: en
   counterpart: dsh_ZH.md
-  revision: "2026-09-25.1"
+  revision: "2026-09-26.1"
   status: source-reviewed-pre-release
 ---
 
@@ -61,6 +61,14 @@ This command can make a real model call. Record the selected profile,
 provider, exact model and call budget before using it. RPNH never silently
 switches route or model.
 
+DSH applies a 2 MiB limit to the complete framed exchange, including history,
+tool declarations, request content and the configured maximum response. A
+general profile whose response allowance alone consumes or exceeds that frame
+is rejected before model-attempt admission. Create an explicit user-owned DSH
+profile that keeps the same provider route, credentials and exact model while
+declaring realistic response headroom. This is a host-specific budget, not a
+provider or model fallback.
+
 ## Recovery boundary
 
 The host may reconnect to durable RPNH state, but it cannot infer whether an
@@ -73,4 +81,5 @@ as other hosts.
 
 The pinned adapter is Linux/WSL2-only. Offline tests do not establish live
 provider availability, and a prepared upstream checkout is not bundled in the
-RPNH wheel.
+RPNH wheel. Admission and driver failures are surfaced as explicit non-zero
+errors; an empty final response is not successful completion.

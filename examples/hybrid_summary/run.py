@@ -41,7 +41,9 @@ def run_example(
         stages=(),
         execution_config_path=execution_config_path,
         workflow_graph=_load_graph(graph_path),
-        max_attempts_per_stage=2,
+        # A Located-input read plus bounded correction of a rejected
+        # publication can require more than two real-model turns.
+        max_attempts_per_stage=4,
         max_parallel_nodes=1,
         owner_statement="RPNH public hybrid summary example",
         plugin_configuration=configuration,

@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: dsh.md
-  revision: "2026-09-25.1"
+  revision: "2026-09-26.1"
   status: source-reviewed-pre-release
 ---
 
@@ -58,6 +58,11 @@ rpnh-dsh /absolute/path/to/deepseek-harness \
 该命令可能产生真实模型调用。使用前必须记录选中的 profile、provider、exact model 和调用
 预算。RPNH 不会静默切换路线或模型。
 
+DSH 对完整 frame 施加 2 MiB 限制，其中包括历史、工具声明、请求正文和配置的最大响应。
+如果通用 profile 仅响应额度就占满或超过该 frame，系统会在模型 attempt 准入前拒绝它。
+用户应显式创建 DSH 专用 profile：保持同一 provider route、凭据和 exact model，只为宿主
+声明留有实际余量的响应预算。这是宿主预算，不是 provider 或 model fallback。
+
 ## 恢复边界
 
 宿主可以重新连接持久化的 RPNH 状态，但不能自行判断未确认的物理 provider 提交是否完成。
@@ -68,4 +73,5 @@ rpnh-dsh /absolute/path/to/deepseek-harness \
 ## 限制
 
 固定版本适配目前仅支持 Linux/WSL2。离线测试不能证明真实 provider 可用；RPNH wheel
-也不包含准备后的上游 checkout。
+也不包含准备后的上游 checkout。准入或 driver 故障会以明确的非零错误暴露；空 final
+response 不代表成功完成。

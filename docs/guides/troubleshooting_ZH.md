@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: troubleshooting.md
-  revision: "2026-09-25.2"
+  revision: "2026-09-26.2"
   status: source-reviewed-not-final-candidate-acceptance
   basis: "core; adapter differences explicitly labelled"
 ---
@@ -31,9 +31,9 @@ metadata:
 | owner/writer 冲突 | 原 owner 进程与精确 run 目录 | 通过 owner 停止/协调，不盲目清锁或新开 writer |
 | 进程消失却无结果 | terminal evidence、interrupted/unknown 状态 | 不报成功；确认效果边界后才显式恢复 |
 | resources-only 空图 | 是否真的声明资源节点 | 无资源时有效，不为展示造节点 |
-| DSH 拒绝 provider/model、输入或响应预算 | 离线／配置模式、精确 selection 和整体 2 MiB frame | 使用所选共享 profile；配置工具需要显式纯 native-plugin allowlist，不由 provider 授权 |
+| DSH 拒绝 provider/model、输入或响应预算 | 离线／配置模式、精确 selection 和整体 2 MiB frame | 保持同一路线和 exact model，但构建显式用户自有 DSH profile，使响应上限为 frame 留出余量；配置工具还需要显式纯 native-plugin allowlist |
 | DSH 拒绝受管工具目录 | 绝对路径的 `--plugin-config`、配对的 `--managed-tool NAME=PLUGIN/OPERATION`、唯一小写名称、object 输入 schema 和 pure effect | 修正所选声明／配置，不关闭 guard 或自动挂载任意已安装工具 |
-| `managed DSH tool result limit exceeds 64 KiB` | 所选 operation 声明的 `max_result_bytes`，不是某次实际结果大小 | SDK 默认 1 MiB，未修改的 `demo/add` 继承此值。新运行使用显式有界的兼容 operation，不改写旧身份 |
+| `managed DSH tool result limit exceeds 64 KiB` | 所选 operation 声明的 `max_result_bytes`，不是某次实际结果大小 | 根据 operation 的合法输出域声明上限。当前 demo 在约束输入后使用 1 KiB；不能未经分析就照抄 DSH 上限或 SDK 默认值。 |
 | 工具参数或下一响应预算被拒绝 | 所选输入 schema；工具声明、历史、最坏结果和下一响应 | 执行前修正请求或获准限额；预期结果很小不能覆盖声明的上界 |
 | 有关联的 `isError: true` 工具结果 | 已持久登记的 managed-plugin 失败 receipt | 工具执行失败，模型可以处理该失败；不能改标成功值或盲目重试 |
 | DSH resume 拒绝 stale execution | 精确 completion 事件、原 registration/profile/catalog、writer 历史、effect/workspace 边界 | 使用原 selection 与 allowlist；缺少合格证据不授权重新运行 provider/tool |
@@ -62,4 +62,4 @@ metadata:
 ## 验证与非目标
 先重跑最小相关确定性检查，再考虑已授权的真实复现。链接/站点构建不验证运行恢复。harness 管理结构准入和记录，不是通用业务授权策略、OS sandbox 或自动外部效果补偿服务。
 
-代码边界：`cpn/rpnh/user_config.py`、`control_server.py`、`task_control.py`、`harness.py`、`registry/event_store.py`、`registry/firing_recovery.py`，可选 `cpn/plugins/{api,catalog,managed_tools}.py`、`cpn/dsh/backend.py`、`integrations/dsh/src/app.ts`。另见[架构](../architecture/design_ZH.md)。
+代码边界：`cpn/rpnh/user_config.py`、`control_server.py`、`task_control.py`、`harness.py`、`registry/event_store.py`、`registry/firing_recovery.py`，可选 `cpn/plugins/{api,catalog,managed_tools}.py`、`cpn/dsh/backend.py`、`integrations/dsh/src/{agent,app}.ts`。另见[架构](../architecture/design_ZH.md)。

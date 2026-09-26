@@ -23,6 +23,7 @@ export class RegistryAgent implements AgentMachine {
   private wakeRequested = false
   private disposed = false
   private halted = false
+  private pendingError = false
   private projected = 0
   lastOutcome: JsonRecord | undefined
   /** Transport failures are transient UI diagnostics, not formal Session events. */
@@ -57,7 +58,16 @@ export class RegistryAgent implements AgentMachine {
     this.controller?.abort(cause)
     this.client.cancel()
   }
-  async whenIdle(): Promise<void> { while (this.activity) await this.activity }
+  async whenIdle(): Promise<void> {
+    while (this.activity) await this.activity
+    // DSH's headless runner derives its exit status from whenIdle(). A
+    // pre-admission Registry rejection has no committed turn to project, so
+    // retaining it only in lastError would otherwise render an empty final.
+    if (this.pendingError && this.lastError !== undefined) {
+      this.pendingError = false
+      throw new Error(this.lastError)
+    }
+  }
   runMaintenance<T>(task: (signal: AbortSignal) => Promise<T>): Promise<T> {
     if (this.phase !== 'idle' || this.disposed) throw new Error('agent is not idle for maintenance')
     this.phase = 'maintenance'; this.controller = new AbortController()
@@ -80,7 +90,7 @@ export class RegistryAgent implements AgentMachine {
   }
   private async drive(): Promise<void> {
     const turn = this.projected + 1
-    this.lastError = undefined; this.lastOutcome = undefined
+    this.lastError = undefined; this.lastOutcome = undefined; this.pendingError = false
     try {
       const messages = this.inbox.claim('next-turn', turn)
       if (!messages.length) return
@@ -99,6 +109,7 @@ export class RegistryAgent implements AgentMachine {
     } catch (error) {
       this.halted = true
       this.lastError = String(error)
+      this.pendingError = true
     }
   }
   private async refresh(): Promise<void> {
@@ -112,7 +123,7 @@ export class RegistryAgent implements AgentMachine {
       const outcome = await this.client.request('resume')
       this.lastOutcome = outcome
       if (outcome.status === 'terminal' || outcome.status === 'idle') {
-        this.halted = false; this.lastError = undefined; await this.refresh()
+        this.halted = false; this.lastError = undefined; this.pendingError = false; await this.refresh()
       }
       return outcome
     })

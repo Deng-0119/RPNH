@@ -6,10 +6,12 @@ import importlib
 import json
 from pathlib import Path
 import sys
+from types import SimpleNamespace
 
 import pytest
 
 from cpn.plugins.api import PluginError
+from cpn.plugins.api import canonical
 from cpn.plugins.catalog import BoundPlugin, PluginCatalog
 from cpn.plugins.runtime import run_plugin
 from cpn.rpnh.agent_tasks import AgentStage, agent_task_catalog
@@ -47,7 +49,7 @@ def example_catalog(example_plugin):
 
 
 def test_native_tool_and_instruction_create_real_terminal_runs(
-        tmp_path: Path, example_catalog: PluginCatalog,
+        tmp_path: Path, example_plugin, example_catalog: PluginCatalog,
 ) -> None:
     add_result = run_plugin(
         example_catalog, "demo/add", {"left": 2, "right": 3},
@@ -67,6 +69,18 @@ def test_native_tool_and_instruction_create_real_terminal_runs(
         "resource_version:")
     assert instruction_result["terminal_evidence_ref"] is not None
     assert instruction_result["actual_model_call_counts"][0] == 0
+    operations = example_plugin.plugin().operations
+    assert {operation.max_result_bytes for operation in operations} == {1024}
+    assert len(canonical(add_result["output"])) <= 1024
+    assert len(canonical(instruction_result["output"])) <= 1024
+    operation_by_name = {operation.name: operation for operation in operations}
+    context = SimpleNamespace(check_cancelled=lambda: None)
+    largest_add = operation_by_name["add"].handler(
+        context, {"left": 1_000_000_000, "right": 1_000_000_000})
+    largest_summary = operation_by_name["summarize"].handler(
+        context, {"values": [1_000_000] * 1000})
+    assert len(canonical(largest_add)) <= operation_by_name["add"].max_result_bytes
+    assert len(canonical(largest_summary)) <= operation_by_name["summarize"].max_result_bytes
 
 
 def test_native_example_rejects_missing_and_empty_inputs_before_a_run(
@@ -80,8 +94,13 @@ def test_native_example_rejects_missing_and_empty_inputs_before_a_run(
         run_plugin(
             example_catalog, "demo/summarize", {"values": []},
             run_dir=tmp_path / "empty-run")
+    with pytest.raises(PluginError):
+        run_plugin(
+            example_catalog, "demo/add", {"left": 1_000_000_001, "right": 0},
+            run_dir=tmp_path / "unbounded-run")
     assert not (tmp_path / "missing-run").exists()
     assert not (tmp_path / "empty-run").exists()
+    assert not (tmp_path / "unbounded-run").exists()
 
 
 @pytest.mark.parametrize(("input_name", "expected", "rename_nodes"), (

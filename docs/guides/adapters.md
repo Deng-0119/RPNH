@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: en
   counterpart: adapters_ZH.md
-  revision: "2026-09-25.1"
+  revision: "2026-09-26.1"
   status: source-reviewed-not-final-candidate-acceptance
   basis: "core; adapter differences explicitly labelled"
 ---
@@ -86,7 +86,11 @@ arbitrary DSH/MCP tools remain unavailable. Configured mode rejects
 internal v2 envelope may carry an empty `data` array; users do not need to
 supply a numeric snapshot for text requests.
 
-The launcher sends a public profile summary. The configured child Registry records route/model attribution and configuration revision, not endpoint, credential binding or static header values. This is not a guarantee that task text or responses contain no sensitive information: preserve runtime data privately. The entire request/response frame is bounded at 2 MiB. The request, history and selected maximum response must pass the pre-dispatch bound; setting the response cap to 2 MiB alone does not guarantee that the enclosing frame fits.
+The launcher sends a public profile summary. The configured child Registry records route/model attribution and configuration revision, not endpoint, credential binding or static header values. This is not a guarantee that task text or responses contain no sensitive information: preserve runtime data privately. The entire request/response frame is bounded at 2 MiB. The request, history and selected maximum response must pass the pre-dispatch bound; setting the response cap to 2 MiB alone does not guarantee that the enclosing frame fits. A general profile with a larger `max_response_bytes` remains valid for core RPNH but is not DSH-compatible. Build an explicit user-owned DSH profile for the same provider, credential route and exact model with enough frame headroom; do not silently rewrite the selected profile.
+
+A rejection before Registry turn admission is now emitted as an explicit
+headless error and nonzero exit, rather than an empty final message. It still
+creates no provider call and must not be reported as a model failure.
 
 ## History and explicit recovery
 Record the returned session ID. History uses `--history --root DIR --session-id ID` without model selection or credentials; it constructs no model/tool effect host. The installed runner still needs its normal host environment and may prepare the checkout. History is read-only with respect to Registry authority, not a claim of no filesystem or process effects.

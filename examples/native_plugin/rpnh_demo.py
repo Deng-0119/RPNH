@@ -2,6 +2,10 @@
 from cpn.plugins import PluginDefinition, PluginOperation, PluginResource
 
 
+DEMO_RESULT_LIMIT_BYTES = 1024
+DEMO_INTEGER_BOUND = 1_000_000_000
+
+
 def add(context, arguments):
     context.check_cancelled()
     return {"value": arguments["left"] + arguments["right"]}
@@ -33,14 +37,26 @@ def plugin():
     # Declaration only: no network, child process, implicit dependency installs,
     # private Registry calls, or provider access at import/registration time.
     return PluginDefinition(
-        name="demo", version="0.2.0",
+        name="demo", version="0.3.0",
         operations=(
             PluginOperation("add", "Add two numbers and return a JSON value.",
                 {"type": "object", "additionalProperties": False,
-                 "properties": {"left": {"type": "number"}, "right": {"type": "number"}},
+                 "properties": {
+                     "left": {
+                         "type": "integer",
+                         "minimum": -DEMO_INTEGER_BOUND,
+                         "maximum": DEMO_INTEGER_BOUND,
+                     },
+                     "right": {
+                         "type": "integer",
+                         "minimum": -DEMO_INTEGER_BOUND,
+                         "maximum": DEMO_INTEGER_BOUND,
+                     },
+                 },
                  "required": ["left", "right"]},
                 {"type": "object", "additionalProperties": False,
-                 "properties": {"value": {"type": "number"}}, "required": ["value"]}, add),
+                 "properties": {"value": {"type": "integer"}}, "required": ["value"]},
+                add, max_result_bytes=DEMO_RESULT_LIMIT_BYTES),
             PluginOperation("instruction", "Load the exact bundled instruction resource.",
                 {"type": "object", "additionalProperties": False},
                 {"type": "object", "additionalProperties": False,
@@ -48,7 +64,8 @@ def plugin():
                     "source_resource_id": {"type": "string"},
                     "source_resource_version_id": {"type": "string"}},
                  "required": ["instruction", "source_resource_id", "source_resource_version_id"]},
-                instruction, resources=("instruction",)),
+                instruction, resources=("instruction",),
+                max_result_bytes=DEMO_RESULT_LIMIT_BYTES),
             PluginOperation(
                 "summarize",
                 "Summarize one nonempty list of bounded integer values.",
@@ -84,6 +101,7 @@ def plugin():
                     ],
                 },
                 summarize,
+                max_result_bytes=DEMO_RESULT_LIMIT_BYTES,
             ),
         ),
         resources=(PluginResource("instruction", b"Use the supplied exact inputs. Report the computed result."),),

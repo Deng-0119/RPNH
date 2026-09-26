@@ -282,7 +282,18 @@ class RegistryFrontendApplication:
                                     for link in authority.get("child_registry_links", ())
                                     if link.get("origin_main_turn_ref") == committed[ordinal]["turn_ref"]]
             result.append(item)
-        active = session.active_turn_snapshot()
+        # A child creates its SQLite file before its first complete authority
+        # snapshot is necessarily readable.  Keep the main-thread projection
+        # available during that bounded handoff instead of letting a transient
+        # child read terminate the single frontend-owner thread.  The main turn
+        # remains running and cannot admit another request; tick() will either
+        # reconcile exact Registry evidence later or retain the visible error.
+        from cpn.rpnh.registry.main_thread import MainThreadAuthorityError
+        try:
+            active = session.active_turn_snapshot()
+        except MainThreadAuthorityError:
+            state.failure = "reconciliation_required"
+            active = None
         if active is not None:
             for item in result:
                 if item["ordinal"] == active.ordinal:

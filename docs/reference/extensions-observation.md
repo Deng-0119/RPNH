@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: en
   counterpart: extensions-observation_ZH.md
-  revision: "2026-09-25.2"
+  revision: "2026-09-26.1"
   status: source-reviewed-not-final-candidate-acceptance
   basis: "core; adapter differences explicitly labelled"
 ---
@@ -32,7 +32,7 @@ The DSH line adds `cpn/plugins/managed_tools.py`; do not infer that an older cor
 
 Only operations declared `effect="pure"` with an object input schema are eligible. Provider-visible names and plugin selectors must be unique. The DSH CLI uses `--plugin-config ABSOLUTE_PATH` together with one or more `--managed-tool NAME=PLUGIN/OPERATION` arguments. Each name component must match `[a-z][a-z0-9_]{0,47}`. Installing a plugin, choosing a provider, or adding a model-visible description does not grant execution. This is not arbitrary DSH plugin or MCP mounting.
 
-The DSH backend imposes a **65536-byte (64 KiB) declared result limit** in addition to the general SDK limits. The SDK default is 1048576 bytes, so an otherwise valid plugin can be rejected before any worker starts. The unchanged `examples/native_plugin/rpnh_demo.py` uses that default; it is a native-plugin example, not a ready-to-run DSH managed-tool fixture. A DSH-compatible selected operation must explicitly declare an appropriate `max_result_bytes` no greater than 65536 in its plugin implementation; changing a launch flag does not change that declaration. Keep the original plugin/version for existing runs and apply the normal exact-identity rules to a revised plugin.
+The DSH backend imposes a **65536-byte (64 KiB) declared result ceiling** in addition to the general SDK limits. The SDK default is 1048576 bytes, so an otherwise valid plugin can be rejected before any worker starts. Neither value is a recommended business limit: derive `max_result_bytes` from the operation's bounded legal output. The current demo operations constrain their input domains and declare 1024 bytes, which is above their maximum serialized output and below the DSH ceiling. Changing a launch flag does not change a plugin declaration; keep normal version and exact-identity rules when revising one.
 
 The owner-bound managed invocation service validates the exact caller execution, tool identity and arguments, and records invocation/receipt material. The inspector checks arguments before worker execution; the DSH path also checks declarations, worst-case tool-result size and the next model response against its 2 MiB frame. A durably recorded plugin failure is returned as one correlated `isError: true` tool result, not a successful value. A dispatch without a durable terminal observation requires reconciliation and must not be retried automatically. Only one correlated tool call from a model response is supported before the next model step; parallel tool batches are not implied.
 

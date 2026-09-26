@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: opencode.md
-  revision: "2026-09-25.1"
+  revision: "2026-09-26.2"
   status: locally-validated-integration-candidate
   upstream-version: "1.18.32"
 ---
@@ -19,7 +19,7 @@ metadata:
 
 执行路径为 `rpnh → OpenCode attach → 回环 HTTP/SSE → 前端中立 application service → 现有 MainSession/TaskControl → Registry/Petri net`。OpenCode 仅作终端展示，不是 RPNH 的执行后端。精确模型选择、provider 调用、资源、workspace、工具、独立任务、Designer 工作流、checkpoint 和终态证据仍由 RPNH 管理；不复制上游执行循环，也不启动 OpenCode server/provider/tool 后端。
 
-这仍是集成候选，不是已发布版本。本地验收已覆盖完整 harness checkout、真实 Registry 路径、源码目录外 wheel，以及固定版真实 TUI 连接无 provider 的应用替身；不声称完成了真实 provider/model 调用。
+这仍是集成候选，不是已发布版本。本地验收已覆盖完整 harness checkout、真实 Registry 路径、源码目录外 wheel、固定版真实 TUI 连接无 provider 的应用替身，以及一次另行授权、经该 TUI 使用 exact model 的真实 turn。结果及内容层警告见[验证记录](examples-validation_ZH.md)。
 
 ## 前置条件与入口
 
@@ -39,7 +39,7 @@ rpnh --frontend opencode --resume ./rpnh-opencode-state
 
 ## 对话、身份与重试
 
-请求身份先由现有 MainThreadRegistry 登记，再交给 TaskControl 启动。HTTP 成功仅可表示输入已登记；成功 assistant 回复必须来自 committed Registry 答案。进程退出码零不是终态证据，子任务启动登记也不是子任务成功。SSE 重连只替换稳定 ID 的当前消息/part 投影，不重试 provider。已有内容但无法确认 owner 的 attempt 会明确进入待核对状态，不盲目重跑。
+请求身份先由现有 MainThreadRegistry 登记，再交给 TaskControl 启动。HTTP 成功仅可表示输入已登记；成功 assistant 回复必须来自 committed Registry 答案。进程退出码零不是终态证据，子任务启动登记也不是子任务成功。SSE 重连只替换稳定 ID 的当前消息/part 投影，不重试 provider。已有内容但无法确认 owner 的 attempt 会明确进入待核对状态，不盲目重跑。子任务正在创建 Registry 时，已经出现但尚不能精确读取的 SQLite authority 会暂时投影为 `reconciliation_required`；它不会终止前端 owner，也不准入另一条提交。后续 tick 只能依据真实 Registry 证据完成结算。
 
 固定版原生 TUI 并非每次都提供 messageID，因此 **同一会话中，没有显式 ID 的相同文本始终视为同一请求**，即使此前已经完成或中断。主动重复请使用 `/rpnh-send UNIQUE_ID TEXT`，并选择新 ID；响应丢失后的重试必须复用原 ID。HTTP 调用方也可使用 `messageID` 或 `Idempotency-Key`，同时提供时必须一致。这是 v1 可见限制，不声称能够自动推断“网络重试”和“用户再次提问”的区别。
 

@@ -6,6 +6,7 @@ No configured API key or external provider transport is used.
 from __future__ import annotations
 
 from pathlib import Path
+import shutil
 from types import SimpleNamespace as NS
 
 import pytest
@@ -80,6 +81,30 @@ def test_actual_registry_submission_answer_and_reopen(real_app):
             reopened.submit(sid, "different", "explicit:one")
     finally:
         reopened.close()
+
+
+def test_snapshot_retains_owner_during_transient_unreadable_child(real_app):
+    app, sid, control, _execution = real_app
+    app.submit(sid, "request", "explicit:transient-child")
+    registry = control.spec.run_dir / ".registry_v1"
+    registry.mkdir(parents=True)
+    (registry / "registry.sqlite3").write_text(
+        "child creation is not complete", encoding="utf-8")
+
+    app.tick()
+    view = app.snapshot()[0]
+    assert view["error"] == "reconciliation_required"
+    assert view["turns"][0]["state"] == "running"
+    assert control.starts == 1
+
+    shutil.rmtree(control.spec.run_dir)
+    run_agent_task(control.spec)
+    app.tick()
+    settled = app.snapshot()[0]
+    assert settled["error"] is None
+    assert settled["turns"][0]["state"] == "committed"
+    assert settled["turns"][0]["answer"]["reply"] == "registered answer"
+    assert control.starts == 1
 
 
 @pytest.mark.parametrize("flag,show,only", [("", False, False), ("--show-resources", True, False), ("--resources-only", False, True)])

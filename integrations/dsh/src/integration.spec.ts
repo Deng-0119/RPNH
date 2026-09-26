@@ -154,6 +154,50 @@ describe('Registry-backed DSH integration', () => {
     } finally { await ctx.fiber.dispose(); await rm(root, { recursive: true, force: true }) }
   })
 
+  it('surfaces a pre-admission Registry rejection instead of an empty successful-looking final', async () => {
+    const root = await mkdtemp(join(tmpdir(), 'rpnh-dsh-pre-admission-'))
+    const adapterPath = join(root, 'adapter.json')
+    const selectionPath = join(root, 'selection.json')
+    await writeFile(adapterPath, JSON.stringify({
+      schema_version: 'local_process_adapter_config/v1', adapter_kind: 'local_process',
+      model_condition: 'bounded-model', argv: [python, '-c', 'raise SystemExit(99)'],
+      probe_argv: [python, '-c', 'raise SystemExit(0)'], env: {}, inherit_env: [],
+    }))
+    await writeFile(selectionPath, JSON.stringify({
+      schema_version: 'llm_execution_selection/v1', adapter_kind: 'local_process',
+      model_condition: 'bounded-model', adapter_config_path: adapterPath,
+      timeout_seconds: 30, max_output_tokens: 64, max_response_bytes: 3 * 1024 * 1024,
+    }))
+    const config: BridgeConfig = {
+      root: join(root, 'sessions'), python, data: [], allowRequest: true, tools: [],
+      execution: { kind: 'configured', selectionPath, profile: {
+        schema_version: 'rpnh/dsh_execution_profile/v2', profile: 'oversized-frame',
+        selection_id: 'local-test/bounded-model', provider: 'local-test',
+        provider_display_name: 'Local test', model_condition: 'bounded-model',
+        adapter_kind: 'local_process', transport_kind: 'subprocess',
+        timeout_seconds: 30, max_output_tokens: 64,
+        max_response_bytes: 3 * 1024 * 1024,
+      } },
+    }
+    const ctx = await createApplication(config)
+    try {
+      const h = await ctx.agents.create({
+        sessionId: SessionId('pre-admission-rejection'),
+        agentOptions: selectedModel(config),
+      })
+      h.agent.followup(message('must fail before provider dispatch'))
+      await expect(h.agent.whenIdle()).rejects.toThrow(
+        'configured provider response budget exceeds the bounded DSH capability frame')
+      const a = h.agent as RegistryAgent
+      expect(a.lastOutcome).toBeUndefined()
+      expect(a.lastError).toContain(
+        'configured provider response budget exceeds the bounded DSH capability frame')
+      expect(ctx.rpnhCapabilities.counters).toMatchObject({ model: 0, tools: 0 })
+      expect(await a.client.request('history')).toMatchObject({ state: 'idle', active: null })
+      await h.dispose()
+    } finally { await ctx.fiber.dispose(); await rm(root, { recursive: true, force: true }) }
+  }, 60_000)
+
   it('runs configured text through the shared local-process provider boundary', async () => {
     const root = await mkdtemp(join(tmpdir(), 'rpnh-dsh-configured-'))
     const providerPath = join(root, 'provider.py')

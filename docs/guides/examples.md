@@ -6,7 +6,7 @@ metadata:
   audience: user-and-developer
   language: en
   counterpart: examples_ZH.md
-  revision: "2026-09-26.1"
+  revision: "2026-09-26.2"
   status: deterministic-offline-validated
   basis: "current main public APIs; scripted model boundary explicitly labelled"
 ---
@@ -62,6 +62,12 @@ second result returns the instruction text plus run-registered resource and
 resource-version identities. Change the two numbers in a copied input file and
 use another absent run directory to see a new result.
 
+All three demo operations explicitly cap canonical results at 1 KiB. That is
+not a copied DSH limit: bounded integer inputs make the largest legal add and
+1,000-item summary much smaller than 1 KiB, while the instruction result has a
+fixed resource shape. A different operation must derive its own limit from its
+legal output domain.
+
 ## Example 2: model, program, model
 
 The graph in `examples/hybrid_summary/graph.json` is loaded by the launcher; it
@@ -76,6 +82,10 @@ fixture first reads each exact Located input through the AgentLoop tool
 contract, then returns deterministic tool calls. Plugin execution, graph
 lowering, Registry publication, resource delivery and terminal settlement are
 ordinary RPNH execution.
+
+Each model node has a four-turn cap. This accommodates a Located-input read and
+bounded correction of one rejected publication while remaining finite; it is
+not a provider retry policy.
 
 ```bash
 DEMO_ROOT="$(mktemp -d "${TMPDIR:-/tmp}/rpnh-hybrid.XXXXXX")"

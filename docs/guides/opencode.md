@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: en
   counterpart: opencode_ZH.md
-  revision: "2026-09-25.1"
+  revision: "2026-09-26.2"
   status: locally-validated-integration-candidate
   upstream-version: "1.18.32"
 ---
@@ -27,8 +27,10 @@ an OpenCode server/provider/tool loop.
 
 This remains an integration candidate rather than a published release. Local
 acceptance covers the complete harness checkout, real Registry paths, an
-out-of-source wheel, and the pinned real TUI against a provider-free application
-double. It does not claim a real provider/model call.
+out-of-source wheel, the pinned real TUI against a provider-free application
+double, and one separately authorized exact-model turn through that TUI. See the
+[validation record](examples-validation.md) for the result and its content-level
+warning.
 
 ## Prerequisites and entry
 
@@ -67,6 +69,10 @@ Registry answer creates a successful assistant response. A worker exiting with
 code zero is not terminal proof. A registered child launch is not child success.
 SSE reconnect replaces stable message/part snapshots and never retries a provider.
 Unknown populated attempts are surfaced for reconciliation, not blindly replayed.
+While a child is creating its Registry, a present but not yet exactly readable
+SQLite authority is projected as `reconciliation_required`; it does not terminate
+the frontend owner or authorize another submission. A later tick settles only
+from exact Registry evidence.
 
 The pinned stock TUI does not always send `messageID`. Therefore **identical
 unkeyed text is the same operation for the lifetime of one session**, even after

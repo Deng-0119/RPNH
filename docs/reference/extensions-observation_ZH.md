@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: extensions-observation.md
-  revision: "2026-09-25.2"
+  revision: "2026-09-26.1"
   status: source-reviewed-not-final-candidate-acceptance
   basis: "core; adapter differences explicitly labelled"
 ---
@@ -32,7 +32,7 @@ DSH 维护线增加了 `cpn/plugins/managed_tools.py`；不能据此推断旧 co
 
 仅接受声明 `effect="pure"` 且输入 schema 为 object 的 operation。模型可见名称和插件 selector 均须唯一。DSH CLI 将 `--plugin-config ABSOLUTE_PATH` 与一个或多个 `--managed-tool NAME=PLUGIN/OPERATION` 同时使用；名称的每个组成部分均须匹配 `[a-z][a-z0-9_]{0,47}`。安装插件、选择 provider 或增加模型可见描述都不授予执行权限；这不是任意 DSH 插件或 MCP 挂载。
 
-DSH backend 在通用 SDK 限额之外，额外要求**声明的结果上限不超过 65536 字节（64 KiB）**。SDK 默认值为 1048576 字节，因此在原生插件接口有效的插件，也可能在 DSH worker 启动前被拒绝。未修改的 `examples/native_plugin/rpnh_demo.py` 沿用默认值，它是原生插件示例，不是可直接运行的 DSH 受管工具 fixture。要用于 DSH，所选 operation 的插件实现必须显式声明适当的 `max_result_bytes`，且不大于 65536；改变启动参数不会改写这一声明。既有运行保留原插件和版本，修订插件仍遵守正常的精确身份规则。
+DSH backend 在通用 SDK 限额之外，额外要求**声明的结果上限不超过 65536 字节（64 KiB）**。SDK 默认值为 1048576 字节，因此在原生插件接口有效的插件，也可能在 DSH worker 启动前被拒绝。两者都不是推荐的业务值：`max_result_bytes` 应由 operation 有界的合法输出推导。当前 demo 约束输入域并声明 1024 字节，高于其最大序列化输出且低于 DSH ceiling。启动参数不能改写插件声明；修订插件时仍须遵守正常版本与精确身份规则。
 
 owner-bound 受管调用服务核对调用方 execution、工具身份和参数，并记录 invocation/receipt 材料。inspector 在 worker 执行前校验参数；DSH 路径还将工具声明、最坏结果大小和下一次模型响应纳入整体 2 MiB frame 检查。已经持久记录的插件失败作为一条有精确关联的 `isError: true` 工具结果返回，不是成功值。只有 dispatch 而无持久终态观察时，需要 reconciliation，不能自动重试。每个模型响应只支持一次有关联的工具调用，再进入下一模型步骤；不隐含支持并行工具批次。
 

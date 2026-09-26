@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: en
   counterpart: troubleshooting_ZH.md
-  revision: "2026-09-25.2"
+  revision: "2026-09-26.2"
   status: source-reviewed-not-final-candidate-acceptance
   basis: "core; adapter differences explicitly labelled"
 ---
@@ -31,9 +31,9 @@ Record the distribution/source revision, frontend, exact profile identity, comma
 | Existing owner / writer fencing conflict | The original owner process and exact run root | Stop/reconcile through the owner; never clear locks or start a competing writer blindly |
 | Process gone, result absent | Registry terminal evidence and interrupted/unknown state | Do not report success; explicit resume only after checking the effect boundary |
 | Empty resources-only net | Actual resource declarations | Valid when none exist; do not synthesize resources for display |
-| DSH rejects provider/model, input or response budget | Offline/configured mode, exact selection and overall 2 MiB frame | Use the selected shared profile; configured tools require an explicit pure native-plugin allowlist, not provider-granted tools |
+| DSH rejects provider/model, input or response budget | Offline/configured mode, exact selection and overall 2 MiB frame | Keep the same route and exact model, but build an explicit user-owned DSH profile whose response bound leaves frame headroom; configured tools also require an explicit pure native-plugin allowlist |
 | DSH rejects a managed tool catalog | Absolute `--plugin-config`, paired `--managed-tool NAME=PLUGIN/OPERATION`, unique lowercase names, object input schema and pure effect | Correct the selected declaration/config; do not disable guards or mount arbitrary installed tools |
-| `managed DSH tool result limit exceeds 64 KiB` | The selected operation's declared `max_result_bytes`, not the size of one observed result | SDK default is 1 MiB; the unchanged `demo/add` example inherits it. Use an explicitly bounded compatible operation for a new run, without rewriting old identity |
+| `managed DSH tool result limit exceeds 64 KiB` | The selected operation's declared `max_result_bytes`, not the size of one observed result | Declare a bound derived from the operation's legal output domain. The current demo operations use 1 KiB after bounding their inputs; do not copy either the DSH ceiling or SDK default without analyzing the operation. |
 | Managed tool arguments or next-response budget rejected | Selected input schema; declarations, history, worst-case tool result and next response | Correct the request or approved bounds before execution; a tiny expected result does not override the declared upper bound |
 | Correlated `isError: true` tool result | Durable managed-plugin failure receipt | The tool failed; the model may handle that failure. Do not relabel it as a successful value or blindly repeat the tool |
 | DSH resume refuses a stale execution | Exact completion event, original registration/profile/catalog, writer history and effect/workspace boundaries | Use the original selection and allowlist; absence of eligible proof is not permission to rerun the provider/tool |
@@ -62,4 +62,4 @@ Never post credentials, raw Registry databases, full shell environment, signed d
 ## Validation and non-goals
 Repeat the smallest relevant deterministic test before attempting an authorized live reproduction. Link/build checks do not validate runtime recovery. The framework governs structural admission and records; it is not a universal business authorization policy, an OS sandbox, or an automatic external-effect compensation service.
 
-Source boundaries: `cpn/rpnh/user_config.py`, `control_server.py`, `task_control.py`, `harness.py`, `registry/event_store.py`, `registry/firing_recovery.py`; optional `cpn/plugins/{api,catalog,managed_tools}.py`, `cpn/dsh/backend.py`, `integrations/dsh/src/app.ts`. [Architecture](../architecture/design.md) explains why these boundaries are separate.
+Source boundaries: `cpn/rpnh/user_config.py`, `control_server.py`, `task_control.py`, `harness.py`, `registry/event_store.py`, `registry/firing_recovery.py`; optional `cpn/plugins/{api,catalog,managed_tools}.py`, `cpn/dsh/backend.py`, `integrations/dsh/src/{agent,app}.ts`. [Architecture](../architecture/design.md) explains why these boundaries are separate.

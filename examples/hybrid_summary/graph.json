@@ -2,7 +2,7 @@
   "nodes": [
     {
       "node_id": "normalize",
-      "instruction": "Normalize the task's batch values into one JSON object for the native operation.",
+      "instruction": "Normalize the task's batch values for the native operation. Read the exact Located input, then publish only one JSON object shaped exactly as {\"values\":[INTEGER,...]}. Preserve the input integers and order. Do not calculate a summary and do not add keys.",
       "input_ports": [{"port_id": "request", "artifact_id": "task"}],
       "output_ports": [{"port_id": "normalized", "artifact_id": "batch_values"}],
       "execution": {"role": "actor", "tools": null, "profile_id": null}
@@ -16,7 +16,7 @@
     },
     {
       "node_id": "explain",
-      "instruction": "Explain the registered summary in one short sentence without recomputing it.",
+      "instruction": "Explain the registered summary without recomputing it. Read the exact Located summary input and report all five registered fields in exactly this sentence shape: COUNT batches total TOTAL; mean MEAN; minimum MINIMUM; maximum MAXIMUM. Substitute only values from that summary and do not list the original batch values.",
       "input_ports": [{"port_id": "summary", "artifact_id": "batch_summary"}],
       "output_ports": [{"port_id": "result", "artifact_id": "answer"}],
       "execution": {"role": "actor", "tools": null, "profile_id": null}

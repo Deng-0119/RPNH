@@ -6,7 +6,7 @@ metadata:
   audience: user-and-developer
   language: zh-CN
   counterpart: examples.md
-  revision: "2026-09-26.1"
+  revision: "2026-09-26.2"
   status: deterministic-offline-validated
   basis: "current main public APIs; scripted model boundary explicitly labelled"
 ---
@@ -56,6 +56,10 @@ rpnh net --run "$ADD_RUN" --show-resources
 `actual_model_call_counts[0]` 为 `0`。第二份结果包含指令正文和本次运行登记的资源身份、
 资源版本身份。复制输入并修改两个数字，再使用一个全新的 run 目录即可比较结果。
 
+三个 demo operation 都显式把规范 JSON 结果限制为 1 KiB。这不是照抄 DSH 上限：有界
+整数输入使最大合法加法结果与 1000 项汇总都远小于 1 KiB，指令结果则具有固定资源形状。
+其它 operation 必须根据自己的合法输出域推导上限。
+
 ## 案例 2：模型、程序、模型
 
 启动器会实际读取 `examples/hybrid_summary/graph.json`，它不是只供展示的配置。三个节点为：
@@ -67,6 +71,9 @@ rpnh net --run "$ADD_RUN" --show-resources
 默认模式临时生成 local-process execution selection。替身先通过 AgentLoop 工具契约读取
 精确 Located input，再返回确定性工具调用；插件执行、图 lowering、Registry 发布、资源
 传递和终端结算均走普通 RPNH 路径。
+
+每个模型节点最多四轮，允许 Located-input 读取以及一次发布被拒后的有界纠正；这不是
+provider 重试策略。
 
 ```bash
 DEMO_ROOT="$(mktemp -d "${TMPDIR:-/tmp}/rpnh-hybrid.XXXXXX")"
