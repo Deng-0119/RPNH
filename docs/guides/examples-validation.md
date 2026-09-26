@@ -6,7 +6,7 @@ metadata:
   audience: user-and-maintainer
   language: en
   counterpart: examples-validation_ZH.md
-  revision: "2026-09-26.6"
+  revision: "2026-09-26.7"
   status: focused-live-validation-complete
   basis: "focused local acceptance across basic, Codex, DSH and OpenCode hosts"
 ---
@@ -134,3 +134,20 @@ before its join settled. The long process provides canonical checkpoints for
 viewer timeline instruction. The sanitized record is
 `examples/workflow_patterns/validation.json`; raw runs remain outside the
 repository.
+
+## Public dashboard images
+
+The documentation now carries 13 actual 1440×980 dashboard captures. Eight
+come from deterministic source examples: native plugin, hybrid calculation,
+serial, parallel Overview, parallel PetriNet, document, long process and an
+independent child task. Five are read-only captures of previously authorized
+accepted runs: native net replacement plus Basic, Codex, DSH and OpenCode.
+
+`scripts/capture_example_dashboards.py` reproduces the deterministic images and
+can accept explicit existing run directories for the authorized examples. The
+capture path verifies expected graph nodes before writing each PNG. It preserves
+the real graph, aggregate state, controls and timeline, while replacing the
+run-specific checkpoint label and hiding the footer containing exact checkpoint
+identity and local observation time. No new provider/model call was made for
+this documentation capture. Images remain observation aids, not substitutes
+for terminal evidence or registered final results.

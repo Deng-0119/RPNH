@@ -11,6 +11,52 @@ across several steps, and inspect the inputs, resources and results behind each
 execution. The same foundation supports applications that are refined manually
 or through an application-defined optimization loop.
 
+## See a multi-agent run
+
+This is the dashboard from the checked-in `parallel` example after a completed
+Registry run. `prepare` enables two independent Agents; `join` becomes eligible
+only after both registered products are available.
+
+![Actual RPNH parallel multi-agent overview](examples/workflow_patterns/assets/parallel-overview.png)
+
+After the source installation below, reproduce it without a provider or API
+credential:
+
+```bash
+DEMO_ROOT="$(mktemp -d "${TMPDIR:-/tmp}/rpnh-readme.XXXXXX")"
+python -m examples.workflow_patterns.run \
+  --scenario parallel --run-dir "$DEMO_ROOT/parallel"
+rpnh net --run "$DEMO_ROOT/parallel" --view --no-open
+```
+
+Overview emphasizes Agent-to-Agent structure. The same run's PetriNet view
+shows every transition, handoff place, fan-out arc and all-input join used by
+execution:
+
+![Actual RPNH parallel PetriNet projection](examples/workflow_patterns/assets/parallel-petrinet.png)
+
+The screenshots retain the real graph, aggregate execution state and controls;
+run-specific checkpoint identities and local timestamps are omitted from public
+images. The dashboard is read-only, and completion still comes from Registry
+terminal evidence rather than a picture or process exit.
+
+## Example index
+
+| What to try | What it demonstrates | Complete instructions |
+|---|---|---|
+| Native calculation | A local plugin, registered input/output and zero model calls | [Native tool](examples/native_plugin/README.md) |
+| Model–program–model calculation | Agent nodes around a native summary operation | [Hybrid summary](examples/hybrid_summary/README.md) |
+| Serial, parallel, document and long workflows | Multi-Agent topology, bounded parallelism, joins and timeline checkpoints | [Workflow gallery](examples/workflow_patterns/README.md) |
+| Independent tasks | Separate child Registries controlled from one main session | [Task workspace](examples/task_workspace/README.md) |
+| Native Petri-net operations | Definition composition and a live whole-net replacement | [Net operations](examples/net_operations/README.md) |
+| Basic, Codex, DSH and OpenCode | One provider-neutral semantic task through four presentations | [Installed adapter task](docs/guides/examples.md) |
+
+Every example page includes an actual dashboard image and states whether it was
+captured from a deterministic local run or a previously authorized live run.
+Use the [complete example catalog](docs/guides/examples.md) for expected results,
+commands and evidence boundaries, and the [dashboard tutorial](docs/guides/viewer.md)
+for every view, control and visual symbol.
+
 ## What RPNH brings to an application
 
 - **Combine agents with existing code.** Give language-model nodes reasoning and

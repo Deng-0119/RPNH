@@ -7,6 +7,12 @@ Set `DSH_SOURCE` and an authorized DSH-compatible execution selection. The
 profile must retain the same route/model while leaving room inside DSH's 2 MiB
 complete-frame limit.
 
+This actual settled PetriNet comes from the checked DSH acceptance turn. Unlike
+the one-transition MainSession hosts, it exposes DSH inspection, policy,
+model/tool and finalization transitions registered by the host integration.
+
+![DSH accepted-turn PetriNet](../assets/dsh-petrinet.png)
+
 ```bash
 : "${DSH_SOURCE:?Set the pinned DSH checkout}"
 : "${EXECUTION_CONFIG:?Set an authorized DSH-compatible selection}"

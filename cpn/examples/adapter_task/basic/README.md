@@ -6,6 +6,11 @@ Prerequisite: set `EXECUTION_CONFIG` to the absolute path of one authorized
 RPNH execution selection. This command starts one real main-session logical
 turn:
 
+This is the actual settled PetriNet from the checked acceptance run. It shows
+the shared RPNH execution layer, not a screenshot of the Basic terminal.
+
+![Basic accepted-turn PetriNet](../assets/basic-petrinet.png)
+
 ```bash
 : "${EXECUTION_CONFIG:?Set an authorized execution selection}"
 RUN_ROOT="$(mktemp -d "${TMPDIR:-/tmp}/rpnh-basic-example.XXXXXX")/session"

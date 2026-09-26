@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: viewer.md
-  revision: "2026-09-26.2"
+  revision: "2026-09-26.3"
   status: source-reviewed-pre-release
 ---
 
@@ -44,6 +44,14 @@ rpnh net --run "$DEMO_ROOT/parallel" --view --no-open
 并行： prepare -> facts --\
                 -> risks ---+-> join
 ```
+
+实际并行 Overview 只保留 Agent 后继关系：
+
+![实际并行 Agent 概览](../../examples/workflow_patterns/assets/parallel-overview.png)
+
+把同一个已完成 run 切换到 PetriNet 后，可以看到实现 fan-out 和全输入 join 的 place 与弧：
+
+![实际并行 PetriNet 视图](../../examples/workflow_patterns/assets/parallel-petrinet.png)
 
 解释精确 place 和 arc 前先切换到 PetriNet。ASCII 只描述 Agent 职责关系，Petri 投影才是
 权威。[工作流模式源码说明](../../examples/workflow_patterns/README_ZH.md)还提供文档任务和

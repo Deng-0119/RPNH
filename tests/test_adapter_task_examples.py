@@ -31,6 +31,8 @@ def test_exported_bundle_is_self_contained_and_verifiable(
         *(f"{host}/README.md" for host in ("basic", "codex", "dsh", "opencode")),
         *(f"{host}/README_ZH.md" for host in ("basic", "codex", "dsh", "opencode")),
         *(f"{host}/evidence.json" for host in ("basic", "codex", "dsh", "opencode")),
+        *(f"assets/{host}-petrinet.png" for host in (
+            "basic", "codex", "dsh", "opencode")),
     }
     assert required <= {
         path.relative_to(exported).as_posix()

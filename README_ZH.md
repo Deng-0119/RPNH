@@ -8,6 +8,45 @@ RPNH 是一个用于组合语言模型、原生工具和可复用工作流的 Ag
 你可以用它将已有软件接入 Agent 应用，组织多步骤工作，并查看每次执行所依据的输入、
 资源和结果。这套基础也适用于由人工持续调整，或通过应用自行定义的优化循环改进的系统。
 
+## 先看一次多 Agent 运行
+
+下图来自仓库内 `parallel` 案例完成后的真实 Registry 看板。`prepare` 会同时启用两个独立
+Agent；只有两个登记产物都可用后，`join` 才具备执行条件。
+
+![RPNH 并行多 Agent 实际概览](examples/workflow_patterns/assets/parallel-overview.png)
+
+完成下文的源码安装后，无需 provider 或 API 凭据即可复现：
+
+```bash
+DEMO_ROOT="$(mktemp -d "${TMPDIR:-/tmp}/rpnh-readme.XXXXXX")"
+python -m examples.workflow_patterns.run \
+  --scenario parallel --run-dir "$DEMO_ROOT/parallel"
+rpnh net --run "$DEMO_ROOT/parallel" --view --no-open
+```
+
+Overview 强调 Agent 之间的网状关系；同一次运行的 PetriNet 视图会展示执行实际使用的每个
+transition、交接 place、并行分叉弧和全输入 join：
+
+![RPNH 并行流程的实际 PetriNet 投影](examples/workflow_patterns/assets/parallel-petrinet.png)
+
+公开图片保留真实图结构、聚合执行状态和控件，但移除了 run 专属 checkpoint 身份及本地
+时间。看板始终只读；完成判定仍以 Registry 终态证据为准，不能用图片或进程退出替代。
+
+## 案例索引
+
+| 可以尝试什么 | 展示的能力 | 完整说明 |
+|---|---|---|
+| 原生计算 | 本地插件、登记输入输出、零模型调用 | [原生工具](examples/native_plugin/README_ZH.md) |
+| 模型—程序—模型计算 | 原生汇总 operation 前后的 Agent 节点 | [混合汇总](examples/hybrid_summary/README_ZH.md) |
+| 串行、并行、文档和长流程 | 多 Agent 拓扑、有界并行、join 与时间轴 checkpoint | [工作流案例库](examples/workflow_patterns/README_ZH.md) |
+| 独立任务 | 一个主会话控制多个相互隔离的子 Registry | [任务工作区](examples/task_workspace/README_ZH.md) |
+| 原生 PetriNet 操作 | 定义组合与真实 whole-net replacement | [网操作](examples/net_operations/README_ZH.md) |
+| Basic、Codex、DSH 与 OpenCode | 同一个 provider-neutral 语义任务经过四种展示入口 | [安装版适配任务](docs/guides/examples_ZH.md) |
+
+每个案例页面都包含实际 dashboard 图，并注明图片来自确定性本地运行还是此前已授权的真实
+运行。[完整案例目录](docs/guides/examples_ZH.md)提供预期结果、命令与证据边界；
+[看板教程](docs/guides/viewer_ZH.md)解释所有视图、控件和图形符号。
+
 ## RPNH 为应用提供什么
 
 - **组合 Agent 与已有代码。** 让语言模型节点负责推理与沟通，让原生插件完成计算或执行

@@ -2,6 +2,11 @@
 
 [English](README.md) | 中文
 
+每个子任务都拥有独立 Registry。下图是其中一个已完成子任务的实际 PetriNet；另一个子任务
+具有不同的 run 和身份，但两者都由同一个主会话控制。
+
+![已完成的独立子任务](assets/independent-task-petrinet.png)
+
 先在仓库外生成脚本化 profile，再启动一个新的主会话：
 
 ```bash

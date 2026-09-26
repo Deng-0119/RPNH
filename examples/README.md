@@ -4,18 +4,20 @@ English | [中文](README_ZH.md)
 
 Choose an example by the behavior you want to see:
 
-| Goal | Example | Default model boundary |
-|---|---|---|
-| Local calculation and registered resource | [Native plugin](native_plugin/README.md) | No model |
-| Serial model–program–model calculation | [Hybrid summary](hybrid_summary/README.md) | Scripted; optional exact live profile |
-| Serial, parallel, document and long workflow shapes | [Workflow pattern gallery](workflow_patterns/README.md) | Scripted; optional exact live profile |
-| Two independently managed child tasks | [Task workspace](task_workspace/README.md) | Scripted |
-| Definition operations and live replacement | [Native net operations](net_operations/README.md) | Definition-only plus one live task |
-| One semantic task through every supported host | `rpnh examples export --output DIR` | User-owned exact live profile |
+| Goal | Example | Actual dashboard | Default model boundary |
+|---|---|---|---|
+| Local calculation and registered resource | [Native plugin](native_plugin/README.md) | ![PetriNet](native_plugin/assets/native-plugin-petrinet.png) | No model |
+| Serial model–program–model calculation | [Hybrid summary](hybrid_summary/README.md) | ![Detailed flow](hybrid_summary/assets/hybrid-summary-flow.png) | Scripted; optional exact live profile |
+| Serial, parallel, document and long workflow shapes | [Workflow pattern gallery](workflow_patterns/README.md) | ![Parallel overview](workflow_patterns/assets/parallel-overview.png) | Scripted; optional exact live profile |
+| Two independently managed child tasks | [Task workspace](task_workspace/README.md) | ![Child PetriNet](task_workspace/assets/independent-task-petrinet.png) | Scripted |
+| Definition operations and live replacement | [Native net operations](net_operations/README.md) | ![Adopted net](net_operations/assets/live-replacement-petrinet.png) | Definition-only plus one live task |
+| One semantic task through every supported host | [Installed adapter task](../docs/guides/examples.md) | ![DSH execution net](../cpn/examples/adapter_task/assets/dsh-petrinet.png) | User-owned exact live profile |
 
 Each runnable workflow creates a real Registry that can be opened with
 `rpnh net --run RUN_DIR --view --no-open`. Scripted fixtures exercise the same
 protocol and settlement boundaries but are not claims about model reasoning.
+Every linked image comes from the named run type; public copies omit exact
+checkpoint identities and local observation timestamps.
 
 Start with the [complete examples guide](../docs/guides/examples.md) and the
 [dashboard guide](../docs/guides/viewer.md). Generated

@@ -13,6 +13,33 @@ runner 不选择或切换 provider/model。
 | `document` | `outline -> draft -> review -> publish` | 文档由四个版本化产物逐步形成。 |
 | `long_process` | 六个串行 Agent 节点 | 更多 canonical checkpoint，便于时间轴回放。 |
 
+## 实际 dashboard 视图
+
+下面所有图片都截取自已完成的确定性 Registry run，不是手绘示意图。公开副本移除了精确
+checkpoint 身份。
+
+### 串行流程
+
+![串行工作流 PetriNet](assets/serial-petrinet.png)
+
+### 并行分叉与 join
+
+Overview 便于直接阅读 Agent 网状关系：
+
+![并行工作流 Agent 概览](assets/parallel-overview.png)
+
+PetriNet 展示实现同一分叉和全输入 join 的真实数据 place、控制 place 与弧：
+
+![并行工作流 PetriNet](assets/parallel-petrinet.png)
+
+### 文档任务
+
+![文档工作流 Detailed flow](assets/document-flow.png)
+
+### 长流程
+
+![六阶段工作流概览](assets/long-process-overview.png)
+
 计算案例继续使用 [`hybrid_summary`](../hybrid_summary/README_ZH.md)，因为它展示了更有价值的
 模型—原生插件—模型边界，不在这里重复同一 operation。
 

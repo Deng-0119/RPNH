@@ -6,7 +6,7 @@ metadata:
   audience: user-and-maintainer
   language: zh-CN
   counterpart: examples-validation.md
-  revision: "2026-09-26.6"
+  revision: "2026-09-26.7"
   status: focused-live-validation-complete
   basis: "focused local acceptance across basic, Codex, DSH and OpenCode hosts"
 ---
@@ -114,3 +114,16 @@ terminal outcome `complete`。
 每个 Agent 都通过受管工具边界读取精确 Located input，并发布一个登记输出。并行 run 的
 join 在两个分支产物均存在后才结算；长流程为 viewer 时间轴教程提供 canonical checkpoint。
 脱敏记录位于 `examples/workflow_patterns/validation.json`，原始 run 保持在仓库之外。
+
+## 公开 dashboard 图片
+
+文档现在包含 13 张实际的 1440×980 dashboard 截图。其中 8 张来自确定性源码案例：原生
+插件、混合计算、串行、并行 Overview、并行 PetriNet、文档、长流程和独立子任务；另外
+5 张只读截取自此前已经授权并验收的运行：原生网替换，以及 Basic、Codex、DSH 和
+OpenCode。
+
+`scripts/capture_example_dashboards.py` 可以重建确定性图片，也可显式接收已有授权案例的
+run 目录。保存 PNG 前，脚本会检查对应图中的预期节点。图片保留真实图、聚合状态、控件和
+时间轴，但会替换 run 专属 checkpoint 标签，并隐藏含精确 checkpoint 身份及本地观察时间的
+footer。本轮文档截图没有产生新的 provider／模型调用。图片只用于观察，不能代替终态证据或
+已登记 final result。

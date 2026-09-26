@@ -43,6 +43,7 @@ cpn = [
   "config/*.json",
   "examples/**/*.json",
   "examples/**/*.md",
+  "examples/**/*.png",
   "examples/**/*.txt",
   "frontend/*.json",
   "frontend/static/*",

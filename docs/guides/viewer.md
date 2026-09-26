@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: en
   counterpart: viewer_ZH.md
-  revision: "2026-09-26.2"
+  revision: "2026-09-26.3"
   status: source-reviewed-pre-release
 ---
 
@@ -47,6 +47,15 @@ serial:    intake -> work -> deliver
 parallel:  prepare -> facts --\
                    -> risks ---+-> join
 ```
+
+The actual parallel Overview keeps only Agent successor relations:
+
+![Actual parallel Agent overview](../../examples/workflow_patterns/assets/parallel-overview.png)
+
+Switching the same completed run to PetriNet reveals the places and arcs that
+enforce the fan-out and all-input join:
+
+![Actual parallel PetriNet view](../../examples/workflow_patterns/assets/parallel-petrinet.png)
 
 Switch to PetriNet before interpreting exact places and arcs. The ASCII shapes
 describe Agent responsibilities only; the Petri projection remains the

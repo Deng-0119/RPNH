@@ -9,6 +9,11 @@
 脚本化/模型整理 -> demo/summarize -> 脚本化/模型解释
 ```
 
+下图是确定性运行完成后的实际 Detailed flow，展示原生 `demo/summarize` operation 前后的
+两个 Agent 节点，以及它们之间已登记的交接。
+
+![已完成混合计算流程](assets/hybrid-summary-flow.png)
+
 安装 RPNH 和 `examples/native_plugin` 后运行确定性模式：
 
 ```bash

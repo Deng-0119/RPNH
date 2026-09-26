@@ -5,6 +5,11 @@
 安装精确的 OpenCode 1.18.32，并选择一个已授权 profile。启动前端本身不会调用模型；
 提交 `task.txt` 会启动一个逻辑主会话 turn：
 
+下图来自成功 replacement 验收运行已结算后的实际 PetriNet，展示 OpenCode 展示层背后由
+RPNH 管理的执行层；此时保守的 pending 状态已经完成 reconciliation。
+
+![OpenCode 验收 turn 的 PetriNet](../assets/opencode-petrinet.png)
+
 ```bash
 : "${EXECUTION_CONFIG:?Set an authorized execution selection}"
 RUN_ROOT="$(mktemp -d "${TMPDIR:-/tmp}/rpnh-opencode-example.XXXXXX")/session"

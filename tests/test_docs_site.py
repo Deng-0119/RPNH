@@ -32,6 +32,10 @@ class DocumentationTests(unittest.TestCase):
             dest = self.root / path.relative_to(ROOT)
             dest.parent.mkdir(parents=True, exist_ok=True)
             shutil.copyfile(path, dest)
+        for path in docs.reviewed_assets(ROOT):
+            dest = self.root / path.relative_to(ROOT)
+            dest.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copyfile(path, dest)
         for name in docs.STATIC_DOCUMENTS:
             shutil.copyfile(ROOT / name, self.root / name)
 
@@ -101,6 +105,25 @@ class DocumentationTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'escapes'):
             docs.check(self.root)
 
+    def test_unreviewed_image_location_rejected(self):
+        source = next(iter(docs.reviewed_assets(self.root)))
+        shutil.copyfile(source, self.root / 'unreviewed.png')
+        self.append('![Unreviewed](unreviewed.png)')
+        with self.assertRaisesRegex(ValueError, 'outside reviewed asset policy'):
+            docs.check(self.root)
+
+    def test_malformed_reviewed_png_rejected(self):
+        path = next(iter(docs.reviewed_assets(self.root)))
+        path.write_bytes(b'not a png')
+        with self.assertRaisesRegex(ValueError, 'invalid PNG'):
+            docs.check(self.root)
+
+    def test_truncated_reviewed_png_rejected_after_valid_header(self):
+        path = next(iter(docs.reviewed_assets(self.root)))
+        path.write_bytes(path.read_bytes()[:24])
+        with self.assertRaisesRegex(ValueError, 'invalid PNG'):
+            docs.check(self.root)
+
     def test_build_language_links_and_no_runtime_import(self):
         output = Path(self.tmp.name) / 'site'
         before = {name for name in sys.modules if name == 'cpn' or name.startswith('cpn.')}
@@ -114,6 +137,11 @@ class DocumentationTests(unittest.TestCase):
         self.assertTrue((output / 'examples/README.html').is_file())
         self.assertTrue(
             (output / 'examples/workflow_patterns/README_ZH.html').is_file())
+        self.assertTrue((
+            output / 'examples/workflow_patterns/assets/parallel-overview.png'
+        ).is_file())
+        self.assertIn(
+            'examples/workflow_patterns/assets/parallel-overview.png', home)
         zh = (output / 'docs/guides/installation_ZH.html').read_text()
         self.assertIn('lang="zh-CN"', zh)
         self.assertIn('installation.html', zh)
@@ -148,6 +176,35 @@ class DocumentationTests(unittest.TestCase):
             document = (self.root / relative).read_text(encoding='utf-8').lower()
             missing = [value for value in required if value.lower() not in document]
             self.assertEqual(missing, [], relative)
+
+    def test_every_runnable_example_page_has_a_reviewed_dashboard_image(self):
+        pages = (
+            'README.md', 'README_ZH.md',
+            'examples/native_plugin/README.md',
+            'examples/native_plugin/README_ZH.md',
+            'examples/hybrid_summary/README.md',
+            'examples/hybrid_summary/README_ZH.md',
+            'examples/workflow_patterns/README.md',
+            'examples/workflow_patterns/README_ZH.md',
+            'examples/task_workspace/README.md',
+            'examples/task_workspace/README_ZH.md',
+            'examples/net_operations/README.md',
+            'examples/net_operations/README_ZH.md',
+            *(f'cpn/examples/adapter_task/{host}/README{suffix}.md'
+              for host in ('basic', 'codex', 'dsh', 'opencode')
+              for suffix in ('', '_ZH')),
+        )
+        for relative in pages:
+            tokens = docs.PARSER.parse(
+                (self.root / relative).read_text(encoding='utf-8'))
+            images = [
+                token for token in docs.children(tokens)
+                if token.type == 'image'
+            ]
+            self.assertTrue(images, relative)
+            for token in images:
+                docs.reviewed_image_target(
+                    self.root / relative, token.attrGet('src'), self.root)
 
     def test_existing_output_not_overwritten(self):
         output = Path(self.tmp.name) / 'site'

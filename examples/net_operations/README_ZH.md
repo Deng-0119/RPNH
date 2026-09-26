@@ -26,6 +26,11 @@ python -m examples.net_operations.compose_serial
 5. Replace 在全网静止边界采用后继网；第二个 Agent 读取第一个 Agent 的已登记 workspace 文件，
    再发布终态结果。
 
+下图来自 `live_result.json` 对应的已授权真实运行，是采用后继网之后的实际 PetriNet。
+时间轴会明确停在 net-version 边界；图片不会把先后两个定义伪装成一张静态网。
+
+![已采用的替换 PetriNet](assets/live-replacement-petrinet.png)
+
 以下命令会产生真实 provider 费用。先检查 `rpnh config show`，取得其中显示的
 `execution_config_path`，并使用仓库外一个尚不存在的目录：
 

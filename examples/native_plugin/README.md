@@ -5,6 +5,13 @@ English | [中文](README_ZH.md)
 Install this package into the same environment as RPNH, from the repository
 root. Each `RUN_DIR` below must not exist before the command starts.
 
+The image below is the actual PetriNet view of the completed `demo/add` run.
+The hidden resource counter shows that one declared plugin capability can be
+revealed with **Show resources**; the visible graph is the ordinary
+request–operation–result path.
+
+![Completed native-plugin PetriNet](assets/native-plugin-petrinet.png)
+
 ```bash
 python -m pip install ./examples/native_plugin
 rpnh plugins --config examples/native_plugin/plugins.json list

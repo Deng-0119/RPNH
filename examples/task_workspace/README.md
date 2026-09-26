@@ -2,6 +2,12 @@
 
 English | [中文](README_ZH.md)
 
+Each child task owns a separate Registry. This is the actual PetriNet view of
+one completed child; the sibling task has a different run and identity even
+though both are controlled from the same main session.
+
+![Completed independent child task](assets/independent-task-petrinet.png)
+
 Create a repository-external scripted profile, then start one fresh main session:
 
 ```bash

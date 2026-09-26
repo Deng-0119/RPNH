@@ -4,6 +4,11 @@
 
 在仓库根目录把此包安装到 RPNH 所在环境。以下每个 `RUN_DIR` 在命令启动前都必须不存在。
 
+下图是 `demo/add` 完成后的实际 PetriNet。隐藏资源计数表明可通过 **Show resources**
+显示一个已声明的插件 capability；当前可见图是普通的请求—operation—结果路径。
+
+![已完成原生插件 PetriNet](assets/native-plugin-petrinet.png)
+
 ```bash
 python -m pip install ./examples/native_plugin
 rpnh plugins --config examples/native_plugin/plugins.json list

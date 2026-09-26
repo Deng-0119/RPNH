@@ -6,7 +6,7 @@ metadata:
   audience: user-and-developer
   language: en
   counterpart: examples_ZH.md
-  revision: "2026-09-26.4"
+  revision: "2026-09-26.5"
   status: focused-live-validated
   basis: "current main public APIs; offline fixtures and 2026-09-26 exact-route live evidence explicitly separated"
 ---
@@ -53,6 +53,8 @@ you no longer need the Registry evidence.
 This path needs no model profile or credential. The parent directory may exist,
 but each run directory must be absent before `run` starts.
 
+![Actual completed native-plugin PetriNet](../../examples/native_plugin/assets/native-plugin-petrinet.png)
+
 ```bash
 DEMO_ROOT="$(mktemp -d "${TMPDIR:-/tmp}/rpnh-native.XXXXXX")"
 ADD_RUN="$DEMO_ROOT/add-run"
@@ -86,6 +88,8 @@ is not display-only configuration. Its three nodes are:
 ```text
 normalize input -> demo/summarize -> explain registered summary
 ```
+
+![Actual completed hybrid Detailed flow](../../examples/hybrid_summary/assets/hybrid-summary-flow.png)
 
 The default mode generates a temporary local-process execution selection. The
 fixture first reads each exact Located input through the AgentLoop tool
@@ -137,6 +141,17 @@ using the [model guide](models.md) before running it.
 One runner exposes four explicit graph shapes. These are completed tasks, not
 declaration-only diagrams:
 
+| Serial PetriNet | Parallel Agent overview |
+|---|---|
+| ![Serial workflow](../../examples/workflow_patterns/assets/serial-petrinet.png) | ![Parallel Agent graph](../../examples/workflow_patterns/assets/parallel-overview.png) |
+
+| Document Detailed flow | Long-process overview |
+|---|---|
+| ![Document workflow](../../examples/workflow_patterns/assets/document-flow.png) | ![Long workflow](../../examples/workflow_patterns/assets/long-process-overview.png) |
+
+The [workflow gallery](../../examples/workflow_patterns/README.md) also shows
+the parallel run's complete PetriNet projection.
+
 ```bash
 DEMO_ROOT="$(mktemp -d "${TMPDIR:-/tmp}/rpnh-patterns.XXXXXX")"
 python -m examples.workflow_patterns.run --list
@@ -170,6 +185,8 @@ and the [dashboard tutorial](viewer.md).
 
 Generate the scripted profile outside the repository and start a fresh basic
 session:
+
+![Actual completed child-task PetriNet](../../examples/task_workspace/assets/independent-task-petrinet.png)
 
 ```bash
 DEMO_ROOT="$(mktemp -d "${TMPDIR:-/tmp}/rpnh-tasks.XXXXXX")"
@@ -210,6 +227,18 @@ separate Registries; the main Registry stores child links.
 Every wheel contains a provider-neutral semantic task plus separate instructions
 for Basic, Codex 0.155.0, pinned DSH and OpenCode 1.18.32. Exporting or listing
 it makes no provider call:
+
+| Basic | Codex 0.155.0 |
+|---|---|
+| ![Basic accepted run](../../cpn/examples/adapter_task/assets/basic-petrinet.png) | ![Codex accepted run](../../cpn/examples/adapter_task/assets/codex-petrinet.png) |
+
+| Pinned DSH | OpenCode 1.18.32 |
+|---|---|
+| ![DSH accepted run](../../cpn/examples/adapter_task/assets/dsh-petrinet.png) | ![OpenCode accepted run](../../cpn/examples/adapter_task/assets/opencode-petrinet.png) |
+
+These are read-only PetriNet views of the accepted Registry runs, not host TUI
+screenshots. Their different execution shapes remain visible; exact checkpoint
+identities are omitted from the public images.
 
 ```bash
 EXAMPLE_PARENT="$(mktemp -d "${TMPDIR:-/tmp}/rpnh-adapter-example.XXXXXX")"

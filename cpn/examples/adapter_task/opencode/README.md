@@ -6,6 +6,12 @@ Install exact OpenCode 1.18.32 and select one authorized profile. Starting the
 frontend sends no model request; submitting `task.txt` starts one logical
 main-session turn:
 
+This is the actual settled PetriNet from the successful replacement acceptance
+run. It shows the RPNH-owned execution layer behind the OpenCode presentation,
+after the conservative pending state was reconciled.
+
+![OpenCode accepted-turn PetriNet](../assets/opencode-petrinet.png)
+
 ```bash
 : "${EXECUTION_CONFIG:?Set an authorized execution selection}"
 RUN_ROOT="$(mktemp -d "${TMPDIR:-/tmp}/rpnh-opencode-example.XXXXXX")/session"

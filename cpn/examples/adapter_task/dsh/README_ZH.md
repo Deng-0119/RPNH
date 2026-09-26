@@ -6,6 +6,11 @@
 与 DSH 兼容的 execution selection；该 profile 保持同一路线和模型，同时须在 DSH 的
 2 MiB 完整 frame 中留出空间。
 
+下图来自已核对 DSH 验收 turn 的实际已结算 PetriNet。不同于单 transition 的 MainSession
+宿主，它会显示 DSH integration 登记的检查、策略、模型／工具和 finalization transition。
+
+![DSH 验收 turn 的 PetriNet](../assets/dsh-petrinet.png)
+
 ```bash
 : "${DSH_SOURCE:?Set the pinned DSH checkout}"
 : "${EXECUTION_CONFIG:?Set an authorized DSH-compatible selection}"

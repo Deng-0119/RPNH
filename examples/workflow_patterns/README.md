@@ -14,6 +14,34 @@ the runner never selects or changes a provider or model.
 | `document` | `outline -> draft -> review -> publish` | A document represented by four versioned products. |
 | `long_process` | Six serial Agent nodes | More canonical checkpoints for timeline replay. |
 
+## Actual dashboard views
+
+All images below were captured from completed deterministic Registry runs, not
+from hand-drawn diagrams. Public copies omit exact checkpoint identities.
+
+### Serial
+
+![Serial workflow PetriNet](assets/serial-petrinet.png)
+
+### Parallel fan-out and join
+
+Overview makes the Agent network easy to read:
+
+![Parallel workflow Agent overview](assets/parallel-overview.png)
+
+PetriNet exposes the actual data places, control places and arcs that enforce
+the same fan-out and all-input join:
+
+![Parallel workflow PetriNet](assets/parallel-petrinet.png)
+
+### Document task
+
+![Document workflow Detailed flow](assets/document-flow.png)
+
+### Long process
+
+![Six-stage workflow overview](assets/long-process-overview.png)
+
 The calculation example remains
 [`hybrid_summary`](../hybrid_summary/README.md), because it demonstrates the
 more useful model–native-plugin–model boundary instead of duplicating that

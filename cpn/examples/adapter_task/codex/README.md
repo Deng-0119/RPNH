@@ -6,6 +6,11 @@ Install exact `codex-cli 0.155.0`, then select one authorized profile. Starting
 the frontend sends no model request; submitting `task.txt` starts one logical
 main-session turn:
 
+This is the actual settled PetriNet from the checked Codex acceptance run. It
+shows the RPNH-owned execution layer behind the Codex presentation.
+
+![Codex accepted-turn PetriNet](../assets/codex-petrinet.png)
+
 ```bash
 : "${EXECUTION_CONFIG:?Set an authorized execution selection}"
 RUN_ROOT="$(mktemp -d "${TMPDIR:-/tmp}/rpnh-codex-example.XXXXXX")/session"

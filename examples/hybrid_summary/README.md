@@ -9,6 +9,12 @@ This three-node DAG reads `graph.json` and executes it through
 scripted/model normalize -> demo/summarize -> scripted/model explain
 ```
 
+This actual Detailed flow view comes from the completed deterministic run. It
+shows the two Agent nodes around the native `demo/summarize` operation and the
+registered handoffs between them.
+
+![Completed hybrid calculation flow](assets/hybrid-summary-flow.png)
+
 After installing RPNH and `examples/native_plugin`, run the deterministic mode:
 
 ```bash

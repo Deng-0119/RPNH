@@ -6,6 +6,19 @@
 endpoint、凭据或模型选择；运行宿主前，用户必须自行选择并授权精确的 RPNH execution
 profile。
 
+## 实际验收 Registry 视图
+
+| Basic | Codex 0.155.0 |
+|---|---|
+| ![Basic 验收运行](assets/basic-petrinet.png) | ![Codex 验收运行](assets/codex-petrinet.png) |
+
+| 固定版本 DSH | OpenCode 1.18.32 |
+|---|---|
+| ![DSH 验收运行](assets/dsh-petrinet.png) | ![OpenCode 验收运行](assets/opencode-petrinet.png) |
+
+这些图片是各展示入口背后的实际已结算 PetriNet，并移除了 run 专属 checkpoint 身份。
+它们不是 TUI 截图，也不能替代每个宿主的 Registry 与 provider audit 核对。
+
 从任意已安装的 `rpnh-harness` 发行包导出一份新副本：
 
 ```bash

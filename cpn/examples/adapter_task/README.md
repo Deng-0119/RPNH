@@ -6,6 +6,20 @@ This bundle runs the same small semantic task through Basic, Codex, DSH and
 OpenCode. It contains no provider, endpoint, credential or model choice. Select
 and authorize your own exact RPNH execution profile before running a host.
 
+## Actual accepted Registry views
+
+| Basic | Codex 0.155.0 |
+|---|---|
+| ![Basic accepted run](assets/basic-petrinet.png) | ![Codex accepted run](assets/codex-petrinet.png) |
+
+| Pinned DSH | OpenCode 1.18.32 |
+|---|---|
+| ![DSH accepted run](assets/dsh-petrinet.png) | ![OpenCode accepted run](assets/opencode-petrinet.png) |
+
+These are the actual settled PetriNet views behind each presentation, with
+run-specific checkpoint identities omitted. They are not TUI screenshots and
+do not replace the host-specific Registry and provider audit checks.
+
 Export a fresh copy from any installed `rpnh-harness` distribution:
 
 ```bash

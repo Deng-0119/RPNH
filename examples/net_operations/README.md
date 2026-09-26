@@ -29,6 +29,13 @@ currently executable native net operation in one Registry:
    Agent reads the first Agent's registered workspace file and publishes the
    terminal result.
 
+The image is the actual adopted successor net from the authorized live run
+recorded in `live_result.json`. The timeline explicitly stops at the net-version
+boundary; the picture does not pretend that both definitions were one static
+net.
+
+![Adopted replacement PetriNet](assets/live-replacement-petrinet.png)
+
 This command incurs real provider cost. First inspect `rpnh config show`, obtain
 the displayed `execution_config_path`, and use an absent directory outside the
 repository:

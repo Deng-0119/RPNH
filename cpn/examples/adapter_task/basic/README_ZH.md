@@ -5,6 +5,10 @@
 前置条件：将 `EXECUTION_CONFIG` 设为一个已授权 RPNH execution selection 的绝对路径。
 下列命令会启动一个真实主会话逻辑 turn：
 
+下图是验收运行已结算后的实际 PetriNet，展示共用的 RPNH 执行层，而不是 Basic 终端截图。
+
+![Basic 验收 turn 的 PetriNet](../assets/basic-petrinet.png)
+
 ```bash
 : "${EXECUTION_CONFIG:?Set an authorized execution selection}"
 RUN_ROOT="$(mktemp -d "${TMPDIR:-/tmp}/rpnh-basic-example.XXXXXX")/session"

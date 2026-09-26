@@ -6,7 +6,7 @@ metadata:
   audience: user-and-developer
   language: zh-CN
   counterpart: examples.md
-  revision: "2026-09-26.4"
+  revision: "2026-09-26.5"
   status: focused-live-validated
   basis: "current main public APIs; offline fixtures and 2026-09-26 exact-route live evidence explicitly separated"
 ---
@@ -50,6 +50,8 @@ rpnh plugins --config examples/native_plugin/plugins.json check
 此路径不需要模型 profile 或凭据。父目录可以存在，但每个 run 目录在 `run` 启动前必须
 不存在。
 
+![原生插件完成后的实际 PetriNet](../../examples/native_plugin/assets/native-plugin-petrinet.png)
+
 ```bash
 DEMO_ROOT="$(mktemp -d "${TMPDIR:-/tmp}/rpnh-native.XXXXXX")"
 ADD_RUN="$DEMO_ROOT/add-run"
@@ -78,6 +80,8 @@ rpnh net --run "$ADD_RUN" --show-resources
 ```text
 整理输入 -> demo/summarize -> 解释登记后的汇总
 ```
+
+![混合流程完成后的实际 Detailed flow](../../examples/hybrid_summary/assets/hybrid-summary-flow.png)
 
 默认模式临时生成 local-process execution selection。替身先通过 AgentLoop 工具契约读取
 精确 Located input，再返回确定性工具调用；插件执行、图 lowering、Registry 发布、资源
@@ -122,6 +126,17 @@ python examples/hybrid_summary/run.py --execution "$EXECUTION_CONFIG" \
 
 同一个 runner 提供四种明确图结构；这些都会完成真实任务，不是只生成声明的示意图：
 
+| 串行 PetriNet | 并行 Agent 概览 |
+|---|---|
+| ![串行工作流](../../examples/workflow_patterns/assets/serial-petrinet.png) | ![并行 Agent 图](../../examples/workflow_patterns/assets/parallel-overview.png) |
+
+| 文档 Detailed flow | 长流程概览 |
+|---|---|
+| ![文档工作流](../../examples/workflow_patterns/assets/document-flow.png) | ![长工作流](../../examples/workflow_patterns/assets/long-process-overview.png) |
+
+[工作流案例库](../../examples/workflow_patterns/README_ZH.md)还展示同一并行 run 的完整
+PetriNet 投影。
+
 ```bash
 DEMO_ROOT="$(mktemp -d "${TMPDIR:-/tmp}/rpnh-patterns.XXXXXX")"
 python -m examples.workflow_patterns.run --list
@@ -152,6 +167,8 @@ runner 不选择或切换路线。参阅[源码案例说明](../../examples/work
 ## 案例 4：两个独立任务
 
 先在仓库外生成脚本化 profile，再启动一个全新的 basic 会话：
+
+![已完成子任务的实际 PetriNet](../../examples/task_workspace/assets/independent-task-petrinet.png)
 
 ```bash
 DEMO_ROOT="$(mktemp -d "${TMPDIR:-/tmp}/rpnh-tasks.XXXXXX")"
@@ -189,6 +206,17 @@ rpnh --frontend basic --execution "$DEMO_ROOT/profile/execution.json" \
 
 每个 wheel 都包含一个 provider-neutral 语义任务，以及 Basic、Codex 0.155.0、固定版本
 DSH 和 OpenCode 1.18.32 的独立说明。列出或导出任务都不会调用 provider：
+
+| Basic | Codex 0.155.0 |
+|---|---|
+| ![Basic 验收运行](../../cpn/examples/adapter_task/assets/basic-petrinet.png) | ![Codex 验收运行](../../cpn/examples/adapter_task/assets/codex-petrinet.png) |
+
+| 固定版本 DSH | OpenCode 1.18.32 |
+|---|---|
+| ![DSH 验收运行](../../cpn/examples/adapter_task/assets/dsh-petrinet.png) | ![OpenCode 验收运行](../../cpn/examples/adapter_task/assets/opencode-petrinet.png) |
+
+这些图片是验收 Registry 的只读 PetriNet，不是宿主 TUI 截图；不同执行结构仍然可见，
+公开图片移除了精确 checkpoint 身份。
 
 ```bash
 EXAMPLE_PARENT="$(mktemp -d "${TMPDIR:-/tmp}/rpnh-adapter-example.XXXXXX")"
