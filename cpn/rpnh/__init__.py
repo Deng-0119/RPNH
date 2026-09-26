@@ -22,6 +22,13 @@ from .firing_resource_access import (
     derive_registered_firing_resource_access,
     verify_registered_firing_resource_access_conflicts,
 )
+from .net_operations import (
+    BranchResult, ComposeConnection, ComposePlan, ExtractPlan, ExtractResult,
+    ReplacementPlan, ReentryPlan, WorkspaceBindingPlan, WorkspaceImportPlan,
+    apply_replacement, branch_module, compose_modules, extract_module,
+    instantiate_module, prepare_reentry, prepare_replacement,
+    register_net_components,
+)
 
 
 def lower_module(module: ModuleDeclaration, registration: Registration) -> SymbolicNet:
@@ -54,4 +61,10 @@ __all__ = (
     "RegisteredPetriFiringResourceAccess",
     "derive_registered_firing_resource_access",
     "verify_registered_firing_resource_access_conflicts",
+    "BranchResult", "ComposeConnection", "ComposePlan", "ExtractPlan",
+    "ExtractResult", "ReplacementPlan", "ReentryPlan",
+    "WorkspaceBindingPlan", "WorkspaceImportPlan", "apply_replacement",
+    "branch_module", "compose_modules", "extract_module",
+    "instantiate_module", "prepare_reentry", "prepare_replacement",
+    "register_net_components",
 )

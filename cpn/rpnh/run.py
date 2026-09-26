@@ -365,6 +365,10 @@ class RunOwner:
         No signal handling, firing settlement, claim release or writer reopen.
         The caller is responsible for the explicit owner's stop authorization.
         """
+        if self.control.edits.queue:
+            raise RuntimeError(
+                "owner stop is blocked while a graph replacement is pending; "
+                "retract it or let active firings settle")
         from .registry.run_authority import record_owner_stop
         return record_owner_stop(self._core, _ResourceServiceKernel(self._core),
                                  idempotency_key=idempotency_key)

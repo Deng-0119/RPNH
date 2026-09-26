@@ -208,18 +208,47 @@ def make_optional_agent_host_bindings(llm_input_target: LLMInputTarget, *,
                     "optional_agent_transport")
             profile_refs[profile_id] = (
                 profile_target, target_ref, backend_ref, transport_ref)
-        stream = io.BytesIO()
-        with tarfile.open(fileobj=stream, mode="w"):
-            pass
-        genesis = publish("workspace_revision/v1", "workspace_lineage", "workspace_revision", lambda ref: {
-            "workspace_lineage_id": str(ref.entity_id), "workspace_revision_id": str(ref.version_id),
-            "workspace_revision_ref": ref_payload(ref), "run_ref": ref_payload(plan.run_ref),
-            "task_ref": ref_payload(plan.task_ref), "net_instance_ref": ref_payload(plan.net_ref),
-            "parent_revision_ref": None, "base_revision_ref": None, "producer_invocation_ref": None,
-            "transition_firing_ref": None, "firing_workspace_binding_ref": None, "disposition": "genesis",
-            "changed_paths": [], "deleted_paths": [], "inventory_paths": [], "conflict_paths": [],
-            "semantic_output_refs": [], "trace_summary_refs": [], "payload_kind": "full_workspace_tar",
-            "settled": True}, "workspace-genesis", stream.getvalue())
+        # Fresh runs create one empty lineage.  A prospective replacement net
+        # inherits the sole current settled workspace lineage instead of
+        # silently creating an empty one.  The candidate is not yet adopted,
+        # so its plan.net_ref differs from the current adoption head.
+        from cpn.rpnh.registry.event_store import (
+            verified_adoption_head, verified_checkpoint_head,
+        )
+        from cpn.rpnh.registry.publication import _version_from_payload
+        current_net = (
+            verified_adoption_head(core.event_store, core.catalog, core.task_id)
+            if core.event_store.list_events_by_type(("net_adopted/v1",))
+            else None)
+        inherited_workspace = current_net is not None and current_net != plan.net_ref
+        if inherited_workspace:
+            checkpoint_ref = verified_checkpoint_head(
+                core.event_store, core.catalog, core.task_id, current_net)
+            _, checkpoint = _registered(
+                core, checkpoint_ref, "marking_checkpoint/v1")
+            heads = tuple(_version_from_payload(value)
+                          for value in checkpoint["workspace_revision_refs"])
+            if len(heads) != 1:
+                raise ValueError(
+                    "optional agent replacement requires one exact current workspace lineage")
+            from cpn.rpnh.registry.module_host_bindings import (
+                preserved_workspace_authority,
+            )
+            genesis, _evidence = preserved_workspace_authority(
+                core, plan, heads[0])
+        else:
+            stream = io.BytesIO()
+            with tarfile.open(fileobj=stream, mode="w"):
+                pass
+            genesis = publish("workspace_revision/v1", "workspace_lineage", "workspace_revision", lambda ref: {
+                "workspace_lineage_id": str(ref.entity_id), "workspace_revision_id": str(ref.version_id),
+                "workspace_revision_ref": ref_payload(ref), "run_ref": ref_payload(plan.run_ref),
+                "task_ref": ref_payload(plan.task_ref), "net_instance_ref": ref_payload(plan.net_ref),
+                "parent_revision_ref": None, "base_revision_ref": None, "producer_invocation_ref": None,
+                "transition_firing_ref": None, "firing_workspace_binding_ref": None, "disposition": "genesis",
+                "changed_paths": [], "deleted_paths": [], "inventory_paths": [], "conflict_paths": [],
+                "semantic_output_refs": [], "trace_summary_refs": [], "payload_kind": "full_workspace_tar",
+                "settled": True}, "workspace-genesis", stream.getvalue())
         environment = publish(
             "execution_environment_identity/v1",
             "execution_environment", "execution_environment_version",

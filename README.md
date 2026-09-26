@@ -170,7 +170,7 @@ Each guide describes its dependencies and supported interaction surface.
 | Read about | Guides |
 |---|---|
 | Getting started | [Installation](docs/guides/installation.md), [examples](docs/guides/examples.md), [configuration](docs/guides/configuration.md), [models](docs/guides/models.md), [usage](docs/guides/usage.md) |
-| Building an application | [Customization and plugins](docs/guides/customization.md), [declaration reference](docs/reference/declarations.md) |
+| Building an application | [Customization and plugins](docs/guides/customization.md), [native Petri-net operations](docs/guides/net-operations.md), [declaration reference](docs/reference/declarations.md) |
 | Understanding a run | [Dashboard](docs/guides/viewer.md), [architecture](docs/architecture/design.md), [runtime and Registry](docs/reference/runtime-registry.md) |
 | Operating and contributing | [Troubleshooting](docs/guides/troubleshooting.md), [development](docs/guides/development.md), [release validation](docs/guides/release-validation.md) |
 

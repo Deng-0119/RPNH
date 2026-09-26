@@ -25,6 +25,7 @@ Start with installation and exact model configuration. These are source-reviewed
 | Operate sessions/tasks and recover | [Usage](guides/usage.md) |
 | Diagnose without losing evidence | [Troubleshooting](guides/troubleshooting.md) |
 | Add workflows, tools, skill resources or MCP bindings | [Customization](guides/customization.md) |
+| Extract, compose, instantiate or replace Petri-net definitions | [Native Petri-net operations](guides/net-operations.md) |
 | Use optional Codex/DSH and understand coexistence | [Adapters](guides/adapters.md) |
 | Use the pinned OpenCode presentation | [OpenCode frontend](guides/opencode.md) |
 | Operate the pinned DSH host | [DSH host adapter](guides/dsh.md) |

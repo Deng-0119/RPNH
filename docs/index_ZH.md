@@ -25,6 +25,7 @@ metadata:
 | 控制会话/任务并恢复 | [使用](guides/usage_ZH.md) |
 | 不破坏证据地定位故障 | [排障](guides/troubleshooting_ZH.md) |
 | 扩展 workflow/tool/skill/MCP | [自定义](guides/customization_ZH.md) |
+| 提取、组合、实例化或替换 PetriNet 定义 | [原生 PetriNet 操作](guides/net-operations_ZH.md) |
 | 选用 Codex/DSH、理解共存 | [适配](guides/adapters_ZH.md) |
 | 使用固定版本 OpenCode 展示前端 | [OpenCode 前端](guides/opencode_ZH.md) |
 | 使用固定版本 DSH 宿主 | [DSH 宿主适配器](guides/dsh_ZH.md) |
