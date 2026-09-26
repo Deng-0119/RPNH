@@ -41,6 +41,9 @@ include = ["cpn*", "integrations*"]
 [tool.setuptools.package-data]
 cpn = [
   "config/*.json",
+  "examples/**/*.json",
+  "examples/**/*.md",
+  "examples/**/*.txt",
   "frontend/*.json",
   "frontend/static/*",
   "frontend/static/assets/*",

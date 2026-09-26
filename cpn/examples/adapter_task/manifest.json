@@ -1,0 +1,36 @@
+{
+  "schema_version": "rpnh/live_adapter_example/v1",
+  "example_id": "batch-summary-v1",
+  "purpose": "Run one provider-backed semantic task through each supported host without changing its route or model.",
+  "task_file": "task.txt",
+  "expected_file": "expected.json",
+  "hosts": [
+    {
+      "id": "basic",
+      "entry": "rpnh --frontend basic",
+      "guide": "basic/README.md",
+      "evidence": "basic/evidence.json"
+    },
+    {
+      "id": "codex",
+      "entry": "rpnh --frontend codex",
+      "guide": "codex/README.md",
+      "evidence": "codex/evidence.json",
+      "host_version": "0.155.0"
+    },
+    {
+      "id": "dsh",
+      "entry": "rpnh-dsh",
+      "guide": "dsh/README.md",
+      "evidence": "dsh/evidence.json",
+      "host_version": "0.1.6-alpha.2"
+    },
+    {
+      "id": "opencode",
+      "entry": "rpnh --frontend opencode",
+      "guide": "opencode/README.md",
+      "evidence": "opencode/evidence.json",
+      "host_version": "1.18.32"
+    }
+  ]
+}

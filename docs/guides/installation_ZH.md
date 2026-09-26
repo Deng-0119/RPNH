@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: installation.md
-  revision: "2026-09-24.1"
+  revision: "2026-09-26.2"
   status: source-reviewed-not-final-candidate-acceptance
   basis: "core; adapter differences explicitly labelled"
 ---
@@ -57,6 +57,17 @@ cd "$TEST_ROOT"
 
 输出应来自新环境的 `site-packages`，不能来自源码目录。[开发维护](development_ZH.md)介绍源码包内 `scripts/check_installed_docs.py` 的受限零模型配置检查；它不验证模型和交互式终端。
 
+wheel 还包含 provider-neutral 的跨宿主任务包。导出只是零模型文件操作，不需要源码 checkout：
+
+```bash
+"$TEST_ROOT/venv/bin/rpnh" examples list
+"$TEST_ROOT/venv/bin/rpnh" examples export --output "$TEST_ROOT/adapter-task"
+```
+
+传入 execution profile 并提交导出的任务是另一项可能产生费用的真实操作；须按任务包内对应
+宿主的说明执行。每个宿主目录包含一份既有验收的脱敏摘要，但不包含凭据，也不能替代对用户
+自有路线的验证。
+
 ## 选择安装范围
 
 | 范围 | 必需内容 | 入口和当前边界 |
@@ -70,7 +81,7 @@ cd "$TEST_ROOT"
 core main 默认前端是 `codex`，核对的适配增量默认是 `auto`；显式 `--frontend basic` 可避开这个差异。使用可选入口前阅读[适配指南](adapters_ZH.md)。独立 viewer 增强不自动成为本候选范围。
 
 ## 验证、升级与卸载
-只有已安装命令、包内 schema/config/static 资源，以及源码目录外的零模型配置流程均通过，才可称安装验证通过。editable 安装成功或链接检查通过都不足以替代。本文档批次单独记录 wheel 验证和站点检查。
+只有已安装命令、包内 schema/config/static/example 资源，以及源码目录外的零模型配置流程均通过，才可称安装验证通过。editable 安装成功或链接检查通过都不足以替代。本文档批次单独记录 wheel 验证和站点检查。
 
 升级前按检查点停止受影响任务，保留会话/run 目录与唯一 catalog 的一致性私有备份，再在新环境安装批准的 wheel。由 catalog 重建 profile，复核精确模型身份后恢复。必须核对 schema 兼容；不要靠改版本字符串或清 writer 锁修复历史 Registry。
 

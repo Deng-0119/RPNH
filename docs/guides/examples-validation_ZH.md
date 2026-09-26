@@ -6,7 +6,7 @@ metadata:
   audience: user-and-maintainer
   language: zh-CN
   counterpart: examples-validation.md
-  revision: "2026-09-26.3"
+  revision: "2026-09-26.4"
   status: focused-live-validation-complete
   basis: "focused local acceptance across basic, Codex, DSH and OpenCode hosts"
 ---
@@ -55,3 +55,32 @@ replacement run 均保存在仓库外。首个 OpenCode run 的成功响应计�
 本记录是候选版本的 focused 证据，不是完整发布套件。宿主路径 PASS 表示 transport、
 Registry 结算和前端投影完成，并不把 OpenCode 的模型内容警告改写为精确遵循提示。
 生成的 Registry、原始 adapter audit、凭据和私有路线细节均未提交。
+
+## 安装版跨宿主语义任务增补
+
+随后从隔离 wheel 候选中导出 `batch-summary-v1`，并通过每个宿主各运行一次。与前面的
+ready 标记不同，每个宿主收到同一个语义任务，每个已提交答案都通过了严格的纯 JSON
+验证器。
+
+| 宿主 | 逻辑 turn | 成功物理响应 | Probe | 路线／模型切换 | 权威 | 内容 |
+|---|---:|---:|---:|---:|---|---|
+| Basic | 1 | 2 | 0 | 0 | PASS | PASS |
+| Codex 0.155.0 | 1 | 2 | 0 | 0 | PASS | PASS |
+| 固定版本 DSH | 1 | 1 | 0 | 0 | PASS | PASS |
+| OpenCode 1.18.32 | 1 | 2 | 0 | 0 | PASS | PASS |
+
+本次增补在明确选择的 `local_process` / `gpt-5.6-terra` 路线上产生七次成功正式响应，
+与上文较早的 27 次响应批次分开计数。OpenCode 在结算尚未完成时显示了保守的
+reconciliation 提示，随后显示精确的已提交 JSON 和正常的“无子任务 decision”注释；任务
+没有重新提交。安装版任务包分别携带各宿主的脱敏摘要，其中不包含原始 Registry、标识、
+本地路径、endpoint、凭据和 transcript。
+
+增补的 focused 检查：
+
+```bash
+python -m pytest -q tests/test_adapter_task_examples.py tests/test_docs_site.py
+python -m pytest -q tests/test_config_and_net_cli.py tests/test_dsh_distribution.py
+python scripts/docs.py check
+python scripts/check_doc_examples.py
+python scripts/check_installed_docs.py --python "$WHEEL_VENV/bin/python" --source-root "$SOURCE_ROOT"
+```

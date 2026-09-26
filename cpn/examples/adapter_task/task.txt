@@ -1,0 +1,1 @@
+Analyze the completed batch durations in minutes: 9, 12, 15. Return only one valid JSON object with exactly these keys in this order: count, total, mean, minimum, maximum. Use JSON numbers. Do not launch another agent or workflow and do not use tools.

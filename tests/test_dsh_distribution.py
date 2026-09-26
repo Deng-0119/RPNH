@@ -17,6 +17,16 @@ from cpn.dsh import launcher
 
 ROOT = Path(__file__).resolve().parents[1]
 ASSETS = {
+    "cpn/examples/__init__.py",
+    "cpn/examples/cli.py",
+    "cpn/examples/adapter_task/manifest.json",
+    "cpn/examples/adapter_task/task.txt",
+    "cpn/examples/adapter_task/expected.json",
+    "cpn/examples/adapter_task/README.md",
+    "cpn/examples/adapter_task/README_ZH.md",
+    *(f"cpn/examples/adapter_task/{host}/{name}"
+      for host in ("basic", "codex", "dsh", "opencode")
+      for name in ("README.md", "README_ZH.md", "evidence.json")),
     "integrations/dsh/UPSTREAM.json",
     "integrations/dsh/UPSTREAM_LICENSE",
     "integrations/dsh/prepare.sh",

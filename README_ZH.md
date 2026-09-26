@@ -86,6 +86,21 @@ rpnh net --run "$RUN_DIR" --show-resources
 [案例指南](docs/guides/examples_ZH.md)继续演示登记指令资源、模型—程序—模型工作流和两个
 独立任务；[自定义指南](docs/guides/customization_ZH.md)解释插件契约。
 
+### 通过支持的宿主运行一个真实任务
+
+安装包内含一套 provider-neutral 任务，可分别通过 Basic、Codex、DSH 与 OpenCode 运行。
+以下导出操作不会调用模型：
+
+```bash
+EXAMPLE_ROOT="$(mktemp -d "${TMPDIR:-/tmp}/rpnh-example-parent.XXXXXX")/adapter-task"
+rpnh examples list
+rpnh examples export --output "$EXAMPLE_ROOT"
+```
+
+导出的各宿主指南使用同一任务和预期语义结果，不会配置 provider 或选择模型；只有用户明确
+传入已授权 execution profile 并提交任务后才产生调用。任务包分别提供各宿主的脱敏验收证据，
+原始 run 仍保持私有。详见[案例指南](docs/guides/examples_ZH.md)。
+
 ### 开始对话
 
 完成模型配置后，启动依赖较少的前端：

@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: en
   counterpart: installation_ZH.md
-  revision: "2026-09-24.1"
+  revision: "2026-09-26.2"
   status: source-reviewed-not-final-candidate-acceptance
   basis: "core; adapter differences explicitly labelled"
 ---
@@ -57,6 +57,19 @@ cd "$TEST_ROOT"
 
 The printed package path must be in this environment's `site-packages`, not the checkout. Use `scripts/check_installed_docs.py` from the source bundle for the guarded configuration smoke described in [development](development.md). That smoke does not validate a model or an interactive terminal.
 
+The wheel also contains the provider-neutral cross-host task bundle. Exporting
+it is a zero-model file operation and does not require the source checkout:
+
+```bash
+"$TEST_ROOT/venv/bin/rpnh" examples list
+"$TEST_ROOT/venv/bin/rpnh" examples export --output "$TEST_ROOT/adapter-task"
+```
+
+Supplying an execution profile and submitting the exported task is a separate,
+potentially paid live operation; follow the bundle's host-specific guide. Each
+host directory includes a sanitized prior acceptance summary, not credentials
+or a substitute for validating the user's own route.
+
 ## Select the installation surface
 
 | Surface | What must be present | Entry and current limitation |
@@ -70,7 +83,7 @@ The printed package path must be in this environment's `site-packages`, not the 
 The core main defaults to `codex`; the reviewed adapter overlay defaults to `auto`. Explicit `--frontend basic` works across those configurations. See [adapters](adapters.md) before using optional-host commands. Enhanced viewer work is not automatically part of this documentation candidate.
 
 ## Verification, update and removal
-Installation is successful only after the installed command, packaged schemas/config/static assets and the zero-model configuration flow work outside the checkout. A successful editable install or passing link check is insufficient. This documentation batch records wheel verification separately from its static-site checks.
+Installation is successful only after the installed command, packaged schemas/config/static/example assets and the zero-model configuration flow work outside the checkout. A successful editable install or passing link check is insufficient. This documentation batch records wheel verification separately from its static-site checks.
 
 For an update, checkpoint-stop affected tasks, retain a consistent private backup of session/run roots and the canonical catalog, then install the approved wheel into a new environment. Rebuild profiles from the catalog and review exact model identity before resuming. Schema compatibility must be verified; do not repair an old Registry by changing JSON version strings or resetting writer locks.
 

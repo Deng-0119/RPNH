@@ -105,6 +105,23 @@ instruction resource, a model–program–model workflow and two independent tas
 The [customization guide](docs/guides/customization.md) explains the plugin
 contract.
 
+### Run one real task through a supported host
+
+The installed distribution contains one provider-neutral task bundle for Basic,
+Codex, DSH and OpenCode. Export it without contacting a model:
+
+```bash
+EXAMPLE_ROOT="$(mktemp -d "${TMPDIR:-/tmp}/rpnh-example-parent.XXXXXX")/adapter-task"
+rpnh examples list
+rpnh examples export --output "$EXAMPLE_ROOT"
+```
+
+The exported per-host guides use the same task and expected semantic result.
+They never configure a provider or choose a model; a call occurs only after you
+explicitly supply an authorized execution profile and submit the task. See the
+[examples guide](docs/guides/examples.md). The bundle includes separate,
+sanitized acceptance evidence for each host; raw runs remain private.
+
 ### Start a conversation
 
 After configuring a model, start the dependency-light frontend:

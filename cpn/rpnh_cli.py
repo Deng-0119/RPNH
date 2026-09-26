@@ -35,7 +35,8 @@ def _parser() -> argparse.ArgumentParser:
         epilog=(
             "Start with `rpnh init`; check configuration with `rpnh doctor`. "
             "Commands: `rpnh config {init|add|build|list|show|use|setup|doctor}` and "
-            "`rpnh net --run RUN_DIR`"),
+            "`rpnh net --run RUN_DIR`; export installed examples with "
+            "`rpnh examples export --output DIR`"),
     )
     parser.add_argument(
         "--execution", type=Path,
@@ -501,6 +502,13 @@ def main(argv: list[str] | None = None) -> int:
             return plugins_main(arguments[1:])
         except (OSError, RuntimeError, TypeError, ValueError) as exc:
             print(f"rpnh plugins: error: {exc}", file=sys.stderr)
+            return 2
+    if arguments and arguments[0] == "examples":
+        from cpn.examples.cli import main as examples_main
+        try:
+            return examples_main(arguments[1:])
+        except (OSError, RuntimeError, TypeError, ValueError) as exc:
+            print(f"rpnh examples: error: {exc}", file=sys.stderr)
             return 2
     if arguments and arguments[0] in {"config", "net"}:
         try:

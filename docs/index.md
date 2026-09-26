@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: en
   counterpart: index_ZH.md
-  revision: "2026-09-26.1"
+  revision: "2026-09-26.2"
   status: source-reviewed-not-final-candidate-acceptance
   basis: "core; adapter differences explicitly labelled"
 ---
@@ -20,7 +20,7 @@ Start with installation and exact model configuration. These are source-reviewed
 | Need | Read |
 |---|---|
 | Install core/basic, source or wheel | [Installation](guides/installation.md) |
-| Run progressive native, hybrid and task examples | [Examples](guides/examples.md) |
+| Run native, hybrid, task and installed cross-host examples | [Examples](guides/examples.md) |
 | Configure exact routes and credentials | [Models](guides/models.md) |
 | Operate sessions/tasks and recover | [Usage](guides/usage.md) |
 | Diagnose without losing evidence | [Troubleshooting](guides/troubleshooting.md) |
@@ -52,5 +52,6 @@ Declaration contracts, advanced trusted-host interfaces and private implementati
 This tree unifies core, native plugins, Codex and OpenCode presentation, DSH,
 and the read-only viewer. Offline checks establish deterministic behavior and
 package completeness only; they do not prove that a user-owned provider route works.
-Live API results are kept outside the public source tree and require separate
-authorization.
+Raw live API evidence remains outside the public source tree and requires
+separate authorization. Sanitized, non-secret acceptance summaries may be
+published with the relevant example.

@@ -1,0 +1,36 @@
+{
+  "schema_version": "rpnh/live_adapter_example_evidence/v1",
+  "example_id": "batch-summary-v1",
+  "validation_date": "2026-09-26",
+  "host": "basic",
+  "host_version": "rpnh-harness 0.1.0",
+  "tested_route": {
+    "adapter_kind": "local_process",
+    "provider": "local_process",
+    "exact_model": "gpt-5.6-terra"
+  },
+  "validation": {
+    "authority_status": "PASS",
+    "semantic_status": "PASS",
+    "logical_turns": 1,
+    "successful_physical_responses": 2,
+    "health_probe_calls": 0,
+    "route_switches": 0
+  },
+  "registry_evidence": {
+    "agent_loop_terminal/v1": 1,
+    "llm_invocation_succeeded/v1": 2,
+    "operation_terminal_ready/v1": 1,
+    "registered_operation_completion_recorded/v1": 1,
+    "run_terminal_evidence/v1": 1,
+    "final_result_index/v1": 1
+  },
+  "normalized_result": {
+    "count": 3,
+    "total": 36,
+    "mean": 12,
+    "minimum": 9,
+    "maximum": 15
+  },
+  "privacy": "Sanitized summary only; raw Registry, audit, identifiers, local paths and transcript are not published."
+}

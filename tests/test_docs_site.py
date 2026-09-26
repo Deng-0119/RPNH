@@ -76,7 +76,7 @@ class DocumentationTests(unittest.TestCase):
         path = self.root / 'docs/index_ZH.md'
         path.write_text(
             path.read_text().replace(
-                'revision: "2026-09-26.1"', 'revision: "older"', 1),
+                'revision: "2026-09-26.2"', 'revision: "older"', 1),
             encoding='utf-8')
         with self.assertRaisesRegex(ValueError, 'counterpart mismatch'):
             docs.check(self.root)

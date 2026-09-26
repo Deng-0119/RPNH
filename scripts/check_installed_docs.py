@@ -24,7 +24,10 @@ dist = md.distribution("rpnh-harness")
 assert Path(dist.locate_file("cpn/__init__.py")).resolve() == Path(cpn.__file__).resolve()
 assert any(ep.name == "rpnh" and ep.value == "cpn.rpnh_cli:main" for ep in dist.entry_points)
 required = ["config/provider_models.json", "schemas/rpnh/module_declaration.v1.schema.json",
-            "schemas/runtime/provider_model_catalog.v2.schema.json"]
+            "schemas/runtime/provider_model_catalog.v2.schema.json",
+            "examples/adapter_task/manifest.json", "examples/adapter_task/task.txt",
+            "examples/adapter_task/expected.json",
+            "examples/adapter_task/opencode/evidence.json"]
 for item in required:
     assert (package / item).is_file(), "Missing packaged resource: " + item
 assert any(p.is_file() for p in (package / "frontend/static").rglob("*")), "Missing static assets"
@@ -71,7 +74,8 @@ def main() -> int:
                 print('BLOCKED: installed rpnh console entry point not found')
                 return 2
             commands = [['--help'], ['config', '--help'], ['config', 'init'],
-                        ['config', 'build'], ['config', 'build', '--check'], ['config', 'list']]
+                        ['config', 'build'], ['config', 'build', '--check'], ['config', 'list'],
+                        ['examples', 'list']]
             for arguments in commands:
                 result = run([str(entry), *arguments])
                 if result.returncode:
@@ -80,8 +84,21 @@ def main() -> int:
                     return 1
                 if arguments == ['config', 'list'] and json.loads(result.stdout) != []:
                     raise ValueError('A fresh empty catalog must expose no profiles')
+            example = work / 'adapter-task'
+            result = run([str(entry), 'examples', 'export', '--output', str(example)])
+            if result.returncode:
+                print('FAIL: installed example export exit', result.returncode)
+                print(result.stderr)
+                return 1
+            result = run([str(entry), 'examples', 'verify',
+                          '--result', str(example / 'expected.json')])
+            if result.returncode or json.loads(result.stdout).get('status') != 'PASS':
+                print('FAIL: installed example verification')
+                print(result.stderr)
+                return 1
             print(json.dumps({'installed_version': provenance['version'],
                               'outside_source': True, 'zero_model_commands_passed': len(commands),
+                              'installed_example_exported': True,
                               'guarded_against_runtime_effects': True,
                               'live_calls': 0}, indent=2))
             return 0

@@ -1,24 +1,25 @@
 ---
 name: rpnh-examples
-description: "Run three progressive examples with real Registry and PetriNet evidence."
+description: "Run progressive offline examples and one installed cross-host live task."
 metadata:
   document-kind: tutorial
   audience: user-and-developer
   language: en
   counterpart: examples_ZH.md
-  revision: "2026-09-26.2"
-  status: deterministic-offline-validated
-  basis: "current main public APIs; scripted model boundary explicitly labelled"
+  revision: "2026-09-26.3"
+  status: focused-live-validated
+  basis: "current main public APIs; offline fixtures and 2026-09-26 exact-route live evidence explicitly separated"
 ---
 
 [English](examples.md) | [中文](examples_ZH.md)
 
-# Three practical RPNH examples
+# Four practical RPNH examples
 
-These examples move from a native operation to a graph workflow and then to
-independent tasks. They use the real plugin host, Registry, task owner and
-PetriNet projection. The scripted model is a deterministic protocol fixture,
-not evidence of language-model reasoning.
+The first three examples move from a native operation to a graph workflow and
+then to independent tasks. They use the real plugin host, Registry, task owner
+and PetriNet projection. Their scripted model is a deterministic protocol
+fixture, not evidence of language-model reasoning. The fourth example is an
+installed, provider-backed task and is explicitly separated from offline tests.
 
 ## Prerequisites
 
@@ -160,6 +161,59 @@ focus; it does not stop, duplicate or replace a child. `status` supplies the
 selected child's `run_dir`. After leaving the frontend, that exact path can be
 used with `rpnh net --run RUN_DIR`. The main session and each child retain
 separate Registries; the main Registry stores child links.
+
+## Example 4: one installed task through every host
+
+Every wheel contains a provider-neutral semantic task plus separate instructions
+for Basic, Codex 0.155.0, pinned DSH and OpenCode 1.18.32. Exporting or listing
+it makes no provider call:
+
+```bash
+EXAMPLE_PARENT="$(mktemp -d "${TMPDIR:-/tmp}/rpnh-adapter-example.XXXXXX")"
+EXAMPLE_ROOT="$EXAMPLE_PARENT/task"
+rpnh examples list
+rpnh examples export --output "$EXAMPLE_ROOT"
+cd "$EXAMPLE_ROOT"
+```
+
+Read `README.md`, then choose exactly one host directory. Each guide requires
+an existing user-owned `EXECUTION_CONFIG`, a fresh operational root and one
+explicit task submission. No bundled file contains a provider, endpoint,
+credential or model choice. The common task computes count, total, mean,
+minimum and maximum for the same three batch values; it is a semantic task,
+not a READY health marker.
+
+Copy only the assistant's JSON object to `answer.json` and verify the task result:
+
+```bash
+rpnh examples verify --result answer.json
+```
+
+That check does not establish execution success by itself. Confirm the host's
+Registry terminal evidence, final registered result, selected-profile provenance
+and physical-call record. Basic, Codex and OpenCode share MainSession authority;
+DSH uses its own registered host turn through the same provider adapter. The
+example does not pretend that DSH exposes Basic-only task/workflow controls.
+
+The bundled per-host `evidence.json` files record the focused 2026-09-26
+acceptance run:
+
+| Host | Logical turns | Successful physical responses | Registry authority | Semantic result |
+|---|---:|---:|---|---|
+| Basic | 1 | 2 | PASS | PASS |
+| Codex 0.155.0 | 1 | 2 | PASS | PASS |
+| pinned DSH | 1 | 1 | PASS | PASS |
+| OpenCode 1.18.32 | 1 | 2 | PASS | PASS |
+
+All seven successful physical responses used the same explicitly selected
+`local_process` route and exact `gpt-5.6-terra` model. There were zero health
+probes and zero route/model switches. A MainSession logical turn may contain
+multiple physical generations; DSH's registered host turn required one. The
+OpenCode presentation showed a conservative reconciliation notice while the
+turn was pending and later displayed the committed answer plus its normal
+no-child-decision annotation. Registry terminal/final-result evidence and the
+semantic verifier both passed. Raw Registries, identifiers, paths and transcripts
+remain private and are not represented by these summaries.
 
 ## What to inspect and change
 

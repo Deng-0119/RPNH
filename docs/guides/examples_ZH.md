@@ -1,22 +1,23 @@
 ---
 name: rpnh-examples
-description: "通过真实 Registry 与 PetriNet 证据运行三个递进案例。"
+description: "运行递进的离线案例，以及一个安装版跨宿主真实任务。"
 metadata:
   document-kind: tutorial
   audience: user-and-developer
   language: zh-CN
   counterpart: examples.md
-  revision: "2026-09-26.2"
-  status: deterministic-offline-validated
-  basis: "current main public APIs; scripted model boundary explicitly labelled"
+  revision: "2026-09-26.3"
+  status: focused-live-validated
+  basis: "current main public APIs; offline fixtures and 2026-09-26 exact-route live evidence explicitly separated"
 ---
 
 [English](examples.md) | [中文](examples_ZH.md)
 
-# 三个实用 RPNH 案例
+# 四个实用 RPNH 案例
 
-三个案例从原生 operation 逐步扩展到图工作流与独立任务。它们使用真实插件宿主、Registry、
-任务 owner 和 PetriNet 投影。脚本化模型只是确定性协议替身，不是语言模型推理证据。
+前三个案例从原生 operation 逐步扩展到图工作流与独立任务。它们使用真实插件宿主、
+Registry、任务 owner 和 PetriNet 投影；其中的脚本化模型只是确定性协议替身，不是语言
+模型推理证据。第四个案例是安装版 provider-backed 任务，与离线测试明确分开。
 
 ## 前置条件
 
@@ -142,6 +143,51 @@ rpnh --frontend basic --execution "$DEMO_ROOT/profile/execution.json" \
 两个 ID 和 run 目录不同。切换只改变进程内焦点，不停止、复制或替换子任务。`status`
 给出所选子任务的 `run_dir`；退出前端后可把该精确路径用于 `rpnh net --run RUN_DIR`。
 主会话和每个子任务拥有独立 Registry，主 Registry 保存子任务链接。
+
+## 案例 4：通过每个宿主运行同一个安装版任务
+
+每个 wheel 都包含一个 provider-neutral 语义任务，以及 Basic、Codex 0.155.0、固定版本
+DSH 和 OpenCode 1.18.32 的独立说明。列出或导出任务都不会调用 provider：
+
+```bash
+EXAMPLE_PARENT="$(mktemp -d "${TMPDIR:-/tmp}/rpnh-adapter-example.XXXXXX")"
+EXAMPLE_ROOT="$EXAMPLE_PARENT/task"
+rpnh examples list
+rpnh examples export --output "$EXAMPLE_ROOT"
+cd "$EXAMPLE_ROOT"
+```
+
+先阅读 `README_ZH.md`，再选择一个宿主目录。每份说明都要求已有的用户自有
+`EXECUTION_CONFIG`、新的运行根目录和一次明确任务提交。捆绑文件不包含 provider、
+endpoint、凭据或模型选择。公共任务对同一组三个批次数值计算数量、总量、平均值、最小值
+和最大值，是语义任务而不是 READY 健康标记。
+
+只把 assistant 的 JSON 对象复制到 `answer.json`，再验证任务结果：
+
+```bash
+rpnh examples verify --result answer.json
+```
+
+该检查本身不能证明执行成功；还须核对宿主的 Registry 终态证据、已登记 final result、
+所选 profile provenance 与物理调用记录。Basic、Codex 和 OpenCode 共用 MainSession 权威；
+DSH 通过同一 provider adapter 使用自己的登记宿主 turn。案例不会假装 DSH 提供 Basic 专属的
+任务／workflow 控制。
+
+任务包内各宿主的 `evidence.json` 分别记录了 2026-09-26 聚焦验收：
+
+| 宿主 | 逻辑 turn | 成功物理响应 | Registry 权威 | 语义结果 |
+|---|---:|---:|---|---|
+| Basic | 1 | 2 | PASS | PASS |
+| Codex 0.155.0 | 1 | 2 | PASS | PASS |
+| 固定版本 DSH | 1 | 1 | PASS | PASS |
+| OpenCode 1.18.32 | 1 | 2 | PASS | PASS |
+
+七次成功物理响应始终使用明确选择的同一 `local_process` 路线与精确
+`gpt-5.6-terra` 模型；health probe 为 0，路线／模型切换为 0。MainSession 的一个逻辑
+turn 可以包含多次物理 generation；DSH 的登记宿主 turn 使用了一次。OpenCode 展示层在
+turn 尚未结算时显示了保守的 reconciliation 提示，随后显示已提交答案及正常的“无子任务
+decision”注释；Registry terminal/final-result 证据和语义验证均通过。原始 Registry、标识、
+路径与 transcript 保持私有，脱敏摘要不代表这些原始资料。
 
 ## 查看与修改
 

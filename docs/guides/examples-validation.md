@@ -6,7 +6,7 @@ metadata:
   audience: user-and-maintainer
   language: en
   counterpart: examples-validation_ZH.md
-  revision: "2026-09-26.3"
+  revision: "2026-09-26.4"
   status: focused-live-validation-complete
   basis: "focused local acceptance across basic, Codex, DSH and OpenCode hosts"
 ---
@@ -63,3 +63,36 @@ PASS means transport, Registry settlement and frontend projection completed; it
 does not convert the OpenCode model-content warning into exact prompt compliance.
 Generated Registries, raw adapter audits, credentials and private route details
 were not committed.
+
+## Installed cross-host semantic task addition
+
+The installable `batch-summary-v1` bundle was then run once through each host
+from an isolated wheel candidate. Unlike the earlier readiness markers, every
+host received the same semantic task and every committed answer passed the
+strict answer-only JSON verifier.
+
+| Host | Logical turns | Successful physical responses | Probes | Route/model switches | Authority | Content |
+|---|---:|---:|---:|---:|---|---|
+| Basic | 1 | 2 | 0 | 0 | PASS | PASS |
+| Codex 0.155.0 | 1 | 2 | 0 | 0 | PASS | PASS |
+| pinned DSH | 1 | 1 | 0 | 0 | PASS | PASS |
+| OpenCode 1.18.32 | 1 | 2 | 0 | 0 | PASS | PASS |
+
+This addition produced seven successful formal responses on the explicitly
+selected `local_process` / `gpt-5.6-terra` route. It is a separate count from
+the earlier 27-response campaign above. OpenCode displayed a conservative
+reconciliation notice while settlement was pending and later displayed the
+exact committed JSON plus its normal no-child-decision annotation; no task was
+resubmitted. The per-host sanitized summaries are shipped in the installed
+example bundle. They omit raw Registries, identifiers, local paths, endpoints,
+credentials and transcripts.
+
+Additional focused checks:
+
+```bash
+python -m pytest -q tests/test_adapter_task_examples.py tests/test_docs_site.py
+python -m pytest -q tests/test_config_and_net_cli.py tests/test_dsh_distribution.py
+python scripts/docs.py check
+python scripts/check_doc_examples.py
+python scripts/check_installed_docs.py --python "$WHEEL_VENV/bin/python" --source-root "$SOURCE_ROOT"
+```
