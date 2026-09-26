@@ -1,0 +1,29 @@
+{
+  "schema_version": "rpnh/example_workflow_pattern/v1",
+  "name": "Six-stage long process",
+  "description": "Six settled handoffs create enough checkpoints to demonstrate timeline navigation and replay.",
+  "task": "Carry a bounded task through six registered stages for timeline inspection.",
+  "expected_output": "Long workflow complete after six registered stages.",
+  "max_attempts_per_node": 4,
+  "max_parallel_nodes": 1,
+  "graph": {
+    "nodes": [
+      {"node_id": "intake", "instruction": "[gallery:long_process:intake] Read every exact Located input. Publish the exact text declared after GALLERY_OUTPUT_JSON and nothing else. GALLERY_OUTPUT_JSON: \"Stage 1 intake complete.\"", "input_ports": [{"port_id": "request", "artifact_id": "task"}], "output_ports": [{"port_id": "intake", "artifact_id": "intake"}], "execution": {"role": "actor", "tools": null, "profile_id": null}},
+      {"node_id": "research", "instruction": "[gallery:long_process:research] Read every exact Located input. Publish the exact text declared after GALLERY_OUTPUT_JSON and nothing else. GALLERY_OUTPUT_JSON: \"Stage 2 research complete.\"", "input_ports": [{"port_id": "intake", "artifact_id": "intake"}], "output_ports": [{"port_id": "research", "artifact_id": "research"}], "execution": {"role": "actor", "tools": null, "profile_id": null}},
+      {"node_id": "analyze", "instruction": "[gallery:long_process:analyze] Read every exact Located input. Publish the exact text declared after GALLERY_OUTPUT_JSON and nothing else. GALLERY_OUTPUT_JSON: \"Stage 3 analysis complete.\"", "input_ports": [{"port_id": "research", "artifact_id": "research"}], "output_ports": [{"port_id": "analysis", "artifact_id": "analysis"}], "execution": {"role": "actor", "tools": null, "profile_id": null}},
+      {"node_id": "draft", "instruction": "[gallery:long_process:draft] Read every exact Located input. Publish the exact text declared after GALLERY_OUTPUT_JSON and nothing else. GALLERY_OUTPUT_JSON: \"Stage 4 draft complete.\"", "input_ports": [{"port_id": "analysis", "artifact_id": "analysis"}], "output_ports": [{"port_id": "draft", "artifact_id": "draft"}], "execution": {"role": "actor", "tools": null, "profile_id": null}},
+      {"node_id": "review", "instruction": "[gallery:long_process:review] Read every exact Located input. Publish the exact text declared after GALLERY_OUTPUT_JSON and nothing else. GALLERY_OUTPUT_JSON: \"Stage 5 review complete.\"", "input_ports": [{"port_id": "draft", "artifact_id": "draft"}], "output_ports": [{"port_id": "reviewed", "artifact_id": "reviewed"}], "execution": {"role": "critic", "tools": null, "profile_id": null}},
+      {"node_id": "publish", "instruction": "[gallery:long_process:publish] Read every exact Located input. Publish the exact text declared after GALLERY_OUTPUT_JSON and nothing else. GALLERY_OUTPUT_JSON: \"Long workflow complete after six registered stages.\"", "input_ports": [{"port_id": "reviewed", "artifact_id": "reviewed"}], "output_ports": [{"port_id": "result", "artifact_id": "result"}], "execution": {"role": "actor", "tools": null, "profile_id": null}}
+    ],
+    "arcs": [
+      {"arc_id": "intake_to_research", "source": {"node_id": "intake", "port_id": "intake"}, "target": {"node_id": "research", "port_id": "intake"}, "kind": "dependency"},
+      {"arc_id": "research_to_analyze", "source": {"node_id": "research", "port_id": "research"}, "target": {"node_id": "analyze", "port_id": "research"}, "kind": "dependency"},
+      {"arc_id": "analyze_to_draft", "source": {"node_id": "analyze", "port_id": "analysis"}, "target": {"node_id": "draft", "port_id": "analysis"}, "kind": "dependency"},
+      {"arc_id": "draft_to_review", "source": {"node_id": "draft", "port_id": "draft"}, "target": {"node_id": "review", "port_id": "draft"}, "kind": "dependency"},
+      {"arc_id": "review_to_publish", "source": {"node_id": "review", "port_id": "reviewed"}, "target": {"node_id": "publish", "port_id": "reviewed"}, "kind": "dependency"}
+    ],
+    "ingress": {"node_id": "intake", "port_id": "request"},
+    "egress": {"node_id": "publish", "port_id": "result"},
+    "max_rework_cycles": 0
+  }
+}

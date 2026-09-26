@@ -1,5 +1,7 @@
 # Basic 宿主
 
+[English](README.md) | 中文
+
 前置条件：将 `EXECUTION_CONFIG` 设为一个已授权 RPNH execution selection 的绝对路径。
 下列命令会启动一个真实主会话逻辑 turn：
 

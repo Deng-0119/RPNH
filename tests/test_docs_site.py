@@ -57,7 +57,7 @@ class DocumentationTests(unittest.TestCase):
         path = self.root / 'examples/native_plugin/README.md'
         with path.open('a', encoding='utf-8') as handle:
             handle.write('\n[Missing](does-not-exist.md)\n')
-        with self.assertRaisesRegex(ValueError, 'missing auxiliary link'):
+        with self.assertRaisesRegex(ValueError, 'missing link'):
             docs.check(self.root)
 
     def test_missing_example_anchor_rejected(self):
@@ -76,7 +76,7 @@ class DocumentationTests(unittest.TestCase):
         path = self.root / 'docs/index_ZH.md'
         path.write_text(
             path.read_text().replace(
-                'revision: "2026-09-26.2"', 'revision: "older"', 1),
+                'revision: "2026-09-26.3"', 'revision: "older"', 1),
             encoding='utf-8')
         with self.assertRaisesRegex(ValueError, 'counterpart mismatch'):
             docs.check(self.root)
@@ -109,6 +109,11 @@ class DocumentationTests(unittest.TestCase):
         home = (output / 'index.html').read_text()
         self.assertIn('index_ZH.html', home)
         self.assertIn('docs/guides/installation.html', home)
+        self.assertIn('class="nav-group"', home)
+        self.assertIn('Source examples', home)
+        self.assertTrue((output / 'examples/README.html').is_file())
+        self.assertTrue(
+            (output / 'examples/workflow_patterns/README_ZH.html').is_file())
         zh = (output / 'docs/guides/installation_ZH.html').read_text()
         self.assertIn('lang="zh-CN"', zh)
         self.assertIn('installation.html', zh)
@@ -117,6 +122,32 @@ class DocumentationTests(unittest.TestCase):
         self.assertTrue((output / 'THIRD_PARTY_NOTICES.md').is_file())
         after = {name for name in sys.modules if name == 'cpn' or name.startswith('cpn.')}
         self.assertEqual(before, after)
+
+    def test_bundled_host_guides_are_reciprocal_language_pairs(self):
+        for path in docs.auxiliary_documents(self.root):
+            counterpart = (
+                path.with_name('README.md')
+                if path.name == 'README_ZH.md'
+                else path.with_name('README_ZH.md'))
+            self.assertTrue(counterpart.is_file(), str(path))
+            self.assertIn(
+                f']({counterpart.name})', path.read_text(encoding='utf-8'))
+
+    def test_viewer_tutorial_covers_views_controls_and_visual_legend(self):
+        required = (
+            'Overview', 'Detailed flow', 'PetriNet', 'Executions',
+            'Search + Locate', 'Resources', 'Locate activity', 'Refresh',
+            'Line bridges', 'Fit to view', 'Reset focus', 'Minimap',
+            'Live position', 'Earlier records', 'Animate changes',
+            'Enter', 'Space', 'consume', 'produce', 'read arc', 'reset arc',
+            'terminal-success',
+        )
+        for relative in (
+                'docs/guides/viewer.md',
+                'docs/guides/viewer_ZH.md'):
+            document = (self.root / relative).read_text(encoding='utf-8').lower()
+            missing = [value for value in required if value.lower() not in document]
+            self.assertEqual(missing, [], relative)
 
     def test_existing_output_not_overwritten(self):
         output = Path(self.tmp.name) / 'site'

@@ -35,13 +35,14 @@ def pages_in(root: Path) -> list[Path]:
     paths.extend(sorted((root / 'docs').glob('*.md')))
     for folder in ('guides', 'architecture', 'reference'):
         paths.extend(sorted((root / 'docs' / folder).glob('*.md')))
+    paths.extend(sorted((root / 'examples').glob('**/README*.md')))
     return paths
 
 
 def auxiliary_documents(root: Path) -> list[Path]:
     """Markdown checked for links but intentionally excluded from the site."""
-    examples = root / 'examples'
-    return sorted(examples.glob('**/README*.md')) if examples.is_dir() else []
+    bundled = root / 'cpn' / 'examples'
+    return sorted(bundled.glob('**/README*.md')) if bundled.is_dir() else []
 
 
 def slug(text: str) -> str:
@@ -65,7 +66,13 @@ def parse_page(path: Path) -> Page:
                 raise ValueError(f'{path}: missing metadata {key}')
         meta = {**meta, 'name': info['name']}
     elif path.name in {'README.md', 'README_ZH.md'}:
-        meta = {'name': 'rpnh-readme', 'revision': 'entry',
+        if 'examples' in path.parts:
+            index = path.parts.index('examples')
+            suffix = '-'.join(path.parts[index + 1:-1]) or 'catalog'
+            name, revision = 'rpnh-example-' + suffix, 'source-example-v1'
+        else:
+            name, revision = 'rpnh-readme', 'entry'
+        meta = {'name': name, 'revision': revision,
                 'language': 'zh-CN' if path.stem.endswith('_ZH') else 'en',
                 'counterpart': 'README.md' if path.stem.endswith('_ZH') else 'README_ZH.md'}
     else:
@@ -225,11 +232,50 @@ def html_path(relative: Path) -> Path:
     return relative.with_suffix('.html')
 
 
+def navigation_group(path: Path, root: Path, language: str) -> tuple[int, str]:
+    """Map maintained pages to a stable task-oriented navigation group."""
+    relative = path.relative_to(root).as_posix()
+    labels = ({
+        'start': 'Start', 'build': 'Build', 'observe': 'Observe',
+        'integrations': 'Integrations', 'reference': 'Reference',
+        'project': 'Project', 'examples': 'Source examples',
+    } if language == 'en' else {
+        'start': '入门', 'build': '构建', 'observe': '查看运行',
+        'integrations': '宿主集成', 'reference': '参考',
+        'project': '项目状态', 'examples': '源码案例',
+    })
+    if relative.startswith('examples/'):
+        key, order = 'examples', 6
+    elif relative.startswith('docs/reference/') or relative in {
+            'docs/ARCHITECTURE.md', 'docs/ARCHITECTURE_ZH.md',
+            'docs/PROVIDER_MODEL_CONFIGURATION.md',
+            'docs/PROVIDER_MODEL_CONFIGURATION_ZH.md'}:
+        key, order = 'reference', 4
+    elif relative.startswith('docs/architecture/') or any(
+            name in relative for name in (
+                'customization', 'net-operations', 'repository-layout')):
+        key, order = 'build', 1
+    elif any(name in relative for name in (
+            'viewer', 'runtime-registry', 'DISPLAY_OBSERVATION')):
+        key, order = 'observe', 2
+    elif any(name in relative for name in (
+            'adapters', 'opencode', 'dsh', 'RPNH_VS_CODEX')):
+        key, order = 'integrations', 3
+    elif any(name in relative for name in (
+            'development', 'release-validation', 'examples-validation',
+            'PROVENANCE', 'DEFERRED_ENGINEERING_WORK')):
+        key, order = 'project', 5
+    else:
+        key, order = 'start', 0
+    return order, labels[key]
+
+
 CSS = '''body{margin:0;font:17px/1.65 system-ui,sans-serif;color:#202a36;background:#fff}
 header{padding:1rem 2rem;border-bottom:1px solid #d8e0e8;background:#f4f7fa}
 a{color:#145d87;text-decoration:none}a:hover{text-decoration:underline}
 .layout{display:grid;grid-template-columns:17rem minmax(0,1fr);max-width:1320px;margin:auto}
 nav{padding:2rem 1.5rem;border-right:1px solid #d8e0e8}nav a{display:block;margin:0 0 .75rem}
+.nav-group{margin:0 0 1.5rem}.nav-group strong{display:block;margin:0 0 .65rem;color:#52647a;font-size:.78rem;text-transform:uppercase;letter-spacing:.06em}
 main{padding:2rem 3rem;max-width:950px;min-width:0}h1{font-size:2.2rem;line-height:1.2}
 h2{margin-top:2.1rem;font-size:1.45rem}code{font-size:.88em;background:#eef3f7;padding:.1em .3em}
 pre{overflow:auto;background:#f1f5f8;padding:1rem;border-radius:6px}pre code{padding:0}
@@ -261,11 +307,21 @@ def build(root: Path, output: Path) -> dict[str, int]:
                     url = urlsplit(old)
                     token.attrSet('href', urlunsplit(('', '', href_for(target[0]),
                                                      url.query, url.fragment)))
+        groups = {}
+        for p, other in pages.items():
+            if (other.metadata['language'] != page.metadata['language']
+                    or p in {root / 'README.md', root / 'README_ZH.md'}):
+                continue
+            key = navigation_group(p, root, page.metadata['language'])
+            groups.setdefault(key, []).append((p, other))
         navigation = ''.join(
-            f'<a href="{escape(href_for(p))}">{escape(other.title)}</a>'
-            for p, other in pages.items()
-            if other.metadata['language'] == page.metadata['language']
-            and p.name not in {'README.md', 'README_ZH.md'})
+            '<section class="nav-group">'
+            f'<strong>{escape(label)}</strong>'
+            + ''.join(
+                f'<a href="{escape(href_for(p))}">{escape(other.title)}</a>'
+                for p, other in items)
+            + '</section>'
+            for (_order, label), items in sorted(groups.items()))
         counterpart = (path.parent / page.metadata['counterpart']).resolve()
         switch = '中文' if page.metadata['language'] == 'en' else 'English'
         toc = ''.join(f'<a href="#{escape(key)}">{escape(value)}</a>'

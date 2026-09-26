@@ -6,7 +6,7 @@ metadata:
   audience: user-and-maintainer
   language: en
   counterpart: examples-validation_ZH.md
-  revision: "2026-09-26.5"
+  revision: "2026-09-26.6"
   status: focused-live-validation-complete
   basis: "focused local acceptance across basic, Codex, DSH and OpenCode hosts"
 ---
@@ -115,3 +115,22 @@ instead of registering a duplicate pair. The deterministic end-to-end
 regression reproduces that boundary without network access. The reusable task
 and sanitized live record are under `examples/net_operations/`; raw Registry,
 provider audit, identifiers, local paths and transcripts were not committed.
+
+## Workflow-pattern and viewer gallery
+
+The source gallery then completed four fresh deterministic Registry runs. This
+was local-process fixture traffic, not a provider campaign:
+
+| Scenario | Fixture calls | Transitions | Places | Edges | Registry terminal |
+|---|---:|---:|---:|---:|---|
+| Serial | 3 | 3 | 6 | 15 | PASS |
+| Parallel fan-out/join | 4 | 4 | 9 | 26 | PASS |
+| Document pipeline | 4 | 4 | 8 | 21 | PASS |
+| Six-stage long process | 6 | 6 | 12 | 33 | PASS |
+
+Each Agent read its exact Located inputs through the managed tool boundary and
+published one registered output. The parallel run required both branch products
+before its join settled. The long process provides canonical checkpoints for
+viewer timeline instruction. The sanitized record is
+`examples/workflow_patterns/validation.json`; raw runs remain outside the
+repository.

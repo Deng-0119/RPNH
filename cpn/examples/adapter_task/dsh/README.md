@@ -1,5 +1,7 @@
 # Pinned DSH host
 
+English | [中文](README_ZH.md)
+
 Prepare the exact upstream checkout declared by the installed RPNH integration.
 Set `DSH_SOURCE` and an authorized DSH-compatible execution selection. The
 profile must retain the same route/model while leaving room inside DSH's 2 MiB

@@ -1,5 +1,7 @@
 # 固定版本 DSH 宿主
 
+[English](README.md) | 中文
+
 准备安装版 RPNH integration 声明的精确上游 checkout。设置 `DSH_SOURCE` 和一个已授权、
 与 DSH 兼容的 execution selection；该 profile 保持同一路线和模型，同时须在 DSH 的
 2 MiB 完整 frame 中留出空间。

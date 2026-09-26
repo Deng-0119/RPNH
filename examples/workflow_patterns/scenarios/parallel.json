@@ -1,0 +1,50 @@
+{
+  "schema_version": "rpnh/example_workflow_pattern/v1",
+  "name": "Two parallel reviews and an all-input join",
+  "description": "One Agent fans out to two independent reviewers whose registered products enable one join.",
+  "task": "Run two independent reviews and combine their registered outputs.",
+  "expected_output": "Parallel workflow complete.",
+  "max_attempts_per_node": 4,
+  "max_parallel_nodes": 2,
+  "graph": {
+    "nodes": [
+      {
+        "node_id": "prepare",
+        "instruction": "[gallery:parallel:prepare] Read every exact Located input. Publish the exact text declared after GALLERY_OUTPUT_JSON and nothing else. GALLERY_OUTPUT_JSON: \"Shared review brief registered.\"",
+        "input_ports": [{"port_id": "request", "artifact_id": "task"}],
+        "output_ports": [{"port_id": "brief", "artifact_id": "brief"}],
+        "execution": {"role": "actor", "tools": null, "profile_id": null}
+      },
+      {
+        "node_id": "facts",
+        "instruction": "[gallery:parallel:facts] Read every exact Located input. Publish the exact text declared after GALLERY_OUTPUT_JSON and nothing else. GALLERY_OUTPUT_JSON: \"Facts review passed.\"",
+        "input_ports": [{"port_id": "brief", "artifact_id": "brief"}],
+        "output_ports": [{"port_id": "facts", "artifact_id": "facts"}],
+        "execution": {"role": "actor", "tools": null, "profile_id": null}
+      },
+      {
+        "node_id": "risks",
+        "instruction": "[gallery:parallel:risks] Read every exact Located input. Publish the exact text declared after GALLERY_OUTPUT_JSON and nothing else. GALLERY_OUTPUT_JSON: \"Risk review passed.\"",
+        "input_ports": [{"port_id": "brief", "artifact_id": "brief"}],
+        "output_ports": [{"port_id": "risks", "artifact_id": "risks"}],
+        "execution": {"role": "actor", "tools": null, "profile_id": null}
+      },
+      {
+        "node_id": "join",
+        "instruction": "[gallery:parallel:join] Read both exact Located inputs before publishing. Publish the exact text declared after GALLERY_OUTPUT_JSON and nothing else. GALLERY_OUTPUT_JSON: \"Parallel workflow complete.\"",
+        "input_ports": [{"port_id": "facts", "artifact_id": "facts"}, {"port_id": "risks", "artifact_id": "risks"}],
+        "output_ports": [{"port_id": "result", "artifact_id": "result"}],
+        "execution": {"role": "actor", "tools": null, "profile_id": null}
+      }
+    ],
+    "arcs": [
+      {"arc_id": "prepare_to_facts", "source": {"node_id": "prepare", "port_id": "brief"}, "target": {"node_id": "facts", "port_id": "brief"}, "kind": "dependency"},
+      {"arc_id": "prepare_to_risks", "source": {"node_id": "prepare", "port_id": "brief"}, "target": {"node_id": "risks", "port_id": "brief"}, "kind": "dependency"},
+      {"arc_id": "facts_to_join", "source": {"node_id": "facts", "port_id": "facts"}, "target": {"node_id": "join", "port_id": "facts"}, "kind": "dependency"},
+      {"arc_id": "risks_to_join", "source": {"node_id": "risks", "port_id": "risks"}, "target": {"node_id": "join", "port_id": "risks"}, "kind": "dependency"}
+    ],
+    "ingress": {"node_id": "prepare", "port_id": "request"},
+    "egress": {"node_id": "join", "port_id": "result"},
+    "max_rework_cycles": 0
+  }
+}

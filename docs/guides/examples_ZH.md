@@ -6,18 +6,28 @@ metadata:
   audience: user-and-developer
   language: zh-CN
   counterpart: examples.md
-  revision: "2026-09-26.3"
+  revision: "2026-09-26.4"
   status: focused-live-validated
   basis: "current main public APIs; offline fixtures and 2026-09-26 exact-route live evidence explicitly separated"
 ---
 
 [English](examples.md) | [中文](examples_ZH.md)
 
-# 四个实用 RPNH 案例
+# RPNH 案例目录
 
-前三个案例从原生 operation 逐步扩展到图工作流与独立任务。它们使用真实插件宿主、
-Registry、任务 owner 和 PetriNet 投影；其中的脚本化模型只是确定性协议替身，不是语言
-模型推理证据。第四个案例是安装版 provider-backed 任务，与离线测试明确分开。
+案例按用户任务而不是实现包组织。下面每个可运行 workflow 都会创建真实 Registry 与
+PetriNet 投影。脚本化模型只是确定性协议替身，不是语言模型推理证据；provider-backed
+案例与离线案例明确分开。
+
+| 想查看的内容 | 从哪里开始 | 默认模式 |
+|---|---|---|
+| 本地计算与登记资源 | 案例 1，原生插件 | 不使用模型 |
+| 带原生 operation 的串行计算 | 案例 2，混合汇总 | 脚本替身 |
+| 串行与并行拓扑对比 | 案例 3，工作流模式 | 脚本替身 |
+| 文档经过起草和审阅 | 案例 3，`document` | 脚本替身 |
+| checkpoint 更多的长流程 | 案例 3，`long_process` | 脚本替身 |
+| 独立后台任务 | 案例 4，任务工作区 | 脚本替身 |
+| 通过不同宿主执行同一真实语义任务 | 案例 5，安装版任务 | 已授权 profile |
 
 ## 前置条件
 
@@ -108,7 +118,38 @@ python examples/hybrid_summary/run.py --execution "$EXECUTION_CONFIG" \
 这条命令可能产生付费或外部调用。案例不选择 provider/model、不切换路线、也不降级；
 执行前按[模型指南](models_ZH.md)完成配置与授权。
 
-## 案例 3：两个独立任务
+## 案例 3：串行、并行、文档和长流程
+
+同一个 runner 提供四种明确图结构；这些都会完成真实任务，不是只生成声明的示意图：
+
+```bash
+DEMO_ROOT="$(mktemp -d "${TMPDIR:-/tmp}/rpnh-patterns.XXXXXX")"
+python -m examples.workflow_patterns.run --list
+python -m examples.workflow_patterns.run \
+  --scenario serial --run-dir "$DEMO_ROOT/serial"
+python -m examples.workflow_patterns.run \
+  --scenario parallel --run-dir "$DEMO_ROOT/parallel"
+python -m examples.workflow_patterns.run \
+  --scenario document --run-dir "$DEMO_ROOT/document"
+python -m examples.workflow_patterns.run \
+  --scenario long_process --run-dir "$DEMO_ROOT/long-process"
+```
+
+`parallel` 包含一次 fan-out、两个可独立启用的 reviewer 和一个显式 all-input join；
+`document` 依次登记 outline、draft、review 和 publication；`long_process` 结算六个 Agent
+节点，为看板时间轴提供更多 canonical checkpoint。可以直接打开任一结果：
+
+```bash
+RUN_DIR="$DEMO_ROOT/parallel"
+rpnh net --run "$RUN_DIR"
+rpnh net --run "$RUN_DIR" --view --no-open
+```
+
+传入 `--execution "$EXECUTION_CONFIG"` 可将脚本替身替换为一条已单独授权的精确 profile；
+runner 不选择或切换路线。参阅[源码案例说明](../../examples/workflow_patterns/README_ZH.md)
+和[看板教程](viewer_ZH.md)。
+
+## 案例 4：两个独立任务
 
 先在仓库外生成脚本化 profile，再启动一个全新的 basic 会话：
 
@@ -144,7 +185,7 @@ rpnh --frontend basic --execution "$DEMO_ROOT/profile/execution.json" \
 给出所选子任务的 `run_dir`；退出前端后可把该精确路径用于 `rpnh net --run RUN_DIR`。
 主会话和每个子任务拥有独立 Registry，主 Registry 保存子任务链接。
 
-## 案例 4：通过每个宿主运行同一个安装版任务
+## 案例 5：通过每个宿主运行同一个安装版任务
 
 每个 wheel 都包含一个 provider-neutral 语义任务，以及 Basic、Codex 0.155.0、固定版本
 DSH 和 OpenCode 1.18.32 的独立说明。列出或导出任务都不会调用 provider：

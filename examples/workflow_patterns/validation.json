@@ -1,0 +1,18 @@
+{
+  "schema_version": "rpnh/sanitized_workflow_pattern_validation/v1",
+  "date": "2026-09-26",
+  "status": "PASS",
+  "execution_mode": "deterministic local_process fixture",
+  "provider_calls": 0,
+  "scenarios": {
+    "serial": {"formal_fixture_calls": 3, "transition_count": 3, "place_count": 6, "edge_count": 15, "registry_terminal": true},
+    "parallel": {"formal_fixture_calls": 4, "transition_count": 4, "place_count": 9, "edge_count": 26, "registry_terminal": true},
+    "document": {"formal_fixture_calls": 4, "transition_count": 4, "place_count": 8, "edge_count": 21, "registry_terminal": true},
+    "long_process": {"formal_fixture_calls": 6, "transition_count": 6, "place_count": 12, "edge_count": 33, "registry_terminal": true}
+  },
+  "privacy": {
+    "raw_registries_committed": false,
+    "local_paths_or_identifiers_committed": false,
+    "credentials_or_endpoints_committed": false
+  }
+}

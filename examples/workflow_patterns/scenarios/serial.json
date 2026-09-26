@@ -1,0 +1,41 @@
+{
+  "schema_version": "rpnh/example_workflow_pattern/v1",
+  "name": "Three-step serial handoff",
+  "description": "Three Agent nodes pass one registered artifact from intake to delivery.",
+  "task": "Produce the documented serial workflow result.",
+  "expected_output": "Serial workflow complete.",
+  "max_attempts_per_node": 4,
+  "max_parallel_nodes": 1,
+  "graph": {
+    "nodes": [
+      {
+        "node_id": "intake",
+        "instruction": "[gallery:serial:intake] Read every exact Located input. Publish the exact text declared after GALLERY_OUTPUT_JSON and nothing else. GALLERY_OUTPUT_JSON: \"Requirements registered.\"",
+        "input_ports": [{"port_id": "request", "artifact_id": "task"}],
+        "output_ports": [{"port_id": "requirements", "artifact_id": "requirements"}],
+        "execution": {"role": "actor", "tools": null, "profile_id": null}
+      },
+      {
+        "node_id": "work",
+        "instruction": "[gallery:serial:work] Read every exact Located input. Publish the exact text declared after GALLERY_OUTPUT_JSON and nothing else. GALLERY_OUTPUT_JSON: \"Serial work product registered.\"",
+        "input_ports": [{"port_id": "requirements", "artifact_id": "requirements"}],
+        "output_ports": [{"port_id": "draft", "artifact_id": "draft"}],
+        "execution": {"role": "actor", "tools": null, "profile_id": null}
+      },
+      {
+        "node_id": "deliver",
+        "instruction": "[gallery:serial:deliver] Read every exact Located input. Publish the exact text declared after GALLERY_OUTPUT_JSON and nothing else. GALLERY_OUTPUT_JSON: \"Serial workflow complete.\"",
+        "input_ports": [{"port_id": "draft", "artifact_id": "draft"}],
+        "output_ports": [{"port_id": "result", "artifact_id": "result"}],
+        "execution": {"role": "actor", "tools": null, "profile_id": null}
+      }
+    ],
+    "arcs": [
+      {"arc_id": "intake_to_work", "source": {"node_id": "intake", "port_id": "requirements"}, "target": {"node_id": "work", "port_id": "requirements"}, "kind": "dependency"},
+      {"arc_id": "work_to_deliver", "source": {"node_id": "work", "port_id": "draft"}, "target": {"node_id": "deliver", "port_id": "draft"}, "kind": "dependency"}
+    ],
+    "ingress": {"node_id": "intake", "port_id": "request"},
+    "egress": {"node_id": "deliver", "port_id": "result"},
+    "max_rework_cycles": 0
+  }
+}

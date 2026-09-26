@@ -1,0 +1,49 @@
+{
+  "schema_version": "rpnh/example_workflow_pattern/v1",
+  "name": "Document outline, draft, review and publication",
+  "description": "A document moves through four registered Agent products instead of one opaque generation.",
+  "task": "Create a short release note explaining that RPNH examples are organized by task pattern.",
+  "expected_output": "Document complete: RPNH examples are organized by task pattern.",
+  "max_attempts_per_node": 4,
+  "max_parallel_nodes": 1,
+  "graph": {
+    "nodes": [
+      {
+        "node_id": "outline",
+        "instruction": "[gallery:document:outline] Read every exact Located input. Publish the exact text declared after GALLERY_OUTPUT_JSON and nothing else. GALLERY_OUTPUT_JSON: \"Outline: purpose, examples, inspection.\"",
+        "input_ports": [{"port_id": "request", "artifact_id": "task"}],
+        "output_ports": [{"port_id": "outline", "artifact_id": "outline"}],
+        "execution": {"role": "actor", "tools": null, "profile_id": null}
+      },
+      {
+        "node_id": "draft",
+        "instruction": "[gallery:document:draft] Read every exact Located input. Publish the exact text declared after GALLERY_OUTPUT_JSON and nothing else. GALLERY_OUTPUT_JSON: \"Draft: examples are grouped by task pattern and produce inspectable runs.\"",
+        "input_ports": [{"port_id": "outline", "artifact_id": "outline"}],
+        "output_ports": [{"port_id": "draft", "artifact_id": "draft"}],
+        "execution": {"role": "actor", "tools": null, "profile_id": null}
+      },
+      {
+        "node_id": "review",
+        "instruction": "[gallery:document:review] Read every exact Located input. Publish the exact text declared after GALLERY_OUTPUT_JSON and nothing else. GALLERY_OUTPUT_JSON: \"Reviewed: the release note is concise and evidence-bounded.\"",
+        "input_ports": [{"port_id": "draft", "artifact_id": "draft"}],
+        "output_ports": [{"port_id": "reviewed", "artifact_id": "reviewed"}],
+        "execution": {"role": "critic", "tools": null, "profile_id": null}
+      },
+      {
+        "node_id": "publish",
+        "instruction": "[gallery:document:publish] Read every exact Located input. Publish the exact text declared after GALLERY_OUTPUT_JSON and nothing else. GALLERY_OUTPUT_JSON: \"Document complete: RPNH examples are organized by task pattern.\"",
+        "input_ports": [{"port_id": "reviewed", "artifact_id": "reviewed"}],
+        "output_ports": [{"port_id": "result", "artifact_id": "result"}],
+        "execution": {"role": "actor", "tools": null, "profile_id": null}
+      }
+    ],
+    "arcs": [
+      {"arc_id": "outline_to_draft", "source": {"node_id": "outline", "port_id": "outline"}, "target": {"node_id": "draft", "port_id": "outline"}, "kind": "dependency"},
+      {"arc_id": "draft_to_review", "source": {"node_id": "draft", "port_id": "draft"}, "target": {"node_id": "review", "port_id": "draft"}, "kind": "dependency"},
+      {"arc_id": "review_to_publish", "source": {"node_id": "review", "port_id": "reviewed"}, "target": {"node_id": "publish", "port_id": "reviewed"}, "kind": "dependency"}
+    ],
+    "ingress": {"node_id": "outline", "port_id": "request"},
+    "egress": {"node_id": "publish", "port_id": "result"},
+    "max_rework_cycles": 0
+  }
+}

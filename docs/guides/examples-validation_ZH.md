@@ -6,7 +6,7 @@ metadata:
   audience: user-and-maintainer
   language: zh-CN
   counterpart: examples-validation.md
-  revision: "2026-09-26.5"
+  revision: "2026-09-26.6"
   status: focused-live-validation-complete
   basis: "focused local acceptance across basic, Codex, DSH and OpenCode hosts"
 ---
@@ -98,3 +98,19 @@ terminal outcome `complete`。
 必须复用本 run 的精确 execution environment/profile，不能重复登记第二套权威。确定性端到端
 回归在无网络条件下复现该边界。可复用任务与脱敏真实结果位于 `examples/net_operations/`；
 原始 Registry、provider audit、身份、本地路径和 transcript 均未提交。
+
+## 工作流模式与 viewer 案例库
+
+源码案例库随后完成了四个新的确定性 Registry run。这些是 local-process fixture 流量，
+不是 provider 测试批次：
+
+| 场景 | Fixture 调用 | Transition | Place | Edge | Registry 终态 |
+|---|---:|---:|---:|---:|---|
+| 串行 | 3 | 3 | 6 | 15 | PASS |
+| 并行 fan-out/join | 4 | 4 | 9 | 26 | PASS |
+| 文档流程 | 4 | 4 | 8 | 21 | PASS |
+| 六阶段长流程 | 6 | 6 | 12 | 33 | PASS |
+
+每个 Agent 都通过受管工具边界读取精确 Located input，并发布一个登记输出。并行 run 的
+join 在两个分支产物均存在后才结算；长流程为 viewer 时间轴教程提供 canonical checkpoint。
+脱敏记录位于 `examples/workflow_patterns/validation.json`，原始 run 保持在仓库之外。

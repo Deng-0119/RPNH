@@ -39,10 +39,11 @@ or through an application-defined optimization loop.
 | Reusable domain-specific agents | Assemble registered components into a workflow that can be inspected and revised. |
 | Agent optimization and recursive self-improvement (RSI) research | Provide execution records, resource versions and controlled workflow changes for application-defined candidates, evaluators and selection policies. |
 
-A small native-tool task is a useful starting point. Add model-driven steps,
-independent tasks and richer resource declarations as the application needs them.
-Task logic, evaluation criteria and domain-specific policies belong to the
-application components.
+A small native-tool task is a useful starting point. The
+[source example catalog](examples/README.md) then provides serial, parallel,
+document, calculation, long-process and independent-task paths. Add richer
+resource declarations as the application needs them. Task logic, evaluation
+criteria and domain-specific policies belong to the application components.
 
 ## How execution is organized
 
@@ -101,7 +102,8 @@ The supplied input is `{"left": 2, "right": 3}`. The returned JSON contains
 `output.value` equal to `5`, together with the run location and terminal evidence
 reference. This executes a local plugin and creates run data. The
 [examples guide](docs/guides/examples.md) continues with the registered
-instruction resource, a model–program–model workflow and two independent tasks.
+instruction resource, model–program–model calculation, serial/parallel/document/
+long workflow patterns and independent tasks.
 The [customization guide](docs/guides/customization.md) explains the plugin
 contract.
 
@@ -169,7 +171,7 @@ Each guide describes its dependencies and supported interaction surface.
 
 | Read about | Guides |
 |---|---|
-| Getting started | [Installation](docs/guides/installation.md), [examples](docs/guides/examples.md), [configuration](docs/guides/configuration.md), [models](docs/guides/models.md), [usage](docs/guides/usage.md) |
+| Getting started | [Installation](docs/guides/installation.md), [examples](docs/guides/examples.md), [repository map](docs/guides/repository-layout.md), [configuration](docs/guides/configuration.md), [models](docs/guides/models.md), [usage](docs/guides/usage.md) |
 | Building an application | [Customization and plugins](docs/guides/customization.md), [native Petri-net operations](docs/guides/net-operations.md), [declaration reference](docs/reference/declarations.md) |
 | Understanding a run | [Dashboard](docs/guides/viewer.md), [architecture](docs/architecture/design.md), [runtime and Registry](docs/reference/runtime-registry.md) |
 | Operating and contributing | [Troubleshooting](docs/guides/troubleshooting.md), [development](docs/guides/development.md), [release validation](docs/guides/release-validation.md) |

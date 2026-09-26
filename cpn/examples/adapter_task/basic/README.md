@@ -1,5 +1,7 @@
 # Basic host
 
+English | [中文](README_ZH.md)
+
 Prerequisite: set `EXECUTION_CONFIG` to the absolute path of one authorized
 RPNH execution selection. This command starts one real main-session logical
 turn:

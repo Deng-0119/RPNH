@@ -74,6 +74,10 @@ def _output_port(texts: Iterable[str]) -> str:
 
 
 def _located_input_path(texts: Iterable[str]) -> str:
+    return _located_input_paths(texts)[0]
+
+
+def _located_input_paths(texts: Iterable[str]) -> list[str]:
     rows = []
     for text in texts:
         for line in text.splitlines():
@@ -88,13 +92,28 @@ def _located_input_path(texts: Iterable[str]) -> str:
                     row.get("sandbox_path"), str):
                 rows.append(row)
     if rows:
-        selected = next(
-            (row for row in rows
-             if row.get("summary") == "Registered operation product"),
-            rows[0],
-        )
-        return selected["sandbox_path"]
+        products = [
+            row for row in rows
+            if row.get("summary") == "Registered operation product"
+        ]
+        selected = products or rows
+        return list(dict.fromkeys(row["sandbox_path"] for row in selected))
     raise ValueError("scripted request did not expose a located input")
+
+
+def _gallery_output(texts: Iterable[str]) -> tuple[str, str] | None:
+    """Return the declared fixture output for one workflow-gallery node."""
+    combined = "\n".join(texts)
+    marker = re.search(r"\[gallery:[a-z_]+:([a-z0-9_]+)\]", combined)
+    value = re.search(r"GALLERY_OUTPUT_JSON:\s*(\"(?:\\.|[^\"\\])*\")", combined)
+    if marker is None and value is None:
+        return None
+    if marker is None or value is None:
+        raise ValueError("gallery fixture marker and output must appear together")
+    output = json.loads(value.group(1))
+    if not isinstance(output, str) or not output:
+        raise ValueError("gallery fixture output must be nonempty text")
+    return marker.group(1), output
 
 
 def _content(request: dict[str, Any]) -> tuple[str, str, str]:
@@ -152,6 +171,37 @@ def main() -> int:
     if request.get("protocol") != "llm_request_envelope/v1":
         raise ValueError("unsupported request protocol")
     texts = list(_strings(request))
+    gallery = _gallery_output(texts)
+    if gallery is not None:
+        node_id, content = gallery
+        port = _output_port(texts)
+        calls = [{
+            "id": f"read-gallery-input-{index}",
+            "name": "read_file",
+            "arguments": json.dumps({"path": path}, separators=(",", ":")),
+        } for index, path in enumerate(_located_input_paths(texts), start=1)]
+        calls.extend(({
+            "id": "write-gallery-output",
+            "name": "write_file",
+            "arguments": json.dumps({
+                "path": f"outputs/{node_id}.txt",
+                "description": f"Deterministic workflow-gallery output from {node_id}.",
+                "content": content,
+                "output_port_id": port,
+                "outcome_id": "complete",
+            }, separators=(",", ":")),
+        }, {
+            "id": "complete-gallery-interaction",
+            "name": "complete_interaction",
+            "arguments": "{}",
+        }))
+        json.dump({
+            "protocol": "llm_response_envelope/v1",
+            "tool_calls": calls,
+            "finish_reason": "tool_calls",
+        }, sys.stdout, ensure_ascii=True, allow_nan=False,
+            sort_keys=True, separators=(",", ":"))
+        return 0
     try:
         path, description, content = _content(request)
     except _NeedLocatedInput:

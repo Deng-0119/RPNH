@@ -1,5 +1,7 @@
 # OpenCode 1.18.32 宿主
 
+[English](README.md) | 中文
+
 安装精确的 OpenCode 1.18.32，并选择一个已授权 profile。启动前端本身不会调用模型；
 提交 `task.txt` 会启动一个逻辑主会话 turn：
 

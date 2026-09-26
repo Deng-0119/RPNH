@@ -163,6 +163,66 @@ def test_hybrid_example_uses_real_plugin_output(
     assert {node["id"] for node in projection["nodes"]} >= expected_nodes
 
 
+def test_workflow_pattern_catalog_matches_sanitized_validation() -> None:
+    patterns = _load_module(
+        "rpnh_public_workflow_pattern_catalog",
+        EXAMPLES / "workflow_patterns" / "run.py",
+    )
+    validation = json.loads((
+        EXAMPLES / "workflow_patterns" / "validation.json"
+    ).read_text(encoding="utf-8"))
+    expected_nodes = {
+        "serial": 3,
+        "parallel": 4,
+        "document": 4,
+        "long_process": 6,
+    }
+    for name, count in expected_nodes.items():
+        scenario = patterns.load_scenario(name)
+        assert len(scenario["graph"]["nodes"]) == count
+        assert validation["scenarios"][name]["transition_count"] == count
+        assert validation["scenarios"][name]["registry_terminal"] is True
+    parallel = patterns.load_scenario("parallel")
+    assert parallel["max_parallel_nodes"] == 2
+    assert len(parallel["graph"]["arcs"]) == 4
+    join = next(
+        node for node in parallel["graph"]["nodes"]
+        if node["node_id"] == "join")
+    assert {item["port_id"] for item in join["input_ports"]} == {
+        "facts", "risks"}
+
+
+def test_parallel_workflow_pattern_reaches_registered_join(
+        tmp_path: Path,
+) -> None:
+    patterns = _load_module(
+        "rpnh_public_parallel_workflow_pattern",
+        EXAMPLES / "workflow_patterns" / "run.py",
+    )
+    profile = _load_module(
+        "rpnh_public_workflow_pattern_profile",
+        EXAMPLES / "_support" / "profile.py",
+    )
+    result = patterns.run_example(
+        scenario_name="parallel",
+        run_dir=tmp_path / "parallel-run",
+        execution_config_path=profile.write_scripted_profile(
+            tmp_path / "profile"),
+    )
+    assert result["status"] == "PASS"
+    assert result["stop_reason"] == "terminal"
+    assert result["output"] == "Parallel workflow complete."
+    assert result["actual_model_call_counts"] == [4, 0]
+    assert result["petri_net"] == {
+        "node_count": 13,
+        "edge_count": 26,
+        "transition_count": 4,
+        "place_count": 9,
+        "resource_place_count": 0,
+        "resource_edge_count": 0,
+    }
+
+
 def test_two_independent_scripted_tasks_keep_distinct_results_and_nets(
         tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
 ) -> None:

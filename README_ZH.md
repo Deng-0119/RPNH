@@ -30,8 +30,9 @@ RPNH 是一个用于组合语言模型、原生工具和可复用工作流的 Ag
 | 可复用的专用 Agent | 将已登记组件组织成可查看、可调整的工作流。 |
 | Agent 优化与递归自我改进（RSI）研究 | 为应用自行定义的候选、评价器和选择策略，提供执行记录、资源版本与受控工作流修改机制。 |
 
-可以先从一个简单的原生工具任务开始，再按应用需要增加模型步骤、独立任务和更丰富的
-资源声明。任务逻辑、评价标准和领域策略由应用组件定义。
+可以先从一个简单的原生工具任务开始，再从[源码案例目录](examples/README_ZH.md)选择
+串行、并行、文档、计算、长流程或独立任务，并按应用需要增加更丰富的资源声明。
+任务逻辑、评价标准和领域策略由应用组件定义。
 
 ## 执行如何组织
 
@@ -83,8 +84,9 @@ rpnh net --run "$RUN_DIR" --show-resources
 
 示例输入是 `{"left": 2, "right": 3}`。返回的 JSON 中，`output.value` 为 `5`，
 并包含运行目录与终端证据引用。这一步会执行本地插件并创建运行数据。
-[案例指南](docs/guides/examples_ZH.md)继续演示登记指令资源、模型—程序—模型工作流和两个
-独立任务；[自定义指南](docs/guides/customization_ZH.md)解释插件契约。
+[案例指南](docs/guides/examples_ZH.md)继续演示登记指令资源、模型—程序—模型计算、
+串行／并行／文档／长流程模式和独立任务；
+[自定义指南](docs/guides/customization_ZH.md)解释插件契约。
 
 ### 通过支持的宿主运行一个真实任务
 
@@ -146,7 +148,7 @@ rpnh net --run "$RUN_DIR" --view --no-open
 
 | 主题 | 指南 |
 |---|---|
-| 入门 | [安装](docs/guides/installation_ZH.md)、[案例](docs/guides/examples_ZH.md)、[配置总表](docs/guides/configuration_ZH.md)、[模型](docs/guides/models_ZH.md)、[使用](docs/guides/usage_ZH.md) |
+| 入门 | [安装](docs/guides/installation_ZH.md)、[案例](docs/guides/examples_ZH.md)、[仓库目录图](docs/guides/repository-layout_ZH.md)、[配置总表](docs/guides/configuration_ZH.md)、[模型](docs/guides/models_ZH.md)、[使用](docs/guides/usage_ZH.md) |
 | 构建应用 | [自定义与插件](docs/guides/customization_ZH.md)、[原生 PetriNet 操作](docs/guides/net-operations_ZH.md)、[声明参考](docs/reference/declarations_ZH.md) |
 | 理解运行过程 | [看板](docs/guides/viewer_ZH.md)、[架构](docs/architecture/design_ZH.md)、[运行与 Registry](docs/reference/runtime-registry_ZH.md) |
 | 使用维护与参与开发 | [排障](docs/guides/troubleshooting_ZH.md)、[开发](docs/guides/development_ZH.md)、[发布验证](docs/guides/release-validation_ZH.md) |

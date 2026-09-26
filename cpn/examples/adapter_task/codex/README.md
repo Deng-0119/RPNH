@@ -1,5 +1,7 @@
 # Codex 0.155.0 host
 
+English | [中文](README_ZH.md)
+
 Install exact `codex-cli 0.155.0`, then select one authorized profile. Starting
 the frontend sends no model request; submitting `task.txt` starts one logical
 main-session turn:

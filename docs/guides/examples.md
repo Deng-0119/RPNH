@@ -6,20 +6,29 @@ metadata:
   audience: user-and-developer
   language: en
   counterpart: examples_ZH.md
-  revision: "2026-09-26.3"
+  revision: "2026-09-26.4"
   status: focused-live-validated
   basis: "current main public APIs; offline fixtures and 2026-09-26 exact-route live evidence explicitly separated"
 ---
 
 [English](examples.md) | [中文](examples_ZH.md)
 
-# Four practical RPNH examples
+# RPNH example catalog
 
-The first three examples move from a native operation to a graph workflow and
-then to independent tasks. They use the real plugin host, Registry, task owner
-and PetriNet projection. Their scripted model is a deterministic protocol
-fixture, not evidence of language-model reasoning. The fourth example is an
-installed, provider-backed task and is explicitly separated from offline tests.
+The examples are organized by user task rather than implementation package.
+Every runnable workflow below creates a real Registry and PetriNet projection.
+A scripted model is a deterministic protocol fixture, not evidence of
+language-model reasoning. Provider-backed examples are explicitly separated.
+
+| I want to see | Start here | Default |
+|---|---|---|
+| Local arithmetic and registered resources | Example 1, native plugin | No model |
+| Serial calculation with a native operation | Example 2, hybrid summary | Scripted |
+| Serial versus parallel topology | Example 3, workflow patterns | Scripted |
+| A document moving through review | Example 3, `document` | Scripted |
+| A longer run with more checkpoints | Example 3, `long_process` | Scripted |
+| Independent background tasks | Example 4, task workspace | Scripted |
+| The same real semantic task through each host | Example 5, installed task | Authorized profile |
 
 ## Prerequisites
 
@@ -123,7 +132,41 @@ This command can make paid or external calls. The example never selects a
 provider/model, changes routes or falls back. Configure and authorize the route
 using the [model guide](models.md) before running it.
 
-## Example 3: two independent tasks
+## Example 3: serial, parallel, document and long workflows
+
+One runner exposes four explicit graph shapes. These are completed tasks, not
+declaration-only diagrams:
+
+```bash
+DEMO_ROOT="$(mktemp -d "${TMPDIR:-/tmp}/rpnh-patterns.XXXXXX")"
+python -m examples.workflow_patterns.run --list
+python -m examples.workflow_patterns.run \
+  --scenario serial --run-dir "$DEMO_ROOT/serial"
+python -m examples.workflow_patterns.run \
+  --scenario parallel --run-dir "$DEMO_ROOT/parallel"
+python -m examples.workflow_patterns.run \
+  --scenario document --run-dir "$DEMO_ROOT/document"
+python -m examples.workflow_patterns.run \
+  --scenario long_process --run-dir "$DEMO_ROOT/long-process"
+```
+
+`parallel` has one fan-out, two independently enabled reviewers and an explicit
+all-input join. `document` registers outline, draft, review and publication
+products. `long_process` settles six Agent nodes, giving the dashboard more
+canonical checkpoints to replay. Open any result directly:
+
+```bash
+RUN_DIR="$DEMO_ROOT/parallel"
+rpnh net --run "$RUN_DIR"
+rpnh net --run "$RUN_DIR" --view --no-open
+```
+
+Use `--execution "$EXECUTION_CONFIG"` to replace the scripted fixture with one
+separately authorized exact profile. The runner does not choose or switch a
+route. See the [source gallery instructions](../../examples/workflow_patterns/README.md)
+and the [dashboard tutorial](viewer.md).
+
+## Example 4: two independent tasks
 
 Generate the scripted profile outside the repository and start a fresh basic
 session:
@@ -162,7 +205,7 @@ selected child's `run_dir`. After leaving the frontend, that exact path can be
 used with `rpnh net --run RUN_DIR`. The main session and each child retain
 separate Registries; the main Registry stores child links.
 
-## Example 4: one installed task through every host
+## Example 5: one installed task through every host
 
 Every wheel contains a provider-neutral semantic task plus separate instructions
 for Basic, Codex 0.155.0, pinned DSH and OpenCode 1.18.32. Exporting or listing
