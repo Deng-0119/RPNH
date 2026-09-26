@@ -6,7 +6,7 @@ metadata:
   audience: user-and-maintainer
   language: en
   counterpart: examples-validation_ZH.md
-  revision: "2026-09-26.4"
+  revision: "2026-09-26.5"
   status: focused-live-validation-complete
   basis: "focused local acceptance across basic, Codex, DSH and OpenCode hosts"
 ---
@@ -96,3 +96,22 @@ python scripts/docs.py check
 python scripts/check_doc_examples.py
 python scripts/check_installed_docs.py --python "$WHEEL_VENV/bin/python" --source-root "$SOURCE_ROOT"
 ```
+
+## Native net-operation live task
+
+The executable native net-operation scope was also exercised in one authorized
+real-provider task. Extract and Branch selected two Agent definitions;
+Instantiate and Compose built the initial graph; after the first Agent settled
+`outputs/seed.txt`, whole-net Replace adopted the successor at a quiescent
+checkpoint. The successor read the inherited file through both the workspace
+and its exact registered-resource path, then registered `outputs/result.txt`
+and reached terminal outcome `complete`.
+
+The selected route was `volcano` / `deepseek-v4-pro`. Five formal physical
+responses succeeded, with zero health probes, zero route/model switches and
+zero post-limit calls. The run also exposed and fixed a replacement binding
+defect: a successor must reuse the run's exact execution environment/profile
+instead of registering a duplicate pair. The deterministic end-to-end
+regression reproduces that boundary without network access. The reusable task
+and sanitized live record are under `examples/net_operations/`; raw Registry,
+provider audit, identifiers, local paths and transcripts were not committed.

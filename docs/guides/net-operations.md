@@ -6,7 +6,7 @@ metadata:
   audience: developer
   language: en
   counterpart: net-operations_ZH.md
-  revision: "2026-09-26.1"
+  revision: "2026-09-26.2"
   status: implemented-basic-scope
 ---
 
@@ -48,7 +48,9 @@ from cpn.rpnh import (
 They are pure until `apply_replacement` is called. Always lower or compile the
 result with the exact trusted `Registration` that supplies its selected keys.
 The repository's `examples/net_operations/compose_serial.py` prints a complete
-two-stage definition without a Registry write or model call.
+two-stage definition without a Registry write or model call. The companion
+`live_agent_replacement.py` executes Extract, Branch, Instantiate and Compose
+output as a real Agent graph, then applies Replace and executes its successor.
 
 ## Explicit registered operation
 
@@ -128,6 +130,23 @@ Agent run creates one empty workspace lineage. During same-owner Agent graph
 replacement, the candidate inherits the current checkpoint's sole settled
 workspace revision and original lineage; replacement fails loudly if that
 authority is absent or ambiguous. RPNH does not silently reset files.
+The candidate also reuses the run's one exact execution environment and
+workspace profile. Publishing a second pair would make tool execution
+ambiguous and is rejected by the runtime.
+
+## Reproducible live acceptance task
+
+See `examples/net_operations/README.md` for the real-provider command and
+acceptance boundary. The checked-in sanitized
+record shows one authorized run on `volcano` / `deepseek-v4-pro`: all five
+executable operation capabilities passed, five formal model responses
+succeeded, no health probe or route switch occurred, the successor used both
+`workspace` and `read_file`, and Registry terminal outcome was `complete`.
+
+The structure operations themselves remain deterministic and zero-model; the
+live claim means their resulting graph and replacement were actually used by
+the model task. It does not claim that inert Reentry or workspace fork/import
+plans ran.
 
 ## Deliberately unavailable
 
@@ -139,7 +158,7 @@ for reentry and workspace policy are inert preparation data only; they do not
 grant execution authority. These branches require dedicated Registry protocols
 before an apply function can exist.
 
-Run the deterministic acceptance tests with:
+From the repository root, run the deterministic acceptance tests with:
 
 ```bash
 python -m pytest -q tests/test_native_net_operations.py

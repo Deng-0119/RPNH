@@ -6,7 +6,7 @@ metadata:
   audience: developer
   language: zh-CN
   counterpart: net-operations.md
-  revision: "2026-09-26.1"
+  revision: "2026-09-26.2"
   status: implemented-basic-scope
 ---
 
@@ -46,7 +46,8 @@ from cpn.rpnh import (
 在调用 `apply_replacement` 前，这些定义操作都是纯操作。结果仍必须用提供相应 key 的同一份
 可信 `Registration` 进行 lowering 或编译。
 仓库中的 `examples/net_operations/compose_serial.py` 可以输出完整的两阶段定义，不写
-Registry，也不调用模型。
+Registry，也不调用模型。配套的 `live_agent_replacement.py` 会把 Extract、Branch、
+Instantiate 和 Compose 的输出作为真实 Agent 图执行，再应用 Replace 并执行其后继网。
 
 ## 显式登记的操作
 
@@ -109,6 +110,18 @@ Registration 验证候选。它还要求候选预算桶及 operation 绑定与�
 存在待处理替换时，正常 owner stop 会明确拒绝。新 Agent run 会创建一条空 workspace lineage；
 同一 owner 替换 Agent 图时，候选网会继承当前 checkpoint 唯一的已结算 workspace revision 及
 原 lineage。如果该权威不存在或不唯一，替换会明确失败；RPNH 不会静默重置文件。
+候选网还会复用本 run 唯一且精确的 execution environment 与 workspace profile；若重复发布
+第二套权威，工具执行会产生歧义，因此 runtime 会拒绝。
+
+## 可复现的真实验收任务
+
+真实 provider 命令与验收边界见 `examples/net_operations/README_ZH.md`。仓库内的
+脱敏记录表明：一次经授权的 `volcano` / `deepseek-v4-pro` 运行中，五项可执行 operation
+能力全部通过，五次正式模型响应成功，没有 health probe 或路线切换；后继 Agent 同时使用了
+`workspace` 与 `read_file`，Registry terminal outcome 为 `complete`。
+
+结构操作本身仍是确定性零模型操作；这里的真实结论是，其结果网及替换确实参与了模型任务，
+并不声称惰性的 Reentry 或 workspace fork/import 计划已经运行。
 
 ## 明确尚未开放
 
@@ -117,7 +130,7 @@ Registration 验证候选。它还要求候选预算桶及 operation 绑定与�
 模型或工具 invocation。reentry 与 workspace policy 的 typed plan 目前只是惰性的准备数据，
 不授予执行权；这些分支需要独立 Registry 协议后才能提供 apply 函数。
 
-确定性验收命令：
+在仓库根目录运行确定性验收命令：
 
 ```bash
 python -m pytest -q tests/test_native_net_operations.py

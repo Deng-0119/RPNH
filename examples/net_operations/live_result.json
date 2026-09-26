@@ -1,0 +1,64 @@
+{
+  "schema_version": "rpnh/sanitized_example_validation/v1",
+  "date": "2026-09-26",
+  "candidate": "main live-example validation",
+  "scope": "executable-native-net-operations",
+  "status": "PASS",
+  "route": {
+    "adapter_kind": "external_provider",
+    "provider": "volcano",
+    "backend": "volcano-coding",
+    "exact_model": "deepseek-v4-pro",
+    "route_switches": 0
+  },
+  "operations": {
+    "extract": "PASS",
+    "branch": "PASS",
+    "instantiate": "PASS",
+    "compose": "PASS",
+    "replace": "PASS"
+  },
+  "execution": {
+    "registry_terminal": true,
+    "run_outcome": "complete",
+    "successful_logical_model_responses": 5,
+    "successful_formal_physical_calls": 5,
+    "health_probe_calls": 0,
+    "post_limit_calls": 0,
+    "replacement_adoptions": 1,
+    "settled_tools": [
+      "write_file",
+      "complete_interaction",
+      "workspace",
+      "read_file",
+      "write_file",
+      "complete_interaction"
+    ],
+    "terminal_output": "RPNH native net live replacement complete"
+  },
+  "workspace": {
+    "preserved_at_adoption": true,
+    "final_revision_descends_from_pre_replacement_revision": true,
+    "inventory_paths": [
+      "outputs/result.txt",
+      "outputs/seed.txt"
+    ],
+    "execution_environment_authority_count": 1,
+    "workspace_profile_authority_count": 1
+  },
+  "petri_net_view": {
+    "source_mode": "registry_current",
+    "final_transition_count": 1,
+    "final_place_count": 2,
+    "final_transition": "replacement_worker.run",
+    "default_resource_nodes": 0,
+    "explicit_resource_nodes": 0,
+    "resources_only_nodes": 0
+  },
+  "privacy": {
+    "raw_registry_committed": false,
+    "raw_provider_audit_committed": false,
+    "credentials_or_endpoints_committed": false,
+    "local_paths_or_run_identifiers_committed": false
+  }
+}

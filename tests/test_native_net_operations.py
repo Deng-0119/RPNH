@@ -3,8 +3,11 @@
 from __future__ import annotations
 
 from concurrent.futures import ThreadPoolExecutor
+import importlib.util
 import io
 import json
+from pathlib import Path
+import sys
 import tarfile
 
 import pytest
@@ -38,6 +41,24 @@ from cpn.rpnh.registry.module_budgets import ModuleBudgetDeclaration
 from cpn.rpnh.registry.publication import _version_from_payload
 from cpn.rpnh.registry.schema_catalog import canonical_json
 from cpn.rpnh.run import OwnerInput, start_run
+
+
+ROOT = Path(__file__).resolve().parents[1]
+
+
+def _load_source_module(name: str, path: Path):
+    spec = importlib.util.spec_from_file_location(name, path)
+    assert spec is not None and spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[name] = module
+    spec.loader.exec_module(module)
+    return module
+
+
+live_agent_replacement = _load_source_module(
+    "rpnh_native_net_live_example",
+    ROOT / "examples/net_operations/live_agent_replacement.py",
+)
 
 
 TEXT = "application/net_operation_test_text/v1"
@@ -499,3 +520,111 @@ def test_agent_replacement_preserves_current_workspace_lineage(tmp_path):
         second_loop.close()
     assert replacement_loop.workspace_base_revision_ref == old_workspace_ref
     assert owner._core.event_store.actual_model_call_counts() == (1, 0)
+
+
+class _LiveExamplePort:
+    def __init__(self):
+        self.calls = 0
+
+    def request_once(self, _attempt):
+        self.calls += 1
+        if self.calls == 1:
+            calls = [{
+                "id": "seed-write", "name": "write_file",
+                "arguments": json.dumps({
+                    "path": "outputs/seed.txt",
+                    "description": "Seed for the replacement Agent.",
+                    "content": json.dumps(live_agent_replacement.SEED_TEXT),
+                    "output_port_id": "prepare_worker.result",
+                    "outcome_id": "complete",
+                }),
+            }, {
+                "id": "seed-complete", "name": "complete_interaction",
+                "arguments": "{}",
+            }]
+        elif self.calls == 2:
+            calls = [{
+                "id": "seed-workspace", "name": "workspace",
+                "arguments": json.dumps({
+                    "script": "sed -n '1p' outputs/seed.txt",
+                    "timeout_seconds": 30,
+                }),
+            }]
+        elif self.calls == 3:
+            request = json.loads(_attempt.canonical_request_bytes)
+            located = []
+            for message in request["messages"]:
+                for line in message.get("content", "").splitlines():
+                    if not line.startswith("- {"):
+                        continue
+                    try:
+                        item = json.loads(line[2:])
+                    except json.JSONDecodeError:
+                        continue
+                    if item.get("source_relative_path") == "outputs/seed.txt":
+                        located.append(item)
+            paths = [item["sandbox_path"] for item in located]
+            if len(paths) != 1:
+                raise AssertionError("replacement request lacks one exact input path")
+            calls = [{
+                "id": "seed-read", "name": "read_file",
+                "arguments": json.dumps({"path": paths[0]}),
+            }]
+        elif self.calls == 4:
+            calls = [{
+                "id": "result-write", "name": "write_file",
+                "arguments": json.dumps({
+                    "path": "outputs/result.txt",
+                    "description": "Terminal replacement result.",
+                    "content": json.dumps(live_agent_replacement.FINAL_TEXT),
+                    "output_port_id": "replacement_worker.result",
+                    "outcome_id": "complete",
+                }),
+            }, {
+                "id": "result-complete", "name": "complete_interaction",
+                "arguments": "{}",
+            }]
+        else:
+            raise AssertionError("live example made an unexpected model call")
+        return LLMInputResponseBytes(canonical_json({
+            "protocol": "llm_response_envelope/v1",
+            "tool_calls": calls,
+            "finish_reason": "tool_calls",
+        }), status_code=None, external_request_id=None)
+
+    def close(self):
+        pass
+
+
+def test_live_example_executes_all_open_operations_and_workspace_handoff(
+        tmp_path, monkeypatch):
+    profile = _load_source_module(
+        "rpnh_native_net_example_profile",
+        ROOT / "examples/_support/profile.py",
+    )
+    execution = profile.write_scripted_profile(tmp_path / "profile")
+    port = _LiveExamplePort()
+    monkeypatch.setattr(
+        live_agent_replacement, "build_llm_input_port",
+        lambda *_args, **_kwargs: port)
+    result = live_agent_replacement.run_live_example(
+        run_dir=tmp_path / "live-example",
+        execution_config_path=execution,
+    )
+
+    assert result["status"] == "PASS"
+    assert set(result["operations"]) == {
+        "extract", "branch", "instantiate", "compose", "replace"}
+    assert result["registry"]["replacement_adoption_count"] == 1
+    assert result["registry"]["actual_model_call_counts"] == [4, 0]
+    assert result["workspace"] == {
+        "preserved_at_adoption": True,
+        "final_revision_changed": True,
+        "inventory_paths": ["outputs/result.txt", "outputs/seed.txt"],
+        "execution_environment_authority_count": 1,
+        "workspace_profile_authority_count": 1,
+    }
+    assert result["settled_tools"] == [
+        "write_file", "complete_interaction", "workspace", "read_file",
+        "write_file", "complete_interaction"]
+    assert result["terminal_output"] == live_agent_replacement.FINAL_TEXT

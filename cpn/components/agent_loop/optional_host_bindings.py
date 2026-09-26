@@ -249,45 +249,94 @@ def make_optional_agent_host_bindings(llm_input_target: LLMInputTarget, *,
                 "changed_paths": [], "deleted_paths": [], "inventory_paths": [], "conflict_paths": [],
                 "semantic_output_refs": [], "trace_summary_refs": [], "payload_kind": "full_workspace_tar",
                 "settled": True}, "workspace-genesis", stream.getvalue())
-        environment = publish(
-            "execution_environment_identity/v1",
-            "execution_environment", "execution_environment_version",
-            lambda ref: {
-                "environment_ref": ref_payload(ref),
-                "name": "research-exp",
-                "python_executable": os.path.realpath(sys.executable),
-                "python_prefix": os.path.realpath(sys.prefix),
-            },
-            "workspace-environment",
-        )
-        workspace_profile = publish(
-            "numerical_tool_profile/v1",
-            "numerical_tool_profile", "numerical_tool_profile_version",
-            lambda ref: {
-                "profile_ref": ref_payload(ref),
-                "environment_ref": ref_payload(environment),
+        if inherited_workspace:
+            # Environment/profile are run-scoped HOST authority.  A same-owner
+            # net replacement must bind its operations to that authority, not
+            # publish a second pair that makes workspace execution ambiguous.
+            environment_rows = core.event_store.canonical_object_rows(
+                object_type="execution_environment_identity/v1")
+            profile_rows = core.event_store.canonical_object_rows(
+                object_type="numerical_tool_profile/v1")
+            if len(environment_rows) != 1 or len(profile_rows) != 1:
+                raise ValueError(
+                    "optional agent replacement requires one exact workspace runtime")
+            environment_data = json.loads(
+                environment_rows[0]["metadata_json"])
+            workspace_profile_data = json.loads(
+                profile_rows[0]["metadata_json"])
+            environment = _version_from_payload(
+                environment_data["environment_ref"])
+            workspace_profile = _version_from_payload(
+                workspace_profile_data["profile_ref"])
+            _registered(
+                core, environment, "execution_environment_identity/v1")
+            _registered(
+                core, workspace_profile, "numerical_tool_profile/v1")
+            expected_profile = {
                 "timeout_seconds": workspace_policy.timeout_seconds,
                 "memory_bytes": workspace_policy.memory_bytes,
                 "process_limit": workspace_policy.process_limit,
                 "source_size_bytes": workspace_policy.source_size_bytes,
                 "input_size_bytes": workspace_policy.input_size_bytes,
-            },
-            "workspace-profile",
-        )
+            }
+            if (workspace_profile_data.get("environment_ref")
+                    != ref_payload(environment)
+                    or any(workspace_profile_data.get(name) != value
+                           for name, value in expected_profile.items())):
+                raise ValueError(
+                    "optional agent replacement changed the workspace runtime")
+        else:
+            environment = publish(
+                "execution_environment_identity/v1",
+                "execution_environment", "execution_environment_version",
+                lambda ref: {
+                    "environment_ref": ref_payload(ref),
+                    "name": "research-exp",
+                    "python_executable": os.path.realpath(sys.executable),
+                    "python_prefix": os.path.realpath(sys.prefix),
+                },
+                "workspace-environment",
+            )
+            workspace_profile = publish(
+                "numerical_tool_profile/v1",
+                "numerical_tool_profile", "numerical_tool_profile_version",
+                lambda ref: {
+                    "profile_ref": ref_payload(ref),
+                    "environment_ref": ref_payload(environment),
+                    "timeout_seconds": workspace_policy.timeout_seconds,
+                    "memory_bytes": workspace_policy.memory_bytes,
+                    "process_limit": workspace_policy.process_limit,
+                    "source_size_bytes": workspace_policy.source_size_bytes,
+                    "input_size_bytes": workspace_policy.input_size_bytes,
+                },
+                "workspace-profile",
+            )
+            environment_data = {
+                "name": "research-exp",
+                "python_executable": os.path.realpath(sys.executable),
+                "python_prefix": os.path.realpath(sys.prefix),
+            }
+            workspace_profile_data = {
+                "timeout_seconds": workspace_policy.timeout_seconds,
+                "memory_bytes": workspace_policy.memory_bytes,
+                "process_limit": workspace_policy.process_limit,
+                "source_size_bytes": workspace_policy.source_size_bytes,
+                "input_size_bytes": workspace_policy.input_size_bytes,
+            }
         inventory = static(
             "workspace-inventory",
             capture_execution_environment_inventory(
                 environment=ExecutionEnvironmentIdentity(
-                    environment, "research-exp",
-                    os.path.realpath(sys.executable),
-                    os.path.realpath(sys.prefix)),
+                    environment, environment_data["name"],
+                    environment_data["python_executable"],
+                    environment_data["python_prefix"]),
                 profile=NumericalToolProfile(
                     workspace_profile, environment,
-                    workspace_policy.timeout_seconds,
-                    workspace_policy.memory_bytes,
-                    workspace_policy.process_limit,
-                    workspace_policy.source_size_bytes,
-                    workspace_policy.input_size_bytes)),
+                    workspace_profile_data["timeout_seconds"],
+                    workspace_profile_data["memory_bytes"],
+                    workspace_profile_data["process_limit"],
+                    workspace_profile_data["source_size_bytes"],
+                    workspace_profile_data["input_size_bytes"])),
             "execution_environment_inventory",
         )
         result = {}

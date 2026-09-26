@@ -6,7 +6,7 @@ metadata:
   audience: user-and-maintainer
   language: zh-CN
   counterpart: examples-validation.md
-  revision: "2026-09-26.4"
+  revision: "2026-09-26.5"
   status: focused-live-validation-complete
   basis: "focused local acceptance across basic, Codex, DSH and OpenCode hosts"
 ---
@@ -84,3 +84,17 @@ python scripts/docs.py check
 python scripts/check_doc_examples.py
 python scripts/check_installed_docs.py --python "$WHEEL_VENV/bin/python" --source-root "$SOURCE_ROOT"
 ```
+
+## 原生网操作真实任务
+
+当前可执行的原生网操作范围还通过了一次经授权的真实 provider 任务。Extract 与 Branch
+选择两个 Agent 定义；Instantiate 与 Compose 构建初始图；第一个 Agent 结算
+`outputs/seed.txt` 后，全网 Replace 在静止 checkpoint 采用后继网。后继 Agent 既通过
+workspace，也通过精确登记资源路径读取继承文件，再登记 `outputs/result.txt`，最终到达
+terminal outcome `complete`。
+
+本次选择的路线为 `volcano` / `deepseek-v4-pro`。五次正式物理响应成功，health probe、
+路线／模型切换和超限调用均为零。运行还暴露并修复了一项 replacement binding 缺陷：后继网
+必须复用本 run 的精确 execution environment/profile，不能重复登记第二套权威。确定性端到端
+回归在无网络条件下复现该边界。可复用任务与脱敏真实结果位于 `examples/net_operations/`；
+原始 Registry、provider audit、身份、本地路径和 transcript 均未提交。
