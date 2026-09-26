@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: en
   counterpart: index_ZH.md
-  revision: "2026-09-25.1"
+  revision: "2026-09-26.1"
   status: source-reviewed-not-final-candidate-acceptance
   basis: "core; adapter differences explicitly labelled"
 ---
@@ -20,6 +20,7 @@ Start with installation and exact model configuration. These are source-reviewed
 | Need | Read |
 |---|---|
 | Install core/basic, source or wheel | [Installation](guides/installation.md) |
+| Run progressive native, hybrid and task examples | [Examples](guides/examples.md) |
 | Configure exact routes and credentials | [Models](guides/models.md) |
 | Operate sessions/tasks and recover | [Usage](guides/usage.md) |
 | Diagnose without losing evidence | [Troubleshooting](guides/troubleshooting.md) |
@@ -41,6 +42,7 @@ Start with installation and exact model configuration. These are source-reviewed
 | Look up plugin, adapter and observer contracts | [Extensions and observation](reference/extensions-observation.md) |
 | Test, contribute and prepare a release | [Development and license status](guides/development.md) |
 | Review the current offline acceptance boundary | [Release validation](guides/release-validation.md) |
+| Review focused example acceptance | [Examples validation](guides/examples-validation.md) |
 
 ## Reading the reference
 Declaration contracts, advanced trusted-host interfaces and private implementation modules are explicitly separated. Source paths in each page are repository-relative navigation aids, not instructions to read a private repository. Optional APIs are labelled by capability; their availability must be checked in the selected source/artifact. A generated page does not grant SDK stability.

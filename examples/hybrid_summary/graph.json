@@ -1,0 +1,42 @@
+{
+  "nodes": [
+    {
+      "node_id": "normalize",
+      "instruction": "Normalize the task's batch values into one JSON object for the native operation.",
+      "input_ports": [{"port_id": "request", "artifact_id": "task"}],
+      "output_ports": [{"port_id": "normalized", "artifact_id": "batch_values"}],
+      "execution": {"role": "actor", "tools": null, "profile_id": null}
+    },
+    {
+      "node_id": "summarize",
+      "instruction": "Compute the exact registered summary with the selected native plugin.",
+      "input_ports": [{"port_id": "normalized", "artifact_id": "batch_values"}],
+      "output_ports": [{"port_id": "summary", "artifact_id": "batch_summary"}],
+      "execution": {"plugin": "demo/summarize", "role": "actor", "tools": null, "profile_id": null}
+    },
+    {
+      "node_id": "explain",
+      "instruction": "Explain the registered summary in one short sentence without recomputing it.",
+      "input_ports": [{"port_id": "summary", "artifact_id": "batch_summary"}],
+      "output_ports": [{"port_id": "result", "artifact_id": "answer"}],
+      "execution": {"role": "actor", "tools": null, "profile_id": null}
+    }
+  ],
+  "arcs": [
+    {
+      "arc_id": "normalized_to_summary",
+      "source": {"node_id": "normalize", "port_id": "normalized"},
+      "target": {"node_id": "summarize", "port_id": "normalized"},
+      "kind": "dependency"
+    },
+    {
+      "arc_id": "summary_to_explanation",
+      "source": {"node_id": "summarize", "port_id": "summary"},
+      "target": {"node_id": "explain", "port_id": "summary"},
+      "kind": "dependency"
+    }
+  ],
+  "ingress": {"node_id": "normalize", "port_id": "request"},
+  "egress": {"node_id": "explain", "port_id": "result"},
+  "max_rework_cycles": 0
+}

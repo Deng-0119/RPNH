@@ -1,0 +1,1 @@
+Batch values: 12, 9, 18. Summarize the batch count, total, mean, minimum and maximum, then explain the result briefly.

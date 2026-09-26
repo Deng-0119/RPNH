@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: en
   counterpart: models_ZH.md
-  revision: "2026-09-24.1"
+  revision: "2026-09-26.1"
   status: source-reviewed-not-final-candidate-acceptance
   basis: "core; adapter differences explicitly labelled"
 ---
@@ -31,7 +31,7 @@ rpnh config list
 
 The empty catalog contains no usable model; these commands do not establish connectivity. Edit the catalog, then repeat build/check/list. Select a declared profile with `rpnh config use PROFILE` or the exact pair with `rpnh config use PROVIDER MODEL`, then inspect `rpnh config show`. `PROFILE`, `PROVIDER` and `MODEL` are values from your catalog, not literal demo selections.
 
-The native/onboarding overlay additionally supplies `rpnh init`, `rpnh config add` and `rpnh doctor --json`. Interactive setup requires a terminal; scripted setup uses init/build/use. Core main does not yet expose those added commands. The `doctor` report is offline.
+The current main package also supplies `rpnh init`, `rpnh config add` and `rpnh doctor --json`. Interactive setup requires a terminal; scripted setup uses init/build/use. The `doctor` report is offline.
 
 ## Complete external-provider example
 The following is **schema-oriented example data, not a usable service**. Replace the `.invalid` endpoint and `EXACT_MODEL_ID` only after choosing an authorized service. It contains a variable name, never a credential value.

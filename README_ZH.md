@@ -83,7 +83,8 @@ rpnh net --run "$RUN_DIR" --show-resources
 
 示例输入是 `{"left": 2, "right": 3}`。返回的 JSON 中，`output.value` 为 `5`，
 并包含运行目录与终端证据引用。这一步会执行本地插件并创建运行数据。
-[自定义指南](docs/guides/customization_ZH.md)介绍了插件契约和登记的指令资源示例。
+[案例指南](docs/guides/examples_ZH.md)继续演示登记指令资源、模型—程序—模型工作流和两个
+独立任务；[自定义指南](docs/guides/customization_ZH.md)解释插件契约。
 
 ### 开始对话
 
@@ -130,7 +131,7 @@ rpnh net --run "$RUN_DIR" --view --no-open
 
 | 主题 | 指南 |
 |---|---|
-| 入门 | [安装](docs/guides/installation_ZH.md)、[模型](docs/guides/models_ZH.md)、[使用](docs/guides/usage_ZH.md) |
+| 入门 | [安装](docs/guides/installation_ZH.md)、[案例](docs/guides/examples_ZH.md)、[模型](docs/guides/models_ZH.md)、[使用](docs/guides/usage_ZH.md) |
 | 构建应用 | [自定义与插件](docs/guides/customization_ZH.md)、[声明参考](docs/reference/declarations_ZH.md) |
 | 理解运行过程 | [看板](docs/guides/viewer_ZH.md)、[架构](docs/architecture/design_ZH.md)、[运行与 Registry](docs/reference/runtime-registry_ZH.md) |
 | 使用维护与参与开发 | [排障](docs/guides/troubleshooting_ZH.md)、[开发](docs/guides/development_ZH.md)、[发布验证](docs/guides/release-validation_ZH.md) |

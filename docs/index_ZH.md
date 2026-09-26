@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: index.md
-  revision: "2026-09-25.1"
+  revision: "2026-09-26.1"
   status: source-reviewed-not-final-candidate-acceptance
   basis: "core; adapter differences explicitly labelled"
 ---
@@ -20,6 +20,7 @@ metadata:
 | 需求 | 阅读 |
 |---|---|
 | 安装 core/basic、源码或 wheel | [安装](guides/installation_ZH.md) |
+| 运行递进的原生、混合与任务案例 | [案例](guides/examples_ZH.md) |
 | 配置精确路由与凭据 | [模型配置](guides/models_ZH.md) |
 | 控制会话/任务并恢复 | [使用](guides/usage_ZH.md) |
 | 不破坏证据地定位故障 | [排障](guides/troubleshooting_ZH.md) |
@@ -41,6 +42,7 @@ metadata:
 | 查询插件/适配/观察接口 | [扩展与观察](reference/extensions-observation_ZH.md) |
 | 测试、贡献及发布准备 | [维护与许可状态](guides/development_ZH.md) |
 | 查看当前离线验收边界 | [发布验收](guides/release-validation_ZH.md) |
+| 查看案例 focused 验收 | [案例验证](guides/examples-validation_ZH.md) |
 
 ## 如何阅读参考
 明确区分声明契约、高级可信宿主接口与私有模块。各页源码路径为仓库内定位信息，不要求公开读者访问私有仓库。可选 API 按能力标注，必须与所选源码/产物核对；自动生成页面不授予 SDK 稳定性承诺。

@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: models.md
-  revision: "2026-09-24.1"
+  revision: "2026-09-26.1"
   status: source-reviewed-not-final-candidate-acceptance
   basis: "core; adapter differences explicitly labelled"
 ---
@@ -31,7 +31,7 @@ rpnh config list
 
 空 catalog 没有可用模型，这些命令不证明连通性。编辑 catalog 后重复 build/check/list。使用 `rpnh config use PROFILE` 或 `rpnh config use PROVIDER MODEL` 选择，再用 `rpnh config show` 检查；这些大写单词必须替换为自己 catalog 中的值。
 
-原生插件/引导增量另有 `rpnh init`、`rpnh config add`、`rpnh doctor --json`。交互配置需要终端，脚本使用 init/build/use。当前核对的 core main 没有上述新增入口；doctor 也只是离线检查。
+当前 main 包也提供 `rpnh init`、`rpnh config add`、`rpnh doctor --json`。交互配置需要终端，脚本使用 init/build/use；doctor 只是离线检查。
 
 ## 完整外部供应商示例
 以下是 **schema 示例，不是可调用服务**。取得授权后才替换 `.invalid` 地址和 `EXACT_MODEL_ID`。配置中只写凭据变量名，不写密钥值。

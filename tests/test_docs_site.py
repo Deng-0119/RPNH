@@ -28,6 +28,10 @@ class DocumentationTests(unittest.TestCase):
             dest = self.root / path.relative_to(ROOT)
             dest.parent.mkdir(parents=True, exist_ok=True)
             shutil.copyfile(path, dest)
+        for path in docs.auxiliary_documents(ROOT):
+            dest = self.root / path.relative_to(ROOT)
+            dest.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copyfile(path, dest)
         for name in docs.STATIC_DOCUMENTS:
             shutil.copyfile(ROOT / name, self.root / name)
 
@@ -49,6 +53,20 @@ class DocumentationTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'missing link'):
             docs.check(self.root)
 
+    def test_missing_example_link_rejected(self):
+        path = self.root / 'examples/native_plugin/README.md'
+        with path.open('a', encoding='utf-8') as handle:
+            handle.write('\n[Missing](does-not-exist.md)\n')
+        with self.assertRaisesRegex(ValueError, 'missing auxiliary link'):
+            docs.check(self.root)
+
+    def test_missing_example_anchor_rejected(self):
+        path = self.root / 'examples/native_plugin/README.md'
+        with path.open('a', encoding='utf-8') as handle:
+            handle.write('\n[Missing](../README.md#does-not-exist)\n')
+        with self.assertRaisesRegex(ValueError, 'missing anchor'):
+            docs.check(self.root)
+
     def test_missing_anchor_rejected(self):
         self.append('[Missing](README.md#not-present)')
         with self.assertRaisesRegex(ValueError, 'missing anchor'):
@@ -56,7 +74,10 @@ class DocumentationTests(unittest.TestCase):
 
     def test_counterpart_drift_rejected(self):
         path = self.root / 'docs/index_ZH.md'
-        path.write_text(path.read_text().replace('2026-09-25.1', 'older'), encoding='utf-8')
+        path.write_text(
+            path.read_text().replace(
+                'revision: "2026-09-26.1"', 'revision: "older"', 1),
+            encoding='utf-8')
         with self.assertRaisesRegex(ValueError, 'counterpart mismatch'):
             docs.check(self.root)
 

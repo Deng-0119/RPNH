@@ -38,6 +38,12 @@ def pages_in(root: Path) -> list[Path]:
     return paths
 
 
+def auxiliary_documents(root: Path) -> list[Path]:
+    """Markdown checked for links but intentionally excluded from the site."""
+    examples = root / 'examples'
+    return sorted(examples.glob('**/README*.md')) if examples.is_dir() else []
+
+
 def slug(text: str) -> str:
     return re.sub(r'\s+', '-', re.sub(r'[^\w\s-]', '', text.lower())).strip('-')
 
@@ -105,6 +111,20 @@ def children(tokens):
             yield from children(token.children)
 
 
+def headings_in(tokens) -> dict[str, str]:
+    headings, counts = {}, Counter()
+    for index, token in enumerate(tokens):
+        if token.type != 'heading_open':
+            continue
+        text = tokens[index + 1].content
+        key = slug(text)
+        occurrence = counts[key]
+        counts[key] += 1
+        key = key if not occurrence else f'{key}-{occurrence}'
+        headings[key] = text
+    return headings
+
+
 def check(root: Path) -> tuple[dict[Path, Page], dict[str, int]]:
     root = root.resolve()
     pages = {path.resolve(): parse_page(path) for path in pages_in(root)}
@@ -156,6 +176,29 @@ def check(root: Path) -> tuple[dict[Path, Page], dict[str, int]]:
                 if result.returncode:
                     raise ValueError(f'{path}: Bash syntax: {result.stderr}')
                 stats['bash_blocks_syntax_only'] += 1
+    auxiliary = {}
+    for path in auxiliary_documents(root):
+        resolved = path.resolve()
+        tokens = PARSER.parse(path.read_text(encoding='utf-8'))
+        auxiliary[resolved] = (tokens, headings_in(tokens))
+    for path, (tokens, headings) in auxiliary.items():
+        stats['auxiliary_documents'] += 1
+        for token in children(tokens):
+            if token.type != 'link_open':
+                continue
+            target = local_target(path, token.attrGet('href'), root)
+            if target is None:
+                stats['external_links_not_fetched'] += 1
+                continue
+            dest, anchor = target
+            if not dest.is_file():
+                raise ValueError(f'{path}: missing auxiliary link {dest}')
+            if anchor:
+                target_headings = (pages[dest].headings if dest in pages else
+                                   auxiliary.get(dest, (None, {}))[1])
+                if anchor not in target_headings:
+                    raise ValueError(f'{path}: missing anchor {anchor}')
+            stats['auxiliary_links'] += 1
     reachable, queue = set(), [root / 'README.md']
     while queue:
         path = queue.pop()

@@ -13,11 +13,27 @@ def instruction(context, arguments):
             "source_resource_version_id": asset.resource_version_id}
 
 
+def summarize(context, arguments):
+    context.check_cancelled()
+    values = arguments["values"]
+    total = sum(values)
+    mean = total / len(values)
+    if mean.is_integer():
+        mean = int(mean)
+    return {
+        "count": len(values),
+        "total": total,
+        "mean": mean,
+        "minimum": min(values),
+        "maximum": max(values),
+    }
+
+
 def plugin():
     # Declaration only: no network, child process, implicit dependency installs,
     # private Registry calls, or provider access at import/registration time.
     return PluginDefinition(
-        name="demo", version="0.1.0",
+        name="demo", version="0.2.0",
         operations=(
             PluginOperation("add", "Add two numbers and return a JSON value.",
                 {"type": "object", "additionalProperties": False,
@@ -33,6 +49,42 @@ def plugin():
                     "source_resource_version_id": {"type": "string"}},
                  "required": ["instruction", "source_resource_id", "source_resource_version_id"]},
                 instruction, resources=("instruction",)),
+            PluginOperation(
+                "summarize",
+                "Summarize one nonempty list of bounded integer values.",
+                {
+                    "type": "object",
+                    "additionalProperties": False,
+                    "properties": {
+                        "values": {
+                            "type": "array",
+                            "minItems": 1,
+                            "maxItems": 1000,
+                            "items": {
+                                "type": "integer",
+                                "minimum": 0,
+                                "maximum": 1000000,
+                            },
+                        },
+                    },
+                    "required": ["values"],
+                },
+                {
+                    "type": "object",
+                    "additionalProperties": False,
+                    "properties": {
+                        "count": {"type": "integer", "minimum": 1},
+                        "total": {"type": "integer", "minimum": 0},
+                        "mean": {"type": "number", "minimum": 0},
+                        "minimum": {"type": "integer", "minimum": 0},
+                        "maximum": {"type": "integer", "minimum": 0},
+                    },
+                    "required": [
+                        "count", "total", "mean", "minimum", "maximum",
+                    ],
+                },
+                summarize,
+            ),
         ),
         resources=(PluginResource("instruction", b"Use the supplied exact inputs. Report the computed result."),),
     )

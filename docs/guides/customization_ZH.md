@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: customization.md
-  revision: "2026-09-24.1"
+  revision: "2026-09-26.1"
   status: source-reviewed-not-final-candidate-acceptance
   basis: "core; adapter differences explicitly labelled"
 ---
@@ -18,7 +18,7 @@ metadata:
 ## 选择正确边界
 业务工作流声明 operation 和可见 Petri 结构，可信宿主绑定实现身份，harness 负责准入/结算，Registry 记录精确身份、资源与版本。前端只转换交互。不能把新私有 agent loop 藏进插件，执行完成后再补日志。
 
-新类型化工作流使用 `ModuleDeclaration`、`Registration` 和已注册 lowering 组件；外部工具或指令资源使用明确安装的原生插件。当前 SDK 位于核对的插件/DSH 增量，不在 core main。普通文档不会自动扫描为可执行 skill。
+新类型化工作流使用 `ModuleDeclaration`、`Registration` 和已注册 lowering 组件；外部工具或指令资源使用明确安装的原生插件。当前 main 包已包含原生 SDK 与宿主桥接，但每个外部插件仍需单独安装和明确选择。普通文档不会自动扫描为可执行 skill。
 
 具有模型调用能力的宿主集成同样是 adapter/plugin，但必须使用 harness 所有的
 `registered_llm/v1` capability。adapter 把宿主消息转换为已注册请求，并把 canonical
@@ -43,7 +43,7 @@ rpnh plugins --config examples/native_plugin/plugins.json check
 rpnh plugins --config examples/native_plugin/plugins.json build demo/add
 ```
 
-`--config` 在子命令之前。示例提供 `demo/add`、`demo/instruction`；handler 检查取消，指令结果带精确注册资源身份。check 不调用 operation，但会导入选中的可信 Python factory，factory 必须只声明。
+`--config` 在子命令之前。示例提供 `demo/add`、`demo/instruction` 和 `demo/summarize`；执行工作的 handler 会检查取消，指令结果带精确注册资源身份。check 不调用 operation，但会导入选中的可信 Python factory，factory 必须只声明。
 
 经明确授权后，可创建含 `left`、`right` 的输入 JSON，再运行 `rpnh plugins --config CONFIG run demo/add --input INPUT --run-dir NEW_RUN_DIR`。虽然纯加法不需要模型，这会创建真实 run/Registry 并执行 handler，不能归入“完全不执行”的安装检查。
 

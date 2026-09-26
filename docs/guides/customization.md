@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: en
   counterpart: customization_ZH.md
-  revision: "2026-09-24.1"
+  revision: "2026-09-26.1"
   status: source-reviewed-not-final-candidate-acceptance
   basis: "core; adapter differences explicitly labelled"
 ---
@@ -18,7 +18,7 @@ metadata:
 ## Choose the correct boundary
 A business workflow declares operations and their visible Petri structure. A trusted host binds implementation identities. The harness admits and settles execution; Registry records exact identities, resources and versions. A frontend only translates interaction. Do not embed a new private agent loop in a plugin and add its logs after it finishes.
 
-Use `ModuleDeclaration` and `Registration` for a new typed workflow, registered components for lowering, and an explicitly installed native plugin for an external tool/instruction resource. The native SDK is present on the reviewed plugin/DSH overlays, not core main. Ordinary documentation pages are never automatically scanned or executed as skills.
+Use `ModuleDeclaration` and `Registration` for a new typed workflow, registered components for lowering, and an explicitly installed native plugin for an external tool/instruction resource. The native SDK and host bridge are part of the current main package; each external plugin is still installed and selected separately. Ordinary documentation pages are never automatically scanned or executed as skills.
 
 A model-capable host integration is also an adapter/plugin, but it must use the harness-owned `registered_llm/v1` capability. The adapter translates host messages into the registered request and maps the canonical response back to the host. Provider profile resolution, credentials, transport, recovery, physical-attempt accounting and Registry settlement remain in the shared harness. Do not copy them into Codex-, DSH- or OpenCode-specific code.
 
@@ -39,7 +39,7 @@ rpnh plugins --config examples/native_plugin/plugins.json check
 rpnh plugins --config examples/native_plugin/plugins.json build demo/add
 ```
 
-`--config` precedes the subcommand. The example exposes `demo/add` and `demo/instruction`; its handler checks cancellation, and the instruction result includes exact registered resource identity. `check` compiles declarations without invoking an operation, but selected factories are trusted Python imports and must be declaration-only.
+`--config` precedes the subcommand. The example exposes `demo/add`, `demo/instruction` and `demo/summarize`; its handlers check cancellation where work is performed, and the instruction result includes exact registered resource identity. `check` compiles declarations without invoking an operation, but selected factories are trusted Python imports and must be declaration-only.
 
 For an explicitly authorized local tool execution, create an input JSON with `left` and `right`, then run `rpnh plugins --config CONFIG run demo/add --input INPUT --run-dir NEW_RUN_DIR`. That creates real Registry/run state and invokes a handler, even though the pure addition needs no model. Do not include it in a blanket “nothing executes” setup check.
 

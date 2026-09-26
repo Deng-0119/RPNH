@@ -100,8 +100,10 @@ rpnh net --run "$RUN_DIR" --show-resources
 The supplied input is `{"left": 2, "right": 3}`. The returned JSON contains
 `output.value` equal to `5`, together with the run location and terminal evidence
 reference. This executes a local plugin and creates run data. The
-[customization guide](docs/guides/customization.md) explains the plugin contract
-and its registered instruction-resource example.
+[examples guide](docs/guides/examples.md) continues with the registered
+instruction resource, a model–program–model workflow and two independent tasks.
+The [customization guide](docs/guides/customization.md) explains the plugin
+contract.
 
 ### Start a conversation
 
@@ -150,7 +152,7 @@ Each guide describes its dependencies and supported interaction surface.
 
 | Read about | Guides |
 |---|---|
-| Getting started | [Installation](docs/guides/installation.md), [models](docs/guides/models.md), [usage](docs/guides/usage.md) |
+| Getting started | [Installation](docs/guides/installation.md), [examples](docs/guides/examples.md), [models](docs/guides/models.md), [usage](docs/guides/usage.md) |
 | Building an application | [Customization and plugins](docs/guides/customization.md), [declaration reference](docs/reference/declarations.md) |
 | Understanding a run | [Dashboard](docs/guides/viewer.md), [architecture](docs/architecture/design.md), [runtime and Registry](docs/reference/runtime-registry.md) |
 | Operating and contributing | [Troubleshooting](docs/guides/troubleshooting.md), [development](docs/guides/development.md), [release validation](docs/guides/release-validation.md) |
