@@ -18,6 +18,7 @@ from contextvars import copy_context
 from typing import Callable, Mapping
 
 from .control_client import ControlProtocolError, json_data
+from .unix_transport import unix_socket_address
 
 
 # Bound one client frame; this is transport admission, not Registry authority.
@@ -66,7 +67,9 @@ class OwnerEventLoop:
         self.outputs = {}
         self.listener = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
         # Bind fails rather than replacing another owner's channel.
-        self.listener.bind(str(self.socket_path))
+        with unix_socket_address(self.socket_path) as address:
+            self.listener.bind(address)
+        self.socket_path.chmod(0o600)
         self._socket_identity = self.socket_path.stat().st_ino
         self.listener.setblocking(False)
         self.listener.listen()

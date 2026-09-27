@@ -7,10 +7,9 @@ constructs a Registry writer or settles a firing.
 from __future__ import annotations
 
 from dataclasses import dataclass, replace
-import hashlib
 import json
 import os
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 import signal
 import subprocess
 import sys
@@ -69,36 +68,59 @@ class _DetachedProcess:
 def owner_socket_path(
         control_root: Path, task_id: str, run_dir: Path,
 ) -> Path:
-    """Return one deterministic short AF_UNIX endpoint for an owner."""
+    """Return the owner endpoint local to its child Registry."""
     if (not isinstance(control_root, Path)
             or not isinstance(run_dir, Path)
             or not isinstance(task_id, str)
             or not task_id):
         raise TypeError("owner socket identity is invalid")
-    identity = "\0".join((
-        str(control_root.resolve()), task_id, str(run_dir.resolve())))
-    digest = hashlib.sha256(identity.encode("utf-8")).hexdigest()
-    resolved_control = control_root.resolve()
-    # Frontend adapters may add durable grouping directories above a
-    # MainSession root. Search its ancestors instead of assuming one fixed
-    # nesting depth; never place an owner endpoint at the filesystem root.
-    for base in (resolved_control, *resolved_control.parents):
-        if base == Path(base.anchor):
-            continue
-        socket_root = base / ".rpnh-owner"
-        socket_path = socket_root / f"{digest[:16]}.sock"
-        if len(os.fsencode(str(socket_path))) >= 108:
-            continue
-        try:
-            if socket_root.is_symlink():
-                raise ValueError(
-                    "RPNH owner socket directory must not be a symlink")
-            socket_root.mkdir(mode=0o700, parents=True, exist_ok=True)
-        except OSError:
-            continue
-        return socket_path
-    raise ValueError(
-        "TaskControl has no writable short ancestor for its Unix owner socket")
+    del control_root, task_id
+    return run_dir.resolve() / "owner.sock"
+
+
+def _relative_reference(path: Path, parent: Path) -> str:
+    value = Path(os.path.relpath(path, parent)).as_posix()
+    pure = PurePosixPath(value)
+    if pure.is_absolute() or pure.as_posix() != value:
+        raise ValueError("task path reference must be relative")
+    return value
+
+
+def _resolve_reference(parent: Path, value: object, *, label: str) -> Path:
+    if not isinstance(value, str) or not value or "\\" in value:
+        raise ValueError(f"{label} must be a relative POSIX path")
+    pure = PurePosixPath(value)
+    if pure.is_absolute() or pure.as_posix() != value:
+        raise ValueError(f"{label} must be a relative POSIX path")
+    return (parent / Path(*pure.parts)).resolve()
+
+
+def _acquire_task_launch_lock(root: Path, task_id: str):
+    """Acquire the worker-lifetime lock, or observe another launch owner."""
+    import fcntl
+
+    lock_root = root / "launch_locks"
+    lock_root.mkdir(parents=True, exist_ok=True)
+    lock = (lock_root / f"{task_id}.lock").open("a+b")
+    try:
+        fcntl.flock(lock.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+    except BlockingIOError:
+        lock.close()
+        return None
+    # A daemon may have closed one or more standard descriptors, allowing the
+    # lock open above to reuse fd 0, 1, or 2.  ``Popen`` subsequently installs
+    # the worker's standard streams and would replace such a descriptor before
+    # ``pass_fds`` can preserve it.  Duplicate the same locked open-file
+    # description outside the standard range before handing it to a worker.
+    try:
+        inherited_fd = fcntl.fcntl(
+            lock.fileno(), fcntl.F_DUPFD_CLOEXEC, 3)
+    except Exception:
+        lock.close()
+        raise
+    inherited_lock = os.fdopen(inherited_fd, "a+b", closefd=True)
+    lock.close()
+    return inherited_lock
 
 
 class TaskControl:
@@ -127,23 +149,22 @@ class TaskControl:
         return owner_socket_path(self.root, task_id, run_dir)
 
     def _upgrade_legacy_owner_socket(self, handle: TaskHandle) -> None:
-        """Persist the task-local endpoint before relaunching old tasks."""
-        configured = handle.spec.owner_socket_path
-        legacy_global = (
-            configured is not None
-            and configured.parent.parent == Path("/tmp")
-            and configured.parent.name.startswith("rpnh-owner-")
-            and configured.suffix == ".sock")
-        if configured is not None and not legacy_global:
-            return
+        """Move a stopped legacy endpoint into its child Registry."""
         socket_path = self._owner_socket_path(handle.task_id, handle.run_dir)
+        if handle.spec.owner_socket_path == socket_path:
+            return
         handle.spec = replace(handle.spec, owner_socket_path=socket_path)
         handle.socket_path = socket_path
+        self._write_spec(handle)
+
+    def _write_spec(self, handle: TaskHandle) -> Path:
         spec_path = self.root / "specs" / f"{handle.task_id}.json"
         spec_path.write_text(
-            json.dumps(handle.spec.as_worker_document(), ensure_ascii=False,
-                       indent=2) + "\n",
+            json.dumps(handle.spec.as_worker_document(
+                document_root=spec_path.parent), ensure_ascii=False,
+                indent=2) + "\n",
             encoding="utf-8")
+        return spec_path
 
     def _write_manifest(
             self, handle: TaskHandle, *, launch_state: str,
@@ -161,13 +182,18 @@ class TaskControl:
             raise ValueError("active task manifest requires exact process identity")
         self._manifest_root.mkdir(parents=True, exist_ok=True)
         value = {
-            "schema_version": "rpnh/task_handle/v1",
+            "schema_version": "rpnh/task_handle/v2",
             "task_id": handle.task_id,
             "kind": handle.kind,
-            "run_dir": str(handle.run_dir),
-            "socket_path": str(handle.socket_path),
-            "log_path": str(handle.log_path),
-            "spec_path": str(self.root / "specs" / f"{handle.task_id}.json"),
+            "run_relative_path": _relative_reference(
+                handle.run_dir, self.root),
+            "socket_relative_path": _relative_reference(
+                handle.socket_path, handle.run_dir),
+            "log_relative_path": _relative_reference(
+                handle.log_path, self.root),
+            "spec_relative_path": _relative_reference(
+                self.root / "specs" / f"{handle.task_id}.json",
+                self.root),
             "pid": pid,
             "process_start_ticks": process_start_ticks,
             "launch_state": launch_state,
@@ -222,18 +248,40 @@ class TaskControl:
         for path in sorted(self._manifest_root.glob("task-*.json")):
             try:
                 value = json.loads(path.read_text(encoding="utf-8"))
-                if (not isinstance(value, Mapping)
-                        or value.get("schema_version")
-                        != "rpnh/task_handle/v1"):
+                if not isinstance(value, Mapping):
                     raise ValueError("manifest schema")
                 task_id = value["task_id"]
-                spec_path = Path(value["spec_path"]).resolve()
+                version = value.get("schema_version")
+                if version == "rpnh/task_handle/v2":
+                    spec_path = _resolve_reference(
+                        self.root, value.get("spec_relative_path"),
+                        label="spec_relative_path")
+                    run_dir = _resolve_reference(
+                        self.root, value.get("run_relative_path"),
+                        label="run_relative_path")
+                    socket_path = _resolve_reference(
+                        run_dir, value.get("socket_relative_path"),
+                        label="socket_relative_path")
+                    log_path = _resolve_reference(
+                        self.root, value.get("log_relative_path"),
+                        label="log_relative_path")
+                elif version == "rpnh/task_handle/v1":
+                    spec_path = Path(value["spec_path"]).resolve()
+                    run_dir = Path(value["run_dir"]).resolve()
+                    socket_path = Path(value["socket_path"]).resolve()
+                    log_path = Path(value["log_path"]).resolve()
+                else:
+                    raise ValueError("manifest schema")
                 if (not isinstance(task_id, str)
                         or path.name != f"{task_id}.json"
-                        or spec_path.parent != (self.root / "specs").resolve()):
+                        or spec_path != (
+                            self.root / "specs" / f"{task_id}.json").resolve()
+                        or log_path != (
+                            self.root / "logs" / f"{task_id}.log").resolve()):
                     raise ValueError("manifest identity")
                 spec = AgentTaskSpec.from_worker_document(json.loads(
-                    spec_path.read_text(encoding="utf-8")))
+                    spec_path.read_text(encoding="utf-8")),
+                    document_root=spec_path.parent)
                 pid = value.get("pid")
                 ticks = value.get("process_start_ticks")
                 launch_state = value.get("launch_state", "active")
@@ -248,9 +296,9 @@ class TaskControl:
                 handle = TaskHandle(
                     task_id=task_id,
                     kind=value["kind"],
-                    run_dir=Path(value["run_dir"]).resolve(),
-                    socket_path=Path(value["socket_path"]).resolve(),
-                    log_path=Path(value["log_path"]).resolve(),
+                    run_dir=run_dir,
+                    socket_path=socket_path,
+                    log_path=log_path,
                     spec=spec,
                     process=process,
                     launch_state=launch_state,
@@ -274,23 +322,50 @@ class TaskControl:
         for handle in tuple(self._tasks.values()):
             if handle.launch_state != "pending":
                 continue
+            launch_lock = _acquire_task_launch_lock(
+                self.root, handle.task_id)
+            if launch_lock is None:
+                # An original worker may be between taking the lock and
+                # recording its active PID. Never overwrite that claim or
+                # launch a competing process from a stale pending snapshot.
+                self._refresh_handle_process(handle)
+                continue
             self._refresh_handle_process(handle)
             if handle.launch_state == "active":
+                launch_lock.close()
                 continue
-            self._upgrade_legacy_owner_socket(handle)
-            spec_path = self.root / "specs" / f"{handle.task_id}.json"
-            self._write_manifest(
-                handle, launch_state="pending", launch_mode=handle.launch_mode)
+            try:
+                self._upgrade_legacy_owner_socket(handle)
+                spec_path = self.root / "specs" / f"{handle.task_id}.json"
+                self._write_manifest(
+                    handle, launch_state="pending",
+                    launch_mode=handle.launch_mode)
+            except Exception:
+                launch_lock.close()
+                raise
             handle.process = self._spawn(
                 handle.task_id, spec_path, handle.log_path,
-                resume=handle.launch_mode == "resume")
+                resume=handle.launch_mode == "resume",
+                launch_lock=launch_lock)
 
     def _spawn(self, task_id: str, spec_path: Path, log_path: Path, *,
-               resume: bool) -> Any:
+               resume: bool, launch_lock=None) -> Any:
         argv = [sys.executable, "-m", "cpn.rpnh.task_worker"]
         if resume:
             argv.append("--resume")
+        if launch_lock is not None:
+            argv.extend(("--launch-lock-fd", str(launch_lock.fileno())))
         argv.append(str(spec_path))
+        environment = os.environ.copy()
+        package_root = str(Path(__file__).resolve().parents[2])
+        inherited_pythonpath = environment.get("PYTHONPATH")
+        pythonpath = (
+            [] if not inherited_pythonpath else
+            inherited_pythonpath.split(os.pathsep))
+        environment["PYTHONPATH"] = os.pathsep.join((
+            package_root,
+            *(entry for entry in pythonpath if entry != package_root),
+        ))
         log = log_path.open("ab", buffering=0)
         try:
             return self._popen(
@@ -299,10 +374,16 @@ class TaskControl:
                 stdout=log,
                 stderr=subprocess.STDOUT,
                 cwd=str(self.root),
+                env=environment,
+                pass_fds=(
+                    () if launch_lock is None else
+                    (launch_lock.fileno(),)),
                 start_new_session=True,
             )
         finally:
             log.close()
+            if launch_lock is not None:
+                launch_lock.close()
 
     def start(self, spec: AgentTaskSpec) -> TaskHandle:
         if not isinstance(spec, AgentTaskSpec):
@@ -317,11 +398,6 @@ class TaskControl:
         run_dir = spec.run_dir.resolve()
         socket_path = self._owner_socket_path(task_id, run_dir)
         spec = replace(spec, owner_socket_path=socket_path)
-        spec_path.write_text(
-            json.dumps(spec.as_worker_document(), ensure_ascii=False, indent=2)
-            + "\n",
-            encoding="utf-8",
-        )
         handle = TaskHandle(
             task_id=task_id,
             kind=spec.kind,
@@ -334,13 +410,23 @@ class TaskControl:
             launch_mode="fresh",
         )
         self._tasks[task_id] = handle
+        self._write_spec(handle)
         # The durable intent precedes process creation.  The worker changes it
         # to active only after winning the per-task launch lock, before any
         # Registry/provider work.
-        self._write_manifest(
-            handle, launch_state="pending", launch_mode="fresh")
+        launch_lock = _acquire_task_launch_lock(self.root, task_id)
+        if launch_lock is None:
+            raise RuntimeError(
+                "new task launch identity is already owned")
+        try:
+            self._write_manifest(
+                handle, launch_state="pending", launch_mode="fresh")
+        except Exception:
+            launch_lock.close()
+            raise
         handle.process = self._spawn(
-            task_id, spec_path, log_path, resume=False)
+            task_id, spec_path, log_path, resume=False,
+            launch_lock=launch_lock)
         return handle
 
     def get(self, task_id: str) -> TaskHandle:
@@ -510,10 +596,19 @@ class TaskControl:
                 "task resume requires Registry status stopped_by_owner")
         spec_path = self.root / "specs" / f"{task_id}.json"
         self._upgrade_legacy_owner_socket(handle)
-        self._write_manifest(
-            handle, launch_state="pending", launch_mode="resume")
+        launch_lock = _acquire_task_launch_lock(self.root, task_id)
+        if launch_lock is None:
+            raise RuntimeError(
+                "task resume launch identity is already owned")
+        try:
+            self._write_manifest(
+                handle, launch_state="pending", launch_mode="resume")
+        except Exception:
+            launch_lock.close()
+            raise
         handle.process = self._spawn(
-            task_id, spec_path, handle.log_path, resume=True)
+            task_id, spec_path, handle.log_path, resume=True,
+            launch_lock=launch_lock)
         return {"task_id": task_id, "status": "RESUME_STARTED"}
 
     def net(self, task_id: str) -> dict[str, Any]:
@@ -524,39 +619,59 @@ class TaskControl:
 
 def claim_task_worker_launch(
         spec_path: Path, spec: AgentTaskSpec, *, resume: bool,
+        inherited_lock_fd: int | None = None,
 ):
     """Acquire this task's durable launch identity before executing it.
 
     The returned open file owns the advisory lock for the worker lifetime.
     ``None`` means another worker already owns the same task identity.
     """
-    import fcntl
-
     path = spec_path.resolve()
     root = path.parent.parent
     task_id = path.stem
     if (path.parent != (root / "specs").resolve()
             or not task_id.startswith("task-")):
         raise ValueError("task worker spec path has no task-control identity")
-    lock_root = root / "launch_locks"
-    lock_root.mkdir(parents=True, exist_ok=True)
-    lock = (lock_root / f"{task_id}.lock").open("a+b")
-    try:
-        fcntl.flock(lock.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
-    except BlockingIOError:
-        lock.close()
-        return None
+    lock_path = root / "launch_locks" / f"{task_id}.lock"
+    if inherited_lock_fd is None:
+        lock = _acquire_task_launch_lock(root, task_id)
+        if lock is None:
+            return None
+    else:
+        if (isinstance(inherited_lock_fd, bool)
+                or not isinstance(inherited_lock_fd, int)
+                or inherited_lock_fd < 0):
+            raise ValueError("inherited launch lock descriptor is invalid")
+        descriptor = os.fstat(inherited_lock_fd)
+        expected = lock_path.stat()
+        if ((descriptor.st_dev, descriptor.st_ino)
+                != (expected.st_dev, expected.st_ino)):
+            raise ValueError(
+                "inherited launch lock differs from task identity")
+        lock = os.fdopen(inherited_lock_fd, "a+b", closefd=True)
 
     try:
         manifest_path = root / "manifests" / f"{task_id}.json"
         value = json.loads(manifest_path.read_text(encoding="utf-8"))
         expected_mode = "resume" if resume else "fresh"
-        if (not isinstance(value, Mapping)
-                or value.get("schema_version") != "rpnh/task_handle/v1"
-                or value.get("task_id") != task_id
-                or Path(value.get("spec_path", "")).resolve() != path
-                or Path(value.get("run_dir", "")).resolve()
-                != spec.run_dir.resolve()
+        if not isinstance(value, Mapping):
+            raise ValueError("task worker launch has a malformed manifest")
+        version = value.get("schema_version")
+        if version == "rpnh/task_handle/v2":
+            persisted_spec = _resolve_reference(
+                root, value.get("spec_relative_path"),
+                label="spec_relative_path")
+            persisted_run = _resolve_reference(
+                root, value.get("run_relative_path"),
+                label="run_relative_path")
+        elif version == "rpnh/task_handle/v1":
+            persisted_spec = Path(value.get("spec_path", "")).resolve()
+            persisted_run = Path(value.get("run_dir", "")).resolve()
+        else:
+            raise ValueError("task worker launch has an unknown manifest schema")
+        if (value.get("task_id") != task_id
+                or persisted_spec != path
+                or persisted_run != spec.run_dir.resolve()
                 or value.get("kind") != spec.kind
                 or value.get("launch_state") != "pending"
                 or value.get("launch_mode") != expected_mode):

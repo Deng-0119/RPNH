@@ -547,7 +547,11 @@ class DshBackend:
         self.input_port_factory = input_port_factory
         self.root.mkdir(parents=True, exist_ok=True)
         self.core = _RegistryCore(self.root / 'main', create=create)
-        self.thread = MainThreadRegistry(self.core, session_root=self.root)
+        self.thread = MainThreadRegistry(
+            self.core, session_root=self.root,
+            initialize_path_base=(
+                MainThreadRegistry.REGISTRY_ROOT_PATH_BASE if create else None),
+        )
         if create:
             self.thread.create_thread(idempotency_key='dsh-session')
         self.runner = None
@@ -638,7 +642,8 @@ class DshBackend:
             }
         if active['state'] == 'terminal':
             return self._commit(_parse_ref(state['thread_ref']), _parse_ref(state['active_turn_ref']), active['output'])
-        path = self.root / active['attempt_relative_path']
+        path = self.thread.resolve_child_path(
+            active['attempt_relative_path'])
         request = active['user_input']
         if self.configured:
             if self.execution_profile is None:

@@ -10,7 +10,7 @@ import json
 import re
 import sqlite3
 import uuid
-from pathlib import Path, PurePosixPath
+from pathlib import Path
 from typing import Any, Mapping, NamedTuple
 
 from ._registry import _RegistryCore
@@ -18,6 +18,7 @@ from .event_store import RegistryConflict
 from .identities import TypedId
 from .models import VersionRef
 from .schema_catalog import canonical_json
+from ..path_refs import relative_child_registry, resolve_child_registry
 
 
 class MainThreadAuthorityError(RuntimeError):
@@ -98,7 +99,14 @@ def _exact_json_value(value: Any, *, label: str) -> Any:
 class MainThreadRegistry:
     """Own one persistent logical main-thread lineage in a Registry core."""
 
-    def __init__(self, core: _RegistryCore, *, session_root: Path | str) -> None:
+    CHILD_PATH_BASE_META = "main_thread_child_path_base"
+    REGISTRY_ROOT_PATH_BASE = "registry_root/v1"
+    LEGACY_SESSION_PATH_BASE = "session_root/v1"
+
+    def __init__(
+            self, core: _RegistryCore, *, session_root: Path | str,
+            initialize_path_base: str | None = None,
+    ) -> None:
         if not isinstance(core, _RegistryCore):
             raise TypeError("main-thread authority requires one Registry core")
         root = Path(session_root)
@@ -106,6 +114,26 @@ class MainThreadRegistry:
             raise ValueError("declared main-thread session root must exist")
         self.core = core
         self.session_root = root.resolve(strict=True)
+        stored = self.core.event_store.get_meta(self.CHILD_PATH_BASE_META)
+        if initialize_path_base is not None:
+            if initialize_path_base != self.REGISTRY_ROOT_PATH_BASE:
+                raise ValueError("unknown main-thread child path base")
+            stored = self.core.event_store.get_or_create_meta(
+                self.CHILD_PATH_BASE_META, initialize_path_base)
+        if stored is None:
+            # Registries written before the marker used session-root paths.
+            stored = self.LEGACY_SESSION_PATH_BASE
+        if stored not in {
+                self.REGISTRY_ROOT_PATH_BASE,
+                self.LEGACY_SESSION_PATH_BASE,
+        }:
+            raise MainThreadAuthorityError(
+                "main-thread child path base is unknown")
+        self.child_path_base = stored
+        self.child_path_root = (
+            self.core.run_dir.resolve(strict=True)
+            if stored == self.REGISTRY_ROOT_PATH_BASE
+            else self.session_root)
 
     @staticmethod
     def _idempotency_key(command: str, key: str, material: Mapping[str, Any]) -> str:
@@ -469,19 +497,22 @@ class MainThreadRegistry:
         return ThreadTurnAdvance(successor_ref, accepted_ref)
 
     def _validated_attempt_path(self, relative_path: str) -> tuple[str, Path]:
-        if not isinstance(relative_path, str) or not relative_path:
-            raise ValueError("attempt path must be one nonempty relative path")
-        pure = PurePosixPath(relative_path)
-        if (pure.is_absolute() or ".." in pure.parts
-                or pure.as_posix() in {"", "."}):
-            raise ValueError("attempt path escapes the declared session root")
-        candidate = (self.session_root / Path(*pure.parts)).resolve(strict=False)
         try:
-            candidate.relative_to(self.session_root)
+            candidate = resolve_child_registry(
+                self.child_path_root, relative_path)
         except ValueError as exc:
             raise ValueError(
-                "attempt path escapes the declared session root") from exc
-        return pure.as_posix(), candidate
+                "attempt path escapes its parent Registry") from exc
+        return relative_path, candidate
+
+    def relative_child_path(self, child_registry_root: Path) -> str:
+        """Return the direct edge from this Registry to one child Registry."""
+        return relative_child_registry(
+            self.child_path_root, child_registry_root)
+
+    def resolve_child_path(self, relative_path: str) -> Path:
+        """Resolve one stored edge without traversing any grandchild link."""
+        return self._validated_attempt_path(relative_path)[1]
 
     def attach_attempt(
             self, *, thread_ref: VersionRef, turn_ref: VersionRef,

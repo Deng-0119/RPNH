@@ -119,7 +119,12 @@ class RegistryFrontendApplication:
                     self._validate_saved_profile(path)
                 for path in paths:
                     session = MainSession.resume(path)
-                    self._sessions[path.name] = _Session(session, TaskControl(path / "main-turn-control"))
+                    self._sessions[path.name] = _Session(
+                        session,
+                        TaskControl(
+                            session.child_path_root
+                            / "main-turn-control"),
+                    )
         except BaseException:
             self.close()
             raise
@@ -219,7 +224,12 @@ class RegistryFrontendApplication:
         sid = "ses_" + uuid4().hex
         path = self.root / "threads" / sid
         session = self._main_session_type(path, profile.path)
-        self._sessions[sid] = _Session(session, self._task_control_type(path / "main-turn-control"))
+        self._sessions[sid] = _Session(
+            session,
+            self._task_control_type(
+                session.child_path_root
+                / "main-turn-control"),
+        )
         return sid
 
     def _turns(self, state: _Session) -> list[dict[str, Any]]:
@@ -431,8 +441,10 @@ class RegistryFrontendApplication:
             attempted = [t for t in self._turns(state) if t["attempt"]]
             if not attempted:
                 raise FrontendError("net_unavailable", "No registered main-turn run exists yet.")
-            run_dir = (state.session.root / attempted[-1]["attempt"]).resolve()
-            if not run_dir.is_relative_to(state.session.root):
+            try:
+                run_dir = state.session.resolve_child_path(
+                    attempted[-1]["attempt"])
+            except ValueError:
                 raise FrontendError("invalid_attempt", "The attempt escapes its session.")
         else:
             run_dir = state.session.task_control.get(task_id).run_dir
@@ -447,14 +459,16 @@ class RegistryFrontendApplication:
         self._check_model(session)
         if not text.strip():
             raise FrontendError("invalid_prompt", "An agent task needs text.", 400)
-        run_dir = session.root / "tasks" / "runs" / ("frontend-agent-" + stable_id(key))
+        run_dir = (
+            session.child_path_root / "tasks" / "runs"
+            / ("frontend-agent-" + stable_id(key)))
         handle = self._matching_handle(session.task_control, run_dir)
         if handle is not None:
             if handle.spec.prompt != text or handle.kind != "single_agent":
                 raise FrontendError("request_conflict", "This agent request identity has different input.")
         else:
             links = session._main_thread._ordered_documents(session._registry_core, "main_child_registry_link/v1")
-            relative = run_dir.relative_to(session.root).as_posix()
+            relative = session.relative_child_path(run_dir)
             if run_dir.exists() or any(doc.get("registry_relative_path") == relative for _, doc in links):
                 raise FrontendError("unknown_outcome", "An agent Registry lacks its launch handle; no replay.")
             from cpn.llm_adapters import load_llm_execution_selection

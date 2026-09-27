@@ -78,3 +78,30 @@ def test_basic_cli_resume_blocks_input_while_registry_turn_is_active(
 
     assert raised.value.code == 2
     assert session.reconcile_calls == 1
+
+
+def test_basic_cli_resume_without_execution_uses_persisted_profile(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    persisted = tmp_path / "persisted-execution.json"
+    session = _ResumeSession(tmp_path / "session", "idle")
+
+    monkeypatch.setattr(
+        "cpn.rpnh_cli.resolve_execution_path",
+        lambda *_args, **_kwargs: pytest.fail(
+            "resume must not resolve the current default profile"))
+    monkeypatch.setattr(
+        "cpn.rpnh_cli.MainSession._persisted_execution_config_path",
+        lambda root: persisted if root == session.root else None)
+    monkeypatch.setattr(
+        "cpn.rpnh_cli.missing_credentials",
+        lambda path: () if path == persisted else pytest.fail(
+            "credential check must use the persisted profile"))
+    monkeypatch.setattr(
+        "cpn.rpnh_cli.MainSession.resume",
+        lambda root, selected: (
+            session if (root, selected) == (session.root, persisted)
+            else pytest.fail("resume received the wrong execution profile")))
+    monkeypatch.setattr("builtins.input", lambda _prompt: "/quit")
+
+    assert main(["--frontend", "basic", "--resume", str(session.root)]) == 0

@@ -6,7 +6,7 @@ metadata:
   audience: developer
   language: en
   counterpart: net-operations_ZH.md
-  revision: "2026-09-26.2"
+  revision: "2026-09-28.1"
   status: implemented-basic-scope
 ---
 
@@ -105,8 +105,10 @@ quantities fail during lowering, before firing admission.
   reusable properties are rechecked by the existing compiler.
 - Identical budget declarations are shared. Conflicting bucket IDs, scopes or
   limits are rejected rather than renamed or enlarged.
-- Parallel instances keep separate inputs. To copy immutable business data,
-  declare a distributor transition that produces the exact branch occurrences.
+- Parallel instances keep separate inputs. A distributor firing consumes its
+  declared predecessor occurrences and deposits each output arc's exact weight
+  into a distinct branch place; native composition never treats place fusion as
+  broadcast.
 - A parallel workflow needs a real downstream join definition if completion
   means all branches settled.
 

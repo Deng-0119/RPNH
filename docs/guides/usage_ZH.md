@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: usage.md
-  revision: "2026-09-24.1"
+  revision: "2026-09-28.1"
   status: source-reviewed-not-final-candidate-acceptance
   basis: "core; adapter differences explicitly labelled"
 ---
@@ -19,6 +19,9 @@ metadata:
 安装对应范围并选择获得授权的精确 profile。**对话、`/agent`、`/workflow`、`/resume`、`--prompt` 都可能执行模型或工具**，不是安装 smoke。新会话使用新目录，保留返回的任务 ID，运行数据保留在私有位置。
 
 以 `rpnh --frontend basic` 显式启动文本前端。`--execution PATH` 指定执行配置，`--session-dir PATH` 指向尚不存在的新会话目录；后者与 `--resume SESSION_DIR` 互斥。`--prompt TEXT` 执行主会话一轮，不是无害的回显命令。
+新会话省略 `--execution` 时，使用 `RPNH_EXECUTION_CONFIG` 或用户保存的默认值；
+`--resume` 省略该参数时则使用该会话持久化的精确 profile。只有显式提供
+`--execution` 才会覆盖它。
 
 ## 主会话与独立任务
 以下是 **basic 前端**命令，不是给 stock Codex 新增的 slash 命令。
@@ -38,7 +41,9 @@ metadata:
 简写 `/status`、`/result`、`/net`、`/message`、`/stop` 作用于选中子任务。普通文本发给主会话或选中单 agent；选中工作流时必须写 `TARGET :: TEXT`。`delegate_leaf` 属于父 agent 内部 action，不是可独立切换的任务。
 
 ## 主回合中断
-使用 `rpnh --frontend basic --resume SESSION_DIR` 重开，由 reconciliation 判断权威状态，不能把进程消失当完成。选中 main 后，`/resume` 继续暂停回合，`/rollback` 回到主对话上一个已完成回合。rollback 保留暂停子 Registry，不回退独立子任务，也不补偿外部写入。选中子任务时 `/rollback` 会被拒绝。尚未解决的活跃回合不能直接接受新输入。
+使用 `rpnh --frontend basic --resume SESSION_DIR` 重开。未显式提供 `--execution`
+时，该命令使用会话持久化的精确 profile，而不是当前环境变量或默认 profile。随后由
+reconciliation 判断权威状态，不能把进程消失当完成。选中 main 后，`/resume` 继续暂停回合，`/rollback` 回到主对话上一个已完成回合。rollback 保留暂停子 Registry，不回退独立子任务，也不补偿外部写入。选中子任务时 `/rollback` 会被拒绝。尚未解决的活跃回合不能直接接受新输入。
 
 ## 不执行模型地检查已有 run
 传入真实 run 目录，而不是聊天记录或任意 session 索引：

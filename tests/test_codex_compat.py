@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+from dataclasses import replace
 import json
 from pathlib import Path
 from types import SimpleNamespace
@@ -105,6 +106,7 @@ class _RecoverySession:
             committed_history: list[tuple[str, str]] | None = None,
     ) -> None:
         self.root = root
+        self.child_path_root = root / "main"
         self.execution_config_path = execution.resolve()
         self.history = list(history or [])
         self.reconciliation = reconciliation
@@ -229,6 +231,56 @@ def test_rejected_turn_and_failed_settings_keep_the_current_profile(
             "model": profile_b.selection_id,
         }))
     assert state.model_id == original[0]
+
+
+def test_codex_rejects_unready_profile_before_thread_or_turn_preparation(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    execution = _local_profile(tmp_path / "profiles")
+    server = CodexAppServer(tmp_path / "session", execution)
+    profile = replace(
+        profile_for_path(execution),
+        required_environment=("RPNH_TEST_MISSING_CREDENTIAL",),
+    )
+    monkeypatch.delenv("RPNH_TEST_MISSING_CREDENTIAL", raising=False)
+    server._profiles_by_model_id[profile.selection_id] = profile
+    socket = _FakeWebSocket([])
+
+    with pytest.raises(ValueError, match="profile is not ready"):
+        asyncio.run(server._start_thread(socket, "start", {
+            "model": profile.selection_id,
+        }))
+    assert server._threads == {}
+
+    class _Session:
+        execution_config_path = execution.resolve()
+        prepare_calls = 0
+
+        @staticmethod
+        def reconcile_active_turn():
+            return MainTurnReconciliation("idle", None)
+
+        def prepare_turn(self, _text: str):
+            self.prepare_calls += 1
+            return object()
+
+    session = _Session()
+    state = ThreadState(
+        thread_id="thread-unready",
+        session=session,
+        main_turn_control=object(),
+        model_id=profile.selection_id,
+        cwd=tmp_path,
+        created_at=100,
+    )
+    server._threads[state.thread_id] = state
+
+    with pytest.raises(ValueError, match="profile is not ready"):
+        asyncio.run(server._start_turn(socket, "turn", {
+            "threadId": state.thread_id,
+            "input": [{"type": "text", "text": "do not prepare"}],
+        }))
+    assert session.prepare_calls == 0
 
 
 def test_codex_model_write_persists_the_rpnh_profile(

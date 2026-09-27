@@ -27,7 +27,8 @@ from cpn.rpnh.main_session import (
     MainTurnSnapshot,
     render_main_decision,
 )
-from cpn.rpnh.task_control import TaskControl, TaskHandle, owner_socket_path
+from cpn.rpnh.task_control import TaskControl, TaskHandle
+from cpn.rpnh.unix_transport import unix_socket_address
 from cpn.rpnh.user_config import (
     ExecutionProfile,
     config_path,
@@ -384,7 +385,8 @@ class CodexAppServer:
                     thread_id=thread_root.name,
                     session=session,
                     main_turn_control=TaskControl(
-                        thread_root / "main-turn-control"),
+                        session.child_path_root
+                        / "main-turn-control"),
                     model_id=profile.selection_id,
                     cwd=cwd,
                     created_at=created_at,
@@ -555,6 +557,11 @@ class CodexAppServer:
             raise ValueError("unknown RPNH thread")
         return self._threads[thread_id]
 
+    @staticmethod
+    def _require_ready_profile(profile: ExecutionProfile) -> None:
+        if not all(os.environ.get(name) for name in profile.required_environment):
+            raise ValueError("The selected RPNH profile is not ready.")
+
     def _listed_threads(
             self, params: Mapping[str, Any],
     ) -> list[ThreadState]:
@@ -590,6 +597,7 @@ class CodexAppServer:
         if profile is None:
             raise ValueError(
                 f"unknown RPNH provider/model selection: {model_id}")
+        self._require_ready_profile(profile)
         raw_cwd = params.get("cwd")
         cwd = (
             Path(raw_cwd).expanduser().resolve()
@@ -603,7 +611,8 @@ class CodexAppServer:
         state = ThreadState(
             thread_id=thread_id,
             session=session,
-            main_turn_control=TaskControl(thread_root / "main-turn-control"),
+            main_turn_control=TaskControl(
+                session.child_path_root / "main-turn-control"),
             model_id=profile.selection_id,
             cwd=cwd,
             created_at=_now_seconds(),
@@ -647,6 +656,13 @@ class CodexAppServer:
             if profile is None:
                 raise ValueError(
                     f"unknown RPNH provider/model selection: {requested_model}")
+        else:
+            profile = self._profiles_by_model_id.get(state.model_id)
+            if profile is None:
+                raise ValueError(
+                    f"unknown RPNH provider/model selection: {state.model_id}")
+        self._require_ready_profile(profile)
+        if requested_model is not None:
             state.session.set_execution_config(profile.path)
             state.model_id = profile.selection_id
         spec = state.session.prepare_turn(user_text)
@@ -1293,7 +1309,9 @@ def resolve_codex_binary(value: str | None = None) -> str:
     return resolved
 
 
-def codex_frontend_argv(binary: str, socket_path: Path, model_id: str) -> tuple[str, ...]:
+def codex_frontend_argv(
+        binary: str, socket_path: str | Path, model_id: str,
+) -> tuple[str, ...]:
     """Pinned presentation client only; no provider or execution authority."""
     return (
         binary, "--remote", f"unix://{socket_path}", "--model", model_id,
@@ -1321,14 +1339,6 @@ async def _run_codex_frontend_async(
             "RPNH Codex resume requires an existing session directory")
     root.mkdir(parents=True, exist_ok=True)
     socket_path = root / "codex-app-server.sock"
-    if len(os.fsencode(str(socket_path))) >= 108:
-        try:
-            socket_path = owner_socket_path(
-                root, "codex-app-server", root)
-        except (TypeError, ValueError) as exc:
-            raise CodexCompatibilityError(
-                "RPNH Codex frontend has no writable short ancestor for its "
-                "Unix socket") from exc
     if os.path.lexists(socket_path):
         raise CodexCompatibilityError(
             f"Codex frontend socket already exists: {socket_path}")
@@ -1341,14 +1351,24 @@ async def _run_codex_frontend_async(
     diagnostic = server.thread_load_diagnostic()
     if diagnostic:
         print(f"RPNH Codex warning: {diagnostic}", file=sys.stderr)
-    async with websockets.unix_serve(server.handle, str(socket_path)):
-        socket_path.chmod(0o600)
-        process = await asyncio.create_subprocess_exec(
-            *codex_frontend_argv(binary, socket_path, server.frontend_model_id))
-        try:
-            return int(await process.wait())
-        finally:
-            await server.stop_active_turns()
+    socket_identity: int | None = None
+    try:
+        with unix_socket_address(
+                socket_path, visible_to_child_process=True) as address:
+            async with websockets.unix_serve(server.handle, address):
+                socket_path.chmod(0o600)
+                socket_identity = socket_path.stat().st_ino
+                process = await asyncio.create_subprocess_exec(
+                    *codex_frontend_argv(
+                        binary, address, server.frontend_model_id))
+                try:
+                    return int(await process.wait())
+                finally:
+                    await server.stop_active_turns()
+    finally:
+        if (socket_identity is not None and socket_path.exists()
+                and socket_path.stat().st_ino == socket_identity):
+            socket_path.unlink()
 
 
 def run_codex_frontend(

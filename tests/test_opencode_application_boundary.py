@@ -13,7 +13,10 @@ import types
 
 import pytest
 
-from cpn.rpnh.frontend_application import RegistryFrontendApplication, FrontendError, _Session, canonical
+from cpn.rpnh.frontend_application import (
+    FrontendError, RegistryFrontendApplication, _Session, canonical,
+    stable_id,
+)
 
 SID = "ses_" + "b" * 32
 
@@ -25,7 +28,9 @@ def ref(number, version):
 class ScriptedMain:
     def __init__(self, root, execution):
         self.root, self.execution_config_path = root, execution
+        self.child_path_root = root
         self.records, self.events = [], []
+        self.child_links = []
         self.execution_state = "pending_start"
         self._main_thread = self
         self._registry_core = NS(event_store=NS(list_events=lambda: tuple(self.events)))
@@ -71,6 +76,29 @@ class ScriptedMain:
             document.update(state="running", attempt_relative_path=f"attempts/{document['ordinal']}")
             self._publish(document, "attach")
         return NS(run_dir=self.root / document["attempt_relative_path"], prompt=text)
+
+    def resolve_child_path(self, relative_path):
+        return (self.root / relative_path).resolve()
+
+    def relative_child_path(self, child_path):
+        return child_path.resolve().relative_to(
+            self.child_path_root.resolve()).as_posix()
+
+    def _ordered_documents(self, _core, object_type):
+        if object_type == "main_child_registry_link/v1":
+            return tuple((None, copy.deepcopy(item))
+                         for item in self.child_links)
+        return ()
+
+    def _index_child_registry(
+            self, handle, *, run_dir, origin_main_turn_ref,
+    ):
+        self.child_links.append({
+            "task_control_id": handle.task_id,
+            "task_kind": handle.kind,
+            "registry_relative_path": self.relative_child_path(run_dir),
+            "origin_main_turn_ref": origin_main_turn_ref,
+        })
 
     def active_turn_snapshot(self):
         if not self.records:
@@ -150,6 +178,7 @@ def boundary(tmp_path):
     main = ScriptedMain(tmp_path / "session", execution)
     main.root.mkdir()
     control = ScriptedControl(main)
+    main.task_control = control
     app = RegistryFrontendApplication.__new__(RegistryFrontendApplication)
     app.root, app.execution = tmp_path, execution
     profile = NS(selection_id="one", provider="test", provider_display_name="Test",
@@ -200,6 +229,24 @@ def test_actual_submission_conflict_and_model_drift(boundary):
     with pytest.raises(FrontendError, match="drift"):
         app.submit(SID, "request", "explicit:one")
     assert control.starts == 1 and len(main.records) == 1
+
+
+def test_agent_launch_does_not_replay_a_parent_relative_registry_link(
+        boundary,
+) -> None:
+    app, main, control, _identity = boundary
+    main.child_path_root = main.root / "main"
+    main.child_path_root.mkdir()
+    key = "registered-agent-request"
+    main.child_links.append({
+        "registry_relative_path": (
+            "tasks/runs/frontend-agent-" + stable_id(key)),
+    })
+
+    with pytest.raises(FrontendError, match="lacks its launch handle"):
+        app.launch_agent(SID, "do not replay", key)
+
+    assert control.starts == 0
 
 
 def test_profile_switch_is_per_turn_and_read_only_commands_do_not_switch(boundary):

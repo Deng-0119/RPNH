@@ -6,7 +6,7 @@ metadata:
   audience: developer
   language: zh-CN
   counterpart: net-operations.md
-  revision: "2026-09-26.2"
+  revision: "2026-09-28.1"
   status: implemented-basic-scope
 ---
 
@@ -92,7 +92,9 @@ Module 输入端口名称的有序列表。
   不会静默隐藏某条 lane。
 - schema、channel、cardinality、库所容量、颜色、初始 token 和 reusable 属性继续由现有编译器复核。
 - 完全相同的预算声明共享同一预算桶；bucket ID、scope 或上限冲突时拒绝，不重命名或扩充预算。
-- 并行实例保留独立输入。如需复制不可变业务数据，应声明真实 distributor transition，产生精确的分支 occurrence。
+- 并行实例保留独立输入。Distributor firing 会消费声明的全部前驱 occurrence，并按照每条
+  输出 arc 的精确权重向不同分支 place 产出；native composition 绝不会把 place fusion
+  当作广播。
 - 如果并行流程要求所有分支都完成，必须提供真实的下游 join 定义。
 
 ## 替换边界

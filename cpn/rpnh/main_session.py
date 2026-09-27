@@ -211,6 +211,19 @@ class MainSession:
     PROFILE_FILE = "execution_profile.json"
     REGISTRY_DIR = "main"
 
+    @property
+    def child_path_root(self) -> Path:
+        """Filesystem root for direct child references of the main Registry."""
+        return self._main_thread.child_path_root
+
+    def resolve_child_path(self, relative_path: str) -> Path:
+        """Resolve one direct child link from the main Registry."""
+        return self._main_thread.resolve_child_path(relative_path)
+
+    def relative_child_path(self, child_path: Path) -> str:
+        """Return one direct child link from the main Registry."""
+        return self._main_thread.relative_child_path(child_path)
+
     def __init__(
             self, root: Path, execution_config_path: Path, *,
             task_control: TaskControl | None = None,
@@ -241,12 +254,17 @@ class MainSession:
             self._registry_core = _RegistryCore(
                 self.root / self.REGISTRY_DIR, create=True)
         self._main_thread = MainThreadRegistry(
-            self._registry_core, session_root=self.root)
+            self._registry_core, session_root=self.root,
+            initialize_path_base=(
+                MainThreadRegistry.REGISTRY_ROOT_PATH_BASE
+                if not resume else None),
+        )
         if not resume:
             self._main_thread.create_thread(
                 idempotency_key="main-session-thread")
         self._launched_children: dict[int, TaskHandle | None] = {}
-        self.task_control = task_control or TaskControl(self.root / "tasks")
+        self.task_control = task_control or TaskControl(
+            self._main_thread.child_path_root / "tasks")
         self._refresh_from_authority()
         if resume and self._active_turn() is not None:
             if persisted_profile is None:
@@ -580,12 +598,12 @@ class MainSession:
             if not isinstance(raw_path, str) or not raw_path:
                 raise RuntimeError(
                     "main-thread Registry contains an invalid attempt path")
-            attempt_path = (self.root / raw_path).resolve()
             try:
-                attempt_path.relative_to(self.root)
+                attempt_path = self._main_thread.resolve_child_path(raw_path)
             except ValueError as exc:
                 raise RuntimeError(
-                    "registered main-turn attempt escapes the session") from exc
+                    "registered main-turn attempt escapes its parent Registry"
+                ) from exc
         observation = observed.get("observation")
         if observation is not None and not isinstance(observation, Mapping):
             raise RuntimeError(
@@ -656,12 +674,12 @@ class MainSession:
                 "turn is active")
         if persisted["schema_version"] == "rpnh/main_session_profile/v2":
             self._assert_execution_profile_identity(persisted)
-        run_dir = (self.root / relative_path).resolve()
         try:
-            run_dir.relative_to(self.root)
+            run_dir = self._main_thread.resolve_child_path(relative_path)
         except ValueError as exc:
             raise RuntimeError(
-                "registered main-turn attempt escapes the session") from exc
+                "registered main-turn attempt escapes its parent Registry"
+            ) from exc
         try:
             run_dir.rmdir()
         except FileNotFoundError:
@@ -736,7 +754,7 @@ class MainSession:
             self, prompt: str, stages: tuple[AgentStage, ...] = (), *,
             workflow_graph: AgentWorkflowGraph | None = None,
     ) -> TaskHandle:
-        run_dir = self.root / "tasks" / "runs" / (
+        run_dir = self._main_thread.child_path_root / "tasks" / "runs" / (
             "child-" + uuid4().hex[:12])
         native = self._selected_plugins()
         settings, _ = self._plugin_settings({"user_input": {"native_plugins": native}})
@@ -759,16 +777,11 @@ class MainSession:
         return handle
 
     def _relative_child_registry_path(self, run_dir: Path) -> str:
-        resolved = run_dir.resolve()
         try:
-            relative = resolved.relative_to(self.root)
+            return self.relative_child_path(run_dir)
         except ValueError as exc:
             raise RuntimeError(
-                "child Registry path escapes the main session") from exc
-        if not relative.parts:
-            raise RuntimeError(
-                "child Registry path cannot be the main session root")
-        return relative.as_posix()
+                "child Registry path escapes the parent Registry") from exc
 
     def _committed_turn_ref(self, ordinal: int) -> VersionRef:
         for item in self._authority_projection["committed_history"]:
@@ -799,7 +812,7 @@ class MainSession:
                 self._index_child_registry(
                     handle,
                     run_dir=(
-                        self.root / "tasks" / "runs"
+                        self._main_thread.child_path_root / "tasks" / "runs"
                         / f"main-turn-{ordinal:04d}-child"),
                     origin_main_turn_ref=self._committed_turn_ref(ordinal),
                 )
@@ -808,7 +821,7 @@ class MainSession:
             self._launched_children[ordinal] = None
             return None
         run_dir = (
-            self.root / "tasks" / "runs"
+            self._main_thread.child_path_root / "tasks" / "runs"
             / f"main-turn-{ordinal:04d}-child").resolve()
         matches: list[TaskHandle] = []
         for status in self.task_control.list():
@@ -873,7 +886,7 @@ class MainSession:
                 continue
             ordinal = int(item["ordinal"])
             run_dir = (
-                self.root / "tasks" / "runs"
+                self._main_thread.child_path_root / "tasks" / "runs"
                 / f"main-turn-{ordinal:04d}-child").resolve()
             origins[run_dir] = (
                 self._version_ref(item["turn_ref"]), decision.task.kind)
@@ -960,7 +973,7 @@ class MainSession:
                 attached = self._main_thread.attach_attempt(
                     thread_ref=self._thread_ref,
                     turn_ref=turn_ref,
-                    attempt_relative_path=f"main/turn-{ordinal:04d}",
+                    attempt_relative_path=self._main_turn_path_ref(ordinal),
                     idempotency_key=f"main-turn-{ordinal}:attempt",
                 )
                 turn_ref = attached.turn_ref
@@ -988,7 +1001,7 @@ class MainSession:
         attached = self._main_thread.attach_attempt(
             thread_ref=accepted.thread_ref,
             turn_ref=accepted.turn_ref,
-            attempt_relative_path=f"main/turn-{ordinal:04d}",
+            attempt_relative_path=self._main_turn_path_ref(ordinal),
             idempotency_key=f"main-turn-{ordinal}:attempt",
         )
         turn = self._turn_document(attached.turn_ref)
@@ -1001,6 +1014,13 @@ class MainSession:
             raise RuntimeError(
                 "main-turn task path differs from Registry attachment")
         return spec
+
+    def _main_turn_path_ref(self, ordinal: int) -> str:
+        name = f"turn-{ordinal:04d}"
+        if (self._main_thread.child_path_base
+                == MainThreadRegistry.REGISTRY_ROOT_PATH_BASE):
+            return name
+        return f"main/{name}"
 
     def _completed_retry(
             self, *, user_text: str, required_task_kind: str | None,

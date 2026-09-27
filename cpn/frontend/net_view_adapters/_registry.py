@@ -108,6 +108,7 @@ class RegistryViewBinding:
     """One pinned attempt; callable directly as the existing ProjectionProvider."""
     host: str
     session_root: Path
+    parent_registry_root: Path
     run_dir: Path
     relative_path: str
     selection_ref: VersionRef
@@ -128,7 +129,8 @@ class RegistryViewBinding:
 
     def __call__(self) -> dict[str, Any]:
         # A new turn or resume must not silently replace this page's target.
-        path = registered_path(self.session_root, self.relative_path)
+        path = registered_path(
+            self.parent_registry_root, self.relative_path)
         if path != self.run_dir:
             raise ViewBindingError('bound Registry location changed')
         for _ in range(3):
@@ -176,13 +178,14 @@ def bind_session(session_root: Path, *, host: str, catalog: SchemaCatalog,
         else:
             selection_ref, doc = _select_turn(reader, state, turn, request_id, session_id)
             relative, kind = doc['attempt_relative_path'], 'main_turn'
-        path = registered_path(session_root, relative)
+        path = registered_path(reader.child_path_root, relative)
         task_ref, run_ref = _identity(path, catalog)
         if expected_task is not None and expected_task != _ref_payload(task_ref):
             raise ViewBindingError('child task differs from its registered identity')
         if expected_run is not None and expected_run != _ref_payload(run_ref):
             raise ViewBindingError('child run differs from its registered identity')
         if _head(core) == before:
-            return RegistryViewBinding(host, session_root, path, relative, selection_ref, kind,
-                                       before, task_ref, run_ref, catalog)
+            return RegistryViewBinding(
+                host, session_root, reader.child_path_root, path, relative,
+                selection_ref, kind, before, task_ref, run_ref, catalog)
     raise ViewBindingError('main Registry changed during selection; retry explicitly')

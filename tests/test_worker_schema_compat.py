@@ -1,4 +1,4 @@
-"""Read both historical v4 shapes without weakening the v5 writer contract."""
+"""Read historical worker shapes and write parent-relative v6 task specs."""
 from pathlib import Path
 
 import pytest
@@ -77,3 +77,27 @@ def test_unknown_main_v4_field_is_not_silently_dropped():
 def test_v5_roundtrip_keeps_plugins_and_owner_identity_together():
     original = spec(plugins=True)
     assert AgentTaskSpec.from_worker_document(original.as_worker_document()) == original
+
+
+def test_v6_roundtrip_uses_only_parent_relative_path_references(
+        tmp_path: Path,
+) -> None:
+    document_root = tmp_path / "control" / "specs"
+    document_root.mkdir(parents=True)
+    run_dir = tmp_path / "main" / "tasks" / "runs" / "child"
+    original = AgentTaskSpec(
+        run_dir=run_dir,
+        prompt="Preserve relative Registry links.",
+        stages=(AgentStage("main", "Complete the request."),),
+        execution_config_path=tmp_path / "profiles" / "default.json",
+        owner_socket_path=run_dir / "owner.sock",
+    )
+
+    document = original.as_worker_document(document_root=document_root)
+
+    assert document["schema_version"] == "rpnh/agent_task_spec/v6"
+    assert document["owner_socket_relative_path"] == "owner.sock"
+    assert not Path(document["run_relative_path"]).is_absolute()
+    assert not Path(document["execution_config_relative_path"]).is_absolute()
+    assert AgentTaskSpec.from_worker_document(
+        document, document_root=document_root) == original

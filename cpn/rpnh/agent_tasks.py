@@ -12,7 +12,7 @@ from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
 import json
 import os
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 import re
 import signal
 import threading
@@ -195,8 +195,63 @@ class AgentTaskSpec:
     def kind(self) -> str:
         return "workflow" if self.workflow_graph is not None else "single_agent"
 
-    def as_worker_document(self) -> dict[str, Any]:
+    @staticmethod
+    def _relative_worker_path(path: Path, root: Path) -> str:
+        value = Path(os.path.relpath(path, root)).as_posix()
+        if PurePosixPath(value).is_absolute():
+            raise ValueError("worker path must be relative to its parent")
+        return value
+
+    @staticmethod
+    def _resolve_worker_path(value: object, root: Path, *, label: str) -> Path:
+        if not isinstance(value, str) or not value or "\\" in value:
+            raise ValueError(f"{label} must be a relative POSIX path")
+        pure = PurePosixPath(value)
+        if pure.is_absolute() or pure.as_posix() != value:
+            raise ValueError(f"{label} must be a relative POSIX path")
+        return (root / Path(*pure.parts)).resolve()
+
+    def as_worker_document(
+            self, *, document_root: Path | None = None,
+    ) -> dict[str, Any]:
         from cpn.plugins.api import json_copy
+        if document_root is not None:
+            root = Path(document_root).resolve()
+            socket_relative = (
+                None if self.owner_socket_path is None else
+                self._relative_worker_path(
+                    self.owner_socket_path, self.run_dir))
+            if (socket_relative is not None
+                    and ".." in PurePosixPath(socket_relative).parts):
+                raise ValueError(
+                    "owner socket must remain inside its child Registry")
+            return {
+                "schema_version": "rpnh/agent_task_spec/v6",
+                **({"plugin_configuration": json_copy(self.plugin_configuration),
+                    "plugin_catalog_digest": self.plugin_catalog_digest}
+                   if self.plugin_configuration is not None else {}),
+                "run_relative_path": self._relative_worker_path(
+                    self.run_dir, root),
+                "prompt": self.prompt,
+                "stages": [
+                    {"stage_id": stage.stage_id,
+                     "instruction": stage.instruction}
+                    for stage in self.stages
+                ],
+                "workflow_graph": (
+                    None if self.workflow_graph is None
+                    else self.workflow_graph.to_dict()),
+                "execution_config_relative_path": self._relative_worker_path(
+                    self.execution_config_path, root),
+                "max_attempts_per_stage": self.max_attempts_per_stage,
+                "max_parallel_nodes": self.max_parallel_nodes,
+                "execution_profiles": {
+                    profile_id: self._relative_worker_path(path, root)
+                    for profile_id, path in self.execution_profiles
+                },
+                "owner_statement": self.owner_statement,
+                "owner_socket_relative_path": socket_relative,
+            }
         return {
             "schema_version": "rpnh/agent_task_spec/v5",
             **({"plugin_configuration": json_copy(self.plugin_configuration),
@@ -225,7 +280,9 @@ class AgentTaskSpec:
         }
 
     @classmethod
-    def from_worker_document(cls, value: object) -> "AgentTaskSpec":
+    def from_worker_document(
+            cls, value: object, *, document_root: Path | None = None,
+    ) -> "AgentTaskSpec":
         fields_v1 = {
             "schema_version", "run_dir", "prompt", "stages",
             "execution_config_path", "max_attempts_per_stage",
@@ -248,13 +305,69 @@ class AgentTaskSpec:
         }
         plugin_fields = {"plugin_configuration", "plugin_catalog_digest"}
         version = value.get("schema_version") if isinstance(value, Mapping) else None
+        fields_v6 = {
+            "schema_version", "run_relative_path", "prompt", "stages",
+            "workflow_graph", "execution_config_relative_path",
+            "max_attempts_per_stage", "max_parallel_nodes",
+            "execution_profiles", "owner_statement",
+            "owner_socket_relative_path",
+        }
         expected_fields = (
             fields_v1 if version == "rpnh/agent_task_spec/v1" else
             fields_v2 if version == "rpnh/agent_task_spec/v2" else
             fields_v3 if version == "rpnh/agent_task_spec/v3" else
             fields_v4 if version == "rpnh/agent_task_spec/v4" else
             fields_v5 | (plugin_fields if set(value) & plugin_fields else set())
-            if version == "rpnh/agent_task_spec/v5" else set())
+            if version == "rpnh/agent_task_spec/v5" else
+            fields_v6 | (plugin_fields if set(value) & plugin_fields else set())
+            if version == "rpnh/agent_task_spec/v6" else set())
+        if version == "rpnh/agent_task_spec/v6":
+            if document_root is None:
+                raise ValueError(
+                    "v6 worker document requires its parent directory")
+            if (not isinstance(value, Mapping)
+                    or set(value) != expected_fields
+                    or not isinstance(value.get("stages"), list)
+                    or not isinstance(value.get("execution_profiles"), Mapping)
+                    or (value.get("owner_socket_relative_path") is not None
+                        and not isinstance(
+                            value.get("owner_socket_relative_path"), str))):
+                raise ValueError("agent task worker document is not current")
+            root = Path(document_root).resolve()
+            run_dir = cls._resolve_worker_path(
+                value["run_relative_path"], root, label="run_relative_path")
+            socket_value = value.get("owner_socket_relative_path")
+            socket_path = (
+                None if socket_value is None else
+                cls._resolve_worker_path(
+                    socket_value, run_dir,
+                    label="owner_socket_relative_path"))
+            if (socket_path is not None
+                    and not socket_path.is_relative_to(run_dir)):
+                raise ValueError(
+                    "owner socket escapes its child Registry")
+            return cls(
+                run_dir=run_dir,
+                prompt=value["prompt"],
+                stages=tuple(AgentStage(**stage) for stage in value["stages"]),
+                execution_config_path=cls._resolve_worker_path(
+                    value["execution_config_relative_path"], root,
+                    label="execution_config_relative_path"),
+                workflow_graph=(
+                    None if value.get("workflow_graph") is None else
+                    AgentWorkflowGraph.from_mapping(value["workflow_graph"])),
+                max_attempts_per_stage=value["max_attempts_per_stage"],
+                max_parallel_nodes=value["max_parallel_nodes"],
+                execution_profiles=tuple(
+                    (profile_id, cls._resolve_worker_path(
+                        path, root,
+                        label=f"execution_profiles.{profile_id}"))
+                    for profile_id, path in value["execution_profiles"].items()),
+                owner_statement=value["owner_statement"],
+                plugin_configuration=value.get("plugin_configuration"),
+                plugin_catalog_digest=value.get("plugin_catalog_digest"),
+                owner_socket_path=socket_path,
+            )
         invalid_owner_socket_path = (
             isinstance(value, Mapping)
             and version in {"rpnh/agent_task_spec/v4", "rpnh/agent_task_spec/v5"}

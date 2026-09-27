@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: en
   counterpart: ARCHITECTURE_ZH.md
-  revision: "2026-09-25.1"
+  revision: "2026-09-28.1"
   status: source-reviewed-pre-release
 ---
 
@@ -43,16 +43,24 @@ Every main turn's model execution runs in its own supervised Registry root. The
 main Registry stores the turn lineage and exact terminal receipt needed to
 commit the assistant answer. Likewise, every independent `/agent` or workflow
 owns a separate Registry root. For these independent children, the main
-Registry stores only a session-relative path, task kind, optional originating
+Registry stores only a parent-Registry-relative path, task kind, optional originating
 committed turn, and exact child task/run references once readable. It does not
 copy child events, tokens, workspace revisions, or results. TaskControl
 manifests remain process-lifecycle projections and are not the relationship
 authority.
 
-Task owner sockets are stored under the deepest usable location among the task
-control root and its first two ancestors whose pathname fits Linux `AF_UNIX`.
-This normally keeps them in the same session tree, avoids a writable-source-tree
-assumption, and never falls back to global `/tmp`.
+New Registries interpret each child path relative to the immediate parent
+Registry root. A grandchild is reached by following the child link and then the
+grandchild link; it is not independently anchored back to the outer session
+directory. New Registries record this convention in Registry metadata; absence
+of that marker identifies an existing session-root Registry and preserves its
+old interpretation. Worker specs and TaskControl manifests likewise persist
+parent-relative references.
+
+Each task owner socket remains `owner.sock` inside that task's Registry. On
+Linux, RPNH opens the immediate parent directory and uses a short transient
+`/proc/.../fd/...` address only for `AF_UNIX` bind/connect. That transport
+address is never persisted and does not flatten or replace the Registry tree.
 
 The main agent may reply directly, create one independent single-agent task, or
 act as Designer and declare a workflow graph. Every independent child owns a
@@ -79,6 +87,12 @@ inputs and gives every loop a Registry-enforced stopping bound.
 The validated graph is lowered into typed places, transitions, arcs, token
 claims, firing admission, execution, and settlement. A process exit or a visible
 frontend message cannot replace PetriNet and Registry terminal evidence.
+Firing admission requires every predecessor occurrence named by every input arc
+weight; successful settlement deposits exactly each output arc's declared
+weight into its own successor place. A fused place is a conflict/shared place,
+not broadcast. Branching therefore requires a declared transition with distinct
+output arcs; native composition rejects one public exit wired directly to
+multiple consumers.
 
 ## Agent execution, workspace, resources, and delegation
 

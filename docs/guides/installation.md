@@ -1,14 +1,14 @@
 ---
 name: rpnh-install
-description: "Install the core and distinguish optional frontend and source integration paths."
+description: "Install unified RPNH and distinguish its optional presentation and host integration paths."
 metadata:
   document-kind: how-to
   audience: operator-and-developer
   language: en
   counterpart: installation_ZH.md
-  revision: "2026-09-26.2"
+  revision: "2026-09-27.1"
   status: source-reviewed-not-final-candidate-acceptance
-  basis: "core; adapter differences explicitly labelled"
+  basis: "unified main; host differences explicitly labelled"
 ---
 
 [English](installation.md) | [中文](installation_ZH.md)
@@ -74,13 +74,14 @@ or a substitute for validating the user's own route.
 
 | Surface | What must be present | Entry and current limitation |
 |---|---|---|
-| Core/basic | Approved Python package | `rpnh --frontend basic`; selected model required for conversation |
-| Codex presentation | Python core plus exactly `codex-cli 0.155.0` | `rpnh --frontend codex`; TUI compatibility is version-specific |
-| Native plugin/onboarding overlay | Source containing `cpn/plugins` and `cpn/rpnh/onboarding.py` | Adds `rpnh plugins`, `rpnh init`, `rpnh doctor`, and frontend `auto`; these are not on the reviewed core main |
-| Managed DSH | DSH-capable package, bundled `integrations/dsh`, pinned upstream checkout and toolchain | `rpnh-dsh`; explicit offline numeric or shared configured text mode |
+| Built-in terminal | Approved unified Python package | `rpnh --frontend basic`; a selected model is still required for conversation |
+| Codex presentation | Unified package plus exactly `codex-cli 0.155.0` | `rpnh --frontend codex`; TUI compatibility is version-specific |
+| OpenCode presentation | Unified package plus exactly OpenCode `1.18.32` | `rpnh --frontend opencode`; explicit only, Linux/WSL2 only, and UI metrics are unavailable |
+| Plugins, onboarding and examples | Approved unified Python package | `rpnh plugins`, `rpnh init`, `rpnh doctor`, and `rpnh examples`; local checks and export do not call a model |
+| Managed DSH | Unified package, bundled `integrations/dsh`, pinned upstream checkout and toolchain | `rpnh-dsh`; explicit offline numeric or shared configured text mode |
 | Coexistence | One unified source/wheel with applicable optional hosts | Do not overlay multiple same-name wheels in one environment |
 
-The core main defaults to `codex`; the reviewed adapter overlay defaults to `auto`. Explicit `--frontend basic` works across those configurations. See [adapters](adapters.md) before using optional-host commands. Enhanced viewer work is not automatically part of this documentation candidate.
+The unified main defaults to `auto`: in an interactive terminal it uses compatible Codex `0.155.0` when available, otherwise it uses the built-in terminal; non-interactive use selects the built-in terminal. Select `--frontend basic`, `codex`, or `opencode` explicitly when that surface is required. See [adapters](adapters.md), [OpenCode](opencode.md), or the DSH guide before using an optional host. Enhanced viewer work is not automatically part of this documentation candidate.
 
 ## Verification, update and removal
 Installation is successful only after the installed command, packaged schemas/config/static/example assets and the zero-model configuration flow work outside the checkout. A successful editable install or passing link check is insufficient. This documentation batch records wheel verification separately from its static-site checks.

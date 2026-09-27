@@ -47,6 +47,7 @@ from cpn.rpnh.llm_contracts import LLMInputTarget
 from cpn.rpnh.main_session import MainSession, parse_main_decision
 from cpn.rpnh.task_control import TaskControl
 from cpn.rpnh.task_control import claim_task_worker_launch
+from cpn.rpnh.unix_transport import unix_socket_address
 from cpn.rpnh_cli import _task_command
 
 
@@ -295,14 +296,18 @@ def test_task_control_launches_an_installed_module_worker(
     handle = control.get(task_id)
     assert handle.kind == "single_agent"
     assert handle.process.kwargs["cwd"] == str(tmp_path / "control")
-    assert handle.process.args[0][1:4] == [
-        "-m", "cpn.rpnh.task_worker", str(
-            next((tmp_path / "control" / "specs").glob("*.json")))]
+    assert handle.process.kwargs["env"]["PYTHONPATH"].split(
+        os.pathsep)[0] == str(Path(__file__).resolve().parents[1])
+    worker_argv = handle.process.args[0]
+    assert worker_argv[1:3] == ["-m", "cpn.rpnh.task_worker"]
+    assert worker_argv[3] == "--launch-lock-fd"
+    assert worker_argv[-1] == str(
+        next((tmp_path / "control" / "specs").glob("*.json")))
 
-    document = json.loads(
-        next((tmp_path / "control" / "specs").glob("*.json"))
-        .read_text(encoding="utf-8"))
-    assert AgentTaskSpec.from_worker_document(document).stages == (
+    spec_path = next((tmp_path / "control" / "specs").glob("*.json"))
+    document = json.loads(spec_path.read_text(encoding="utf-8"))
+    assert AgentTaskSpec.from_worker_document(
+        document, document_root=spec_path.parent).stages == (
         AgentStage(
             "worker",
             "Complete the requested task and return its result.",
@@ -342,21 +347,27 @@ def test_task_control_serializes_canonical_paths_before_worker_launch(
         (tmp_path / "control" / "specs").glob("*.json")
     ).read_text(encoding="utf-8"))
 
-    assert document["run_dir"] == str(expected_run)
-    assert document["execution_config_path"] == str(expected_default)
-    assert document["execution_profiles"] == {"critic": str(expected_critic)}
+    document_root = tmp_path / "control" / "specs"
+    assert document["schema_version"] == "rpnh/agent_task_spec/v6"
+    assert document["run_relative_path"] == Path(os.path.relpath(
+        expected_run, document_root)).as_posix()
+    assert document["execution_config_relative_path"] == Path(os.path.relpath(
+        expected_default, document_root)).as_posix()
+    assert document["execution_profiles"] == {
+        "critic": Path(os.path.relpath(
+            expected_critic, document_root)).as_posix()}
     assert handle.run_dir == expected_run
-    assert handle.socket_path.parent.name == ".rpnh-owner"
-    assert tmp_path in handle.socket_path.parents
-    assert handle.socket_path.suffix == ".sock"
-    restored = AgentTaskSpec.from_worker_document(document)
+    assert handle.socket_path == expected_run / "owner.sock"
+    assert document["owner_socket_relative_path"] == "owner.sock"
+    restored = AgentTaskSpec.from_worker_document(
+        document, document_root=document_root)
     assert restored.run_dir == expected_run
     assert restored.execution_config_path == expected_default
     assert restored.execution_profiles == (("critic", expected_critic),)
     assert restored.owner_socket_path == handle.socket_path
 
 
-def test_task_control_uses_a_short_stable_owner_socket_for_long_run_paths(
+def test_task_control_keeps_owner_socket_in_registry_and_shortens_only_transport(
         tmp_path: Path,
 ) -> None:
     long_run = tmp_path / ("session-" + "x" * 80) / ("run-" + "y" * 80)
@@ -370,19 +381,24 @@ def test_task_control_uses_a_short_stable_owner_socket_for_long_run_paths(
     ))
     spec_path = control_root / "specs" / f"{handle.task_id}.json"
     manifest_path = control_root / "manifests" / f"{handle.task_id}.json"
-    worker_spec = AgentTaskSpec.from_worker_document(json.loads(
-        spec_path.read_text(encoding="utf-8")))
+    worker_spec = AgentTaskSpec.from_worker_document(
+        json.loads(spec_path.read_text(encoding="utf-8")),
+        document_root=spec_path.parent)
 
     assert len(os.fsencode(str(long_run / "owner.sock"))) >= 108
-    assert len(os.fsencode(str(handle.socket_path))) < 108
-    assert handle.socket_path.parent.name == ".rpnh-owner"
-    assert tmp_path in handle.socket_path.parents
+    assert handle.socket_path == long_run / "owner.sock"
     assert worker_spec.owner_socket_path == handle.socket_path
-    assert json.loads(manifest_path.read_text(encoding="utf-8"))["socket_path"] == str(
-        handle.socket_path)
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    assert manifest["schema_version"] == "rpnh/task_handle/v2"
+    assert manifest["socket_relative_path"] == "owner.sock"
+    assert all(not Path(value).is_absolute() for key, value in manifest.items()
+               if key.endswith("_relative_path"))
+    long_run.mkdir(parents=True)
     channel = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
     try:
-        channel.bind(str(handle.socket_path))
+        with unix_socket_address(handle.socket_path) as address:
+            assert len(os.fsencode(address)) < 108
+            channel.bind(address)
     finally:
         channel.close()
         handle.socket_path.unlink()
@@ -391,7 +407,7 @@ def test_task_control_uses_a_short_stable_owner_socket_for_long_run_paths(
     assert recovered.get(handle.task_id).socket_path == handle.socket_path
 
 
-def test_owner_socket_searches_past_frontend_grouping_depth(
+def test_owner_socket_remains_local_through_frontend_grouping_depth(
         tmp_path: Path,
 ) -> None:
     nested = tmp_path
@@ -408,9 +424,10 @@ def test_owner_socket_searches_past_frontend_grouping_depth(
         execution_config_path=tmp_path / "execution.json",
     ))
 
-    assert len(os.fsencode(str(handle.socket_path))) < 108
-    assert handle.socket_path.parent.name == ".rpnh-owner"
-    assert tmp_path in handle.socket_path.parents
+    assert handle.socket_path == handle.run_dir / "owner.sock"
+    handle.run_dir.mkdir(parents=True)
+    with unix_socket_address(handle.socket_path) as address:
+        assert len(os.fsencode(address)) < 108
 
 
 def test_task_status_preserves_local_exit_code_without_forging_recovered_code(
@@ -468,23 +485,83 @@ def test_task_control_upgrades_pending_v3_worker_specs_before_recovery(
     ))
     spec_path = root / "specs" / f"{handle.task_id}.json"
     manifest_path = root / "manifests" / f"{handle.task_id}.json"
-    legacy = json.loads(spec_path.read_text(encoding="utf-8"))
+    legacy = handle.spec.as_worker_document()
     legacy["schema_version"] = "rpnh/agent_task_spec/v3"
     legacy.pop("owner_socket_path")
     spec_path.write_text(json.dumps(legacy), encoding="utf-8")
-    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
-    manifest["socket_path"] = str(handle.run_dir / "owner.sock")
+    manifest = {
+        "schema_version": "rpnh/task_handle/v1",
+        "task_id": handle.task_id,
+        "kind": handle.kind,
+        "run_dir": str(handle.run_dir),
+        "socket_path": str(handle.run_dir / "owner.sock"),
+        "log_path": str(handle.log_path),
+        "spec_path": str(spec_path),
+        "pid": None,
+        "process_start_ticks": None,
+        "launch_state": "pending",
+        "launch_mode": "fresh",
+    }
     manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
 
     recovered = TaskControl(root, popen_factory=_Process)
     recovered_handle = recovered.get(handle.task_id)
     upgraded = json.loads(spec_path.read_text(encoding="utf-8"))
 
-    assert upgraded["schema_version"] == "rpnh/agent_task_spec/v5"
-    assert upgraded["owner_socket_path"] == str(recovered_handle.socket_path)
-    assert len(os.fsencode(str(recovered_handle.socket_path))) < 108
-    assert json.loads(manifest_path.read_text(encoding="utf-8"))["socket_path"] == str(
-        recovered_handle.socket_path)
+    assert upgraded["schema_version"] == "rpnh/agent_task_spec/v6"
+    assert upgraded["owner_socket_relative_path"] == "owner.sock"
+    assert recovered_handle.socket_path == recovered_handle.run_dir / "owner.sock"
+    assert json.loads(manifest_path.read_text(
+        encoding="utf-8"))["schema_version"] == "rpnh/task_handle/v2"
+
+
+def test_legacy_pending_recovery_never_overwrites_an_inflight_worker_claim(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    root = tmp_path / "control"
+    first = TaskControl(root, popen_factory=_Process)
+    handle = first.start(AgentTaskSpec(
+        run_dir=tmp_path / "run",
+        prompt="Preserve the original launch claim.",
+        stages=(AgentStage("worker", "Return one result."),),
+        execution_config_path=tmp_path / "execution.json",
+    ))
+    spec_path = root / "specs" / f"{handle.task_id}.json"
+    manifest_path = root / "manifests" / f"{handle.task_id}.json"
+    legacy_spec = handle.spec.as_worker_document()
+    legacy_spec["schema_version"] = "rpnh/agent_task_spec/v3"
+    legacy_spec.pop("owner_socket_path")
+    spec_path.write_text(json.dumps(legacy_spec), encoding="utf-8")
+    legacy_manifest = {
+        "schema_version": "rpnh/task_handle/v1",
+        "task_id": handle.task_id,
+        "kind": handle.kind,
+        "run_dir": str(handle.run_dir),
+        "socket_path": str(handle.run_dir / "owner.sock"),
+        "log_path": str(handle.log_path),
+        "spec_path": str(spec_path),
+        "pid": None,
+        "process_start_ticks": None,
+        "launch_state": "pending",
+        "launch_mode": "fresh",
+    }
+    manifest_path.write_text(
+        json.dumps(legacy_manifest), encoding="utf-8")
+    spawned: list[_Process] = []
+    monkeypatch.setattr(
+        "cpn.rpnh.task_control._acquire_task_launch_lock",
+        lambda _root, _task_id: None)
+
+    recovered = TaskControl(
+        root,
+        popen_factory=lambda *args, **kwargs: (
+            spawned.append(_Process(*args, **kwargs)) or spawned[-1]),
+    )
+
+    assert spawned == []
+    assert recovered.get(handle.task_id).launch_state == "pending"
+    assert json.loads(manifest_path.read_text(
+        encoding="utf-8")) == legacy_manifest
 
 
 def test_task_control_rehomes_a_persisted_global_tmp_owner_socket(
@@ -507,13 +584,13 @@ def test_task_control_rehomes_a_persisted_global_tmp_owner_socket(
 
     control._upgrade_legacy_owner_socket(handle)
 
-    assert handle.socket_path.parent.name == ".rpnh-owner"
-    assert tmp_path in handle.socket_path.parents
+    assert handle.socket_path == handle.run_dir / "owner.sock"
     assert handle.spec.owner_socket_path == handle.socket_path
     document = json.loads(
         (root / "specs" / f"{handle.task_id}.json").read_text(
             encoding="utf-8"))
-    assert document["owner_socket_path"] == str(handle.socket_path)
+    assert document["schema_version"] == "rpnh/agent_task_spec/v6"
+    assert document["owner_socket_relative_path"] == "owner.sock"
 
 
 @pytest.mark.parametrize("version", (1, 2, 3, 4))
@@ -605,6 +682,38 @@ def test_worker_claim_activates_intent_and_excludes_duplicate(
             spec_path, spec, resume=False) is None
     finally:
         claim.close()
+
+
+def test_task_worker_inherits_launch_lock_when_parent_stdin_is_closed(
+        tmp_path: Path,
+) -> None:
+    root = tmp_path / "control"
+    control = TaskControl(root)
+    try:
+        saved_stdin = os.dup(0)
+    except OSError:
+        saved_stdin = None
+    try:
+        if saved_stdin is not None:
+            os.close(0)
+        handle = control.start(AgentTaskSpec(
+            run_dir=tmp_path / "run",
+            prompt="Exercise worker launch descriptor inheritance.",
+            stages=(AgentStage("worker", "Return one result."),),
+            execution_config_path=tmp_path / "missing-execution.json",
+        ))
+    finally:
+        if saved_stdin is not None:
+            os.dup2(saved_stdin, 0)
+            os.close(saved_stdin)
+
+    assert handle.process.wait(timeout=10) == 1
+    manifest = json.loads((
+        root / "manifests" / f"{handle.task_id}.json"
+    ).read_text(encoding="utf-8"))
+    assert manifest["launch_state"] == "active"
+    assert "inherited launch lock differs from task identity" not in (
+        handle.log_path.read_text(encoding="utf-8"))
 
 
 def test_resume_uses_persisted_transition_profiles_when_graph_swaps_them(

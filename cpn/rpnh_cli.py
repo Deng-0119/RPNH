@@ -40,7 +40,8 @@ def _parser() -> argparse.ArgumentParser:
     )
     parser.add_argument(
         "--execution", type=Path,
-        help=("current LLM execution selection; otherwise use "
+        help=("LLM execution selection; a resume without this option uses "
+              "the session's persisted profile, while a fresh session uses "
               "RPNH_EXECUTION_CONFIG or the saved user default"),
     )
     parser.add_argument(
@@ -529,13 +530,22 @@ def main(argv: list[str] | None = None) -> int:
     parser = _parser()
     args = parser.parse_args(arguments)
     try:
-        execution = resolve_execution_path(
-            args.execution,
-            save_default=args.save_default,
-            allow_interactive_setup=(
-                args.execution is None and args.prompt is None
-                and args.resume is None and sys.stdin.isatty()),
-        )
+        if args.resume is not None and args.execution is None:
+            if args.save_default:
+                raise ValueError("--save-default requires --execution")
+            execution = MainSession._persisted_execution_config_path(
+                args.resume)
+            if execution is None:
+                raise ValueError(
+                    "RPNH resume requires a persisted execution profile")
+        else:
+            execution = resolve_execution_path(
+                args.execution,
+                save_default=args.save_default,
+                allow_interactive_setup=(
+                    args.execution is None and args.prompt is None
+                    and args.resume is None and sys.stdin.isatty()),
+            )
         missing = missing_credentials(execution)
         if missing:
             raise ValueError(

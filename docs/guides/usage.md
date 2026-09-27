@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: en
   counterpart: usage_ZH.md
-  revision: "2026-09-24.1"
+  revision: "2026-09-28.1"
   status: source-reviewed-not-final-candidate-acceptance
   basis: "core; adapter differences explicitly labelled"
 ---
@@ -19,6 +19,9 @@ metadata:
 Install the appropriate surface and select an authorized exact profile. **Conversation, `/agent`, `/workflow`, `/resume` and `--prompt` can execute models/tools.** They are not installation smoke tests. Use a new session directory for a new session, retain returned task IDs, and keep run data private.
 
 Start the explicit basic frontend with `rpnh --frontend basic`. Supply `--execution PATH` to select a file or `--session-dir PATH` for an absent new session directory. `--resume SESSION_DIR` is mutually exclusive with `--session-dir`. `--prompt TEXT` runs a main turn, not a harmless echo.
+For a fresh session, omitting `--execution` uses `RPNH_EXECUTION_CONFIG` or the
+saved user default. For `--resume`, omitting it instead uses the exact profile
+persisted by that session; an explicit `--execution` is the only override.
 
 ## Main session and independent task controls
 The following are **basic-frontend** commands. They are not additions to stock Codex's slash-command registry.
@@ -38,7 +41,9 @@ The following are **basic-frontend** commands. They are not additions to stock C
 Short `/status`, `/result`, `/net`, `/message`, `/stop` commands act on the selected child. Plain text goes to main or to the selected single-agent; selected workflows require `TARGET :: TEXT`. A parent-owned `delegate_leaf` is an internal action, not an independently switchable task.
 
 ## Interrupted main turn
-Reopen with `rpnh --frontend basic --resume SESSION_DIR`. Reconciliation determines the authoritative state; do not treat a missing terminal process as completion. With main selected, `/resume` continues the paused turn and `/rollback` returns the main conversation to its prior completed turn. Rollback retains the paused child Registry; it neither rewinds independent children nor compensates external writes. `/rollback` on a selected child is rejected. An active unreconciled turn must be resolved before accepting new input.
+Reopen with `rpnh --frontend basic --resume SESSION_DIR`. Without an explicit
+`--execution`, this command uses the session's persisted exact profile, not the
+current environment/default profile. Reconciliation determines the authoritative state; do not treat a missing terminal process as completion. With main selected, `/resume` continues the paused turn and `/rollback` returns the main conversation to its prior completed turn. Rollback retains the paused child Registry; it neither rewinds independent children nor compensates external writes. `/rollback` on a selected child is rejected. An active unreconciled turn must be resolved before accepting new input.
 
 ## Inspect existing runs without execution
 Use an actual run directory, not a transcript or arbitrary session index:

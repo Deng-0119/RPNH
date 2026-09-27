@@ -3,9 +3,12 @@ from __future__ import annotations
 
 import json
 import math
+from pathlib import Path
 import socket
 from typing import Any, Mapping
 from uuid import uuid4
+
+from .unix_transport import unix_socket_address
 
 _OMITTED = object()
 
@@ -118,7 +121,8 @@ class ControlClient:
         wire = serialize_command(command_id, command, arguments)
         with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as channel:
             channel.settimeout(self.timeout)
-            channel.connect(self.socket_path)
+            with unix_socket_address(Path(self.socket_path)) as address:
+                channel.connect(address)
             channel.sendall(wire)
             with channel.makefile("rb") as reader:
                 return parse_reply(reader.readline(), command_id)

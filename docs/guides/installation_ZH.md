@@ -1,14 +1,14 @@
 ---
 name: rpnh-install
-description: "Install the core and distinguish optional frontend and source integration paths."
+description: "Install unified RPNH and distinguish its optional presentation and host integration paths."
 metadata:
   document-kind: how-to
   audience: operator-and-developer
   language: zh-CN
   counterpart: installation.md
-  revision: "2026-09-26.2"
+  revision: "2026-09-27.1"
   status: source-reviewed-not-final-candidate-acceptance
-  basis: "core; adapter differences explicitly labelled"
+  basis: "unified main; host differences explicitly labelled"
 ---
 
 [English](installation.md) | [中文](installation_ZH.md)
@@ -72,13 +72,14 @@ wheel 还包含 provider-neutral 的跨宿主任务包。导出只是零模型�
 
 | 范围 | 必需内容 | 入口和当前边界 |
 |---|---|---|
-| core/basic | 批准的 Python 包 | `rpnh --frontend basic`；对话仍需选择模型 |
-| Codex 展示 | 核心包和精确 `codex-cli 0.155.0` | `rpnh --frontend codex`；兼容性绑定版本 |
-| 原生插件/引导增量 | 含 `cpn/plugins`、`cpn/rpnh/onboarding.py` 的源码 | 新增 plugins/init/doctor/auto；当前核对的 core main 没有这些增量命令 |
-| 托管 DSH | DSH Python 包、内含 `integrations/dsh`、固定上游及工具链 | `rpnh-dsh`；显式离线数值或共享配置文本模式 |
+| 内置终端 | 批准的统一 Python 包 | `rpnh --frontend basic`；对话仍需选择模型 |
+| Codex 展示 | 统一包和精确 `codex-cli 0.155.0` | `rpnh --frontend codex`；兼容性绑定版本 |
+| OpenCode 展示 | 统一包和精确 OpenCode `1.18.32` | `rpnh --frontend opencode`；仅显式选择、仅 Linux/WSL2，且无 UI 指标 |
+| 插件、引导与案例 | 批准的统一 Python 包 | `rpnh plugins`、`rpnh init`、`rpnh doctor`、`rpnh examples`；本地检查和导出不调用模型 |
+| 托管 DSH | 统一包、内含 `integrations/dsh`、固定上游及工具链 | `rpnh-dsh`；显式离线数值或共享配置文本模式 |
 | 共存 | 统一源码/wheel，加所需可选宿主 | 不要在同一环境覆盖安装多份同名 wheel |
 
-core main 默认前端是 `codex`，核对的适配增量默认是 `auto`；显式 `--frontend basic` 可避开这个差异。使用可选入口前阅读[适配指南](adapters_ZH.md)。独立 viewer 增强不自动成为本候选范围。
+统一 main 默认使用 `auto`：在交互式终端中，找到兼容的 Codex `0.155.0` 时使用它，否则使用内置终端；非交互式使用内置终端。需要特定界面时显式选择 `--frontend basic`、`codex` 或 `opencode`。使用可选宿主前阅读[适配指南](adapters_ZH.md)、[OpenCode](opencode_ZH.md)或 DSH 指南。独立 viewer 增强不自动成为本候选范围。
 
 ## 验证、升级与卸载
 只有已安装命令、包内 schema/config/static/example 资源，以及源码目录外的零模型配置流程均通过，才可称安装验证通过。editable 安装成功或链接检查通过都不足以替代。本文档批次单独记录 wheel 验证和站点检查。

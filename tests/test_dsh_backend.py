@@ -347,7 +347,7 @@ def test_full_multistep_and_registry_only_reopen_without_reexecution(tmp_path):
     assert result['answer']['text']=='12'
     assert [c['ticket']['kind'] for c in physical.calls]==['model','tool','model','tool','model']
     assert len({c['ticket']['execution_ref']['version_id'] for c in physical.calls})==5
-    path=next((tmp_path/'s1'/'attempts').iterdir())
+    path=next((tmp_path/'s1'/'main'/'attempts').iterdir())
     view=project_registry_net(path, catalog=b.core.catalog)
     firings={n['id']:n.get('runtime',{}).get('firing_count',0) for n in view['nodes'] if n['kind']=='transition'}
     assert firings['dsh.model']==3 and firings['dsh.tool']==2 and firings['dsh.inspect_tool']==2
@@ -477,7 +477,7 @@ def test_configured_model_uses_shared_registered_host_provider_once(tmp_path):
         'model_request', 'model_response']
     assert len(physical.calls) == 1
     assert 'provider_response' not in result['answer']['calls'][0]['arguments']
-    run_dir = next((tmp_path / 's1' / 'attempts').iterdir())
+    run_dir = next((tmp_path / 's1' / 'main' / 'attempts').iterdir())
     core = _RegistryCore(run_dir, create=False, read_only=True)
     assert core.event_store.actual_model_call_counts() == (1, 0)
     assert len(tuple(core.event_store.canonical_object_rows(
@@ -518,7 +518,7 @@ def test_configured_managed_plugin_tool_uses_shared_registry_boundary_once(
 
     assert result['answer']['text'] == 'The result is 8.'
     assert len(physical.calls) == 2
-    run_dir = next((tmp_path / 's1' / 'attempts').iterdir())
+    run_dir = next((tmp_path / 's1' / 'main' / 'attempts').iterdir())
     core = _RegistryCore(run_dir, create=False, read_only=True)
     assert core.event_store.actual_model_call_counts() == (2, 0)
     receipts = []
@@ -661,7 +661,7 @@ def test_configured_managed_tool_failure_becomes_correlated_error_result(
         'content': '{"error":"handler_failed"}',
     }
     assert backend.history()['active'] is None
-    run_dir = next((tmp_path / 's1' / 'attempts').iterdir())
+    run_dir = next((tmp_path / 's1' / 'main' / 'attempts').iterdir())
     core = _RegistryCore(run_dir, create=False, read_only=True)
     receipts = []
     for row in core.event_store.canonical_object_rows(

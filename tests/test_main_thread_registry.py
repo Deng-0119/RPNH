@@ -139,6 +139,37 @@ def test_two_committed_turns_recover_one_thread_and_history(tmp_path, monkeypatc
         "answer 1", "answer 2"]
 
 
+def test_new_main_registry_resolves_each_child_from_its_registry_root(
+        tmp_path: Path,
+) -> None:
+    main_root = tmp_path / "main"
+    core = _RegistryCore(main_root, create=True)
+    service = MainThreadRegistry(
+        core, session_root=tmp_path,
+        initialize_path_base=MainThreadRegistry.REGISTRY_ROOT_PATH_BASE)
+    created = service.create_thread(idempotency_key="create")
+
+    attachment = _start_turn(service, created, 1)
+
+    assert attachment.attempt_relative_path.startswith("attempts/")
+    assert attachment.attempt_path.parent == main_root / "attempts"
+    assert core.event_store.get_meta(
+        MainThreadRegistry.CHILD_PATH_BASE_META
+    ) == MainThreadRegistry.REGISTRY_ROOT_PATH_BASE
+
+
+def test_unknown_main_registry_child_path_base_fails_loudly(
+        tmp_path: Path,
+) -> None:
+    core = _RegistryCore(tmp_path / "main", create=True)
+    core.event_store.get_or_create_meta(
+        MainThreadRegistry.CHILD_PATH_BASE_META, "unknown/v9")
+
+    with pytest.raises(
+            MainThreadAuthorityError, match="child path base is unknown"):
+        MainThreadRegistry(core, session_root=tmp_path)
+
+
 def test_terminal_receipt_commit_is_idempotent(tmp_path, monkeypatch):
     core = _RegistryCore(tmp_path / "main", create=True)
     service = MainThreadRegistry(core, session_root=tmp_path)

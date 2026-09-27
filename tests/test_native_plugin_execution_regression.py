@@ -5,6 +5,7 @@ These tests run actual spawned handlers; no provider or network access is used.
 from __future__ import annotations
 
 import json
+import os
 
 import pytest
 
@@ -35,6 +36,19 @@ def test_native_success_is_not_an_unexplained_block(tmp_path, operation, argumen
     assert result["stop_reason"] == "terminal", {"result": result, "failures": failures}
     assert result["output"] == expected
     assert not failures
+
+
+def test_native_plugin_owner_channel_keeps_a_deep_registry_path(tmp_path):
+    run_dir = (
+        tmp_path / ("session-" + "x" * 80) / ("run-" + "y" * 80))
+    assert len(os.fsencode(str(run_dir / "owner.sock"))) >= 108
+
+    result = run_plugin(
+        catalog(), "test_plugin/add", {"x": 3}, run_dir=run_dir)
+
+    assert result["stop_reason"] == "terminal"
+    assert result["output"] == 5
+    assert not (tmp_path / ".rpnh-owner").exists()
 
 
 @pytest.mark.parametrize("operation, expected_code", [

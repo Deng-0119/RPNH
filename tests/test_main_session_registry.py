@@ -4,6 +4,7 @@ import json
 import os
 from pathlib import Path
 import signal
+import sqlite3
 import sys
 import time
 from types import SimpleNamespace
@@ -380,6 +381,26 @@ def test_new_session_registry_and_prepare_retry_use_exact_attempt(
     active = session._active_turn()
     assert active is not None
     assert active[1]["state"] == "running"
+    assert active[1]["attempt_relative_path"] == "turn-0001"
+
+
+def test_markerless_session_keeps_legacy_session_relative_children(
+        tmp_path: Path,
+) -> None:
+    session, root, execution = _new_session(tmp_path)
+    with sqlite3.connect(
+            root / "main" / ".registry_v1" / "registry.sqlite3") as db:
+        db.execute(
+            "DELETE FROM registry_meta WHERE key=?",
+            (MainThreadRegistry.CHILD_PATH_BASE_META,))
+
+    resumed = MainSession.resume(root, execution)
+    spec = resumed.prepare_turn("legacy question")
+    active = resumed._active_turn()
+
+    assert resumed.child_path_root == root
+    assert spec.run_dir == root / "main" / "turn-0001"
+    assert active is not None
     assert active[1]["attempt_relative_path"] == "main/turn-0001"
 
 
@@ -417,7 +438,7 @@ def test_main_turn_uses_profile_runtime_policy_without_source_edits(
     assert "old answer" not in prompt
 
 
-def test_long_main_session_uses_short_stable_owner_socket(
+def test_long_main_session_keeps_owner_socket_relative_to_turn_registry(
         tmp_path: Path,
 ) -> None:
     root = tmp_path / ("session-" + "x" * 100)
@@ -428,7 +449,7 @@ def test_long_main_session_uses_short_stable_owner_socket(
 
     assert len(os.fsencode(str(first.run_dir / "owner.sock"))) >= 108
     assert first.owner_socket_path is not None
-    assert len(os.fsencode(str(first.owner_socket_path))) < 108
+    assert first.owner_socket_path == first.run_dir / "owner.sock"
     assert second.owner_socket_path == first.owner_socket_path
 
 
@@ -668,7 +689,7 @@ def test_direct_agent_launch_gets_an_independent_registry_index(
     assert links[0]["origin_main_turn_ref"] is None
     assert links[0]["registry_relative_path"].startswith(
         "tasks/runs/child-")
-    assert (root / links[0]["registry_relative_path"]).resolve() == (
+    assert (root / "main" / links[0]["registry_relative_path"]).resolve() == (
         control.registered_spec.run_dir.resolve())
 
     assert control.child_registry_core is not None
@@ -1201,7 +1222,7 @@ def test_explicit_main_rollback_returns_to_prior_completed_turn_only(
         expected_type="main_turn/v1",
     )
     assert interrupted_turn["state"] == "interrupted"
-    assert interrupted_turn["attempt_relative_path"] == "main/turn-0002"
+    assert interrupted_turn["attempt_relative_path"] == "turn-0002"
     assert session.prepare_turn("third").run_dir.name == "turn-0003"
 
 

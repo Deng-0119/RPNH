@@ -229,9 +229,10 @@ def compose_modules(
             connections.append(ComposeConnection(
                 left, left_exits[0], right, right_entries[0]))
 
+    seen_sources: set[tuple[str, str, str]] = set()
     seen_targets: set[tuple[str, str]] = set()
     links: list[dict] = []
-    connected_sources: set[tuple[str, str]] = set()
+    connected_source_endpoints: set[tuple[str, str, str]] = set()
     connected_targets: set[tuple[str, str]] = set()
     for connection in connections:
         if (connection.source_instance not in documents
@@ -241,11 +242,19 @@ def compose_modules(
         right = documents[connection.target_instance]["entry"].get(connection.target_entry)
         if left is None or right is None:
             raise ValueError("connection names an unknown public endpoint")
+        source = (
+            connection.source_instance, left["component"], left["port"])
         target = (connection.target_instance, connection.target_entry)
+        if source in seen_sources:
+            raise ValueError(
+                "one composed exit cannot have multiple consumers; "
+                "declare a distributor transition with one output arc per "
+                "successor place")
         if target in seen_targets:
             raise ValueError("one composed entry cannot have multiple producers")
+        seen_sources.add(source)
         seen_targets.add(target)
-        connected_sources.add((connection.source_instance, connection.source_exit))
+        connected_source_endpoints.add(source)
         connected_targets.add(target)
         links.append({
             "source": _prefixed_endpoint(left, connection.source_instance),
@@ -282,7 +291,8 @@ def compose_modules(
                     "qualified public entry names collide: " + qualified)
             entries[qualified] = _prefixed_endpoint(endpoint, instance)
         for name, endpoint in document["exit"].items():
-            if (instance, name) in connected_sources:
+            if (instance, endpoint["component"], endpoint["port"]) in (
+                    connected_source_endpoints):
                 continue
             qualified = f"{instance}_{name}"
             if qualified in exits:

@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: ARCHITECTURE.md
-  revision: "2026-09-25.1"
+  revision: "2026-09-28.1"
   status: source-reviewed-pre-release
 ---
 
@@ -40,13 +40,19 @@ execution profile，以及指向 child task 的 Registry-native 链接。一个�
 每个 main turn 的模型执行都运行在自己的受监督 Registry root 中。主 Registry 保存
 turn lineage，以及提交 assistant answer 所需的精确 terminal receipt。同样，每个独立
 `/agent` 或 workflow 都有单独 Registry root。对这些独立 child，主 Registry 只保存
-session-relative path、task kind、可选的来源 committed turn，以及可读取后得到的精确
+parent-Registry-relative path、task kind、可选的来源 committed turn，以及可读取后得到的精确
 child task/run 引用；不复制 child events、tokens、workspace revisions 或 results。TaskControl
 manifest 仍然只是 process-lifecycle 投影，不是这层关系的权威。
 
-Task owner socket 会在 task control root 及其向上两级祖先中，选择路径最深、实际可用且
-满足 Linux `AF_UNIX` 长度限制的位置。通常它仍位于同一 session 树内，不要求源码树
-可写，也绝不回退到全局 `/tmp`。
+新 Registry 中，每个 child path 都相对于其直接父 Registry root 解释。访问 grandchild
+时先沿 child link，再沿 grandchild link，不会把深层节点重新直接锚定到最外层 session
+目录。新 Registry 会在 metadata 中记录该约定；缺少该 marker 表示现有的 session-root
+Registry，并继续按旧语义读取。Worker spec 与 TaskControl manifest 同样只持久化父节点
+相对引用。
+
+每个 task owner socket 都保留为该 task Registry 内的 `owner.sock`。在 Linux 上，RPNH
+打开其直接父目录，只在 `AF_UNIX` bind/connect 的瞬间使用较短的
+`/proc/.../fd/...` 传输地址。该临时地址不会持久化，也不会压平或替代 Registry 树。
 
 主 Agent 可以直接回复、创建一个独立 single-agent task，或作为 Designer 声明 workflow
 图。每个独立 child 都拥有单独进程、Registry root、PetriNet、execution authority 和
@@ -68,6 +74,10 @@ transition 和正数 `max_rework_cycles` 预算。这样首次 dependency 输入
 通过验证的 graph 会 lowering 为 typed places、transitions、arcs、token claim、firing
 admission、execution 和 settlement。进程退出或前端可见消息不能替代 PetriNet 与 Registry
 terminal evidence。
+Firing admission 要求满足所有输入 arc 权重所指定的全部前驱 occurrence；成功 settlement
+则按照每条输出 arc 的声明权重，把对应数量的 occurrence 放入各自独立的后继 place。
+融合 place 表示冲突／共享库所，不表示广播。因此分支必须声明具有不同输出 arc 的真实
+transition；native composition 会拒绝把同一个公共出口直接接到多个消费者。
 
 ## Agent 执行、workspace、资源与委派
 

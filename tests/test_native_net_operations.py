@@ -167,6 +167,22 @@ def test_serial_parallel_and_instance_are_explicit_and_lowerable():
 
 def test_compose_rejects_implicit_broadcast_and_incompatible_link():
     definition = _simple_module()
+    with pytest.raises(ValueError, match="distributor transition"):
+        compose_modules({"a": definition, "b": definition, "c": definition}, ComposePlan(
+            "Bad", "c", connections=(
+                ComposeConnection("a", "result", "b", "request"),
+                ComposeConnection("a", "result", "c", "request"),
+            )))
+    aliased_document = definition.to_dict()
+    aliased_document["exit"]["same_result"] = dict(
+        aliased_document["exit"]["result"])
+    aliased = ModuleDeclaration.from_dict(aliased_document)
+    with pytest.raises(ValueError, match="distributor transition"):
+        compose_modules({"a": aliased, "b": definition, "c": definition}, ComposePlan(
+            "AliasedBad", "c", connections=(
+                ComposeConnection("a", "result", "b", "request"),
+                ComposeConnection("a", "same_result", "c", "request"),
+            )))
     with pytest.raises(ValueError, match="multiple producers"):
         compose_modules({"a": definition, "b": definition, "c": definition}, ComposePlan(
             "Bad", "c", connections=(

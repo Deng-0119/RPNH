@@ -14,15 +14,32 @@ def main(argv: list[str] | None = None) -> int:
     resume = bool(arguments and arguments[0] == "--resume")
     if resume:
         arguments = arguments[1:]
+    launch_lock_fd = None
+    if arguments and arguments[0] == "--launch-lock-fd":
+        if len(arguments) < 2:
+            raise SystemExit(
+                "--launch-lock-fd requires one descriptor number")
+        try:
+            launch_lock_fd = int(arguments[1])
+        except ValueError as exc:
+            raise SystemExit(
+                "--launch-lock-fd requires one descriptor number") from exc
+        if launch_lock_fd < 0:
+            raise SystemExit(
+                "--launch-lock-fd requires one descriptor number")
+        arguments = arguments[2:]
     if len(arguments) != 1:
         raise SystemExit(
-            "usage: python -m cpn.rpnh.task_worker [--resume] TASK_SPEC.json")
+            "usage: python -m cpn.rpnh.task_worker [--resume] "
+            "[--launch-lock-fd FD] TASK_SPEC.json")
     path = Path(arguments[0])
     try:
         document = json.loads(path.read_text(encoding="utf-8"))
-        spec = AgentTaskSpec.from_worker_document(document)
+        spec = AgentTaskSpec.from_worker_document(
+            document, document_root=path.resolve().parent)
         launch_claim = claim_task_worker_launch(
-            path, spec, resume=resume)
+            path, spec, resume=resume,
+            inherited_lock_fd=launch_lock_fd)
         if launch_claim is None:
             return 3
         result = (
