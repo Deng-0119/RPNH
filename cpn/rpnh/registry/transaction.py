@@ -70,15 +70,11 @@ class RegistryTransaction:
                  producer_invocation_id: TypedId | None = None) -> PreparedObject:
         if self._closed:
             raise RuntimeError("transaction is closed")
-        replace_unregistered = (
-            all(item.version_id != version_id for item in self._objects)
-            and self.event_store.object_row(version_id) is None)
         prepared = self.object_store.prewrite(
             object_type=object_type, logical_id=logical_id, version_id=version_id,
             payload=payload, metadata=metadata, media_type=media_type,
             schema_ref=schema_ref,
-            producer_invocation_id=producer_invocation_id,
-            replace_unregistered=replace_unregistered)
+            producer_invocation_id=producer_invocation_id)
         self._objects.append(prepared)
         return prepared
 
@@ -108,16 +104,12 @@ class RegistryTransaction:
             producer_invocation_id: TypedId | None = None) -> PreparedObject:
         if self._closed:
             raise RuntimeError("transaction is closed")
-        replace_unregistered = (
-            all(item.version_id != version_id for item in self._objects)
-            and self.event_store.object_row(version_id) is None)
         prepared = self.object_store.prewrite_with_metadata_factory(
             object_type=object_type, logical_id=logical_id,
             version_id=version_id, payload=payload,
             metadata_factory=metadata_factory, media_type=media_type,
             schema_ref=schema_ref,
-            producer_invocation_id=producer_invocation_id,
-            replace_unregistered=replace_unregistered)
+            producer_invocation_id=producer_invocation_id)
         self._objects.append(prepared)
         return prepared
 

@@ -86,6 +86,11 @@ checkpoint 和 2000 条 firing。查看已知大型 run 时提高它们，不需
 显式 loopback IP，`--port` 范围为 0–65535。view 模式有意拒绝 `--resources-only`、
 `--node`、`--output` 和非文本 `--format`；这些筛选使用终端投影。
 
+Viewer 是独立的本地只读展示服务。它接受 IPv4／IPv6 loopback 字面地址
+（`127.0.0.1` 与 `::1`），为 IPv6 输出带方括号的 URL，并且只服务 `Host` 与可选
+`Origin` 精确指向该监听器的请求。这一边界不会给 Registry 执行或 provider 调用增加
+HTTP transport；Codex、OpenCode 与 DSH 继续使用各自的适配传输。
+
 ## 认识页面区域
 
 | 区域 | 含义 |

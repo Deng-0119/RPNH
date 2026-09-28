@@ -26,7 +26,7 @@ python -m pip install -e '.[test]'
 python -m pytest -q
 ```
 
-This is the repository's general test entry, not a command executed by this documentation batch. Prefer focused affected-boundary tests for small changes. The reviewed core test extra specifies pytest; adapter overlays additionally declare numpy/scipy. Record missing dependencies rather than attributing collection failure to runtime semantics. Do not relax version bounds merely to use preinstalled libraries.
+This is the repository's general test entry, not a command executed by this documentation batch. Prefer focused affected-boundary tests for small changes. The single `.[test]` extra declares pytest, numpy and scipy. Record missing dependencies rather than attributing collection failure to runtime semantics. Do not relax version bounds merely to use preinstalled libraries.
 
 The repository includes the lockfile-pinned viewer bundles and their license
 texts so normal source and sdist wheel builds do not require Node. When those

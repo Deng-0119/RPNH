@@ -10,8 +10,9 @@ from __future__ import annotations
 from dataclasses import dataclass
 import json
 from http.server import BaseHTTPRequestHandler, HTTPServer
-from ipaddress import ip_address
+from ipaddress import IPv4Address, IPv6Address, ip_address
 from pathlib import Path
+import socket
 from typing import Any, Callable, Mapping
 from urllib.parse import urlsplit, parse_qs
 import webbrowser
@@ -47,8 +48,83 @@ def _validate_loopback(host: str) -> None:
         address = ip_address(host)
     except ValueError as exc:
         raise ValueError("host 必须是明确的回环 IP 地址") from exc
-    if not address.is_loopback:
+    if not address.is_loopback or getattr(address, "scope_id", None) is not None:
         raise ValueError("只允许绑定回环地址")
+
+
+def _format_authority(address: IPv4Address | IPv6Address, port: int) -> str:
+    host = (
+        f"[{address.compressed}]" if address.version == 6
+        else address.compressed)
+    return host if port == 80 else f"{host}:{port}"
+
+
+def _parse_ip_authority(
+        value: str,
+) -> tuple[IPv4Address | IPv6Address, int | None]:
+    """Parse the deliberately narrow authority accepted by the Viewer."""
+    if not value or any(char.isspace() or ord(char) < 32 for char in value):
+        raise ValueError("invalid authority")
+    if value.startswith("["):
+        closing = value.find("]")
+        if closing <= 1:
+            raise ValueError("invalid IPv6 authority")
+        host = value[1:closing]
+        remainder = value[closing + 1:]
+        if "]" in value[closing + 1:] or "%" in host:
+            raise ValueError("invalid IPv6 authority")
+        address = ip_address(host)
+        if address.version != 6:
+            raise ValueError("brackets require IPv6")
+        if remainder and not remainder.startswith(":"):
+            raise ValueError("invalid IPv6 authority")
+        port_text = remainder[1:] if remainder else None
+    else:
+        if value.count(":") > 1:
+            raise ValueError("invalid IPv4 authority")
+        host, separator, exact_port = value.partition(":")
+        port_text = exact_port if separator else None
+        address = ip_address(host)
+        if address.version != 4:
+            raise ValueError("IPv6 requires brackets")
+    if port_text is None:
+        return address, None
+    if (not port_text or not port_text.isascii() or not port_text.isdecimal()
+            or (len(port_text) > 1 and port_text.startswith("0"))):
+        raise ValueError("invalid port")
+    port = int(port_text)
+    if not 0 <= port <= 65535:
+        raise ValueError("invalid port")
+    return address, port
+
+
+def _authority_matches(
+    value: str,
+    expected_address: IPv4Address | IPv6Address,
+    expected_port: int,
+) -> bool:
+    try:
+        address, port = _parse_ip_authority(value)
+    except ValueError:
+        return False
+    normalized_port = 80 if port is None else port
+    return address == expected_address and normalized_port == expected_port
+
+
+def _origin_matches(
+    value: str,
+    expected_address: IPv4Address | IPv6Address,
+    expected_port: int,
+) -> bool:
+    if not value or any(char.isspace() or ord(char) < 32 for char in value):
+        return False
+    prefix = "http://"
+    if value[:len(prefix)].lower() != prefix:
+        return False
+    # Origin is a serialized origin, not a URL with a path, query, fragment,
+    # credentials, or an inferred/default port. The authority parser rejects
+    # all of those extra forms, including userinfo.
+    return _authority_matches(value[len(prefix):], expected_address, expected_port)
 
 
 def _projection_error(message: str) -> ValueError:
@@ -195,6 +271,104 @@ def handle_request(
     return response
 
 
+class _ProjectionHandler(BaseHTTPRequestHandler):
+    server: "_ProjectionHTTPServer"
+
+    def _send_response(self, response: RequestResponse) -> None:
+        self.send_response(response.status)
+        for name, value in response.headers.items():
+            self.send_header(name, value)
+        self.end_headers()
+        if self.command != "HEAD":
+            self.wfile.write(response.body)
+
+    def _request_boundary(
+            self,
+    ) -> tuple[RequestResponse | None, str | None]:
+        request_parts = self.requestline.split()
+        raw_target = request_parts[1] if len(request_parts) == 3 else ""
+        target = urlsplit(raw_target)
+        if (not raw_target.startswith("/") or raw_target.startswith("//")
+                or target.scheme or target.netloc or target.fragment):
+            return (
+                _response(
+                    400, "text/plain; charset=utf-8",
+                    "Viewer 只接受 origin-form request target".encode("utf-8")),
+                None,
+            )
+
+        host_values = self.headers.get_all("Host", [])
+        if (len(host_values) != 1
+                or not _authority_matches(
+                    host_values[0], self.server.bound_address, self.server.bound_port)):
+            return (
+                _response(
+                    400, "text/plain; charset=utf-8",
+                    "Host 与 Viewer 监听地址不匹配".encode("utf-8")),
+                None,
+            )
+
+        origin_values = self.headers.get_all("Origin", [])
+        if len(origin_values) > 1 or (
+            origin_values and not _origin_matches(
+                origin_values[0], self.server.bound_address, self.server.bound_port)
+        ):
+            return (
+                _response(
+                    400, "text/plain; charset=utf-8",
+                    "Origin 与 Viewer 不同源".encode("utf-8")),
+                None,
+            )
+        return None, raw_target
+
+    def _send(self) -> None:
+        rejection, target = self._request_boundary()
+        if rejection is not None:
+            self._send_response(rejection)
+            return
+        assert target is not None
+        response = handle_request(
+            self.server.provider,
+            self.command,
+            target,
+            show_resources=self.server.show_resources,
+        )
+        self._send_response(response)
+
+    do_GET = _send
+    do_HEAD = _send
+
+    def do_POST(self) -> None: self._send()
+    def do_PUT(self) -> None: self._send()
+    def do_PATCH(self) -> None: self._send()
+    def do_DELETE(self) -> None: self._send()
+
+    def log_message(self, _format: str, *_args: object) -> None:
+        return
+
+
+class _ProjectionHTTPServer(HTTPServer):
+    """HTTPServer pinned to one literal loopback address family and origin."""
+
+    def __init__(
+        self,
+        provider: ProjectionProvider,
+        host: str,
+        port: int,
+        show_resources: bool,
+    ) -> None:
+        _validate_loopback(host)
+        address = ip_address(host)
+        self.address_family = socket.AF_INET6 if address.version == 6 else socket.AF_INET
+        self.provider = provider
+        self.show_resources = show_resources
+        super().__init__((address.compressed, port), _ProjectionHandler)
+        self.bound_address = ip_address(self.server_address[0])
+        self.bound_port = int(self.server_address[1])
+        self.authority = _format_authority(self.bound_address, self.bound_port)
+        self.origin = f"http://{self.authority}"
+
+
 def serve_projection(
     provider: ProjectionProvider,
     host: str = "127.0.0.1",
@@ -207,31 +381,8 @@ def serve_projection(
     if not isinstance(port, int) or not 0 <= port <= 65535:
         raise ValueError("port 必须在 0 到 65535 之间")
 
-    class ProjectionHandler(BaseHTTPRequestHandler):
-        def _send(self) -> None:
-            response = handle_request(provider, self.command, self.path,
-                                      show_resources=show_resources)
-            self.send_response(response.status)
-            for name, value in response.headers.items():
-                self.send_header(name, value)
-            self.end_headers()
-            if self.command != "HEAD":
-                self.wfile.write(response.body)
-
-        do_GET = _send
-        do_HEAD = _send
-
-        def do_POST(self) -> None: self._send()
-        def do_PUT(self) -> None: self._send()
-        def do_PATCH(self) -> None: self._send()
-        def do_DELETE(self) -> None: self._send()
-
-        def log_message(self, _format: str, *_args: object) -> None:
-            return
-
-    with HTTPServer((host, port), ProjectionHandler) as server:
-        bound_port = int(server.server_port)
-        url = f"http://{host}:{bound_port}/"
+    with _ProjectionHTTPServer(provider, host, port, show_resources) as server:
+        url = f"{server.origin}/"
         print(f"PetriNet 只读查看器：{url}")
         if open_browser:
             webbrowser.open(url)
@@ -239,4 +390,4 @@ def serve_projection(
             server.serve_forever()
         except KeyboardInterrupt:
             pass
-    return bound_port
+    return server.bound_port

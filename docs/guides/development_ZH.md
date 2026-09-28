@@ -26,7 +26,7 @@ python -m pip install -e '.[test]'
 python -m pytest -q
 ```
 
-这是仓库通用测试入口，不是本文档批次已执行的命令。小改优先受影响边界测试。core test extra 声明 pytest，适配增量另声明 numpy/scipy。缺依赖要如实记录，不把 collection 失败当运行语义错误，也不为迁就预装库放宽版本限制。
+这是仓库通用测试入口，不是本文档批次已执行的命令。小改优先受影响边界测试。唯一的 `.[test]` extra 同时声明 pytest、numpy 和 scipy。缺依赖要如实记录，不把 collection 失败当运行语义错误，也不为迁就预装库放宽版本限制。
 
 仓库提交 lockfile 固定的 viewer bundle 及许可文本，使普通源码／sdist wheel 构建不依赖
 Node 或网络。只有明确更新这些依赖时，才重新生成并测试已提交资源：

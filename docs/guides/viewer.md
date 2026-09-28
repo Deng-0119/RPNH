@@ -95,6 +95,12 @@ loopback IP; `--port` accepts 0–65535. View mode intentionally rejects
 `--resources-only`, `--node`, `--output` and non-text `--format`; use the
 terminal projection for those filters.
 
+The Viewer is a separate, read-only local display service. It accepts IPv4 and
+IPv6 loopback literals (`127.0.0.1` and `::1`), prints bracketed IPv6 URLs, and
+serves only requests whose `Host` and optional `Origin` identify that exact
+listener. This boundary does not add an HTTP transport to Registry execution or
+provider calls; Codex, OpenCode and DSH retain their own adapter transports.
+
 ## Read the screen
 
 | Region | Meaning |

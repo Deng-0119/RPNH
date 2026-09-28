@@ -3,10 +3,14 @@ from pathlib import Path
 import json
 import pytest
 from cpn.frontend import server
+from scripts.check_net_viewer_wheel import REQUIRED_STATIC_FILES
 from test_net_viewer import _projection
 
 
-@pytest.mark.parametrize("asset", ["/model.mjs", "/layout.mjs", "/renderer.mjs", "/panels.mjs", "/i18n.mjs", "/messages.mjs", "/canvas-text.mjs", "/overview.mjs", "/wire-geometry.mjs"])
+@pytest.mark.parametrize(
+    "asset",
+    [f"/{name}" for name in REQUIRED_STATIC_FILES if name.endswith(".mjs")],
+)
 def test_viewer_modules_never_read_a_registry(asset):
     def unexpected(): pytest.fail("static asset invoked Registry provider")
     response = server.handle_request(unexpected, "GET", asset)
@@ -14,6 +18,15 @@ def test_viewer_modules_never_read_a_registry(asset):
     assert response.headers["X-Content-Type-Options"] == "nosniff"
     assert "worker-src 'self'" in response.headers["Content-Security-Policy"]
     assert "script-src 'self';" in response.headers["Content-Security-Policy"]
+
+
+def test_wheel_audit_covers_every_top_level_served_static_file():
+    served_files = {"index.html"} | {
+        filename for filename, _content_type in server._ASSETS.values()
+        if not filename.startswith("assets/")
+    }
+    assert set(REQUIRED_STATIC_FILES) == served_files
+    assert {"overview.mjs", "wire-geometry.mjs"} <= set(REQUIRED_STATIC_FILES)
 
 
 @pytest.mark.parametrize("path", ["/assets/../server.py", "/assets/%2e%2e/server.py", "/assets/no-such-file", "/../pyproject.toml"])

@@ -42,16 +42,9 @@ class ObjectStore:
         return f"registry-object:{version_id}"
 
     def _publish_payload(
-            self, payload: bytes, version_id: TypedId, *,
-            replace_unregistered: bool = False) -> None:
+            self, payload: bytes, version_id: TypedId) -> None:
         destination = self.path_for_version(version_id)
         destination.parent.mkdir(parents=True, exist_ok=True)
-        if destination.exists():
-            if destination.read_bytes() == payload:
-                return
-            if not replace_unregistered:
-                raise ObjectIntegrityError(
-                    f"immutable version collision at {destination}")
         fd, temporary = tempfile.mkstemp(
             prefix="prewrite-", dir=destination.parent)
         try:
@@ -59,12 +52,8 @@ class ObjectStore:
                 stream.write(payload)
                 stream.flush()
                 os.fsync(stream.fileno())
-            os.replace(temporary, destination)
-            directory_fd = os.open(destination.parent, os.O_DIRECTORY)
-            try:
-                os.fsync(directory_fd)
-            finally:
-                os.close(directory_fd)
+            self._publish_temporary_exact(
+                Path(temporary), destination)
         finally:
             try:
                 os.unlink(temporary)
@@ -75,8 +64,7 @@ class ObjectStore:
                  version_id: TypedId, payload: bytes,
                  metadata: Mapping[str, Any], media_type: str,
                  schema_ref: str,
-                 producer_invocation_id: TypedId | None = None,
-                 replace_unregistered: bool = False) -> PreparedObject:
+                 producer_invocation_id: TypedId | None = None) -> PreparedObject:
         if self.read_only:
             raise ObjectIntegrityError("read-only immutable object store cannot prewrite")
         definition = self.catalog.require(object_type, category="object")
@@ -97,9 +85,7 @@ class ObjectStore:
             storage_locator=self.locator_for_version(version_id),
             metadata=dict(metadata))
         self.validate_envelope(prepared)
-        self._publish_payload(
-            payload, version_id,
-            replace_unregistered=replace_unregistered)
+        self._publish_payload(payload, version_id)
         return prepared
 
     def prewrite_with_metadata_factory(
@@ -107,8 +93,7 @@ class ObjectStore:
             version_id: TypedId, payload: bytes,
             metadata_factory: Callable[[int], Mapping[str, Any]],
             media_type: str, schema_ref: str,
-            producer_invocation_id: TypedId | None = None,
-            replace_unregistered: bool = False) -> PreparedObject:
+            producer_invocation_id: TypedId | None = None) -> PreparedObject:
         """Prewrite bytes whose metadata records their exact byte count."""
 
         if self.read_only:
@@ -140,9 +125,7 @@ class ObjectStore:
             storage_locator=self.locator_for_version(version_id),
             metadata=frozen_metadata)
         self.validate_envelope(prepared)
-        self._publish_payload(
-            payload, version_id,
-            replace_unregistered=replace_unregistered)
+        self._publish_payload(payload, version_id)
         return prepared
 
     def prewrite_descriptor(
@@ -194,21 +177,61 @@ class ObjectStore:
             if total != expected_size:
                 raise ObjectIntegrityError(
                     "streamed object differs from its declared byte count")
-            if destination.exists():
-                self._verify_path(destination, size=expected_size)
-            else:
-                os.replace(temporary, destination)
-                directory_fd = os.open(destination.parent, os.O_DIRECTORY)
-                try:
-                    os.fsync(directory_fd)
-                finally:
-                    os.close(directory_fd)
+            self._publish_temporary_exact(
+                Path(temporary), destination)
             return prepared
         finally:
             try:
                 os.unlink(temporary)
             except FileNotFoundError:
                 pass
+
+    def _publish_temporary_exact(
+            self, temporary: Path, destination: Path) -> None:
+        """Atomically publish once, accepting only exact-byte replay.
+
+        The temporary file is in the destination directory, so a hard link is
+        one atomic no-clobber publication on the same filesystem.  A competing
+        publisher either wins that link or observes its exact bytes here; no
+        participant can overwrite another exact version.
+        """
+
+        try:
+            os.link(temporary, destination)
+        except FileExistsError:
+            if not self._paths_have_same_bytes(destination, temporary):
+                raise ObjectIntegrityError(
+                    f"immutable version collision at {destination}")
+        # Persist both the destination link and removal of this publisher's
+        # temporary alias.  Exact-byte concurrent losers also perform the
+        # directory sync, so they cannot acknowledge a winner's unpersisted
+        # link merely because it became visible first.
+        temporary.unlink()
+        self._fsync_directory(destination.parent)
+
+    @staticmethod
+    def _fsync_directory(directory: Path) -> None:
+        directory_fd = os.open(directory, os.O_DIRECTORY)
+        try:
+            os.fsync(directory_fd)
+        finally:
+            os.close(directory_fd)
+
+    def _paths_have_same_bytes(self, left: Path, right: Path) -> bool:
+        """Compare two payload files without retaining either payload in memory."""
+
+        try:
+            with left.open("rb") as left_stream, right.open("rb") as right_stream:
+                while True:
+                    left_chunk = left_stream.read(self._CHUNK_SIZE)
+                    right_chunk = right_stream.read(self._CHUNK_SIZE)
+                    if left_chunk != right_chunk:
+                        return False
+                    if not left_chunk:
+                        return True
+        except OSError as exc:
+            raise ObjectIntegrityError(
+                "cannot compare immutable payloads for exact-version reuse") from exc
 
     def validate_envelope(self, prepared: PreparedObject) -> None:
         definition = self.catalog.require(prepared.object_type, category="object")
