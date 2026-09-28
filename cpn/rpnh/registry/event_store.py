@@ -731,7 +731,6 @@ class _HistoricalMechanicalTerminalReadyAuthorization:
     firing_ref: tuple[str, str, str]
     lease_ref: tuple[str, str, str]
     operation_result_ref: tuple[str, str, str]
-    context_digest: str
     event_material: Mapping[str, Any]
 
 
@@ -861,10 +860,11 @@ def _transaction_command_material(
             str, Mapping[str, Any] | None],
         expected_dependency_root_predecessor: Mapping[
             str, str | None] | None,
+        workspace_head_advances: Sequence[Mapping[str, str]] = (),
 ) -> Mapping[str, Any]:
     """Return the exact structural material for one Registry command."""
 
-    return {
+    material = {
         "branch_id": branch_id,
         "task_round_id": task_round_id,
         "net_instance_id": net_instance_id,
@@ -912,6 +912,12 @@ def _transaction_command_material(
             dict(expected_dependency_root_predecessor)
             if expected_dependency_root_predecessor is not None else None),
     }
+    # Preserve the exact historical idempotency material for ordinary
+    # transactions.  The generic CAS command becomes material only when used.
+    if workspace_head_advances:
+        material["workspace_head_advances"] = [
+            dict(item) for item in workspace_head_advances]
+    return material
 
 
 def _ref_json(ref: Any) -> dict[str, Any]:
@@ -1113,7 +1119,6 @@ class EventStore:
             task_round_ref: VersionRef, net_instance_ref: VersionRef,
             invocation_ref: VersionRef, firing_ref: VersionRef,
             lease_ref: VersionRef, operation_result_ref: VersionRef,
-            context_digest: str,
     ) -> PendingEvent:
         """Attach a private one-use proof to one exact terminal-ready event."""
 
@@ -1124,7 +1129,6 @@ class EventStore:
                 != _exact_ref_payload(lease_ref)
                 or event.payload.get("operation_result_ref")
                 != _exact_ref_payload(operation_result_ref)
-                or event.payload.get("context_digest") != context_digest
                 or event.idempotency_key != event.command_id
                 or task_round_id != task_round_ref.entity_id
                 or net_instance_id != net_instance_ref.entity_id
@@ -1152,7 +1156,6 @@ class EventStore:
             lease_ref=self._authorization_ref_identity(lease_ref),
             operation_result_ref=self._authorization_ref_identity(
                 operation_result_ref),
-            context_digest=context_digest,
             event_material=self._pending_event_authorization_material(event),
         )
         with self._lock:
@@ -1856,6 +1859,8 @@ class EventStore:
                           str, str | None] | None = None,
                       firing_publications: Sequence[
                           Mapping[str, object]] = (),
+                      workspace_head_advances: Sequence[
+                          Mapping[str, object]] = (),
                       ) -> tuple[EventEnvelope, ...]:
         from ._event_store import commit
 
@@ -1869,6 +1874,7 @@ class EventStore:
             expected_dependency_root_predecessor=(
                 expected_dependency_root_predecessor),
             firing_publications=firing_publications,
+            workspace_head_advances=workspace_head_advances,
         )
 
     def _before_firing_authority_mutation(
@@ -2034,6 +2040,10 @@ class EventStore:
     def actual_model_call_limit(self) -> int:
         from ._event_store import accounting
         return accounting.actual_model_call_limit(self)
+
+    def ordinary_model_call_limit(self) -> int:
+        from ._event_store import accounting
+        return accounting.ordinary_model_call_limit(self)
 
     def list_events_by_transaction(self, transaction_id: str) -> tuple[EventEnvelope, ...]:
         from ._event_store import queries

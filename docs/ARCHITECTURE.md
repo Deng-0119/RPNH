@@ -198,6 +198,24 @@ as interrupted and returns the conversation to its prior completed turn; the
 separate child Registry and every independently indexed task/workflow Registry
 remain intact.
 
+Independent child control also exposes an explicit checkpoint-reopen protocol.
+`/task ID checkpoints` lists committed cuts; `/task ID reopen CHECKPOINT`
+selects one exact cut after the current owner has stopped or terminated. The
+Registry atomically appends an owner authorization, fresh occurrences cloned
+from that cut's live tokens, workspace revisions based on that cut, a new
+checkpoint and a new execution authority generation. Current attempt high-water
+marks are retained so physical attempt identities are never reused. Later
+history is superseded for current execution but remains immutable and readable;
+the task ID, run ID, net and Registry do not change.
+
+If the selected reopen command reaches a recoverable running generation, Core
+first enumerates every active firing in deterministic order and closes each
+exact firing through its registered completion or owner-interrupted outcome.
+Only then may it stage the selected historical cut. Each closure is separately
+idempotent, so loss of the replacement owner after one parallel branch has
+closed resumes by draining only the remaining branches; it does not replay the
+abandoned physical calls or weaken ordinary stale-lease admission.
+
 An owner stop is also propagated into the currently running provider or
 workspace boundary. The in-flight process/connection is cancelled, racing
 products are rejected, and the current semantic action is not committed. For

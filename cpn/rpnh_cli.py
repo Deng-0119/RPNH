@@ -286,8 +286,12 @@ def _run_task_action(
                 "usage: /net [view [--show-resources] [--no-open]]")
     elif action == "stop" and payload is None:
         _print_json(session.task_control.stop(task_id))
+    elif action == "checkpoints" and payload is None:
+        _print_json(session.task_control.checkpoints(task_id))
     elif action == "resume" and payload is None:
         _print_json(session.task_control.resume(task_id))
+    elif action == "reopen" and payload:
+        _print_json(session.task_control.reopen(task_id, payload.strip()))
     elif action == "message" and payload:
         if " :: " in payload:
             target, body = payload.split(" :: ", 1)
@@ -319,6 +323,8 @@ def _task_command(
   /task ID message TARGET :: TEXT
   /task ID stop                checkpoint-stop this exact task process
   /task ID resume              resume an owner-stopped task from Registry
+  /task ID checkpoints         list selectable committed Petri checkpoints
+  /task ID reopen CHECKPOINT   start a new generation at that exact checkpoint
   /status | /result | /net | /message | /stop | /resume
                                operate on the selected child task
   /resume                      with main selected, settle terminal evidence or continue a paused turn
@@ -380,7 +386,7 @@ def _task_command(
         parts = line.split(maxsplit=3)
         if len(parts) < 3:
             raise ValueError(
-                "usage: /task ID {status|result|net|message|stop|resume}")
+                "usage: /task ID {status|result|net|message|stop|checkpoints|resume|reopen}")
         _run_task_action(
             session, parts[1], parts[2],
             None if len(parts) == 3 else parts[3])

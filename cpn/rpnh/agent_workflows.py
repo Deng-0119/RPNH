@@ -969,6 +969,11 @@ def build_agent_workflow_module(
                 "config": {
                     "provider_attempt_limit": 3,
                     "agent_loop_role": node.execution.role,
+                    "workspace_failure_policy": (
+                        "allow_explicit_diagnostic"
+                        if node.execution.role in {
+                            "critic", "finalization_reviewer"}
+                        else "require_resolved"),
                     "execution_profile_id": node.execution.profile_id,
                     "semantic_node_id": node.node_id,
                     "node_synopsis": node.instruction,

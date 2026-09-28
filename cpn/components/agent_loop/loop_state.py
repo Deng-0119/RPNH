@@ -693,9 +693,8 @@ class LoopStateExecutionMixin:
     def task_model_call_handoff_required_v1(self, execution):
         execution = self._execution(execution)
         # Use the existing exact Registry accounting, not a local counter.
-        manifest = self.core.get_version(self.ledger.recovery_manifest_ref().version_id).metadata
         counts = self.core.event_store.actual_model_call_counts()
-        return counts[0] >= manifest["ordinary_global_cap"]
+        return counts[0] >= self.core.event_store.ordinary_model_call_limit()
 
     def handoff_agent_llm_turn_cap_v1(self, execution, loop, *, idempotency_key):
         self._execution(execution, loop)

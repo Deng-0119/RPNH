@@ -512,6 +512,7 @@ def _publish_conflict_evidence(
         "transition_firing_ref": _ref_payload(
             context.own_transition_firing_ref),
         "firing_workspace_binding_ref": _ref_payload(view_ref),
+        "reopen_authorization_ref": None,
         "disposition": "conflict",
         "changed_paths": changed_paths,
         "deleted_paths": deleted_paths,
@@ -884,6 +885,7 @@ def prepare_firing_workspace_plans(
         "transition_firing_ref": _ref_payload(
             context.own_transition_firing_ref),
         "firing_workspace_binding_ref": _ref_payload(view_ref),
+        "reopen_authorization_ref": None,
         "disposition": disposition,
         "changed_paths": changed_paths,
         "deleted_paths": deleted_paths,

@@ -407,9 +407,12 @@ class InvocationLifecycle:
     def _terminal_descendant_event_ids(
             self, context: InvocationContext,
             provider_submission_unknown_ref: VersionRef | None = None,
+            *, allow_failed_invocations: bool = False,
     ) -> tuple[str, ...]:
         from ._invocation.terminal import _terminal_descendant_event_ids as implementation
-        return implementation(self, context, provider_submission_unknown_ref)
+        return implementation(
+            self, context, provider_submission_unknown_ref,
+            allow_failed_invocations=allow_failed_invocations)
 
     @staticmethod
     def _relation_endpoint(row: Mapping[str, Any], field: str) -> VersionRef:

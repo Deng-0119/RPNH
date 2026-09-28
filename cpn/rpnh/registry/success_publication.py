@@ -195,6 +195,7 @@ def stage_success_material(
         publish_checkpoint: bool, idempotency_key: str,
         declared_effects: Mapping[str, Any] | None = None,
         revision=None,
+        historical_lease_writer_epoch: int | None = None,
 ) -> SuccessMaterial:
     _check_success_authority(
         core, kernel, tx, executable, prior_marking, projected, new_tokens,
@@ -313,7 +314,7 @@ def stage_success_material(
             "derived_from", result_ref, _version_from_payload(value),
             metadata={"role": label}),
             producer_invocation_id=context.invocation_ref.entity_id)
-    tx.append(PendingEvent(
+    ready_event: PendingEvent = PendingEvent(
         event_type="operation_terminal_ready/v1",
         criticality="authoritative",
         stream_id=f"invocation:{context.invocation_ref.entity_id}",
@@ -325,7 +326,33 @@ def stage_success_material(
         payload_schema_ref="registry_v1/operation_terminal_ready/v1",
         task_control=True,
         producer_principal=str(context.principal_ref.entity_id),
-        producer_invocation_id=context.invocation_ref.entity_id))
+        producer_invocation_id=context.invocation_ref.entity_id)
+    if historical_lease_writer_epoch is not None:
+        if (isinstance(historical_lease_writer_epoch, bool)
+                or historical_lease_writer_epoch < 1
+                or context.own_transition_firing_ref is None):
+            raise ResourceIntegrityFault(
+                "historical settlement requires one exact stale firing lease")
+        ready_event = (
+            core.event_store
+            ._authorize_historical_mechanical_terminal_ready_event(
+                ready_event,
+                task_id=tx.task_id,
+                branch_id=tx.branch_id,
+                task_round_id=context.task_round_ref.entity_id,
+                net_instance_id=context.net_instance_ref.entity_id,
+                transaction_id=tx.transaction_id,
+                writer_epoch=tx.writer_epoch,
+                lease_writer_epoch=historical_lease_writer_epoch,
+                task_ref=context.task_ref,
+                task_round_ref=context.task_round_ref,
+                net_instance_ref=context.net_instance_ref,
+                invocation_ref=context.invocation_ref,
+                firing_ref=context.own_transition_firing_ref,
+                lease_ref=context.operation_execution_lease_ref,
+                operation_result_ref=result_ref,
+            ))
+    tx.append(ready_event)
     for plan in workspace_plans:
         if plan["final_payload"] is None:
             continue

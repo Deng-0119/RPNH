@@ -5,6 +5,7 @@ import json
 import os
 from pathlib import Path
 import signal
+import shutil
 import socket
 import sqlite3
 import sys
@@ -28,12 +29,14 @@ from cpn.rpnh.agent_tasks import (
     agent_task_registration,
     build_agent_task_module,
     build_agent_workflow_module,
+    reopen_agent_task,
     resume_agent_task,
     run_agent_task,
 )
 from cpn.rpnh.registry._registry import _RegistryCore
+from cpn.rpnh.registry.errors import ResourceIntegrityFault
 from cpn.rpnh.registry.identities import TypedId
-from cpn.rpnh.llm_contracts import LLMInputResponseBytes
+from cpn.rpnh.llm_contracts import LLMInputPortFailure, LLMInputResponseBytes
 from cpn.rpnh.agent_workflows import (
     AgentWorkflowArc,
     AgentWorkflowEndpoint,
@@ -45,7 +48,7 @@ from cpn.rpnh.agent_workflows import (
 from cpn.rpnh.compiler import compile_module
 from cpn.rpnh.llm_contracts import LLMInputTarget
 from cpn.rpnh.main_session import MainSession, parse_main_decision
-from cpn.rpnh.task_control import TaskControl
+from cpn.rpnh.task_control import TaskControl, TaskHandle
 from cpn.rpnh.task_control import claim_task_worker_launch
 from cpn.rpnh.unix_transport import unix_socket_address
 from cpn.rpnh_cli import _task_command
@@ -1040,6 +1043,98 @@ class _FanoutWorkspacePort:
         pass
 
 
+class _WorkspaceFailureRecoveryPort:
+    def __init__(self) -> None:
+        self.calls = 0
+        self.failed_action_ref = None
+        self.resolution_action_ref = None
+
+    @staticmethod
+    def _workspace_results(envelope):
+        results = []
+        for message in envelope["messages"]:
+            if message.get("role") != "tool":
+                continue
+            content = message.get("content")
+            if not isinstance(content, str):
+                continue
+            try:
+                value = json.loads(content)
+            except json.JSONDecodeError:
+                continue
+            if (isinstance(value, dict)
+                    and value.get("kind") == "workspace_execution/v1"):
+                results.append(value)
+        return results
+
+    def request_once(self, attempt):
+        self.calls += 1
+        envelope = json.loads(attempt.canonical_request_bytes)
+        workspace_results = self._workspace_results(envelope)
+        if self.calls == 1:
+            calls = [{
+                "id": "failed-solve",
+                "name": "workspace",
+                "arguments": json.dumps({
+                    "script": "timed-out-solve",
+                    "timeout_seconds": 10,
+                }),
+            }, {
+                "id": "candidate-output",
+                "name": "write_file",
+                "arguments": json.dumps({
+                    "path": "outputs/result.txt",
+                    "description": "Candidate requiring successful execution.",
+                    "content": json.dumps("corrected and verified"),
+                    "output_port_id": "main.result",
+                    "outcome_id": "complete",
+                }),
+            }, {
+                "id": "premature-complete",
+                "name": "complete_interaction",
+                "arguments": "{}",
+            }]
+        elif self.calls == 2:
+            failed, = [
+                result for result in workspace_results
+                if result["status"] == "timed_out"]
+            self.failed_action_ref = failed["agent_action_ref"]
+            calls = [{
+                "id": "corrected-solve",
+                "name": "workspace",
+                "arguments": json.dumps({
+                    "script": "corrected-solve",
+                    "timeout_seconds": 10,
+                }),
+            }]
+        elif self.calls == 3:
+            failed, = [
+                result for result in workspace_results
+                if result["status"] == "timed_out"]
+            resolved, = [
+                result for result in workspace_results
+                if result["status"] == "completed"
+                and result["exit_code"] == 0]
+            assert failed["agent_action_ref"] == self.failed_action_ref
+            self.resolution_action_ref = resolved["agent_action_ref"]
+            calls = [{
+                "id": "verified-complete",
+                "name": "complete_interaction",
+                "arguments": "{}",
+            }]
+        else:
+            raise AssertionError("recovery task requested an extra turn")
+        return LLMInputResponseBytes(json.dumps({
+            "protocol": "llm_response_envelope/v1",
+            "tool_calls": calls,
+            "finish_reason": "tool_calls",
+        }, sort_keys=True, separators=(",", ":")).encode("utf-8"),
+            status_code=None, external_request_id=None)
+
+    def close(self):
+        pass
+
+
 class _InterruptedWorkspacePort:
     def __init__(self) -> None:
         self.calls = 0
@@ -1340,6 +1435,149 @@ def test_workflow_registers_and_projects_workspace_files(
         }
 
 
+def test_workflow_read_file_acknowledges_registered_empty_file(
+        tmp_path: Path, monkeypatch,
+) -> None:
+    adapter_path = tmp_path / "adapter.json"
+    adapter_path.write_text(json.dumps({
+        "schema_version": "local_process_adapter_config/v1",
+        "adapter_kind": "local_process",
+        "model_condition": "offline-empty-file-test",
+        "argv": [sys.executable, "-c", "pass"],
+        "probe_argv": [sys.executable, "-c", "pass"],
+        "env": {}, "inherit_env": [],
+    }), encoding="utf-8")
+    execution_path = tmp_path / "execution.json"
+    execution_path.write_text(json.dumps({
+        "schema_version": "llm_execution_selection/v1",
+        "adapter_kind": "local_process",
+        "model_condition": "offline-empty-file-test",
+        "adapter_config_path": str(adapter_path),
+        "timeout_seconds": 30,
+        "max_output_tokens": 1024,
+        "max_response_bytes": 65536,
+    }), encoding="utf-8")
+
+    class _EmptyFilePort:
+        def request_once(self, attempt):
+            envelope = json.loads(attempt.canonical_request_bytes)
+            messages = envelope["messages"]
+            combined = "\n".join(
+                message["content"] for message in messages
+                if isinstance(message.get("content"), str))
+            tool_results = [
+                message for message in messages if message["role"] == "tool"]
+            planning = "Plan the work." in combined
+            if planning and not tool_results:
+                calls = [{
+                    "id": "create-empty-file",
+                    "name": "workspace",
+                    "arguments": json.dumps({
+                        "script": "create-empty-file",
+                        "timeout_seconds": 10,
+                    }),
+                }]
+            elif planning:
+                calls = [{
+                    "id": "empty-file-plan-output",
+                    "name": "write_file",
+                    "arguments": json.dumps({
+                        "path": "outputs/plan.txt",
+                        "description": "Plan carrying an empty workspace file.",
+                        "content": json.dumps("plan ready"),
+                        "output_port_id": "team.output__plan__plan",
+                        "outcome_id": "complete",
+                    }),
+                }, {
+                    "id": "empty-file-plan-complete",
+                    "name": "complete_interaction",
+                    "arguments": "{}",
+                }]
+            elif not tool_results:
+                located = []
+                for line in combined.splitlines():
+                    if not line.startswith("- {"):
+                        continue
+                    item = json.loads(line[2:])
+                    if item.get("source_relative_path") == "shared/empty.txt":
+                        located.append(item["sandbox_path"])
+                assert len(located) == 1
+                calls = [{
+                    "id": "read-empty-file",
+                    "name": "read_file",
+                    "arguments": json.dumps({"path": located[0]}),
+                }]
+            else:
+                calls = [{
+                    "id": "empty-file-result",
+                    "name": "write_file",
+                    "arguments": json.dumps({
+                        "path": "outputs/result.txt",
+                        "description": "Result after reading an empty file.",
+                        "content": json.dumps("empty file read"),
+                        "output_port_id": "team.result",
+                        "outcome_id": "complete",
+                    }),
+                }, {
+                    "id": "empty-file-deliver-complete",
+                    "name": "complete_interaction",
+                    "arguments": "{}",
+                }]
+            return LLMInputResponseBytes(json.dumps({
+                "protocol": "llm_response_envelope/v1",
+                "tool_calls": calls,
+                "finish_reason": "tool_calls",
+            }, sort_keys=True, separators=(",", ":")).encode("utf-8"),
+                status_code=None, external_request_id=None)
+
+        def close(self):
+            pass
+
+    monkeypatch.setattr(
+        "cpn.rpnh.agent_tasks.build_llm_input_port",
+        lambda _selection, *, destination_run_root: _EmptyFilePort())
+
+    def fake_workspace(*, script, cwd, **_kwargs):
+        assert script == "create-empty-file"
+        path = Path(cwd) / "shared" / "empty.txt"
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(b"")
+        return {
+            "status": "completed", "exit_code": 0,
+            "stdout": "", "stderr": "", "output_truncated": False,
+            "command_started": True,
+        }
+
+    monkeypatch.setattr(
+        optional_execution, "execute_bounded_workspace_tool",
+        fake_workspace)
+    run_dir = tmp_path / "run"
+    result = run_agent_task(AgentTaskSpec(
+        run_dir=run_dir,
+        prompt="Create an empty file, then read it from the next node.",
+        stages=(), execution_config_path=execution_path,
+        workflow_graph=_workflow_graph(), max_attempts_per_stage=4,
+    ))
+
+    assert result["stop_reason"] == "terminal"
+    assert result["output"] == "empty file read"
+    core = _RegistryCore(
+        run_dir, create=False, read_only=True,
+        catalog=agent_task_catalog())
+    receipts = [
+        json.loads(row["metadata_json"])
+        for row in core.event_store.canonical_object_rows(
+            object_type="delivery_boundary_receipt/v1")
+    ]
+    assert sum(
+        receipt["boundary"] == "tool_result"
+        and receipt["outcome"] == "acknowledged"
+        and receipt["positive_byte_count"] == 0
+        and receipt["resource_byte_count"] == 0
+        for receipt in receipts
+    ) == 1
+
+
 def test_fanout_workspaces_namespace_semantic_products_and_merge_branch_files(
         tmp_path: Path, monkeypatch,
 ) -> None:
@@ -1484,6 +1722,1318 @@ def test_fanout_workspaces_namespace_semantic_products_and_merge_branch_files(
         "outputs/ports/output__branch_a__a/result.json"] == b"a"
     assert files[
         "outputs/ports/output__branch_b__b/result.json"] == b"b"
+
+
+def test_workspace_failure_rejects_completion_then_same_loop_recovers(
+        tmp_path: Path, monkeypatch,
+) -> None:
+    adapter_path = tmp_path / "adapter.json"
+    adapter_path.write_text(json.dumps({
+        "schema_version": "local_process_adapter_config/v1",
+        "adapter_kind": "local_process",
+        "model_condition": "offline-workspace-recovery-test",
+        "argv": [sys.executable, "-c", "pass"],
+        "probe_argv": [sys.executable, "-c", "pass"],
+        "env": {},
+        "inherit_env": [],
+    }), encoding="utf-8")
+    execution_path = tmp_path / "execution.json"
+    execution_path.write_text(json.dumps({
+        "schema_version": "llm_execution_selection/v1",
+        "adapter_kind": "local_process",
+        "model_condition": "offline-workspace-recovery-test",
+        "adapter_config_path": str(adapter_path),
+        "timeout_seconds": 30,
+        "max_output_tokens": 1024,
+        "max_response_bytes": 65536,
+    }), encoding="utf-8")
+    port = _WorkspaceFailureRecoveryPort()
+    monkeypatch.setattr(
+        "cpn.rpnh.agent_tasks.build_llm_input_port",
+        lambda _selection, *, destination_run_root: port)
+
+    def fake_workspace(*, script, **_kwargs):
+        if script == "timed-out-solve":
+            return {
+                "status": "timed_out", "exit_code": -9,
+                "stdout": "", "stderr": "deadline exceeded",
+                "output_truncated": False, "command_started": True,
+            }
+        assert script == "corrected-solve"
+        return {
+            "status": "completed", "exit_code": 0,
+            "stdout": "verification passed", "stderr": "",
+            "output_truncated": False, "command_started": True,
+        }
+
+    monkeypatch.setattr(
+        optional_execution, "execute_bounded_workspace_tool",
+        fake_workspace)
+    run_dir = tmp_path / "run"
+    result = run_agent_task(AgentTaskSpec(
+        run_dir=run_dir,
+        prompt="Recover from a failed solve and verify the corrected result.",
+        stages=(AgentStage("main", "Solve, correct, and verify the task."),),
+        execution_config_path=execution_path,
+        max_attempts_per_stage=4,
+    ))
+
+    assert result["stop_reason"] == "terminal"
+    assert result["output"] == "corrected and verified"
+    assert result["actual_model_call_counts"] == [3, 0]
+    assert port.calls == 3
+    assert port.failed_action_ref is not None
+    assert port.resolution_action_ref is not None
+
+    readonly = _RegistryCore(
+        run_dir, create=False, read_only=True,
+        catalog=agent_task_catalog())
+    actions = [
+        json.loads(row["metadata_json"])
+        for row in readonly.event_store.canonical_object_rows(
+            object_type="agent_action/v2")]
+    failed = next(
+        action for action in actions
+        if action["tool_call_id"] == "failed-solve")
+    premature = next(
+        action for action in actions
+        if action["tool_call_id"] == "premature-complete")
+    resolved = next(
+        action for action in actions
+        if action["tool_call_id"] == "corrected-solve")
+    completed = next(
+        action for action in actions
+        if action["tool_call_id"] == "verified-complete")
+    assert failed["result_metadata"]["status"] == "timed_out"
+    assert premature["state"] == "ACTION_REJECTED"
+    error = readonly.get_version(TypedId.parse(
+        premature["tool_error_ref"]["version_id"],
+        expected="agent_tool_error_version"))
+    assert error.metadata["error_code"] == "arguments_invalid"
+    assert resolved["result_metadata"]["exit_code"] == 0
+    assert completed["state"] == "COMPLETED"
+    assert completed["arguments"] == {}
+    loop_ids = {action["agent_loop_ref"]["logical_id"] for action in actions}
+    assert len(loop_ids) == 1
+
+
+def test_terminal_task_reenters_same_run_from_selected_checkpoint(
+        tmp_path: Path, monkeypatch,
+) -> None:
+    adapter_path = tmp_path / "adapter.json"
+    adapter_path.write_text(json.dumps({
+        "schema_version": "local_process_adapter_config/v1",
+        "adapter_kind": "local_process",
+        "model_condition": "offline-checkpoint-reentry-test",
+        "argv": [sys.executable, "-c", "pass"],
+        "probe_argv": [sys.executable, "-c", "pass"],
+        "env": {},
+        "inherit_env": [],
+    }), encoding="utf-8")
+    execution_path = tmp_path / "execution.json"
+    execution_path.write_text(json.dumps({
+        "schema_version": "llm_execution_selection/v1",
+        "adapter_kind": "local_process",
+        "model_condition": "offline-checkpoint-reentry-test",
+        "adapter_config_path": str(adapter_path),
+        "timeout_seconds": 30,
+        "max_output_tokens": 1024,
+        "max_response_bytes": 65536,
+    }), encoding="utf-8")
+
+    class _ReentryPort:
+        def __init__(self) -> None:
+            self.calls = 0
+
+        def request_once(self, _attempt):
+            self.calls += 1
+            value = "first terminal" if self.calls == 1 else "reentered terminal"
+            tool_calls = []
+            if self.calls == 1:
+                tool_calls.append({
+                    "id": "first-generation-obsolete-file",
+                    "name": "workspace",
+                    "arguments": json.dumps({
+                        "script": "printf obsolete > obsolete.txt",
+                        "timeout_seconds": 5,
+                    }),
+                })
+            tool_calls.extend([{
+                "id": f"reentry-output-{self.calls}",
+                "name": "write_file",
+                "arguments": json.dumps({
+                    "path": "outputs/result.txt",
+                    "description": "Generation-specific result.",
+                    "content": json.dumps(value),
+                    "output_port_id": "main.result",
+                    "outcome_id": "complete",
+                }),
+            }, {
+                "id": f"reentry-complete-{self.calls}",
+                "name": "complete_interaction",
+                "arguments": "{}",
+            }])
+            return LLMInputResponseBytes(json.dumps({
+                "protocol": "llm_response_envelope/v1",
+                "tool_calls": tool_calls,
+                "finish_reason": "tool_calls",
+            }, sort_keys=True, separators=(",", ":")).encode("utf-8"),
+                status_code=None, external_request_id=None)
+
+        def close(self):
+            pass
+
+    port = _ReentryPort()
+    monkeypatch.setattr(
+        "cpn.rpnh.agent_tasks.build_llm_input_port",
+        lambda _selection, *, destination_run_root: port)
+    run_dir = tmp_path / "run"
+    spec = AgentTaskSpec(
+        run_dir=run_dir,
+        prompt="Return one generation-specific result.",
+        stages=(AgentStage("main", "Return one result."),),
+        execution_config_path=execution_path,
+        max_attempts_per_stage=4,
+    )
+    first = run_agent_task(spec)
+    assert first["output"] == "first terminal"
+
+    readonly = _RegistryCore(
+        run_dir, create=False, read_only=True,
+        catalog=agent_task_catalog())
+    from cpn.rpnh.registry.checkpoint_reentry import committed_checkpoint_refs
+    initial = committed_checkpoint_refs(readonly)[0]
+    first_terminal_ref = first["terminal_evidence_ref"]
+
+    control_root = tmp_path / "control"
+    (control_root / "specs").mkdir(parents=True)
+    (control_root / "logs").mkdir()
+    control = TaskControl(
+        control_root, popen_factory=_Process,
+        recover_pending_launches=False)
+    stopped = _Process()
+    stopped.return_code = 0
+    handle = TaskHandle(
+        task_id="task-existing-reentry", kind=spec.kind,
+        run_dir=run_dir, socket_path=run_dir / "owner.sock",
+        log_path=control_root / "logs" / "task-existing-reentry.log",
+        spec=spec, process=stopped)
+    control._tasks[handle.task_id] = handle
+    launch = control.reopen(
+        handle.task_id, str(initial.version_id),
+        reason="Verify exact checkpoint generation reentry.")
+    command_id = launch["reopen_command_id"]
+    manifest = json.loads((
+        control_root / "manifests" / f"{handle.task_id}.json"
+    ).read_text(encoding="utf-8"))
+    assert manifest["launch_mode"] == "reopen"
+    assert manifest["resume_checkpoint_version_id"] == str(
+        initial.version_id)
+    worker_argv = handle.process.args[0]
+    reopen_index = worker_argv.index("--reopen")
+    assert worker_argv[reopen_index + 1:reopen_index + 4] == [
+        str(initial.version_id), command_id,
+        "Verify exact checkpoint generation reentry.",
+    ]
+
+    # Simulate an owner process disappearing after the append-only reentry cut
+    # is committed but before mutable workspace materialization or dispatch.
+    staged_core = _RegistryCore(
+        run_dir, create=False, catalog=agent_task_catalog())
+    from cpn.rpnh.registry.checkpoint_reentry import stage_checkpoint_reentry
+    from cpn.rpnh.registry.resource_service import _ResourceServiceKernel
+    staged_checkpoint = stage_checkpoint_reentry(
+        staged_core, _ResourceServiceKernel(staged_core),
+        source_checkpoint_ref=initial,
+        command_id=command_id,
+        reason="Verify exact checkpoint generation reentry.")
+    assert str(staged_checkpoint.version_id).startswith(
+        "marking_checkpoint_version:")
+
+    second = reopen_agent_task(
+        spec, checkpoint_version_id=str(initial.version_id),
+        command_id=command_id,
+        reason="Verify exact checkpoint generation reentry.")
+    assert second["output"] == "reentered terminal"
+    assert second["terminal_evidence_ref"] != first_terminal_ref
+    assert port.calls == 2
+
+    reopened = _RegistryCore(
+        run_dir, create=False, read_only=True,
+        catalog=agent_task_catalog())
+    from cpn.rpnh.registry.run_authority import current_run_execution_authority
+    _authority_ref, authority = current_run_execution_authority(
+        reopened, _ResourceServiceKernel(reopened))
+    assert authority["status"] == "terminal"
+    assert authority["execution_generation"] == 1
+    assert authority["generation_source_checkpoint_ref"] == {
+        "entity_type": "marking_checkpoint/v1",
+        "logical_id": str(initial.entity_id),
+        "version_id": str(initial.version_id),
+    }
+    assert len(reopened.event_store.canonical_object_rows(
+        object_type="run_terminal_evidence/v1")) == 2
+    firing_attempts = sorted(
+        json.loads(row["metadata_json"])["attempt_index"]
+        for row in reopened.event_store.canonical_object_rows(
+            object_type="transition_firing/v1"))
+    assert firing_attempts == [1, 2]
+    bindings = [
+        json.loads(row["metadata_json"])
+        for row in reopened.event_store.canonical_object_rows(
+            object_type="workspace_binding/v1")]
+    roots = {item["allowed_root"] for item in bindings
+             if item["binding_kind"] == "lineage_template"}
+    assert len(roots) == 1
+    assert not (run_dir / next(iter(roots)) / "obsolete.txt").exists()
+    assert reopened.get_version(TypedId.parse(
+        first_terminal_ref["version_id"],
+        expected="terminal_evidence_version")).metadata[
+            "terminal_evidence_ref"] == first_terminal_ref
+
+    writable = _RegistryCore(
+        run_dir, create=False, catalog=agent_task_catalog())
+    before_retry = writable.event_store.max_ordinal()
+    retried = stage_checkpoint_reentry(
+        writable, _ResourceServiceKernel(writable),
+        source_checkpoint_ref=initial,
+        command_id=command_id,
+        reason="Verify exact checkpoint generation reentry.")
+    authorization = writable.get_version(TypedId.parse(
+        authority["reopen_authorization_ref"]["version_id"],
+        expected="run_reopen_authorization_version")).metadata
+    assert str(retried.version_id) == authorization[
+        "reentry_checkpoint_ref"]["version_id"]
+    assert writable.event_store.max_ordinal() == before_retry
+    with pytest.raises(ResourceIntegrityFault, match="conflicting reason"):
+        stage_checkpoint_reentry(
+            writable, _ResourceServiceKernel(writable),
+            source_checkpoint_ref=initial,
+            command_id=command_id,
+            reason="A different owner intent must not reuse the command id.")
+    assert writable.event_store.max_ordinal() == before_retry
+
+    # Simulate the second crash window: the reentry cut was materialized and
+    # run authority changed to running, but no firing was admitted yet.
+    from cpn.rpnh.registry import run_authority as run_authority_module
+    real_resume_owner_stopped_run = (
+        run_authority_module.resume_owner_stopped_run)
+
+    def _crash_after_running_authority(*args, **kwargs):
+        real_resume_owner_stopped_run(*args, **kwargs)
+        raise RuntimeError("simulated post-resume owner loss")
+
+    monkeypatch.setattr(
+        run_authority_module, "resume_owner_stopped_run",
+        _crash_after_running_authority)
+    with pytest.raises(RuntimeError, match="simulated post-resume owner loss"):
+        reopen_agent_task(
+            spec, checkpoint_version_id=str(initial.version_id),
+            command_id="test-owner-running-gap-command",
+            reason="Verify running-without-firing recovery.")
+    assert port.calls == 2
+    interrupted = _RegistryCore(
+        run_dir, create=False, read_only=True,
+        catalog=agent_task_catalog())
+    _interrupted_ref, interrupted_authority = (
+        current_run_execution_authority(
+            interrupted, _ResourceServiceKernel(interrupted)))
+    assert interrupted_authority["status"] == "running"
+    assert interrupted_authority["execution_generation"] == 2
+
+    # A later owner can still checkpoint-stop this reopened generation even
+    # though immutable terminal evidence from earlier generations exists.
+    stopping = _RegistryCore(
+        run_dir, create=False, catalog=agent_task_catalog())
+    stopped_ref = run_authority_module.record_owner_stop(
+        stopping, _ResourceServiceKernel(stopping),
+        idempotency_key="test-generation-two-owner-stop")
+    assert stopping.get_version(stopped_ref.version_id).metadata[
+        "execution_generation"] == 2
+    assert stopping.get_version(stopped_ref.version_id).metadata[
+        "status"] == "stopped_by_owner"
+
+    monkeypatch.setattr(
+        run_authority_module, "resume_owner_stopped_run",
+        real_resume_owner_stopped_run)
+    recovered = reopen_agent_task(
+        spec, checkpoint_version_id=str(initial.version_id),
+        command_id="test-owner-running-gap-command",
+        reason="Verify running-without-firing recovery.")
+    assert recovered["output"] == "reentered terminal"
+    assert port.calls == 3
+
+    recovered_core = _RegistryCore(
+        run_dir, create=False, read_only=True,
+        catalog=agent_task_catalog())
+    _recovered_ref, recovered_authority = current_run_execution_authority(
+        recovered_core, _ResourceServiceKernel(recovered_core))
+    terminal_cut = recovered_authority["latest_checkpoint_ref"]["version_id"]
+    third = reopen_agent_task(
+        spec, checkpoint_version_id=terminal_cut,
+        command_id="test-owner-terminal-cut-command",
+        reason="Verify a terminal checkpoint is a safe no-op generation.")
+    assert third["output"] == "reentered terminal"
+    assert port.calls == 3
+    final = _RegistryCore(
+        run_dir, create=False, read_only=True,
+        catalog=agent_task_catalog())
+    _final_authority_ref, final_authority = current_run_execution_authority(
+        final, _ResourceServiceKernel(final))
+    assert final_authority["execution_generation"] == 3
+    assert len(final.event_store.canonical_object_rows(
+        object_type="run_terminal_evidence/v1")) == 4
+    assert sorted(
+        json.loads(row["metadata_json"])["attempt_index"]
+        for row in final.event_store.canonical_object_rows(
+            object_type="transition_firing/v1")) == [1, 2, 3]
+
+    # A terminal cut created by the preceding no-op reentry is itself a valid
+    # selectable cut. Its carrier must recursively unwrap to the actual
+    # producing firing and must not issue a provider request.
+    nested_terminal_cut = final_authority[
+        "latest_checkpoint_ref"]["version_id"]
+    fourth = reopen_agent_task(
+        spec, checkpoint_version_id=nested_terminal_cut,
+        command_id="test-owner-nested-terminal-cut-command",
+        reason="Verify recursive terminal reentry ancestry.")
+    assert fourth["output"] == "reentered terminal"
+    assert port.calls == 3
+    nested = _RegistryCore(
+        run_dir, create=False, read_only=True,
+        catalog=agent_task_catalog())
+    _nested_ref, nested_authority = current_run_execution_authority(
+        nested, _ResourceServiceKernel(nested))
+    assert nested_authority["execution_generation"] == 4
+    assert len(nested.event_store.canonical_object_rows(
+        object_type="run_terminal_evidence/v1")) == 5
+
+
+def test_checkpoint_reentry_refires_after_completed_turn_action_failure(
+        tmp_path: Path, monkeypatch,
+) -> None:
+    adapter_path = tmp_path / "adapter.json"
+    adapter_path.write_text(json.dumps({
+        "schema_version": "local_process_adapter_config/v1",
+        "adapter_kind": "local_process",
+        "model_condition": "offline-action-failure-reentry-test",
+        "argv": [sys.executable, "-c", "pass"],
+        "probe_argv": [sys.executable, "-c", "pass"],
+        "env": {}, "inherit_env": [],
+    }), encoding="utf-8")
+    execution_path = tmp_path / "execution.json"
+    execution_path.write_text(json.dumps({
+        "schema_version": "llm_execution_selection/v1",
+        "adapter_kind": "local_process",
+        "model_condition": "offline-action-failure-reentry-test",
+        "adapter_config_path": str(adapter_path),
+        "timeout_seconds": 30,
+        "max_output_tokens": 1024,
+        "max_response_bytes": 65536,
+    }), encoding="utf-8")
+
+    class _ActionFailureThenSuccessPort:
+        def __init__(self) -> None:
+            self.calls = 0
+
+        def request_once(self, _attempt):
+            self.calls += 1
+            if self.calls == 1:
+                envelope = json.loads(_attempt.canonical_request_bytes)
+                combined = "\n".join(
+                    message["content"] for message in envelope["messages"]
+                    if isinstance(message.get("content"), str))
+                located = []
+                for line in combined.splitlines():
+                    if not line.startswith("- {"):
+                        continue
+                    item = json.loads(line[2:])
+                    if isinstance(item.get("sandbox_path"), str):
+                        located.append(item["sandbox_path"])
+                assert len(located) == 1
+                calls = [{
+                    "id": "framework-failed-file-read",
+                    "name": "read_file",
+                    "arguments": json.dumps({
+                        "path": located[0],
+                    }),
+                }]
+            elif self.calls == 2:
+                calls = [{
+                    "id": "recovered-output",
+                    "name": "write_file",
+                    "arguments": json.dumps({
+                        "path": "outputs/result.txt",
+                        "description": "Result from the re-fired node.",
+                        "content": json.dumps("re-fired after action failure"),
+                        "output_port_id": "main.result",
+                        "outcome_id": "complete",
+                    }),
+                }, {
+                    "id": "recovered-complete",
+                    "name": "complete_interaction",
+                    "arguments": "{}",
+                }]
+            else:
+                raise AssertionError("action failure recovery requested an extra turn")
+            return LLMInputResponseBytes(json.dumps({
+                "protocol": "llm_response_envelope/v1",
+                "tool_calls": calls,
+                "finish_reason": "tool_calls",
+            }, sort_keys=True, separators=(",", ":")).encode("utf-8"),
+                status_code=None, external_request_id=None)
+
+        def close(self):
+            pass
+
+    port = _ActionFailureThenSuccessPort()
+    monkeypatch.setattr(
+        "cpn.rpnh.agent_tasks.build_llm_input_port",
+        lambda _selection, *, destination_run_root: port)
+    from cpn.rpnh.registry.errors import DeliveryAcknowledgementConflict
+    from cpn.rpnh.registry.resource_service import _ResourceServiceKernel
+    real_record_boundary_receipt = (
+        _ResourceServiceKernel._record_boundary_receipt)
+    fail_tool_receipt = True
+
+    def fail_first_tool_receipt(self, context, release, **kwargs):
+        nonlocal fail_tool_receipt
+        if fail_tool_receipt and release.boundary == "tool_result":
+            fail_tool_receipt = False
+            raise DeliveryAcknowledgementConflict(
+                "simulated post-read framework failure")
+        return real_record_boundary_receipt(
+            self, context, release, **kwargs)
+
+    monkeypatch.setattr(
+        _ResourceServiceKernel, "_record_boundary_receipt",
+        fail_first_tool_receipt)
+    run_dir = tmp_path / "run"
+    spec = AgentTaskSpec(
+        run_dir=run_dir,
+        prompt="Return one result after a recoverable action failure.",
+        stages=(AgentStage("main", "Return one result."),),
+        execution_config_path=execution_path,
+        max_attempts_per_stage=3,
+    )
+
+    blocked = run_agent_task(spec)
+    assert blocked["stop_reason"] == "blocked_or_waiting"
+    assert port.calls == 1
+    monkeypatch.setattr(
+        _ResourceServiceKernel, "_record_boundary_receipt",
+        real_record_boundary_receipt)
+    before = _RegistryCore(
+        run_dir, create=False, read_only=True,
+        catalog=agent_task_catalog())
+    from cpn.rpnh.registry.checkpoint_reentry import committed_checkpoint_refs
+    selected = committed_checkpoint_refs(before)[0]
+    assert not before.event_store.list_events_by_type((
+        "provider_attempt_owner_interrupted/v1",
+        "llm_call_owner_interrupted/v1",
+        "llm_invocation_owner_interrupted/v1",
+    ))
+
+    recovered = reopen_agent_task(
+        spec, checkpoint_version_id=str(selected.version_id),
+        command_id="test-owner-reentry-after-action-failure",
+        reason="Re-fire the node after its completed turn failed action settlement.")
+    assert recovered["stop_reason"] == "terminal"
+    assert recovered["output"] == "re-fired after action failure"
+    assert port.calls == 2
+
+    final = _RegistryCore(
+        run_dir, create=False, read_only=True,
+        catalog=agent_task_catalog())
+    assert not final.event_store.list_events_by_type((
+        "provider_attempt_owner_interrupted/v1",
+        "llm_call_owner_interrupted/v1",
+        "llm_invocation_owner_interrupted/v1",
+    ))
+    attempts = [
+        json.loads(row["metadata_json"])["attempt_index"]
+        for row in final.event_store.canonical_object_rows(
+            object_type="transition_firing/v1")
+    ]
+    assert sorted(attempts) == [1, 2]
+
+
+def test_checkpoint_reentry_interrupts_unknown_active_firing_without_retry(
+        tmp_path: Path, monkeypatch,
+) -> None:
+    adapter_path = tmp_path / "adapter.json"
+    adapter_path.write_text(json.dumps({
+        "schema_version": "local_process_adapter_config/v1",
+        "adapter_kind": "local_process",
+        "model_condition": "offline-unknown-reentry-test",
+        "argv": [sys.executable, "-c", "pass"],
+        "probe_argv": [sys.executable, "-c", "pass"],
+        "env": {}, "inherit_env": [],
+    }), encoding="utf-8")
+    execution_path = tmp_path / "execution.json"
+    execution_path.write_text(json.dumps({
+        "schema_version": "llm_execution_selection/v1",
+        "adapter_kind": "local_process",
+        "model_condition": "offline-unknown-reentry-test",
+        "adapter_config_path": str(adapter_path),
+        "timeout_seconds": 30,
+        "max_output_tokens": 1024,
+        "max_response_bytes": 65536,
+    }), encoding="utf-8")
+
+    class _UnknownThenSuccessPort:
+        def __init__(self) -> None:
+            self.calls = 0
+
+        def request_once(self, _attempt):
+            self.calls += 1
+            if self.calls == 1:
+                raise LLMInputPortFailure(
+                    "submission_unknown",
+                    submission_state="submission_unknown",
+                    failure_code="offline_submission_unknown")
+            return LLMInputResponseBytes(json.dumps({
+                "protocol": "llm_response_envelope/v1",
+                "tool_calls": [{
+                    "id": "reentered-output",
+                    "name": "write_file",
+                    "arguments": json.dumps({
+                        "path": "outputs/result.txt",
+                        "description": "Result after explicit reentry.",
+                        "content": json.dumps("reentered after unknown"),
+                        "output_port_id": "main.result",
+                        "outcome_id": "complete",
+                    }),
+                }, {
+                    "id": "reentered-complete",
+                    "name": "complete_interaction",
+                    "arguments": "{}",
+                }],
+                "finish_reason": "tool_calls",
+            }, sort_keys=True, separators=(",", ":")).encode("utf-8"),
+                status_code=None, external_request_id=None)
+
+        def close(self):
+            pass
+
+    port = _UnknownThenSuccessPort()
+    monkeypatch.setattr(
+        "cpn.rpnh.agent_tasks.build_llm_input_port",
+        lambda _selection, *, destination_run_root: port)
+    run_dir = tmp_path / "run"
+    spec = AgentTaskSpec(
+        run_dir=run_dir,
+        prompt="Return one result after explicit owner recovery.",
+        stages=(AgentStage("main", "Return one result."),),
+        execution_config_path=execution_path,
+        max_attempts_per_stage=4,
+    )
+
+    blocked = run_agent_task(spec)
+    assert blocked["stop_reason"] == "blocked_or_waiting"
+    assert port.calls == 1
+    before = _RegistryCore(
+        run_dir, create=False, read_only=True,
+        catalog=agent_task_catalog())
+    from cpn.rpnh.registry.checkpoint_reentry import committed_checkpoint_refs
+    selected = committed_checkpoint_refs(before)[0]
+    failure, = before.event_store.list_events_by_type((
+        "llm_invocation_failed/v1",))
+    assert failure.payload["submission_state"] == "submission_unknown"
+    failed_attempt_ref = failure.payload["llm_invocation_attempt_ref"]
+
+    # A real resumed task starts in a new worker process.  No prior fresh-run
+    # side effect may be required to bind the trusted operation inventory
+    # before classifying and closing the interrupted firing.
+    from cpn.rpnh.registry._operation import registration as registration_module
+    monkeypatch.setattr(registration_module, "_OPERATION_REGISTRATION", None)
+
+    # Simulate owner loss after the unknown physical attempt is permanently
+    # closed, but before its transition firing is settled. Replaying the same
+    # explicit reentry command must consume that exact closure and must never
+    # retransmit the abandoned request.
+    from cpn.rpnh.registry import firing_success as firing_success_module
+    real_succeed = firing_success_module._succeed_verified_module_operation
+
+    def _lose_owner_before_firing_settlement(*args, **kwargs):
+        raise RuntimeError("simulated interruption settlement loss")
+
+    monkeypatch.setattr(
+        firing_success_module, "_succeed_verified_module_operation",
+        _lose_owner_before_firing_settlement)
+    with pytest.raises(
+            RuntimeError, match="simulated interruption settlement loss"):
+        reopen_agent_task(
+            spec, checkpoint_version_id=str(selected.version_id),
+            command_id="test-owner-reentry-after-submission-unknown",
+            reason="Owner abandons the unknown firing and selects a safe cut.")
+    assert port.calls == 1
+    interrupted = _RegistryCore(
+        run_dir, create=False, read_only=True,
+        catalog=agent_task_catalog())
+    interruption_events = tuple(
+        interrupted.event_store.list_events_by_type((event_type,))[0]
+        for event_type in (
+            "provider_attempt_owner_interrupted/v1",
+            "llm_call_owner_interrupted/v1",
+            "llm_invocation_owner_interrupted/v1",
+        ))
+    assert len({event.transaction_id for event in interruption_events}) == 1
+    assert len({json.dumps(event.payload, sort_keys=True)
+                for event in interruption_events}) == 1
+    assert interruption_events[0].payload["submission_state"] == (
+        "submission_unknown")
+
+    monkeypatch.setattr(
+        firing_success_module, "_succeed_verified_module_operation",
+        real_succeed)
+    recovered = reopen_agent_task(
+        spec, checkpoint_version_id=str(selected.version_id),
+        command_id="test-owner-reentry-after-submission-unknown",
+        reason="Owner abandons the unknown firing and selects a safe cut.")
+    assert recovered["stop_reason"] == "terminal"
+    assert recovered["output"] == "reentered after unknown"
+    assert port.calls == 2
+
+    final = _RegistryCore(
+        run_dir, create=False, read_only=True,
+        catalog=agent_task_catalog())
+    from cpn.rpnh.registry.resource_service import _ResourceServiceKernel
+    from cpn.rpnh.registry.run_authority import current_run_execution_authority
+    _authority_ref, authority = current_run_execution_authority(
+        final, _ResourceServiceKernel(final))
+    assert authority["status"] == "terminal"
+    assert authority["execution_generation"] == 1
+    failures = final.event_store.list_events_by_type((
+        "llm_invocation_failed/v1",))
+    assert len(failures) == 1
+    assert failures[0].payload["llm_invocation_attempt_ref"] == (
+        failed_attempt_ref)
+    attempts = [
+        json.loads(row["metadata_json"])
+        for row in final.event_store.canonical_object_rows(
+            object_type="transition_firing/v1")]
+    assert sorted(item["attempt_index"] for item in attempts) == [1, 2]
+    results = [
+        json.loads(row["metadata_json"])
+        for row in final.event_store.canonical_object_rows(
+            object_type="operation_result/v1")]
+    assert len(results) == 2
+
+
+def test_parallel_checkpoint_reentry_drains_all_active_firings_crash_safely(
+        tmp_path: Path, monkeypatch,
+) -> None:
+    adapter_path = tmp_path / "adapter.json"
+    adapter_path.write_text(json.dumps({
+        "schema_version": "local_process_adapter_config/v1",
+        "adapter_kind": "local_process",
+        "model_condition": "offline-parallel-active-reentry-test",
+        "argv": [sys.executable, "-c", "pass"],
+        "probe_argv": [sys.executable, "-c", "pass"],
+        "env": {}, "inherit_env": [],
+    }), encoding="utf-8")
+    execution_path = tmp_path / "execution.json"
+    execution_path.write_text(json.dumps({
+        "schema_version": "llm_execution_selection/v1",
+        "adapter_kind": "local_process",
+        "model_condition": "offline-parallel-active-reentry-test",
+        "adapter_config_path": str(adapter_path),
+        "timeout_seconds": 30,
+        "max_output_tokens": 1024,
+        "max_response_bytes": 65536,
+    }), encoding="utf-8")
+
+    class _ParallelOwnerLossPort:
+        def __init__(self) -> None:
+            self.lock = threading.Lock()
+            self.branch_barrier = threading.Barrier(2)
+            self.calls = {
+                "start": 0, "branch_a": 0, "branch_b": 0, "join": 0}
+
+        def request_once(self, attempt):
+            envelope = json.loads(attempt.canonical_request_bytes)
+            combined = "\n".join(
+                message["content"] for message in envelope["messages"]
+                if isinstance(message.get("content"), str))
+            if "Create the shared starting point." in combined:
+                role, output_port = "start", "team.output__start__seed"
+            elif "Produce branch A." in combined:
+                role, output_port = "branch_a", "team.output__branch_a__a"
+            elif "Produce branch B." in combined:
+                role, output_port = "branch_b", "team.output__branch_b__b"
+            elif "Join both branches." in combined:
+                role, output_port = "join", "team.result"
+            else:
+                raise AssertionError("unknown parallel owner-loss role")
+            with self.lock:
+                self.calls[role] += 1
+                number = self.calls[role]
+            if role in {"branch_a", "branch_b"} and number == 1:
+                self.branch_barrier.wait(timeout=10)
+                raise RuntimeError(
+                    f"simulated simultaneous owner loss in {role}")
+            return LLMInputResponseBytes(json.dumps({
+                "protocol": "llm_response_envelope/v1",
+                "tool_calls": [{
+                    "id": f"{role}-{number}-output",
+                    "name": "write_file",
+                    "arguments": json.dumps({
+                        "path": f"outputs/{role}.txt",
+                        "description": "Parallel recovery output.",
+                        "content": json.dumps(f"{role} {number}"),
+                        "output_port_id": output_port,
+                        "outcome_id": "complete",
+                    }),
+                }, {
+                    "id": f"{role}-{number}-complete",
+                    "name": "complete_interaction",
+                    "arguments": "{}",
+                }],
+                "finish_reason": "tool_calls",
+            }, sort_keys=True, separators=(",", ":")).encode("utf-8"),
+                status_code=None, external_request_id=None)
+
+        def close(self):
+            pass
+
+    port = _ParallelOwnerLossPort()
+    monkeypatch.setattr(
+        "cpn.rpnh.agent_tasks.build_llm_input_port",
+        lambda _selection, *, destination_run_root: port)
+    run_dir = tmp_path / "run"
+    spec = AgentTaskSpec(
+        run_dir=run_dir,
+        prompt="Fan out, recover both interrupted branches, then join.",
+        stages=(), workflow_graph=_fanout_workflow_graph(),
+        execution_config_path=execution_path,
+        max_attempts_per_stage=4, max_parallel_nodes=2,
+    )
+
+    blocked = run_agent_task(spec)
+    assert blocked["stop_reason"] == "blocked_or_waiting"
+    assert port.calls == {
+        "start": 1, "branch_a": 1, "branch_b": 1, "join": 0}
+
+    interrupted = _RegistryCore(
+        run_dir, create=False, read_only=True,
+        catalog=agent_task_catalog())
+    from cpn.rpnh.registry.checkpoint_reentry import committed_checkpoint_refs
+    from cpn.rpnh.registry.module_execution import active_module_firings
+    from cpn.rpnh.registry.module_runtime import hydrate_module_runtime
+    executable, _structure, _marking = hydrate_module_runtime(interrupted)
+    active = active_module_firings(
+        interrupted, executable.net_ref, require_current_writer=False)
+    assert {firing.transition_id for firing in active} == {
+        "team.branch_a", "team.branch_b"}
+    start_cuts = []
+    for ref in committed_checkpoint_refs(interrupted):
+        attempts = {
+            item["transition_id"]: item["highest_issued"]
+            for item in interrupted.get_version(ref.version_id).metadata[
+                "attempts"]}
+        if attempts == {"team.start": 1}:
+            start_cuts.append(ref)
+    assert len(start_cuts) == 1
+    selected = start_cuts[0]
+    command_id = "test-parallel-active-checkpoint-reentry"
+
+    # Lose the replacement owner after it commits the first interruption.
+    # The same durable reopen command must consume that partial progress and
+    # drain the remaining sibling without replaying either abandoned call.
+    from cpn.rpnh.run import RunOwner
+    real_recover = RunOwner.recover_interrupted_firing
+    recovered_count = 0
+
+    def _lose_owner_after_first_recovery(self, recovery, *, command_id):
+        nonlocal recovered_count
+        value = real_recover(self, recovery, command_id=command_id)
+        recovered_count += 1
+        if recovered_count == 1:
+            raise RuntimeError("simulated loss during parallel recovery")
+        return value
+
+    monkeypatch.setattr(
+        RunOwner, "recover_interrupted_firing",
+        _lose_owner_after_first_recovery)
+    with pytest.raises(RuntimeError, match="loss during parallel recovery"):
+        reopen_agent_task(
+            spec, checkpoint_version_id=str(selected.version_id),
+            command_id=command_id,
+            reason="Abandon both active branches and return to the split cut.")
+    assert port.calls == {
+        "start": 1, "branch_a": 1, "branch_b": 1, "join": 0}
+
+    monkeypatch.setattr(
+        RunOwner, "recover_interrupted_firing", real_recover)
+    result = reopen_agent_task(
+        spec, checkpoint_version_id=str(selected.version_id),
+        command_id=command_id,
+        reason="Abandon both active branches and return to the split cut.")
+    assert result["stop_reason"] == "terminal"
+    assert result["output"] == "join 1"
+    assert port.calls == {
+        "start": 1, "branch_a": 2, "branch_b": 2, "join": 1}
+    final = _RegistryCore(
+        run_dir, create=False, read_only=True,
+        catalog=agent_task_catalog())
+    final_executable, _structure, _marking = hydrate_module_runtime(final)
+    assert not active_module_firings(
+        final, final_executable.net_ref, require_current_writer=False)
+    from cpn.rpnh.registry.resource_service import _ResourceServiceKernel
+    from cpn.rpnh.registry.run_authority import current_run_execution_authority
+    _authority_ref, authority = current_run_execution_authority(
+        final, _ResourceServiceKernel(final))
+    assert authority["status"] == "terminal"
+    assert authority["execution_generation"] == 1
+
+
+def test_parallel_workflow_reopens_every_committed_business_cut(
+        tmp_path: Path, monkeypatch,
+) -> None:
+    adapter_path = tmp_path / "adapter.json"
+    adapter_path.write_text(json.dumps({
+        "schema_version": "local_process_adapter_config/v1",
+        "adapter_kind": "local_process",
+        "model_condition": "offline-parallel-cut-reentry-test",
+        "argv": [sys.executable, "-c", "pass"],
+        "probe_argv": [sys.executable, "-c", "pass"],
+        "env": {}, "inherit_env": [],
+    }), encoding="utf-8")
+    execution_path = tmp_path / "execution.json"
+    execution_path.write_text(json.dumps({
+        "schema_version": "llm_execution_selection/v1",
+        "adapter_kind": "local_process",
+        "model_condition": "offline-parallel-cut-reentry-test",
+        "adapter_config_path": str(adapter_path),
+        "timeout_seconds": 30,
+        "max_output_tokens": 1024,
+        "max_response_bytes": 65536,
+    }), encoding="utf-8")
+
+    class _ParallelCutPort:
+        def __init__(self) -> None:
+            self.lock = threading.Lock()
+            self.calls = {
+                "start": 0, "branch_a": 0, "branch_b": 0, "join": 0}
+
+        def request_once(self, attempt):
+            envelope = json.loads(attempt.canonical_request_bytes)
+            combined = "\n".join(
+                message["content"] for message in envelope["messages"]
+                if isinstance(message.get("content"), str))
+            if "Create the shared starting point." in combined:
+                role, output_port = "start", "team.output__start__seed"
+            elif "Produce branch A." in combined:
+                role, output_port = "branch_a", "team.output__branch_a__a"
+            elif "Produce branch B." in combined:
+                role, output_port = "branch_b", "team.output__branch_b__b"
+            elif "Join both branches." in combined:
+                role, output_port = "join", "team.result"
+            else:
+                raise AssertionError("unknown parallel checkpoint role")
+            with self.lock:
+                self.calls[role] += 1
+                number = self.calls[role]
+            return LLMInputResponseBytes(json.dumps({
+                "protocol": "llm_response_envelope/v1",
+                "tool_calls": [{
+                    "id": f"{role}-{number}-output",
+                    "name": "write_file",
+                    "arguments": json.dumps({
+                        "path": f"outputs/{role}.txt",
+                        "description": "Parallel checkpoint output.",
+                        "content": json.dumps(f"{role} {number}"),
+                        "output_port_id": output_port,
+                        "outcome_id": "complete",
+                    }),
+                }, {
+                    "id": f"{role}-{number}-complete",
+                    "name": "complete_interaction",
+                    "arguments": "{}",
+                }],
+                "finish_reason": "tool_calls",
+            }, sort_keys=True, separators=(",", ":")).encode("utf-8"),
+                status_code=None, external_request_id=None)
+
+        def close(self):
+            pass
+
+    port = _ParallelCutPort()
+    monkeypatch.setattr(
+        "cpn.rpnh.agent_tasks.build_llm_input_port",
+        lambda _selection, *, destination_run_root: port)
+    run_dir = tmp_path / "run"
+    spec = AgentTaskSpec(
+        run_dir=run_dir,
+        prompt="Fan out, complete both branches, then join.",
+        stages=(), workflow_graph=_fanout_workflow_graph(),
+        execution_config_path=execution_path,
+        max_attempts_per_stage=3, max_parallel_nodes=2,
+    )
+    baseline = run_agent_task(spec)
+    assert baseline["stop_reason"] == "terminal"
+    assert port.calls == {
+        "start": 1, "branch_a": 1, "branch_b": 1, "join": 1}
+
+    readonly = _RegistryCore(
+        run_dir, create=False, read_only=True,
+        catalog=agent_task_catalog())
+    from cpn.rpnh.registry.checkpoint_reentry import committed_checkpoint_refs
+    cuts = []
+    for ref in committed_checkpoint_refs(readonly):
+        checkpoint = readonly.get_version(ref.version_id).metadata
+        firing_refs = checkpoint["transition_firing_refs"]
+        if not firing_refs:
+            transition_id = "initial"
+        else:
+            assert len(firing_refs) == 1
+            firing = readonly.get_version(TypedId.parse(
+                firing_refs[0]["version_id"],
+                expected="transition_firing_version"))
+            transition_id = firing.metadata["transition_id"]
+        cuts.append((ref, transition_id))
+        if transition_id == "team.join":
+            break
+    assert len(cuts) == 5
+    assert cuts[0][1] == "initial"
+    assert cuts[1][1] == "team.start"
+    branch_order = [transition_id for _ref, transition_id in cuts[2:4]]
+    assert set(branch_order) == {"team.branch_a", "team.branch_b"}
+    assert cuts[4][1] == "team.join"
+
+    for index, (cut, transition_id) in enumerate(cuts):
+        before = dict(port.calls)
+        result = reopen_agent_task(
+            spec, checkpoint_version_id=str(cut.version_id),
+            command_id=f"test-parallel-business-cut-{index}",
+            reason=f"Verify safe continuation after {transition_id}.")
+        assert result["stop_reason"] == "terminal"
+        increments = {
+            name for name, count in port.calls.items()
+            if count == before[name] + 1}
+        assert all(
+            count in {before[name], before[name] + 1}
+            for name, count in port.calls.items())
+        if transition_id == "initial":
+            expected = {"start", "branch_a", "branch_b", "join"}
+        elif transition_id == "team.start":
+            expected = {"branch_a", "branch_b", "join"}
+        elif transition_id == branch_order[0]:
+            expected = {branch_order[1].removeprefix("team."), "join"}
+        elif transition_id == branch_order[1]:
+            expected = {"join"}
+        else:
+            expected = set()
+        assert increments == expected
+
+    final = _RegistryCore(
+        run_dir, create=False, read_only=True,
+        catalog=agent_task_catalog())
+    from cpn.rpnh.registry.resource_service import _ResourceServiceKernel
+    from cpn.rpnh.registry.run_authority import current_run_execution_authority
+    _authority_ref, authority = current_run_execution_authority(
+        final, _ResourceServiceKernel(final))
+    assert authority["status"] == "terminal"
+    assert authority["execution_generation"] == len(cuts)
+    assert final.event_store.actual_model_call_counts() == (14, 0)
+    assert final.event_store.actual_model_call_limit() == 72
+    assert final.event_store.ordinary_model_call_limit() == 72
+
+
+def test_serial_task_reopens_an_intermediate_checkpoint_without_prefix_replay(
+        tmp_path: Path, monkeypatch,
+) -> None:
+    adapter_path = tmp_path / "adapter.json"
+    adapter_path.write_text(json.dumps({
+        "schema_version": "local_process_adapter_config/v1",
+        "adapter_kind": "local_process",
+        "model_condition": "offline-intermediate-reentry-test",
+        "argv": [sys.executable, "-c", "pass"],
+        "probe_argv": [sys.executable, "-c", "pass"],
+        "env": {},
+        "inherit_env": [],
+    }), encoding="utf-8")
+    execution_path = tmp_path / "execution.json"
+    execution_path.write_text(json.dumps({
+        "schema_version": "llm_execution_selection/v1",
+        "adapter_kind": "local_process",
+        "model_condition": "offline-intermediate-reentry-test",
+        "adapter_config_path": str(adapter_path),
+        "timeout_seconds": 30,
+        "max_output_tokens": 1024,
+        "max_response_bytes": 65536,
+    }), encoding="utf-8")
+
+    class _SerialPort:
+        def __init__(self) -> None:
+            self.plan_calls = 0
+            self.deliver_calls = 0
+
+        def request_once(self, attempt):
+            envelope = json.loads(attempt.canonical_request_bytes)
+            combined = "\n".join(
+                message["content"] for message in envelope["messages"]
+                if isinstance(message.get("content"), str))
+            if "Plan the work." in combined:
+                self.plan_calls += 1
+                output_port = "team.output__plan__plan"
+                path = "outputs/plan.txt"
+                value = "plan once"
+                call_id = f"plan-{self.plan_calls}"
+            elif "Deliver the result." in combined:
+                self.deliver_calls += 1
+                output_port = "team.result"
+                path = "outputs/result.txt"
+                value = f"delivery {self.deliver_calls}"
+                call_id = f"deliver-{self.deliver_calls}"
+            else:
+                raise AssertionError("unknown serial transition")
+            return LLMInputResponseBytes(json.dumps({
+                "protocol": "llm_response_envelope/v1",
+                "tool_calls": [{
+                    "id": call_id + "-output",
+                    "name": "write_file",
+                    "arguments": json.dumps({
+                        "path": path,
+                        "description": "Serial checkpoint output.",
+                        "content": json.dumps(value),
+                        "output_port_id": output_port,
+                        "outcome_id": "complete",
+                    }),
+                }, {
+                    "id": call_id + "-complete",
+                    "name": "complete_interaction",
+                    "arguments": "{}",
+                }],
+                "finish_reason": "tool_calls",
+            }, sort_keys=True, separators=(",", ":")).encode("utf-8"),
+                status_code=None, external_request_id=None)
+
+        def close(self):
+            pass
+
+    port = _SerialPort()
+    monkeypatch.setattr(
+        "cpn.rpnh.agent_tasks.build_llm_input_port",
+        lambda _selection, *, destination_run_root: port)
+    run_dir = tmp_path / "run"
+    spec = AgentTaskSpec(
+        run_dir=run_dir,
+        prompt="Plan, then deliver one result.",
+        stages=(), workflow_graph=_workflow_graph(),
+        execution_config_path=execution_path,
+        max_attempts_per_stage=4,
+    )
+    first = run_agent_task(spec)
+    assert first["output"] == "delivery 1"
+    assert (port.plan_calls, port.deliver_calls) == (1, 1)
+
+    core = _RegistryCore(
+        run_dir, create=False, read_only=True,
+        catalog=agent_task_catalog())
+    from cpn.rpnh.registry.checkpoint_reentry import committed_checkpoint_refs
+    candidates = []
+    for ref in committed_checkpoint_refs(core):
+        metadata = core.get_version(ref.version_id).metadata
+        attempts = {
+            item["transition_id"]: item["highest_issued"]
+            for item in metadata["attempts"]}
+        if attempts == {"team.plan": 1}:
+            candidates.append(ref)
+    assert len(candidates) == 1
+    intermediate = candidates[0]
+
+    second = reopen_agent_task(
+        spec, checkpoint_version_id=str(intermediate.version_id),
+        command_id="test-intermediate-checkpoint-reopen",
+        reason="Verify settled workflow prefix is not replayed.")
+    assert second["output"] == "delivery 2"
+    assert (port.plan_calls, port.deliver_calls) == (1, 2)
+    final = _RegistryCore(
+        run_dir, create=False, read_only=True,
+        catalog=agent_task_catalog())
+    attempts = sorted(
+        (json.loads(row["metadata_json"])["transition_id"],
+         json.loads(row["metadata_json"])["attempt_index"])
+        for row in final.event_store.canonical_object_rows(
+            object_type="transition_firing/v1"))
+    assert attempts == [
+        ("team.deliver", 1), ("team.deliver", 2), ("team.plan", 1)]
+
+
+def test_reopen_recovery_after_progress_keeps_the_progressed_workspace(
+        tmp_path: Path, monkeypatch,
+) -> None:
+    adapter_path = tmp_path / "adapter.json"
+    adapter_path.write_text(json.dumps({
+        "schema_version": "local_process_adapter_config/v1",
+        "adapter_kind": "local_process",
+        "model_condition": "offline-progressed-reentry-test",
+        "argv": [sys.executable, "-c", "pass"],
+        "probe_argv": [sys.executable, "-c", "pass"],
+        "env": {}, "inherit_env": [],
+    }), encoding="utf-8")
+    execution_path = tmp_path / "execution.json"
+    execution_path.write_text(json.dumps({
+        "schema_version": "llm_execution_selection/v1",
+        "adapter_kind": "local_process",
+        "model_condition": "offline-progressed-reentry-test",
+        "adapter_config_path": str(adapter_path),
+        "timeout_seconds": 30,
+        "max_output_tokens": 1024,
+        "max_response_bytes": 65536,
+    }), encoding="utf-8")
+    port = AgentWorkflowPort
+    endpoint = AgentWorkflowEndpoint
+    graph = AgentWorkflowGraph(
+        nodes=(
+            AgentWorkflowNode(
+                "plan", "Plan the work.",
+                (port("request", "task"),), (port("plan", "plan"),)),
+            AgentWorkflowNode(
+                "draft", "Draft the work.",
+                (port("plan", "plan"),), (port("draft", "draft"),)),
+            AgentWorkflowNode(
+                "deliver", "Deliver the result.",
+                (port("draft", "draft"),), (port("result", "result"),)),
+        ),
+        arcs=(
+            AgentWorkflowArc(
+                "plan_to_draft", endpoint("plan", "plan"),
+                endpoint("draft", "plan")),
+            AgentWorkflowArc(
+                "draft_to_deliver", endpoint("draft", "draft"),
+                endpoint("deliver", "draft")),
+        ),
+        ingress=endpoint("plan", "request"),
+        egress=endpoint("deliver", "result"),
+    )
+
+    class _ProgressPort:
+        def __init__(self) -> None:
+            self.calls = {"plan": 0, "draft": 0, "deliver": 0}
+
+        def request_once(self, attempt):
+            envelope = json.loads(attempt.canonical_request_bytes)
+            combined = "\n".join(
+                message["content"] for message in envelope["messages"]
+                if isinstance(message.get("content"), str))
+            if "Plan the work." in combined:
+                name, output_port = "plan", "team.output__plan__plan"
+            elif "Draft the work." in combined:
+                name, output_port = "draft", "team.output__draft__draft"
+            elif "Deliver the result." in combined:
+                name, output_port = "deliver", "team.result"
+            else:
+                raise AssertionError("unknown progressed workflow transition")
+            self.calls[name] += 1
+            number = self.calls[name]
+            if name == "deliver" and number == 2:
+                signal.raise_signal(signal.SIGINT)
+            path = f"outputs/{name}.txt"
+            value = f"{name} {number}"
+            return LLMInputResponseBytes(json.dumps({
+                "protocol": "llm_response_envelope/v1",
+                "tool_calls": [{
+                    "id": f"{name}-{number}-output",
+                    "name": "write_file",
+                    "arguments": json.dumps({
+                        "path": path,
+                        "description": "Progressed checkpoint output.",
+                        "content": json.dumps(value),
+                        "output_port_id": output_port,
+                        "outcome_id": "complete",
+                    }),
+                }, {
+                    "id": f"{name}-{number}-complete",
+                    "name": "complete_interaction",
+                    "arguments": "{}",
+                }],
+                "finish_reason": "tool_calls",
+            }, sort_keys=True, separators=(",", ":")).encode("utf-8"),
+                status_code=None, external_request_id=None)
+
+        def close(self):
+            pass
+
+    fake = _ProgressPort()
+    monkeypatch.setattr(
+        "cpn.rpnh.agent_tasks.build_llm_input_port",
+        lambda _selection, *, destination_run_root: fake)
+    run_dir = tmp_path / "run"
+    spec = AgentTaskSpec(
+        run_dir=run_dir, prompt="Plan, draft, and deliver.",
+        stages=(), workflow_graph=graph,
+        execution_config_path=execution_path,
+        max_attempts_per_stage=5,
+    )
+    first = run_agent_task(spec)
+    assert first["output"] == "deliver 1"
+    assert fake.calls == {"plan": 1, "draft": 1, "deliver": 1}
+
+    core = _RegistryCore(
+        run_dir, create=False, read_only=True,
+        catalog=agent_task_catalog())
+    from cpn.rpnh.registry.checkpoint_reentry import committed_checkpoint_refs
+    plan_cuts = []
+    for ref in committed_checkpoint_refs(core):
+        attempts = {
+            item["transition_id"]: item["highest_issued"]
+            for item in core.get_version(ref.version_id).metadata["attempts"]}
+        if attempts == {"team.plan": 1}:
+            plan_cuts.append(ref)
+    assert len(plan_cuts) == 1
+    selected = plan_cuts[0]
+    command_id = "test-progressed-reentry-command"
+    from cpn.rpnh.registry import checkpoint_reentry as reentry_module
+    real_materialize = reentry_module.materialize_reentry_workspaces
+    materialized: list[str] = []
+
+    def _record_materialization(core, kernel, checkpoint_ref):
+        materialized.append(str(checkpoint_ref.version_id))
+        return real_materialize(core, kernel, checkpoint_ref)
+
+    monkeypatch.setattr(
+        reentry_module, "materialize_reentry_workspaces",
+        _record_materialization)
+
+    stopped = reopen_agent_task(
+        spec, checkpoint_version_id=str(selected.version_id),
+        command_id=command_id,
+        reason="Stop after the reopened generation progresses.")
+    assert stopped["terminal_evidence_ref"] is None
+    assert fake.calls == {"plan": 1, "draft": 2, "deliver": 2}
+    assert len(materialized) == 1
+
+    # A genuinely new owner command may choose any committed cut after this
+    # generation has progressed and stopped; it is not mistaken for recovery
+    # of the generation's original staged cut.
+    fork_dir = tmp_path / "stopped-progress-fork"
+    shutil.copytree(run_dir, fork_dir)
+    fork = _RegistryCore(
+        fork_dir, create=False, catalog=agent_task_catalog())
+    from cpn.rpnh.registry.checkpoint_reentry import stage_checkpoint_reentry
+    from cpn.rpnh.registry.resource_service import _ResourceServiceKernel
+    from cpn.rpnh.registry.run_authority import current_run_execution_authority
+    new_generation_cut = stage_checkpoint_reentry(
+        fork, _ResourceServiceKernel(fork),
+        source_checkpoint_ref=selected,
+        command_id="test-new-command-after-progressed-stop",
+        reason="Choose a new cut after the prior generation progressed.")
+    _fork_authority_ref, fork_authority = current_run_execution_authority(
+        fork, _ResourceServiceKernel(fork))
+    assert fork_authority["execution_generation"] == 2
+    assert fork_authority["latest_checkpoint_ref"]["version_id"] == str(
+        new_generation_cut.version_id)
+
+    resumed = reopen_agent_task(
+        spec, checkpoint_version_id=str(selected.version_id),
+        command_id=command_id,
+        reason="Stop after the reopened generation progresses.")
+    assert resumed["output"] == "deliver 3"
+    assert fake.calls == {"plan": 1, "draft": 2, "deliver": 3}
+    assert len(materialized) == 1
 
 
 def test_interrupted_firing_does_not_publish_workspace_files(

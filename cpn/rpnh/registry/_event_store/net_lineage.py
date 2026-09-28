@@ -652,6 +652,15 @@ def verified_checkpoint_head(event_store: "EventStore", catalog: SchemaCatalog,
                 "workspace_revision_refs"],
             "settled": True,
         }
+        for field in (
+                "reentry_source_checkpoint_ref",
+                "reentry_authorization_ref",
+                "reentry_superseded_terminal_evidence_ref",
+                "reentry_generation",
+                "reentry_token_mappings",
+                "reentry_superseded_token_refs"):
+            if field in checkpoint or field in event.payload:
+                expected[field] = checkpoint.get(field)
         for field in ("owner_command_ref", "owner_command_result_ref"):
             if field in checkpoint or field in event.payload:
                 expected[field] = checkpoint.get(field, [])

@@ -49,6 +49,22 @@ def _declared_agent_prompt(operation, target: LLMInputTarget) -> dict:
         f"{outcome.name}="
         + ",".join(product.port for product in outcome.products)
         for outcome in semantic_outcomes)
+    workspace_failure_policy = operation.declaration.config.get(
+        "workspace_failure_policy", "require_resolved")
+    if workspace_failure_policy not in {
+            "require_resolved", "allow_explicit_diagnostic"}:
+        raise ValueError(
+            "optional agent workspace_failure_policy is invalid")
+    failure_guidance = (
+        "A timed-out or nonzero-exit workspace action is immutable failure "
+        "evidence, not task completion. Correct the problem and run a later "
+        "successful workspace action before complete_interaction."
+        if workspace_failure_policy == "require_resolved" else
+        "A timed-out or nonzero-exit workspace action is immutable evidence. "
+        "Resolve it with a later successful workspace action, or when the "
+        "declared critic/reviewer responsibility is specifically to report "
+        "that diagnostic, report it accurately before complete_interaction."
+    )
     messages.append({
         "role": "system",
         "content": (
@@ -58,6 +74,7 @@ def _declared_agent_prompt(operation, target: LLMInputTarget) -> dict:
             "one exact port after '='; never substitute internal port_* "
             "handles. The content field carries serialized JSON bytes, so a "
             "text result must include JSON string quotes inside content. "
+            + failure_guidance + " "
             "After all products are registered, call complete_interaction "
             "as the final tool call."),
     })
@@ -245,7 +262,8 @@ def make_optional_agent_host_bindings(llm_input_target: LLMInputTarget, *,
                 "workspace_revision_ref": ref_payload(ref), "run_ref": ref_payload(plan.run_ref),
                 "task_ref": ref_payload(plan.task_ref), "net_instance_ref": ref_payload(plan.net_ref),
                 "parent_revision_ref": None, "base_revision_ref": None, "producer_invocation_ref": None,
-                "transition_firing_ref": None, "firing_workspace_binding_ref": None, "disposition": "genesis",
+                "transition_firing_ref": None, "firing_workspace_binding_ref": None,
+                "reopen_authorization_ref": None, "disposition": "genesis",
                 "changed_paths": [], "deleted_paths": [], "path_deltas": [],
                 "inventory_paths": [], "conflict_paths": [],
                 "semantic_output_refs": [], "trace_summary_refs": [], "payload_kind": "full_workspace_tar",

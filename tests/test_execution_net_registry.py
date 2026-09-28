@@ -8,6 +8,7 @@ from cpn.rpnh import file_execution_net
 from cpn.rpnh.registry._registry import _RegistryCore
 from cpn.rpnh.registry.errors import ResourceIntegrityFault
 from cpn.rpnh.registry.event_store import RegistryConflict
+from cpn.rpnh.registry.identities import TypedId, new_id
 from cpn.rpnh.registry.execution_net import (
     ExecutionInputArc,
     ExecutionNetDefinition,
@@ -16,6 +17,8 @@ from cpn.rpnh.registry.execution_net import (
     ExecutionParentAuthority,
     ExecutionTransition,
 )
+from cpn.rpnh.registry.models import TypedRelation, VersionRef
+from cpn.rpnh.registry.schema_catalog import SchemaCatalog, canonical_json
 from cpn.rpnh.registry.execution_runtime import ExecutionRuntime
 from test_structural_evidence import _owner, _products, _start
 
@@ -98,6 +101,114 @@ def _active_parent(tmp_path, name="one"):
     owner = _owner(tmp_path / name)
     execution = _start(owner, "gate.inspect")
     return owner, _parent(execution), execution
+
+
+def _workspace_metadata(*, ref, parent_ref, authority_ref=None, core):
+    def payload(value):
+        return {
+            "entity_type": value.entity_type,
+            "logical_id": str(value.entity_id),
+            "version_id": str(value.version_id),
+        }
+
+    return {
+        "workspace_lineage_id": str(ref.entity_id),
+        "workspace_revision_id": str(ref.version_id),
+        "workspace_revision_ref": payload(ref),
+        "run_ref": payload(VersionRef("run/v1", new_id("run"), new_id("run_version"))),
+        "task_ref": payload(VersionRef("task/v1", core.task_id, new_id("task_version"))),
+        "net_instance_ref": payload(VersionRef(
+            "net_instance/v1", new_id("net_instance"),
+            new_id("net_instance_version"))),
+        "parent_revision_ref": payload(parent_ref) if parent_ref else None,
+        "base_revision_ref": payload(parent_ref) if parent_ref else None,
+        "producer_invocation_ref": None,
+        "transition_firing_ref": None,
+        "firing_workspace_binding_ref": None,
+        "reopen_authorization_ref": (
+            payload(authority_ref) if authority_ref else None),
+        "disposition": (
+            "owner_reopen" if authority_ref else
+            "committed" if parent_ref else "genesis"),
+        "changed_paths": [], "deleted_paths": [], "path_deltas": [],
+        "inventory_paths": [], "conflict_paths": [],
+        "semantic_output_refs": [], "trace_summary_refs": [],
+        "payload_kind": "full_workspace_tar", "settled": True,
+    }
+
+
+def test_generic_workspace_head_advance_is_atomic_against_a_stale_head(
+        tmp_path, monkeypatch):
+    # This test targets the transaction primitive; the repository-wide schema
+    # index is independently covered and may be under concurrent maintenance.
+    monkeypatch.setattr(SchemaCatalog, "_verify_repository_index", lambda self: None)
+    core = _RegistryCore(tmp_path / "registry", create=True)
+    lineage_id = new_id("workspace_lineage")
+    genesis_ref = VersionRef(
+        "workspace_revision/v1", lineage_id, new_id("workspace_revision"))
+    genesis = _workspace_metadata(ref=genesis_ref, parent_ref=None, core=core)
+    tx = core.begin(idempotency_key="workspace-cas:genesis")
+    tx.prewrite(
+        object_type="workspace_revision/v1", logical_id=lineage_id,
+        version_id=genesis_ref.version_id, payload=b"genesis", metadata=genesis,
+        media_type="application/x-tar", schema_ref="registry_v1/workspace_revision/v1")
+    tx.commit()
+    with core.event_store.connect() as db:
+        authority_row = db.execute(
+            "SELECT object_type,logical_id,version_id FROM objects "
+            "WHERE object_type='registry_type_catalog/v1'").fetchone()
+    assert authority_row is not None
+    authority_ref = VersionRef(
+        str(authority_row["object_type"]),
+        TypedId.parse(str(authority_row["logical_id"])),
+        TypedId.parse(str(authority_row["version_id"])))
+
+    successor_ref = VersionRef(
+        "workspace_revision/v1", lineage_id, new_id("workspace_revision"))
+    successor = _workspace_metadata(
+        ref=successor_ref, parent_ref=genesis_ref, authority_ref=authority_ref,
+        core=core)
+    tx = core.begin(idempotency_key="workspace-cas:success")
+    tx.prewrite(
+        object_type="workspace_revision/v1", logical_id=lineage_id,
+        version_id=successor_ref.version_id, payload=canonical_json(successor),
+        metadata=successor, media_type="application/x-tar",
+        schema_ref="registry_v1/workspace_revision/v1")
+    tx.relate(TypedRelation(
+        new_id("relation"), "derived_from", successor_ref, authority_ref,
+        system_owned=True))
+    tx.advance_workspace_head(
+        lineage_ref=genesis_ref, expected_head_ref=genesis_ref,
+        successor_ref=successor_ref, authority_ref=authority_ref)
+    tx.commit()
+
+    stale_ref = VersionRef(
+        "workspace_revision/v1", lineage_id, new_id("workspace_revision"))
+    stale = _workspace_metadata(
+        ref=stale_ref, parent_ref=genesis_ref, authority_ref=authority_ref,
+        core=core)
+    tx = core.begin(idempotency_key="workspace-cas:stale")
+    tx.prewrite(
+        object_type="workspace_revision/v1", logical_id=lineage_id,
+        version_id=stale_ref.version_id, payload=canonical_json(stale),
+        metadata=stale, media_type="application/x-tar",
+        schema_ref="registry_v1/workspace_revision/v1")
+    tx.relate(TypedRelation(
+        new_id("relation"), "derived_from", stale_ref, authority_ref,
+        system_owned=True))
+    tx.advance_workspace_head(
+        lineage_ref=genesis_ref, expected_head_ref=genesis_ref,
+        successor_ref=stale_ref, authority_ref=authority_ref)
+    with pytest.raises(RegistryConflict, match="compare-and-swap conflict"):
+        tx.commit()
+    with core.event_store.connect() as db:
+        head = db.execute(
+            "SELECT workspace_revision_version_id FROM workspace_lineage_heads "
+            "WHERE workspace_lineage_id=?", (str(lineage_id),)).fetchone()
+        stale_object = db.execute(
+            "SELECT 1 FROM objects WHERE version_id=?", (str(stale_ref.version_id),)).fetchone()
+    assert head["workspace_revision_version_id"] == str(successor_ref.version_id)
+    assert stale_object is None
 
 
 def test_definition_rejects_nonmechanical_weights_and_topology():

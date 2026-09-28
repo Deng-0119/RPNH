@@ -158,6 +158,19 @@ checkpoint 续接同一 child Registry。用户执行 `/rollback` 时，只把 m
 interrupted，让主会话回到上一个已完成 turn；独立 child Registry 以及所有已索引的独立
 task/workflow Registry 均保持不变。
 
+独立 child 控制还提供显式 checkpoint-reopen 协议。`/task ID checkpoints` 列出已提交
+切面；当前 owner 已停止或终止后，`/task ID reopen CHECKPOINT` 选择其中一个精确切面。
+Registry 以单个原子事务追加 owner 授权、由该切面活跃 token 克隆的新 occurrence、以该
+切面为 base 的 workspace revision、新 checkpoint 和新执行 authority 代次。当前 attempt
+高水位继续保留，因而不会复用物理 attempt 身份。后续历史只是在当前执行语义中被取代，
+其不可变记录仍可读取；task ID、run ID、net 与 Registry 均不改变。
+
+如果所选 reopen 命令面对的是仍处于可恢复 running 状态的执行代次，Core 会先按确定顺序
+枚举全部 active firing，并依据各自已登记 completion 或 owner-interrupted outcome 逐一闭合；
+只有全部排空后才会提交所选历史切面。每个闭合命令均独立幂等，因此 replacement owner 在
+某个并行分支闭合后丢失时，重启只排空剩余分支，不会重放已放弃的物理调用，也不会放宽
+普通 stale-lease 准入规则。
+
 Owner stop 也会传递到当前正在运行的 provider 或 workspace 边界。运行中的进程／连接会被
 取消，竞态返回的 products 会被拒绝，当前 semantic action 不会提交。对于 LLM input，
 Registry 会在同一事务中把 provider attempt、logical call 和 neutral invocation attempt

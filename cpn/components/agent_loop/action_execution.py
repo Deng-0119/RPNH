@@ -34,7 +34,7 @@ from cpn.rpnh.registry.operation_execution import verify_operation_execution
 from cpn.rpnh.registry.publication import (
     _append_direct_resource_version_publication, _direct_resource_metadata,
     _provider_request_resource_metadata, _ref_payload, _registry_type_catalog_ref,
-    _resource_from_payload, _version_from_payload, _stable_id,
+    _resource_from_payload, _stable_id,
 )
 from cpn.rpnh.registry.resource_service import _resource_payload
 from cpn.rpnh.registry.resource_verification import verify_resource
@@ -83,6 +83,92 @@ from cpn.components.tool_executors import (
 class OptionalAgentCapabilityUnavailable(ResourceIntegrityFault):
     """Typed framework block, not a fabricated successful capability result."""
 
+
+class UnresolvedWorkspaceFailure(ValueError):
+    """Model-correctable refusal to settle over failed workspace evidence."""
+
+
+def _workspace_execution_failed(metadata: Mapping | None) -> bool:
+    return bool(
+        metadata
+        and metadata.get("kind") == "workspace_execution/v1"
+        and (metadata.get("status") != "completed"
+             or metadata.get("exit_code") != 0))
+
+
+def _settled_workspace_action_history(service, loop):
+    """Return exact applied workspace actions for one immutable AgentLoop."""
+
+    history = []
+    events = service.core.event_store.list_events_by_aggregate(
+        loop.loop_id, event_types=("agent_action_settled/v1",))
+    for event in events:
+        if (event.payload.get("tool_name") != "workspace"
+                or event.payload.get("settlement")
+                != AgentLoopState.ACTION_APPLIED.value):
+            continue
+        action_id = TypedId.parse(
+            str(event.payload["agent_action_id"]), expected="agent_action")
+        row = service.core.event_store.latest_object_row(
+            action_id, object_type="agent_action/v2")
+        if row is None:
+            raise ResourceIntegrityFault(
+                "workspace settlement lacks its exact action object")
+        action_ref = VersionRef(
+            "agent_action/v2", action_id,
+            TypedId.parse(
+                str(row["version_id"]), expected="agent_action_version"))
+        action = service.mechanical_lifecycle.hydrate_action(action_ref)
+        if (action.loop_id != loop.loop_id
+                or action.tool_name != "workspace"
+                or action.tool_call_ordinal
+                != event.payload.get("tool_call_ordinal")):
+            raise ResourceIntegrityFault(
+                "workspace action history crossed its exact AgentLoop")
+        history.append((action_ref, action))
+    return tuple(sorted(
+        history,
+        key=lambda item: (
+            item[1].turn_sequence, item[1].tool_call_ordinal,
+            str(item[0].entity_id)),
+    ))
+
+
+def _validate_workspace_failure_closure(
+        *, service, execution, loop) -> None:
+    """Require causal closure for every failed workspace action."""
+
+    history = _settled_workspace_action_history(service, loop)
+    failed = tuple(
+        action for _ref, action in history
+        if _workspace_execution_failed(action.result_metadata)
+    )
+    if not failed:
+        return
+
+    _binding, _compiled, operation = service._declared(
+        execution.operation.canonical.context)
+    policy = operation.declaration.config.get(
+        "workspace_failure_policy", "require_resolved")
+    if policy not in {"require_resolved", "allow_explicit_diagnostic"}:
+        raise ResourceIntegrityFault(
+            "operation declares an invalid workspace failure policy")
+    if policy == "allow_explicit_diagnostic":
+        return
+    successful = tuple(
+        action for _ref, action in history
+        if not _workspace_execution_failed(action.result_metadata))
+    for failed_action in failed:
+        if not any(
+                (resolution.turn_sequence, resolution.tool_call_ordinal)
+                > (failed_action.turn_sequence,
+                   failed_action.tool_call_ordinal)
+                for resolution in successful):
+            raise UnresolvedWorkspaceFailure(
+                "complete_interaction requires a later completed zero-exit "
+                "workspace action after every timed-out or nonzero-exit action")
+
+
 def _read_file(*, service, execution, loop, turn, arguments, idempotency_key):
     return service._read_input(execution, loop, arguments, idempotency_key)
 
@@ -121,6 +207,8 @@ def _request_resource(**_kwargs):
         "request_resource must be resolved by the Registry resource lifecycle")
 
 def _complete_interaction(*, service, execution, loop, turn, arguments, idempotency_key):
+    _validate_workspace_failure_closure(
+        service=service, execution=execution, loop=loop)
     if not loop.written_resource_refs:
         raise ValueError("complete_interaction requires a registered semantic product")
     artifacts = tuple(verify_resource(service.core, service.kernel, execution.operation.canonical, ref)
@@ -254,6 +342,12 @@ class ActionExecutionMixin:
         error_documents = []
         delegated_terminal_responses = {}
         current = loop
+        unobserved_workspace_failure = any(
+            _workspace_execution_failed({
+                "kind": "workspace_execution/v1",
+                **dict(result),
+            })
+            for result in (external_tool_results or {}).values())
         for ordinal, prepared in enumerate(actions):
             validation = prepared.validation
             call = prepared.tool_call
@@ -262,6 +356,7 @@ class ActionExecutionMixin:
             refs, metadata, error_ref = (), None, None
             state = AgentLoopState.ACTION_APPLIED
             error = None
+            error_code = "arguments_invalid"
             if isinstance(validation, AgentToolSyntaxError):
                 error = validation.detail
             elif validation.tool_name not in catalog.tool_names:
@@ -351,6 +446,9 @@ class ActionExecutionMixin:
                         "workspace action lacks its worker execution result")
                 refs, metadata = (), {
                     "kind": "workspace_execution/v1", **dict(result)}
+                unobserved_workspace_failure = (
+                    unobserved_workspace_failure
+                    or _workspace_execution_failed(metadata))
             else:
                 registered = self.owner.registration.declaration("tool", validation.tool_name)
                 # ``current`` is the in-memory projection of actions already
@@ -364,6 +462,16 @@ class ActionExecutionMixin:
                         "write_file", "complete_interaction"}
                     else loop)
                 try:
+                    if (validation.tool_name == "complete_interaction"
+                            and (unobserved_workspace_failure or any(
+                                record.tool_name == "workspace"
+                                and _workspace_execution_failed(
+                                    record.result_metadata)
+                                for record in records))):
+                        raise UnresolvedWorkspaceFailure(
+                            "a workspace failure from this same tool-call batch "
+                            "must be observed and resolved in a later turn before "
+                            "completion")
                     refs, metadata = self.invoke_tool(execution, validation.tool_name,
                         identity=registered["identity"], contracts=registered["contracts"], kwargs={
                             "service": self, "execution": execution, "loop": tool_loop, "turn": turn,
@@ -378,7 +486,8 @@ class ActionExecutionMixin:
                         loop=loop, turn_ref=turn_ref,
                         turn_sequence=turn.sequence,
                         prepared_action=prepared, detail=error,
-                        idempotency_key=idempotency_key))
+                        idempotency_key=idempotency_key,
+                        error_code=error_code))
                 state = record.state
                 error_ref = record.tool_error_ref
                 error_documents.append((error_ref, error_document))

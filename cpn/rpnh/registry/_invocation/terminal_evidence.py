@@ -19,6 +19,7 @@ def terminal_descendant_event_ids(
         context: Any,
         provider_submission_unknown_ref: VersionRef | None = None,
         *,
+        allow_failed_invocations: bool = False,
         event_store: Any,
         require_ref: Callable[[VersionRef, str, str], Mapping[str, Any]],
         relation_endpoint: Callable[[Mapping[str, Any], str], VersionRef],
@@ -1856,6 +1857,103 @@ def terminal_descendant_event_ids(
                     failed_compaction_attempts.append((
                         failure, neutral_ref, neutral,
                         provider_ref, provider))
+            if failed_compaction_attempts and allow_failed_invocations:
+                if len(failed_compaction_attempts) != 1:
+                    raise admission_error(
+                        "interrupted call has ambiguous neutral failures")
+                (failure, neutral_ref, neutral,
+                 provider_ref, provider) = failed_compaction_attempts[0]
+                try:
+                    llm_invocation_ref = ref_from_payload(
+                        neutral["llm_invocation_ref"])
+                    llm_invocation = require_ref(
+                        llm_invocation_ref, "llm_invocation_spec/v1",
+                        "llm_invocation_version")
+                except (KeyError, TypeError, ValueError) as exc:
+                    raise admission_error(
+                        "interrupted failed call refs are malformed") from exc
+                owner_calls = tuple(
+                    event for event in call_events
+                    if event.event_type
+                    == "llm_call_owner_interrupted/v1")
+                owner_attempts = tuple(
+                    event for event in
+                    event_store.list_events_by_aggregate(
+                        str(provider_ref.entity_id), event_types=(
+                            "provider_attempt_owner_interrupted/v1",)))
+                owner_neutral = tuple(
+                    event for event in
+                    event_store.list_events_by_aggregate(
+                        str(neutral_ref.entity_id), event_types=(
+                            "llm_invocation_owner_interrupted/v1",)))
+                common_failure_valid = (
+                    failure.aggregate_id == str(neutral_ref.entity_id)
+                    and failure.producer_invocation_id
+                    == context.invocation_ref.entity_id
+                    and failure.payload.get("llm_invocation_ref")
+                    == ref_payload(llm_invocation_ref)
+                    and failure.payload.get("llm_invocation_attempt_ref")
+                    == ref_payload(neutral_ref)
+                    and failure.payload.get("attempt_ordinal")
+                    == neutral.get("attempt_ordinal")
+                    and failure.payload.get("next_attempt_allowed") is False
+                    and neutral.get("llm_invocation_attempt_ref")
+                    == ref_payload(neutral_ref)
+                    and llm_invocation.get("llm_invocation_ref")
+                    == ref_payload(llm_invocation_ref)
+                    and llm_invocation.get("invocation_ref")
+                    == ref_payload(context.invocation_ref)
+                    and llm_invocation.get("operation_binding_ref")
+                    == ref_payload(context.operation_binding_ref)
+                    and provider.get("llm_call_ref")
+                    == ref_payload(call_ref))
+                if owner_calls or owner_attempts or owner_neutral:
+                    if (not common_failure_valid
+                            or len(owner_calls) != 1
+                            or len(owner_attempts) != 1
+                            or len(owner_neutral) != 1
+                            or len(call_events) != 1
+                            or len({owner_calls[0].transaction_id,
+                                    owner_attempts[0].transaction_id,
+                                    owner_neutral[0].transaction_id}) != 1
+                            or dict(owner_calls[0].payload)
+                            != dict(owner_attempts[0].payload)
+                            or dict(owner_calls[0].payload)
+                            != dict(owner_neutral[0].payload)
+                            or owner_calls[0].payload.get(
+                                "llm_invocation_attempt_ref")
+                            != ref_payload(neutral_ref)
+                            or owner_calls[0].payload.get(
+                                "provider_attempt_ref")
+                            != ref_payload(provider_ref)
+                            or owner_calls[0].payload.get("llm_call_ref")
+                            != ref_payload(call_ref)
+                            or owner_calls[0].payload.get("invocation_ref")
+                            != ref_payload(context.invocation_ref)
+                            or owner_calls[0].payload.get("submission_state")
+                            != failure.payload.get("submission_state")):
+                        raise admission_error(
+                            "interrupted failed call lacks one exact owner closure")
+                    terminal_ids.append(str(owner_calls[0].event_id))
+                    continue
+                completions = tuple(
+                    event for event in
+                    event_store.list_events_by_aggregate(
+                        str(provider_ref.entity_id), event_types=(
+                            "provider_attempt_completed/v1",)))
+                if (not common_failure_valid
+                        or failure.payload.get("disposition")
+                        != "protocol_rejected"
+                        or failure.payload.get("submission_state")
+                        != "response_observed"
+                        or call_events
+                        or len(completions) != 1
+                        or completions[0].producer_invocation_id
+                        != context.invocation_ref.entity_id):
+                    raise admission_error(
+                        "interrupted failed call lacks a closed provider attempt")
+                terminal_ids.append(str(failure.event_id))
+                continue
             if failed_compaction_attempts:
                 if (len(failed_compaction_attempts) != 1
                         or call_events):

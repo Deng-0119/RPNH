@@ -98,7 +98,9 @@ rule is a visible v1 limitation, not transparent exactly-once intent inference.
 | --- | --- |
 | `/rpnh-help` | Discover the supported control surface. |
 | `/rpnh-tasks` | List the session's independent tasks/workflows. |
-| `/rpnh-task ID status\|result\|stop\|resume` | Address exactly one existing child owner. |
+| `/rpnh-task ID status\|result\|stop\|resume` | Address exactly one existing child owner; resume continues its current stopped cut. |
+| `/rpnh-task ID checkpoints` | List exact committed checkpoint versions for that child run. |
+| `/rpnh-task ID reopen CHECKPOINT` | Reopen that exact cut as a new generation in the same Registry/run. |
 | `/rpnh-task ID message TEXT` | Send a registered control message to one child owner. |
 | `/rpnh-task ID net [resource flags]` | Read the selected child's real registered net. |
 | `/rpnh-net [--show-resources\|--resources-only]` | Read the latest main attempt's real net using the existing filter. |
@@ -123,6 +125,8 @@ explicitly instead of sending an unsafe startup interrupt. Leaving the UI asks
 every active main turn to reach its normal `stopped_by_owner` checkpoint before
 the application owner closes; independently owned child workers keep running.
 Resume/rollback never reconstructs a checkpoint from the OpenCode transcript.
+Task checkpoint reopen likewise uses only the selected committed Registry cut;
+it does not derive state from OpenCode messages or create a replacement task.
 
 ## Model, resources and disabled features
 

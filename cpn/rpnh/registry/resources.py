@@ -982,7 +982,7 @@ class VerifiedResourceArtifact:
 
 @dataclass(frozen=True, slots=True)
 class PetriInputReceiptAuthority:
-    """Durable proof that exact bytes crossed the monitored Petri input boundary."""
+    """Durable proof that a resource crossed the monitored Petri input boundary."""
 
     authorized_delivery_ref: VersionRef
     terminal_delivery_ref: VersionRef
@@ -1039,8 +1039,7 @@ class SettledPetriInputArtifact:
                 or self.operation_start_event_id.kind != "event"):
             raise TypeError(
                 "settled Petri input requires exact immutable source authority")
-        if (not self.payload
-                or self.receipt.exact_resource_ref
+        if (self.receipt.exact_resource_ref
                 != self.resource.header.ref
                 or self.receipt.positive_byte_count != len(self.payload)):
             raise ValueError(

@@ -564,6 +564,7 @@ def build_agent_task_module(
                 "config": {
                     "provider_attempt_limit": 3,
                     "agent_loop_role": "actor",
+                    "workspace_failure_policy": "require_resolved",
                     "node_synopsis": stage.instruction,
                     "resource_bounds": {
                         "max_llm_attempts": max_attempts_per_stage,
@@ -751,6 +752,9 @@ def _validate_resumed_execution_profiles(
 
 def _execute_agent_task(
         spec: AgentTaskSpec, *, resume: bool,
+        checkpoint_version_id: str | None = None,
+        reopen_command_id: str | None = None,
+        reopen_reason: str | None = None,
 ) -> dict[str, Any]:
     """Run or resume one task through the owner/Harness/AgentLoop path."""
     if not isinstance(spec, AgentTaskSpec):
@@ -842,6 +846,9 @@ def _execute_agent_task(
                 model_condition=selection.input_target.model_condition,
                 catalog=agent_task_catalog(plugin_catalog),
                 host_execution_bindings=host_bindings,
+                checkpoint_version_id=checkpoint_version_id,
+                reopen_command_id=reopen_command_id,
+                reopen_reason=reopen_reason,
             )
             if resume else
             start_run(
@@ -938,14 +945,26 @@ def run_agent_task(spec: AgentTaskSpec) -> dict[str, Any]:
     return _execute_agent_task(spec, resume=False)
 
 
-def resume_agent_task(spec: AgentTaskSpec) -> dict[str, Any]:
-    """Resume one clean owner-stopped task from its Registry checkpoint."""
+def resume_agent_task(
+        spec: AgentTaskSpec,
+) -> dict[str, Any]:
+    """Resume one owner-stopped task from its current checkpoint."""
     return _execute_agent_task(spec, resume=True)
+
+
+def reopen_agent_task(
+        spec: AgentTaskSpec, *, checkpoint_version_id: str,
+        command_id: str, reason: str,
+) -> dict[str, Any]:
+    """Start a new generation at one exact owner-selected checkpoint."""
+    return _execute_agent_task(
+        spec, resume=True, checkpoint_version_id=checkpoint_version_id,
+        reopen_command_id=command_id, reopen_reason=reason)
 
 
 __all__ = (
     "AgentStage", "AgentTaskSpec", "AgentWorkflowGraph", "EXECUTOR_KEY", "TERMINAL_KEY",
     "TEXT_SCHEMA", "agent_task_catalog", "agent_task_registration",
     "build_agent_task_module", "build_agent_workflow_module",
-    "resume_agent_task", "run_agent_task",
+    "reopen_agent_task", "resume_agent_task", "run_agent_task",
 )

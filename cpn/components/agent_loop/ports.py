@@ -53,7 +53,7 @@ class AgentLoopRegistryPort(Protocol):
 
     def prepare_agent_turn_context_v1(
         self, execution: object, loop: AgentLoopSnapshot,
-        catalog: AgentToolCatalog,
+        catalog: AgentToolCatalog, *, tool_output_byte_limit: int = 10_000,
     ) -> PreparedAgentTurnContext: ...
 
     def prepared_agent_turn_context_scope_v1(

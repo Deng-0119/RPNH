@@ -181,6 +181,9 @@ rpnh --frontend basic
 Use `/agent` for an independent task, `/workflow` to ask the Designer for a
 workflow, and `/tasks` to list children. `/switch` changes the selected task;
 `/task ID status` and `/task ID result` inspect its progress and output.
+`/task ID checkpoints` lists committed cuts, and `/task ID reopen CHECKPOINT`
+continues the same Registry/run from a user-selected cut as a new execution
+generation.
 Conversation and task execution use the configured models and tools. See
 [usage and recovery](docs/guides/usage.md) for messaging, stopping and resuming.
 

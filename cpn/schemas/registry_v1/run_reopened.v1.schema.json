@@ -1,0 +1,35 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "registry_v1/run_reopened/v1",
+  "title": "Atomic owner checkpoint reentry fact",
+  "type": "object",
+  "additionalProperties": false,
+  "definitions": {
+    "ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "entity_type": {"type": "string"},
+        "logical_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"},
+        "version_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"}
+      },
+      "required": ["entity_type", "logical_id", "version_id"]
+    }
+  },
+  "properties": {
+    "run_reopen_authorization_ref": {"$ref": "#/definitions/ref"},
+    "expected_run_authority_ref": {"$ref": "#/definitions/ref"},
+    "selected_checkpoint_ref": {"$ref": "#/definitions/ref"},
+    "reentry_checkpoint_ref": {"$ref": "#/definitions/ref"},
+    "successor_run_authority_ref": {"$ref": "#/definitions/ref"},
+    "workspace_reentry_revision_refs": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/definitions/ref"}},
+    "execution_generation": {"type": "integer", "minimum": 1},
+    "reason": {"type": "string", "minLength": 1, "maxLength": 600}
+  },
+  "required": [
+    "run_reopen_authorization_ref", "expected_run_authority_ref",
+    "selected_checkpoint_ref", "reentry_checkpoint_ref",
+    "successor_run_authority_ref", "workspace_reentry_revision_refs",
+    "execution_generation", "reason"
+  ]
+}

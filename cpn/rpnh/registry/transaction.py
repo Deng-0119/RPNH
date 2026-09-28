@@ -52,6 +52,7 @@ class RegistryTransaction:
             str, Mapping[str, Any] | None] = {}
         self._expected_dependency_root_predecessor: dict[str, str | None] | None = None
         self._firing_publications: list[dict[str, object]] = []
+        self._workspace_head_advances: list[dict[str, str]] = []
         self._initial_ordinal = event_store.max_ordinal()
         self._initial_heads: dict[str, int] = {}
         self._closed = False
@@ -250,7 +251,8 @@ class RegistryTransaction:
                     != workspace_revision_ref.entity_id))
                 or not isinstance(marking_net_ref, VersionRef)
                 or marking_net_ref.entity_type != "net_instance/v1"
-                or self._firing_publications):
+                or self._firing_publications
+                or self._workspace_head_advances):
             raise RuntimeError(
                 "transaction permits exactly one firing publication root")
         self._firing_publications.append({
@@ -274,6 +276,42 @@ class RegistryTransaction:
                 marking_checkpoint_ref.version_id),
             "marking_net_version_id": str(
                 marking_net_ref.version_id),
+        })
+
+    def advance_workspace_head(
+            self, *, lineage_ref: VersionRef, expected_head_ref: VersionRef,
+            successor_ref: VersionRef, authority_ref: VersionRef) -> None:
+        """Atomically advance one non-firing workspace lineage head."""
+
+        workspace_refs = (lineage_ref, expected_head_ref, successor_ref)
+        if (self._closed
+                or self._firing_publications
+                or any(not isinstance(ref, VersionRef)
+                       or ref.entity_type != "workspace_revision/v1"
+                       or ref.entity_id.kind != "workspace_lineage"
+                       or ref.version_id.kind != "workspace_revision"
+                       for ref in workspace_refs)
+                or any(ref.entity_id != lineage_ref.entity_id
+                       for ref in workspace_refs)
+                or expected_head_ref.version_id == successor_ref.version_id
+                or not isinstance(authority_ref, VersionRef)
+                or not isinstance(authority_ref.entity_type, str)
+                or not authority_ref.entity_type
+                or not isinstance(authority_ref.entity_id, TypedId)
+                or not isinstance(authority_ref.version_id, TypedId)):
+            raise TypeError(
+                "workspace head advance requires exact workspace and authority refs")
+        if any(item["workspace_lineage_id"] == str(lineage_ref.entity_id)
+               for item in self._workspace_head_advances):
+            raise RuntimeError(
+                "transaction may advance each workspace lineage only once")
+        self._workspace_head_advances.append({
+            "workspace_lineage_id": str(lineage_ref.entity_id),
+            "expected_workspace_head_version_id": str(expected_head_ref.version_id),
+            "workspace_revision_version_id": str(successor_ref.version_id),
+            "authority_entity_type": authority_ref.entity_type,
+            "authority_logical_id": str(authority_ref.entity_id),
+            "authority_version_id": str(authority_ref.version_id),
         })
 
     def commit(self) -> tuple[EventEnvelope, ...]:
@@ -344,7 +382,8 @@ class RegistryTransaction:
                 self._expected_snapshot_predecessors),
             expected_dependency_root_predecessor=(
                 self._expected_dependency_root_predecessor),
-            firing_publications=tuple(self._firing_publications))
+            firing_publications=tuple(self._firing_publications),
+            workspace_head_advances=tuple(self._workspace_head_advances))
         self._closed = True
         return result
 

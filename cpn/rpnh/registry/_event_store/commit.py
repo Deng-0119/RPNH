@@ -35,6 +35,7 @@ def publish_batch(event_store: "EventStore", *, task_id: TypedId, branch_id: str
                   expected_dependency_root_predecessor: Mapping[
                       str, str | None] | None = None,
                   firing_publications: Sequence[Mapping[str, object]] = (),
+                  workspace_head_advances: Sequence[Mapping[str, object]] = (),
                   ) -> tuple[EventEnvelope, ...]:
     """Validate and atomically append one complete Registry transaction."""
     from ..event_store import (
@@ -57,6 +58,8 @@ def publish_batch(event_store: "EventStore", *, task_id: TypedId, branch_id: str
         dict(expected_dependency_root_predecessor)
         if expected_dependency_root_predecessor is not None else None)
     publication_commands = tuple(dict(item) for item in firing_publications)
+    workspace_head_commands = tuple(
+        dict(item) for item in workspace_head_advances)
     # HISTORICAL_INERT: no current caller can supply fault-mechanical
     # settlement publication commands.  The retained validator below is
     # unreachable until it is removed with the historical schemas.
@@ -80,6 +83,9 @@ def publish_batch(event_store: "EventStore", *, task_id: TypedId, branch_id: str
                 and removed_business_terminal_events)):
         raise RegistryConflict(
             "one Registry transaction may settle and publish only one firing")
+    if publication_commands and workspace_head_commands:
+        raise RegistryConflict(
+            "workspace head advances cannot share a firing publication transaction")
     required_publication_fields = {
         "firing_version_id", "invocation_version_id",
         "admission_checkpoint_version_id",
@@ -109,6 +115,20 @@ def publish_batch(event_store: "EventStore", *, task_id: TypedId, branch_id: str
                     for item in publication_commands})
             != len(publication_commands)):
         raise TypeError("firing publication command is malformed")
+    required_workspace_head_fields = {
+        "workspace_lineage_id", "expected_workspace_head_version_id",
+        "workspace_revision_version_id", "authority_entity_type",
+        "authority_logical_id", "authority_version_id",
+    }
+    if (any(
+            set(item) != required_workspace_head_fields
+            or any(not isinstance(value, str) or not value
+                   for value in item.values())
+            for item in workspace_head_commands)
+            or len({item["workspace_lineage_id"]
+                    for item in workspace_head_commands})
+            != len(workspace_head_commands)):
+        raise TypeError("workspace head advance command is malformed")
     required_mechanical_publication_fields = {
         "settlement_version_id", "firing_version_id",
         "sidecar_action_version_id", "operation_fault_version_id",
@@ -130,6 +150,54 @@ def publish_batch(event_store: "EventStore", *, task_id: TypedId, branch_id: str
             for item in historical_mechanical_publication_commands):
         raise TypeError("mechanical settlement publication command is malformed")
     prepared_by_version = {str(item.version_id): item for item in objects}
+    for command in workspace_head_commands:
+        successors = tuple(
+            item for item in objects
+            if (item.object_type == "workspace_revision/v1"
+                and str(item.logical_id) == command["workspace_lineage_id"]
+                and str(item.version_id)
+                == command["workspace_revision_version_id"]))
+        successor = successors[0] if len(successors) == 1 else None
+        parent = (successor.metadata.get("parent_revision_ref")
+                  if successor is not None else None)
+        successor_ref = (successor.metadata.get("workspace_revision_ref")
+                         if successor is not None else None)
+        if (successor is None
+                or not isinstance(parent, Mapping)
+                or parent != {
+                    "entity_type": "workspace_revision/v1",
+                    "logical_id": command["workspace_lineage_id"],
+                    "version_id": command[
+                        "expected_workspace_head_version_id"],
+                }
+                or successor.metadata.get("workspace_lineage_id")
+                != command["workspace_lineage_id"]
+                or successor_ref != {
+                    "entity_type": "workspace_revision/v1",
+                    "logical_id": command["workspace_lineage_id"],
+                    "version_id": command[
+                        "workspace_revision_version_id"],
+                }
+                or not any(
+                    relation.system_owned
+                    and relation.producer_invocation_id is None
+                    and relation.strength == "strong"
+                    and isinstance(relation.source, VersionRef)
+                    and isinstance(relation.target, VersionRef)
+                    and relation.source.entity_type == "workspace_revision/v1"
+                    and str(relation.source.entity_id)
+                    == command["workspace_lineage_id"]
+                    and str(relation.source.version_id)
+                    == command["workspace_revision_version_id"]
+                    and relation.target.entity_type
+                    == command["authority_entity_type"]
+                    and str(relation.target.entity_id)
+                    == command["authority_logical_id"]
+                    and str(relation.target.version_id)
+                    == command["authority_version_id"]
+                    for relation in relations)):
+            raise RegistryConflict(
+                "workspace head advance lacks its exact successor authority")
     for command in historical_mechanical_publication_commands:
         settlement = prepared_by_version.get(command["settlement_version_id"])
         delta = prepared_by_version.get(command["marking_delta_version_id"])
@@ -360,6 +428,7 @@ def publish_batch(event_store: "EventStore", *, task_id: TypedId, branch_id: str
         expected_snapshot_predecessors=snapshot_predecessors,
         expected_dependency_root_predecessor=(
             dependency_root_predecessor),
+        workspace_head_advances=workspace_head_commands,
     )
     with event_store._lock, event_store.connect() as db:
         db.execute("BEGIN IMMEDIATE")
@@ -504,6 +573,20 @@ def publish_batch(event_store: "EventStore", *, task_id: TypedId, branch_id: str
                     db.rollback()
                     raise RegistryConflict(
                         "firing publication replay differs from exact settlement")
+            for command in workspace_head_commands:
+                head = db.execute(
+                    "SELECT workspace_revision_version_id,transaction_id "
+                    "FROM workspace_lineage_heads WHERE workspace_lineage_id=?",
+                    (command["workspace_lineage_id"],),
+                ).fetchone()
+                if (head is None
+                        or str(head["workspace_revision_version_id"])
+                        != command["workspace_revision_version_id"]
+                        or str(head["transaction_id"])
+                        != str(existing["transaction_id"])):
+                    db.rollback()
+                    raise RegistryConflict(
+                        "workspace head advance replay differs from committed CAS")
             requested_relation_owners = {
                 str(relation.relation_id): {
                     "producer_invocation_id": (
@@ -537,6 +620,19 @@ def publish_batch(event_store: "EventStore", *, task_id: TypedId, branch_id: str
                 (existing["transaction_id"],)).fetchall()
             db.rollback()
             return tuple(event_store._row_to_envelope(row) for row in rows)
+
+        for command in workspace_head_commands:
+            authority = db.execute(
+                "SELECT 1 FROM objects WHERE object_type=? AND logical_id=? "
+                "AND version_id=?",
+                (command["authority_entity_type"],
+                 command["authority_logical_id"],
+                 command["authority_version_id"]),
+            ).fetchone()
+            if authority is None:
+                db.rollback()
+                raise RegistryConflict(
+                    "workspace head advance authority is not an immutable Registry object")
 
         for command in historical_mechanical_publication_commands:
             settlement = prepared_by_version[
@@ -1210,6 +1306,32 @@ def publish_batch(event_store: "EventStore", *, task_id: TypedId, branch_id: str
                     "VALUES(?,?,?,?)",
                     (firing_version_id, "relation",
                      str(relation.relation_id), str(transaction_id)))
+
+        for command in workspace_head_commands:
+            head = db.execute(
+                "SELECT workspace_revision_version_id FROM workspace_lineage_heads "
+                "WHERE workspace_lineage_id=?",
+                (command["workspace_lineage_id"],),
+            ).fetchone()
+            if (head is None
+                    or str(head["workspace_revision_version_id"])
+                    != command["expected_workspace_head_version_id"]):
+                db.rollback()
+                raise RegistryConflict(
+                    "workspace head compare-and-swap conflict")
+            db.execute(
+                "UPDATE workspace_lineage_heads SET "
+                "workspace_revision_version_id=?,transaction_id=? "
+                "WHERE workspace_lineage_id=? AND "
+                "workspace_revision_version_id=?",
+                (command["workspace_revision_version_id"],
+                 str(transaction_id), command["workspace_lineage_id"],
+                 command["expected_workspace_head_version_id"]),
+            )
+            if db.execute("SELECT changes()").fetchone()[0] != 1:
+                db.rollback()
+                raise RegistryConflict(
+                    "workspace head SQL CAS did not advance one head")
 
         for item in objects:
             if (item.object_type != "workspace_revision/v1"

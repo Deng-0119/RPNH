@@ -20,7 +20,7 @@ from .agent_tasks import AgentTaskSpec, agent_task_catalog
 from .control_client import ControlClient
 from .inspection import project_registry_net
 from .registry._registry import _RegistryCore
-from .registry.publication import _version_from_payload
+from .registry.publication import _ref_payload, _version_from_payload
 from .registry.resource_service import _ResourceServiceKernel
 from .registry.resources import ResourceVersionRef
 
@@ -38,6 +38,9 @@ class TaskHandle:
     process: Any
     launch_state: str = "active"
     launch_mode: str = "fresh"
+    resume_checkpoint_version_id: str | None = None
+    reopen_command_id: str | None = None
+    reopen_reason: str | None = None
 
 
 def _process_start_ticks(pid: int) -> int | None:
@@ -177,7 +180,7 @@ class TaskControl:
     ) -> None:
         if launch_state not in {"pending", "active"}:
             raise ValueError("task launch state is invalid")
-        if launch_mode not in {"fresh", "resume"}:
+        if launch_mode not in {"fresh", "resume", "reopen"}:
             raise ValueError("task launch mode is invalid")
         if launch_state == "pending":
             pid = process_start_ticks = None
@@ -202,6 +205,10 @@ class TaskControl:
             "process_start_ticks": process_start_ticks,
             "launch_state": launch_state,
             "launch_mode": launch_mode,
+            "resume_checkpoint_version_id": (
+                handle.resume_checkpoint_version_id),
+            "reopen_command_id": handle.reopen_command_id,
+            "reopen_reason": handle.reopen_reason,
         }
         path = self._manifest_root / f"{handle.task_id}.json"
         temporary = path.with_suffix(".json.tmp")
@@ -225,10 +232,19 @@ class TaskControl:
         launch_mode = value.get("launch_mode", "fresh")
         if launch_state not in {"pending", "active"}:
             return
-        if launch_mode not in {"fresh", "resume"}:
+        if launch_mode not in {"fresh", "resume", "reopen"}:
             return
         handle.launch_state = launch_state
         handle.launch_mode = launch_mode
+        checkpoint = value.get("resume_checkpoint_version_id")
+        if checkpoint is None or isinstance(checkpoint, str):
+            handle.resume_checkpoint_version_id = checkpoint
+        reopen_command_id = value.get("reopen_command_id")
+        reopen_reason = value.get("reopen_reason")
+        if reopen_command_id is None or isinstance(reopen_command_id, str):
+            handle.reopen_command_id = reopen_command_id
+        if reopen_reason is None or isinstance(reopen_reason, str):
+            handle.reopen_reason = reopen_reason
         pid = value.get("pid")
         ticks = value.get("process_start_ticks")
         if (launch_state == "active" and isinstance(pid, int)
@@ -290,8 +306,23 @@ class TaskControl:
                 ticks = value.get("process_start_ticks")
                 launch_state = value.get("launch_state", "active")
                 launch_mode = value.get("launch_mode", "fresh")
+                resume_checkpoint_version_id = value.get(
+                    "resume_checkpoint_version_id")
+                reopen_command_id = value.get("reopen_command_id")
+                reopen_reason = value.get("reopen_reason")
                 if (launch_state not in {"pending", "active"}
-                        or launch_mode not in {"fresh", "resume"}):
+                        or launch_mode not in {"fresh", "resume", "reopen"}
+                        or (resume_checkpoint_version_id is not None
+                            and not isinstance(
+                                resume_checkpoint_version_id, str))
+                        or (reopen_command_id is not None
+                            and not isinstance(reopen_command_id, str))
+                        or (reopen_reason is not None
+                            and not isinstance(reopen_reason, str))
+                        or (launch_mode == "reopen")
+                        != all(value is not None for value in (
+                            resume_checkpoint_version_id,
+                            reopen_command_id, reopen_reason))):
                     raise ValueError("manifest launch lifecycle")
                 process = (
                     _DetachedProcess(pid, ticks)
@@ -307,6 +338,10 @@ class TaskControl:
                     process=process,
                     launch_state=launch_state,
                     launch_mode=launch_mode,
+                    resume_checkpoint_version_id=(
+                        resume_checkpoint_version_id),
+                    reopen_command_id=reopen_command_id,
+                    reopen_reason=reopen_reason,
                 )
                 if (handle.kind != spec.kind
                         or handle.run_dir != spec.run_dir.resolve()
@@ -350,13 +385,29 @@ class TaskControl:
             handle.process = self._spawn(
                 handle.task_id, spec_path, handle.log_path,
                 resume=handle.launch_mode == "resume",
+                checkpoint_version_id=(
+                    handle.resume_checkpoint_version_id),
+                reopen_command_id=handle.reopen_command_id,
+                reopen_reason=handle.reopen_reason,
                 launch_lock=launch_lock)
 
     def _spawn(self, task_id: str, spec_path: Path, log_path: Path, *,
-               resume: bool, launch_lock=None) -> Any:
+               resume: bool, checkpoint_version_id: str | None = None,
+               reopen_command_id: str | None = None,
+               reopen_reason: str | None = None,
+               launch_lock=None) -> Any:
         argv = [sys.executable, "-m", "cpn.rpnh.task_worker"]
         if resume:
             argv.append("--resume")
+        reopen_values = (
+            checkpoint_version_id, reopen_command_id, reopen_reason)
+        if any(value is not None for value in reopen_values):
+            if resume or not all(isinstance(value, str) and value
+                                 for value in reopen_values):
+                raise ValueError(
+                    "checkpoint reopen requires one complete non-resume intent")
+            argv.extend(("--reopen", checkpoint_version_id,
+                         reopen_command_id, reopen_reason))
         if launch_lock is not None:
             argv.extend(("--launch-lock-fd", str(launch_lock.fileno())))
         argv.append(str(spec_path))
@@ -412,6 +463,9 @@ class TaskControl:
             process=_DetachedProcess(-1, -1),
             launch_state="pending",
             launch_mode="fresh",
+            resume_checkpoint_version_id=None,
+            reopen_command_id=None,
+            reopen_reason=None,
         )
         self._tasks[task_id] = handle
         self._write_spec(handle)
@@ -430,6 +484,9 @@ class TaskControl:
             raise
         handle.process = self._spawn(
             task_id, spec_path, log_path, resume=False,
+            checkpoint_version_id=None,
+            reopen_command_id=None,
+            reopen_reason=None,
             launch_lock=launch_lock)
         return handle
 
@@ -509,6 +566,8 @@ class TaskControl:
             "task_ref": str(core.task_id),
             "execution_status": authority["status"],
             "checkpoint_ref": authority["latest_checkpoint_ref"],
+            "execution_generation": authority.get(
+                "execution_generation", 0),
             "terminal_evidence_count": len(terminal),
             "final_result_index_count": len(final),
             "actual_model_call_counts": list(
@@ -530,13 +589,17 @@ class TaskControl:
         core = _RegistryCore(
             handle.run_dir, create=False, read_only=True,
             catalog=agent_task_catalog())
-        rows = core.event_store.canonical_object_rows(
-            object_type="run_terminal_evidence/v1")
-        if not rows:
+        from .registry.run_authority import current_run_execution_authority
+        _authority_ref, authority = current_run_execution_authority(
+            core, _ResourceServiceKernel(core))
+        evidence_payload = authority.get("terminal_evidence_ref")
+        if (authority.get("status") != "terminal"
+                or evidence_payload is None):
             raise RuntimeError("task has no registered terminal result")
-        if len(rows) != 1:
-            raise RuntimeError("task has multiple registered terminal results")
-        evidence = json.loads(rows[0]["metadata_json"])
+        evidence_ref = _version_from_payload(evidence_payload)
+        evidence = dict(_ResourceServiceKernel(core)._exact_object(
+            evidence_ref,
+            expected_type="run_terminal_evidence/v1").metadata)
         result_ref = _version_from_payload(evidence["terminal_result_ref"])
         raw = _ResourceServiceKernel(core)._read_registered(
             ResourceVersionRef(result_ref.entity_id, result_ref.version_id))
@@ -546,6 +609,8 @@ class TaskControl:
             "terminal_evidence_ref": evidence["terminal_evidence_ref"],
             "terminal_result_ref": evidence["terminal_result_ref"],
             "run_outcome": evidence["run_outcome"],
+            "execution_generation": authority.get(
+                "execution_generation", 0),
             "output": json.loads(raw),
             "actual_model_call_counts": list(
                 core.event_store.actual_model_call_counts()),
@@ -587,8 +652,27 @@ class TaskControl:
         handle.process.send_signal(signal.SIGINT)
         return {"task_id": task_id, "status": "STOP_REQUESTED"}
 
+    def checkpoints(self, task_id: str) -> dict[str, Any]:
+        """List exact committed checkpoint cuts selectable for reentry."""
+        handle = self.get(task_id)
+        core = _RegistryCore(
+            handle.run_dir, create=False, read_only=True,
+            catalog=agent_task_catalog())
+        from .registry.checkpoint_reentry import committed_checkpoint_refs
+        from .registry.run_authority import current_run_execution_authority
+        refs = committed_checkpoint_refs(core)
+        _authority_ref, authority = current_run_execution_authority(
+            core, _ResourceServiceKernel(core))
+        return {
+            "task_id": task_id,
+            "current_checkpoint_ref": authority["latest_checkpoint_ref"],
+            "execution_generation": authority.get(
+                "execution_generation", 0),
+            "checkpoints": [_ref_payload(ref) for ref in refs],
+        }
+
     def resume(self, task_id: str) -> dict[str, Any]:
-        """Resume one owner-stopped task from its Registry checkpoint."""
+        """Resume the task's current owner-stopped checkpoint."""
         handle = self.get(task_id)
         if handle.process.poll() is None:
             return {"task_id": task_id, "status": "ALREADY_RUNNING"}
@@ -605,6 +689,9 @@ class TaskControl:
             raise RuntimeError(
                 "task resume launch identity is already owned")
         try:
+            handle.resume_checkpoint_version_id = None
+            handle.reopen_command_id = None
+            handle.reopen_reason = None
             self._write_manifest(
                 handle, launch_state="pending", launch_mode="resume")
         except Exception:
@@ -612,8 +699,91 @@ class TaskControl:
             raise
         handle.process = self._spawn(
             task_id, spec_path, handle.log_path, resume=True,
+            checkpoint_version_id=None,
+            reopen_command_id=None,
+            reopen_reason=None,
             launch_lock=launch_lock)
-        return {"task_id": task_id, "status": "RESUME_STARTED"}
+        return {
+            "task_id": task_id,
+            "status": "RESUME_STARTED",
+        }
+
+    def reopen(
+            self, task_id: str, checkpoint_version_id: str, *,
+            reason: str = "Owner selected an exact Registry checkpoint.",
+    ) -> dict[str, Any]:
+        """Start a new execution generation at an exact committed cut."""
+        if (not isinstance(checkpoint_version_id, str)
+                or not checkpoint_version_id
+                or not isinstance(reason, str) or not reason
+                or len(reason) > 600):
+            raise ValueError("task reopen requires one checkpoint and reason")
+        handle = self.get(task_id)
+        if handle.process.poll() is None:
+            return {"task_id": task_id, "status": "ALREADY_RUNNING"}
+        core = _RegistryCore(
+            handle.run_dir, create=False, read_only=True,
+            catalog=agent_task_catalog())
+        from .registry.checkpoint_reentry import resolve_committed_checkpoint
+        from .registry.run_authority import current_run_execution_authority
+        selected = resolve_committed_checkpoint(core, checkpoint_version_id)
+        _authority_ref, authority = current_run_execution_authority(
+            core, _ResourceServiceKernel(core))
+        status = authority["status"]
+        reopen_authorization = authority.get("reopen_authorization_ref")
+        reentry_checkpoint = None
+        if reopen_authorization is not None:
+            reentry_checkpoint = dict(
+                _ResourceServiceKernel(core)._exact_object(
+                    _version_from_payload(reopen_authorization),
+                    expected_type="run_reopen_authorization/v1"
+                ).metadata)["reentry_checkpoint_ref"]
+        recover_existing = (
+            reopen_authorization is not None
+            and (status == "running"
+                 or (status == "stopped_by_owner"
+                     and authority["latest_checkpoint_ref"]
+                     == reentry_checkpoint))
+            and handle.launch_mode == "reopen"
+            and handle.resume_checkpoint_version_id
+            == str(selected.version_id)
+            and isinstance(handle.reopen_command_id, str)
+            and isinstance(handle.reopen_reason, str))
+        if (status not in {"terminal", "stopped_by_owner", "running"}
+                and not recover_existing):
+            raise RuntimeError(
+                "task reopen requires terminal/owner-stopped authority or its durable recovery intent")
+        if recover_existing:
+            command_id = handle.reopen_command_id
+            reason = handle.reopen_reason
+        else:
+            command_id = "owner-reopen-" + uuid4().hex
+        spec_path = self.root / "specs" / f"{task_id}.json"
+        self._upgrade_legacy_owner_socket(handle)
+        launch_lock = _acquire_task_launch_lock(self.root, task_id)
+        if launch_lock is None:
+            raise RuntimeError("task reopen launch identity is already owned")
+        try:
+            handle.resume_checkpoint_version_id = str(selected.version_id)
+            handle.reopen_command_id = command_id
+            handle.reopen_reason = reason
+            self._write_manifest(
+                handle, launch_state="pending", launch_mode="reopen")
+        except Exception:
+            launch_lock.close()
+            raise
+        handle.process = self._spawn(
+            task_id, spec_path, handle.log_path, resume=False,
+            checkpoint_version_id=str(selected.version_id),
+            reopen_command_id=command_id, reopen_reason=reason,
+            launch_lock=launch_lock)
+        return {
+            "task_id": task_id,
+            "status": ("REOPEN_RECOVERY_STARTED" if recover_existing
+                       else "CHECKPOINT_REOPEN_STARTED"),
+            "checkpoint_version_id": str(selected.version_id),
+            "reopen_command_id": command_id,
+        }
 
     def net(self, task_id: str) -> dict[str, Any]:
         handle = self.get(task_id)
@@ -623,6 +793,9 @@ class TaskControl:
 
 def claim_task_worker_launch(
         spec_path: Path, spec: AgentTaskSpec, *, resume: bool,
+        checkpoint_version_id: str | None = None,
+        reopen_command_id: str | None = None,
+        reopen_reason: str | None = None,
         inherited_lock_fd: int | None = None,
 ):
     """Acquire this task's durable launch identity before executing it.
@@ -657,7 +830,12 @@ def claim_task_worker_launch(
     try:
         manifest_path = root / "manifests" / f"{task_id}.json"
         value = json.loads(manifest_path.read_text(encoding="utf-8"))
-        expected_mode = "resume" if resume else "fresh"
+        reopen = reopen_command_id is not None
+        if reopen != (checkpoint_version_id is not None) or reopen != (
+                reopen_reason is not None) or (reopen and resume):
+            raise ValueError("task worker reopen intent is incomplete")
+        expected_mode = "reopen" if reopen else (
+            "resume" if resume else "fresh")
         if not isinstance(value, Mapping):
             raise ValueError("task worker launch has a malformed manifest")
         version = value.get("schema_version")
@@ -678,7 +856,11 @@ def claim_task_worker_launch(
                 or persisted_run != spec.run_dir.resolve()
                 or value.get("kind") != spec.kind
                 or value.get("launch_state") != "pending"
-                or value.get("launch_mode") != expected_mode):
+                or value.get("launch_mode") != expected_mode
+                or value.get("resume_checkpoint_version_id")
+                != checkpoint_version_id
+                or value.get("reopen_command_id") != reopen_command_id
+                or value.get("reopen_reason") != reopen_reason):
             raise ValueError("task worker launch differs from durable intent")
         pid = os.getpid()
         ticks = _process_start_ticks(pid)

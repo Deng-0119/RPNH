@@ -459,6 +459,76 @@ def _current_task_recovery_manifest_row(
         "WHERE pointer.key='task_recovery_manifest_version_id'",
     ).fetchone()
 
+
+def _registered_model_call_limits(
+        db: sqlite3.Connection, *, task_id: str,
+) -> tuple[int, int]:
+    """Return ordinary/hard limits including owner-authorized generations.
+
+    The startup manifest remains the immutable per-generation budget
+    contract.  Every atomically closed ``run_reopened/v1`` authorization
+    grants one additional copy of that original budget.  This keeps physical
+    attempt identities and cumulative accounting monotonic while preventing a
+    later owner-selected checkpoint generation from inheriting an already
+    consumed run-wide cap.
+    """
+    current_row = _current_task_recovery_manifest_row(db)
+    if current_row is None:
+        raise ValueError("task has no current registered call-limit authority")
+    initial_rows = db.execute(
+        "SELECT o.metadata_json FROM objects o JOIN transactions t ON "
+        "t.transaction_id=o.transaction_id AND t.status='committed' "
+        "WHERE o.object_type='task_recovery_manifest/v1' "
+        "AND o.logical_id=? ORDER BY o.rowid LIMIT 1",
+        (task_id,),
+    ).fetchall()
+    if len(initial_rows) != 1:
+        raise ValueError("task has no immutable initial call-limit authority")
+    try:
+        current = json.loads(str(current_row["metadata_json"]))
+        initial = json.loads(str(initial_rows[0]["metadata_json"]))
+        current_ordinary = current["ordinary_global_cap"]
+        current_hard = current["task_total_hard_cap"]
+        generation_ordinary = initial["ordinary_global_cap"]
+        generation_hard = initial["task_total_hard_cap"]
+    except (TypeError, ValueError, KeyError, json.JSONDecodeError) as exc:
+        raise ValueError("registered model-call limits are malformed") from exc
+    values = (
+        current_ordinary, current_hard,
+        generation_ordinary, generation_hard,
+    )
+    if any(isinstance(value, bool) or not isinstance(value, int) or value < 1
+           for value in values):
+        raise ValueError("registered model-call limits are invalid")
+
+    rows = db.execute(
+        "SELECT o.metadata_json FROM objects o JOIN transactions t ON "
+        "t.transaction_id=o.transaction_id AND t.status='committed' "
+        "WHERE o.object_type='run_reopen_authorization/v1' "
+        "AND json_extract(o.metadata_json,'$.task_ref.logical_id')=? "
+        "AND EXISTS (SELECT 1 FROM events e WHERE "
+        "e.transaction_id=o.transaction_id "
+        "AND e.event_type='run_reopened/v1' "
+        "AND json_extract(e.payload_json,"
+        "'$.run_reopen_authorization_ref.version_id')=o.version_id)",
+        (task_id,),
+    ).fetchall()
+    try:
+        generations = sorted(
+            int(json.loads(str(row["metadata_json"]))["execution_generation"])
+            for row in rows)
+    except (TypeError, ValueError, KeyError, json.JSONDecodeError) as exc:
+        raise ValueError(
+            "checkpoint generation budget authority is malformed") from exc
+    if generations and generations != list(range(1, generations[-1] + 1)):
+        raise ValueError(
+            "checkpoint generation budget authority is not contiguous")
+    generation_count = len(generations)
+    return (
+        current_ordinary + generation_count * generation_ordinary,
+        current_hard + generation_count * generation_hard,
+    )
+
 _AGENT_CAP_SLOT_RETURN_KIND = "registered_logical_slot_return/v1"
 
 _AGENT_CAP_TRACE_SUMMARY_KIND = "registered_agent_trace_summary/v1"
@@ -682,17 +752,10 @@ def install_published_model_call_baseline_v1(
             db.rollback()
             raise RegistryConflict(
                 "published call baseline differs from continuation identity")
-        manifest_row = _current_task_recovery_manifest_row(db)
-        if manifest_row is None:
-            db.rollback()
-            raise RegistryConflict(
-                "published call baseline lacks its current call limit")
         try:
-            limit = int(json.loads(str(
-                manifest_row["metadata_json"]))[
-                    "task_total_hard_cap"])
-        except (TypeError, ValueError, KeyError,
-                json.JSONDecodeError) as exc:
+            _ordinary_limit, limit = _registered_model_call_limits(
+                db, task_id=task_id)
+        except ValueError as exc:
             db.rollback()
             raise RegistryConflict(
                 "destination model-call limit is malformed") from exc
@@ -830,17 +893,38 @@ def task_model_call_terminal_phase_entered(store) -> bool:
             db, task_id=task_id)
 
 def actual_model_call_limit(store) -> int:
-    """Return the exact registered task call limit."""
+    """Return the effective hard limit for the current execution generation."""
     from ..event_store import RegistryCorruptError
 
     with store.connect() as db:
-        row = _current_task_recovery_manifest_row(db)
-    if row is None:
-        raise RegistryCorruptError(
-            "task has no current registered call-limit authority")
-    value = json.loads(row["metadata_json"]).get(
-        "task_total_hard_cap")
-    if isinstance(value, bool) or not isinstance(value, int) or value < 1:
-        raise RegistryCorruptError(
-            "registered actual-model-call limit is invalid")
-    return value
+        task_row = db.execute(
+            "SELECT value FROM registry_meta WHERE key='task_id'",
+        ).fetchone()
+        if task_row is None:
+            raise RegistryCorruptError("task identity is missing")
+        try:
+            _ordinary, hard = _registered_model_call_limits(
+                db, task_id=str(task_row["value"]))
+        except ValueError as exc:
+            raise RegistryCorruptError(
+                "registered actual-model-call limit is invalid") from exc
+    return hard
+
+
+def ordinary_model_call_limit(store) -> int:
+    """Return the effective ordinary-call limit for the current generation."""
+    from ..event_store import RegistryCorruptError
+
+    with store.connect() as db:
+        task_row = db.execute(
+            "SELECT value FROM registry_meta WHERE key='task_id'",
+        ).fetchone()
+        if task_row is None:
+            raise RegistryCorruptError("task identity is missing")
+        try:
+            ordinary, _hard = _registered_model_call_limits(
+                db, task_id=str(task_row["value"]))
+        except ValueError as exc:
+            raise RegistryCorruptError(
+                "registered ordinary model-call limit is invalid") from exc
+    return ordinary

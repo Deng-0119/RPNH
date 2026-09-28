@@ -1083,6 +1083,44 @@ def validate_firing_event(context, pending):
             raise RegistryConflict(
                 "checkpoint repair commit lacks one exact atomic successor")
 
+    if event_type == "run_reopened/v1":
+        authorization_ref = payload.get("run_reopen_authorization_ref")
+        checkpoint_ref = payload.get("reentry_checkpoint_ref")
+        successor_ref = payload.get("successor_run_authority_ref")
+        checkpoints = tuple(
+            item for item in events
+            if item.event_type == "marking_checkpoint_committed/v1"
+            and item.payload.get("checkpoint_ref") == checkpoint_ref
+            and item.payload.get("reentry_authorization_ref")
+            == authorization_ref)
+        authorization = (version_metadata(
+            str(authorization_ref.get("version_id", "")),
+            "run_reopen_authorization/v1")
+            if isinstance(authorization_ref, Mapping) else None)
+        successor = (version_metadata(
+            str(successor_ref.get("version_id", "")),
+            "run_execution_authority/v1")
+            if isinstance(successor_ref, Mapping) else None)
+        if (len(checkpoints) != 1
+                or authorization is None or successor is None
+                or str(authorization_ref.get("version_id", ""))
+                not in new_by_version
+                or str(successor_ref.get("version_id", ""))
+                not in new_by_version
+                or authorization.get("reentry_checkpoint_ref")
+                != checkpoint_ref
+                or authorization.get("successor_run_authority_ref")
+                != successor_ref
+                or authorization.get("workspace_reentry_revision_refs")
+                != payload.get("workspace_reentry_revision_refs")
+                or authorization.get("execution_generation")
+                != payload.get("execution_generation")
+                or successor.get("latest_checkpoint_ref") != checkpoint_ref
+                or successor.get("reopen_authorization_ref")
+                != authorization_ref):
+            raise RegistryConflict(
+                "run reopen event lacks one exact atomic authority closure")
+
     if event_type == "marking_checkpoint_committed/v1":
         checkpoint_ref = payload.get("checkpoint_ref")
         net_ref = payload.get("net_instance_ref")
@@ -1179,6 +1217,23 @@ def validate_firing_event(context, pending):
                 or payload.get("settled") is not True):
             raise RegistryConflict(
                 "checkpoint commit differs from its immutable object")
+        reentry_fields = (
+            "reentry_source_checkpoint_ref",
+            "reentry_authorization_ref",
+            "reentry_superseded_terminal_evidence_ref",
+            "reentry_generation",
+            "reentry_token_mappings",
+            "reentry_superseded_token_refs",
+        )
+        present_reentry = tuple(
+            field for field in reentry_fields
+            if field in checkpoint or field in payload)
+        if present_reentry:
+            if (set(present_reentry) != set(reentry_fields)
+                    or any(checkpoint.get(field) != payload.get(field)
+                           for field in reentry_fields)):
+                raise RegistryConflict(
+                    "checkpoint reentry provenance tuple is incomplete")
         previous = payload.get("previous_checkpoint_ref")
         for field in ("owner_command_ref", "owner_command_result_ref"):
             if checkpoint.get(field) != payload.get(field):
@@ -1215,7 +1270,231 @@ def validate_firing_event(context, pending):
                     == checkpoint_ref
                     and item.payload.get("expected_checkpoint_ref")
                     == previous))
-            if owner_predecessors:
+            if present_reentry:
+                source_ref = payload.get(
+                    "reentry_source_checkpoint_ref")
+                authorization_ref = payload.get(
+                    "reentry_authorization_ref")
+                mappings = payload.get("reentry_token_mappings")
+                superseded_token_refs = payload.get(
+                    "reentry_superseded_token_refs")
+                source = (version_metadata(
+                    str(source_ref.get("version_id", "")),
+                    "marking_checkpoint/v1")
+                    if isinstance(source_ref, Mapping) else None)
+                current_checkpoint = (version_metadata(
+                    str(previous.get("version_id", "")),
+                    "marking_checkpoint/v1")
+                    if isinstance(previous, Mapping) else None)
+                committed_source = (
+                    isinstance(source_ref, Mapping)
+                    and db.execute(
+                        "SELECT 1 FROM events e WHERE e.task_id=? AND "
+                        "e.net_instance_id=? AND "
+                        "e.event_type='marking_checkpoint_committed/v1' AND "
+                        "json_extract(e.payload_json,'$.checkpoint_ref.version_id')=? AND "
+                        f"{_CANONICAL_EVENT_SQL} LIMIT 1",
+                        (str(task_id), str(net_instance_id),
+                         str(source_ref.get("version_id", ""))),
+                    ).fetchone() is not None)
+                mapping_rows = (
+                    mappings if isinstance(mappings, list) else [])
+                sources = [row.get("source_token_ref") for row in mapping_rows
+                    if isinstance(row, Mapping)]
+                replacements = [row.get("replacement_token_ref")
+                    for row in mapping_rows if isinstance(row, Mapping)]
+                source_token_refs = (
+                    source.get("token_refs", [])
+                    if isinstance(source, Mapping) else [])
+                checkpoint_token_refs = checkpoint.get("token_refs", [])
+                if (source is None or current_checkpoint is None
+                        or not committed_source
+                        or source.get("net_instance_ref") != net_ref
+                        or source.get("settled") is not True
+                        or len(mapping_rows) != len(sources)
+                        or len(mapping_rows) != len(replacements)
+                        or len({canonical_json(row) for row in sources})
+                        != len(sources)
+                        or len({canonical_json(row) for row in replacements})
+                        != len(replacements)
+                        or {canonical_json(row) for row in sources}
+                        != {canonical_json(row) for row in source_token_refs}
+                        or {canonical_json(row) for row in replacements}
+                        != {canonical_json(row)
+                            for row in checkpoint_token_refs}
+                        or not isinstance(superseded_token_refs, list)
+                        or {canonical_json(row)
+                            for row in superseded_token_refs}
+                        != {canonical_json(row) for row in
+                            current_checkpoint.get("token_refs", [])}
+                        or any(not has_new_relation(
+                            "supersedes",
+                            str(authorization_ref.get("version_id", "")),
+                            str(row.get("version_id", "")))
+                            for row in superseded_token_refs
+                            if isinstance(row, Mapping))
+                        or checkpoint.get("epoch")
+                        != current_checkpoint.get("epoch", -1) + 1
+                        or checkpoint.get("attempts")
+                        != current_checkpoint.get("attempts")
+                        or checkpoint.get("next_token_id")
+                        != current_checkpoint.get("next_token_id", 0)
+                            + len(mapping_rows)
+                        or delta_ref is not None or transition_refs != []
+                        or matching_repairs):
+                    raise RegistryConflict(
+                        "checkpoint reentry differs from its selected/current cuts")
+                first_token_id = current_checkpoint.get("next_token_id", 0)
+                for offset, row in enumerate(mapping_rows):
+                    source_token_ref = row["source_token_ref"]
+                    replacement_token_ref = row["replacement_token_ref"]
+                    source_token = version_metadata(
+                        str(source_token_ref.get("version_id", "")),
+                        "petri_token/v1")
+                    replacement = version_metadata(
+                        str(replacement_token_ref.get("version_id", "")),
+                        "petri_token/v1")
+                    expected = (None if source_token is None else {
+                        **source_token,
+                        "petri_token_ref": replacement_token_ref,
+                        "token_id": first_token_id + offset,
+                        "epoch": checkpoint["epoch"],
+                        "consumed_by": None,
+                    })
+                    if (source_token is None or replacement is None
+                            or replacement != expected
+                            or str(replacement_token_ref.get(
+                                "version_id", "")) not in new_by_version
+                            or not has_new_relation(
+                                "derived_from",
+                                str(replacement_token_ref.get(
+                                    "version_id", "")),
+                                str(source_token_ref.get(
+                                    "version_id", "")))):
+                        raise RegistryConflict(
+                            "checkpoint reentry token is not one fresh exact clone")
+                authority_rows = db.execute(
+                    "SELECT o.metadata_json FROM objects o JOIN events e "
+                    "ON e.event_id=o.published_event_id WHERE "
+                    "o.object_type='run_execution_authority/v1' AND "
+                    f"{_CANONICAL_EVENT_SQL} ORDER BY e.ordinal DESC LIMIT 1"
+                ).fetchall()
+                prior_authority = (
+                    json.loads(str(authority_rows[0]["metadata_json"]))
+                    if len(authority_rows) == 1 else None)
+                staged_authorities = [dict(item.metadata) for item in objects
+                    if item.object_type == "run_execution_authority/v1"]
+                staged_authorizations = [dict(item.metadata)
+                    for item in objects
+                    if item.object_type == "run_reopen_authorization/v1"]
+                matching_authorizations = [item
+                    for item in staged_authorizations
+                    if (item.get("run_reopen_authorization_ref")
+                        == authorization_ref
+                        and item.get("expected_run_authority_ref")
+                        == (prior_authority or {}).get(
+                            "run_execution_authority_ref")
+                        and item.get("expected_current_checkpoint_ref")
+                        == previous
+                        and item.get("selected_checkpoint_ref") == source_ref
+                        and item.get("superseded_current_token_refs")
+                        == superseded_token_refs
+                        and item.get("selected_source_token_refs") == sources
+                        and item.get("workspace_reentry_revision_refs")
+                        == checkpoint.get("workspace_revision_refs"))]
+                expected_generation = (
+                    int(prior_authority.get("execution_generation", 0)) + 1
+                    if isinstance(prior_authority, Mapping) else None)
+                matching_authorities = [item for item in staged_authorities
+                    if (item.get("latest_checkpoint_ref") == checkpoint_ref
+                        and item.get("status") == "stopped_by_owner"
+                        and item.get("terminal_evidence_ref") is None
+                        and item.get("execution_generation")
+                        == expected_generation
+                        and item.get("generation_source_checkpoint_ref")
+                        == source_ref
+                        and item.get("reopen_authorization_ref")
+                        == authorization_ref)]
+                valid_workspace_reentry = False
+                if len(matching_authorizations) == 1:
+                    authorization = matching_authorizations[0]
+                    expected_heads = authorization.get(
+                        "expected_workspace_head_refs", [])
+                    selected_workspaces = authorization.get(
+                        "selected_workspace_revision_refs", [])
+                    successor_workspaces = authorization.get(
+                        "workspace_reentry_revision_refs", [])
+                    workspace_by_version = {
+                        str(item.version_id): dict(item.metadata)
+                        for item in objects
+                        if item.object_type == "workspace_revision/v1"}
+                    valid_workspace_reentry = (
+                        len(expected_heads) == len(selected_workspaces)
+                        == len(successor_workspaces)
+                        and all(
+                            isinstance(expected, Mapping)
+                            and isinstance(selected, Mapping)
+                            and isinstance(successor, Mapping)
+                            and expected.get("logical_id")
+                            == selected.get("logical_id")
+                            == successor.get("logical_id")
+                            and (document := workspace_by_version.get(
+                                str(successor.get("version_id", ""))))
+                            is not None
+                            and document.get("workspace_revision_ref")
+                            == successor
+                            and document.get("parent_revision_ref")
+                            == expected
+                            and document.get("base_revision_ref")
+                            == selected
+                            and document.get("disposition") == "owner_reopen"
+                            and document.get("reopen_authorization_ref")
+                            == authorization_ref
+                            and document.get("settled") is True
+                            for expected, selected, successor in zip(
+                                expected_heads, selected_workspaces,
+                                successor_workspaces)))
+                if (not isinstance(prior_authority, Mapping)
+                        or prior_authority.get("latest_checkpoint_ref")
+                        != previous
+                        or prior_authority.get("status")
+                        not in {"terminal", "stopped_by_owner"}
+                        or payload.get("reentry_generation")
+                        != expected_generation
+                        or payload.get(
+                            "reentry_superseded_terminal_evidence_ref")
+                        != prior_authority.get("terminal_evidence_ref")
+                        or len(matching_authorizations) != 1
+                        or len(matching_authorities) != 1
+                        or not valid_workspace_reentry
+                        or matching_authorizations[0].get(
+                            "successor_run_authority_ref")
+                        != matching_authorities[0].get(
+                            "run_execution_authority_ref")
+                        or matching_authorizations[0].get(
+                            "execution_generation") != expected_generation
+                        or not any(
+                            item.event_type == "run_reopened/v1"
+                            and item.payload.get(
+                                "run_reopen_authorization_ref")
+                            == authorization_ref
+                            and item.payload.get("selected_checkpoint_ref")
+                            == source_ref
+                            and item.payload.get("reentry_checkpoint_ref")
+                            == checkpoint_ref
+                            and item.payload.get(
+                                "successor_run_authority_ref")
+                            == matching_authorities[0].get(
+                                "run_execution_authority_ref")
+                            and item.payload.get(
+                                "workspace_reentry_revision_refs")
+                            == checkpoint.get("workspace_revision_refs")
+                            and item.payload.get("execution_generation")
+                            == expected_generation
+                            for item in events)):
+                    raise RegistryConflict(
+                        "checkpoint reentry lacks its execution-generation successor")
+            elif owner_predecessors:
                 if delta_ref is not None or transition_refs != [] or matching_repairs:
                     raise RegistryConflict("owner command checkpoint is not firing settlement or repair")
             elif matching_repairs:

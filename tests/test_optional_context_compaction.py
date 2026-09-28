@@ -45,6 +45,8 @@ def _configure_offline_task(
         *, context_window_tokens: int | None = None,
         runtime_policy: RuntimePolicy | None = None,
 ) -> Path:
+    effective_runtime = runtime_policy or RuntimePolicy()
+    port.execution_policy = {"runtime": effective_runtime.as_document()}
     adapter_path = tmp_path / "adapter.json"
     adapter_path.write_text(json.dumps({
         "schema_version": "local_process_adapter_config/v1",
@@ -59,7 +61,7 @@ def _configure_offline_task(
             "offline-context-compaction", 128, 65536,
             context_window_tokens),
         "local_process", adapter_path, 30,
-        runtime_policy or RuntimePolicy())
+        effective_runtime)
     monkeypatch.setattr(
         "cpn.rpnh.agent_tasks.load_llm_execution_selection",
         lambda _path: selection)
@@ -256,6 +258,71 @@ class _RollingCompactionPort:
 
     def close(self):
         pass
+
+
+class _LargeImmediateWorkspaceOutputPort:
+    def __init__(self) -> None:
+        self.requests: list[dict] = []
+
+    def request_once(self, attempt):
+        envelope = json.loads(attempt.canonical_request_bytes)
+        self.requests.append(envelope)
+        if len(self.requests) == 1:
+            return _response(tool_calls=[{
+                "id": "large-workspace-output",
+                "name": "workspace",
+                "arguments": json.dumps({
+                    "script": (
+                        "python -c \"print('LIVE-FULL-' + "
+                        "'X' * 20000 + '-FULL-END')\""),
+                    "timeout_seconds": 10,
+                }),
+            }], finish_reason="tool_calls")
+        tool_messages = [
+            message for message in envelope["messages"]
+            if message.get("role") == "tool"]
+        assert len(tool_messages) == 1
+        visible = tool_messages[0]["content"]
+        assert len(visible.encode("utf-8")) <= 512
+        assert "bytes omitted from model-visible tool output" in visible
+        assert "agent_action_ref" in visible
+        assert "-FULL-END" in visible
+        return _completion_response("bounded immediate output complete")
+
+    def close(self):
+        pass
+
+
+def test_immediate_workspace_output_uses_configured_model_visible_limit(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    port = _LargeImmediateWorkspaceOutputPort()
+    execution_path = _configure_offline_task(
+        tmp_path, monkeypatch, port,
+        runtime_policy=RuntimePolicy(
+            context_tool_output_byte_limit=512))
+    run_dir = tmp_path / "run"
+
+    result = run_agent_task(AgentTaskSpec(
+        run_dir=run_dir, prompt="Exercise bounded workspace output.",
+        stages=(AgentStage("main", "Produce the requested result."),),
+        execution_config_path=execution_path, max_attempts_per_stage=3,
+    ))
+
+    assert result["stop_reason"] == "terminal"
+    assert result["output"] == "bounded immediate output complete"
+    assert len(port.requests) == 2
+    core = _RegistryCore(
+        run_dir, create=False, read_only=True, catalog=agent_task_catalog())
+    workspace_actions = [
+        item for item in _objects(core, "agent_action/v2")
+        if item["tool_name"] == "workspace"]
+    assert len(workspace_actions) == 1
+    metadata = workspace_actions[0]["result_metadata"]
+    assert metadata["output_truncated"] is False
+    assert metadata["stdout"].startswith("LIVE-FULL-")
+    assert metadata["stdout"].rstrip().endswith("-FULL-END")
+    assert len(metadata["stdout"]) > 20_000
 
 
 def test_pressure_projection_retry_identity_and_effective_history(

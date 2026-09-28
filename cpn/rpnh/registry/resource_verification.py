@@ -215,7 +215,8 @@ def verify_petri_input_receipt(
             or boundary_meta.get("delivery_ref") != expected_authorized_ref
             or boundary_meta.get("witness_ref") != _ref_payload(witness_ref)
             or not isinstance(positive_count, int)
-            or positive_count <= 0 or positive_count != resource.size
+            or isinstance(positive_count, bool)
+            or positive_count < 0 or positive_count != resource.size
             or not isinstance(evidence, str)
             or terminal_event.event_type
             != "resource_delivery_acknowledged/v1"

@@ -12,8 +12,8 @@ from ...models import PendingEvent, PreparedObject
 from ..accounting import (
     _ACTUAL_MODEL_CALL_EVENT_TYPES,
     _cumulative_task_model_call_attempt_version_ids,
-    _current_task_recovery_manifest_row,
     _published_model_call_baseline_count,
+    _registered_model_call_limits,
 )
 
 
@@ -344,16 +344,14 @@ def validate_llm_model_call_budget(
     ).fetchone()
     if task_row is None:
         raise RegistryConflict("returned LLM response lacks task identity")
-    manifest_row = _current_task_recovery_manifest_row(db)
-    if manifest_row is None:
-        raise RegistryConflict(
-            "returned LLM response lacks its model-call limit authority")
-    limit = json.loads(str(manifest_row["metadata_json"])).get(
-        "task_total_hard_cap")
-    if isinstance(limit, bool) or not isinstance(limit, int) or limit < 1:
-        raise RegistryConflict("LLM model-call limit is invalid")
-
     task_id = str(task_row["value"])
+    try:
+        _ordinary_limit, limit = _registered_model_call_limits(
+            db, task_id=task_id)
+    except ValueError as exc:
+        raise RegistryConflict(
+            "returned LLM response lacks valid generation call-limit authority"
+        ) from exc
     returned_total = (
         _published_model_call_baseline_count(db, task_id=task_id)
         + len(_cumulative_task_model_call_attempt_version_ids(
@@ -1660,15 +1658,35 @@ def validate_provider_pre_resource_event(context, pending):
                     "llm_invocation_failed/v1",
                     "llm_invocation_interrupted/v1",
                     "llm_invocation_succeeded/v1"}))
-        persisted_neutral_terminal = db.execute(
-            "SELECT event_type FROM events WHERE aggregate_id=? "
+        persisted_neutral_terminals = db.execute(
+            "SELECT event_type,payload_json,producer_invocation_id "
+            "FROM events WHERE aggregate_id=? "
             "AND event_type IN ("
             "'llm_invocation_failed/v1',"
             "'llm_invocation_interrupted/v1',"
             "'llm_invocation_owner_interrupted/v1',"
-            "'llm_invocation_succeeded/v1') LIMIT 1",
+            "'llm_invocation_succeeded/v1') ORDER BY ordinal",
             (str(neutral_ref.get("logical_id", "")),),
-        ).fetchone()
+        ).fetchall()
+        prior_failed_closure = False
+        if len(persisted_neutral_terminals) == 1:
+            prior = persisted_neutral_terminals[0]
+            try:
+                prior_payload = json.loads(str(prior["payload_json"]))
+            except (TypeError, ValueError, json.JSONDecodeError):
+                prior_payload = None
+            prior_failed_closure = bool(
+                prior["event_type"] == "llm_invocation_failed/v1"
+                and isinstance(prior_payload, Mapping)
+                and prior_payload.get("llm_invocation_ref")
+                == llm_invocation_ref
+                and prior_payload.get("llm_invocation_attempt_ref")
+                == neutral_ref
+                and prior_payload.get("next_attempt_allowed") is False
+                and prior_payload.get("submission_state")
+                == common.get("submission_state")
+                and str(prior["producer_invocation_id"])
+                == str(invocation_ref.get("logical_id", "")))
         if (dict(call_event.payload) != common
                 or dict(provider_event.payload) != common
                 or neutral_event.aggregate_type
@@ -1714,7 +1732,8 @@ def validate_provider_pre_resource_event(context, pending):
                     str(neutral_ref.get("version_id", "")),
                     str(provider_ref.get("version_id", "")))
                 or conflicting_neutral_terminals
-                or persisted_neutral_terminal is not None):
+                or (persisted_neutral_terminals
+                    and not prior_failed_closure)):
             raise RegistryConflict(
                 "LLM owner interruption differs from its exact current authority")
 

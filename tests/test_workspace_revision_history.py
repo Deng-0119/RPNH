@@ -319,6 +319,7 @@ def _schema_metadata(disposition: str, path_deltas: list[dict]) -> dict:
         "firing_workspace_binding_ref": None if nullable else _version_payload(
             VersionRef("workspace_binding/v1", _id("workspace_binding", 9),
                        _id("workspace_binding_version", 9))),
+        "reopen_authorization_ref": None,
         "disposition": disposition,
         "changed_paths": [],
         "deleted_paths": [],

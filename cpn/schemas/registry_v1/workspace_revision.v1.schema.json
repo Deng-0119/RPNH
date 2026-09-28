@@ -103,7 +103,8 @@
     "producer_invocation_ref": {"$ref": "#/definitions/nullable_ref"},
     "transition_firing_ref": {"$ref": "#/definitions/nullable_ref"},
     "firing_workspace_binding_ref": {"$ref": "#/definitions/nullable_ref"},
-    "disposition": {"enum": ["genesis", "committed", "merged", "conflict"]},
+    "reopen_authorization_ref": {"$ref": "#/definitions/nullable_ref"},
+    "disposition": {"enum": ["genesis", "committed", "merged", "owner_reopen", "conflict"]},
     "changed_paths": {"$ref": "#/definitions/path_list"},
     "deleted_paths": {"$ref": "#/definitions/path_list"},
     "path_deltas": {
@@ -155,6 +156,22 @@
       "else": {
         "properties": {
           "conflict_paths": {"maxItems": 0},
+          "payload_kind": {"const": "full_workspace_tar"},
+          "settled": {"const": true}
+        }
+      }
+    },
+    {
+      "if": {"properties": {"disposition": {"const": "owner_reopen"}}},
+      "then": {
+        "required": ["reopen_authorization_ref"],
+        "properties": {
+          "parent_revision_ref": {"$ref": "#/definitions/ref"},
+          "base_revision_ref": {"$ref": "#/definitions/ref"},
+          "producer_invocation_ref": {"type": "null"},
+          "transition_firing_ref": {"type": "null"},
+          "firing_workspace_binding_ref": {"type": "null"},
+          "reopen_authorization_ref": {"$ref": "#/definitions/ref"},
           "payload_kind": {"const": "full_workspace_tar"},
           "settled": {"const": true}
         }

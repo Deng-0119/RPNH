@@ -40,10 +40,21 @@ Basic、Codex 与 OpenCode 使用同一个直接 `SESSION_DIR` 契约。当前�
 | `/task ID status`、`/task ID result` | 读取进程/Registry 状态或已注册结果 |
 | `/task ID message TEXT` | 向单 agent 任务排队投递输入 |
 | `/task ID message TARGET :: TEXT` | 明确工作流接收目标 |
-| `/task ID stop`、`/task ID resume` | 请求检查点停止、显式恢复 owner-stopped 任务 |
+| `/task ID stop`、`/task ID resume` | 请求 checkpoint 停止、续接当前 owner-stopped 切面 |
+| `/task ID checkpoints` | 列出同一 run 中可选择的精确已提交 checkpoint 版本 |
+| `/task ID reopen CHECKPOINT` | 从所选切面追加新执行代次；可能执行模型或工具 |
 | `/quit` | 离开主前端；独立子任务可能继续运行 |
 
 简写 `/status`、`/result`、`/net`、`/message`、`/stop` 作用于选中子任务。普通文本发给主会话或选中单 agent；选中工作流时必须写 `TARGET :: TEXT`。`delegate_leaf` 属于父 agent 内部 action，不是可独立切换的任务。
+
+`resume` 与 `reopen` 的语义不同。`resume` 续接当前 `stopped_by_owner`
+checkpoint；`reopen` 接受 `checkpoints` 返回的精确 ID，在同一 Registry／同一 run
+中恢复该切面的 Petri marking 与 workspace，并追加新的不可变执行代次。它不会删除
+后续历史，也不会创建替代任务。当前 child 仍在运行时应先停止，再选择旧切面。若所选
+切面已经 terminal，新代次不会再次调用模型而是直接闭合。若 worker 已退出，且某次
+物理调用被登记为 `submission_unknown`，`reopen` 同时表示 owner 明确放弃该未决 firing，
+并从所选安全切面创建新的 attempt。原 unknown attempt 仍作为不可变证据保留，系统绝不
+自动重发它。
 
 ## 主回合中断
 使用 `rpnh --frontend basic --resume SESSION_DIR` 重开。未显式提供 `--execution`

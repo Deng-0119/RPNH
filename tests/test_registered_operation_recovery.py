@@ -1,16 +1,20 @@
 from __future__ import annotations
 
 import json
+from dataclasses import replace
 from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
 
 from cpn.rpnh.registry.errors import ResourceIntegrityFault
+from cpn.rpnh.registry.event_store import RegistryConflict
 from cpn.rpnh.registry._registry import _RegistryCore
 from cpn.rpnh.registry.firing_recovery import (
     _reject_conflicting_lifecycle,
+    classify_registered_operation_interruption,
     record_registered_operation_completion,
+    recover_registered_operation_interruption,
 )
 from cpn.rpnh.module import ModuleDeclaration
 from cpn.rpnh.registry.module_budgets import ModuleBudgetDeclaration
@@ -18,7 +22,9 @@ from cpn.rpnh.registry.publication import _version_from_payload
 from cpn.rpnh.registry.registration_gateway import RegistryRegistrationGateway
 from cpn.rpnh.registry.resource_service import _ResourceServiceKernel
 from cpn.rpnh.registry.schema_catalog import canonical_json
-from cpn.rpnh.run import OwnerInput, resume_run, start_run
+from cpn.rpnh.run import (
+    OwnerInput, _operation_services, resume_run, start_run,
+)
 from test_structural_evidence import (
     REQUEST, TERMINAL, _module, _owner, _products, _registration, _start,
 )
@@ -130,6 +136,58 @@ def test_later_writer_fact_invalidates_stale_completion(
             model_condition=MODEL)
 
     assert later.event_store.writer_epoch == epoch_after_fact
+
+
+def test_stale_empty_interruption_requires_one_use_reopen_authorization(
+        tmp_path: Path) -> None:
+    document = _module().to_dict()
+    inspect = next(
+        operation
+        for operation in document["components"][0]["operations"]
+        if operation["name"] == "inspect")
+    inspect["outcomes"].append({"name": "interrupted", "products": []})
+    module = ModuleDeclaration.from_dict(document)
+    request = OwnerInput(
+        REQUEST,
+        canonical_json({"request_id": "request-A", "allow": True}),
+        "Stale empty-settlement authorization boundary",
+    )
+    owner = start_run(
+        module, _registration(), run_dir=tmp_path / "run",
+        task_input=request, entry_inputs={"request": request},
+        budgets=ModuleBudgetDeclaration(
+            tuple(module.to_dict()["budget_buckets"]),
+            ("rpnh/module_declaration/v1",), 4, 0, 4, 0),
+        model_condition=MODEL,
+        owner_statement="Reject generic stale empty settlement",
+        command_id="test:stale-empty:fresh",
+    )
+    _start(owner, "gate.inspect")
+
+    from cpn.rpnh.registry.run_authority import (
+        current_run_execution_authority,
+    )
+    preflight = _RegistryCore(
+        tmp_path / "run", create=False, read_only=True)
+    preflight_kernel, preflight_repository, historical_input = (
+        _operation_services(preflight))
+    _authority_ref, authority = current_run_execution_authority(
+        preflight, preflight_kernel)
+    recovery = classify_registered_operation_interruption(
+        preflight, preflight_kernel, preflight_repository,
+        current_run=authority, historical_input=historical_input,
+        checkpoint_reentry=True)
+
+    replacement = _RegistryCore(tmp_path / "run", create=False)
+    kernel, repository, _historical_input = _operation_services(replacement)
+    _replacement_ref, replacement_authority = (
+        current_run_execution_authority(replacement, kernel))
+    without_reopen_proof = replace(recovery, checkpoint_reentry=False)
+    with pytest.raises(RegistryConflict, match="stale operation lease"):
+        recover_registered_operation_interruption(
+            replacement, kernel, repository, without_reopen_proof,
+            current_run=replacement_authority,
+            idempotency_key="test:stale-empty:without-proof")
 
 
 def test_nested_host_failure_is_not_a_parent_operation_terminal_conflict(

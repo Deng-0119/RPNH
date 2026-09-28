@@ -524,7 +524,17 @@ class WorkspaceExecutionMixin:
         prior_ref, prior_binding = self._current_workspace_resource(
             context, relative.as_posix())
         payload = absolute.read_bytes()
+        # The address head is append-only and can still name a resource from a
+        # later execution generation after the owner reopens an older
+        # checkpoint.  Content convergence is reusable only when that exact
+        # resource belongs to this firing's selected workspace base; otherwise
+        # this firing must publish its own accepted path evidence.
+        from cpn.rpnh.workspace_settlement import _workspace_resource_state
+        base_ref = _workspace_resource_state(
+            self.core, loop.workspace_base_revision_ref).get(
+                relative.as_posix())
         if (prior_ref is not None
+                and prior_ref == base_ref
                 and self.kernel._read_firing_registered(context, prior_ref)
                 == payload):
             return prior_ref, False

@@ -8,6 +8,7 @@ from typing import Callable, Mapping
 from ._registry import _RegistryCore
 from .errors import ResourceIntegrityFault
 from .firing_authority import canonical_invocation
+from .identities import TypedId
 from .models import EventEnvelope, PendingEvent, VersionRef
 from .operation_execution import operation_start_payload, verify_operation_execution
 from .operations import (
@@ -21,6 +22,8 @@ from .operation_repository import OperationInputResourceSubstitution
 from .publication import _ref_payload, _resource_from_payload, _version_from_payload
 from .resource_service import _ResourceServiceKernel, _resource_payload
 from .resources import HistoricalPetriInputArtifact, ResourceVersionRef
+from .schema_catalog import canonical_json
+from .strict_contracts import _registered
 
 
 COMPLETION_EVENT_TYPE = "registered_operation_completion_recorded/v1"
@@ -36,6 +39,17 @@ class RegisteredOperationFiringRecovery:
     completion_event_id: object
     completion_payload: Mapping[str, object]
     stale_writer_fencing_epoch: int
+    checkpoint_reentry: bool = False
+
+
+@dataclass(frozen=True, slots=True)
+class RegisteredOperationInterruptionRecovery:
+    """Read-only-classified active firing explicitly abandoned by its owner."""
+
+    execution: OperationExecutionAuthority
+    stale_writer_fencing_epoch: int
+    llm_owner_interruption_payload: Mapping[str, object] | None
+    checkpoint_reentry: bool = False
 
 
 def registered_operation_completion_payload(
@@ -188,30 +202,100 @@ def _has_later_writer_events(core: _RegistryCore, stale_epoch: int) -> bool:
         for event in core.event_store.list_events())
 
 
+_LLM_OWNER_INTERRUPTION_TYPES = frozenset({
+    "provider_attempt_owner_interrupted/v1",
+    "llm_call_owner_interrupted/v1",
+    "llm_invocation_owner_interrupted/v1",
+})
+
+
+def _persisted_llm_owner_interruption(
+        core: _RegistryCore, *, invocation_ref: VersionRef,
+) -> Mapping[str, object] | None:
+    """Return one exact three-layer owner closure for this firing, if any."""
+
+    selected = tuple(
+        event for event in core.event_store.list_events_by_producer(
+            invocation_ref.entity_id)
+        if event.event_type in _LLM_OWNER_INTERRUPTION_TYPES)
+    if not selected:
+        return None
+    by_type = {
+        event_type: tuple(
+            event for event in selected if event.event_type == event_type)
+        for event_type in _LLM_OWNER_INTERRUPTION_TYPES
+    }
+    if (any(len(events) != 1 for events in by_type.values())
+            or len({event.transaction_id for event in selected}) != 1
+            or len({canonical_json(event.payload) for event in selected}) != 1):
+        raise ResourceIntegrityFault(
+            "active firing has an ambiguous LLM owner-interruption closure")
+    return dict(selected[0].payload)
+
+
+def _only_later_owner_interruption_events(
+        core: _RegistryCore, stale_epoch: int, *,
+        invocation_ref: VersionRef,
+) -> bool:
+    """Accept only a crash-safe, already committed interruption substep."""
+
+    later = tuple(
+        event for event in core.event_store.list_events()
+        if (isinstance(event.writer_fencing_epoch, int)
+            and event.writer_fencing_epoch > stale_epoch))
+    if not later:
+        return True
+    closure = tuple(
+        event for event in later
+        if event.event_type in _LLM_OWNER_INTERRUPTION_TYPES)
+    if (len(closure) != 3
+            or any(event.producer_invocation_id != invocation_ref.entity_id
+                   for event in closure)
+            or len({event.transaction_id for event in closure}) != 1
+            or len({canonical_json(event.payload) for event in closure}) != 1):
+        return False
+    transaction_id = closure[0].transaction_id
+    return all(
+        event in closure
+        or (event.event_type == "transaction_committed/v1"
+            and event.transaction_id == transaction_id)
+        for event in later)
+
+
 def _validate_recovery_shape(
         core: _RegistryCore, kernel: _ResourceServiceKernel, *,
         current_run: Mapping[str, object], expected_event_payload=None,
-        expected_firing=None,
-) -> tuple[object, EventEnvelope, int]:
+        expected_firing=None, completion_required: bool = True,
+        allow_owner_interruption: bool = False,
+        checkpoint_reentry: bool = False,
+) -> tuple[object, EventEnvelope | None, int]:
     from .module_execution import active_module_firings
     from .module_runtime import hydrate_module_runtime
 
     executable, _structure, marking = hydrate_module_runtime(core)
+    all_active = active_module_firings(
+        core, executable.net_ref, require_current_writer=False)
     if expected_firing is None:
-        active = active_module_firings(
-            core, executable.net_ref, require_current_writer=False)
+        active = all_active
     else:
-        with core.event_store.connect() as db:
-            rows = db.execute(
-                "SELECT firing_version_id FROM firing_publications "
-                "WHERE state='PROVISIONAL' AND net_version_id=?",
-                (str(executable.net_ref.version_id),),
-            ).fetchall()
-        active = ((expected_firing,) if (
-            len(rows) == 1
-            and str(rows[0]["firing_version_id"])
-            == str(expected_firing.transition_firing_ref.version_id)) else ())
+        matches = tuple(
+            firing for firing in all_active
+            if firing.transition_firing_ref
+            == expected_firing.transition_firing_ref)
+        active = (
+            (expected_firing,)
+            if (len(matches) == 1
+                and replace(
+                    expected_firing,
+                    verified_at_head=matches[0].verified_at_head)
+                == matches[0])
+            else ())
     if len(active) != 1:
+        raise ResourceIntegrityFault(
+            "running run recovery lacks the selected active firing"
+            if checkpoint_reentry else
+            "running run recovery requires exactly one active firing")
+    if not checkpoint_reentry and len(all_active) != 1:
         raise ResourceIntegrityFault(
             "running run recovery requires exactly one active firing")
     firing = active[0]
@@ -236,38 +320,52 @@ def _validate_recovery_shape(
     events = tuple(event for event in _completion_events(core)
                    if event.payload.get("transition_firing_ref")
                    == _ref_payload(firing.transition_firing_ref))
-    if len(events) != 1:
+    if completion_required and len(events) != 1:
         raise ResourceIntegrityFault(
             "active firing lacks one exact registered-operation completion")
-    event = events[0]
-    payload = dict(event.payload)
-    if (expected_event_payload is not None
-            and payload != dict(expected_event_payload)):
+    if not completion_required and events:
+        raise ResourceIntegrityFault(
+            "active firing interruption conflicts with registered completion")
+    event = events[0] if events else None
+    payload = dict(event.payload) if event is not None else None
+    if (expected_event_payload is not None and (
+            payload is None
+            or payload != dict(expected_event_payload))):
         raise ResourceIntegrityFault(
             "registered-operation recovery material changed after preflight")
     current_epoch = core.event_store.writer_epoch
     epoch_valid = (
         stale_epoch <= current_epoch if core.read_only
         else stale_epoch < current_epoch)
-    if (not epoch_valid or _has_later_writer_events(core, stale_epoch)
-            or event.writer_fencing_epoch != stale_epoch
-            or event.aggregate_id != str(lease_ref.entity_id)
-            or event.producer_invocation_id != invocation_ref.entity_id
-            or payload.get("invocation_ref") != _ref_payload(invocation_ref)
-            or payload.get("transition_firing_ref")
-            != _ref_payload(firing.transition_firing_ref)
-            or payload.get("operation_execution_lease_ref")
-            != _ref_payload(lease_ref)
-            or payload.get("firing_admission_ref")
-            != _ref_payload(firing.firing_admission_ref)
-            or payload.get("net_instance_ref")
-            != _ref_payload(executable.net_ref)
-            or payload.get("admission_marking_checkpoint_ref")
-            != _ref_payload(firing.admission_marking_checkpoint_ref)
-            or payload.get("admission_writer_fencing_epoch") != stale_epoch
+    later_events_valid = (
+        checkpoint_reentry
+        or not _has_later_writer_events(core, stale_epoch)
+        or (allow_owner_interruption
+            and _only_later_owner_interruption_events(
+                core, stale_epoch, invocation_ref=invocation_ref)))
+    if (not epoch_valid or not later_events_valid
+            or (event is not None and (
+                event.writer_fencing_epoch != stale_epoch
+                or event.aggregate_id != str(lease_ref.entity_id)
+                or event.producer_invocation_id != invocation_ref.entity_id
+                or payload.get("invocation_ref") != _ref_payload(invocation_ref)
+                or payload.get("transition_firing_ref")
+                != _ref_payload(firing.transition_firing_ref)
+                or payload.get("operation_execution_lease_ref")
+                != _ref_payload(lease_ref)
+                or payload.get("firing_admission_ref")
+                != _ref_payload(firing.firing_admission_ref)
+                or payload.get("net_instance_ref")
+                != _ref_payload(executable.net_ref)
+                or payload.get("admission_marking_checkpoint_ref")
+                != _ref_payload(firing.admission_marking_checkpoint_ref)
+                or payload.get("admission_writer_fencing_epoch")
+                != stale_epoch))
             or current_run.get("latest_checkpoint_ref")
             != _ref_payload(marking.checkpoint_ref)
-            or marking.checkpoint_ref != firing.admission_marking_checkpoint_ref
+            or (not checkpoint_reentry
+                and marking.checkpoint_ref
+                != firing.admission_marking_checkpoint_ref)
             or current_run.get("declaration_ref")
             != _ref_payload(
                 executable.declaration_resource_ref.as_version_ref())):
@@ -285,24 +383,19 @@ def _validate_recovery_shape(
     return firing, event, stale_epoch
 
 
-def classify_registered_operation_recovery(
+def _hydrate_active_operation_execution(
         core: _RegistryCore, kernel: _ResourceServiceKernel, repository, *,
-        current_run: Mapping[str, object],
-        historical_input: Callable[
+        firing, historical_input: Callable[
             [VersionRef, ResourceVersionRef], HistoricalPetriInputArtifact],
-) -> RegisteredOperationFiringRecovery:
-    """Classify and fully hydrate recoverable material on a read-only writer."""
+) -> OperationExecutionAuthority:
+    """Rebuild one stale operation Start without granting settlement."""
 
-    if (not isinstance(core, _RegistryCore) or not core.read_only
-            or current_run.get("status") != "running"
-            or current_run.get("terminal_evidence_ref") is not None
-            or not callable(historical_input)):
-        raise ResourceIntegrityFault(
-            "registered-operation recovery requires one running read-only run")
-    firing, event, stale_epoch = _validate_recovery_shape(
-        core, kernel, current_run=current_run)
-    payload = dict(event.payload)
-    invocation_ref = _version_from_payload(payload["invocation_ref"])
+    admission = kernel._exact_object(
+        firing.firing_admission_ref, expected_type="firing_admission/v1")
+    invocation_ref = _version_from_payload(
+        admission.metadata["invocation_ref"])
+    lease_ref = _version_from_payload(
+        admission.metadata["operation_execution_lease_ref"])
     canonical = canonical_invocation(
         core, kernel, invocation_ref, require_current_writer=False)
     from .module_runtime import hydrate_module_runtime
@@ -316,7 +409,7 @@ def classify_registered_operation_recovery(
             "recoverable firing lacks one exact executable transition")
     transition = transitions[0]
     start_events = tuple(core.event_store.list_events_by_aggregate(
-        str(payload["operation_execution_lease_ref"]["logical_id"]),
+        str(lease_ref.entity_id),
         event_types=("operation_execution_started/v1",)))
     if len(start_events) != 1:
         raise ResourceIntegrityFault(
@@ -339,7 +432,8 @@ def classify_registered_operation_recovery(
             firing.activation_ref,
             expected_type=firing.activation_ref.entity_type)
         substitutions = []
-        for binding_ref, resource_ref in zip(start_bindings, start_resources):
+        for binding_ref, resource_ref in zip(
+                start_bindings, start_resources):
             matches = tuple(
                 claim for claim in plan.claims
                 if binding_ref in {
@@ -370,8 +464,9 @@ def classify_registered_operation_recovery(
         if tuple(claim.resource_ref for claim in plan.claims) != start_resources:
             raise ResourceIntegrityFault(
                 "recoverable operation Start input material is not reproducible")
-    artifacts = tuple(historical_input(invocation_ref, claim.resource_ref)
-                      for claim in plan.claims)
+    artifacts = tuple(
+        historical_input(invocation_ref, claim.resource_ref)
+        for claim in plan.claims)
     operation = hydrate_operation_authority(
         repository, input_plan=plan, petri_inputs=artifacts)
     admission_head = kernel._head(
@@ -379,25 +474,60 @@ def classify_registered_operation_recovery(
     admission_canonical = replace(canonical, verified_at_head=admission_head)
     operation = replace(
         operation,
-        input_plan=replace(operation.input_plan, canonical=admission_canonical),
+        input_plan=replace(
+            operation.input_plan, canonical=admission_canonical),
         canonical=admission_canonical,
     )
     execution = OperationExecutionAuthority(
         operation=operation,
-        operation_execution_lease_ref=_version_from_payload(
-            payload["operation_execution_lease_ref"]),
+        operation_execution_lease_ref=lease_ref,
         start_event_id=start.event_id,
         declaration_terminal_delivery_ref=(
-            _version_from_payload(start.payload["declaration_terminal_delivery_ref"])
+            _version_from_payload(
+                start.payload["declaration_terminal_delivery_ref"])
             if start.payload["declaration_terminal_delivery_ref"] is not None
             else None),
         admission_head=admission_head,
         verified_at_head=kernel._head(),
     )
-    if (dict(start.payload) != operation_start_payload(
+    if dict(start.payload) != operation_start_payload(
             operation, admission_head,
-            execution.declaration_terminal_delivery_ref)
-            or str(start.event_id) != payload["operation_start_event_id"]):
+            execution.declaration_terminal_delivery_ref):
+        raise ResourceIntegrityFault(
+            "recoverable operation Start differs from durable authority")
+    return execution
+
+
+def classify_registered_operation_recovery(
+        core: _RegistryCore, kernel: _ResourceServiceKernel, repository, *,
+        current_run: Mapping[str, object],
+        historical_input: Callable[
+            [VersionRef, ResourceVersionRef], HistoricalPetriInputArtifact],
+        expected_firing=None,
+        checkpoint_reentry: bool = False,
+) -> RegisteredOperationFiringRecovery:
+    """Classify and fully hydrate recoverable material on a read-only writer."""
+
+    if (not isinstance(core, _RegistryCore) or not core.read_only
+            or current_run.get("status") != "running"
+            or current_run.get("terminal_evidence_ref") is not None
+            or not callable(historical_input)):
+        raise ResourceIntegrityFault(
+            "registered-operation recovery requires one running read-only run")
+    firing, event, stale_epoch = _validate_recovery_shape(
+        core, kernel, current_run=current_run,
+        expected_firing=expected_firing,
+        checkpoint_reentry=checkpoint_reentry)
+    if event is None:
+        raise ResourceIntegrityFault(
+            "registered-operation completion recovery lacks its event")
+    payload = dict(event.payload)
+    execution = _hydrate_active_operation_execution(
+        core, kernel, repository, firing=firing,
+        historical_input=historical_input)
+    operation = execution.operation
+    canonical = operation.canonical
+    if str(execution.start_event_id) != payload["operation_start_event_id"]:
         raise ResourceIntegrityFault(
             "recoverable operation Start differs from completion authority")
     from .resource_verification import verify_resource
@@ -441,6 +571,294 @@ def classify_registered_operation_recovery(
         completion_event_id=event.event_id,
         completion_payload=payload,
         stale_writer_fencing_epoch=stale_epoch,
+        checkpoint_reentry=checkpoint_reentry,
+    )
+
+
+def _owner_interruption_payload_for_active_invocation(
+        core: _RegistryCore, invocation_ref: VersionRef,
+) -> Mapping[str, object] | None:
+    """Describe the one permitted physical call that checkpoint reentry closes."""
+
+    persisted = _persisted_llm_owner_interruption(
+        core, invocation_ref=invocation_ref)
+    if persisted is not None:
+        if persisted.get("invocation_ref") != _ref_payload(invocation_ref):
+            raise ResourceIntegrityFault(
+                "LLM owner interruption belongs to another invocation")
+        return None
+
+    provider_rows = core.event_store.object_rows_by_producer(
+        invocation_ref.entity_id,
+        object_types=("provider_attempt_spec/v1",))
+    pending = []
+    for row in provider_rows:
+        events = tuple(
+            event for event in core.event_store.list_events_by_aggregate(
+                str(row["logical_id"]))
+            if event.event_type.startswith("provider_attempt_"))
+        if not events:
+            raise ResourceIntegrityFault(
+                "provider attempt lacks its durable lifecycle")
+        if events[-1].event_type == "provider_attempt_submission_permitted/v2":
+            pending.append((row, json.loads(str(row["metadata_json"]))))
+    if not pending:
+        return None
+    if len(pending) != 1:
+        raise ResourceIntegrityFault(
+            "active firing has multiple unresolved physical provider attempts")
+    provider_row, provider = pending[0]
+    provider_ref = VersionRef(
+        "provider_attempt_spec/v1",
+        TypedId.parse(str(provider_row["logical_id"]),
+                      expected="provider_attempt"),
+        TypedId.parse(str(provider_row["version_id"]),
+                      expected="provider_attempt_version"))
+    if (provider.get("provider_attempt_ref") != _ref_payload(provider_ref)
+            or provider.get("invocation_ref") != _ref_payload(invocation_ref)):
+        raise ResourceIntegrityFault(
+            "unresolved provider attempt differs from the active invocation")
+
+    neutral_candidates = []
+    for row in core.event_store.object_rows_by_producer(
+            invocation_ref.entity_id,
+            object_types=("llm_invocation_attempt/v1",)):
+        neutral_ref = VersionRef(
+            "llm_invocation_attempt/v1",
+            TypedId.parse(str(row["logical_id"]),
+                          expected="llm_invocation_attempt"),
+            TypedId.parse(str(row["version_id"]),
+                          expected="llm_invocation_attempt_version"))
+        targets = []
+        for relation in core.event_store.relation_rows_for_version(
+                neutral_ref.version_id,
+                relation_type="derived_from", endpoint="source"):
+            source_raw = json.loads(str(relation["source_json"]))
+            target_raw = json.loads(str(relation["target_json"]))
+            source = VersionRef(
+                str(source_raw["entity_type"]),
+                TypedId.parse(str(source_raw["entity_id"])),
+                TypedId.parse(str(source_raw["version_id"])))
+            target = VersionRef(
+                str(target_raw["entity_type"]),
+                TypedId.parse(str(target_raw["entity_id"])),
+                TypedId.parse(str(target_raw["version_id"])))
+            if source == neutral_ref and target == provider_ref:
+                targets.append(target)
+        if len(targets) == 1:
+            neutral_candidates.append((neutral_ref, json.loads(
+                str(row["metadata_json"]))))
+    if len(neutral_candidates) != 1:
+        raise ResourceIntegrityFault(
+            "unresolved provider attempt lacks one exact neutral attempt")
+    neutral_ref, neutral = neutral_candidates[0]
+    llm_invocation_ref = _version_from_payload(
+        neutral["llm_invocation_ref"])
+    _invocation_row, llm_invocation = _registered(
+        core, llm_invocation_ref, "llm_invocation_spec/v1")
+    if (neutral.get("llm_invocation_attempt_ref")
+            != _ref_payload(neutral_ref)
+            or llm_invocation.get("llm_invocation_ref")
+            != _ref_payload(llm_invocation_ref)
+            or llm_invocation.get("invocation_ref")
+            != _ref_payload(invocation_ref)):
+        raise ResourceIntegrityFault(
+            "unresolved neutral attempt differs from the active invocation")
+    failures = tuple(
+        event for event in core.event_store.list_events_by_aggregate(
+            str(neutral_ref.entity_id),
+            event_types=("llm_invocation_failed/v1",)))
+    if len(failures) > 1:
+        raise ResourceIntegrityFault(
+            "unresolved neutral attempt has ambiguous failure facts")
+    if failures:
+        failure = failures[0]
+        submission_state = failure.payload.get("submission_state")
+        if (failure.payload.get("llm_invocation_ref")
+                != _ref_payload(llm_invocation_ref)
+                or failure.payload.get("llm_invocation_attempt_ref")
+                != _ref_payload(neutral_ref)
+                or failure.payload.get("next_attempt_allowed") is not False
+                or submission_state not in {"not_submitted", "submission_unknown"}):
+            raise ResourceIntegrityFault(
+                "unresolved neutral failure is not owner-abandonable")
+    else:
+        # A committed permit with no transport return is conservatively unknown.
+        submission_state = "submission_unknown"
+    call_ref = _version_from_payload(provider["llm_call_ref"])
+    _call_row, call = _registered(core, call_ref, "llm_call_spec/v2")
+    if (call.get("llm_call_ref") != _ref_payload(call_ref)
+            or call.get("invocation_ref") != _ref_payload(invocation_ref)):
+        raise ResourceIntegrityFault(
+            "unresolved provider call differs from the active invocation")
+    return {
+        "provider_attempt_id": str(provider_ref.entity_id),
+        "llm_invocation_ref": _ref_payload(llm_invocation_ref),
+        "llm_invocation_attempt_ref": _ref_payload(neutral_ref),
+        "provider_attempt_ref": _ref_payload(provider_ref),
+        "llm_call_ref": _ref_payload(call_ref),
+        "invocation_ref": _ref_payload(invocation_ref),
+        "submission_state": submission_state,
+    }
+
+
+def classify_registered_operation_interruption(
+        core: _RegistryCore, kernel: _ResourceServiceKernel, repository, *,
+        current_run: Mapping[str, object],
+        historical_input: Callable[
+            [VersionRef, ResourceVersionRef], HistoricalPetriInputArtifact],
+        expected_firing=None,
+        checkpoint_reentry: bool = False,
+) -> RegisteredOperationInterruptionRecovery:
+    """Classify one owner-abandonable active firing without replaying HOST."""
+
+    if (not isinstance(core, _RegistryCore) or not core.read_only
+            or current_run.get("status") != "running"
+            or current_run.get("terminal_evidence_ref") is not None
+            or not callable(historical_input)):
+        raise ResourceIntegrityFault(
+            "registered-operation interruption requires one running read-only run")
+    firing, event, stale_epoch = _validate_recovery_shape(
+        core, kernel, current_run=current_run,
+        expected_firing=expected_firing,
+        completion_required=False, allow_owner_interruption=True,
+        checkpoint_reentry=checkpoint_reentry)
+    if event is not None:
+        raise ResourceIntegrityFault(
+            "registered-operation interruption found a completion event")
+    execution = _hydrate_active_operation_execution(
+        core, kernel, repository, firing=firing,
+        historical_input=historical_input)
+    _compiled, declared = repository.registered_compiled_operation(
+        execution.operation)
+    outcomes = tuple(
+        item for item in declared.declaration.outcomes
+        if item.name == "interrupted")
+    if (len(outcomes) != 1 or outcomes[0].products
+            or outcomes[0].effects):
+        raise ResourceIntegrityFault(
+            "active firing has no effect-free empty interrupted outcome")
+    return RegisteredOperationInterruptionRecovery(
+        execution=execution,
+        stale_writer_fencing_epoch=stale_epoch,
+        llm_owner_interruption_payload=(
+            _owner_interruption_payload_for_active_invocation(
+                core,
+                execution.operation.canonical.context.invocation_ref)),
+        checkpoint_reentry=checkpoint_reentry,
+    )
+
+
+def _record_recovered_llm_owner_interruption(
+        core: _RegistryCore, payload: Mapping[str, object] | None, *,
+        idempotency_key: str,
+) -> None:
+    """Close one old physical call without resubmission before firing settlement."""
+
+    if payload is None:
+        return
+    try:
+        invocation_ref = _version_from_payload(payload["invocation_ref"])
+        neutral_ref = _version_from_payload(
+            payload["llm_invocation_attempt_ref"])
+        provider_ref = _version_from_payload(payload["provider_attempt_ref"])
+        call_ref = _version_from_payload(payload["llm_call_ref"])
+    except (KeyError, TypeError, ValueError) as exc:
+        raise ResourceIntegrityFault(
+            "LLM owner-interruption recovery payload is malformed") from exc
+    existing = _persisted_llm_owner_interruption(
+        core, invocation_ref=invocation_ref)
+    if existing is not None:
+        if dict(existing) != dict(payload):
+            raise ResourceIntegrityFault(
+                "LLM owner-interruption recovery conflicts with prior closure")
+        return
+    tx = core.begin(idempotency_key=idempotency_key)
+    for event_type, aggregate_id, aggregate_type in (
+            ("provider_attempt_owner_interrupted/v1",
+             str(provider_ref.entity_id), "provider_attempt"),
+            ("llm_call_owner_interrupted/v1",
+             str(call_ref.entity_id), "llm_call"),
+            ("llm_invocation_owner_interrupted/v1",
+             str(neutral_ref.entity_id), "llm_invocation_attempt")):
+        stream_kind = {
+            "llm_invocation_attempt": "llm-attempt",
+        }.get(aggregate_type, aggregate_type.replace("_", "-"))
+        tx.append(PendingEvent(
+            event_type=event_type,
+            criticality="authoritative",
+            stream_id=f"{stream_kind}:{aggregate_id}",
+            aggregate_id=aggregate_id,
+            aggregate_type=aggregate_type,
+            idempotency_key=idempotency_key,
+            command_id=idempotency_key,
+            payload=dict(payload),
+            payload_schema_ref=f"registry_v1/{event_type}",
+            task_control=True,
+            producer_invocation_id=invocation_ref.entity_id,
+        ))
+    tx.commit()
+    recorded = _persisted_llm_owner_interruption(
+        core, invocation_ref=invocation_ref)
+    if recorded is None or dict(recorded) != dict(payload):
+        raise ResourceIntegrityFault(
+            "LLM owner-interruption recovery was not recorded exactly once")
+
+
+def recover_registered_operation_interruption(
+        core: _RegistryCore, kernel: _ResourceServiceKernel, repository,
+        recovery: RegisteredOperationInterruptionRecovery, *,
+        current_run: Mapping[str, object], idempotency_key: str,
+        registration=None, candidate_publisher=None, workspace_plans=(),
+):
+    """Settle an explicitly abandoned stale firing through `interrupted`."""
+
+    if (not isinstance(recovery, RegisteredOperationInterruptionRecovery)
+            or core.read_only
+            or core.writer_epoch <= recovery.stale_writer_fencing_epoch
+            or (not recovery.checkpoint_reentry
+                and not _only_later_owner_interruption_events(
+                    core, recovery.stale_writer_fencing_epoch,
+                    invocation_ref=(
+                        recovery.execution.operation.canonical.context
+                        .invocation_ref)))
+            or current_run.get("status") != "running"):
+        raise ResourceIntegrityFault(
+            "registered-operation interruption requires the immediate new writer")
+    firing, event, stale_epoch = _validate_recovery_shape(
+        core, kernel, current_run=current_run,
+        expected_firing=recovery.execution.operation.firing,
+        completion_required=False, allow_owner_interruption=True,
+        checkpoint_reentry=recovery.checkpoint_reentry)
+    if (event is not None
+            or firing != recovery.execution.operation.firing
+            or stale_epoch != recovery.stale_writer_fencing_epoch):
+        raise ResourceIntegrityFault(
+            "registered-operation interruption crossed its preflight authority")
+    outputs = register_operation_outputs(
+        repository, recovery.execution, (),
+        selected_outcome_id="interrupted",
+        idempotency_key=(
+            "recovery-interrupt:"
+            f"{recovery.execution.operation_execution_lease_ref.version_id}"))
+    from .firing_success import (
+        _succeed_verified_module_operation,
+        _verify_closed_operation_outputs,
+    )
+    outputs = _verify_closed_operation_outputs(
+        kernel, repository, recovery.execution, outputs)
+    _record_recovered_llm_owner_interruption(
+        core, recovery.llm_owner_interruption_payload,
+        idempotency_key=f"{idempotency_key}:llm-owner-interruption")
+    return _succeed_verified_module_operation(
+        core, kernel, repository, outputs,
+        idempotency_key=idempotency_key,
+        registration=registration,
+        candidate_publisher=candidate_publisher,
+        workspace_plans=tuple(workspace_plans),
+        resource_access_writer_epoch=stale_epoch,
+        allow_failed_invocations=True,
+        authorize_stale_lease_settlement=recovery.checkpoint_reentry,
     )
 
 
@@ -456,15 +874,17 @@ def recover_registered_operation_completion(
     if (not isinstance(recovery, RegisteredOperationFiringRecovery)
             or core.read_only
             or core.writer_epoch <= recovery.stale_writer_fencing_epoch
-            or _has_later_writer_events(
-                core, recovery.stale_writer_fencing_epoch)
+            or (not recovery.checkpoint_reentry
+                and _has_later_writer_events(
+                    core, recovery.stale_writer_fencing_epoch))
             or current_run.get("status") != "running"):
         raise ResourceIntegrityFault(
             "registered-operation recovery requires the immediate new writer")
     _firing, event, stale_epoch = _validate_recovery_shape(
         core, kernel, current_run=current_run,
         expected_event_payload=recovery.completion_payload,
-        expected_firing=recovery.outputs.execution.operation.firing)
+        expected_firing=recovery.outputs.execution.operation.firing,
+        checkpoint_reentry=recovery.checkpoint_reentry)
     if (event.event_id != recovery.completion_event_id
             or stale_epoch != recovery.stale_writer_fencing_epoch
             or registered_operation_completion_payload(
@@ -484,13 +904,17 @@ def recover_registered_operation_completion(
         candidate_publisher=candidate_publisher,
         workspace_plans=tuple(workspace_plans),
         resource_access_writer_epoch=stale_epoch,
+        authorize_stale_lease_settlement=recovery.checkpoint_reentry,
     )
 
 
 __all__ = (
     "COMPLETION_EVENT_TYPE", "RegisteredOperationFiringRecovery",
+    "RegisteredOperationInterruptionRecovery",
     "classify_registered_operation_recovery",
+    "classify_registered_operation_interruption",
     "record_registered_operation_completion",
     "recover_registered_operation_completion",
+    "recover_registered_operation_interruption",
     "registered_operation_completion_payload",
 )

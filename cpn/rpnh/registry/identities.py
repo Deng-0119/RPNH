@@ -91,6 +91,7 @@ IdKind = Literal[
     "firing_resource_production", "firing_resource_production_version",
     "route_deposit", "route_deposit_version",
     "run_execution_authority", "run_execution_authority_version",
+    "run_reopen_authorization", "run_reopen_authorization_version",
     "terminal_evidence", "terminal_evidence_version",
     "firing_completion", "firing_completion_version",
     "runtime_timed_scheduler_snapshot",

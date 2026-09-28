@@ -651,10 +651,9 @@ class RegisteredOperationInputAuthority:
             raise OperationAuthorityError(
                 "operation input substitution schema is not explicit")
         if (artifact.receipt.exact_resource_ref != artifact.resource.header.ref
-                or artifact.receipt.positive_byte_count != len(artifact.payload)
-                or artifact.receipt.positive_byte_count <= 0):
+                or artifact.receipt.positive_byte_count != len(artifact.payload)):
             raise OperationAuthorityError(
-                "operation input lacks an acknowledged positive petri_input receipt")
+                "operation input lacks an acknowledged exact petri_input receipt")
 
 
 @dataclass(frozen=True, slots=True)

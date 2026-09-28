@@ -273,7 +273,9 @@ def request_agent_turn_v1(
 ) -> CompletedAgentLLMInvocation:
     current_loop = loop
     turn_context = self._registry.prepare_agent_turn_context_v1(
-        execution, current_loop, catalog)
+        execution, current_loop, catalog,
+        tool_output_byte_limit=(
+            self._reduction_settings.tool_output_byte_limit))
     if turn_context.forced_compaction_reason == "response_length":
         compacted = self.compact_agent_context_v1(
             execution, current_loop, catalog,
@@ -281,7 +283,9 @@ def request_agent_turn_v1(
             idempotency_key=f"{idempotency_key}:response-length")
         current_loop = compacted.waiting_loop
         turn_context = self._registry.prepare_agent_turn_context_v1(
-            execution, current_loop, catalog)
+            execution, current_loop, catalog,
+            tool_output_byte_limit=(
+                self._reduction_settings.tool_output_byte_limit))
         if turn_context.forced_compaction_reason is not None:
             raise AgentLoopProtocolError(
                 "response-length compaction did not close its trigger")
@@ -305,7 +309,9 @@ def request_agent_turn_v1(
                 idempotency_key=f"{idempotency_key}:context-pressure")
             current_loop = compacted.waiting_loop
             turn_context = self._registry.prepare_agent_turn_context_v1(
-                execution, current_loop, catalog)
+                execution, current_loop, catalog,
+                tool_output_byte_limit=(
+                    self._reduction_settings.tool_output_byte_limit))
     while True:
         prepared = self._registry.prepare_agent_llm_turn_v1(
             execution, current_loop, catalog,

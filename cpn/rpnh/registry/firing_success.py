@@ -95,7 +95,10 @@ def _verify_closed_operation_outputs(
 
 def prepare_firing_success(core: _RegistryCore,
         outputs: RegisteredOperationOutputsAuthority, *,
-        idempotency_key: str) -> PreparedFiringSuccess:
+        idempotency_key: str,
+        provider_submission_unknown_ref: VersionRef | None = None,
+        allow_failed_invocations: bool = False,
+) -> PreparedFiringSuccess:
     """Stage result material only; terminal-ready is committed with Success.
 
 Module-specific review/workspace policy is not part of harness settlement.
@@ -124,7 +127,10 @@ Module-specific review/workspace policy is not part of harness settlement.
     ready = {key: value for key, value in result.items() if key != "transition_firing_ref"}
     ready.update({
         "operation_execution_lease_ref": _ref_payload(context.operation_execution_lease_ref),
-        "sealed_terminal_event_ids": list(InvocationLifecycle(core)._terminal_descendant_event_ids(context, None)),
+        "sealed_terminal_event_ids": list(
+            InvocationLifecycle(core)._terminal_descendant_event_ids(
+                context, provider_submission_unknown_ref,
+                allow_failed_invocations=allow_failed_invocations)),
     })
     settlement = FiringSettlementAuthority(
         canonical=canonical, operation_result_ref=result_ref)
@@ -223,6 +229,9 @@ def _succeed_verified_module_operation(
         candidate_publisher: Callable | None = None,
         workspace_plans: tuple[Mapping[str, Any], ...] = (),
         resource_access_writer_epoch: int,
+        provider_submission_unknown_ref: VersionRef | None = None,
+        allow_failed_invocations: bool = False,
+        authorize_stale_lease_settlement: bool = False,
 ):
     """Project and stage Success after an ordinary or recovery-specific gate."""
 
@@ -299,7 +308,9 @@ def _succeed_verified_module_operation(
                 projected, new_tokens, effects,
                 candidate_publisher=candidate_publisher)
     prepared = prepare_firing_success(
-        core, outputs, idempotency_key=idempotency_key)
+        core, outputs, idempotency_key=idempotency_key,
+        provider_submission_unknown_ref=provider_submission_unknown_ref,
+        allow_failed_invocations=allow_failed_invocations)
     context = prepared.settlement.canonical.context
     tx = core.begin(idempotency_key=idempotency_key, task_round_id=context.task_round_ref.entity_id,
         net_instance_id=executable.net_ref.entity_id)
@@ -308,7 +319,10 @@ def _succeed_verified_module_operation(
         formal_delta=formal_delta,
         result_metadata=prepared.result_metadata, terminal_ready_payload=prepared.terminal_ready_payload,
         workspace_plans=workspace_plans, disposition_relations=(), publish_checkpoint=True, idempotency_key=idempotency_key,
-        declared_effects=declared_effects, revision=revision)
+        declared_effects=declared_effects, revision=revision,
+        historical_lease_writer_epoch=(
+            resource_access_writer_epoch
+            if authorize_stale_lease_settlement else None))
     if revision is not None:
         stage_operation_revision(core, tx, revision,
             old_executable=executable, checkpoint_ref=material.checkpoint_ref,

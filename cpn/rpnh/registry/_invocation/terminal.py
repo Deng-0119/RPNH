@@ -33,6 +33,7 @@ from ..invocations import (
 def _terminal_descendant_event_ids(
         lifecycle, context: InvocationContext,
         provider_submission_unknown_ref: VersionRef | None = None,
+        *, allow_failed_invocations: bool = False,
 ) -> tuple[str, ...]:
     # Resolve this through the compatibility module at call time.  Existing
     # consumers replace this seam when exercising the evidence classifier.
@@ -41,6 +42,7 @@ def _terminal_descendant_event_ids(
     return invocation_facade.terminal_descendant_event_ids(
         context,
         provider_submission_unknown_ref,
+        allow_failed_invocations=allow_failed_invocations,
         event_store=lifecycle.service.event_store,
         require_ref=lifecycle._require_ref,
         relation_endpoint=lifecycle._relation_endpoint,

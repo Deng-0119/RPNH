@@ -15,7 +15,15 @@
       },
       "required": ["entity_type", "logical_id", "version_id"]
     },
-    "nullable_ref": {"oneOf": [{"$ref": "#/definitions/ref"}, {"type": "null"}]}
+    "nullable_ref": {"oneOf": [{"$ref": "#/definitions/ref"}, {"type": "null"}]},
+    "reentry_token_mapping": {
+      "type": "object", "additionalProperties": false,
+      "properties": {
+        "source_token_ref": {"$ref": "#/definitions/ref"},
+        "replacement_token_ref": {"$ref": "#/definitions/ref"}
+      },
+      "required": ["source_token_ref", "replacement_token_ref"]
+    }
   },
   "properties": {
     "owner_command_ref": {"$ref": "#/definitions/ref"},
@@ -28,13 +36,36 @@
     "transition_firing_refs": {"type": "array", "items": {"$ref": "#/definitions/ref"}, "uniqueItems": true},
     "workspace_revision_refs": {"type": "array", "items": {"$ref": "#/definitions/ref"}, "uniqueItems": true},
     "settlement_event_id": {"type": "string", "pattern": "^event:[a-f0-9]{32}$"},
-    "settled": {"const": true}
+    "settled": {"const": true},
+    "reentry_source_checkpoint_ref": {"$ref": "#/definitions/ref"},
+    "reentry_authorization_ref": {"$ref": "#/definitions/ref"},
+    "reentry_superseded_terminal_evidence_ref": {"$ref": "#/definitions/nullable_ref"},
+    "reentry_generation": {"type": "integer", "minimum": 1},
+    "reentry_token_mappings": {"type": "array", "items": {"$ref": "#/definitions/reentry_token_mapping"}, "uniqueItems": true},
+    "reentry_superseded_token_refs": {"type": "array", "items": {"$ref": "#/definitions/ref"}, "uniqueItems": true}
   },
   "allOf": [{"if": {"anyOf": [{"required": ["owner_command_ref"]}, {"required": ["owner_command_result_ref"]}]},
     "then": {"required": ["owner_command_ref", "owner_command_result_ref"],
       "properties": {"previous_checkpoint_ref": {"$ref": "#/definitions/ref"},
         "settlement_delta_ref": {"type": "null"}, "transition_firing_refs": {"maxItems": 0}},
-      "not": {"required": ["settlement_event_id"]}}}],
+      "not": {"required": ["settlement_event_id"]}}},
+    {"if": {"anyOf": [
+        {"required": ["reentry_source_checkpoint_ref"]},
+        {"required": ["reentry_authorization_ref"]},
+        {"required": ["reentry_superseded_terminal_evidence_ref"]},
+        {"required": ["reentry_generation"]},
+        {"required": ["reentry_token_mappings"]},
+        {"required": ["reentry_superseded_token_refs"]}
+      ]},
+     "then": {"required": ["reentry_source_checkpoint_ref",
+        "reentry_authorization_ref", "reentry_superseded_terminal_evidence_ref",
+        "reentry_generation", "reentry_token_mappings",
+        "reentry_superseded_token_refs"],
+       "properties": {"previous_checkpoint_ref": {"$ref": "#/definitions/ref"},
+         "settlement_delta_ref": {"type": "null"},
+         "transition_firing_refs": {"maxItems": 0}},
+       "not": {"required": ["settlement_event_id"]}}}
+  ],
   "required": [
     "checkpoint_ref", "net_instance_ref", "team_design_root_ref",
     "previous_checkpoint_ref", "settlement_delta_ref",

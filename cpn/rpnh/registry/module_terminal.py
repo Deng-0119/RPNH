@@ -6,6 +6,7 @@ Business outcome colours remain distinct from explicit framework run outcomes.
 from __future__ import annotations
 
 import json
+from dataclasses import replace
 from typing import Mapping
 
 from ._registry import _RegistryCore
@@ -170,6 +171,74 @@ def _producing_token(core, kernel, executable, structure, carrier, product, port
     raise ResourceIntegrityFault("terminal forward lineage does not reach its actual producing firing")
 
 
+def _unwrap_reentry_carrier(core, kernel, carrier):
+    """Resolve fresh reentry occurrences back to a firing-produced token."""
+
+    by_replacement: dict[str, list[tuple[VersionRef, dict, VersionRef]]] = {}
+    for row in core.event_store.canonical_object_rows(
+            object_type="marking_checkpoint/v1"):
+        checkpoint_ref = VersionRef(
+            "marking_checkpoint/v1",
+            TypedId.parse(str(row["logical_id"]),
+                          expected="marking_checkpoint"),
+            TypedId.parse(str(row["version_id"]),
+                          expected="marking_checkpoint_version"))
+        checkpoint = _object(
+            core, kernel, checkpoint_ref, "marking_checkpoint/v1")
+        for mapping in checkpoint.get("reentry_token_mappings", []):
+            replacement_ref = _version_from_payload(
+                mapping["replacement_token_ref"])
+            by_replacement.setdefault(
+                str(replacement_ref.version_id), []).append((
+                    checkpoint_ref, checkpoint,
+                    _version_from_payload(mapping["source_token_ref"])))
+
+    current = carrier
+    seen: set[VersionRef] = set()
+    while current.token_ref not in seen:
+        seen.add(current.token_ref)
+        current_document = _object(
+            core, kernel, current.token_ref, "petri_token/v1")
+        replacement_payload = _ref_payload(current.token_ref)
+        matches = by_replacement.get(
+            str(current.token_ref.version_id), [])
+        if not matches:
+            return current
+        if len(matches) != 1:
+            raise ResourceIntegrityFault(
+                "terminal reentry carrier has ambiguous token ancestry")
+        checkpoint_ref, checkpoint, source_ref = matches[0]
+        if source_ref in seen:
+            raise ResourceIntegrityFault(
+                "terminal reentry carrier token ancestry is cyclic")
+        source_document = _object(
+            core, kernel, source_ref, "petri_token/v1")
+        expected = {
+            **source_document,
+            "petri_token_ref": replacement_payload,
+            "token_id": current_document["token_id"],
+            "epoch": current_document["epoch"],
+            "consumed_by": None,
+        }
+        if (current_document != expected
+                or replacement_payload not in checkpoint["token_refs"]
+                or core.event_store.object_row(
+                    current.token_ref.version_id)["transaction_id"]
+                != core.event_store.object_row(
+                    checkpoint_ref.version_id)["transaction_id"]):
+            raise ResourceIntegrityFault(
+                "terminal reentry carrier is not one atomic exact clone")
+        current = replace(
+            current, token_ref=source_ref,
+            state=replace(
+                current.state, token_ref=source_ref,
+                token_id=source_document["token_id"],
+                epoch=source_document["epoch"],
+                consumed_by=source_document["consumed_by"]))
+    raise ResourceIntegrityFault(
+        "terminal reentry carrier token ancestry is cyclic")
+
+
 def _terminal_material_for_binding(core, kernel, terminal):
     # An absent or non-Module execution source is not a terminal prestate.
     if not core.event_store.canonical_object_rows(object_type="run_execution_authority/v1"):
@@ -293,7 +362,11 @@ def _terminal_material_for_binding(core, kernel, terminal):
     result = _object(core, kernel, result_ref, "operation_result/v1")
     completion = record["firing_completion"]
     successor = record["successor_checkpoint"]
-    producing_token_ref = _producing_token(core, kernel, executable, structure, token, product, port, firing_ref)
+    producing_carrier = _unwrap_reentry_carrier(
+        core, kernel, token)
+    producing_token_ref = _producing_token(
+        core, kernel, executable, structure, producing_carrier,
+        product, port, firing_ref)
     if (record["state"] != "PUBLISHED"
             or result["operation_result_ref"] != _ref_payload(result_ref)
             or result["invocation_ref"] != _ref_payload(invocation_ref)
@@ -372,24 +445,52 @@ The caller must be the sole execution owner using this Registry's writer epoch.
         raise ResourceIntegrityFault("Module terminal writer epoch is stale")
     material = _terminal_material(core, kernel)
     if material is None:
-        if (core.event_store.canonical_object_rows(object_type="run_terminal_evidence/v1")
-                or core.event_store.canonical_object_rows(object_type="final_result_index/v1")):
-            raise ResourceIntegrityFault("terminal objects exist without exact Module terminal prestate")
+        # Earlier execution generations retain immutable terminal objects.
+        # Current authority, not global object count, selects whether this
+        # generation is open or closed.
+        if core.event_store.canonical_object_rows(
+                object_type="run_execution_authority/v1"):
+            _authority_ref, authority = current_run_execution_authority(
+                core, kernel)
+            if ((authority["status"] == "terminal")
+                    != (authority["terminal_evidence_ref"] is not None)):
+                raise ResourceIntegrityFault(
+                    "current terminal authority is internally inconsistent")
         return None
     authority_ref, authority, index_material, evidence_material = material
-    index_ref = _existing(core, kernel, "final_result_index/v1", "final_result_index_ref", index_material)
-    evidence_rows = core.event_store.canonical_object_rows(object_type="run_terminal_evidence/v1")
-    if index_ref is not None:
-        evidence = {**evidence_material, "final_result_index_ref": _ref_payload(index_ref)}
-        evidence_ref = _existing(core, kernel, "run_terminal_evidence/v1", "terminal_evidence_ref", evidence)
-        if evidence_ref is not None:
-            if (authority["status"] != "terminal" or authority["terminal_evidence_ref"] != _ref_payload(evidence_ref)
-                    or len({core.event_store.object_row(ref.version_id)["transaction_id"]
-                            for ref in (authority_ref, index_ref, evidence_ref)}) != 1):
-                raise ResourceIntegrityFault("terminal closure was not published in one authority transaction")
-            return evidence_ref
-    if index_ref is not None or evidence_rows or authority["status"] == "terminal" or authority["terminal_evidence_ref"] is not None:
-        raise ResourceIntegrityFault("run has partial or conflicting terminal closure")
+    if authority["status"] == "terminal":
+        if authority["terminal_evidence_ref"] is None:
+            raise ResourceIntegrityFault(
+                "terminal authority lacks current terminal evidence")
+        evidence_ref = _version_from_payload(
+            authority["terminal_evidence_ref"])
+        evidence = _object(
+            core, kernel, evidence_ref, "run_terminal_evidence/v1")
+        index_ref = _version_from_payload(
+            evidence["final_result_index_ref"])
+        index = _object(core, kernel, index_ref, "final_result_index/v1")
+        expected_index = {
+            "final_result_index_ref": _ref_payload(index_ref),
+            **index_material,
+        }
+        expected_evidence = {
+            "terminal_evidence_ref": _ref_payload(evidence_ref),
+            "final_result_index_ref": _ref_payload(index_ref),
+            **evidence_material,
+        }
+        if (index != expected_index or evidence != expected_evidence
+                or len({
+                    core.event_store.object_row(ref.version_id)[
+                        "transaction_id"]
+                    for ref in (authority_ref, index_ref, evidence_ref)
+                }) != 1):
+            raise ResourceIntegrityFault(
+                "current terminal closure conflicts with its generation")
+        return evidence_ref
+    if (authority["terminal_evidence_ref"] is not None
+            or authority["status"] == "stopped_by_owner"):
+        raise ResourceIntegrityFault(
+            "open terminal publication has conflicting run authority")
     index_ref = VersionRef("final_result_index/v1", new_id("terminal_evidence"), new_id("terminal_evidence_version"))
     evidence_ref = VersionRef("run_terminal_evidence/v1", new_id("terminal_evidence"), new_id("terminal_evidence_version"))
     successor_ref = VersionRef("run_execution_authority/v1", authority_ref.entity_id, new_id("run_execution_authority_version"))
@@ -400,7 +501,14 @@ The caller must be the sole execution owner using this Registry's writer epoch.
     documents = ((index_ref, index), (evidence_ref, evidence), (successor_ref, successor))
     for ref, document in documents:
         core.catalog.validate_instance(ref.entity_type, category="object", instance=document)
-    tx = core.begin(idempotency_key=f"run-terminal-evidence:{evidence_material['terminal_occurrence_ref']['version_id']}")
+    # A producing firing may legitimately close more than one execution
+    # generation when the owner reopens an already-terminal checkpoint.  The
+    # selected final checkpoint is the immutable generation-specific cut, so
+    # include it in the command identity instead of conflating those closures.
+    tx = core.begin(idempotency_key=(
+        "run-terminal-evidence:"
+        f"{evidence_material['terminal_occurrence_ref']['version_id']}:"
+        f"{evidence_material['final_checkpoint_ref']['version_id']}"))
     for ref, document in documents:
         tx.prewrite(object_type=ref.entity_type, logical_id=ref.entity_id, version_id=ref.version_id,
             payload=canonical_json(document), metadata=document, media_type="application/json",

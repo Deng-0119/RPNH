@@ -542,7 +542,7 @@ class RegistryFrontendApplication:
         if name == "rpnh-help":
             if arguments.strip():
                 raise FrontendError("invalid_arguments", "rpnh-help takes no arguments.", 400)
-            return {"commands": ["rpnh-tasks", "rpnh-task ID status|result|stop|resume|net|message",
+            return {"commands": ["rpnh-tasks", "rpnh-task ID status|result|stop|resume|reopen CHECKPOINT_VERSION|checkpoints|net|message",
                                  "rpnh-net [--show-resources|--resources-only]", "rpnh-agent TEXT",
                                  "rpnh-workflow TEXT", "rpnh-resume", "rpnh-rollback", "rpnh-send UNIQUE_ID TEXT"],
                     "notice": "Identical unkeyed prompts are one request per session. Command observations are not agent answers."}
@@ -580,6 +580,8 @@ class RegistryFrontendApplication:
             session.task_control.get(task_id)
             if action == "net":
                 return self._net(state, task_id, tuple(flags))
+            if action == "checkpoints" and not flags:
+                return session.task_control.checkpoints(task_id)
             if action == "message":
                 fields = arguments.split(maxsplit=2)
                 if len(fields) != 3 or not fields[2].strip():
@@ -591,12 +593,16 @@ class RegistryFrontendApplication:
                     return session.task_control.message(
                         task_id, body, target=target.strip())
                 return session.task_control.message(task_id, payload)
-            if flags or action not in {"status", "result", "stop", "resume"}:
+            if action == "resume" and not flags:
+                self._check_model(session)
+                return session.task_control.resume(task_id)
+            if action == "reopen" and len(flags) == 1:
+                self._check_model(session)
+                return session.task_control.reopen(task_id, flags[0])
+            if flags or action not in {"status", "result", "stop"}:
                 raise FrontendError("unsupported_command", "Unsupported task action.", 400)
             if action == "status":
                 return self._status(session.task_control.status(task_id))
-            if action == "resume":
-                self._check_model(session)
             return getattr(session.task_control, action)(task_id)
         if name in {"rpnh-resume", "rpnh-rollback"} and not words:
             snap = session.active_turn_snapshot()

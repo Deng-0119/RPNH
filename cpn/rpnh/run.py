@@ -355,6 +355,39 @@ class RunOwner:
         self.control.edits.advance()
         return result
 
+    def recover_interrupted_firing(self, recovery, *, command_id):
+        """Settle one owner-abandoned stale firing without replaying HOST."""
+        from .registry.firing_recovery import (
+            recover_registered_operation_interruption,
+        )
+        from .registry.run_authority import current_run_execution_authority
+        from .workspace_settlement import prepare_firing_workspace_plans
+        kernel, repository = self.operation_repository()
+        # Interruption preserves the firing-private workspace just like an
+        # in-process owner stop.  The interrupted semantic outcome has no
+        # products, but settlement still publishes the exact workspace head.
+        from .registry.operations import register_operation_outputs
+        outputs = register_operation_outputs(
+            repository, recovery.execution, (),
+            selected_outcome_id="interrupted",
+            idempotency_key=(
+                "owner-interrupt-plan:"
+                f"{recovery.execution.operation_execution_lease_ref.version_id}"))
+        workspace_plans = prepare_firing_workspace_plans(
+            self._core, kernel, outputs,
+            idempotency_key=command_id)
+        _authority_ref, current = current_run_execution_authority(
+            self._core, kernel)
+        result = recover_registered_operation_interruption(
+            self._core, kernel, repository, recovery,
+            current_run=current, idempotency_key=command_id,
+            registration=self.registration,
+            candidate_publisher=getattr(
+                self, "revision_candidate_publisher", None),
+            workspace_plans=workspace_plans)
+        self.control.edits.advance()
+        return result
+
     def terminal(self):
         from .registry.module_terminal import register_module_terminal
         return register_module_terminal(self._core, _ResourceServiceKernel(self._core))
@@ -565,10 +598,17 @@ def resume_run(
         registration: Registration, *, run_dir: str | Path,
         model_condition: str, catalog=None,
         host_execution_bindings=None,
+        checkpoint_version_id: str | None = None,
+        reopen_command_id: str | None = None,
+        reopen_reason: str | None = None,
 ) -> RunOwner:
     """Reopen one clean owner-stop checkpoint as the sole new writer."""
     if (not isinstance(registration, Registration)
-            or not isinstance(model_condition, str) or not model_condition):
+            or not isinstance(model_condition, str) or not model_condition
+            or ((checkpoint_version_id is None)
+                != (reopen_command_id is None))
+            or ((checkpoint_version_id is None)
+                != (reopen_reason is None))):
         raise TypeError("resume_run requires registration and exact model")
     from .registry.run_authority import current_run_execution_authority
     destination = Path(run_dir)
@@ -579,8 +619,68 @@ def resume_run(
         expected_model_condition=model_condition)
     registration.bind_schema_catalog(preflight.catalog)
     material = _load_resume_material(preflight, registration)
+    # Recovery classification may need the trusted executor contract before a
+    # writer or Registry gateway exists.  A fresh worker process has no prior
+    # process-global binding, so establish it immediately after the complete
+    # persisted registration inventory has passed read-only validation.
+    bind_operation_registration(registration)
     recovery = None
-    if preflight_current["status"] == "running":
+    checkpoint_recoveries = []
+    selected_checkpoint = None
+    if checkpoint_version_id is not None:
+        from .registry.checkpoint_reentry import resolve_committed_checkpoint
+        selected_checkpoint = resolve_committed_checkpoint(
+            preflight, checkpoint_version_id)
+        if preflight_current["status"] not in {
+                "terminal", "stopped_by_owner", "running"}:
+            from .registry.errors import ResourceIntegrityFault
+            raise ResourceIntegrityFault(
+                "checkpoint reentry requires terminal, owner-stopped, or its recoverable running generation")
+        if preflight_current["status"] == "running":
+            from .registry.module_execution import active_module_firings
+            preflight_executable, _structure, _marking = (
+                hydrate_module_runtime(preflight))
+            active = active_module_firings(
+                preflight, preflight_executable.net_ref,
+                require_current_writer=False)
+            if active:
+                from .registry.firing_recovery import (
+                    classify_registered_operation_interruption,
+                    classify_registered_operation_recovery,
+                )
+                preflight_kernel, preflight_repository, historical_input = (
+                    _operation_services(preflight))
+                completion_events = (
+                    preflight.event_store.list_events_by_type((
+                        "registered_operation_completion_recorded/v1",)))
+                for firing in active:
+                    completions = tuple(
+                        event for event in completion_events
+                        if event.payload.get("transition_firing_ref")
+                        == ref_payload(firing.transition_firing_ref))
+                    if len(completions) == 1:
+                        item = classify_registered_operation_recovery(
+                            preflight, preflight_kernel,
+                            preflight_repository,
+                            current_run=preflight_current,
+                            historical_input=historical_input,
+                            expected_firing=firing,
+                            checkpoint_reentry=True)
+                        checkpoint_recoveries.append(("completion", item))
+                    elif not completions:
+                        item = classify_registered_operation_interruption(
+                            preflight, preflight_kernel,
+                            preflight_repository,
+                            current_run=preflight_current,
+                            historical_input=historical_input,
+                            expected_firing=firing,
+                            checkpoint_reentry=True)
+                        checkpoint_recoveries.append(("interruption", item))
+                    else:
+                        from .registry.errors import ResourceIntegrityFault
+                        raise ResourceIntegrityFault(
+                            "active firing has ambiguous operation completions")
+    elif preflight_current["status"] == "running":
         from .registry.firing_recovery import (
             classify_registered_operation_recovery,
         )
@@ -623,14 +723,80 @@ def resume_run(
         if (schema_id in PROTECTED_SCHEMA_REFS
                 and schema_id not in gateway.schema_refs):
             gateway.bind_builtin_schema(schema_id)
-    bind_operation_registration(registration)
     owner = RunOwner(
         core, registration, material.identity, None,
         material.original_input_ref, material.principal_ref,
         material.task_round_ref, material.bootstrap_ref, gateway,
         material.budgets)
     owner.host_execution_bindings = host_execution_bindings
-    if recovery is None:
+    if checkpoint_recoveries:
+        for ordinal, (kind, item) in enumerate(checkpoint_recoveries):
+            firing_ref = (
+                item.outputs.execution.operation.firing.transition_firing_ref
+                if kind == "completion" else
+                item.execution.operation.firing.transition_firing_ref)
+            command_id = (
+                "rpnh:reopen:registered-operation-"
+                f"{kind}:{ordinal}:{firing_ref.version_id}:"
+                f"writer-{core.writer_epoch}")
+            if kind == "completion":
+                owner.recover_completed_firing(
+                    item, command_id=command_id)
+            else:
+                owner.recover_interrupted_firing(
+                    item, command_id=command_id)
+    elif recovery is not None:
+        owner.recover_completed_firing(
+            recovery,
+            command_id=(
+                "rpnh:resume:registered-operation-completion:"
+                f"writer-{core.writer_epoch}"),
+        )
+    if selected_checkpoint is not None:
+        from .registry.module_execution import active_module_firings
+        selected_executable, _selected_structure, _selected_marking = (
+            hydrate_module_runtime(core))
+        _selected_authority_ref, selected_authority = (
+            current_run_execution_authority(core, kernel))
+        active_selected = active_module_firings(
+            core, selected_executable.net_ref,
+            require_current_writer=False)
+        if (selected_authority["status"] == "running"
+                and not active_selected):
+            owner.record_owner_stop(
+                idempotency_key=(
+                    "rpnh:reopen:drained-owner-stop:"
+                    f"writer-{core.writer_epoch}"))
+        from .registry.checkpoint_reentry import (
+            materialize_reentry_workspaces,
+            stage_checkpoint_reentry,
+        )
+        reopened_checkpoint = stage_checkpoint_reentry(
+            core, kernel, source_checkpoint_ref=selected_checkpoint,
+            command_id=reopen_command_id, reason=reopen_reason)
+        _reopen_authority_ref, reopen_authority = (
+            current_run_execution_authority(core, kernel))
+        reopened_executable, _reopened_structure, _reopened_marking = (
+            hydrate_module_runtime(core))
+        active_reopened = active_module_firings(
+            core, reopened_executable.net_ref,
+            require_current_writer=False)
+        if (reopen_authority["latest_checkpoint_ref"]
+                == ref_payload(reopened_checkpoint)
+                and (reopen_authority["status"] == "stopped_by_owner"
+                     or (reopen_authority["status"] == "running"
+                         and not active_reopened))):
+            materialize_reentry_workspaces(
+                core, kernel, reopened_checkpoint)
+        executable, structure, _marking = hydrate_module_runtime(core)
+
+    _current_authority_ref, current_authority = (
+        current_run_execution_authority(core, kernel))
+    if current_authority["status"] == "terminal":
+        from .registry.errors import ResourceIntegrityFault
+        raise ResourceIntegrityFault(
+            "checkpoint reopen command already reached terminal authority")
+    if current_authority["status"] == "stopped_by_owner":
         from .registry.run_authority import resume_owner_stopped_run
         resume_owner_stopped_run(
             core, kernel,
@@ -639,13 +805,7 @@ def resume_run(
             recovery_manifest_ref=material.recovery_manifest_ref,
             idempotency_key=f"rpnh:resume:writer-{core.writer_epoch}",
         )
-    else:
-        owner.recover_completed_firing(
-            recovery,
-            command_id=(
-                "rpnh:resume:registered-operation-completion:"
-                f"writer-{core.writer_epoch}"),
-        )
+    elif recovery is not None and selected_checkpoint is None:
         recovered_executable, _structure, _marking = hydrate_module_runtime(core)
         from .registry.run_authority import record_recovered_run_entry
         record_recovered_run_entry(
@@ -654,6 +814,19 @@ def resume_run(
             mutable_stage_ref=recovered_executable.declaration_resource_ref,
             recovery_manifest_ref=material.recovery_manifest_ref,
         )
+    elif (current_authority["status"] == "running"
+          and current_authority.get("reopen_authorization_ref") is not None):
+        from .registry.run_authority import record_recovered_run_entry
+        record_recovered_run_entry(
+            core, kernel,
+            immutable_input_ref=material.original_input_ref,
+            mutable_stage_ref=executable.declaration_resource_ref,
+            recovery_manifest_ref=material.recovery_manifest_ref,
+        )
+    else:
+        from .registry.errors import ResourceIntegrityFault
+        raise ResourceIntegrityFault(
+            "run resume has no recoverable current execution state")
     owner.current_input_ref = owner.control.current_input()
     return owner
 

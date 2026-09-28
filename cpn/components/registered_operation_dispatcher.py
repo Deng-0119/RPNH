@@ -336,12 +336,11 @@ def _validate_petri_input_artifact(
             f"{label} requires a Registry-verified Petri input artifact")
     exact_ref = artifact.resource.header.ref
     if ((isinstance(artifact, PetriInputArtifact)
-             and artifact.release.exact_resource_ref != exact_ref)
+            and artifact.release.exact_resource_ref != exact_ref)
             or artifact.receipt.exact_resource_ref != exact_ref
-            or artifact.receipt.positive_byte_count != len(artifact.payload)
-            or not artifact.payload):
+            or artifact.receipt.positive_byte_count != len(artifact.payload)):
         raise RegisteredOperationAuthorityRequiredError(
-            f"{label} lacks one exact positive petri_input receipt")
+            f"{label} lacks one exact petri_input receipt")
 
 
 class _PermittedRegisteredOperationDispatch:

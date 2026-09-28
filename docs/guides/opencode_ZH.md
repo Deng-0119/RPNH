@@ -58,7 +58,9 @@ resume、list 与历史投影都是观察操作：不会调用模型，不会提
 | --- | --- |
 | `/rpnh-help` | 查看支持的控制面。 |
 | `/rpnh-tasks` | 列出本会话的独立任务/工作流。 |
-| `/rpnh-task ID status\|result\|stop\|resume` | 精确访问一个已有子任务 owner。 |
+| `/rpnh-task ID status\|result\|stop\|resume` | 精确访问一个已有子任务 owner；resume 续接其当前停止切面。 |
+| `/rpnh-task ID checkpoints` | 列出该 child run 的精确已提交 checkpoint 版本。 |
+| `/rpnh-task ID reopen CHECKPOINT` | 在同一 Registry／run 中把该精确切面重开为新代次。 |
 | `/rpnh-task ID message TEXT` | 向一个子任务 owner 发送已登记的控制消息。 |
 | `/rpnh-task ID net [资源参数]` | 读取该子任务的真实注册网。 |
 | `/rpnh-net [--show-resources\|--resources-only]` | 读取最新主回合 attempt 的真实网，复用已有资源过滤。 |
@@ -70,7 +72,7 @@ resume、list 与历史投影都是观察操作：不会调用模型，不会提
 
 使用前缀避免与 OpenCode 原生命令冲突。原生 OpenCode 仍可能展示它自身的命令；这些不是 RPNH 能力，其 effect route 会明确拒绝。命令输出明确标为临时 synthetic observation，不是 agent 答案或新终态证据，前端进程重启后不恢复；权威任务 ID、结果和网仍保留在 RPNH。网输出是 JSON 观察，不是 OpenCode 原生 Petri-net 可视化。
 
-abort 只请求精确的主回合 owner 停止；同一 owner 生命周期内的重复请求会合并。请求被接受不等于 checkpoint 已完成，必须等待 Registry 的 `stopped_by_owner`。owner channel 尚未就绪时明确报错，不发送不安全的早期启动中断。退出 UI 时，所有活跃主回合必须先到达正常的 `stopped_by_owner` checkpoint，application owner 才关闭；独立子 worker 不会因此停止。恢复和回滚不从 OpenCode transcript 重建 checkpoint。
+abort 只请求精确的主回合 owner 停止；同一 owner 生命周期内的重复请求会合并。请求被接受不等于 checkpoint 已完成，必须等待 Registry 的 `stopped_by_owner`。owner channel 尚未就绪时明确报错，不发送不安全的早期启动中断。退出 UI 时，所有活跃主回合必须先到达正常的 `stopped_by_owner` checkpoint，application owner 才关闭；独立子 worker 不会因此停止。恢复和回滚不从 OpenCode transcript 重建 checkpoint。task checkpoint reopen 也只使用用户选择的已提交 Registry 切面，不从 OpenCode message 推导状态，也不创建替代任务。
 
 ## 模型、资源与禁用能力
 

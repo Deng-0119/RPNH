@@ -91,7 +91,7 @@ profile 会记录解析后的值，因此 run 及其 resume 使用同一份精�
 | `max_parallel_nodes` | 4 | workflow 同时 in-flight 的 node 上限；single-agent 始终串行。 |
 | `main_history_message_limit` | 20 | 新 main Designer prompt 包含的最近完整 role/body 消息数；Registry 仍保存全部已提交历史。 |
 | `context_pressure_trigger_ratio` | 0.90 | 达到已声明 context window 的该比例时主动压缩；为输出 token 预留空间可能更早触发。 |
-| `context_tool_output_byte_limit` | 10000 | 压缩时旧 tool output 保留给模型的最大字节数；Registry 完整证据不变，最小 128。 |
+| `context_tool_output_byte_limit` | 10000 | 每条模型可见 tool result 投影的最大字节数，包括紧邻下一 turn 与压缩历史；Registry 完整证据不变且仍可分页读取，最小 128。 |
 | `workspace.timeout_seconds` | 120 | firing-private workspace 命令上限；tool 请求可选择更小值。 |
 | `workspace.memory_bytes` | 4294967296 | workspace 进程地址空间上限。 |
 | `workspace.process_limit` | 64 | workspace 进程数上限。 |

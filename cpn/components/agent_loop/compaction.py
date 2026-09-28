@@ -998,7 +998,9 @@ def compact_agent_context_v1(
         raise AgentLoopProtocolError(
             "context compaction bridge arguments are invalid")
     prepared_target = self._registry.prepare_agent_turn_context_v1(
-        execution, loop, catalog).target
+        execution, loop, catalog,
+        tool_output_byte_limit=(
+            self._reduction_settings.tool_output_byte_limit)).target
     loop_context_window = prepared_target.context_window_tokens
     pressure_policy = (
         ContextPressurePolicy(

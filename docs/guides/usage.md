@@ -42,10 +42,24 @@ The following are **basic-frontend** commands. They are not additions to stock C
 | `/task ID status`, `/task ID result` | Read process/Registry status or registered result |
 | `/task ID message TEXT` | Queue input for a single-agent task |
 | `/task ID message TARGET :: TEXT` | Explicit workflow recipient |
-| `/task ID stop`, `/task ID resume` | Request checkpoint stop; explicitly resume an owner-stopped task |
+| `/task ID stop`, `/task ID resume` | Request checkpoint stop; continue the current owner-stopped cut |
+| `/task ID checkpoints` | List exact committed checkpoint versions in the same run |
+| `/task ID reopen CHECKPOINT` | Append a new execution generation from the selected checkpoint; may execute models/tools |
 | `/quit` | Leave the main frontend; independent children may continue |
 
 Short `/status`, `/result`, `/net`, `/message`, `/stop` commands act on the selected child. Plain text goes to main or to the selected single-agent; selected workflows require `TARGET :: TEXT`. A parent-owned `delegate_leaf` is an internal action, not an independently switchable task.
+
+`resume` and `reopen` are intentionally different. `resume` continues the
+current `stopped_by_owner` checkpoint. `reopen` accepts an exact ID returned by
+`checkpoints`, keeps the same Registry/run, and restores that cut's Petri
+marking and workspace as a new append-only execution generation. It does not
+delete later history or create a replacement task. Stop a currently running
+child before selecting an older cut. An already-terminal selected cut closes
+the new generation without another model call. If a worker has exited with one
+physical call recorded as `submission_unknown`, `reopen` is also the explicit
+owner decision to abandon that unresolved firing and start a fresh attempt from
+the selected safe cut. The unknown attempt remains immutable evidence and is
+never automatically retransmitted.
 
 ## Interrupted main turn
 Reopen with `rpnh --frontend basic --resume SESSION_DIR`. Without an explicit

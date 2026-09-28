@@ -152,6 +152,8 @@ rpnh --frontend basic
 
 使用 `/agent` 创建独立任务，使用 `/workflow` 请 Designer 设计工作流，使用 `/tasks`
 列出子任务。`/switch` 切换当前任务；`/task ID status` 和 `/task ID result` 查看进度与结果。
+`/task ID checkpoints` 列出已提交切面，`/task ID reopen CHECKPOINT` 则在同一
+Registry／run 中从用户所选切面追加新执行代次。
 对话和任务执行使用已配置的模型与工具。消息、停止与恢复方式见
 [使用与恢复指南](docs/guides/usage_ZH.md)。
 

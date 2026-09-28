@@ -97,7 +97,7 @@ so a run and its resume retain one exact policy.
 | `max_parallel_nodes` | 4 | Maximum concurrently in-flight workflow nodes. A single-agent task remains serial. |
 | `main_history_message_limit` | 20 | Number of most recent complete role/body messages included in a new main-Designer prompt. Full committed history remains in Registry. |
 | `context_pressure_trigger_ratio` | 0.90 | Fraction of a declared context window that triggers proactive compaction; output-token reservation can trigger earlier. |
-| `context_tool_output_byte_limit` | 10000 | Maximum model-visible bytes retained for an older tool output during compaction; full Registry evidence is unchanged. Minimum 128. |
+| `context_tool_output_byte_limit` | 10000 | Maximum bytes for each model-visible tool-result projection, including the immediately following turn and compaction history; full Registry evidence is unchanged and remains page-readable. Minimum 128. |
 | `workspace.timeout_seconds` | 120 | Maximum firing-private workspace command time. A tool request may choose a lower value. |
 | `workspace.memory_bytes` | 4294967296 | Address-space bound for the workspace process. |
 | `workspace.process_limit` | 64 | Workspace process-count bound. |

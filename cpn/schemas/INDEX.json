@@ -529,6 +529,14 @@
       "path": "registry_v1/run_execution_authority.v1.schema.json"
     },
     {
+      "schema_id": "registry_v1/run_reopen_authorization/v1",
+      "path": "registry_v1/run_reopen_authorization.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/run_reopened/v1",
+      "path": "registry_v1/run_reopened.v1.schema.json"
+    },
+    {
       "schema_id": "registry_v1/run_terminal_evidence/v1",
       "path": "registry_v1/run_terminal_evidence.v1.schema.json"
     },

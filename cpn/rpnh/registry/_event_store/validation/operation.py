@@ -1826,7 +1826,7 @@ def validate_operation_event(context, pending):
                         boundary.get("positive_byte_count"), bool)
                     or not isinstance(
                         boundary.get("positive_byte_count"), int)
-                    or int(boundary["positive_byte_count"]) <= 0
+                    or int(boundary["positive_byte_count"]) < 0
                     or int(boundary["positive_byte_count"])
                     != int(declaration_row["size"])
                     or witness.get("delivery_ref") != prepared_ref

@@ -51,9 +51,13 @@ registered-operation 路径在核验精确输出 bundle 后、向 dispatcher 调
 
 跨进程重开时，共享 `resume_run` 可对具有这一精确 completion 的单个 stale running firing 补结算，不再次调用 HOST/provider/tool。registration、不可变身份和预算材料在 writer 准入前检查。缺失、旧格式、串线或冲突证据不授权重放。空 writer-epoch 间隔仅在没有后续 writer 发布事实时允许；声明 HOST effects 的 outcome 仍不进入恢复。绑定 workspace 的 completion 只有在它引用精确且不可变的 `workspace_revision_candidate/v1`，且该候选由 `map_ready` 下级执行 checkpoint 持有时才可恢复；恢复会校验归档并使用它，而不会重新扫描 live workspace。
 
+用户选择历史执行切面属于独立的 `reopen` 协议，不是 stale-firing recovery。当前 owner 已停止或 terminal 后，它接受当前 net lineage 中任意精确的已提交 checkpoint。单个事务登记 `run_reopen_authorization/v1`、取代当前 token occurrence、把所选切面克隆成新的 occurrence、通过 `owner_reopen` revision 推进每条 workspace lineage、提交 reentry checkpoint，并安装执行代次加一的 stopped authority。workspace head 对原 head 做 compare-and-swap；dispatch 前恢复可变目录。即使选择较旧 marking，attempt 仍保留当前高水位。同一持久命令重试保持幂等；新的用户命令才创建新代次。历史 object 与 terminal evidence 从不重写。
+
+同一 owner 明确选择的命令也可以从可恢复的 running 代次开始。在登记 reopen authorization 前，共享 Core 会按确定顺序枚举全部 active firing，并结算其精确 registered completion，或把未决调用闭合为 owner-interrupted。每个 firing 的闭合都独立幂等：replacement owner 若在闭合一个并行分支后退出，重试同一持久 reopen 命令只会排空其余 active firing，随后提交所选切面。窄化的一次性 stale-lease 证明精确绑定 task、run、invocation、firing、lease、result、transaction 与事件材料，不授权普通 stale settlement。
+
 registered-host LLM 边界还会在同一准入 execution 重入时分类精确 v3 call 事实。已登记响应可以完成处理或直接返回，而不再物理调用；已有 submission permit 却没有响应时为 `submission_unknown`。这种同一 execution 内的处理，**不等于** operation-completion 事件之前断点的跨进程恢复。部分传输观察、响应头、本地已写出均不能证明远端完成。provider 权威状态查询／幂等仍是具体 provider 契约的可选能力，不是所有 route 已实现的通用保证。
 
-owner stop 若与已验证且已返回 harness 的 registered products 竞态，先结算 products，再在下一安全边界停止。不能用 interrupted outcome 替换这些 products 并导致恢复重执行。这些变化不意味着支持任意 crash、通用重试或外部效果回滚。
+owner stop 若与已验证且已返回 harness 的 registered products 竞态，先结算 products，再在下一安全边界停止。不能用 interrupted outcome 替换这些 products 并导致恢复重执行。checkpoint reopen 恢复已登记的 Petri/workspace 状态，但不会擦除或撤销所选切面之后发生的外部效果。provider 已提交却没有已登记 completion 时，先以 `submission_unknown` 阻塞。后续由 owner 明确选择 checkpoint reopen 时，可以把这一精确未决物理 attempt 持久闭合为 owner-interrupted，并用新身份从所选安全切面重新 firing；原 unknown 事实不可变，也绝不是自动重试。
 
 DSH headless 的退出判定中，`terminal` 和“最新 turn 已提交”的 `idle` 为完成状态；空会话或非终态 idle 失败。`submission_unknown` 等诊断状态是失败，不是部分成功。terminal 记录也可能包含被拒绝的业务结果：命令／协议完成不证明业务动作已获批；provider 响应持久登记本身也不证明外围任务已经终态结算。
 

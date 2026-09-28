@@ -1,0 +1,53 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "registry_v1/run_reopen_authorization/v1",
+  "title": "Owner authority for one exact checkpoint reentry generation",
+  "type": "object",
+  "additionalProperties": false,
+  "definitions": {
+    "ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "entity_type": {"type": "string"},
+        "logical_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"},
+        "version_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"}
+      },
+      "required": ["entity_type", "logical_id", "version_id"]
+    },
+    "nullable_ref": {"oneOf": [{"$ref": "#/definitions/ref"}, {"type": "null"}]},
+    "refs": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/definitions/ref"}}
+  },
+  "properties": {
+    "run_reopen_authorization_ref": {"$ref": "#/definitions/ref"},
+    "command_id": {"type": "string", "minLength": 1, "maxLength": 300},
+    "task_ref": {"$ref": "#/definitions/ref"},
+    "run_ref": {"$ref": "#/definitions/ref"},
+    "net_instance_ref": {"$ref": "#/definitions/ref"},
+    "owner_principal_ref": {"$ref": "#/definitions/ref"},
+    "control_authority_ref": {"$ref": "#/definitions/ref"},
+    "expected_run_authority_ref": {"$ref": "#/definitions/ref"},
+    "expected_terminal_evidence_ref": {"$ref": "#/definitions/nullable_ref"},
+    "expected_current_checkpoint_ref": {"$ref": "#/definitions/ref"},
+    "selected_checkpoint_ref": {"$ref": "#/definitions/ref"},
+    "superseded_current_token_refs": {"$ref": "#/definitions/refs"},
+    "selected_source_token_refs": {"$ref": "#/definitions/refs"},
+    "expected_workspace_head_refs": {"$ref": "#/definitions/refs"},
+    "selected_workspace_revision_refs": {"$ref": "#/definitions/refs"},
+    "workspace_reentry_revision_refs": {"$ref": "#/definitions/refs"},
+    "reentry_checkpoint_ref": {"$ref": "#/definitions/ref"},
+    "successor_run_authority_ref": {"$ref": "#/definitions/ref"},
+    "execution_generation": {"type": "integer", "minimum": 1},
+    "reason": {"type": "string", "minLength": 1, "maxLength": 600}
+  },
+  "required": [
+    "run_reopen_authorization_ref", "command_id", "task_ref", "run_ref",
+    "net_instance_ref", "owner_principal_ref", "control_authority_ref",
+    "expected_run_authority_ref", "expected_terminal_evidence_ref",
+    "expected_current_checkpoint_ref", "selected_checkpoint_ref",
+    "superseded_current_token_refs", "selected_source_token_refs",
+    "expected_workspace_head_refs", "selected_workspace_revision_refs",
+    "workspace_reentry_revision_refs", "reentry_checkpoint_ref",
+    "successor_run_authority_ref", "execution_generation", "reason"
+  ]
+}

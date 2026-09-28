@@ -850,26 +850,20 @@ class MainThreadRegistry:
                 "terminal_result_ref": None,
                 "final_result_index_ref": None,
             }
-            evidence_rows = child.event_store.canonical_object_rows(
-                object_type="run_terminal_evidence/v1")
-            result_rows = child.event_store.canonical_object_rows(
-                object_type="final_result_index/v1")
             if outcome == "running":
-                if (authority.get("terminal_evidence_ref") is not None
-                        or evidence_rows or result_rows):
+                if authority.get("terminal_evidence_ref") is not None:
                     raise MainThreadAuthorityError(
                         "running child Registry contains terminal result authority")
                 return observed
             if outcome == "stopped_by_owner":
-                if (authority.get("terminal_evidence_ref") is not None
-                        or evidence_rows or result_rows):
+                if authority.get("terminal_evidence_ref") is not None:
                     raise MainThreadAuthorityError(
                         "stopped child Registry contains terminal result authority")
                 return observed
 
-            if len(evidence_rows) != 1 or len(result_rows) != 1:
+            if authority.get("terminal_evidence_ref") is None:
                 raise MainThreadAuthorityError(
-                    "terminal child Registry lacks unique terminal evidence")
+                    "terminal child Registry lacks current terminal evidence")
             evidence_ref = _parse_ref(authority["terminal_evidence_ref"])
             evidence = self._read_exact(
                 child, evidence_ref, expected_type="run_terminal_evidence/v1")

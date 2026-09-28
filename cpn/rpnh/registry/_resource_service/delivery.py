@@ -384,10 +384,14 @@ def _record_boundary_receipt(
                 "boundary receipt does not match its released channel")
         released = bool(channel.get("released"))
     if outcome == "acknowledged" and (
-            not released or positive_byte_count is None
-            or positive_byte_count <= 0):
+            not released
+            or isinstance(positive_byte_count, bool)
+            or not isinstance(positive_byte_count, int)
+            or positive_byte_count < 0
+            or positive_byte_count != release.byte_count):
         raise DeliveryAcknowledgementConflict(
-            "successful boundary acknowledgement requires positive consumed bytes")
+            "successful boundary acknowledgement requires the exact consumed "
+            "resource byte count")
     if outcome == "failed" and released:
         raise DeliveryAcknowledgementConflict(
             "released bytes with uncertain consumption must be recorded unknown")
@@ -469,10 +473,15 @@ def acknowledge_delivery(
                 "boundary receipt witness does not close this delivery")
     if command.outcome == "acknowledged":
         if (witness_ref is None
-                or receipt_meta.get("positive_byte_count") is None
-                or int(receipt_meta["positive_byte_count"]) <= 0):
+                or isinstance(
+                    receipt_meta.get("positive_byte_count"), bool)
+                or not isinstance(
+                    receipt_meta.get("positive_byte_count"), int)
+                or int(receipt_meta["positive_byte_count"]) < 0
+                or int(receipt_meta["positive_byte_count"])
+                != int(receipt_meta["resource_byte_count"])):
             raise DeliveryAcknowledgementConflict(
-                "acknowledged delivery lacks positive boundary evidence")
+                "acknowledged delivery lacks exact boundary byte evidence")
     events = self._delivery_events(command.delivery_ref.entity_id)
     terminal_events = [event for event in events if event.event_type in {
         "resource_delivery_acknowledged/v1", "resource_delivery_failed/v1",
@@ -679,7 +688,10 @@ def reconcile_incomplete_deliveries_on_resume(self) -> tuple[TypedId, ...]:
                 item for item in receipt_rows
                 if item[1].get("outcome") == "acknowledged"
                 and isinstance(item[1].get("positive_byte_count"), int)
-                and int(item[1]["positive_byte_count"]) > 0
+                and not isinstance(item[1].get("positive_byte_count"), bool)
+                and int(item[1]["positive_byte_count"]) >= 0
+                and int(item[1]["positive_byte_count"])
+                == int(item[1]["resource_byte_count"])
             ]
             unknown = [
                 item for item in receipt_rows

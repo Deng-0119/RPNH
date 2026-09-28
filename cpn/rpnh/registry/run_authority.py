@@ -173,9 +173,7 @@ def record_owner_stop(
         raise ResourceIntegrityFault("owner stop writer epoch is stale")
     authority_ref, current = current_run_execution_authority(core, kernel)
     if (current["status"] == "terminal"
-            or current["terminal_evidence_ref"] is not None
-            or core.event_store.canonical_object_rows(object_type="run_terminal_evidence/v1")
-            or core.event_store.canonical_object_rows(object_type="final_result_index/v1")):
+            or current["terminal_evidence_ref"] is not None):
         raise ResourceIntegrityFault("terminal run cannot be stopped by owner")
     from .module_runtime import hydrate_module_runtime
     executable, _structure, marking = hydrate_module_runtime(core)

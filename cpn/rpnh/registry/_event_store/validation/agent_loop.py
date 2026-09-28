@@ -10,6 +10,7 @@ from typing import Any, Callable, Mapping, Sequence
 from ... import event_store as facade
 from ...identities import TypedId
 from ...models import PendingEvent, PreparedObject
+from ..accounting import _registered_model_call_limits
 
 
 def validate_agent_loop_atomicity(
@@ -1046,7 +1047,7 @@ def validate_current_invocation_authority(
         lease.get("writer_fencing_epoch", -1)) if lease is not None else -1
 
     def has_exact_historical_terminal_ready_authorization() -> bool:
-        if (boundary != "terminal-ready"
+        if (boundary not in {"terminal-ready", "settlement"}
                 or invocation.get("origin") != "petri_operation"):
             return False
         candidates = tuple(
@@ -1062,8 +1063,8 @@ def validate_current_invocation_authority(
         proof = pending.authorization
         if proof is None:
             return False
-        issued = event_store._EventStore__historical_terminal_ready_authorizations.pop(
-            proof.nonce, None)
+        issued = event_store._EventStore__historical_terminal_ready_authorizations.get(
+            proof.nonce)
         if issued is not proof:
             return False
         firing_ref = invocation.get("own_transition_firing_ref")
@@ -1074,7 +1075,7 @@ def validate_current_invocation_authority(
                 invocation_ref, firing_ref, lease_ref,
                 operation_result_ref, task_ref, round_ref, net_ref)):
             return False
-        return bool(
+        valid = bool(
             current_writer_epoch is not None
             and transaction_writer_epoch == current_writer_epoch
             and proof.task_id == task_id
@@ -1100,9 +1101,24 @@ def validate_current_invocation_authority(
             == event_store._authorization_ref_identity(lease_ref)
             and proof.operation_result_ref
             == event_store._authorization_ref_identity(operation_result_ref)
-            and proof.context_digest == invocation.get("context_digest")
             and proof.event_material
             == event_store._pending_event_authorization_material(pending))
+        if not valid:
+            return False
+        matching_settlement = any(
+            value.event_type == "transition_firing_settled/v1"
+            and value.payload.get("invocation_ref") == invocation_ref
+            for value in events)
+        if (boundary == "settlement"
+                or (boundary == "terminal-ready"
+                    and not matching_settlement)):
+            consumed = (
+                event_store
+                ._EventStore__historical_terminal_ready_authorizations.pop(
+                    proof.nonce, None))
+            if consumed is not proof:
+                return False
+        return True
 
     def has_exact_pending_terminal_ready_settlement() -> bool:
         """Bind settlement to its one same-transaction audit fact."""
@@ -1643,15 +1659,16 @@ def validate_current_invocation_authority(
             source_turn_budget = (
                 source_loop.get("llm_turn_budget")
                 if isinstance(source_loop, Mapping) else None)
-            manifest_row = _current_task_recovery_manifest_row(db)
-            if manifest_row is None:
-                return False
             try:
-                registered_task_limit = (
-                    json.loads(manifest_row["metadata_json"])
-                    ["task_total_hard_cap"])
-            except (IndexError, KeyError, TypeError, ValueError,
-                    json.JSONDecodeError):
+                task_row = db.execute(
+                    "SELECT value FROM registry_meta WHERE key='task_id'",
+                ).fetchone()
+                if task_row is None:
+                    return False
+                registered_task_limit, _hard_limit = (
+                    _registered_model_call_limits(
+                        db, task_id=str(task_row["value"])))
+            except ValueError:
                 return False
             boundary = descriptors.get(
                 "handoff_boundary", "llm_turn_cap")
@@ -2057,6 +2074,7 @@ def validate_current_invocation_authority(
             or current_writer_epoch is None
             or (lease_writer_epoch != current_writer_epoch
                 and not is_exact_committed_agent_terminal_ready()
+                and not has_exact_historical_terminal_ready_authorization()
                 and not is_exact_recorded_completion_recovery())):
         raise RegistryConflict(f"{boundary} has a stale operation lease")
 

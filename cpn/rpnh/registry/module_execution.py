@@ -129,6 +129,13 @@ def admit_module_firing(core: _RegistryCore, *, transition_id: str,
     """
     if not isinstance(core, _RegistryCore) or core.read_only:
         raise TypeError("Module admission requires the execution owner's Registry")
+    kernel = _ResourceServiceKernel(core)
+    from .run_authority import current_run_execution_authority
+    _authority_ref, authority = current_run_execution_authority(core, kernel)
+    if (authority.get("status") != "running"
+            or authority.get("terminal_evidence_ref") is not None):
+        raise ValueError(
+            "Module admission requires the current running execution authority")
     executable, structure, marking = hydrate_module_runtime(core)
     if transition_id not in structure.transitions:
         raise ValueError("Module admission names an undeclared symbolic transition")
@@ -137,7 +144,6 @@ def admit_module_firing(core: _RegistryCore, *, transition_id: str,
     firings, epoch = local.claim_firing_set(max_count=1, allowed={transition_id})
     if not firings:
         return None
-    kernel = _ResourceServiceKernel(core)
     evidence = local.firing_allocation_evidence()
     if len(evidence.allocations) != 1:
         raise ValueError("single admission must select one exact occurrence")

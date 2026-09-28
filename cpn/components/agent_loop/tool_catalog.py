@@ -521,13 +521,19 @@ def model_visible_agent_tool_description(name: str) -> str:
             "Use it for ordinary file inspection, editing, and execution; use "
             "write_file to register semantic outputs. The workspace is separate "
             "from the Registry's registered resource authority and network access "
-            "is unavailable.")
+            "is unavailable. A timeout or nonzero exit is recorded as an observed "
+            "failed action and must be explicitly resolved by a later successful "
+            "workspace action before an actor can complete.")
 
     descriptions = {
         "complete_interaction": (
             "Complete only after write_file has registered every intended output "
-            "file required by the assignment. The final write_file may precede this call in "
-            "the same response when complete_interaction is the final ordered call."),
+            "file required by the assignment. After any earlier timed-out or "
+            "nonzero-exit workspace action, an actor must run a later successful "
+            "workspace action before completion; a registered critic/reviewer may "
+            "instead report the diagnostic when its operation policy allows it. "
+            "The final write_file may precede this call in the same response when "
+            "complete_interaction is the final ordered call."),
         "delegate_leaf": (
             "Open one depth-one, one-atomic-task subtask session annotation. "
             "Its calls, tools, files, and results execute under this parent "

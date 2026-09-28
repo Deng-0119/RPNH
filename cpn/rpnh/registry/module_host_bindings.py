@@ -105,7 +105,8 @@ def preserved_workspace_authority(core, plan: ModuleHostBindingPlan,
                 or revision["task_ref"] != ref_payload(plan.task_ref)
                 or _version_from_payload(revision["net_instance_ref"]) not in adopted
                 or revision["settled"] is not True
-                or revision["disposition"] not in {"genesis", "committed", "merged"}
+                or revision["disposition"] not in {
+                    "genesis", "committed", "merged", "owner_reopen"}
                 or revision["payload_kind"] != "full_workspace_tar"
                 or core.get_version(cursor.version_id).media_type != "application/x-tar"):
             raise ValueError("preserved workspace is outside exact settled run/task/net ancestry")
@@ -117,6 +118,40 @@ def preserved_workspace_authority(core, plan: ModuleHostBindingPlan,
                 raise ValueError("preserved workspace genesis has non-genesis evidence")
             genesis = cursor
             break
+        if revision["disposition"] == "owner_reopen":
+            if any(revision[field] is not None for field in (
+                    "producer_invocation_ref", "transition_firing_ref",
+                    "firing_workspace_binding_ref")):
+                raise ValueError(
+                    "owner-reopen workspace has ordinary firing authority")
+            authorization_ref = _version_from_payload(
+                revision["reopen_authorization_ref"])
+            authorization = exact(
+                authorization_ref, "run_reopen_authorization/v1")
+            revision_row, _ = _registered(
+                core, cursor, "workspace_revision/v1")
+            events = tuple(
+                event for event in core.event_store.list_events_by_aggregate(
+                    str(plan.run_ref.entity_id),
+                    event_types=("run_reopened/v1",))
+                if event.payload.get("run_reopen_authorization_ref")
+                == ref_payload(authorization_ref))
+            if (authorization.get("run_ref") != ref_payload(plan.run_ref)
+                    or authorization.get("task_ref") != ref_payload(plan.task_ref)
+                    or ref_payload(cursor) not in authorization.get(
+                        "workspace_reentry_revision_refs", [])
+                    or authorization.get("selected_workspace_revision_refs", [])
+                    .count(revision["base_revision_ref"]) != 1
+                    or authorization.get("expected_workspace_head_refs", [])
+                    .count(revision["parent_revision_ref"]) != 1
+                    or len(events) != 1
+                    or str(events[0].transaction_id)
+                    != str(revision_row["transaction_id"])):
+                raise ValueError(
+                    "owner-reopen workspace lacks exact atomic authority")
+            evidence.add(authorization_ref)
+            cursor = _version_from_payload(revision["parent_revision_ref"])
+            continue
         firing_ref = _version_from_payload(revision["transition_firing_ref"])
         invocation_ref = _version_from_payload(revision["producer_invocation_ref"])
         binding_ref = _version_from_payload(revision["firing_workspace_binding_ref"])
@@ -156,7 +191,22 @@ def preserved_workspace_authority(core, plan: ModuleHostBindingPlan,
     revisions = {ref for ref in evidence if ref.entity_type == "workspace_revision/v1"}
     for ref in revisions:
         _, revision = _registered(core, ref, "workspace_revision/v1")
-        if revision["disposition"] != "genesis":
+        if revision["disposition"] == "owner_reopen":
+            base = _version_from_payload(revision["base_revision_ref"])
+            ancestors = set()
+            parent = _version_from_payload(revision["parent_revision_ref"])
+            while parent not in ancestors:
+                ancestors.add(parent)
+                _, ancestor = _registered(
+                    core, parent, "workspace_revision/v1")
+                if ancestor["parent_revision_ref"] is None:
+                    break
+                parent = _version_from_payload(
+                    ancestor["parent_revision_ref"])
+            if base not in ancestors:
+                raise ValueError(
+                    "owner-reopen workspace base is not historical ancestry")
+        elif revision["disposition"] != "genesis":
             base = _version_from_payload(revision["base_revision_ref"])
             binding = exact(_version_from_payload(revision["firing_workspace_binding_ref"]), "workspace_binding/v1")
             ancestors = set()

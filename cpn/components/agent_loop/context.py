@@ -831,8 +831,6 @@ class ContextExecutionMixin:
             for product in outcome.products
         })
         located = self._project_workspace(execution, loop)
-        manifest = self.core.get_version(
-            self.ledger.recovery_manifest_ref().version_id).metadata
         task_calls_used = self.core.event_store.actual_model_call_counts()[0]
         return build_agent_system_initialization(
             invocation_ref=loop.invocation_ref,
@@ -848,7 +846,7 @@ class ContextExecutionMixin:
                   "and later agents receive the current Registry version."),
             llm_turn_cap=loop.llm_turn_budget,
             llm_turns_used=loop.llm_turns_used,
-            task_call_cap=manifest["ordinary_global_cap"],
+            task_call_cap=self.core.event_store.ordinary_model_call_limit(),
             task_calls_used=task_calls_used,
             semantic_output_port_ids=tuple(semantic_output_ports),
             workspace_root=".",
@@ -858,8 +856,15 @@ class ContextExecutionMixin:
     def _input_path(ref):
         return f"registered_resources/{ref.resource_id.value}/{ref.resource_version_id.value}/content"
 
-    def prepare_agent_turn_context_v1(self, execution, loop, catalog):
+    def prepare_agent_turn_context_v1(
+            self, execution, loop, catalog, *,
+            tool_output_byte_limit=10_000):
         execution = self._execution(execution, loop)
+        if (isinstance(tool_output_byte_limit, bool)
+                or not isinstance(tool_output_byte_limit, int)
+                or tool_output_byte_limit < 128):
+            raise TypeError(
+                "agent context tool output byte limit is invalid")
         initialization = self.prepare_agent_system_initialization_v1(execution, loop, catalog)
         context = self._context(loop)
         binding, _, _ = self._declared(context)
@@ -871,8 +876,11 @@ class ContextExecutionMixin:
         def read_response(ref):
             return self.kernel._read_firing_registered(context, ref)
 
-        def render_tool_result(action, _action_ref):
+        def render_tool_result(action, action_ref):
             result = action.result_metadata
+            if (result and result["kind"] == "workspace_execution/v1"):
+                return dict(
+                    result, agent_action_ref=_ref_payload(action_ref))
             if result and result["kind"] == "registered_file_read/v1":
                 return dict(
                     result, content=self._decoded_read(
@@ -904,6 +912,14 @@ class ContextExecutionMixin:
         except Exception as exc:
             raise ResourceIntegrityFault(
                 "optional history lacks exact immutable turn/action facts") from exc
+        # Registry retains the complete immutable action result.  Only the
+        # model-visible history is bounded, using the same user-configured
+        # limit as compaction.  This protects the very next turn as well as
+        # later compacted history; a large first tool result must not reach the
+        # provider before context-pressure compaction has a prior turn to
+        # summarize.
+        messages = reduce_tool_messages(
+            messages, byte_limit=tool_output_byte_limit)
         events = self.mechanical_lifecycle.turn_events(loop)
         from cpn.components.request_protocol import validate_llm_request_message_history
         validate_llm_request_message_history(messages)
