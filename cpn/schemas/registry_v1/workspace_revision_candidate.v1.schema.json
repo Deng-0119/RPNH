@@ -1,0 +1,49 @@
+{
+  "$id": "registry_v1/workspace_revision_candidate/v1",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "additionalProperties": false,
+  "definitions": {
+    "ref": {"type": "object", "additionalProperties": false, "properties": {"entity_type": {"type": "string", "pattern": "^[a-z][a-z0-9_]*/v[1-9][0-9]*$"}, "logical_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"}, "version_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"}}, "required": ["entity_type", "logical_id", "version_id"]},
+    "resource_ref": {"type": "object", "additionalProperties": false, "properties": {"resource_id": {"type": "string", "pattern": "^resource:[a-f0-9]{32}$"}, "resource_version_id": {"type": "string", "pattern": "^resource_version:[a-f0-9]{32}$"}}, "required": ["resource_id", "resource_version_id"]},
+    "nullable_resource_ref": {"oneOf": [{"$ref": "#/definitions/resource_ref"}, {"type": "null"}]},
+    "nullable_summary": {"oneOf": [{"type": "string", "maxLength": 600}, {"type": "null"}]},
+    "path_list": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1, "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$)).+$"}},
+    "path_delta": {
+      "type": "object", "additionalProperties": false,
+      "properties": {
+        "path": {"type": "string", "minLength": 1, "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$)).+$"},
+        "change_kind": {"enum": ["create", "update", "delete"]},
+        "before_resource_ref": {"$ref": "#/definitions/nullable_resource_ref"},
+        "after_resource_ref": {"$ref": "#/definitions/nullable_resource_ref"},
+        "before_summary": {"$ref": "#/definitions/nullable_summary"},
+        "after_summary": {"$ref": "#/definitions/nullable_summary"}
+      },
+      "required": ["path", "change_kind", "before_resource_ref", "after_resource_ref", "before_summary", "after_summary"],
+      "allOf": [
+        {"if": {"properties": {"change_kind": {"const": "create"}}}, "then": {"properties": {"before_resource_ref": {"type": "null"}, "after_resource_ref": {"$ref": "#/definitions/resource_ref"}, "before_summary": {"type": "null"}, "after_summary": {"type": "string", "maxLength": 600}}}},
+        {"if": {"properties": {"change_kind": {"const": "update"}}}, "then": {"properties": {"before_resource_ref": {"$ref": "#/definitions/resource_ref"}, "after_resource_ref": {"$ref": "#/definitions/resource_ref"}, "before_summary": {"type": "string", "maxLength": 600}, "after_summary": {"type": "string", "maxLength": 600}}}},
+        {"if": {"properties": {"change_kind": {"const": "delete"}}}, "then": {"properties": {"before_resource_ref": {"$ref": "#/definitions/resource_ref"}, "after_resource_ref": {"type": "null"}, "before_summary": {"type": "string", "maxLength": 600}, "after_summary": {"type": "null"}}}}
+      ]
+    }
+  },
+  "properties": {
+    "workspace_revision_candidate_ref": {"$ref": "#/definitions/ref"},
+    "execution_instance_ref": {"$ref": "#/definitions/ref"},
+    "invocation_ref": {"$ref": "#/definitions/ref"},
+    "transition_firing_ref": {"$ref": "#/definitions/ref"},
+    "task_ref": {"$ref": "#/definitions/ref"},
+    "net_instance_ref": {"$ref": "#/definitions/ref"},
+    "admission_marking_checkpoint_ref": {"$ref": "#/definitions/ref"},
+    "workspace_lineage_ref": {"$ref": "#/definitions/ref"},
+    "base_revision_ref": {"$ref": "#/definitions/ref"},
+    "firing_workspace_binding_ref": {"$ref": "#/definitions/ref"},
+    "changed_paths": {"$ref": "#/definitions/path_list"},
+    "deleted_paths": {"$ref": "#/definitions/path_list"},
+    "path_deltas": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/definitions/path_delta"}},
+    "inventory_paths": {"$ref": "#/definitions/path_list"},
+    "semantic_output_refs": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/definitions/resource_ref"}},
+    "payload_kind": {"const": "full_workspace_tar"}
+  },
+  "required": ["workspace_revision_candidate_ref", "execution_instance_ref", "invocation_ref", "transition_firing_ref", "task_ref", "net_instance_ref", "admission_marking_checkpoint_ref", "workspace_lineage_ref", "base_revision_ref", "firing_workspace_binding_ref", "changed_paths", "deleted_paths", "path_deltas", "inventory_paths", "semantic_output_refs", "payload_kind"]
+}

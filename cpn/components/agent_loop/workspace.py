@@ -139,11 +139,13 @@ from collections.abc import Mapping
 from copy import deepcopy
 from contextlib import nullcontext
 from dataclasses import replace
+import errno
 import json
 import mimetypes
 import os
 from pathlib import Path, PurePosixPath
 import stat
+import uuid
 
 from cpn.rpnh.executable_net import load_compiled_net
 from cpn.rpnh.llm_contracts import LLMCallAttempt, LLMInputTarget
@@ -217,6 +219,9 @@ from .action_execution import (
 )
 
 
+_WORKSPACE_STAGING_PREFIX = ".rpnh-write-stage-"
+
+
 def _semantic_workspace_path(
         requested: PurePosixPath, symbolic_port_name: str,
 ) -> PurePosixPath:
@@ -243,6 +248,21 @@ def _semantic_workspace_path(
         *relative_parts)
 
 class WorkspaceExecutionMixin:
+    def _execute_file_materialization(
+            self, context, identity_key, materialize):
+        from cpn.rpnh.file_execution_net import (
+            FILE_MATERIALIZATION_NET,
+            execute_idempotent_materialization,
+        )
+        _state, evidence_refs = execute_idempotent_materialization(
+            self.core, context=context,
+            definition=FILE_MATERIALIZATION_NET,
+            transition_id="materialize_file",
+            identity_key=identity_key,
+            materialize=materialize,
+        )
+        return evidence_refs
+
     def _workspace_runtime(self):
         environment_rows = self.core.event_store.canonical_object_rows(
             object_type="execution_environment_identity/v1")
@@ -343,7 +363,7 @@ class WorkspaceExecutionMixin:
     @staticmethod
     def _write_workspace_bytes(
             root, relative_path, payload, *, allow_registered_resources=False,
-            mode=0o600):
+            mode=0o600, before_replace=None):
         relative = PurePosixPath(relative_path)
         if (relative.is_absolute() or not relative.parts
                 or any(part in {"", ".", ".."} for part in relative.parts)
@@ -353,13 +373,25 @@ class WorkspaceExecutionMixin:
         directory_flags = (
             os.O_RDONLY | getattr(os, "O_DIRECTORY", 0)
             | getattr(os, "O_NOFOLLOW", 0))
-        file_flags = (
-            os.O_WRONLY | os.O_CREAT | getattr(os, "O_NOFOLLOW", 0)
-            | getattr(os, "O_NONBLOCK", 0))
+        file_flags = (os.O_WRONLY | os.O_CREAT | os.O_EXCL
+                      | getattr(os, "O_NOFOLLOW", 0)
+                      | getattr(os, "O_NONBLOCK", 0))
         descriptors = []
+        staging_name = None
+        staging_directory = None
         try:
-            current = os.open(root, directory_flags)
-            descriptors.append(current)
+            root_descriptor = os.open(root, directory_flags)
+            descriptors.append(root_descriptor)
+            try:
+                os.mkdir("registered_resources", mode=0o700,
+                         dir_fd=root_descriptor)
+            except FileExistsError:
+                pass
+            staging_directory = os.open(
+                "registered_resources", directory_flags,
+                dir_fd=root_descriptor)
+            descriptors.append(staging_directory)
+            current = root_descriptor
             for part in relative.parts[:-1]:
                 try:
                     os.mkdir(part, mode=0o700, dir_fd=current)
@@ -367,22 +399,56 @@ class WorkspaceExecutionMixin:
                     pass
                 current = os.open(part, directory_flags, dir_fd=current)
                 descriptors.append(current)
-            target = os.open(
-                relative.parts[-1], file_flags, mode=0o600,
-                dir_fd=current)
-            descriptors.append(target)
-            if not stat.S_ISREG(os.fstat(target).st_mode):
+            target_name = relative.parts[-1]
+            try:
+                target_status = os.stat(
+                    target_name, dir_fd=current, follow_symlinks=False)
+            except FileNotFoundError:
+                target_status = None
+            if target_status is not None and stat.S_ISLNK(target_status.st_mode):
+                raise OSError(
+                    errno.ELOOP, "workspace destination must not be a symlink",
+                    target_name)
+            if (target_status is not None
+                    and not stat.S_ISREG(target_status.st_mode)):
                 raise ValueError(
                     "workspace destination must be one regular file")
-            os.ftruncate(target, 0)
-            os.fchmod(target, mode)
+
+            staging_name = (
+                f"{_WORKSPACE_STAGING_PREFIX}{uuid.uuid4().hex}.tmp")
+            target = os.open(
+                staging_name, file_flags, mode=0o600,
+                dir_fd=staging_directory)
+            descriptors.append(target)
             remaining = memoryview(payload)
             while remaining:
                 written = os.write(target, remaining)
                 if written < 1:
                     raise OSError("workspace write made no progress")
                 remaining = remaining[written:]
+            os.fchmod(target, mode)
+            os.fsync(target)
+            os.close(target)
+            descriptors.pop()
+
+            result = before_replace() if before_replace is not None else None
+            os.replace(
+                staging_name, target_name,
+                src_dir_fd=staging_directory, dst_dir_fd=current)
+            staging_name = None
+            # The execution checkpoint may become map-ready immediately after
+            # this method returns.  Flush every opened directory in the path so
+            # a host/filesystem crash cannot leave Registry evidence ahead of
+            # the visible rename or newly created parent directories.
+            for descriptor in dict.fromkeys(reversed(descriptors)):
+                os.fsync(descriptor)
+            return result
         finally:
+            if staging_name is not None and staging_directory is not None:
+                try:
+                    os.unlink(staging_name, dir_fd=staging_directory)
+                except FileNotFoundError:
+                    pass
             for descriptor in reversed(descriptors):
                 try:
                     os.close(descriptor)
@@ -551,68 +617,26 @@ class WorkspaceExecutionMixin:
     def finalize_agent_workspace_v1(
             self, execution, loop, *, idempotency_key):
         execution = self._execution(execution, loop)
-        return tuple(
-            ref.as_version_ref() for ref in self._sync_workspace(
+        published = []
+
+        def synchronize():
+            published.extend(self._sync_workspace(
                 execution, loop, idempotency_key))
+
+        from cpn.rpnh.workspace_settlement import (
+            finalize_firing_workspace_candidate,
+        )
+        finalize_firing_workspace_candidate(
+            self.core, self.kernel, execution, loop,
+            idempotency_key=idempotency_key,
+            synchronize=synchronize)
+        return tuple(ref.as_version_ref() for ref in published)
 
     def _settled_workspace_resources(self, context, revision_ref):
         """Resolve exact path resources at one immutable revision head."""
+        from cpn.rpnh.workspace_settlement import _workspace_resource_state
 
-        revisions = []
-        cursor = revision_ref
-        seen = set()
-        while cursor is not None:
-            if cursor in seen:
-                raise ResourceIntegrityFault(
-                    "workspace revision parent chain contains a cycle")
-            seen.add(cursor)
-            revision = self.kernel._exact_object(
-                cursor, expected_type="workspace_revision/v1").metadata
-            revisions.append(revision)
-            parent = revision.get("parent_revision_ref")
-            cursor = (
-                _version_from_payload(parent)
-                if isinstance(parent, dict) else None)
-        revisions.reverse()
-
-        resource_rows = []
-        for row in self.core.event_store.canonical_object_rows(
-                object_type="resource_version/v1"):
-            metadata = json.loads(row["metadata_json"])
-            path = metadata.get("descriptors", {}).get("workspace_path")
-            if (metadata.get("origin_kind") == "workspace_write"
-                    and metadata.get("task_ref")
-                    == _ref_payload(context.task_ref)
-                    and isinstance(path, str)):
-                resource_rows.append((
-                    path,
-                    ResourceVersionRef(
-                        TypedId.parse(
-                            str(row["logical_id"]), expected="resource"),
-                        TypedId.parse(
-                            str(row["version_id"]),
-                            expected="resource_version"),
-                    ),
-                    metadata,
-                ))
-
-        resources = {}
-        for revision in revisions:
-            for path in revision["deleted_paths"]:
-                resources.pop(path, None)
-            producer = revision.get("producer_invocation_ref")
-            if not isinstance(producer, dict):
-                continue
-            for path in revision["changed_paths"]:
-                matches = [
-                    ref for candidate, ref, metadata in resource_rows
-                    if candidate == path
-                    and metadata.get("producer_ref") == producer
-                ]
-                if len(matches) != 1:
-                    raise ResourceIntegrityFault(
-                        "workspace revision path lacks one exact Registry resource")
-                resources[path] = matches[0]
+        resources = _workspace_resource_state(self.core, revision_ref)
 
         result = []
         for path, ref in sorted(resources.items()):
@@ -1103,16 +1127,30 @@ class WorkspaceExecutionMixin:
                     canonical_json(decoded))
             else:
                 payload = workspace_payload
-        root = self._workspace_root(loop)
-        self._write_workspace_bytes(root, path, workspace_payload)
         derived_from = (
             (source_ref,) if source_ref is not None else ())
-        ref = self.kernel.publish_bytes(context, PublishResource(
+        command = PublishResource(
             origin=PetriOutputOrigin(binding.output_binding_ref, context.activation_ref), payload=payload,
             media_type="application/json", content_schema_ref=port.schema, summary=arguments["description"],
             lifetime_ref=context.invocation_ref, derived_from=derived_from,
             descriptors={"output_outcome_id": outcome.name,
-                "output_port_id": port.port_id, "place": binding.place}, idempotency_key=key))
+                "output_port_id": port.port_id, "place": binding.place}, idempotency_key=key)
+        root = self._workspace_root(loop)
+        def materialize(_state):
+            published = self._write_workspace_bytes(
+                root, path, workspace_payload,
+                before_replace=lambda: self.kernel.publish_bytes(
+                    context, command))
+            return (published.as_version_ref(),)
+
+        evidence_refs = self._execute_file_materialization(
+            context, f"semantic-write:{key}", materialize)
+        evidence_ref, = evidence_refs
+        if evidence_ref.entity_type != "resource_version/v1":
+            raise ResourceIntegrityFault(
+                "file materialization evidence is not its exact resource")
+        ref = ResourceVersionRef(
+            evidence_ref.entity_id, evidence_ref.version_id)
         verify_resource(self.core, self.kernel, execution.operation.canonical, ref)
         return (ref.as_version_ref(),), {
             "kind": "registered_file_write/v1", "path": path.as_posix(),

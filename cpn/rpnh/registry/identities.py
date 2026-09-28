@@ -97,6 +97,13 @@ IdKind = Literal[
     "runtime_timed_scheduler_snapshot_version",
     "published_model_call_baseline",
     "published_model_call_baseline_version",
+    "execution_net_definition", "execution_net_definition_version",
+    "execution_instance", "execution_instance_version",
+    "execution_token", "execution_token_version",
+    "execution_transition_firing", "execution_transition_firing_version",
+    "execution_checkpoint", "execution_checkpoint_version",
+    "workspace_revision_candidate", "workspace_revision_candidate_version",
+    "execution_terminal_mapping", "execution_terminal_mapping_version",
 ]
 _KINDS = frozenset(IdKind.__args__)
 _VALUE = re.compile(r"^[a-f0-9]{32}$")
@@ -130,6 +137,34 @@ class TypedId:
 
 def new_id(kind: IdKind) -> TypedId:
     return TypedId(kind=kind, value=uuid.uuid4().hex)
+
+
+_EXECUTION_ID_KINDS = frozenset({
+    "execution_net_definition", "execution_net_definition_version",
+    "execution_instance", "execution_instance_version",
+    "execution_token", "execution_token_version",
+    "execution_transition_firing", "execution_transition_firing_version",
+    "execution_checkpoint", "execution_checkpoint_version",
+})
+
+
+def stable_execution_id(kind: IdKind, *scope: str | TypedId) -> TypedId:
+    """Return one deterministic identity inside an execution-instance scope."""
+
+    if kind not in _EXECUTION_ID_KINDS:
+        raise ValueError("stable execution identity requires an execution kind")
+    if (not scope or any(
+            not isinstance(value, (str, TypedId)) or not str(value)
+            for value in scope)):
+        raise ValueError("stable execution identity requires a nonempty scope")
+    material = ":".join(str(value) for value in scope)
+    return TypedId(
+        kind=kind,
+        value=uuid.uuid5(
+            uuid.NAMESPACE_URL,
+            f"d1-c:execution:{kind}:{material}",
+        ).hex,
+    )
 
 
 def fresh_bootstrap_resource_id(

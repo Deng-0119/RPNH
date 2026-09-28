@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: en
   counterpart: ARCHITECTURE_ZH.md
-  revision: "2026-09-28.1"
+  revision: "2026-09-28.2"
   status: source-reviewed-pre-release
 ---
 
@@ -94,6 +94,21 @@ not broadcast. Branching therefore requires a declared transition with distinct
 output arcs; native composition rejects one public exit wired directly to
 multiple consumers.
 
+Each admitted business firing may also own one or more **execution-net
+instances in the same Registry**. These subordinate Petri nets describe
+predefined harness mechanics such as file materialization and workspace
+finalization; they are not Designer-authored business workflow and do not open
+a child Registry. Their tokens, transition firings, checkpoints, and evidence
+are separate from the business marking. They use the same weighted input/output
+arc rules and may retain multiple independent active firings. Business Success
+is allowed only after every subordinate instance is `map_ready`; the Success
+transaction compare-and-appends a seal to the firing's execution-child stream,
+then records an immutable terminal mapping from each execution checkpoint and
+its evidence to the operation result, successor business checkpoint, and
+workspace revision. A concurrently attached child makes that transaction stale
+and forces re-evaluation. Until Success commits, execution progress cannot
+advance or fabricate the business marking.
+
 ## Agent execution, workspace, resources, and delegation
 
 An admitted agent firing runs an agent loop with a Registry-defined tool
@@ -108,6 +123,20 @@ versioned resources and advances the workspace lineage, so later firings can
 materialize and modify the exact registered state. Files from an interrupted,
 unsettled action are not promoted to the shared revision.
 
+Semantic file writes stage bytes below the workspace's reserved internal
+directory, validate and publish the exact Registry resource, and only then use
+an atomic replace for the user-visible relative path. Validation or publication
+failure therefore preserves the prior file. The staged file is synchronized
+before Registry publication, and the affected directories are synchronized
+after replace before the execution checkpoint can become `map_ready`.
+Workspace finalization publishes a full immutable candidate archive and a
+`path_deltas` record before operation completion: every create, update, or
+delete names its exact before/after resource versions and bounded summaries.
+The candidate is evidence for the subordinate execution checkpoint; the live
+directory is not completion authority. The final workspace revision and
+business marking are still published together by the ordinary Success
+transaction.
+
 The workspace shell is a **write-confinement** boundary: it may mutate only its
 firing workspace (plus `/dev/null`) and cannot use network sockets. It is not a
 host-file read secrecy boundary because the command must still read the Linux
@@ -121,6 +150,15 @@ with the same per-firing idempotency key. This does not replay the AgentLoop or
 provider request. A second failure remains a `framework_repair` block with no
 fabricated terminal or final-result evidence; provisional files must not be
 reported as completed output.
+
+If a process stops after the exact output bundle, immutable workspace candidate,
+and registered-operation completion have all been recorded, `resume_run` may
+settle that one firing from Registry evidence without rerunning its AgentLoop,
+provider, shell, or file action. Recovery validates the candidate archive,
+execution checkpoint, parent firing, route identities, and completion record,
+then performs the normal Success transaction. A missing or non-`map_ready`
+candidate fails closed. This is not generic replay authorization for arbitrary
+external effects or for a request whose submission/result remains unknown.
 
 `request_resource` uses Registry resource lifecycle, queue, grant, and lease
 authority rather than an informal shared path. A waiting firing continues only

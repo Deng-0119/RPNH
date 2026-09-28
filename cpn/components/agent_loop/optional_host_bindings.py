@@ -246,7 +246,8 @@ def make_optional_agent_host_bindings(llm_input_target: LLMInputTarget, *,
                 "task_ref": ref_payload(plan.task_ref), "net_instance_ref": ref_payload(plan.net_ref),
                 "parent_revision_ref": None, "base_revision_ref": None, "producer_invocation_ref": None,
                 "transition_firing_ref": None, "firing_workspace_binding_ref": None, "disposition": "genesis",
-                "changed_paths": [], "deleted_paths": [], "inventory_paths": [], "conflict_paths": [],
+                "changed_paths": [], "deleted_paths": [], "path_deltas": [],
+                "inventory_paths": [], "conflict_paths": [],
                 "semantic_output_refs": [], "trace_summary_refs": [], "payload_kind": "full_workspace_tar",
                 "settled": True}, "workspace-genesis", stream.getvalue())
         if inherited_workspace:

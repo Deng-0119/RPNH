@@ -1,7 +1,10 @@
 from __future__ import annotations
 
+import io
 import json
 from pathlib import Path
+import sqlite3
+import tarfile
 
 from cpn.components.agent_loop.models import AgentLoopState
 from cpn.components.agent_loop.optional_host_bindings import (
@@ -19,10 +22,14 @@ from cpn.rpnh.control_server import OwnerEventLoop
 from cpn.rpnh.llm_contracts import LLMInputTarget
 from cpn.rpnh.module import ModuleDeclaration
 from cpn.rpnh.registry.module_budgets import ModuleBudgetDeclaration
+from cpn.rpnh.registry.firing_recovery import (
+    record_registered_operation_completion,
+)
 from cpn.rpnh.registry.operations import register_operation_outputs
+from cpn.rpnh.registry.publication import _version_from_payload
 from cpn.rpnh.registry.resource_verification import verify_resource
 from cpn.rpnh.registry.schema_catalog import canonical_json
-from cpn.rpnh.run import OwnerInput, start_run
+from cpn.rpnh.run import OwnerInput, resume_run, start_run
 
 
 def _multi_output_module() -> ModuleDeclaration:
@@ -268,3 +275,97 @@ def test_same_turn_multi_output_uses_exact_firing_authority(
         ))
     finally:
         negative_event_loop.close()
+
+
+def test_workspace_completion_recovers_from_frozen_candidate_without_replay(
+        tmp_path: Path) -> None:
+    (owner, event_loop, service, execution, catalog,
+     stored, turn, actions) = _stored_turn(
+        tmp_path, _response(duplicate_second_port=False, complete=True))
+    try:
+        settled, _records = service.settle_agent_turn_actions_v1(
+            stored, turn, actions,
+            permitted_tool_names=catalog.tool_names,
+            idempotency_key="offline:recovery:actions",
+            execution=execution,
+        )
+        service.finalize_agent_workspace_v1(
+            execution, settled,
+            idempotency_key="offline:recovery:workspace")
+        artifacts = tuple(
+            verify_resource(
+                owner._core, service.kernel,
+                execution.operation.canonical, ref)
+            for ref in settled.written_resource_refs)
+        outputs = register_operation_outputs(
+            service.repository, execution, artifacts,
+            selected_outcome_id="accept",
+            idempotency_key="offline:recovery:outputs")
+        completion = record_registered_operation_completion(
+            owner._core, service.kernel, service.repository, outputs,
+            idempotency_key="offline:recovery:completion")
+        candidate_ref = _version_from_payload(
+            completion.payload["workspace_revision_candidate_ref"])
+        candidate = owner._core.get_version(candidate_ref.version_id)
+        candidate_payload = owner._core.object_store.read_registered(candidate)
+
+        # This mutation occurs after the durable completion authority.  A new
+        # writer must settle from the immutable candidate, not rescan live
+        # files or rerun the completed AgentLoop/workspace action.
+        workspace_root = service._workspace_root(settled)
+        workspace_root.joinpath("outputs/result.txt").write_text(
+            "post-completion mutation", encoding="utf-8")
+    finally:
+        event_loop.close()
+
+    resumed = resume_run(
+        agent_task_registration(), run_dir=tmp_path,
+        model_condition="offline-multi-output",
+        catalog=agent_task_catalog(),
+        host_execution_bindings=owner.host_execution_bindings,
+    )
+    assert resumed.snapshot()["active_firings"] == []
+    assert sum(
+        event.event_type == "registered_operation_completion_recorded/v1"
+        for event in resumed._core.event_store.list_events()) == 1
+    assert sum(
+        event.event_type == "transition_firing_settled/v1"
+        for event in resumed._core.event_store.list_events()) == 1
+
+    revisions = resumed._core.event_store.canonical_object_rows(
+        object_type="workspace_revision/v1")
+    assert len(revisions) == 2
+    final = resumed._core.get_version(
+        _version_from_payload(json.loads(
+            revisions[-1]["metadata_json"])["workspace_revision_ref"]
+        ).version_id)
+    final_payload = resumed._core.object_store.read_registered(final)
+    assert final_payload == candidate_payload
+    with tarfile.open(fileobj=io.BytesIO(final_payload), mode="r:") as archive:
+        assert archive.extractfile("outputs/result.txt").read() == b"result"
+        assert archive.extractfile("outputs/memo.txt").read() == b"memo"
+
+    mappings = resumed._core.event_store.canonical_object_rows(
+        object_type="execution_terminal_mapping/v1")
+    assert len(mappings) == 3
+    assert all(
+        json.loads(row["metadata_json"])["workspace_revision_ref"]
+        == final.metadata["workspace_revision_ref"]
+        for row in mappings)
+    firing_version_id = str(
+        execution.operation.firing.transition_firing_ref.version_id)
+    with sqlite3.connect(
+            tmp_path / ".registry_v1" / "registry.sqlite3") as database:
+        publication_transaction, = database.execute(
+            "SELECT published_transaction_id FROM firing_publications "
+            "WHERE firing_version_id=?", (firing_version_id,)).fetchone()
+        mapping_transactions = {
+            row[0] for row in database.execute(
+                "SELECT transaction_id FROM objects "
+                "WHERE object_type='execution_terminal_mapping/v1'")}
+        revision_transaction, = database.execute(
+            "SELECT transaction_id FROM objects "
+            "WHERE version_id=?",
+            (str(final.version_id),)).fetchone()
+    assert mapping_transactions == {publication_transaction}
+    assert revision_transaction == publication_transaction

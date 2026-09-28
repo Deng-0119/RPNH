@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: runtime-registry.md
-  revision: "2026-09-25.2"
+  revision: "2026-09-28.1"
   status: source-reviewed-not-final-candidate-acceptance
   basis: "core; adapter differences explicitly labelled"
 ---
@@ -43,13 +43,13 @@ Harness 构造接口：
 
 `request_owner_stop()` 请求安全 owner 工作，不宣告物理执行已停止。`RunOwner.record_owner_stop(*, idempotency_key)` 记录已授权安全边界事件，不处理信号、不自动结算、不新开 writer；停止授权仍由 launcher 负责。
 
-## DSH 维护线的持久完成记录与有界恢复
+## 持久完成记录与有界恢复
 宿主无关的 completion/recovery 行为位于共享的 `cpn/components` 与 `cpn/rpnh`
 模块，不属于某个前端适配器。
 
 registered-operation 路径在核验精确输出 bundle 后、向 dispatcher 调用方返回 products 前，记录 `registered_operation_completion_recorded/v1`。该事件绑定 run、invocation、firing、execution lease、Start、admission、marking checkpoint、operation specification/binding、所选 outcome、有序输出资源引用与 writer epoch。它是持久的 executor-return 证明，**不是 Petri 结算或终态答案**。适配器或修复脚本不能自行伪造、追加这个事件。
 
-跨进程重开时，共享 `resume_run` 可对具有这一精确 completion 的单个 stale running firing 补结算，不再次调用 HOST/provider/tool。registration、不可变身份和预算材料在 writer 准入前检查。缺失、旧格式、串线或冲突证据不授权重放。空 writer-epoch 间隔仅在没有后续 writer 发布事实时允许；声明 HOST effects 或绑定 workspace 的 outcome 不进入自动结算恢复，需要其专属的持久 effect/revision 指令。
+跨进程重开时，共享 `resume_run` 可对具有这一精确 completion 的单个 stale running firing 补结算，不再次调用 HOST/provider/tool。registration、不可变身份和预算材料在 writer 准入前检查。缺失、旧格式、串线或冲突证据不授权重放。空 writer-epoch 间隔仅在没有后续 writer 发布事实时允许；声明 HOST effects 的 outcome 仍不进入恢复。绑定 workspace 的 completion 只有在它引用精确且不可变的 `workspace_revision_candidate/v1`，且该候选由 `map_ready` 下级执行 checkpoint 持有时才可恢复；恢复会校验归档并使用它，而不会重新扫描 live workspace。
 
 registered-host LLM 边界还会在同一准入 execution 重入时分类精确 v3 call 事实。已登记响应可以完成处理或直接返回，而不再物理调用；已有 submission permit 却没有响应时为 `submission_unknown`。这种同一 execution 内的处理，**不等于** operation-completion 事件之前断点的跨进程恢复。部分传输观察、响应头、本地已写出均不能证明远端完成。provider 权威状态查询／幂等仍是具体 provider 契约的可选能力，不是所有 route 已实现的通用保证。
 
@@ -64,9 +64,29 @@ DSH headless 的退出判定中，`terminal` 和“最新 turn 已提交”的 `
 
 `_ResourceServiceKernel` 保留 live core、资源权威和 delivery/publication 边界。`RunOwner.access_resource(execution, resource_ref, *, access_mode, command_id)` 使用准入 execution 与精确资源版本。succeed 在已提交 firing success 之前准备 workspace 结算。文件存在或候选输出不能替代已确认访问和注册结算。
 
+下级执行 PetriNet 是同一 Registry 内、归属于一个精确业务 invocation/firing 的权威。其
+definition、instance、加权 token、active/settled transition firing 与 checkpoint stream
+均独立于 `TeamNetMarking`；互不依赖的 transition 可以并行保持 active。内置文件物化与
+workspace-finalization 网只有在持有精确 Registry evidence 后才会达到 `map_ready`。业务
+Success 事务要求所有下级 instance 已 map-ready，并把 `execution_terminal_mapping/v1` 与
+operation result、后继 marking checkpoint、可选 workspace revision 一同写入。因此单独的
+执行 checkpoint 不能消费或产生业务 token。
+
+Instance attachment 与 Success sealing 共用每个 firing 独立的 execution-child stream。
+Success 通过 compare-and-append 写入已封口的 instance/checkpoint/mapping 集，因此 attachment
+与业务 settlement 竞态时只会使一方 stale，不会在业务发布后残留未映射的 running child。
+执行 settle 产物还绑定其 predecessor checkpoint 与 command identity；CAS 失败的 stale
+attempt 不会占用正确重试所需的不可变版本位置。
+
+每个已结算 workspace revision 都包含排序后的 `path_deltas`。每条 delta 记录
+create/update/delete、精确且可空的 before/after resource 引用与有界摘要。完整归档保存字节
+和 mode，delta 链保存逐路径版本谱系。Finalization 会先冻结
+`workspace_revision_candidate/v1`；并发 head merge 与最终 path delta 仍由 Success owner
+相对于当前 lineage head 计算。
+
 ## 读取、恢复与兼容
 `snapshot(owner_or_client)` 委托已有 owner/client，不新开 writer。快照包含精确 run/task/net/checkpoint、声明、marking、控制队列和 enabled transition，同时明确 `global_liveness=UNKNOWN`，不授予完成权威。
 
 私有类、SQL helper、`_event_store`、`_operation`、`_invocation`、`_provider_calls`、`_resource_service` 均是实现细节。重组时保留 facade/事务兼容，文档不能启用历史 inert 路径。恢复和数据保留见[使用](../guides/usage_ZH.md)、[排障](../guides/troubleshooting_ZH.md)，DSH 专用命令见 [DSH 指南](../guides/dsh_ZH.md)。
 
-代码：`cpn/rpnh/run.py:RunOwner,OwnerInput,resume_run`、`harness.py:Harness,OperationDispatch,OperationProducts,OperationDisposition,HarnessResult`、`marking.py`、`registry/event_store.py`、`registry/_event_store/commit.py`、`workspace_settlement.py`；DSH 维护线的 `registry/firing_recovery.py`、`cpn/components/registered_operation_dispatcher.py`、`registered_host_llm.py`、`tests/test_registered_operation_recovery.py`、`tests/test_dsh_backend.py`。
+代码：`cpn/rpnh/run.py:RunOwner,OwnerInput,resume_run`、`harness.py:Harness,OperationDispatch,OperationProducts,OperationDisposition,HarnessResult`、`marking.py`、`registry/event_store.py`、`registry/_event_store/commit.py`、`registry/execution_net.py`、`registry/execution_runtime.py`、`file_execution_net.py`、`workspace_settlement.py`、`registry/firing_recovery.py`、`cpn/components/registered_operation_dispatcher.py`、`registered_host_llm.py`、`tests/test_execution_net_registry.py`、`tests/test_workspace_revision_history.py`、`tests/test_multi_output_same_turn.py`、`tests/test_registered_operation_recovery.py`、`tests/test_dsh_backend.py`。

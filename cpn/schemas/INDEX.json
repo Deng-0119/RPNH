@@ -97,12 +97,44 @@
       "path": "registry_v1/executable_transition_binding.v1.schema.json"
     },
     {
+      "schema_id": "registry_v1/execution_checkpoint/v1",
+      "path": "registry_v1/execution_checkpoint.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/execution_children_sealed/v1",
+      "path": "registry_v1/execution_children_sealed.v1.schema.json"
+    },
+    {
       "schema_id": "registry_v1/execution_environment_identity/v1",
       "path": "registry_v1/execution_environment_identity.v1.schema.json"
     },
     {
       "schema_id": "registry_v1/execution_evidence/v1",
       "path": "registry_v1/execution_evidence.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/execution_instance/v1",
+      "path": "registry_v1/execution_instance.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/execution_instance_attached/v1",
+      "path": "registry_v1/execution_instance_attached.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/execution_net_definition/v1",
+      "path": "registry_v1/execution_net_definition.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/execution_terminal_mapping/v1",
+      "path": "registry_v1/execution_terminal_mapping.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/execution_token/v1",
+      "path": "registry_v1/execution_token.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/execution_transition_firing/v1",
+      "path": "registry_v1/execution_transition_firing.v1.schema.json"
     },
     {
       "schema_id": "registry_v1/external_kb_package/v1",
@@ -571,6 +603,10 @@
     {
       "schema_id": "registry_v1/workspace_revision/v1",
       "path": "registry_v1/workspace_revision.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/workspace_revision_candidate/v1",
+      "path": "registry_v1/workspace_revision_candidate.v1.schema.json"
     },
     {
       "schema_id": "registry_v1/workspace_write_intent/v1",

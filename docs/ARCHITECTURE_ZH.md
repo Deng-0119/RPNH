@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: ARCHITECTURE.md
-  revision: "2026-09-28.1"
+  revision: "2026-09-28.2"
   status: source-reviewed-pre-release
 ---
 
@@ -79,6 +79,17 @@ Firing admission 要求满足所有输入 arc 权重所指定的全部前驱 occ
 融合 place 表示冲突／共享库所，不表示广播。因此分支必须声明具有不同输出 arc 的真实
 transition；native composition 会拒绝把同一个公共出口直接接到多个消费者。
 
+每个已 admission 的业务 firing 还可以在**同一个 Registry** 中拥有一个或多个执行网
+instance。此类下级 PetriNet 描述文件物化、workspace finalization 等预定义 harness 机制；
+它们不是 Designer 编写的业务 workflow，也不会新建 child Registry。执行网的 token、
+transition firing、checkpoint 与 evidence 和业务 marking 相互隔离。执行网遵循相同的加权
+输入／输出 arc 规则，并允许多个互不依赖的 firing 同时保持 active。只有全部下级 instance
+均达到 `map_ready` 后，业务 Success 才能提交；同一 Success 事务会把每个执行 checkpoint
+及其 evidence，不可变地映射到 operation result、后继业务 checkpoint 与 workspace
+revision，并以 compare-and-append 封口该 firing 的 execution-child stream。并发附加的
+child 会使事务 stale，强制重新核验。在 Success 提交前，执行进度不能推进或伪造业务
+marking。
+
 ## Agent 执行、workspace、资源与委派
 
 已 admission 的 agent firing 使用 Registry-defined tool catalog 运行 agent loop。语义
@@ -90,6 +101,15 @@ settlement 都绑定到精确 firing 与 invocation identity。
 版本化资源并推进 workspace lineage，因此后续 firing 可以 materialize 并修改精确的已
 登记状态。来自中断且未 settlement action 的文件不会提升为共享 revision。
 
+语义文件写入先在 workspace 的保留内部目录暂存字节，验证并发布精确 Registry resource，
+随后才以 atomic replace 更新用户可见的相对路径。因此 schema 校验或 Registry 发布失败会
+保留原文件。暂存文件会在 Registry 发布前同步到存储，replace 后还会同步受影响目录，之后
+执行 checkpoint 才能达到 `map_ready`。Workspace finalization 会在 operation completion
+之前发布完整、不可变的候选归档及 `path_deltas`：每次 create、update 或 delete 都记录精确
+的前后 resource version 与有界摘要。候选归档是下级执行 checkpoint 的 evidence；live
+directory 不是完成权威。最终 workspace revision 与业务 marking 仍由普通 Success 事务
+一并发布。
+
 Workspace shell 是**写入隔离**边界：它只能修改本 firing 的 workspace（以及
 `/dev/null`），也不能使用网络 socket。它不是主机文件读取保密边界，因为命令仍需读取
 Linux runtime、可执行程序和动态库。Agent 的语义读取仍受 Registry `read_file`／resource
@@ -100,6 +120,13 @@ Workspace finalization 遇到一次已观测的 SQLite I/O 中断时，会立即
 幂等键重试一次；这不会重放 AgentLoop 或 provider 请求。第二次仍失败时保持为
 `framework_repair` block，不伪造 terminal 或 final-result evidence；provisional 文件不得
 报告为已完成输出。
+
+如果进程在精确输出 bundle、不可变 workspace 候选和 registered-operation completion 均已
+登记后停止，`resume_run` 可以仅依据 Registry evidence 补结算这一个 firing，不重跑其
+AgentLoop、provider、shell 或文件 action。恢复会校验候选归档、执行 checkpoint、父 firing、
+route identity 与 completion record，再执行普通 Success 事务。候选缺失或尚未
+`map_ready` 时会 fail closed。该能力不授权任意外部 effect 的通用重放，也不解决提交／结果
+仍为 unknown 的请求。
 
 `request_resource` 使用 Registry resource lifecycle、queue、grant 和 lease authority，
 而不是非正式共享路径。等待中的 firing 只有在其 resource grant 成为当前状态后，才会

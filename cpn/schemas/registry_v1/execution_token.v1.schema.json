@@ -1,0 +1,18 @@
+{
+  "$id": "registry_v1/execution_token/v1",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "additionalProperties": false,
+  "definitions": {
+    "ref": {"type": "object", "additionalProperties": false, "properties": {"entity_type": {"type": "string", "pattern": "^[a-z][a-z0-9_]*/v[1-9][0-9]*$"}, "logical_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"}, "version_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"}}, "required": ["entity_type", "logical_id", "version_id"]},
+    "nullable_ref": {"oneOf": [{"$ref": "#/definitions/ref"}, {"type": "null"}]}
+  },
+  "properties": {
+    "execution_token_ref": {"$ref": "#/definitions/ref"},
+    "execution_instance_ref": {"$ref": "#/definitions/ref"},
+    "place": {"type": "string", "pattern": "^[a-z][a-z0-9_.-]*$"},
+    "ordinal": {"type": "integer", "minimum": 0},
+    "produced_by_firing_ref": {"$ref": "#/definitions/nullable_ref"}
+  },
+  "required": ["execution_token_ref", "execution_instance_ref", "place", "ordinal", "produced_by_firing_ref"]
+}

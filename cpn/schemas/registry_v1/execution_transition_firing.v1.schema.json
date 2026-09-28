@@ -1,0 +1,30 @@
+{
+  "$id": "registry_v1/execution_transition_firing/v1",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "additionalProperties": false,
+  "definitions": {
+    "ref": {"type": "object", "additionalProperties": false, "properties": {"entity_type": {"type": "string", "pattern": "^[a-z][a-z0-9_]*/v[1-9][0-9]*$"}, "logical_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"}, "version_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"}}, "required": ["entity_type", "logical_id", "version_id"]},
+    "nullable_ref": {"oneOf": [{"$ref": "#/definitions/ref"}, {"type": "null"}]}
+  },
+  "properties": {
+    "execution_transition_firing_ref": {"$ref": "#/definitions/ref"},
+    "execution_instance_ref": {"$ref": "#/definitions/ref"},
+    "execution_net_definition_ref": {"$ref": "#/definitions/ref"},
+    "predecessor_checkpoint_ref": {"$ref": "#/definitions/ref"},
+    "transition_id": {"type": "string", "pattern": "^[a-z][a-z0-9_.-]*$"},
+    "recovery_mode": {"enum": ["pure", "idempotent_materialization"]},
+    "materialization_key": {"oneOf": [{"type": "string", "minLength": 1}, {"type": "null"}]},
+    "input_token_refs": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/definitions/ref"}},
+    "status": {"enum": ["active", "settled"]},
+    "active_firing_ref": {"$ref": "#/definitions/nullable_ref"},
+    "settled_checkpoint_ref": {"$ref": "#/definitions/nullable_ref"},
+    "output_token_refs": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/definitions/ref"}}
+  },
+  "required": ["execution_transition_firing_ref", "execution_instance_ref", "execution_net_definition_ref", "predecessor_checkpoint_ref", "transition_id", "recovery_mode", "materialization_key", "input_token_refs", "status", "active_firing_ref", "settled_checkpoint_ref", "output_token_refs"],
+  "allOf": [
+    {"if": {"properties": {"recovery_mode": {"const": "pure"}}}, "then": {"properties": {"materialization_key": {"type": "null"}}}},
+    {"if": {"properties": {"status": {"const": "active"}}}, "then": {"properties": {"active_firing_ref": {"type": "null"}, "settled_checkpoint_ref": {"type": "null"}, "output_token_refs": {"maxItems": 0}}}},
+    {"if": {"properties": {"status": {"const": "settled"}}}, "then": {"properties": {"active_firing_ref": {"$ref": "#/definitions/ref"}, "settled_checkpoint_ref": {"$ref": "#/definitions/ref"}}}}
+  ]
+}

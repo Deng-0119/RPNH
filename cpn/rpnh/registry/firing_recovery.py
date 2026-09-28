@@ -56,6 +56,9 @@ def registered_operation_completion_payload(
     except (TypeError, ValueError, json.JSONDecodeError) as exc:
         raise ResourceIntegrityFault(
             "registered-operation completion run identity is malformed") from exc
+    from ..workspace_settlement import workspace_finalization_candidate
+    candidate = workspace_finalization_candidate(
+        core, _ResourceServiceKernel(core), context)
     return {
         "run_ref": _ref_payload(run_ref),
         "invocation_ref": _ref_payload(context.invocation_ref),
@@ -82,6 +85,8 @@ def registered_operation_completion_payload(
         } for ordinal, output in enumerate(outputs.outputs)],
         "admission_writer_fencing_epoch": (
             execution.admission_head.writer_fencing_epoch),
+        "workspace_revision_candidate_ref": (
+            _ref_payload(candidate[1]) if candidate is not None else None),
     }
 
 
@@ -423,8 +428,14 @@ def classify_registered_operation_recovery(
         raise ResourceIntegrityFault(
             "recoverable completion has unrecorded declared HOST effects")
     if isinstance(binding.get("workspace_binding_ref"), Mapping):
-        raise ResourceIntegrityFault(
-            "recoverable completion has an unsettled workspace revision")
+        from ..workspace_settlement import workspace_finalization_candidate
+        candidate = workspace_finalization_candidate(
+            core, kernel, canonical.context, required=True)
+        if (candidate is None
+                or payload.get("workspace_revision_candidate_ref")
+                != _ref_payload(candidate[1])):
+            raise ResourceIntegrityFault(
+                "recoverable completion lacks its exact map-ready candidate")
     return RegisteredOperationFiringRecovery(
         outputs=outputs,
         completion_event_id=event.event_id,

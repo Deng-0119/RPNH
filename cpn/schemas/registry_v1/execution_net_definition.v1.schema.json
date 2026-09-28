@@ -1,0 +1,25 @@
+{
+  "$id": "registry_v1/execution_net_definition/v1",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "additionalProperties": false,
+  "definitions": {
+    "ref": {"type": "object", "additionalProperties": false, "properties": {"entity_type": {"const": "execution_net_definition/v1"}, "logical_id": {"type": "string", "pattern": "^execution_net_definition:[a-f0-9]{32}$"}, "version_id": {"type": "string", "pattern": "^execution_net_definition_version:[a-f0-9]{32}$"}}, "required": ["entity_type", "logical_id", "version_id"]},
+    "name": {"type": "string", "pattern": "^[a-z][a-z0-9_.-]*$"},
+    "transition": {"type": "object", "additionalProperties": false, "properties": {"transition_id": {"$ref": "#/definitions/name"}, "recovery_mode": {"enum": ["pure", "idempotent_materialization"]}}, "required": ["transition_id", "recovery_mode"]},
+    "input_arc": {"type": "object", "additionalProperties": false, "properties": {"place": {"$ref": "#/definitions/name"}, "transition_id": {"$ref": "#/definitions/name"}, "weight": {"type": "integer", "minimum": 1}}, "required": ["place", "transition_id", "weight"]},
+    "output_arc": {"type": "object", "additionalProperties": false, "properties": {"transition_id": {"$ref": "#/definitions/name"}, "place": {"$ref": "#/definitions/name"}, "weight": {"type": "integer", "minimum": 1}}, "required": ["transition_id", "place", "weight"]}
+  },
+  "properties": {
+    "execution_net_definition_ref": {"$ref": "#/definitions/ref"},
+    "definition_key": {"$ref": "#/definitions/name"},
+    "places": {"type": "array", "minItems": 2, "uniqueItems": true, "items": {"$ref": "#/definitions/name"}},
+    "transitions": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/definitions/transition"}},
+    "input_arcs": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/definitions/input_arc"}},
+    "output_arcs": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/definitions/output_arc"}},
+    "initial_place": {"$ref": "#/definitions/name"},
+    "initial_tokens": {"type": "integer", "minimum": 1},
+    "terminal_places": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/definitions/name"}}
+  },
+  "required": ["execution_net_definition_ref", "definition_key", "places", "transitions", "input_arcs", "output_arcs", "initial_place", "initial_tokens", "terminal_places"]
+}

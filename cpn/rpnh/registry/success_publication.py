@@ -445,6 +445,19 @@ def stage_success_publication(
     workspace_revision_ref = (
         workspace_plan["final_ref"]
         if workspace_plan is not None else None)
+    from ..file_execution_net import (
+        execution_parent,
+        stage_execution_terminal_mappings,
+    )
+    stage_execution_terminal_mappings(
+        core, tx,
+        parent=execution_parent(context),
+        operation_result_ref=result_ref,
+        successor_checkpoint_ref=checkpoint_ref,
+        workspace_revision_ref=workspace_revision_ref,
+        business_outcome=str(result_metadata["business_outcome"]),
+        idempotency_key=idempotency_key,
+    )
     tx.publish_firing(
         firing_ref=firing.transition_firing_ref,
         invocation_ref=context.invocation_ref,

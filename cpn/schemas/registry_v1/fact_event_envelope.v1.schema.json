@@ -18,6 +18,8 @@
       "capability_issued/v1",
       "capability_revoked/v1",
       "checkpoint_repair_committed/v1",
+      "execution_children_sealed/v1",
+      "execution_instance_attached/v1",
       "firing_admitted/v1",
       "firing_external_kb_read_recorded/v2",
       "firing_resource_transaction_committed/v1",

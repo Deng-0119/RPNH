@@ -1,0 +1,19 @@
+{
+  "$id": "registry_v1/execution_instance/v1",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "additionalProperties": false,
+  "definitions": {
+    "ref": {"type": "object", "additionalProperties": false, "properties": {"entity_type": {"type": "string", "pattern": "^[a-z][a-z0-9_]*/v[1-9][0-9]*$"}, "logical_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"}, "version_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"}}, "required": ["entity_type", "logical_id", "version_id"]}
+  },
+  "properties": {
+    "execution_instance_ref": {"$ref": "#/definitions/ref"},
+    "execution_net_definition_ref": {"$ref": "#/definitions/ref"},
+    "parent_invocation_ref": {"$ref": "#/definitions/ref"},
+    "parent_business_firing_ref": {"$ref": "#/definitions/ref"},
+    "parent_business_net_ref": {"$ref": "#/definitions/ref"},
+    "parent_business_checkpoint_ref": {"$ref": "#/definitions/ref"},
+    "initial_checkpoint_ref": {"$ref": "#/definitions/ref"}
+  },
+  "required": ["execution_instance_ref", "execution_net_definition_ref", "parent_invocation_ref", "parent_business_firing_ref", "parent_business_net_ref", "parent_business_checkpoint_ref", "initial_checkpoint_ref"]
+}

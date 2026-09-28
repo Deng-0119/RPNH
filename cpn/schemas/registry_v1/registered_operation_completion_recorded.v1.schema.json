@@ -15,6 +15,9 @@
       },
       "required": ["entity_type", "logical_id", "version_id"]
     },
+    "nullable_ref": {
+      "oneOf": [{"$ref": "#/definitions/ref"}, {"type": "null"}]
+    },
     "resource_ref": {
       "type": "object",
       "additionalProperties": false,
@@ -49,7 +52,8 @@
     "operation_binding_ref": {"$ref": "#/definitions/ref"},
     "selected_outcome_id": {"type": "string", "minLength": 1},
     "ordered_outputs": {"type": "array", "items": {"$ref": "#/definitions/output"}},
-    "admission_writer_fencing_epoch": {"type": "integer", "minimum": 1}
+    "admission_writer_fencing_epoch": {"type": "integer", "minimum": 1},
+    "workspace_revision_candidate_ref": {"$ref": "#/definitions/nullable_ref"}
   },
   "required": [
     "run_ref", "invocation_ref", "transition_firing_ref",
@@ -57,6 +61,6 @@
     "firing_admission_ref", "net_instance_ref",
     "admission_marking_checkpoint_ref", "operation_spec_ref",
     "operation_binding_ref", "selected_outcome_id", "ordered_outputs",
-    "admission_writer_fencing_epoch"
+    "admission_writer_fencing_epoch", "workspace_revision_candidate_ref"
   ]
 }

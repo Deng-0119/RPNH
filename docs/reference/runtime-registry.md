@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: en
   counterpart: runtime-registry_ZH.md
-  revision: "2026-09-25.2"
+  revision: "2026-09-28.1"
   status: source-reviewed-not-final-candidate-acceptance
   basis: "core; adapter differences explicitly labelled"
 ---
@@ -43,13 +43,13 @@ Malformed boundary objects raise `HarnessBoundaryError`. Resource wait requires 
 
 `request_owner_stop()` requests safe owner work; it does not assert that physical execution has stopped. `RunOwner.record_owner_stop(*, idempotency_key)` records the authorized safe-boundary event, without signal handling, automatic settlement or opening a new writer. The launcher still owns stop authorization.
 
-## Durable completion and bounded recovery on the DSH line
+## Durable completion and bounded recovery
 Host-neutral completion and recovery live in shared `cpn/components` and
 `cpn/rpnh` modules rather than in a frontend adapter.
 
 After validating the exact returned output bundle, the registered-operation path records `registered_operation_completion_recorded/v1` before returning products to the dispatcher caller. The event binds run, invocation, firing, execution lease, Start, admission, marking checkpoint, operation specification/binding, selected outcome, ordered output resource references and writer epoch. It is a durable executor-return proof, **not Petri settlement or a terminal answer**. Do not synthesize or append this event from an adapter or repair script.
 
-On a process reopen, shared `resume_run` can settle one stale running firing with that exact completion, without invoking its HOST/provider/tool again. Registration, immutable identity and budget material are checked before writer admission. Missing, old-format, crossed or conflicting proof does not authorize replay. An empty writer-epoch gap is tolerated only when no later writer published a fact. Automatic settlement excludes outcomes with declared HOST effects or workspace bindings; these require their own durable effect/revision instructions.
+On a process reopen, shared `resume_run` can settle one stale running firing with that exact completion, without invoking its HOST/provider/tool again. Registration, immutable identity and budget material are checked before writer admission. Missing, old-format, crossed or conflicting proof does not authorize replay. An empty writer-epoch gap is tolerated only when no later writer published a fact. Outcomes with declared HOST effects remain excluded. A workspace-bound completion is recoverable only when it names the exact immutable `workspace_revision_candidate/v1` held by a `map_ready` subordinate execution checkpoint; recovery validates that archive and uses it instead of rescanning the live workspace.
 
 The registered-host LLM boundary separately classifies exact v3 call facts when the same admitted execution re-enters. It may finish or return an already registered response without another physical call; a pre-existing submission permit without a response is `submission_unknown`. This same-execution handling is **not** cross-process recovery for a cut before the operation-completion event. Partial transport observations, headers, or locally completed writes do not establish remote completion. Provider-authoritative status queries/idempotency remain optional provider-contract capabilities, not a generic implemented guarantee for every route.
 
@@ -64,9 +64,15 @@ For DSH headless exit handling, `terminal` and an `idle` whose latest turn is al
 
 `_ResourceServiceKernel` retains the live core, resource authority and delivery/publication boundary. `RunOwner.access_resource(execution, resource_ref, *, access_mode, command_id)` uses admitted execution and an exact resource version. `succeed` prepares workspace settlement before committed firing success. File existence or a candidate output cannot substitute for acknowledged registered access and settlement.
 
+Subordinate execution Petri nets are same-Registry authority beneath one exact business invocation/firing. Their definitions, instances, weighted tokens, active/settled transition firings and checkpoint stream are distinct from `TeamNetMarking`; independent transitions may be active concurrently. Built-in file materialization and workspace-finalization nets reach `map_ready` only with exact Registry evidence. The business Success transaction requires every subordinate instance to be map-ready and stages `execution_terminal_mapping/v1` beside the operation result, successor marking checkpoint and optional workspace revision. It is therefore impossible for an execution checkpoint alone to consume or produce business tokens.
+
+Instance attachment and Success sealing share one per-firing execution-child stream. Success compare-and-appends the sealed instance/checkpoint/mapping set, so an attachment racing with settlement makes one transaction stale instead of leaving an unmapped running child after business publication. Execution settle artifacts include their predecessor checkpoint and command identity; a losing stale attempt cannot reserve immutable version locators needed by the valid retry.
+
+Every settled workspace revision carries sorted `path_deltas`. Each delta records create/update/delete, exact nullable before/after resource references and bounded summaries. Full archives preserve the bytes and modes; the delta chain preserves per-path version lineage. Finalization first freezes `workspace_revision_candidate/v1`; concurrent-head merge and final path deltas are still calculated by the Success owner against the current lineage head.
+
 ## Read, recovery and compatibility
 `snapshot(owner_or_client)` delegates to the existing owner or client; it does not open another writer. Owner snapshots expose exact run/task/net/checkpoint refs, declaration, marking, pending controls and enabled transitions, with `global_liveness` explicitly `UNKNOWN`. They do not grant completion authority.
 
 Private classes, backend SQL helpers and `_event_store`, `_operation`, `_invocation`, `_provider_calls`, `_resource_service` domains are implementation details. Preserve facade/transaction compatibility when reorganizing them. Historical inert validation paths are not enabled by documentation. Recovery and data retention follow [usage](../guides/usage.md) and [troubleshooting](../guides/troubleshooting.md); DSH-specific commands are in the [DSH guide](../guides/dsh.md).
 
-Sources: `cpn/rpnh/run.py:RunOwner,OwnerInput,resume_run`; `harness.py:Harness,OperationDispatch,OperationProducts,OperationDisposition,HarnessResult`; `marking.py`; `registry/event_store.py`; `registry/_event_store/commit.py`; `workspace_settlement.py`; DSH-line `registry/firing_recovery.py`, `cpn/components/registered_operation_dispatcher.py`, `registered_host_llm.py`, `tests/test_registered_operation_recovery.py` and `tests/test_dsh_backend.py`.
+Sources: `cpn/rpnh/run.py:RunOwner,OwnerInput,resume_run`; `harness.py:Harness,OperationDispatch,OperationProducts,OperationDisposition,HarnessResult`; `marking.py`; `registry/event_store.py`; `registry/_event_store/commit.py`; `registry/execution_net.py`; `registry/execution_runtime.py`; `file_execution_net.py`; `workspace_settlement.py`; `registry/firing_recovery.py`; `cpn/components/registered_operation_dispatcher.py`; `registered_host_llm.py`; `tests/test_execution_net_registry.py`; `tests/test_workspace_revision_history.py`; `tests/test_multi_output_same_turn.py`; `tests/test_registered_operation_recovery.py`; and `tests/test_dsh_backend.py`.

@@ -1,0 +1,35 @@
+{
+  "$id": "registry_v1/execution_children_sealed/v1",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "additionalProperties": false,
+  "definitions": {
+    "ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "entity_type": {"type": "string", "pattern": "^[a-z][a-z0-9_]*/v[1-9][0-9]*$"},
+        "logical_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"},
+        "version_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"}
+      },
+      "required": ["entity_type", "logical_id", "version_id"]
+    },
+    "refs": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"$ref": "#/definitions/ref"}
+    }
+  },
+  "properties": {
+    "parent_invocation_ref": {"$ref": "#/definitions/ref"},
+    "parent_business_firing_ref": {"$ref": "#/definitions/ref"},
+    "execution_instance_refs": {"$ref": "#/definitions/refs"},
+    "execution_checkpoint_refs": {"$ref": "#/definitions/refs"},
+    "execution_terminal_mapping_refs": {"$ref": "#/definitions/refs"}
+  },
+  "required": [
+    "parent_invocation_ref", "parent_business_firing_ref",
+    "execution_instance_refs", "execution_checkpoint_refs",
+    "execution_terminal_mapping_refs"
+  ]
+}

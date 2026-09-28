@@ -1437,6 +1437,28 @@ def test_fanout_workspaces_namespace_semantic_products_and_merge_branch_files(
     metadata = [json.loads(row["metadata_json"]) for row in revisions]
     assert [item["disposition"] for item in metadata].count("merged") == 1
     assert head["workspace_revision_version_id"] == revisions[-1]["version_id"]
+    readonly = _RegistryCore(
+        run_dir, create=False, read_only=True,
+        catalog=agent_task_catalog())
+    for revision in metadata[1:]:
+        deltas = revision["path_deltas"]
+        assert [item["path"] for item in deltas] == sorted(
+            revision["changed_paths"] + revision["deleted_paths"])
+        for delta in deltas:
+            for side in ("before", "after"):
+                ref = delta[f"{side}_resource_ref"]
+                summary = delta[f"{side}_summary"]
+                if ref is None:
+                    assert summary is None
+                    continue
+                version_id = TypedId.parse(
+                    ref["resource_version_id"], expected="resource_version")
+                prepared = readonly.get_version(version_id)
+                assert readonly.event_store.canonical_object_row(
+                    version_id) is not None
+                assert prepared.metadata["descriptors"]["workspace_path"] == (
+                    delta["path"])
+                assert prepared.metadata["summary"] == summary
     archive_payload = (
         run_dir / ".registry_v1" / "objects" / "workspace_revision"
         / revisions[-1]["version_id"].split(":", 1)[1]).read_bytes()

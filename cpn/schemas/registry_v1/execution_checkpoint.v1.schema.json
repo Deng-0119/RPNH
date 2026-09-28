@@ -1,0 +1,25 @@
+{
+  "$id": "registry_v1/execution_checkpoint/v1",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "additionalProperties": false,
+  "definitions": {
+    "ref": {"type": "object", "additionalProperties": false, "properties": {"entity_type": {"type": "string", "pattern": "^[a-z][a-z0-9_]*/v[1-9][0-9]*$"}, "logical_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"}, "version_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"}}, "required": ["entity_type", "logical_id", "version_id"]},
+    "nullable_ref": {"oneOf": [{"$ref": "#/definitions/ref"}, {"type": "null"}]}
+  },
+  "properties": {
+    "execution_checkpoint_ref": {"$ref": "#/definitions/ref"},
+    "execution_instance_ref": {"$ref": "#/definitions/ref"},
+    "execution_net_definition_ref": {"$ref": "#/definitions/ref"},
+    "sequence": {"type": "integer", "minimum": 0},
+    "previous_checkpoint_ref": {"$ref": "#/definitions/nullable_ref"},
+    "transition_firing_ref": {"$ref": "#/definitions/nullable_ref"},
+    "token_refs": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/definitions/ref"}},
+    "active_firing_refs": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/definitions/ref"}},
+    "evidence_refs": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/definitions/ref"}},
+    "next_token_ordinal": {"type": "integer", "minimum": 0},
+    "status": {"enum": ["running", "map_ready"]}
+  },
+  "required": ["execution_checkpoint_ref", "execution_instance_ref", "execution_net_definition_ref", "sequence", "previous_checkpoint_ref", "transition_firing_ref", "token_refs", "active_firing_refs", "evidence_refs", "next_token_ordinal", "status"],
+  "allOf": [{"if": {"properties": {"status": {"const": "map_ready"}}}, "then": {"properties": {"token_refs": {"minItems": 1}, "active_firing_refs": {"maxItems": 0}}}}]
+}

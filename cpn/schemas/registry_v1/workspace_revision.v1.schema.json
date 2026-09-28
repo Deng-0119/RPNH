@@ -25,10 +25,70 @@
       },
       "required": ["resource_id", "resource_version_id"]
     },
+    "nullable_resource_ref": {
+      "oneOf": [{"$ref": "#/definitions/resource_ref"}, {"type": "null"}]
+    },
+    "nullable_summary": {
+      "oneOf": [
+        {"type": "string", "maxLength": 600},
+        {"type": "null"}
+      ]
+    },
     "path_list": {
       "type": "array",
       "uniqueItems": true,
       "items": {"type": "string", "minLength": 1, "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$)).+$"}
+    },
+    "path_delta": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "path": {"type": "string", "minLength": 1, "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$)).+$"},
+        "change_kind": {"enum": ["create", "update", "delete"]},
+        "before_resource_ref": {"$ref": "#/definitions/nullable_resource_ref"},
+        "after_resource_ref": {"$ref": "#/definitions/nullable_resource_ref"},
+        "before_summary": {"$ref": "#/definitions/nullable_summary"},
+        "after_summary": {"$ref": "#/definitions/nullable_summary"}
+      },
+      "required": [
+        "path", "change_kind", "before_resource_ref", "after_resource_ref",
+        "before_summary", "after_summary"
+      ],
+      "allOf": [
+        {
+          "if": {"properties": {"change_kind": {"const": "create"}}},
+          "then": {
+            "properties": {
+              "before_resource_ref": {"type": "null"},
+              "after_resource_ref": {"$ref": "#/definitions/resource_ref"},
+              "before_summary": {"type": "null"},
+              "after_summary": {"type": "string", "maxLength": 600}
+            }
+          }
+        },
+        {
+          "if": {"properties": {"change_kind": {"const": "update"}}},
+          "then": {
+            "properties": {
+              "before_resource_ref": {"$ref": "#/definitions/resource_ref"},
+              "after_resource_ref": {"$ref": "#/definitions/resource_ref"},
+              "before_summary": {"type": "string", "maxLength": 600},
+              "after_summary": {"type": "string", "maxLength": 600}
+            }
+          }
+        },
+        {
+          "if": {"properties": {"change_kind": {"const": "delete"}}},
+          "then": {
+            "properties": {
+              "before_resource_ref": {"$ref": "#/definitions/resource_ref"},
+              "after_resource_ref": {"type": "null"},
+              "before_summary": {"type": "string", "maxLength": 600},
+              "after_summary": {"type": "null"}
+            }
+          }
+        }
+      ]
     }
   },
   "properties": {
@@ -46,6 +106,11 @@
     "disposition": {"enum": ["genesis", "committed", "merged", "conflict"]},
     "changed_paths": {"$ref": "#/definitions/path_list"},
     "deleted_paths": {"$ref": "#/definitions/path_list"},
+    "path_deltas": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"$ref": "#/definitions/path_delta"}
+    },
     "inventory_paths": {"$ref": "#/definitions/path_list"},
     "conflict_paths": {"$ref": "#/definitions/path_list"},
     "semantic_output_refs": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/definitions/resource_ref"}},
@@ -58,7 +123,7 @@
     "run_ref", "task_ref", "net_instance_ref", "parent_revision_ref",
     "base_revision_ref", "producer_invocation_ref", "transition_firing_ref",
     "firing_workspace_binding_ref", "disposition", "changed_paths",
-    "deleted_paths", "inventory_paths", "conflict_paths",
+    "deleted_paths", "path_deltas", "inventory_paths", "conflict_paths",
     "semantic_output_refs", "trace_summary_refs", "payload_kind", "settled"
   ],
   "allOf": [
@@ -71,6 +136,7 @@
           "producer_invocation_ref": {"type": "null"},
           "transition_firing_ref": {"type": "null"},
           "firing_workspace_binding_ref": {"type": "null"},
+          "path_deltas": {"maxItems": 0, "default": []},
           "payload_kind": {"const": "full_workspace_tar"},
           "settled": {"const": true}
         }
@@ -81,6 +147,7 @@
       "then": {
         "properties": {
           "conflict_paths": {"minItems": 1},
+          "path_deltas": {"maxItems": 0},
           "payload_kind": {"const": "conflict_evidence"},
           "settled": {"const": false}
         }
