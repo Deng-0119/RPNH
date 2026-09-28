@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: adapters.md
-  revision: "2026-09-26.1"
+  revision: "2026-09-28.1"
   status: source-reviewed-not-final-candidate-acceptance
   basis: "core; adapter differences explicitly labelled"
 ---
@@ -24,6 +24,17 @@ codex --version
 ```
 
 RPNH launcher 使用兼容服务和既有主会话权威。`rpnh --frontend codex` 启动会话，输入后可能执行模型，不是离线 smoke。RPNH 自己的任务控制用 `rpnh --frontend basic`。Codex model picker 是 RPNH 配置投影，不授权改写 Codex 供应商设置或静默换路由。可选 local-process subscription bridge 是独立供应商路径，选择 TUI 不自动选择它。
+
+subscription bridge 为每个 firing 创建临时私有 Codex home 与 runtime 目录。认证状态
+保持为对已配置来源的引用，不复制凭据；私有目录使用 `0700`，并随 firing 一起删除。
+这能让本地状态在只读父策略下保持可写，但不会绕过 Codex sandbox。Linux owner 与
+user namespace 环境仍必须支持所选 Codex sandbox；否则 adapter 会在取得 terminal
+模型响应前失败，并保留私有失败审计。
+
+Codex 与 Basic、OpenCode 接收同一个直接 MainSession root。先用一次
+`--session-dir ROOT` 创建；当前 owner 退出后，另一个前端才可用 `--resume ROOT` 重开。
+Codex 协议 thread ID 与 `.frontends/codex.json` 都是可重建的展示 metadata，Registry
+会话历史才是权威。
 
 ## 托管 DSH 前提
 本节仅适用于包含 `cpn/dsh`、`integrations/dsh` 的源码树或安装发行包。清单固定 `deepseek-ai/deepseek-harness` 上游 `ddefc45fbc7f8e46dd73185e68295696d1297887`（`0.1.6-alpha.2`），历史记录测试 Node 24，engine 为 `^22.19.0 || >=24.0.0`，pnpm 为 `11.7.0`。这些是集成 pin，不是上游最新版本声明。

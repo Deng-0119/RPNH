@@ -20,8 +20,13 @@ metadata:
 
 以 `rpnh --frontend basic` 显式启动文本前端。`--execution PATH` 指定执行配置，`--session-dir PATH` 指向尚不存在的新会话目录；后者与 `--resume SESSION_DIR` 互斥。`--prompt TEXT` 执行主会话一轮，不是无害的回显命令。
 新会话省略 `--execution` 时，使用 `RPNH_EXECUTION_CONFIG` 或用户保存的默认值；
-`--resume` 省略该参数时则使用该会话持久化的精确 profile。只有显式提供
-`--execution` 才会覆盖它。
+`--resume` 省略该参数时则使用该会话持久化的精确 profile。恢复时显式提供
+`--execution` 只用于相等性断言，不能替换已持久化的 provider／exact-model 身份。
+
+Basic、Codex 与 OpenCode 使用同一个直接 `SESSION_DIR` 契约。当前前端退出后，可用
+三者中的任意一个重开完全相同的 root；后端只有一个 MainSession Registry，不会为每个
+前端复制会话。共享 owner lease 会拒绝并发的可写前端。重开、列出与历史投影不会调用
+模型，也不会补偿启动 child。
 
 ## 主会话与独立任务
 以下是 **basic 前端**命令，不是给 stock Codex 新增的 slash 命令。
@@ -42,8 +47,11 @@ metadata:
 
 ## 主回合中断
 使用 `rpnh --frontend basic --resume SESSION_DIR` 重开。未显式提供 `--execution`
-时，该命令使用会话持久化的精确 profile，而不是当前环境变量或默认 profile。随后由
-reconciliation 判断权威状态，不能把进程消失当完成。选中 main 后，`/resume` 继续暂停回合，`/rollback` 回到主对话上一个已完成回合。rollback 保留暂停子 Registry，不回退独立子任务，也不补偿外部写入。选中子任务时 `/rollback` 会被拒绝。尚未解决的活跃回合不能直接接受新输入。
+时，该命令使用会话持久化的精确 profile，而不是当前环境变量或默认 profile。打开时只
+观察权威状态，不自动提交 terminal child，也不补偿 committed launch。选中 main 后，
+`/resume` 会显式提交已有 terminal evidence，或继续暂停回合；`/rollback` 回到主对话
+上一个已完成回合。rollback 保留暂停子 Registry，不回退独立子任务，也不补偿外部写入。
+选中子任务时 `/rollback` 会被拒绝。尚未解决的活跃回合不能直接接受新输入。
 
 ## 不执行模型地检查已有 run
 传入真实 run 目录，而不是聊天记录或任意 session 索引：

@@ -62,6 +62,8 @@ def _session(tmp_path: Path):
         task_control=_Control(tmp_path),
         reconciliation_calls=reconciliations,
         main_actions=main_actions,
+        active_turn_snapshot=lambda: SimpleNamespace(
+            state="stopped_by_owner"),
         reconcile_child_registry_links=(
             lambda: reconciliations.append("reconciled")),
         resume_paused_turn=lambda: (

@@ -179,6 +179,10 @@ rpnh net --run "$RUN_DIR" --view --no-open
 | `rpnh-dsh` | 可选的固定版本 DSH 宿主集成，安装及离线、已配置模型两种运行方式见[DSH 指南](docs/guides/dsh_ZH.md)。 |
 
 这些集成共用 RPNH 的模型选择与受管执行机制。
+Basic、Codex 与 OpenCode 是同一个直接 MainSession root 的顺序展示入口：先用
+`--session-dir` 创建，再等当前前端退出后，用另一个前端对完全相同的路径执行
+`--resume`。它们不会把 Registry 状态复制成前端私有会话；共享 owner lease 会拒绝
+并发的可写展示。DSH 仍是具有自身 session surface 的 registered host 集成。
 各专题指南说明相应依赖与支持的交互功能。
 
 ## 文档

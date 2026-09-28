@@ -73,7 +73,7 @@ def run_opencode_frontend(root: Path, execution: Path, *, resume: bool = False) 
             server.start()
             env.update({"OPENCODE_SERVER_USERNAME": "rpnh", "OPENCODE_SERVER_PASSWORD": server.password})
             print("RPNH OpenCode frontend — Registry-owned execution; UI metrics unavailable.")
-            print(f"frontend root: {root.resolve()}")
+            print(f"main session root: {root.resolve()}")
             print("Identical unkeyed text is one request; use /rpnh-send NEW_ID TEXT for an intentional repeat.")
             args = [binary, "attach", server.url, "--dir", str(display), "--username", "rpnh"]
             if resume:

@@ -21,7 +21,14 @@ Install the appropriate surface and select an authorized exact profile. **Conver
 Start the explicit basic frontend with `rpnh --frontend basic`. Supply `--execution PATH` to select a file or `--session-dir PATH` for an absent new session directory. `--resume SESSION_DIR` is mutually exclusive with `--session-dir`. `--prompt TEXT` runs a main turn, not a harmless echo.
 For a fresh session, omitting `--execution` uses `RPNH_EXECUTION_CONFIG` or the
 saved user default. For `--resume`, omitting it instead uses the exact profile
-persisted by that session; an explicit `--execution` is the only override.
+persisted by that session. An explicit `--execution` on resume is an equality
+assertion and cannot replace the persisted provider/exact-model identity.
+
+Basic, Codex and OpenCode use the same direct `SESSION_DIR` contract. After the
+current frontend exits, reopen that exact root with any of the three frontends;
+there is one MainSession Registry, not one copied session per frontend. A shared
+owner lease rejects concurrent writable frontends. Reopening, listing and
+history projection do not call a model or compensate a child launch.
 
 ## Main session and independent task controls
 The following are **basic-frontend** commands. They are not additions to stock Codex's slash-command registry.
@@ -43,7 +50,13 @@ Short `/status`, `/result`, `/net`, `/message`, `/stop` commands act on the sele
 ## Interrupted main turn
 Reopen with `rpnh --frontend basic --resume SESSION_DIR`. Without an explicit
 `--execution`, this command uses the session's persisted exact profile, not the
-current environment/default profile. Reconciliation determines the authoritative state; do not treat a missing terminal process as completion. With main selected, `/resume` continues the paused turn and `/rollback` returns the main conversation to its prior completed turn. Rollback retains the paused child Registry; it neither rewinds independent children nor compensates external writes. `/rollback` on a selected child is rejected. An active unreconciled turn must be resolved before accepting new input.
+current environment/default profile. Opening observes the authoritative state;
+it does not settle a terminal child or compensate a committed launch. With main
+selected, `/resume` explicitly commits already-terminal evidence or continues a
+paused turn; `/rollback` returns the main conversation to its prior completed
+turn. Rollback retains the paused child Registry; it neither rewinds independent
+children nor compensates external writes. `/rollback` on a selected child is
+rejected. An active unreconciled turn must be resolved before accepting new input.
 
 ## Inspect existing runs without execution
 Use an actual run directory, not a transcript or arbitrary session index:

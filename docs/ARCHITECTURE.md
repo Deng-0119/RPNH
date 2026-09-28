@@ -20,24 +20,34 @@ RPNH-owned state rather than independent execution backends.
 
 ```text
 stock Codex TUI 0.155.0 ─┐
-basic CLI ───────────────┼─> MainSession Registry ─> TaskControl
-                         │                            │
-provider profile ────────┘                            ├─> independent agent task
-                                                      └─> graph workflow task
-                                                               │
-                                                               v
-                                           Harness + typed PetriNet + Registry
-                                                               ^
+OpenCode TUI 1.18.32 ────┼─> one canonical MainSession Registry ─> TaskControl
+basic CLI ───────────────┤                                      │
+provider profile ────────┘                                      ├─> independent agent task
+                                                                └─> graph workflow task
+                                                                         │
+                                                                         v
+                                                     Harness + typed PetriNet + Registry
+                                                                         ^
 read-only PetriNet CLI/viewer ──────────────────────────────────┘
 ```
 
 ## Ownership layers
 
-The frontend owns terminal interaction only. Each Codex conversation thread
-maps one-to-one to one RPNH main-session Registry. `MainSession` owns that
-durable thread, turn ordering, committed conversation history, selected
-execution profile, and Registry-native links to child tasks. A frontend
-container may hold multiple threads, but it does not merge their Registries.
+The frontend owns terminal interaction only. One direct session root maps
+one-to-one to one RPNH main-session Registry. `MainSession` owns that durable
+thread, turn ordering, committed conversation history, selected execution
+profile, and Registry-native links to child tasks. Basic, Codex and OpenCode
+can open that same root sequentially; they do not copy it into frontend-specific
+thread containers. Their protocol IDs and optional sidecars are presentation
+metadata, never execution authority.
+
+A nonblocking owner lease is held before a fresh canonical root becomes a
+valid Registry and prevents two writable frontends from opening it
+concurrently. Merely reopening, listing or projecting
+the session does not compensate a committed child launch. Compensation and
+terminal-turn settlement occur only as part of a subsequent explicit execution
+action, including the user's explicit resume command. Independent child owners
+remain separate and continue according to their own Registry checkpoints.
 
 Every main turn's model execution runs in its own supervised Registry root. The
 main Registry stores the turn lineage and exact terminal receipt needed to

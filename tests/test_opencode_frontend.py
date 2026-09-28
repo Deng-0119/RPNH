@@ -65,9 +65,11 @@ class ApplicationDouble:
 
     def create_session(self, selection_id=None):
         self._record("create_session")
+        if self.views:
+            raise FrontendError("session_exists", "Already bound.")
         selection_id = selection_id or MODEL["selection"]
         model = MODEL if selection_id == MODEL["selection"] else MODEL_TWO
-        sid = SID if not self.views else "ses_" + f"{len(self.views):032x}"
+        sid = SID
         self.views.append({"id": sid, "created": 1000, "updated": 1000,
                            "model": public_model(model), "turns": [], "error": None})
         return sid
@@ -89,6 +91,7 @@ class ApplicationDouble:
         turns.append({"ordinal": number, "key": key, "text": text, "kind": kind, "state": "running",
                       "created": 1000 + number, "updated": 1000 + number,
                       "model": public_model(model),
+                      "model_evidence": "frontend-request/v2",
                       "turn_ref": {"entity_type": "main_turn/v1", "logical_id": f"turn-{number}", "version_id": "v1"},
                       "attempt": f"main/turn-{number:04d}", "answer": None, "children": []})
         return number
@@ -161,7 +164,8 @@ def test_exact_provider_allowlist_and_no_routes(context):
 
 
 def test_session_creation_and_turn_can_select_an_rpnh_profile(context):
-    app, protocol = context
+    app = ApplicationDouble()
+    protocol = OpenCodeProtocol(LocalGateway(app), context[1].directory)
     created = protocol.route("POST", "/session", {
         "agent": "rpnh",
         "model": {"providerID": "rpnh", "id": MODEL_TWO["selection"]},
@@ -374,9 +378,15 @@ def test_gateway_serializes_application_and_closes_on_owner():
         holder.append(ApplicationDouble())
         return holder[0]
     gateway = FrontendGateway(factory, tick_interval=60)
+    def create_once():
+        try:
+            return gateway.call("create_session")
+        except FrontendError as exc:
+            return exc.code
     with ThreadPoolExecutor(max_workers=6) as pool:
-        values = list(pool.map(lambda _: gateway.call("create_session"), range(24)))
-        assert len(values) == len(set(values)) == 24 and SID in values
+        values = list(pool.map(lambda _: create_once(), range(24)))
+        assert values.count(SID) == 1
+        assert values.count("session_exists") == 23
     gateway.close()
     assert holder[0].closed
     assert len(set(holder[0].owner_threads)) == 1

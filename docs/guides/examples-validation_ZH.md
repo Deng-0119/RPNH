@@ -50,7 +50,9 @@ input，另一次返回 `write_file` 与 `complete_interaction`。这些是本�
 replacement run 均保存在仓库外。首个 OpenCode run 的成功响应计数为零，并保持
 `submission_unknown`；它既不计作成功，也未被重放。另行授权的 replacement 使用一次新的
 物理调用。该 replacement 还暴露并验证了子 Registry 瞬时读取时的前端对账修复；重开同一
-前端根目录后，在没有再次调用模型的情况下提交了已有终态结果。
+前端根目录后，在没有再次调用模型的情况下提交了已有终态结果。这是当时 revision 的历史
+行为；当前 main 已明确改变该边界：重开 canonical MainSession 只做观察，必须由用户显式
+执行前端 resume 命令后，才提交 terminal evidence。
 
 本记录是候选版本的 focused 证据，不是完整发布套件。宿主路径 PASS 表示 transport、
 Registry 结算和前端投影完成，并不把 OpenCode 的模型内容警告改写为精确遵循提示。

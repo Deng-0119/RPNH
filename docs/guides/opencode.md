@@ -44,9 +44,9 @@ client, establish binary provenance, or modify global OpenCode settings.
 ```bash
 python -m pip install .
 rpnh --help
-rpnh --frontend opencode --session-dir ./rpnh-opencode-state
-# After leaving the frontend, reopen its persisted sessions:
-rpnh --frontend opencode --resume ./rpnh-opencode-state
+rpnh --frontend opencode --session-dir ./my-rpnh-session
+# After leaving any RPNH frontend, reopen the same MainSession:
+rpnh --frontend opencode --resume ./my-rpnh-session
 ```
 
 Starting a frontend/catalog does not submit a prompt. Sending a prompt, launching
@@ -56,10 +56,20 @@ for the existing one-shot path. Basic and Codex still delegate to the existing
 CLI. No existing runtime, Registry schema, provider implementation or default
 frontend is replaced.
 
-The frontend root contains `threads/ses_*`, each an independent existing
-MainSession root. Pass the top-level frontend root to OpenCode `--resume`, not
-a basic/Codex root. Do not attach two application owners to the same root. The
-process lock prevents a second owner of this frontend root.
+The supplied path is the direct canonical MainSession root. It is the same path
+accepted by Basic and Codex, so a session created in one frontend can be viewed
+and continued by either other frontend after the first exits. OpenCode exposes
+one presentation session for that root; it creates no `threads/ses_*` Registry
+copy. A shared nonblocking owner lease rejects a second writable frontend.
+Protocol `ses_*` IDs and `.frontends/codex.json` are presentation metadata only.
+
+Resume/list/history operations are observational: they do not invoke a model,
+settle a terminal main turn or compensate a committed child launch. A terminal
+turn inherited from another frontend remains visibly terminal until the user
+issues `/rpnh-resume`; that explicit action may commit the main answer and launch
+its already-declared child. Historical turns without OpenCode request evidence
+remain visible, with their per-turn model evidence marked unavailable instead of
+being reconstructed from current defaults or sidecars.
 
 ## Conversation and duplicate requests
 
@@ -118,11 +128,12 @@ Resume/rollback never reconstructs a checkpoint from the OpenCode transcript.
 
 All selectable user-configured RPNH profiles appear under one presentation-only
 `rpnh` provider. A session can select a profile when created and switch profiles
-between main turns; switching during an active turn is rejected. Every turn
-retains its selection evidence. Unknown profiles, unavailable credentials,
+between main turns; switching during an active turn is rejected. OpenCode-origin
+turns retain their request selection evidence; imported Registry history is not
+assigned evidence it never recorded. Unknown profiles, unavailable credentials,
 non-RPNH agents and variants are rejected. RPNH profile identity is checked before
-new execution and before reopening any persisted owner that could compensate a
-launch. The client receives no provider key, credential environment name,
+new execution and before an explicit action that could compensate a launch. The
+client receives no provider key, credential environment name,
 endpoint, host route or private profile path.
 
 Permission replies and attachments are unavailable in this version: there is no

@@ -105,39 +105,42 @@ def _codex_argv(
 
 
 def _codex_process_environment(*, runtime_root: Path) -> dict[str, str]:
-    """Give the endpoint writable ephemeral state without copying credentials.
+    """Give the endpoint writable firing-local state without copying credentials.
 
-    The subscription home supplied by a local-process adapter may be mounted
-    read-only in the managed runtime.  ``codex exec --ephemeral`` still needs
-    a writable state directory while it initializes its app-server client.
-    Keep the configured home when it is writable; otherwise create only a
-    firing-local home and expose the configured ``auth.json`` through a
-    read-only symlink.  The model, route, and credential bytes are unchanged.
+    ``os.access`` and filesystem flags cannot observe policy-based write
+    restrictions inherited by a child process.  ``codex exec --ephemeral``
+    still initializes writable app-server state, so every configured
+    subscription home is projected into a firing-local home while the existing
+    ``auth.json`` remains a reference to its configured source.  This avoids a
+    credential copy that could survive a forced process-group termination.  The
+    model, route, and credential bytes are unchanged.
     """
     environment = dict(os.environ)
     configured = environment.get("CODEX_HOME")
-    if not configured:
-        return environment
-    configured_path = Path(configured)
-    try:
-        writable = os.access(configured_path, os.W_OK) and not bool(
-            os.statvfs(configured_path).f_flag & getattr(os, "ST_RDONLY", 1))
-    except OSError:
-        writable = False
-    if writable:
-        return environment
+    if configured:
+        configured_path = Path(configured)
+    else:
+        home = environment.get("HOME")
+        if not home:
+            raise CodexSubscriptionBridgeError(
+                "Codex subscription home is unavailable")
+        configured_path = Path(home) / ".codex"
     auth_source = configured_path / "auth.json"
     if not auth_source.is_file():
         raise CodexSubscriptionBridgeError(
-            "configured CODEX_HOME is read-only and auth.json is unavailable")
+            "Codex subscription home has no readable auth.json")
     ephemeral_home = runtime_root / "codex-home"
-    ephemeral_home.mkdir()
-    (ephemeral_home / "auth.json").symlink_to(auth_source)
+    ephemeral_home.mkdir(mode=0o700)
+    (ephemeral_home / "tmp").mkdir(mode=0o700)
+    auth_destination = ephemeral_home / "auth.json"
+    auth_destination.symlink_to(auth_source)
     environment["CODEX_HOME"] = str(ephemeral_home)
     environment["HOME"] = str(runtime_root / "home")
-    Path(environment["HOME"]).mkdir()
+    Path(environment["HOME"]).mkdir(mode=0o700)
     environment["TMPDIR"] = str(runtime_root / "tmp")
-    Path(environment["TMPDIR"]).mkdir()
+    Path(environment["TMPDIR"]).mkdir(mode=0o700)
+    environment["XDG_RUNTIME_DIR"] = str(runtime_root / "xdg-runtime")
+    Path(environment["XDG_RUNTIME_DIR"]).mkdir(mode=0o700)
     return environment
 
 
@@ -337,11 +340,16 @@ def main(argv: Sequence[str] | None = None) -> int:
                 verbosity=args.verbosity,
                 instructions_file=instructions_file,
             )
-            completed = subprocess.run(
-                command, input=prompt.encode("utf-8"), stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE, check=False, shell=False,
-                env=_codex_process_environment(runtime_root=runtime_root),
-            )
+            previous_umask = os.umask(0o077)
+            try:
+                completed = subprocess.run(
+                    command, input=prompt.encode("utf-8"),
+                    stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                    check=False, shell=False,
+                    env=_codex_process_environment(runtime_root=runtime_root),
+                )
+            finally:
+                os.umask(previous_umask)
         if completed.returncode != 0:
             event_failure = _codex_failure_from_events(completed.stdout)
             if event_failure is not None:

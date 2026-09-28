@@ -222,9 +222,19 @@ def profile_for_path(
         selected: Path, directory: Path | None = None,
 ) -> ExecutionProfile:
     resolved = selected.expanduser().resolve()
-    for profile in discover_profiles(directory):
-        if profile.path == resolved:
-            return profile
+    if directory is not None:
+        roots = (directory.resolve(),)
+    else:
+        adjacent = resolved.parent
+        configured = profile_directory()
+        roots = ((adjacent,) if adjacent == configured else
+                 (adjacent, configured))
+    for root in roots:
+        if not discover_provider_models(root):
+            continue
+        for profile in discover_profiles(root):
+            if profile.path == resolved:
+                return profile
     return load_profile(resolved)
 
 

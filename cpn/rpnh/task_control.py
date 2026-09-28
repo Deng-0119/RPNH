@@ -130,15 +130,19 @@ class TaskControl:
             self, root: Path, *,
             popen_factory: Callable[..., Any] = subprocess.Popen,
             channel_ready: Callable[[Path], bool] | None = None,
+            recover_pending_launches: bool = True,
     ) -> None:
         if not isinstance(root, Path):
             raise TypeError("TaskControl root requires pathlib.Path")
+        if not isinstance(recover_pending_launches, bool):
+            raise TypeError("recover_pending_launches requires bool")
         self.root = root.resolve()
         self._popen = popen_factory
         self._channel_ready = channel_ready or (lambda path: path.is_socket())
         self._tasks: dict[str, TaskHandle] = {}
         self._load_persisted_tasks()
-        self._recover_pending_launches()
+        if recover_pending_launches:
+            self._recover_pending_launches()
 
     @property
     def _manifest_root(self) -> Path:

@@ -209,7 +209,13 @@ levels. See the [dashboard guide](docs/guides/viewer.md).
 | `rpnh-dsh` | Optional pinned DSH host integration; installation and offline/configured modes are in the [DSH guide](docs/guides/dsh.md). |
 
 Model selection and managed execution remain with RPNH across these integrations.
-Each guide describes its dependencies and supported interaction surface.
+Basic, Codex and OpenCode are sequential presentations of the same direct
+MainSession root: create it with `--session-dir`, then reopen that exact path with
+`--resume` and another frontend after the first exits. They do not copy Registry
+state into frontend-specific sessions, and a shared owner lease rejects concurrent
+writable presentations. DSH remains a registered host integration with its own
+session surface. Each guide describes its dependencies and supported interaction
+surface.
 
 ## Documentation
 

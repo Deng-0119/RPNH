@@ -58,7 +58,7 @@ def test_legacy_attachment_metadata_is_preserved_but_never_delivered(tmp_path, m
     root = tmp_path / "session"
     execution = _local_profile(tmp_path / "profiles")
     thread_root = _write_thread_projection(root, execution=execution)
-    path = thread_root / "thread_state.json"
+    path = thread_root / ".frontends" / "codex.json"
     doc = json.loads(path.read_text())
     legacy = [{"id": "old", "attachmentType": "local-file", "identityKey": "x", "createdAt": 100,
                "payload": {"path": "/not-a-registered-input"}}]
@@ -66,15 +66,19 @@ def test_legacy_attachment_metadata_is_preserved_but_never_delivered(tmp_path, m
     path.write_text(json.dumps(doc))
     session = _RecoverySession(thread_root, execution,
                                MainTurnReconciliation("idle", None))
-    monkeypatch.setattr(frontend.MainSession, "resume", lambda _root: session)
+    monkeypatch.setattr(
+        frontend.MainSession, "resume",
+        lambda _root, _execution=None, **_kwargs: session)
     server = frontend.CodexAppServer(root, session.execution_config_path)
-    assert server._threads["thread-1"].attachments == legacy
+    thread_id = next(iter(server._threads))
+    assert server._threads[thread_id].attachments == legacy
     assert json.loads(path.read_text())["attachments"] == legacy
-    socket = requests(("thread/attachment/list", {"threadId": "thread-1"}))
+    socket = requests(("thread/attachment/list", {"threadId": thread_id}))
     asyncio.run(server.handle(socket))
     assert next(item for item in socket.sent if item.get("id") == 0)["error"]["code"] == -32601
     assert session.history == []
     assert json.loads(path.read_text())["attachments"] == legacy
+    server.close()
 
 
 def test_manifest_matches_actual_method_dispatch_and_has_no_static_pass_claim():
@@ -124,6 +128,59 @@ def test_subscription_bridge_replaces_builtin_instructions_and_keeps_no_tool_bou
     assert "model_max_output_tokens" not in config_doc
 
 
+def test_subscription_bridge_always_uses_firing_local_codex_state(
+        tmp_path, monkeypatch,
+):
+    configured = tmp_path / "configured-codex-home"
+    configured.mkdir()
+    auth = configured / "auth.json"
+    auth.write_text('{"fixture":"credential-reference"}')
+    runtime = tmp_path / "runtime"
+    runtime.mkdir()
+    monkeypatch.setenv("CODEX_HOME", str(configured))
+    monkeypatch.setenv("HOME", str(tmp_path / "original-home"))
+
+    environment = bridge._codex_process_environment(runtime_root=runtime)
+
+    projected = Path(environment["CODEX_HOME"])
+    assert projected == runtime / "codex-home"
+    assert projected.stat().st_mode & 0o777 == 0o700
+    assert (projected / "tmp").stat().st_mode & 0o777 == 0o700
+    projected_auth = projected / "auth.json"
+    assert projected_auth.is_symlink()
+    assert projected_auth.resolve() == auth
+    assert Path(environment["HOME"]) == runtime / "home"
+    assert Path(environment["TMPDIR"]) == runtime / "tmp"
+    assert Path(environment["HOME"]).stat().st_mode & 0o777 == 0o700
+    assert Path(environment["TMPDIR"]).stat().st_mode & 0o777 == 0o700
+    assert Path(environment["XDG_RUNTIME_DIR"]) == runtime / "xdg-runtime"
+    assert (Path(environment["XDG_RUNTIME_DIR"]).stat().st_mode
+            & 0o777 == 0o700)
+    assert auth.read_text() == '{"fixture":"credential-reference"}'
+
+
+def test_subscription_bridge_projects_the_default_home_when_codex_home_is_unset(
+        tmp_path, monkeypatch,
+):
+    home = tmp_path / "source-home"
+    configured = home / ".codex"
+    configured.mkdir(parents=True)
+    auth = configured / "auth.json"
+    auth.write_text('{"fixture":"default-home"}')
+    runtime = tmp_path / "runtime"
+    runtime.mkdir()
+    monkeypatch.delenv("CODEX_HOME", raising=False)
+    monkeypatch.setenv("HOME", str(home))
+
+    environment = bridge._codex_process_environment(runtime_root=runtime)
+
+    projected_auth = Path(environment["CODEX_HOME"]) / "auth.json"
+    assert projected_auth.is_symlink()
+    assert projected_auth.resolve() == auth
+    assert Path(environment["HOME"]) == runtime / "home"
+    assert Path(environment["XDG_RUNTIME_DIR"]) == runtime / "xdg-runtime"
+
+
 def test_transport_rejects_builtin_tool_events_even_with_successful_process():
     payload = json.dumps({"type": "item.completed", "item": {
         "type": "command_execution", "command": "ignored"}}).encode()
@@ -140,7 +197,7 @@ def test_frontend_argv_preserves_remote_and_disabled_features():
     assert "check_for_update_on_startup=false" in argv
 
 
-def test_codex_frontend_uses_existing_short_socket_helper_for_long_root(
+def test_codex_frontend_uses_external_socket_for_absent_long_root(
         tmp_path, monkeypatch,
 ):
     execution = _local_profile(tmp_path / "profiles")
@@ -155,6 +212,7 @@ def test_codex_frontend_uses_existing_short_socket_helper_for_long_root(
 
     assert result == 0
     assert not direct.exists()
+    assert not root.exists()
 
 
 def test_bridge_process_loads_rpnh_instructions_without_altering_registered_request(tmp_path):
@@ -171,6 +229,9 @@ instructions = Path(config["model_instructions_file"]).read_text()
 assert "RPNH alone owns tool execution" in instructions
 assert "Codex" not in instructions
 assert args[args.index("--sandbox") + 1] == "read-only"
+mode_probe = Path(config["model_instructions_file"]).parent / "mode-probe"
+mode_probe.mkdir()
+assert mode_probe.stat().st_mode & 0o777 == 0o700
 prompt = sys.stdin.read()
 request = json.loads(prompt.split("REQUEST_JSON_BEGIN\\n", 1)[1].rsplit("\\nREQUEST_JSON_END",1)[0])
 assert request["messages"][0]["content"] == "Explain Codex; preserve my words."
@@ -187,6 +248,7 @@ print(json.dumps({"type":"turn.completed", "usage":None}))
     payload = json.dumps(request, ensure_ascii=True, allow_nan=False, sort_keys=True, separators=(",", ":")).encode()
     repo = str(Path(__file__).resolve().parents[1])
     (tmp_path / "unused-home").mkdir()
+    (tmp_path / "unused-home" / "auth.json").write_text("{}")
     environment = {"PATH": os.environ.get("PATH", ""), "PYTHONPATH": repo, "HOME": str(tmp_path),
                    "CODEX_HOME": str(tmp_path / "unused-home")}
     completed = subprocess.run([

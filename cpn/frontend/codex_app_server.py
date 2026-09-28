@@ -14,10 +14,10 @@ import os
 from pathlib import Path
 import shutil
 import subprocess
-import sys
+import tempfile
 import time
 from typing import Any, Mapping
-from uuid import NAMESPACE_URL, uuid4, uuid5
+from uuid import NAMESPACE_URL, uuid5
 
 from cpn.llm_adapters import load_llm_execution_selection
 from cpn.rpnh.main_session import (
@@ -26,6 +26,11 @@ from cpn.rpnh.main_session import (
     MainTurnReconciliation,
     MainTurnSnapshot,
     render_main_decision,
+)
+from cpn.rpnh.session_access import (
+    MainSessionOwnerLease,
+    inspect_main_session_root,
+    stable_frontend_session_id,
 )
 from cpn.rpnh.task_control import TaskControl, TaskHandle
 from cpn.rpnh.unix_transport import unix_socket_address
@@ -171,30 +176,33 @@ class CodexAppServer:
             str(routes[0].get("provider"))
             if isinstance(routes, list) and routes else selection.adapter_kind)
         self._threads: dict[str, ThreadState] = {}
-        self._thread_load_failures: list[str] = []
         self._initialize_accepted_connections: set[int] = set()
         self._initialized_connections: set[int] = set()
         self._send_locks: dict[int, asyncio.Lock] = {}
         self._background: set[asyncio.Task[None]] = set()
-        self._load_threads()
+        self._lease: MainSessionOwnerLease | None = None
+        try:
+            self._load_direct_session()
+        except Exception:
+            self.close()
+            raise
 
     @staticmethod
     def _thread_state_path(root: Path) -> Path:
-        return root / "thread_state.json"
+        return root / ".frontends" / "codex.json"
 
     def _persist_thread(self, state: ThreadState) -> None:
         path = self._thread_state_path(state.session.root)
         value = {
-            "schema_version": "rpnh/codex_thread_state/v1",
-            "thread_id": state.thread_id,
-            "model_id": state.model_id,
+            "schema_version": "rpnh/codex_frontend_metadata/v1",
+            "protocol_thread_id": state.thread_id,
             "cwd": str(state.cwd),
             "created_at": state.created_at,
             "preview": state.preview,
             "name": state.name,
-            "turns": state.turns,
             "attachments": state.attachments,
         }
+        path.parent.mkdir(parents=True, exist_ok=True)
         temporary = path.with_suffix(".json.tmp")
         temporary.write_text(
             json.dumps(value, ensure_ascii=False, indent=2) + "\n",
@@ -202,41 +210,8 @@ class CodexAppServer:
         os.replace(temporary, path)
 
     @staticmethod
-    def _matching_projection_ids(
-            value: object, *, user_text: str, assistant_text: str,
-    ) -> tuple[str, str, str] | None:
-        if (not isinstance(value, Mapping)
-                or value.get("status") != "completed"
-                or not isinstance(value.get("id"), str)
-                or not isinstance(value.get("items"), list)):
-            return None
-        user_items = [
-            item for item in value["items"]
-            if isinstance(item, Mapping) and item.get("type") == "userMessage"
-        ]
-        assistant_items = [
-            item for item in value["items"]
-            if isinstance(item, Mapping) and item.get("type") == "agentMessage"
-        ]
-        if len(user_items) != 1 or len(assistant_items) != 1:
-            return None
-        user_item = user_items[0]
-        assistant_item = assistant_items[0]
-        content = user_item.get("content")
-        if (not isinstance(user_item.get("id"), str)
-                or not isinstance(assistant_item.get("id"), str)
-                or not isinstance(content, list) or len(content) != 1
-                or not isinstance(content[0], Mapping)
-                or content[0].get("type") != "text"
-                or content[0].get("text") != user_text
-                or assistant_item.get("text") != assistant_text):
-            return None
-        return value["id"], user_item["id"], assistant_item["id"]
-
-    @staticmethod
     def _committed_turns(
             state: ThreadState, *, latest_active: ActiveTurn | None = None,
-            previous_turns: list[object] | None = None,
     ) -> list[dict[str, Any]]:
         """Build the Codex transcript only from MainSession Registry history."""
         history = list(getattr(
@@ -255,20 +230,11 @@ class CodexAppServer:
                     or not isinstance(assistant_text, str)):
                 raise RuntimeError(
                     "main-session Registry history has invalid roles")
-            previous_ids = (
-                CodexAppServer._matching_projection_ids(
-                    previous_turns[ordinal - 1],
-                    user_text=user_text,
-                    assistant_text=assistant_text,
-                )
-                if previous_turns is not None
-                and ordinal <= len(previous_turns) else None)
             projected_turn_id, projected_user_id, projected_assistant_id = (
-                previous_ids or (
-                    _ui_id(state.thread_id, ordinal, "turn"),
-                    _ui_id(state.thread_id, ordinal, "user"),
-                    _ui_id(state.thread_id, ordinal, "assistant"),
-                ))
+                _ui_id(state.thread_id, ordinal, "turn"),
+                _ui_id(state.thread_id, ordinal, "user"),
+                _ui_id(state.thread_id, ordinal, "assistant"),
+            )
             user_item = {
                 "type": "userMessage",
                 "id": (
@@ -326,122 +292,85 @@ class CodexAppServer:
                 state.main_turn_control, snapshot.attempt_path),
         )
 
-    def _load_threads(self) -> None:
-        threads = self.root / "threads"
-        if not threads.is_dir():
+    def _load_direct_session(self) -> None:
+        if not os.path.lexists(self.root):
             return
-        for thread_root in sorted(path for path in threads.iterdir()
-                                  if path.is_dir()):
-            path = self._thread_state_path(thread_root)
-            failure_code = "persisted_profile_unavailable"
+        record = inspect_main_session_root(self.root)
+        profile = self._profiles_by_path.get(record.execution_config_path)
+        if profile is None:
+            raise ValueError("persisted main-session model is unavailable")
+        path = self._thread_state_path(record.root)
+        value: Mapping[str, Any] = {}
+        if path.is_file():
             try:
-                persisted_profile = (
-                    MainSession._persisted_execution_config_path(thread_root))
-                if persisted_profile is None:
-                    raise ValueError(
-                        "persisted thread profile projection is unavailable")
-                profile = self._profiles_by_path.get(persisted_profile)
-                if profile is None:
-                    raise ValueError("persisted thread model is unavailable")
-                failure_code = "session_unavailable"
-                session = MainSession.resume(thread_root)
-                value: Mapping[str, Any] = {}
-                if path.is_file():
-                    try:
-                        candidate = json.loads(path.read_text(encoding="utf-8"))
-                        if (isinstance(candidate, Mapping)
-                                and candidate.get("schema_version")
-                                == "rpnh/codex_thread_state/v1"
-                                and candidate.get("thread_id")
-                                == thread_root.name):
-                            value = candidate
-                    except (OSError, TypeError, ValueError,
-                            json.JSONDecodeError):
-                        pass
-                failure_code = "thread_projection_invalid"
-                raw_cwd = value.get("cwd")
-                cwd = (
-                    Path(raw_cwd).resolve()
-                    if isinstance(raw_cwd, str) and raw_cwd
-                    else Path.cwd().resolve())
-                raw_created_at = value.get("created_at")
-                created_at = (
-                    raw_created_at
-                    if isinstance(raw_created_at, int)
-                    and not isinstance(raw_created_at, bool)
-                    else int(thread_root.stat().st_mtime))
-                raw_preview = value.get("preview")
-                preview = raw_preview if isinstance(raw_preview, str) else ""
-                raw_name = value.get("name")
-                name = raw_name if isinstance(raw_name, str) else None
-                raw_attachments = value.get("attachments", [])
-                try:
-                    attachments = self._attachments(
-                        raw_attachments
-                        if isinstance(raw_attachments, list) else [])
-                except ValueError:
-                    attachments = []
-                state = ThreadState(
-                    thread_id=thread_root.name,
-                    session=session,
-                    main_turn_control=TaskControl(
-                        session.child_path_root
-                        / "main-turn-control"),
-                    model_id=profile.selection_id,
-                    cwd=cwd,
-                    created_at=created_at,
-                    preview=preview,
-                    name=name,
-                    attachments=attachments,
-                )
-                failure_code = "thread_reconciliation_failed"
-                reconciliation = session.reconcile_active_turn()
-                raw_turns = value.get("turns")
-                state.turns = self._committed_turns(
-                    state,
-                    previous_turns=(
-                        raw_turns if isinstance(raw_turns, list) else None),
-                )
-                if reconciliation.state in {
-                        "accepted", "pending_start", "running"}:
-                    if reconciliation.snapshot is None:
-                        raise RuntimeError(
-                            "active main-turn reconciliation lacks a snapshot")
-                    state.active = self._active_from_snapshot(
-                        state, reconciliation.snapshot)
-                elif reconciliation.state not in {
-                        "idle", "committed", "interrupted", "paused"}:
-                    raise RuntimeError(
-                        "unsupported main-turn reconciliation state: "
-                        f"{reconciliation.state}")
-                if not state.preview and state.session.history:
-                    state.preview = state.session.history[0][1][:200]
-                self._threads[state.thread_id] = state
-                try:
-                    self._persist_thread(state)
-                except OSError:
-                    pass
-            except (KeyError, OSError, RuntimeError, TypeError, ValueError,
-                    json.JSONDecodeError):
-                self._thread_load_failures.append(failure_code)
+                candidate = json.loads(path.read_text(encoding="utf-8"))
+                if (isinstance(candidate, Mapping)
+                        and candidate.get("schema_version")
+                        == "rpnh/codex_frontend_metadata/v1"):
+                    value = candidate
+            except (OSError, TypeError, ValueError, json.JSONDecodeError):
+                pass
+        raw_cwd = value.get("cwd")
+        cwd = (
+            Path(raw_cwd).resolve()
+            if isinstance(raw_cwd, str) and raw_cwd
+            else Path.cwd().resolve())
+        raw_created_at = value.get("created_at")
+        created_at = (
+            raw_created_at
+            if isinstance(raw_created_at, int)
+            and not isinstance(raw_created_at, bool)
+            else int(record.root.stat().st_mtime))
+        raw_preview = value.get("preview")
+        preview = raw_preview if isinstance(raw_preview, str) else ""
+        raw_name = value.get("name")
+        name = raw_name if isinstance(raw_name, str) else None
+        raw_attachments = value.get("attachments", [])
+        try:
+            attachments = self._attachments(
+                raw_attachments if isinstance(raw_attachments, list) else [])
+        except ValueError:
+            attachments = []
 
-    @property
-    def thread_load_failures(self) -> tuple[str, ...]:
-        """Redacted reason codes for persisted threads omitted at startup."""
-        return tuple(self._thread_load_failures)
+        lease = MainSessionOwnerLease.acquire(record)
+        self._lease = lease
+        try:
+            session = MainSession.resume(
+                record.root, record.execution_config_path,
+                task_control=object())
+            session.task_control = TaskControl(
+                session.child_path_root / "tasks",
+                recover_pending_launches=False,
+            )
+            state = ThreadState(
+                thread_id=stable_frontend_session_id(record),
+                session=session,
+                main_turn_control=TaskControl(
+                    session.child_path_root / "main-turn-control",
+                    recover_pending_launches=False),
+                model_id=profile.selection_id,
+                cwd=cwd,
+                created_at=created_at,
+                preview=preview,
+                name=name,
+                attachments=attachments,
+            )
+            state.turns = self._committed_turns(state)
+            snapshot = session.active_turn_snapshot()
+            if snapshot is not None:
+                state.active = self._active_from_snapshot(state, snapshot)
+            if not state.preview and session.history:
+                state.preview = session.history[0][1][:200]
+            self._threads[state.thread_id] = state
+        except Exception:
+            self.close()
+            raise
 
-    def thread_load_diagnostic(self) -> str | None:
-        if not self._thread_load_failures:
-            return None
-        counts = {
-            code: self._thread_load_failures.count(code)
-            for code in set(self._thread_load_failures)
-        }
-        details = ", ".join(
-            f"{code}={counts[code]}" for code in sorted(counts))
-        return (
-            f"{len(self._thread_load_failures)} persisted thread(s) "
-            f"were not loaded ({details})")
+    def close(self) -> None:
+        """Release ownership of the canonical MainSession root."""
+        if self._lease is not None:
+            lease, self._lease = self._lease, None
+            lease.close()
 
     @staticmethod
     def _attachments(value: list[object]) -> list[dict[str, Any]]:
@@ -587,6 +516,9 @@ class CodexAppServer:
             self, websocket: Any, request_id: object,
             params: Mapping[str, Any],
     ) -> None:
+        if self._threads or self._lease is not None:
+            raise ValueError(
+                "RPNH Codex frontend is already bound to its one main session")
         requested_model = params.get("model")
         model_id = (
             self.default_model_id
@@ -602,23 +534,29 @@ class CodexAppServer:
         cwd = (
             Path(raw_cwd).expanduser().resolve()
             if raw_cwd else Path.cwd().resolve())
-        thread_id = str(uuid4())
-        thread_root = self.root / "threads" / thread_id
-        session = MainSession(
-            thread_root,
-            profile.path,
-        )
-        state = ThreadState(
-            thread_id=thread_id,
-            session=session,
-            main_turn_control=TaskControl(
-                session.child_path_root / "main-turn-control"),
-            model_id=profile.selection_id,
-            cwd=cwd,
-            created_at=_now_seconds(),
-        )
-        self._threads[thread_id] = state
-        self._persist_thread(state)
+        lease = MainSessionOwnerLease.reserve_for_creation(self.root)
+        self._lease = lease
+        try:
+            session = MainSession(
+                self.root, profile.path, owner_root_reserved=True)
+            record = inspect_main_session_root(self.root)
+            thread_id = stable_frontend_session_id(record)
+            state = ThreadState(
+                thread_id=thread_id,
+                session=session,
+                main_turn_control=TaskControl(
+                    session.child_path_root / "main-turn-control"),
+                model_id=profile.selection_id,
+                cwd=cwd,
+                created_at=_now_seconds(),
+            )
+            self._threads[thread_id] = state
+            self._persist_thread(state)
+        except Exception:
+            if "thread_id" in locals():
+                self._threads.pop(thread_id, None)
+            self.close()
+            raise
         document = self._thread_document(state)
         await self._result(websocket, request_id, {
             "thread": document,
@@ -798,14 +736,13 @@ class CodexAppServer:
             active.turn_id, status, items=[user_item, item],
             started_at=active.started_at)
 
-        # The persisted list is rebuilt after every terminal reconciliation.
-        # Interrupted turns are therefore notified to the live client but are
-        # never inserted into conversation history.
+        # Rebuild the in-memory transcript from Registry authority after every
+        # terminal reconciliation. Interrupted turns are live notifications
+        # only and never enter conversation history.
         state.turns = self._committed_turns(
             state,
             latest_active=(
                 active if reconciliation.state == "committed" else None),
-            previous_turns=list(state.turns),
         )
         state.active = None
         self._persist_thread(state)
@@ -892,6 +829,23 @@ class CodexAppServer:
                 state.main_turn_control,
                 reconciliation.snapshot.attempt_path,
             )
+        if websocket is not None:
+            self._ensure_active_tracking(websocket, state)
+
+    async def _observe_active_turn(
+            self, websocket: Any | None, state: ThreadState,
+    ) -> None:
+        """Observe existing Registry activity without semantic reconciliation."""
+        snapshot = state.session.active_turn_snapshot()
+        if snapshot is None:
+            return
+        active = state.active
+        if active is None or active.ordinal != snapshot.ordinal:
+            active = self._active_from_snapshot(state, snapshot)
+            state.active = active
+        elif active.task_handle is None:
+            active.task_handle = self._live_main_turn_handle(
+                state.main_turn_control, snapshot.attempt_path)
         if websocket is not None:
             self._ensure_active_tracking(websocket, state)
 
@@ -1170,7 +1124,8 @@ class CodexAppServer:
             await self._start_thread(websocket, request_id, params)
         elif method == "thread/resume":
             state = self._thread(params.get("threadId"))
-            await self._refresh_active_turn(websocket, state)
+            # Codex presentation reopen is not semantic paused-turn resume.
+            await self._observe_active_turn(websocket, state)
             await self._result(websocket, request_id, {
                 "thread": self._thread_document(state),
                 "model": state.model_id,
@@ -1248,7 +1203,7 @@ class CodexAppServer:
                                         "before sending initialized")
                                 self._initialized_connections.add(key)
                                 for state in self._threads.values():
-                                    await self._refresh_active_turn(
+                                    await self._observe_active_turn(
                                         websocket, state)
                             continue
                         await self._handle_request(
@@ -1337,38 +1292,30 @@ async def _run_codex_frontend_async(
     if resume and not root.is_dir():
         raise CodexCompatibilityError(
             "RPNH Codex resume requires an existing session directory")
-    root.mkdir(parents=True, exist_ok=True)
-    socket_path = root / "codex-app-server.sock"
-    if os.path.lexists(socket_path):
-        raise CodexCompatibilityError(
-            f"Codex frontend socket already exists: {socket_path}")
-    server = CodexAppServer(root, execution_config_path)
-    if resume and not server._threads:
-        diagnostic = server.thread_load_diagnostic()
-        raise CodexCompatibilityError(
-            "RPNH Codex resume found no valid persisted threads"
-            + (f"; {diagnostic}" if diagnostic else ""))
-    diagnostic = server.thread_load_diagnostic()
-    if diagnostic:
-        print(f"RPNH Codex warning: {diagnostic}", file=sys.stderr)
-    socket_identity: int | None = None
     try:
-        with unix_socket_address(
-                socket_path, visible_to_child_process=True) as address:
-            async with websockets.unix_serve(server.handle, address):
-                socket_path.chmod(0o600)
-                socket_identity = socket_path.stat().st_ino
-                process = await asyncio.create_subprocess_exec(
-                    *codex_frontend_argv(
-                        binary, address, server.frontend_model_id))
-                try:
-                    return int(await process.wait())
-                finally:
-                    await server.stop_active_turns()
+        server = CodexAppServer(root, execution_config_path)
+    except (OSError, RuntimeError, TypeError, ValueError) as exc:
+        raise CodexCompatibilityError(str(exc)) from exc
+    if resume and not server._threads:
+        server.close()
+        raise CodexCompatibilityError(
+            "RPNH Codex resume requires one direct main-session root")
+    try:
+        with tempfile.TemporaryDirectory(prefix="rpnh-codex-socket-") as raw:
+            socket_path = Path(raw) / "app.sock"
+            with unix_socket_address(
+                    socket_path, visible_to_child_process=True) as address:
+                async with websockets.unix_serve(server.handle, address):
+                    socket_path.chmod(0o600)
+                    process = await asyncio.create_subprocess_exec(
+                        *codex_frontend_argv(
+                            binary, address, server.frontend_model_id))
+                    try:
+                        return int(await process.wait())
+                    finally:
+                        await server.stop_active_turns()
     finally:
-        if (socket_identity is not None and socket_path.exists()
-                and socket_path.stat().st_ino == socket_identity):
-            socket_path.unlink()
+        server.close()
 
 
 def run_codex_frontend(

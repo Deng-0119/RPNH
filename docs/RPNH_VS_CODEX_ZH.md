@@ -50,7 +50,9 @@ Workflow 不是预装的项目 pipeline。Designer 为当前任务声明一个�
 的别名。
 
 Registry 边界跟随执行 ownership。一个 Codex conversation thread 对应一个主会话
-Registry。每个可独立切换的 agent 或 workflow 都有自己的 Registry。主 Registry 只包含
+Registry 的直接 root。Codex 退出后，Basic 或 OpenCode 可重开完全相同的 root，不复制
+Registry；共享 owner lease 会阻止并发可写前端。每个可独立切换的 agent 或 workflow
+都有自己的 Registry。主 Registry 只包含
 相对链接／索引、可选的来源 turn，以及 child Registry 可读取后的精确 task/run 引用；
 不吸收 child 的 event history、tokens、workspace 或 final-result authority。
 

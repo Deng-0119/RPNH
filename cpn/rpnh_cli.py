@@ -321,7 +321,7 @@ def _task_command(
   /task ID resume              resume an owner-stopped task from Registry
   /status | /result | /net | /message | /stop | /resume
                                operate on the selected child task
-  /resume                      with main selected, continue its paused turn
+  /resume                      with main selected, settle terminal evidence or continue a paused turn
   /rollback                    with main selected, return to its prior completed turn
   TEXT                         talk to main, or message the selected single-agent
   /quit                        leave the main session without stopping tasks""")
@@ -396,7 +396,18 @@ def _task_command(
                 session, state.selected_task_id, "resume", None)
             return True
         try:
-            decision, task = session.resume_paused_turn()
+            snapshot = session.active_turn_snapshot()
+            if snapshot is not None and snapshot.state == "terminal":
+                reconciliation = session.reconcile_active_turn()
+                if (reconciliation.state != "committed"
+                        or reconciliation.decision is None):
+                    raise RuntimeError(
+                        "terminal main turn did not commit during explicit "
+                        "reconciliation")
+                decision, task = (
+                    reconciliation.decision, reconciliation.child)
+            else:
+                decision, task = session.resume_paused_turn()
         except MainSessionPaused:
             print("[RPNH main turn paused again; its checkpoint is retained]")
             return True
@@ -477,6 +488,80 @@ def _run_turn(session: MainSession, text: str) -> bool:
     return True
 
 
+def _run_basic_frontend(
+        args: argparse.Namespace, root: Path, execution: Path,
+) -> int:
+    """Own one canonical MainSession root for the Basic frontend lifetime."""
+
+    from cpn.rpnh.session_access import (
+        MainSessionOwnerLease,
+        inspect_main_session_root,
+    )
+
+    lease = None
+    try:
+        if args.resume is not None:
+            descriptor = inspect_main_session_root(root)
+            if descriptor.execution_config_path != execution.resolve():
+                raise ValueError(
+                    "resume execution profile differs from the session's "
+                    "persisted exact profile")
+            lease = MainSessionOwnerLease(descriptor)
+            session = MainSession.resume(root, execution)
+            snapshot = session.active_turn_snapshot()
+            if (snapshot is not None and snapshot.state in {
+                    "accepted", "pending_start", "running"}):
+                raise RuntimeError(
+                    "resumed main-session turn remains active; resolve or "
+                    "interrupt it before accepting new input")
+            if (snapshot is not None and snapshot.state not in {
+                    "terminal", "stopped_by_owner"}):
+                raise RuntimeError(
+                    "unsupported resumed main-session state: "
+                    f"{snapshot.state}")
+        else:
+            lease = MainSessionOwnerLease.reserve_for_creation(root)
+            session = MainSession(
+                root, execution, owner_root_reserved=True)
+
+        print("RPNH — AI assistant")
+        print(f"session: {session.root}")
+        print("Type /help for task controls.")
+        if (args.resume is not None and snapshot is not None
+                and snapshot.state == "terminal"):
+            print(
+                "[RPNH main turn has terminal child evidence; use /resume "
+                "to commit it and any declared child launch]")
+        if args.prompt is not None:
+            return 0 if _run_turn(session, args.prompt) else 1
+        frontend_state = _BasicFrontendState()
+        while True:
+            try:
+                focus = frontend_state.selected_task_id or "main"
+                line = input(f"RPNH[{focus}] › ").strip()
+            except EOFError:
+                print()
+                return 0
+            except KeyboardInterrupt:
+                print("\nUse /quit to leave; active child tasks are not stopped.")
+                continue
+            if not line:
+                continue
+            if line == "/quit":
+                return 0
+            try:
+                if not _task_command(session, line, frontend_state):
+                    if frontend_state.selected_task_id is None:
+                        _run_turn(session, line)
+                    else:
+                        _route_selected_input(session, frontend_state, line)
+            except (OSError, RuntimeError, TypeError, ValueError) as exc:
+                print(f"error: {exc}", file=sys.stderr)
+    finally:
+        if lease is not None:
+            lease.close()
+
+
 def main(argv: list[str] | None = None) -> int:
     arguments = list(sys.argv[1:] if argv is None else argv)
     from cpn.rpnh.onboarding import SetupCancelled
@@ -530,14 +615,24 @@ def main(argv: list[str] | None = None) -> int:
     parser = _parser()
     args = parser.parse_args(arguments)
     try:
-        if args.resume is not None and args.execution is None:
-            if args.save_default:
-                raise ValueError("--save-default requires --execution")
-            execution = MainSession._persisted_execution_config_path(
-                args.resume)
-            if execution is None:
+        if args.resume is not None:
+            persisted_execution = (
+                MainSession._persisted_execution_config_path(args.resume))
+            if persisted_execution is None:
                 raise ValueError(
                     "RPNH resume requires a persisted execution profile")
+            if args.execution is None:
+                if args.save_default:
+                    raise ValueError("--save-default requires --execution")
+                execution = persisted_execution
+            else:
+                execution = resolve_execution_path(
+                    args.execution, save_default=args.save_default,
+                    allow_interactive_setup=False)
+                if execution.resolve() != persisted_execution.resolve():
+                    raise ValueError(
+                        "resume execution profile differs from the session's "
+                        "persisted exact profile")
         else:
             execution = resolve_execution_path(
                 args.execution,
@@ -564,8 +659,7 @@ def main(argv: list[str] | None = None) -> int:
     frontend = "basic" if args.prompt is not None else _choose_frontend(args.frontend)
     root = (args.resume or args.session_dir or (
         Path.cwd() / ".rpnh" / "sessions" / (
-            ("opencode-" if frontend == "opencode" else "session-")
-            + uuid4().hex[:12])))
+            "session-" + uuid4().hex[:12])))
     if frontend == "opencode":
         try:
             from cpn.frontend.opencode_launcher import run_opencode_frontend
@@ -581,52 +675,9 @@ def main(argv: list[str] | None = None) -> int:
         except (OSError, RuntimeError, TypeError, ValueError) as exc:
             parser.error(str(exc))
     try:
-        session = (
-            MainSession.resume(root, execution)
-            if args.resume is not None else
-            MainSession(root, execution))
-        if args.resume is not None:
-            reconciliation = session.reconcile_active_turn()
-            if reconciliation.state in {
-                    "accepted", "pending_start", "running"}:
-                raise RuntimeError(
-                    "resumed main-session turn remains active; resolve or "
-                    "interrupt it before accepting new input")
-            if reconciliation.state not in {
-                    "idle", "committed", "interrupted", "paused"}:
-                raise RuntimeError(
-                    "unsupported resumed main-session state: "
-                    f"{reconciliation.state}")
+        return _run_basic_frontend(args, root, execution)
     except (OSError, RuntimeError, TypeError, ValueError) as exc:
         parser.error(str(exc))
-    print("RPNH — AI assistant")
-    print(f"session: {session.root}")
-    print("Type /help for task controls.")
-    if args.prompt is not None:
-        return 0 if _run_turn(session, args.prompt) else 1
-    frontend_state = _BasicFrontendState()
-    while True:
-        try:
-            focus = frontend_state.selected_task_id or "main"
-            line = input(f"RPNH[{focus}] › ").strip()
-        except EOFError:
-            print()
-            return 0
-        except KeyboardInterrupt:
-            print("\nUse /quit to leave; active child tasks are not stopped.")
-            continue
-        if not line:
-            continue
-        if line == "/quit":
-            return 0
-        try:
-            if not _task_command(session, line, frontend_state):
-                if frontend_state.selected_task_id is None:
-                    _run_turn(session, line)
-                else:
-                    _route_selected_input(session, frontend_state, line)
-        except (OSError, RuntimeError, TypeError, ValueError) as exc:
-            print(f"error: {exc}", file=sys.stderr)
 
 
 if __name__ == "__main__":

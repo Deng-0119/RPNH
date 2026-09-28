@@ -28,14 +28,23 @@ metadata:
 ```bash
 python -m pip install .
 rpnh --help
-rpnh --frontend opencode --session-dir ./rpnh-opencode-state
-# 退出前端后，重开持久化会话：
-rpnh --frontend opencode --resume ./rpnh-opencode-state
+rpnh --frontend opencode --session-dir ./my-rpnh-session
+# 退出任意 RPNH 前端后，重开同一个 MainSession：
+rpnh --frontend opencode --resume ./my-rpnh-session
 ```
 
 启动前端/catalog 本身不提交问题；提交问题、启动任务或显式恢复可能调用已选 RPNH 模型/工具。本交互前端拒绝 `--prompt`，一次性执行仍使用 `--frontend basic`。basic/Codex 保持委托现有 CLI；不替换已有 runtime、Registry schema、provider 实现或默认前端。
 
-前端根目录下的 `threads/ses_*` 分别是现有 MainSession 的独立根目录。`rpnh --frontend opencode --resume` 接收前端顶层根目录，不能直接替换为 basic/Codex 根目录。进程锁阻止第二个此类前端 owner 同时持有同一前端根目录。
+传入路径就是直接的 canonical MainSession root，与 Basic、Codex 接收的路径相同。因此，
+前一个前端退出后，其创建的会话可以由另两个前端查看并继续。OpenCode 只为该 root 投影
+一个展示 session，不创建 `threads/ses_*` Registry 副本。共享的非阻塞 owner lease 会
+拒绝第二个可写前端。协议 `ses_*` ID 与 `.frontends/codex.json` 都只是展示 metadata。
+
+resume、list 与历史投影都是观察操作：不会调用模型，不会提交 terminal main turn，也不会
+补偿启动 committed child。从其它前端继承的 terminal turn 会保持可见的 terminal 状态，
+直到用户显式执行 `/rpnh-resume`；该明确动作才可以提交主答案并启动已经声明的 child。
+缺少 OpenCode request evidence 的历史 turn 仍可见，但其逐 turn 模型证据会标为 unavailable，
+不会根据当前默认 profile 或 sidecar 猜测补全。
 
 ## 对话、身份与重试
 
@@ -65,7 +74,12 @@ abort 只请求精确的主回合 owner 停止；同一 owner 生命周期内的
 
 ## 模型、资源与禁用能力
 
-所有可选择的用户 RPNH profile 都展示在一个仅用于界面的 `rpnh` provider 下。创建 session 时可选择 profile，也可以在主回合之间切换；活跃回合中禁止切换。每个 turn 都保留其 selection 证据。未知 profile、凭据未就绪、非 RPNH agent 和 variant 均会被拒绝。在新执行前，以及重开任何可能补偿启动的持久化 owner 前检查 RPNH profile 身份。客户端不接收 provider key、凭据变量名、endpoint、宿主 route 或私有 profile 路径。
+所有可选择的用户 RPNH profile 都展示在一个仅用于界面的 `rpnh` provider 下。创建 session
+时可选择 profile，也可以在主回合之间切换；活跃回合中禁止切换。OpenCode 来源的 turn
+保留其 request selection evidence；从 Registry 投影的其它历史不会被补写从未登记的证据。
+未知 profile、凭据未就绪、非 RPNH agent 和 variant 均会被拒绝。在新执行前，以及任何可能
+补偿启动的显式动作前检查 RPNH profile 身份。客户端不接收 provider key、凭据变量名、
+endpoint、宿主 route 或私有 profile 路径。
 
 本版 permission reply 与附件不可用：没有伪造审批、默认放行、直接 file URL 准入或附件转文本降级。OpenCode 原生 shell、fork、revert、share、summarize、初始化、provider 登录及配置写入均不支持，不会回落到其它执行后端。LSP/MCP/formatter/workspace 空目录仅是兼容投影，不宣称展示了 RPNH 的已注册扩展。
 

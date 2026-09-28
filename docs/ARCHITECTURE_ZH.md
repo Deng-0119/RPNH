@@ -19,23 +19,30 @@ PetriNet viewer 都是 RPNH-owned 状态之上的界面，而不是彼此独立�
 
 ```text
 stock Codex TUI 0.155.0 ─┐
-basic CLI ───────────────┼─> MainSession Registry ─> TaskControl
-                         │                            │
-provider profile ────────┘                            ├─> independent agent task
-                                                      └─> graph workflow task
-                                                               │
-                                                               v
-                                           Harness + typed PetriNet + Registry
-                                                               ^
+OpenCode TUI 1.18.32 ────┼─> 单一 canonical MainSession Registry ─> TaskControl
+basic CLI ───────────────┤                                        │
+provider profile ────────┘                                        ├─> independent agent task
+                                                                  └─> graph workflow task
+                                                                           │
+                                                                           v
+                                                       Harness + typed PetriNet + Registry
+                                                                           ^
 read-only PetriNet CLI/viewer ──────────────────────────────────┘
 ```
 
 ## 权威层次
 
-前端只负责终端交互。每个 Codex conversation thread 一一对应一个 RPNH 主会话
-Registry。`MainSession` 负责该持久 thread、turn 顺序、已提交会话历史、选中的
-execution profile，以及指向 child task 的 Registry-native 链接。一个前端容器可以
-保存多个 thread，但不会合并它们的 Registry。
+前端只负责终端交互。一个直接 session root 一一对应一个 RPNH 主会话 Registry。
+`MainSession` 负责该持久 thread、turn 顺序、已提交会话历史、选中的 execution
+profile，以及指向 child task 的 Registry-native 链接。Basic、Codex 与 OpenCode
+可以依次打开同一个 root；不会把它复制到各前端私有的 thread 容器。协议 ID 与可选
+sidecar 仅是展示 metadata，不是执行权威。
+
+新 canonical session root 在成为有效 Registry 之前就持有非阻塞 owner lease；该 lease
+会拒绝两个可写前端并发打开同一会话。
+单纯重开、列出或投影会话不会补偿启动已提交 child。只有后续明确执行动作（包括用户
+显式 resume）才会执行 committed-launch compensation 或提交 terminal turn。独立 child
+owner 仍然彼此隔离，并按各自 Registry checkpoint 继续。
 
 每个 main turn 的模型执行都运行在自己的受监督 Registry root 中。主 Registry 保存
 turn lineage，以及提交 assistant answer 所需的精确 terminal receipt。同样，每个独立

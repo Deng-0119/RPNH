@@ -7,7 +7,7 @@ registered command identities; it does not create another event store or loop.
 from __future__ import annotations
 
 from concurrent.futures import Future, TimeoutError as FutureTimeout
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime
 import json
 import os
@@ -17,7 +17,13 @@ import re
 import threading
 import time
 from typing import Any, Callable, Mapping
-from uuid import NAMESPACE_URL, uuid4, uuid5
+from uuid import NAMESPACE_URL, uuid5
+
+from cpn.rpnh.session_access import (
+    MainSessionOwnerLease,
+    inspect_main_session_root,
+    stable_frontend_session_id,
+)
 
 
 class FrontendError(RuntimeError):
@@ -61,17 +67,20 @@ class _Session:
     main_control: Any
     failure: str | None = None
     stop_requested_for: str | None = None
+    owner_lease: MainSessionOwnerLease | None = None
+    owned_main_turn_task_ids: set[str] = field(default_factory=set)
 
 
 class RegistryFrontendApplication:
-    """One application owner over independent MainSession/TaskControl instances."""
+    """One OpenCode presentation owner over one canonical MainSession."""
 
     def __init__(self, root: Path, execution: Path, *, resume: bool = False) -> None:
-        import fcntl
         from cpn.rpnh.main_session import MainSession
         from cpn.rpnh.task_control import TaskControl
         from cpn.rpnh.user_config import discover_profiles, profile_for_path
-        self.root, self.execution = root.expanduser().resolve(), execution.expanduser().resolve()
+        requested_root = root.expanduser()
+        self.root = requested_root.resolve()
+        self.execution = execution.expanduser().resolve()
         active_profile = profile_for_path(self.execution)
         installed = discover_profiles()
         self.profiles = (
@@ -89,51 +98,61 @@ class RegistryFrontendApplication:
         self.default_selection = active_profile.selection_id
         self._sessions: dict[str, _Session] = {}
         self._main_session_type, self._task_control_type = MainSession, TaskControl
-        self._lock = None
         self._initial_identities = {
             profile.selection_id: self._execution_identity(profile.path)
             for profile in self.profiles
         }
-        if resume:
-            if not (self.root / "threads").is_dir():
-                raise FrontendError("not_frontend_root", "Resume needs an existing OpenCode frontend root.")
-        elif self.root.exists():
-            raise FrontendError("root_exists", "A new frontend needs an absent root.")
-        else:
-            self.root.mkdir(parents=True, mode=0o700)
-            (self.root / "threads").mkdir(mode=0o700)
-        lock_path = self.root / ".frontend-owner.lock"
-        if lock_path.is_symlink():
-            raise FrontendError("owner_lock", "The owner lock must not be a symlink.")
-        self._lock = lock_path.open("a+b")
+        if not resume:
+            if os.path.lexists(requested_root):
+                raise FrontendError(
+                    "root_exists", "A new main session needs an absent root.")
+            return
+
         try:
-            fcntl.flock(self._lock.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
-            if resume:
-                paths = [p for p in sorted((self.root / "threads").iterdir())
-                         if re.fullmatch(r"ses_[0-9a-f]{32}", p.name)]
-                # Both constructors can compensate durable launches. Check ALL
-                # saved execution identities before opening any runnable owner.
-                for path in paths:
-                    if path.is_symlink() or not path.is_dir():
-                        raise FrontendError("invalid_session", "Invalid session directory.")
-                    self._validate_saved_profile(path)
-                for path in paths:
-                    session = MainSession.resume(path)
-                    self._sessions[path.name] = _Session(
-                        session,
-                        TaskControl(
-                            session.child_path_root
-                            / "main-turn-control"),
-                    )
+            record = inspect_main_session_root(requested_root)
+        except (OSError, TypeError, ValueError) as exc:
+            raise FrontendError(
+                "not_main_session_root",
+                "Resume needs one direct canonical RPNH main-session root.",
+            ) from exc
+        self.root = record.root
+        self._validate_saved_profile(record.root)
+        try:
+            lease = MainSessionOwnerLease.acquire(record)
+        except (OSError, RuntimeError, TypeError, ValueError) as exc:
+            raise FrontendError(
+                "session_owned", "The main session already has a writable owner.") from exc
+        try:
+            # MainSession.resume is deliberately effect-free.  A temporary
+            # control prevents TaskControl's pending-launch recovery from
+            # running during construction; observational indexes are attached
+            # only after the canonical child path is known.
+            session = MainSession.resume(record.root, task_control=object())
+            session.task_control = self._observational_control(
+                session.child_path_root / "tasks")
+            sid = stable_frontend_session_id(record)
+            self._sessions[sid] = _Session(
+                session,
+                self._observational_control(
+                    session.child_path_root / "main-turn-control"),
+                owner_lease=lease,
+            )
         except BaseException:
-            self.close()
+            lease.close()
             raise
 
     def close(self) -> None:
         # Exiting the UI does not signal independently owned workers.
-        if self._lock is not None:
-            self._lock.close()
-            self._lock = None
+        for state in self._sessions.values():
+            if state.owner_lease is not None:
+                state.owner_lease.close()
+                state.owner_lease = None
+
+    def _observational_control(self, root: Path) -> Any:
+        """Load durable handles without compensating a pending worker launch."""
+
+        return self._task_control_type(
+            root, recover_pending_launches=False)
 
     def configuration(self) -> dict[str, Any]:
         return {
@@ -215,25 +234,42 @@ class RegistryFrontendApplication:
         return self._sessions[sid]
 
     def create_session(self, selection_id: str | None = None) -> str:
+        if self._sessions:
+            raise FrontendError(
+                "session_exists",
+                "This OpenCode application is already bound to its one main session.")
         profile = self._profile(selection_id or self.default_selection)
         initial = self._initial_identities[profile.selection_id]
         if self._execution_identity(profile.path) != initial:
             raise FrontendError("selection_drift", "RPNH profile drift was rejected before session creation.")
         if not self._profile_ready(profile):
             raise FrontendError("profile_not_ready", "The selected RPNH profile is not ready.", 400)
-        sid = "ses_" + uuid4().hex
-        path = self.root / "threads" / sid
-        session = self._main_session_type(path, profile.path)
-        self._sessions[sid] = _Session(
-            session,
-            self._task_control_type(
-                session.child_path_root
-                / "main-turn-control"),
-        )
-        return sid
+        lease = None
+        try:
+            lease = MainSessionOwnerLease.reserve_for_creation(self.root)
+            session = self._main_session_type(
+                self.root, profile.path, owner_root_reserved=True)
+            record = inspect_main_session_root(self.root)
+            sid = stable_frontend_session_id(record)
+            self._sessions[sid] = _Session(
+                session,
+                self._observational_control(
+                    session.child_path_root / "main-turn-control"),
+                owner_lease=lease,
+            )
+            return sid
+        except BaseException:
+            if lease is not None:
+                lease.close()
+            raise
 
     def _turns(self, state: _Session) -> list[dict[str, Any]]:
         session = state.session
+        current_profile = self._profiles_by_path.get(
+            session.execution_config_path)
+        if current_profile is None:
+            raise FrontendError(
+                "selection_unavailable", "The session's RPNH profile is unavailable.")
         authority = session._main_thread.recover_thread()
         thread = session._version_ref(authority["thread_ref"])
         events = {str(e.payload.get("version_id")): e
@@ -254,7 +290,9 @@ class RegistryFrontendApplication:
                 command = {}
             if not isinstance(command, dict):
                 command = {}
-            key, identity, selection_id = command.get("caller_idempotency_key", ""), None, None
+            key = command.get("caller_idempotency_key", "")
+            identity, selection_id = None, current_profile.selection_id
+            model_evidence = "unavailable"
             if isinstance(key, str) and key.startswith("frontend-request/v2:"):
                 try:
                     request_evidence = json.loads(
@@ -270,17 +308,16 @@ class RegistryFrontendApplication:
                 identity = request_evidence["key"]
                 selection_id = request_evidence["selection"]
                 self._profile(selection_id)
+                model_evidence = "frontend-request/v2"
                 material = command.get("material")
                 if (command.get("authority") != "main_thread/v1" or command.get("command") != "accept_turn"
                         or not isinstance(material, dict) or material.get("user_input") != first["user_input"]):
                     raise FrontendError("invalid_evidence", "Submission evidence differs from its Registry turn.")
-            else:
-                raise FrontendError(
-                    "missing_evidence", "A turn lacks current frontend submission evidence.")
             text, kind = session._turn_input(first["user_input"])
             ordinal = int(first["ordinal"])
             item = {"ordinal": ordinal, "key": identity, "text": text, "kind": kind,
                     "model": self._public_profile(self._profile(selection_id)),
+                    "model_evidence": model_evidence,
                     "state": current["state"], "created": _milliseconds(event.recorded_at),
                     "updated": _milliseconds(latest.recorded_at),
                     "turn_ref": {"entity_type": ref.entity_type, "logical_id": str(ref.entity_id),
@@ -383,7 +420,8 @@ class RegistryFrontendApplication:
         if handle is None:
             if spec.run_dir.exists() and any(spec.run_dir.iterdir()):
                 raise FrontendError("unknown_outcome", "An unowned attempt exists; no automatic replay.")
-            state.main_control.start(spec)
+            started = state.main_control.start(spec)
+            state.owned_main_turn_task_ids.add(started.task_id)
         state.failure = None
         return ordinal
 
@@ -394,15 +432,20 @@ class RegistryFrontendApplication:
                 if snap is None:
                     continue
                 handle = self._matching_handle(state.main_control, snap.attempt_path)
-                if snap.state == "terminal":
+                owned = (
+                    handle is not None
+                    and handle.task_id in state.owned_main_turn_task_ids)
+                if snap.state == "terminal" and owned:
                     self._check_model(state.session)
                     state.session.reconcile_active_turn()
+                    state.owned_main_turn_task_ids.discard(handle.task_id)
                     state.failure = None
-                elif snap.state == "running" and handle is not None and handle.process.poll() is not None:
+                elif (snap.state == "running" and owned
+                        and handle.process.poll() is not None):
                     if state.session.reconcile_active_turn().state == "running":
                         state.session.fail_active_turn()
                 elif snap.state in {"accepted", "pending_start", "running"} and (
-                        handle is None or handle.process.poll() is not None):
+                        not owned or handle.process.poll() is not None):
                     state.failure = "reconciliation_required"
             except Exception:
                 state.failure = "reconciliation_required"  # Never provider exception text.
@@ -557,6 +600,16 @@ class RegistryFrontendApplication:
             return getattr(session.task_control, action)(task_id)
         if name in {"rpnh-resume", "rpnh-rollback"} and not words:
             snap = session.active_turn_snapshot()
+            if (name == "rpnh-resume" and snap is not None
+                    and snap.state == "terminal"):
+                self._select_profile(session, selected.selection_id)
+                self._check_model(session)
+                reconciliation = session.reconcile_active_turn()
+                if reconciliation.state != "committed":
+                    raise FrontendError(
+                        "reconciliation_required",
+                        "Terminal evidence did not commit the main turn.")
+                return {"status": "main_terminal_evidence_committed"}
             if snap is None or snap.state != "stopped_by_owner":
                 raise FrontendError("not_paused", "The main turn is not paused at a Registry checkpoint.")
             if name == "rpnh-rollback":
@@ -580,15 +633,19 @@ class RegistryFrontendApplication:
             snap = state.session.active_turn_snapshot()
             if snap is None:
                 continue
-            if snap.state == "terminal":
+            handle = self._matching_handle(
+                state.main_control, snap.attempt_path)
+            owned = (
+                handle is not None
+                and handle.task_id in state.owned_main_turn_task_ids)
+            if snap.state == "terminal" and owned:
                 state.session.reconcile_active_turn()
+                state.owned_main_turn_task_ids.discard(handle.task_id)
                 continue
             if snap.state == "stopped_by_owner":
                 continue
-            handle = self._matching_handle(state.main_control, snap.attempt_path)
-            if handle is None:
+            if not owned:
                 state.failure = "reconciliation_required"
-                pending.append(state)
                 continue
             reply = state.main_control.stop(handle.task_id, startup_safe=True)
             if reply.get("status") not in {

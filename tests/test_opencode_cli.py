@@ -6,6 +6,8 @@ import pytest
 
 from cpn import rpnh_cli
 from cpn.frontend import opencode_launcher
+from cpn.rpnh.main_session import MainSession
+from test_main_session_registry import _write_execution_profile
 
 
 def _configured(monkeypatch: pytest.MonkeyPatch, execution: Path) -> None:
@@ -59,3 +61,23 @@ def test_opencode_rejects_one_shot_prompt_before_owner_creation(
             "--prompt", "not supported",
         ])
     assert error.value.code == 2
+
+
+def test_cli_resumes_the_same_direct_session_root_with_opencode(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    execution = _write_execution_profile(tmp_path)
+    root = tmp_path / "shared-session"
+    MainSession(root, execution)
+    monkeypatch.setattr(rpnh_cli, "missing_credentials", lambda _path: ())
+    calls = []
+    monkeypatch.setattr(
+        opencode_launcher, "run_opencode_frontend",
+        lambda actual_root, actual_execution, *, resume: (
+            calls.append((actual_root, actual_execution, resume)) or 23),
+    )
+
+    assert rpnh_cli.main([
+        "--frontend", "opencode", "--resume", str(root),
+    ]) == 23
+    assert calls == [(root, execution.resolve(), True)]

@@ -53,7 +53,9 @@ single-agent task is still a real one-transition PetriNet task, not an alias for
 the main thread.
 
 The Registry boundary follows execution ownership. One Codex conversation
-thread maps to one main-session Registry. Every independently switchable agent
+thread maps to one direct main-session Registry root. After Codex exits, Basic
+or OpenCode can reopen that exact root without copying its Registry; a shared
+owner lease prevents concurrent writable frontends. Every independently switchable agent
 or workflow has its own Registry. The main Registry contains only a relative
 link/index, the optional originating turn, and exact task/run references once
 the child Registry is readable; it does not absorb the child's event history,

@@ -11,9 +11,7 @@ import pytest
 from cpn.frontend.codex_app_server import (
     ActiveTurn,
     CodexAppServer,
-    CodexCompatibilityError,
     ThreadState,
-    _run_codex_frontend_async,
 )
 from cpn.rpnh.agent_tasks import AgentStage
 from cpn.rpnh.main_session import (
@@ -23,6 +21,11 @@ from cpn.rpnh.main_session import (
     MainTurnReconciliation,
     MainTurnSnapshot,
 )
+from cpn.rpnh.session_access import (
+    MainSessionOwnerLease,
+    stable_frontend_session_id,
+)
+from cpn.rpnh.task_control import TaskControl
 from cpn.rpnh.user_config import profile_for_path
 
 
@@ -77,12 +80,14 @@ def _write_thread_projection(
         root: Path, *, thread_id: str = "thread-1", turns: object = None,
         execution: Path | None = None,
 ) -> Path:
-    thread_root = root / "threads" / thread_id
-    thread_root.mkdir(parents=True, exist_ok=True)
-    (thread_root / "thread_state.json").write_text(json.dumps({
-        "schema_version": "rpnh/codex_thread_state/v1",
-        "thread_id": thread_id,
-        "model_id": "local-process/test-model",
+    if execution is None:
+        raise ValueError("direct-root test fixture requires an execution profile")
+    MainSession(root, execution)
+    sidecar = root / ".frontends" / "codex.json"
+    sidecar.parent.mkdir(parents=True)
+    sidecar.write_text(json.dumps({
+        "schema_version": "rpnh/codex_frontend_metadata/v1",
+        "protocol_thread_id": thread_id,
         "cwd": str(root),
         "created_at": 100,
         "preview": "",
@@ -90,12 +95,7 @@ def _write_thread_projection(
         "turns": [] if turns is None else turns,
         "attachments": [],
     }), encoding="utf-8")
-    if execution is not None:
-        (thread_root / "execution_profile.json").write_text(json.dumps({
-            "schema_version": "rpnh/main_session_profile/v1",
-            "execution_config_path": str(execution.resolve()),
-        }), encoding="utf-8")
-    return thread_root
+    return root
 
 
 class _RecoverySession:
@@ -118,6 +118,9 @@ class _RecoverySession:
         if self.committed_history is not None:
             self.history = list(self.committed_history)
         return self.reconciliation
+
+    def active_turn_snapshot(self) -> MainTurnSnapshot | None:
+        return self.reconciliation.snapshot
 
 
 def test_codex_0155_handshake_projects_only_rpnh_backend(
@@ -350,135 +353,161 @@ def test_codex_frontend_attachment_crud_cannot_fake_registered_inputs(
     assert not (tmp_path / "session").exists()
 
 
-def test_codex_resume_rebuilds_transcript_from_main_session_registry(
+def test_codex_projects_one_direct_basic_main_session(tmp_path: Path) -> None:
+    execution = _local_profile(tmp_path / "profiles")
+    root = tmp_path / "session"
+    MainSession(root, execution)
+
+    server = CodexAppServer(root, execution)
+    thread_id = stable_frontend_session_id(root)
+
+    assert tuple(server._threads) == (thread_id,)
+    assert server._threads[thread_id].session.root == root.resolve()
+    assert not (root / "threads").exists()
+    server.close()
+
+
+def test_codex_fresh_thread_is_direct_and_rejects_a_second_thread(
+        tmp_path: Path,
+) -> None:
+    execution = _local_profile(tmp_path / "profiles")
+    root = tmp_path / "session"
+    server = CodexAppServer(root, execution)
+    socket = _FakeWebSocket([])
+
+    asyncio.run(server._start_thread(socket, "first", {}))
+    state = next(iter(server._threads.values()))
+    assert state.session.root == root.resolve()
+    assert state.thread_id == stable_frontend_session_id(root)
+    assert not (root / "threads").exists()
+    with pytest.raises(ValueError, match="already bound"):
+        asyncio.run(server._start_thread(socket, "second", {}))
+    server.close()
+
+
+def test_codex_rejects_frontend_container_root(tmp_path: Path) -> None:
+    execution = _local_profile(tmp_path / "profiles")
+    container = tmp_path / "container"
+    MainSession(container / "threads" / "legacy", execution)
+
+    with pytest.raises(ValueError, match="container roots"):
+        CodexAppServer(container, execution)
+
+
+def test_codex_resume_rebuilds_transcript_and_sanitizes_forged_sidecar(
         tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     execution = _local_profile(tmp_path / "profiles")
     root = tmp_path / "session"
-    thread_root = _write_thread_projection(
-        root, turns="forged UI transcript", execution=execution)
+    _write_thread_projection(
+        root, thread_id="forged-id", turns=[{"text": "forged"}],
+        execution=execution)
     session = _RecoverySession(
-        thread_root, execution,
-        MainTurnReconciliation("idle", None),
+        root, execution, MainTurnReconciliation("idle", None),
         history=[("user", "authoritative question"),
                  ("assistant", "authoritative answer")],
     )
     monkeypatch.setattr(
         "cpn.frontend.codex_app_server.MainSession.resume",
-        lambda _root: session,
+        lambda _root, _execution=None, **_kwargs: session,
     )
 
     server = CodexAppServer(root, execution)
-
-    turn = server._threads["thread-1"].turns[0]
-    assert turn["status"] == "completed"
+    state = next(iter(server._threads.values()))
+    turn = state.turns[0]
+    assert state.thread_id == stable_frontend_session_id(root)
     assert turn["items"][0]["content"][0]["text"] == (
         "authoritative question")
     assert turn["items"][1]["text"] == "authoritative answer"
+
+    server._persist_thread(state)
     persisted = json.loads(
-        (thread_root / "thread_state.json").read_text(encoding="utf-8"))
-    assert persisted["turns"] == server._threads["thread-1"].turns
+        (root / ".frontends" / "codex.json").read_text(encoding="utf-8"))
+    assert set(persisted) == {
+        "schema_version", "protocol_thread_id", "cwd", "created_at",
+        "preview", "name", "attachments",
+    }
+    assert "turns" not in persisted
+    assert "model_id" not in persisted
+    server.close()
+
+    (root / ".frontends" / "codex.json").unlink()
+    reopened = CodexAppServer(root, execution)
+    reopened_turn = next(iter(reopened._threads.values())).turns[0]
+    assert reopened_turn["items"][1]["text"] == "authoritative answer"
+    reopened.close()
 
 
-def test_codex_load_reports_unavailable_profile_without_hiding_valid_thread(
+def test_codex_releases_lease_on_close_and_constructor_failure(
         tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     execution = _local_profile(tmp_path / "profiles")
     root = tmp_path / "session"
-    missing_execution = tmp_path / "missing" / "execution.json"
-    valid_root = _write_thread_projection(
-        root, thread_id="thread-valid", execution=execution)
-    missing_root = _write_thread_projection(
-        root, thread_id="thread-missing", execution=missing_execution)
-    missing_projection = missing_root / "thread_state.json"
-    before = missing_projection.read_bytes()
-    sessions = {
-        "thread-valid": _RecoverySession(
-            valid_root, execution, MainTurnReconciliation("idle", None)),
-        "thread-missing": _RecoverySession(
-            missing_root, missing_execution,
-            MainTurnReconciliation("idle", None)),
-    }
-    monkeypatch.setattr(
-        "cpn.frontend.codex_app_server.MainSession.resume",
-        lambda thread_root: sessions[thread_root.name],
-    )
-
+    MainSession(root, execution)
     server = CodexAppServer(root, execution)
+    with pytest.raises(RuntimeError, match="owner lease"):
+        MainSessionOwnerLease(root)
+    server.close()
+    with MainSessionOwnerLease(root):
+        pass
 
-    assert tuple(server._threads) == ("thread-valid",)
-    assert server.thread_load_failures == (
-        "persisted_profile_unavailable",)
-    diagnostic = server.thread_load_diagnostic()
-    assert diagnostic == (
-        "1 persisted thread(s) were not loaded "
-        "(persisted_profile_unavailable=1)")
-    assert "thread-missing" not in diagnostic
-    assert str(tmp_path) not in diagnostic
-    assert missing_projection.read_bytes() == before
+    def fail_resume(*_args, **_kwargs):
+        raise RuntimeError("resume failed")
+
+    monkeypatch.setattr(
+        "cpn.frontend.codex_app_server.MainSession.resume", fail_resume)
+    with pytest.raises(RuntimeError, match="resume failed"):
+        CodexAppServer(root, execution)
+    with MainSessionOwnerLease(root):
+        pass
 
 
-def test_codex_resume_fails_loud_when_all_persisted_profiles_unavailable(
+def test_codex_resume_projection_starts_no_worker_or_reconciliation(
         tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     execution = _local_profile(tmp_path / "profiles")
     root = tmp_path / "session"
-    missing_execution = tmp_path / "missing" / "execution.json"
-    thread_root = _write_thread_projection(
-        root, execution=missing_execution)
-    projection = thread_root / "thread_state.json"
-    before = projection.read_bytes()
-    session = _RecoverySession(
-        thread_root, missing_execution,
-        MainTurnReconciliation("idle", None),
-    )
+    MainSession(root, execution)
+
+    def forbidden(*_args, **_kwargs):
+        raise AssertionError("resume projection must not start or reconcile")
+
+    recovery_modes: list[bool] = []
+    original_init = TaskControl.__init__
+
+    def record_task_control_mode(self, *args, **kwargs):
+        recovery_modes.append(kwargs.get("recover_pending_launches", True))
+        return original_init(self, *args, **kwargs)
+
+    monkeypatch.setattr(TaskControl, "__init__", record_task_control_mode)
     monkeypatch.setattr(
-        "cpn.frontend.codex_app_server.MainSession.resume",
-        lambda _root: session,
-    )
-    monkeypatch.setattr(
-        "cpn.frontend.codex_app_server.resolve_codex_binary",
-        lambda _value=None: "/usr/bin/true",
-    )
-
-    with pytest.raises(CodexCompatibilityError) as raised:
-        asyncio.run(_run_codex_frontend_async(
-            root, execution, codex_binary="ignored", resume=True))
-
-    message = str(raised.value)
-    assert "no valid persisted threads" in message
-    assert "persisted_profile_unavailable=1" in message
-    assert "thread-1" not in message
-    assert str(tmp_path) not in message
-    assert projection.read_bytes() == before
-
-
-def test_codex_unavailable_exact_profile_does_not_touch_real_session(
-        tmp_path: Path,
-) -> None:
-    execution = _local_profile(tmp_path / "profiles", model="same-model")
-    orphan_execution = _local_profile(
-        tmp_path / "orphan-profiles", model="same-model")
-    root = tmp_path / "session"
-    thread_root = root / "threads" / "thread-orphan"
-    MainSession(thread_root, orphan_execution)
-    _write_thread_projection(
-        root, thread_id="thread-orphan", execution=orphan_execution)
-    before = {
-        path.relative_to(thread_root): path.read_bytes()
-        for path in thread_root.rglob("*") if path.is_file()
-    }
-
+        "cpn.frontend.codex_app_server.TaskControl.start", forbidden)
+    monkeypatch.setattr(MainSession, "reconcile_active_turn", forbidden)
     server = CodexAppServer(root, execution)
+    thread_id = next(iter(server._threads))
+    socket = _FakeWebSocket([{
+        "id": "initialize",
+        "method": "initialize",
+        "params": {
+            "clientInfo": {"name": "codex-tui", "version": "0.155.0"},
+        },
+    }, {
+        "method": "initialized",
+    }, {
+        "id": 1, "method": "thread/list", "params": {},
+    }, {
+        "id": 2, "method": "thread/read",
+        "params": {"threadId": thread_id},
+    }, {
+        "id": 3, "method": "thread/resume",
+        "params": {"threadId": thread_id},
+    }])
 
-    after = {
-        path.relative_to(thread_root): path.read_bytes()
-        for path in thread_root.rglob("*") if path.is_file()
-    }
-    assert server._threads == {}
-    assert server.thread_load_failures == (
-        "persisted_profile_unavailable",)
-    assert after == before
+    asyncio.run(server.handle(socket))
+
+    assert all("error" not in item for item in socket.sent if "id" in item)
+    assert recovery_modes == [False, False]
+    server.close()
 
 
 def test_codex_resumed_transcript_preserves_live_launch_annotation(
@@ -494,7 +523,7 @@ def test_codex_resumed_transcript_preserves_live_launch_annotation(
     live_text = CodexAppServer._decision_output(
         MainTurnReconciliation("committed", None, decision, child))
     session = _RecoverySession(
-        root / "threads" / "thread-1", execution,
+        root, execution,
         MainTurnReconciliation("idle", None),
         history=[("user", "do it"), ("assistant", "delegated")],
     )
@@ -502,9 +531,10 @@ def test_codex_resumed_transcript_preserves_live_launch_annotation(
         ("user", "do it"), ("assistant", live_text)]
     monkeypatch.setattr(
         "cpn.frontend.codex_app_server.MainSession.resume",
-        lambda _root: session,
+        lambda _root, _execution=None, **_kwargs: session,
     )
     server = CodexAppServer(root, execution)
+    thread_id = next(iter(server._threads))
     socket = _FakeWebSocket([{
         "id": "initialize",
         "method": "initialize",
@@ -516,7 +546,7 @@ def test_codex_resumed_transcript_preserves_live_launch_annotation(
     }, {
         "id": 1,
         "method": "thread/read",
-        "params": {"threadId": "thread-1"},
+        "params": {"threadId": thread_id},
     }])
 
     asyncio.run(server.handle(socket))
@@ -529,7 +559,7 @@ def test_codex_resumed_transcript_preserves_live_launch_annotation(
         "delegated\n\n[launched task-durable: single_agent]")
 
 
-def test_codex_resume_reconciles_registry_terminal_before_projection(
+def test_codex_resume_observes_terminal_without_reconciliation(
         tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     execution = _local_profile(tmp_path / "profiles")
@@ -555,15 +585,17 @@ def test_codex_resume_reconciles_registry_terminal_before_projection(
     )
     monkeypatch.setattr(
         "cpn.frontend.codex_app_server.MainSession.resume",
-        lambda _root: session,
+        lambda _root, _execution=None, **_kwargs: session,
     )
 
     server = CodexAppServer(root, execution)
 
-    state = server._threads["thread-1"]
-    assert session.reconcile_calls == 1
-    assert state.active is None
-    assert state.turns[0]["items"][1]["text"] == "registered result"
+    state = next(iter(server._threads.values()))
+    assert session.reconcile_calls == 0
+    assert state.active is not None
+    assert state.active.user_text == "finish naturally"
+    assert state.turns == []
+    server.close()
 
 
 def test_codex_resume_restores_only_live_matching_foreground_handle(
@@ -590,7 +622,7 @@ def test_codex_resume_restores_only_live_matching_foreground_handle(
         task_id="task-main", process=SimpleNamespace(poll=lambda: None))
 
     class _Control:
-        def __init__(self, _root: Path) -> None:
+        def __init__(self, _root: Path, **_kwargs) -> None:
             pass
 
         def list(self):
@@ -602,17 +634,18 @@ def test_codex_resume_restores_only_live_matching_foreground_handle(
 
     monkeypatch.setattr(
         "cpn.frontend.codex_app_server.MainSession.resume",
-        lambda _root: session,
+        lambda _root, _execution=None, **_kwargs: session,
     )
     monkeypatch.setattr(
         "cpn.frontend.codex_app_server.TaskControl", _Control)
 
     server = CodexAppServer(root, execution)
 
-    active = server._threads["thread-1"].active
+    active = next(iter(server._threads.values())).active
     assert active is not None
     assert active.user_text == "still running"
     assert active.task_handle is handle
+    server.close()
 
 
 def test_codex_start_failure_keeps_pending_registry_turn_visible(
@@ -777,9 +810,9 @@ def test_codex_interrupt_race_prefers_registry_terminal_evidence(
         item for item in socket.sent if item.get("method") == "turn/completed")
     assert completed["params"]["turn"]["status"] == "completed"
     assert completed["params"]["turn"]["id"] == state.turns[0]["id"]
-    rebuilt = server._committed_turns(
-        state, previous_turns=list(state.turns))
-    assert rebuilt[0]["id"] == "turn-race"
+    rebuilt = server._committed_turns(state)
+    assert rebuilt[0]["id"] != "turn-race"
+    assert rebuilt[0]["items"][1]["text"] == "won naturally"
 
 
 def test_codex_stopped_turn_is_reconciled_without_entering_history(
@@ -834,8 +867,9 @@ def test_codex_stopped_turn_is_reconciled_without_entering_history(
     assert state.active is None
     assert state.turns == []
     persisted = json.loads(
-        (thread_root / "thread_state.json").read_text(encoding="utf-8"))
-    assert persisted["turns"] == []
+        (thread_root / ".frontends" / "codex.json").read_text(
+            encoding="utf-8"))
+    assert "turns" not in persisted
     completed = next(
         item for item in socket.sent if item.get("method") == "turn/completed")
     assert completed["params"]["turn"]["status"] == "interrupted"

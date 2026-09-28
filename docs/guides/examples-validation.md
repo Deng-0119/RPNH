@@ -55,8 +55,11 @@ were preserved outside the repository. The first OpenCode run records zero
 successful responses and remains `submission_unknown`; it was neither counted
 as success nor replayed. A separately authorized replacement used one new
 physical call. During that replacement, a transient child-Registry read exposed
-and validated the frontend reconciliation fix; reopening the same frontend root
-committed the already-terminal result without another model call.
+and validated the then-current frontend reconciliation fix. That historical
+revision committed an already-terminal result while reopening its frontend root,
+without another model call. Current main deliberately changed this boundary:
+reopening the canonical MainSession is observational, and the user must issue
+the explicit frontend resume command to commit terminal evidence.
 
 This record is focused candidate evidence, not a full release suite. Host-path
 PASS means transport, Registry settlement and frontend projection completed; it

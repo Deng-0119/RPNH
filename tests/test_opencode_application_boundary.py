@@ -220,6 +220,25 @@ def test_real_submit_method_persists_identity_before_start_and_deduplicates(boun
     assert app.submit(SID, "request", "explicit:two") == 2 and control.starts == 2
 
 
+def test_foreign_turn_is_visible_without_frontend_request_or_model_evidence(boundary):
+    app, main, _control, _identity = boundary
+    main.accept_turn(
+        thread_ref=main._version_ref({
+            "entity_type": "main_thread/v1", "logical_id": "thread",
+            "version_id": "thread-v1"}),
+        user_input={"text": "created by basic", "required_task_kind": None},
+        expected_ordinal=1,
+        idempotency_key="main-turn-1:accept",
+    )
+
+    turn = app.snapshot()[0]["turns"][0]
+
+    assert turn["text"] == "created by basic"
+    assert turn["key"] is None
+    assert turn["model"]["selection"] == "one"
+    assert turn["model_evidence"] == "unavailable"
+
+
 def test_actual_submission_conflict_and_model_drift(boundary):
     app, main, control, identity = boundary
     app.submit(SID, "request", "explicit:one")

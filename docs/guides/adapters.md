@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: en
   counterpart: adapters_ZH.md
-  revision: "2026-09-26.1"
+  revision: "2026-09-28.1"
   status: source-reviewed-not-final-candidate-acceptance
   basis: "core; adapter differences explicitly labelled"
 ---
@@ -24,6 +24,20 @@ codex --version
 ```
 
 The RPNH launcher uses its compatibility server and existing main-session authority. `rpnh --frontend codex` begins a session and may execute models after input; it is not an offline smoke command. Use `rpnh --frontend basic` for the documented RPNH-specific controls. A Codex model picker is an RPNH configuration projection, not permission to rewrite Codex provider settings or select a different route silently. The optional local-process subscription bridge is a separate provider path, not implied by choosing the TUI.
+
+The subscription bridge gives each firing a temporary private Codex home and
+runtime directory.  Authentication remains a reference to the configured
+source rather than a credential copy; private directories use `0700` and are
+removed with the firing.  This makes local state writable under a read-only
+parent policy but does not bypass the Codex sandbox.  The Linux owner and
+user-namespace environment must still support the selected Codex sandbox;
+otherwise the adapter fails before a terminal model response and retains its
+private failure audit.
+
+Codex receives the same direct MainSession root as Basic and OpenCode. Use
+`--session-dir ROOT` once, then `--resume ROOT` from another frontend only after
+the current owner exits. Codex protocol thread IDs and `.frontends/codex.json`
+are rebuildable presentation metadata; the Registry transcript is authoritative.
 
 ## Managed DSH prerequisites
 This section applies only to a source tree or installed distribution containing `cpn/dsh` and `integrations/dsh`. The integration manifest pins upstream `deepseek-ai/deepseek-harness` revision `ddefc45fbc7f8e46dd73185e68295696d1297887` (`0.1.6-alpha.2`). It records Node 24 as previously tested, engine range `^22.19.0 || >=24.0.0`, and pnpm `11.7.0`. These are integration pins, not claims about the latest upstream release.

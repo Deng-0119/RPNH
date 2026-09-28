@@ -645,6 +645,11 @@ def test_task_control_recovers_pre_spawn_intent_with_same_identity(
     assert intent["launch_state"] == "pending"
     assert intent["pid"] is None
 
+    observed = TaskControl(
+        root, popen_factory=spawn, recover_pending_launches=False)
+    assert len(spawned) == 1
+    assert observed.get(handle.task_id).launch_state == "pending"
+
     recovered = TaskControl(root, popen_factory=spawn)
     recovered_handle = recovered.get(handle.task_id)
 

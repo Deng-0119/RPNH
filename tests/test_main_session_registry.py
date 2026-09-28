@@ -41,6 +41,7 @@ from cpn.rpnh.registry.main_thread import (
     MainThreadRegistry,
 )
 from cpn.rpnh.registry.models import VersionRef
+from cpn.rpnh.session_access import MainSessionOwnerLease
 
 
 def _ref(entity_type: str, logical_kind: str, version_kind: str) -> VersionRef:
@@ -356,6 +357,31 @@ def _new_session(
     )
 
 
+def test_fresh_session_holds_owner_lease_before_registry_becomes_visible(
+        tmp_path: Path,
+) -> None:
+    root = tmp_path / "reserved-session"
+    execution = _write_execution_profile(tmp_path)
+
+    lease = MainSessionOwnerLease.reserve_for_creation(root)
+    try:
+        assert {path.name for path in root.iterdir()} == {
+            MainSession.OWNER_LOCK_FILE}
+        assert root.stat().st_mode & 0o777 == 0o700
+        with pytest.raises(ValueError, match="absent root"):
+            MainSessionOwnerLease.reserve_for_creation(root)
+        session = MainSession(
+            root, execution, owner_root_reserved=True)
+        assert session.root == root.resolve()
+        with pytest.raises(RuntimeError, match="owner lease"):
+            MainSessionOwnerLease(root)
+    finally:
+        lease.close()
+
+    with MainSessionOwnerLease(root):
+        pass
+
+
 def test_new_session_registry_and_prepare_retry_use_exact_attempt(
         tmp_path: Path,
 ) -> None:
@@ -493,6 +519,46 @@ def test_active_turn_resume_rejects_execution_profile_change_without_rewrite(
     assert state_path.read_bytes() == state_before
 
 
+def test_idle_resume_requires_persisted_profile_and_rejects_explicit_change(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    session, root, execution = _new_session(tmp_path)
+    session.prepare_turn("finish this turn")
+    _install_child_observation(monkeypatch, session, "terminal")
+    session.complete_turn(
+        "finish this turn", {"reply": "finished", "task": None})
+    replacement = tmp_path / "replacement-execution.json"
+
+    with pytest.raises(
+            ValueError, match="cannot change the execution profile"):
+        MainSession.resume(root, replacement)
+
+    (root / MainSession.PROFILE_FILE).unlink()
+    session.state_path.unlink()
+    with pytest.raises(ValueError, match="persisted execution profile"):
+        MainSession.resume(root, execution)
+
+
+def test_idle_resume_rejects_in_place_profile_identity_change(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    session, root, execution = _new_session(tmp_path)
+    session.prepare_turn("finish before drift")
+    _install_child_observation(monkeypatch, session, "terminal")
+    session.complete_turn(
+        "finish before drift", {"reply": "finished", "task": None})
+    selection = json.loads(execution.read_text(encoding="utf-8"))
+    adapter = Path(selection["adapter_config_path"])
+    selection["model_condition"] = "changed-idle-session-model"
+    adapter_document = json.loads(adapter.read_text(encoding="utf-8"))
+    adapter_document["model_condition"] = "changed-idle-session-model"
+    execution.write_text(json.dumps(selection), encoding="utf-8")
+    adapter.write_text(json.dumps(adapter_document), encoding="utf-8")
+
+    with pytest.raises(ValueError, match="identity changed"):
+        MainSession.resume(root)
+
+
 def test_active_turn_rejects_in_place_profile_identity_change_before_worker(
         tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -516,6 +582,8 @@ def test_active_turn_rejects_in_place_profile_identity_change_before_worker(
 
     with pytest.raises(ValueError, match="identity changed"):
         MainSession.resume(root)
+    with pytest.raises(ValueError, match="identity changed"):
+        session.set_execution_config(execution)
     with pytest.raises(ValueError, match="identity changed"):
         session.turn("keep this exact route")
 
@@ -702,6 +770,14 @@ def test_direct_agent_launch_gets_an_independent_registry_index(
     reconciled = resumed._main_thread.recover_thread()[
         "child_registry_links"]
     assert len(reconciled) == 1
+    assert len(control.specs) == 1
+    assert reconciled[0]["state"] == "launch_registered"
+
+    resumed.activate_for_execution()
+    reconciled = resumed._main_thread.recover_thread()[
+        "child_registry_links"]
+
+    assert len(control.specs) == 1
     assert reconciled[0]["state"] == "registry_attached"
     assert reconciled[0]["child_task_ref"] == _payload(identity.task_ref)
     assert reconciled[0]["child_run_ref"] == _payload(identity.run_ref)
@@ -711,7 +787,7 @@ def test_direct_agent_launch_gets_an_independent_registry_index(
 
 
 @pytest.mark.parametrize("registered_before_failure", [False, True])
-def test_resume_compensates_committed_child_launch_exactly_once(
+def test_resume_projection_is_effect_free_until_activation_compensates_once(
         tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
         registered_before_failure: bool,
 ) -> None:
@@ -742,6 +818,22 @@ def test_resume_compensates_committed_child_launch_exactly_once(
     resumed_again = MainSession.resume(
         root, execution, task_control=control)
 
+    assert len(control.specs) == 1
+    history = resumed.display_history
+    latest = resumed.latest_committed_reconciliation()
+    assert resumed_again.reconcile_active_turn().state == "idle"
+    assert len(control.specs) == 1
+    if registered_before_failure:
+        assert history[-1] == (
+            "assistant", "launch it\n\n[launched task-child: single_agent]")
+        assert latest.child is control.handle
+    else:
+        assert history[-1] == ("assistant", "launch it")
+        assert latest.child is None
+
+    resumed_again.activate_for_execution()
+    resumed_again.activate_for_execution()
+
     expected_starts = 1 if registered_before_failure else 2
     assert len(control.specs) == expected_starts
     recovered_spec = control.registered_spec
@@ -750,9 +842,72 @@ def test_resume_compensates_committed_child_launch_exactly_once(
     assert recovered_spec.prompt == committed_spec.prompt
     assert recovered_spec.stages == committed_spec.stages
     assert recovered_spec.workflow_graph == committed_spec.workflow_graph
-    assert resumed.display_history[-1] == (
+    assert resumed_again.display_history[-1] == (
         "assistant", "launch it\n\n[launched task-child: single_agent]")
     assert resumed_again.reconcile_active_turn().state == "idle"
+    assert len(control.specs) == expected_starts
+
+
+def test_conflicting_active_request_is_rejected_before_launch_compensation(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    control = _TaskControl()
+    control.fail_once = True
+    session, _root, _execution = _new_session(
+        tmp_path, task_control=control)
+    session.prepare_turn("commit a child")
+    _install_child_observation(monkeypatch, session, "terminal")
+    with pytest.raises(RuntimeError, match="launch failed"):
+        session.complete_turn("commit a child", {
+            "reply": "child committed",
+            "task": {
+                "kind": "single_agent",
+                "prompt": "perform exact work",
+                "instruction": "Return the exact result.",
+            },
+        })
+    assert len(control.specs) == 1
+
+    projection = session._main_thread.recover_thread()
+    session._main_thread.accept_turn(
+        thread_ref=session._version_ref(projection["thread_ref"]),
+        user_input={"text": "expected input", "required_task_kind": None},
+        expected_ordinal=int(projection["next_turn_ordinal"]),
+        idempotency_key="test:accepted-before-prepare",
+    )
+
+    with pytest.raises(ValueError, match="differs from the active"):
+        session.prepare_turn("conflicting input")
+    assert len(control.specs) == 1
+
+
+def test_new_turn_prepare_activates_committed_launch_compensation_once(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    control = _TaskControl()
+    control.fail_once = True
+    session, root, execution = _new_session(
+        tmp_path, task_control=control)
+    session.prepare_turn("commit child first")
+    _install_child_observation(monkeypatch, session, "terminal")
+    with pytest.raises(RuntimeError, match="launch failed"):
+        session.complete_turn("commit child first", {
+            "reply": "child committed",
+            "task": {
+                "kind": "single_agent",
+                "prompt": "perform committed work",
+                "instruction": "Return the exact result.",
+            },
+        })
+    resumed = MainSession.resume(root, execution, task_control=control)
+
+    assert len(control.specs) == 1
+    first = resumed.prepare_turn("start the next turn")
+    second = resumed.prepare_turn("start the next turn")
+
+    assert first == second
+    assert first.run_dir.name == "turn-0002"
+    assert len(control.specs) == 2
 
 
 @pytest.mark.parametrize("projection_state", ["missing", "corrupt", "lying"])

@@ -22,7 +22,7 @@ from cpn.rpnh.provider_setup import (
     build_provider_catalog,
     initialize_provider_catalog,
 )
-from cpn.rpnh.user_config import discover_profiles
+from cpn.rpnh.user_config import discover_profiles, profile_for_path
 
 
 def _recovery() -> dict[str, object]:
@@ -114,6 +114,10 @@ def test_catalog_accepts_arbitrary_provider_and_exact_model_identifiers(
 
     assert result["selection_ids"] == ["future-model"]
     assert profiles[0].selectable is True
+    unrelated = tmp_path / "unrelated-profiles"
+    unrelated.mkdir()
+    monkeypatch.setenv("RPNH_PROFILE_DIR", str(unrelated))
+    assert profile_for_path(profiles[0].path).selection_id == "future-model"
     assert profiles[0].provider == "custom provider #42"
     assert profiles[0].required_environment == ("RPNH_TEST_API_KEY",)
     assert adapter_config.routes[0].provider == "custom provider #42"

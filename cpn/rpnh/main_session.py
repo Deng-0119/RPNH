@@ -210,6 +210,7 @@ class MainSession:
     STATE_FILE = "session_state.json"
     PROFILE_FILE = "execution_profile.json"
     REGISTRY_DIR = "main"
+    OWNER_LOCK_FILE = ".main-session-owner.lock"
 
     @property
     def child_path_root(self) -> Path:
@@ -228,9 +229,15 @@ class MainSession:
             self, root: Path, execution_config_path: Path, *,
             task_control: TaskControl | None = None,
             resume: bool = False,
+            owner_root_reserved: bool = False,
     ) -> None:
         if not isinstance(root, Path) or not isinstance(execution_config_path, Path):
             raise TypeError("MainSession paths require pathlib.Path")
+        if not isinstance(owner_root_reserved, bool):
+            raise TypeError("owner_root_reserved requires bool")
+        if resume and owner_root_reserved:
+            raise ValueError(
+                "resume cannot initialize a reserved main-session root")
         self.root = root.resolve()
         self.execution_config_path = execution_config_path.resolve()
         persisted_profile = (
@@ -247,10 +254,20 @@ class MainSession:
                 raise ValueError(
                     "RPNH session has no valid main-thread Registry") from exc
         else:
-            if os.path.lexists(self.root):
-                raise ValueError(
-                    "RPNH main session requires an absent session directory")
-            self.root.mkdir(parents=True)
+            if owner_root_reserved:
+                lock_path = self.root / self.OWNER_LOCK_FILE
+                if (self.root.is_symlink() or not self.root.is_dir()
+                        or lock_path.is_symlink() or not lock_path.is_file()
+                        or {path.name for path in self.root.iterdir()}
+                        != {self.OWNER_LOCK_FILE}):
+                    raise ValueError(
+                        "reserved main-session root must contain only its "
+                        "owner lock")
+            else:
+                if os.path.lexists(self.root):
+                    raise ValueError(
+                        "RPNH main session requires an absent session directory")
+                self.root.mkdir(parents=True)
             self._registry_core = _RegistryCore(
                 self.root / self.REGISTRY_DIR, create=True)
         self._main_thread = MainThreadRegistry(
@@ -266,24 +283,21 @@ class MainSession:
         self.task_control = task_control or TaskControl(
             self._main_thread.child_path_root / "tasks")
         self._refresh_from_authority()
-        if resume and self._active_turn() is not None:
+        if resume:
             if persisted_profile is None:
                 raise ValueError(
-                    "active main-session turn has no persisted execution "
+                    "main-session resume has no persisted execution "
                     "profile authority")
             if self.execution_config_path != persisted_profile[
                     "execution_config_path"]:
                 raise ValueError(
-                    "cannot change the execution profile while a main-session "
-                    "turn is active")
+                    "cannot change the execution profile when resuming a "
+                    "main session")
             if persisted_profile["schema_version"] == (
                     "rpnh/main_session_profile/v2"):
                 self._assert_execution_profile_identity(persisted_profile)
         self._persist_profile()
         self._persist_state()
-        if resume:
-            self.reconcile_committed_launches()
-            self.reconcile_child_registry_links()
 
     @classmethod
     def _persisted_execution_profile(
@@ -381,8 +395,7 @@ class MainSession:
             expected["execution_config_path"])
         if self._execution_profile_document() != expected:
             raise ValueError(
-                "execution profile identity changed while a main-session "
-                "turn is active")
+                "execution profile identity changed for the main session")
 
     @classmethod
     def resume(
@@ -391,12 +404,12 @@ class MainSession:
     ) -> "MainSession":
         root = root.resolve()
         selected = execution_config_path
+        persisted = cls._persisted_execution_config_path(root)
+        if persisted is None:
+            raise ValueError(
+                "RPNH resume requires a persisted execution profile")
         if selected is None:
-            selected = cls._persisted_execution_config_path(root)
-            if selected is None:
-                raise ValueError(
-                    "RPNH resume requires execution_config_path when the "
-                    "profile projection is unavailable")
+            selected = persisted
         return cls(
             root, selected, task_control=task_control, resume=True)
 
@@ -629,7 +642,6 @@ class MainSession:
 
         snapshot = self.active_turn_snapshot()
         if snapshot is None:
-            self.reconcile_committed_launches()
             return MainTurnReconciliation("idle", None)
         if snapshot.state == "terminal":
             decision, child = self.complete_turn(
@@ -741,11 +753,18 @@ class MainSession:
             raise TypeError("execution config path requires pathlib.Path")
         selected = path.resolve()
         self._refresh_from_authority()
-        if (selected != self.execution_config_path
-                and self._active_turn() is not None):
-            raise ValueError(
-                "cannot change the execution profile while a main-session "
-                "turn is active")
+        if self._active_turn() is not None:
+            persisted = self._persisted_execution_profile(self.root)
+            if persisted is None:
+                raise ValueError(
+                    "active main-session turn has no persisted execution "
+                    "profile authority")
+            if persisted["schema_version"] == "rpnh/main_session_profile/v2":
+                self._assert_execution_profile_identity(persisted)
+            if selected != self.execution_config_path:
+                raise ValueError(
+                    "cannot change the execution profile while a main-session "
+                    "turn is active")
         self.execution_config_path = selected
         self._persist_profile()
         self._persist_state()
@@ -754,6 +773,9 @@ class MainSession:
             self, prompt: str, stages: tuple[AgentStage, ...] = (), *,
             workflow_graph: AgentWorkflowGraph | None = None,
     ) -> TaskHandle:
+        if not isinstance(prompt, str) or not prompt.strip():
+            raise ValueError("independent task prompt must be nonempty text")
+        self.activate_for_execution()
         run_dir = self._main_thread.child_path_root / "tasks" / "runs" / (
             "child-" + uuid4().hex[:12])
         native = self._selected_plugins()
@@ -915,15 +937,77 @@ class MainSession:
         self._refresh_from_authority()
         return links
 
+    def activate_for_execution(self) -> dict[int, TaskHandle | None]:
+        """Compensate committed launches before an explicit execution action."""
+
+        recovered = self.reconcile_committed_launches()
+        self.reconcile_child_registry_links()
+        return recovered
+
+    def _registered_decision_child(
+            self, task: MainTaskDecision | None, *, ordinal: int,
+    ) -> TaskHandle | None:
+        """Observe an existing child handle without launching or indexing it."""
+
+        if task is None:
+            return None
+        cached = self._launched_children.get(ordinal)
+        if cached is not None:
+            return cached
+
+        turn_ref = self._committed_turn_ref(ordinal)
+        turn_ref_payload = {
+            "entity_type": turn_ref.entity_type,
+            "logical_id": str(turn_ref.entity_id),
+            "version_id": str(turn_ref.version_id),
+        }
+        linked_ids = [
+            link["task_control_id"]
+            for link in self._authority_projection["child_registry_links"]
+            if link.get("origin_main_turn_ref") == turn_ref_payload
+        ]
+        if len(linked_ids) > 1:
+            raise RuntimeError(
+                "multiple child links match one committed main turn")
+        if linked_ids:
+            handle = self.task_control.get(linked_ids[0])
+            if handle.kind != task.kind:
+                raise RuntimeError(
+                    "registered child task kind differs from main decision")
+            return handle
+
+        run_dir = (
+            self._main_thread.child_path_root / "tasks" / "runs"
+            / f"main-turn-{ordinal:04d}-child").resolve()
+        matching_ids: list[str] = []
+        for status in self.task_control.list():
+            if (not isinstance(status, Mapping)
+                    or not isinstance(status.get("task_id"), str)
+                    or not isinstance(status.get("run_dir"), str)):
+                raise RuntimeError(
+                    "task control returned a malformed child index")
+            if Path(status["run_dir"]).resolve() == run_dir:
+                matching_ids.append(status["task_id"])
+        if len(matching_ids) > 1:
+            raise RuntimeError(
+                "multiple child launches match one committed main turn")
+        if not matching_ids:
+            return None
+        handle = self.task_control.get(matching_ids[0])
+        if handle.kind != task.kind:
+            raise RuntimeError(
+                "registered child task kind differs from main decision")
+        return handle
+
     def latest_committed_reconciliation(self) -> MainTurnReconciliation:
-        """Return the latest committed decision with its recovered child."""
+        """Return the latest committed decision and any registered child."""
         projection = self._refresh_from_authority()
         history = projection["committed_history"]
         if not history:
             return MainTurnReconciliation("idle", None)
         item = history[-1]
         decision = self._decision_from_document(item["answer"])
-        child = self._launch_decision_task(
+        child = self._registered_decision_child(
             decision.task, ordinal=int(item["ordinal"]))
         return MainTurnReconciliation(
             "committed", None, decision, child)
@@ -937,7 +1021,7 @@ class MainSession:
             ordinal = int(item["ordinal"])
             user_text, _required = self._turn_input(item["user_input"])
             decision = self._decision_from_document(item["answer"])
-            child = self._launch_decision_task(
+            child = self._registered_decision_child(
                 decision.task, ordinal=ordinal)
             history.extend((
                 ("user", user_text),
@@ -968,6 +1052,9 @@ class MainSession:
             turn_ref, turn = active
             self._assert_turn_input(
                 turn, user_text, required_task_kind)
+            if turn["state"] not in {"accepted", "running"}:
+                raise RuntimeError("active main turn is not preparable")
+            self.activate_for_execution()
             if turn["state"] == "accepted":
                 ordinal = int(turn["ordinal"])
                 attached = self._main_thread.attach_attempt(
@@ -978,14 +1065,14 @@ class MainSession:
                 )
                 turn_ref = attached.turn_ref
                 turn = self._turn_document(turn_ref)
-            elif turn["state"] != "running":
-                raise RuntimeError("active main turn is not preparable")
             self._refresh_from_authority()
             self._persist_state()
             return self._task_spec(
                 turn, user_text=user_text,
                 required_task_kind=required_task_kind)
 
+        self.activate_for_execution()
+        self._refresh_from_authority()
         ordinal = int(self._authority_projection["next_turn_ordinal"])
         native = self._selected_plugins()
         accepted = self._main_thread.accept_turn(
@@ -1104,6 +1191,7 @@ class MainSession:
         if active is None:
             raise RuntimeError("paused main turn has no active Registry turn")
         _turn_ref, turn = active
+        self.activate_for_execution()
         spec = self._task_spec(
             turn,
             user_text=snapshot.user_text,

@@ -317,15 +317,14 @@ def test_add_never_overwrites_unmanaged_generated_file(tmp_path):
 
 def test_first_launch_wizard_continues_into_builtin_session(tmp_path, monkeypatch):
     # Test the CLI routing separately from the real execution test above.
-    from types import SimpleNamespace
     observed = []
     monkeypatch.setattr(sys.stdin, "isatty", lambda: True)
-    monkeypatch.setattr("builtins.input", answers([*api_answers(), "/quit"]))
-    def create(root, execution):
+    monkeypatch.setattr("builtins.input", answers(api_answers()))
+    def run_basic(_args, root, execution):
         assert read_selected_path() == execution
-        observed.append(execution)
-        return SimpleNamespace(root=root)
-    monkeypatch.setattr("cpn.rpnh_cli.MainSession", create)
+        observed.append((root, execution))
+        return 0
+    monkeypatch.setattr("cpn.rpnh_cli._run_basic_frontend", run_basic)
     assert main(["--frontend", "basic", "--session-dir", str(tmp_path / "session")]) == 0
     assert len(observed) == 1
 

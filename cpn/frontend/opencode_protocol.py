@@ -176,12 +176,21 @@ class OpenCodeProtocol:
 
     def _assistant(
             self, sid: str, aid: str, uid: str, created: int,
-            selection: str,
+            selection: str, *, model_evidence: str | None = None,
     ) -> dict[str, Any]:
-        return {"id": aid, "sessionID": sid, "role": "assistant", "parentID": uid,
+        result = {"id": aid, "sessionID": sid, "role": "assistant", "parentID": uid,
                 "time": {"created": created}, "modelID": selection, "providerID": "rpnh",
                 "agent": "rpnh", "mode": "rpnh", "path": {"cwd": self.directory, "root": self.directory},
                 "cost": 0, "tokens": {"input": 0, "output": 0, "reasoning": 0, "cache": {"read": 0, "write": 0}}}
+        if model_evidence is not None:
+            result["metadata"] = {
+                "rpnh_turn_model_evidence": model_evidence,
+                "rpnh_turn_model_display_basis": (
+                    "registered_frontend_request"
+                    if model_evidence == "frontend-request/v2" else
+                    "session_current_selection"),
+            }
+        return result
 
     @staticmethod
     def _message_ids(sid: str, turn: Mapping[str, Any]) -> tuple[str, str]:
@@ -198,20 +207,32 @@ class OpenCodeProtocol:
         ordinal, created = turn["ordinal"], turn["created"]
         uid, aid = self._message_ids(sid, turn)
         selection = turn["model"]["selection"]
+        model_evidence = turn.get("model_evidence", "unavailable")
+        model_metadata = {
+            "rpnh_turn_model_evidence": model_evidence,
+            "rpnh_turn_model_display_basis": (
+                "registered_frontend_request"
+                if model_evidence == "frontend-request/v2" else
+                "session_current_selection"),
+        }
         user = {"id": uid, "sessionID": sid, "role": "user", "time": {"created": created}, "agent": "rpnh",
-                "model": {"providerID": "rpnh", "modelID": selection}}
+                "model": {"providerID": "rpnh", "modelID": selection},
+                "metadata": dict(model_metadata)}
 
         def part(mid: str, kind: str, text: str, synthetic: bool = False) -> dict[str, Any]:
             return {"id": _identity("prt", sid, ordinal, kind, created), "sessionID": sid,
                     "messageID": mid, "type": "text", "text": text, "synthetic": synthetic,
-                    "metadata": {"rpnh_turn_ref": turn["turn_ref"], "rpnh_metrics": "unavailable"}}
+                    "metadata": {"rpnh_turn_ref": turn["turn_ref"], "rpnh_metrics": "unavailable",
+                                 **model_metadata}}
 
         messages = [{"info": user, "parts": [part(uid, "user", turn["text"])]}]
         answer = turn.get("answer")
         failed = turn["state"] in {"stopped_by_owner", "failed", "interrupted"}
         if answer is None and not failed:
             return messages
-        info = self._assistant(sid, aid, uid, created, selection)
+        info = self._assistant(
+            sid, aid, uid, created, selection,
+            model_evidence=model_evidence)
         if answer is not None:
             if turn["state"] != "committed" or not isinstance(answer.get("reply"), str):
                 raise FrontendError("invalid_terminal", "An answer lacks committed main-turn evidence.", 500)
@@ -398,7 +419,8 @@ class OpenCodeProtocol:
             message = {
                 "info": self._assistant(
                     sid, aid, uid, turn["created"],
-                    turn["model"]["selection"]),
+                    turn["model"]["selection"],
+                    model_evidence=turn.get("model_evidence", "unavailable")),
                 "parts": [],
             }
         return Reply(204 if operation == "prompt_async" else 200,
