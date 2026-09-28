@@ -6,7 +6,7 @@ metadata:
   audience: user-and-maintainer
   language: zh-CN
   counterpart: examples-validation.md
-  revision: "2026-09-26.7"
+  revision: "2026-09-28.1"
   status: focused-live-validation-complete
   basis: "focused local acceptance across basic, Codex, DSH and OpenCode hosts"
 ---
@@ -129,3 +129,32 @@ run 目录。保存 PNG 前，脚本会检查对应图中的预期节点。图�
 时间轴，但会替换 run 专属 checkpoint 标签，并隐藏含精确 checkpoint 身份及本地观察时间的
 footer。本轮文档截图没有产生新的 provider／模型调用。图片只用于观察，不能代替终态证据或
 已登记 final result。
+
+## 大型 child ingress 与复杂 workflow 真实验收
+
+2026-09-28 的一次授权安装版 wheel 测试显式使用 `codex-terra` / `gpt-5.6-terra`
+精确路线，执行了大型文档／数据任务和数值 3-DOF 动力下降任务。测试暴露了一个通用
+MainSession 缺陷：child Registry 的 ingress 只有 Designer 给出的短任务摘要，因此
+Designer 可见的完整用户资料包没有进入 child。修复后，child ingress 由原始用户 turn
+逐字内容和一个带标签的 Designer 补充说明按固定顺序组成。父、子 Registry 仍保持独立；
+没有增加跨 Registry 正文引用，也没有加入项目专用 workflow。
+
+MainSession／frontend／worker 的 focused 闭包通过 21 项测试，中英文文档检查通过 20 项。
+重建 wheel 后共有 52 次物理响应成功，health probe 与 provider/model 切换均为零：
+transport/resume smoke 为 2 次，JB Designer 与 child graph 分别为 2 次和 23 次，3-DOF
+Designer 与 child graph 分别为 3 次和 22 次。
+
+| 真实 workflow | Registry 结果 | 业务结果 | PetriNet |
+|---|---|---|---|
+| JB steering packet | `terminal`；一个 terminal evidence、一个 final-result index | PASS；建议总样本量 778、每臂 389 | 5 个 firing、5 个 transition、14 个 place、47 条 edge |
+| 3-DOF 动力下降 | `terminal`；一个 terminal evidence、一个 final-result index | **NOT ACCEPTED**；模型生成的 SLSQP 实现存在数组 shape 缺陷，后续求解又超时，因此 review 正确拒绝着陆与约束满足声明 | 5 个 firing、5 个 transition、15 个 place、52 条 edge |
+
+3-DOF 的结果按任务层失败如实记录，不会改写为模型成功。implementation 和独立
+validation 节点都在隔离、禁网 workspace 中执行了生成的 solver；validation/review 路径
+保留实际失败并阻止假阳性。这仍通过本次 harness 边界验收：精确 ingress、Registry 文件
+传递、workspace 执行、图推进和诚实终态报告均正常工作。
+
+两个图的默认投影与 `--show-resources` 相同，`--resources-only` 为空，因为它们都没有声明
+resource place；测试没有伪造资源节点。完整脱敏机器记录见
+`docs/validation/terra-complex-workflows-20260928.json`。
+原始资料包、参与者数据、Registry、本地身份、transcript、凭据和私有路线细节均留在仓库外。

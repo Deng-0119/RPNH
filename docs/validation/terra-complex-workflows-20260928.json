@@ -1,0 +1,84 @@
+{
+  "schema_version": "rpnh/sanitized_live_complex_workflow_validation/v1",
+  "date": "2026-09-28",
+  "candidate": "commit containing this record",
+  "status": "PASS_WITH_TASK_LEVEL_WARNING",
+  "environment": {
+    "platform": "Linux / WSL2",
+    "installation": "repository-external wheel environment",
+    "profile": "codex-terra",
+    "adapter_kind": "local_process",
+    "exact_model": "gpt-5.6-terra",
+    "codex_cli_version": "0.157.1",
+    "saved_default_profile_changed": false
+  },
+  "fixed_boundary": {
+    "name": "main_to_child_task_ingress",
+    "before": "the child ingress contained only the Designer-authored summary",
+    "after": "the child ingress contains the exact original user task once, followed by one labelled supplemental Designer brief",
+    "cross_registry_resource_link_added": false
+  },
+  "offline_acceptance": {
+    "main_session_frontend_and_worker_tests": 21,
+    "documentation_tests": 20,
+    "status": "PASS"
+  },
+  "live_calls": {
+    "successful_physical_responses": 52,
+    "health_probes": 0,
+    "provider_or_model_switches": 0,
+    "breakdown": {
+      "wheel_transport_smoke": 2,
+      "jb_designer": 2,
+      "jb_child_workflow": 23,
+      "three_dof_designer": 3,
+      "three_dof_child_workflow": 22
+    }
+  },
+  "runs": {
+    "jb_steering_packet": {
+      "original_task_bytes": 170930,
+      "child_ingress_bytes": 171299,
+      "original_task_occurrences": 1,
+      "transition_count": 5,
+      "place_count": 14,
+      "edge_count": 47,
+      "firing_count": 5,
+      "registry_execution_status": "terminal",
+      "terminal_evidence_count": 1,
+      "final_result_index_count": 1,
+      "run_outcome": "complete",
+      "business_result": "PASS",
+      "observed_recommendation": "778 total participants, 389 per arm"
+    },
+    "three_dof_powered_descent": {
+      "original_task_bytes": 15109,
+      "child_ingress_bytes": 15481,
+      "original_task_occurrences": 1,
+      "transition_count": 5,
+      "place_count": 15,
+      "edge_count": 52,
+      "firing_count": 5,
+      "registry_execution_status": "terminal",
+      "terminal_evidence_count": 1,
+      "final_result_index_count": 1,
+      "run_outcome": "complete",
+      "business_result": "NOT_ACCEPTED",
+      "observed_limitation": "the generated SLSQP implementation hit an array-shape defect and a later solve timed out, so no trajectory or constraint-success claim was accepted",
+      "harness_boundary_result": "PASS: implementation and independent validation workspaces executed, files crossed Registry nodes, and engineering review blocked a false success"
+    }
+  },
+  "petri_net_views": {
+    "default_resource_nodes_hidden": true,
+    "explicit_resource_view_resource_nodes": 0,
+    "resources_only_nodes": 0,
+    "reason": "neither Designer graph declared resource places"
+  },
+  "privacy": {
+    "raw_registries_committed": false,
+    "source_dossier_or_participant_data_committed": false,
+    "raw_model_transcripts_committed": false,
+    "local_paths_or_runtime_identifiers_committed": false,
+    "credentials_or_private_endpoints_committed": false
+  }
+}

@@ -76,9 +76,12 @@ tokens, workspace, or final-result authority.
    Designer and declares ingress, egress, typed ports, and arcs. Dependency arcs
    form the initial entry-to-exit DAG. Explicit feedback arcs lower to separate
    rework transitions and consume a shared `max_rework_cycles` budget.
-4. The user task is the workflow's initial ingress resource token. An ordinary
-   untyped cycle is rejected because it would mix first-generation and feedback
-   activation without an explicit output route or stopping bound.
+4. The workflow's initial ingress resource token preserves the exact original
+   user task, followed by a labeled supplemental Designer brief. The brief
+   cannot replace or summarize away the original task; node instructions own
+   execution responsibilities. An ordinary untyped cycle is rejected because
+   it would mix first-generation and feedback activation without an explicit
+   output route or stopping bound.
 5. Workspace files become shared state only through successful Registry
    settlement. Later agents see the registered revision and can build on it;
    interrupted, unsettled writes are not promoted. This preserves provenance

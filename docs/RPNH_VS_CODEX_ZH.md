@@ -68,8 +68,10 @@ Registry；共享 owner lease 会阻止并发可写前端。每个可独立切�
 3. 主会话在逻辑上是一个 Agent。执行 graph 工作时，该 Agent 承担 Designer，声明
    ingress、egress、typed ports 和 arcs。Dependency arcs 构成首次入口到出口 DAG；显式
    feedback arcs lowering 为独立 rework transitions，并消耗共享 `max_rework_cycles` 预算。
-4. 用户任务是 workflow 的初始 ingress resource token。普通 untyped cycle 会被拒绝，
-   因为它会在没有显式输出 route 与停止上界的情况下混合首次激活与 feedback 激活。
+4. workflow 的初始 ingress resource token 先逐字保留原始用户任务，再附加带明确标签的
+   Designer 补充说明。补充说明不能替换或摘要掉原始任务；执行职责由 node instruction
+   承担。普通 untyped cycle 会被拒绝，因为它会在没有显式输出 route 与停止上界的情况下
+   混合首次激活与 feedback 激活。
 5. Workspace 文件只有在 Registry 成功 settlement 后才成为共享状态。后续 Agent 能看到
    已登记 revision 并继续修改；中断且未 settlement 的写入不会被提升。这样既保留顺序
    node 间的 provenance，也隔离并发 firing view。

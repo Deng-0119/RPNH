@@ -6,7 +6,7 @@ metadata:
   audience: user-and-maintainer
   language: en
   counterpart: examples-validation_ZH.md
-  revision: "2026-09-26.7"
+  revision: "2026-09-28.1"
   status: focused-live-validation-complete
   basis: "focused local acceptance across basic, Codex, DSH and OpenCode hosts"
 ---
@@ -154,3 +154,41 @@ run-specific checkpoint label and hiding the footer containing exact checkpoint
 identity and local observation time. No new provider/model call was made for
 this documentation capture. Images remain observation aids, not substitutes
 for terminal evidence or registered final results.
+
+## Large child-ingress and complex-workflow live acceptance
+
+An authorized installed-wheel campaign on 2026-09-28 exercised the exact
+`codex-terra` / `gpt-5.6-terra` route with a large document/data task and a
+numerical 3-DOF powered-descent task. It exposed a general MainSession defect:
+the child Registry ingress contained only the Designer's short task summary,
+so a complete user dossier visible to the Designer was absent from the child.
+The fix now composes the child ingress deterministically from the exact original
+user turn followed by one labelled supplemental Designer brief. The parent and
+child Registries remain independent; no cross-Registry body reference or
+project workflow was added.
+
+The focused MainSession/frontend/worker closure passed 21 tests and the aligned
+documentation checks passed 20 tests. The rebuilt wheel then produced 52
+successful physical responses, zero health probes and zero provider/model
+switches: two for a transport/resume smoke, two plus 23 for the JB Designer and
+child graph, and three plus 22 for the 3-DOF Designer and child graph.
+
+| Live workflow | Registry result | Business result | PetriNet |
+|---|---|---|---|
+| JB steering packet | `terminal`; one terminal evidence and one final-result index | PASS; recommendation 778 total, 389 per arm | 5 firings, 5 transitions, 14 places, 47 edges |
+| 3-DOF powered descent | `terminal`; one terminal evidence and one final-result index | **NOT ACCEPTED**; the generated SLSQP implementation had an array-shape defect and a later solve timed out, so review correctly rejected landing/constraint claims | 5 firings, 5 transitions, 15 places, 52 edges |
+
+The 3-DOF task is deliberately recorded as a task-level failure, not converted
+into model success. Its implementation and independent validation nodes both
+executed the generated solver in isolated, network-disabled workspaces; the
+validation/review path preserved the observed failure and prevented a false
+positive. This still passes the harness boundary being tested: exact ingress,
+Registry file propagation, workspace execution, graph progression and honest
+terminal reporting all worked.
+
+For both graphs, default and `--show-resources` projections were identical and
+`--resources-only` was empty because neither graph declared a resource place.
+No resource node was fabricated. The complete sanitized machine-readable record
+is `docs/validation/terra-complex-workflows-20260928.json`.
+Raw dossiers, participant data, Registries, local identifiers, transcripts,
+credentials and private route details remain outside the repository.

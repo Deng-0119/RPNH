@@ -715,6 +715,8 @@ def test_complete_turn_registers_receipt_commits_and_is_idempotent(
     assert decision == retried
     assert handle is retried_handle is control.handle
     assert len(control.specs) == 2
+    assert control.registered_spec.prompt == MainSession._child_task_prompt(
+        "delegate this", "do the work")
     assert len(session._registry_core.event_store.object_rows()) == object_count
     assert session.history == [
         ("user", "delegate this"), ("assistant", "launched")]
@@ -748,6 +750,7 @@ def test_direct_agent_launch_gets_an_independent_registry_index(
     )
 
     assert handle is control.handle
+    assert control.registered_spec.prompt == "do independent work"
     projection = session._main_thread.recover_thread()
     assert projection["committed_history"] == []
     links = projection["child_registry_links"]
@@ -786,6 +789,57 @@ def test_direct_agent_launch_gets_an_independent_registry_index(
     assert len(resumed._registry_core.event_store.object_rows()) == object_count
 
 
+def test_workflow_child_ingress_preserves_large_original_user_task(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    control = _TaskControl()
+    control.handle.kind = "workflow"
+    session, _root, _execution = _new_session(
+        tmp_path, task_control=control)
+    original = "original dossier\n" + ("participant,row,value\n" * 4096)
+    brief = "Analyze the dossier in parallel and synthesize one result."
+    session.prepare_turn(original, required_task_kind="workflow")
+    _install_child_observation(monkeypatch, session, "terminal")
+
+    decision, handle = session.complete_turn(
+        original,
+        {
+            "reply": "workflow designed",
+            "task": {
+                "kind": "workflow",
+                "prompt": brief,
+                "graph": {
+                    "nodes": [{
+                        "node_id": "worker",
+                        "instruction": "Analyze and return the result.",
+                        "input_ports": [{
+                            "port_id": "request", "artifact_id": "task",
+                        }],
+                        "output_ports": [{
+                            "port_id": "result", "artifact_id": "result",
+                        }],
+                    }],
+                    "arcs": [],
+                    "ingress": {"node_id": "worker", "port_id": "request"},
+                    "egress": {"node_id": "worker", "port_id": "result"},
+                    "max_rework_cycles": 0,
+                },
+            },
+        },
+        required_task_kind="workflow",
+    )
+
+    assert handle is control.handle
+    assert decision.task is not None
+    assert decision.task.prompt == brief
+    assert control.registered_spec.prompt == MainSession._child_task_prompt(
+        original, brief)
+    assert control.registered_spec.prompt.count(original) == 1
+    assert control.registered_spec.prompt.count(brief) == 1
+    assert control.registered_spec.prompt.index(original) < (
+        control.registered_spec.prompt.index(brief))
+
+
 @pytest.mark.parametrize("registered_before_failure", [False, True])
 def test_resume_projection_is_effect_free_until_activation_compensates_once(
         tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
@@ -812,6 +866,8 @@ def test_resume_projection_is_effect_free_until_activation_compensates_once(
     with pytest.raises(RuntimeError, match="launch failed"):
         session.complete_turn("delegate durably", output)
     committed_spec = control.specs[0]
+    assert committed_spec.prompt == MainSession._child_task_prompt(
+        "delegate durably", "perform exact work")
 
     resumed = MainSession.resume(
         root, execution, task_control=control)

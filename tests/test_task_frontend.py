@@ -325,9 +325,13 @@ def test_task_control_serializes_canonical_paths_before_worker_launch(
     invocation.mkdir()
     other_cwd.mkdir()
     monkeypatch.chdir(invocation)
+    prompt = MainSession._child_task_prompt(
+        "原始任务\n" + ("row,value\n" * 2048),
+        "Inspect the canonical worker paths once.",
+    )
     spec = AgentTaskSpec(
         run_dir=Path("runs/task"),
-        prompt="Inspect canonical worker paths.",
+        prompt=prompt,
         stages=(AgentStage("worker", "Inspect the task."),),
         execution_config_path=Path("profiles/default.json"),
         execution_profiles=(("critic", Path("profiles/critic.json")),),
@@ -365,6 +369,7 @@ def test_task_control_serializes_canonical_paths_before_worker_launch(
     assert restored.execution_config_path == expected_default
     assert restored.execution_profiles == (("critic", expected_critic),)
     assert restored.owner_socket_path == handle.socket_path
+    assert restored.prompt == prompt
 
 
 def test_task_control_keeps_owner_socket_in_registry_and_shortens_only_transport(

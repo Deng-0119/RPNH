@@ -162,6 +162,11 @@ When actual work should run independently, request exactly one child object:
 either a single_agent or a graph-shaped workflow. The child will receive its
 own Registry, PetriNet and owner channel. {requirement}
 Do not claim that a child has run; only request its launch.
+RPNH will deterministically give the child the exact current user message as
+its authoritative task input, followed by task.prompt as a supplemental
+Designer execution brief. Do not copy, summarize, or replace the current user
+message inside task.prompt, including any embedded dossier. Put detailed role
+responsibilities in the single-agent instruction or workflow node instructions.
 
 A workflow is a finite agent graph, not an ordered stage list. Declare
 nodes with complete responsibilities and typed symbolic text-product ports,
@@ -825,6 +830,29 @@ class MainSession:
             idempotency_key=f"child-registry:{handle.task_id}:register",
         )
 
+    @staticmethod
+    def _child_task_prompt(
+            original_user_task: str, designer_execution_brief: str,
+    ) -> str:
+        """Preserve exact user input while retaining additive design guidance."""
+
+        if (not isinstance(original_user_task, str)
+                or not original_user_task.strip()):
+            raise ValueError("child task requires a nonempty original user task")
+        if (not isinstance(designer_execution_brief, str)
+                or not designer_execution_brief.strip()):
+            raise ValueError("child task requires a nonempty Designer brief")
+        return (
+            "RPNH ORIGINAL USER TASK (authoritative)\n"
+            "--- BEGIN ORIGINAL USER TASK ---\n"
+            f"{original_user_task}\n"
+            "--- END ORIGINAL USER TASK ---\n\n"
+            "RPNH DESIGNER EXECUTION BRIEF (supplemental)\n"
+            "--- BEGIN DESIGNER EXECUTION BRIEF ---\n"
+            f"{designer_execution_brief}\n"
+            "--- END DESIGNER EXECUTION BRIEF ---"
+        )
+
     def _launch_decision_task(
             self, task: MainTaskDecision | None, *, ordinal: int,
     ) -> TaskHandle | None:
@@ -864,6 +892,8 @@ class MainSession:
             )
             return handle
         origin_turn = self._turn_document(self._committed_turn_ref(ordinal))
+        original_user_task, _required_task_kind = self._turn_input(
+            origin_turn["user_input"])
         settings, _ = self._plugin_settings(origin_turn)
         from cpn.llm_adapters import load_llm_execution_selection
         runtime = load_llm_execution_selection(
@@ -871,7 +901,8 @@ class MainSession:
         handle = self.task_control.start(AgentTaskSpec(
             **settings,
             run_dir=run_dir,
-            prompt=task.prompt,
+            prompt=self._child_task_prompt(
+                original_user_task, task.prompt),
             stages=task.stages,
             execution_config_path=self.execution_config_path,
             workflow_graph=task.workflow_graph,
