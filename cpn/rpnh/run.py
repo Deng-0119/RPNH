@@ -186,9 +186,8 @@ def _operation_services(core):
         )
         from .registry.resource_service import _resource_payload
         matches = []
-        for event in core.event_store.list_events():
-            if event.event_type != "resource_delivery_acknowledged/v1":
-                continue
+        for event in core.event_store.list_events_by_type(
+                ("resource_delivery_acknowledged/v1",)):
             delivery_ref = _version_from_payload(
                 event.payload["terminal_delivery_ref"])
             delivery = kernel._exact_object(
@@ -201,7 +200,8 @@ def _operation_services(core):
             raise ResourceIntegrityFault(
                 "registered input lacks exact acknowledged delivery")
         event, delivery_ref = matches[0]
-        reads = [read for read in core.event_store.list_events()
+        reads = [read for read in core.event_store.list_events_by_transaction(
+                     str(event.transaction_id))
                  if (read.event_type == "observed_read/v1"
                      and read.transaction_id == event.transaction_id)]
         if len(reads) != 1:

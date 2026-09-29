@@ -121,6 +121,8 @@ def test_extracted_backend_and_empty_views_keep_existing_behavior(tmp_path) -> N
     assert store.relation_rows() == ()
     assert store.outbox_rows() == ()
     assert store.canonical_view() == CanonicalView(through_ordinal=0)
+    assert store.first_and_last_events() == (None, None)
+    assert not store.has_event_idempotency_prefix("missing:")
 
 
 def _publish_empty_transaction(store: EventStore, *, key: str):
@@ -156,6 +158,26 @@ def _publish_empty_transaction(store: EventStore, *, key: str):
         expected_heads={stream_id: 0},
     )
     return transaction_id, result
+
+
+def test_indexed_event_bounds_and_idempotency_prefix_preserve_facts(
+        tmp_path) -> None:
+    store = EventStore(tmp_path / "registry.sqlite", SchemaCatalog())
+    _first_transaction, first = _publish_empty_transaction(
+        store, key="indexed-prefix:first")
+    _second_transaction, second = _publish_empty_transaction(
+        store, key="other-key")
+
+    first_event, last_event = store.first_and_last_events()
+    assert first_event is not None
+    assert last_event is not None
+    assert first_event.event_id == first[0].event_id
+    assert last_event.event_id == second[-1].event_id
+    assert store.has_event_idempotency_prefix("indexed-prefix:")
+    assert store.has_event_idempotency_prefix("other-key")
+    assert not store.has_event_idempotency_prefix("indexed-prefix:missing")
+    with pytest.raises(ValueError, match="prefix must be nonempty"):
+        store.has_event_idempotency_prefix("")
 
 
 def test_publish_batch_facade_delegates_complete_command(monkeypatch) -> None:

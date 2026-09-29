@@ -190,11 +190,15 @@ class MainThreadRegistry:
             self, core: _RegistryCore, object_type: str,
     ) -> list[tuple[VersionRef, dict[str, Any]]]:
         rows = core.event_store.canonical_object_rows(object_type=object_type)
-        event_ordinals = {
-            str(event.event_id): event.ordinal
-            for event in core.event_store.list_events()
-        }
         try:
+            event_ordinals = {}
+            for row in rows:
+                published_event_id = str(row["published_event_id"])
+                publication = core.event_store.event_by_id(
+                    TypedId.parse(published_event_id, expected="event"))
+                if publication is None:
+                    raise KeyError(published_event_id)
+                event_ordinals[published_event_id] = publication.ordinal
             ordered = sorted(
                 rows,
                 key=lambda row: event_ordinals[str(row["published_event_id"])],

@@ -238,9 +238,9 @@ def verify_registered_firing_resource_access_conflicts(
 
     active_refs = set(by_ref)
     events_by_firing: dict[VersionRef, list[Any]] = {}
-    for event in core.event_store.list_events():
-        if (event.event_type != "petri_firing_resource_accessed/v1"
-                or event.writer_fencing_epoch != core.writer_epoch):
+    for event in core.event_store.list_events_by_type(
+            ("petri_firing_resource_accessed/v1",)):
+        if event.writer_fencing_epoch != core.writer_epoch:
             continue
         try:
             firing_ref = _version_from_payload(

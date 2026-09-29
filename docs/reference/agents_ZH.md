@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: agents.md
-  revision: "2026-09-28.1"
+  revision: "2026-09-29.1"
   status: source-reviewed-not-final-candidate-acceptance
   basis: "core; adapter differences explicitly labelled"
 ---
@@ -29,15 +29,11 @@ metadata:
 
 workspace 执行事实与任务完成事实彼此分离。已启动的 workspace 动作若
 `status=timed_out` 或 `exit_code` 非零，仍作为不可变的 `ACTION_APPLIED` 观测保存，
-但 actor 不能越过它结算任务。Registry 要求同一 AgentLoop 中更晚的 completed、零退出
-验证 action，在 script 开头用保留注释精确指向每条失败 action 的版本
-（`# rpnh-resolves-action: agent_action_version:...`），才接受 actor completion；无关的
-成功命令不算闭环。该元数据保留在既有 workspace script 参数内，不更换不可变 v1 工具契约。
-critic 或 finalization reviewer 只有
-在其已登记 operation policy 允许诊断证据时，才能直接报告该诊断。若失败的 workspace
-动作与 completion 出现在同一次 provider 响应，completion 不能通过：失败先返回同一
-AgentLoop，只要 turn budget 尚未耗尽，该 loop 就继续纠错。该门禁保持既有
-`complete_interaction` v1 工具契约，因此旧 Registry 可恢复而不替换不可变 HOST 注册。
+但它既不会被后续成功擦除，也不单独证明任务失败。模型或已声明的业务 operation
+负责判断应继续纠错、验证，还是准确输出诊断结果。Registry 不会在
+`complete_interaction` 前强制重试、要求“最终不可重试”标记或保留 script 注释；这些属于
+runtime／业务策略，不是结构完整性。completion 仍要求已注册的语义产物，并保留此前每条
+action 作为不可变证据。
 
 owner interruption 是另一条边界。它关闭正在执行的动作，保存干净 workspace
 checkpoint，并令 run 停在 `stopped_by_owner`；`resume` 从该 checkpoint 在同一
@@ -65,6 +61,6 @@ Protocol 方法故意直接声明，因为 gateway 会枚举 `vars(protocol)`。
 生成器的真实 CLI 参数见[模型配置](../guides/models_ZH.md)。timeout_seconds、max_output_tokens、max_response_bytes、可选的 context_window_tokens 与 context_compaction_retained_tokens 不等于完整费用预算；声明 context window 会启用主动 compaction，并作为非秘密 profile provenance 展示。provider adapter 执行所选传输，Registry ledger 记录物理尝试和恢复证据，不能合并成隐藏 transport retry。
 
 ## 失败、测试与稳定性
-测试非法响应、length interruption、schema 不符、旧引用、取消/等待、workspace 失败闭环、owner-stop resume 以及精确 provider/model 保持。上下文文字和工具结果出现在 prompt 中，并不会获得 Registry 权威。`OptionalAgentLoopRegistryService` 和私有 commit helper 是实现边界，不授权插件作者写 Registry 内部。
+测试非法响应、length interruption、schema 不符、旧引用、取消/等待、workspace 失败证据、owner-stop resume 以及精确 provider/model 保持。上下文文字和工具结果出现在 prompt 中，并不会获得 Registry 权威。`OptionalAgentLoopRegistryService` 和私有 commit helper 是实现边界，不授权插件作者写 Registry 内部。
 
 代码映射：`cpn/rpnh/main_session.py`、`task_control.py`、`agent_tasks.py`、`agent_workflows.py`；`cpn/components/agent_loop/{ports,service,turn_execution,turn_records,action_execution,action_records,context,compaction,delegation,resource_wait,workspace}.py`；`cpn/rpnh/user_config.py`、`provider_setup.py`、`cpn/llm_adapters`、`cpn/rpnh/registry/_provider_calls`。

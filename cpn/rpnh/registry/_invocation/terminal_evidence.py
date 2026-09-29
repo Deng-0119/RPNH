@@ -1049,9 +1049,7 @@ def terminal_descendant_event_ids(
                     or any(any(
                         event.payload.get(name) != value
                         for name, value in expected_common.items())
-                        for event in closures)
-                    or any(event.payload.get("next_attempt_allowed") is not False
-                           for event in closures)):
+                        for event in closures)):
                 raise admission_error(
                     "registered HOST LLM failure closure is conflicting")
             terminal_ids.extend(

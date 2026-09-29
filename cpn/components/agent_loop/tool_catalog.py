@@ -521,23 +521,16 @@ def model_visible_agent_tool_description(name: str) -> str:
             "Use it for ordinary file inspection, editing, and execution; use "
             "write_file to register semantic outputs. The workspace is separate "
             "from the Registry's registered resource authority and network access "
-            "is unavailable. A timeout or nonzero exit is recorded as an observed "
-            "failed action and must be explicitly resolved by a later successful "
-            "workspace action before an actor can complete. After correcting "
-            "the workspace, prefix a successful verification script with "
-            "'# rpnh-resolves-action: VERSION_ID' for each exact failed "
-            "agent_action_ref; an unrelated zero-exit command does not resolve "
-            "the failure.")
+            "is unavailable. A timeout or nonzero exit is retained as immutable "
+            "action evidence; use that evidence when deciding whether correction, "
+            "further verification, or an accurate diagnostic result is needed.")
 
     descriptions = {
         "complete_interaction": (
             "Complete only after write_file has registered every intended output "
-            "file required by the assignment. After any earlier timed-out or "
-            "nonzero-exit workspace action, an actor must run a later successful "
-            "workspace verification action whose leading RPNH resolution "
-            "comments name the exact failed actions; a registered critic/reviewer "
-            "may instead report the diagnostic "
-            "when its operation policy allows it. "
+            "file required by the assignment. Earlier failed actions remain in "
+            "Registry history but do not require a reserved comment or a Harness-"
+            "imposed retry before completion. "
             "The final write_file may precede this call in the same response when "
             "complete_interaction is the final ordered call."),
         "delegate_leaf": (

@@ -383,7 +383,7 @@ def request_agent_turn_v1(
                 submission_state = "response_observed"
                 canonical_response = None
         if disposition != "success":
-            next_attempt_allowed = (
+            retry_permitted = (
                 self._registry.record_llm_invocation_failure_v1(
                     current_loop, attempt, disposition,
                     failure_code=failure_code,
@@ -392,7 +392,7 @@ def request_agent_turn_v1(
                         f"{idempotency_key}:attempt:"
                         f"{attempt.attempt_ref.version_id}:"
                         f"{disposition}")))
-            if next_attempt_allowed:
+            if retry_permitted:
                 continue
             block_kind = (
                 "submission_reconciliation"

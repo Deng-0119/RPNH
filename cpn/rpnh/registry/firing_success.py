@@ -278,9 +278,10 @@ def _succeed_verified_module_operation(
         )
     firing = execution.operation.firing
     resource_access_events = tuple(
-        event for event in core.event_store.list_events()
-        if (event.event_type == "petri_firing_resource_accessed/v1"
-            and event.aggregate_id == str(firing.transition_firing_ref.entity_id)
+        event for event in core.event_store.list_events_by_aggregate(
+            str(firing.transition_firing_ref.entity_id),
+            event_types=("petri_firing_resource_accessed/v1",))
+        if (event.aggregate_id == str(firing.transition_firing_ref.entity_id)
             and event.writer_fencing_epoch == resource_access_writer_epoch
             and event.payload.get("transition_firing_ref")
             == _ref_payload(firing.transition_firing_ref)))

@@ -33,9 +33,9 @@ def committed_checkpoint_refs(
     verified_checkpoint_head(
         core.event_store, core.catalog, core.task_id, net_ref)
     refs = []
-    for event in core.event_store.list_events():
-        if (event.event_type != "marking_checkpoint_committed/v1"
-                or event.payload.get("net_instance_ref")
+    for event in core.event_store.list_events_by_type(
+            ("marking_checkpoint_committed/v1",)):
+        if (event.payload.get("net_instance_ref")
                 != _ref_payload(net_ref)):
             continue
         ref = _version_from_payload(event.payload["checkpoint_ref"])

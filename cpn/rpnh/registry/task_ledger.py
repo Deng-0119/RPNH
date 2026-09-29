@@ -96,9 +96,8 @@ class TaskControlLedger:
             "output_binding_refs": closure["output_binding_refs"],
             "supersedes_net_ref": _exact_ref_payload(supersedes_net_ref),
         }
-        existing = tuple(
-            event for event in self.service.event_store.list_events()
-            if event.idempotency_key == idempotency_key)
+        existing = self.service.event_store.list_events_by_idempotency_key(
+            idempotency_key)
         if existing:
             adopted = [event for event in existing
                        if event.event_type == "net_adopted/v1"]
@@ -107,9 +106,9 @@ class TaskControlLedger:
                     "net-adoption idempotency key was reused for different input")
             return existing
         adoptions = [
-            event for event in self.service.event_store.list_events()
+            event for event in self.service.event_store.list_events_by_type(
+                ("net_adopted/v1",))
             if event.task_id == self.service.task_id
-            and event.event_type == "net_adopted/v1"
         ]
         if adoptions:
             active = verified_adoption_head(

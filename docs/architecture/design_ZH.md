@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: design.md
-  revision: "2026-09-24.1"
+  revision: "2026-09-29.1"
   status: source-reviewed-not-final-candidate-acceptance
   basis: "core; adapter differences explicitly labelled"
 ---
@@ -39,6 +39,20 @@ Intake 与 Finalization 是完整生命周期，不能拆掉一端。格式化�
 资源身份/版本和已确认访问才是依据，不只是路径或无版本内容。每个 firing 获得注册版本的私有 workspace 视图；成功结算发布允许的后继，未完成写入不进入已提交共享历史。这不意味着任意外部副作用可自动补偿。
 
 harness 负责**结构安全**：明确准入、所有权、声明效果与证据。业务提供访问与披露政策，通过 guard、Inspector place/token 或注册 operation 接入。核心不应硬编码某公司的权限政策，但业务政策也不能成为绕过结构闭环的理由。可信插件/宿主仍需审查，Registry 和 PN 都不是 OS sandbox。
+
+## 结构校验与运行策略
+Registry schema 与 commit validator 只强制历史重放时必须持续成立的事实：类型化身份、
+精确引用、所有权、append-only 顺序、Petri token／基数规则、transport 里程碑及匹配的终态
+证据。它们不能把一次 runtime 决策固化为历史完整性。重试资格与次数、工具失败后的处置、
+业务验收和答案是否充分，属于所选 provider／operation／用户策略。因此 failure 记录保存
+已发生事实和 transport disposition；当前 invocation policy 决定能否准入新的 attempt，
+历史有效性不要求保存“最终不可重试”断言。未改版本号的 v1 schema 在读取旧 append-only
+事件时仍接受该字段，但当前 writer 和决策均不再生成或使用它。
+
+点查询必须使用 Registry 按 identity、type、aggregate、transaction 或 idempotency 提供的
+索引读取。只有明确的全历史审计，或语义确实依赖全部后续 writer 事实的恢复规则，才应加载
+完整事件历史。这样既不削弱证据边界，也避免长生命周期 Registry 仅为解析一个 authority
+或 publication event 而持续变慢。
 
 ## 观察者与适配
 net view 是配置结构或 Registry 当前结构的只读投影，应保留来源模式、精确 ID 与未知状态。它不能造 token、根据 UI 状态推断终态，或为了好看隐藏真实执行环节。翻译只改变解释标签，不改协议 ID、字段名、模型身份和运行数据。

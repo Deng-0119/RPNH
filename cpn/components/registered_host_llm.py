@@ -958,9 +958,7 @@ class RegisteredHostLLMRegistryService:
         if any(store.object_row(version_id) is not None
                for version_id in deterministic_versions):
             return True
-        return any(
-            event.idempotency_key.startswith(authority.key + ":")
-            for event in store.list_events())
+        return store.has_event_idempotency_prefix(authority.key + ":")
 
     def _raw_response(
             self, authority: _RegisteredHostRequestAuthority,
@@ -1453,7 +1451,6 @@ class RegisteredHostLLMRegistryService:
             "disposition": disposition,
             "submission_state": submission_state,
             "failure_code": failure_code,
-            "next_attempt_allowed": False,
         }
         tx = self.core.begin(idempotency_key=key)
         for event_type, aggregate_id, aggregate_type, stream in (

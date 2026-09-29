@@ -33,7 +33,27 @@ class ScriptedMain:
         self.child_links = []
         self.execution_state = "pending_start"
         self._main_thread = self
-        self._registry_core = NS(event_store=NS(list_events=lambda: tuple(self.events)))
+        self._registry_core = NS(event_store=NS(
+            list_events=lambda: tuple(self.events),
+            object_publication_event=self._object_publication_event,
+            first_and_last_events=self._first_and_last_events,
+        ))
+
+    def _object_publication_event(self, version_id, *, object_type):
+        assert object_type == "main_turn/v1"
+        matches = [
+            event for event in self.events
+            if event.event_type == "object_version_published/v1"
+            and event.payload.get("version_id") == str(version_id)
+        ]
+        if not matches:
+            raise ValueError("scripted publication is absent")
+        return matches[-1]
+
+    def _first_and_last_events(self):
+        if not self.events:
+            return None, None
+        return self.events[0], self.events[-1]
 
     @staticmethod
     def _version_ref(value):

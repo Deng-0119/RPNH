@@ -1682,7 +1682,6 @@ def validate_provider_pre_resource_event(context, pending):
                 == llm_invocation_ref
                 and prior_payload.get("llm_invocation_attempt_ref")
                 == neutral_ref
-                and prior_payload.get("next_attempt_allowed") is False
                 and prior_payload.get("submission_state")
                 == common.get("submission_state")
                 and str(prior["producer_invocation_id"])
@@ -2728,8 +2727,7 @@ def validate_registered_host_llm_event(context, pending):
     }
     closed = tuple(item for item in siblings if item.event_type in closed_types)
     if ({item.event_type for item in closed} != closed_types
-            or any(dict(item.payload) != dict(payload) for item in closed)
-            or payload.get("next_attempt_allowed") is not False):
+            or any(dict(item.payload) != dict(payload) for item in closed)):
         raise RegistryConflict(
             "registered HOST LLM closure is not one exact terminal bundle")
 

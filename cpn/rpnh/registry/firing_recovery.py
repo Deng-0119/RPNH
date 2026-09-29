@@ -164,8 +164,7 @@ def record_registered_operation_completion(
 
 
 def _completion_events(core: _RegistryCore) -> tuple[EventEnvelope, ...]:
-    return tuple(event for event in core.event_store.list_events()
-                 if event.event_type == COMPLETION_EVENT_TYPE)
+    return core.event_store.list_events_by_type((COMPLETION_EVENT_TYPE,))
 
 
 def _reject_conflicting_lifecycle(
@@ -186,9 +185,13 @@ def _reject_conflicting_lifecycle(
         str(invocation_ref.entity_id), str(firing_ref.entity_id),
         str(lease_ref.entity_id),
     }
-    for event in core.event_store.list_events():
-        if (event.event_type in terminal_types
-                and event.aggregate_id in aggregate_ids):
+    events = tuple(
+        event
+        for aggregate_id in aggregate_ids
+        for event in core.event_store.list_events_by_aggregate(
+            aggregate_id, event_types=tuple(terminal_types)))
+    for event in events:
+        if event.aggregate_id in aggregate_ids:
             raise ResourceIntegrityFault(
                 "registered-operation recovery has a terminal conflict")
 
@@ -678,7 +681,6 @@ def _owner_interruption_payload_for_active_invocation(
                 != _ref_payload(llm_invocation_ref)
                 or failure.payload.get("llm_invocation_attempt_ref")
                 != _ref_payload(neutral_ref)
-                or failure.payload.get("next_attempt_allowed") is not False
                 or submission_state not in {"not_submitted", "submission_unknown"}):
             raise ResourceIntegrityFault(
                 "unresolved neutral failure is not owner-abandonable")

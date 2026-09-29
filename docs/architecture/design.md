@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: en
   counterpart: design_ZH.md
-  revision: "2026-09-24.1"
+  revision: "2026-09-29.1"
   status: source-reviewed-not-final-candidate-acceptance
   basis: "core; adapter differences explicitly labelled"
 ---
@@ -39,6 +39,27 @@ A `delegate_leaf` is different: it is parent-owned, bounded, and returns to an e
 Resource identity/version and acknowledged access matter, not just file paths or unversioned contents. Firing workspaces expose a private view of the registered revision. Successful settlement publishes the allowed successor; incomplete writes do not become committed shared history. This is not automatic compensation for arbitrary external side effects.
 
 The harness governs **structural safety**: explicit admission, ownership, declared effects and evidence. The business supplies access policy and data-disclosure rules, which can enter through declared guards, Inspector places/tokens or registered operations. The core should not hard-code a particular organization's authorization policy. Conversely, business policy is not an excuse to bypass the structural path. Trusted plugins and host code still require review; neither Registry nor a Petri diagram is an OS sandbox.
+
+## Structural validation and runtime policy
+Registry schemas and commit validators enforce facts that must remain true when
+history is replayed: typed identity, exact references, ownership, append-only
+ordering, Petri token/cardinality rules, transport milestones and matching
+terminal evidence. They must not freeze a runtime decision into historical
+integrity. Retry eligibility and count, remediation after a failed tool action,
+business acceptance and whether an answer is good enough belong to the selected
+provider/operation/user policy. A failure record therefore stores what happened
+and its transport disposition; the current invocation policy decides whether a
+fresh attempt may be admitted. Historical validity does not require a stored
+“final non-retryable” assertion. The unchanged v1 schemas accept that field
+when reading older append-only events, but current writers and decisions ignore
+it.
+
+Point reads must use the Registry's indexed identity, type, aggregate,
+transaction or idempotency queries. Materializing the complete event history is
+reserved for a deliberately whole-history audit or a recovery rule whose
+meaning depends on all later writer facts. This keeps the same evidence boundary
+without making long-lived Registries progressively slower merely to resolve one
+authority or publication event.
 
 ## Observation and adapter boundaries
 A net view is a read-only projection of configured or Registry-current structure. It must preserve its source mode, exact IDs and uncertainty; it cannot mint tokens, infer terminal evidence from UI state or hide a real execution step to improve presentation. Translation changes explanatory labels, not protocol IDs, field names, model identities or run data.

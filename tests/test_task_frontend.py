@@ -1046,106 +1046,33 @@ class _FanoutWorkspacePort:
 class _WorkspaceFailureRecoveryPort:
     def __init__(self) -> None:
         self.calls = 0
-        self.failed_action_ref = None
-        self.resolution_action_ref = None
-        self.solve_calls = 0
-
-    @staticmethod
-    def _workspace_results(envelope):
-        results = []
-        for message in envelope["messages"]:
-            if message.get("role") != "tool":
-                continue
-            content = message.get("content")
-            if not isinstance(content, str):
-                continue
-            try:
-                value = json.loads(content)
-            except json.JSONDecodeError:
-                continue
-            if (isinstance(value, dict)
-                    and value.get("kind") == "workspace_execution/v1"):
-                results.append(value)
-        return results
 
     def request_once(self, attempt):
         self.calls += 1
-        envelope = json.loads(attempt.canonical_request_bytes)
-        workspace_results = self._workspace_results(envelope)
-        if self.calls == 1:
-            calls = [{
-                "id": "failed-solve",
-                "name": "workspace",
-                "arguments": json.dumps({
-                    "script": "timed-out-solve",
-                    "timeout_seconds": 10,
-                }),
-            }, {
-                "id": "candidate-output",
-                "name": "write_file",
-                "arguments": json.dumps({
-                    "path": "outputs/result.txt",
-                    "description": "Candidate requiring successful execution.",
-                    "content": json.dumps("corrected and verified"),
-                    "output_port_id": "main.result",
-                    "outcome_id": "complete",
-                }),
-            }, {
-                "id": "premature-complete",
-                "name": "complete_interaction",
-                "arguments": "{}",
-            }]
-        elif self.calls == 2:
-            failed, = [
-                result for result in workspace_results
-                if result["status"] == "timed_out"]
-            self.failed_action_ref = failed["agent_action_ref"]
-            calls = [{
-                "id": "unrelated-success",
-                "name": "workspace",
-                "arguments": json.dumps({
-                    "script": "unrelated-check",
-                    "timeout_seconds": 10,
-                }),
-            }, {
-                "id": "unresolved-complete",
-                "name": "complete_interaction",
-                "arguments": "{}",
-            }]
-        elif self.calls == 3:
-            failed, = [
-                result for result in workspace_results
-                if result["status"] == "timed_out"]
-            calls = [{
-                "id": "corrected-solve",
-                "name": "workspace",
-                "arguments": json.dumps({
-                    "script": (
-                        "# rpnh-resolves-action: "
-                        + failed["agent_action_ref"]["version_id"]
-                        + "\ncorrected-solve"),
-                    "timeout_seconds": 10,
-                }),
-            }]
-        elif self.calls == 4:
-            failed, = [
-                result for result in workspace_results
-                if result["status"] == "timed_out"]
-            successful = [
-                result for result in workspace_results
-                if result["status"] == "completed"
-                and result["exit_code"] == 0]
-            assert len(successful) == 2
-            resolved = successful[-1]
-            assert failed["agent_action_ref"] == self.failed_action_ref
-            self.resolution_action_ref = resolved["agent_action_ref"]
-            calls = [{
-                "id": "verified-complete",
-                "name": "complete_interaction",
-                "arguments": "{}",
-            }]
-        else:
-            raise AssertionError("recovery task requested an extra turn")
+        if self.calls != 1:
+            raise AssertionError("failed-action evidence forced an extra turn")
+        calls = [{
+            "id": "failed-diagnostic",
+            "name": "workspace",
+            "arguments": json.dumps({
+                "script": "timed-out-diagnostic",
+                "timeout_seconds": 10,
+            }),
+        }, {
+            "id": "evidence-aware-output",
+            "name": "write_file",
+            "arguments": json.dumps({
+                "path": "outputs/result.txt",
+                "description": "Accurate result retaining failed diagnostics.",
+                "content": json.dumps("diagnostic retained"),
+                "output_port_id": "main.result",
+                "outcome_id": "complete",
+            }),
+        }, {
+            "id": "complete-with-history",
+            "name": "complete_interaction",
+            "arguments": "{}",
+        }]
         return LLMInputResponseBytes(json.dumps({
             "protocol": "llm_response_envelope/v1",
             "tool_calls": calls,
@@ -1746,7 +1673,7 @@ def test_fanout_workspaces_namespace_semantic_products_and_merge_branch_files(
         "outputs/ports/output__branch_b__b/result.json"] == b"b"
 
 
-def test_workspace_failure_rejects_completion_then_same_loop_recovers(
+def test_workspace_failure_is_evidence_not_a_completion_policy_gate(
         tmp_path: Path, monkeypatch,
 ) -> None:
     adapter_path = tmp_path / "adapter.json"
@@ -1775,19 +1702,10 @@ def test_workspace_failure_rejects_completion_then_same_loop_recovers(
         lambda _selection, *, destination_run_root: port)
 
     def fake_workspace(*, script, **_kwargs):
-        if script == "timed-out-solve":
-            port.solve_calls += 1
-            if port.solve_calls == 1:
-                return {
-                    "status": "timed_out", "exit_code": -9,
-                    "stdout": "", "stderr": "deadline exceeded",
-                    "output_truncated": False, "command_started": True,
-                }
-        assert script.splitlines()[-1] in {
-            "unrelated-check", "corrected-solve"}
+        assert script == "timed-out-diagnostic"
         return {
-            "status": "completed", "exit_code": 0,
-            "stdout": "verification passed", "stderr": "",
+            "status": "timed_out", "exit_code": -9,
+            "stdout": "", "stderr": "deadline exceeded",
             "output_truncated": False, "command_started": True,
         }
 
@@ -1797,18 +1715,16 @@ def test_workspace_failure_rejects_completion_then_same_loop_recovers(
     run_dir = tmp_path / "run"
     result = run_agent_task(AgentTaskSpec(
         run_dir=run_dir,
-        prompt="Recover from a failed solve and verify the corrected result.",
-        stages=(AgentStage("main", "Solve, correct, and verify the task."),),
+        prompt="Retain one failed diagnostic and report it accurately.",
+        stages=(AgentStage("main", "Record the diagnostic result."),),
         execution_config_path=execution_path,
-        max_attempts_per_stage=4,
+        max_attempts_per_stage=1,
     ))
 
     assert result["stop_reason"] == "terminal"
-    assert result["output"] == "corrected and verified"
-    assert result["actual_model_call_counts"] == [4, 0]
-    assert port.calls == 4
-    assert port.failed_action_ref is not None
-    assert port.resolution_action_ref is not None
+    assert result["output"] == "diagnostic retained"
+    assert result["actual_model_call_counts"] == [1, 0]
+    assert port.calls == 1
 
     readonly = _RegistryCore(
         run_dir, create=False, read_only=True,
@@ -1819,34 +1735,12 @@ def test_workspace_failure_rejects_completion_then_same_loop_recovers(
             object_type="agent_action/v2")]
     failed = next(
         action for action in actions
-        if action["tool_call_id"] == "failed-solve")
-    premature = next(
-        action for action in actions
-        if action["tool_call_id"] == "premature-complete")
-    unresolved = next(
-        action for action in actions
-        if action["tool_call_id"] == "unresolved-complete")
-    unrelated = next(
-        action for action in actions
-        if action["tool_call_id"] == "unrelated-success")
-    resolved = next(
-        action for action in actions
-        if action["tool_call_id"] == "corrected-solve")
+        if action["tool_call_id"] == "failed-diagnostic")
     completed = next(
         action for action in actions
-        if action["tool_call_id"] == "verified-complete")
+        if action["tool_call_id"] == "complete-with-history")
     assert failed["result_metadata"]["status"] == "timed_out"
-    assert premature["state"] == "ACTION_REJECTED"
-    assert unresolved["state"] == "ACTION_REJECTED"
-    error = readonly.get_version(TypedId.parse(
-        premature["tool_error_ref"]["version_id"],
-        expected="agent_tool_error_version"))
-    assert error.metadata["error_code"] == "arguments_invalid"
-    assert resolved["result_metadata"]["exit_code"] == 0
-    assert resolved["arguments"]["script"].splitlines()[0] == (
-        "# rpnh-resolves-action: "
-        + failed["agent_action_ref"]["version_id"])
-    assert "rpnh-resolves-action" not in unrelated["arguments"]["script"]
+    assert failed["state"] == "ACTION_APPLIED"
     assert completed["state"] == "COMPLETED"
     assert completed["arguments"] == {}
     loop_ids = {action["agent_loop_ref"]["logical_id"] for action in actions}

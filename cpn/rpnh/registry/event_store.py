@@ -1985,6 +1985,16 @@ class EventStore:
         from ._event_store import queries
         return queries.event_by_id(self, event_id)
 
+    def first_and_last_events(
+            self,
+    ) -> tuple[EventEnvelope | None, EventEnvelope | None]:
+        from ._event_store import queries
+        return queries.first_and_last_events(self)
+
+    def has_event_idempotency_prefix(self, prefix: str) -> bool:
+        from ._event_store import queries
+        return queries.has_event_idempotency_prefix(self, prefix)
+
     def list_events_by_type(self, event_types: tuple[str, ...], *, after_ordinal: int=0) -> tuple[EventEnvelope, ...]:
         from ._event_store import queries
         return queries.list_events_by_type(self, event_types, after_ordinal=after_ordinal)

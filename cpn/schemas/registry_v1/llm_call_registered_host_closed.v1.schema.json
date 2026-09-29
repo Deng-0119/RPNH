@@ -6,5 +6,5 @@
   "properties": {
     "invocation_kind": {"const": "registered_host"}, "invocation_ref": {"$ref": "#/definitions/ref"}, "operation_binding_ref": {"$ref": "#/definitions/ref"}, "llm_call_ref": {"$ref": "#/definitions/ref"}, "registered_host_llm_attempt_ref": {"$ref": "#/definitions/ref"}, "provider_attempt_ref": {"$ref": "#/definitions/ref"}, "disposition": {"type": "string", "minLength": 1}, "submission_state": {"type": "string", "minLength": 1}, "failure_code": {"type": "string", "minLength": 1}, "next_attempt_allowed": {"const": false}
   },
-  "required": ["invocation_kind", "invocation_ref", "operation_binding_ref", "llm_call_ref", "registered_host_llm_attempt_ref", "provider_attempt_ref", "disposition", "submission_state", "failure_code", "next_attempt_allowed"]
+  "required": ["invocation_kind", "invocation_ref", "operation_binding_ref", "llm_call_ref", "registered_host_llm_attempt_ref", "provider_attempt_ref", "disposition", "submission_state", "failure_code"]
 }

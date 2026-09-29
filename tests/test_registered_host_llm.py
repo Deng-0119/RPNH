@@ -397,20 +397,28 @@ def test_registered_host_llm_failure_closes_all_exact_identities(
         )
 
         events = tuple(owner._core.event_store.list_events())
-        closed = {
-            event.event_type for event in events
+        closure_events = tuple(
+            event for event in events
             if event.payload.get("registered_host_llm_attempt_ref") == {
                 "entity_type": attempt.attempt_ref.entity_type,
                 "logical_id": str(attempt.attempt_ref.entity_id),
                 "version_id": str(attempt.attempt_ref.version_id),
             }
-        }
+        )
+        closed = {event.event_type for event in closure_events}
         assert closed == {
             "registered_host_llm_attempt_reserved/v1",
             "provider_attempt_host_closed/v1",
             "llm_call_registered_host_closed/v1",
             "registered_host_llm_attempt_closed/v1",
         }
+        for event in closure_events:
+            if event.event_type.endswith("_closed/v1"):
+                assert "next_attempt_allowed" not in event.payload
+                historical_payload = dict(event.payload)
+                historical_payload["next_attempt_allowed"] = False
+                owner._core.catalog.validate_schema_ref(
+                    event.payload_schema_ref, historical_payload)
         assert owner._core.event_store.actual_model_call_counts() == (0, 0)
         outputs = owner.products(
             execution,

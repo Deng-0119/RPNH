@@ -27,14 +27,18 @@ def current_run_execution_authority(
     if len(logical_ids) != 1:
         raise ResourceIntegrityFault(
             "run run has multiple execution-authority lineages")
-    event_ordinals = {
-        str(event.event_id): event.ordinal
-        for event in core.event_store.list_events()
-    }
     try:
+        publication_ordinals = {}
+        for candidate in rows:
+            publication = core.event_store.event_by_id(TypedId.parse(
+                str(candidate["published_event_id"]), expected="event"))
+            if publication is None:
+                raise ValueError("run authority publication event is absent")
+            publication_ordinals[str(candidate["version_id"])] = (
+                publication.ordinal)
         row = max(
             rows,
-            key=lambda item: event_ordinals[str(item["published_event_id"])],
+            key=lambda item: publication_ordinals[str(item["version_id"])],
         )
         document = json.loads(str(row["metadata_json"]))
         authority_ref = VersionRef(

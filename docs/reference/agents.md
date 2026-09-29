@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: en
   counterpart: agents_ZH.md
-  revision: "2026-09-28.1"
+  revision: "2026-09-29.1"
   status: source-reviewed-not-final-candidate-acceptance
   basis: "core; adapter differences explicitly labelled"
 ---
@@ -29,18 +29,14 @@ The `AgentLoopLLMPort` declares `request_agent_turn_v1(execution, loop, catalog,
 
 Workspace execution and task completion are separate facts. A started workspace
 action with `status=timed_out` or a nonzero `exit_code` remains an immutable
-`ACTION_APPLIED` observation, but an actor cannot settle the assignment over it.
-For an actor, Registry requires a later completed, zero-exit verification action
-in the same AgentLoop whose leading reserved comment names each exact failed
-action version (`# rpnh-resolves-action: agent_action_version:...`); an unrelated
-successful command is not closure. This metadata stays inside the existing
-workspace script argument, preserving immutable v1 tool contracts. A critic or finalization
-reviewer may instead report the diagnostic only when its registered operation
-policy permits diagnostic evidence. A failed workspace action and a completion
-submitted in the same provider response cannot complete: the failure is first
-returned to the same AgentLoop, which continues while its turn budget remains.
-This gate preserves the existing `complete_interaction` v1 tool contract, so an
-older Registry can resume without replacing immutable HOST registrations.
+`ACTION_APPLIED` observation. It is neither erased by a later success nor itself
+proof that the assignment failed. The model or declared business operation must
+decide whether correction, verification, or an accurate diagnostic result is
+appropriate. Registry does not require a retry, a final non-retryable marker, or
+a reserved script comment before `complete_interaction`; those are runtime or
+business-policy decisions rather than structural integrity. Completion still
+requires registered semantic products and preserves every preceding action as
+immutable evidence.
 
 Owner interruption is a different boundary. It closes the in-progress action,
 persists the clean workspace checkpoint and leaves the run `stopped_by_owner`;
@@ -72,6 +68,6 @@ Methods intentionally remain declared directly on the Protocols because gateways
 The exact CLI arguments for catalog generation are in [models](../guides/models.md). Generated execution limits (`timeout_seconds`, `max_output_tokens`, `max_response_bytes`, optional `context_window_tokens`, and optional `context_compaction_retained_tokens`) are not a comprehensive monetary budget. A declared context window enables proactive compaction and is shown as non-secret profile provenance. The provider adapter executes the selected transport; the Registry provider ledger records physical attempts and recovery evidence. Their responsibilities must not be collapsed into an invisible transport retry.
 
 ## Failures, testing and stability
-Test malformed responses, length interruption, schema mismatch, stale references, cancelled/waiting actions, workspace failure closure, owner-stop resume and exact provider/model preservation. Context text and tool results do not gain Registry authority merely by appearing in a prompt. The `OptionalAgentLoopRegistryService` owner-side gateway and private commit helpers are implementation surfaces, not plugin-author permission to write Registry internals.
+Test malformed responses, length interruption, schema mismatch, stale references, cancelled/waiting actions, workspace failure evidence, owner-stop resume and exact provider/model preservation. Context text and tool results do not gain Registry authority merely by appearing in a prompt. The `OptionalAgentLoopRegistryService` owner-side gateway and private commit helpers are implementation surfaces, not plugin-author permission to write Registry internals.
 
 Source map: `cpn/rpnh/main_session.py`, `task_control.py`, `agent_tasks.py`, `agent_workflows.py`; `cpn/components/agent_loop/{ports,service,turn_execution,turn_records,action_execution,action_records,context,compaction,delegation,resource_wait,workspace}.py`; `cpn/rpnh/user_config.py`, `provider_setup.py`, `cpn/llm_adapters`, `cpn/rpnh/registry/_provider_calls`.

@@ -49,26 +49,6 @@ def _declared_agent_prompt(operation, target: LLMInputTarget) -> dict:
         f"{outcome.name}="
         + ",".join(product.port for product in outcome.products)
         for outcome in semantic_outcomes)
-    workspace_failure_policy = operation.declaration.config.get(
-        "workspace_failure_policy", "require_resolved")
-    if workspace_failure_policy not in {
-            "require_resolved", "allow_explicit_diagnostic"}:
-        raise ValueError(
-            "optional agent workspace_failure_policy is invalid")
-    failure_guidance = (
-        "A timed-out or nonzero-exit workspace action is immutable failure "
-        "evidence, not task completion. Correct the problem and run a later "
-        "successful verification script prefixed with one exact "
-        "'# rpnh-resolves-action: AGENT_ACTION_VERSION_ID' comment for every "
-        "failed agent_action_ref it resolves before complete_interaction. An "
-        "unrelated successful command is not a resolution."
-        if workspace_failure_policy == "require_resolved" else
-        "A timed-out or nonzero-exit workspace action is immutable evidence. "
-        "Resolve it with a successful verification script whose leading RPNH "
-        "resolution comments name the exact failed action versions, or when the "
-        "declared critic/reviewer responsibility is specifically to report "
-        "that diagnostic, report it accurately before complete_interaction."
-    )
     messages.append({
         "role": "system",
         "content": (
@@ -78,7 +58,10 @@ def _declared_agent_prompt(operation, target: LLMInputTarget) -> dict:
             "one exact port after '='; never substitute internal port_* "
             "handles. The content field carries serialized JSON bytes, so a "
             "text result must include JSON string quotes inside content. "
-            + failure_guidance + " "
+            "A timed-out or nonzero-exit workspace action remains immutable "
+            "evidence. Account for it accurately when deciding what to do "
+            "next; Registry records the fact but does not impose a retry or "
+            "reserved-comment policy on completion. "
             "After all products are registered, call complete_interaction "
             "as the final tool call."),
     })

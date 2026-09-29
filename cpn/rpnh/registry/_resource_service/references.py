@@ -1254,7 +1254,11 @@ def _live_firing_resource_extension_allows(
         "transition_firing_superseded_by_growth_recovery/v1",
         "transition_firing_superseded_by_native_resume/v1",
     }
-    events = tuple(self._ResourceServiceKernel__core.event_store.list_events())
+    events = tuple(
+        self._ResourceServiceKernel__core.event_store.list_events_by_aggregate(
+            str(firing_ref.entity_id),
+            event_types=(*terminal_types,
+                         "live_firing_resource_extension/v1")))
     if any(
             event.aggregate_id == str(firing_ref.entity_id)
             and event.event_type in terminal_types
@@ -1401,11 +1405,11 @@ def _binding_allows(self, context: InvocationContext, authorization_ref: Version
                 if isinstance(firing_raw, Mapping):
                     firing_ref = _version_from_payload(firing_raw)
                     if any(
-                            event.event_type
-                            == "transition_firing_settled/v1"
-                            and event.aggregate_id
-                            == str(firing_ref.entity_id)
-                            for event in self._ResourceServiceKernel__core.event_store.list_events()):
+                            event.aggregate_id == str(firing_ref.entity_id)
+                            for event in self._ResourceServiceKernel__core.event_store.list_events_by_aggregate(
+                                str(firing_ref.entity_id),
+                                event_types=(
+                                    "transition_firing_settled/v1",))):
                         return True
         manifest_raw = workspace.metadata.get(
             "workspace_seed_manifest_ref")

@@ -1109,9 +1109,9 @@ def _historical_build_fault_sidecar_action(
     if (not isinstance(business_firing_settlement_ref, VersionRef)
             or business_firing_settlement_ref.entity_type != "fact_event/v1"
             or len(tuple(
-                event for event in core.event_store.list_events()
-                if event.event_type == "transition_firing_settled/v1"
-                and event.payload.get("event_ref")
+                event for event in core.event_store.list_events_by_type(
+                    ("transition_firing_settled/v1",))
+                if event.payload.get("event_ref")
                 == ref_payload(business_firing_settlement_ref))) != 1):
         raise StrictContractError(
             "fault sidecar action requires one exact business settlement event")

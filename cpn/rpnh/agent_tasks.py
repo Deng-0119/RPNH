@@ -564,7 +564,6 @@ def build_agent_task_module(
                 "config": {
                     "provider_attempt_limit": 3,
                     "agent_loop_role": "actor",
-                    "workspace_failure_policy": "require_resolved",
                     "node_synopsis": stage.instruction,
                     "resource_bounds": {
                         "max_llm_attempts": max_attempts_per_stage,

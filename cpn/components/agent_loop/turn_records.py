@@ -714,7 +714,10 @@ class TurnRecordsMechanicsMixin:
             elif terminal[-1].event_type != "llm_invocation_failed/v1":
                 raise AgentLoopMechanicalLifecycleError(
                     "settled successful/interrupted call cannot retry")
-            elif terminal[-1].payload.get("next_attempt_allowed") is True:
+            elif self.retry_permitted(
+                    str(terminal[-1].payload.get("disposition", "")),
+                    attempt_ordinal=len(attempts) - 1,
+                    maximum_attempts=maximum_attempts):
                 ordinal = len(attempts)
                 if ordinal >= maximum_attempts:
                     raise AgentLoopMechanicalLifecycleError(
@@ -727,7 +730,7 @@ class TurnRecordsMechanicsMixin:
                                invocation_ref.version_id, ordinal))
             else:
                 raise AgentLoopMechanicalLifecycleError(
-                    "failed call does not authorize another attempt")
+                    "failed call has no retry slot under this invocation policy")
         else:
             ordinal = 0
             attempt_ref = VersionRef(
@@ -865,8 +868,8 @@ class TurnRecordsMechanicsMixin:
 
     def commit_llm_failure(
             self, *, loop: AgentLoopSnapshot, attempt: Any,
-            disposition: str, next_attempt_allowed: bool,
-            idempotency_key: str, failure_code: str | None = None,
+            disposition: str, idempotency_key: str,
+            failure_code: str | None = None,
             submission_state: str | None = None,
             events: Sequence[
                 tuple[str, str, str, Mapping[str, Any]]] = (),
@@ -874,7 +877,6 @@ class TurnRecordsMechanicsMixin:
         """Persist one neutral failed-attempt disposition."""
         self.current_loop(loop)
         if (not isinstance(disposition, str) or not disposition
-                or not isinstance(next_attempt_allowed, bool)
                 or (failure_code is None) != (submission_state is None)):
             raise AgentLoopMechanicalLifecycleError(
                 "LLM failure disposition is incomplete")
@@ -884,7 +886,6 @@ class TurnRecordsMechanicsMixin:
                 attempt.attempt_ref),
             "attempt_ordinal": attempt.attempt_ordinal,
             "disposition": disposition,
-            "next_attempt_allowed": next_attempt_allowed,
         }
         if failure_code is not None:
             payload.update(
@@ -974,7 +975,7 @@ class TurnRecordsMechanicsMixin:
         tx.commit()
 
     @staticmethod
-    def next_attempt_allowed(
+    def retry_permitted(
             disposition: str, *, attempt_ordinal: int,
             maximum_attempts: int,
     ) -> bool:
@@ -1041,12 +1042,11 @@ class TurnRecordsMechanicsMixin:
                 or attempt.model_condition != current.model_condition):
             raise AgentLoopMechanicalLifecycleError(
                 "failed attempt differs from its current Loop authority")
-        allowed = self.next_attempt_allowed(
+        allowed = self.retry_permitted(
             disposition, attempt_ordinal=attempt.attempt_ordinal,
             maximum_attempts=maximum_attempts)
         self.commit_llm_failure(
             loop=current, attempt=attempt, disposition=disposition,
-            next_attempt_allowed=allowed,
             idempotency_key=idempotency_key,
             failure_code=failure_code, submission_state=submission_state,
             events=events)

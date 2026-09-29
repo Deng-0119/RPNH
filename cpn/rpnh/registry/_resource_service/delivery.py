@@ -615,15 +615,16 @@ def acknowledge_delivery(
 def reconcile_incomplete_deliveries_on_resume(self) -> tuple[TypedId, ...]:
     """Close durable delivery crash windows without fabricating a read."""
     latest: dict[str, Any] = {}
-    for event in self._ResourceServiceKernel__core.event_store.list_events():
-        if event.event_type in {
-                "resource_delivery_prepared/v1",
-                "resource_release_authorized/v1",
-                "resource_delivery_acknowledged/v1",
-                "resource_delivery_failed/v1",
-                "resource_delivery_unknown/v1",
-        }:
-            latest[event.aggregate_id] = event
+    delivery_types = (
+        "resource_delivery_prepared/v1",
+        "resource_release_authorized/v1",
+        "resource_delivery_acknowledged/v1",
+        "resource_delivery_failed/v1",
+        "resource_delivery_unknown/v1",
+    )
+    for event in self._ResourceServiceKernel__core.event_store.list_events_by_type(
+            delivery_types):
+        latest[event.aggregate_id] = event
     reconciled: list[TypedId] = []
     for delivery_id_text, state in sorted(latest.items()):
         if state.event_type not in {
@@ -633,11 +634,9 @@ def reconcile_incomplete_deliveries_on_resume(self) -> tuple[TypedId, ...]:
             continue
         delivery_id = TypedId.parse(
             delivery_id_text, expected="resource_delivery")
-        object_rows = [
-            row for row in self._ResourceServiceKernel__core.event_store.object_rows()
-            if row["logical_id"] == delivery_id_text
-            and row["object_type"] == "resource_delivery/v1"
-        ]
+        object_rows = list(
+            self._ResourceServiceKernel__core.event_store.object_rows_by_logical(
+                delivery_id, object_type="resource_delivery/v1"))
         wanted_state = (
             "prepared" if state.event_type == "resource_delivery_prepared/v1"
             else "release_authorized")

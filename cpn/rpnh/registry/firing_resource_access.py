@@ -49,9 +49,10 @@ def derive_current_firing_resource_access(
         raise ResourceIntegrityFault(
             "resource access firing differs from the adopted Petri net")
     prior_events = tuple(
-        event for event in core.event_store.list_events()
-        if (event.event_type == "petri_firing_resource_accessed/v1"
-            and event.aggregate_id
+        event for event in core.event_store.list_events_by_aggregate(
+            str(firing.transition_firing_ref.entity_id),
+            event_types=("petri_firing_resource_accessed/v1",))
+        if (event.aggregate_id
             == str(firing.transition_firing_ref.entity_id)
             and event.writer_fencing_epoch == core.writer_epoch
             and event.payload.get("transition_firing_ref")

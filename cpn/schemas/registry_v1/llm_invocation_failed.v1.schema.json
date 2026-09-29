@@ -26,6 +26,6 @@
   },
   "required": [
     "llm_invocation_ref", "llm_invocation_attempt_ref", "attempt_ordinal",
-    "disposition", "next_attempt_allowed"
+    "disposition"
   ]
 }

@@ -46,6 +46,33 @@ def event_by_id(store, event_id: TypedId) -> EventEnvelope | None:
         ).fetchone()
         return store._row_to_envelope(row) if row is not None else None
 
+def first_and_last_events(
+        store,
+) -> tuple[EventEnvelope | None, EventEnvelope | None]:
+    """Return persisted Registry time bounds without hydrating its history."""
+    with store.connect() as db:
+        first = db.execute(
+            "SELECT * FROM events ORDER BY ordinal LIMIT 1").fetchone()
+        last = db.execute(
+            "SELECT * FROM events ORDER BY ordinal DESC LIMIT 1").fetchone()
+    return (
+        store._row_to_envelope(first) if first is not None else None,
+        store._row_to_envelope(last) if last is not None else None,
+    )
+
+def has_event_idempotency_prefix(store, prefix: str) -> bool:
+    """Test one exact key prefix without materializing unrelated events."""
+    if not isinstance(prefix, str) or not prefix:
+        raise ValueError("event idempotency prefix must be nonempty")
+    upper_bound = prefix + "\U0010ffff"
+    with store.connect() as db:
+        row = db.execute(
+            "SELECT 1 FROM events "
+            "WHERE idempotency_key>=? AND idempotency_key<? LIMIT 1",
+            (prefix, upper_bound),
+        ).fetchone()
+    return row is not None
+
 def list_events_by_type(
         store, event_types: tuple[str, ...], *,
         after_ordinal: int = 0) -> tuple[EventEnvelope, ...]:

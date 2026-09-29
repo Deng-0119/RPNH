@@ -199,8 +199,16 @@ def test_nested_host_failure_is_not_a_parent_operation_terminal_conflict(
         event_type="provider_attempt_host_closed/v1",
         aggregate_id="provider_attempt:00000000000000000000000000000000",
     )
+    recorded = [nested]
+
+    def by_aggregate(aggregate_id, *, event_types=()):
+        return tuple(
+            event for event in recorded
+            if event.aggregate_id == aggregate_id
+            and (not event_types or event.event_type in event_types))
+
     core = SimpleNamespace(event_store=SimpleNamespace(
-        list_events=lambda: (nested,)))
+        list_events_by_aggregate=by_aggregate))
 
     _reject_conflicting_lifecycle(
         core,
@@ -213,7 +221,7 @@ def test_nested_host_failure_is_not_a_parent_operation_terminal_conflict(
         event_type="operation_terminal_ready/v1",
         aggregate_id=str(context.invocation_ref.entity_id),
     )
-    core.event_store.list_events = lambda: (nested, parent)
+    recorded.append(parent)
     with pytest.raises(ResourceIntegrityFault, match="terminal conflict"):
         _reject_conflicting_lifecycle(
             core,

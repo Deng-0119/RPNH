@@ -312,15 +312,43 @@ def test_checkpoint_reentry_accepts_closed_compaction_failures_without_policy(
         max_attempts_per_stage=4,
     )
 
-    blocked = run_agent_task(spec)
+    from cpn.components.agent_loop.mechanical_lifecycle import (
+        AgentLoopMechanicalLifecycle,
+    )
+    current_event_writer = AgentLoopMechanicalLifecycle._event
+
+    def legacy_event_writer(
+            tx, *, event_type, aggregate_id, aggregate_type, payload,
+            producer_invocation_id,
+    ):
+        material = dict(payload)
+        if event_type == "llm_invocation_failed/v1":
+            # Older v1 writers persisted this policy decision.  Deliberately
+            # store ``False`` even for the first retryable failure: current
+            # execution must derive retry admission from disposition/bounds.
+            material["next_attempt_allowed"] = False
+        return current_event_writer(
+            tx, event_type=event_type, aggregate_id=aggregate_id,
+            aggregate_type=aggregate_type, payload=material,
+            producer_invocation_id=producer_invocation_id)
+
+    with monkeypatch.context() as legacy_writer:
+        legacy_writer.setattr(
+            AgentLoopMechanicalLifecycle, "_event",
+            staticmethod(legacy_event_writer))
+        blocked = run_agent_task(spec)
     assert blocked["stop_reason"] == "blocked_or_waiting"
     assert port.compaction_attempts == 2
     interrupted = _RegistryCore(
         run_dir, create=False, read_only=True, catalog=agent_task_catalog())
     failures = interrupted.event_store.list_events_by_type(
         ("llm_invocation_failed/v1",))
-    assert [event.payload["next_attempt_allowed"]
-            for event in failures] == [True, False]
+    assert len(failures) == 2
+    assert all(event.payload["next_attempt_allowed"] is False
+               for event in failures)
+    for event in failures:
+        interrupted.catalog.validate_schema_ref(
+            event.payload_schema_ref, event.payload)
     from cpn.rpnh.registry.checkpoint_reentry import committed_checkpoint_refs
     selected, = committed_checkpoint_refs(interrupted)
 
@@ -587,7 +615,7 @@ def test_pressure_projection_retry_identity_and_effective_history(
         ("llm_invocation_failed/v1",))
     assert len(failed) == 1
     assert failed[0].payload["disposition"] == "protocol_rejected"
-    assert failed[0].payload["next_attempt_allowed"] is True
+    assert "next_attempt_allowed" not in failed[0].payload
 
 
 def test_repeated_compaction_opens_new_context_sessions_and_keeps_recent_turns(

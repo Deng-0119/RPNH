@@ -272,17 +272,17 @@ class RegistryFrontendApplication:
                 "selection_unavailable", "The session's RPNH profile is unavailable.")
         authority = session._main_thread.recover_thread()
         thread = session._version_ref(authority["thread_ref"])
-        events = {str(e.payload.get("version_id")): e
-                  for e in session._registry_core.event_store.list_events()
-                  if e.event_type == "object_version_published/v1"}
         committed = {int(item["ordinal"]): item for item in authority["committed_history"]}
         result = []
         for lineage in session._main_thread._turn_lineages(thread.entity_id):
             first_ref, first = lineage[0]
             ref, current = lineage[-1]
-            event = events.get(str(first_ref.version_id))
-            latest = events.get(str(ref.version_id))
-            if event is None or latest is None:
+            try:
+                event = session._registry_core.event_store.object_publication_event(
+                    first_ref.version_id, object_type=first_ref.entity_type)
+                latest = session._registry_core.event_store.object_publication_event(
+                    ref.version_id, object_type=ref.entity_type)
+            except (KeyError, TypeError, ValueError):
                 raise FrontendError("missing_evidence", "A turn publication is unavailable.")
             try:
                 command = json.loads(event.command_id)
@@ -351,13 +351,14 @@ class RegistryFrontendApplication:
         views = []
         for sid, state in self._sessions.items():
             turns = self._turns(state)
-            events = tuple(state.session._registry_core.event_store.list_events())
+            first_event, last_event = (
+                state.session._registry_core.event_store.first_and_last_events())
             profile = self._profiles_by_path.get(state.session.execution_config_path)
             if profile is None:
                 raise FrontendError(
                     "selection_unavailable", "The session's RPNH profile is unavailable.")
-            views.append({"id": sid, "created": _milliseconds(events[0].recorded_at) if events else 0,
-                          "updated": _milliseconds(events[-1].recorded_at) if events else 0,
+            views.append({"id": sid, "created": _milliseconds(first_event.recorded_at) if first_event else 0,
+                          "updated": _milliseconds(last_event.recorded_at) if last_event else 0,
                           "model": self._public_profile(profile), "turns": turns,
                           "error": state.failure})
         return views
