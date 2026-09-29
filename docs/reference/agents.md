@@ -30,8 +30,11 @@ The `AgentLoopLLMPort` declares `request_agent_turn_v1(execution, loop, catalog,
 Workspace execution and task completion are separate facts. A started workspace
 action with `status=timed_out` or a nonzero `exit_code` remains an immutable
 `ACTION_APPLIED` observation, but an actor cannot settle the assignment over it.
-For an actor, Registry requires a later completed, zero-exit workspace action in
-the same AgentLoop before accepting completion. A critic or finalization
+For an actor, Registry requires a later completed, zero-exit verification action
+in the same AgentLoop whose leading reserved comment names each exact failed
+action version (`# rpnh-resolves-action: agent_action_version:...`); an unrelated
+successful command is not closure. This metadata stays inside the existing
+workspace script argument, preserving immutable v1 tool contracts. A critic or finalization
 reviewer may instead report the diagnostic only when its registered operation
 policy permits diagnostic evidence. A failed workspace action and a completion
 submitted in the same provider response cannot complete: the failure is first
@@ -43,8 +46,9 @@ Owner interruption is a different boundary. It closes the in-progress action,
 persists the clean workspace checkpoint and leaves the run `stopped_by_owner`;
 `resume` continues that same Registry from the checkpoint without replaying the
 invalidated action. A fully settled terminal run is immutable and is not an
-ordinary resume target. `reopen CHECKPOINT` is the separate owner-authorized
-operation for selecting any committed checkpoint in that run. It appends a new
+ordinary resume target. `reopen CHECKPOINT [:: REASON]` is the separate
+owner-authorized operation for selecting any committed checkpoint in that run;
+an optional reason becomes a Registry-backed resumed-agent instruction. It appends a new
 execution generation in the same Registry/run, clones that cut's live Petri
 tokens, restores its exact workspace revisions and preserves the current
 attempt high-water marks. Prior tokens, terminal evidence and files remain

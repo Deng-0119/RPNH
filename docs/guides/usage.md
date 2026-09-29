@@ -44,7 +44,7 @@ The following are **basic-frontend** commands. They are not additions to stock C
 | `/task ID message TARGET :: TEXT` | Explicit workflow recipient |
 | `/task ID stop`, `/task ID resume` | Request checkpoint stop; continue the current owner-stopped cut |
 | `/task ID checkpoints` | List exact committed checkpoint versions in the same run |
-| `/task ID reopen CHECKPOINT` | Append a new execution generation from the selected checkpoint; may execute models/tools |
+| `/task ID reopen CHECKPOINT [:: REASON]` | Append a new execution generation from the selected checkpoint and make optional owner guidance visible to resumed agents; may execute models/tools |
 | `/quit` | Leave the main frontend; independent children may continue |
 
 Short `/status`, `/result`, `/net`, `/message`, `/stop` commands act on the selected child. Plain text goes to main or to the selected single-agent; selected workflows require `TARGET :: TEXT`. A parent-owned `delegate_leaf` is an internal action, not an independently switchable task.
@@ -60,6 +60,10 @@ physical call recorded as `submission_unknown`, `reopen` is also the explicit
 owner decision to abandon that unresolved firing and start a fresh attempt from
 the selected safe cut. The unknown attempt remains immutable evidence and is
 never automatically retransmitted.
+
+When remediation is needed, append ` :: REASON`. The owner reason is stored in
+the reopen authorization and projected as a system instruction to agents in
+that execution generation. Omitting it retains the neutral default reason.
 
 ## Interrupted main turn
 Reopen with `rpnh --frontend basic --resume SESSION_DIR`. Without an explicit

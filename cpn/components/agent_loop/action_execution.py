@@ -140,7 +140,7 @@ def _validate_workspace_failure_closure(
 
     history = _settled_workspace_action_history(service, loop)
     failed = tuple(
-        action for _ref, action in history
+        (ref, action) for ref, action in history
         if _workspace_execution_failed(action.result_metadata)
     )
     if not failed:
@@ -156,17 +156,53 @@ def _validate_workspace_failure_closure(
     if policy == "allow_explicit_diagnostic":
         return
     successful = tuple(
-        action for _ref, action in history
+        (ref, action) for ref, action in history
         if not _workspace_execution_failed(action.result_metadata))
-    for failed_action in failed:
+    known_failures = {ref.version_id: (ref, action) for ref, action in failed}
+    resolutions: dict[VersionRef, list[AgentActionRecord]] = {
+        ref: [] for ref, _action in failed}
+    prefix = "# rpnh-resolves-action: "
+    for _resolution_ref, resolution in successful:
+        arguments = resolution.arguments
+        script = (
+            arguments.get("script")
+            if isinstance(arguments, Mapping) else None)
+        if not isinstance(script, str):
+            raise ResourceIntegrityFault(
+                "settled workspace action lacks its exact script")
+        for line in script.splitlines():
+            if not line.strip():
+                continue
+            if not line.startswith(prefix):
+                break
+            try:
+                version_id = TypedId.parse(
+                    line.removeprefix(prefix),
+                    expected="agent_action_version")
+            except ValueError as exc:
+                raise UnresolvedWorkspaceFailure(
+                    "workspace resolution comment has a malformed action "
+                    "version id") from exc
+            target = known_failures.get(version_id)
+            if (target is None
+                    or (resolution.turn_sequence,
+                        resolution.tool_call_ordinal)
+                    <= (target[1].turn_sequence,
+                        target[1].tool_call_ordinal)):
+                raise UnresolvedWorkspaceFailure(
+                    "workspace resolution comment must name an exact earlier "
+                    "failed workspace action in this AgentLoop")
+            resolutions[target[0]].append(resolution)
+    for failed_ref, failed_action in failed:
         if not any(
                 (resolution.turn_sequence, resolution.tool_call_ordinal)
                 > (failed_action.turn_sequence,
                    failed_action.tool_call_ordinal)
-                for resolution in successful):
+                for resolution in resolutions[failed_ref]):
             raise UnresolvedWorkspaceFailure(
-                "complete_interaction requires a later completed zero-exit "
-                "workspace action after every timed-out or nonzero-exit action")
+                "complete_interaction requires a later successful verification "
+                "script beginning with this exact resolution comment: "
+                f"{prefix}{failed_ref.version_id}")
 
 
 def _read_file(*, service, execution, loop, turn, arguments, idempotency_key):

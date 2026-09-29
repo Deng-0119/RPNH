@@ -100,7 +100,7 @@ rule is a visible v1 limitation, not transparent exactly-once intent inference.
 | `/rpnh-tasks` | List the session's independent tasks/workflows. |
 | `/rpnh-task ID status\|result\|stop\|resume` | Address exactly one existing child owner; resume continues its current stopped cut. |
 | `/rpnh-task ID checkpoints` | List exact committed checkpoint versions for that child run. |
-| `/rpnh-task ID reopen CHECKPOINT` | Reopen that exact cut as a new generation in the same Registry/run. |
+| `/rpnh-task ID reopen CHECKPOINT [:: REASON]` | Reopen that exact cut as a new generation in the same Registry/run, with optional owner guidance. |
 | `/rpnh-task ID message TEXT` | Send a registered control message to one child owner. |
 | `/rpnh-task ID net [resource flags]` | Read the selected child's real registered net. |
 | `/rpnh-net [--show-resources\|--resources-only]` | Read the latest main attempt's real net using the existing filter. |

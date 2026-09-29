@@ -542,7 +542,7 @@ class RegistryFrontendApplication:
         if name == "rpnh-help":
             if arguments.strip():
                 raise FrontendError("invalid_arguments", "rpnh-help takes no arguments.", 400)
-            return {"commands": ["rpnh-tasks", "rpnh-task ID status|result|stop|resume|reopen CHECKPOINT_VERSION|checkpoints|net|message",
+            return {"commands": ["rpnh-tasks", "rpnh-task ID status|result|stop|resume|reopen CHECKPOINT_VERSION [:: REASON]|checkpoints|net|message",
                                  "rpnh-net [--show-resources|--resources-only]", "rpnh-agent TEXT",
                                  "rpnh-workflow TEXT", "rpnh-resume", "rpnh-rollback", "rpnh-send UNIQUE_ID TEXT"],
                     "notice": "Identical unkeyed prompts are one request per session. Command observations are not agent answers."}
@@ -596,9 +596,24 @@ class RegistryFrontendApplication:
             if action == "resume" and not flags:
                 self._check_model(session)
                 return session.task_control.resume(task_id)
-            if action == "reopen" and len(flags) == 1:
+            if action == "reopen" and flags:
                 self._check_model(session)
-                return session.task_control.reopen(task_id, flags[0])
+                fields = arguments.split(maxsplit=2)
+                payload = fields[2] if len(fields) == 3 else ""
+                checkpoint, separator, reason = payload.partition(" :: ")
+                checkpoint = checkpoint.strip()
+                if (not checkpoint or any(character.isspace()
+                        for character in checkpoint)
+                        or (separator and not reason.strip())):
+                    raise FrontendError(
+                        "invalid_arguments",
+                        "Usage: /rpnh-task ID reopen CHECKPOINT [:: REASON]",
+                        400)
+                options = {}
+                if separator:
+                    options["reason"] = reason.strip()
+                return session.task_control.reopen(
+                    task_id, checkpoint, **options)
             if flags or action not in {"status", "result", "stop"}:
                 raise FrontendError("unsupported_command", "Unsupported task action.", 400)
             if action == "status":

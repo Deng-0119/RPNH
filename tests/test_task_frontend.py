@@ -1048,6 +1048,7 @@ class _WorkspaceFailureRecoveryPort:
         self.calls = 0
         self.failed_action_ref = None
         self.resolution_action_ref = None
+        self.solve_calls = 0
 
     @staticmethod
     def _workspace_results(envelope):
@@ -1100,21 +1101,42 @@ class _WorkspaceFailureRecoveryPort:
                 if result["status"] == "timed_out"]
             self.failed_action_ref = failed["agent_action_ref"]
             calls = [{
-                "id": "corrected-solve",
+                "id": "unrelated-success",
                 "name": "workspace",
                 "arguments": json.dumps({
-                    "script": "corrected-solve",
+                    "script": "unrelated-check",
                     "timeout_seconds": 10,
                 }),
+            }, {
+                "id": "unresolved-complete",
+                "name": "complete_interaction",
+                "arguments": "{}",
             }]
         elif self.calls == 3:
             failed, = [
                 result for result in workspace_results
                 if result["status"] == "timed_out"]
-            resolved, = [
+            calls = [{
+                "id": "corrected-solve",
+                "name": "workspace",
+                "arguments": json.dumps({
+                    "script": (
+                        "# rpnh-resolves-action: "
+                        + failed["agent_action_ref"]["version_id"]
+                        + "\ncorrected-solve"),
+                    "timeout_seconds": 10,
+                }),
+            }]
+        elif self.calls == 4:
+            failed, = [
+                result for result in workspace_results
+                if result["status"] == "timed_out"]
+            successful = [
                 result for result in workspace_results
                 if result["status"] == "completed"
                 and result["exit_code"] == 0]
+            assert len(successful) == 2
+            resolved = successful[-1]
             assert failed["agent_action_ref"] == self.failed_action_ref
             self.resolution_action_ref = resolved["agent_action_ref"]
             calls = [{
@@ -1754,12 +1776,15 @@ def test_workspace_failure_rejects_completion_then_same_loop_recovers(
 
     def fake_workspace(*, script, **_kwargs):
         if script == "timed-out-solve":
-            return {
-                "status": "timed_out", "exit_code": -9,
-                "stdout": "", "stderr": "deadline exceeded",
-                "output_truncated": False, "command_started": True,
-            }
-        assert script == "corrected-solve"
+            port.solve_calls += 1
+            if port.solve_calls == 1:
+                return {
+                    "status": "timed_out", "exit_code": -9,
+                    "stdout": "", "stderr": "deadline exceeded",
+                    "output_truncated": False, "command_started": True,
+                }
+        assert script.splitlines()[-1] in {
+            "unrelated-check", "corrected-solve"}
         return {
             "status": "completed", "exit_code": 0,
             "stdout": "verification passed", "stderr": "",
@@ -1780,8 +1805,8 @@ def test_workspace_failure_rejects_completion_then_same_loop_recovers(
 
     assert result["stop_reason"] == "terminal"
     assert result["output"] == "corrected and verified"
-    assert result["actual_model_call_counts"] == [3, 0]
-    assert port.calls == 3
+    assert result["actual_model_call_counts"] == [4, 0]
+    assert port.calls == 4
     assert port.failed_action_ref is not None
     assert port.resolution_action_ref is not None
 
@@ -1798,6 +1823,12 @@ def test_workspace_failure_rejects_completion_then_same_loop_recovers(
     premature = next(
         action for action in actions
         if action["tool_call_id"] == "premature-complete")
+    unresolved = next(
+        action for action in actions
+        if action["tool_call_id"] == "unresolved-complete")
+    unrelated = next(
+        action for action in actions
+        if action["tool_call_id"] == "unrelated-success")
     resolved = next(
         action for action in actions
         if action["tool_call_id"] == "corrected-solve")
@@ -1806,15 +1837,254 @@ def test_workspace_failure_rejects_completion_then_same_loop_recovers(
         if action["tool_call_id"] == "verified-complete")
     assert failed["result_metadata"]["status"] == "timed_out"
     assert premature["state"] == "ACTION_REJECTED"
+    assert unresolved["state"] == "ACTION_REJECTED"
     error = readonly.get_version(TypedId.parse(
         premature["tool_error_ref"]["version_id"],
         expected="agent_tool_error_version"))
     assert error.metadata["error_code"] == "arguments_invalid"
     assert resolved["result_metadata"]["exit_code"] == 0
+    assert resolved["arguments"]["script"].splitlines()[0] == (
+        "# rpnh-resolves-action: "
+        + failed["agent_action_ref"]["version_id"])
+    assert "rpnh-resolves-action" not in unrelated["arguments"]["script"]
     assert completed["state"] == "COMPLETED"
     assert completed["arguments"] == {}
     loop_ids = {action["agent_loop_ref"]["logical_id"] for action in actions}
     assert len(loop_ids) == 1
+
+
+def test_owner_message_is_delivered_once_at_next_agent_request_boundary(
+        tmp_path: Path, monkeypatch,
+) -> None:
+    adapter_path = tmp_path / "adapter.json"
+    adapter_path.write_text(json.dumps({
+        "schema_version": "local_process_adapter_config/v1",
+        "adapter_kind": "local_process",
+        "model_condition": "offline-owner-message-test",
+        "argv": [sys.executable, "-c", "pass"],
+        "probe_argv": [sys.executable, "-c", "pass"],
+        "env": {},
+        "inherit_env": [],
+    }), encoding="utf-8")
+    execution_path = tmp_path / "execution.json"
+    execution_path.write_text(json.dumps({
+        "schema_version": "llm_execution_selection/v1",
+        "adapter_kind": "local_process",
+        "model_condition": "offline-owner-message-test",
+        "adapter_config_path": str(adapter_path),
+        "timeout_seconds": 30,
+        "max_output_tokens": 1024,
+        "max_response_bytes": 65536,
+    }), encoding="utf-8")
+    instruction = "Use the already validated workspace result."
+
+    from cpn.rpnh.run import RunOwner
+    original_boundary = RunOwner.request_boundary
+    queued = False
+
+    def queue_then_select(self, context, *, request_id):
+        nonlocal queued
+        if not queued:
+            queued = True
+            self.control.message({
+                "target": "main.run", "body": instruction,
+            }, "test-owner-message")
+        return original_boundary(self, context, request_id=request_id)
+
+    monkeypatch.setattr(RunOwner, "request_boundary", queue_then_select)
+
+    class _OwnerMessagePort:
+        def __init__(self) -> None:
+            self.request_messages = []
+
+        def request_once(self, attempt):
+            messages = json.loads(
+                attempt.canonical_request_bytes)["messages"]
+            self.request_messages.append(messages)
+            owner_messages = [
+                message for message in messages
+                if message.get("role") == "user"
+                and message.get("content") == instruction]
+            if len(self.request_messages) == 1:
+                assert len(owner_messages) == 1
+                calls = [{
+                    "id": "owner-message-workspace-step",
+                    "name": "workspace",
+                    "arguments": json.dumps({
+                        "script": "printf ready > ready.txt",
+                        "timeout_seconds": 5,
+                    }),
+                }]
+            else:
+                assert owner_messages == []
+                calls = [{
+                    "id": "owner-message-output",
+                    "name": "write_file",
+                    "arguments": json.dumps({
+                        "path": "outputs/result.txt",
+                        "description": "Owner-corrected result.",
+                        "content": json.dumps("owner message delivered"),
+                        "output_port_id": "main.result",
+                        "outcome_id": "complete",
+                    }),
+                }, {
+                    "id": "owner-message-complete",
+                    "name": "complete_interaction",
+                    "arguments": "{}",
+                }]
+            return LLMInputResponseBytes(json.dumps({
+                "protocol": "llm_response_envelope/v1",
+                "tool_calls": calls,
+                "finish_reason": "tool_calls",
+            }, sort_keys=True, separators=(",", ":")).encode("utf-8"),
+                status_code=None, external_request_id=None)
+
+        def close(self):
+            pass
+
+    port = _OwnerMessagePort()
+    monkeypatch.setattr(
+        "cpn.rpnh.agent_tasks.build_llm_input_port",
+        lambda _selection, *, destination_run_root: port)
+    run_dir = tmp_path / "run"
+    result = run_agent_task(AgentTaskSpec(
+        run_dir=run_dir,
+        prompt="Complete after applying any owner feedback.",
+        stages=(AgentStage("main", "Apply owner feedback."),),
+        execution_config_path=execution_path,
+        max_attempts_per_stage=3,
+    ))
+
+    assert result["stop_reason"] == "terminal"
+    assert result["output"] == "owner message delivered"
+    assert len(port.request_messages) == 2
+    readonly = _RegistryCore(
+        run_dir, create=False, read_only=True,
+        catalog=agent_task_catalog())
+    owner_records = []
+    for row in readonly.event_store.canonical_object_rows(
+            object_type="resource_version/v1"):
+        metadata = json.loads(row["metadata_json"])
+        if metadata.get("content_schema_ref") != "rpnh/owner_control/v1":
+            continue
+        prepared = readonly.get_version(TypedId.parse(
+            row["version_id"], expected="resource_version"))
+        owner_records.append(json.loads(
+            readonly.object_store.read_registered(prepared)))
+    delivered = [
+        record for record in owner_records
+        if record["kind"] == "receipt"
+        and record["data"].get("status") == "DELIVERED"]
+    boundaries = [
+        record for record in owner_records
+        if record["kind"] == "receipt"
+        and record["data"].get("status") == "REQUEST_INPUTS"]
+    assert len(delivered) == 1
+    assert [record["data"]["messages"] for record in boundaries] == [
+        [instruction], []]
+
+
+def test_rejected_file_materialization_then_correction_reaches_success(
+        tmp_path: Path, monkeypatch,
+) -> None:
+    adapter_path = tmp_path / "adapter.json"
+    adapter_path.write_text(json.dumps({
+        "schema_version": "local_process_adapter_config/v1",
+        "adapter_kind": "local_process",
+        "model_condition": "offline-file-rejection-recovery-test",
+        "argv": [sys.executable, "-c", "pass"],
+        "probe_argv": [sys.executable, "-c", "pass"],
+        "env": {},
+        "inherit_env": [],
+    }), encoding="utf-8")
+    execution_path = tmp_path / "execution.json"
+    execution_path.write_text(json.dumps({
+        "schema_version": "llm_execution_selection/v1",
+        "adapter_kind": "local_process",
+        "model_condition": "offline-file-rejection-recovery-test",
+        "adapter_config_path": str(adapter_path),
+        "timeout_seconds": 30,
+        "max_output_tokens": 1024,
+        "max_response_bytes": 65536,
+    }), encoding="utf-8")
+
+    class _CorrectionPort:
+        def __init__(self) -> None:
+            self.calls = 0
+
+        def request_once(self, attempt):
+            self.calls += 1
+            messages = json.loads(
+                attempt.canonical_request_bytes)["messages"]
+            if self.calls == 1:
+                calls = [{
+                    "id": "rejected-reserved-path",
+                    "name": "write_file",
+                    "arguments": json.dumps({
+                        "path": "registered_resources/rejected.txt",
+                        "description": "This reserved path must be rejected.",
+                        "content": json.dumps("must not be published"),
+                        "output_port_id": "main.result",
+                        "outcome_id": "complete",
+                    }),
+                }]
+            elif self.calls == 2:
+                assert any(
+                    message.get("role") == "tool"
+                    and "rejected" in str(message.get("content")).lower()
+                    for message in messages)
+                calls = [{
+                    "id": "corrected-output-path",
+                    "name": "write_file",
+                    "arguments": json.dumps({
+                        "path": "outputs/result.txt",
+                        "description": "Corrected output path.",
+                        "content": json.dumps("corrected file result"),
+                        "output_port_id": "main.result",
+                        "outcome_id": "complete",
+                    }),
+                }]
+            else:
+                calls = [{
+                    "id": "complete-after-file-correction",
+                    "name": "complete_interaction",
+                    "arguments": "{}",
+                }]
+            return LLMInputResponseBytes(json.dumps({
+                "protocol": "llm_response_envelope/v1",
+                "tool_calls": calls,
+                "finish_reason": "tool_calls",
+            }, sort_keys=True, separators=(",", ":")).encode("utf-8"),
+                status_code=None, external_request_id=None)
+
+        def close(self):
+            pass
+
+    port = _CorrectionPort()
+    monkeypatch.setattr(
+        "cpn.rpnh.agent_tasks.build_llm_input_port",
+        lambda _selection, *, destination_run_root: port)
+    run_dir = tmp_path / "run"
+    result = run_agent_task(AgentTaskSpec(
+        run_dir=run_dir,
+        prompt="Correct a rejected file output and complete.",
+        stages=(AgentStage("main", "Write the requested result."),),
+        execution_config_path=execution_path,
+        max_attempts_per_stage=4,
+    ))
+
+    assert result["stop_reason"] == "terminal"
+    assert result["output"] == "corrected file result"
+    assert port.calls == 3
+    readonly = _RegistryCore(
+        run_dir, create=False, read_only=True,
+        catalog=agent_task_catalog())
+    attached = readonly.event_store.list_events_by_type(
+        ("execution_instance_attached/v1",))
+    mapped = readonly.event_store.canonical_object_rows(
+        object_type="execution_terminal_mapping/v1")
+    assert len(attached) == 2
+    assert len(mapped) == len(attached)
 
 
 def test_terminal_task_reenters_same_run_from_selected_checkpoint(
@@ -1844,9 +2114,12 @@ def test_terminal_task_reenters_same_run_from_selected_checkpoint(
     class _ReentryPort:
         def __init__(self) -> None:
             self.calls = 0
+            self.request_messages = []
 
-        def request_once(self, _attempt):
+        def request_once(self, attempt):
             self.calls += 1
+            self.request_messages.append(json.loads(
+                attempt.canonical_request_bytes)["messages"])
             value = "first terminal" if self.calls == 1 else "reentered terminal"
             tool_calls = []
             if self.calls == 1:
@@ -1957,6 +2230,21 @@ def test_terminal_task_reenters_same_run_from_selected_checkpoint(
     assert second["output"] == "reentered terminal"
     assert second["terminal_evidence_ref"] != first_terminal_ref
     assert port.calls == 2
+    assert not any(
+        "OWNER_CHECKPOINT_REENTRY_INSTRUCTION" in message.get("content", "")
+        for message in port.request_messages[0])
+    reentry_messages = [
+        message["content"] for message in port.request_messages[1]
+        if message.get("role") == "system"
+        and "OWNER_CHECKPOINT_REENTRY_INSTRUCTION" in message.get(
+            "content", "")]
+    assert reentry_messages == [
+        "OWNER_CHECKPOINT_REENTRY_INSTRUCTION (Registry-authorized, "
+        "execution generation 1): Verify exact checkpoint generation "
+        "reentry. Continue from the restored checkpoint and preserve already "
+        "completed work unless this instruction explicitly requires replacing "
+        "it."
+    ]
 
     reopened = _RegistryCore(
         run_dir, create=False, read_only=True,

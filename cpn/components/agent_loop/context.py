@@ -701,6 +701,34 @@ def optional_agent_loop_schema_data():
 
 
 class ContextExecutionMixin:
+    def _owner_reentry_prompt(self) -> str | None:
+        """Project the current Registry-authorized reopen reason to agents."""
+
+        from cpn.rpnh.registry.run_authority import (
+            current_run_execution_authority,
+        )
+        _authority_ref, authority = current_run_execution_authority(
+            self.core, self.kernel)
+        raw_ref = authority.get("reopen_authorization_ref")
+        if raw_ref is None:
+            return None
+        authorization = self.kernel._exact_object(
+            _version_from_payload(raw_ref),
+            expected_type="run_reopen_authorization/v1").metadata
+        generation = authority.get("execution_generation")
+        reason = authorization.get("reason")
+        if (not isinstance(generation, int) or generation < 1
+                or authorization.get("execution_generation") != generation
+                or not isinstance(reason, str) or not reason):
+            raise ResourceIntegrityFault(
+                "current checkpoint reentry instruction is malformed")
+        return (
+            "OWNER_CHECKPOINT_REENTRY_INSTRUCTION (Registry-authorized, "
+            f"execution generation {generation}): {reason} Continue from the "
+            "restored checkpoint and preserve already completed work unless "
+            "this instruction explicitly requires replacing it."
+        )
+
     def _context(self, loop):
         canonical = canonical_invocation(self.core, self.kernel, loop.invocation_ref)
         if canonical.context.operation_binding_ref != loop.operation_binding_ref:
@@ -960,7 +988,7 @@ class ContextExecutionMixin:
         self._current(prepared_context.loop)
         return nullcontext(prepared_context)
 
-    def _envelope(self, prepared, catalog):
+    def _envelope(self, prepared, catalog, *, owner_messages=()):
         prompt = json.loads(prepared.prompt_payload)
         envelope = materialize_agent_request_envelope(
             model_condition=prepared.target.model_condition,
@@ -970,7 +998,9 @@ class ContextExecutionMixin:
             history_messages=json.loads(prepared.prior_turn_messages_payload),
             tool_descriptors=catalog.tool_descriptors,
             source_prompt_ref=_resource_payload(prepared.prompt_ref),
-            tool_catalog_ref=_resource_payload(prepared.loop.tool_catalog_ref))
+            tool_catalog_ref=_resource_payload(prepared.loop.tool_catalog_ref),
+            owner_reentry_prompt=self._owner_reentry_prompt(),
+            owner_messages=owner_messages)
         self.core.catalog.validate_schema_ref("runtime/llm_request_envelope/v1", envelope)
         return canonical_json(envelope)
 

@@ -18,8 +18,12 @@ def _ref(entity_type: str, entity_kind: str, version_kind: str) -> VersionRef:
 
 
 class _Kernel:
-    def __init__(self, publish):
+    def __init__(self, publish, preflight=None):
         self.publish_bytes = publish
+        self.preflight = preflight or (lambda _context, _command: None)
+
+    def _preflight_publish(self, context, command):
+        return self.preflight(context, command)
 
     def _firing_prepared(self, _context, _ref):
         raise AssertionError("the fixture has no previously written resources")
@@ -29,10 +33,10 @@ class _Kernel:
 
 
 class _WriteProductHarness(workspace.WorkspaceExecutionMixin):
-    def __init__(self, root: Path, publish):
+    def __init__(self, root: Path, publish, *, preflight=None):
         self.root = root
         self.core = object()
-        self.kernel = _Kernel(publish)
+        self.kernel = _Kernel(publish, preflight)
         port = SimpleNamespace(
             name="worker.result",
             port_id="port-result",
@@ -107,7 +111,12 @@ def test_schema_rejection_preserves_or_omits_target(
     def reject(_context, _command):
         raise ResourcePayloadSchemaViolation("fixture schema rejection")
 
-    service = _WriteProductHarness(tmp_path, reject)
+    service = _WriteProductHarness(
+        tmp_path,
+        lambda *_args: pytest.fail(
+            "schema-rejected publication must not reach materialization"),
+        preflight=reject,
+    )
     with pytest.raises(ResourcePayloadSchemaViolation):
         service.write()
 

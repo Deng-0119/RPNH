@@ -204,6 +204,15 @@ class _ResourceServiceKernel:
             command: PublishResource) -> None:
         return _publication._validate_publication_contract(**locals())
 
+    def _preflight_publish(
+            self, context: InvocationContext,
+            command: PublishResource, *, native_resume: bool = False,
+    ) -> tuple[
+            str, VersionRef, VersionRef | None, VersionRef,
+            RegisteredContentSchemaAuthority | None,
+    ]:
+        return _publication._preflight_publish(**locals())
+
     def _publish_fresh_reference(
             self, context: InvocationContext, command: PublishResource, *,
             kind: str, primary: VersionRef, secondary: VersionRef | None,

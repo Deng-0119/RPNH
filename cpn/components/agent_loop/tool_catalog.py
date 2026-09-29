@@ -523,15 +523,21 @@ def model_visible_agent_tool_description(name: str) -> str:
             "from the Registry's registered resource authority and network access "
             "is unavailable. A timeout or nonzero exit is recorded as an observed "
             "failed action and must be explicitly resolved by a later successful "
-            "workspace action before an actor can complete.")
+            "workspace action before an actor can complete. After correcting "
+            "the workspace, prefix a successful verification script with "
+            "'# rpnh-resolves-action: VERSION_ID' for each exact failed "
+            "agent_action_ref; an unrelated zero-exit command does not resolve "
+            "the failure.")
 
     descriptions = {
         "complete_interaction": (
             "Complete only after write_file has registered every intended output "
             "file required by the assignment. After any earlier timed-out or "
             "nonzero-exit workspace action, an actor must run a later successful "
-            "workspace action before completion; a registered critic/reviewer may "
-            "instead report the diagnostic when its operation policy allows it. "
+            "workspace verification action whose leading RPNH resolution "
+            "comments name the exact failed actions; a registered critic/reviewer "
+            "may instead report the diagnostic "
+            "when its operation policy allows it. "
             "The final write_file may precede this call in the same response when "
             "complete_interaction is the final ordered call."),
         "delegate_leaf": (

@@ -494,7 +494,8 @@ class CompactionExecutionMixin:
             tool_descriptors=catalog.tool_descriptors,
             source_prompt_ref=_resource_payload(prompt_ref),
             tool_catalog_ref=_resource_payload(loop.tool_catalog_ref),
-            checkpoint_prompt=reduction_settings.checkpoint_prompt)
+            checkpoint_prompt=reduction_settings.checkpoint_prompt,
+            owner_reentry_prompt=self._owner_reentry_prompt())
         self.core.catalog.validate_schema_ref(
             "runtime/llm_request_envelope/v1", envelope)
         return canonical_json(envelope), prompt_ref, initialization, target

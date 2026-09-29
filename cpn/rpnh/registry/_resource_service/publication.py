@@ -141,11 +141,14 @@ def _binding_intent_payload(intent: AddressBindingIntent) -> dict[str, Any]:
             if intent.expected_binding_ref else None),
     }
 
-def _publish(
+def _preflight_publish(
         self, context: InvocationContext,
-        command: PublishResource, *, transaction: Any | None = None,
-        native_resume: bool = False,
-) -> ResourceVersionRef:
+        command: PublishResource, *, native_resume: bool = False,
+) -> tuple[
+        str, VersionRef, VersionRef | None, VersionRef,
+        RegisteredContentSchemaAuthority | None,
+]:
+    """Validate one byte publication without appending Registry state."""
     self._validate_descriptor(command)
     if not isinstance(command.payload, bytes):
         raise ResourceSchemaViolation("resource payload must be bytes")
@@ -170,6 +173,20 @@ def _publish(
     if command.contributor_delegations:
         raise ResourceSchemaViolation(
             "current parent-owned publication cannot claim delegated contributors")
+    return (
+        kind, primary, secondary, producer_ref,
+        content_schema_authority,
+    )
+
+
+def _publish(
+        self, context: InvocationContext,
+        command: PublishResource, *, transaction: Any | None = None,
+        native_resume: bool = False,
+) -> ResourceVersionRef:
+    (kind, primary, secondary, producer_ref,
+     content_schema_authority) = self._preflight_publish(
+        context, command, native_resume=native_resume)
     return self._publish_fresh_reference(
         context, command, kind=kind, primary=primary,
         secondary=secondary, producer_ref=producer_ref,

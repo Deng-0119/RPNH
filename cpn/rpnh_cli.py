@@ -291,7 +291,16 @@ def _run_task_action(
     elif action == "resume" and payload is None:
         _print_json(session.task_control.resume(task_id))
     elif action == "reopen" and payload:
-        _print_json(session.task_control.reopen(task_id, payload.strip()))
+        checkpoint, separator, reason = payload.partition(" :: ")
+        checkpoint = checkpoint.strip()
+        if not checkpoint or (separator and not reason.strip()):
+            raise ValueError(
+                "usage: /task ID reopen CHECKPOINT [:: REASON]")
+        options = {}
+        if separator:
+            options["reason"] = reason.strip()
+        _print_json(session.task_control.reopen(
+            task_id, checkpoint, **options))
     elif action == "message" and payload:
         if " :: " in payload:
             target, body = payload.split(" :: ", 1)
@@ -324,7 +333,8 @@ def _task_command(
   /task ID stop                checkpoint-stop this exact task process
   /task ID resume              resume an owner-stopped task from Registry
   /task ID checkpoints         list selectable committed Petri checkpoints
-  /task ID reopen CHECKPOINT   start a new generation at that exact checkpoint
+  /task ID reopen CHECKPOINT [:: REASON]
+                               start a new generation with owner guidance
   /status | /result | /net | /message | /stop | /resume
                                operate on the selected child task
   /resume                      with main selected, settle terminal evidence or continue a paused turn

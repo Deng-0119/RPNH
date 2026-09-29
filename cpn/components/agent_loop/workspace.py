@@ -1067,7 +1067,8 @@ class WorkspaceExecutionMixin:
         if len(selected) != 1:
             raise ValueError("write_file requires one exact declared symbolic output port")
         port = selected[0]
-        path = _semantic_workspace_path(requested_path, port.name)
+        path = self._strict_relative_path(
+            _semantic_workspace_path(requested_path, port.name))
         semantic_outcomes = tuple(
             outcome for outcome in operation.declaration.outcomes
             if outcome.name != "interrupted")
@@ -1145,6 +1146,11 @@ class WorkspaceExecutionMixin:
             lifetime_ref=context.invocation_ref, derived_from=derived_from,
             descriptors={"output_outcome_id": outcome.name,
                 "output_port_id": port.port_id, "place": binding.place}, idempotency_key=key)
+        # Reject deterministic path/schema/publication-contract faults before
+        # attaching and starting the durable file execution child.  Failures
+        # after this boundary may reflect an accepted publication or host
+        # interruption and intentionally retain their same-key recovery net.
+        self.kernel._preflight_publish(context, command)
         root = self._workspace_root(loop)
         def materialize(_state):
             published = self._write_workspace_bytes(

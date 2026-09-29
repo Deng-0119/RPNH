@@ -29,8 +29,11 @@ metadata:
 
 workspace 执行事实与任务完成事实彼此分离。已启动的 workspace 动作若
 `status=timed_out` 或 `exit_code` 非零，仍作为不可变的 `ACTION_APPLIED` 观测保存，
-但 actor 不能越过它结算任务。Registry 要求同一 AgentLoop 中存在更晚的 completed、
-零退出 workspace 动作后才接受 actor completion。critic 或 finalization reviewer 只有
+但 actor 不能越过它结算任务。Registry 要求同一 AgentLoop 中更晚的 completed、零退出
+验证 action，在 script 开头用保留注释精确指向每条失败 action 的版本
+（`# rpnh-resolves-action: agent_action_version:...`），才接受 actor completion；无关的
+成功命令不算闭环。该元数据保留在既有 workspace script 参数内，不更换不可变 v1 工具契约。
+critic 或 finalization reviewer 只有
 在其已登记 operation policy 允许诊断证据时，才能直接报告该诊断。若失败的 workspace
 动作与 completion 出现在同一次 provider 响应，completion 不能通过：失败先返回同一
 AgentLoop，只要 turn budget 尚未耗尽，该 loop 就继续纠错。该门禁保持既有
@@ -39,8 +42,9 @@ AgentLoop，只要 turn budget 尚未耗尽，该 loop 就继续纠错。该门�
 owner interruption 是另一条边界。它关闭正在执行的动作，保存干净 workspace
 checkpoint，并令 run 停在 `stopped_by_owner`；`resume` 从该 checkpoint 在同一
 Registry 中继续，不重放已作废动作。已经完整结算的 terminal run 是不可变历史，
-不是普通 resume 目标。`reopen CHECKPOINT` 是独立的 owner 授权操作，可选择该 run
-中的任意已提交 checkpoint。它在同一 Registry／同一 run 中追加新的执行代次，克隆该
+不是普通 resume 目标。`reopen CHECKPOINT [:: REASON]` 是独立的 owner 授权操作，
+可选择该 run 中的任意已提交 checkpoint；可选 reason 会成为 Registry 支撑的恢复后
+agent 指令。它在同一 Registry／同一 run 中追加新的执行代次，克隆该
 切面的活跃 Petri token，恢复其精确 workspace revision，并保留当前 attempt 高水位。
 旧 token、terminal evidence 与文件仍是不可变历史；不可变 object/event 不会被修改，
 workspace-head 投影通过 compare-and-swap 前移，并由所选 revision 恢复 live tree。若选择

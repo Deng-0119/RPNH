@@ -13,8 +13,13 @@ def materialize_agent_request_envelope(
         source_prompt_ref: Mapping[str, Any],
         tool_catalog_ref: Mapping[str, Any],
         checkpoint_prompt: str | None = None,
+        owner_reentry_prompt: str | None = None,
+        owner_messages: Sequence[str] = (),
 ) -> dict[str, Any]:
     """Build one envelope from values already materialized by the caller."""
+    if any(not isinstance(message, str) or not message.strip()
+           for message in owner_messages):
+        raise ValueError("owner messages must be non-empty text")
     messages = [
         {"role": "system", "content": system_content},
         *prompt_messages,
@@ -22,6 +27,11 @@ def materialize_agent_request_envelope(
     ]
     if checkpoint_prompt is not None:
         messages.append({"role": "system", "content": checkpoint_prompt})
+    if owner_reentry_prompt is not None:
+        messages.append({"role": "system", "content": owner_reentry_prompt})
+    messages.extend(
+        {"role": "user", "content": message}
+        for message in owner_messages)
     return {
         "protocol": "llm_request_envelope/v1",
         "model_condition": model_condition,

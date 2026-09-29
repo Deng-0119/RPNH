@@ -87,9 +87,11 @@ from .action_execution import (
 
 class TurnExecutionMixin:
 
-    def _publish_request(self, loop, prepared, catalog, key):
+    def _publish_request(
+            self, loop, prepared, request_bytes, key, *,
+            owner_input_resources=()):
         context = self._context(loop)
-        envelope = json.loads(self._envelope(prepared, catalog))
+        envelope = json.loads(request_bytes)
         recipe = dict(envelope)
         recipe.pop("protocol")
         recipe["schema_version"] = "logical_provider_request_recipe/v1"
@@ -100,8 +102,12 @@ class TurnExecutionMixin:
         ref = ResourceVersionRef(
             _stable_id("resource", "optional-agent-request", key),
             _stable_id("resource_version", "optional-agent-request", key))
-        inputs = (prepared.prompt_ref, loop.tool_catalog_ref,
-                  *(item.resource_ref for item in prepared.initialization.located_inputs))
+        inputs = tuple(dict.fromkeys((
+            prepared.prompt_ref, loop.tool_catalog_ref,
+            *(item.resource_ref
+              for item in prepared.initialization.located_inputs),
+            *owner_input_resources,
+        )))
         def stage_request(tx):
             _append_direct_resource_version_publication(tx, ref=ref, payload=payload,
                 metadata_factory=lambda size: _direct_resource_metadata(self.core, ref=ref,
@@ -164,8 +170,28 @@ class TurnExecutionMixin:
                 and overlay.trigger_reason == "response_length"):
             dispatch_key += ":after-compaction:" + str(
                 overlay.compaction_ref.version_id)
+        owner_boundary = self.owner.request_boundary(
+            context, request_id=dispatch_key)
+        try:
+            if owner_boundary["status"] != "REQUEST_INPUTS":
+                raise ValueError("unexpected owner request-boundary status")
+            owner_messages = tuple(owner_boundary["messages"])
+            owner_input_resources = []
+            for item in owner_boundary["resources"]:
+                ref = _version_from_payload(item["resource_ref"])
+                if ref.entity_type != "resource_version/v1":
+                    raise ValueError(
+                        "owner request input is not a resource version")
+                owner_input_resources.append(ResourceVersionRef(
+                    ref.entity_id, ref.version_id))
+        except (KeyError, TypeError, ValueError) as exc:
+            raise ResourceIntegrityFault(
+                "owner request boundary is malformed") from exc
+        request_bytes = self._envelope(
+            prepared, catalog, owner_messages=owner_messages)
         request_ref = self._publish_request(
-            loop, prepared, catalog, dispatch_key + ":recipe")
+            loop, prepared, request_bytes, dispatch_key + ":recipe",
+            owner_input_resources=tuple(owner_input_resources))
         delivery, _, _ = self._deliver(
             context, request_ref, "llm_prompt",
             dispatch_key + ":recipe-delivery")
@@ -232,7 +258,7 @@ class TurnExecutionMixin:
             reservation_class=provider.reservation_class,
             finalization_scope=provider.finalization_scope,
             model_condition=loop.model_condition,
-            canonical_request_bytes=self._envelope(prepared, catalog),
+            canonical_request_bytes=request_bytes,
             max_response_bytes=prepared.target.max_response_bytes,
             maximum_attempts=1,
             provider_attempt_ref=provider.ref,

@@ -18,7 +18,7 @@ OPENCODE_COMMIT = "545f51d26cc39a907d2867492d498d9607ea5fa4"
 COMMANDS = {
     "rpnh-help": "RPNH controls and limitations",
     "rpnh-tasks": "List independent RPNH tasks/workflows",
-    "rpnh-task": "ID status|result|stop|checkpoints|resume|reopen CHECKPOINT|net|message",
+    "rpnh-task": "ID status|result|stop|checkpoints|resume|reopen CHECKPOINT [:: REASON]|net|message",
     "rpnh-net": "Main-run Petri net [--show-resources|--resources-only]",
     "rpnh-agent": "TEXT: launch an independent RPNH agent",
     "rpnh-workflow": "TEXT: ask the RPNH Designer for a workflow",

@@ -58,10 +58,14 @@ def _declared_agent_prompt(operation, target: LLMInputTarget) -> dict:
     failure_guidance = (
         "A timed-out or nonzero-exit workspace action is immutable failure "
         "evidence, not task completion. Correct the problem and run a later "
-        "successful workspace action before complete_interaction."
+        "successful verification script prefixed with one exact "
+        "'# rpnh-resolves-action: AGENT_ACTION_VERSION_ID' comment for every "
+        "failed agent_action_ref it resolves before complete_interaction. An "
+        "unrelated successful command is not a resolution."
         if workspace_failure_policy == "require_resolved" else
         "A timed-out or nonzero-exit workspace action is immutable evidence. "
-        "Resolve it with a later successful workspace action, or when the "
+        "Resolve it with a successful verification script whose leading RPNH "
+        "resolution comments name the exact failed action versions, or when the "
         "declared critic/reviewer responsibility is specifically to report "
         "that diagnostic, report it accurately before complete_interaction."
     )

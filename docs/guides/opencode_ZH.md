@@ -60,7 +60,7 @@ resume、list 与历史投影都是观察操作：不会调用模型，不会提
 | `/rpnh-tasks` | 列出本会话的独立任务/工作流。 |
 | `/rpnh-task ID status\|result\|stop\|resume` | 精确访问一个已有子任务 owner；resume 续接其当前停止切面。 |
 | `/rpnh-task ID checkpoints` | 列出该 child run 的精确已提交 checkpoint 版本。 |
-| `/rpnh-task ID reopen CHECKPOINT` | 在同一 Registry／run 中把该精确切面重开为新代次。 |
+| `/rpnh-task ID reopen CHECKPOINT [:: REASON]` | 在同一 Registry／run 中把该精确切面重开为新代次，并可附带 owner 指引。 |
 | `/rpnh-task ID message TEXT` | 向一个子任务 owner 发送已登记的控制消息。 |
 | `/rpnh-task ID net [资源参数]` | 读取该子任务的真实注册网。 |
 | `/rpnh-net [--show-resources\|--resources-only]` | 读取最新主回合 attempt 的真实网，复用已有资源过滤。 |
