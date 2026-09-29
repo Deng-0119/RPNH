@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 import json
-from http.server import BaseHTTPRequestHandler, HTTPServer
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from ipaddress import IPv4Address, IPv6Address, ip_address
 from pathlib import Path
 import socket
@@ -21,6 +21,7 @@ import webbrowser
 ProjectionProvider = Callable[[], Mapping[str, Any]]
 _STATIC_ROOT = Path(__file__).with_name("static")
 _SCHEMA_VERSION = "rpnh/net_view/v1"
+_REQUEST_TIMEOUT_SECONDS = 5.0
 _ASSETS = {
     "/app.js": ("app.js", "application/javascript; charset=utf-8"),
     "/style.css": ("style.css", "text/css; charset=utf-8"),
@@ -347,8 +348,10 @@ class _ProjectionHandler(BaseHTTPRequestHandler):
         return
 
 
-class _ProjectionHTTPServer(HTTPServer):
-    """HTTPServer pinned to one literal loopback address family and origin."""
+class _ProjectionHTTPServer(ThreadingHTTPServer):
+    """Bounded-request loopback server for the read-only Viewer."""
+
+    daemon_threads = True
 
     def __init__(
         self,
@@ -362,11 +365,17 @@ class _ProjectionHTTPServer(HTTPServer):
         self.address_family = socket.AF_INET6 if address.version == 6 else socket.AF_INET
         self.provider = provider
         self.show_resources = show_resources
+        self.request_timeout_seconds = _REQUEST_TIMEOUT_SECONDS
         super().__init__((address.compressed, port), _ProjectionHandler)
         self.bound_address = ip_address(self.server_address[0])
         self.bound_port = int(self.server_address[1])
         self.authority = _format_authority(self.bound_address, self.bound_port)
         self.origin = f"http://{self.authority}"
+
+    def get_request(self) -> tuple[socket.socket, Any]:
+        request, client_address = super().get_request()
+        request.settimeout(self.request_timeout_seconds)
+        return request, client_address
 
 
 def serve_projection(

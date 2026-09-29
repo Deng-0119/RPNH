@@ -1878,8 +1878,9 @@ def test_owner_message_is_delivered_once_at_next_agent_request_boundary(
         [instruction], []]
 
 
+@pytest.mark.parametrize("rejection_kind", ("reserved_path", "directory"))
 def test_rejected_file_materialization_then_correction_reaches_success(
-        tmp_path: Path, monkeypatch,
+        tmp_path: Path, monkeypatch, rejection_kind: str,
 ) -> None:
     adapter_path = tmp_path / "adapter.json"
     adapter_path.write_text(json.dumps({
@@ -1910,19 +1911,32 @@ def test_rejected_file_materialization_then_correction_reaches_success(
             self.calls += 1
             messages = json.loads(
                 attempt.canonical_request_bytes)["messages"]
-            if self.calls == 1:
+            offset = 1 if rejection_kind == "directory" else 0
+            if rejection_kind == "directory" and self.calls == 1:
                 calls = [{
-                    "id": "rejected-reserved-path",
+                    "id": "prepare-rejected-directory",
+                    "name": "workspace",
+                    "arguments": json.dumps({
+                        "script": "prepare-rejected-directory",
+                        "timeout_seconds": 10,
+                    }),
+                }]
+            elif self.calls == 1 + offset:
+                calls = [{
+                    "id": "rejected-file-path",
                     "name": "write_file",
                     "arguments": json.dumps({
-                        "path": "registered_resources/rejected.txt",
-                        "description": "This reserved path must be rejected.",
+                        "path": (
+                            "registered_resources/rejected.txt"
+                            if rejection_kind == "reserved_path"
+                            else "outputs/rejected-directory"),
+                        "description": "This destination must be rejected.",
                         "content": json.dumps("must not be published"),
                         "output_port_id": "main.result",
                         "outcome_id": "complete",
                     }),
                 }]
-            elif self.calls == 2:
+            elif self.calls == 2 + offset:
                 assert any(
                     message.get("role") == "tool"
                     and "rejected" in str(message.get("content")).lower()
@@ -1958,18 +1972,34 @@ def test_rejected_file_materialization_then_correction_reaches_success(
     monkeypatch.setattr(
         "cpn.rpnh.agent_tasks.build_llm_input_port",
         lambda _selection, *, destination_run_root: port)
+
+    def prepare_rejected_directory(*, script, cwd, **_kwargs):
+        assert rejection_kind == "directory"
+        assert script == "prepare-rejected-directory"
+        target = Path(cwd) / "outputs" / "rejected-directory"
+        target.mkdir(parents=True)
+        return {
+            "status": "completed", "exit_code": 0,
+            "stdout": "", "stderr": "", "output_truncated": False,
+            "command_started": True,
+        }
+
+    if rejection_kind == "directory":
+        monkeypatch.setattr(
+            optional_execution, "execute_bounded_workspace_tool",
+            prepare_rejected_directory)
     run_dir = tmp_path / "run"
     result = run_agent_task(AgentTaskSpec(
         run_dir=run_dir,
         prompt="Correct a rejected file output and complete.",
         stages=(AgentStage("main", "Write the requested result."),),
         execution_config_path=execution_path,
-        max_attempts_per_stage=4,
+        max_attempts_per_stage=5,
     ))
 
     assert result["stop_reason"] == "terminal"
     assert result["output"] == "corrected file result"
-    assert port.calls == 3
+    assert port.calls == (4 if rejection_kind == "directory" else 3)
     readonly = _RegistryCore(
         run_dir, create=False, read_only=True,
         catalog=agent_task_catalog())
@@ -3433,9 +3463,12 @@ def test_interruption_checkpoints_prior_workspace_action_and_discards_current(
     monkeypatch.setattr(
         "cpn.rpnh.agent_tasks.build_llm_input_port",
         lambda _selection, *, destination_run_root: port)
+    workspace_roots = []
+    fifo_readers = []
 
     def interrupted_workspace(*, script, cwd, **_kwargs):
         root = Path(cwd)
+        workspace_roots.append(root)
         if script == "write-settled-draft":
             target = root / "drafts" / "settled.txt"
             target.parent.mkdir(parents=True, exist_ok=True)
@@ -3444,6 +3477,11 @@ def test_interruption_checkpoints_prior_workspace_action_and_discards_current(
             target = root / "drafts" / "discarded.txt"
             target.parent.mkdir(parents=True, exist_ok=True)
             target.write_text("must not survive", encoding="utf-8")
+            settled = root / "drafts" / "settled.txt"
+            settled.unlink()
+            os.mkfifo(settled, 0o600)
+            fifo_readers.append(os.open(
+                settled, os.O_RDONLY | os.O_NONBLOCK))
             os.kill(os.getpid(), signal.SIGINT)
         else:
             raise AssertionError("unknown checkpoint workspace script")
@@ -3457,13 +3495,21 @@ def test_interruption_checkpoints_prior_workspace_action_and_discards_current(
         optional_execution, "execute_bounded_workspace_tool",
         interrupted_workspace)
     run_dir = tmp_path / "run"
-    result = run_agent_task(AgentTaskSpec(
-        run_dir=run_dir,
-        prompt="Preserve completed work across an owner interruption.",
-        stages=(AgentStage("main", "Write and revise the draft."),),
-        execution_config_path=execution_path,
-        max_attempts_per_stage=4,
-    ))
+    try:
+        result = run_agent_task(AgentTaskSpec(
+            run_dir=run_dir,
+            prompt="Preserve completed work across an owner interruption.",
+            stages=(AgentStage("main", "Write and revise the draft."),),
+            execution_config_path=execution_path,
+            max_attempts_per_stage=4,
+        ))
+        restored = workspace_roots[-1] / "drafts" / "settled.txt"
+        assert restored.is_file()
+        assert restored.read_text(
+            encoding="utf-8") == "settled before interruption"
+    finally:
+        for descriptor in fifo_readers:
+            os.close(descriptor)
 
     assert result["stop_reason"] == "stopped_by_owner"
     assert port.calls == 2

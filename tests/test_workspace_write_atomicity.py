@@ -1,12 +1,16 @@
 from __future__ import annotations
 
+import os
 from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
 
 from cpn.components.agent_loop import workspace
-from cpn.rpnh.registry.errors import ResourcePayloadSchemaViolation
+from cpn.rpnh.registry.errors import (
+    ResourceIntegrityFault,
+    ResourcePayloadSchemaViolation,
+)
 from cpn.rpnh.registry.identities import new_id
 from cpn.rpnh.registry.models import VersionRef
 from cpn.rpnh.registry.resources import ResourceVersionRef
@@ -84,18 +88,21 @@ class _WriteProductHarness(workspace.WorkspaceExecutionMixin):
         ref, = materialize(None)
         return (ref,)
 
-    def write(self):
+    def write(
+            self, *, path: str = "outputs/result.json",
+            key: str = "atomic-write-fixture",
+    ):
         return self._write_product(
             self.execution,
             self.loop,
             {
-                "path": "outputs/result.json",
+                "path": path,
                 "description": "Atomic write fixture.",
                 "content": '{"candidate":true}',
                 "output_port_id": "worker.result",
                 "outcome_id": "complete",
             },
-            "atomic-write-fixture",
+            key,
         )
 
 
@@ -146,6 +153,94 @@ def test_registry_publication_failure_preserves_prior_target(
     assert target.read_bytes() == b"prior publication"
     assert service._workspace_files(tmp_path) == ("outputs/result.json",)
     assert not tuple(tmp_path.rglob(".rpnh-write-stage-*.tmp"))
+
+
+@pytest.mark.parametrize("destination_kind", ("directory", "fifo"))
+def test_correctable_destination_type_rejection_precedes_execution_child(
+        tmp_path: Path, destination_kind: str,
+) -> None:
+    target = tmp_path / "outputs" / "result.json"
+    target.parent.mkdir(parents=True)
+    if destination_kind == "directory":
+        target.mkdir()
+    else:
+        os.mkfifo(target)
+
+    service = _WriteProductHarness(
+        tmp_path,
+        lambda *_args: pytest.fail("rejected path must not publish"),
+    )
+    service._execute_file_materialization = lambda *_args, **_kwargs: (
+        pytest.fail("rejected path must not attach an execution child"))
+
+    with pytest.raises(
+            ValueError, match="destination must be one regular file"):
+        service.write()
+
+
+def test_nul_path_rejection_precedes_execution_child(tmp_path: Path) -> None:
+    service = _WriteProductHarness(
+        tmp_path,
+        lambda *_args: pytest.fail("rejected path must not publish"),
+    )
+    service._execute_file_materialization = lambda *_args, **_kwargs: (
+        pytest.fail("rejected path must not attach an execution child"))
+
+    with pytest.raises(ValueError, match="without NUL"):
+        service.write(path="outputs/bad\x00.txt")
+
+
+def test_corrected_destination_can_materialize_after_preflight_rejection(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    rejected = tmp_path / "outputs" / "result.json"
+    rejected.parent.mkdir(parents=True)
+    rejected.mkdir()
+    published_ref = ResourceVersionRef(
+        new_id("resource"), new_id("resource_version"))
+    service = _WriteProductHarness(
+        tmp_path, lambda *_args: published_ref)
+    calls = []
+    original_execute = service._execute_file_materialization
+
+    def execute(*args, **kwargs):
+        calls.append(kwargs.get(
+            "identity_key", args[1] if len(args) > 1 else None))
+        return original_execute(*args, **kwargs)
+
+    monkeypatch.setattr(service, "_execute_file_materialization", execute)
+    monkeypatch.setattr(workspace, "verify_resource", lambda *_args: None)
+
+    with pytest.raises(ValueError):
+        service.write(key="rejected-directory")
+    refs, result = service.write(
+        path="outputs/good.json", key="corrected-file")
+
+    assert calls == ["semantic-write:corrected-file"]
+    assert refs == (published_ref.as_version_ref(),)
+    assert result["path"] == "outputs/good.json"
+    assert (tmp_path / "outputs" / "good.json").read_bytes() == (
+        b'{"candidate":true}')
+
+
+def test_destination_change_after_preflight_is_not_model_correctable(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    target = tmp_path / "outputs" / "result.json"
+    target.parent.mkdir(parents=True)
+    target.mkdir()
+    service = _WriteProductHarness(
+        tmp_path,
+        lambda *_args: pytest.fail("changed path must not publish"),
+    )
+    monkeypatch.setattr(
+        service, "_preflight_workspace_destination",
+        lambda *_args: None)
+
+    with pytest.raises(
+            ResourceIntegrityFault,
+            match="changed after materialization admission"):
+        service.write()
 
 
 def test_success_publishes_before_atomic_replace_and_cleans_staging(

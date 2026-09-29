@@ -149,6 +149,25 @@ def test_ipv4_wire_boundary_accepts_only_the_bound_authority_and_same_origin() -
         assert calls == 3
 
 
+def test_incomplete_client_does_not_block_other_viewer_requests() -> None:
+    with _running_viewer(_projection) as httpd:
+        httpd.request_timeout_seconds = 0.2
+        slow = socket.socket(httpd.address_family, socket.SOCK_STREAM)
+        slow.settimeout(1)
+        try:
+            slow.connect((
+                httpd.bound_address.compressed, httpd.bound_port))
+            slow.sendall(b"GET /api/v1/net HTTP/1.1\r\n")
+
+            status, body = _raw_request(
+                httpd, headers=(("Host", httpd.authority),))
+            assert status == 200
+            assert json.loads(body)["schema_version"] == "rpnh/net_view/v1"
+            assert slow.recv(1) == b""
+        finally:
+            slow.close()
+
+
 def test_wire_boundary_rejects_invalid_host_before_provider() -> None:
     calls = 0
 

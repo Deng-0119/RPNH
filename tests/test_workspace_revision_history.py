@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import json
+import os
 from pathlib import Path
+import stat
 from types import SimpleNamespace
 
 from jsonschema import Draft7Validator
@@ -12,6 +14,8 @@ from cpn.rpnh.registry.models import VersionRef
 from cpn.rpnh.registry.resources import ResourceVersionRef
 from cpn.rpnh.workspace_settlement import (
     _convergent_delta,
+    _restore_tree,
+    _tree_files,
     _workspace_path_deltas,
     _workspace_resource_state,
 )
@@ -34,6 +38,33 @@ def _resource_payload(ref: ResourceVersionRef) -> dict[str, str]:
         "resource_id": str(ref.resource_id),
         "resource_version_id": str(ref.resource_version_id),
     }
+
+
+def test_restore_tree_replaces_fifo_with_snapshot_regular_file(
+        tmp_path: Path,
+) -> None:
+    root = tmp_path / "workspace"
+    root.mkdir()
+    registered = root / "registered_resources"
+    registered.mkdir()
+    preserved = registered / "evidence.bin"
+    preserved.write_bytes(b"registry evidence")
+    target = root / "saved.txt"
+    os.mkfifo(target, 0o600)
+    # Keep a nonblocking reader open so the historical direct write-to-FIFO
+    # implementation would return instead of hanging this regression test.
+    reader = os.open(target, os.O_RDONLY | os.O_NONBLOCK)
+    try:
+        _restore_tree(root, {"saved.txt": (b"ORIGINAL", 0o640)})
+    finally:
+        os.close(reader)
+
+    assert stat.S_ISREG(target.lstat().st_mode)
+    assert target.read_bytes() == b"ORIGINAL"
+    assert stat.S_IMODE(target.stat().st_mode) == 0o640
+    assert _tree_files(root) == {"saved.txt": (b"ORIGINAL", 0o640)}
+    assert preserved.read_bytes() == b"registry evidence"
+    assert not tuple(root.rglob(".rpnh-restore-stage-*.tmp"))
 
 
 class _EventStore:

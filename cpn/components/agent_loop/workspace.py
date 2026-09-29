@@ -352,25 +352,85 @@ class WorkspaceExecutionMixin:
         return matches[0]
 
     @staticmethod
-    def _strict_relative_path(value):
-        path = PurePosixPath(value)
+    def _workspace_relative_path(value, *, allow_registered_resources=False):
+        try:
+            raw = os.fspath(value)
+        except TypeError as exc:
+            raise ValueError("workspace file path must be text") from exc
+        if not isinstance(raw, str) or "\x00" in raw:
+            raise ValueError("workspace file path must be text without NUL")
+        path = PurePosixPath(raw)
         if (path.is_absolute() or not path.parts
                 or any(part in {"", ".", ".."} for part in path.parts)
-                or path.parts[0] == "registered_resources"):
+                or (path.parts[0] == "registered_resources"
+                    and not allow_registered_resources)):
             raise ValueError(
                 "workspace file path must be relative and outside registered_resources")
         return path
 
     @staticmethod
+    def _strict_relative_path(value):
+        return WorkspaceExecutionMixin._workspace_relative_path(value)
+
+    @staticmethod
+    def _preflight_workspace_destination(root, relative_path):
+        """Reject deterministic destination faults before a child net starts."""
+
+        relative = WorkspaceExecutionMixin._workspace_relative_path(
+            relative_path)
+        directory_flags = (
+            os.O_RDONLY | getattr(os, "O_DIRECTORY", 0)
+            | getattr(os, "O_NOFOLLOW", 0))
+        descriptors = []
+        try:
+            current = os.open(root, directory_flags)
+            descriptors.append(current)
+            try:
+                staging_status = os.stat(
+                    "registered_resources", dir_fd=current,
+                    follow_symlinks=False)
+            except FileNotFoundError:
+                staging_status = None
+            if (staging_status is not None
+                    and not stat.S_ISDIR(staging_status.st_mode)):
+                raise ValueError(
+                    "workspace registered_resources must be one directory")
+            for part in relative.parts[:-1]:
+                try:
+                    current = os.open(part, directory_flags, dir_fd=current)
+                except FileNotFoundError:
+                    return relative
+                except OSError as exc:
+                    if exc.errno in {errno.ELOOP, errno.ENOTDIR}:
+                        raise ValueError(
+                            "workspace destination parent must be one directory") from exc
+                    raise
+                descriptors.append(current)
+            try:
+                target_status = os.stat(
+                    relative.parts[-1], dir_fd=current,
+                    follow_symlinks=False)
+            except FileNotFoundError:
+                target_status = None
+            if (target_status is not None
+                    and not stat.S_ISREG(target_status.st_mode)):
+                raise ValueError(
+                    "workspace destination must be one regular file")
+            return relative
+        finally:
+            for descriptor in reversed(descriptors):
+                try:
+                    os.close(descriptor)
+                except OSError:
+                    pass
+
+    @staticmethod
     def _write_workspace_bytes(
             root, relative_path, payload, *, allow_registered_resources=False,
             mode=0o600, before_replace=None):
-        relative = PurePosixPath(relative_path)
-        if (relative.is_absolute() or not relative.parts
-                or any(part in {"", ".", ".."} for part in relative.parts)
-                or (relative.parts[0] == "registered_resources"
-                    and not allow_registered_resources)):
-            raise ValueError("workspace destination is not a strict relative path")
+        relative = WorkspaceExecutionMixin._workspace_relative_path(
+            relative_path,
+            allow_registered_resources=allow_registered_resources)
         directory_flags = (
             os.O_RDONLY | getattr(os, "O_DIRECTORY", 0)
             | getattr(os, "O_NOFOLLOW", 0))
@@ -1185,11 +1245,21 @@ class WorkspaceExecutionMixin:
         # interruption and intentionally retain their same-key recovery net.
         self.kernel._preflight_publish(context, command)
         root = self._workspace_root(loop)
+        self._preflight_workspace_destination(root, path)
         def materialize(_state):
-            published = self._write_workspace_bytes(
-                root, path, workspace_payload,
-                before_replace=lambda: self.kernel.publish_bytes(
-                    context, command))
+            try:
+                published = self._write_workspace_bytes(
+                    root, path, workspace_payload,
+                    before_replace=lambda: self.kernel.publish_bytes(
+                        context, command))
+            except ValueError as exc:
+                # The deterministic model-correctable checks ran before the
+                # execution child was attached.  A later mismatch means the
+                # private workspace changed across that boundary and must stay
+                # on the same-key recovery path instead of creating a second
+                # model action beside an active child.
+                raise ResourceIntegrityFault(
+                    "workspace destination changed after materialization admission") from exc
             return (published.as_version_ref(),)
 
         evidence_refs = self._execute_file_materialization(

@@ -12,6 +12,7 @@ import os
 from pathlib import Path, PurePosixPath
 import stat
 import tarfile
+import uuid
 
 from .registry.errors import ResourceIntegrityFault
 from .registry._registry import RegistryReadError
@@ -32,6 +33,7 @@ from .registry.schema_catalog import canonical_json
 
 
 _MAX_PATH_DELTA_SUMMARY_CHARS = 600
+_RESTORE_STAGING_PREFIX = ".rpnh-restore-stage-"
 
 
 def _strict_workspace_path(value: str) -> PurePosixPath:
@@ -66,6 +68,52 @@ def _tree_files(root: Path) -> dict[str, tuple[bytes, int]]:
     return files
 
 
+def _restore_regular_file(
+        root: Path, relative: str, payload: bytes, mode: int,
+) -> None:
+    """Atomically replace one snapshot path with a new regular file."""
+
+    target = root.joinpath(*PurePosixPath(relative).parts)
+    target.parent.mkdir(parents=True, exist_ok=True)
+    staging = target.parent / (
+        f"{_RESTORE_STAGING_PREFIX}{uuid.uuid4().hex}.tmp")
+    descriptor = None
+    try:
+        descriptor = os.open(
+            staging,
+            os.O_WRONLY | os.O_CREAT | os.O_EXCL
+            | getattr(os, "O_NOFOLLOW", 0),
+            0o600,
+        )
+        remaining = memoryview(payload)
+        while remaining:
+            written = os.write(descriptor, remaining)
+            if written < 1:
+                raise OSError("workspace restore write made no progress")
+            remaining = remaining[written:]
+        os.fchmod(descriptor, mode)
+        os.fsync(descriptor)
+        os.close(descriptor)
+        descriptor = None
+        os.replace(staging, target)
+        directory = os.open(
+            target.parent,
+            os.O_RDONLY | getattr(os, "O_DIRECTORY", 0)
+            | getattr(os, "O_NOFOLLOW", 0),
+        )
+        try:
+            os.fsync(directory)
+        finally:
+            os.close(directory)
+    finally:
+        if descriptor is not None:
+            os.close(descriptor)
+        try:
+            staging.unlink()
+        except FileNotFoundError:
+            pass
+
+
 def _restore_tree(
         root: Path, files: dict[str, tuple[bytes, int]],
 ) -> None:
@@ -88,7 +136,9 @@ def _restore_tree(
         for name in names:
             candidate = current_path / name
             relative = candidate.relative_to(root).as_posix()
-            if candidate.is_symlink() or relative not in files:
+            current_mode = candidate.lstat().st_mode
+            if (relative not in files
+                    or not stat.S_ISREG(current_mode)):
                 candidate.unlink(missing_ok=True)
         for name in directories:
             candidate = current_path / name
@@ -100,10 +150,7 @@ def _restore_tree(
             except OSError:
                 pass
     for relative, (payload, mode) in files.items():
-        target = root.joinpath(*PurePosixPath(relative).parts)
-        target.parent.mkdir(parents=True, exist_ok=True)
-        target.write_bytes(payload)
-        target.chmod(mode)
+        _restore_regular_file(root, relative, payload, mode)
 
 
 def _archive_files(core, revision_ref: VersionRef) -> dict[str, tuple[bytes, int]]:
