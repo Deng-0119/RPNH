@@ -269,6 +269,67 @@ class _WorkspaceThenCompactionOwnerLossPort:
         pass
 
 
+class _FailedCompactionRetryThenReentryPort:
+    def __init__(self) -> None:
+        self.requests: list[dict] = []
+        self.compaction_attempts = 0
+
+    def request_once(self, attempt):
+        envelope = json.loads(attempt.canonical_request_bytes)
+        self.requests.append(envelope)
+        checkpoint = (
+            envelope["messages"][-1].get("content")
+            == CONTEXT_CHECKPOINT_PROMPT)
+        if checkpoint:
+            self.compaction_attempts += 1
+            if self.compaction_attempts <= 2:
+                return LLMInputResponseBytes(
+                    b'{"not":"a canonical response"}',
+                    status_code=None, external_request_id=None)
+            raise AssertionError("failed compaction was replayed")
+        if len(self.requests) == 1:
+            return _response(
+                text="SETTLED-PRE-COMPACTION-TURN",
+                finish_reason="stop", usage={"input_tokens": 950})
+        return _completion_response("failed compaction reentry complete")
+
+    def close(self):
+        pass
+
+
+def test_checkpoint_reentry_accepts_closed_compaction_retry_chain(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    port = _FailedCompactionRetryThenReentryPort()
+    execution_path = _configure_offline_task(
+        tmp_path, monkeypatch, port, context_window_tokens=1000)
+    run_dir = tmp_path / "run"
+    spec = AgentTaskSpec(
+        run_dir=run_dir,
+        prompt="Recover after a closed failed compaction retry chain.",
+        stages=(AgentStage("main", "Produce the requested result."),),
+        execution_config_path=execution_path,
+        max_attempts_per_stage=4,
+    )
+
+    blocked = run_agent_task(spec)
+    assert blocked["stop_reason"] == "blocked_or_waiting"
+    assert port.compaction_attempts == 2
+    interrupted = _RegistryCore(
+        run_dir, create=False, read_only=True, catalog=agent_task_catalog())
+    from cpn.rpnh.registry.checkpoint_reentry import committed_checkpoint_refs
+    selected, = committed_checkpoint_refs(interrupted)
+
+    result = reopen_agent_task(
+        spec, checkpoint_version_id=str(selected.version_id),
+        command_id="test-failed-compaction-retry-chain-reentry",
+        reason="Return to the selected cut after bounded compaction failure.")
+
+    assert result["stop_reason"] == "terminal"
+    assert result["output"] == "failed compaction reentry complete"
+    assert len(port.requests) == 4
+
+
 def test_checkpoint_reentry_finalizes_settled_workspace_before_interruption(
         tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
 ) -> None:
