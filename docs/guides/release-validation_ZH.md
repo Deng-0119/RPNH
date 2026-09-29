@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: release-validation.md
-  revision: "2026-09-29.3"
+  revision: "2026-09-29.4"
   status: historical-full-baseline-current-focused-delta
 ---
 
@@ -24,7 +24,8 @@ Registry 数据。历史总数不能表述成当前 `main` 的完整套件结果
 `87e98356a1ba78b6afd7bae93d26704e030467a3` 的定向变更：跨前端 canonical session
 ownership、下级执行网、workspace 版本历史、任意 checkpoint reopen、compaction／恢复
 闭环、Registry 校验与 runtime 重试策略分离，以及 workspace 目标准入前拒绝、特殊文件
-安全的 snapshot 恢复、有限并发 Viewer 请求和严格 wheel vendor asset 校验。该 SHA 之后
+安全的 snapshot 恢复、Viewer 独立连接处理与有限 socket I/O 超时，以及严格 wheel vendor
+asset 校验。该 SHA 之后
 仅修改文档的提交不改变运行时边界。
 
 统一代码树包含 core Registry/PetriNet 执行、Basic、Codex 与 OpenCode 前端、原生插件、
@@ -65,7 +66,7 @@ exact model。
 | registered-operation 与 resource-service 恢复 | `de53768` 时 16 项通过 |
 | Workspace 拒绝／恢复、execution-child 闭合及 Viewer HTTP／资源 | `87e9835` 时 63 项聚焦测试通过，覆盖目录/FIFO/NUL 拒绝、目录错误后纠正、owner-stop FIFO 恢复和不完整 client 隔离 |
 | 实际 wheel Viewer 门禁 | 从 `87e9835` 构建的 wheel 通过固定顶层文件和 vendor 文件／许可集合；空 manifest 会被拒绝 |
-| 当前文档与配置参考 | 20 项通过；70 页、384 个内部链接、35 组语言配对及构建后的 70 页站点均通过 |
+| 当前文档与配置参考 | 20 项通过；70 页、388 个内部链接、35 组语言配对及构建后的 70 页站点均通过 |
 | 历史 Registry 投影 | 一个保留的大型 3-DOF run 在 verified event head 16185 通过 `rpnh net` 打开，且未获取 writer authority |
 
 这些集合验证精确 checkpoint reentry、workspace candidate 结算、不可变失败证据与索引化
@@ -86,9 +87,9 @@ Python 3.12 解释器也没有完整测试依赖。本记录没有执行浏览�
 ## HTTP 边界
 
 Viewer HTTP server 只是本地只读展示面。它仅接受字面 loopback 监听地址，校验请求目标、
-`Host` 与可选同源 `Origin`，正确格式化 IPv6 authority，并独立处理连接、限制不完整请求的
-读取时间。这不会取代其他 adapter 的协议
-专属校验：OpenCode 保留带认证的 HTTP/SSE 合约，Codex 保留 Unix socket 合约，provider
+`Host` 与可选同源 `Origin`，正确格式化 IPv6 authority，并独立处理连接；已接受的 socket
+具有有限 I/O 超时。这既不是总请求 deadline，也不是连接数或线程数上限。它不会取代其他
+adapter 的协议专属校验：OpenCode 保留带认证的 HTTP/SSE 合约，Codex 保留 Unix socket 合约，provider
 adapter 保留已配置的远程 transport 策略。
 
 ## 仓库策略

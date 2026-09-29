@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: viewer.md
-  revision: "2026-09-29.3"
+  revision: "2026-09-29.4"
   status: source-reviewed-pre-release
 ---
 
@@ -88,9 +88,10 @@ checkpoint 和 2000 条 firing。查看已知大型 run 时提高它们，不需
 
 Viewer 是独立的本地只读展示服务。它接受 IPv4／IPv6 loopback 字面地址
 （`127.0.0.1` 与 `::1`），为 IPv6 输出带方括号的 URL，并且只服务 `Host` 与可选
-`Origin` 精确指向该监听器的请求。连接相互独立，不完整请求具有有限读取超时，因此一个
-局部 loopback client 不会无限阻塞其它 Viewer 请求。这一边界不会给 Registry 执行或
-provider 调用增加 HTTP transport；Codex、OpenCode 与 DSH 继续使用各自的适配传输。
+`Origin` 精确指向该监听器的请求。连接相互独立，每个已接受 socket 都具有有限 I/O
+超时，因此一个局部 loopback client 不会无限阻塞其它 Viewer 请求。该超时不是总请求
+deadline，也不限制连接数或线程数。这一边界不会给 Registry 执行或 provider 调用增加
+HTTP transport；Codex、OpenCode 与 DSH 继续使用各自的适配传输。
 
 ## 认识页面区域
 

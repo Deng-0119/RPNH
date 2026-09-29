@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: en
   counterpart: release-validation_ZH.md
-  revision: "2026-09-29.3"
+  revision: "2026-09-29.4"
   status: historical-full-baseline-current-focused-delta
 ---
 
@@ -28,8 +28,9 @@ documentation additionally covers focused changes through
 ownership, subordinate execution nets, workspace version history, arbitrary
 checkpoint reopen, compaction/recovery closure and separation of Registry
 validation from runtime retry policy, plus pre-admission workspace destination
-rejection, special-file-safe snapshot restoration, bounded concurrent Viewer
-requests and strict wheel vendor-asset validation. Documentation-only commits
+rejection, special-file-safe snapshot restoration, independent Viewer connection
+handling with a finite socket I/O timeout, and strict wheel vendor-asset
+validation. Documentation-only commits
 after that SHA do not change the runtime boundary.
 
 The unified tree contains core Registry/PetriNet execution, Basic, Codex and
@@ -74,7 +75,7 @@ smallest directly affected sets rather than an unrelated full-suite rerun:
 | Registered-operation and resource-service recovery | 16 tests passed at `de53768` |
 | Workspace rejection/recovery, execution-child closure and Viewer HTTP/assets | 63 focused tests passed at `87e9835`; directory/FIFO/NUL rejection, directory correction, owner-stop FIFO restoration and incomplete-client isolation were included |
 | Actual wheel Viewer gate | A wheel built from `87e9835` passed the fixed top-level and vendor-file/license set; an empty manifest is rejected |
-| Current documentation and configuration reference | 20 tests passed; 70 pages, 384 internal links, 35 language pairs and the built 70-page site passed |
+| Current documentation and configuration reference | 20 tests passed; 70 pages, 388 internal links, 35 language pairs and the built 70-page site passed |
 | Historical Registry projection | A preserved large 3-DOF run opened through `rpnh net` at verified event head 16185 without acquiring writer authority |
 
 These sets verify exact checkpoint reentry, workspace candidate settlement,
@@ -104,8 +105,9 @@ authorized live examples are reported separately in
 The Viewer HTTP server is a local, read-only display surface. It accepts only a
 literal loopback listener, validates the request target, `Host` and optional
 same-origin `Origin`, formats IPv6 authorities correctly, serves connections
-independently and bounds incomplete request reads. This does not
-replace transport-specific validation in other adapters: OpenCode retains its
+independently and gives accepted sockets a finite I/O timeout. This is neither
+a total request deadline nor a connection or thread cap. It does not replace
+transport-specific validation in other adapters: OpenCode retains its
 authenticated HTTP/SSE contract, Codex its Unix-socket contract, and provider
 adapters their configured remote transport policy.
 
