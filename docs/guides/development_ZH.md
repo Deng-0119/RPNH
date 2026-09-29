@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: development.md
-  revision: "2026-09-24.1"
+  revision: "2026-09-29.2"
   status: source-reviewed-not-final-candidate-acceptance
   basis: "core; adapter differences explicitly labelled"
 ---
@@ -26,7 +26,11 @@ python -m pip install -e '.[test]'
 python -m pytest -q
 ```
 
-这是仓库通用测试入口，不是本文档批次已执行的命令。小改优先受影响边界测试。唯一的 `.[test]` extra 同时声明 pytest、numpy 和 scipy。缺依赖要如实记录，不把 collection 失败当运行语义错误，也不为迁就预装库放宽版本限制。
+这是仓库通用测试入口，不是每次改动都要执行的命令。文档或局部修复应运行直接受影响的
+聚焦测试；只有跨运行时／schema 重构可能影响无关组件，或明确准备完整候选时，才运行全量
+套件。真实 provider 检查必须另行授权，且只用于离线测试无法证明的传输或端到端行为。测试
+范围是针对改动的证据，不是进度计数器。唯一的 `.[test]` extra 声明 pytest、numpy、scipy。
+依赖缺失应如实记录，不能归因到运行语义；不得为迁就预装库而放松版本边界。
 
 仓库提交 lockfile 固定的 viewer bundle 及许可文本，使普通源码／sdist wheel 构建不依赖
 Node 或网络。只有明确更新这些依赖时，才重新生成并测试已提交资源：

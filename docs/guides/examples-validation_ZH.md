@@ -6,16 +6,17 @@ metadata:
   audience: user-and-maintainer
   language: zh-CN
   counterpart: examples-validation.md
-  revision: "2026-09-28.1"
-  status: focused-live-validation-complete
-  basis: "focused local acceptance across basic, Codex, DSH and OpenCode hosts"
+  revision: "2026-09-29.2"
+  status: dated-focused-and-live-evidence
+  basis: "cumulative dated evidence; current main compatibility recorded separately"
 ---
 
 [English](examples-validation.md) | [中文](examples-validation_ZH.md)
 
 # 用户案例验证记录
 
-基线是 `main@6c675cb`，候选版本为包含本记录的提交。验证环境为 Linux、Python 3.13，
+这是一份累计、带日期的验证记录。最早的案例基线是 `main@6c675cb`，后续章节分别标明
+2026-09-26 或 2026-09-28 的证据，不是当前完整套件认证。验证环境为 Linux、Python 3.13，
 run 目录位于仓库外。确定性检查使用 `local_process`。经授权的真实检查显式选择用户 profile
 `codex-terra`、catalog provider `codex` 和 exact model `gpt-5.6-terra`；已保存的默认
 profile 未被修改。
@@ -158,3 +159,14 @@ validation 节点都在隔离、禁网 workspace 中执行了生成的 solver；
 resource place；测试没有伪造资源节点。完整脱敏机器记录见
 `docs/validation/terra-complex-workflows-20260928.json`。
 原始资料包、参与者数据、Registry、本地身份、transcript、凭据和私有路线细节均留在仓库外。
+
+## 当前 main 的适用边界
+
+截至 `de53768` 的后续运行时工作修改了 checkpoint reopen、下级执行网、workspace revision
+证据、compaction 恢复与 Registry 结构校验。这些边界的 focused 离线测试记录在
+[发布验证](release-validation_ZH.md)。后续定向验证与本轮文档更新均未产生 provider 调用。
+
+上面的带日期业务结果保持不变。尤其是已记录的 3-DOF run 仍为 **NOT ACCEPTED**；后来的
+通用 checkpoint／恢复修复不能追溯性地把当时的 solver 结果改写成成功。当前 `main` 使用
+[案例目录](examples_ZH.md)和[使用指南](usage_ZH.md)中的命令；截图、调用计数和业务结果只
+适用于生成它们的带日期运行。

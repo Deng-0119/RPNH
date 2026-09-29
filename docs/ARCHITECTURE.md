@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: en
   counterpart: ARCHITECTURE_ZH.md
-  revision: "2026-09-28.2"
+  revision: "2026-09-29.2"
   status: source-reviewed-pre-release
 ---
 
@@ -161,6 +161,14 @@ provider request. A second failure remains a `framework_repair` block with no
 fabricated terminal or final-result evidence; provisional files must not be
 reported as completed output.
 
+Registry schema and event validation are structural authorities, not a hidden
+business decision engine. They validate exact identities, references, ordering,
+transaction closure and evidence consistency. A timed-out or nonzero workspace
+action remains immutable evidence, but current writers do not attach a generic
+`next_attempt_allowed` decision, require a reserved script comment, or force the
+next action to be a retry. The selected runtime and declared business operation
+decide whether to correct, verify, diagnose or terminate.
+
 If a process stops after the exact output bundle, immutable workspace candidate,
 and registered-operation completion have all been recorded, `resume_run` may
 settle that one firing from Registry evidence without rerunning its AgentLoop,
@@ -245,8 +253,8 @@ Provider execution is shared harness infrastructure, not a frontend feature.
 An opted-in host adapter receives a firing-local `registered_llm/v1` capability
 and translates its host's messages and results at that boundary. It does not
 open provider connections, resolve credentials, choose another model, implement
-retry policy, or create a second accounting path. Codex, managed DSH, and a
-future OpenCode integration therefore reuse the same selected profile, input
+retry policy, or create a second accounting path. Codex, managed DSH, and the
+OpenCode presentation therefore reuse the same selected profile, input
 port, physical-attempt records, and settlement rules. Supporting a new host
 requires a host adapter/plugin and declared operation bindings, not another
 provider implementation.

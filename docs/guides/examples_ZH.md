@@ -6,9 +6,9 @@ metadata:
   audience: user-and-developer
   language: zh-CN
   counterpart: examples.md
-  revision: "2026-09-26.5"
-  status: focused-live-validated
-  basis: "current main public APIs; offline fixtures and 2026-09-26 exact-route live evidence explicitly separated"
+  revision: "2026-09-29.2"
+  status: current-instructions-with-dated-evidence
+  basis: "current main commands; deterministic runs and dated authorized live evidence explicitly separated"
 ---
 
 [English](examples.md) | [中文](examples_ZH.md)
@@ -18,6 +18,8 @@ metadata:
 案例按用户任务而不是实现包组织。下面每个可运行 workflow 都会创建真实 Registry 与
 PetriNet 投影。脚本化模型只是确定性协议替身，不是语言模型推理证据；provider-backed
 案例与离线案例明确分开。
+命令和恢复语义描述当前 `main`；截图与验收表保留生成它们的日期和精确边界，不会被静默
+改标为当前执行结果。
 
 | 想查看的内容 | 从哪里开始 | 默认模式 |
 |---|---|---|
@@ -202,6 +204,20 @@ rpnh --frontend basic --execution "$DEMO_ROOT/profile/execution.json" \
 给出所选子任务的 `run_dir`；退出前端后可把该精确路径用于 `rpnh net --run RUN_DIR`。
 主会话和每个子任务拥有独立 Registry，主 Registry 保存子任务链接。
 
+要查看当前 checkpoint 控制，先让一个子任务结算，再列出它的精确切面：
+
+```text
+/task FIRST_ID checkpoints
+/task FIRST_ID reopen CHECKPOINT :: Re-run from this committed cut and verify the result.
+/task FIRST_ID status
+/task FIRST_ID result
+```
+
+只能用该 task 返回的 ID 替换 `CHECKPOINT`。`reopen` 在同一 Registry／run 中追加新的执行
+代次，不删除后续历史。选择已 terminal 的切面时，新代次无需模型调用即可闭合；选择较早
+切面时可能再次执行脚本 adapter。要续接最新 owner-stopped 切面，应使用
+`/task ID resume`。
+
 ## 案例 5：通过每个宿主运行同一个安装版任务
 
 每个 wheel 都包含一个 provider-neutral 语义任务，以及 Basic、Codex 0.155.0、固定版本
@@ -265,4 +281,5 @@ decision”注释；Registry terminal/final-result 证据和语义验证均通�
 - 缺少插件必填字段或空汇总列表会被声明的 schema 拒绝，不能表述为成功运行。
 - 看板只读且默认监听 loopback。查看结束后关闭自己启动的进程。详见[看板指南](viewer_ZH.md)。
 
-已核对的验收记录见[案例验证](examples-validation_ZH.md)。
+带日期的验收记录见[案例验证](examples-validation_ZH.md)。其中区分确定性 fixture、此前授权
+的 provider 调用和当前定向兼容检查，均不能替代用户对自有 route 的验证。

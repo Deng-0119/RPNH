@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: en
   counterpart: extensions-observation_ZH.md
-  revision: "2026-09-26.1"
+  revision: "2026-09-29.2"
   status: source-reviewed-not-final-candidate-acceptance
   basis: "core; adapter differences explicitly labelled"
 ---
@@ -16,7 +16,16 @@ metadata:
 # Plugin SDK, adapters and read-only observation
 
 ## Native plugin author contracts
-These APIs exist on the plugin-capable overlays. `PluginDefinition` binds a name/version and a tuple of operations, a config schema and optional resources. `PluginOperation(name, description, input_schema, output_schema, handler, resources=(), effect="pure", timeout_seconds=60, max_result_bytes=1048576)` pins a top-level importable function and its source-module hash. Valid effect declarations are `pure`, `external_read`, `external_write`; limits are 1–7200 seconds and 1–16777216 bytes. Wrong names, unsupported schemas, unimportable handlers, invalid limits and nonfinite/non-JSON values raise `PluginError`.
+These APIs ship in the unified package. An external plugin is still an
+independently installed, explicitly selected trusted package. `PluginDefinition`
+binds a name/version and a tuple of operations, a config schema and optional
+resources. `PluginOperation(name, description, input_schema, output_schema,
+handler, resources=(), effect="pure", timeout_seconds=60,
+max_result_bytes=1048576)` pins a top-level importable function and its
+source-module hash. Valid effect declarations are `pure`, `external_read`,
+`external_write`; limits are 1–7200 seconds and 1–16777216 bytes. Wrong names,
+unsupported schemas, unimportable handlers, invalid limits and nonfinite/non-JSON
+values raise `PluginError`.
 
 `PluginResource(name, payload, media_type="text/plain")` requires nonempty immutable bytes and provides hash/size/media type. Handler resources are selected by distinct declared names. Draft-07 schemas permit local `#/` references, not remote schema loading. This avoids turning task-authored data into arbitrary schema fetch/import instructions; it does not sandbox trusted Python code.
 
@@ -27,8 +36,16 @@ These APIs exist on the plugin-capable overlays. `PluginDefinition` binds a name
 
 Use the [customization example](../guides/customization.md), not direct calls to private `cpn.rpnh.registry` helpers. Installing a Python package does not itself select it for every task. Documentation metadata never grants runtime execution authority.
 
-## Managed tool catalog on the DSH line
-The DSH line adds `cpn/plugins/managed_tools.py`; do not infer that an older core-only or Codex installation contains it. `ManagedToolSelector(name, selector)` maps one provider-visible name to one exact `plugin/operation`. `ManagedPluginToolCatalog(plugin_catalog, allowlist)` produces an immutable projection of an explicit `PluginCatalog`, not a discovery service. Its `provider_declarations` property returns function declarations, `declaration(name)` and `binding(name)` reject unselected names, and `document()` includes the selected catalog and registration identities.
+## Managed tool catalog for the DSH host
+The unified package includes `cpn/plugins/managed_tools.py`, but this catalog is
+activated only by the explicit DSH host configuration. It is not a global tool
+discovery surface for Basic, Codex or OpenCode. `ManagedToolSelector(name,
+selector)` maps one provider-visible name to one exact `plugin/operation`.
+`ManagedPluginToolCatalog(plugin_catalog, allowlist)` produces an immutable
+projection of an explicit `PluginCatalog`, not a discovery service. Its
+`provider_declarations` property returns function declarations,
+`declaration(name)` and `binding(name)` reject unselected names, and `document()`
+includes the selected catalog and registration identities.
 
 Only operations declared `effect="pure"` with an object input schema are eligible. Provider-visible names and plugin selectors must be unique. The DSH CLI uses `--plugin-config ABSOLUTE_PATH` together with one or more `--managed-tool NAME=PLUGIN/OPERATION` arguments. Each name component must match `[a-z][a-z0-9_]{0,47}`. Installing a plugin, choosing a provider, or adding a model-visible description does not grant execution. This is not arbitrary DSH plugin or MCP mounting.
 

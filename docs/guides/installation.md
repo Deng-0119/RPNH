@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: en
   counterpart: installation_ZH.md
-  revision: "2026-09-27.1"
+  revision: "2026-09-29.2"
   status: source-reviewed-not-final-candidate-acceptance
   basis: "unified main; host differences explicitly labelled"
 ---
@@ -20,7 +20,10 @@ Install an explicitly selected RPNH source tree or wheel without calling a model
 
 The current distribution is named `rpnh-harness`, version `0.1.0`, with imports under `cpn` and user entry `rpnh`. Required libraries are `jsonschema>=4.20,<5` and `websockets>=12,<16`. There are **no `codex` or `dsh` pip extras**. Do not install differently sourced copies of `cpn` into the same environment.
 
-Public repository, release artifact and package-index coordinates are **not yet assigned in these documents**. Obtain the approved source/archive or wheel from the maintainer. The commands below deliberately do not require access to a private repository or claim that a public package exists.
+The canonical source repository is `Deng-0119/RPNH` on GitHub and is currently
+access-controlled. No package-index release or downloadable release artifact is
+claimed here. Obtain an authorized checkout/archive or build the wheel from the
+reviewed commit; the commands below do not assume package-index publication.
 
 ## Install from an approved source tree
 Run these Bash commands from its root (the directory containing `pyproject.toml`):
@@ -81,7 +84,7 @@ or a substitute for validating the user's own route.
 | Managed DSH | Unified package, bundled `integrations/dsh`, pinned upstream checkout and toolchain | `rpnh-dsh`; explicit offline numeric or shared configured text mode |
 | Coexistence | One unified source/wheel with applicable optional hosts | Do not overlay multiple same-name wheels in one environment |
 
-The unified main defaults to `auto`: in an interactive terminal it uses compatible Codex `0.155.0` when available, otherwise it uses the built-in terminal; non-interactive use selects the built-in terminal. Select `--frontend basic`, `codex`, or `opencode` explicitly when that surface is required. See [adapters](adapters.md), [OpenCode](opencode.md), or the DSH guide before using an optional host. Enhanced viewer work is not automatically part of this documentation candidate.
+The unified main defaults to `auto`: in an interactive terminal it uses compatible Codex `0.155.0` when available, otherwise it uses the built-in terminal; non-interactive use selects the built-in terminal. Select `--frontend basic`, `codex`, or `opencode` explicitly when that surface is required. See [adapters](adapters.md), [OpenCode](opencode.md), or the DSH guide before using an optional host. The read-only Viewer and its packaged assets are part of this same unified distribution; it is not a separate execution backend.
 
 ## Verification, update and removal
 Installation is successful only after the installed command, packaged schemas/config/static/example assets and the zero-model configuration flow work outside the checkout. A successful editable install or passing link check is insufficient. This documentation batch records wheel verification separately from its static-site checks.

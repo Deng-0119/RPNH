@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: en
   counterpart: agents_ZH.md
-  revision: "2026-09-29.1"
+  revision: "2026-09-29.2"
   status: source-reviewed-not-final-candidate-acceptance
   basis: "core; adapter differences explicitly labelled"
 ---
@@ -70,4 +70,4 @@ The exact CLI arguments for catalog generation are in [models](../guides/models.
 ## Failures, testing and stability
 Test malformed responses, length interruption, schema mismatch, stale references, cancelled/waiting actions, workspace failure evidence, owner-stop resume and exact provider/model preservation. Context text and tool results do not gain Registry authority merely by appearing in a prompt. The `OptionalAgentLoopRegistryService` owner-side gateway and private commit helpers are implementation surfaces, not plugin-author permission to write Registry internals.
 
-Source map: `cpn/rpnh/main_session.py`, `task_control.py`, `agent_tasks.py`, `agent_workflows.py`; `cpn/components/agent_loop/{ports,service,turn_execution,turn_records,action_execution,action_records,context,compaction,delegation,resource_wait,workspace}.py`; `cpn/rpnh/user_config.py`, `provider_setup.py`, `cpn/llm_adapters`, `cpn/rpnh/registry/_provider_calls`.
+Source map: `cpn/rpnh/main_session.py`, `session_access.py`, `frontend_application.py`, `task_control.py`, `agent_tasks.py`, `agent_workflows.py`; `cpn/components/agent_loop/{ports,service,turn_execution,turn_records,action_execution,action_records,context,compaction,delegation,resource_wait,workspace}.py`; `cpn/rpnh/user_config.py`, `provider_setup.py`, `cpn/llm_adapters`, `cpn/rpnh/registry/_provider_calls`.

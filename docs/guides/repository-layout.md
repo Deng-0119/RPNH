@@ -6,7 +6,7 @@ metadata:
   audience: user-and-developer
   language: en
   counterpart: repository-layout_ZH.md
-  revision: "2026-09-26.1"
+  revision: "2026-09-29.2"
   status: source-reviewed-pre-release
 ---
 
@@ -20,7 +20,9 @@ below explain ownership and are not additional runtime entry points.
 
 | Path | Purpose | Start here when |
 |---|---|---|
-| `cpn/rpnh/` | Registry, PetriNet, owner, tasks, sessions and CLI application services | Changing core execution semantics |
+| `cpn/rpnh/` | PetriNet, owner, tasks, canonical sessions and frontend-neutral application services | Changing core execution semantics |
+| `cpn/rpnh/registry/` | Append-only event/object authority, structural validation, indexed reads, execution nets and recovery | Changing persistence, settlement or checkpoint behavior |
+| `cpn/rpnh/{workspace_settlement,file_execution_net}.py` | Versioned workspace publication and predefined file execution mechanics | Changing file version/evidence behavior rather than business workflow |
 | `cpn/llm_adapters/` | Shared local-process and external-provider input ports | Adding transport behavior without host duplication |
 | `cpn/components/` | Reusable AgentLoop and execution-service components | Extending managed Agent behavior |
 | `cpn/frontend/static/` | Viewer assets shipped in the Python wheel | Inspecting the runtime dashboard |
@@ -37,6 +39,11 @@ virtual environments and viewer dependencies do not belong in the repository.
 Examples create their runs under a caller-selected directory outside the source
 tree. Sanitized validation summaries may be committed; raw operational evidence
 may not.
+
+Basic, Codex and OpenCode open the same canonical MainSession root sequentially;
+they are not separate source variants. DSH is an optional registered host in the
+same distribution and uses the shared provider layer. Historical branches are
+provenance, not installation components to overlay on `main`.
 
 Use the [example catalog](examples.md) to choose a task and the
 [dashboard tutorial](viewer.md) to inspect its PetriNet. Use the

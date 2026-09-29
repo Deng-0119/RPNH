@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: dsh.md
-  revision: "2026-09-26.1"
+  revision: "2026-09-29.2"
   status: source-reviewed-pre-release
 ---
 
@@ -69,6 +69,11 @@ DSH 对完整 frame 施加 2 MiB 限制，其中包括历史、工具声明、�
 除非共享 provider adapter 能够 reconciliation，否则该 attempt 保持
 `submission_unknown`。managed tool 结果与其他宿主一样，通过统一 Registry 与 operation
 契约结算。
+
+如果进程丢失前精确登记输出及其 operation completion 已持久化，共享恢复可以不重放 host、
+provider 或 tool 而完成结算。绑定 workspace 的恢复还要求 `map_ready` 下级执行 checkpoint
+持有精确不可变 candidate；声明 HOST effects 的 outcome 仍被排除。这是 Registry 证据恢复，
+不是 DSH 专用重试路径。
 
 ## 限制
 

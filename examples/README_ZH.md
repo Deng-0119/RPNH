@@ -18,6 +18,10 @@
 模型推理能力。每张链接图片都来自对应类型的 run；公开副本移除了精确 checkpoint 身份和
 本地观察时间。
 
+要查看中断／恢复行为，请使用独立任务案例，以及[完整案例指南](../docs/guides/examples_ZH.md)
+中的当前 `/task ID checkpoints`、`resume`、`reopen` 教程。Reopen 会在同一 Registry 中追加
+新执行代次，不会重写较早代次生成的图片或带日期验证记录。
+
 请从[完整案例指南](../docs/guides/examples_ZH.md)和
 [看板指南](../docs/guides/viewer_ZH.md)开始。生成的 profile、Registry 目录和 provider
 transcript 均保存在仓库之外。

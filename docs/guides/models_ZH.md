@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: models.md
-  revision: "2026-09-26.2"
+  revision: "2026-09-29.2"
   status: source-reviewed-not-final-candidate-acceptance
   basis: "core; adapter differences explicitly labelled"
 ---
@@ -103,4 +103,6 @@ build 生成 `external_provider_adapter_config/v2` 或 `local_process_adapter_co
 ## 验证与恢复
 profile 的 `ready: true` 只代表所需变量有值，不能证明 key 正确、路由可达、模型可用或费用情况。密钥不进入 catalog、git 或共享日志。配置漂移时备份唯一 catalog，在受控目录重建，再把 `RPNH_PROFILE_DIR` 指向其 `execution` 子目录。不要静默改写已有运行的路由；切换当前 profile 不迁移历史 run 权威。
 
-代码：`cpn/rpnh/provider_setup.py`、`user_config.py`、`provider_catalog.py`，`cpn/schemas/runtime/provider_model_catalog.v2.schema.json`，增量中的 `cpn/rpnh/onboarding.py`。另见[排障](troubleshooting_ZH.md)和[组件参考](../reference/agents_ZH.md)。
+代码：`cpn/rpnh/provider_setup.py`、`user_config.py`、`provider_catalog.py`、`onboarding.py`，
+以及 `cpn/schemas/runtime/provider_model_catalog.v2.schema.json`。另见
+[排障](troubleshooting_ZH.md)和[组件参考](../reference/agents_ZH.md)。

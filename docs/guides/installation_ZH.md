@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: installation.md
-  revision: "2026-09-27.1"
+  revision: "2026-09-29.2"
   status: source-reviewed-not-final-candidate-acceptance
   basis: "unified main; host differences explicitly labelled"
 ---
@@ -20,7 +20,9 @@ metadata:
 
 发行包名称是 `rpnh-harness`，版本 `0.1.0`，Python 导入包为 `cpn`，用户命令为 `rpnh`。依赖是 `jsonschema>=4.20,<5`、`websockets>=12,<16`。当前**不存在 `codex`、`dsh` pip extra**。不要在同一环境安装来自不同维护线的两套 `cpn`。
 
-本文尚未分配公开仓库、发布产物或包索引地址。请从维护者取得批准的源码或 wheel；以下教程不依赖私有仓库地址，也不声称已公开发布。
+Canonical 源码仓库是 GitHub 上的 `Deng-0119/RPNH`，目前受访问控制。本文不声称已经发布
+包索引版本或可下载 release artifact。请取得获准的 checkout／archive，或从已审查提交构建
+wheel；以下命令不假定包索引已发布。
 
 ## 从批准的源码安装
 在包含 `pyproject.toml` 的源码根目录运行 Bash：
@@ -79,7 +81,7 @@ wheel 还包含 provider-neutral 的跨宿主任务包。导出只是零模型�
 | 托管 DSH | 统一包、内含 `integrations/dsh`、固定上游及工具链 | `rpnh-dsh`；显式离线数值或共享配置文本模式 |
 | 共存 | 统一源码/wheel，加所需可选宿主 | 不要在同一环境覆盖安装多份同名 wheel |
 
-统一 main 默认使用 `auto`：在交互式终端中，找到兼容的 Codex `0.155.0` 时使用它，否则使用内置终端；非交互式使用内置终端。需要特定界面时显式选择 `--frontend basic`、`codex` 或 `opencode`。使用可选宿主前阅读[适配指南](adapters_ZH.md)、[OpenCode](opencode_ZH.md)或 DSH 指南。独立 viewer 增强不自动成为本候选范围。
+统一 main 默认使用 `auto`：在交互式终端中，找到兼容的 Codex `0.155.0` 时使用它，否则使用内置终端；非交互式使用内置终端。需要特定界面时显式选择 `--frontend basic`、`codex` 或 `opencode`。使用可选宿主前阅读[适配指南](adapters_ZH.md)、[OpenCode](opencode_ZH.md)或 DSH 指南。只读 Viewer 及其打包资源属于同一统一发行包，但它不是另一套执行后端。
 
 ## 验证、升级与卸载
 只有已安装命令、包内 schema/config/static/example 资源，以及源码目录外的零模型配置流程均通过，才可称安装验证通过。editable 安装成功或链接检查通过都不足以替代。本文档批次单独记录 wheel 验证和站点检查。

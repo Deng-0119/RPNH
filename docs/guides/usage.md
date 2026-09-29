@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: en
   counterpart: usage_ZH.md
-  revision: "2026-09-28.1"
+  revision: "2026-09-29.2"
   status: source-reviewed-not-final-candidate-acceptance
   basis: "core; adapter differences explicitly labelled"
 ---
@@ -94,5 +94,12 @@ Resource places are hidden by default and appear only if actually declared. An e
 
 ## Expected evidence and recovery
 Success is registered terminal evidence plus the registered result in the child's authority, not “process exited”, a cached UI answer or an empty work queue. Keep main and child roots together when making a controlled consistent backup; relative Registry links are not copied event stores. Do not start a second writer to repair display issues. Use [troubleshooting](troubleshooting.md) for owner conflict, drift or unknown outcomes.
+
+For file-producing work, inspect the settled workspace revision and its
+`path_deltas` rather than treating the mutable live directory as authority.
+Subordinate execution nets record file materialization/finalization mechanics;
+they do not replace the business PetriNet or create another task Registry. A
+failed workspace action remains evidence, while the declared operation decides
+whether later correction or an accurate failure result is appropriate.
 
 Sources: `cpn/rpnh_cli.py:_task_command`, `_run_task_action`, `_net_command`; `cpn/rpnh/main_session.py`, `task_control.py`, `inspection.py`, `registry/main_thread.py`.

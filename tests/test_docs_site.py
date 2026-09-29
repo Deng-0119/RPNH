@@ -1,6 +1,7 @@
 """Documentation-only regressions. No RPNH imports and no example execution."""
 from pathlib import Path
 import importlib.util
+import re
 import shutil
 import sys
 import tempfile
@@ -79,8 +80,9 @@ class DocumentationTests(unittest.TestCase):
     def test_counterpart_drift_rejected(self):
         path = self.root / 'docs/index_ZH.md'
         path.write_text(
-            path.read_text().replace(
-                'revision: "2026-09-26.3"', 'revision: "older"', 1),
+            re.sub(
+                r'^  revision: "[^"]+"$', '  revision: "older"',
+                path.read_text(), count=1, flags=re.MULTILINE),
             encoding='utf-8')
         with self.assertRaisesRegex(ValueError, 'counterpart mismatch'):
             docs.check(self.root)

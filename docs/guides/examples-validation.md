@@ -6,20 +6,22 @@ metadata:
   audience: user-and-maintainer
   language: en
   counterpart: examples-validation_ZH.md
-  revision: "2026-09-28.1"
-  status: focused-live-validation-complete
-  basis: "focused local acceptance across basic, Codex, DSH and OpenCode hosts"
+  revision: "2026-09-29.2"
+  status: dated-focused-and-live-evidence
+  basis: "cumulative dated evidence; current main compatibility recorded separately"
 ---
 
 [English](examples-validation.md) | [中文](examples-validation_ZH.md)
 
 # User-example validation record
 
-Baseline was `main` at `6c675cb`; the candidate is the commit containing this
-record. Validation used Linux, Python 3.13 and repository-external temporary run
-directories. Deterministic checks used `local_process`. Authorized live checks
-explicitly selected user profile `codex-terra`, catalog provider `codex` and
-exact model `gpt-5.6-terra`; the saved default profile was not changed.
+This is a cumulative, dated validation record. Its earliest example baseline was
+`main@6c675cb`; later sections identify their own 2026-09-26 or 2026-09-28
+evidence. It is not a current full-suite certification. Validation used Linux,
+Python 3.13 and repository-external temporary run directories. Deterministic
+checks used `local_process`. Authorized live checks explicitly selected user
+profile `codex-terra`, catalog provider `codex` and exact model
+`gpt-5.6-terra`; the saved default profile was not changed.
 
 | Mode | Status | Observed result |
 |---|---|---|
@@ -192,3 +194,18 @@ No resource node was fabricated. The complete sanitized machine-readable record
 is `docs/validation/terra-complex-workflows-20260928.json`.
 Raw dossiers, participant data, Registries, local identifiers, transcripts,
 credentials and private route details remain outside the repository.
+
+## Current main applicability
+
+Later runtime work through `de53768` changed checkpoint reopen, subordinate
+execution nets, workspace revision evidence, compaction recovery and structural
+Registry validation. Focused offline tests for those boundaries are recorded in
+[release validation](release-validation.md). No provider call was made for that
+post-baseline validation or this documentation refresh.
+
+The dated business results above remain unchanged. In particular, the recorded
+3-DOF run remains **NOT ACCEPTED**; a later general checkpoint/recovery fix does
+not retroactively turn that historical solver result into success. Current
+commands in the [example catalog](examples.md) and [usage guide](usage.md) apply
+to current `main`, while screenshots, call counts and business outcomes apply
+only to the dated runs that produced them.

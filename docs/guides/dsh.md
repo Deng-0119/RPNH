@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: en
   counterpart: dsh_ZH.md
-  revision: "2026-09-26.1"
+  revision: "2026-09-29.2"
   status: source-reviewed-pre-release
 ---
 
@@ -76,6 +76,13 @@ unacknowledged physical provider submission completed. Such an attempt remains
 `submission_unknown` unless the shared provider adapter can reconcile it.
 Managed tool results settle through the same Registry and operation contracts
 as other hosts.
+
+If exact registered outputs and their operation completion are durable before a
+process loss, shared recovery may finish settlement without replaying the host,
+provider or tool. Workspace-bound recovery additionally requires the exact
+immutable candidate held by a `map_ready` subordinate execution checkpoint;
+declared HOST effects remain excluded. This is Registry evidence recovery, not a
+DSH-specific retry path.
 
 ## Limits
 

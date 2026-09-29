@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: en
   counterpart: runtime-registry_ZH.md
-  revision: "2026-09-28.1"
+  revision: "2026-09-29.2"
   status: source-reviewed-not-final-candidate-acceptance
   basis: "core; adapter differences explicitly labelled"
 ---
@@ -61,6 +61,14 @@ If an owner stop races with validated registered products already returned to th
 
 For DSH headless exit handling, `terminal` and an `idle` whose latest turn is already committed are successful completion states. An empty or nonterminal idle session fails. Diagnostic states such as `submission_unknown` are failures, not partial success. A terminal record may contain a denied business outcome: command/protocol completion is not proof that the requested business action was approved. A durably registered provider response alone also does not prove that the enclosing task has reached terminal settlement.
 
+Registry validation deliberately stops at structural integrity. Current events
+must close exact identities, references, order and atomic transaction material;
+they do not encode a universal retry/remediation policy. Current workspace
+writers therefore omit `next_attempt_allowed`. The v1 schemas still accept that
+field when reading already-persisted history, but its historical value cannot
+override current runtime policy or block checkpoint reopen. Failed actions stay
+visible and are interpreted by the declared operation and Agent runtime.
+
 ## Marking, resources and transaction ownership
 `TeamNetMarking` is the facade/state owner. `_marking` splits selection, claims, outputs, revisions, checkpoints and delta implementation without creating another token/epoch/claim store. Registry-backed hydration provides the current graph/marking. Do not use a mutable display projection as a replacement runtime marking.
 
@@ -79,4 +87,4 @@ Every settled workspace revision carries sorted `path_deltas`. Each delta record
 
 Private classes, backend SQL helpers and `_event_store`, `_operation`, `_invocation`, `_provider_calls`, `_resource_service` domains are implementation details. Preserve facade/transaction compatibility when reorganizing them. Historical inert validation paths are not enabled by documentation. Recovery and data retention follow [usage](../guides/usage.md) and [troubleshooting](../guides/troubleshooting.md); DSH-specific commands are in the [DSH guide](../guides/dsh.md).
 
-Sources: `cpn/rpnh/run.py:RunOwner,OwnerInput,resume_run`; `harness.py:Harness,OperationDispatch,OperationProducts,OperationDisposition,HarnessResult`; `marking.py`; `registry/event_store.py`; `registry/_event_store/commit.py`; `registry/execution_net.py`; `registry/execution_runtime.py`; `file_execution_net.py`; `workspace_settlement.py`; `registry/firing_recovery.py`; `cpn/components/registered_operation_dispatcher.py`; `registered_host_llm.py`; `tests/test_execution_net_registry.py`; `tests/test_workspace_revision_history.py`; `tests/test_multi_output_same_turn.py`; `tests/test_registered_operation_recovery.py`; and `tests/test_dsh_backend.py`.
+Sources: `cpn/rpnh/run.py:RunOwner,OwnerInput,resume_run`; `harness.py:Harness,OperationDispatch,OperationProducts,OperationDisposition,HarnessResult`; `marking.py`; `registry/event_store.py`; `registry/_event_store/commit.py`; `registry/_event_store/validation/`; `registry/execution_net.py`; `registry/execution_runtime.py`; `registry/checkpoint_reentry.py`; `file_execution_net.py`; `workspace_settlement.py`; `registry/firing_recovery.py`; `cpn/components/registered_operation_dispatcher.py`; `registered_host_llm.py`; `tests/test_execution_net_registry.py`; `tests/test_workspace_revision_history.py`; `tests/test_multi_output_same_turn.py`; `tests/test_registered_operation_recovery.py`; and `tests/test_dsh_backend.py`.

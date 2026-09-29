@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: customization.md
-  revision: "2026-09-26.1"
+  revision: "2026-09-29.2"
   status: source-reviewed-not-final-candidate-acceptance
   basis: "core; adapter differences explicitly labelled"
 ---
@@ -34,7 +34,8 @@ response 映射回宿主；provider profile 解析、凭据、transport、recove
 link 融合兼容 place，不制造广播副本。分支、join 和有界反馈需要对应端口、弧和预算。不得直接编辑 Registry 或 marking 使步骤“可执行”。见[声明参考](../reference/declarations_ZH.md)。
 
 ## 仓库中的真实插件示例
-在含原生插件增量的源码中，先审查示例，再独立安装：
+统一源码树包含原生插件 SDK 和一个示例插件，但该示例仍需独立安装并显式选择。先审查其
+源码，再执行：
 
 ```bash
 python -m pip install ./examples/native_plugin
@@ -57,4 +58,4 @@ skill 可作为准入 operation 消费的已注册指令资源；Markdown front 
 ## 供应商与运行行为扩展
 使用既有传输的新供应商通常只需 catalog 配置。新传输需要适配契约、精确身份、物理调用/未知效果记录及确定性测试，不能仅改供应商名称。密钥和业务策略不进入通用核心默认值。
 
-验证非法输入、缺注册、schema 不符、取消、身份漂移、超时、资源访问与结算失败。schema/命令变化记录兼容或迁移说明。代码：`cpn/rpnh/module.py`、`compiler.py`、`harness.py`；增量 `cpn/plugins/{api,catalog,cli,runtime}.py` 和 `examples/native_plugin/rpnh_demo.py`。
+验证非法输入、缺注册、schema 不符、取消、身份漂移、超时、资源访问与结算失败。schema/命令变化记录兼容或迁移说明。代码：`cpn/rpnh/module.py`、`compiler.py`、`harness.py`、`cpn/plugins/{api,catalog,cli,runtime}.py` 和 `examples/native_plugin/rpnh_demo.py`。

@@ -52,7 +52,7 @@ transition、交接 place、并行分叉弧和全输入 join：
 - **组合 Agent 与已有代码。** 让语言模型节点负责推理与沟通，让原生插件完成计算或执行
   已有业务逻辑，并在同一工作流中声明各自的输入与输出。
 - **关联工作过程与结果。** 登记的资源版本将输入、产物与具体执行关联起来。
-  工作区结算合并兼容的修改，并记录并行修订之间的冲突。
+  工作区结算合并兼容的修改，记录逐路径 create/update/delete 历史，并保留并行修订之间的冲突。
 - **独立于对话管理任务。** 启动、查看、发送消息、停止和恢复独立任务。
   每个任务保留自己的 Registry、执行状态与结果，主会话提供统一入口。
 - **查看实际驱动执行的结构。** 只读 PetriNet 看板展示工作流结构、执行状态与已声明资源，
@@ -81,6 +81,19 @@ transition、交接 place、并行分叉弧和全输入 join：
 
 已声明的操作先经过准入，再交给执行器运行。返回的产物经过登记与结算后供后续步骤使用，
 最终结果由已声明的终端绑定确定。前端与看板使用同一套记录进行交互和展示。
+
+Harness 自有的文件物化和 workspace finalization 作为同一 Registry 内的下级执行 PetriNet
+运行。它们把实现机制与 Designer 编写的业务图分开，同时保留 checkpoint 到结果的精确
+证据。Registry 校验负责身份、顺序、引用和原子闭合；是否重试、如何补救，以及失败的
+工具动作能否被业务接受，仍是明确的 runtime 或应用策略。
+
+### 恢复、重开与证据保留
+
+Owner stop 会为当前 run 建立 checkpoint，但不会把未完成工作改写成成功结果。`resume`
+续接最新 owner-stopped 切面；`reopen` 可选择任意已提交 checkpoint，并在同一 Registry／
+run 中追加新的执行代次，后续历史和文件仍作为不可变证据保留。主对话 rollback 会回到上一个
+已完成 turn，但不会删除独立 child Registry。Provider 提交状态未知时会被记录，而不是静默
+重放。
 
 参阅[架构说明](docs/architecture/design_ZH.md)和
 [运行参考](docs/reference/runtime-registry_ZH.md)，了解执行模型、工作区结算与工作流修订机制。
@@ -196,8 +209,9 @@ Basic、Codex 与 OpenCode 是同一个直接 MainSession root 的顺序展示�
 |---|---|
 | 入门 | [安装](docs/guides/installation_ZH.md)、[案例](docs/guides/examples_ZH.md)、[仓库目录图](docs/guides/repository-layout_ZH.md)、[配置总表](docs/guides/configuration_ZH.md)、[模型](docs/guides/models_ZH.md)、[使用](docs/guides/usage_ZH.md) |
 | 构建应用 | [自定义与插件](docs/guides/customization_ZH.md)、[原生 PetriNet 操作](docs/guides/net-operations_ZH.md)、[声明参考](docs/reference/declarations_ZH.md) |
-| 理解运行过程 | [看板](docs/guides/viewer_ZH.md)、[架构](docs/architecture/design_ZH.md)、[运行与 Registry](docs/reference/runtime-registry_ZH.md) |
-| 使用维护与参与开发 | [排障](docs/guides/troubleshooting_ZH.md)、[开发](docs/guides/development_ZH.md)、[发布验证](docs/guides/release-validation_ZH.md) |
+| 理解运行过程 | [看板](docs/guides/viewer_ZH.md)、[架构](docs/architecture/design_ZH.md)、[Runtime 与 Registry 接口](docs/reference/runtime-registry_ZH.md)、[会话与 Agent 接口](docs/reference/agents_ZH.md) |
+| 接入宿主与工具 | [前端／宿主适配](docs/guides/adapters_ZH.md)、[插件与观察接口](docs/reference/extensions-observation_ZH.md) |
+| 使用维护与参与开发 | [排障](docs/guides/troubleshooting_ZH.md)、[开发](docs/guides/development_ZH.md)、[历史发布验证](docs/guides/release-validation_ZH.md)、[案例验证](docs/guides/examples-validation_ZH.md) |
 
 ## 开发
 

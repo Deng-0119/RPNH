@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: agents.md
-  revision: "2026-09-29.1"
+  revision: "2026-09-29.2"
   status: source-reviewed-not-final-candidate-acceptance
   basis: "core; adapter differences explicitly labelled"
 ---
@@ -63,4 +63,4 @@ Protocol 方法故意直接声明，因为 gateway 会枚举 `vars(protocol)`。
 ## 失败、测试与稳定性
 测试非法响应、length interruption、schema 不符、旧引用、取消/等待、workspace 失败证据、owner-stop resume 以及精确 provider/model 保持。上下文文字和工具结果出现在 prompt 中，并不会获得 Registry 权威。`OptionalAgentLoopRegistryService` 和私有 commit helper 是实现边界，不授权插件作者写 Registry 内部。
 
-代码映射：`cpn/rpnh/main_session.py`、`task_control.py`、`agent_tasks.py`、`agent_workflows.py`；`cpn/components/agent_loop/{ports,service,turn_execution,turn_records,action_execution,action_records,context,compaction,delegation,resource_wait,workspace}.py`；`cpn/rpnh/user_config.py`、`provider_setup.py`、`cpn/llm_adapters`、`cpn/rpnh/registry/_provider_calls`。
+代码映射：`cpn/rpnh/main_session.py`、`session_access.py`、`frontend_application.py`、`task_control.py`、`agent_tasks.py`、`agent_workflows.py`；`cpn/components/agent_loop/{ports,service,turn_execution,turn_records,action_execution,action_records,context,compaction,delegation,resource_wait,workspace}.py`；`cpn/rpnh/user_config.py`、`provider_setup.py`、`cpn/llm_adapters`、`cpn/rpnh/registry/_provider_calls`。

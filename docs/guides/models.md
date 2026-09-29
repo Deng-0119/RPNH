@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: en
   counterpart: models_ZH.md
-  revision: "2026-09-26.2"
+  revision: "2026-09-29.2"
   status: source-reviewed-not-final-candidate-acceptance
   basis: "core; adapter differences explicitly labelled"
 ---
@@ -104,4 +104,6 @@ Health probes and formal retries, when reached during authorized execution, are 
 ## Verify and recover
 `ready: true` from a profile means required environment values are present; it does not validate keys, availability, model behavior or billing. Keep credentials out of the catalog, version control and shared logs. To repair drift, back up the canonical catalog and regenerate in a controlled directory; point `RPNH_PROFILE_DIR` at its `execution` subdirectory. Do not silently redirect existing runs. Changing a selected profile does not migrate prior run authority.
 
-Sources: `cpn/rpnh/provider_setup.py`, `user_config.py`, `provider_catalog.py`; `cpn/schemas/runtime/provider_model_catalog.v2.schema.json`; overlay `cpn/rpnh/onboarding.py`. See [troubleshooting](troubleshooting.md) and [component reference](../reference/agents.md).
+Sources: `cpn/rpnh/provider_setup.py`, `user_config.py`, `provider_catalog.py`,
+`onboarding.py`; `cpn/schemas/runtime/provider_model_catalog.v2.schema.json`.
+See [troubleshooting](troubleshooting.md) and [component reference](../reference/agents.md).

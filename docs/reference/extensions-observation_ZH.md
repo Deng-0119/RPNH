@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: extensions-observation.md
-  revision: "2026-09-26.1"
+  revision: "2026-09-29.2"
   status: source-reviewed-not-final-candidate-acceptance
   basis: "core; adapter differences explicitly labelled"
 ---
@@ -16,7 +16,12 @@ metadata:
 # 插件 SDK、适配与只读观察
 
 ## 原生插件契约
-这些 API 位于插件增量。`PluginDefinition` 绑定 name/version、operation tuple、config schema 和可选资源。`PluginOperation(name, description, input_schema, output_schema, handler, resources=(), effect="pure", timeout_seconds=60, max_result_bytes=1048576)` 钉住可导入顶层函数及源模块 hash。effect 仅 pure/external_read/external_write；时间限额 1–7200 秒，结果限额 1–16777216 字节。名称、schema、handler、限额或非有限/非 JSON 数据错误抛 `PluginError`。
+这些 API 随统一包提供；外部插件仍是独立安装、显式选择的可信包。`PluginDefinition` 绑定
+name/version、operation tuple、config schema 和可选资源。`PluginOperation(name,
+description, input_schema, output_schema, handler, resources=(), effect="pure",
+timeout_seconds=60, max_result_bytes=1048576)` 钉住可导入顶层函数及源模块 hash。effect 仅
+pure/external_read/external_write；时间限额 1–7200 秒，结果限额 1–16777216 字节。名称、
+schema、handler、限额或非有限／非 JSON 数据错误抛 `PluginError`。
 
 `PluginResource(name, payload, media_type="text/plain")` 要求非空不可变 bytes，描述包含 hash/size/media type。handler 只能选择声明的不同资源名。Draft-07 schema 允许本地 `#/` ref，不加载远端 schema；这防止任务数据变成任意 fetch/import 指令，但不是可信 Python 的 sandbox。
 
@@ -27,8 +32,13 @@ list 描述 catalog，check 编译所有 operation，build SELECTOR 返回经编
 
 使用[自定义示例](../guides/customization_ZH.md)，不要直接调用私有 Registry helper。安装 Python 包不会自动让所有任务选择它；文档 metadata 不授予执行权限。
 
-## DSH 维护线的受管工具目录
-DSH 维护线增加了 `cpn/plugins/managed_tools.py`；不能据此推断旧 core-only 或 Codex 安装也包含它。`ManagedToolSelector(name, selector)` 把模型可见名称映射到精确的 `plugin/operation`。`ManagedPluginToolCatalog(plugin_catalog, allowlist)` 是显式 `PluginCatalog` 的不可变投影，不是自动发现服务。其 `provider_declarations` 属性返回 function 声明；`declaration(name)`、`binding(name)` 拒绝未选择的名称；`document()` 包含所选目录和注册身份。
+## DSH 宿主的受管工具目录
+统一包包含 `cpn/plugins/managed_tools.py`，但该目录只由显式 DSH 宿主配置启用，不是 Basic、
+Codex 或 OpenCode 的全局工具发现面。`ManagedToolSelector(name, selector)` 把模型可见名称映射
+到精确的 `plugin/operation`。`ManagedPluginToolCatalog(plugin_catalog, allowlist)` 是显式
+`PluginCatalog` 的不可变投影，不是自动发现服务。其 `provider_declarations` 属性返回
+function 声明；`declaration(name)`、`binding(name)` 拒绝未选择的名称；`document()` 包含所选
+目录和注册身份。
 
 仅接受声明 `effect="pure"` 且输入 schema 为 object 的 operation。模型可见名称和插件 selector 均须唯一。DSH CLI 将 `--plugin-config ABSOLUTE_PATH` 与一个或多个 `--managed-tool NAME=PLUGIN/OPERATION` 同时使用；名称的每个组成部分均须匹配 `[a-z][a-z0-9_]{0,47}`。安装插件、选择 provider 或增加模型可见描述都不授予执行权限；这不是任意 DSH 插件或 MCP 挂载。
 

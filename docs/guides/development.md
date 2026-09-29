@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: en
   counterpart: development_ZH.md
-  revision: "2026-09-24.1"
+  revision: "2026-09-29.2"
   status: source-reviewed-not-final-candidate-acceptance
   basis: "core; adapter differences explicitly labelled"
 ---
@@ -26,7 +26,16 @@ python -m pip install -e '.[test]'
 python -m pytest -q
 ```
 
-This is the repository's general test entry, not a command executed by this documentation batch. Prefer focused affected-boundary tests for small changes. The single `.[test]` extra declares pytest, numpy and scipy. Record missing dependencies rather than attributing collection failure to runtime semantics. Do not relax version bounds merely to use preinstalled libraries.
+This is the repository's general test entry, not a command executed by every
+change. Use focused affected-boundary tests for documentation and local fixes;
+run the complete suite when a broad runtime/schema refactor can affect unrelated
+components or when preparing an explicitly scoped full candidate. Real-provider
+checks require separate authorization and are appropriate only when offline
+tests cannot establish the changed transport or end-to-end behavior. Test scope
+is evidence for the change, not a progress counter. The single `.[test]` extra
+declares pytest, numpy and scipy. Record missing dependencies rather than
+attributing collection failure to runtime semantics. Do not relax version bounds
+merely to use preinstalled libraries.
 
 The repository includes the lockfile-pinned viewer bundles and their license
 texts so normal source and sdist wheel builds do not require Node. When those

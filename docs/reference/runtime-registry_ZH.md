@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: runtime-registry.md
-  revision: "2026-09-28.1"
+  revision: "2026-09-29.2"
   status: source-reviewed-not-final-candidate-acceptance
   basis: "core; adapter differences explicitly labelled"
 ---
@@ -61,6 +61,12 @@ owner stop 若与已验证且已返回 harness 的 registered products 竞态，
 
 DSH headless 的退出判定中，`terminal` 和“最新 turn 已提交”的 `idle` 为完成状态；空会话或非终态 idle 失败。`submission_unknown` 等诊断状态是失败，不是部分成功。terminal 记录也可能包含被拒绝的业务结果：命令／协议完成不证明业务动作已获批；provider 响应持久登记本身也不证明外围任务已经终态结算。
 
+Registry 校验明确止于结构完整性。当前事件必须闭合精确身份、引用、顺序和原子事务材料，
+但不编码通用重试／补救策略。因此当前 workspace writer 不再写
+`next_attempt_allowed`。v1 schema 仍接受已持久历史中的该字段，但历史值不能覆盖当前
+runtime policy，也不能阻止 checkpoint reopen。失败 action 保持可见，由声明的 operation
+与 Agent runtime 解释。
+
 ## Marking、资源与事务归属
 `TeamNetMarking` 是 facade 和状态所有者；`_marking` 只是分开 selection、claims、outputs、revisions、checkpoints、delta，不新建 token/epoch/claim 状态。当前图与 marking 由 Registry hydration 提供，不能用可变展示投影替代。
 
@@ -93,4 +99,4 @@ create/update/delete、精确且可空的 before/after resource 引用与有界�
 
 私有类、SQL helper、`_event_store`、`_operation`、`_invocation`、`_provider_calls`、`_resource_service` 均是实现细节。重组时保留 facade/事务兼容，文档不能启用历史 inert 路径。恢复和数据保留见[使用](../guides/usage_ZH.md)、[排障](../guides/troubleshooting_ZH.md)，DSH 专用命令见 [DSH 指南](../guides/dsh_ZH.md)。
 
-代码：`cpn/rpnh/run.py:RunOwner,OwnerInput,resume_run`、`harness.py:Harness,OperationDispatch,OperationProducts,OperationDisposition,HarnessResult`、`marking.py`、`registry/event_store.py`、`registry/_event_store/commit.py`、`registry/execution_net.py`、`registry/execution_runtime.py`、`file_execution_net.py`、`workspace_settlement.py`、`registry/firing_recovery.py`、`cpn/components/registered_operation_dispatcher.py`、`registered_host_llm.py`、`tests/test_execution_net_registry.py`、`tests/test_workspace_revision_history.py`、`tests/test_multi_output_same_turn.py`、`tests/test_registered_operation_recovery.py`、`tests/test_dsh_backend.py`。
+代码：`cpn/rpnh/run.py:RunOwner,OwnerInput,resume_run`、`harness.py:Harness,OperationDispatch,OperationProducts,OperationDisposition,HarnessResult`、`marking.py`、`registry/event_store.py`、`registry/_event_store/commit.py`、`registry/_event_store/validation/`、`registry/execution_net.py`、`registry/execution_runtime.py`、`registry/checkpoint_reentry.py`、`file_execution_net.py`、`workspace_settlement.py`、`registry/firing_recovery.py`、`cpn/components/registered_operation_dispatcher.py`、`registered_host_llm.py`、`tests/test_execution_net_registry.py`、`tests/test_workspace_revision_history.py`、`tests/test_multi_output_same_turn.py`、`tests/test_registered_operation_recovery.py`、`tests/test_dsh_backend.py`。

@@ -64,7 +64,8 @@ for every view, control and visual symbol.
   existing business logic. Declare their inputs and outputs in one workflow.
 - **Keep work and its results connected.** Registered resource versions link
   inputs and products to their executions. Workspace settlement merges compatible
-  changes and records conflicts between concurrent revisions.
+  changes, records per-path create/update/delete history, and preserves conflicts
+  between concurrent revisions.
 - **Manage tasks independently of the conversation.** Launch, inspect, message,
   stop and resume independent tasks. Each task keeps its own Registry, execution
   state and results while the main session provides a common entry point.
@@ -102,6 +103,23 @@ A declared operation is admitted before dispatch. Its returned products are
 registered and settled before downstream steps rely on them, and a declared
 terminal binding identifies the final result. Frontends and the dashboard use
 these same records for interaction and observation.
+
+Harness-owned file materialization and workspace finalization run as subordinate
+execution Petri nets inside the same Registry. They keep implementation mechanics
+separate from the Designer-authored business graph while retaining exact
+checkpoint-to-result evidence. Registry validation enforces identity, ordering,
+references and atomic closure; retry, remediation and whether a failed tool action
+is acceptable remain explicit runtime or application policy.
+
+### Resume, reopen and preserve evidence
+
+An owner stop checkpoints the current run without turning unfinished work into a
+successful result. `resume` continues the latest owner-stopped cut. `reopen`
+selects any committed checkpoint and appends a new execution generation in the
+same Registry/run; later history and files remain immutable evidence. A main
+conversation rollback returns to its previous completed turn but does not delete
+independent child Registries. Unknown provider submissions are recorded rather
+than silently replayed.
 
 See the [architecture](docs/architecture/design.md) and
 [runtime reference](docs/reference/runtime-registry.md) for the execution model,
@@ -228,8 +246,9 @@ surface.
 |---|---|
 | Getting started | [Installation](docs/guides/installation.md), [examples](docs/guides/examples.md), [repository map](docs/guides/repository-layout.md), [configuration](docs/guides/configuration.md), [models](docs/guides/models.md), [usage](docs/guides/usage.md) |
 | Building an application | [Customization and plugins](docs/guides/customization.md), [native Petri-net operations](docs/guides/net-operations.md), [declaration reference](docs/reference/declarations.md) |
-| Understanding a run | [Dashboard](docs/guides/viewer.md), [architecture](docs/architecture/design.md), [runtime and Registry](docs/reference/runtime-registry.md) |
-| Operating and contributing | [Troubleshooting](docs/guides/troubleshooting.md), [development](docs/guides/development.md), [release validation](docs/guides/release-validation.md) |
+| Understanding a run | [Dashboard](docs/guides/viewer.md), [architecture](docs/architecture/design.md), [runtime and Registry interfaces](docs/reference/runtime-registry.md), [session and Agent interfaces](docs/reference/agents.md) |
+| Integrating hosts and tools | [Frontend/host adapters](docs/guides/adapters.md), [plugin and observation interfaces](docs/reference/extensions-observation.md) |
+| Operating and contributing | [Troubleshooting](docs/guides/troubleshooting.md), [development](docs/guides/development.md), [historical release validation](docs/guides/release-validation.md), [example validation](docs/guides/examples-validation.md) |
 
 ## Development
 

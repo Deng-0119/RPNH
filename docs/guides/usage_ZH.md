@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: usage.md
-  revision: "2026-09-28.1"
+  revision: "2026-09-29.2"
   status: source-reviewed-not-final-candidate-acceptance
   basis: "core; adapter differences explicitly labelled"
 ---
@@ -85,5 +85,10 @@ rpnh net --run "$RUN_DIR" --view --no-open
 
 ## 预期证据与恢复
 成功依据是子任务权威中的 terminal evidence 与 registered result，不是进程退出、UI 缓存答案或队列为空。一致性备份应保留主/子目录关系，相对 Registry 链接不是子事件库副本。不要为了修复展示启动第二个 writer。owner 冲突、配置漂移和未知结果见[排障](troubleshooting_ZH.md)。
+
+涉及文件的工作应查看已结算 workspace revision 及其 `path_deltas`，不能把可变 live 目录当作
+权威。下级执行网记录文件物化／finalization 机制，但不替代业务 PetriNet，也不创建另一个
+task Registry。失败 workspace action 仍是证据；是否在后续纠正或准确返回失败，由声明的
+operation 决定。
 
 代码：`cpn/rpnh_cli.py:_task_command`、`_run_task_action`、`_net_command`，`cpn/rpnh/main_session.py`、`task_control.py`、`inspection.py`、`registry/main_thread.py`。

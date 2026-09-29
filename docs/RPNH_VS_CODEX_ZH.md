@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: RPNH_VS_CODEX.md
-  revision: "2026-09-25.1"
+  revision: "2026-09-29.2"
   status: source-reviewed-pre-release
 ---
 
@@ -20,7 +20,7 @@ RPNH 提供 harness、执行模型与证据权威。
 
 | 维度 | 直接运行 `codex` | 运行 `rpnh` |
 |---|---|---|
-| 终端界面 | Codex TUI | 同一固定版本 TUI，另有 `--frontend basic` |
+| 终端界面 | Codex TUI | 同一固定版本 TUI、内置 Basic 或固定版 OpenCode 展示 |
 | 后端状态 | Codex/OpenAI thread 与执行状态 | 每个 conversation thread 一个 RPNH main-session Registry；独立 child Registry 与 typed PetriNet 状态 |
 | Provider/model | Codex 账户与配置 | 用户所有的 RPNH profile，固定 provider、route 和 exact model |
 | 普通输入 | Codex thread/turn | 受监督的 single-agent RPNH main turn |
@@ -28,10 +28,10 @@ RPNH 提供 harness、执行模型与证据权威。
 | 任务切换 | Codex 前端语义 | `/switch` 改变 basic CLI 焦点，不停止后台任务 |
 | Workflow | Codex 后端行为 | Designer-authored typed graph lowering 为 PetriNet |
 | Subagent | 由 Codex 实现决定 | 父级所有的有界 `delegate_leaf`，结果返回一个父 action |
-| Workspace | Codex workspace/tool 语义 | 私有 firing view；settlement 时发布 Registry 版本化文件 |
+| Workspace | Codex workspace/tool 语义 | 私有 firing view；settlement 时发布 Registry 版本化文件和逐路径 delta |
 | 调度 | Codex 后端内部机制 | Petri enablement、admission、firing、resource 与 settlement |
 | 完成判定 | 可见 model/session 输出 | Registry terminal evidence 加 final-result index |
-| 中断／恢复 | Codex session 行为 | Registry checkpoint、owner stop、精确 lineage resume |
+| 中断／恢复 | Codex session 行为 | Registry checkpoint、owner stop、精确 lineage resume 与 owner 选择的 checkpoint reopen |
 | 查看 | Codex logs/session | task/net/token/firing/provider/resource 的只读投影 |
 
 ## 四种执行身份
@@ -83,7 +83,9 @@ Registry；共享 owner lease 会阻止并发可写前端。每个可独立切�
    由用户选择 `/resume` 续接同一 child Registry lineage，或用 `/rollback` 让主会话回到
    上一个已完成 turn。Rollback 绝不删除或回退 child Registry。
 8. 独立 task 的行为类似后台 Agent。退出或中断主会话不会停止它们。`/task ID stop` 请求
-   checkpointed owner stop；`/task ID resume` 从同一条满足条件的 Registry lineage 继续。
+   checkpointed owner stop；`/task ID resume` 从最新满足条件的 Registry 切面继续。
+   `/task ID reopen CHECKPOINT [:: REASON]` 是另一项操作：它从精确已提交切面追加新执行
+   代次，同时保留全部后续历史和当前 attempt 高水位。
 9. `rpnh net` 与浏览器 viewer 在不取得 writer authority 的情况下读取已有 run。普通 graph
    node 默认可见；实际 resource node 只有通过 `--show-resources`、`--resources-only` 或
    页面开关才会显示。

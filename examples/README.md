@@ -19,6 +19,12 @@ protocol and settlement boundaries but are not claims about model reasoning.
 Every linked image comes from the named run type; public copies omit exact
 checkpoint identities and local observation timestamps.
 
+For interruption/recovery behavior, use the independent-task example and the
+current `/task ID checkpoints`, `resume`, and `reopen` walkthrough in the
+[complete examples guide](../docs/guides/examples.md). Reopen appends a new
+execution generation to the same Registry; it does not rewrite the image or the
+dated validation record that came from an earlier generation.
+
 Start with the [complete examples guide](../docs/guides/examples.md) and the
 [dashboard guide](../docs/guides/viewer.md). Generated
 profiles, Registry directories and provider transcripts stay outside this tree.

@@ -1,38 +1,41 @@
 ---
 name: rpnh-release-validation
-description: "记录统一公开候选的脱敏离线验收边界。"
+description: "区分历史全量离线基线与当前定向验证。"
 metadata:
   document-kind: validation-record
   audience: operator-and-developer
   language: zh-CN
   counterpart: release-validation.md
-  revision: "2026-09-28.1"
-  status: offline-candidate-validated
+  revision: "2026-09-29.2"
+  status: historical-full-baseline-current-focused-delta
 ---
 
 [English](release-validation.md) | [中文](release-validation_ZH.md)
 
-# 公开候选验收记录
+# 发布验证边界
 
-本记录描述 2026-09-28 验证的统一候选，只提供脱敏摘要，不复制本地日志或私有 Registry
-数据。
+本页把历史完整套件基线与后续定向验证分开，只提供脱敏摘要，不复制本地日志或私有
+Registry 数据。历史总数不能表述成当前 `main` 的完整套件结果。
 
 ## 纳入的源码边界
 
-通过验证的运行时源码提交为
-`073a4516013443fadfcd05fa81d29c4aa1b5391b`。后续只修改文档的提交可以纳入本记录，
-但不会改变该运行时边界。
+本记录中最后一次完整离线套件于 2026-09-28 针对运行时提交
+`073a4516013443fadfcd05fa81d29c4aa1b5391b` 执行。当前运行时文档还覆盖截至
+`de537681c43a077a999089220558aca266196ead` 的定向变更：跨前端 canonical session
+ownership、下级执行网、workspace 版本历史、任意 checkpoint reopen、compaction／恢复
+闭环，以及 Registry 校验与 runtime 重试策略分离。该 SHA 之后仅修改文档的提交不改变
+运行时边界。
 
-候选包含 core Registry/PetriNet 执行、basic、Codex 与 OpenCode 前端、原生插件、共享
-provider/profile 层、可选 DSH 宿主和只读 PetriNet viewer。不包含历史分支证据、真实 API
-campaign、项目 workflow 和本地 profile。
+统一代码树包含 core Registry/PetriNet 执行、Basic、Codex 与 OpenCode 前端、原生插件、
+共享 provider/profile 层、可选 DSH 宿主和只读 PetriNet viewer。不包含历史分支证据、
+真实 API campaign、项目 workflow 和本地 profile。
 
-软件包附带的 provider/model catalog 为空，不预选 provider、endpoint、credential 或 exact
-model。
+软件包附带的 provider/model catalog 为空，不预选 provider、endpoint、credential 或
+exact model。
 
-## 已完成检查
+## 历史完整套件基线
 
-| 检查 | 结果 |
+| 检查 | `073a451` 的结果 |
 |---|---|
 | Python 3.13 完整离线套件 | 744 项通过，1 项因环境条件跳过，用时 2279.34 秒 |
 | Viewer HTTP、打包资源与不可变对象定向集合 | 41 项通过，用时 0.75 秒 |
@@ -44,32 +47,47 @@ model。
 | 源码目录外的 wheel 安装 smoke | Python 3.13 从隔离环境加载 `cpn`；7 条零模型命令通过 |
 | 安装后的原生示例 | 导出与验证通过，且运行副作用受到 guard 限制 |
 
-定向集合与完整套件有重叠，它们是变更相关证据，不会叠加到完整测试总数。打包检查使用从
-上述已验证提交实际构建的 wheel 和 sdist。验收判断不依赖 checksum。
+定向集合与完整套件有重叠，是变更相关证据，不叠加到完整测试总数。打包检查使用该提交
+实际构建的 wheel 和 sdist；验收判断不依赖 checksum。Viewer 检查覆盖全部顶层静态文件、
+随包 JointJS/ELK 资源及其许可记录。安装 smoke 在源码树外执行，并在检查 help、空 catalog
+配置和案例命令时阻止 provider-capable 网络、子进程与 Registry 副作用。
 
-Viewer 检查覆盖 Viewer 提供的全部顶层静态文件、随包提供的 JointJS/ELK 资源及其许可
-记录。安装后 smoke 在源码树外执行，并在运行 help、空 catalog 配置与示例命令时禁止网络、
-子进程和 Registry 副作用。
+## 当前定向增量
+
+完整套件基线之后的运行时变更使用直接覆盖受影响边界的最小集合验证，没有把无关全量
+重跑伪装成必要证据：
+
+| 边界 | 定向证据 |
+|---|---|
+| AgentLoop、registered-host、前端与 checkpoint 闭环 | `de53768` 时 14 项通过 |
+| 已持久 v1 兼容与当前 checkpoint reopen | `de53768` 时 2 项通过；旧的可选 `next_attempt_allowed: false` 可读且不阻止 reopen，当前 writer 不再写入该字段 |
+| registered-operation 与 resource-service 恢复 | `de53768` 时 16 项通过 |
+| 当前文档与配置参考 | 20 项通过；70 页、384 个内部链接、35 组语言配对及构建后的 70 页站点均通过 |
+| 历史 Registry 投影 | 一个保留的大型 3-DOF run 在 verified event head 16185 通过 `rpnh net` 打开，且未获取 writer authority |
+
+这些集合验证精确 checkpoint reentry、workspace candidate 结算、不可变失败证据与索引化
+Registry 读取等变更边界。它们不是新的完整套件总数，也不是真实 provider campaign。
+文档检查验证 metadata、链接、语法、语言配对和 schema 示例，不执行模型案例。
 
 ## 调用与限制
 
-本轮没有真实模型或 provider API 调用。离线通过不能证明用户自有 route 可达。完整套件中
-唯一跳过项是验收环境未安装固定版本 OpenCode 可执行文件所对应的 PTY 测试；OpenCode
-协议测试仍使用无 provider 的应用替身执行。
+历史完整离线运行与后续定向运行时验证均未产生真实模型或 provider API 调用。离线通过
+不能证明用户自有 route 可达。历史完整套件中唯一跳过项是未安装固定版本 OpenCode
+可执行文件对应的 PTY 测试；OpenCode 协议测试仍使用无 provider 的应用替身。
 
-验收环境为 Linux/WSL2 x86-64 和 Python 3.13.12。环境未安装 Python 3.11，可用的 Python
-3.12 解释器也不具备完整测试依赖，因此本轮没有重新完成 3.11/3.12 全套兼容性验证。本轮
-也没有执行浏览器自动化、固定的真实 OpenCode 可执行文件或真实 provider route。本候选
-没有修改 Viewer JavaScript，因此没有重复运行独立的 Node/浏览器套件。
+完整套件环境为 Linux/WSL2 x86-64 和 Python 3.13.12。环境未安装 Python 3.11，可用的
+Python 3.12 解释器也没有完整测试依赖。本记录没有执行浏览器自动化、固定的真实 OpenCode
+客户端或真实 provider route。带日期且经过授权的真实案例另见
+[案例验证](examples-validation_ZH.md)。
 
 ## HTTP 边界
 
 Viewer HTTP server 只是本地只读展示面。它仅接受字面 loopback 监听地址，校验请求目标、
-`Host` 和可选的同源 `Origin`，并正确格式化 IPv6 authority。这不会取代其他 adapter 的协议
-专属校验：OpenCode 继续使用带认证的 HTTP/SSE 合约，Codex 继续使用 Unix socket 合约，
-provider adapter 继续遵守其配置的远程 transport 策略。
+`Host` 与可选同源 `Origin`，并正确格式化 IPv6 authority。这不会取代其他 adapter 的协议
+专属校验：OpenCode 保留带认证的 HTTP/SSE 合约，Codex 保留 Unix socket 合约，provider
+adapter 保留已配置的远程 transport 策略。
 
 ## 仓库策略
 
-公开候选使用 `main`，不包含 GitHub Actions workflow，也没有自动 `push` trigger。真实
-provider 证据和生成的 run 数据保存在仓库之外。
+Canonical 项目使用 `main`，不包含 GitHub Actions workflow，也没有自动 `push` trigger。
+真实 provider 证据和生成的 run 数据保存在仓库之外；仓库只提交审查过的脱敏摘要。

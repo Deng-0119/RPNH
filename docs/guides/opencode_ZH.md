@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: opencode.md
-  revision: "2026-09-26.2"
+  revision: "2026-09-29.2"
   status: locally-validated-integration-candidate
   upstream-version: "1.18.32"
 ---

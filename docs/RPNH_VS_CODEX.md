@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: en
   counterpart: RPNH_VS_CODEX_ZH.md
-  revision: "2026-09-25.1"
+  revision: "2026-09-29.2"
   status: source-reviewed-pre-release
 ---
 
@@ -21,7 +21,7 @@ supplies the harness, execution model, and evidence authority.
 
 | Dimension | Running `codex` directly | Running `rpnh` |
 |---|---|---|
-| Terminal UI | Codex TUI | The same pinned TUI, plus `--frontend basic` |
+| Terminal UI | Codex TUI | The same pinned TUI, built-in Basic, or pinned OpenCode presentation |
 | Backend state | Codex/OpenAI thread and execution state | One RPNH main-session Registry per conversation thread; independent child Registries and typed PetriNet state |
 | Provider/model | Codex account and configuration | User-owned RPNH profile with provider, route, and exact model |
 | Ordinary input | Codex thread/turn | A supervised single-agent RPNH main turn |
@@ -29,10 +29,10 @@ supplies the harness, execution model, and evidence authority.
 | Task switching | Codex frontend semantics | `/switch` changes basic-CLI focus without stopping background tasks |
 | Workflow | Codex backend behavior | Designer-authored typed graph lowered to a PetriNet |
 | Subagent | Codex implementation-defined | Parent-owned, bounded `delegate_leaf` whose result returns to one action |
-| Workspace | Codex workspace/tool semantics | Private firing views and Registry-versioned files published at settlement |
+| Workspace | Codex workspace/tool semantics | Private firing views, Registry-versioned files and per-path deltas published at settlement |
 | Scheduling | Codex backend internals | Petri enablement, admission, firing, resources, and settlement |
 | Completion | Visible model/session output | Registry terminal evidence plus final-result index |
-| Interruption/resume | Codex session behavior | Registry checkpoint, owner stop, exact-lineage resume |
+| Interruption/resume | Codex session behavior | Registry checkpoint, owner stop, exact-lineage resume and owner-selected checkpoint reopen |
 | Inspection | Codex logs/session | Read-only task/net/token/firing/provider/resource projections |
 
 ## Four execution identities
@@ -98,7 +98,10 @@ tokens, workspace, or final-result authority.
    completed turn. Rollback never deletes or rewinds the child Registry.
 8. Independent tasks behave like background agents. Leaving or interrupting the
    main session does not stop them. `/task ID stop` requests a checkpointed owner
-   stop; `/task ID resume` continues the same eligible Registry lineage.
+   stop; `/task ID resume` continues the latest eligible Registry cut.
+   `/task ID reopen CHECKPOINT [:: REASON]` is separate: it appends a new
+   execution generation from an exact committed cut while preserving all later
+   history and current attempt high-water marks.
 9. `rpnh net` and the browser viewer read an existing run without writer
    authority. Ordinary graph nodes are visible by default; actual resource nodes
    appear only through `--show-resources`, `--resources-only`, or the page toggle.

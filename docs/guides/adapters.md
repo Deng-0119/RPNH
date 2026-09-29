@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: en
   counterpart: adapters_ZH.md
-  revision: "2026-09-28.1"
+  revision: "2026-09-29.2"
   status: source-reviewed-not-final-candidate-acceptance
   basis: "core; adapter differences explicitly labelled"
 ---
@@ -116,7 +116,10 @@ recovery tests. The shared operation layer also records one exact completion
 after output validation. If the process stops after that event but before
 firing settlement, resume settles the completion without another provider or
 tool call. Without the event it fails closed before advancing the writer epoch.
-Only effect-free, workspace-free outcomes use this automatic settlement path.
+Outcomes with declared HOST effects remain excluded. A workspace-bound outcome
+is eligible only when the completion names its exact immutable workspace
+candidate and that candidate is held by a `map_ready` subordinate execution
+checkpoint; recovery validates the archive instead of rescanning the live tree.
 An empty writer-epoch gap is harmless; a later writer fact invalidates the old
 completion. Registration and immutable resume material are checked before a
 new writer opens. Managed tool arguments are schema-checked before execution,

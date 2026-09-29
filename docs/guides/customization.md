@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: en
   counterpart: customization_ZH.md
-  revision: "2026-09-26.1"
+  revision: "2026-09-29.2"
   status: source-reviewed-not-final-candidate-acceptance
   basis: "core; adapter differences explicitly labelled"
 ---
@@ -30,7 +30,9 @@ Represent a business decision with an explicit Inspector place/token, guard or r
 Links fuse compatible places; they do not manufacture broadcast copies. Branching, joins and bounded feedback must have the corresponding declared ports, arcs and budgets. Do not edit Registry records or marking directly to “enable” a step. See [declarations](../reference/declarations.md).
 
 ## A real native-plugin example
-On a source tree containing the native plugin overlay, the existing example is an independently installed package. After reviewing its source:
+The unified source tree includes the native plugin SDK and one example plugin,
+but the example remains an independently installed and explicitly selected
+package. After reviewing its source:
 
 ```bash
 python -m pip install ./examples/native_plugin
@@ -53,4 +55,4 @@ A skill can be a registered instruction resource consumed by an admitted operati
 ## Change providers or runtime behavior
 A new provider using an existing transport usually belongs in the canonical catalog. A new transport requires an explicit adapter contract, exact identity handling, physical-call/unknown-effect accounting and deterministic tests; editing only a provider name is insufficient. Never move credentials or business policies into generic core defaults.
 
-Validate malformed input, missing registration, schema mismatch, cancellation, identity drift, timeout, resource access and settlement failure. Keep compatibility or migration notes with changed schemas/commands. Sources: `cpn/rpnh/module.py`, `compiler.py`, `harness.py`; overlay `cpn/plugins/{api,catalog,cli,runtime}.py` and `examples/native_plugin/rpnh_demo.py`.
+Validate malformed input, missing registration, schema mismatch, cancellation, identity drift, timeout, resource access and settlement failure. Keep compatibility or migration notes with changed schemas/commands. Sources: `cpn/rpnh/module.py`, `compiler.py`, `harness.py`; `cpn/plugins/{api,catalog,cli,runtime}.py` and `examples/native_plugin/rpnh_demo.py`.

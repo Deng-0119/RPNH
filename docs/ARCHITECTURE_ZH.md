@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: ARCHITECTURE.md
-  revision: "2026-09-28.2"
+  revision: "2026-09-29.2"
   status: source-reviewed-pre-release
 ---
 
@@ -128,6 +128,11 @@ Workspace finalization 遇到一次已观测的 SQLite I/O 中断时，会立即
 `framework_repair` block，不伪造 terminal 或 final-result evidence；provisional 文件不得
 报告为已完成输出。
 
+Registry schema 与 event 校验是结构权威，不是隐藏的业务决策引擎。它们校验精确身份、
+引用、顺序、事务闭合与证据一致性。Workspace action 超时或非零退出后仍作为不可变证据
+保留，但当前 writer 不会附加通用 `next_attempt_allowed` 决策，不要求保留脚本注释，也不
+强制下一步必须重试。由所选 runtime 与已声明业务 operation 决定纠正、验证、诊断或终止。
+
 如果进程在精确输出 bundle、不可变 workspace 候选和 registered-operation completion 均已
 登记后停止，`resume_run` 可以仅依据 Registry evidence 补结算这一个 firing，不重跑其
 AgentLoop、provider、shell 或文件 action。恢复会校验候选归档、执行 checkpoint、父 firing、
@@ -194,7 +199,7 @@ limits 和 credential environment names。发送给 provider 的 model identifie
 Provider 执行是共享 harness 基础设施，不属于某个前端。明确选择使用该能力的 host
 adapter 在 firing 内获得 `registered_llm/v1` capability，并只在此边界转换宿主消息与结果；
 它不自行连接 provider、解析凭据、选择其它模型、实现重试策略或建立第二条记账路径。
-因此 Codex、托管 DSH 以及未来的 OpenCode 集成都复用同一 selected profile、input port、
+因此 Codex、托管 DSH 与 OpenCode 展示都复用同一 selected profile、input port、
 物理 attempt 记录和结算规则。接入新宿主只需实现 host adapter/plugin 并声明 operation
 binding，不需要重新实现 provider。
 

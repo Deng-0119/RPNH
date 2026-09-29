@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: adapters.md
-  revision: "2026-09-28.1"
+  revision: "2026-09-29.2"
   status: source-reviewed-not-final-candidate-acceptance
   basis: "core; adapter differences explicitly labelled"
 ---
@@ -107,8 +107,10 @@ final。它仍未产生 provider 调用，不能记作模型失败。
 配置模式在模型尝试登记前干净停止已有本地恢复测试。共享 operation 层还会在输出验证后
 记录一个精确 completion；如果进程在该事件之后、firing 结算之前停止，resume 会结算该
 completion，不再次调用 provider 或工具。缺少该事件时会在 writer epoch 前移前失败闭合。
-自动结算只适用于无 effect、无 workspace binding 的 outcome。空 writer-epoch 间隔无害，
-但后续 writer 一旦发布事实，旧 completion 即失效。registration 与不可变恢复材料会在
+声明 HOST effects 的 outcome 仍不进入自动结算。绑定 workspace 的 outcome 只有在
+completion 引用其精确不可变 workspace candidate，且该 candidate 由 `map_ready` 下级执行
+checkpoint 持有时才具备资格；恢复会校验归档，不重新扫描 live tree。空 writer-epoch 间隔
+无害，但后续 writer 一旦发布事实，旧 completion 即失效。registration 与不可变恢复材料会在
 新 writer 打开前校验。受管工具参数在执行前按 schema 校验，声明结果上限为 64 KiB，
 持久登记的插件失败会形成精确关联的错误工具结果。inspector 还会在 worker 启动前确认
 声明的最坏结果连同下一模型响应能够装入 frame。

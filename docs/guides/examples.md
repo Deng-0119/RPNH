@@ -6,9 +6,9 @@ metadata:
   audience: user-and-developer
   language: en
   counterpart: examples_ZH.md
-  revision: "2026-09-26.5"
-  status: focused-live-validated
-  basis: "current main public APIs; offline fixtures and 2026-09-26 exact-route live evidence explicitly separated"
+  revision: "2026-09-29.2"
+  status: current-instructions-with-dated-evidence
+  basis: "current main commands; deterministic runs and dated authorized live evidence explicitly separated"
 ---
 
 [English](examples.md) | [中文](examples_ZH.md)
@@ -19,6 +19,9 @@ The examples are organized by user task rather than implementation package.
 Every runnable workflow below creates a real Registry and PetriNet projection.
 A scripted model is a deterministic protocol fixture, not evidence of
 language-model reasoning. Provider-backed examples are explicitly separated.
+Commands and recovery semantics describe current `main`; screenshots and
+acceptance tables retain the date and exact boundary of the run that produced
+them instead of being silently relabelled as current execution.
 
 | I want to see | Start here | Default |
 |---|---|---|
@@ -222,6 +225,22 @@ selected child's `run_dir`. After leaving the frontend, that exact path can be
 used with `rpnh net --run RUN_DIR`. The main session and each child retain
 separate Registries; the main Registry stores child links.
 
+To inspect current checkpoint controls, first let one child settle, then list
+its exact cuts:
+
+```text
+/task FIRST_ID checkpoints
+/task FIRST_ID reopen CHECKPOINT :: Re-run from this committed cut and verify the result.
+/task FIRST_ID status
+/task FIRST_ID result
+```
+
+Replace `CHECKPOINT` only with an ID returned for that task. `reopen` appends a
+new execution generation in the same Registry/run; it does not delete later
+history. Selecting an already-terminal cut closes the new generation without a
+model call. Selecting an earlier cut can execute the scripted adapter again.
+Use `/task ID resume` instead when continuing the latest owner-stopped cut.
+
 ## Example 5: one installed task through every host
 
 Every wheel contains a provider-neutral semantic task plus separate instructions
@@ -299,4 +318,7 @@ remain private and are not represented by these summaries.
   process you started when inspection is complete. See the
   [dashboard guide](viewer.md).
 
-The checked acceptance record is in [examples validation](examples-validation.md).
+The dated acceptance record is in [examples validation](examples-validation.md).
+It distinguishes deterministic fixtures, earlier authorized provider calls and
+current focused compatibility checks; none substitutes for validating a user's
+own route.
