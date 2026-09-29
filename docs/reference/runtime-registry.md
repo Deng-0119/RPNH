@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: en
   counterpart: runtime-registry_ZH.md
-  revision: "2026-09-29.2"
+  revision: "2026-09-29.3"
   status: source-reviewed-not-final-candidate-acceptance
   basis: "core; adapter differences explicitly labelled"
 ---
@@ -77,6 +77,14 @@ visible and are interpreted by the declared operation and Agent runtime.
 `_ResourceServiceKernel` retains the live core, resource authority and delivery/publication boundary. `RunOwner.access_resource(execution, resource_ref, *, access_mode, command_id)` uses admitted execution and an exact resource version. `succeed` prepares workspace settlement before committed firing success. File existence or a candidate output cannot substitute for acknowledged registered access and settlement.
 
 Subordinate execution Petri nets are same-Registry authority beneath one exact business invocation/firing. Their definitions, instances, weighted tokens, active/settled transition firings and checkpoint stream are distinct from `TeamNetMarking`; independent transitions may be active concurrently. Built-in file materialization and workspace-finalization nets reach `map_ready` only with exact Registry evidence. The business Success transaction requires every subordinate instance to be map-ready and stages `execution_terminal_mapping/v1` beside the operation result, successor marking checkpoint and optional workspace revision. It is therefore impossible for an execution checkpoint alone to consume or produce business tokens.
+
+Deterministic `write_file` path, parent and destination-type faults are checked
+before attaching a file-materialization instance. If the private filesystem
+changes after that admission boundary, the mismatch is an integrity/recovery
+failure on the same materialization identity, not a second model-correctable
+action beside an active child. Snapshot restoration recreates ordinary files by
+staged atomic replacement and never writes snapshot bytes into a FIFO or other
+special file.
 
 Instance attachment and Success sealing share one per-firing execution-child stream. Success compare-and-appends the sealed instance/checkpoint/mapping set, so an attachment racing with settlement makes one transaction stale instead of leaving an unmapped running child after business publication. Execution settle artifacts include their predecessor checkpoint and command identity; a losing stale attempt cannot reserve immutable version locators needed by the valid retry.
 

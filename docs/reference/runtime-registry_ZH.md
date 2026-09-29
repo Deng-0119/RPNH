@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: runtime-registry.md
-  revision: "2026-09-29.2"
+  revision: "2026-09-29.3"
   status: source-reviewed-not-final-candidate-acceptance
   basis: "core; adapter differences explicitly labelled"
 ---
@@ -81,6 +81,11 @@ workspace-finalization 网只有在持有精确 Registry evidence 后才会达�
 Success 事务要求所有下级 instance 已 map-ready，并把 `execution_terminal_mapping/v1` 与
 operation result、后继 marking checkpoint、可选 workspace revision 一同写入。因此单独的
 执行 checkpoint 不能消费或产生业务 token。
+
+可确定的 `write_file` 路径、父目录和目标类型错误会在挂接 file-materialization instance
+之前检查。若私有文件系统在该准入边界后发生变化，不一致属于同一个 materialization 身份的
+完整性／恢复故障，而不是在 active child 旁新建另一个“模型可纠正”action。Snapshot 恢复
+通过暂存和原子替换重建普通文件，绝不会把 snapshot 字节写入 FIFO 或其它特殊文件。
 
 Instance attachment 与 Success sealing 共用每个 firing 独立的 execution-child stream。
 Success 通过 compare-and-append 写入已封口的 instance/checkpoint/mapping 集，因此 attachment

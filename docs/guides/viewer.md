@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: en
   counterpart: viewer_ZH.md
-  revision: "2026-09-26.3"
+  revision: "2026-09-29.3"
   status: source-reviewed-pre-release
 ---
 
@@ -98,8 +98,11 @@ terminal projection for those filters.
 The Viewer is a separate, read-only local display service. It accepts IPv4 and
 IPv6 loopback literals (`127.0.0.1` and `::1`), prints bracketed IPv6 URLs, and
 serves only requests whose `Host` and optional `Origin` identify that exact
-listener. This boundary does not add an HTTP transport to Registry execution or
-provider calls; Codex, OpenCode and DSH retain their own adapter transports.
+listener. Connections are handled independently and incomplete requests have a
+finite read timeout, so one partial loopback client does not indefinitely block
+other Viewer requests. This boundary does not add an HTTP transport to Registry
+execution or provider calls; Codex, OpenCode and DSH retain their own adapter
+transports.
 
 ## Read the screen
 

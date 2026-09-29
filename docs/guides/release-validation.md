@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: en
   counterpart: release-validation_ZH.md
-  revision: "2026-09-29.2"
+  revision: "2026-09-29.3"
   status: historical-full-baseline-current-focused-delta
 ---
 
@@ -24,11 +24,13 @@ result for current `main`.
 The last complete offline suite in this record ran against runtime commit
 `073a4516013443fadfcd05fa81d29c4aa1b5391b` on 2026-09-28. Current runtime
 documentation additionally covers focused changes through
-`de537681c43a077a999089220558aca266196ead`: canonical cross-frontend session
+`87e98356a1ba78b6afd7bae93d26704e030467a3`: canonical cross-frontend session
 ownership, subordinate execution nets, workspace version history, arbitrary
 checkpoint reopen, compaction/recovery closure and separation of Registry
-validation from runtime retry policy. Documentation-only commits after that SHA
-do not change the runtime boundary.
+validation from runtime retry policy, plus pre-admission workspace destination
+rejection, special-file-safe snapshot restoration, bounded concurrent Viewer
+requests and strict wheel vendor-asset validation. Documentation-only commits
+after that SHA do not change the runtime boundary.
 
 The unified tree contains core Registry/PetriNet execution, Basic, Codex and
 OpenCode frontends, native plugins, the shared provider/profile layer, the
@@ -70,6 +72,8 @@ smallest directly affected sets rather than an unrelated full-suite rerun:
 | AgentLoop, registered-host, frontend and checkpoint closure | 14 tests passed at `de53768` |
 | Persisted v1 compatibility plus current checkpoint reopen | 2 tests passed at `de53768`; old optional `next_attempt_allowed: false` remained readable and did not block reopen, while current writers omitted it |
 | Registered-operation and resource-service recovery | 16 tests passed at `de53768` |
+| Workspace rejection/recovery, execution-child closure and Viewer HTTP/assets | 63 focused tests passed at `87e9835`; directory/FIFO/NUL rejection, directory correction, owner-stop FIFO restoration and incomplete-client isolation were included |
+| Actual wheel Viewer gate | A wheel built from `87e9835` passed the fixed top-level and vendor-file/license set; an empty manifest is rejected |
 | Current documentation and configuration reference | 20 tests passed; 70 pages, 384 internal links, 35 language pairs and the built 70-page site passed |
 | Historical Registry projection | A preserved large 3-DOF run opened through `rpnh net` at verified event head 16185 without acquiring writer authority |
 
@@ -99,7 +103,8 @@ authorized live examples are reported separately in
 
 The Viewer HTTP server is a local, read-only display surface. It accepts only a
 literal loopback listener, validates the request target, `Host` and optional
-same-origin `Origin`, and formats IPv6 authorities correctly. This does not
+same-origin `Origin`, formats IPv6 authorities correctly, serves connections
+independently and bounds incomplete request reads. This does not
 replace transport-specific validation in other adapters: OpenCode retains its
 authenticated HTTP/SSE contract, Codex its Unix-socket contract, and provider
 adapters their configured remote transport policy.

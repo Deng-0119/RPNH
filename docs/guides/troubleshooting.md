@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: en
   counterpart: troubleshooting_ZH.md
-  revision: "2026-09-29.2"
+  revision: "2026-09-29.3"
   status: source-reviewed-not-final-candidate-acceptance
   basis: "core; adapter differences explicitly labelled"
 ---
@@ -31,6 +31,7 @@ Record the distribution/source revision, frontend, exact profile identity, comma
 | Existing owner / writer fencing conflict | The original owner process and exact run root | Stop/reconcile through the owner; never clear locks or start a competing writer blindly |
 | Process gone, result absent | Registry terminal evidence and interrupted/unknown state | Do not report success; explicit resume only after checking the effect boundary |
 | Workspace command timed out or returned nonzero, but later work exists | Immutable action record, subsequent tool/model decisions and registered semantic result | Keep the failed action as evidence. Registry does not require a blind retry or reserved “final failure” marker; the declared operation decides whether to correct, diagnose or fail |
+| `write_file` rejects a directory, special file or NUL path | The exact firing-private destination and returned tool error | Correct the path in a later action. Deterministic path/type faults are rejected before a subordinate execution child starts; do not edit Registry state or mark a rejected write successful. |
 | Need to continue from an older task cut | `/task ID checkpoints`, current owner state and external effects after the selected cut | Stop/reconcile the owner, then use `reopen CHECKPOINT [:: REASON]`; do not edit marking, copy a Registry or reuse physical attempt identities |
 | Empty resources-only net | Actual resource declarations | Valid when none exist; do not synthesize resources for display |
 | DSH rejects provider/model, input or response budget | Offline/configured mode, exact selection and overall 2 MiB frame | Keep the same route and exact model, but build an explicit user-owned DSH profile whose response bound leaves frame headroom; configured tools also require an explicit pure native-plugin allowlist |
@@ -55,6 +56,12 @@ For configured DSH, a clean stop before model-attempt registration can resume un
 A complete raw provider response and an operation-completion event are different milestones. `submission_unknown` or partial bytes are failure diagnostics, not partial success or proof of remote non-execution. Provider-authoritative queries/idempotency are only optional capabilities of a concrete supporting provider contract; do not assume them for a generic compatible endpoint.
 
 For an active main turn, reopen the same session and use its supported reconciliation path. An owner-stopped child resumes its own Registry, not a transcript reconstruction. `reopen` is a separate owner-authorized generation from one exact committed checkpoint; it preserves later history and cannot undo external effects. Keep exact selected provider/model unchanged unless an explicitly reviewed operation authorizes otherwise.
+
+Owner-stop and checkpoint reentry restore snapshot paths as regular files with
+their recorded bytes and modes. A FIFO, socket, device or symlink occupying a
+snapshot file path is replaced through a staged atomic rename; restoration does
+not open that special file for writing. `registered_resources` remains a
+Registry-managed projection and is preserved.
 
 ## Logs and issue reports
 Report expected/actual behavior, code SHA, platform/Python, exact command with sensitive values replaced, and whether the failure occurred before admission, after physical dispatch or during settlement. Include only a reviewed minimal reproduction. Token text, original input, prompts, provider response bodies, intermediate results, workspace files and even tool-call logs may be sensitive. A filename or hash alone is not a privacy guarantee.

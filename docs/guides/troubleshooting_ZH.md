@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: troubleshooting.md
-  revision: "2026-09-29.2"
+  revision: "2026-09-29.3"
   status: source-reviewed-not-final-candidate-acceptance
   basis: "core; adapter differences explicitly labelled"
 ---
@@ -31,6 +31,7 @@ metadata:
 | owner/writer 冲突 | 原 owner 进程与精确 run 目录 | 通过 owner 停止/协调，不盲目清锁或新开 writer |
 | 进程消失却无结果 | terminal evidence、interrupted/unknown 状态 | 不报成功；确认效果边界后才显式恢复 |
 | Workspace 命令超时或非零退出，但后续仍有工作 | 不可变 action 记录、后续 tool/model 决策与登记的语义结果 | 保留失败 action 作为证据。Registry 不要求盲目重试或保留“最终失败”标记；由声明的 operation 决定纠正、诊断或失败 |
+| `write_file` 拒绝目录、特殊文件或含 NUL 的路径 | 精确 firing-private 目标和返回的 tool error | 在后续 action 中修正路径。可确定的路径／类型错误会在下级执行子网启动前拒绝；不能编辑 Registry 或把被拒绝写入标为成功。 |
 | 需要从较早 task 切面继续 | `/task ID checkpoints`、当前 owner 状态及所选切面后的外部效果 | 先停止／协调 owner，再执行 `reopen CHECKPOINT [:: REASON]`；不编辑 marking、不复制 Registry、不复用物理 attempt 身份 |
 | resources-only 空图 | 是否真的声明资源节点 | 无资源时有效，不为展示造节点 |
 | DSH 拒绝 provider/model、输入或响应预算 | 离线／配置模式、精确 selection 和整体 2 MiB frame | 保持同一路线和 exact model，但构建显式用户自有 DSH profile，使响应上限为 frame 留出余量；配置工具还需要显式纯 native-plugin allowlist |
@@ -63,6 +64,10 @@ metadata:
 而不是由聊天记录重建。`reopen` 是从一个精确已提交 checkpoint 开始的独立 owner 授权代次；
 它保留后续历史，也不能撤销外部效果。没有经过明确审查的操作授权，不改变已有精确
 provider/model。
+
+Owner-stop 与 checkpoint reentry 会按已记录字节和 mode，把 snapshot 路径恢复为普通文件。
+若 FIFO、socket、device 或 symlink 占据 snapshot 的文件路径，恢复会通过暂存文件和原子替换
+处理，不会打开该特殊文件写入。`registered_resources` 仍是 Registry 管理的投影并保持不变。
 
 ## 日志与问题报告
 提供预期/实际行为、代码 SHA、平台/Python、去敏命令，以及失败发生在准入前、物理派发后还是结算阶段。只附审查过的最小复现。token 文本、原始输入、prompt、响应、中间值、workspace 和调用日志都可能敏感；仅改文件名或附 hash 不是隐私保证。
