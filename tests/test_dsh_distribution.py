@@ -36,6 +36,23 @@ ASSETS = {
     *(f"integrations/dsh/src/{path.name}" for path in (ROOT / "integrations/dsh/src").glob("*.ts")),
 }
 
+PUBLIC_SOURCE_ASSETS = {
+    "AGENTS.md",
+    "CHANGELOG.md",
+    "CHANGELOG_ZH.md",
+    "CONTRIBUTING.md",
+    "CONTRIBUTING_ZH.md",
+    "SECURITY.md",
+    "SECURITY_ZH.md",
+    "docs/index.md",
+    "docs/index_ZH.md",
+    "docs/guides/installation.md",
+    "docs/guides/installation_ZH.md",
+    "examples/README.md",
+    "examples/README_ZH.md",
+    "examples/workflow_patterns/scenarios/parallel.json",
+}
+
 
 def _write_factory_seam(root: Path, *, drift: bool = False) -> Path:
     target = root / "packages/core/agent-loop/src/index.ts"
@@ -83,7 +100,9 @@ def test_dsh_factory_patch_fails_loud_on_semantic_drift(tmp_path: Path) -> None:
     assert target.read_text(encoding="utf-8") == original
 
 
-def test_dsh_assets_are_in_wheel_and_sdist(tmp_path: Path) -> None:
+def test_distribution_contains_runtime_and_public_source_assets(
+        tmp_path: Path,
+) -> None:
     dist_dir = tmp_path / "dist"
     dist_dir.mkdir()
     command = (
@@ -105,6 +124,8 @@ def test_dsh_assets_are_in_wheel_and_sdist(tmp_path: Path) -> None:
             with tarfile.open(archive) as contents:
                 names = {name.split("/", 1)[1] for name in contents.getnames() if "/" in name}
         assert ASSETS <= names
+        if archive.suffix != ".whl":
+            assert PUBLIC_SOURCE_ASSETS <= names
 
 
 def test_dsh_console_help_works_from_installed_distribution(tmp_path: Path) -> None:
