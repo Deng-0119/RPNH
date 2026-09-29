@@ -1,0 +1,21 @@
+{
+  "schema_version": "rpnh/example_reference_result/v1",
+  "status": "PASS",
+  "sample_size": {
+    "historical_evaluable_per_arm": 278,
+    "observed_five_year_completion": "439/613",
+    "recommended_randomized_per_arm": 389,
+    "recommended_randomized_total": 778,
+    "rounding": "ceiling after applying the exact observed completion fraction"
+  },
+  "baseline": {
+    "U-MDT": {"n": 323, "age_mean": 40.8, "age_sd": 14.7, "male_n": 217, "abi_mean": 2.46, "abi_sd": 2.03, "abi_ge_4_n": 119},
+    "R-MDT": {"n": 290, "age_mean": 39.6, "age_sd": 14.8, "male_n": 193, "abi_mean": 2.50, "abi_sd": 1.99, "abi_ge_4_n": 95}
+  },
+  "time_to_first_reaction": {
+    "U-MDT": {"events": 197, "survival_day_180": 0.675, "survival_day_365": 0.510, "survival_day_730": 0.428, "survival_day_1825": 0.366},
+    "R-MDT": {"events": 161, "survival_day_180": 0.700, "survival_day_365": 0.610, "survival_day_730": 0.500, "survival_day_1825": 0.413},
+    "log_rank_chi_square": 2.72,
+    "log_rank_p_value": 0.099
+  }
+}

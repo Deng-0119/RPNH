@@ -122,7 +122,8 @@ rpnh --frontend basic
 子任务。`/switch` 切换当前任务；`/task ID status` 与 `/task ID result` 查看状态和结果。
 `/task ID checkpoints` 列出已提交切面，`/task ID reopen CHECKPOINT [:: REASON]` 在同一
 Registry／run 中从用户所选切面追加新的执行代次。详见
-[使用与恢复指南](docs/guides/usage_ZH.md)。
+[使用指南](docs/guides/usage_ZH.md)与
+[checkpoint 恢复流程](docs/guides/checkpoint-recovery_ZH.md)。
 
 ## 案例目录
 
@@ -134,6 +135,8 @@ Registry／run 中从用户所选切面追加新的执行代次。详见
 | 独立任务 | 一个主会话控制多个相互隔离的子 Registry | [任务工作区](examples/task_workspace/README_ZH.md) |
 | 原生 PetriNet 操作 | 定义组合与真实 whole-net replacement | [网操作](examples/net_operations/README_ZH.md) |
 | Basic、Codex、DSH 与 OpenCode | 同一个 provider-neutral 语义任务经过四种宿主入口 | [安装版适配任务](docs/guides/examples_ZH.md) |
+| JB 临床 packet | 公开临床来源、文档／数据分析和 Designer 自主设计图 | [复现 JB](examples/jb_steering_packet/README_ZH.md) |
+| 3-DOF 动力下降 | 数值实现、独立验证和 Designer 自主设计图 | [复现 3-DOF](examples/three_dof_powered_descent/README_ZH.md) |
 
 每个案例页面都包含实际 dashboard 图，并注明图片来自确定性本地运行还是此前已授权的真实
 运行。[完整案例指南](docs/guides/examples_ZH.md)记录计算、文档、串行、并行、长流程和

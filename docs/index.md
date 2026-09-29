@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: en
   counterpart: index_ZH.md
-  revision: "2026-09-29.3"
+  revision: "2026-09-29.4"
   status: source-reviewed-v0.1.0rc1
   basis: "core; adapter differences explicitly labelled"
 ---
@@ -28,6 +28,7 @@ has a corresponding Chinese page.
 | Understand the source tree and packaged boundaries | [Repository map](guides/repository-layout.md) |
 | Configure routes, models and every supported runtime limit | [Configuration reference](guides/configuration.md), [models](guides/models.md) |
 | Operate sessions/tasks and recover | [Usage](guides/usage.md) |
+| Continue the same task from a checkpoint | [Checkpoint recovery](guides/checkpoint-recovery.md) |
 | Diagnose without losing evidence | [Troubleshooting](guides/troubleshooting.md) |
 | Add workflows, tools, skill resources or MCP bindings | [Customization](guides/customization.md) |
 | Extract, compose, instantiate or replace Petri-net definitions | [Native Petri-net operations](guides/net-operations.md) |

@@ -12,6 +12,8 @@ Choose an example by the behavior you want to see:
 | Two independently managed child tasks | [Task workspace](task_workspace/README.md) | ![Child PetriNet](task_workspace/assets/independent-task-petrinet.png) | Scripted |
 | Definition operations and live replacement | [Native net operations](net_operations/README.md) | ![Adopted net](net_operations/assets/live-replacement-petrinet.png) | Definition-only plus one live task |
 | One semantic task through every supported host | [Installed adapter task](../docs/guides/examples.md) | ![DSH execution net](../cpn/examples/adapter_task/assets/dsh-petrinet.png) | User-owned exact live profile |
+| Real clinical document/data packet | [JB steering packet](jb_steering_packet/README.md) | ![JB workflow](jb_steering_packet/assets/jb-steering-petrinet.png) | User-owned exact live profile |
+| Real numerical optimal-control task | [3-DOF powered descent](three_dof_powered_descent/README.md) | ![3-DOF workflow](three_dof_powered_descent/assets/three-dof-petrinet.png) | User-owned exact live profile |
 
 Each runnable workflow creates a real Registry that can be opened with
 `rpnh net --run RUN_DIR --view --no-open`. Scripted fixtures exercise the same
@@ -20,10 +22,9 @@ Every linked image comes from the named run type; public copies omit exact
 checkpoint identities and local observation timestamps.
 
 For interruption/recovery behavior, use the independent-task example and the
-current `/task ID checkpoints`, `resume`, and `reopen` walkthrough in the
-[complete examples guide](../docs/guides/examples.md). Reopen appends a new
-execution generation to the same Registry; it does not rewrite the image or the
-dated validation record that came from an earlier generation.
+dedicated [checkpoint recovery guide](../docs/guides/checkpoint-recovery.md).
+Reopen appends a new execution generation to the same Registry; it does not
+rewrite the example's final-success image or reference result.
 
 Start with the [complete examples guide](../docs/guides/examples.md) and the
 [dashboard guide](../docs/guides/viewer.md). Generated

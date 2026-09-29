@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: index.md
-  revision: "2026-09-29.3"
+  revision: "2026-09-29.4"
   status: source-reviewed-v0.1.0rc1
   basis: "core; adapter differences explicitly labelled"
 ---
@@ -25,6 +25,7 @@ metadata:
 | 理解源码目录与安装包边界 | [仓库目录图](guides/repository-layout_ZH.md) |
 | 配置 route、模型与全部受支持运行上限 | [配置总表](guides/configuration_ZH.md)、[模型配置](guides/models_ZH.md) |
 | 控制会话/任务并恢复 | [使用](guides/usage_ZH.md) |
+| 从 checkpoint 继续同一个任务 | [Checkpoint 恢复](guides/checkpoint-recovery_ZH.md) |
 | 不破坏证据地定位故障 | [排障](guides/troubleshooting_ZH.md) |
 | 扩展 workflow/tool/skill/MCP | [自定义](guides/customization_ZH.md) |
 | 提取、组合、实例化或替换 PetriNet 定义 | [原生 PetriNet 操作](guides/net-operations_ZH.md) |

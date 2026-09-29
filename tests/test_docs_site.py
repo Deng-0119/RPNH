@@ -194,6 +194,10 @@ class DocumentationTests(unittest.TestCase):
             'examples/workflow_patterns/README_ZH.md',
             'examples/task_workspace/README.md',
             'examples/task_workspace/README_ZH.md',
+            'examples/jb_steering_packet/README.md',
+            'examples/jb_steering_packet/README_ZH.md',
+            'examples/three_dof_powered_descent/README.md',
+            'examples/three_dof_powered_descent/README_ZH.md',
             'examples/net_operations/README.md',
             'examples/net_operations/README_ZH.md',
             *(f'cpn/examples/adapter_task/{host}/README{suffix}.md'

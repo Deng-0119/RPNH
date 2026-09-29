@@ -1,0 +1,27 @@
+{
+  "schema_version": "rpnh/example_validation/v1",
+  "status": "PASS",
+  "publication_scope": "final_success_only",
+  "observation_date": "2026-09-29",
+  "evidence_scope": "separate later Registry; does not supersede the dated 2026-09-28 archival record",
+  "registry": {
+    "terminal_authority": true,
+    "registered_final_result": true,
+    "transition_count": 5,
+    "place_count": 15,
+    "edge_count": 52,
+    "resource_place_count": 0
+  },
+  "business_deliverables": {
+    "generated_implementation": true,
+    "machine_readable_trajectory": true,
+    "independent_numerical_validation": true,
+    "engineering_report": true,
+    "observed_feasible_trajectory": "reference_result.json"
+  },
+  "privacy": {
+    "raw_registry_in_repository": false,
+    "provider_or_model_identity_in_example": false,
+    "local_paths_in_example": false
+  }
+}

@@ -140,7 +140,8 @@ a workflow, and `/tasks` to list children. `/switch` changes the selected task;
 `/task ID status` and `/task ID result` inspect its state and output.
 `/task ID checkpoints` lists committed cuts, and `/task ID reopen CHECKPOINT
 [:: REASON]` appends a new execution generation from a user-selected cut in the
-same Registry/run. See [usage and recovery](docs/guides/usage.md).
+same Registry/run. See [usage](docs/guides/usage.md) and the
+[checkpoint recovery procedure](docs/guides/checkpoint-recovery.md).
 
 ## Example catalog
 
@@ -152,6 +153,8 @@ same Registry/run. See [usage and recovery](docs/guides/usage.md).
 | Independent tasks | Separate child Registries controlled from one main session | [Task workspace](examples/task_workspace/README.md) |
 | Native Petri-net operations | Definition composition and live whole-net replacement | [Net operations](examples/net_operations/README.md) |
 | Basic, Codex, DSH and OpenCode | One provider-neutral semantic task through four host surfaces | [Installed adapter task](docs/guides/examples.md) |
+| JB clinical packet | Public clinical sources, document/data analysis and a Designer-authored graph | [Reproduce JB](examples/jb_steering_packet/README.md) |
+| 3-DOF powered descent | Numerical implementation, independent validation and a Designer-authored graph | [Reproduce 3-DOF](examples/three_dof_powered_descent/README.md) |
 
 Every example page includes an actual dashboard image and identifies whether it
 came from a deterministic local run or a previously authorized live run. The

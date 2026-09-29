@@ -6,13 +6,23 @@ metadata:
   audience: user-and-developer
   language: zh-CN
   counterpart: CHANGELOG.md
-  revision: "2026-09-29.1"
+  revision: "2026-09-29.2"
   status: v0.1.0rc1
 ---
 
 [English](CHANGELOG.md) | [中文](CHANGELOG_ZH.md)
 
 # 变更记录
+
+## 未发布
+
+- 新增可复现的 JB 临床 packet 与 3-DOF 动力下降案例。两者都使用用户选择的精确
+  profile，由主 agent 自行设计图，提供独立业务验证和真实验收 PetriNet 图，同时不发布
+  原始 Registry 或私有输入。
+- 新增独立 checkpoint 恢复流程，用于从最近 owner-stopped 切面或用户选择的较早
+  checkpoint 继续同一个 child Registry。
+- dashboard 捕获现在验证当前 authority 引用的 terminal/final-result 对，也支持含有早期
+  execution generation 的 append-only Registry。
 
 ## 0.1.0rc1 — 2026-09-29
 

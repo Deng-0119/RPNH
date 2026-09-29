@@ -6,7 +6,7 @@ metadata:
   audience: user-and-maintainer
   language: en
   counterpart: examples-validation_ZH.md
-  revision: "2026-09-29.2"
+  revision: "2026-09-29.3"
   status: dated-focused-and-live-evidence
   basis: "cumulative dated evidence; current main compatibility recorded separately"
 ---
@@ -142,11 +142,12 @@ repository.
 
 ## Public dashboard images
 
-The documentation now carries 13 actual 1440×980 dashboard captures. Eight
+The documentation now carries 15 actual 1440×980 dashboard captures. Eight
 come from deterministic source examples: native plugin, hybrid calculation,
 serial, parallel Overview, parallel PetriNet, document, long process and an
-independent child task. Five are read-only captures of previously authorized
-accepted runs: native net replacement plus Basic, Codex, DSH and OpenCode.
+independent child task. Seven are read-only captures of previously authorized
+accepted runs: native net replacement, Basic, Codex, DSH, OpenCode, JB and
+3-DOF powered descent.
 
 `scripts/capture_example_dashboards.py` reproduces the deterministic images and
 can accept explicit existing run directories for the authorized examples. The
@@ -157,55 +158,32 @@ identity and local observation time. No new provider/model call was made for
 this documentation capture. Images remain observation aids, not substitutes
 for terminal evidence or registered final results.
 
-## Large child-ingress and complex-workflow live acceptance
+## Reproducible real-task examples
 
-An authorized installed-wheel campaign on 2026-09-28 exercised the exact
-`codex-terra` / `gpt-5.6-terra` route with a large document/data task and a
-numerical 3-DOF powered-descent task. It exposed a general MainSession defect:
-the child Registry ingress contained only the Designer's short task summary,
-so a complete user dossier visible to the Designer was absent from the child.
-The fix now composes the child ingress deterministically from the exact original
-user turn followed by one labelled supplemental Designer brief. The parent and
-child Registries remain independent; no cross-Registry body reference or
-project workflow was added.
+The repository now publishes final-success-only packages for two authorized
+provider-backed tasks. Their runners require a user-owned exact execution
+selection and make the main agent design the workflow; neither package embeds a
+provider/model or a historical graph.
 
-The focused MainSession/frontend/worker closure passed 21 tests and the aligned
-documentation checks passed 20 tests. The rebuilt wheel then produced 52
-successful physical responses, zero health probes and zero provider/model
-switches: two for a transport/resume smoke, two plus 23 for the JB Designer and
-child graph, and three plus 22 for the 3-DOF Designer and child graph.
-
-| Live workflow | Registry result | Business result | PetriNet |
+| Real workflow | Current terminal evidence | Independent business check | PetriNet |
 |---|---|---|---|
-| JB steering packet | `terminal`; one terminal evidence and one final-result index | PASS; recommendation 778 total, 389 per arm | 5 firings, 5 transitions, 14 places, 47 edges |
-| 3-DOF powered descent | `terminal`; one terminal evidence and one final-result index | **NOT ACCEPTED**; the generated SLSQP implementation had an array-shape defect and a later solve timed out, so review correctly rejected landing/constraint claims | 5 firings, 5 transitions, 15 places, 52 edges |
+| [JB steering packet](../../examples/jb_steering_packet/README.md) | Current Registry authority references a registered terminal result | Official PLOS sources; deterministic baseline, survival and 778-participant reference | 7 transitions, 17 places, 49 edges |
+| [3-DOF powered descent](../../examples/three_dof_powered_descent/README.md) | A separate later Registry observed on 2026-09-29 has current authority over a registered terminal result | Stdlib verifier accepts the observed trajectory against dynamics and all stated limits | 5 transitions, 15 places, 52 edges |
 
-The 3-DOF task is deliberately recorded as a task-level failure, not converted
-into model success. Its implementation and independent validation nodes both
-executed the generated solver in isolated, network-disabled workspaces; the
-validation/review path preserved the observed failure and prevented a false
-positive. This still passes the harness boundary being tested: exact ingress,
-Registry file propagation, workspace execution, graph progression and honest
-terminal reporting all worked.
+For both graphs, default and `--show-resources` projections are identical and
+`--resources-only` is empty because neither graph declares a resource place.
+No display-only resource was added. The checked summaries are stored beside
+each example in `validation.json` and `reference_result.json`.
 
-For both graphs, default and `--show-resources` projections were identical and
-`--resources-only` was empty because neither graph declared a resource place.
-No resource node was fabricated. The complete sanitized machine-readable record
-is `docs/validation/terra-complex-workflows-20260928.json`.
-Raw dossiers, participant data, Registries, local identifiers, transcripts,
-credentials and private route details remain outside the repository.
+The JB preparation script downloads source files to a user-owned directory;
+participant rows are not committed. The 3-DOF package publishes a compact
+problem statement and verifier, not the generated trajectory or solver. Raw
+Registries, identifiers, transcripts, credentials and private route details
+remain outside the repository. Capturing these two images and validating the
+offline reference programs made no new provider/model call.
 
-## Current main applicability
-
-Later runtime work through `de53768` changed checkpoint reopen, subordinate
-execution nets, workspace revision evidence, compaction recovery and structural
-Registry validation. Focused offline tests for those boundaries are recorded in
-[release validation](release-validation.md). No provider call was made for that
-post-baseline validation or this documentation refresh.
-
-The dated business results above remain unchanged. In particular, the recorded
-3-DOF run remains **NOT ACCEPTED**; a later general checkpoint/recovery fix does
-not retroactively turn that historical solver result into success. Current
-commands in the [example catalog](examples.md) and [usage guide](usage.md) apply
-to current `main`, while screenshots, call counts and business outcomes apply
-only to the dated runs that produced them.
+Current commands apply to current `main`. A user's own route and newly generated
+business result still require their own Registry and semantic acceptance; the
+published screenshots are observation aids, not replay fixtures.
+The 3-DOF package is evidence from a separate later Registry and does not
+rewrite or supersede the dated 2026-09-28 archival record.

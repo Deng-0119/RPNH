@@ -1,0 +1,22 @@
+{
+  "schema_version": "rpnh/example_reference_result/v1",
+  "status": "PASS",
+  "scope": "one observed feasible trajectory; not a general optimality guarantee",
+  "solver": {
+    "method": "SLSQP constrained nonlinear program",
+    "status": 0,
+    "final_time_seconds": 41.66978370502171,
+    "objective_impulse_N_s": 395279.5682256981
+  },
+  "validation": {
+    "maximum_euler_residual": 0.0,
+    "minimum_thrust_N": 5579.999999999825,
+    "maximum_thrust_N": 18599.999999999844,
+    "minimum_altitude_m": 0.0007038081597600641,
+    "maximum_speed_m_per_s": 84.49652594785825,
+    "minimum_mass_kg": 1726.0225525393123,
+    "terminal_position_error_m": 2.2325418395702364e-10,
+    "terminal_velocity_error_m_per_s": 8.30744080279974e-12,
+    "failures": []
+  }
+}

@@ -11,7 +11,7 @@ import selectors
 import subprocess
 import sys
 import tempfile
-from typing import Any, Iterator, Mapping
+from typing import Iterator
 
 ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
@@ -25,8 +25,7 @@ from cpn.plugins.runtime import run_plugin
 from cpn.rpnh.agent_tasks import AgentStage
 from cpn.rpnh.main_session import MainSession
 from cpn.rpnh.registry._registry import _RegistryCore
-from cpn.rpnh.registry.identities import TypedId
-from cpn.rpnh.registry.models import VersionRef
+from cpn.rpnh.registry.publication import _version_from_payload
 from cpn.rpnh.registry.resource_service import _ResourceServiceKernel
 from cpn.rpnh.registry.run_authority import current_run_execution_authority
 from cpn.rpnh.task_control import TaskControl
@@ -35,45 +34,26 @@ from cpn.rpnh.task_control import TaskControl
 DEFAULT_OUTPUT_ROOT = ROOT
 
 
-def _row_ref(row: Mapping[str, Any], object_type: str) -> VersionRef:
-    return VersionRef(
-        object_type,
-        TypedId.parse(str(row["logical_id"])),
-        TypedId.parse(str(row["version_id"])),
-    )
-
-
 def require_terminal_registry(run_dir: Path) -> None:
-    """Require exact terminal authority and its sole registered final result."""
+    """Require the current authority's exact terminal and final-result pair."""
     core = _RegistryCore(run_dir, create=False, read_only=True)
     kernel = _ResourceServiceKernel(core)
     _authority_ref, authority = current_run_execution_authority(core, kernel)
-    evidence_rows = core.event_store.canonical_object_rows(
-        object_type="run_terminal_evidence/v1")
-    final_rows = core.event_store.canonical_object_rows(
-        object_type="final_result_index/v1")
-    if (authority.get("status") != "terminal"
-            or len(evidence_rows) != 1 or len(final_rows) != 1):
+    evidence_payload = authority.get("terminal_evidence_ref")
+    if authority.get("status") != "terminal" or evidence_payload is None:
         raise RuntimeError(
-            "public example image requires terminal Registry authority, one "
-            "terminal evidence object and one final result index")
+            "public example image requires terminal Registry authority")
 
-    evidence_ref = _row_ref(evidence_rows[0], "run_terminal_evidence/v1")
-    final_ref = _row_ref(final_rows[0], "final_result_index/v1")
+    evidence_ref = _version_from_payload(evidence_payload)
     evidence = dict(kernel._exact_object(
         evidence_ref, expected_type="run_terminal_evidence/v1").metadata)
+    final_payload = evidence.get("final_result_index_ref")
+    if final_payload is None:
+        raise RuntimeError(
+            "public example terminal evidence lacks a final-result index")
+    final_ref = _version_from_payload(final_payload)
     final = dict(kernel._exact_object(
         final_ref, expected_type="final_result_index/v1").metadata)
-    evidence_payload = {
-        "entity_type": evidence_ref.entity_type,
-        "logical_id": str(evidence_ref.entity_id),
-        "version_id": str(evidence_ref.version_id),
-    }
-    final_payload = {
-        "entity_type": final_ref.entity_type,
-        "logical_id": str(final_ref.entity_id),
-        "version_id": str(final_ref.version_id),
-    }
     if (authority.get("terminal_evidence_ref") != evidence_payload
             or evidence.get("terminal_evidence_ref") != evidence_payload
             or evidence.get("final_result_index_ref") != final_payload
@@ -83,9 +63,11 @@ def require_terminal_registry(run_dir: Path) -> None:
             or evidence.get("terminal_occurrence_ref")
             != final.get("terminal_occurrence_ref")
             or evidence.get("run_outcome")
-            != final.get("terminal_outcome")):
+            != final.get("terminal_outcome")
+            or final.get("terminal_outcome") != "complete"):
         raise RuntimeError(
-            "public example image Registry terminal/final-result linkage is invalid")
+            "public example image requires a complete, consistently linked "
+            "Registry terminal/final-result pair")
 
 
 @contextmanager
@@ -166,6 +148,8 @@ def main(argv: list[str] | None = None) -> int:
             "long-process", "task"):
         parser.add_argument(f"--{name}-run", type=Path)
     parser.add_argument("--net-operations-run", type=Path)
+    parser.add_argument("--jb-run", type=Path)
+    parser.add_argument("--three-dof-run", type=Path)
     for host in ("basic", "codex", "dsh", "opencode"):
         parser.add_argument(f"--adapter-{host}-run", type=Path)
     args = parser.parse_args(argv)
@@ -272,6 +256,8 @@ def main(argv: list[str] | None = None) -> int:
 
         optional_runs = {
             "net_operations": args.net_operations_run,
+            "jb": args.jb_run,
+            "three_dof": args.three_dof_run,
             **{
                 f"adapter_{host}": getattr(args, f"adapter_{host}_run")
                 for host in ("basic", "codex", "dsh", "opencode")
@@ -381,6 +367,20 @@ def main(argv: list[str] | None = None) -> int:
                 "adapter_opencode": (
                     "cpn/examples/adapter_task/assets/opencode-petrinet.png",
                     "petri", {"main.run"}),
+                "jb": (
+                    "examples/jb_steering_packet/assets/"
+                    "jb-steering-petrinet.png",
+                    "overview", {
+                        "team.intake", "team.evidence",
+                        "team.workbook_analysis", "team.synthesis",
+                        "team.review", "team.finalize"}),
+                "three_dof": (
+                    "examples/three_dof_powered_descent/assets/"
+                    "three-dof-petrinet.png",
+                    "overview", {
+                        "team.guidance_design", "team.implementation",
+                        "team.numerical_validation",
+                        "team.engineering_review", "team.final_report"}),
             }
             for name, (relative, mode, expected) in optional_captures.items():
                 if name in runs:

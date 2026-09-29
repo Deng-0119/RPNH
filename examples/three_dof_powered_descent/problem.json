@@ -1,0 +1,32 @@
+{
+  "schema_version": "rpnh/example_powered_descent_problem/v1",
+  "title": "Mars 3-DOF fuel-conscious powered descent",
+  "state": {
+    "position_m": [2400.0, 450.0, -330.0],
+    "velocity_m_per_s": [-10.0, -40.0, 10.0],
+    "mass_kg": 1905.0
+  },
+  "dynamics": {
+    "position_derivative": "v",
+    "velocity_derivative": "[-3.71, 0, 0] + T / m",
+    "mass_derivative": "-alpha * norm(T)",
+    "alpha": 0.000453,
+    "integration": "explicit Euler, left endpoint",
+    "maximum_substep_seconds": 0.01
+  },
+  "limits": {
+    "minimum_thrust_N": 5580.0,
+    "maximum_thrust_N": 18600.0,
+    "minimum_mass_kg": 1505.0,
+    "maximum_speed_m_per_s": 150.0,
+    "minimum_altitude_m": 0.0,
+    "glide_slope": "hypot(r[1], r[2]) <= 14.300666256711942 * r[0]"
+  },
+  "terminal_acceptance": {
+    "position_target_m": [0.0, 0.0, 0.0],
+    "velocity_target_m_per_s": [0.0, 0.0, 0.0],
+    "maximum_position_error_m": 0.5,
+    "maximum_velocity_error_m_per_s": 0.05
+  },
+  "objective": "minimize total thrust impulse while satisfying all hard constraints"
+}

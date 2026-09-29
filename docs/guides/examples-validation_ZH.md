@@ -6,7 +6,7 @@ metadata:
   audience: user-and-maintainer
   language: zh-CN
   counterpart: examples-validation.md
-  revision: "2026-09-29.2"
+  revision: "2026-09-29.3"
   status: dated-focused-and-live-evidence
   basis: "cumulative dated evidence; current main compatibility recorded separately"
 ---
@@ -120,10 +120,10 @@ join 在两个分支产物均存在后才结算；长流程为 viewer 时间轴�
 
 ## 公开 dashboard 图片
 
-文档现在包含 13 张实际的 1440×980 dashboard 截图。其中 8 张来自确定性源码案例：原生
+文档现在包含 15 张实际的 1440×980 dashboard 截图。其中 8 张来自确定性源码案例：原生
 插件、混合计算、串行、并行 Overview、并行 PetriNet、文档、长流程和独立子任务；另外
-5 张只读截取自此前已经授权并验收的运行：原生网替换，以及 Basic、Codex、DSH 和
-OpenCode。
+7 张只读截取自此前已经授权并验收的运行：原生网替换、Basic、Codex、DSH、OpenCode、
+JB 和 3-DOF 动力下降。
 
 `scripts/capture_example_dashboards.py` 可以重建确定性图片，也可显式接收已有授权案例的
 run 目录。保存 PNG 前，脚本会检查对应图中的预期节点。图片保留真实图、聚合状态、控件和
@@ -131,42 +131,25 @@ run 目录。保存 PNG 前，脚本会检查对应图中的预期节点。图�
 footer。本轮文档截图没有产生新的 provider／模型调用。图片只用于观察，不能代替终态证据或
 已登记 final result。
 
-## 大型 child ingress 与复杂 workflow 真实验收
+## 可复现真实任务案例
 
-2026-09-28 的一次授权安装版 wheel 测试显式使用 `codex-terra` / `gpt-5.6-terra`
-精确路线，执行了大型文档／数据任务和数值 3-DOF 动力下降任务。测试暴露了一个通用
-MainSession 缺陷：child Registry 的 ingress 只有 Designer 给出的短任务摘要，因此
-Designer 可见的完整用户资料包没有进入 child。修复后，child ingress 由原始用户 turn
-逐字内容和一个带标签的 Designer 补充说明按固定顺序组成。父、子 Registry 仍保持独立；
-没有增加跨 Registry 正文引用，也没有加入项目专用 workflow。
+仓库现在发布两个最终成功范围的真实 provider task 包。runner 要求用户自有的精确
+execution selection，并由主 agent 自行设计 workflow；两个包都不嵌入 provider/model 或
+历史图。
 
-MainSession／frontend／worker 的 focused 闭包通过 21 项测试，中英文文档检查通过 20 项。
-重建 wheel 后共有 52 次物理响应成功，health probe 与 provider/model 切换均为零：
-transport/resume smoke 为 2 次，JB Designer 与 child graph 分别为 2 次和 23 次，3-DOF
-Designer 与 child graph 分别为 3 次和 22 次。
-
-| 真实 workflow | Registry 结果 | 业务结果 | PetriNet |
+| 真实 workflow | 当前终态证据 | 独立业务检查 | PetriNet |
 |---|---|---|---|
-| JB steering packet | `terminal`；一个 terminal evidence、一个 final-result index | PASS；建议总样本量 778、每臂 389 | 5 个 firing、5 个 transition、14 个 place、47 条 edge |
-| 3-DOF 动力下降 | `terminal`；一个 terminal evidence、一个 final-result index | **NOT ACCEPTED**；模型生成的 SLSQP 实现存在数组 shape 缺陷，后续求解又超时，因此 review 正确拒绝着陆与约束满足声明 | 5 个 firing、5 个 transition、15 个 place、52 条 edge |
+| [JB steering packet](../../examples/jb_steering_packet/README_ZH.md) | 当前 Registry authority 引用已登记 terminal result | PLOS 官方来源；确定性基线、生存与 778 人参考计算 | 7 个 transition、17 个 place、49 条 edge |
+| [3-DOF 动力下降](../../examples/three_dof_powered_descent/README_ZH.md) | 2026-09-29 观察的另一条后续 Registry，其当前 authority 引用已登记 terminal result | stdlib verifier 按动力学和全部声明限制接受观察轨迹 | 5 个 transition、15 个 place、52 条 edge |
 
-3-DOF 的结果按任务层失败如实记录，不会改写为模型成功。implementation 和独立
-validation 节点都在隔离、禁网 workspace 中执行了生成的 solver；validation/review 路径
-保留实际失败并阻止假阳性。这仍通过本次 harness 边界验收：精确 ingress、Registry 文件
-传递、workspace 执行、图推进和诚实终态报告均正常工作。
+两个图的默认投影与 `--show-resources` 相同，`--resources-only` 为空，因为都没有声明
+resource place；没有增加展示专用资源。验收摘要分别保存在案例目录内的 `validation.json`
+与 `reference_result.json`。
 
-两个图的默认投影与 `--show-resources` 相同，`--resources-only` 为空，因为它们都没有声明
-resource place；测试没有伪造资源节点。完整脱敏机器记录见
-`docs/validation/terra-complex-workflows-20260928.json`。
-原始资料包、参与者数据、Registry、本地身份、transcript、凭据和私有路线细节均留在仓库外。
+JB 准备脚本把来源文件下载到用户自有目录，不提交参与者行。3-DOF 包发布精炼问题定义与
+verifier，不发布生成轨迹或 solver。原始 Registry、身份、transcript、凭据和私有路线细节
+均留在仓库外。捕获这两张图片和验证离线参考程序没有产生新的 provider／模型调用。
 
-## 当前 main 的适用边界
-
-截至 `de53768` 的后续运行时工作修改了 checkpoint reopen、下级执行网、workspace revision
-证据、compaction 恢复与 Registry 结构校验。这些边界的 focused 离线测试记录在
-[发布验证](release-validation_ZH.md)。后续定向验证与本轮文档更新均未产生 provider 调用。
-
-上面的带日期业务结果保持不变。尤其是已记录的 3-DOF run 仍为 **NOT ACCEPTED**；后来的
-通用 checkpoint／恢复修复不能追溯性地把当时的 solver 结果改写成成功。当前 `main` 使用
-[案例目录](examples_ZH.md)和[使用指南](usage_ZH.md)中的命令；截图、调用计数和业务结果只
-适用于生成它们的带日期运行。
+当前命令适用于当前 `main`。用户自己的 route 和新生成的业务结果仍必须由自己的 Registry
+和语义验收证明；公开截图只是观察辅助，不是 replay fixture。
+3-DOF 案例来自另一条后续 Registry，不会改写或取代 2026-09-28 的带日期归档记录。

@@ -6,13 +6,25 @@ metadata:
   audience: user-and-developer
   language: en
   counterpart: CHANGELOG_ZH.md
-  revision: "2026-09-29.1"
+  revision: "2026-09-29.2"
   status: v0.1.0rc1
 ---
 
 [English](CHANGELOG.md) | [中文](CHANGELOG_ZH.md)
 
 # Changelog
+
+## Unreleased
+
+- Added reproducible JB clinical-packet and 3-DOF powered-descent examples.
+  Both use a user-selected exact profile, let the main agent design the graph,
+  include independent business verification and show an actual accepted
+  PetriNet dashboard without publishing raw Registries or private inputs.
+- Added a standalone checkpoint-recovery procedure for continuing the same
+  child Registry from its latest owner-stopped cut or a user-selected older
+  checkpoint.
+- Dashboard capture now validates the terminal/final-result pair referenced by
+  current authority, including append-only Registries with prior generations.
 
 ## 0.1.0rc1 — 2026-09-29
 

@@ -1,0 +1,24 @@
+{
+  "schema_version": "rpnh/example_validation/v1",
+  "status": "PASS",
+  "publication_scope": "final_success_only",
+  "registry": {
+    "terminal_authority": true,
+    "registered_final_result": true,
+    "transition_count": 7,
+    "place_count": 17,
+    "edge_count": 49,
+    "resource_place_count": 0
+  },
+  "business_deliverables": {
+    "design_memo": true,
+    "decoded_baseline_table": true,
+    "kaplan_meier_style_comparison": true,
+    "independent_reference_calculation": "reference_result.json"
+  },
+  "privacy": {
+    "participant_rows_in_repository": false,
+    "raw_registry_in_repository": false,
+    "provider_or_model_identity_in_example": false
+  }
+}

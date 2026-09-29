@@ -1,0 +1,26 @@
+{
+  "schema_version": "rpnh/example_sources/v1",
+  "study": "U-MDT/CT-BR",
+  "trial_registration": "NCT00669643",
+  "sources": [
+    {
+      "title": "Uniform multidrug therapy for leprosy patients in Brazil (U-MDT/CT-BR): Results of an open label, randomized and controlled clinical trial, among multibacillary patients",
+      "authors": "Penna et al.",
+      "year": 2017,
+      "doi": "10.1371/journal.pntd.0005725",
+      "locator": "https://journals.plos.org/plosntds/article?id=10.1371/journal.pntd.0005725",
+      "license": "CC BY 4.0 on the article page"
+    },
+    {
+      "title": "S2 statistical analysis plan",
+      "doi": "10.1371/journal.pntd.0005725.s002",
+      "locator": "https://journals.plos.org/plosntds/article/file?id=10.1371%2Fjournal.pntd.0005725.s002&type=supplementary"
+    },
+    {
+      "title": "S5 data file with codebook",
+      "doi": "10.1371/journal.pntd.0005725.s005",
+      "locator": "https://journals.plos.org/plosntds/article/file?id=10.1371%2Fjournal.pntd.0005725.s005&type=supplementary"
+    }
+  ],
+  "redistribution_boundary": "The preparation script downloads official files into a user-owned directory. Participant rows and source supplements are not redistributed in this repository."
+}

@@ -1,0 +1,23 @@
+{
+  "schema_version": "rpnh/example_sources/v1",
+  "sources": [
+    {
+      "title": "Convex Programming Approach to Powered Descent Guidance for Mars Landing",
+      "authors": "Behcet Acikmese and Scott R. Ploen",
+      "year": 2007,
+      "locator": "https://doi.org/10.2514/1.27553",
+      "use": "problem family and powered-descent formulation"
+    },
+    {
+      "title": "Successive Convexification: A Superlinearly Convergent Algorithm for Non-convex Optimal Control Problems",
+      "authors": "Yuanqi Mao, Michael Szmuk, Xiangru Xu, and Behcet Acikmese",
+      "locator": "https://arxiv.org/abs/1804.06539",
+      "use": "optional numerical-method background; no method is prescribed"
+    },
+    {
+      "title": "G-FOLD public numerical example",
+      "locator": "https://github.com/thisisneal/G-FOLD",
+      "use": "provenance pointer for the public parameter set; no upstream code is redistributed"
+    }
+  ]
+}

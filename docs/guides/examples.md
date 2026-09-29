@@ -6,7 +6,7 @@ metadata:
   audience: user-and-developer
   language: en
   counterpart: examples_ZH.md
-  revision: "2026-09-29.2"
+  revision: "2026-09-29.3"
   status: current-instructions-with-dated-evidence
   basis: "current main commands; deterministic runs and dated authorized live evidence explicitly separated"
 ---
@@ -32,6 +32,8 @@ them instead of being silently relabelled as current execution.
 | A longer run with more checkpoints | Example 3, `long_process` | Scripted |
 | Independent background tasks | Example 4, task workspace | Scripted |
 | The same real semantic task through each host | Example 5, installed task | Authorized profile |
+| A real clinical document/data packet | Example 6, JB steering packet | Authorized profile |
+| A real numerical optimal-control task | Example 7, 3-DOF powered descent | Authorized profile |
 
 ## Prerequisites
 
@@ -306,6 +308,32 @@ no-child-decision annotation. Registry terminal/final-result evidence and the
 semantic verifier both passed. Raw Registries, identifiers, paths and transcripts
 remain private and are not represented by these summaries.
 
+## Example 6: JB clinical steering packet
+
+![Actual accepted JB graph](../../examples/jb_steering_packet/assets/jb-steering-petrinet.png)
+
+This real task downloads its article, statistical analysis plan and data
+workbook from official PLOS sources into a repository-external directory. A
+preparation script converts them into one exact registered task packet. The
+main agent must design the graph; the example contains no fixed workflow and no
+provider/model selection. An offline aggregate analyzer supplies reproducible
+baseline, Kaplan-Meier-style and sample-size checks without publishing
+participant rows.
+
+Follow the complete [JB reproduction guide](../../examples/jb_steering_packet/README.md).
+
+## Example 7: 3-DOF powered descent
+
+![Actual accepted 3-DOF graph](../../examples/three_dof_powered_descent/assets/three-dof-petrinet.png)
+
+This real numerical task registers a compact public problem statement and a
+solver-independent trajectory verifier. The main agent chooses both graph and
+numerical method. Acceptance requires the generated implementation to run and
+the resulting trajectory to satisfy terminal, dynamics and path checks; a
+solver exit status is insufficient.
+
+Follow the complete [3-DOF reproduction guide](../../examples/three_dof_powered_descent/README.md).
+
 ## What to inspect and change
 
 - Default net output hides resource nodes; `--show-resources` displays only
@@ -318,7 +346,7 @@ remain private and are not represented by these summaries.
   process you started when inspection is complete. See the
   [dashboard guide](viewer.md).
 
-The dated acceptance record is in [examples validation](examples-validation.md).
+The accepted reference boundary is in [examples validation](examples-validation.md).
 It distinguishes deterministic fixtures, earlier authorized provider calls and
 current focused compatibility checks; none substitutes for validating a user's
 own route.

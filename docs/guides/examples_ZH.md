@@ -6,7 +6,7 @@ metadata:
   audience: user-and-developer
   language: zh-CN
   counterpart: examples.md
-  revision: "2026-09-29.2"
+  revision: "2026-09-29.3"
   status: current-instructions-with-dated-evidence
   basis: "current main commands; deterministic runs and dated authorized live evidence explicitly separated"
 ---
@@ -30,6 +30,8 @@ PetriNet 投影。脚本化模型只是确定性协议替身，不是语言模�
 | checkpoint 更多的长流程 | 案例 3，`long_process` | 脚本替身 |
 | 独立后台任务 | 案例 4，任务工作区 | 脚本替身 |
 | 通过不同宿主执行同一真实语义任务 | 案例 5，安装版任务 | 已授权 profile |
+| 真实临床文档／数据 packet | 案例 6，JB steering packet | 已授权 profile |
+| 真实数值最优控制任务 | 案例 7，3-DOF 动力下降 | 已授权 profile |
 
 ## 前置条件
 
@@ -274,6 +276,27 @@ turn 尚未结算时显示了保守的 reconciliation 提示，随后显示已�
 decision”注释；Registry terminal/final-result 证据和语义验证均通过。原始 Registry、标识、
 路径与 transcript 保持私有，脱敏摘要不代表这些原始资料。
 
+## 案例 6：JB 临床 steering packet
+
+![实际验收通过的 JB 图](../../examples/jb_steering_packet/assets/jb-steering-petrinet.png)
+
+这个真实任务把论文、统计分析计划和数据工作簿从 PLOS 官方来源下载到仓库外目录，再由
+准备脚本转换为一个精确注册的任务 packet。主 agent 必须自行设计图；案例不包含固定
+workflow，也不选择 provider/model。离线聚合分析器在不发布参与者行的前提下，提供可复算
+的基线、Kaplan-Meier 式和样本量验收值。
+
+完整步骤见 [JB 复现指南](../../examples/jb_steering_packet/README_ZH.md)。
+
+## 案例 7：3-DOF 动力下降
+
+![实际验收通过的 3-DOF 图](../../examples/three_dof_powered_descent/assets/three-dof-petrinet.png)
+
+这个真实数值任务注册精炼的公开问题定义和与 solver 无关的轨迹 verifier。主 agent 自行
+选择图和数值方法。验收要求生成的实现实际运行，并且轨迹满足终端、动力学和路径检查；
+solver 退出状态本身不够。
+
+完整步骤见 [3-DOF 复现指南](../../examples/three_dof_powered_descent/README_ZH.md)。
+
 ## 查看与修改
 
 - 默认 net 隐藏资源节点；`--show-resources` 只显示实际 net 声明的资源。
@@ -281,5 +304,5 @@ decision”注释；Registry terminal/final-result 证据和语义验证均通�
 - 缺少插件必填字段或空汇总列表会被声明的 schema 拒绝，不能表述为成功运行。
 - 看板只读且默认监听 loopback。查看结束后关闭自己启动的进程。详见[看板指南](viewer_ZH.md)。
 
-带日期的验收记录见[案例验证](examples-validation_ZH.md)。其中区分确定性 fixture、此前授权
+验收参考边界见[案例验证](examples-validation_ZH.md)。其中区分确定性 fixture、此前授权
 的 provider 调用和当前定向兼容检查，均不能替代用户对自有 route 的验证。
