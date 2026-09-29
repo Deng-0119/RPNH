@@ -306,8 +306,8 @@ class WorkspaceExecutionMixin:
             ref, expected_type="workspace_binding/v1").metadata
         return ref, template
 
-    def _workspace_view(self, loop):
-        context = self._context(loop)
+    def _workspace_view(self, loop, *, native_resume=False):
+        context = self._context(loop, native_resume=native_resume)
         ref = loop.workspace_binding_ref
         if ref is None:
             raise OptionalAgentCapabilityUnavailable(
@@ -323,11 +323,12 @@ class WorkspaceExecutionMixin:
                 "agent loop workspace differs from its firing authority")
         return ref, view
 
-    def _workspace_root(self, loop):
+    def _workspace_root(self, loop, *, native_resume=False):
         from cpn.rpnh.registry.resource_service import (
             _resolve_registry_workspace_root,
         )
-        _ref, template = self._workspace_view(loop)
+        _ref, template = self._workspace_view(
+            loop, native_resume=native_resume)
         root = _resolve_registry_workspace_root(
             self.core, template["allowed_root"])
         root.mkdir(parents=True, exist_ok=True)
@@ -477,7 +478,8 @@ class WorkspaceExecutionMixin:
                 files.append(relative)
         return tuple(sorted(files))
 
-    def _current_workspace_resource(self, context, relative_path):
+    def _current_workspace_resource(
+            self, context, relative_path, *, native_resume=False):
         address = ResourceAddress(context.task_ref, relative_path)
         binding_ref = self.kernel._current_binding(
             address,
@@ -496,7 +498,8 @@ class WorkspaceExecutionMixin:
             binding.metadata["resource_ref"])
         self.kernel._authorize_resource(
             context, context.operation_binding_ref,
-            resource_ref, metadata_only=True)
+            resource_ref, metadata_only=True,
+            native_resume=native_resume)
         prepared = self.kernel._firing_prepared(
             context, resource_ref)
         metadata = prepared.metadata
@@ -508,10 +511,12 @@ class WorkspaceExecutionMixin:
         return resource_ref, binding_ref
 
     def _register_workspace_file(
-            self, loop, relative_path, key, *, summary=None):
-        context = self._context(loop)
+            self, loop, relative_path, key, *, summary=None,
+            context=None, native_resume=False):
+        context = context or self._context(
+            loop, native_resume=native_resume)
         template_ref, _template = self._workspace_template(context)
-        root = self._workspace_root(loop)
+        root = self._workspace_root(loop, native_resume=native_resume)
         relative = self._strict_relative_path(relative_path)
         absolute = root.joinpath(*relative.parts)
         if absolute.is_symlink() or not absolute.is_file():
@@ -522,7 +527,7 @@ class WorkspaceExecutionMixin:
             raise ValueError(
                 "workspace file exceeds the registered publication byte limit")
         prior_ref, prior_binding = self._current_workspace_resource(
-            context, relative.as_posix())
+            context, relative.as_posix(), native_resume=native_resume)
         payload = absolute.read_bytes()
         # The address head is append-only and can still name a resource from a
         # later execution generation after the owner reopens an older
@@ -567,16 +572,18 @@ class WorkspaceExecutionMixin:
             },
             idempotency_key=key,
         )
-        return self.kernel.publish_bytes(context, command), True
+        return self.kernel._publish(
+            context, command, native_resume=native_resume), True
 
     def _sync_workspace(
-            self, execution, loop, key):
-        if execution.operation.canonical.context != self._context(loop):
+            self, execution, loop, key, *, native_resume=False):
+        context = self._context(loop, native_resume=native_resume)
+        if execution.operation.canonical.context != context:
             raise ResourceIntegrityFault(
                 "workspace sync differs from its firing invocation")
         from cpn.rpnh.workspace_settlement import _archive_files
 
-        root = self._workspace_root(loop)
+        root = self._workspace_root(loop, native_resume=native_resume)
         current_paths = self._workspace_files(root)
         base_files = _archive_files(
             self.core, loop.workspace_base_revision_ref)
@@ -589,20 +596,21 @@ class WorkspaceExecutionMixin:
                 continue
             ref, changed = self._register_workspace_file(
                 loop, relative_path,
-                f"{key}:file:{ordinal}:{relative_path}")
+                f"{key}:file:{ordinal}:{relative_path}",
+                context=context, native_resume=native_resume)
             if changed:
                 published.append(ref)
-        context = self._context(loop)
         for ordinal, relative_path in enumerate(
                 sorted(set(base_files) - set(current_paths))):
             _prior_ref, binding_ref = self._current_workspace_resource(
-                context, relative_path)
+                context, relative_path, native_resume=native_resume)
             if binding_ref is None:
                 continue
             self.kernel.unbind_address(context, UnbindResourceAddress(
                 ResourceAddress(context.task_ref, relative_path),
                 context.operation_binding_ref, binding_ref,
-                f"{key}:delete:{ordinal}:{relative_path}"))
+                f"{key}:delete:{ordinal}:{relative_path}"),
+                native_resume=native_resume)
         return tuple(published)
 
     def _run_workspace(self, execution, loop, arguments, _key):
@@ -638,6 +646,31 @@ class WorkspaceExecutionMixin:
         )
         finalize_firing_workspace_candidate(
             self.core, self.kernel, execution, loop,
+            idempotency_key=idempotency_key,
+            synchronize=synchronize)
+        return tuple(ref.as_version_ref() for ref in published)
+
+    def finalize_recovered_agent_workspace_v1(
+            self, execution, loop, *, idempotency_key):
+        """Finalize one stale firing at an authorized native-recovery cut."""
+
+        context = self._context(loop, native_resume=True)
+        if execution.operation.canonical.context != context:
+            raise ResourceIntegrityFault(
+                "workspace recovery differs from its firing invocation")
+        current = self.mechanical_lifecycle.current_loop(loop)
+        published = []
+
+        def synchronize():
+            published.extend(self._sync_workspace(
+                execution, current, idempotency_key,
+                native_resume=True))
+
+        from cpn.rpnh.workspace_settlement import (
+            finalize_firing_workspace_candidate,
+        )
+        finalize_firing_workspace_candidate(
+            self.core, self.kernel, execution, current,
             idempotency_key=idempotency_key,
             synchronize=synchronize)
         return tuple(ref.as_version_ref() for ref in published)

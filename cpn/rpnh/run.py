@@ -363,6 +363,69 @@ class RunOwner:
         from .registry.run_authority import current_run_execution_authority
         from .workspace_settlement import prepare_firing_workspace_plans
         kernel, repository = self.operation_repository()
+        # A replacement owner can observe an AgentLoop after its last action
+        # batch settled but before the normal executor finalized the private
+        # workspace.  At those durable, action-free loop boundaries, perform
+        # the same one-shot workspace finalization used by the in-process stop
+        # path before preparing the interrupted firing's revision.  This keeps
+        # already-settled action effects while never treating an in-progress
+        # workspace action as a checkpoint.
+        from cpn.components.agent_loop.models import AgentLoopState
+        from cpn.components.agent_loop.optional_execution import (
+            OptionalAgentLoopRegistryService,
+        )
+        agent_registry = OptionalAgentLoopRegistryService(
+            owner=self, kernel=kernel, repository=repository,
+            provider_attempts=None, invoke_tool=None)
+        context = recovery.execution.operation.canonical.context
+        loop_rows = self._core.event_store.agent_loop_rows_for_invocation(
+            invocation_ref=context.invocation_ref,
+            operation_binding_ref=context.operation_binding_ref)
+        loop_documents = tuple(
+            json.loads(str(row["metadata_json"])) for row in loop_rows)
+        loop_identities = {
+            str(document["agent_loop_id"])
+            for document in loop_documents}
+        if len(loop_identities) > 1:
+            from .registry.errors import ResourceIntegrityFault
+            raise ResourceIntegrityFault(
+                "interrupted firing has multiple exact AgentLoops")
+        loop = None
+        if loop_documents:
+            highest_revision = max(
+                int(document["revision"])
+                for document in loop_documents)
+            current_documents = tuple(
+                document for document in loop_documents
+                if int(document["revision"]) == highest_revision)
+            if len(current_documents) != 1:
+                from .registry.errors import ResourceIntegrityFault
+                raise ResourceIntegrityFault(
+                    "interrupted firing has an ambiguous AgentLoop head")
+            loop = agent_registry.mechanical_lifecycle.hydrate_loop(
+                _version_from_payload(
+                    current_documents[0]["agent_loop_ref"]))
+        if loop is not None:
+            safe_workspace_states = frozenset({
+                AgentLoopState.NEW,
+                AgentLoopState.WAITING_FOR_LLM,
+                AgentLoopState.COMPACTING,
+                AgentLoopState.WAITING_RESOURCE,
+                AgentLoopState.COMPLETED,
+                AgentLoopState.TIMED_OUT,
+                AgentLoopState.EXHAUSTED,
+                AgentLoopState.INFRASTRUCTURE_FAILED,
+                AgentLoopState.RECONCILIATION_REQUIRED,
+            })
+            if loop.state in safe_workspace_states:
+                firing_version = (
+                    recovery.execution.operation.firing
+                    .transition_firing_ref.version_id)
+                agent_registry.finalize_recovered_agent_workspace_v1(
+                    recovery.execution, loop,
+                    idempotency_key=(
+                        "registered-operation-workspace-finalization:"
+                        f"{firing_version}"))
         # Interruption preserves the firing-private workspace just like an
         # in-process owner stop.  The interrupted semantic outcome has no
         # products, but settlement still publishes the exact workspace head.

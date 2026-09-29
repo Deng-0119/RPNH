@@ -311,7 +311,8 @@ class _ResourceServiceKernel:
 
     def unbind_address(
             self, context: InvocationContext,
-            command: UnbindResourceAddress) -> ResourceAddressBindingRef:
+            command: UnbindResourceAddress, *,
+            native_resume: bool = False) -> ResourceAddressBindingRef:
         return _addresses.unbind_address(**locals())
 
     def _observer_authority(

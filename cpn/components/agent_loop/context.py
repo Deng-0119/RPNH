@@ -729,11 +729,19 @@ class ContextExecutionMixin:
             "this instruction explicitly requires replacing it."
         )
 
-    def _context(self, loop):
-        canonical = canonical_invocation(self.core, self.kernel, loop.invocation_ref)
+    def _context(self, loop, *, native_resume: bool = False):
+        canonical = canonical_invocation(
+            self.core, self.kernel, loop.invocation_ref,
+            require_current_writer=not native_resume)
         if canonical.context.operation_binding_ref != loop.operation_binding_ref:
             raise ResourceIntegrityFault("optional loop crossed its invocation binding")
-        InvocationLifecycle(self.core).revalidate_io(canonical.context, boundary="optional-agent-loop")
+        if native_resume:
+            self.kernel._revalidate_invocation(
+                canonical.context, boundary="optional-agent-loop-recovery",
+                native_resume=True)
+        else:
+            InvocationLifecycle(self.core).revalidate_io(
+                canonical.context, boundary="optional-agent-loop")
         return canonical.context
 
     def _declared(self, context):

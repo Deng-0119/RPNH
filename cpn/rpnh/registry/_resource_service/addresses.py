@@ -317,9 +317,11 @@ def bind_addresses(
 
 def unbind_address(
         self, context: InvocationContext,
-        command: UnbindResourceAddress) -> ResourceAddressBindingRef:
+        command: UnbindResourceAddress, *,
+        native_resume: bool = False) -> ResourceAddressBindingRef:
     self._revalidate_invocation(
-        context, boundary="resource-address-mutation")
+        context, boundary="resource-address-mutation",
+        native_resume=native_resume)
     if command.expected_binding_ref.tombstone:
         raise ResourceAddressConflict("an address tombstone cannot be tombstoned twice")
     prior = self._exact_object(
@@ -339,7 +341,8 @@ def unbind_address(
     result = self._append_binding(
         context, tx, command.address, prior_resource,
         command.authorization_ref, command.expected_binding_ref,
-        idempotency_key=command.idempotency_key, tombstone=True)
+        idempotency_key=command.idempotency_key, tombstone=True,
+        native_resume=native_resume)
     try:
         tx.commit()
     except RegistryConflict as exc:

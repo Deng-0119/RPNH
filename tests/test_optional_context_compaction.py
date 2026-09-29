@@ -8,7 +8,8 @@ import pytest
 from cpn.components.agent_loop.compact import CONTEXT_CHECKPOINT_PROMPT
 from cpn.components.agent_loop.models import AgentContextOverlay
 from cpn.rpnh.agent_tasks import (
-    AgentStage, AgentTaskSpec, agent_task_catalog, run_agent_task,
+    AgentStage, AgentTaskSpec, agent_task_catalog, reopen_agent_task,
+    run_agent_task,
 )
 from cpn.rpnh.llm_contracts import LLMInputResponseBytes, LLMInputTarget
 from cpn.rpnh.registry._registry import _RegistryCore
@@ -233,6 +234,80 @@ class _PressureRetryPort:
 
     def close(self):
         pass
+
+
+class _WorkspaceThenCompactionOwnerLossPort:
+    def __init__(self) -> None:
+        self.requests: list[dict] = []
+        self.compaction_interrupted = False
+
+    def request_once(self, attempt):
+        envelope = json.loads(attempt.canonical_request_bytes)
+        self.requests.append(envelope)
+        checkpoint = (
+            envelope["messages"][-1].get("content")
+            == CONTEXT_CHECKPOINT_PROMPT)
+        if checkpoint and not self.compaction_interrupted:
+            self.compaction_interrupted = True
+            raise KeyboardInterrupt("simulated owner loss during compaction")
+        if len(self.requests) == 1:
+            return _response(tool_calls=[{
+                "id": "settled-workspace-write",
+                "name": "workspace",
+                "arguments": json.dumps({
+                    "script": (
+                        "printf 'settled-before-owner-loss\\n' "
+                        "> settled.txt"),
+                    "timeout_seconds": 10,
+                }),
+            }], finish_reason="tool_calls", usage={"input_tokens": 950})
+        if checkpoint:
+            raise AssertionError("abandoned compaction was replayed")
+        return _completion_response("checkpoint reentry complete")
+
+    def close(self):
+        pass
+
+
+def test_checkpoint_reentry_finalizes_settled_workspace_before_interruption(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    port = _WorkspaceThenCompactionOwnerLossPort()
+    execution_path = _configure_offline_task(
+        tmp_path, monkeypatch, port, context_window_tokens=1000)
+    run_dir = tmp_path / "run"
+    spec = AgentTaskSpec(
+        run_dir=run_dir,
+        prompt="Preserve a settled workspace action across owner loss.",
+        stages=(AgentStage("main", "Produce the requested result."),),
+        execution_config_path=execution_path,
+        max_attempts_per_stage=4,
+    )
+
+    with pytest.raises(
+            KeyboardInterrupt, match="simulated owner loss during compaction"):
+        run_agent_task(spec)
+
+    interrupted = _RegistryCore(
+        run_dir, create=False, read_only=True, catalog=agent_task_catalog())
+    from cpn.rpnh.registry.checkpoint_reentry import committed_checkpoint_refs
+    selected, = committed_checkpoint_refs(interrupted)
+
+    result = reopen_agent_task(
+        spec, checkpoint_version_id=str(selected.version_id),
+        command_id="test-workspace-compaction-owner-loss-reentry",
+        reason="Return to the selected cut after a settled workspace action.")
+
+    assert result["stop_reason"] == "terminal"
+    assert result["output"] == "checkpoint reentry complete"
+    assert len(port.requests) == 3
+    final = _RegistryCore(
+        run_dir, create=False, read_only=True, catalog=agent_task_catalog())
+    revisions = _objects(final, "workspace_revision/v1")
+    assert any(
+        "settled.txt" in revision["inventory_paths"]
+        and "settled.txt" in revision["changed_paths"]
+        for revision in revisions)
 
 
 class _RollingCompactionPort:
