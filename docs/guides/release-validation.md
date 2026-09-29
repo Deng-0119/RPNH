@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: en
   counterpart: release-validation_ZH.md
-  revision: "2026-09-29.5"
+  revision: "2026-09-29.6"
   status: historical-full-baseline-current-focused-delta
 ---
 
@@ -30,8 +30,8 @@ checkpoint reopen, compaction/recovery closure and separation of Registry
 validation from runtime retry policy, plus pre-admission workspace destination
 rejection, special-file-safe snapshot restoration, independent Viewer connection
 handling with a finite socket I/O timeout, and strict wheel vendor-asset
-validation. Documentation-only commits
-after that SHA do not change the runtime boundary.
+validation. Release-version, packaging-metadata and documentation-only changes
+after that SHA do not change the execution boundary.
 
 The unified tree contains core Registry/PetriNet execution, Basic, Codex and
 OpenCode frontends, native plugins, the shared provider/profile layer, the
@@ -77,6 +77,7 @@ smallest directly affected sets rather than an unrelated full-suite rerun:
 | Actual wheel Viewer gate | A wheel built from `87e9835` passed the fixed top-level and vendor-file/license set; an empty manifest is rejected |
 | Current documentation and configuration reference | 20 tests passed; 76 pages, 420 internal links, 38 language pairs and the built 76-page site passed |
 | Historical Registry projection | A preserved large 3-DOF run opened through `rpnh net` at verified event head 16185 without acquiring writer authority |
+| `v0.1.0rc1` complete collection | At `1e85b4f`, 790 tests passed and the pinned OpenCode PTY test skipped because its executable was absent; 23 Unix-socket tests failed before protocol handling because the operator-supplied temporary root made their socket paths exceed the platform limit. Both affected files then passed all 30 tests with a short temporary root. No source change was needed, so the combined candidate evidence covers 813 unique passing tests and one documented environment skip without presenting the first run as a single clean pass. |
 
 These sets verify exact checkpoint reentry, workspace candidate settlement,
 immutable failure evidence and indexed Registry reads. They are not a new

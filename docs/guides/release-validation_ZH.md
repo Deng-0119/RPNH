@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: release-validation.md
-  revision: "2026-09-29.5"
+  revision: "2026-09-29.6"
   status: historical-full-baseline-current-focused-delta
 ---
 
@@ -25,8 +25,7 @@ Registry 数据。历史总数不能表述成当前 `main` 的完整套件结果
 ownership、下级执行网、workspace 版本历史、任意 checkpoint reopen、compaction／恢复
 闭环、Registry 校验与 runtime 重试策略分离，以及 workspace 目标准入前拒绝、特殊文件
 安全的 snapshot 恢复、Viewer 独立连接处理与有限 socket I/O 超时，以及严格 wheel vendor
-asset 校验。该 SHA 之后
-仅修改文档的提交不改变运行时边界。
+asset 校验。该 SHA 之后的发布版本、打包 metadata 与纯文档变更不改变执行边界。
 
 统一代码树包含 core Registry/PetriNet 执行、Basic、Codex 与 OpenCode 前端、原生插件、
 共享 provider/profile 层、可选 DSH 宿主和只读 PetriNet viewer。不包含历史分支证据、
@@ -68,6 +67,7 @@ exact model。
 | 实际 wheel Viewer 门禁 | 从 `87e9835` 构建的 wheel 通过固定顶层文件和 vendor 文件／许可集合；空 manifest 会被拒绝 |
 | 当前文档与配置参考 | 20 项通过；76 页、420 个内部链接、38 组语言配对及构建后的 76 页站点均通过 |
 | 历史 Registry 投影 | 一个保留的大型 3-DOF run 在 verified event head 16185 通过 `rpnh net` 打开，且未获取 writer authority |
+| `v0.1.0rc1` 完整 collection | 在 `1e85b4f` 上有 790 项通过；固定版本 OpenCode PTY 因未安装可执行文件而跳过。操作者提供的临时根过长，使 23 项 Unix socket 测试在协议处理前因平台路径上限失败；随后两个受影响文件在短临时根下 30 项全部通过。无需修改源码，因此组合候选证据覆盖 813 个唯一通过项和 1 个已记录环境 skip，同时不把第一次运行写成单次全绿。 |
 
 这些集合验证精确 checkpoint reentry、workspace candidate 结算、不可变失败证据与索引化
 Registry 读取等变更边界。它们不是新的完整套件总数，也不是真实 provider campaign。
