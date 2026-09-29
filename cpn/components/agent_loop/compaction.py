@@ -762,16 +762,24 @@ class CompactionExecutionMixin:
             context, _resource_from_payload(
                 invocation["semantic_prompt_resource_ref"])))
         prompt_messages = prompt.get("messages")
+        owner_reentry_prompt = self._owner_reentry_prompt()
+        owner_suffix = (
+            [{"role": "system", "content": owner_reentry_prompt}]
+            if owner_reentry_prompt is not None else [])
         if (not isinstance(prompt_messages, list)
-                or len(request_messages) < len(prompt_messages) + 2
+                or len(request_messages)
+                < len(prompt_messages) + 2 + len(owner_suffix)
                 or request_messages[-1] != {
                     "role": "system",
                     "content": prepared.reduction_settings.checkpoint_prompt,
-                }):
+                }
+                or (owner_suffix and request_messages[-2:-1]
+                    != owner_suffix)):
             raise ResourceIntegrityFault(
                 "compaction request cannot recover its effective history")
+        history_end = -1 - len(owner_suffix)
         effective_history = request_messages[
-            1 + len(prompt_messages):-1]
+            1 + len(prompt_messages):history_end]
         previous_overlay = (
             self.mechanical_lifecycle.latest_context_overlay(prepared.loop))
         source_session_ordinal = (

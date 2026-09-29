@@ -81,8 +81,9 @@ def _objects(core: _RegistryCore, object_type: str) -> list[dict]:
 
 
 class _LengthThenReplayPort:
-    def __init__(self) -> None:
+    def __init__(self, *, owner_reentry_prompt: str | None = None) -> None:
         self.requests: list[dict] = []
+        self.owner_reentry_prompt = owner_reentry_prompt
 
     def request_once(self, attempt):
         envelope = json.loads(attempt.canonical_request_bytes)
@@ -90,6 +91,13 @@ class _LengthThenReplayPort:
         if len(self.requests) == 1:
             return _response(finish_reason="length")
         if envelope["messages"][-1].get("content") == CONTEXT_CHECKPOINT_PROMPT:
+            assert envelope["tools"]
+            assert envelope["tool_choice"] == "auto"
+            if self.owner_reentry_prompt is not None:
+                assert envelope["messages"][-2] == {
+                    "role": "system",
+                    "content": self.owner_reentry_prompt,
+                }
             return _response(
                 text="Resume the interrupted semantic slot and finish it.",
                 finish_reason="stop")
@@ -99,6 +107,10 @@ class _LengthThenReplayPort:
         assert any(
             "agent_context_fact_capsule" in message.get("content", "")
             for message in envelope["messages"])
+        if self.owner_reentry_prompt is not None:
+            assert sum(
+                message.get("content") == self.owner_reentry_prompt
+                for message in envelope["messages"]) == 1
         return _completion_response("length replay complete")
 
     def close(self):
@@ -108,7 +120,16 @@ class _LengthThenReplayPort:
 def test_length_interruption_compacts_before_same_slot_replay(
         tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    port = _LengthThenReplayPort()
+    owner_reentry_prompt = (
+        "OWNER_CHECKPOINT_REENTRY_INSTRUCTION: preserve accepted evidence.")
+    from cpn.components.agent_loop.optional_execution import (
+        OptionalAgentLoopRegistryService,
+    )
+    monkeypatch.setattr(
+        OptionalAgentLoopRegistryService, "_owner_reentry_prompt",
+        lambda _self: owner_reentry_prompt)
+    port = _LengthThenReplayPort(
+        owner_reentry_prompt=owner_reentry_prompt)
     execution_path = _configure_offline_task(
         tmp_path, monkeypatch, port,
         runtime_policy=RuntimePolicy(workspace=WorkspacePolicy(

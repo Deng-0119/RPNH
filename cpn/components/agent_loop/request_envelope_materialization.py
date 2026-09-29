@@ -25,13 +25,15 @@ def materialize_agent_request_envelope(
         *prompt_messages,
         *history_messages,
     ]
-    if checkpoint_prompt is not None:
-        messages.append({"role": "system", "content": checkpoint_prompt})
     if owner_reentry_prompt is not None:
         messages.append({"role": "system", "content": owner_reentry_prompt})
     messages.extend(
         {"role": "user", "content": message}
         for message in owner_messages)
+    # A framework checkpoint instruction must remain the terminal instruction:
+    # its response protocol deliberately differs from an ordinary agent turn.
+    if checkpoint_prompt is not None:
+        messages.append({"role": "system", "content": checkpoint_prompt})
     return {
         "protocol": "llm_request_envelope/v1",
         "model_condition": model_condition,
