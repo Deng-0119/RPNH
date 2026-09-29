@@ -6,8 +6,8 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: development.md
-  revision: "2026-09-29.2"
-  status: source-reviewed-not-final-candidate-acceptance
+  revision: "2026-09-29.3"
+  status: source-reviewed-v0.1.0rc1
   basis: "core; adapter differences explicitly labelled"
 ---
 
@@ -79,7 +79,9 @@ python scripts/docs.py build --output /tmp/rpnh-docs-site
 RPNH 使用根目录的 MIT License。第三方组件保留各自许可；源码和构建产物必须保留
 `THIRD_PARTY_NOTICES.md`、固定 DSH 上游许可和 viewer 库许可。
 
-当前代码树是发布候选，不代表每个可选宿主或用户自有 provider route 已经可用。公开前应验证
-真实 wheel 与安装后的命令入口。私有 Registry 数据和真实 provider 证据不得进入公开仓库。
+`v0.1.0rc1` 是公开预发布版，不代表每个可选宿主或用户自有 provider route 已经可用。
+应针对每个所选环境验证真实 wheel 与安装后的命令入口。私有 Registry 数据和原始真实
+provider 证据不得进入公开仓库。参与贡献与私密漏洞报告路径分别由仓库根目录的
+`CONTRIBUTING_ZH.md` 和 `SECURITY_ZH.md` 说明。
 
 官方工具资料：[Markdown parser](https://markdown-it-py.readthedocs.io/en/latest/using.html)、[Sphinx Markdown](https://www.sphinx-doc.org/en/master/usage/markdown.html)、[PyData 安装](https://pydata-sphinx-theme.readthedocs.io/en/stable/user_guide/install.html)、[Python 打包](https://packaging.python.org/en/latest/tutorials/packaging-projects/)。运行支持事实来自实际仓库，不由这些外部教程推导。

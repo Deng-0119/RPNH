@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: en
   counterpart: release-validation_ZH.md
-  revision: "2026-09-29.4"
+  revision: "2026-09-29.5"
   status: historical-full-baseline-current-focused-delta
 ---
 
@@ -75,7 +75,7 @@ smallest directly affected sets rather than an unrelated full-suite rerun:
 | Registered-operation and resource-service recovery | 16 tests passed at `de53768` |
 | Workspace rejection/recovery, execution-child closure and Viewer HTTP/assets | 63 focused tests passed at `87e9835`; directory/FIFO/NUL rejection, directory correction, owner-stop FIFO restoration and incomplete-client isolation were included |
 | Actual wheel Viewer gate | A wheel built from `87e9835` passed the fixed top-level and vendor-file/license set; an empty manifest is rejected |
-| Current documentation and configuration reference | 20 tests passed; 70 pages, 388 internal links, 35 language pairs and the built 70-page site passed |
+| Current documentation and configuration reference | 20 tests passed; 76 pages, 420 internal links, 38 language pairs and the built 76-page site passed |
 | Historical Registry projection | A preserved large 3-DOF run opened through `rpnh net` at verified event head 16185 without acquiring writer authority |
 
 These sets verify exact checkpoint reentry, workspace candidate settlement,

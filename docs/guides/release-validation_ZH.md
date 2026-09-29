@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: release-validation.md
-  revision: "2026-09-29.4"
+  revision: "2026-09-29.5"
   status: historical-full-baseline-current-focused-delta
 ---
 
@@ -66,7 +66,7 @@ exact model。
 | registered-operation 与 resource-service 恢复 | `de53768` 时 16 项通过 |
 | Workspace 拒绝／恢复、execution-child 闭合及 Viewer HTTP／资源 | `87e9835` 时 63 项聚焦测试通过，覆盖目录/FIFO/NUL 拒绝、目录错误后纠正、owner-stop FIFO 恢复和不完整 client 隔离 |
 | 实际 wheel Viewer 门禁 | 从 `87e9835` 构建的 wheel 通过固定顶层文件和 vendor 文件／许可集合；空 manifest 会被拒绝 |
-| 当前文档与配置参考 | 20 项通过；70 页、388 个内部链接、35 组语言配对及构建后的 70 页站点均通过 |
+| 当前文档与配置参考 | 20 项通过；76 页、420 个内部链接、38 组语言配对及构建后的 76 页站点均通过 |
 | 历史 Registry 投影 | 一个保留的大型 3-DOF run 在 verified event head 16185 通过 `rpnh net` 打开，且未获取 writer authority |
 
 这些集合验证精确 checkpoint reentry、workspace candidate 结算、不可变失败证据与索引化

@@ -7,7 +7,7 @@ metadata:
   language: en
   counterpart: adapters_ZH.md
   revision: "2026-09-29.2"
-  status: source-reviewed-not-final-candidate-acceptance
+  status: source-reviewed-v0.1.0rc1
   basis: "core; adapter differences explicitly labelled"
 ---
 

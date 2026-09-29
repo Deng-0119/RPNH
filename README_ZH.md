@@ -16,7 +16,8 @@ workspace 或恢复状态的独立所有者。
 | 概览 | 当前边界 |
 |---|---|
 | 平台 | Linux 或 WSL2，Python 3.11+ |
-| 安装 | 发布候选准备期间使用源码安装 |
+| 发布 | `v0.1.0rc1` 公开预发布版 |
+| 安装 | 源码 checkout 或 GitHub Release wheel/sdist |
 | 模型 | 用户自有 provider 与 exact-model catalog；不预选 route |
 | 执行 | 主会话，以及相互独立的 task/workflow Registry |
 | 查看 | 终端投影和本地只读 PetriNet 看板 |
@@ -62,7 +63,8 @@ transition、交接 place、并行分叉弧和全输入 join：
 
 ## 快速开始
 
-在 Linux 或 WSL2 中克隆仓库，然后从仓库根目录执行：
+在 Linux 或 WSL2 中克隆仓库，然后从仓库根目录执行。对应 wheel 与 sdist 附在
+[`v0.1.0rc1` prerelease](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc1)中。
 
 ```bash
 python3 -m venv .venv
@@ -194,7 +196,7 @@ session surface 的 registered host 集成。所有情况下，模型选择与�
 | 构建应用 | [自定义与插件](docs/guides/customization_ZH.md)、[原生 PetriNet 操作](docs/guides/net-operations_ZH.md)、[声明](docs/reference/declarations_ZH.md) |
 | 理解执行 | [看板](docs/guides/viewer_ZH.md)、[架构](docs/architecture/design_ZH.md)、[Registry/runtime](docs/reference/runtime-registry_ZH.md)、[会话与 Agent](docs/reference/agents_ZH.md) |
 | 接入宿主 | [前端与宿主适配](docs/guides/adapters_ZH.md)、[扩展与观察接口](docs/reference/extensions-observation_ZH.md) |
-| 使用维护或参与开发 | [排障](docs/guides/troubleshooting_ZH.md)、[开发](docs/guides/development_ZH.md)、[发布验证](docs/guides/release-validation_ZH.md) |
+| 使用维护或参与开发 | [排障](docs/guides/troubleshooting_ZH.md)、[开发](docs/guides/development_ZH.md)、[参与贡献](CONTRIBUTING_ZH.md)、[安全报告](SECURITY_ZH.md)、[变更记录](CHANGELOG_ZH.md)、[发布验证](docs/guides/release-validation_ZH.md) |
 
 ## 验证与开发
 

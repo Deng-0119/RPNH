@@ -20,7 +20,12 @@ import yaml
 from markdown_it import MarkdownIt
 
 PARSER = MarkdownIt('commonmark', {'html': False}).enable('table')
-STATIC_DOCUMENTS = {'LICENSE', 'THIRD_PARTY_NOTICES.md'}
+STATIC_DOCUMENTS = {'AGENTS.md', 'LICENSE', 'THIRD_PARTY_NOTICES.md'}
+ROOT_PROJECT_DOCUMENTS = (
+    'CHANGELOG.md', 'CHANGELOG_ZH.md',
+    'CONTRIBUTING.md', 'CONTRIBUTING_ZH.md',
+    'SECURITY.md', 'SECURITY_ZH.md',
+)
 PNG_SIGNATURE = b'\x89PNG\r\n\x1a\n'
 
 
@@ -35,6 +40,7 @@ class Page:
 
 def pages_in(root: Path) -> list[Path]:
     paths = [root / name for name in ('README.md', 'README_ZH.md')]
+    paths.extend(root / name for name in ROOT_PROJECT_DOCUMENTS)
     paths.extend(sorted((root / 'docs').glob('*.md')))
     for folder in ('guides', 'architecture', 'reference'):
         paths.extend(sorted((root / 'docs' / folder).glob('*.md')))
@@ -344,7 +350,8 @@ def navigation_group(path: Path, root: Path, language: str) -> tuple[int, str]:
         key, order = 'integrations', 3
     elif any(name in relative for name in (
             'development', 'release-validation', 'examples-validation',
-            'PROVENANCE', 'DEFERRED_ENGINEERING_WORK')):
+            'PROVENANCE', 'DEFERRED_ENGINEERING_WORK', 'CHANGELOG',
+            'CONTRIBUTING', 'SECURITY')):
         key, order = 'project', 5
     else:
         key, order = 'start', 0
@@ -415,9 +422,9 @@ def build(root: Path, output: Path) -> dict[str, int]:
         toc = ''.join(f'<a href="#{escape(key)}">{escape(value)}</a>'
                       for key, value in list(page.headings.items())[1:])
         body = PARSER.renderer.render(page.tokens, PARSER.options, {})
-        footer = ('按源码核对的发布前文档。本站不会执行示例。'
+        footer = ('按源码核对的 v0.1.0rc1 文档。本站不会执行示例。'
                   if page.metadata['language'] == 'zh-CN' else
-                  'Source-reviewed pre-release documentation. Examples are not executed by this site.')
+                  'Source-reviewed v0.1.0rc1 documentation. Examples are not executed by this site.')
         html = (f'<!doctype html><html lang="{page.metadata["language"]}"><head>'
                 '<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">'
                 f'<title>{escape(page.title)} — RPNH</title><style>{CSS}</style></head><body>'

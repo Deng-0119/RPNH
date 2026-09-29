@@ -6,16 +6,16 @@ metadata:
   audience: operator-and-developer
   language: en
   counterpart: PROVENANCE_ZH.md
-  revision: "2026-09-29.2"
-  status: source-reviewed-pre-release
+  revision: "2026-09-29.3"
+  status: source-reviewed-v0.1.0rc1
 ---
 
 # Source provenance
 
 [中文](PROVENANCE_ZH.md)
 
-This publication candidate is maintained in the canonical, currently
-access-controlled repository as a fresh-root export. It does not carry private
+This public prerelease is maintained in the canonical repository as a
+fresh-root export. It does not carry private
 development history, deleted evidence, local Registry data or obsolete remote
 branches. Its initial unified source was reviewed from these exact predecessor
 tips; current development continues only on the canonical `main` history:

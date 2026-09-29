@@ -6,8 +6,8 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: index.md
-  revision: "2026-09-29.2"
-  status: source-reviewed-not-final-candidate-acceptance
+  revision: "2026-09-29.3"
+  status: source-reviewed-v0.1.0rc1
   basis: "core; adapter differences explicitly labelled"
 ---
 
@@ -44,11 +44,12 @@ metadata:
 | 定位会话/AgentLoop/模型边界 | [Agent 与模型](reference/agents_ZH.md) |
 | 查询插件/适配/观察接口 | [扩展与观察](reference/extensions-observation_ZH.md) |
 | 测试、贡献及发布准备 | [维护与许可状态](guides/development_ZH.md) |
+| 查看发布变更与项目规则 | [变更记录](../CHANGELOG_ZH.md)、[参与贡献](../CONTRIBUTING_ZH.md)、[安全报告](../SECURITY_ZH.md) |
 | 查看历史全量离线基线与当前定向增量 | [发布验收](guides/release-validation_ZH.md) |
 | 查看带日期的 focused／真实案例证据 | [案例验证](guides/examples-validation_ZH.md) |
 
 ## 如何阅读参考
-明确区分声明契约、高级可信宿主接口与私有模块。各页源码路径为仓库内定位信息，不要求公开读者访问私有仓库。可选 API 按能力标注，必须与所选源码/产物核对；自动生成页面不授予 SDK 稳定性承诺。
+明确区分声明契约、高级可信宿主接口与私有模块。各页源码路径是仓库内定位信息，不是独立安装说明。可选 API 按能力标注，必须与所选源码/产物核对；自动生成页面不授予 SDK 稳定性承诺。
 
 ## 验证状态
 

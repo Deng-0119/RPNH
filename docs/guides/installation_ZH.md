@@ -6,8 +6,8 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: installation.md
-  revision: "2026-09-29.3"
-  status: source-reviewed-not-final-candidate-acceptance
+  revision: "2026-09-29.4"
+  status: source-reviewed-v0.1.0rc1
   basis: "unified main; host differences explicitly labelled"
 ---
 
@@ -18,11 +18,11 @@ metadata:
 ## 目标与前提
 从明确指定的 RPNH 源码或 wheel 安装，不调用模型。当前运行支持范围仍是 **Linux（包括 WSL2）**，不支持原生 Windows 和 macOS。`pyproject.toml` 声明 Python `>=3.11`，不等于每个 Python/平台组合均已测试；运行时涉及 Unix socket、POSIX 进程控制和 Linux 进程检查。basic 文本前端不需要 Codex 或 Node。
 
-发行包名称是 `rpnh-harness`，版本 `0.1.0`，Python 导入包为 `cpn`，用户命令为 `rpnh`。依赖是 `jsonschema>=4.20,<5`、`websockets>=12,<16`。当前**不存在 `codex`、`dsh` pip extra**。不要在同一环境安装来自不同维护线的两套 `cpn`。
+发行包名称是 `rpnh-harness`，版本 `0.1.0rc1`，Python 导入包为 `cpn`，用户命令为 `rpnh`。依赖是 `jsonschema>=4.20,<5`、`websockets>=12,<16`。当前**不存在 `codex`、`dsh` pip extra**。不要在同一环境安装来自不同维护线的两套 `cpn`。
 
-Canonical 源码仓库是 GitHub 上的 `Deng-0119/RPNH`，目前受访问控制。本文不声称已经发布
-包索引版本或可下载 release artifact。请取得获准的 checkout／archive，或从已审查提交构建
-wheel；以下命令不假定包索引已发布。
+Canonical 公开源码仓库是 GitHub 上的 `Deng-0119/RPNH`。`v0.1.0rc1` GitHub prerelease
+包含经过审查的 wheel 和源码分发包；当前不声称已发布包索引版本。应安装 release artifact，
+或从精确 tag 源码构建 wheel，不要混用来源不同的副本。
 
 ## 从批准的源码安装
 在包含 `pyproject.toml` 的源码根目录运行 Bash：

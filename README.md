@@ -19,7 +19,8 @@ runtime—not separate owners of model, workspace or recovery state.
 | At a glance | Current boundary |
 |---|---|
 | Platform | Linux or WSL2, Python 3.11+ |
-| Installation | Source installation during release-candidate preparation |
+| Release | `v0.1.0rc1` public prerelease |
+| Installation | Source checkout or GitHub Release wheel/sdist |
 | Models | User-owned provider and exact-model catalog; no route is preselected |
 | Execution | Main session plus independent task/workflow Registries |
 | Observation | Terminal projections and a local read-only PetriNet dashboard |
@@ -74,7 +75,9 @@ registered final result—not a picture or process exit—establish completion.
 
 ## Quick start
 
-Clone the repository on Linux or WSL2, then run from its root:
+Clone the repository on Linux or WSL2, then run from its root. The corresponding
+wheel and sdist are attached to the
+[`v0.1.0rc1` prerelease](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc1).
 
 ```bash
 python3 -m venv .venv
@@ -223,7 +226,7 @@ all cases.
 | Build an application | [Customization and plugins](docs/guides/customization.md), [native Petri-net operations](docs/guides/net-operations.md), [declarations](docs/reference/declarations.md) |
 | Understand execution | [Dashboard](docs/guides/viewer.md), [architecture](docs/architecture/design.md), [Registry/runtime](docs/reference/runtime-registry.md), [sessions and Agents](docs/reference/agents.md) |
 | Integrate a host | [Frontend and host adapters](docs/guides/adapters.md), [extension and observation interfaces](docs/reference/extensions-observation.md) |
-| Operate or contribute | [Troubleshooting](docs/guides/troubleshooting.md), [development](docs/guides/development.md), [release validation](docs/guides/release-validation.md) |
+| Operate or contribute | [Troubleshooting](docs/guides/troubleshooting.md), [development](docs/guides/development.md), [contributing](CONTRIBUTING.md), [security](SECURITY.md), [changelog](CHANGELOG.md), [release validation](docs/guides/release-validation.md) |
 
 ## Validation and development
 

@@ -7,7 +7,7 @@ metadata:
   language: zh-CN
   counterpart: design.md
   revision: "2026-09-29.1"
-  status: source-reviewed-not-final-candidate-acceptance
+  status: source-reviewed-v0.1.0rc1
   basis: "core; adapter differences explicitly labelled"
 ---
 

@@ -6,8 +6,8 @@ metadata:
   audience: operator-and-developer
   language: en
   counterpart: index_ZH.md
-  revision: "2026-09-29.2"
-  status: source-reviewed-not-final-candidate-acceptance
+  revision: "2026-09-29.3"
+  status: source-reviewed-v0.1.0rc1
   basis: "core; adapter differences explicitly labelled"
 ---
 
@@ -47,11 +47,12 @@ has a corresponding Chinese page.
 | Locate session/AgentLoop/model boundaries | [Agents and models](reference/agents.md) |
 | Look up plugin, adapter and observer contracts | [Extensions and observation](reference/extensions-observation.md) |
 | Test, contribute and prepare a release | [Development and license status](guides/development.md) |
+| Review release changes and project policies | [Changelog](../CHANGELOG.md), [contributing](../CONTRIBUTING.md), [security](../SECURITY.md) |
 | Review the historical full offline baseline and current focused delta | [Release validation](guides/release-validation.md) |
 | Review dated focused/live example evidence | [Examples validation](guides/examples-validation.md) |
 
 ## Reading the reference
-Declaration contracts, advanced trusted-host interfaces and private implementation modules are explicitly separated. Source paths in each page are repository-relative navigation aids, not instructions to read a private repository. Optional APIs are labelled by capability; their availability must be checked in the selected source/artifact. A generated page does not grant SDK stability.
+Declaration contracts, advanced trusted-host interfaces and private implementation modules are explicitly separated. Source paths in each page are repository-relative navigation aids, not independent installation instructions. Optional APIs are labelled by capability; their availability must be checked in the selected source/artifact. A generated page does not grant SDK stability.
 
 ## Validation status
 

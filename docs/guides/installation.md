@@ -6,8 +6,8 @@ metadata:
   audience: operator-and-developer
   language: en
   counterpart: installation_ZH.md
-  revision: "2026-09-29.3"
-  status: source-reviewed-not-final-candidate-acceptance
+  revision: "2026-09-29.4"
+  status: source-reviewed-v0.1.0rc1
   basis: "unified main; host differences explicitly labelled"
 ---
 
@@ -18,12 +18,13 @@ metadata:
 ## Goal and prerequisites
 Install an explicitly selected RPNH source tree or wheel without calling a model. Runtime support remains **Linux, including WSL2**; native Windows and macOS are not supported by this candidate. Python is declared as `>=3.11`; this is not a claim that every Python/platform combination was tested. The runtime uses Unix sockets, POSIX process control and Linux-specific process inspection. A basic terminal does not require Codex or Node.
 
-The current distribution is named `rpnh-harness`, version `0.1.0`, with imports under `cpn` and user entry `rpnh`. Required libraries are `jsonschema>=4.20,<5` and `websockets>=12,<16`. There are **no `codex` or `dsh` pip extras**. Do not install differently sourced copies of `cpn` into the same environment.
+The current distribution is named `rpnh-harness`, version `0.1.0rc1`, with imports under `cpn` and user entry `rpnh`. Required libraries are `jsonschema>=4.20,<5` and `websockets>=12,<16`. There are **no `codex` or `dsh` pip extras**. Do not install differently sourced copies of `cpn` into the same environment.
 
-The canonical source repository is `Deng-0119/RPNH` on GitHub and is currently
-access-controlled. No package-index release or downloadable release artifact is
-claimed here. Obtain an authorized checkout/archive or build the wheel from the
-reviewed commit; the commands below do not assume package-index publication.
+The canonical public source repository is `Deng-0119/RPNH` on GitHub. The
+`v0.1.0rc1` GitHub prerelease contains the reviewed wheel and source distribution;
+no package-index publication is claimed. Install a release artifact or build the
+wheel from the exact tagged source rather than mixing independently sourced
+copies.
 
 ## Install from an approved source tree
 Run these Bash commands from its root (the directory containing `pyproject.toml`):

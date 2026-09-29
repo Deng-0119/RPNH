@@ -150,6 +150,10 @@ class DocumentationTests(unittest.TestCase):
         self.assertNotIn('<script', home)
         self.assertTrue((output / 'LICENSE').is_file())
         self.assertTrue((output / 'THIRD_PARTY_NOTICES.md').is_file())
+        self.assertTrue((output / 'CHANGELOG.html').is_file())
+        self.assertTrue((output / 'CHANGELOG_ZH.html').is_file())
+        self.assertTrue((output / 'CONTRIBUTING.html').is_file())
+        self.assertTrue((output / 'SECURITY_ZH.html').is_file())
         after = {name for name in sys.modules if name == 'cpn' or name.startswith('cpn.')}
         self.assertEqual(before, after)
 

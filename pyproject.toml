@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "rpnh-harness"
-version = "0.1.0"
-description = "A terminal AI assistant with persistent tasks, configurable models, and execution history"
+version = "0.1.0rc1"
+description = "Registry-governed agent harness with typed PetriNet execution"
 readme = "README.md"
 license = "MIT"
 license-files = [
@@ -15,6 +15,7 @@ license-files = [
 ]
 requires-python = ">=3.11"
 classifiers = [
+  "Development Status :: 4 - Beta",
   "Operating System :: POSIX :: Linux",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
@@ -24,6 +25,13 @@ dependencies = [
   "jsonschema>=4.20,<5",
   "websockets>=12,<16",
 ]
+
+[project.urls]
+Homepage = "https://github.com/Deng-0119/RPNH"
+Documentation = "https://github.com/Deng-0119/RPNH/blob/main/docs/index.md"
+Repository = "https://github.com/Deng-0119/RPNH.git"
+Issues = "https://github.com/Deng-0119/RPNH/issues"
+Changelog = "https://github.com/Deng-0119/RPNH/blob/main/CHANGELOG.md"
 
 [project.optional-dependencies]
 # Existing AgentLoop integration tests capture the numerical environment.

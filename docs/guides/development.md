@@ -6,8 +6,8 @@ metadata:
   audience: operator-and-developer
   language: en
   counterpart: development_ZH.md
-  revision: "2026-09-29.2"
-  status: source-reviewed-not-final-candidate-acceptance
+  revision: "2026-09-29.3"
+  status: source-reviewed-v0.1.0rc1
   basis: "core; adapter differences explicitly labelled"
 ---
 
@@ -87,9 +87,11 @@ RPNH is licensed under the root MIT License. Third-party components retain
 their own terms; preserve `THIRD_PARTY_NOTICES.md`, the pinned DSH upstream
 license and the viewer library licenses in source and built distributions.
 
-This source tree is a release candidate, not evidence that every optional host
-or user-owned provider route works. Validate the actual wheel and installed
-entry points before publication. Keep private Registry data and live-provider
-evidence outside the public repository.
+`v0.1.0rc1` is a public prerelease, not evidence that every optional host or
+user-owned provider route works. Validate the actual wheel and installed entry
+points for each selected environment. Keep private Registry data and raw
+live-provider evidence outside the public repository. Contribution and private
+vulnerability-reporting paths are defined in the repository-root
+`CONTRIBUTING.md` and `SECURITY.md`.
 
 Official tool references: [Markdown parser](https://markdown-it-py.readthedocs.io/en/latest/using.html), [Sphinx Markdown configuration](https://www.sphinx-doc.org/en/master/usage/markdown.html), [PyData installation](https://pydata-sphinx-theme.readthedocs.io/en/stable/user_guide/install.html), [Python packaging](https://packaging.python.org/en/latest/tutorials/packaging-projects/). The runtime support facts above come from the inspected repository, not these external guides.

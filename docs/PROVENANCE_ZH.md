@@ -6,15 +6,15 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: PROVENANCE.md
-  revision: "2026-09-29.2"
-  status: source-reviewed-pre-release
+  revision: "2026-09-29.3"
+  status: source-reviewed-v0.1.0rc1
 ---
 
 # 源码来源
 
 [English](PROVENANCE.md)
 
-本发布候选在当前受访问控制的 canonical 仓库中以 fresh-root export 维护，不携带私有开发
+本公开预发布版在 canonical 仓库中以 fresh-root export 维护，不携带私有开发
 历史、已删除证据、本地 Registry 数据或废弃远端分支。最初统一源码按以下精确前序 tip
 核对；当前开发只沿 canonical `main` 历史继续：
 
