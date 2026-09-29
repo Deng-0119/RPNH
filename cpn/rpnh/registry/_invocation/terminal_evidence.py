@@ -1886,30 +1886,6 @@ def terminal_descendant_event_ids(
                     event_store.list_events_by_aggregate(
                         str(neutral_ref.entity_id), event_types=(
                             "llm_invocation_owner_interrupted/v1",)))
-                retry_successors = []
-                for row in event_store.object_rows_by_producer(
-                        context.invocation_ref.entity_id,
-                        object_types=("llm_invocation_attempt/v1",)):
-                    try:
-                        successor = json.loads(str(row["metadata_json"]))
-                    except (TypeError, ValueError,
-                            json.JSONDecodeError) as exc:
-                        raise admission_error(
-                            "interrupted retry attempt inventory is malformed"
-                        ) from exc
-                    if (successor.get("prior_attempt_ref")
-                            == ref_payload(neutral_ref)):
-                        retry_successors.append(successor)
-                retry_allowed = failure.payload.get(
-                    "next_attempt_allowed")
-                retry_chain_valid = (
-                    retry_allowed is False
-                    or (retry_allowed is True
-                        and len(retry_successors) == 1
-                        and retry_successors[0].get("llm_invocation_ref")
-                        == ref_payload(llm_invocation_ref)
-                        and retry_successors[0].get("attempt_ordinal")
-                        == neutral.get("attempt_ordinal") + 1))
                 common_failure_valid = (
                     failure.aggregate_id == str(neutral_ref.entity_id)
                     and failure.producer_invocation_id
@@ -1920,7 +1896,6 @@ def terminal_descendant_event_ids(
                     == ref_payload(neutral_ref)
                     and failure.payload.get("attempt_ordinal")
                     == neutral.get("attempt_ordinal")
-                    and retry_chain_valid
                     and neutral.get("llm_invocation_attempt_ref")
                     == ref_payload(neutral_ref)
                     and llm_invocation.get("llm_invocation_ref")

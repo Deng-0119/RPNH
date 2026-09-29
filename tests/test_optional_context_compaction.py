@@ -269,7 +269,7 @@ class _WorkspaceThenCompactionOwnerLossPort:
         pass
 
 
-class _FailedCompactionRetryThenReentryPort:
+class _ClosedCompactionFailuresThenReentryPort:
     def __init__(self) -> None:
         self.requests: list[dict] = []
         self.compaction_attempts = 0
@@ -297,10 +297,10 @@ class _FailedCompactionRetryThenReentryPort:
         pass
 
 
-def test_checkpoint_reentry_accepts_closed_compaction_retry_chain(
+def test_checkpoint_reentry_accepts_closed_compaction_failures_without_policy(
         tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    port = _FailedCompactionRetryThenReentryPort()
+    port = _ClosedCompactionFailuresThenReentryPort()
     execution_path = _configure_offline_task(
         tmp_path, monkeypatch, port, context_window_tokens=1000)
     run_dir = tmp_path / "run"
@@ -317,6 +317,10 @@ def test_checkpoint_reentry_accepts_closed_compaction_retry_chain(
     assert port.compaction_attempts == 2
     interrupted = _RegistryCore(
         run_dir, create=False, read_only=True, catalog=agent_task_catalog())
+    failures = interrupted.event_store.list_events_by_type(
+        ("llm_invocation_failed/v1",))
+    assert [event.payload["next_attempt_allowed"]
+            for event in failures] == [True, False]
     from cpn.rpnh.registry.checkpoint_reentry import committed_checkpoint_refs
     selected, = committed_checkpoint_refs(interrupted)
 
