@@ -3,7 +3,7 @@
 [English](README.md) | 中文
 
 [查看实际图](#先看一次多-agent-运行) · [快速开始](#快速开始) ·
-[案例](#案例目录) · [前端](#前端与宿主集成) · [文档](#文档)
+[案例](#案例目录) · [前端](#前端与宿主集成) · [文档](#文档) · [技术报告](docs/technical-report_ZH.md)
 
 RPNH 是一个用于组合语言模型、原生工具和可复用工作流的 provider-neutral Agent 执行框架。
 持久化 **Registry** 记录执行与资源历史；类型化 **PetriNet** 决定任务何时具备执行条件，
@@ -194,6 +194,7 @@ session surface 的 registered host 集成。所有情况下，模型选择与�
 
 | 目标 | 从这里开始 |
 |---|---|
+| 测试前先了解整体设计 | [技术报告](docs/technical-report_ZH.md) |
 | 安装与运行 | [安装](docs/guides/installation_ZH.md)、[案例](docs/guides/examples_ZH.md)、[使用](docs/guides/usage_ZH.md) |
 | 配置 runtime | [配置](docs/guides/configuration_ZH.md)、[模型](docs/guides/models_ZH.md)、[使用与恢复](docs/guides/usage_ZH.md) |
 | 构建应用 | [自定义与插件](docs/guides/customization_ZH.md)、[原生 PetriNet 操作](docs/guides/net-operations_ZH.md)、[声明](docs/reference/declarations_ZH.md) |
