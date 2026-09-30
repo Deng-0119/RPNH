@@ -53,6 +53,10 @@ rpnh plugins --config examples/native_plugin/plugins.json build demo/add
 
 handler 应是可导入的顶层函数，有 Draft-07 输入/输出 schema、资源声明、`pure`/`external_read`/`external_write` 效果与限额。实现身份钉住 handler 源文件字节；传递依赖仍由安装环境管理。版本声明不是 OS 安全沙箱。不得隐藏重试、接受任务 JSON 提供的动态导入地址或直接拿内部 Registry handle。
 
+每个 worker 都会收到由 harness 所有的 `context.call_id`，以及对应的 operation、invocation
+和 firing 身份。外部效果服务需要防重放时应使用该逐调用身份；不得把同一 firing 内对同一
+operation 的所有调用折叠为一个请求。
+
 skill 可作为准入 operation 消费的已注册指令资源；Markdown front matter 本身不会安装 skill。MCP 工具需要通过明确安装的宿主能力绑定，把 operation、资源和效果暴露给核心；这不等于自动发现任意 MCP server，也不表示支持所有传输。应测试实际选用的宿主和协议后再声明兼容。
 
 ## 供应商与运行行为扩展

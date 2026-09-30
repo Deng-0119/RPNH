@@ -50,6 +50,8 @@ Expose a declaration-only factory through the `rpnh.plugins` entry-point group. 
 
 Use top-level importable handlers with input/output Draft-07 schemas, declared resources, an effect of `pure`, `external_read` or `external_write`, and explicit limits. Handler source bytes are pinned; transitive dependencies still belong to the installed environment. Version declarations are not an OS security sandbox. No hidden retries, dynamic imports supplied by task JSON, or direct internal Registry handles belong in a handler.
 
+Each worker receives the harness-owned `context.call_id` together with its operation, invocation and firing identities. Use that call identity when an external effect service needs replay protection; do not collapse all calls to one operation in the same firing into one request.
+
 A skill can be a registered instruction resource consumed by an admitted operation; Markdown front matter alone does not create one. An MCP-backed tool must be wrapped/bound through an explicitly installed host capability with visible operation/resource/effect semantics. This is not a claim of universal MCP server discovery or support for every transport. Test the selected host and protocol before advertising compatibility.
 
 ## Change providers or runtime behavior

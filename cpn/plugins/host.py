@@ -295,7 +295,8 @@ class NativePluginHost:
             "context": {"config": body["config"], "resources": tuple(views),
                         "operation_id": binding["selector"],
                         "invocation_id": str(context.invocation_ref.version_id),
-                        "firing_id": str(execution.operation.firing.transition_firing_ref.version_id)},
+                        "firing_id": str(execution.operation.firing.transition_firing_ref.version_id),
+                        "call_id": str(attempt.resource_version_id)},
             "arguments": arguments, "max_result_bytes": contract["operation"]["max_result_bytes"],
             "implementation": contract["operation"]["implementation"]}}
 

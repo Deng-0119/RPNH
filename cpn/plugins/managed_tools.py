@@ -541,7 +541,8 @@ class ManagedPluginInvocationService:
             raise
 
     def _packet(self, execution: Any, selector: str, plugin: BoundPlugin,
-                operation: Any, arguments: Mapping[str, Any]) -> dict[str, Any]:
+                operation: Any, call_id: str,
+                arguments: Mapping[str, Any]) -> dict[str, Any]:
         resources = {item.name: item for item in plugin.definition.resources}
         context = execution.operation.canonical.context
         views = tuple(ResourceView(
@@ -559,6 +560,7 @@ class ManagedPluginInvocationService:
                 "invocation_id": str(context.invocation_ref.version_id),
                 "firing_id": str(
                     execution.operation.firing.transition_firing_ref.version_id),
+                "call_id": call_id,
             },
             "arguments": json_copy(arguments),
             "max_result_bytes": operation.max_result_bytes,
@@ -634,7 +636,7 @@ class ManagedPluginInvocationService:
                 operation.handler,
                 self._packet(
                     execution, declaration.selector, plugin, operation,
-                    arguments),
+                    call_id, arguments),
                 environment_names=plugin.environment,
                 timeout_seconds=operation.timeout_seconds,
                 cancelled=interruption_requested)

@@ -250,15 +250,16 @@ class ResourceView:
 class PluginContext:
     """Worker-local inputs and cooperative cancellation; no owner or gateway."""
     __slots__ = ("config", "resources", "operation_id", "invocation_id",
-                 "firing_id", "_cancel", "_deadline")
+                 "firing_id", "call_id", "_cancel", "_deadline")
 
     def __init__(self, *, config, resources, operation_id, invocation_id,
-                 firing_id, cancel, deadline):
+                 firing_id, call_id, cancel, deadline):
         self.config = frozen(config)
         self.resources = MappingProxyType({r.name: r for r in resources})
         self.operation_id = operation_id
         self.invocation_id = invocation_id
         self.firing_id = firing_id
+        self.call_id = call_id
         self._cancel, self._deadline = cancel, deadline
 
     @property

@@ -16,6 +16,8 @@ metadata:
 
 ## 未发布
 
+- native 与 managed plugin worker 现在会收到由 harness 所有的逐调用
+  `PluginContext.call_id`，使外部效果桥能够区分对同一 operation 的两次合法调用与重放。
 - 用户自有 provider catalog 现可为精确模型声明可选 reasoning effort。Basic、DSH、
   Codex 与 OpenCode 使用同一份固定的 model/effort selection；生成的 local/external
   adapter 会把所选值传到物理请求，同时不在 RPNH 内置供应商模型对照表。

@@ -129,7 +129,7 @@ def test_response_is_drained_when_worker_exits_during_status_check(monkeypatch, 
         "implementation": implementation_identity(handler),
         "context": {"config": {"offset": 2}, "resources": (),
                     "operation_id": "test_plugin/add", "invocation_id": "test-invocation",
-                    "firing_id": "test-firing"},
+                    "firing_id": "test-firing", "call_id": "test-call"},
     }
     if reports_error:
         with pytest.raises(worker.WorkerFailure, match="^handler_failed$"):

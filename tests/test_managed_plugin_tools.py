@@ -41,6 +41,7 @@ CALLER_TERMINAL = "tests/managed-tool-caller-terminal/v1"
 
 def managed_double(context, arguments):
     assert context.operation_id == "synthetic/double"
+    assert context.call_id
     return arguments["value"] * 2
 
 
@@ -256,6 +257,18 @@ def test_explicit_allowlist_projects_one_pure_plugin_operation():
 
     with pytest.raises(PluginError, match="owner-selected"):
         ManagedPluginToolCatalog(selected, ("synthetic/missing",))
+
+
+def test_managed_worker_packet_carries_exact_call_identity(tmp_path):
+    prepared = _prepared_invocation(tmp_path)
+    declaration = prepared["declaration"]
+    plugin, operation = prepared["service"].catalog.binding("double_value")
+
+    packet = prepared["service"]._packet(
+        prepared["execution"], declaration.selector, plugin, operation,
+        "second-legitimate-call", {"value": 4})
+
+    assert packet["context"]["call_id"] == "second-legitimate-call"
 
 
 def test_non_native_caller_executes_and_persists_started_returned(

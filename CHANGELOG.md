@@ -16,6 +16,9 @@ metadata:
 
 ## Unreleased
 
+- Native and managed plugin workers now receive the harness-owned per-call
+  `PluginContext.call_id`, so an external effect bridge can distinguish two
+  legitimate calls to the same operation from a replay.
 - Added optional exact-model reasoning-effort declarations to the user-owned
   provider catalog. Basic, DSH, Codex and OpenCode now consume the same pinned
   model/effort selection, while generated local and external adapters carry the
