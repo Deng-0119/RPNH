@@ -71,6 +71,7 @@ def validate_agent_loop_atomicity(
         return
     family = {
         "agent_loop/v1", "agent_turn/v1", "agent_action/v2",
+        "agent_action/v3",
         "agent_tool_error/v1", "agent_context_compaction/v1",
         "agent_context_compaction/v2", "agent_context_compaction/v3",
         "firing_external_kb_read/v2",
@@ -450,7 +451,8 @@ def validate_agent_loop_atomicity(
             raise RegistryConflict(
                 "agent turn record/event/loop revision are not one closure")
     actions = tuple(item for item in agent_objects
-                    if item.object_type == "agent_action/v2")
+                    if item.object_type in {
+                        "agent_action/v2", "agent_action/v3"})
     action_events = tuple(event for event in agent_events
                           if event.event_type == "agent_action_settled/v1")
     errors = {str(item.version_id): item for item in agent_objects
@@ -464,7 +466,7 @@ def validate_agent_loop_atomicity(
             and (len(actions) != 1 or len(action_events) != 1
                  or len(agent_events) != 1
                  or any(item.object_type not in {
-                     "agent_loop/v1", "agent_action/v2",
+                     "agent_loop/v1", "agent_action/v2", "agent_action/v3",
                      "agent_tool_error/v1"}
                      for item in agent_objects))):
         raise RegistryConflict(
@@ -1636,7 +1638,7 @@ def validate_current_invocation_authority(
                     action_rows, actions_payload, strict=True):
                 action_objects = db.execute(
                     "SELECT version_id FROM objects "
-                    "WHERE object_type='agent_action/v2' "
+                    "WHERE object_type IN ('agent_action/v2','agent_action/v3') "
                     "AND logical_id=? AND transaction_id=? "
                     "AND COALESCE(producer_invocation_id,'')="
                     "COALESCE(?,'') ORDER BY rowid",
@@ -1744,8 +1746,10 @@ def validate_current_invocation_authority(
                 and all(exact_resource_ref_exists(value)
                     for value in (*response_refs, *partial_refs,
                                   *input_refs))
-                and all(exact_ref_exists(value, "agent_action/v2")
-                        for value in action_refs)
+                and all(
+                    exact_ref_exists(value, "agent_action/v2")
+                    or exact_ref_exists(value, "agent_action/v3")
+                    for value in action_refs)
                 and {canonical_json({
                     "entity_type": "resource_version/v1",
                     "logical_id": value.get("resource_id"),
@@ -1911,7 +1915,8 @@ def validate_current_invocation_authority(
         for event_row, event_payload in actions:
             rows = db.execute(
                 "SELECT metadata_json,transaction_id FROM objects "
-                "WHERE object_type='agent_action/v2' AND logical_id=?",
+                "WHERE object_type IN ('agent_action/v2','agent_action/v3') "
+                "AND logical_id=?",
                 (str(event_payload.get("agent_action_id", "")),),
             ).fetchall()
             if (len(rows) != 1

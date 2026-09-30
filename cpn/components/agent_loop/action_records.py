@@ -75,7 +75,7 @@ class ActionRecordsMechanicsMixin:
     def _action_document(
             record: AgentActionRecord, *, action_ref: VersionRef,
             loop_ref: VersionRef, turn_ref: VersionRef) -> dict[str, Any]:
-        return {
+        document = {
             "agent_action_id": record.action_id,
             "agent_action_version_id": str(action_ref.version_id),
             "agent_action_ref": _ref_payload(action_ref),
@@ -97,6 +97,19 @@ class ActionRecordsMechanicsMixin:
                                if record.tool_error_ref is not None else None),
             "result_metadata": record.result_metadata,
         }
+        if record.managed_action is not None:
+            managed = dict(record.managed_action)
+            output = managed.pop("output")
+            error = managed.pop("error")
+            document.pop("result_metadata")
+            returned = managed.get("outcome") == "returned"
+            document.update(
+                managed, output=output, error=error,
+                output_size_bytes=(
+                    len(canonical_json(output)) if returned else 0),
+                error_size_bytes=(
+                    0 if returned else len(canonical_json(error))))
+        return document
 
     def model_correctable_rejection(
             self, *, loop: AgentLoopSnapshot, turn_ref: VersionRef,
@@ -266,8 +279,11 @@ class ActionRecordsMechanicsMixin:
                           else _stable_id(
                               "agent_action_version", record.action_id,
                               tx.idempotency_key))
+            action_type = (
+                "agent_action/v3"
+                if record.managed_action is not None else "agent_action/v2")
             ref = VersionRef(
-                "agent_action/v2",
+                action_type,
                 TypedId.parse(record.action_id, expected="agent_action"),
                 version_id)
             document = self._action_document(
@@ -280,7 +296,7 @@ class ActionRecordsMechanicsMixin:
                     object_type=ref.entity_type, logical_id=ref.entity_id,
                     version_id=ref.version_id, payload=canonical_json(document),
                     metadata=document, media_type="application/json",
-                    schema_ref="registry_v1/agent_action/v2",
+                    schema_ref=f"registry_v1/{action_type}",
                     producer_invocation_id=before.invocation_ref.entity_id)
                 if after_action_prewrite is not None:
                     after_action_prewrite(tx, record, ref)
@@ -625,13 +641,24 @@ class ActionRecordsMechanicsMixin:
     def hydrate_action(self, action_ref: VersionRef) -> AgentActionRecord:
         """Read one exact immutable action through the shared declared view."""
         if (not isinstance(action_ref, VersionRef)
-                or action_ref.entity_type != "agent_action/v2"):
-            raise TypeError("action history requires agent_action/v2")
+                or action_ref.entity_type not in {
+                    "agent_action/v2", "agent_action/v3"}):
+            raise TypeError("action history requires agent_action/v2-or-v3")
         value = dict(self.kernel._exact_object(
-            action_ref, expected_type="agent_action/v2").metadata)
+            action_ref, expected_type=action_ref.entity_type).metadata)
         if value.get("agent_action_ref") != _ref_payload(action_ref):
             raise AgentLoopMechanicalLifecycleError(
                 "action history differs from its exact immutable ref")
+        if action_ref.entity_type == "agent_action/v3":
+            returned = value.get("outcome") == "returned"
+            expected_output_size = (
+                len(canonical_json(value.get("output"))) if returned else 0)
+            expected_error_size = (
+                0 if returned else len(canonical_json(value.get("error"))))
+            if (value.get("output_size_bytes") != expected_output_size
+                    or value.get("error_size_bytes") != expected_error_size):
+                raise AgentLoopMechanicalLifecycleError(
+                    "managed action stored JSON sizes differ from canonical bytes")
         return AgentActionRecord(
             action_id=str(value["agent_action_id"]),
             loop_id=str(value["agent_loop_ref"]["logical_id"]),
@@ -656,20 +683,41 @@ class ActionRecordsMechanicsMixin:
                     TypedId.parse(str(value["tool_error_ref"]["logical_id"])),
                     TypedId.parse(str(value["tool_error_ref"]["version_id"])))
                 if isinstance(value.get("tool_error_ref"), Mapping) else None),
-            result_metadata=value.get("result_metadata"))
+            result_metadata=(
+                value.get("result_metadata")
+                if action_ref.entity_type == "agent_action/v2" else
+                ({
+                    "kind": "managed_native_plugin_result/v1",
+                    "output": value["output"],
+                    "terminal_receipt_ref": value[
+                        "terminal_receipt_ref"],
+                } if value["outcome"] == "returned" else None)),
+            managed_action=(
+                None if action_ref.entity_type == "agent_action/v2" else {
+                    name: value[name] for name in (
+                        "provider_name", "registration_key", "selector",
+                        "plugin_catalog_digest", "binding_digest", "effect",
+                        "outcome", "request_admission_receipt_ref",
+                        "admitted_at_utc", "started_receipt_ref",
+                        "terminal_receipt_ref", "model_visible_result_ref",
+                        "non_delivery_reason", "output", "error")
+                } | {"max_result_bytes": value["max_result_bytes"]}))
 
     def latest_settled_action(
             self, *, action_id: str, turn_ref: VersionRef,
             ordinal: int) -> tuple[VersionRef, AgentActionRecord]:
         """Resolve a stable action identity without using canonical-head views."""
         logical_id = TypedId.parse(action_id, expected="agent_action")
-        row = self.core.event_store.latest_object_row(
-            logical_id, object_type="agent_action/v2")
-        if row is None:
+        rows = tuple(
+            row for action_type in ("agent_action/v2", "agent_action/v3")
+            if (row := self.core.event_store.latest_object_row(
+                logical_id, object_type=action_type)) is not None)
+        if len(rows) != 1:
             raise AgentLoopMechanicalLifecycleError(
-                "action history lacks its immutable object")
+                "action history lacks exactly one v2-or-v3 immutable object")
+        row, = rows
         ref = VersionRef(
-            "agent_action/v2", logical_id,
+            str(row["object_type"]), logical_id,
             TypedId.parse(str(row["version_id"]),
                           expected="agent_action_version"))
         document = json.loads(str(row["metadata_json"]))

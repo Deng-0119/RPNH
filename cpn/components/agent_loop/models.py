@@ -22,6 +22,7 @@ from .timing import (
 
 
 A2C_CRITIC_VERDICTS = ("continue", "pass", "escalate", "give_up")
+MANAGED_FRAMEWORK_ERROR_MAX_BYTES = 64 * 1024
 
 
 class AgentLoopProtocolError(RuntimeError):
@@ -577,6 +578,7 @@ class AgentActionRecord:
     result_refs: tuple[VersionRef, ...] = ()
     tool_error_ref: VersionRef | None = None
     result_metadata: Mapping[str, Any] | None = None
+    managed_action: Mapping[str, Any] | None = None
 
     def __post_init__(self) -> None:
         expected_action_id = (
@@ -670,7 +672,10 @@ class AgentActionRecord:
             except (TypeError, ValueError) as exc:
                 raise TypeError(
                     "agent action metadata must be JSON-serializable") from exc
-        self._validate_result_metadata()
+        if self.managed_action is None:
+            self._validate_result_metadata()
+        else:
+            self._validate_managed_action()
         if (self.tool_name == "query_kb"
                 and self.state != AgentLoopState.ACTION_REJECTED):
             if (self.state != AgentLoopState.ACTION_APPLIED
@@ -759,6 +764,108 @@ class AgentActionRecord:
             if self.result_refs != (result_resource_ref.as_version_ref(),):
                 raise AgentLoopProtocolError(
                     "delegated subtask result ref differs from its final result")
+
+    def _validate_managed_action(self) -> None:
+        value = self.managed_action
+        if not isinstance(value, Mapping):
+            raise AgentLoopProtocolError("managed action identity is missing")
+        fields = {
+            "provider_name", "registration_key", "selector",
+            "plugin_catalog_digest", "binding_digest", "effect", "outcome",
+            "request_admission_receipt_ref", "admitted_at_utc",
+            "started_receipt_ref", "terminal_receipt_ref",
+            "model_visible_result_ref", "non_delivery_reason", "output",
+            "error", "max_result_bytes",
+        }
+        if (set(value) != fields
+                or self.action_identity_kind != "tool_call_id"
+                or self.tool_name != value.get("provider_name")
+                or self.result_refs
+                or value.get("effect") not in {
+                    "pure", "external_read", "external_write"}
+                or value.get("outcome") not in {
+                    "returned", "failed", "outcome_unknown", "rejected"}
+                or not isinstance(value.get("max_result_bytes"), int)
+                or isinstance(value.get("max_result_bytes"), bool)
+                or not 0 < value["max_result_bytes"] <= 16 * 1024 * 1024):
+            raise AgentLoopProtocolError(
+                "managed action differs from its closed identity")
+        try:
+            output_size = len(json.dumps(
+                value.get("output"), ensure_ascii=True, sort_keys=True,
+                separators=(",", ":"), allow_nan=False).encode("utf-8"))
+            error_size = len(json.dumps(
+                value.get("error"), ensure_ascii=True, sort_keys=True,
+                separators=(",", ":"), allow_nan=False).encode("utf-8"))
+        except (TypeError, ValueError) as exc:
+            raise AgentLoopProtocolError(
+                "managed action output/error must be closed JSON") from exc
+
+        def resource_ref(raw: object) -> bool:
+            return (isinstance(raw, Mapping)
+                    and set(raw) == {"resource_id", "resource_version_id"}
+                    and isinstance(raw.get("resource_id"), str)
+                    and raw["resource_id"].startswith("resource:")
+                    and isinstance(raw.get("resource_version_id"), str)
+                    and raw["resource_version_id"].startswith(
+                        "resource_version:"))
+
+        outcome = value["outcome"]
+        if outcome == "returned":
+            valid = (
+                self.state == AgentLoopState.ACTION_APPLIED
+                and self.tool_error_ref is None
+                and isinstance(self.result_metadata, Mapping)
+                and set(self.result_metadata) == {
+                    "kind", "output", "terminal_receipt_ref"}
+                and self.result_metadata.get("kind")
+                == "managed_native_plugin_result/v1"
+                and self.result_metadata.get("output") == value.get("output")
+                and self.result_metadata.get("terminal_receipt_ref")
+                == value.get("terminal_receipt_ref")
+                and value.get("error") is None
+                and output_size <= value["max_result_bytes"]
+                and resource_ref(value.get("request_admission_receipt_ref"))
+                and value.get("request_admission_receipt_ref")
+                == value.get("started_receipt_ref")
+                and resource_ref(value.get("terminal_receipt_ref"))
+                and value.get("model_visible_result_ref") is None
+                and value.get("non_delivery_reason")
+                == "provider_delivery_not_recorded"
+                and isinstance(value.get("admitted_at_utc"), str))
+        elif outcome == "rejected":
+            valid = (
+                self.state == AgentLoopState.ACTION_REJECTED
+                and self.tool_error_ref is not None
+                and self.result_metadata is None
+                and all(value.get(name) is None for name in (
+                    "request_admission_receipt_ref", "admitted_at_utc",
+                    "started_receipt_ref", "terminal_receipt_ref",
+                    "model_visible_result_ref", "output"))
+                and value.get("non_delivery_reason")
+                == "rejected_before_dispatch"
+                and value.get("error") is not None
+                and error_size <= MANAGED_FRAMEWORK_ERROR_MAX_BYTES)
+        else:
+            valid = (
+                self.state == AgentLoopState.ACTION_REJECTED
+                and self.tool_error_ref is not None
+                and self.result_metadata is None
+                and resource_ref(value.get("request_admission_receipt_ref"))
+                and value.get("request_admission_receipt_ref")
+                == value.get("started_receipt_ref")
+                and resource_ref(value.get("terminal_receipt_ref"))
+                and value.get("model_visible_result_ref") is None
+                and value.get("output") is None
+                and value.get("non_delivery_reason") == (
+                    "outcome_unknown" if outcome == "outcome_unknown"
+                    else "managed_call_failed")
+                and value.get("error") is not None
+                and isinstance(value.get("admitted_at_utc"), str)
+                and error_size <= MANAGED_FRAMEWORK_ERROR_MAX_BYTES)
+        if not valid:
+            raise AgentLoopProtocolError(
+                "managed action lacks its exact closed outcome evidence")
 
     def _validate_result_metadata(self) -> None:
         value = self.result_metadata

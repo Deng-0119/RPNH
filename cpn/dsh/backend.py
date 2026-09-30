@@ -363,7 +363,8 @@ def declaration(*, configured: bool = False,
 
 
 def registration(executor=None,
-                 managed_tools: ManagedPluginToolCatalog | None = None):
+                 managed_tools: ManagedPluginToolCatalog | None = None, *,
+                 managed_registration_keys=None):
     executor = dict if executor is None else executor
     reg = Registration()
     reg.register_schema(ENVELOPE, ENVELOPE_SCHEMA)
@@ -420,7 +421,9 @@ def registration(executor=None,
     reg.register_tool(TERMINAL, dict, identity={'implementation_id': 'rpnh.dsh.terminal', 'revision': 'v1'},
         contracts={'binding_protocol': 'rpnh/module_terminal/v1'})
     if managed_tools is not None:
-        ManagedPluginToolAdapter(managed_tools).register(reg)
+        ManagedPluginToolAdapter(managed_tools).register(
+            reg, registration_keys=managed_registration_keys,
+            include_legacy=managed_registration_keys is not None)
     return reg
 
 
@@ -679,14 +682,33 @@ class DshBackend:
         else:
             _validate_turn_request(request, session_id=self.session_id)
         self.cancelled = False
+        managed_registration_keys = (
+            self._persisted_managed_registration_keys(path)
+            if self.configured else None)
         owner = resume_run(
             registration(
                 _DshExecutor(self),
-                self.managed_tools if self.configured else None), run_dir=path,
+                self.managed_tools if self.configured else None,
+                managed_registration_keys=managed_registration_keys),
+            run_dir=path,
             model_condition=self._model_condition,
             host_execution_bindings=self._host_bindings(),
             catalog=self._catalog())
         return self._execute(owner, _parse_ref(state['thread_ref']), _parse_ref(state['active_turn_ref']))
+
+    def _persisted_managed_registration_keys(self, run_dir):
+        from cpn.rpnh.registry.module_runtime import hydrate_module_runtime
+
+        core = _RegistryCore(
+            run_dir, create=False, read_only=True, catalog=self._catalog())
+        _executable, structure, _marking = hydrate_module_runtime(core)
+        persisted = set(structure.compiled.registrations.get('tool', {}))
+        available = self.managed_tools.registration_declarations(
+            include_legacy=True)
+        return {
+            declaration.registration_key for declaration in available
+            if declaration.registration_key in persisted
+        }
 
     @property
     def _model_condition(self):
@@ -925,7 +947,18 @@ class DshBackend:
                 raise ValueError(
                     'configured DSH tool firing lacks its owner-bound service')
             call = state['pending_tool']
-            declaration = self.managed_tools.declaration(call['name'])
+            declarations = tuple(
+                declaration for declaration in
+                self.managed_tools.registration_declarations(
+                    include_legacy=True)
+                if (declaration.name == call['name']
+                    and declaration.registration_key in
+                    execution.operation.spec.allowed_tool_ids))
+            if len(declarations) != 1:
+                raise ValueError(
+                    'configured DSH tool firing lacks one exact current or '
+                    'legacy registration')
+            declaration, = declarations
             try:
                 result = gateway.invoke_registered_tool(
                     execution, declaration.registration_key,

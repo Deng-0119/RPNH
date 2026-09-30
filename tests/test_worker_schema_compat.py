@@ -101,3 +101,42 @@ def test_v6_roundtrip_uses_only_parent_relative_path_references(
     assert not Path(document["execution_config_relative_path"]).is_absolute()
     assert AgentTaskSpec.from_worker_document(
         document, document_root=document_root) == original
+
+
+def test_managed_bindings_use_additive_v7_v8_documents(tmp_path: Path) -> None:
+    base = spec(plugins=True)
+    original = AgentTaskSpec(
+        run_dir=base.run_dir, prompt=base.prompt, stages=base.stages,
+        execution_config_path=base.execution_config_path,
+        owner_socket_path=base.run_dir / "owner.sock",
+        plugin_configuration=base.plugin_configuration,
+        plugin_catalog_digest=base.plugin_catalog_digest,
+        managed_bindings={
+            "main": {
+                "tools": {
+                    "lookup": {
+                        "selector": "synthetic/lookup",
+                        "description": "Read one exact synthetic value",
+                        "input_schema": {
+                            "type": "object",
+                            "additionalProperties": False,
+                            "properties": {"key": {"type": "string"}},
+                            "required": ["key"],
+                        },
+                    },
+                },
+                "admitted_effects": ["pure", "external_read"],
+            },
+        },
+    )
+
+    absolute = original.as_worker_document()
+    assert absolute["schema_version"] == "rpnh/agent_task_spec/v7"
+    assert AgentTaskSpec.from_worker_document(absolute) == original
+
+    document_root = tmp_path / "specs"
+    document_root.mkdir()
+    relative = original.as_worker_document(document_root=document_root)
+    assert relative["schema_version"] == "rpnh/agent_task_spec/v8"
+    assert AgentTaskSpec.from_worker_document(
+        relative, document_root=document_root) == original

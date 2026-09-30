@@ -800,7 +800,8 @@ def agent_action_rows_for_turn(
             "agent action lookup requires an exact agent_turn/v1 ref")
     with store.connect() as db:
         return tuple(db.execute(
-            "SELECT * FROM objects WHERE object_type='agent_action/v2' "
+            "SELECT * FROM objects WHERE object_type IN "
+            "('agent_action/v2','agent_action/v3') "
             "AND json_extract(metadata_json,"
             "'$.agent_turn_ref.entity_type')=? "
             "AND json_extract(metadata_json,"
@@ -821,7 +822,7 @@ def settled_agent_action_rows_for_turn(
     with store.connect() as db:
         return tuple(db.execute(
             "SELECT action.* FROM objects action WHERE "
-            "action.object_type='agent_action/v2' AND "
+            "action.object_type IN ('agent_action/v2','agent_action/v3') AND "
             "json_extract(action.metadata_json,"
             "'$.agent_turn_ref.entity_type')=? AND "
             "json_extract(action.metadata_json,"

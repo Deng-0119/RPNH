@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: en
   counterpart: extensions-observation_ZH.md
-  revision: "2026-09-29.2"
+  revision: "2026-10-01.1"
   status: source-reviewed-v0.1.0rc1
   basis: "core; adapter differences explicitly labelled"
 ---
@@ -36,22 +36,47 @@ values raise `PluginError`.
 
 Use the [customization example](../guides/customization.md), not direct calls to private `cpn.rpnh.registry` helpers. Installing a Python package does not itself select it for every task. Documentation metadata never grants runtime execution authority.
 
-## Managed tool catalog for the DSH host
-The unified package includes `cpn/plugins/managed_tools.py`, but this catalog is
-activated only by the explicit DSH host configuration. It is not a global tool
-discovery surface for Basic, Codex or OpenCode. `ManagedToolSelector(name,
-selector)` maps one provider-visible name to one exact `plugin/operation`.
+## Managed tool catalog for trusted hosts
+The unified package includes `cpn/plugins/managed_tools.py`. The catalog is
+activated only by an explicit trusted-host configuration, including managed DSH
+or per-node `AgentTaskSpec.managed_bindings`; it is not a global discovery
+surface for Basic, Codex or OpenCode. `ManagedToolSelector(name, selector)` maps
+one provider-visible name to one exact `plugin/operation`.
 `ManagedPluginToolCatalog(plugin_catalog, allowlist)` produces an immutable
 projection of an explicit `PluginCatalog`, not a discovery service. Its
 `provider_declarations` property returns function declarations,
 `declaration(name)` and `binding(name)` reject unselected names, and `document()`
 includes the selected catalog and registration identities.
 
-Only operations declared `effect="pure"` with an object input schema are eligible. Provider-visible names and plugin selectors must be unique. The DSH CLI uses `--plugin-config ABSOLUTE_PATH` together with one or more `--managed-tool NAME=PLUGIN/OPERATION` arguments. Each name component must match `[a-z][a-z0-9_]{0,47}`. Installing a plugin, choosing a provider, or adding a model-visible description does not grant execution. This is not arbitrary DSH plugin or MCP mounting.
+The generic catalog accepts `pure`, `external_read`, or `external_write` only
+when the host explicitly lists that effect; the default remains `pure`.
+Operations require an object input schema. Provider-visible names and selectors
+are unique within a node catalog, and built-in AgentLoop dispatch names are
+reserved across all nodes. A host may narrow the visible description and input
+schema, but invocation validates both the visible schema and the original
+plugin operation schema. Installing a plugin, selecting a provider, or changing
+the visible description does not grant execution.
+
+The DSH CLI remains a narrower host: it uses `--plugin-config ABSOLUTE_PATH`
+together with one or more `--managed-tool NAME=PLUGIN/OPERATION` arguments and
+admits pure operations only. Each name component must match
+`[a-z][a-z0-9_]{0,47}`. This is not arbitrary DSH plugin or MCP mounting.
 
 The DSH backend imposes a **65536-byte (64 KiB) declared result ceiling** in addition to the general SDK limits. The SDK default is 1048576 bytes, so an otherwise valid plugin can be rejected before any worker starts. Neither value is a recommended business limit: derive `max_result_bytes` from the operation's bounded legal output. The current demo operations constrain their input domains and declare 1024 bytes, which is above their maximum serialized output and below the DSH ceiling. Changing a launch flag does not change a plugin declaration; keep normal version and exact-identity rules when revising one.
 
-The owner-bound managed invocation service validates the exact caller execution, tool identity and arguments, and records invocation/receipt material. The inspector checks arguments before worker execution; the DSH path also checks declarations, worst-case tool-result size and the next model response against its 2 MiB frame. A durably recorded plugin failure is returned as one correlated `isError: true` tool result, not a successful value. A dispatch without a durable terminal observation requires reconciliation and must not be retried automatically. Only one correlated tool call from a model response is supported before the next model step; parallel tool batches are not implied.
+The owner-bound managed invocation service validates the exact caller execution,
+tool identity and arguments, and records started plus returned, failed, or
+outcome-unknown receipts. A concurrent observer of an actively owned call does
+not convert it into an unknown outcome. Once ownership is lost, a dispatch
+without durable terminal evidence requires reconciliation and must not be
+retried automatically. The Registry result and the bounded model-visible
+projection are separate evidence; storing a full result is not proof that a
+provider received it. The inspector checks arguments before worker execution;
+the DSH path also checks declarations, worst-case tool-result size and the next
+model response against its 2 MiB frame. A durably recorded plugin failure is one
+correlated `isError: true` tool result, not a successful value. DSH supports one
+correlated tool call per model response before the next model step; parallel DSH
+tool batches are not implied.
 
 The declaration `pure` is a contract for trusted installed code, not an OS security boundary. See the [DSH guide](../guides/dsh.md) for launch/resume arguments and [runtime recovery](runtime-registry.md) for durable completion settlement.
 

@@ -6,7 +6,7 @@ metadata:
   audience: user-and-developer
   language: en
   counterpart: CHANGELOG_ZH.md
-  revision: "2026-09-30.1"
+  revision: "2026-10-01.1"
   status: v0.1.0rc1
 ---
 
@@ -16,6 +16,11 @@ metadata:
 
 ## Unreleased
 
+- Agent tasks and workflows can now bind explicitly registered native-plugin
+  operations to provider-visible tool names per node or stage. Bindings admit
+  exact effects, preserve per-call receipts and structured results, and keep
+  legacy tasks and ordinary action records unchanged when the feature is not
+  configured.
 - Native and managed plugin workers now receive the harness-owned per-call
   `PluginContext.call_id`, so an external effect bridge can distinguish two
   legitimate calls to the same operation from a replay.

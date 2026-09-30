@@ -29,6 +29,7 @@ from cpn.components.tool_executors import (
     NumericalToolProfile,
     capture_execution_environment_inventory,
 )
+from cpn.plugins.api import json_copy
 
 
 def _declared_agent_prompt(operation, target: LLMInputTarget) -> dict:
@@ -82,7 +83,8 @@ def make_optional_agent_host_bindings(llm_input_target: LLMInputTarget, *,
         provider_backend_config: Mapping | None = None,
         transport_contract: Mapping | None = None,
         execution_profiles: Mapping | None = None,
-        workspace_policy: WorkspacePolicy | None = None):
+        workspace_policy: WorkspacePolicy | None = None,
+        managed_catalogs: Mapping | None = None):
     """Return the public ``start_run(host_execution_bindings=...)`` factory.
 
     The owner must pass the same exact model condition to start_run and this
@@ -96,6 +98,14 @@ def make_optional_agent_host_bindings(llm_input_target: LLMInputTarget, *,
     workspace_policy = workspace_policy or WorkspacePolicy()
     if not isinstance(workspace_policy, WorkspacePolicy):
         raise TypeError("optional agent HOST startup requires WorkspacePolicy")
+    managed_catalogs = dict(managed_catalogs or {})
+    if managed_catalogs:
+        from cpn.plugins.managed_tools import ManagedPluginToolCatalog
+        if any(not isinstance(node_id, str)
+               or not isinstance(catalog, ManagedPluginToolCatalog)
+               for node_id, catalog in managed_catalogs.items()):
+            raise TypeError(
+                "optional managed catalogs require exact node/catalog bindings")
     if (provider_backend_config is None) != (transport_contract is None):
         raise ValueError("optional provider startup requires both exact route and transport documents")
     backend_data = None if provider_backend_config is None else dict(provider_backend_config)
@@ -357,17 +367,61 @@ def make_optional_agent_host_bindings(llm_input_target: LLMInputTarget, *,
                 profile_id]
             # The exact HOST declarations, not a global Current tool surface,
             # own the optional catalog. Empty startup remains startup-only.
+            node_id = operation.declaration.config.get("semantic_node_id")
+            managed = managed_catalogs.get(node_id)
+            managed_by_key = ({
+                declaration.registration_key: declaration
+                for declaration in managed.tools
+            } if managed is not None else {})
             tools = []
             for tool_name in operation.declaration.tools:
                 declared = compiled.registrations["tool"][tool_name]
                 contracts = declared["contracts"]
-                if contracts.get("binding_protocol") != "optional_agent_tool/v1":
-                    raise ValueError("optional loop tool lacks its explicit HOST capability contract")
-                tools.append({"name": tool_name, "description": contracts["description"],
-                              "arguments": contracts["arguments"]})
+                if contracts.get("binding_protocol") == "optional_agent_tool/v1":
+                    tools.append({"name": tool_name,
+                                  "description": contracts["description"],
+                                  "arguments": contracts["arguments"]})
+                    continue
+                declaration = managed_by_key.get(tool_name)
+                if (declaration is None
+                        or declared["identity"].get("provider_name")
+                        != declaration.name
+                        or declared["identity"].get("selector")
+                        != declaration.selector
+                        or declared["identity"].get("binding_digest")
+                        != declaration.identity["binding_digest"]
+                        or declared["contracts"].get("invocation_protocol")
+                        != "rpnh/managed_native_plugin_tool_invocation/v2"):
+                    raise ValueError(
+                        "optional loop tool lacks its exact HOST capability contract")
+                tools.append({
+                    "name": declaration.name,
+                    "description": declaration.description,
+                    "arguments": json_copy(declaration.input_schema),
+                })
+            tools.sort(key=lambda item: item["name"])
             catalog = static(f"catalog:{name}", {"schema_version": "agent_tool_catalog/v1",
                 "surface_kind": "parent_current", "workspace_scope": "firing_private_projection",
                 "tools": tools}, "optional_agent_tool_catalog")
+            managed_binding = None
+            if managed is not None:
+                managed_binding = static(
+                    f"managed-tools:{name}", {
+                        "schema_version": "rpnh/agent_loop_managed_tool_bindings/v1",
+                        "semantic_node_id": node_id,
+                        "plugin_catalog_digest": managed.plugin_catalog_digest,
+                        "bindings": {
+                            declaration.name: {
+                                "registration_key": declaration.registration_key,
+                                "selector": declaration.selector,
+                                "binding_digest": declaration.identity[
+                                    "binding_digest"],
+                                "effect": declaration.effect,
+                                "max_result_bytes": declaration.max_result_bytes,
+                            }
+                            for declaration in managed.tools
+                        },
+                    }, "optional_agent_managed_tool_bindings")
             prompt = static(
                 f"prompt:{name}",
                 _declared_agent_prompt(operation, selected_target),
@@ -392,6 +446,7 @@ def make_optional_agent_host_bindings(llm_input_target: LLMInputTarget, *,
                 workspace_binding_ref=workspace,
                 module_artifact_refs=(environment, workspace_profile),
                 extra_resource_refs=(catalog, prompt, inventory)
+                + (() if managed_binding is None else (managed_binding,))
                 + (() if backend is None else (backend, transport)))
         return MappingProxyType(result)
 

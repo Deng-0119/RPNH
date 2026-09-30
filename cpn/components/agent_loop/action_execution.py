@@ -255,6 +255,14 @@ class ActionExecutionMixin:
         error_documents = []
         delegated_terminal_responses = {}
         current = loop
+        managed_bindings = self._managed_tool_bindings(self._context(loop))
+        _binding, _compiled, declared_operation = self._declared(
+            self._context(loop))
+        managed_node_id = declared_operation.declaration.config.get(
+            "semantic_node_id")
+        managed_services = getattr(self, "managed_plugin_services", {})
+        managed_service = managed_services.get(managed_node_id)
+        reconciliation_required = None
         for ordinal, prepared in enumerate(actions):
             validation = prepared.validation
             call = prepared.tool_call
@@ -264,7 +272,14 @@ class ActionExecutionMixin:
             state = AgentLoopState.ACTION_APPLIED
             error = None
             error_code = "arguments_invalid"
-            if isinstance(validation, AgentToolSyntaxError):
+            managed_name = call.tool_name
+            managed_binding = managed_bindings.get(managed_name, {})
+            managed_action = None
+            if reconciliation_required is not None:
+                error = (
+                    "tool was not dispatched after an external-write outcome "
+                    "became uncertain")
+            elif isinstance(validation, AgentToolSyntaxError):
                 error = validation.detail
             elif validation.tool_name not in catalog.tool_names:
                 error = "tool not declared in this optional surface"
@@ -353,6 +368,106 @@ class ActionExecutionMixin:
                         "workspace action lacks its worker execution result")
                 refs, metadata = (), {
                     "kind": "workspace_execution/v1", **dict(result)}
+            elif validation.tool_name in managed_bindings:
+                if managed_service is None:
+                    raise ResourceIntegrityFault(
+                        "managed tool lacks its node-scoped invocation service")
+                declaration = managed_service.catalog.declaration(
+                    validation.tool_name)
+                if (declaration.registration_key
+                        != managed_binding.get("registration_key")):
+                    raise ResourceIntegrityFault(
+                        "managed service differs from the persisted node binding")
+                from cpn.plugins.api import PluginError
+                try:
+                    managed_service.validate_arguments(
+                        validation.tool_name, validation.arguments)
+                except PluginError as exc:
+                    error = str(exc)
+                if error is None:
+                    try:
+                        result = managed_service.invoke(
+                            validation.tool_name, execution=execution,
+                            call_id=call.action_identity_key,
+                            arguments=validation.arguments,
+                            interruption_requested=getattr(
+                                self, "managed_plugin_interruption_requested",
+                                lambda: False))
+                        managed_action = {
+                            "provider_name": declaration.name,
+                            "registration_key": declaration.registration_key,
+                            "selector": declaration.selector,
+                            "plugin_catalog_digest": (
+                                managed_service.catalog.plugin_catalog_digest),
+                            "binding_digest": declaration.identity[
+                                "binding_digest"],
+                            "effect": declaration.effect,
+                            "outcome": "returned",
+                            "request_admission_receipt_ref": result[
+                                "started_receipt_ref"],
+                            "admitted_at_utc": result["admitted_at_utc"],
+                            "started_receipt_ref": result[
+                                "started_receipt_ref"],
+                            "terminal_receipt_ref": result[
+                                "terminal_receipt_ref"],
+                            "model_visible_result_ref": None,
+                            "non_delivery_reason": (
+                                "provider_delivery_not_recorded"),
+                            "output": result["output"],
+                            "error": None,
+                            "max_result_bytes": declaration.max_result_bytes,
+                        }
+                        metadata = {
+                            "kind": "managed_native_plugin_result/v1",
+                            "output": result["output"],
+                            "terminal_receipt_ref": result[
+                                "terminal_receipt_ref"],
+                        }
+                    except Exception as exc:
+                        from cpn.plugins.managed_tools import (
+                            ManagedPluginInvocationFailed,
+                            ManagedPluginInvocationReconciliationRequired,
+                        )
+                        if not isinstance(exc, (
+                                ManagedPluginInvocationFailed,
+                                ManagedPluginInvocationReconciliationRequired)):
+                            raise
+                        evidence = exc.evidence
+                        if not isinstance(evidence, Mapping):
+                            raise ResourceIntegrityFault(
+                                "managed failure lacks exact durable evidence") from exc
+                        outcome = evidence["outcome"]
+                        managed_action = {
+                            "provider_name": declaration.name,
+                            "registration_key": declaration.registration_key,
+                            "selector": declaration.selector,
+                            "plugin_catalog_digest": (
+                                managed_service.catalog.plugin_catalog_digest),
+                            "binding_digest": declaration.identity[
+                                "binding_digest"],
+                            "effect": declaration.effect,
+                            "outcome": outcome,
+                            "request_admission_receipt_ref": evidence[
+                                "started_receipt_ref"],
+                            "admitted_at_utc": evidence["admitted_at_utc"],
+                            "started_receipt_ref": evidence[
+                                "started_receipt_ref"],
+                            "terminal_receipt_ref": evidence[
+                                "terminal_receipt_ref"],
+                            "model_visible_result_ref": None,
+                            "non_delivery_reason": (
+                                "outcome_unknown" if outcome == "outcome_unknown"
+                                else "managed_call_failed"),
+                            "output": None,
+                            "error": evidence["error"],
+                            "max_result_bytes": declaration.max_result_bytes,
+                        }
+                        error = str(exc)
+                        if isinstance(
+                                exc,
+                                ManagedPluginInvocationReconciliationRequired):
+                            reconciliation_required = (
+                                declaration, validation.action_id, exc)
             else:
                 registered = self.owner.registration.declaration("tool", validation.tool_name)
                 # ``current`` is the in-memory projection of actions already
@@ -384,6 +499,44 @@ class ActionExecutionMixin:
                         error_code=error_code))
                 state = record.state
                 error_ref = record.tool_error_ref
+                if managed_binding:
+                    if managed_action is None:
+                        if managed_service is None:
+                            raise ResourceIntegrityFault(
+                                "managed rejection lacks its node-scoped service")
+                        declaration = managed_service.catalog.declaration(
+                            managed_name)
+                        managed_action = {
+                            "provider_name": declaration.name,
+                            "registration_key": declaration.registration_key,
+                            "selector": declaration.selector,
+                            "plugin_catalog_digest": (
+                                managed_service.catalog.plugin_catalog_digest),
+                            "binding_digest": declaration.identity[
+                                "binding_digest"],
+                            "effect": declaration.effect,
+                            "outcome": "rejected",
+                            "request_admission_receipt_ref": None,
+                            "admitted_at_utc": None,
+                            "started_receipt_ref": None,
+                            "terminal_receipt_ref": None,
+                            "model_visible_result_ref": None,
+                            "non_delivery_reason": "rejected_before_dispatch",
+                            "output": None,
+                            "error": {
+                                "code": error_code, "detail": error},
+                            "max_result_bytes": declaration.max_result_bytes,
+                        }
+                    record = replace(record, managed_action=managed_action)
+                    managed_ref = VersionRef(
+                        "agent_action/v3",
+                        TypedId.parse(
+                            record.action_id, expected="agent_action"),
+                        _stable_id(
+                            "agent_action_version", record.action_id,
+                            idempotency_key))
+                    error_document["agent_action_ref"] = _ref_payload(
+                        managed_ref)
                 error_documents.append((error_ref, error_document))
             else:
                 arguments = (
@@ -394,7 +547,7 @@ class ActionExecutionMixin:
                     ordinal, call.tool_call_id, call.action_identity_kind,
                     call.action_identity_key, call.tool_name,
                     call.raw_arguments, arguments, loop.revision, state,
-                    tuple(refs), error_ref, metadata)
+                    tuple(refs), error_ref, metadata, managed_action)
             written = current.written_resource_refs
             if metadata and metadata["kind"] == "registered_file_write/v1":
                 written += (_resource_from_payload(metadata["resource_ref"]),)
@@ -464,6 +617,28 @@ class ActionExecutionMixin:
                                  if final_state == AgentLoopState.COMPLETED
                                  else None),
                 after_action_prewrite=stage_delegated_result))
+        if reconciliation_required is not None:
+            declaration, action_id, exc = reconciliation_required
+            action_ref = VersionRef(
+                "agent_action/v3",
+                TypedId.parse(action_id, expected="agent_action"),
+                _stable_id(
+                    "agent_action_version", action_id, idempotency_key))
+            block = self.register_operation_execution_block(
+                execution,
+                block_kind="submission_reconciliation",
+                operation_or_tool_identity=declaration.registration_key,
+                error_code="managed_outcome_reconciliation_required",
+                error_message=canonical_json({
+                    "committed_agent_loop_ref": _ref_payload(
+                        self.mechanical_lifecycle.loop_ref(committed_loop)),
+                    "managed_action_ref": _ref_payload(action_ref),
+                }).decode("utf-8"),
+                boundary="managed_native_plugin",
+                consecutive_count=1,
+                exact_error_ref=action_ref,
+                retry_not_before_utc=None)
+            return block, committed_loop
         return committed_loop, committed_records
 
     def interrupt_agent_turn_actions_v1(

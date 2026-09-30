@@ -9,7 +9,7 @@ loop.  It owns no second scheduler or Registry.
 from __future__ import annotations
 
 from concurrent.futures import ThreadPoolExecutor
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 import json
 import os
 from pathlib import Path, PurePosixPath
@@ -108,6 +108,8 @@ class AgentTaskSpec:
     plugin_configuration: Mapping[str, Any] | None = None
     plugin_catalog_digest: str | None = None
     owner_socket_path: Path | None = None
+    managed_bindings: Mapping[str, Mapping[str, Any]] = field(
+        default_factory=dict)
 
     def __post_init__(self) -> None:
         if (not isinstance(self.run_dir, Path)
@@ -181,7 +183,7 @@ class AgentTaskSpec:
                 or not self.owner_statement.strip()):
             raise ValueError("owner_statement must be nonempty text")
         if self.plugin_configuration is None:
-            if self.plugin_catalog_digest is not None:
+            if self.plugin_catalog_digest is not None or self.managed_bindings:
                 raise ValueError("plugin digest requires its exact owner configuration")
         else:
             from cpn.plugins.api import frozen
@@ -190,6 +192,58 @@ class AgentTaskSpec:
                     or re.fullmatch(r"[a-f0-9]{64}", self.plugin_catalog_digest) is None):
                 raise ValueError("plugin configuration requires its exact compiled catalog digest")
             object.__setattr__(self, "plugin_configuration", frozen(self.plugin_configuration))
+        if not isinstance(self.managed_bindings, Mapping):
+            raise ValueError("managed bindings must be keyed by node or stage")
+        normalized = {}
+        for node_id, raw in self.managed_bindings.items():
+            if (not isinstance(node_id, str)
+                    or _STAGE_ID.fullmatch(node_id) is None
+                    or not isinstance(raw, Mapping)
+                    or set(raw) not in ({"tools"}, {"tools", "admitted_effects"})
+                    or not isinstance(raw.get("tools"), Mapping)
+                    or not raw["tools"]):
+                raise ValueError(
+                    "managed bindings require one exact nonempty node tool declaration")
+            effects = raw.get("admitted_effects", ["pure"])
+            if (not isinstance(effects, (list, tuple)) or not effects
+                    or len(set(effects)) != len(effects)
+                    or any(effect not in {
+                        "pure", "external_read", "external_write"}
+                           for effect in effects)):
+                raise ValueError("managed binding effects are invalid")
+            tools = {}
+            for visible_name, declaration in raw["tools"].items():
+                if (not isinstance(visible_name, str)
+                        or _STAGE_ID.fullmatch(visible_name) is None
+                        or not isinstance(declaration, Mapping)
+                        or set(declaration) - {
+                            "selector", "description", "input_schema"}
+                        or not isinstance(declaration.get("selector"), str)):
+                    raise ValueError("managed tool declaration is invalid")
+                tools[visible_name] = dict(declaration)
+            normalized[node_id] = {
+                "tools": tools,
+                "admitted_effects": list(effects),
+            }
+        known_nodes = (
+            {stage.stage_id for stage in self.stages}
+            if self.workflow_graph is None else
+            {node.node_id for node in self.workflow_graph.nodes})
+        if set(normalized) - known_nodes:
+            raise ValueError("managed bindings reference an unknown node or stage")
+        if self.workflow_graph is not None:
+            plugin_nodes = {
+                node.node_id for node in self.workflow_graph.nodes
+                if node.execution.plugin is not None}
+            if set(normalized) & plugin_nodes:
+                raise ValueError(
+                    "managed bindings cannot target plugin-executed workflow nodes")
+        if any(set(binding["tools"]) & set(OPTIONAL_TOOL_BINDINGS)
+               for binding in normalized.values()):
+            raise ValueError(
+                "managed tool names cannot collide with reserved built-in tools")
+        from cpn.plugins.api import frozen
+        object.__setattr__(self, "managed_bindings", frozen(normalized))
 
     @property
     def kind(self) -> str:
@@ -226,7 +280,9 @@ class AgentTaskSpec:
                 raise ValueError(
                     "owner socket must remain inside its child Registry")
             return {
-                "schema_version": "rpnh/agent_task_spec/v6",
+                "schema_version": (
+                    "rpnh/agent_task_spec/v8" if self.managed_bindings
+                    else "rpnh/agent_task_spec/v6"),
                 **({"plugin_configuration": json_copy(self.plugin_configuration),
                     "plugin_catalog_digest": self.plugin_catalog_digest}
                    if self.plugin_configuration is not None else {}),
@@ -251,9 +307,13 @@ class AgentTaskSpec:
                 },
                 "owner_statement": self.owner_statement,
                 "owner_socket_relative_path": socket_relative,
+                **({"managed_bindings": json_copy(self.managed_bindings)}
+                   if self.managed_bindings else {}),
             }
         return {
-            "schema_version": "rpnh/agent_task_spec/v5",
+            "schema_version": (
+                "rpnh/agent_task_spec/v7" if self.managed_bindings
+                else "rpnh/agent_task_spec/v5"),
             **({"plugin_configuration": json_copy(self.plugin_configuration),
                 "plugin_catalog_digest": self.plugin_catalog_digest} if self.plugin_configuration is not None else {}),
             "run_dir": str(self.run_dir),
@@ -277,6 +337,8 @@ class AgentTaskSpec:
             "owner_socket_path": (
                 None if self.owner_socket_path is None
                 else str(self.owner_socket_path)),
+            **({"managed_bindings": json_copy(self.managed_bindings)}
+               if self.managed_bindings else {}),
         }
 
     @classmethod
@@ -312,6 +374,8 @@ class AgentTaskSpec:
             "execution_profiles", "owner_statement",
             "owner_socket_relative_path",
         }
+        fields_v7 = fields_v5 | {"managed_bindings"}
+        fields_v8 = fields_v6 | {"managed_bindings"}
         expected_fields = (
             fields_v1 if version == "rpnh/agent_task_spec/v1" else
             fields_v2 if version == "rpnh/agent_task_spec/v2" else
@@ -320,8 +384,12 @@ class AgentTaskSpec:
             fields_v5 | (plugin_fields if set(value) & plugin_fields else set())
             if version == "rpnh/agent_task_spec/v5" else
             fields_v6 | (plugin_fields if set(value) & plugin_fields else set())
-            if version == "rpnh/agent_task_spec/v6" else set())
-        if version == "rpnh/agent_task_spec/v6":
+            if version == "rpnh/agent_task_spec/v6" else
+            fields_v7 | plugin_fields
+            if version == "rpnh/agent_task_spec/v7" else
+            fields_v8 | plugin_fields
+            if version == "rpnh/agent_task_spec/v8" else set())
+        if version in {"rpnh/agent_task_spec/v6", "rpnh/agent_task_spec/v8"}:
             if document_root is None:
                 raise ValueError(
                     "v6 worker document requires its parent directory")
@@ -367,6 +435,7 @@ class AgentTaskSpec:
                 plugin_configuration=value.get("plugin_configuration"),
                 plugin_catalog_digest=value.get("plugin_catalog_digest"),
                 owner_socket_path=socket_path,
+                managed_bindings=value.get("managed_bindings", {}),
             )
         invalid_owner_socket_path = (
             isinstance(value, Mapping)
@@ -376,7 +445,7 @@ class AgentTaskSpec:
         if (not isinstance(value, Mapping)
                 or set(value) != expected_fields
                 or not isinstance(value.get("stages"), list)
-                or (version in {"rpnh/agent_task_spec/v3", "rpnh/agent_task_spec/v4", "rpnh/agent_task_spec/v5"}
+                or (version in {"rpnh/agent_task_spec/v3", "rpnh/agent_task_spec/v4", "rpnh/agent_task_spec/v5", "rpnh/agent_task_spec/v7"}
                     and not isinstance(value.get("execution_profiles"), Mapping))
                 or invalid_owner_socket_path):
             raise ValueError("agent task worker document is not current")
@@ -402,10 +471,11 @@ class AgentTaskSpec:
             owner_socket_path=(
                 None if value.get("owner_socket_path") is None
                 else Path(value["owner_socket_path"])),
+            managed_bindings=value.get("managed_bindings", {}),
         )
 
 
-def agent_task_registration(plugin_catalog=None) -> Registration:
+def agent_task_registration(plugin_catalog=None, managed_catalogs=()) -> Registration:
     """Register the optional generic agent component without Current imports."""
     registration = Registration()
     register_basic_components(registration)
@@ -456,6 +526,23 @@ def agent_task_registration(plugin_catalog=None) -> Registration:
     if plugin_catalog is not None:
         from cpn.plugins.host import register_plugins
         register_plugins(registration, plugin_catalog)
+    if managed_catalogs:
+        from cpn.plugins.managed_tools import ManagedPluginToolAdapter
+        registered = set()
+        for managed in managed_catalogs:
+            fresh = tuple(
+                tool for tool in managed.tools
+                if tool.registration_key not in registered)
+            if fresh:
+                # Registration rejects duplicate keys. Per-node catalogs may
+                # share an exact declaration, so register each exact key once.
+                ManagedPluginToolAdapter(managed).register(
+                    registration,
+                    registration_keys={
+                        declaration.registration_key
+                        for declaration in fresh})
+                registered.update(
+                    declaration.registration_key for declaration in fresh)
     registration.register_executor(
         EXECUTOR_KEY,
         execute_default_operation,
@@ -512,6 +599,8 @@ def agent_task_catalog(plugin_catalog=None) -> SchemaCatalog:
 
 def build_agent_task_module(
         stages: Sequence[AgentStage], *, max_attempts_per_stage: int = 12,
+        managed_tools: Mapping[str, Sequence[str]] | None = None,
+        managed_tool_names: Mapping[str, Sequence[str]] | None = None,
 ) -> ModuleDeclaration:
     """Build one single-agent typed Petri task.
 
@@ -536,6 +625,13 @@ def build_agent_task_module(
         "max_attempts": max_attempts_per_stage,
     } for stage in stages]
     components = []
+    managed_tools = dict(managed_tools or {})
+    managed_tool_names = dict(managed_tool_names or {})
+    if (set(managed_tool_names) - {stage.stage_id for stage in stages}
+            or any(set(names) & set(OPTIONAL_TOOL_BINDINGS)
+                   for names in managed_tool_names.values())):
+        raise ValueError(
+            "managed stage tool names collide with the built-in surface")
     for stage, bucket in zip(stages, buckets):
         components.append({
             "name": stage.stage_id,
@@ -560,10 +656,14 @@ def build_agent_task_module(
                 "inputs": ["request"],
                 "outputs": ["result", "interrupt_return_request"],
                 "request_port": "request",
-                "tools": sorted(OPTIONAL_TOOL_BINDINGS),
+                "tools": sorted({
+                    *OPTIONAL_TOOL_BINDINGS,
+                    *managed_tools.get(stage.stage_id, ()),
+                }),
                 "config": {
                     "provider_attempt_limit": 3,
                     "agent_loop_role": "actor",
+                    "semantic_node_id": stage.stage_id,
                     "node_synopsis": stage.instruction,
                     "resource_bounds": {
                         "max_llm_attempts": max_attempts_per_stage,
@@ -774,10 +874,29 @@ def _execute_agent_task(
     plugin_catalog = load_catalog(spec.plugin_configuration)
     if spec.plugin_catalog_digest is not None and plugin_catalog.digest != spec.plugin_catalog_digest:
         raise ValueError("installed plugin/configuration differs from the pinned task catalog")
-    registration = agent_task_registration(plugin_catalog)
+    from cpn.plugins.managed_tools import ManagedPluginToolCatalog
+    managed_catalogs = {
+        node_id: ManagedPluginToolCatalog(
+            plugin_catalog, binding["tools"],
+            admitted_effects=binding["admitted_effects"])
+        for node_id, binding in spec.managed_bindings.items()
+    }
+    managed_registration_keys = {
+        node_id: tuple(
+            declaration.registration_key for declaration in catalog.tools)
+        for node_id, catalog in managed_catalogs.items()
+    }
+    managed_visible_names = {
+        node_id: tuple(declaration.name for declaration in catalog.tools)
+        for node_id, catalog in managed_catalogs.items()
+    }
+    registration = agent_task_registration(
+        plugin_catalog, managed_catalogs.values())
     if spec.workflow_graph is None:
         module = build_agent_task_module(
-            spec.stages, max_attempts_per_stage=spec.max_attempts_per_stage)
+            spec.stages, max_attempts_per_stage=spec.max_attempts_per_stage,
+            managed_tools=managed_registration_keys,
+            managed_tool_names=managed_visible_names)
     else:
         schemas, _types = optional_agent_loop_schema_data()
         module = build_agent_workflow_module(
@@ -788,6 +907,8 @@ def _execute_agent_task(
             required_schemas=(CONFIG_SCHEMA_ID, *schemas),
             max_attempts_per_node=spec.max_attempts_per_stage,
             plugin_catalog=plugin_catalog,
+            managed_tools=managed_registration_keys,
+            managed_tool_names=managed_visible_names,
         )
     bucket_documents = module.to_dict()["budget_buckets"]
     call_cap = sum(bucket["max_attempts"] for bucket in bucket_documents)
@@ -831,6 +952,7 @@ def _execute_agent_task(
                 for profile_id, selected in selections.items()
                 if profile_id != "default"
             },
+            managed_catalogs=managed_catalogs,
         )
         if resume:
             # Validate every exact model/provider route through a read-only
@@ -899,6 +1021,18 @@ def _execute_agent_task(
             owner=owner, event_loop=event_loop, llm_input_port=port,
             llm_input_ports_by_transition=transition_ports,
             interruption_requested=stop_requested.is_set)
+        if managed_catalogs:
+            from types import MappingProxyType
+            from cpn.plugins.managed_tools import ManagedPluginInvocationService
+            assert services._optional_agent_service is not None
+            services._optional_agent_service.managed_plugin_services = (
+                MappingProxyType({
+                    node_id: ManagedPluginInvocationService(
+                        owner, services._kernel, services._repository, catalog)
+                    for node_id, catalog in managed_catalogs.items()
+                }))
+            services._optional_agent_service.managed_plugin_interruption_requested = (
+                stop_requested.is_set)
         with ThreadPoolExecutor(
                 max_workers=spec.max_parallel_nodes) as workers:
             runner = Orchestrator(

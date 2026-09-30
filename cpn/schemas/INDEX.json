@@ -9,6 +9,10 @@
       "path": "registry_v1/agent_action.v2.schema.json"
     },
     {
+      "schema_id": "registry_v1/agent_action/v3",
+      "path": "registry_v1/agent_action.v3.schema.json"
+    },
+    {
       "schema_id": "registry_v1/agent_action_settled/v1",
       "path": "registry_v1/agent_action_settled.v1.schema.json"
     },

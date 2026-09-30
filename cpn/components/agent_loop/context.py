@@ -683,6 +683,7 @@ def optional_agent_loop_schema_data():
     root = Path(__file__).resolve().parents[2] / "schemas" / "registry_v1"
     schemas, types = {}, []
     for name, category in (("agent_loop/v1", "object"), ("agent_action/v2", "object"),
+            ("agent_action/v3", "object"),
             ("agent_context_compaction/v3", "object"),
             ("agent_tool_error/v1", "object"), ("agent_loop_started/v1", "event"),
             ("agent_action_settled/v1", "event"), ("agent_loop_terminal/v1", "event"),
@@ -798,17 +799,80 @@ class ContextExecutionMixin:
         )
         ref, _, payload = self._static(context, "optional_agent_tool_catalog")
         _, compiled, operation = self._declared(context)
-        if payload != catalog.payload or tuple(operation.declaration.tools) != catalog.tool_names:
+        managed = self._managed_tool_bindings(context)
+        registration_keys = tuple(sorted(
+            managed.get(name, {}).get("registration_key", name)
+            for name in catalog.tool_names))
+        if (payload != catalog.payload
+                or tuple(operation.declaration.tools) != registration_keys):
             raise ResourceIntegrityFault("optional tool catalog differs from the exact admitted declaration")
-        if not catalog.tool_names or set(catalog.tool_names) - set(OPTIONAL_TOOL_BINDINGS):
-            raise OptionalAgentCapabilityUnavailable("optional loop supports only declared read/write/completion")
+        if (not catalog.tool_names
+                or set(catalog.tool_names)
+                - set(OPTIONAL_TOOL_BINDINGS) - set(managed)):
+            raise OptionalAgentCapabilityUnavailable(
+                "optional loop supports only exact declared capabilities")
         for name in catalog.tool_names:
-            actual = compiled.registrations["tool"][name]
-            if actual != self.owner.registration.declaration("tool", name):
+            registration_key = managed.get(name, {}).get(
+                "registration_key", name)
+            actual = compiled.registrations["tool"][registration_key]
+            if canonical_json(actual) != canonical_json(
+                    self.owner.registration.declaration(
+                        "tool", registration_key)):
                 raise ResourceIntegrityFault("optional tool HOST registration changed")
-            if actual["identity"] != OPTIONAL_TOOL_BINDINGS[name][1]["identity"] or actual["contracts"] != OPTIONAL_TOOL_BINDINGS[name][1]["contracts"]:
+            if name in managed:
+                binding = managed[name]
+                contracts = actual["contracts"]
+                identity = actual["identity"]
+                if (contracts.get("invocation_protocol")
+                        != "rpnh/managed_native_plugin_tool_invocation/v2"
+                        or identity.get("provider_name") != name
+                        or identity.get("selector") != binding["selector"]
+                        or identity.get("binding_digest")
+                        != binding["binding_digest"]
+                        or identity.get("plugin_catalog_digest")
+                        != binding["plugin_catalog_digest"]
+                        or identity.get("effect") != binding["effect"]):
+                    raise ResourceIntegrityFault(
+                        "managed tool differs from its node-scoped binding")
+            elif (actual["identity"] != OPTIONAL_TOOL_BINDINGS[name][1]["identity"]
+                    or actual["contracts"] != OPTIONAL_TOOL_BINDINGS[name][1]["contracts"]):
                 raise ResourceIntegrityFault("optional tool is not its declared capability implementation")
         return ref
+
+    def _managed_tool_bindings(self, context):
+        """Read the immutable per-node visible-name to registration mapping."""
+        from .action_execution import OptionalAgentCapabilityUnavailable
+        try:
+            _ref, _prepared, payload = self._static(
+                context, "optional_agent_managed_tool_bindings")
+        except OptionalAgentCapabilityUnavailable:
+            return {}
+        try:
+            document = json.loads(payload)
+        except (TypeError, ValueError) as exc:
+            raise ResourceIntegrityFault(
+                "managed tool binding resource is not JSON") from exc
+        bindings = document.get("bindings") if isinstance(document, Mapping) else None
+        if (not isinstance(document, Mapping)
+                or set(document) != {
+                    "schema_version", "semantic_node_id",
+                    "plugin_catalog_digest", "bindings"}
+                or document.get("schema_version")
+                != "rpnh/agent_loop_managed_tool_bindings/v1"
+                or not isinstance(bindings, Mapping)
+                or any(not isinstance(name, str)
+                       or not isinstance(value, Mapping)
+                       or set(value) != {
+                           "registration_key", "selector", "binding_digest",
+                           "effect", "max_result_bytes"}
+                       for name, value in bindings.items())):
+            raise ResourceIntegrityFault(
+                "managed tool binding resource is malformed")
+        digest = document["plugin_catalog_digest"]
+        return {
+            name: {**dict(value), "plugin_catalog_digest": digest}
+            for name, value in bindings.items()
+        }
 
     def prepare_agent_loop_start_v1(self, execution, catalog, *, idempotency_key):
         from .action_execution import OptionalAgentCapabilityUnavailable

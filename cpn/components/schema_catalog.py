@@ -10,6 +10,7 @@ from cpn.rpnh.registry.schema_catalog import TypeDefinition
 
 COMPONENT_OBJECT_TYPES = (
     "agent_action/v2",
+    "agent_action/v3",
     "agent_tool_error/v1",
     "agent_context_compaction/v3",
     "agent_loop/v1",

@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+from concurrent.futures import ThreadPoolExecutor
 import json
+from threading import Event
 
 import pytest
 
@@ -154,9 +156,9 @@ def _caller_module(registration_key):
     })
 
 
-def _prepared_invocation(tmp_path):
-    selected = _plugin_catalog()
-    managed = _managed_catalog(selected)
+def _prepared_invocation(tmp_path, *, selected=None, managed=None):
+    selected = selected or _plugin_catalog()
+    managed = managed or _managed_catalog(selected)
     declaration = managed.declaration("double_value")
     registration = _registration(managed)
     module = _caller_module(declaration.registration_key)
@@ -246,14 +248,14 @@ def test_explicit_allowlist_projects_one_pure_plugin_operation():
     },)
     document = managed.document()
     assert document["schema_version"] == (
-        "rpnh/managed_native_plugin_tool_catalog/v1")
+        "rpnh/managed_native_plugin_tool_catalog/v2")
     assert document["plugin_catalog_digest"] == selected.digest
     registration = document["tools"][0]["registration"]
     assert registration["identity"]["selector"] == "synthetic/double"
     assert registration["identity"]["binding_digest"] == (
         selected.plugins[0].digest)
     assert registration["contracts"]["invocation_protocol"] == (
-        "rpnh/managed_native_plugin_tool_invocation/v1")
+        "rpnh/managed_native_plugin_tool_invocation/v2")
 
     with pytest.raises(PluginError, match="owner-selected"):
         ManagedPluginToolCatalog(selected, ("synthetic/missing",))
@@ -269,6 +271,26 @@ def test_managed_worker_packet_carries_exact_call_identity(tmp_path):
         "second-legitimate-call", {"value": 4})
 
     assert packet["context"]["call_id"] == "second-legitimate-call"
+
+
+def test_worker_prestart_failures_report_no_possible_execution(monkeypatch):
+    from cpn.plugins.worker import WorkerFailure, execute_worker
+
+    with pytest.raises(WorkerFailure) as serialization:
+        execute_worker(
+            lambda _context, _arguments: None, {}, environment_names=(),
+            timeout_seconds=1, cancelled=lambda: False)
+    assert serialization.value.code == "handler_failed"
+    assert serialization.value.may_have_executed is False
+
+    missing = "RPNH_TEST_MISSING_MANAGED_CREDENTIAL"
+    monkeypatch.delenv(missing, raising=False)
+    with pytest.raises(WorkerFailure) as credential:
+        execute_worker(
+            managed_double, {}, environment_names=(missing,),
+            timeout_seconds=1, cancelled=lambda: False)
+    assert credential.value.code == "credential_environment_missing"
+    assert credential.value.may_have_executed is False
 
 
 def test_non_native_caller_executes_and_persists_started_returned(
@@ -287,7 +309,7 @@ def test_non_native_caller_executes_and_persists_started_returned(
 
     assert result["output"] == 8
     assert result["schema_version"] == (
-        "rpnh/managed_native_plugin_tool_result/v1")
+        "rpnh/managed_native_plugin_tool_result/v2")
     assert result["terminal_receipt_ref"]["resource_version_id"].startswith(
         "resource_version:")
     assert calls == [True]
@@ -325,6 +347,55 @@ def test_returned_call_replays_from_registry_after_service_reconstruction(
     assert calls == [True]
 
 
+def test_concurrent_same_call_observer_waits_for_executor_terminal(
+        tmp_path, monkeypatch):
+    prepared = _prepared_invocation(tmp_path)
+    entered = Event()
+    release = Event()
+    calls = []
+
+    def controlled_worker(*_args, **_kwargs):
+        calls.append(True)
+        entered.set()
+        assert release.wait(timeout=5)
+        return 8
+
+    monkeypatch.setattr(
+        "cpn.plugins.worker.execute_worker", controlled_worker)
+    rebuilt_service = ManagedPluginInvocationService(
+        prepared["owner"], prepared["kernel"], prepared["repository"],
+        _managed_catalog(prepared["selected"]))
+    observer_entered = Event()
+    original_enter = rebuilt_service._enter_active_call
+
+    def enter_as_observer(key):
+        observed = original_enter(key)
+        observer_entered.set()
+        return observed
+
+    monkeypatch.setattr(
+        rebuilt_service, "_enter_active_call", enter_as_observer)
+
+    with ThreadPoolExecutor(max_workers=2) as workers:
+        executor = workers.submit(
+            _invoke, prepared, call_id="concurrent-call")
+        assert entered.wait(timeout=5)
+        observer = workers.submit(
+            _invoke, prepared, service=rebuilt_service,
+            call_id="concurrent-call")
+        assert observer_entered.wait(timeout=5)
+        assert not observer.done()
+        release.set()
+        executed = executor.result(timeout=5)
+        observed = observer.result(timeout=5)
+
+    assert observed == executed
+    assert executed["outcome"] == "returned"
+    assert calls == [True]
+    assert [item["state"] for item in _managed_receipts(
+        tmp_path / "run")] == ["started", "returned"]
+
+
 def test_changed_arguments_conflict_with_durable_call_identity(
         tmp_path, monkeypatch):
     prepared = _prepared_invocation(tmp_path)
@@ -344,7 +415,7 @@ def test_changed_arguments_conflict_with_durable_call_identity(
     assert calls == [True]
 
 
-def test_started_without_terminal_blocks_reconciliation_and_redispatch(
+def test_started_without_terminal_publishes_unknown_and_never_redispatches(
         tmp_path, monkeypatch):
     prepared = _prepared_invocation(tmp_path)
     calls = []
@@ -363,12 +434,65 @@ def test_started_without_terminal_blocks_reconciliation_and_redispatch(
         _managed_catalog(prepared["selected"]))
     with pytest.raises(
             ManagedPluginInvocationReconciliationRequired,
-            match="without a terminal"):
+            match="requires reconciliation") as blocked:
         _invoke(
             prepared, service=rebuilt_service, call_id="started-only")
+    assert blocked.value.evidence["error"] == {
+        "code": "managed_terminal_observation_missing"}
     assert calls == [True]
     assert [item["state"] for item in _managed_receipts(
-        tmp_path / "run")] == ["started"]
+        tmp_path / "run")] == ["started", "outcome_unknown"]
+
+
+def test_provider_override_is_additional_to_plugin_input_schema(
+        tmp_path, monkeypatch):
+    selected = _plugin_catalog()
+    managed = ManagedPluginToolCatalog(selected, {
+        "double_value": {
+            "selector": "synthetic/double",
+            "input_schema": {"type": "object"},
+        },
+    })
+    prepared = _prepared_invocation(
+        tmp_path, selected=selected, managed=managed)
+    calls = []
+    monkeypatch.setattr(
+        "cpn.plugins.worker.execute_worker",
+        lambda *_args, **_kwargs: calls.append(True))
+
+    with pytest.raises(PluginError, match="declared plugin schema"):
+        _invoke(prepared, arguments={"value": "provider-only-value"})
+
+    assert calls == []
+    assert _managed_receipts(tmp_path / "run") == []
+
+
+def test_legacy_v1_declaration_is_the_exact_base_shape():
+    selected = _plugin_catalog()
+    managed = ManagedPluginToolCatalog(
+        selected, {"double_value": "synthetic/double"},
+        protocol_version="v1")
+    declaration = managed.declaration("double_value")
+    operation_key = selected.operation_key("synthetic/double")
+
+    assert managed.document()["schema_version"] == (
+        "rpnh/managed_native_plugin_tool_catalog/v1")
+    assert declaration.registration_key == (
+        f"{operation_key}/managed-tool/v1/double_value")
+    assert json_copy(declaration.identity) == {
+        "implementation_id": "rpnh.managed_native_plugin_tool",
+        "revision": "v1",
+        "provider_name": "double_value",
+        "selector": "synthetic/double",
+        "plugin_version": "1",
+        "binding_digest": selected.plugins[0].digest,
+        "plugin_catalog_digest": selected.digest,
+    }
+    assert declaration.contracts["invocation_protocol"] == (
+        "rpnh/managed_native_plugin_tool_invocation/v1")
+    assert "capability" not in declaration.contracts["managed_plugin"]
+    assert "effect" not in declaration.contracts
+    assert "max_result_bytes" not in declaration.contracts
 
 
 def test_invalid_arguments_reject_before_started_claim_or_worker(
@@ -411,7 +535,74 @@ def test_failed_call_is_durable_and_never_silently_retried(
         tmp_path / "run")] == ["started", "failed"]
 
 
+def test_external_write_prestart_failure_is_durable_failed_not_unknown(
+        tmp_path, monkeypatch):
+    from cpn.plugins.worker import WorkerFailure
+    selected = _plugin_catalog(effect="external_write")
+    managed = ManagedPluginToolCatalog(
+        selected, (ManagedToolSelector(
+            "double_value", "synthetic/double"),),
+        admitted_effects=("external_write",))
+    prepared = _prepared_invocation(
+        tmp_path, selected=selected, managed=managed)
+    calls = []
+
+    def prestart_failure(*_args, **_kwargs):
+        calls.append(True)
+        raise WorkerFailure(
+            "credential_environment_missing", may_have_executed=False)
+
+    monkeypatch.setattr(
+        "cpn.plugins.worker.execute_worker", prestart_failure)
+    with pytest.raises(ManagedPluginInvocationFailed) as first:
+        _invoke(prepared, call_id="prestart-external-write")
+    assert first.value.evidence["outcome"] == "failed"
+
+    rebuilt = ManagedPluginInvocationService(
+        prepared["owner"], prepared["kernel"], prepared["repository"],
+        managed)
+    with pytest.raises(ManagedPluginInvocationFailed) as replayed:
+        _invoke(
+            prepared, service=rebuilt,
+            call_id="prestart-external-write")
+    assert replayed.value.evidence["outcome"] == "failed"
+    assert calls == [True]
+    assert [item["state"] for item in _managed_receipts(
+        tmp_path / "run")] == ["started", "failed"]
+
+
 def test_non_pure_operation_is_not_managed():
     selected = _plugin_catalog(effect="external_write")
-    with pytest.raises(PluginError, match="pure"):
+    with pytest.raises(PluginError, match="explicitly admitted"):
         _managed_catalog(selected)
+
+
+def test_effect_policy_and_provider_descriptor_overrides_are_explicit():
+    selected = _plugin_catalog(effect="external_read")
+    override = {
+        "type": "object", "additionalProperties": False,
+        "properties": {"value": {"type": "integer", "minimum": 2}},
+        "required": ["value"],
+    }
+    managed = ManagedPluginToolCatalog(
+        selected, {"double_value": {
+            "selector": "synthetic/double",
+            "description": "Host-scoped exact read",
+            "input_schema": override,
+        }}, admitted_effects=("pure", "external_read"))
+
+    declaration = managed.declaration("double_value")
+    assert declaration.effect == "external_read"
+    assert declaration.description == "Host-scoped exact read"
+    assert json_copy(declaration.input_schema) == override
+    assert declaration.contracts["effect"] == "external_read"
+    assert json_copy(
+        declaration.contracts["managed_plugin"]["capability"]) == {
+        "schema_version": "rpnh/plugin_capability/v1",
+        "binding_digest": selected.plugins[0].digest,
+        "plugin": selected.plugins[0].definition.descriptor(),
+        "operation": "double",
+        "config": {},
+        "environment": [],
+        "assets": [],
+    }

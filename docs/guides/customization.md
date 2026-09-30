@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: en
   counterpart: customization_ZH.md
-  revision: "2026-09-29.2"
+  revision: "2026-10-01.1"
   status: source-reviewed-v0.1.0rc1
   basis: "core; adapter differences explicitly labelled"
 ---
@@ -51,6 +51,40 @@ Expose a declaration-only factory through the `rpnh.plugins` entry-point group. 
 Use top-level importable handlers with input/output Draft-07 schemas, declared resources, an effect of `pure`, `external_read` or `external_write`, and explicit limits. Handler source bytes are pinned; transitive dependencies still belong to the installed environment. Version declarations are not an OS security sandbox. No hidden retries, dynamic imports supplied by task JSON, or direct internal Registry handles belong in a handler.
 
 Each worker receives the harness-owned `context.call_id` together with its operation, invocation and firing identities. Use that call identity when an external effect service needs replay protection; do not collapse all calls to one operation in the same firing into one request.
+
+## Bind registered tools to individual agent nodes
+
+An `AgentTaskSpec` can expose selected native-plugin operations as managed tools
+on exact stages or workflow nodes. The task still pins the complete plugin
+configuration and catalog digest. Each node maps a provider-visible name to one
+exact selector and explicitly admits the effects that its trusted host accepts:
+
+```python
+managed_bindings = {
+    "planner": {
+        "tools": {"lookup": {"selector": "catalog_a/lookup"}},
+        "admitted_effects": ["external_read"],
+    },
+    "worker": {
+        "tools": {"lookup": {"selector": "catalog_b/lookup"}},
+        "admitted_effects": ["pure"],
+    },
+}
+```
+
+The identical visible name is node-scoped; it does not merge the two
+implementations. A declaration may also narrow the provider-visible
+`description` and object `input_schema`, but execution validates both that
+surface and the original plugin operation schema. Built-in AgentLoop tool names
+are reserved and cannot be rebound. Empty bindings take the legacy task path.
+
+Managed invocation persists the exact call identity and a started receipt before
+dispatch, followed by returned, failed, or outcome-unknown evidence. A repeated
+completed call reads its durable result; a missing terminal observation for an
+external effect requires owner reconciliation and is not permission to replay
+the handler. The Registry can retain the full result even when later context
+compaction exposes only a bounded projection. A result reference therefore does
+not by itself prove that a provider request actually contained the full result.
 
 A skill can be a registered instruction resource consumed by an admitted operation; Markdown front matter alone does not create one. An MCP-backed tool must be wrapped/bound through an explicitly installed host capability with visible operation/resource/effect semantics. This is not a claim of universal MCP server discovery or support for every transport. Test the selected host and protocol before advertising compatibility.
 

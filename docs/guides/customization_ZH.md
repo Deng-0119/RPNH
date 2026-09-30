@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: customization.md
-  revision: "2026-09-29.2"
+  revision: "2026-10-01.1"
   status: source-reviewed-v0.1.0rc1
   basis: "core; adapter differences explicitly labelled"
 ---
@@ -56,6 +56,35 @@ handler 应是可导入的顶层函数，有 Draft-07 输入/输出 schema、资
 每个 worker 都会收到由 harness 所有的 `context.call_id`，以及对应的 operation、invocation
 和 firing 身份。外部效果服务需要防重放时应使用该逐调用身份；不得把同一 firing 内对同一
 operation 的所有调用折叠为一个请求。
+
+## 按 Agent 节点绑定登记工具
+
+`AgentTaskSpec` 可以在精确 stage 或 workflow node 上，把选定的原生插件 operation 暴露为
+managed tool。任务仍钉住完整插件配置与 catalog digest；每个节点将模型可见名称映射到
+精确 selector，并显式声明可信宿主接受的 effect：
+
+```python
+managed_bindings = {
+    "planner": {
+        "tools": {"lookup": {"selector": "catalog_a/lookup"}},
+        "admitted_effects": ["external_read"],
+    },
+    "worker": {
+        "tools": {"lookup": {"selector": "catalog_b/lookup"}},
+        "admitted_effects": ["pure"],
+    },
+}
+```
+
+相同模型可见名称只在节点内有效，不会合并两个实现。声明也可收窄模型可见的
+`description` 与 object `input_schema`，但执行时会同时验证这一表面 schema 和原插件
+operation schema。AgentLoop 内置工具名属于保留名，不能被重新绑定；空绑定继续走旧任务
+路径。
+
+managed 调用会在派发前持久记录精确 call identity 与 started 回执，再记录 returned、failed
+或 outcome-unknown 证据。已完成的同一调用读取持久结果；外部效果缺少 terminal observation
+时必须由 owner 核对，不能据此重放 handler。Registry 可以保存完整结果，而后续上下文压缩
+只暴露有界投影；因此仅有结果引用并不能证明某次 provider 请求实际包含了完整结果。
 
 skill 可作为准入 operation 消费的已注册指令资源；Markdown front matter 本身不会安装 skill。MCP 工具需要通过明确安装的宿主能力绑定，把 operation、资源和效果暴露给核心；这不等于自动发现任意 MCP server，也不表示支持所有传输。应测试实际选用的宿主和协议后再声明兼容。
 

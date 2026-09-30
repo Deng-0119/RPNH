@@ -216,7 +216,7 @@ def _revalidate_committed_agent_terminal(
     for event in actions:
         rows = tuple(
             row for row in object_rows
-            if row["object_type"] == "agent_action/v2"
+            if row["object_type"] in {"agent_action/v2", "agent_action/v3"}
             and row["logical_id"] == event.payload.get("agent_action_id"))
         if len(rows) != 1 or str(rows[0]["transaction_id"]) != str(
                 event.transaction_id):

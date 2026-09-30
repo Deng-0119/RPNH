@@ -6,7 +6,7 @@ metadata:
   audience: user-and-developer
   language: zh-CN
   counterpart: CHANGELOG.md
-  revision: "2026-09-30.1"
+  revision: "2026-10-01.1"
   status: v0.1.0rc1
 ---
 
@@ -16,6 +16,9 @@ metadata:
 
 ## 未发布
 
+- Agent task 与 workflow 现在可以按 node 或 stage，把显式登记的原生插件 operation
+  绑定到模型可见工具名。绑定会明确准入 effect、保留逐调用回执与结构化结果；未配置
+  此功能时，旧任务和普通 action 记录保持原有行为。
 - native 与 managed plugin worker 现在会收到由 harness 所有的逐调用
   `PluginContext.call_id`，使外部效果桥能够区分对同一 operation 的两次合法调用与重放。
 - 用户自有 provider catalog 现可为精确模型声明可选 reasoning effort。Basic、DSH、

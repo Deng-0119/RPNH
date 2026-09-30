@@ -867,6 +867,8 @@ def build_agent_workflow_module(
         graph: AgentWorkflowGraph, *, executor_key: str, terminal_key: str,
         tools: Sequence[str], required_schemas: Sequence[str],
         max_attempts_per_node: int = 12, plugin_catalog=None,
+        managed_tools: Mapping[str, Sequence[str]] | None = None,
+        managed_tool_names: Mapping[str, Sequence[str]] | None = None,
 ) -> ModuleDeclaration:
     """Build one graph-shaped independent workflow Module."""
     if not isinstance(graph, AgentWorkflowGraph):
@@ -875,6 +877,25 @@ def build_agent_workflow_module(
             or not isinstance(max_attempts_per_node, int)
             or max_attempts_per_node < 1):
         raise ValueError("max_attempts_per_node must be positive")
+    managed_tools = dict(managed_tools or {})
+    managed_tool_names = dict(managed_tool_names or {})
+    if (set(managed_tools) - {node.node_id for node in graph.nodes}
+            or any(not isinstance(values, Sequence)
+                   or isinstance(values, (str, bytes))
+                   or any(not isinstance(value, str) or not value
+                          for value in values)
+                   for values in managed_tools.values())):
+        raise ValueError("managed workflow tools must be keyed by exact node")
+    if set(managed_tool_names) - {node.node_id for node in graph.nodes}:
+        raise ValueError("managed workflow names must be keyed by exact node")
+    for node in graph.nodes:
+        names = set(managed_tool_names.get(node.node_id, ()))
+        if names and node.execution.plugin is not None:
+            raise ValueError(
+                "managed tools cannot target plugin-executed workflow nodes")
+        if names & set(tools):
+            raise ValueError(
+                "managed workflow tool names collide with reserved built-in tools")
     node_buckets = [{
         "bucket_id": node.node_id,
         "budget_scope": node.node_id if len(graph.nodes) > 1 else "module",
@@ -963,9 +984,11 @@ def build_agent_workflow_module(
                 "inputs": inputs,
                 "outputs": semantic_outputs + interrupt_outputs,
                 "request_port": inputs[0],
-                "tools": list(
-                    node.execution.tools
-                    if node.execution.tools is not None else sorted(tools)),
+                "tools": sorted({
+                    *(node.execution.tools
+                      if node.execution.tools is not None else tools),
+                    *managed_tools.get(node.node_id, ()),
+                }),
                 "config": {
                     "provider_attempt_limit": 3,
                     "agent_loop_role": node.execution.role,

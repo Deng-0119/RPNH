@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: extensions-observation.md
-  revision: "2026-09-29.2"
+  revision: "2026-10-01.1"
   status: source-reviewed-v0.1.0rc1
   basis: "core; adapter differences explicitly labelled"
 ---
@@ -32,19 +32,35 @@ list 描述 catalog，check 编译所有 operation，build SELECTOR 返回经编
 
 使用[自定义示例](../guides/customization_ZH.md)，不要直接调用私有 Registry helper。安装 Python 包不会自动让所有任务选择它；文档 metadata 不授予执行权限。
 
-## DSH 宿主的受管工具目录
-统一包包含 `cpn/plugins/managed_tools.py`，但该目录只由显式 DSH 宿主配置启用，不是 Basic、
-Codex 或 OpenCode 的全局工具发现面。`ManagedToolSelector(name, selector)` 把模型可见名称映射
-到精确的 `plugin/operation`。`ManagedPluginToolCatalog(plugin_catalog, allowlist)` 是显式
+## 可信宿主的受管工具目录
+统一包包含 `cpn/plugins/managed_tools.py`。该目录只由显式可信宿主配置启用，包括 managed
+DSH 或逐节点的 `AgentTaskSpec.managed_bindings`；它不是 Basic、Codex 或 OpenCode 的全局
+工具发现面。`ManagedToolSelector(name, selector)` 把模型可见名称映射到精确的
+`plugin/operation`。`ManagedPluginToolCatalog(plugin_catalog, allowlist)` 是显式
 `PluginCatalog` 的不可变投影，不是自动发现服务。其 `provider_declarations` 属性返回
 function 声明；`declaration(name)`、`binding(name)` 拒绝未选择的名称；`document()` 包含所选
 目录和注册身份。
 
-仅接受声明 `effect="pure"` 且输入 schema 为 object 的 operation。模型可见名称和插件 selector 均须唯一。DSH CLI 将 `--plugin-config ABSOLUTE_PATH` 与一个或多个 `--managed-tool NAME=PLUGIN/OPERATION` 同时使用；名称的每个组成部分均须匹配 `[a-z][a-z0-9_]{0,47}`。安装插件、选择 provider 或增加模型可见描述都不授予执行权限；这不是任意 DSH 插件或 MCP 挂载。
+通用目录仅在宿主显式列出 effect 时接受 `pure`、`external_read` 或 `external_write`，默认仍为
+`pure`；operation 的输入 schema 必须是 object。同一节点目录内的模型可见名称和 selector
+必须唯一，所有 AgentLoop 内置派发名称均为保留名。宿主可以收窄可见 description 与输入
+schema，但调用时会同时验证可见 schema 和原插件 operation schema。安装插件、选择
+provider 或改变可见描述都不授予执行权限。
+
+DSH CLI 仍是更窄的宿主：它将 `--plugin-config ABSOLUTE_PATH` 与一个或多个
+`--managed-tool NAME=PLUGIN/OPERATION` 同时使用，并且只准入 pure operation。名称的每个
+组成部分均须匹配 `[a-z][a-z0-9_]{0,47}`；这不是任意 DSH 插件或 MCP 挂载。
 
 DSH backend 在通用 SDK 限额之外，额外要求**声明的结果上限不超过 65536 字节（64 KiB）**。SDK 默认值为 1048576 字节，因此在原生插件接口有效的插件，也可能在 DSH worker 启动前被拒绝。两者都不是推荐的业务值：`max_result_bytes` 应由 operation 有界的合法输出推导。当前 demo 约束输入域并声明 1024 字节，高于其最大序列化输出且低于 DSH ceiling。启动参数不能改写插件声明；修订插件时仍须遵守正常版本与精确身份规则。
 
-owner-bound 受管调用服务核对调用方 execution、工具身份和参数，并记录 invocation/receipt 材料。inspector 在 worker 执行前校验参数；DSH 路径还将工具声明、最坏结果大小和下一次模型响应纳入整体 2 MiB frame 检查。已经持久记录的插件失败作为一条有精确关联的 `isError: true` 工具结果返回，不是成功值。只有 dispatch 而无持久终态观察时，需要 reconciliation，不能自动重试。每个模型响应只支持一次有关联的工具调用，再进入下一模型步骤；不隐含支持并行工具批次。
+owner-bound 受管调用服务核对调用方 execution、工具身份和参数，并记录 started 以及
+returned、failed 或 outcome-unknown 回执。仍由活动执行者持有的调用不会因并发观察者而被
+改写为未知结果；所有权丢失后，已经 dispatch 却没有持久终态证据的调用需要
+reconciliation，不能自动重试。Registry 中的完整结果与模型可见的有界投影是不同证据；
+保存全文不代表 provider 实际收到了全文。inspector 在 worker 执行前校验参数；DSH 路径还
+将工具声明、最坏结果大小和下一次模型响应纳入整体 2 MiB frame 检查。已经持久记录的插件
+失败是一条精确关联的 `isError: true` 工具结果，不是成功值。DSH 每个模型响应只支持一次
+有关联的工具调用，再进入下一模型步骤；不隐含支持并行 DSH 工具批次。
 
 `pure` 是可信已安装代码的声明契约，不是 OS 安全边界。启动与恢复参数见
 [DSH 指南](../guides/dsh_ZH.md)，持久 completion 结算见 [runtime 恢复](runtime-registry_ZH.md)。

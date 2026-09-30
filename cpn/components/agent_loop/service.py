@@ -540,10 +540,12 @@ class CompletedAgentContextCompaction:
 class _LLMExecutionBlock(BaseException):
     """Process-local LLM wait/block; never a firing outcome."""
 
-    def __init__(self, authority: OperationExecutionBlockAuthority) -> None:
+    def __init__(self, authority: OperationExecutionBlockAuthority,
+                 loop: AgentLoopSnapshot | None = None) -> None:
         if not isinstance(authority, OperationExecutionBlockAuthority):
             raise TypeError("LLM block requires exact Registry authority")
         self.authority = authority
+        self.loop = loop
         super().__init__("LLM execution blocked")
 
 
@@ -779,8 +781,9 @@ class AgentLoopService:
                         idempotency_key=(
                             f"{idempotency_key}:turn:{turn.sequence}"))
                 except _LLMExecutionBlock as blocked:
+                    committed_loop = blocked.loop or loop
                     return AgentLoopExecutionBlock(
-                        loop=loop,
+                        loop=committed_loop,
                         block_authority=blocked.authority,
                         timing_observation=(
                             self._operation_timing_observation(
@@ -1415,6 +1418,10 @@ class AgentLoopService:
                 **settlement_timing_kwargs)
         if isinstance(settlement, OperationExecutionBlockAuthority):
             raise _LLMExecutionBlock(settlement)
+        if (isinstance(settlement, tuple) and len(settlement) == 2
+                and isinstance(settlement[0], OperationExecutionBlockAuthority)
+                and isinstance(settlement[1], AgentLoopSnapshot)):
+            raise _LLMExecutionBlock(settlement[0], settlement[1])
         if (not isinstance(settlement, tuple)
                 or len(settlement) != 2):
             raise AgentLoopProtocolError(

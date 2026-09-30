@@ -7,12 +7,15 @@ import pickle
 import signal
 import time
 
-from .api import PluginContext, PluginError, canonical, json_copy, implementation_identity
+from .api import PluginContext, canonical, json_copy, implementation_identity
 
 
 class WorkerFailure(RuntimeError):
-    def __init__(self, code: str):
+    def __init__(self, code: str, *, may_have_executed: bool = True):
+        if not isinstance(may_have_executed, bool):
+            raise TypeError("worker execution uncertainty must be boolean")
         self.code = code
+        self.may_have_executed = may_have_executed
         super().__init__(code)
 
 
@@ -51,11 +54,14 @@ def execute_worker(handler, packet, *, environment_names, timeout_seconds, cance
     try:
         pickle.dumps(handler)
     except Exception as exc:
-        raise PluginError("plugin handler is not importable by a spawned worker") from exc
+        raise WorkerFailure(
+            "handler_failed", may_have_executed=False) from exc
     allowed = {key: os.environ[key] for key in ("PATH", "LANG", "LC_ALL", "TMPDIR") if key in os.environ}
     for name in environment_names:
         if name not in os.environ:
-            raise WorkerFailure("credential_environment_missing")
+            raise WorkerFailure(
+                "credential_environment_missing",
+                may_have_executed=False)
         allowed[name] = os.environ[name]
     mp = multiprocessing.get_context("spawn")
     reader, writer = mp.Pipe(duplex=False)
@@ -64,7 +70,12 @@ def execute_worker(handler, packet, *, environment_names, timeout_seconds, cance
     process = mp.Process(target=_worker, args=(handler, packet, allowed, event, writer, deadline))
     started = False
     try:
-        process.start(); started = True
+        try:
+            process.start()
+        except Exception as exc:
+            raise WorkerFailure(
+                "worker_protocol_failed", may_have_executed=False) from exc
+        started = True
         writer.close()
         while True:
             if cancelled():

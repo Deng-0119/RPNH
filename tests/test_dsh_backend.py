@@ -9,7 +9,10 @@ from cpn.dsh.backend import (
     DshBackend, MAX_BYTES, MAX_MANAGED_TOOL_RESULT_BYTES, REVISION,
 )
 from cpn.llm_adapters.config import LLMExecutionSelection
-from cpn.plugins import PluginDefinition, PluginOperation
+from cpn.plugins import (
+    BoundPlugin, PluginCatalog, PluginDefinition, PluginOperation,
+    build_managed_plugin_tool_catalog,
+)
 from cpn.rpnh.llm_contracts import LLMInputResponseBytes, LLMInputTarget
 from cpn.rpnh.inspection import project_registry_net
 from cpn.rpnh.registry._registry import _RegistryCore
@@ -196,6 +199,37 @@ def managed_plugin_definition(
             }, {'type': 'integer'}, managed_double,
             max_result_bytes=max_result_bytes),
     ))
+
+
+def configured_managed_plugin(tmp_path, monkeypatch):
+    import cpn.plugins.catalog as plugin_catalog
+
+    monkeypatch.setattr(
+        plugin_catalog.metadata, 'entry_points',
+        lambda *, group: [SimpleNamespace(
+            name='managed-test', load=lambda: managed_plugin_definition)])
+    plugin_config = (tmp_path / 'plugins.json').resolve()
+    plugin_config.write_text(json.dumps({
+        'schema_version': 'rpnh/plugins/v1',
+        'plugins': [{
+            'name': 'managed_test', 'entry_point': 'managed-test',
+            'version': '1', 'config': {}, 'environment': [],
+        }],
+    }), encoding='utf-8')
+    selected = PluginCatalog((BoundPlugin(managed_plugin_definition(), {}),))
+    return plugin_config, selected
+
+
+def managed_receipts(run_dir):
+    core = _RegistryCore(run_dir, create=False, read_only=True)
+    receipts = []
+    for row in core.event_store.canonical_object_rows(
+            object_type='resource_version/v1'):
+        metadata = json.loads(row['metadata_json'])
+        if 'managed_plugin_call' in metadata.get('descriptors', {}):
+            receipts.append(json.loads(core.object_store.read_registered(
+                core.get_version(row['version_id']))))
+    return receipts
 
 
 class ManagedConfiguredPort:
@@ -537,6 +571,99 @@ def test_configured_managed_plugin_tool_uses_shared_registry_boundary_once(
     assert {item['call_id'] for item in receipts} == {'call-double'}
     assert result['answer']['messages'][-3]['content'][0]['name'] == (
         'double_value')
+
+
+def test_configured_v2_managed_tool_stop_reopens_with_exact_registration(
+        tmp_path, monkeypatch,
+):
+    plugin_config, _selected = configured_managed_plugin(
+        tmp_path, monkeypatch)
+    selection = configured_selection(tmp_path)
+    physical = ManagedConfiguredPort(selection)
+    backend = DshBackend(
+        tmp_path, 's1', ManagedConfiguredEffect(), create=True,
+        offline=False, selection=selection,
+        plugin_config_path=plugin_config,
+        managed_tools={'double_value': 'managed_test/double'},
+        input_port_factory=lambda *_args, **_kwargs: physical)
+    stopped = []
+
+    def stop_before_tool(_owner, execution):
+        if (execution.operation.firing.transition_id == 'dsh.tool'
+                and not stopped):
+            stopped.append(True)
+            backend.cancel()
+
+    backend.before_dispatch = stop_before_tool
+    turn = configured_request(selection)
+    turn['policy']['tools'] = ['double_value']
+
+    interrupted = backend.turn(turn)
+
+    assert interrupted['status'] == 'stopped_by_owner'
+    assert len(physical.calls) == 1
+    reopened = DshBackend(
+        tmp_path, 's1', ManagedConfiguredEffect(), offline=False,
+        selection=selection, plugin_config_path=plugin_config,
+        managed_tools={'double_value': 'managed_test/double'},
+        input_port_factory=lambda *_args, **_kwargs: physical)
+    resumed = reopened.resume()
+
+    assert resumed['status'] == 'terminal'
+    assert resumed['answer']['text'] == 'The result is 8.'
+    assert len(physical.calls) == 2
+    run_dir = next((tmp_path / 's1' / 'main' / 'attempts').iterdir())
+    receipts = managed_receipts(run_dir)
+    assert [item['state'] for item in receipts] == ['started', 'returned']
+    assert all(item['schema_version'].endswith('/v2') for item in receipts)
+    assert all(item['admitted_at_utc'].endswith('Z') for item in receipts)
+
+
+def test_configured_persisted_v1_managed_tool_resumes_and_executes_exactly(
+        tmp_path, monkeypatch,
+):
+    plugin_config, selected = configured_managed_plugin(
+        tmp_path, monkeypatch)
+    selection = configured_selection(tmp_path)
+    physical = ManagedConfiguredPort(selection)
+    backend = DshBackend(
+        tmp_path, 's1', ManagedConfiguredEffect(), create=True,
+        offline=False, selection=selection,
+        plugin_config_path=plugin_config,
+        managed_tools={'double_value': 'managed_test/double'},
+        input_port_factory=lambda *_args, **_kwargs: physical)
+    backend.managed_tools = build_managed_plugin_tool_catalog(
+        selected, {'double_value': 'managed_test/double'},
+        protocol_version='v1')
+    backend.managed_tool_names = ('double_value',)
+
+    def stop_before_tool(_owner, execution):
+        if execution.operation.firing.transition_id == 'dsh.tool':
+            backend.cancel()
+
+    backend.before_dispatch = stop_before_tool
+    turn = configured_request(selection)
+    turn['policy']['tools'] = ['double_value']
+
+    interrupted = backend.turn(turn)
+
+    assert interrupted['status'] == 'stopped_by_owner'
+    assert len(physical.calls) == 1
+    reopened = DshBackend(
+        tmp_path, 's1', ManagedConfiguredEffect(), offline=False,
+        selection=selection, plugin_config_path=plugin_config,
+        managed_tools={'double_value': 'managed_test/double'},
+        input_port_factory=lambda *_args, **_kwargs: physical)
+    resumed = reopened.resume()
+
+    assert resumed['status'] == 'terminal'
+    assert resumed['answer']['text'] == 'The result is 8.'
+    assert len(physical.calls) == 2
+    run_dir = next((tmp_path / 's1' / 'main' / 'attempts').iterdir())
+    receipts = managed_receipts(run_dir)
+    assert [item['state'] for item in receipts] == ['started', 'returned']
+    assert all(item['schema_version'].endswith('/v1') for item in receipts)
+    assert all('admitted_at_utc' not in item for item in receipts)
 
 
 def test_configured_managed_tools_require_explicit_matching_policy(

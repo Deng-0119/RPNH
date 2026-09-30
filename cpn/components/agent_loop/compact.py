@@ -208,13 +208,15 @@ def reduce_tool_messages(
 def prior_tool_result_reference(
         result_metadata: Mapping[str, Any],
         agent_action_ref: Mapping[str, Any],
+        *, model_visible_byte_limit: int | None = None,
 ) -> dict[str, Any]:
     """Replace an already-delivered large tool body with its exact action locator."""
 
     if (not isinstance(agent_action_ref, Mapping)
             or set(agent_action_ref) != {
                 "entity_type", "logical_id", "version_id"}
-            or agent_action_ref.get("entity_type") != "agent_action/v2"
+            or agent_action_ref.get("entity_type") not in {
+                "agent_action/v2", "agent_action/v3"}
             or not isinstance(agent_action_ref.get("logical_id"), str)
             or not str(agent_action_ref["logical_id"]).startswith(
                 "agent_action:")
@@ -236,6 +238,60 @@ def prior_tool_result_reference(
         "result_kind": kind,
         "model_visible_history": "reference_only_after_immediate_delivery",
     }
+    if kind == "managed_native_plugin_result/v1":
+        terminal_ref = result_metadata.get("terminal_receipt_ref")
+        if (agent_action_ref.get("entity_type") != "agent_action/v3"
+                or set(result_metadata) != {
+                    "kind", "output", "terminal_receipt_ref"}
+                or not isinstance(terminal_ref, Mapping)
+                or set(terminal_ref) != {
+                    "resource_id", "resource_version_id"}
+                or not isinstance(terminal_ref.get("resource_id"), str)
+                or not terminal_ref["resource_id"].startswith("resource:")
+                or not isinstance(
+                    terminal_ref.get("resource_version_id"), str)
+                or not terminal_ref["resource_version_id"].startswith(
+                    "resource_version:")):
+            raise ValueError("prior managed result metadata is invalid")
+        if (model_visible_byte_limit is not None
+                and (isinstance(model_visible_byte_limit, bool)
+                     or not isinstance(model_visible_byte_limit, int)
+                     or model_visible_byte_limit < 128)):
+            raise ValueError("managed result delivery limit is invalid")
+        serialized_size = len(json.dumps(
+            dict(result_metadata), ensure_ascii=True, sort_keys=True,
+            separators=(",", ":"), allow_nan=False).encode("utf-8"))
+        if model_visible_byte_limit is None:
+            delivery = "not_recorded"
+            history = "delivery_not_recorded"
+            notice = (
+                "This action records the complete Registry result and terminal "
+                "receipt, but does not record whether provider content was "
+                "delivered. No provider-delivery claim is made.")
+        elif serialized_size <= model_visible_byte_limit:
+            delivery = "full"
+            history = "full_within_limit_before_reference"
+            notice = (
+                "The complete managed result fit the immediate model-visible "
+                "history limit. The terminal receipt identifies full Registry "
+                "evidence; it is not itself proof of provider receipt.")
+        else:
+            delivery = "bounded"
+            history = "bounded_before_reference"
+            notice = (
+                "Only a bounded representation of the managed result fit the "
+                "immediate model-visible history. The complete output was not "
+                "delivered in full as provider content; it remains available "
+                "from the exact Registry terminal receipt.")
+        return {
+            **common,
+            "model_visible_history": history,
+            "status": "returned",
+            "terminal_receipt_ref": dict(terminal_ref),
+            "provider_content_delivery": delivery,
+            "output_replayed": False,
+            "history_notice": notice,
+        }
     if kind == "bounded_numerical_result/v1":
         if (set(result_metadata) != {
                 "kind", "status", "result_size_bytes", "path"}
