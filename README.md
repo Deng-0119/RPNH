@@ -4,7 +4,7 @@ English | [中文](README_ZH.md)
 
 [See the graph](#see-a-multi-agent-run) · [Quick start](#quick-start) ·
 [Examples](#example-catalog) · [Frontends](#frontends-and-host-integrations) ·
-[Documentation](#documentation)
+[Documentation](#documentation) · [Technical report](docs/technical-report.md)
 
 RPNH is a provider-neutral agent execution framework for composing language
 models, native tools and reusable workflows. A durable **Registry** records
@@ -224,6 +224,7 @@ all cases.
 
 | Goal | Start here |
 |---|---|
+| Understand the design before testing | [Technical report](docs/technical-report.md) |
 | Install and run | [Installation](docs/guides/installation.md), [examples](docs/guides/examples.md), [usage](docs/guides/usage.md) |
 | Configure the runtime | [Configuration](docs/guides/configuration.md), [models](docs/guides/models.md), [usage and recovery](docs/guides/usage.md) |
 | Build an application | [Customization and plugins](docs/guides/customization.md), [native Petri-net operations](docs/guides/net-operations.md), [declarations](docs/reference/declarations.md) |
