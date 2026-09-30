@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: index.md
-  revision: "2026-09-29.4"
+  revision: "2026-09-30.1"
   status: source-reviewed-v0.1.0rc1
   basis: "core; adapter differences explicitly labelled"
 ---
@@ -15,11 +15,14 @@ metadata:
 
 # 文档导航
 
+需要先连续了解项目定位、执行模型和评估边界，可以从[技术报告](technical-report_ZH.md)开始。
+
 先读安装和精确模型配置，再选择最接近目标应用的案例。指南描述当前 `main`；带日期的验证
 记录保留其实际测试的旧版本边界，不能自动作为后续提交的认证。每个主题都有对应英文页。
 
 | 需求 | 阅读 |
 |---|---|
+| 首次了解 RPNH，再试用或集成 | [技术报告](technical-report_ZH.md) |
 | 安装 core/basic、源码或 wheel | [安装](guides/installation_ZH.md) |
 | 运行原生、混合、任务与安装版跨宿主案例 | [案例](guides/examples_ZH.md) |
 | 理解源码目录与安装包边界 | [仓库目录图](guides/repository-layout_ZH.md) |

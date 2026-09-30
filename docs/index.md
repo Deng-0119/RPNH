@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: en
   counterpart: index_ZH.md
-  revision: "2026-09-29.4"
+  revision: "2026-09-30.1"
   status: source-reviewed-v0.1.0rc1
   basis: "core; adapter differences explicitly labelled"
 ---
@@ -14,6 +14,9 @@ metadata:
 [English](index.md) | [中文](index_ZH.md)
 
 # Documentation
+
+For a continuous introduction to the project's purpose, execution model and
+evaluation boundaries, read the [technical report](technical-report.md).
 
 Start with installation and exact model configuration, then choose the example
 closest to the application you want to build. The guides describe current
@@ -23,6 +26,7 @@ has a corresponding Chinese page.
 
 | Need | Read |
 |---|---|
+| Understand RPNH before trying or integrating it | [Technical report](technical-report.md) |
 | Install core/basic, source or wheel | [Installation](guides/installation.md) |
 | Run native, hybrid, task and installed cross-host examples | [Examples](guides/examples.md) |
 | Understand the source tree and packaged boundaries | [Repository map](guides/repository-layout.md) |
