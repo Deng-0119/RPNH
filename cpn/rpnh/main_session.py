@@ -298,8 +298,9 @@ class MainSession:
                 raise ValueError(
                     "cannot change the execution profile when resuming a "
                     "main session")
-            if persisted_profile["schema_version"] == (
-                    "rpnh/main_session_profile/v2"):
+            if persisted_profile["schema_version"] in {
+                    "rpnh/main_session_profile/v2",
+                    "rpnh/main_session_profile/v3"}:
                 self._assert_execution_profile_identity(persisted_profile)
         self._persist_profile()
         self._persist_state()
@@ -335,6 +336,25 @@ class MainSession:
                             "registry_policy"}:
                         raise ValueError("invalid execution profile projection")
                     if (not isinstance(document["registry_policy"], Mapping)
+                            or any(not isinstance(document[key], str)
+                                   or not document[key]
+                                   for key in (
+                                       "adapter_config_path", "selection_id",
+                                       "provider", "model_condition",
+                                       "adapter_kind"))):
+                        raise ValueError("invalid execution profile identity")
+                elif schema_version == "rpnh/main_session_profile/v3":
+                    if set(document) != {
+                            "schema_version", "execution_config_path",
+                            "adapter_config_path", "selection_id", "provider",
+                            "model_condition", "reasoning_effort",
+                            "adapter_kind", "registry_policy"}:
+                        raise ValueError("invalid execution profile projection")
+                    if (not isinstance(document["registry_policy"], Mapping)
+                            or (document["reasoning_effort"] is not None
+                                and (not isinstance(
+                                    document["reasoning_effort"], str)
+                                     or not document["reasoning_effort"]))
                             or any(not isinstance(document[key], str)
                                    or not document[key]
                                    for key in (
@@ -382,12 +402,13 @@ class MainSession:
         selection = load_llm_execution_selection(self.execution_config_path)
         profile = profile_for_path(self.execution_config_path)
         return {
-            "schema_version": "rpnh/main_session_profile/v2",
+            "schema_version": "rpnh/main_session_profile/v3",
             "execution_config_path": str(self.execution_config_path),
             "adapter_config_path": str(selection.adapter_config_path),
             "selection_id": profile.selection_id,
             "provider": profile.provider,
             "model_condition": selection.input_target.model_condition,
+            "reasoning_effort": selection.reasoning_effort,
             "adapter_kind": selection.adapter_kind,
             "registry_policy": selection.as_registry_policy(),
         }
@@ -398,7 +419,12 @@ class MainSession:
         expected = dict(persisted)
         expected["execution_config_path"] = str(
             expected["execution_config_path"])
-        if self._execution_profile_document() != expected:
+        current = self._execution_profile_document()
+        if expected.get("schema_version") == "rpnh/main_session_profile/v2":
+            current = dict(current)
+            current["schema_version"] = "rpnh/main_session_profile/v2"
+            current.pop("reasoning_effort")
+        if current != expected:
             raise ValueError(
                 "execution profile identity changed for the main session")
 
@@ -689,7 +715,9 @@ class MainSession:
             raise ValueError(
                 "cannot change the execution profile while a main-session "
                 "turn is active")
-        if persisted["schema_version"] == "rpnh/main_session_profile/v2":
+        if persisted["schema_version"] in {
+                "rpnh/main_session_profile/v2",
+                "rpnh/main_session_profile/v3"}:
             self._assert_execution_profile_identity(persisted)
         try:
             run_dir = self._main_thread.resolve_child_path(relative_path)
@@ -764,7 +792,9 @@ class MainSession:
                 raise ValueError(
                     "active main-session turn has no persisted execution "
                     "profile authority")
-            if persisted["schema_version"] == "rpnh/main_session_profile/v2":
+            if persisted["schema_version"] in {
+                    "rpnh/main_session_profile/v2",
+                    "rpnh/main_session_profile/v3"}:
                 self._assert_execution_profile_identity(persisted)
             if selected != self.execution_config_path:
                 raise ValueError(

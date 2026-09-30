@@ -133,10 +133,14 @@ def _recovery(**overrides: int) -> dict[str, object]:
 def _port_and_attempt(
         tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
         actions: list[object], *, recovery: dict[str, object] | None = None,
+        reasoning_effort: str | None = None,
 ) -> tuple[ExternalProviderInputPort, LLMCallAttempt, _FakeHTTPSFactory]:
     config = tmp_path / "adapter.json"
-    config.write_text(json.dumps({
-        "schema_version": "external_provider_adapter_config/v2",
+    config_document = {
+        "schema_version": (
+            "external_provider_adapter_config/v3"
+            if reasoning_effort is not None
+            else "external_provider_adapter_config/v2"),
         "adapter_kind": "external_provider",
         "model_condition": MODEL,
         "recovery": recovery or _recovery(),
@@ -150,7 +154,10 @@ def _port_and_attempt(
             "credential": None,
             "headers": {"X-Test-Route": "primary"},
         }],
-    }), encoding="utf-8")
+    }
+    if reasoning_effort is not None:
+        config_document["reasoning_effort"] = reasoning_effort
+    config.write_text(json.dumps(config_document), encoding="utf-8")
     factory = _FakeHTTPSFactory(actions)
     monkeypatch.setattr(
         external_provider_module.http.client, "HTTPSConnection", factory)
@@ -181,6 +188,7 @@ def _port_and_attempt(
         max_response_bytes=1024 * 1024,
         config_path=config,
         destination_run_root=tmp_path / "run",
+        reasoning_effort=reasoning_effort,
     ), attempt, factory
 
 
@@ -271,6 +279,28 @@ def test_first_probe_success_stops_probe_sequence_and_retries_formal_call(
     assert {path.relative_to(tmp_path / "run").parts[0]
             for path in (tmp_path / "run").rglob("*") if path.is_file()} == {
                 "adapter-private"}
+
+
+def test_selected_reasoning_effort_reaches_formal_and_probe_requests(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    port, attempt, factory = _port_and_attempt(
+        tmp_path, monkeypatch, [
+            socket.timeout("formal response headers timeout"),
+            (200, _provider_response("READY.", "probe-1"), "probe-1"),
+            (200, _provider_response("formal result", "formal-2"), "formal-2"),
+        ],
+        reasoning_effort="user-defined-xhigh",
+    )
+
+    port.request_once(attempt)
+
+    documents = _request_documents(factory)
+    assert len(documents) == 3
+    assert {document["reasoning_effort"] for document in documents} == {
+        "user-defined-xhigh"}
+    assert documents[1]["messages"] == [{
+        "role": "user", "content": "Reply with READY."}]
 
 
 def test_second_probe_success_skips_third_probe(

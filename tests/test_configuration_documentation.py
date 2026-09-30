@@ -33,7 +33,7 @@ def _named_in_code_span(document: str, name: str) -> bool:
 def test_configuration_reference_names_every_catalog_field_in_both_languages(
 ) -> None:
     schema = json.loads((
-        ROOT / "cpn/schemas/runtime/provider_model_catalog.v2.schema.json"
+        ROOT / "cpn/schemas/runtime/provider_model_catalog.v3.schema.json"
     ).read_text(encoding="utf-8"))
     public_fields = _property_names(schema)
     public_fields.update({
@@ -56,6 +56,7 @@ def test_configuration_reference_names_all_operator_selectors() -> None:
         "RPNH_PROVIDER_CATALOG", "RPNH_PROFILE_DIR", "RPNH_CONFIG",
         "RPNH_EXECUTION_CONFIG", "RPNH_PLUGIN_CONFIG", "RPNH_CODEX_BIN",
         "--catalog", "--output-root", "--execution", "--save-default",
+        "--effort",
         "--session-dir", "--resume", "--prompt", "--frontend",
         "--show-resources", "--resources-only", "--node", "--output",
         "--host", "--port", "--max-checkpoints", "--max-firings",

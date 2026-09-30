@@ -78,7 +78,8 @@ function configuredProfile(raw: string): PublicExecutionProfile {
   const value: unknown = JSON.parse(raw)
   if (!value || typeof value !== 'object' || Array.isArray(value)) throw new Error('invalid launcher execution profile')
   const profile = value as Record<string, unknown>
-  if (profile.schema_version !== 'rpnh/dsh_execution_profile/v2') {
+  if (profile.schema_version !== 'rpnh/dsh_execution_profile/v2'
+    && profile.schema_version !== 'rpnh/dsh_execution_profile/v3') {
     throw new Error('invalid launcher execution profile')
   }
   const adapterKind = String(profile.adapter_kind)
@@ -88,8 +89,8 @@ function configuredProfile(raw: string): PublicExecutionProfile {
     if (!Number.isSafeInteger(value) || Number(value) < 1) throw new Error(`invalid execution profile ${name}`)
     return Number(value)
   }
-  return Object.freeze({
-    schema_version: 'rpnh/dsh_execution_profile/v2',
+  const common = {
+    schema_version: profile.schema_version,
     profile: nonempty(profile.profile, 'execution profile profile'),
     selection_id: nonempty(profile.selection_id, 'execution profile selection_id'),
     provider: nonempty(profile.provider, 'execution profile provider'),
@@ -100,6 +101,26 @@ function configuredProfile(raw: string): PublicExecutionProfile {
     timeout_seconds: positive('timeout_seconds'),
     max_output_tokens: positive('max_output_tokens'),
     max_response_bytes: positive('max_response_bytes'),
+  } as const
+  if (profile.schema_version === 'rpnh/dsh_execution_profile/v2') {
+    return Object.freeze(common)
+  }
+  const selected = profile.reasoning_effort
+  const supported = profile.supported_reasoning_efforts
+  const fallback = profile.default_reasoning_effort
+  if ((selected !== null && typeof selected !== 'string')
+    || !Array.isArray(supported)
+    || supported.some(item => typeof item !== 'string' || item.length === 0)
+    || new Set(supported).size !== supported.length
+    || (fallback !== null && typeof fallback !== 'string')
+    || (selected !== null && !supported.includes(selected))
+    || (fallback !== null && !supported.includes(fallback))) {
+    throw new Error('invalid execution profile reasoning effort')
+  }
+  return Object.freeze({ ...common,
+    reasoning_effort: selected as string | null,
+    supported_reasoning_efforts: Object.freeze([...(supported as string[])]),
+    default_reasoning_effort: fallback as string | null,
   })
 }
 function managedToolSelections(raw: string[] | undefined): ReadonlyArray<{ name: string; selector: string }> {

@@ -6,7 +6,7 @@ metadata:
   audience: user-and-developer
   language: zh-CN
   counterpart: CHANGELOG.md
-  revision: "2026-09-29.2"
+  revision: "2026-09-30.1"
   status: v0.1.0rc1
 ---
 
@@ -16,6 +16,9 @@ metadata:
 
 ## 未发布
 
+- 用户自有 provider catalog 现可为精确模型声明可选 reasoning effort。Basic、DSH、
+  Codex 与 OpenCode 使用同一份固定的 model/effort selection；生成的 local/external
+  adapter 会把所选值传到物理请求，同时不在 RPNH 内置供应商模型对照表。
 - 新增可复现的 JB 临床 packet 与 3-DOF 动力下降案例。两者都使用用户选择的精确
   profile，由主 agent 自行设计图，提供独立业务验证和真实验收 PetriNet 图，同时不发布
   原始 Registry 或私有输入。

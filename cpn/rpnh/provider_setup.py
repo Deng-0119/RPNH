@@ -26,7 +26,8 @@ from cpn.rpnh.user_config import (
 from cpn.rpnh.runtime_policy import runtime_policy_from_document
 
 
-CATALOG_SCHEMA_VERSION = "rpnh/provider_model_catalog/v2"
+CATALOG_SCHEMA_VERSION = "rpnh/provider_model_catalog/v3"
+LEGACY_CATALOG_SCHEMA_VERSION = "rpnh/provider_model_catalog/v2"
 GENERATED_INDEX_SCHEMA_VERSION = "rpnh/generated_provider_files/v1"
 _IDENTIFIER = re.compile(r"[a-z0-9][a-z0-9._-]*")
 _SAFE_FILE = re.compile(r"[a-z0-9][a-z0-9._-]*\.json")
@@ -59,9 +60,16 @@ def _read_json(path: Path, *, label: str) -> Any:
 
 
 def _validate_schema(document: Any) -> None:
+    if not isinstance(document, Mapping):
+        raise ValueError("provider catalog must be an object")
+    version = document.get("schema_version")
+    if version not in {CATALOG_SCHEMA_VERSION, LEGACY_CATALOG_SCHEMA_VERSION}:
+        raise ValueError("provider catalog schema_version is unsupported")
+    schema_version = "v3" if version == CATALOG_SCHEMA_VERSION else "v2"
     schema_path = (
         Path(__file__).resolve().parents[1]
-        / "schemas" / "runtime" / "provider_model_catalog.v2.schema.json"
+        / "schemas" / "runtime"
+        / f"provider_model_catalog.{schema_version}.schema.json"
     )
     schema = _read_json(schema_path, label="provider catalog schema")
     errors = sorted(
@@ -94,15 +102,32 @@ def _adapter_file(value: object) -> str:
     return value
 
 
-def _replace_model(values: object, *, model: str, label: str) -> list[str]:
+def _replace_placeholders(
+        values: object, *, model: str, reasoning_effort: str | None,
+        label: str, require_reasoning_effort: bool = True,
+) -> list[str]:
     if (not isinstance(values, list) or not values
             or any(not isinstance(item, str) or "\x00" in item for item in values)):
         raise ValueError(f"{label} must be a nonempty string array")
-    return [item.replace("{model}", model) for item in values]
+    has_effort_placeholder = any("{reasoning_effort}" in item for item in values)
+    if (reasoning_effort is not None and require_reasoning_effort
+            and not has_effort_placeholder):
+        raise ValueError(
+            f"{label} must contain {{reasoning_effort}} when reasoning_efforts "
+            "is declared")
+    if reasoning_effort is None and has_effort_placeholder:
+        raise ValueError(
+            f"{label} contains {{reasoning_effort}} but reasoning_efforts is absent")
+    return [
+        item.replace("{model}", model).replace(
+            "{reasoning_effort}", reasoning_effort or "")
+        for item in values
+    ]
 
 
 def _external_adapter(
         *, provider: str, model: str, adapter: Mapping[str, Any],
+        reasoning_effort: str | None, current: bool,
 ) -> dict[str, object]:
     endpoint = _opaque_text(adapter["endpoint"], label="endpoint")
     parsed = urlsplit(endpoint)
@@ -147,8 +172,10 @@ def _external_adapter(
         recovery = recovery_policy_from_document(adapter["recovery"])
     except ExternalProviderRecoveryConfigError as exc:
         raise ValueError(f"{provider}/{model} {exc}") from exc
-    return {
-        "schema_version": "external_provider_adapter_config/v2",
+    document: dict[str, object] = {
+        "schema_version": (
+            "external_provider_adapter_config/v3" if current
+            else "external_provider_adapter_config/v2"),
         "adapter_kind": "external_provider",
         "model_condition": model,
         "recovery": recovery.as_document(),
@@ -163,23 +190,62 @@ def _external_adapter(
             "headers": headers,
         }],
     }
+    if current:
+        document["reasoning_effort"] = reasoning_effort
+    return document
 
 
 def _local_adapter(
         *, model: str, adapter: Mapping[str, Any],
+        reasoning_effort: str | None, current: bool,
 ) -> dict[str, object]:
-    return {
-        "schema_version": "local_process_adapter_config/v1",
+    document: dict[str, object] = {
+        "schema_version": (
+            "local_process_adapter_config/v2" if current
+            else "local_process_adapter_config/v1"),
         "adapter_kind": "local_process",
         "model_condition": model,
-        "argv": _replace_model(
-            adapter["argv"], model=model, label="local adapter argv"),
-        "probe_argv": _replace_model(
+        "argv": _replace_placeholders(
+            adapter["argv"], model=model, reasoning_effort=reasoning_effort,
+            label="local adapter argv"),
+        "probe_argv": _replace_placeholders(
             adapter["probe_argv"], model=model,
-            label="local adapter probe_argv"),
+            reasoning_effort=reasoning_effort,
+            label="local adapter probe_argv",
+            require_reasoning_effort=False),
         "env": adapter.get("env", {}),
         "inherit_env": adapter.get("inherit_env", []),
     }
+    if current:
+        document["reasoning_effort"] = reasoning_effort
+    return document
+
+
+def _reasoning_efforts(
+        raw_model: Mapping[str, Any], *, current: bool,
+) -> tuple[tuple[str | None, ...], tuple[str, ...], str | None]:
+    raw = raw_model.get("reasoning_efforts")
+    if raw is None:
+        return (None,), (), None
+    if not current:
+        raise ValueError("reasoning_efforts requires provider catalog v3")
+    supported = tuple(
+        _identifier(item, label="supported reasoning effort")
+        for item in raw["supported"])
+    if len(set(supported)) != len(supported):
+        raise ValueError("supported reasoning efforts must be unique")
+    default = _identifier(
+        raw["default"], label="default reasoning effort")
+    if default not in supported:
+        raise ValueError(
+            "default reasoning effort must belong to supported efforts")
+    return supported, supported, default
+
+
+def _variant_profile(profile: str, effort: str | None, default: str | None) -> str:
+    if effort is None or effort == default:
+        return profile
+    return f"{profile}--effort-{effort}"
 
 
 def _json_bytes(value: object) -> bytes:
@@ -187,8 +253,10 @@ def _json_bytes(value: object) -> bytes:
 
 
 def _render(document: Mapping[str, Any]) -> dict[str, bytes]:
-    if document.get("schema_version") != CATALOG_SCHEMA_VERSION:
-        raise ValueError("provider catalog schema_version is not current")
+    version = document.get("schema_version")
+    if version not in {CATALOG_SCHEMA_VERSION, LEGACY_CATALOG_SCHEMA_VERSION}:
+        raise ValueError("provider catalog schema_version is unsupported")
+    current = version == CATALOG_SCHEMA_VERSION
     outputs: dict[str, bytes] = {}
     profiles: set[str] = set()
     providers: set[str] = set()
@@ -201,7 +269,8 @@ def _render(document: Mapping[str, Any]) -> dict[str, bytes]:
             raise ValueError(f"duplicate provider: {provider}")
         providers.add(provider)
         for raw_model in raw_provider["models"]:
-            profile = _identifier(raw_model["profile"], label="profile")
+            logical_profile = _identifier(
+                raw_model["profile"], label="profile")
             model = _opaque_text(
                 raw_model["model_condition"], label="model_condition")
             context_window = raw_model.get("context_window_tokens")
@@ -213,48 +282,79 @@ def _render(document: Mapping[str, Any]) -> dict[str, bytes]:
                 raise ValueError(
                     "context_compaction_retained_tokens must be smaller "
                     "than context_window_tokens")
-            if profile in profiles:
-                raise ValueError(f"duplicate profile: {profile}")
-            profiles.add(profile)
-            adapter_file = _adapter_file(profile + ".json")
-            adapter = raw_model["adapter"]
-            adapter_document = (
-                _external_adapter(
-                    provider=provider, model=model, adapter=adapter)
-                if adapter["adapter_kind"] == "external_provider"
-                else _local_adapter(model=model, adapter=adapter)
-            )
-            execution_document = {
-                "schema_version": "llm_execution_selection/v1",
-                "adapter_kind": adapter["adapter_kind"],
-                "model_condition": model,
-                "adapter_config_path": f"../adapters/{adapter_file}",
-                "timeout_seconds": raw_model["timeout_seconds"],
-                "max_output_tokens": raw_model["max_output_tokens"],
-                "max_response_bytes": raw_model["max_response_bytes"],
-                "runtime": runtime_policy_from_document(
-                    raw_model.get("runtime")).as_document(),
-            }
-            if "context_window_tokens" in raw_model:
-                execution_document["context_window_tokens"] = (
-                    raw_model["context_window_tokens"])
-            if "context_compaction_retained_tokens" in raw_model:
-                execution_document["context_compaction_retained_tokens"] = (
-                    raw_model["context_compaction_retained_tokens"])
-            adapter_relative = f"adapters/{adapter_file}"
-            execution_relative = f"execution/{profile}.json"
-            if adapter_relative in outputs:
-                raise ValueError(f"duplicate adapter_file: {adapter_file}")
-            outputs[adapter_relative] = _json_bytes(adapter_document)
-            outputs[execution_relative] = _json_bytes(execution_document)
-            registrations.append({
-                "profile": profile,
-                "provider": provider,
-                "display_name": display_name,
-                "model_condition": model,
-            })
+            efforts, supported_efforts, default_effort = _reasoning_efforts(
+                raw_model, current=current)
+            for effort in efforts:
+                profile = _variant_profile(
+                    logical_profile, effort, default_effort)
+                if profile in profiles:
+                    raise ValueError(f"duplicate generated profile: {profile}")
+                profiles.add(profile)
+                adapter_file = _adapter_file(profile + ".json")
+                adapter = raw_model["adapter"]
+                adapter_document = (
+                    _external_adapter(
+                        provider=provider, model=model, adapter=adapter,
+                        reasoning_effort=effort, current=current)
+                    if adapter["adapter_kind"] == "external_provider"
+                    else _local_adapter(
+                        model=model, adapter=adapter,
+                        reasoning_effort=effort, current=current)
+                )
+                execution_document: dict[str, object] = {
+                    "schema_version": (
+                        "llm_execution_selection/v2" if current
+                        else "llm_execution_selection/v1"),
+                    "adapter_kind": adapter["adapter_kind"],
+                    "model_condition": model,
+                    "adapter_config_path": f"../adapters/{adapter_file}",
+                    "timeout_seconds": raw_model["timeout_seconds"],
+                    "max_output_tokens": raw_model["max_output_tokens"],
+                    "max_response_bytes": raw_model["max_response_bytes"],
+                    "runtime": runtime_policy_from_document(
+                        raw_model.get("runtime")).as_document(),
+                }
+                if current:
+                    execution_document.update({
+                        "physical_profile": profile,
+                        "logical_selection_id": logical_profile,
+                        "reasoning_effort": effort,
+                        "supported_reasoning_efforts": list(supported_efforts),
+                        "default_reasoning_effort": default_effort,
+                    })
+                if "context_window_tokens" in raw_model:
+                    execution_document["context_window_tokens"] = (
+                        raw_model["context_window_tokens"])
+                if "context_compaction_retained_tokens" in raw_model:
+                    execution_document[
+                        "context_compaction_retained_tokens"] = (
+                            raw_model[
+                                "context_compaction_retained_tokens"])
+                adapter_relative = f"adapters/{adapter_file}"
+                execution_relative = f"execution/{profile}.json"
+                if adapter_relative in outputs:
+                    raise ValueError(f"duplicate adapter_file: {adapter_file}")
+                outputs[adapter_relative] = _json_bytes(adapter_document)
+                outputs[execution_relative] = _json_bytes(execution_document)
+                registration: dict[str, object] = {
+                    "profile": profile,
+                    "provider": provider,
+                    "display_name": display_name,
+                    "model_condition": model,
+                }
+                if current:
+                    registration.update({
+                        "logical_selection_id": logical_profile,
+                        "reasoning_effort": effort,
+                        "supported_reasoning_efforts": list(
+                            supported_efforts),
+                        "default_reasoning_effort": default_effort,
+                    })
+                registrations.append(registration)
     outputs["profiles.json"] = _json_bytes({
-        "schema_version": "rpnh/provider_profiles/v2",
+        "schema_version": (
+            "rpnh/provider_profiles/v3" if current
+            else "rpnh/provider_profiles/v2"),
         "profiles": registrations,
     })
     return outputs
@@ -345,7 +445,8 @@ def build_provider_catalog(
         _write_atomic(index_path, index_bytes)
     profiles = discover_profiles(root / "execution")
     expected_profile_count = sum(
-        len(provider["models"]) for provider in document["providers"])
+        (len(model.get("reasoning_efforts", {}).get("supported", [])) or 1)
+        for provider in document["providers"] for model in provider["models"])
     if len(profiles) != expected_profile_count:
         # This guard should never be reached after catalog and runtime
         # validation agree.
@@ -355,7 +456,7 @@ def build_provider_catalog(
         "output_root": str(root),
         "status": "ok" if not check else "in_sync",
         "profile_count": len(profiles),
-        "selection_ids": [profile.selection_id for profile in profiles],
+        "selection_ids": sorted({profile.selection_id for profile in profiles}),
         "generated_files": generated,
     }
 
@@ -471,7 +572,8 @@ if __name__ == "__main__":
 
 
 __all__ = (
-    "CATALOG_SCHEMA_VERSION", "add_provider_model", "build_provider_catalog", "catalog_template_path",
+    "CATALOG_SCHEMA_VERSION", "LEGACY_CATALOG_SCHEMA_VERSION",
+    "add_provider_model", "build_provider_catalog", "catalog_template_path",
     "default_catalog_path", "default_output_root", "initialize_provider_catalog",
     "main",
 )

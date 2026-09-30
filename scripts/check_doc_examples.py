@@ -12,7 +12,7 @@ def main():
     root = Path(__file__).resolve().parents[1]
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--schema', type=Path,
-        default=root / 'cpn/schemas/runtime/provider_model_catalog.v2.schema.json')
+        default=root / 'cpn/schemas/runtime/provider_model_catalog.v3.schema.json')
     args = parser.parse_args()
     schema = json.loads(args.schema.read_text(encoding='utf-8'))
     Draft7Validator.check_schema(schema)
@@ -26,7 +26,7 @@ def main():
                 examples.append(example)
     if len(examples) != 2 or examples[0] != examples[1]:
         raise ValueError('Expected two equal bilingual catalog examples')
-    validator.validate({'schema_version': 'rpnh/provider_model_catalog/v2', 'providers': []})
+    validator.validate({'schema_version': 'rpnh/provider_model_catalog/v3', 'providers': []})
     for mutation in ('protocol', 'recovery_limit', 'unknown_key'):
         bad = copy.deepcopy(examples[0])
         model = bad['providers'][0]['models'][0]

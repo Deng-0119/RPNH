@@ -14,7 +14,8 @@ from cpn.rpnh.provider_catalog import (
 )
 
 
-CONFIG_SCHEMA_VERSION = "rpnh/cli_config/v3"
+CONFIG_SCHEMA_VERSION = "rpnh/cli_config/v4"
+LEGACY_CONFIG_SCHEMA_VERSION = "rpnh/cli_config/v3"
 
 
 @dataclass(frozen=True, slots=True)
@@ -31,6 +32,9 @@ class ExecutionProfile:
     context_window_tokens: int | None
     context_compaction_retained_tokens: int | None
     runtime: Mapping[str, object]
+    reasoning_effort: str | None = None
+    supported_reasoning_efforts: tuple[str, ...] = ()
+    default_reasoning_effort: str | None = None
     @property
     def selectable(self) -> bool:
         return True
@@ -57,6 +61,10 @@ class ExecutionProfile:
             "credential_environment": list(self.required_environment),
             "missing_credential_environment": missing,
             "ready": not missing,
+            "reasoning_effort": self.reasoning_effort,
+            "supported_reasoning_efforts": list(
+                self.supported_reasoning_efforts),
+            "default_reasoning_effort": self.default_reasoning_effort,
         }
         if self.recovery is not None:
             result["recovery"] = dict(self.recovery)
@@ -158,11 +166,28 @@ def _load_profile(
     model = selection.input_target.model_condition
     if registration is None:
         provider, display_name = _inferred_provider(adapter, fallback=name)
-        selection_id = f"{provider}/{model}"
+        selection_id = (
+            selection.logical_selection_id or f"{provider}/{model}")
     else:
         if registration.profile != name or registration.model_condition != model:
             raise ValueError(
                 "provider registration differs from its execution profile")
+        if (selection.physical_profile is not None
+                and selection.physical_profile != registration.profile):
+            raise ValueError(
+                "provider registration differs from physical profile identity")
+        if (selection.logical_selection_id is not None
+                and selection.logical_selection_id
+                != registration.selection_id):
+            raise ValueError(
+                "provider registration differs from logical selection identity")
+        if (selection.reasoning_effort != registration.reasoning_effort
+                or selection.supported_reasoning_efforts
+                != registration.supported_reasoning_efforts
+                or selection.default_reasoning_effort
+                != registration.default_reasoning_effort):
+            raise ValueError(
+                "provider registration differs from reasoning effort metadata")
         _validate_registered_adapter(adapter, registration)
         provider = registration.provider
         display_name = registration.display_name
@@ -187,6 +212,9 @@ def _load_profile(
         context_compaction_retained_tokens=(
             selection.input_target.context_compaction_retained_tokens),
         runtime=selection.runtime_policy.as_document(),
+        reasoning_effort=selection.reasoning_effort,
+        supported_reasoning_efforts=selection.supported_reasoning_efforts,
+        default_reasoning_effort=selection.default_reasoning_effort,
     )
 
 
@@ -240,12 +268,32 @@ def profile_for_path(
 
 def _selection_by_identity(
         profile_id: str, provider: str, model_condition: str,
+        reasoning_effort: str | None,
 ) -> ExecutionProfile:
     matches = [
         profile for profile in discover_profiles()
         if (profile.selection_id == profile_id
             and profile.provider == provider
-            and profile.model_condition == model_condition)
+            and profile.model_condition == model_condition
+            and profile.reasoning_effort == reasoning_effort)
+    ]
+    if len(matches) != 1:
+        raise ValueError(
+            f"saved RPNH profile is unavailable: {profile_id}")
+    return matches[0]
+
+
+def _legacy_selection_by_identity(
+        profile_id: str, provider: str, model_condition: str,
+) -> ExecutionProfile:
+    matches = [
+        profile for profile in discover_profiles()
+        if (profile.selection_id == profile_id
+            and profile.provider == provider
+            and profile.model_condition == model_condition
+            and (profile.reasoning_effort is None
+                 or profile.reasoning_effort
+                 == profile.default_reasoning_effort))
     ]
     if len(matches) != 1:
         raise ValueError(
@@ -266,13 +314,38 @@ def read_selected_path(path: Path | None = None) -> Path | None:
         raise ValueError(f"RPNH user config is not current: {selected_config}")
     if (document.get("schema_version") == CONFIG_SCHEMA_VERSION
             and set(document) == {
+                "schema_version", "profile", "provider", "model_condition",
+                "reasoning_effort"}
+            and all(isinstance(document.get(key), str) and document[key]
+                    for key in ("profile", "provider", "model_condition"))
+            and (document["reasoning_effort"] is None
+                 or isinstance(document["reasoning_effort"], str))):
+        return _selection_by_identity(
+            document["profile"], document["provider"],
+            document["model_condition"],
+            document["reasoning_effort"]).path
+    if (document.get("schema_version") == CONFIG_SCHEMA_VERSION
+            and set(document) == {
+                "schema_version", "execution_config_path", "reasoning_effort"}
+            and isinstance(document.get("execution_config_path"), str)
+            and document["execution_config_path"]
+            and (document["reasoning_effort"] is None
+                 or isinstance(document["reasoning_effort"], str))):
+        selected = Path(
+            document["execution_config_path"]).expanduser().resolve()
+        if load_profile(selected).reasoning_effort != document["reasoning_effort"]:
+            raise ValueError(
+                "saved RPNH path differs from its reasoning effort")
+        return selected
+    if (document.get("schema_version") == LEGACY_CONFIG_SCHEMA_VERSION
+            and set(document) == {
                 "schema_version", "profile", "provider", "model_condition"}
             and all(isinstance(document.get(key), str) and document[key]
                     for key in ("profile", "provider", "model_condition"))):
-        return _selection_by_identity(
+        return _legacy_selection_by_identity(
             document["profile"], document["provider"],
             document["model_condition"]).path
-    if (document.get("schema_version") == CONFIG_SCHEMA_VERSION
+    if (document.get("schema_version") == LEGACY_CONFIG_SCHEMA_VERSION
             and set(document) == {"schema_version", "execution_config_path"}
             and isinstance(document.get("execution_config_path"), str)
             and document["execution_config_path"]):
@@ -299,9 +372,13 @@ def save_selected_path(
             "profile": bundled[0].selection_id,
             "provider": bundled[0].provider,
             "model_condition": bundled[0].model_condition,
+            "reasoning_effort": bundled[0].reasoning_effort,
         }
     else:
-        selection_document = {"execution_config_path": str(selected)}
+        selection_document = {
+            "execution_config_path": str(selected),
+            "reasoning_effort": load_profile(selected).reasoning_effort,
+        }
     temporary = destination.with_name(destination.name + ".tmp")
     temporary.write_text(json.dumps({
         "schema_version": CONFIG_SCHEMA_VERSION,
@@ -315,6 +392,7 @@ def select_profile(
         provider_or_profile: str,
         model_condition: str | None = None,
         directory: Path | None = None,
+        *, reasoning_effort: str | None = None,
 ) -> ExecutionProfile:
     profiles = discover_profiles(directory)
     if model_condition is None:
@@ -322,11 +400,30 @@ def select_profile(
             profile for profile in profiles
             if provider_or_profile == profile.name
         ]
+        if (not matches
+                or (reasoning_effort is not None
+                    and any(profile.selection_id == provider_or_profile
+                            for profile in profiles))):
+            matches = [
+                profile for profile in profiles
+                if provider_or_profile == profile.selection_id
+            ]
     else:
         matches = [
             profile for profile in profiles
             if profile.provider == provider_or_profile
             and profile.model_condition == model_condition
+        ]
+    if reasoning_effort is not None:
+        matches = [
+            profile for profile in matches
+            if profile.reasoning_effort == reasoning_effort
+        ]
+    elif len(matches) > 1:
+        matches = [
+            profile for profile in matches
+            if profile.reasoning_effort is None
+            or profile.reasoning_effort == profile.default_reasoning_effort
         ]
     if len(matches) != 1:
         choices = ", ".join(
@@ -391,7 +488,7 @@ def missing_credentials(
 
 
 __all__ = (
-    "CONFIG_SCHEMA_VERSION",
+    "CONFIG_SCHEMA_VERSION", "LEGACY_CONFIG_SCHEMA_VERSION",
     "ExecutionProfile", "config_path", "discover_profiles",
     "interactive_setup", "load_profile", "missing_credentials",
     "profile_directory", "profile_for_path", "read_selected_path",

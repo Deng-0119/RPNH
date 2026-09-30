@@ -91,7 +91,7 @@ def _public_profile(execution_path: Path) -> dict[str, object]:
             or not isinstance(routes[0].get("transport"), str)):
         raise ValueError("selected provider lacks one exact transport route")
     return {
-        "schema_version": "rpnh/dsh_execution_profile/v2",
+        "schema_version": "rpnh/dsh_execution_profile/v3",
         "profile": profile.name,
         "selection_id": profile.selection_id,
         "provider": profile.provider,
@@ -102,6 +102,10 @@ def _public_profile(execution_path: Path) -> dict[str, object]:
         "timeout_seconds": selection.timeout_seconds,
         "max_output_tokens": selection.input_target.max_output_tokens,
         "max_response_bytes": selection.input_target.max_response_bytes,
+        "reasoning_effort": selection.reasoning_effort,
+        "supported_reasoning_efforts": list(
+            selection.supported_reasoning_efforts),
+        "default_reasoning_effort": selection.default_reasoning_effort,
     }
 
 

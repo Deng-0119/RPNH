@@ -6,7 +6,7 @@ export const PROTOCOL = 'rpnh/dsh/v1'
 export const LIMIT = 2 * 1024 * 1024
 export type JsonRecord = Record<string, any>
 export type PublicExecutionProfile = Readonly<{
-  schema_version: 'rpnh/dsh_execution_profile/v2'
+  schema_version: 'rpnh/dsh_execution_profile/v2' | 'rpnh/dsh_execution_profile/v3'
   profile: string
   selection_id: string
   provider: string
@@ -17,6 +17,9 @@ export type PublicExecutionProfile = Readonly<{
   timeout_seconds: number
   max_output_tokens: number
   max_response_bytes: number
+  reasoning_effort?: string | null
+  supported_reasoning_efforts?: readonly string[]
+  default_reasoning_effort?: string | null
 }>
 export type BridgeExecution = (
   | Readonly<{ execution: Readonly<{ kind: 'offline' }> }>

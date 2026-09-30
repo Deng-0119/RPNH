@@ -32,7 +32,14 @@ MODEL_TWO = {"provider": "test-provider-two", "model": "exact-model-two", "selec
 
 
 def public_model(model, *, ready=True):
-    return {**model, "provider_name": model["provider"], "ready": ready}
+    return {
+        **model,
+        "provider_name": model["provider"],
+        "reasoning_effort": "medium",
+        "supported_reasoning_efforts": ["low", "medium", "high"],
+        "default_reasoning_effort": "medium",
+        "ready": ready,
+    }
 
 
 class ApplicationDouble:
@@ -50,6 +57,7 @@ class ApplicationDouble:
     def configuration(self):
         self._record("configuration")
         return {"default_selection": MODEL["selection"],
+                "default_reasoning_effort": "medium",
                 "profiles": [public_model(MODEL), public_model(MODEL_TWO)]}
 
     def snapshot(self):
@@ -63,22 +71,28 @@ class ApplicationDouble:
         self._record("close")
         self.closed = True
 
-    def create_session(self, selection_id=None):
+    def create_session(self, selection_id=None, *, reasoning_effort=None):
         self._record("create_session")
         if self.views:
             raise FrontendError("session_exists", "Already bound.")
         selection_id = selection_id or MODEL["selection"]
         model = MODEL if selection_id == MODEL["selection"] else MODEL_TWO
         sid = SID
+        public = public_model(model)
+        public["reasoning_effort"] = reasoning_effort or "medium"
         self.views.append({"id": sid, "created": 1000, "updated": 1000,
-                           "model": public_model(model), "turns": [], "error": None})
+                           "model": public, "turns": [], "error": None})
         return sid
 
-    def submit(self, sid, text, key, *, kind=None, selection_id=None):
+    def submit(
+            self, sid, text, key, *, kind=None, selection_id=None,
+            reasoning_effort=None):
         self._record("submit")
         view = next(view for view in self.views if view["id"] == sid)
         model = MODEL if (selection_id or view["model"]["selection"]) == MODEL["selection"] else MODEL_TWO
-        view["model"] = public_model(model)
+        selected = public_model(model)
+        selected["reasoning_effort"] = reasoning_effort or "medium"
+        view["model"] = selected
         turns = view["turns"]
         for turn in turns:
             if turn["key"] == key:
@@ -90,8 +104,8 @@ class ApplicationDouble:
         number = len(turns) + 1
         turns.append({"ordinal": number, "key": key, "text": text, "kind": kind, "state": "running",
                       "created": 1000 + number, "updated": 1000 + number,
-                      "model": public_model(model),
-                      "model_evidence": "frontend-request/v2",
+                      "model": selected,
+                      "model_evidence": "frontend-request/v3",
                       "turn_ref": {"entity_type": "main_turn/v1", "logical_id": f"turn-{number}", "version_id": "v1"},
                       "attempt": f"main/turn-{number:04d}", "answer": None, "children": []})
         return number
@@ -106,7 +120,9 @@ class ApplicationDouble:
             self.views[0]["turns"][-1]["state"] = "stopped_by_owner"
         return True
 
-    def command(self, sid, name, arguments, key, *, selection_id=None):
+    def command(
+            self, sid, name, arguments, key, *, selection_id=None,
+            reasoning_effort=None):
         self._record("command")
         return {"status": "observation", "name": name}
 
@@ -160,6 +176,8 @@ def test_exact_provider_allowlist_and_no_routes(context):
     assert set(provider["models"]) == {MODEL["selection"], MODEL_TWO["selection"]}
     assert model["options"]["rpnh_provider"] == MODEL["provider"]
     assert model["options"]["rpnh_exact_model"] == MODEL["model"]
+    assert model["capabilities"]["reasoning"] is True
+    assert set(model["variants"]) == {"low", "medium", "high"}
     assert protocol.route("GET", "/permission").body == []
 
 
@@ -181,6 +199,21 @@ def test_session_creation_and_turn_can_select_an_rpnh_profile(context):
     view = next(view for view in app.views if view["id"] == sid)
     assert view["model"]["selection"] == MODEL_TWO["selection"]
     assert view["turns"][0]["model"]["model"] == MODEL_TWO["model"]
+
+
+def test_reasoning_effort_variant_is_model_scoped_and_reaches_application(context):
+    app, protocol = context
+    receipt = protocol.route(
+        "POST", f"/session/{SID}/message",
+        prompt("high effort", variant="high"))
+    assert receipt.status == 200
+    assert app.views[0]["model"]["reasoning_effort"] == "high"
+    assert app.views[0]["turns"][0]["model"]["reasoning_effort"] == "high"
+
+    with pytest.raises(FrontendError, match="reasoning effort"):
+        protocol.route(
+            "POST", f"/session/{SID}/message",
+            prompt("invalid effort", variant="ultra", messageID="new"))
 
 
 def test_registered_answer_only_and_stable_reconnect(context):
@@ -253,7 +286,7 @@ def test_unsupported_effects_do_not_reach_application(context, operation):
 
 @pytest.mark.parametrize("changes", [
     {"system": "override"}, {"tools": {}}, {"model": {"providerID": "other", "modelID": "exact-model"}},
-    {"agent": "build"}, {"variant": "high"}, {"noReply": True}, {"format": {"type": "json_schema"}},
+    {"agent": "build"}, {"variant": "ultra"}, {"noReply": True}, {"format": {"type": "json_schema"}},
     {"parts": [{"type": "file", "url": "file:///unavailable"}]},
     {"parts": [{"type": "text", "text": "question", "synthetic": True}]},
 ])

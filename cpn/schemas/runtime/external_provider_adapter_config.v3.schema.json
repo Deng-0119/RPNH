@@ -1,0 +1,83 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "runtime/external_provider_adapter_config/v3",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {"const": "external_provider_adapter_config/v3"},
+    "adapter_kind": {"const": "external_provider"},
+    "model_condition": {"type": "string", "minLength": 1},
+    "reasoning_effort": {"$ref": "#/definitions/nullableIdentifier"},
+    "recovery": {"$ref": "#/definitions/recovery"},
+    "routes": {
+      "type": "array", "minItems": 1, "maxItems": 1,
+      "items": {"$ref": "#/definitions/route"}
+    }
+  },
+  "required": [
+    "schema_version", "adapter_kind", "model_condition",
+    "reasoning_effort", "recovery", "routes"
+  ],
+  "definitions": {
+    "nullableIdentifier": {
+      "oneOf": [
+        {"type": "null"},
+        {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]*$"}
+      ]
+    },
+    "positiveInteger": {"type": "integer", "minimum": 1},
+    "recovery": {
+      "type": "object", "additionalProperties": false,
+      "properties": {
+        "strategy": {"const": "bounded_same_route_health_probe/v1"},
+        "max_probe_attempts": {"type": "integer", "minimum": 1, "maximum": 3},
+        "probe_timeout_budget_seconds": {"$ref": "#/definitions/positiveInteger"},
+        "max_probe_success_formal_failure_cycles": {
+          "type": "integer", "minimum": 1, "maximum": 3
+        }
+      },
+      "required": [
+        "strategy", "max_probe_attempts", "probe_timeout_budget_seconds",
+        "max_probe_success_formal_failure_cycles"
+      ]
+    },
+    "credential": {
+      "oneOf": [
+        {"type": "null"},
+        {
+          "type": "object", "additionalProperties": false,
+          "properties": {
+            "environment": {"type": "string", "pattern": "^[A-Za-z_][A-Za-z0-9_]*$"},
+            "header": {"type": "string", "pattern": "^[!#$%&'*+.^_`|~0-9A-Za-z-]+$"},
+            "prefix": {"type": "string", "maxLength": 1024}
+          },
+          "required": ["environment", "header", "prefix"]
+        }
+      ]
+    },
+    "route": {
+      "type": "object", "additionalProperties": false,
+      "properties": {
+        "route_id": {"type": "string", "minLength": 1},
+        "provider": {"type": "string", "minLength": 1},
+        "backend": {"type": "string", "minLength": 1},
+        "protocol": {"const": "openai_chat_completions/v1"},
+        "endpoint": {
+          "type": "string", "minLength": 9, "maxLength": 2048,
+          "pattern": "^https?://[^?#]+$"
+        },
+        "outbound_model": {"type": "string", "minLength": 1},
+        "credential": {"$ref": "#/definitions/credential"},
+        "headers": {
+          "type": "object",
+          "propertyNames": {"pattern": "^[!#$%&'*+.^_`|~0-9A-Za-z-]+$"},
+          "additionalProperties": {"type": "string", "minLength": 1}
+        }
+      },
+      "required": [
+        "route_id", "provider", "backend", "protocol", "endpoint",
+        "outbound_model", "credential", "headers"
+      ]
+    }
+  }
+}

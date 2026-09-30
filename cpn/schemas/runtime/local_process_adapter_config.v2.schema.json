@@ -1,0 +1,39 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "runtime/local_process_adapter_config/v2",
+  "type": "object",
+  "additionalProperties": false,
+  "definitions": {
+    "argv": {
+      "type": "array", "minItems": 1,
+      "items": {"type": "string", "pattern": "^[^\\u0000]*$"}
+    },
+    "nullableIdentifier": {
+      "oneOf": [
+        {"type": "null"},
+        {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]*$"}
+      ]
+    }
+  },
+  "properties": {
+    "schema_version": {"const": "local_process_adapter_config/v2"},
+    "adapter_kind": {"const": "local_process"},
+    "model_condition": {"type": "string", "minLength": 1},
+    "reasoning_effort": {"$ref": "#/definitions/nullableIdentifier"},
+    "argv": {"$ref": "#/definitions/argv"},
+    "probe_argv": {"$ref": "#/definitions/argv"},
+    "env": {
+      "type": "object",
+      "propertyNames": {"pattern": "^[A-Za-z_][A-Za-z0-9_]*$"},
+      "additionalProperties": {"type": "string", "pattern": "^[^\\u0000]*$"}
+    },
+    "inherit_env": {
+      "type": "array", "uniqueItems": true,
+      "items": {"type": "string", "pattern": "^[A-Za-z_][A-Za-z0-9_]*$"}
+    }
+  },
+  "required": [
+    "schema_version", "adapter_kind", "model_condition",
+    "reasoning_effort", "argv", "probe_argv", "env", "inherit_env"
+  ]
+}

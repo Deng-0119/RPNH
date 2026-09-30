@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: PROVIDER_MODEL_CONFIGURATION.md
-  revision: "2026-09-26.1"
+  revision: "2026-09-30.1"
   status: source-reviewed-pre-release
 ---
 
@@ -62,6 +62,15 @@ rpnh config show
 rpnh config use 'provider identifier' 'exact model identifier'
 ```
 
+若该精确模型声明了 reasoning effort，可用任一形式选择：
+
+```bash
+rpnh config use PROFILE --effort EFFORT
+rpnh config use 'provider identifier' 'exact model identifier' --effort EFFORT
+```
+
+合法值和默认值只来自该模型的 catalog 项；RPNH 不维护供应商 model/effort 对照表。
+
 RPNH 仍保持 exact-model 权威：生成的 outbound model 与 `model_condition` 完全一致；调用
 失败时不会静默切换 provider、route 或 model。
 
@@ -75,7 +84,7 @@ loopback 服务：
 
 ```json
 {
-  "schema_version": "rpnh/provider_model_catalog/v2",
+  "schema_version": "rpnh/provider_model_catalog/v3",
   "providers": [
     {
       "provider": "provider identifier",
@@ -84,6 +93,10 @@ loopback 服务：
         {
           "profile": "my-model",
           "model_condition": "exact/model-identifier@version",
+          "reasoning_efforts": {
+            "supported": ["low", "medium", "high"],
+            "default": "medium"
+          },
           "adapter": {
             "adapter_kind": "external_provider",
             "route_id": "primary",
@@ -128,6 +141,12 @@ compaction；如果输出 token 预留要求更早压缩，则采用更早边界
 省略窗口时 RPNH 不猜测 provider 专属容量，而是禁用主动 pressure 判定。压缩后完整历史
 turn 仍保存在 Registry 中。
 
+`reasoning_efforts` 是可选的精确模型元数据。`supported` 只填写 provider 对该精确模型
+公开支持的值，`default` 必须属于同一非空集合。这些值是不透明标识；model mode、订阅方案、
+service tier 或项目级标签都不应放进该字段。省略时，前端不展示 effort 选择器，外部请求也
+不发送 `reasoning_effort`。提供后，各前端只把 basic harness 的同一选择适配为自身协议；
+所选值仍固定在保存配置和 session 权威中。
+
 同一 model 项可增加完整的可选 `runtime` 对象，用于配置每 node 回合预算、workflow
 并发、main history prompt 尾部、context pressure/reduction 与 workspace 资源上限。
 省略时 build 会解析为文档默认值并写入生成 execution profile。全部字段和默认值见配置
@@ -162,9 +181,16 @@ success、workflow operation 或实验结果。现有 external-provider catalog 
 {
   "profile": "my-local-model",
   "model_condition": "exact local model",
+  "reasoning_efforts": {
+    "supported": ["low", "medium", "high"],
+    "default": "medium"
+  },
   "adapter": {
     "adapter_kind": "local_process",
-    "argv": ["my-llm-command", "--model", "{model}"],
+    "argv": [
+      "my-llm-command", "--model", "{model}",
+      "--reasoning-effort", "{reasoning_effort}"
+    ],
     "probe_argv": ["my-llm-command", "--version"],
     "env": {},
     "inherit_env": []
@@ -177,8 +203,9 @@ success、workflow operation 或实验结果。现有 external-provider catalog 
 }
 ```
 
-构建器会把 `{model}` 替换为精确 model 标识；local-process adapter 支持的运行时占位符
-仍然可用。每个 local-process 请求都把目标 Registry run root 作为当前工作目录，因此
+构建器会把 `{model}` 替换为精确 model 标识。若声明了 `reasoning_efforts`，正式 `argv`
+还必须包含 `{reasoning_effort}`；构建器会为每个支持值生成一个不可变 adapter/execution
+variant。local-process adapter 支持的其他运行时占位符仍然可用。每个 local-process 请求都把目标 Registry run root 作为当前工作目录，因此
 bridge 临时数据留在用户自有 run 内，不要求已安装的源码树或 `/tmp` 可写。
 
 ## 自定义位置

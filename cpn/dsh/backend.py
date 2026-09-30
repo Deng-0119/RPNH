@@ -101,7 +101,10 @@ ENVELOPE_V2_SCHEMA = {
                 'max_response_bytes',
             ],
             'properties': {
-                'schema_version': {'const': 'rpnh/dsh_execution_profile/v2'},
+                'schema_version': {
+                    'enum': [
+                        'rpnh/dsh_execution_profile/v2',
+                        'rpnh/dsh_execution_profile/v3']},
                 'profile': {'type': 'string', 'minLength': 1},
                 'selection_id': {'type': 'string', 'minLength': 1},
                 'provider': {'type': 'string', 'minLength': 1},
@@ -113,6 +116,13 @@ ENVELOPE_V2_SCHEMA = {
                 'timeout_seconds': {'type': 'integer', 'minimum': 1},
                 'max_output_tokens': {'type': 'integer', 'minimum': 1},
                 'max_response_bytes': {'type': 'integer', 'minimum': 1},
+                'reasoning_effort': {
+                    'type': ['string', 'null']},
+                'supported_reasoning_efforts': {
+                    'type': 'array', 'uniqueItems': True,
+                    'items': {'type': 'string', 'minLength': 1}},
+                'default_reasoning_effort': {
+                    'type': ['string', 'null']},
             },
             'additionalProperties': False,
         },
@@ -200,8 +210,9 @@ def _public_execution_profile(
     if (not isinstance(routes, list) or len(routes) != 1
             or not isinstance(routes[0], Mapping)):
         raise ValueError('configured DSH selection lacks one exact route')
+    schema_version = supplied.get('schema_version')
     expected = {
-        'schema_version': 'rpnh/dsh_execution_profile/v2',
+        'schema_version': schema_version,
         'profile': supplied.get('profile'),
         'selection_id': supplied.get('selection_id'),
         'provider': supplied.get('provider'),
@@ -213,8 +224,19 @@ def _public_execution_profile(
         'max_output_tokens': selection.input_target.max_output_tokens,
         'max_response_bytes': selection.input_target.max_response_bytes,
     }
+    if schema_version == 'rpnh/dsh_execution_profile/v3':
+        expected.update({
+            'reasoning_effort': selection.reasoning_effort,
+            'supported_reasoning_efforts': list(
+                selection.supported_reasoning_efforts),
+            'default_reasoning_effort': selection.default_reasoning_effort,
+        })
     document = json.loads(canonical_json(dict(supplied)))
-    if (document.get('schema_version') != 'rpnh/dsh_execution_profile/v2'
+    if (schema_version not in {
+                'rpnh/dsh_execution_profile/v2',
+                'rpnh/dsh_execution_profile/v3'}
+            or (schema_version == 'rpnh/dsh_execution_profile/v2'
+                and selection.reasoning_effort is not None)
             or (selection.adapter_kind == 'external_provider'
                 and document.get('provider') != routes[0].get('provider'))
             or document != expected

@@ -76,30 +76,53 @@ class RegistryFrontendApplication:
 
     def __init__(self, root: Path, execution: Path, *, resume: bool = False) -> None:
         from cpn.rpnh.main_session import MainSession
+        from cpn.rpnh.provider_catalog import provider_manifest_path
         from cpn.rpnh.task_control import TaskControl
         from cpn.rpnh.user_config import discover_profiles, profile_for_path
         requested_root = root.expanduser()
         self.root = requested_root.resolve()
         self.execution = execution.expanduser().resolve()
         active_profile = profile_for_path(self.execution)
-        installed = discover_profiles()
+        adjacent = (
+            discover_profiles(self.execution.parent)
+            if provider_manifest_path(self.execution.parent).is_file()
+            else ())
+        installed = (
+            adjacent
+            if any(profile.path == self.execution for profile in adjacent)
+            else discover_profiles())
         self.profiles = (
             tuple(profile for profile in installed if profile.selectable)
             if any(profile.path == self.execution for profile in installed)
             else (active_profile,)
         )
-        self._profiles_by_selection = {
-            profile.selection_id: profile for profile in self.profiles}
+        self._profiles_by_variant = {
+            (profile.selection_id, profile.reasoning_effort): profile
+            for profile in self.profiles}
         self._profiles_by_path = {
             profile.path: profile for profile in self.profiles}
-        if len(self._profiles_by_selection) != len(self.profiles):
+        if (len(self._profiles_by_variant) != len(self.profiles)
+                or len(self._profiles_by_path) != len(self.profiles)):
             raise FrontendError(
-                "ambiguous_catalog", "RPNH profile selection identities are not unique.", 500)
+                "ambiguous_catalog",
+                "RPNH model/effort execution identities are not unique.", 500)
+        logical_profiles = tuple(
+            profile for profile in self.profiles
+            if profile.reasoning_effort == profile.default_reasoning_effort)
+        if not logical_profiles:
+            logical_profiles = (active_profile,)
+        self._logical_profiles = {
+            profile.selection_id: profile for profile in logical_profiles}
+        if len(self._logical_profiles) != len(logical_profiles):
+            raise FrontendError(
+                "ambiguous_catalog",
+                "RPNH logical model identities are not unique.", 500)
         self.default_selection = active_profile.selection_id
+        self.default_reasoning_effort = active_profile.reasoning_effort
         self._sessions: dict[str, _Session] = {}
         self._main_session_type, self._task_control_type = MainSession, TaskControl
         self._initial_identities = {
-            profile.selection_id: self._execution_identity(profile.path)
+            profile.path: self._execution_identity(profile.path)
             for profile in self.profiles
         }
         if not resume:
@@ -157,7 +180,10 @@ class RegistryFrontendApplication:
     def configuration(self) -> dict[str, Any]:
         return {
             "default_selection": self.default_selection,
-            "profiles": [self._public_profile(profile) for profile in self.profiles],
+            "default_reasoning_effort": self.default_reasoning_effort,
+            "profiles": [
+                self._public_profile(profile)
+                for profile in self._logical_profiles.values()],
         }
 
     @staticmethod
@@ -170,14 +196,29 @@ class RegistryFrontendApplication:
             "provider": profile.provider,
             "provider_name": profile.provider_display_name,
             "model": profile.model_condition,
+            "reasoning_effort": profile.reasoning_effort,
+            "supported_reasoning_efforts": list(
+                profile.supported_reasoning_efforts),
+            "default_reasoning_effort": profile.default_reasoning_effort,
             "ready": self._profile_ready(profile),
         }
 
-    def _profile(self, selection_id: str) -> Any:
-        profile = self._profiles_by_selection.get(selection_id)
-        if profile is None:
+    def _profile(
+            self, selection_id: str,
+            reasoning_effort: str | None = None,
+    ) -> Any:
+        logical = self._logical_profiles.get(selection_id)
+        if logical is None:
             raise FrontendError(
                 "unknown_model", "Unknown RPNH provider/model selection.", 400)
+        effort = (
+            logical.default_reasoning_effort
+            if reasoning_effort is None else reasoning_effort)
+        profile = self._profiles_by_variant.get((selection_id, effort))
+        if profile is None:
+            raise FrontendError(
+                "unknown_effort",
+                "Unknown reasoning effort for this RPNH model.", 400)
         return profile
 
     def _execution_identity(self, path: Path) -> dict[str, Any]:
@@ -185,16 +226,20 @@ class RegistryFrontendApplication:
         from cpn.rpnh.user_config import profile_for_path
         selected = path.expanduser().resolve()
         selection, profile = load_llm_execution_selection(selected), profile_for_path(selected)
-        return {"schema_version": "rpnh/main_session_profile/v2",
+        return {"schema_version": "rpnh/main_session_profile/v3",
                 "execution_config_path": str(selected),
                 "adapter_config_path": str(selection.adapter_config_path),
                 "selection_id": profile.selection_id, "provider": profile.provider,
                 "model_condition": selection.input_target.model_condition,
+                "reasoning_effort": selection.reasoning_effort,
                 "adapter_kind": selection.adapter_kind, "registry_policy": selection.as_registry_policy()}
 
     def _validate_saved_profile(self, root: Path) -> Any:
         persisted = self._main_session_type._persisted_execution_profile(root)
-        if persisted is None or persisted.get("schema_version") != "rpnh/main_session_profile/v2":
+        if (persisted is None
+                or persisted.get("schema_version") not in {
+                    "rpnh/main_session_profile/v2",
+                    "rpnh/main_session_profile/v3"}):
             raise FrontendError("missing_profile", "A current persisted RPNH profile is required.")
         raw_path = persisted.get("execution_config_path")
         if not isinstance(raw_path, (str, Path)):
@@ -204,8 +249,16 @@ class RegistryFrontendApplication:
             raise FrontendError("selection_unavailable", "The persisted RPNH profile is unavailable.")
         expected = dict(persisted)
         expected["execution_config_path"] = str(expected["execution_config_path"])
-        initial = self._initial_identities[profile.selection_id]
-        if expected != initial or self._execution_identity(profile.path) != initial:
+        initial = self._initial_identities[profile.path]
+        current = self._execution_identity(profile.path)
+        if expected.get("schema_version") == "rpnh/main_session_profile/v2":
+            current = dict(current)
+            current["schema_version"] = "rpnh/main_session_profile/v2"
+            current.pop("reasoning_effort")
+            initial = dict(initial)
+            initial["schema_version"] = "rpnh/main_session_profile/v2"
+            initial.pop("reasoning_effort")
+        if expected != initial or current != initial:
             raise FrontendError("selection_drift", "RPNH profile drift was rejected before opening work.")
         return profile
 
@@ -214,9 +267,12 @@ class RegistryFrontendApplication:
         if session.execution_config_path != profile.path:
             raise FrontendError("selection_drift", "RPNH execution selection changed.")
 
-    def _select_profile(self, session: Any, selection_id: str) -> Any:
-        profile = self._profile(selection_id)
-        initial = self._initial_identities[selection_id]
+    def _select_profile(
+            self, session: Any, selection_id: str,
+            reasoning_effort: str | None = None,
+    ) -> Any:
+        profile = self._profile(selection_id, reasoning_effort)
+        initial = self._initial_identities[profile.path]
         if self._execution_identity(profile.path) != initial:
             raise FrontendError("selection_drift", "RPNH profile drift was rejected before execution.")
         if not self._profile_ready(profile):
@@ -233,13 +289,20 @@ class RegistryFrontendApplication:
             raise FrontendError("unknown_session", "Unknown RPNH session.", 404)
         return self._sessions[sid]
 
-    def create_session(self, selection_id: str | None = None) -> str:
+    def create_session(
+            self, selection_id: str | None = None,
+            reasoning_effort: str | None = None,
+    ) -> str:
         if self._sessions:
             raise FrontendError(
                 "session_exists",
                 "This OpenCode application is already bound to its one main session.")
-        profile = self._profile(selection_id or self.default_selection)
-        initial = self._initial_identities[profile.selection_id]
+        profile = self._profile(
+            selection_id or self.default_selection,
+            (self.default_reasoning_effort
+             if selection_id is None and reasoning_effort is None
+             else reasoning_effort))
+        initial = self._initial_identities[profile.path]
         if self._execution_identity(profile.path) != initial:
             raise FrontendError("selection_drift", "RPNH profile drift was rejected before session creation.")
         if not self._profile_ready(profile):
@@ -291,7 +354,9 @@ class RegistryFrontendApplication:
             if not isinstance(command, dict):
                 command = {}
             key = command.get("caller_idempotency_key", "")
-            identity, selection_id = None, current_profile.selection_id
+            identity = None
+            selection_id = current_profile.selection_id
+            reasoning_effort = current_profile.reasoning_effort
             model_evidence = "unavailable"
             if isinstance(key, str) and key.startswith("frontend-request/v2:"):
                 try:
@@ -313,10 +378,42 @@ class RegistryFrontendApplication:
                 if (command.get("authority") != "main_thread/v1" or command.get("command") != "accept_turn"
                         or not isinstance(material, dict) or material.get("user_input") != first["user_input"]):
                     raise FrontendError("invalid_evidence", "Submission evidence differs from its Registry turn.")
+            elif isinstance(key, str) and key.startswith("frontend-request/v3:"):
+                try:
+                    request_evidence = json.loads(
+                        key.removeprefix("frontend-request/v3:"))
+                except (TypeError, ValueError):
+                    request_evidence = None
+                if (not isinstance(request_evidence, dict)
+                        or set(request_evidence) != {
+                            "key", "selection", "reasoning_effort"}
+                        or not isinstance(request_evidence["key"], str)
+                        or not isinstance(request_evidence["selection"], str)
+                        or (request_evidence["reasoning_effort"] is not None
+                            and not isinstance(
+                                request_evidence["reasoning_effort"], str))):
+                    raise FrontendError(
+                        "invalid_evidence",
+                        "Submission identity evidence is invalid.")
+                identity = request_evidence["key"]
+                selection_id = request_evidence["selection"]
+                reasoning_effort = request_evidence["reasoning_effort"]
+                self._profile(selection_id, reasoning_effort)
+                model_evidence = "frontend-request/v3"
+                material = command.get("material")
+                if (command.get("authority") != "main_thread/v1"
+                        or command.get("command") != "accept_turn"
+                        or not isinstance(material, dict)
+                        or material.get("user_input")
+                        != first["user_input"]):
+                    raise FrontendError(
+                        "invalid_evidence",
+                        "Submission evidence differs from its Registry turn.")
             text, kind = session._turn_input(first["user_input"])
             ordinal = int(first["ordinal"])
             item = {"ordinal": ordinal, "key": identity, "text": text, "kind": kind,
-                    "model": self._public_profile(self._profile(selection_id)),
+                    "model": self._public_profile(self._profile(
+                        selection_id, reasoning_effort)),
                     "model_evidence": model_evidence,
                     "state": current["state"], "created": _milliseconds(event.recorded_at),
                     "updated": _milliseconds(latest.recorded_at),
@@ -376,6 +473,7 @@ class RegistryFrontendApplication:
     def submit(
             self, sid: str, text: str, key: str, *, kind: str | None = None,
             selection_id: str | None = None,
+            reasoning_effort: str | None = None,
     ) -> int:
         state = self._get(sid)
         session = state.session
@@ -383,8 +481,13 @@ class RegistryFrontendApplication:
         if current is None:
             raise FrontendError(
                 "selection_unavailable", "The session's RPNH profile is unavailable.")
-        profile = self._profile(selection_id or current.selection_id)
-        initial = self._initial_identities[profile.selection_id]
+        selected_id = selection_id or current.selection_id
+        selected_effort = (
+            current.reasoning_effort
+            if selection_id is None and reasoning_effort is None
+            else reasoning_effort)
+        profile = self._profile(selected_id, selected_effort)
+        initial = self._initial_identities[profile.path]
         if self._execution_identity(profile.path) != initial:
             raise FrontendError("selection_drift", "RPNH profile drift was rejected before execution.")
         if not isinstance(text, str) or not text.strip() or kind not in {None, "workflow"}:
@@ -396,14 +499,17 @@ class RegistryFrontendApplication:
             raise FrontendError("ambiguous_submission", "Duplicate Registry submission identities.")
         if existing:
             item = existing[0]
-            if ((item["text"], item["kind"], item["model"]["selection"])
-                    != (text, kind, profile.selection_id)):
+            if ((item["text"], item["kind"], item["model"]["selection"],
+                 item["model"].get("reasoning_effort"))
+                    != (text, kind, profile.selection_id,
+                        profile.reasoning_effort)):
                 raise FrontendError("request_conflict", "This request identity already has different input.")
             if item["state"] not in {"accepted", "pending_start"}:
                 return item["ordinal"]
             ordinal = item["ordinal"]
         else:
-            profile = self._select_profile(session, profile.selection_id)
+            profile = self._select_profile(
+                session, profile.selection_id, profile.reasoning_effort)
             if session.active_turn_snapshot() is not None:
                 raise FrontendError("session_busy", "Resolve the active or paused main turn first.")
             projection = session._main_thread.recover_thread()
@@ -411,8 +517,10 @@ class RegistryFrontendApplication:
             session._main_thread.accept_turn(
                 thread_ref=session._version_ref(projection["thread_ref"]),
                 user_input={"text": text, "required_task_kind": kind}, expected_ordinal=ordinal,
-                idempotency_key="frontend-request/v2:" + canonical({
-                    "key": key, "selection": profile.selection_id}))
+                idempotency_key="frontend-request/v3:" + canonical({
+                    "key": key,
+                    "selection": profile.selection_id,
+                    "reasoning_effort": profile.reasoning_effort}))
         spec = session.prepare_turn(text, required_task_kind=kind)
         snap = session.active_turn_snapshot()
         if snap is None or snap.ordinal != ordinal:
@@ -531,6 +639,7 @@ class RegistryFrontendApplication:
     def command(
             self, sid: str, name: str, arguments: str, key: str, *,
             selection_id: str | None = None,
+            reasoning_effort: str | None = None,
     ) -> Any:
         import shlex
         state = self._get(sid)
@@ -539,7 +648,11 @@ class RegistryFrontendApplication:
         if current is None:
             raise FrontendError(
                 "selection_unavailable", "The session's RPNH profile is unavailable.")
-        selected = self._profile(selection_id or current.selection_id)
+        selected = self._profile(
+            selection_id or current.selection_id,
+            (current.reasoning_effort
+             if selection_id is None and reasoning_effort is None
+             else reasoning_effort))
         if name == "rpnh-help":
             if arguments.strip():
                 raise FrontendError("invalid_arguments", "rpnh-help takes no arguments.", 400)
@@ -548,7 +661,9 @@ class RegistryFrontendApplication:
                                  "rpnh-workflow TEXT", "rpnh-resume", "rpnh-rollback", "rpnh-send UNIQUE_ID TEXT"],
                     "notice": "Identical unkeyed prompts are one request per session. Command observations are not agent answers."}
         if name in {"rpnh-workflow", "rpnh-send"}:
-            selected = self._select_profile(session, selected.selection_id)
+            selected = self._select_profile(
+                session, selected.selection_id,
+                selected.reasoning_effort)
             text = arguments
             kind = "workflow" if name == "rpnh-workflow" else None
             if name == "rpnh-send":
@@ -557,15 +672,19 @@ class RegistryFrontendApplication:
                     raise FrontendError("invalid_arguments", "Usage: /rpnh-send UNIQUE_ID TEXT", 400)
                 key = request_identity(
                     parts[1], None,
-                    {"provider": "rpnh", "selection": selected.selection_id},
+                    {"provider": "rpnh", "selection": selected.selection_id,
+                     "reasoning_effort": selected.reasoning_effort},
                     parts[0])
                 text = parts[1]
             return {"turn_ordinal": self.submit(
                 sid, text, key, kind=kind,
-                selection_id=selected.selection_id),
+                selection_id=selected.selection_id,
+                reasoning_effort=selected.reasoning_effort),
                 "status": "registered_not_terminal"}
         if name == "rpnh-agent":
-            self._select_profile(session, selected.selection_id)
+            self._select_profile(
+                session, selected.selection_id,
+                selected.reasoning_effort)
             return self.launch_agent(sid, arguments, key)
         try:
             words = shlex.split(arguments)
@@ -624,7 +743,9 @@ class RegistryFrontendApplication:
             snap = session.active_turn_snapshot()
             if (name == "rpnh-resume" and snap is not None
                     and snap.state == "terminal"):
-                self._select_profile(session, selected.selection_id)
+                self._select_profile(
+                    session, selected.selection_id,
+                    selected.reasoning_effort)
                 self._check_model(session)
                 reconciliation = session.reconcile_active_turn()
                 if reconciliation.state != "committed":
@@ -637,7 +758,9 @@ class RegistryFrontendApplication:
             if name == "rpnh-rollback":
                 session.rollback_paused_turn()
                 return {"status": "main_interrupted_child_registry_retained"}
-            self._select_profile(session, selected.selection_id)
+            self._select_profile(
+                session, selected.selection_id,
+                selected.reasoning_effort)
             self._check_model(session)
             handle = self._matching_handle(state.main_control, snap.attempt_path)
             if handle is None:

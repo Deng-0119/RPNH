@@ -203,6 +203,9 @@ def test_dsh_launcher_resolves_public_profile_without_credentials(
         ),
         adapter_kind="external_provider",
         timeout_seconds=30,
+        reasoning_effort="high",
+        supported_reasoning_efforts=("low", "medium", "high"),
+        default_reasoning_effort="medium",
         as_registry_policy=lambda: {
             "adapter_kind": "external_provider",
             "timeout_seconds": 30,
@@ -245,6 +248,10 @@ def test_dsh_launcher_resolves_public_profile_without_credentials(
     assert public["model_condition"] == "exact-model"
     assert public["timeout_seconds"] == 30
     assert public["transport_kind"] == "https"
+    assert public["reasoning_effort"] == "high"
+    assert public["supported_reasoning_efforts"] == [
+        "low", "medium", "high"]
+    assert public["default_reasoning_effort"] == "medium"
     assert "policy" not in public
     serialized = json.dumps(public)
     assert "credential-must-not-be-serialized" not in serialized
@@ -270,6 +277,9 @@ def test_dsh_launcher_forwards_explicit_managed_tool_selection(
         ),
         adapter_kind="external_provider",
         timeout_seconds=30,
+        reasoning_effort=None,
+        supported_reasoning_efforts=(),
+        default_reasoning_effort=None,
         as_registry_policy=lambda: {
             "route_provenance": [{"transport": "https"}],
         },

@@ -21,6 +21,7 @@ from cpn.rpnh.main_session import (
     MainTurnReconciliation,
     MainTurnSnapshot,
 )
+from cpn.rpnh.provider_setup import build_provider_catalog
 from cpn.rpnh.session_access import (
     MainSessionOwnerLease,
     stable_frontend_session_id,
@@ -55,6 +56,52 @@ def _local_profile(root: Path, *, model: str = "test-model") -> Path:
         "max_response_bytes": 8192,
     }), encoding="utf-8")
     return execution
+
+
+def _reasoning_effort_profiles(
+        root: Path, *, default: str = "medium",
+) -> tuple[Path, Path, Path]:
+    catalog = root / "catalog.json"
+    catalog.parent.mkdir(parents=True, exist_ok=True)
+    catalog.write_text(json.dumps({
+        "schema_version": "rpnh/provider_model_catalog/v3",
+        "providers": [{
+            "provider": "local",
+            "display_name": "Local",
+            "models": [{
+                "profile": "reasoning-model",
+                "model_condition": "exact-reasoning-model",
+                "reasoning_efforts": {
+                    "supported": ["low", "medium", "high"],
+                    "default": default,
+                },
+                "adapter": {
+                    "adapter_kind": "local_process",
+                    "argv": [
+                        "/usr/bin/true", "--model", "{model}",
+                        "--effort", "{reasoning_effort}",
+                    ],
+                    "probe_argv": ["/usr/bin/true"],
+                    "env": {},
+                    "inherit_env": [],
+                },
+                "timeout_seconds": 60,
+                "max_output_tokens": 1024,
+                "max_response_bytes": 8192,
+            }],
+        }],
+    }), encoding="utf-8")
+    generated = root / "generated"
+    build_provider_catalog(catalog, generated)
+    execution = generated / "execution"
+    def path(effort: str) -> Path:
+        return execution / (
+            "reasoning-model.json"
+            if effort == default else
+            f"reasoning-model--effort-{effort}.json")
+    return (
+        path("low"), path("medium"), path("high"),
+    )
 
 
 class _FakeWebSocket:
@@ -204,6 +251,11 @@ def test_rejected_turn_and_failed_settings_keep_the_current_profile(
     server = CodexAppServer(tmp_path / "session", execution_a)
     profile_b = profile_for_path(execution_b)
     server._profiles_by_model_id[profile_b.selection_id] = profile_b
+    server._profiles_by_variant[
+        (profile_b.selection_id, profile_b.reasoning_effort)] = profile_b
+    server._profiles_by_path[profile_b.path] = profile_b
+    server._initial_profile_identities[profile_b.path] = (
+        server._execution_identity(profile_b.path))
     socket = _FakeWebSocket([])
     asyncio.run(server._start_thread(socket, "start", {
         "model": server.frontend_model_id,
@@ -323,9 +375,145 @@ def test_codex_model_write_persists_the_rpnh_profile(
     assert response["version"].startswith("rpnh-")
     saved = json.loads(selected_config.read_text(encoding="utf-8"))
     assert saved == {
-        "schema_version": "rpnh/cli_config/v3",
+        "schema_version": "rpnh/cli_config/v4",
         "execution_config_path": str(execution.resolve()),
+        "reasoning_effort": None,
     }
+
+
+def test_codex_lists_selects_and_persists_model_scoped_reasoning_effort(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    low, medium, high = _reasoning_effort_profiles(
+        tmp_path / "runtime")
+    selected_config = tmp_path / "user" / "config.json"
+    monkeypatch.setenv("RPNH_CONFIG", str(selected_config))
+    server = CodexAppServer(tmp_path / "session", medium)
+    socket = _FakeWebSocket([
+        {
+            "id": "initialize",
+            "method": "initialize",
+            "params": {
+                "clientInfo": {"name": "codex-tui", "version": "0.155.0"},
+            },
+        },
+        {"method": "initialized"},
+        {"id": 1, "method": "model/list", "params": {}},
+        {
+            "id": 2,
+            "method": "config/batchWrite",
+            "params": {
+                "expectedVersion": "rpnh-uninitialized",
+                "reloadUserConfig": True,
+                "edits": [
+                    {
+                        "keyPath": "model",
+                        "value": "reasoning-model",
+                        "mergeStrategy": "replace",
+                    },
+                    {
+                        "keyPath": "model_reasoning_effort",
+                        "value": "high",
+                        "mergeStrategy": "replace",
+                    },
+                ],
+            },
+        },
+        {
+            "id": 3,
+            "method": "thread/start",
+            "params": {
+                "model": "reasoning-model",
+                "effort": "high",
+                "cwd": str(tmp_path),
+            },
+        },
+    ])
+
+    asyncio.run(server.handle(socket))
+
+    model = next(
+        item["result"]["data"][0]
+        for item in socket.sent if item.get("id") == 1)
+    assert model["defaultReasoningEffort"] == "medium"
+    assert [
+        item["reasoningEffort"]
+        for item in model["supportedReasoningEfforts"]
+    ] == ["low", "medium", "high"]
+    started = next(
+        item["result"] for item in socket.sent if item.get("id") == 3)
+    assert started["reasoningEffort"] == "high"
+    state = next(iter(server._threads.values()))
+    assert state.reasoning_effort == "high"
+    assert state.session.execution_config_path == high.resolve()
+    assert low.resolve() in server._profiles_by_path
+    saved = json.loads(selected_config.read_text(encoding="utf-8"))
+    assert saved == {
+        "schema_version": "rpnh/cli_config/v4",
+        "execution_config_path": str(high.resolve()),
+        "reasoning_effort": "high",
+    }
+
+
+def test_codex_rejects_cached_effort_path_after_catalog_default_changes(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    runtime = tmp_path / "runtime"
+    low, _, _ = _reasoning_effort_profiles(runtime, default="low")
+    selected_config = tmp_path / "user" / "config.json"
+    monkeypatch.setenv("RPNH_CONFIG", str(selected_config))
+    server = CodexAppServer(tmp_path / "session", low)
+
+    _reasoning_effort_profiles(runtime, default="high")
+    socket = _FakeWebSocket([
+        {
+            "id": "initialize",
+            "method": "initialize",
+            "params": {
+                "clientInfo": {"name": "codex-tui", "version": "0.155.0"},
+            },
+        },
+        {"method": "initialized"},
+        {
+            "id": 1,
+            "method": "config/batchWrite",
+            "params": {
+                "expectedVersion": "rpnh-uninitialized",
+                "reloadUserConfig": True,
+                "edits": [
+                    {
+                        "keyPath": "model",
+                        "value": "reasoning-model",
+                        "mergeStrategy": "replace",
+                    },
+                    {
+                        "keyPath": "model_reasoning_effort",
+                        "value": "low",
+                        "mergeStrategy": "replace",
+                    },
+                ],
+            },
+        },
+        {
+            "id": 2,
+            "method": "thread/start",
+            "params": {
+                "model": "reasoning-model",
+                "effort": "low",
+                "cwd": str(tmp_path),
+            },
+        },
+    ])
+
+    asyncio.run(server.handle(socket))
+
+    for request_id in (1, 2):
+        response = next(
+            item for item in socket.sent if item.get("id") == request_id)
+        assert "result" not in response
+        assert "profile changed" in response["error"]["message"]
+    assert not selected_config.exists()
+    assert not (tmp_path / "session").exists()
 
 
 def test_codex_frontend_attachment_crud_cannot_fake_registered_inputs(

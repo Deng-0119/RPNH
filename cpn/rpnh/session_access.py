@@ -63,9 +63,13 @@ def inspect_main_session_root(candidate: Path) -> MainSessionRoot:
     except ValueError as exc:
         raise ValueError("main session has an invalid persisted execution profile") from exc
     if (profile is None
-            or profile.get("schema_version") != "rpnh/main_session_profile/v2"
+            or profile.get("schema_version") not in {
+                "rpnh/main_session_profile/v2",
+                "rpnh/main_session_profile/v3",
+            }
             or execution_config_path is None):
-        raise ValueError("main session requires a persisted v2 execution profile")
+        raise ValueError(
+            "main session requires a persisted v2 or v3 execution profile")
     return MainSessionRoot(root=root, execution_config_path=execution_config_path)
 
 

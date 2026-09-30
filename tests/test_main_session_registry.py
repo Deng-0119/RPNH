@@ -683,7 +683,7 @@ def test_legacy_v1_profile_is_readable_and_upgrades_on_resume(
     MainSession.resume(root)
 
     assert json.loads(profile_path.read_text(encoding="utf-8"))["schema_version"] == (
-        "rpnh/main_session_profile/v2")
+        "rpnh/main_session_profile/v3")
 
 
 def test_complete_turn_registers_receipt_commits_and_is_idempotent(

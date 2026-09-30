@@ -202,20 +202,32 @@ def boundary(tmp_path):
     app = RegistryFrontendApplication.__new__(RegistryFrontendApplication)
     app.root, app.execution = tmp_path, execution
     profile = NS(selection_id="one", provider="test", provider_display_name="Test",
-                 model_condition="exact", required_environment=(), path=execution)
+                 model_condition="exact", required_environment=(), path=execution,
+                 reasoning_effort=None, supported_reasoning_efforts=(),
+                 default_reasoning_effort=None)
     profile_two = NS(selection_id="two", provider="test-two", provider_display_name="Test Two",
-                     model_condition="exact-two", required_environment=(), path=execution_two)
+                     model_condition="exact-two", required_environment=(), path=execution_two,
+                     reasoning_effort=None, supported_reasoning_efforts=(),
+                     default_reasoning_effort=None)
     app.profiles = (profile, profile_two)
     app.default_selection = profile.selection_id
+    app.default_reasoning_effort = None
+    app._profiles_by_variant = {
+        (p.selection_id, p.reasoning_effort): p for p in app.profiles}
+    app._logical_profiles = {p.selection_id: p for p in app.profiles}
     app._profiles_by_selection = {p.selection_id: p for p in app.profiles}
     app._profiles_by_path = {p.path: p for p in app.profiles}
     identities = {
-        profile.selection_id: {"schema_version": "rpnh/main_session_profile/v2",
-                               "execution_config_path": str(execution), "policy": "pinned"},
-        profile_two.selection_id: {"schema_version": "rpnh/main_session_profile/v2",
-                                   "execution_config_path": str(execution_two), "policy": "pinned-two"},
+        profile.selection_id: {"schema_version": "rpnh/main_session_profile/v3",
+                               "execution_config_path": str(execution),
+                               "reasoning_effort": None, "policy": "pinned"},
+        profile_two.selection_id: {"schema_version": "rpnh/main_session_profile/v3",
+                                   "execution_config_path": str(execution_two),
+                                   "reasoning_effort": None, "policy": "pinned-two"},
     }
-    app._initial_identities = copy.deepcopy(identities)
+    app._initial_identities = {
+        p.path: copy.deepcopy(identities[p.selection_id])
+        for p in app.profiles}
     app._execution_identity = lambda path: dict(
         identities[app._profiles_by_path[path].selection_id])
     app._main_session_type = NS(

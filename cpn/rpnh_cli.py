@@ -97,6 +97,9 @@ def _config_parser() -> argparse.ArgumentParser:
         "use", help="select one user-configured profile or exact pair")
     use.add_argument("provider_or_profile")
     use.add_argument("model", nargs="?")
+    use.add_argument(
+        "--effort",
+        help="select one effort declared for the chosen exact model")
     commands.add_parser("setup", help="create or select a model interactively")
     commands.add_parser("add", help="add a model without editing JSON")
     doctor = commands.add_parser("doctor", help="check local configuration without model calls")
@@ -120,10 +123,25 @@ def _config_command(argv: Sequence[str]) -> int:
         return 0
     if args.config_command == "list":
         selected = read_selected_path()
-        _print_json([
-            profile.as_public_dict(selected=selected == profile.path)
-            for profile in discover_profiles()
-        ])
+        profiles = discover_profiles()
+        selected_profile = (
+            None if selected is None else profile_for_path(selected))
+        logical_profiles = [
+            profile for profile in profiles
+            if profile.reasoning_effort
+            == profile.default_reasoning_effort]
+        projected = []
+        for logical in logical_profiles:
+            public = logical
+            if (selected_profile is not None
+                    and selected_profile.selection_id
+                    == logical.selection_id):
+                public = selected_profile
+            projected.append(public.as_public_dict(
+                selected=selected_profile is not None
+                and selected_profile.selection_id
+                == logical.selection_id))
+        _print_json(projected)
         return 0
     if args.config_command == "show":
         selected = read_selected_path()
@@ -132,7 +150,9 @@ def _config_command(argv: Sequence[str]) -> int:
         _print_json(profile_for_path(selected).as_public_dict(selected=True))
         return 0
     if args.config_command == "use":
-        profile = select_profile(args.provider_or_profile, args.model)
+        profile = select_profile(
+            args.provider_or_profile, args.model,
+            reasoning_effort=args.effort)
         _print_json(profile.as_public_dict(selected=True))
         return 0
     if args.config_command == "build":

@@ -93,6 +93,7 @@ def build_llm_input_port(
             "max_response_bytes": target.max_response_bytes,
             "config_path": selection.adapter_config_path,
             "destination_run_root": destination_run_root,
+            "reasoning_effort": selection.reasoning_effort,
         }
         if selection.adapter_kind == "external_provider":
             from .external_provider import ExternalProviderInputPort

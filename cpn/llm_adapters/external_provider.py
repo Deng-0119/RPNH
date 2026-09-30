@@ -7,6 +7,7 @@ import http.client
 import ipaddress
 import json
 from pathlib import Path
+import re
 import socket
 import ssl
 import threading
@@ -40,15 +41,18 @@ from ._external_provider_recovery import (
 )
 
 
-SCHEMA_VERSION = "external_provider_adapter_config/v2"
+SCHEMA_VERSION = "external_provider_adapter_config/v3"
+LEGACY_SCHEMA_VERSION = "external_provider_adapter_config/v2"
 _READ_CHUNK_BYTES = 64 * 1024
 _ROUTE_FIELDS = {
     "route_id", "provider", "backend", "protocol", "endpoint",
     "outbound_model", "credential", "headers",
 }
-_CONFIG_FIELDS = {
+_LEGACY_CONFIG_FIELDS = {
     "schema_version", "adapter_kind", "model_condition", "recovery", "routes",
 }
+_CONFIG_FIELDS = _LEGACY_CONFIG_FIELDS | {"reasoning_effort"}
+_IDENTIFIER = re.compile(r"[a-z0-9][a-z0-9._-]*")
 _FORBIDDEN_EXTRA_HEADERS = {
     "authorization", "connection", "content-length", "content-type", "host",
     "proxy-authorization", "transfer-encoding",
@@ -91,6 +95,7 @@ class _ExternalRoute:
 class _ExternalProviderConfig:
     routes: tuple[_ExternalRoute, ...]
     recovery: ExternalProviderRecoveryPolicy
+    reasoning_effort: str | None
 
 
 def _text(value: object, *, label: str) -> str:
@@ -175,7 +180,10 @@ def _route(value: object) -> _ExternalRoute:
     )
 
 
-def _load_config(path: Path, model_condition: str) -> _ExternalProviderConfig:
+def _load_config(
+        path: Path, model_condition: str,
+        reasoning_effort: str | None = None,
+) -> _ExternalProviderConfig:
     if (not isinstance(model_condition, str) or not model_condition
             or model_condition != model_condition.strip()):
         raise AdapterConfigError(
@@ -185,12 +193,31 @@ def _load_config(path: Path, model_condition: str) -> _ExternalProviderConfig:
     except (OSError, UnicodeDecodeError, json.JSONDecodeError) as exc:
         raise AdapterConfigError(
             "external adapter config is unavailable or invalid") from exc
-    if not isinstance(document, Mapping) or set(document) != _CONFIG_FIELDS:
+    if not isinstance(document, Mapping):
         raise AdapterConfigError("external adapter config fields are not current")
-    if (document.get("schema_version") != SCHEMA_VERSION
+    version = document.get("schema_version")
+    expected_fields = (
+        _CONFIG_FIELDS if version == SCHEMA_VERSION
+        else _LEGACY_CONFIG_FIELDS)
+    if set(document) != expected_fields:
+        raise AdapterConfigError("external adapter config fields are not current")
+    if (version not in {SCHEMA_VERSION, LEGACY_SCHEMA_VERSION}
             or document.get("adapter_kind") != "external_provider"
             or document.get("model_condition") != model_condition):
         raise AdapterConfigError("external adapter identity differs from selection")
+    configured_effort = document.get("reasoning_effort")
+    if version == SCHEMA_VERSION:
+        if (configured_effort is not None
+                and (not isinstance(configured_effort, str)
+                     or _IDENTIFIER.fullmatch(configured_effort) is None)):
+            raise AdapterConfigError(
+                "external adapter reasoning_effort is invalid")
+        if configured_effort != reasoning_effort:
+            raise AdapterConfigError(
+                "external adapter reasoning effort differs from selection")
+    elif reasoning_effort is not None:
+        raise AdapterConfigError(
+            "legacy external adapter cannot select a reasoning effort")
     values = document.get("routes")
     if not isinstance(values, list) or len(values) != 1:
         raise AdapterConfigError(
@@ -205,16 +232,25 @@ def _load_config(path: Path, model_condition: str) -> _ExternalProviderConfig:
         recovery = recovery_policy_from_document(document.get("recovery"))
     except ExternalProviderRecoveryConfigError as exc:
         raise AdapterConfigError(str(exc)) from exc
-    return _ExternalProviderConfig(routes=routes, recovery=recovery)
+    return _ExternalProviderConfig(
+        routes=routes, recovery=recovery,
+        reasoning_effort=(
+            configured_effort if isinstance(configured_effort, str) else None),
+    )
 
 
-def _probe_request(route: _ExternalRoute) -> bytes:
-    return json.dumps({
+def _probe_request(
+        route: _ExternalRoute, reasoning_effort: str | None = None,
+) -> bytes:
+    document: dict[str, object] = {
         "model": route.outbound_model,
         "max_tokens": 8,
         "messages": [{"role": "user", "content": "Reply with READY."}],
         "stream": False,
-    }, ensure_ascii=False, allow_nan=False,
+    }
+    if reasoning_effort is not None:
+        document["reasoning_effort"] = reasoning_effort
+    return json.dumps(document, ensure_ascii=False, allow_nan=False,
         separators=(",", ":")).encode("utf-8")
 
 
@@ -342,6 +378,7 @@ class ExternalProviderInputPort:
             timeout_seconds: int, max_response_bytes: int,
             config_path: Path,
             destination_run_root: Path,
+            reasoning_effort: str | None = None,
     ) -> None:
         values = (
             max_output_tokens, timeout_seconds, max_response_bytes,
@@ -354,9 +391,11 @@ class ExternalProviderInputPort:
         self._max_output_tokens = max_output_tokens
         self._timeout_seconds = timeout_seconds
         self._max_response_bytes = max_response_bytes
-        config = _load_config(config_path, model_condition)
+        config = _load_config(
+            config_path, model_condition, reasoning_effort)
         self._routes = config.routes
         self._recovery = config.recovery
+        self._reasoning_effort = config.reasoning_effort
         self._audit = PrivateAttemptAudit(destination_run_root)
         active_route_id = self._audit.latest_selected_external_route_id(
             model_condition=model_condition)
@@ -724,7 +763,8 @@ class ExternalProviderInputPort:
                     attempt.canonical_request_bytes,
                     expected_model_condition=attempt.model_condition,
                     expected_max_output_tokens=self._max_output_tokens,
-                    outbound_model=self._routes[0].outbound_model)
+                    outbound_model=self._routes[0].outbound_model,
+                    reasoning_effort=self._reasoning_effort)
             except ResponseEnvelopeError:
                 self._audit.finish_external_invocation(
                     attempt, outcome="adapter_not_submitted",
@@ -791,7 +831,8 @@ class ExternalProviderInputPort:
                     attempt.canonical_request_bytes,
                     expected_model_condition=attempt.model_condition,
                     expected_max_output_tokens=self._max_output_tokens,
-                    outbound_model=route.outbound_model)
+                    outbound_model=route.outbound_model,
+                    reasoning_effort=self._reasoning_effort)
             except ResponseEnvelopeError:
                 self._audit.finish_external_invocation(
                     attempt, outcome="request_protocol_invalid",
@@ -891,7 +932,9 @@ class ExternalProviderInputPort:
                         probe_budget_exhausted = True
                         break
                     probe_result = perform(
-                        body=_probe_request(route), call_kind="health_probe",
+                        body=_probe_request(
+                            route, self._reasoning_effort),
+                        call_kind="health_probe",
                         deadline=probe_deadline)
                     probe_attempts += 1
                     if probe_result.response_bytes is not None:
@@ -936,4 +979,7 @@ class ExternalProviderInputPort:
             self._closed = True
 
 
-__all__ = ["AdapterConfigError", "ExternalProviderInputPort", "SCHEMA_VERSION"]
+__all__ = [
+    "AdapterConfigError", "ExternalProviderInputPort",
+    "LEGACY_SCHEMA_VERSION", "SCHEMA_VERSION",
+]

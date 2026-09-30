@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: configuration.md
-  revision: "2026-09-26.1"
+  revision: "2026-09-30.1"
   status: source-reviewed-pre-release
 ---
 
@@ -35,6 +35,8 @@ plugin catalog 管理已安装原生 operation，workflow/module declaration 管
 会显示 provider/model、恢复策略、context 策略与不含凭据的 runtime policy。
 `--save-default` 保存显式 `--execution`。`ready` 只代表指定凭据变量存在，不代表网络、
 模型、授权或计费已验证。
+若模型声明了 effort，`rpnh config use ... --effort EFFORT` 从该模型配置的值中选择；
+省略时使用其配置的默认值。
 
 ## Provider 与精确模型字段
 
@@ -46,6 +48,7 @@ catalog 根对象包含固定的 `schema_version` 与 `providers` 数组。每�
 |---|---|
 | `profile` | 唯一、适合文件名的小写 profile 名。 |
 | `model_condition` | 原样发送的精确模型标识；RPNH 不限制模型名单。 |
+| `reasoning_efforts` | 可选对象，包含非空且无重复的 `supported` 列表，以及属于该列表的 `default`。这些值是用户自有的精确模型元数据；RPNH 不内置供应商对照表。 |
 | `adapter` | 下述唯一一条 `external_provider` 或 `local_process` route。 |
 | `timeout_seconds` | 正数，正式请求超时；交互初始化值为 900。 |
 | `max_output_tokens` | 正数，输出 token 请求上限；交互初始化值为 8192。 |
@@ -77,8 +80,9 @@ catalog 根对象包含固定的 `schema_version` 与 `providers` 数组。每�
 | `env` | 传给子进程的静态环境增量，可为空。 |
 | `inherit_env` | 明确从 launcher 继承的环境变量名，可为空。 |
 
-两个本地命令向量中的 `{model}` 都会替换为精确模型。本地进程和 probe 仍可能有外部
-副作用或费用。
+两个本地命令向量中的 `{model}` 都会替换为精确模型。若声明了 `reasoning_efforts`，
+正式 `argv` 必须包含 `{reasoning_effort}`，并在每个生成的不可变 variant 中替换。
+本地进程和 probe 仍可能有外部副作用或费用。
 
 ## 标准 Agent runtime policy
 

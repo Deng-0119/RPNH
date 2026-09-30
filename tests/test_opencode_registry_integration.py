@@ -160,7 +160,7 @@ def test_basic_direct_session_projects_and_continues_without_resume_effects(
         turns = app.snapshot()[0]["turns"]
         assert [turn["text"] for turn in turns] == [
             "created by Basic", "continued by OpenCode"]
-        assert turns[1]["model_evidence"] == "frontend-request/v2"
+        assert turns[1]["model_evidence"] == "frontend-request/v3"
         assert len(app._sessions[sid].session._main_thread.recover_thread()[
             "committed_history"]) == 2
         assert port.calls == 2

@@ -1,0 +1,80 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "runtime/llm_execution_selection/v2",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {"const": "llm_execution_selection/v2"},
+    "adapter_kind": {"enum": ["local_process", "external_provider"]},
+    "model_condition": {"type": "string", "minLength": 1},
+    "adapter_config_path": {
+      "type": "string",
+      "pattern": "^(?:/|\\.\\./adapters/[a-z0-9][a-z0-9._-]*\\.json$)"
+    },
+    "timeout_seconds": {"type": "integer", "minimum": 1},
+    "max_output_tokens": {"type": "integer", "minimum": 1},
+    "max_response_bytes": {"type": "integer", "minimum": 1},
+    "context_window_tokens": {"type": "integer", "minimum": 1},
+    "context_compaction_retained_tokens": {"type": "integer", "minimum": 1},
+    "physical_profile": {"$ref": "#/definitions/identifier"},
+    "logical_selection_id": {"$ref": "#/definitions/identifier"},
+    "reasoning_effort": {"$ref": "#/definitions/nullableIdentifier"},
+    "supported_reasoning_efforts": {
+      "type": "array", "uniqueItems": true,
+      "items": {"$ref": "#/definitions/identifier"}
+    },
+    "default_reasoning_effort": {"$ref": "#/definitions/nullableIdentifier"},
+    "runtime": {"$ref": "#/definitions/runtimePolicy"}
+  },
+  "required": [
+    "schema_version", "adapter_kind", "model_condition",
+    "adapter_config_path", "timeout_seconds", "max_output_tokens",
+    "max_response_bytes", "physical_profile", "logical_selection_id",
+    "reasoning_effort", "supported_reasoning_efforts",
+    "default_reasoning_effort"
+  ],
+  "definitions": {
+    "identifier": {
+      "type": "string", "pattern": "^[a-z0-9][a-z0-9._-]*$"
+    },
+    "nullableIdentifier": {
+      "oneOf": [
+        {"type": "null"},
+        {"$ref": "#/definitions/identifier"}
+      ]
+    },
+    "runtimePolicy": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "max_turns_per_node": {"type": "integer", "minimum": 1},
+        "max_parallel_nodes": {"type": "integer", "minimum": 1},
+        "main_history_message_limit": {"type": "integer", "minimum": 1},
+        "context_pressure_trigger_ratio": {
+          "type": "number", "exclusiveMinimum": 0, "exclusiveMaximum": 1
+        },
+        "context_tool_output_byte_limit": {"type": "integer", "minimum": 128},
+        "workspace": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "timeout_seconds": {"type": "integer", "minimum": 1},
+            "memory_bytes": {"type": "integer", "minimum": 1},
+            "process_limit": {"type": "integer", "minimum": 1},
+            "source_size_bytes": {"type": "integer", "minimum": 1},
+            "input_size_bytes": {"type": "integer", "minimum": 1}
+          },
+          "required": [
+            "timeout_seconds", "memory_bytes", "process_limit",
+            "source_size_bytes", "input_size_bytes"
+          ]
+        }
+      },
+      "required": [
+        "max_turns_per_node", "max_parallel_nodes",
+        "main_history_message_limit", "context_pressure_trigger_ratio",
+        "context_tool_output_byte_limit", "workspace"
+      ]
+    }
+  }
+}

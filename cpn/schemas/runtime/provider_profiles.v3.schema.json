@@ -1,0 +1,42 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "runtime/provider_profiles/v3",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {"const": "rpnh/provider_profiles/v3"},
+    "profiles": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "profile": {"$ref": "#/definitions/identifier"},
+          "logical_selection_id": {"$ref": "#/definitions/identifier"},
+          "provider": {"$ref": "#/definitions/text"},
+          "display_name": {"$ref": "#/definitions/text"},
+          "model_condition": {"$ref": "#/definitions/text"},
+          "reasoning_effort": {"$ref": "#/definitions/nullableIdentifier"},
+          "supported_reasoning_efforts": {
+            "type": "array", "uniqueItems": true,
+            "items": {"$ref": "#/definitions/identifier"}
+          },
+          "default_reasoning_effort": {"$ref": "#/definitions/nullableIdentifier"}
+        },
+        "required": [
+          "profile", "logical_selection_id", "provider", "display_name",
+          "model_condition", "reasoning_effort",
+          "supported_reasoning_efforts", "default_reasoning_effort"
+        ]
+      }
+    }
+  },
+  "required": ["schema_version", "profiles"],
+  "definitions": {
+    "identifier": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]*$"},
+    "nullableIdentifier": {
+      "oneOf": [{"type": "null"}, {"$ref": "#/definitions/identifier"}]
+    },
+    "text": {"type": "string", "minLength": 1}
+  }
+}

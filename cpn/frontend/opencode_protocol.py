@@ -48,8 +48,13 @@ class OpenCodeProtocol:
         self.gateway, self.directory = gateway, directory
         configuration = gateway.call("configuration")
         if (not isinstance(configuration, Mapping)
-                or set(configuration) != {"default_selection", "profiles"}
+                or set(configuration) != {
+                    "default_selection", "default_reasoning_effort",
+                    "profiles"}
                 or not isinstance(configuration["default_selection"], str)
+                or (configuration["default_reasoning_effort"] is not None
+                    and not isinstance(
+                        configuration["default_reasoning_effort"], str))
                 or not isinstance(configuration["profiles"], list)
                 or not configuration["profiles"]):
             raise FrontendError("invalid_catalog", "Invalid RPNH public model projection.", 500)
@@ -57,9 +62,21 @@ class OpenCodeProtocol:
         if any(
                 not isinstance(profile, Mapping)
                 or set(profile) != {
-                    "selection", "provider", "provider_name", "model", "ready"}
+                    "selection", "provider", "provider_name", "model",
+                    "reasoning_effort", "supported_reasoning_efforts",
+                    "default_reasoning_effort", "ready"}
                 or any(not isinstance(profile[key], str) or not profile[key]
                        for key in ("selection", "provider", "provider_name", "model"))
+                or (profile["reasoning_effort"] is not None
+                    and not isinstance(profile["reasoning_effort"], str))
+                or not isinstance(profile["supported_reasoning_efforts"], list)
+                or any(not isinstance(effort, str) or not effort
+                       for effort in profile["supported_reasoning_efforts"])
+                or len(set(profile["supported_reasoning_efforts"]))
+                != len(profile["supported_reasoning_efforts"])
+                or (profile["default_reasoning_effort"] is not None
+                    and profile["default_reasoning_effort"]
+                    not in profile["supported_reasoning_efforts"])
                 or not isinstance(profile["ready"], bool)
                 for profile in profiles):
             raise FrontendError("invalid_catalog", "Invalid RPNH public model projection.", 500)
@@ -68,6 +85,8 @@ class OpenCodeProtocol:
                 or configuration["default_selection"] not in self.profiles):
             raise FrontendError("invalid_catalog", "Invalid RPNH public model projection.", 500)
         self.default_selection = configuration["default_selection"]
+        self.default_reasoning_effort = configuration[
+            "default_reasoning_effort"]
         self._condition = threading.Condition()
         self._revision, self._sequence = 0, 0
         self._epoch = uuid4().hex
@@ -104,16 +123,19 @@ class OpenCodeProtocol:
 
     def _selection(
             self, body: Mapping[str, Any], *, fallback: str,
+            fallback_effort: str | None = None,
             command: bool = False, create: bool = False,
-    ) -> str:
+    ) -> tuple[str, str | None]:
         if body.get("agent", "rpnh") != "rpnh":
             raise FrontendError("unsupported_agent", "Only the RPNH main agent is available.", 400)
-        if body.get("variant") not in (None, ""):
-            raise FrontendError("unsupported_variant", "Variants are controlled by RPNH.", 400)
+        variant = body.get("variant")
+        if variant == "":
+            variant = None
         requested = body.get("model")
         if requested is None:
-            return fallback
-        if command:
+            selection = fallback
+            valid = selection in self.profiles
+        elif command:
             prefix = "rpnh/"
             selection = requested.removeprefix(prefix) if isinstance(requested, str) else ""
             valid = isinstance(requested, str) and requested.startswith(prefix)
@@ -121,8 +143,16 @@ class OpenCodeProtocol:
             model_key = "id" if create else "modelID"
             if isinstance(requested, dict):
                 requested = dict(requested)
-                if create and requested.get("variant") in (None, ""):
-                    requested.pop("variant", None)
+                nested_variant = requested.pop("variant", None) if create else None
+                if nested_variant == "":
+                    nested_variant = None
+                if (nested_variant is not None and variant is not None
+                        and nested_variant != variant):
+                    raise FrontendError(
+                        "conflicting_effort",
+                        "Model and request reasoning efforts differ.", 400)
+                if nested_variant is not None:
+                    variant = nested_variant
                 selection = requested.get(model_key, "")
                 valid = requested == {"providerID": "rpnh", model_key: selection}
             else:
@@ -130,7 +160,20 @@ class OpenCodeProtocol:
                 valid = False
         if not valid or selection not in self.profiles:
             raise FrontendError("selection_drift", "Unknown RPNH provider/model selection.")
-        return selection
+        profile = self.profiles[selection]
+        effort = fallback_effort if variant is None else variant
+        if requested is not None and variant is None:
+            effort = profile["default_reasoning_effort"]
+        supported = profile["supported_reasoning_efforts"]
+        if (effort is not None and not isinstance(effort, str)):
+            raise FrontendError(
+                "invalid_effort", "Reasoning effort must be text.", 400)
+        if ((effort is None and supported)
+                or (effort is not None and effort not in supported)):
+            raise FrontendError(
+                "unsupported_effort",
+                "Unknown reasoning effort for this RPNH model.", 400)
+        return selection, effort
 
     def _provider(self) -> dict[str, Any]:
         modalities = {"text": True, "audio": False, "image": False, "video": False, "pdf": False}
@@ -142,7 +185,8 @@ class OpenCodeProtocol:
                 "id": selection, "providerID": "rpnh",
                 "api": {"id": selection, "url": "", "npm": ""},
                 "name": f"{profile['model']} ({profile['provider_name']})",
-                "capabilities": {"temperature": False, "reasoning": False,
+                "capabilities": {"temperature": False,
+                    "reasoning": bool(profile["supported_reasoning_efforts"]),
                     "attachment": False, "toolcall": False, "input": modalities,
                     "output": dict(modalities), "interleaved": False},
                 "cost": {"input": 0, "output": 0,
@@ -152,8 +196,12 @@ class OpenCodeProtocol:
                             "rpnh_metrics": "unavailable",
                             "rpnh_provider": profile["provider"],
                             "rpnh_exact_model": profile["model"],
+                            "rpnh_default_reasoning_effort": profile[
+                                "default_reasoning_effort"],
                             "rpnh_ready": profile["ready"]},
-                "headers": {}, "release_date": "", "variants": {}}
+                "headers": {}, "release_date": "", "variants": {
+                    effort: {} for effort in profile[
+                        "supported_reasoning_efforts"]}}
         return {"id": "rpnh", "name": "RPNH profiles", "source": "config",
                 "env": [], "options": {}, "models": models}
 
@@ -167,7 +215,9 @@ class OpenCodeProtocol:
                 "metadata": {"rpnh_authority": "Registry", "rpnh_metrics": "unavailable",
                              "rpnh_permission": "unavailable", "rpnh_state_error": view.get("error"),
                              "rpnh_provider": view["model"]["provider"],
-                             "rpnh_exact_model": view["model"]["model"]}}
+                             "rpnh_exact_model": view["model"]["model"],
+                             "rpnh_reasoning_effort": view["model"].get(
+                                 "reasoning_effort")}}
 
     @staticmethod
     def session_status(view: Mapping[str, Any]) -> dict[str, str]:
@@ -187,7 +237,8 @@ class OpenCodeProtocol:
                 "rpnh_turn_model_evidence": model_evidence,
                 "rpnh_turn_model_display_basis": (
                     "registered_frontend_request"
-                    if model_evidence == "frontend-request/v2" else
+                    if model_evidence in {
+                        "frontend-request/v2", "frontend-request/v3"} else
                     "session_current_selection"),
             }
         return result
@@ -212,7 +263,8 @@ class OpenCodeProtocol:
             "rpnh_turn_model_evidence": model_evidence,
             "rpnh_turn_model_display_basis": (
                 "registered_frontend_request"
-                if model_evidence == "frontend-request/v2" else
+                if model_evidence in {
+                    "frontend-request/v2", "frontend-request/v3"} else
                 "session_current_selection"),
         }
         user = {"id": uid, "sessionID": sid, "role": "user", "time": {"created": created}, "agent": "rpnh",
@@ -343,11 +395,14 @@ class OpenCodeProtocol:
         if not isinstance(body, dict):
             raise FrontendError("invalid_body", "A JSON object is required.", 400)
         if path == "/session":
-            if set(body) - {"agent", "model"}:
+            if set(body) - {"agent", "model", "variant"}:
                 raise FrontendError("unsupported_session_options", "Session options are controlled by RPNH.", 400)
-            selection = self._selection(
-                body, fallback=self.default_selection, create=True)
-            sid = self.gateway.call("create_session", selection)
+            selection, effort = self._selection(
+                body, fallback=self.default_selection,
+                fallback_effort=self.default_reasoning_effort, create=True)
+            sid = self.gateway.call(
+                "create_session", selection,
+                reasoning_effort=effort)
             self.notify()
             return Reply(200, self.session_document(self._view(sid)))
         match = re.fullmatch(r"/session/(ses_[0-9a-f]{32})/(message|prompt_async|abort|command)", path)
@@ -369,15 +424,19 @@ class OpenCodeProtocol:
             if not isinstance(name, str) or name not in COMMANDS or not isinstance(arguments, str):
                 raise FrontendError("unsupported_command", "Only advertised RPNH commands are accepted.", 400)
             view = self._view(sid)
-            selection = self._selection(
-                body, fallback=view["model"]["selection"], command=True)
-            identity_model = {"provider": "rpnh", "selection": selection}
+            selection, effort = self._selection(
+                body, fallback=view["model"]["selection"],
+                fallback_effort=view["model"].get("reasoning_effort"),
+                command=True)
+            identity_model = {
+                "provider": "rpnh", "selection": selection,
+                "reasoning_effort": effort}
             key = request_identity(
                 name + "\n" + arguments, None, identity_model,
                 self._supplied_id(body, headers))
             result = self.gateway.call(
                 "command", sid, name, arguments, key,
-                selection_id=selection)
+                selection_id=selection, reasoning_effort=effort)
             return Reply(200, self._observation(sid, name, result), {"X-RPNH-Submission-Key": key})
         allowed = {"parts", "messageID", "model", "agent", "variant", "noReply", "format"}
         if set(body) - allowed or (body.get("noReply") is not None and body.get("noReply") is not False):
@@ -385,8 +444,9 @@ class OpenCodeProtocol:
         if body.get("format") not in (None, {"type": "text"}):
             raise FrontendError("unsupported_format", "Only plain text is supported.", 400)
         view = self._view(sid)
-        selection = self._selection(
-            body, fallback=view["model"]["selection"])
+        selection, effort = self._selection(
+            body, fallback=view["model"]["selection"],
+            fallback_effort=view["model"].get("reasoning_effort"))
         parts = body.get("parts")
         if not isinstance(parts, list) or not 1 <= len(parts) <= 32:
             raise FrontendError("invalid_parts", "Nonempty text parts are required.", 400)
@@ -401,11 +461,14 @@ class OpenCodeProtocol:
             raise FrontendError("invalid_text", "Text must be nonempty and at most 131072 characters.", 400)
         if text.lstrip().startswith("/"):
             raise FrontendError("unsupported_command", "Use an advertised RPNH command, not a native slash command.", 400)
-        identity_model = {"provider": "rpnh", "selection": selection}
+        identity_model = {
+            "provider": "rpnh", "selection": selection,
+            "reasoning_effort": effort}
         key = request_identity(
             text, None, identity_model, self._supplied_id(body, headers))
         ordinal = self.gateway.call(
-            "submit", sid, text, key, selection_id=selection)
+            "submit", sid, text, key, selection_id=selection,
+            reasoning_effort=effort)
         self.notify()
         turn = next(t for t in self._view(sid)["turns"] if t["ordinal"] == ordinal)
         # The pinned endpoint requires an AssistantMessage response. Until a

@@ -44,6 +44,7 @@ def _provider_json_object(payload: bytes) -> dict[str, Any]:
 def provider_request_from_envelope(
     payload: bytes, *, expected_model_condition: str,
     expected_max_output_tokens: int, outbound_model: str,
+    reasoning_effort: str | None = None,
 ) -> bytes:
     """Translate validated framework request bytes for one external route."""
     document = canonical_request_envelope_document(
@@ -52,14 +53,17 @@ def provider_request_from_envelope(
         expected_max_output_tokens=expected_max_output_tokens,
     )
     try:
-        return json.dumps({
+        request: dict[str, object] = {
             "model": outbound_model,
             "max_tokens": document["max_output_tokens"],
             "messages": document["messages"],
             "tools": document["tools"],
             "tool_choice": document["tool_choice"],
             "stream": False,
-        }, ensure_ascii=False, allow_nan=False,
+        }
+        if reasoning_effort is not None:
+            request["reasoning_effort"] = reasoning_effort
+        return json.dumps(request, ensure_ascii=False, allow_nan=False,
             separators=(",", ":")).encode("utf-8")
     except (TypeError, ValueError) as exc:
         raise ResponseEnvelopeError(

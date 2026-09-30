@@ -6,7 +6,7 @@ metadata:
   audience: user-and-developer
   language: en
   counterpart: CHANGELOG_ZH.md
-  revision: "2026-09-29.2"
+  revision: "2026-09-30.1"
   status: v0.1.0rc1
 ---
 
@@ -16,6 +16,10 @@ metadata:
 
 ## Unreleased
 
+- Added optional exact-model reasoning-effort declarations to the user-owned
+  provider catalog. Basic, DSH, Codex and OpenCode now consume the same pinned
+  model/effort selection, while generated local and external adapters carry the
+  selected value to the physical request without a built-in vendor model table.
 - Added reproducible JB clinical-packet and 3-DOF powered-descent examples.
   Both use a user-selected exact profile, let the main agent design the graph,
   include independent business verification and show an actual accepted

@@ -43,7 +43,7 @@ def test_initialization_creates_an_empty_user_owned_catalog(
     created = initialize_provider_catalog(catalog)
     assert created == {"catalog": str(catalog), "status": "created"}
     assert json.loads(catalog.read_text(encoding="utf-8")) == {
-        "schema_version": "rpnh/provider_model_catalog/v2",
+        "schema_version": "rpnh/provider_model_catalog/v3",
         "providers": [],
     }
     result = build_provider_catalog(catalog, output)

@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import os
 from pathlib import Path
+import re
 import selectors
 import shutil
 import signal
@@ -30,11 +31,14 @@ from ._common import (
 )
 
 
-SCHEMA_VERSION = "local_process_adapter_config/v1"
-_CONFIG_FIELDS = {
+SCHEMA_VERSION = "local_process_adapter_config/v2"
+LEGACY_SCHEMA_VERSION = "local_process_adapter_config/v1"
+_LEGACY_CONFIG_FIELDS = {
     "schema_version", "adapter_kind", "model_condition", "argv",
     "probe_argv", "env", "inherit_env",
 }
+_CONFIG_FIELDS = _LEGACY_CONFIG_FIELDS | {"reasoning_effort"}
+_IDENTIFIER = re.compile(r"[a-z0-9][a-z0-9._-]*")
 _IO_CHUNK_BYTES = 64 * 1024
 _STDERR_TAIL_BYTES = 16 * 1024
 _STDERR_EXCERPT_CHARS = 2 * 1024
@@ -161,18 +165,38 @@ def _inherited_env(value: object) -> tuple[str, ...]:
 
 def _load_config(
         path: Path, model_condition: str,
+        reasoning_effort: str | None = None,
 ) -> tuple[tuple[str, ...], dict[str, str]]:
     try:
         document: Any = json.loads(path.read_bytes())
     except (OSError, UnicodeDecodeError, json.JSONDecodeError) as exc:
         raise AdapterConfigError(
             "local adapter config is unavailable or invalid") from exc
-    if not isinstance(document, Mapping) or set(document) != _CONFIG_FIELDS:
+    if not isinstance(document, Mapping):
         raise AdapterConfigError("local adapter config fields are not current")
-    if (document.get("schema_version") != SCHEMA_VERSION
+    version = document.get("schema_version")
+    expected_fields = (
+        _CONFIG_FIELDS if version == SCHEMA_VERSION
+        else _LEGACY_CONFIG_FIELDS)
+    if set(document) != expected_fields:
+        raise AdapterConfigError("local adapter config fields are not current")
+    if (version not in {SCHEMA_VERSION, LEGACY_SCHEMA_VERSION}
             or document.get("adapter_kind") != "local_process"
             or document.get("model_condition") != model_condition):
         raise AdapterConfigError("local adapter identity differs from selection")
+    configured_effort = document.get("reasoning_effort")
+    if version == SCHEMA_VERSION:
+        if (configured_effort is not None
+                and (not isinstance(configured_effort, str)
+                     or _IDENTIFIER.fullmatch(configured_effort) is None)):
+            raise AdapterConfigError(
+                "local adapter reasoning_effort is invalid")
+        if configured_effort != reasoning_effort:
+            raise AdapterConfigError(
+                "local adapter reasoning effort differs from selection")
+    elif reasoning_effort is not None:
+        raise AdapterConfigError(
+            "legacy local adapter cannot select a reasoning effort")
     # probe_argv remains adapter-private config input but is not executable in
     # the source-neutral current path.
     _argv(document.get("probe_argv"), label="probe_argv")
@@ -363,12 +387,14 @@ class LocalProcessInputPort:
             self, *, model_condition: str, max_output_tokens: int,
             timeout_seconds: int, max_response_bytes: int,
             config_path: Path, destination_run_root: Path,
+            reasoning_effort: str | None = None,
     ) -> None:
         self._model_condition = model_condition
         self._max_output_tokens = max_output_tokens
         self._timeout_seconds = timeout_seconds
         self._max_response_bytes = max_response_bytes
-        self._argv, self._env = _load_config(config_path, model_condition)
+        self._argv, self._env = _load_config(
+            config_path, model_condition, reasoning_effort)
         self._destination_run_root = destination_run_root.resolve()
         self._audit = PrivateAttemptAudit(self._destination_run_root)
         self._lock = threading.Lock()
@@ -507,4 +533,7 @@ class LocalProcessInputPort:
             self._closed = True
 
 
-__all__ = ["AdapterConfigError", "LocalProcessInputPort", "SCHEMA_VERSION"]
+__all__ = [
+    "AdapterConfigError", "LEGACY_SCHEMA_VERSION", "LocalProcessInputPort",
+    "SCHEMA_VERSION",
+]

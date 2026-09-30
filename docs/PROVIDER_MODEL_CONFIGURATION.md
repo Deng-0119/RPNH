@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: en
   counterpart: PROVIDER_MODEL_CONFIGURATION_ZH.md
-  revision: "2026-09-26.1"
+  revision: "2026-09-30.1"
   status: source-reviewed-pre-release
 ---
 
@@ -58,6 +58,16 @@ its exact pair when that pair identifies only one profile:
 rpnh config use 'provider identifier' 'exact model identifier'
 ```
 
+If that exact model declares reasoning efforts, select one with either form:
+
+```bash
+rpnh config use PROFILE --effort EFFORT
+rpnh config use 'provider identifier' 'exact model identifier' --effort EFFORT
+```
+
+The valid values and default come only from that model's catalog entry. RPNH
+does not maintain a vendor model/effort table.
+
 RPNH preserves exact-model authority: the generated outbound model is exactly
 `model_condition`, and a failed call never causes a silent provider, route, or
 model fallback.
@@ -73,7 +83,7 @@ additional defaults. Interactive defaults are the values stated above.
 
 ```json
 {
-  "schema_version": "rpnh/provider_model_catalog/v2",
+  "schema_version": "rpnh/provider_model_catalog/v3",
   "providers": [
     {
       "provider": "provider identifier",
@@ -82,6 +92,10 @@ additional defaults. Interactive defaults are the values stated above.
         {
           "profile": "my-model",
           "model_condition": "exact/model-identifier@version",
+          "reasoning_efforts": {
+            "supported": ["low", "medium", "high"],
+            "default": "medium"
+          },
           "adapter": {
             "adapter_kind": "external_provider",
             "route_id": "primary",
@@ -129,6 +143,15 @@ shown by `rpnh config show`; this enables proactive compaction at the current
 tail and must be smaller than the declared window. Omitting the window disables
 proactive pressure decisions rather than making RPNH guess a provider-specific
 value. Full historical turns remain in Registry after compaction.
+
+`reasoning_efforts` is optional exact-model metadata. Populate `supported`
+only with values documented by the provider for that exact model; `default`
+must be a member of the same nonempty set. These values are opaque identifiers,
+so model modes, subscription plans, service tiers, or project-wide labels do
+not belong in this field. If omitted, no effort selector is advertised and the
+external request omits `reasoning_effort`. If present, each frontend adapts the
+same basic-harness selection to its own protocol; the selected value remains
+pinned in saved configuration and session authority.
 
 The optional complete `runtime` object on the same model entry configures
 per-node turn budget, workflow concurrency, main-history prompt tail, context
@@ -181,9 +204,16 @@ A local model catalog entry looks like:
 {
   "profile": "my-local-model",
   "model_condition": "exact local model",
+  "reasoning_efforts": {
+    "supported": ["low", "medium", "high"],
+    "default": "medium"
+  },
   "adapter": {
     "adapter_kind": "local_process",
-    "argv": ["my-llm-command", "--model", "{model}"],
+    "argv": [
+      "my-llm-command", "--model", "{model}",
+      "--reasoning-effort", "{reasoning_effort}"
+    ],
     "probe_argv": ["my-llm-command", "--version"],
     "env": {},
     "inherit_env": []
@@ -196,8 +226,11 @@ A local model catalog entry looks like:
 }
 ```
 
-The builder replaces `{model}` with the exact model identifier. Runtime-owned
-placeholders supported by the local-process adapter remain available. Every
+The builder replaces `{model}` with the exact model identifier. If
+`reasoning_efforts` is declared, the formal `argv` must also contain
+`{reasoning_effort}`; the builder creates one immutable adapter/execution
+variant per supported value. Runtime-owned placeholders supported by the
+local-process adapter remain available. Every
 local-process request runs with the destination Registry run root as its current
 working directory. Bridge scratch data therefore stays inside the user-owned
 run instead of requiring the installed source tree or `/tmp` to be writable.

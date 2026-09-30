@@ -97,10 +97,11 @@ def test_user_can_build_and_select_any_exact_provider_model_pair(
     assert shown["runtime"]["main_history_message_limit"] == 20
     saved = json.loads((tmp_path / "config.json").read_text(encoding="utf-8"))
     assert saved == {
-        "schema_version": "rpnh/cli_config/v3",
+        "schema_version": "rpnh/cli_config/v4",
         "profile": "user-model",
         "provider": "user provider",
         "model_condition": "vendor/model:future@1",
+        "reasoning_effort": None,
     }
 
 

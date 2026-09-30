@@ -5,6 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 import json
 from pathlib import Path
+import re
 from typing import Any, Mapping
 from urllib.parse import urlsplit
 
@@ -19,7 +20,9 @@ from ._external_provider_recovery import (
 )
 
 
-SCHEMA_VERSION = "llm_execution_selection/v1"
+SCHEMA_VERSION = "llm_execution_selection/v2"
+LEGACY_SCHEMA_VERSION = "llm_execution_selection/v1"
+_IDENTIFIER = re.compile(r"[a-z0-9][a-z0-9._-]*")
 
 
 class LLMExecutionConfigError(RuntimeError):
@@ -36,6 +39,15 @@ def _positive(value: object, *, label: str) -> int:
     if isinstance(value, bool) or not isinstance(value, int) or value < 1:
         raise LLMExecutionConfigError(f"{label} must be a positive integer")
     return value
+
+
+def _optional_identifier(value: object, *, label: str) -> str | None:
+    if value is None:
+        return None
+    text = _text(value, label=label)
+    if _IDENTIFIER.fullmatch(text) is None:
+        raise LLMExecutionConfigError(f"{label} must be a safe identifier")
+    return text
 
 
 def _path_free_argv_profile(value: object, *, label: str) -> list[str]:
@@ -57,6 +69,11 @@ class LLMExecutionSelection:
     adapter_config_path: Path
     timeout_seconds: int
     runtime_policy: RuntimePolicy = RuntimePolicy()
+    physical_profile: str | None = None
+    logical_selection_id: str | None = None
+    reasoning_effort: str | None = None
+    supported_reasoning_efforts: tuple[str, ...] = ()
+    default_reasoning_effort: str | None = None
 
     def as_registry_policy(self) -> dict[str, object]:
         """Return non-secret execution policy/provenance without local paths."""
@@ -72,6 +89,15 @@ class LLMExecutionSelection:
                 != self.input_target.model_condition):
             raise LLMExecutionConfigError(
                 "adapter private configuration differs from selection")
+        private_effort = private.get("reasoning_effort")
+        if ("reasoning_effort" in private
+                and private_effort != self.reasoning_effort):
+            raise LLMExecutionConfigError(
+                "adapter reasoning effort differs from selection")
+        if ("reasoning_effort" not in private
+                and self.reasoning_effort is not None):
+            raise LLMExecutionConfigError(
+                "adapter reasoning effort is absent from selection")
         try:
             adapter_stat = self.adapter_config_path.stat()
         except OSError as exc:
@@ -148,7 +174,7 @@ class LLMExecutionSelection:
                 "fixed_env_names": sorted(str(name) for name in env),
                 "inherited_env_names": [str(name) for name in inherited],
             }
-        return {
+        policy: dict[str, object] = {
             "adapter_kind": self.adapter_kind,
             "timeout_seconds": self.timeout_seconds,
             "max_output_tokens": self.input_target.max_output_tokens,
@@ -164,6 +190,18 @@ class LLMExecutionSelection:
             "adapter_profile": adapter_profile,
             "runtime": self.runtime_policy.as_document(),
         }
+        if self.physical_profile is not None:
+            policy["profile_identity"] = {
+                "physical_profile": self.physical_profile,
+                "logical_selection_id": self.logical_selection_id,
+            }
+        if self.reasoning_effort is not None:
+            policy["reasoning_effort"] = {
+                "selected": self.reasoning_effort,
+                "supported": list(self.supported_reasoning_efforts),
+                "default": self.default_reasoning_effort,
+            }
+        return policy
 
     @classmethod
     def from_mapping(cls, value: object) -> "LLMExecutionSelection":
@@ -172,17 +210,28 @@ class LLMExecutionSelection:
             "adapter_config_path", "timeout_seconds", "max_output_tokens",
             "max_response_bytes",
         }
-        optional_fields = {
+        legacy_optional_fields = {
             "context_window_tokens", "context_compaction_retained_tokens",
             "runtime"}
-        if (not isinstance(value, Mapping)
-                or not required_fields.issubset(value)
-                or set(value) - required_fields - optional_fields):
+        current_fields = {
+            "physical_profile", "logical_selection_id", "reasoning_effort",
+            "supported_reasoning_efforts", "default_reasoning_effort"}
+        if not isinstance(value, Mapping):
             raise LLMExecutionConfigError(
                 "LLM execution selection fields are not current")
-        if value["schema_version"] != SCHEMA_VERSION:
+        version = value.get("schema_version")
+        if version not in {SCHEMA_VERSION, LEGACY_SCHEMA_VERSION}:
             raise LLMExecutionConfigError(
-                "LLM execution selection schema_version is not current")
+                "LLM execution selection schema_version is unsupported")
+        allowed_fields = required_fields | legacy_optional_fields
+        if version == SCHEMA_VERSION:
+            allowed_fields |= current_fields
+        if (not required_fields.issubset(value)
+                or set(value) - allowed_fields
+                or (version == SCHEMA_VERSION
+                    and not current_fields.issubset(value))):
+            raise LLMExecutionConfigError(
+                "LLM execution selection fields are not current")
         adapter_kind = _text(value["adapter_kind"], label="adapter_kind")
         if adapter_kind not in {"external_provider", "local_process"}:
             raise LLMExecutionConfigError("adapter_kind is unsupported")
@@ -213,6 +262,47 @@ class LLMExecutionSelection:
             )
         except TypeError as exc:
             raise LLMExecutionConfigError(str(exc)) from exc
+        physical_profile = None
+        logical_selection_id = None
+        reasoning_effort = None
+        supported_reasoning_efforts: tuple[str, ...] = ()
+        default_reasoning_effort = None
+        if version == SCHEMA_VERSION:
+            physical_profile = _optional_identifier(
+                value["physical_profile"], label="physical_profile")
+            logical_selection_id = _optional_identifier(
+                value["logical_selection_id"],
+                label="logical_selection_id")
+            if physical_profile is None or logical_selection_id is None:
+                raise LLMExecutionConfigError(
+                    "profile identities must be safe identifiers")
+            reasoning_effort = _optional_identifier(
+                value["reasoning_effort"], label="reasoning_effort")
+            raw_supported = value["supported_reasoning_efforts"]
+            if not isinstance(raw_supported, list):
+                raise LLMExecutionConfigError(
+                    "supported_reasoning_efforts must be an array")
+            supported_reasoning_efforts = tuple(
+                _optional_identifier(item, label="supported_reasoning_effort")
+                for item in raw_supported)
+            if (any(item is None for item in supported_reasoning_efforts)
+                    or len(set(supported_reasoning_efforts))
+                    != len(supported_reasoning_efforts)):
+                raise LLMExecutionConfigError(
+                    "supported_reasoning_efforts must contain unique safe identifiers")
+            default_reasoning_effort = _optional_identifier(
+                value["default_reasoning_effort"],
+                label="default_reasoning_effort")
+            if supported_reasoning_efforts:
+                if (reasoning_effort not in supported_reasoning_efforts
+                        or default_reasoning_effort
+                        not in supported_reasoning_efforts):
+                    raise LLMExecutionConfigError(
+                        "reasoning effort selection/default is unsupported")
+            elif (reasoning_effort is not None
+                    or default_reasoning_effort is not None):
+                raise LLMExecutionConfigError(
+                    "reasoning effort metadata is inconsistent")
         return cls(
             input_target=input_target,
             adapter_kind=adapter_kind,
@@ -220,6 +310,13 @@ class LLMExecutionSelection:
             timeout_seconds=_positive(
                 value["timeout_seconds"], label="timeout_seconds"),
             runtime_policy=runtime_policy_from_document(value.get("runtime")),
+            physical_profile=physical_profile,
+            logical_selection_id=logical_selection_id,
+            reasoning_effort=reasoning_effort,
+            supported_reasoning_efforts=tuple(
+                item for item in supported_reasoning_efforts
+                if item is not None),
+            default_reasoning_effort=default_reasoning_effort,
         )
 
 
@@ -236,6 +333,12 @@ def load_llm_execution_selection(path: Path) -> LLMExecutionSelection:
         if isinstance(raw_adapter_path, str):
             adapter_path = Path(raw_adapter_path).expanduser()
             if not adapter_path.is_absolute():
+                if (document.get("schema_version") == SCHEMA_VERSION
+                        and re.fullmatch(
+                            r"\.\./adapters/[a-z0-9][a-z0-9._-]*\.json",
+                            raw_adapter_path) is None):
+                    raise LLMExecutionConfigError(
+                        "current adapter_config_path relative layout is invalid")
                 document = dict(document)
                 document["adapter_config_path"] = str(
                     (path.resolve().parent / adapter_path).resolve())
@@ -243,6 +346,7 @@ def load_llm_execution_selection(path: Path) -> LLMExecutionSelection:
 
 
 __all__ = [
-    "LLMExecutionConfigError", "LLMExecutionSelection",
+    "LEGACY_SCHEMA_VERSION", "LLMExecutionConfigError",
+    "LLMExecutionSelection", "SCHEMA_VERSION",
     "load_llm_execution_selection",
 ]

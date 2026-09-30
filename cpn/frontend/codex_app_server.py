@@ -27,6 +27,7 @@ from cpn.rpnh.main_session import (
     MainTurnSnapshot,
     render_main_decision,
 )
+from cpn.rpnh.provider_catalog import provider_manifest_path
 from cpn.rpnh.session_access import (
     MainSessionOwnerLease,
     inspect_main_session_root,
@@ -40,7 +41,6 @@ from cpn.rpnh.user_config import (
     discover_profiles,
     profile_for_path,
     save_selected_path,
-    select_profile,
 )
 
 
@@ -74,6 +74,7 @@ class ThreadState:
     model_id: str
     cwd: Path
     created_at: int
+    reasoning_effort: str | None = None
     preview: str = ""
     name: str | None = None
     turns: list[dict[str, Any]] = field(default_factory=list)
@@ -155,22 +156,48 @@ class CodexAppServer:
         active_profile = profile_for_path(self.execution_config_path)
         self.profile_name = profile_name or active_profile.name
         self.frontend_model_id = active_profile.selection_id
-        installed_profiles = discover_profiles()
+        adjacent_profiles = (
+            discover_profiles(self.execution_config_path.parent)
+            if provider_manifest_path(
+                self.execution_config_path.parent).is_file()
+            else ())
+        installed_profiles = (
+            adjacent_profiles
+            if any(profile.path == self.execution_config_path
+                   for profile in adjacent_profiles)
+            else discover_profiles())
         if any(
                 profile.path == self.execution_config_path
                 for profile in installed_profiles):
-            self.model_profiles = tuple(
+            all_profiles = tuple(
                 profile for profile in installed_profiles
                 if profile.selectable)
         else:
+            all_profiles = (active_profile,)
+        self._profiles_by_variant = {
+            (profile.selection_id, profile.reasoning_effort): profile
+            for profile in all_profiles
+        }
+        if len(self._profiles_by_variant) != len(all_profiles):
+            raise ValueError(
+                "RPNH model/effort execution identities are not unique")
+        self.model_profiles = tuple(
+            profile for profile in all_profiles
+            if profile.reasoning_effort == profile.default_reasoning_effort)
+        if not self.model_profiles:
             self.model_profiles = (active_profile,)
         self._profiles_by_model_id = {
             profile.selection_id: profile for profile in self.model_profiles
         }
         self._profiles_by_path = {
-            profile.path: profile for profile in self.model_profiles
+            profile.path: profile for profile in all_profiles
+        }
+        self._initial_profile_identities = {
+            profile.path: self._execution_identity(profile.path)
+            for profile in all_profiles
         }
         self.default_model_id = self.frontend_model_id
+        self.default_reasoning_effort = active_profile.reasoning_effort
         routes = provenance.get("route_provenance")
         self.provider_route = (
             str(routes[0].get("provider"))
@@ -349,6 +376,7 @@ class CodexAppServer:
                     session.child_path_root / "main-turn-control",
                     recover_pending_launches=False),
                 model_id=profile.selection_id,
+                reasoning_effort=profile.reasoning_effort,
                 cwd=cwd,
                 created_at=created_at,
                 preview=preview,
@@ -408,6 +436,67 @@ class CodexAppServer:
             })
         return attachments
 
+    def _profile_for_selection(
+            self, model_id: str, effort: object = None,
+    ) -> ExecutionProfile:
+        if not isinstance(model_id, str):
+            raise ValueError("RPNH thread model must be a selection ID")
+        logical = self._profiles_by_model_id.get(model_id)
+        if logical is None:
+            raise ValueError(
+                f"unknown RPNH provider/model selection: {model_id}")
+        selected_effort = (
+            logical.default_reasoning_effort if effort is None else effort)
+        if selected_effort is not None and not isinstance(
+                selected_effort, str):
+            raise ValueError("RPNH reasoning effort must be text or null")
+        if (selected_effort is None
+                and logical.reasoning_effort is None
+                and not logical.supported_reasoning_efforts):
+            profile = logical
+        else:
+            profile = self._profiles_by_variant.get(
+                (model_id, selected_effort))
+            if profile is None:
+                choices = ", ".join(logical.supported_reasoning_efforts)
+                raise ValueError(
+                    "unknown RPNH reasoning effort for selected model; "
+                    f"choose one of: {choices or '(none)'}")
+        self._assert_profile_identity(profile)
+        return profile
+
+    @staticmethod
+    def _execution_identity(path: Path) -> dict[str, object]:
+        """Capture the complete non-secret identity behind one physical path."""
+
+        selected = path.expanduser().resolve()
+        selection = load_llm_execution_selection(selected)
+        profile = profile_for_path(selected)
+        return {
+            "schema_version": "rpnh/main_session_profile/v3",
+            "execution_config_path": str(selected),
+            "adapter_config_path": str(selection.adapter_config_path),
+            "selection_id": profile.selection_id,
+            "provider": profile.provider,
+            "model_condition": selection.input_target.model_condition,
+            "reasoning_effort": selection.reasoning_effort,
+            "adapter_kind": selection.adapter_kind,
+            "registry_policy": selection.as_registry_policy(),
+        }
+
+    def _assert_profile_identity(self, profile: ExecutionProfile) -> None:
+        expected = self._initial_profile_identities.get(profile.path)
+        try:
+            current = self._execution_identity(profile.path)
+        except Exception as exc:
+            raise ValueError(
+                "RPNH provider/model/effort profile changed while the "
+                "Codex frontend was running; restart the frontend") from exc
+        if expected is None or current != expected:
+            raise ValueError(
+                "RPNH provider/model/effort profile changed while the "
+                "Codex frontend was running; restart the frontend")
+
     def _model(self, profile: ExecutionProfile) -> dict[str, Any]:
         public = profile.as_public_dict()
         readiness = "ready" if public["ready"] else "credentials required"
@@ -421,11 +510,12 @@ class CodexAppServer:
                 f"{readiness}"),
             "hidden": False,
             "isDefault": profile.selection_id == self.default_model_id,
-            "defaultReasoningEffort": "medium",
+            "defaultReasoningEffort": profile.default_reasoning_effort,
             "supportedReasoningEfforts": [{
-                "reasoningEffort": "medium",
-                "description": "Execution behavior is owned by the RPNH profile.",
-            }],
+                "reasoningEffort": effort,
+                "description": (
+                    "Configured for this exact model in the RPNH catalog."),
+            } for effort in profile.supported_reasoning_efforts],
             "inputModalities": ["text"],
             "supportsPersonality": False,
             "additionalSpeedTiers": [],
@@ -523,12 +613,10 @@ class CodexAppServer:
         model_id = (
             self.default_model_id
             if requested_model is None else requested_model)
-        if not isinstance(model_id, str):
-            raise ValueError("RPNH thread model must be a selection ID")
-        profile = self._profiles_by_model_id.get(model_id)
-        if profile is None:
-            raise ValueError(
-                f"unknown RPNH provider/model selection: {model_id}")
+        requested_effort = params.get("effort")
+        if requested_model is None and requested_effort is None:
+            requested_effort = self.default_reasoning_effort
+        profile = self._profile_for_selection(model_id, requested_effort)
         self._require_ready_profile(profile)
         raw_cwd = params.get("cwd")
         cwd = (
@@ -547,6 +635,7 @@ class CodexAppServer:
                 main_turn_control=TaskControl(
                     session.child_path_root / "main-turn-control"),
                 model_id=profile.selection_id,
+                reasoning_effort=profile.reasoning_effort,
                 cwd=cwd,
                 created_at=_now_seconds(),
             )
@@ -566,7 +655,7 @@ class CodexAppServer:
             "approvalPolicy": "never",
             "approvalsReviewer": "user",
             "sandbox": {"type": "dangerFullAccess"},
-            "reasoningEffort": "medium",
+            "reasoningEffort": state.reasoning_effort,
             "serviceTier": None,
             "instructionSources": [],
         })
@@ -587,22 +676,20 @@ class CodexAppServer:
                 "or /rollback")
         user_text = _text_input(params)
         requested_model = params.get("model")
-        if requested_model is not None:
-            if not isinstance(requested_model, str):
-                raise ValueError("RPNH turn model must be a selection ID")
-            profile = self._profiles_by_model_id.get(requested_model)
-            if profile is None:
-                raise ValueError(
-                    f"unknown RPNH provider/model selection: {requested_model}")
-        else:
-            profile = self._profiles_by_model_id.get(state.model_id)
-            if profile is None:
-                raise ValueError(
-                    f"unknown RPNH provider/model selection: {state.model_id}")
+        requested_effort = params.get("effort")
+        model_id = state.model_id if requested_model is None else requested_model
+        effort = (
+            state.reasoning_effort
+            if requested_model is None and requested_effort is None
+            else requested_effort)
+        profile = self._profile_for_selection(model_id, effort)
         self._require_ready_profile(profile)
-        if requested_model is not None:
+        if getattr(
+                state.session, "execution_config_path", profile.path
+        ) != profile.path:
             state.session.set_execution_config(profile.path)
-            state.model_id = profile.selection_id
+        state.model_id = profile.selection_id
+        state.reasoning_effort = profile.reasoning_effort
         spec = state.session.prepare_turn(user_text)
         snapshot = state.session.active_turn_snapshot()
         if snapshot is None:
@@ -891,7 +978,7 @@ class CodexAppServer:
         state = self._thread(params.get("threadId"))
         if state.active is not None:
             raise ValueError(
-                "cannot change RPNH provider/model during an active turn")
+                "cannot change RPNH provider/model/effort during an active turn")
         supported_fields = {
             "threadId", "model", "effort", "collaborationMode",
             "approvalPolicy", "approvalsReviewer", "cwd", "multiAgentMode",
@@ -928,20 +1015,19 @@ class CodexAppServer:
                      or collaboration_mode.get("mode") != "default")):
             raise ValueError(
                 "RPNH Codex frontend supports default collaboration mode only")
-        effort = params.get("effort")
-        if effort not in {None, "medium"}:
-            raise ValueError(
-                "RPNH profiles expose only the medium frontend effort")
         model_id = params.get("model")
-        if model_id is not None:
-            if not isinstance(model_id, str):
-                raise ValueError("RPNH thread model must be a selection ID")
-            profile = self._profiles_by_model_id.get(model_id)
-            if profile is None:
-                raise ValueError(
-                    f"unknown RPNH provider/model selection: {model_id}")
+        effort = params.get("effort")
+        selected_model = state.model_id if model_id is None else model_id
+        selected_effort = (
+            state.reasoning_effort
+            if model_id is None and effort is None else effort)
+        if model_id is not None or effort is not None:
+            profile = self._profile_for_selection(
+                selected_model, selected_effort)
+            self._require_ready_profile(profile)
             state.session.set_execution_config(profile.path)
             state.model_id = profile.selection_id
+            state.reasoning_effort = profile.reasoning_effort
         self._persist_thread(state)
         await self._result(websocket, request_id, {})
 
@@ -992,31 +1078,20 @@ class CodexAppServer:
             raise ValueError(
                 "RPNH config/batchWrite requires a model selection ID")
         effort_edit = by_key.get("model_reasoning_effort")
-        if (effort_edit is not None
-                and effort_edit.get("value") not in {None, "medium"}):
-            raise ValueError(
-                "RPNH profiles expose only the medium frontend effort")
         model_id = model_edit.get("value")
         if not isinstance(model_id, str) or not model_id:
             raise ValueError(
                 "RPNH config/batchWrite model value must be a selection ID")
-        profile = self._profiles_by_model_id.get(model_id)
-        if profile is None:
-            choices = ", ".join(self._profiles_by_model_id) or "(none)"
-            raise ValueError(
-                "unknown RPNH provider/model selection; choose one of: "
-                f"{choices}")
+        effort = None if effort_edit is None else effort_edit.get("value")
+        profile = self._profile_for_selection(model_id, effort)
         destination = config_path().expanduser().resolve()
         current_version = self._config_version(destination)
         if (expected_version is not None
                 and expected_version != current_version):
             raise ValueError("RPNH config/batchWrite expectedVersion is stale")
-        if (len(self.model_profiles) == 1
-                and profile.path == self.execution_config_path):
-            save_selected_path(profile.path)
-        else:
-            select_profile(profile.selection_id)
+        save_selected_path(profile.path)
         self.default_model_id = profile.selection_id
+        self.default_reasoning_effort = profile.reasoning_effort
         return {
             "filePath": str(destination),
             "status": "ok",
@@ -1079,7 +1154,7 @@ class CodexAppServer:
             await self._result(websocket, request_id, {
                 "config": {
                     "model": self.default_model_id,
-                    "model_reasoning_effort": "medium",
+                    "model_reasoning_effort": self.default_reasoning_effort,
                     "model_provider": "rpnh",
                     "default_permissions": ":danger-full-access",
                     "approval_policy": "never",
@@ -1134,7 +1209,7 @@ class CodexAppServer:
                 "approvalPolicy": "never",
                 "approvalsReviewer": "user",
                 "sandbox": {"type": "dangerFullAccess"},
-                "reasoningEffort": "medium",
+                "reasoningEffort": state.reasoning_effort,
                 "serviceTier": None,
                 "instructionSources": [],
             })

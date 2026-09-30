@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: en
   counterpart: configuration_ZH.md
-  revision: "2026-09-26.1"
+  revision: "2026-09-30.1"
   status: source-reviewed-pre-release
 ---
 
@@ -38,6 +38,9 @@ Use `rpnh config init`, edit only the catalog, then run `rpnh config build`,
 runtime policy without credential values. `--save-default` stores an explicit
 `--execution` selection. `ready` means only that named credential variables are
 present; it is not a network, model, authorization or billing check.
+For a model that declares efforts, `rpnh config use ... --effort EFFORT`
+selects one of that model's configured values; omission uses its configured
+default.
 
 ## Provider and exact-model fields
 
@@ -51,6 +54,7 @@ unless marked optional.
 |---|---|
 | `profile` | Unique lowercase file-safe profile name. |
 | `model_condition` | Exact outbound model identifier; RPNH does not apply a model allowlist. |
+| `reasoning_efforts` | Optional object with a nonempty unique `supported` list and a `default` member of that list. Values are user-owned exact-model metadata; RPNH has no built-in vendor table. |
 | `adapter` | Exactly one `external_provider` or `local_process` route described below. |
 | `timeout_seconds` | Positive per-formal-request deadline. Interactive setup starts at 900. |
 | `max_output_tokens` | Positive output-token request cap. Interactive setup starts at 8192. |
@@ -83,7 +87,9 @@ A `local_process` adapter has these fields:
 | `inherit_env` | Explicit environment-variable names copied from the launcher; may be empty. |
 
 `{model}` in either local command vector is replaced with the exact selected
-model. Local processes and probes may still have external effects or cost.
+model. If `reasoning_efforts` is declared, formal `argv` must contain
+`{reasoning_effort}`; it is replaced in each generated immutable variant.
+Local processes and probes may still have external effects or cost.
 
 ## Standard Agent runtime policy
 

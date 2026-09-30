@@ -96,7 +96,7 @@ def configured_profile(selection):
         policy['route_provenance'][0]['provider']
         if selection.adapter_kind == 'external_provider' else 'local-test')
     return {
-        'schema_version': 'rpnh/dsh_execution_profile/v2',
+        'schema_version': 'rpnh/dsh_execution_profile/v3',
         'profile': 'configured-test',
         'selection_id': 'local/configured-model',
         'provider': provider,
@@ -107,6 +107,10 @@ def configured_profile(selection):
         'timeout_seconds': selection.timeout_seconds,
         'max_output_tokens': selection.input_target.max_output_tokens,
         'max_response_bytes': selection.input_target.max_response_bytes,
+        'reasoning_effort': selection.reasoning_effort,
+        'supported_reasoning_efforts': list(
+            selection.supported_reasoning_efforts),
+        'default_reasoning_effort': selection.default_reasoning_effort,
     }
 
 
