@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: technical-report.md
-  revision: "2026-09-30.1"
+  revision: "2026-10-01.1"
   status: source-reviewed-introduction
   basis: "Deng-0119/RPNH at 40f1be804b00abab587636783a5f0e9d3e1f83a9"
 ---
@@ -62,7 +62,7 @@ RPNH 是一个 provider-neutral 的 Agent 执行框架，用于组合语言模�
 Transition 不会因为前序节点“发了一条消息”就自动获得执行资格。准入需要满足准确的 token 出现项、
 资源版本、已登记绑定、占用、预算，以及适用的已声明条件。外部调度策略只能从**已经使能**的
 transition 中选择不重复的子集，不能把尚未使能的 transition 变成可执行状态。当前实现的这一边界可见
-[`Harness.schedule_ready`](../cpn/rpnh/harness.py)。
+[`Harness.schedule_ready`][harness-source]。
 
 共享 place 也不等于广播。同一结果需要进入两条独立分支时，工作流必须声明具有相应输出的分发节点；
 join 必须声明它真正需要的输入。Agent 工作流层的反馈使用显式且受预算限制的返工路径，
@@ -94,7 +94,7 @@ RPNH 管理结构性质：工作是否经过登记边界准入、使用了什么
 `Harness` 接收已有 `RunOwner`、属于该 owner 的 `OwnerEventLoop`、dispatcher 与提交回调，
 允许受限数量的物理 operation 同时在执行。Future 完成后，处理回到 owner loop，先核对产物是否属于
 准确的 firing 与 execution lease，再结算。这是每个 run 的单写入路径设计，不是把全部计算串行化。
-参阅[`harness.py`](../cpn/rpnh/harness.py)与[运行参考](reference/runtime-registry_ZH.md)。
+参阅[`harness.py`][harness-source]与[运行参考](reference/runtime-registry_ZH.md)。
 
 三类层次关系需要区分。**独立子任务**有自己的 Registry、PetriNet 和 owner，父级保留准确链接，
 不复制子任务事件。**Delegated leaf** 是归属于准确父 action 的有界委派。
@@ -124,7 +124,7 @@ RPNH 管理结构性质：工作是否经过登记边界准入、使用了什么
 EventStore 的提交协调器检查类型化 task/transaction 身份、准确引用、预期状态和发布结构。
 当前批次契约在一个事务中最多允许一次 firing 的结算与发布；辅助模块不会取得独立发布权威。
 这样，结果与后继状态之间的关系是显式的。参阅
-[`publish_batch`](../cpn/rpnh/registry/_event_store/commit.py)与
+[`publish_batch`][event-store-commit-source]与
 [Registry 运行参考](reference/runtime-registry_ZH.md)。
 
 ## 5. 版本化 workspace 与恢复
@@ -161,7 +161,7 @@ RPNH 提供应用无关的**网定义提取、组合、实例化、分支与替�
 Extract 作用于完整 module，或在支持的公共端口边界上选择完整组件。Compose 连接显式兼容的出入口。
 Instantiate 创建名称独立的符号实例，不生成额外预算。Branch 提取定义，并可进一步实例化；
 它本身**不创建**另一份 Registry 或 worker。确定性测试包含串行/并行编译，以及对隐式广播的拒绝：
-[`test_native_net_operations.py`](../tests/test_native_net_operations.py)。
+[`test_native_net_operations.py`][native-net-tests]。
 
 Replace 使用已有 owner edit 路径。在支持的 `whole_net_quiescent` 模式下，先暂停新准入，
 等待活动 firing 收束，再应用显式状态映射或退役规则，并使用原有预算清单采用后继网。
@@ -258,10 +258,10 @@ run/checkpoint。截图本身不是验收条件。[工作流案例库](../exampl
 
 | 要了解的问题 | 建议入口 |
 |---|---|
-| Owner/worker 边界具体约束什么？ | [`cpn/rpnh/harness.py`](../cpn/rpnh/harness.py)，重点看 `schedule_ready`、`_complete`、`result`。 |
-| 发布如何闭合？ | [`registry/_event_store/commit.py`](../cpn/rpnh/registry/_event_store/commit.py)与[运行参考](reference/runtime-registry_ZH.md)。 |
+| Owner/worker 边界具体约束什么？ | [`cpn/rpnh/harness.py`][harness-source]，重点看 `schedule_ready`、`_complete`、`result`。 |
+| 发布如何闭合？ | [`registry/_event_store/commit.py`][event-store-commit-source]与[运行参考](reference/runtime-registry_ZH.md)。 |
 | 会话与下级执行网如何分层？ | [整体架构](ARCHITECTURE_ZH.md)与[执行原则](architecture/design_ZH.md)。 |
-| 哪些组合情况确实可以执行？ | [原生网操作](guides/net-operations_ZH.md)及其[确定性测试](../tests/test_native_net_operations.py)。 |
+| 哪些组合情况确实可以执行？ | [原生网操作](guides/net-operations_ZH.md)及其[确定性测试][native-net-tests]。 |
 | 新能力应如何进入 harness？ | [自定义指南](guides/customization_ZH.md)。 |
 | 测试者如何检查真实案例？ | [工作流案例库](../examples/workflow_patterns/README_ZH.md)与[安装指南](guides/installation_ZH.md)。 |
 | 哪些观察实际经过验证？ | [发布验证记录](guides/release-validation_ZH.md)。 |
@@ -271,3 +271,7 @@ run/checkpoint。截图本身不是验收条件。[工作流案例库](../exampl
 
 RPNH 在执行设计上的核心，是把声明结构、登记证据与受控继续执行联系起来。
 对于某个具体应用，其价值取决于这些性质能否解决实际的协调与检查问题，并应最终在该应用的真实任务上验证。
+
+[harness-source]: https://github.com/Deng-0119/RPNH/blob/40f1be804b00abab587636783a5f0e9d3e1f83a9/cpn/rpnh/harness.py
+[event-store-commit-source]: https://github.com/Deng-0119/RPNH/blob/40f1be804b00abab587636783a5f0e9d3e1f83a9/cpn/rpnh/registry/_event_store/commit.py
+[native-net-tests]: https://github.com/Deng-0119/RPNH/blob/40f1be804b00abab587636783a5f0e9d3e1f83a9/tests/test_native_net_operations.py

@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: en
   counterpart: technical-report_ZH.md
-  revision: "2026-09-30.1"
+  revision: "2026-10-01.1"
   status: source-reviewed-introduction
   basis: "Deng-0119/RPNH at 40f1be804b00abab587636783a5f0e9d3e1f83a9"
 ---
@@ -78,7 +78,7 @@ claims, budgets and applicable declared conditions must satisfy admission.
 An injected scheduling policy can select a distinct subset of **already enabled**
 transitions; it cannot make an otherwise disabled transition executable.
 The current implementation checks this boundary in
-[`Harness.schedule_ready`](../cpn/rpnh/harness.py).
+[`Harness.schedule_ready`][harness-source].
 
 Place sharing is also not broadcasting. A workflow that needs one result in two
 independent lanes must declare a distributor with appropriate outputs; a join
@@ -121,7 +121,7 @@ submission callbacks. It allows bounded in-flight physical operations. When a
 future completes, handling re-enters that owner loop, and products are checked
 against the exact firing and execution lease before settlement. This is a
 single-writer-per-run design, not a claim that all computation is serial. See
-[`harness.py`](../cpn/rpnh/harness.py) and the
+[`harness.py`][harness-source] and the
 [runtime reference](reference/runtime-registry.md).
 
 Three different forms of hierarchy should not be conflated. An **independent
@@ -161,7 +161,7 @@ exact references, expected state and publication structure. Its current batch
 contract permits at most one firing settlement/publication per transaction;
 helper modules do not create separate publication authorities. This keeps a
 result's relationship to its successor state explicit. See
-[`publish_batch`](../cpn/rpnh/registry/_event_store/commit.py) and the
+[`publish_batch`][event-store-commit-source] and the
 [runtime/Registry reference](reference/runtime-registry.md).
 
 ## 5. Versioned workspaces and recovery
@@ -211,7 +211,7 @@ creates independently named symbols without creating extra budget. Branch
 extracts a definition and optionally instantiates it; it does **not** by itself
 create another Registry or worker. The deterministic tests include serial and
 parallel compilation and rejection of implicit broadcast:
-[`test_native_net_operations.py`](../tests/test_native_net_operations.py).
+[`test_native_net_operations.py`][native-net-tests].
 
 Replacement uses the existing owner-edit path. In the supported
 `whole_net_quiescent` mode, new admission pauses, active firings drain, explicit
@@ -343,10 +343,10 @@ inputs or raw private runs with a public issue.
 
 | Question | Starting point |
 |---|---|
-| What does the owner/worker boundary enforce? | [`cpn/rpnh/harness.py`](../cpn/rpnh/harness.py), especially `schedule_ready`, `_complete` and `result`. |
-| How is a publication closed? | [`registry/_event_store/commit.py`](../cpn/rpnh/registry/_event_store/commit.py) and the [runtime reference](reference/runtime-registry.md). |
+| What does the owner/worker boundary enforce? | [`cpn/rpnh/harness.py`][harness-source], especially `schedule_ready`, `_complete` and `result`. |
+| How is a publication closed? | [`registry/_event_store/commit.py`][event-store-commit-source] and the [runtime reference](reference/runtime-registry.md). |
 | How do sessions and execution-net layers fit together? | [Harness architecture](ARCHITECTURE.md) and [execution principles](architecture/design.md). |
-| Which composition cases are executable? | [Native net operations](guides/net-operations.md) and their [deterministic tests](../tests/test_native_net_operations.py). |
+| Which composition cases are executable? | [Native net operations](guides/net-operations.md) and their [deterministic tests][native-net-tests]. |
 | How should a new capability enter the harness? | [Customization](guides/customization.md). |
 | How can a tester inspect a real example? | [Workflow gallery](../examples/workflow_patterns/README.md) and [installation](guides/installation.md). |
 | Which observations were actually validated? | [Release-validation record](guides/release-validation.md). |
@@ -362,3 +362,7 @@ registered evidence and controlled continuation connected. Its usefulness for a
 particular application should be judged by whether those properties solve that
 application's coordination and inspection needs, and then verified on its actual
 workload.
+
+[harness-source]: https://github.com/Deng-0119/RPNH/blob/40f1be804b00abab587636783a5f0e9d3e1f83a9/cpn/rpnh/harness.py
+[event-store-commit-source]: https://github.com/Deng-0119/RPNH/blob/40f1be804b00abab587636783a5f0e9d3e1f83a9/cpn/rpnh/registry/_event_store/commit.py
+[native-net-tests]: https://github.com/Deng-0119/RPNH/blob/40f1be804b00abab587636783a5f0e9d3e1f83a9/tests/test_native_net_operations.py
