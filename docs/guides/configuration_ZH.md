@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: configuration.md
-  revision: "2026-09-30.1"
+  revision: "2026-10-01.1"
   status: source-reviewed-pre-release
 ---
 
@@ -91,7 +91,7 @@ profile 会记录解析后的值，因此 run 及其 resume 使用同一份精�
 
 | 字段 | 默认值 | 作用 |
 |---|---:|---|
-| `max_turns_per_node` | 12 | 每个 single-agent stage 或 workflow node 的模型/工具回合预算，同时限定对应 module bucket。 |
+| `max_turns_per_node` | 12 | 每个 single-agent stage 或 workflow node 的模型/工具回合预算，同时限定对应 module bucket。设为 `null` 时会登记显式的无计量 authority，不设置人工的 node、工具回合或全任务累计调用上限。 |
 | `max_parallel_nodes` | 4 | workflow 同时 in-flight 的 node 上限；single-agent 始终串行。 |
 | `main_history_message_limit` | 20 | 新 main Designer prompt 包含的最近完整 role/body 消息数；Registry 仍保存全部已提交历史。 |
 | `context_pressure_trigger_ratio` | 0.90 | 达到已声明 context window 的该比例时主动压缩；为输出 token 预留空间可能更早触发。 |
@@ -155,7 +155,9 @@ compaction 路径），因此不会复制到 catalog。公开可配置的 transp
 Designer 或 module 作者在 declaration 中配置图策略，而不是修改全局源码。
 `max_rework_cycles` 是非负 workflow graph 预算；零表示禁用 feedback/rework。所选 runtime
 的 `max_turns_per_node` 决定各 node attempt bucket，`max_parallel_nodes` 决定调度并发。
-每个 node 的模型 profile 和 tool allowlist 仍属于 graph。
+每个 node 的模型 profile 和 tool allowlist 仍属于 graph。`null` 回合限制不会关闭
+owner-stop、provider 重试处理、workspace 资源约束、context-window 处理或
+Registry/PetriNet 的准入与 settlement。
 
 原生 `PluginOperation` 声明 `timeout_seconds`（1–7200，默认 60）和
 `max_result_bytes`（1–16777216，SDK 默认 1048576）。DSH managed tool 另有固定 65536-byte

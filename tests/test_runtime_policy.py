@@ -42,3 +42,10 @@ def test_runtime_policy_defaults_and_invalid_shapes_fail_loud() -> None:
         RuntimePolicy(context_pressure_trigger_ratio=1.0)
     with pytest.raises(ValueError, match="at least 128"):
         RuntimePolicy(context_tool_output_byte_limit=127)
+
+
+def test_runtime_policy_accepts_explicit_unmetered_agent_turns() -> None:
+    policy = RuntimePolicy(max_turns_per_node=None)
+
+    assert policy.as_document()["max_turns_per_node"] is None
+    assert runtime_policy_from_document(policy.as_document()) == policy

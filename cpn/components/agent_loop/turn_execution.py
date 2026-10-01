@@ -153,7 +153,9 @@ class TurnExecutionMixin:
 
     def prepare_agent_llm_turn_v1(self, execution, loop, catalog, initialization, *, idempotency_key, prepared_context=None):
         execution = self._execution(execution, loop)
-        if loop.state != AgentLoopState.WAITING_FOR_LLM or loop.llm_turns_used >= loop.llm_turn_budget:
+        if (loop.state != AgentLoopState.WAITING_FOR_LLM
+                or (loop.llm_turn_budget is not None
+                    and loop.llm_turns_used >= loop.llm_turn_budget)):
             raise OptionalAgentCapabilityUnavailable("optional turn budget closed; no declared cap handoff")
         prepared = prepared_context or self.prepare_agent_turn_context_v1(execution, loop, catalog)
         if prepared.loop != loop or prepared.initialization != initialization:

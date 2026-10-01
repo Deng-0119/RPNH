@@ -485,15 +485,16 @@ class OperationSpecAuthority:
 
 @dataclass(frozen=True, slots=True)
 class OperationExecutionLimits:
-    max_llm_attempts: int
-    max_tool_turns: int
+    max_llm_attempts: int | None
+    max_tool_turns: int | None
 
     def __post_init__(self) -> None:
         values = (self.max_llm_attempts, self.max_tool_turns)
-        if any(isinstance(value, bool) or not isinstance(value, int) or value < 0
+        if any(value is not None and (
+                isinstance(value, bool) or not isinstance(value, int) or value < 0)
                for value in values):
             raise OperationAuthorityError(
-                "operation execution limits must be nonnegative integers")
+                "operation execution limits must be null or nonnegative integers")
 
 
 @dataclass(frozen=True, slots=True)

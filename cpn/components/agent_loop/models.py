@@ -46,6 +46,7 @@ class AgentLoopLocalTurnLimitExhausted(BaseException):
     def __init__(self, exhausted_loop: "AgentLoopSnapshot") -> None:
         if (not isinstance(exhausted_loop, AgentLoopSnapshot)
                 or exhausted_loop.state != AgentLoopState.EXHAUSTED
+                or exhausted_loop.llm_turn_budget is None
                 or exhausted_loop.llm_turns_used
                 != exhausted_loop.llm_turn_budget):
             raise TypeError(
@@ -399,7 +400,7 @@ class AgentLoopSnapshot:
     state: AgentLoopState
     revision: int
     next_turn_sequence: int
-    llm_turn_budget: int
+    llm_turn_budget: int | None
     llm_turns_used: int
     model_condition: str
     tool_catalog_ref: ResourceVersionRef
@@ -428,15 +429,19 @@ class AgentLoopSnapshot:
             raise TypeError("agent loop state must be typed")
         for value, label in ((self.revision, "revision"),
                              (self.next_turn_sequence, "turn sequence"),
-                             (self.llm_turn_budget, "turn budget"),
                              (self.llm_turns_used, "turn usage")):
             if isinstance(value, bool) or not isinstance(value, int) or value < 0:
                 raise ValueError(f"agent loop {label} is invalid")
-        # The configured per-agent cap is always positive.  A paired critic
-        # can nevertheless start with no returned-call allowance remaining
-        # when the actor-cap compaction has consumed the sole configured call.
-        if (self.llm_turn_budget < 0
-                or self.llm_turns_used > self.llm_turn_budget
+        if (self.llm_turn_budget is not None
+                and (isinstance(self.llm_turn_budget, bool)
+                     or not isinstance(self.llm_turn_budget, int)
+                     or self.llm_turn_budget < 0)):
+            raise ValueError("agent loop turn budget is invalid")
+        # A configured per-agent cap is positive.  A paired critic can still
+        # start with no returned-call allowance after actor-cap compaction;
+        # null is the explicit unmetered contract.
+        if ((self.llm_turn_budget is not None
+             and self.llm_turns_used > self.llm_turn_budget)
                 or self.next_turn_sequence != self.llm_turns_used):
             raise AgentLoopProtocolError("agent-loop turn accounting is inconsistent")
         if (not isinstance(self.model_condition, str)

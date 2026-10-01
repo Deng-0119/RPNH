@@ -17,7 +17,7 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "max_turns_per_node": {"type": "integer", "minimum": 1},
+        "max_turns_per_node": {"type": ["integer", "null"], "minimum": 1},
         "max_parallel_nodes": {"type": "integer", "minimum": 1},
         "main_history_message_limit": {"type": "integer", "minimum": 1},
         "context_pressure_trigger_ratio": {

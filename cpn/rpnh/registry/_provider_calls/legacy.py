@@ -316,9 +316,10 @@ def _historical_reserve(
             "provider attempt cannot hydrate exact operation limits") from exc
     if (node.object_type != "node_declaration/v1"
             or node.logical_id != node_ref.entity_id
-            or isinstance(max_llm_attempts, bool)
-            or not isinstance(max_llm_attempts, int)
-            or max_llm_attempts < 0):
+            or (max_llm_attempts is not None
+                and (isinstance(max_llm_attempts, bool)
+                     or not isinstance(max_llm_attempts, int)
+                     or max_llm_attempts < 0))):
         raise ProviderAdmissionError(
             "provider attempt operation limits are malformed")
     call_attempts = tuple(
@@ -327,7 +328,7 @@ def _historical_reserve(
             call.call_id, call.version_id)
         if json.loads(row["metadata_json"]).get("llm_call_ref")
         == _ref_payload(call.ref))
-    if (existing_attempt is None
+    if (existing_attempt is None and max_llm_attempts is not None
             and len(call_attempts) >= max_llm_attempts):
         raise ProviderAdmissionError(
             "logical provider call exhausted max_llm_attempts")

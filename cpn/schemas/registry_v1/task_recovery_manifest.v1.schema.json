@@ -3,7 +3,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "additionalProperties": false,
   "properties": {
-    "budget_buckets": {"type": "array", "minItems": 1, "items": {"type": "object", "additionalProperties": false, "properties": {"bucket_id": {"type": "string", "minLength": 1}, "budget_scope": {"type": "string", "minLength": 1}, "finalization_scope": {"type": ["string", "null"], "minLength": 1}, "max_attempts": {"type": "integer", "minimum": 1}}, "required": ["bucket_id", "budget_scope", "finalization_scope", "max_attempts"]}},
+    "budget_buckets": {"type": "array", "minItems": 1, "items": {"type": "object", "additionalProperties": false, "properties": {"bucket_id": {"type": "string", "minLength": 1}, "budget_scope": {"type": "string", "minLength": 1}, "finalization_scope": {"type": ["string", "null"], "minLength": 1}, "max_attempts": {"type": ["integer", "null"], "minimum": 1}}, "required": ["bucket_id", "budget_scope", "finalization_scope", "max_attempts"]}},
     "branch_id": {
       "minLength": 1,
       "type": "string"
@@ -70,7 +70,7 @@
     },
     "ordinary_global_cap": {
       "minimum": 1,
-      "type": "integer"
+      "type": ["integer", "null"]
     },
     "protocol_versions": {
       "items": {
@@ -87,7 +87,7 @@
     },
     "task_total_hard_cap": {
       "minimum": 1,
-      "type": "integer"
+      "type": ["integer", "null"]
     },
     "terminal_quota": {
       "minimum": 0,

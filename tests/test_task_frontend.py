@@ -22,6 +22,7 @@ from cpn.components.agent_loop.optional_execution import (
     optional_agent_loop_schema_data,
 )
 from cpn.components.basic import CONFIG_SCHEMA_ID
+from cpn.llm_adapters.config import LLMExecutionSelection
 from cpn.rpnh.agent_tasks import (
     AgentStage,
     AgentTaskSpec,
@@ -213,6 +214,51 @@ def test_single_agent_and_graph_workflow_compile_as_real_modules() -> None:
     prompt = _declared_agent_prompt(
         plan, LLMInputTarget("test-model", 1024, 8192))
     assert prompt["messages"][0]["content"] == "Plan the work."
+
+
+def test_agent_modules_accept_explicit_unmetered_call_limits(
+        tmp_path: Path,
+) -> None:
+    single = build_agent_task_module((
+        AgentStage("main", "Answer as the only main-session agent."),
+    ), max_attempts_per_stage=None)
+    schemas, _types = optional_agent_loop_schema_data()
+    workflow = build_agent_workflow_module(
+        _feedback_workflow_graph(2),
+        executor_key="rpnh/default-agent/v1",
+        terminal_key="rpnh/agent-task-terminal/v1",
+        tools=(),
+        required_schemas=(CONFIG_SCHEMA_ID, *schemas),
+        max_attempts_per_node=None,
+    )
+
+    for module in (single, workflow):
+        document = module.to_dict()
+        assert all(
+            bucket["max_attempts"] is None
+            for bucket in document["budget_buckets"])
+        agent_operations = [
+            operation
+            for component in document["components"]
+            for operation in component.get("operations", ())
+            if operation["executor"] == "rpnh/default-agent/v1"]
+        assert agent_operations
+        assert all(
+            operation["config"]["resource_bounds"] == {
+                "max_llm_attempts": None,
+                "max_tool_turns": None,
+            }
+            for operation in agent_operations)
+        compile_module(module, agent_task_registration())
+
+    spec = AgentTaskSpec(
+        run_dir=tmp_path / "unmetered-run",
+        prompt="Complete the task without an artificial cumulative call cap.",
+        stages=(AgentStage("main", "Complete the task."),),
+        execution_config_path=tmp_path / "execution.json",
+        max_attempts_per_stage=None,
+    )
+    assert spec.max_attempts_per_stage is None
 
 
 @pytest.mark.parametrize(
@@ -966,6 +1012,46 @@ class _WorkspaceWorkflowPort:
         pass
 
 
+class _UnmeteredTurnPort:
+    def __init__(self, progress_turns: int = 13) -> None:
+        self.progress_turns = progress_turns
+        self.calls = 0
+
+    def request_once(self, _attempt):
+        self.calls += 1
+        if self.calls <= self.progress_turns:
+            calls = [{
+                "id": f"registry-query-{self.calls}",
+                "name": "query_registry_resources",
+                "arguments": "{}",
+            }]
+        else:
+            calls = [{
+                "id": "unmetered-output",
+                "name": "write_file",
+                "arguments": json.dumps({
+                    "path": "outputs/result.txt",
+                    "description": "Result after crossing the old turn default.",
+                    "content": json.dumps("unmetered complete"),
+                    "output_port_id": "main.result",
+                    "outcome_id": "complete",
+                }),
+            }, {
+                "id": "unmetered-complete",
+                "name": "complete_interaction",
+                "arguments": "{}",
+            }]
+        return LLMInputResponseBytes(json.dumps({
+            "protocol": "llm_response_envelope/v1",
+            "tool_calls": calls,
+            "finish_reason": "tool_calls",
+        }, sort_keys=True, separators=(",", ":")).encode("utf-8"),
+            status_code=None, external_request_id=None)
+
+    def close(self):
+        pass
+
+
 class _FanoutWorkspacePort:
     def __init__(self) -> None:
         self._lock = threading.Lock()
@@ -1238,8 +1324,56 @@ class _ResumeCheckpointPort:
         pass
 
 
+def test_unmetered_agent_crosses_the_bounded_default_without_cap_handoff(
+        tmp_path: Path, monkeypatch,
+) -> None:
+    port = _UnmeteredTurnPort()
+    adapter_path = tmp_path / "adapter.json"
+    adapter_path.write_text(json.dumps({
+        "schema_version": "local_process_adapter_config/v1",
+        "adapter_kind": "local_process",
+        "model_condition": "offline-unmetered-turns",
+        "argv": [sys.executable, "-c", "pass"],
+        "probe_argv": [sys.executable, "-c", "pass"],
+        "env": {}, "inherit_env": [],
+    }), encoding="utf-8")
+    selection = LLMExecutionSelection(
+        LLMInputTarget("offline-unmetered-turns", 1024, 65536),
+        "local_process", adapter_path, 30)
+    monkeypatch.setattr(
+        "cpn.rpnh.agent_tasks.load_llm_execution_selection",
+        lambda _path: selection)
+    monkeypatch.setattr(
+        "cpn.rpnh.agent_tasks.build_llm_input_port",
+        lambda _selection, *, destination_run_root: port)
+    execution_path = tmp_path / "selection.json"
+    execution_path.write_text("{}", encoding="utf-8")
+    run_dir = tmp_path / "unmetered-run"
+
+    result = run_agent_task(AgentTaskSpec(
+        run_dir=run_dir,
+        prompt="Continue past the historical default, then complete.",
+        stages=(AgentStage("main", "Complete after all progress turns."),),
+        execution_config_path=execution_path,
+        max_attempts_per_stage=None,
+    ))
+
+    assert result["stop_reason"] == "terminal"
+    assert result["output"] == "unmetered complete"
+    assert result["actual_model_call_counts"] == [14, 0]
+    assert port.calls == 14
+    core = _RegistryCore(
+        run_dir, create=False, read_only=True,
+        catalog=agent_task_catalog())
+    assert core.event_store.actual_model_call_limit() is None
+    assert core.event_store.ordinary_model_call_limit() is None
+
+
+@pytest.mark.parametrize(
+    "max_attempts_per_stage", (4, None), ids=("bounded", "unmetered"))
 def test_workflow_registers_and_projects_workspace_files(
         tmp_path: Path, monkeypatch,
+        max_attempts_per_stage: int | None,
 ) -> None:
     adapter_path = tmp_path / "adapter.json"
     adapter_path.write_text(json.dumps({
@@ -1296,7 +1430,7 @@ def test_workflow_registers_and_projects_workspace_files(
         stages=(),
         execution_config_path=execution_path,
         workflow_graph=_workflow_graph(),
-        max_attempts_per_stage=4,
+        max_attempts_per_stage=max_attempts_per_stage,
     ))
 
     assert result["stop_reason"] == "terminal"
@@ -1331,6 +1465,11 @@ def test_workflow_registers_and_projects_workspace_files(
     readonly = _RegistryCore(
         run_dir, create=False, read_only=True,
         catalog=agent_task_catalog())
+    expected_limit = (
+        None if max_attempts_per_stage is None
+        else 2 * max_attempts_per_stage)
+    assert readonly.event_store.actual_model_call_limit() == expected_limit
+    assert readonly.event_store.ordinary_model_call_limit() == expected_limit
     canonical_workspace_versions = {
         str(row["version_id"])
         for row in readonly.event_store.canonical_object_rows(

@@ -6,7 +6,7 @@ metadata:
   audience: user-and-developer
   language: zh-CN
   counterpart: CHANGELOG.md
-  revision: "2026-10-01.1"
+  revision: "2026-10-01.2"
   status: v0.1.0rc1
 ---
 
@@ -16,6 +16,10 @@ metadata:
 
 ## 未发布
 
+- Agent runtime profile 现在可将 `max_turns_per_node` 设为 `null`，从而不设置
+  人工的逐 node、工具回合和全任务累计模型调用上限。Registry 会把它记录为显式的
+  无计量 authority；provider 故障重试、owner-stop、workspace 资源约束和 PetriNet
+  settlement 控制仍然有效。正整数配置保持原有的有界行为。
 - Agent task 与 workflow 现在可以按 node 或 stage，把显式登记的原生插件 operation
   绑定到模型可见工具名。绑定会明确准入 effect、保留逐调用回执与结构化结果；未配置
   此功能时，旧任务和普通 action 记录保持原有行为。

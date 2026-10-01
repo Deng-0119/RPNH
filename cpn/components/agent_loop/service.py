@@ -69,7 +69,7 @@ class StartAgentLoopCommand:
     operation_binding_ref: VersionRef
     owner_ref: VersionRef
     model_condition: str
-    llm_turn_budget: int
+    llm_turn_budget: int | None
     tool_catalog: AgentToolCatalog
     registered_tool_catalog_ref: ResourceVersionRef
     idempotency_key: str
@@ -124,7 +124,7 @@ class ParentOwnedDelegatedSubtaskRequest:
     parent_discoverable_resource_refs: tuple[ResourceVersionRef, ...]
     allowed_tool_names: tuple[str, ...]
     parent_tool_names: tuple[str, ...]
-    leaf_turn_limit: int
+    leaf_turn_limit: int | None
     child_session_id: str
     result_resource_ref: ResourceVersionRef
     llm_invocation_ref: VersionRef | None = None
@@ -152,9 +152,10 @@ class ParentOwnedDelegatedSubtaskRequest:
                 or self.discoverable_resource_refs
                 != self.readable_resource_refs
                 or "delegate_leaf" in self.allowed_tool_names
-                or isinstance(self.leaf_turn_limit, bool)
-                or not isinstance(self.leaf_turn_limit, int)
-                or self.leaf_turn_limit < 1
+                or (self.leaf_turn_limit is not None
+                    and (isinstance(self.leaf_turn_limit, bool)
+                         or not isinstance(self.leaf_turn_limit, int)
+                         or self.leaf_turn_limit < 1))
                 or not isinstance(self.child_session_id, str)
                 or not self.child_session_id
                 or not isinstance(
@@ -854,7 +855,8 @@ class AgentLoopService:
                         execution, loop.loop_id),
                 )
             segment_boundary = (
-                waiting.llm_turns_used >= waiting.llm_turn_budget)
+                waiting.llm_turn_budget is not None
+                and waiting.llm_turns_used >= waiting.llm_turn_budget)
             if segment_boundary:
                 segment_identity = (
                     f"{segment_role}-segment:{waiting.next_turn_sequence}")
@@ -1522,6 +1524,9 @@ class AgentLoopService:
             history_messages: tuple[Mapping[str, Any], ...] = ()
             length_replay_ordinal = 0
             while True:
+                if self._interruption_requested(execution):
+                    raise LLMInputPortInterrupted(
+                        submission_state="not_submitted")
                 prepared = (
                     self._registry
                     .prepare_parent_owned_delegated_subtask_call_v1(
@@ -1588,7 +1593,9 @@ class AgentLoopService:
                 history_messages = outcome.history_messages
                 leaf_turn_sequence += 1
                 length_replay_ordinal = 0
-                if leaf_turn_sequence >= prepared.request.leaf_turn_limit:
+                if (prepared.request.leaf_turn_limit is not None
+                        and leaf_turn_sequence
+                        >= prepared.request.leaf_turn_limit):
                     raise AgentLoopProtocolError(
                         "delegated subtask exhausted its local turn limit")
         return results

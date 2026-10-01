@@ -358,7 +358,7 @@ def validate_llm_model_call_budget(
             db, task_id=task_id,
             pending_attempt_version_ids=(
                 pending_returned_attempt_version_ids))))
-    if returned_total > limit:
+    if limit is not None and returned_total > limit:
         raise TaskModelCallLimitExceeded(
             "actual returned task model-call cap is exhausted")
 

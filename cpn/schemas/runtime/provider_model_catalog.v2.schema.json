@@ -22,6 +22,9 @@
       "pattern": "^[^\\u0000-\\u001f\\u007f]+$"
     },
     "positiveInteger": {"type": "integer", "minimum": 1},
+    "nullablePositiveInteger": {
+      "type": ["integer", "null"], "minimum": 1
+    },
     "workspacePolicy": {
       "type": "object",
       "additionalProperties": false,
@@ -41,7 +44,7 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "max_turns_per_node": {"$ref": "#/definitions/positiveInteger"},
+        "max_turns_per_node": {"$ref": "#/definitions/nullablePositiveInteger"},
         "max_parallel_nodes": {"$ref": "#/definitions/positiveInteger"},
         "main_history_message_limit": {"$ref": "#/definitions/positiveInteger"},
         "context_pressure_trigger_ratio": {

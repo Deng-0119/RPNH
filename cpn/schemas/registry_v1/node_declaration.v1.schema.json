@@ -23,8 +23,8 @@
     "producer_operation_binding_ref": {"$ref": "#/definitions/ref"},
     "offered_output_binding_refs": {"$ref": "#/definitions/refs"},
     "resource_bounds": {"type": "object", "additionalProperties": false,
-      "properties": {"max_llm_attempts": {"type": "integer", "minimum": 0},
-        "max_tool_turns": {"type": "integer", "minimum": 0}},
+      "properties": {"max_llm_attempts": {"type": ["integer", "null"], "minimum": 0},
+        "max_tool_turns": {"type": ["integer", "null"], "minimum": 0}},
       "required": ["max_llm_attempts", "max_tool_turns"]}
   },
   "required": ["node_ref", "semantic_node_id", "node_synopsis", "transition_id", "activation_ref",

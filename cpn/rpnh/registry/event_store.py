@@ -2047,11 +2047,11 @@ class EventStore:
         from ._event_store import accounting
         return accounting.task_model_call_terminal_phase_entered(self)
 
-    def actual_model_call_limit(self) -> int:
+    def actual_model_call_limit(self) -> int | None:
         from ._event_store import accounting
         return accounting.actual_model_call_limit(self)
 
-    def ordinary_model_call_limit(self) -> int:
+    def ordinary_model_call_limit(self) -> int | None:
         from ._event_store import accounting
         return accounting.ordinary_model_call_limit(self)
 

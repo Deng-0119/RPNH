@@ -216,9 +216,9 @@ def build_agent_system_initialization(
     located_inputs: tuple[LocatedAgentInput, ...],
     output_kind: str,
     output_contract: str,
-    llm_turn_cap: int,
+    llm_turn_cap: int | None,
     llm_turns_used: int,
-    task_call_cap: int,
+    task_call_cap: int | None,
     task_calls_used: int,
     semantic_output_port_ids: tuple[str, ...] = (),
     verified_evidence_output_port_ids: tuple[str, ...] = (),
@@ -249,22 +249,30 @@ def build_agent_system_initialization(
     ))
     if not isinstance(output_contract, str) or not output_contract.strip():
         raise ValueError("agent initialization output contract is required")
-    if (isinstance(llm_turn_cap, bool)
-            or not isinstance(llm_turn_cap, int)
-            or llm_turn_cap < 1):
-        raise ValueError("agent initialization provider turn cap must be positive")
+    if (llm_turn_cap is not None
+            and (isinstance(llm_turn_cap, bool)
+                 or not isinstance(llm_turn_cap, int)
+                 or llm_turn_cap < 1)):
+        raise ValueError(
+            "agent initialization provider turn cap must be null or positive")
     if (isinstance(llm_turns_used, bool)
             or not isinstance(llm_turns_used, int)
             or llm_turns_used < 0
-            or llm_turns_used > llm_turn_cap):
+            or (llm_turn_cap is not None
+                and llm_turns_used > llm_turn_cap)):
         raise ValueError(
             "agent initialization provider turn usage must be within its cap")
-    if (isinstance(task_call_cap, bool) or not isinstance(task_call_cap, int)
-            or task_call_cap < 1):
-        raise ValueError("agent initialization task call cap must be positive")
+    if (task_call_cap is not None
+            and (isinstance(task_call_cap, bool)
+                 or not isinstance(task_call_cap, int)
+                 or task_call_cap < 1)):
+        raise ValueError(
+            "agent initialization task call cap must be null or positive")
     if (isinstance(task_calls_used, bool)
             or not isinstance(task_calls_used, int)
-            or task_calls_used < 0 or task_calls_used > task_call_cap):
+            or task_calls_used < 0
+            or (task_call_cap is not None
+                and task_calls_used > task_call_cap)):
         raise ValueError(
             "agent initialization task call usage must be within its cap")
     contract = output_contract.strip()

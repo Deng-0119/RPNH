@@ -276,7 +276,9 @@ def _hydrate_binding(
     limits = _facade.OperationExecutionLimits(
         max_llm_attempts=limits_raw.get("max_llm_attempts"),
         max_tool_turns=limits_raw.get("max_tool_turns"))
-    if ((spec.transport == "llm") != (limits.max_llm_attempts > 0)):
+    has_llm_capacity = (
+        limits.max_llm_attempts is None or limits.max_llm_attempts > 0)
+    if ((spec.transport == "llm") != has_llm_capacity):
         raise _facade.OperationAuthorityError(
             "operation LLM-attempt limit differs from its transport")
     binding = _facade.OperationBindingAuthority(

@@ -866,17 +866,19 @@ def lower_agent_workflow_graph(
 def build_agent_workflow_module(
         graph: AgentWorkflowGraph, *, executor_key: str, terminal_key: str,
         tools: Sequence[str], required_schemas: Sequence[str],
-        max_attempts_per_node: int = 12, plugin_catalog=None,
+        max_attempts_per_node: int | None = 12, plugin_catalog=None,
         managed_tools: Mapping[str, Sequence[str]] | None = None,
         managed_tool_names: Mapping[str, Sequence[str]] | None = None,
 ) -> ModuleDeclaration:
     """Build one graph-shaped independent workflow Module."""
     if not isinstance(graph, AgentWorkflowGraph):
         raise TypeError("workflow Module requires AgentWorkflowGraph")
-    if (isinstance(max_attempts_per_node, bool)
-            or not isinstance(max_attempts_per_node, int)
-            or max_attempts_per_node < 1):
-        raise ValueError("max_attempts_per_node must be positive")
+    if (max_attempts_per_node is not None
+            and (isinstance(max_attempts_per_node, bool)
+                 or not isinstance(max_attempts_per_node, int)
+                 or max_attempts_per_node < 1)):
+        raise ValueError(
+            "max_attempts_per_node must be null or positive")
     managed_tools = dict(managed_tools or {})
     managed_tool_names = dict(managed_tool_names or {})
     if (set(managed_tools) - {node.node_id for node in graph.nodes}
@@ -909,7 +911,8 @@ def build_agent_workflow_module(
         # The Petri permit place bounds how many rework firings may occur.
         # This bucket bounds provider calls across those firings, so each
         # permitted firing needs the same normal turn allowance as a node.
-        "max_attempts": graph.max_rework_cycles * max_attempts_per_node,
+        "max_attempts": (None if max_attempts_per_node is None else
+                         graph.max_rework_cycles * max_attempts_per_node),
     } if graph.max_rework_cycles else None)
     buckets = [*node_buckets, *((rework_bucket,) if rework_bucket else ())]
     producer_for = {
@@ -955,7 +958,7 @@ def build_agent_workflow_module(
 
         def operation(
                 name: str, selected_ports, selected_bucket,
-                attempt_limit: int,
+                attempt_limit: int | None,
         ) -> dict[str, Any]:
             inputs = [
                 _node_input_handle(graph, node.node_id, port.port_id)

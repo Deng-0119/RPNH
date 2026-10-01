@@ -25,7 +25,7 @@ class WorkspacePolicy:
 class RuntimePolicy:
     """Cost, concurrency, compaction, and workspace policy for one profile."""
 
-    max_turns_per_node: int = 12
+    max_turns_per_node: int | None = 12
     max_parallel_nodes: int = 4
     main_history_message_limit: int = 20
     context_pressure_trigger_ratio: float = 0.90
@@ -33,9 +33,13 @@ class RuntimePolicy:
     workspace: WorkspacePolicy = field(default_factory=WorkspacePolicy)
 
     def __post_init__(self) -> None:
-        for name in (
-                "max_turns_per_node", "max_parallel_nodes",
-                "main_history_message_limit"):
+        max_turns = self.max_turns_per_node
+        if (max_turns is not None
+                and (isinstance(max_turns, bool)
+                     or not isinstance(max_turns, int) or max_turns < 1)):
+            raise ValueError(
+                "runtime.max_turns_per_node must be null or a positive integer")
+        for name in ("max_parallel_nodes", "main_history_message_limit"):
             value = getattr(self, name)
             if isinstance(value, bool) or not isinstance(value, int) or value < 1:
                 raise ValueError(f"runtime.{name} must be a positive integer")

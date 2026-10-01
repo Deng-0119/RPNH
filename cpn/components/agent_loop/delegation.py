@@ -550,11 +550,12 @@ class DelegationExecutionMixin:
         bounds = operation.declaration.config.get("resource_bounds", {})
         leaf_turn_limit = operation.declaration.config.get(
             "delegate_leaf_turn_limit", bounds.get("max_tool_turns"))
-        if (isinstance(leaf_turn_limit, bool)
-                or not isinstance(leaf_turn_limit, int)
-                or leaf_turn_limit < 1):
+        if (leaf_turn_limit is not None
+                and (isinstance(leaf_turn_limit, bool)
+                     or not isinstance(leaf_turn_limit, int)
+                     or leaf_turn_limit < 1)):
             raise ResourceIntegrityFault(
-                "delegated subtask requires a declared positive turn limit")
+                "delegated subtask turn limit must be null or positive")
         sponsoring_ref = (
             context.sponsoring_transition_firing_ref
             or context.own_transition_firing_ref)

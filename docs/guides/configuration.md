@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: en
   counterpart: configuration_ZH.md
-  revision: "2026-09-30.1"
+  revision: "2026-10-01.1"
   status: source-reviewed-pre-release
 ---
 
@@ -99,7 +99,7 @@ so a run and its resume retain one exact policy.
 
 | Field | Default | Effect |
 |---|---:|---|
-| `max_turns_per_node` | 12 | Model/tool-turn budget for each single-agent stage or workflow node. This also bounds the corresponding module bucket. |
+| `max_turns_per_node` | 12 | Model/tool-turn budget for each single-agent stage or workflow node. This also bounds the corresponding module bucket. Set it to `null` to record explicit unmetered authority with no artificial node, tool-turn or cumulative task call ceiling. |
 | `max_parallel_nodes` | 4 | Maximum concurrently in-flight workflow nodes. A single-agent task remains serial. |
 | `main_history_message_limit` | 20 | Number of most recent complete role/body messages included in a new main-Designer prompt. Full committed history remains in Registry. |
 | `context_pressure_trigger_ratio` | 0.90 | Fraction of a declared context window that triggers proactive compaction; output-token reservation can trigger earlier. |
@@ -171,7 +171,9 @@ not in global source constants. `max_rework_cycles` is a nonnegative workflow
 graph budget; zero disables feedback/rework. The selected runtime
 `max_turns_per_node` determines each node's attempt bucket, while
 `max_parallel_nodes` determines scheduler concurrency. Explicit per-node model
-profiles and tool allowlists remain part of the graph.
+profiles and tool allowlists remain part of the graph. A `null` turn limit does
+not disable owner stop, provider retry handling, workspace resource bounds,
+context-window handling or Registry/PetriNet admission and settlement.
 
 A native `PluginOperation` declares `timeout_seconds` (1–7200, default 60) and
 `max_result_bytes` (1–16777216, SDK default 1048576). DSH-managed tools add a

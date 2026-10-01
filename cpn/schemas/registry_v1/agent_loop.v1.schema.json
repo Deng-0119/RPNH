@@ -25,7 +25,7 @@
     "state": {"enum": ["NEW", "WAITING_FOR_LLM", "TURN_STORED", "ACTION_PENDING", "ACTION_APPLIED", "ACTION_REJECTED", "CANDIDATE_COMMITTED", "CANDIDATE_ADOPTED", "DISPOSITION_RECORDED", "COMPACTING", "COMPLETED", "WAITING_RESOURCE", "TIMED_OUT", "EXHAUSTED", "INFRASTRUCTURE_FAILED", "RECONCILIATION_REQUIRED"]},
     "revision": {"type": "integer", "minimum": 0},
     "next_turn_sequence": {"type": "integer", "minimum": 0},
-    "llm_turn_budget": {"type": "integer", "minimum": 0},
+    "llm_turn_budget": {"type": ["integer", "null"], "minimum": 0},
     "llm_turns_used": {"type": "integer", "minimum": 0},
     "model_condition": {"type": "string", "minLength": 1},
     "tool_catalog_ref": {"$ref": "#/definitions/resource_ref"},

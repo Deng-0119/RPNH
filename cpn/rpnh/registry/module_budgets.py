@@ -22,9 +22,9 @@ class ModuleBudgetDeclaration:
     """All quantities/scopes are chosen explicitly by the execution owner."""
     budget_buckets: tuple[Mapping[str, Any], ...]
     protocol_versions: tuple[str, ...]
-    ordinary_global_cap: int
+    ordinary_global_cap: int | None
     terminal_quota: int
-    task_total_hard_cap: int
+    task_total_hard_cap: int | None
     finalization_budget: int
 
     def contract(self, inventory_ref: ResourceVersionRef, inventory_schema_id: str) -> dict[str, Any]:
@@ -33,8 +33,13 @@ class ModuleBudgetDeclaration:
                 or len(set(self.protocol_versions)) != len(self.protocol_versions)):
             raise ValueError("Module budgets require exact unique protocol versions")
         for value in (self.ordinary_global_cap, self.task_total_hard_cap):
-            if type(value) is not int or value < 1:
-                raise ValueError("Module ordinary/task budget quantities must be positive integers")
+            if value is not None and (type(value) is not int or value < 1):
+                raise ValueError(
+                    "Module ordinary/task budget quantities must be null or positive integers")
+        if ((self.ordinary_global_cap is None)
+                != (self.task_total_hard_cap is None)):
+            raise ValueError(
+                "Module ordinary/task budget quantities must both be bounded or both be null")
         for value in (self.terminal_quota, self.finalization_budget):
             if type(value) is not int or value < 0:
                 raise ValueError("Module terminal budget quantities must be nonnegative integers")

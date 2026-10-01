@@ -1297,7 +1297,7 @@
               ]
             },
             "max_attempts": {
-              "type": "integer",
+              "type": ["integer", "null"],
               "minimum": 1
             }
           }
@@ -1862,7 +1862,7 @@
           ]
         },
         "max_attempts": {
-          "type": "integer",
+          "type": ["integer", "null"],
           "minimum": 1
         }
       }

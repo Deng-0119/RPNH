@@ -46,8 +46,11 @@ def validate_budget_buckets(records: Any) -> list[dict[str, Any]]:
         if record["budget_scope"] in scopes:
             raise BudgetContractError("budget scope must identify exactly one bucket")
         bound = record["max_attempts"]
-        if isinstance(bound, bool) or not isinstance(bound, int) or bound < 1:
-            raise BudgetContractError("budget bucket max_attempts must be a positive integer")
+        if (bound is not None
+                and (isinstance(bound, bool) or not isinstance(bound, int)
+                     or bound < 1)):
+            raise BudgetContractError(
+                "budget bucket max_attempts must be null or a positive integer")
         ids.add(bucket_id)
         scopes.add(record["budget_scope"])
         result.append(dict(record))

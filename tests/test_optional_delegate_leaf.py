@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import json
+import os
 from pathlib import Path
+import signal
 
 import pytest
 
@@ -131,6 +133,31 @@ class _MixedValidityDelegatedLeafPort:
         pass
 
 
+class _OwnerStoppedDelegatedLeafPort:
+    def __init__(self) -> None:
+        self.requests = 0
+
+    def request_once(self, attempt):
+        self.requests += 1
+        envelope = json.loads(attempt.canonical_request_bytes)
+        if "delegate_leaf" in _tool_names(envelope):
+            return _response(tool_calls=[{
+                "id": "delegate-until-stop", "name": "delegate_leaf",
+                "arguments": json.dumps({
+                    "instruction": "Continue local inspection until stopped.",
+                    "resource_refs": [],
+                }),
+            }], finish_reason="tool_calls")
+        os.kill(os.getpid(), signal.SIGINT)
+        return _response(tool_calls=[{
+            "id": "child-progress", "name": "query_registry_resources",
+            "arguments": "{}",
+        }], finish_reason="tool_calls")
+
+    def close(self):
+        pass
+
+
 def test_delegated_leaf_catalog_omits_parent_only_resource_request() -> None:
     child_tools = derive_atomic_subtask_tools(build_agent_tool_catalog())
     child_schemas = {
@@ -155,7 +182,7 @@ def test_delegated_leaf_catalog_omits_parent_only_resource_request() -> None:
 
 def _configure_offline_task(
         tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
-        port: _DelegatedLeafPort,
+        port: object,
 ) -> Path:
     adapter_path = tmp_path / "adapter.json"
     adapter_path.write_text(json.dumps({
@@ -187,8 +214,11 @@ def _objects(core: _RegistryCore, object_type: str) -> list[dict]:
     ]
 
 
+@pytest.mark.parametrize(
+    "max_attempts_per_stage", (6, None), ids=("bounded", "unmetered"))
 def test_delegate_leaf_multi_turn_provider_and_registry_closure(
         tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+        max_attempts_per_stage: int | None,
 ) -> None:
     port = _DelegatedLeafPort()
     execution_path = _configure_offline_task(tmp_path, monkeypatch, port)
@@ -199,7 +229,7 @@ def test_delegate_leaf_multi_turn_provider_and_registry_closure(
         prompt="Exercise one parent-owned delegated child session.",
         stages=(AgentStage("main", "Use delegate_leaf, then finish."),),
         execution_config_path=execution_path,
-        max_attempts_per_stage=6,
+        max_attempts_per_stage=max_attempts_per_stage,
     ))
 
     assert result["stop_reason"] == "terminal"
@@ -279,3 +309,22 @@ def test_malformed_delegate_sibling_is_rejected_without_blocking_firing(
         ("valid-delegate", "ACTION_APPLIED"),
         ("malformed-delegate", "ACTION_REJECTED"),
     ]
+
+
+def test_owner_stop_interrupts_an_unmetered_delegated_session(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    port = _OwnerStoppedDelegatedLeafPort()
+    execution_path = _configure_offline_task(
+        tmp_path, monkeypatch, port)
+
+    result = run_agent_task(AgentTaskSpec(
+        run_dir=tmp_path / "run",
+        prompt="Exercise owner stop during delegated execution.",
+        stages=(AgentStage("main", "Delegate until the owner stops."),),
+        execution_config_path=execution_path,
+        max_attempts_per_stage=None,
+    ))
+
+    assert result["stop_reason"] == "stopped_by_owner"
+    assert port.requests == 2

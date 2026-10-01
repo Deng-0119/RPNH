@@ -108,7 +108,7 @@ class BudgetBucketDeclaration:
     bucket_id: str
     budget_scope: str
     finalization_scope: str | None
-    max_attempts: int
+    max_attempts: int | None
 
 
 def _terminal(value):

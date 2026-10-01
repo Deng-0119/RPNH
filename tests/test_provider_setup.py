@@ -89,7 +89,7 @@ def test_catalog_accepts_arbitrary_provider_and_exact_model_identifiers(
                 "context_window_tokens": 131072,
                 "context_compaction_retained_tokens": 16384,
                 "runtime": {
-                    "max_turns_per_node": 7,
+                    "max_turns_per_node": None,
                     "max_parallel_nodes": 2,
                     "main_history_message_limit": 8,
                     "context_pressure_trigger_ratio": 0.75,
@@ -130,11 +130,11 @@ def test_catalog_accepts_arbitrary_provider_and_exact_model_identifiers(
             == 16384)
     assert registry_policy["context_window_tokens"] == 131072
     assert registry_policy["context_compaction_retained_tokens"] == 16384
-    assert selection.runtime_policy.max_turns_per_node == 7
+    assert selection.runtime_policy.max_turns_per_node is None
     assert selection.runtime_policy.max_parallel_nodes == 2
     assert selection.runtime_policy.context_pressure_trigger_ratio == 0.75
     assert registry_policy["runtime"] == {
-        "max_turns_per_node": 7,
+        "max_turns_per_node": None,
         "max_parallel_nodes": 2,
         "main_history_message_limit": 8,
         "context_pressure_trigger_ratio": 0.75,

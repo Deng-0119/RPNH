@@ -101,7 +101,7 @@ class AgentTaskSpec:
     stages: tuple[AgentStage, ...]
     execution_config_path: Path
     workflow_graph: AgentWorkflowGraph | None = None
-    max_attempts_per_stage: int = 12
+    max_attempts_per_stage: int | None = 12
     max_parallel_nodes: int = 4
     execution_profiles: tuple[tuple[str, Path], ...] = ()
     owner_statement: str = "RPNH user-authorized agent task"
@@ -139,10 +139,12 @@ class AgentTaskSpec:
               or self.stages):
             raise ValueError(
                 "workflow task requires one graph and no serial stages")
-        if (isinstance(self.max_attempts_per_stage, bool)
-                or not isinstance(self.max_attempts_per_stage, int)
-                or self.max_attempts_per_stage < 1):
-            raise ValueError("max_attempts_per_stage must be positive")
+        if (self.max_attempts_per_stage is not None
+                and (isinstance(self.max_attempts_per_stage, bool)
+                     or not isinstance(self.max_attempts_per_stage, int)
+                     or self.max_attempts_per_stage < 1)):
+            raise ValueError(
+                "max_attempts_per_stage must be null or positive")
         if (isinstance(self.max_parallel_nodes, bool)
                 or not isinstance(self.max_parallel_nodes, int)
                 or self.max_parallel_nodes < 1):
@@ -598,7 +600,8 @@ def agent_task_catalog(plugin_catalog=None) -> SchemaCatalog:
 
 
 def build_agent_task_module(
-        stages: Sequence[AgentStage], *, max_attempts_per_stage: int = 12,
+        stages: Sequence[AgentStage], *,
+        max_attempts_per_stage: int | None = 12,
         managed_tools: Mapping[str, Sequence[str]] | None = None,
         managed_tool_names: Mapping[str, Sequence[str]] | None = None,
 ) -> ModuleDeclaration:
@@ -613,10 +616,12 @@ def build_agent_task_module(
             or len({stage.stage_id for stage in stages}) != len(stages)):
         raise ValueError(
             "single-agent Module requires exactly one AgentStage")
-    if (isinstance(max_attempts_per_stage, bool)
-            or not isinstance(max_attempts_per_stage, int)
-            or max_attempts_per_stage < 1):
-        raise ValueError("max_attempts_per_stage must be positive")
+    if (max_attempts_per_stage is not None
+            and (isinstance(max_attempts_per_stage, bool)
+                 or not isinstance(max_attempts_per_stage, int)
+                 or max_attempts_per_stage < 1)):
+        raise ValueError(
+            "max_attempts_per_stage must be null or positive")
 
     buckets = [{
         "bucket_id": stage.stage_id,
@@ -911,7 +916,10 @@ def _execute_agent_task(
             managed_tool_names=managed_visible_names,
         )
     bucket_documents = module.to_dict()["budget_buckets"]
-    call_cap = sum(bucket["max_attempts"] for bucket in bucket_documents)
+    call_cap = (None if any(bucket["max_attempts"] is None
+                            for bucket in bucket_documents)
+                else sum(bucket["max_attempts"]
+                         for bucket in bucket_documents))
     request = OwnerInput(
         TEXT_SCHEMA, canonical_json(spec.prompt), "RPNH agent task request")
     runner = None

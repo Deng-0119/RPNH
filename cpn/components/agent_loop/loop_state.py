@@ -396,7 +396,8 @@ class LoopStateMechanicsMixin:
                 "llm_turn_budget"}.intersection(changes):
             raise AgentLoopMechanicalLifecycleError(
                 "role policy cannot replace mechanical continuation fields")
-        if (isinstance(new_turn_budget, bool)
+        if (current.llm_turn_budget is None
+                or isinstance(new_turn_budget, bool)
                 or not isinstance(new_turn_budget, int)
                 or new_turn_budget <= current.llm_turn_budget):
             raise AgentLoopMechanicalLifecycleError(
@@ -502,7 +503,10 @@ class LoopStateMechanicsMixin:
                     AgentLoopState.COMPLETED,
                     AgentLoopState.EXHAUSTED}
                 or (after.state == AgentLoopState.WAITING_FOR_LLM
-                    and after.llm_turn_budget <= before.llm_turn_budget)):
+                    and (before.llm_turn_budget is None
+                         or after.llm_turn_budget is None
+                         or after.llm_turn_budget
+                         <= before.llm_turn_budget))):
             raise AgentLoopMechanicalLifecycleError(
                 "cap continuation is not one segment extension/closure")
         return self.commit_loop_successor(
@@ -694,7 +698,8 @@ class LoopStateExecutionMixin:
         execution = self._execution(execution)
         # Use the existing exact Registry accounting, not a local counter.
         counts = self.core.event_store.actual_model_call_counts()
-        return counts[0] >= self.core.event_store.ordinary_model_call_limit()
+        limit = self.core.event_store.ordinary_model_call_limit()
+        return limit is not None and counts[0] >= limit
 
     def handoff_agent_llm_turn_cap_v1(self, execution, loop, *, idempotency_key):
         self._execution(execution, loop)
@@ -715,7 +720,8 @@ class LoopStateExecutionMixin:
         role = operation.declaration.config.get("agent_loop_role")
         increment = operation.declaration.config.get(
             "turn_budget_extension")
-        if (role not in {"critic", "finalization_reviewer"}
+        if (loop.llm_turn_budget is None
+                or role not in {"critic", "finalization_reviewer"}
                 or isinstance(increment, bool)
                 or not isinstance(increment, int) or increment < 1):
             raise OptionalAgentCapabilityUnavailable(

@@ -401,8 +401,15 @@ class _RegistryCore:
             raise ValueError("task recovery manifest must pin protocol versions")
         for name in ("ordinary_global_cap", "task_total_hard_cap"):
             value = contract[name]
-            if isinstance(value, bool) or not isinstance(value, int) or value < 1:
-                raise ValueError("ordinary/task budget bounds must be positive integers")
+            if (value is not None
+                    and (isinstance(value, bool) or not isinstance(value, int)
+                         or value < 1)):
+                raise ValueError(
+                    "ordinary/task budget bounds must be null or positive integers")
+        if ((contract["ordinary_global_cap"] is None)
+                != (contract["task_total_hard_cap"] is None)):
+            raise ValueError(
+                "ordinary/task budget bounds must both be bounded or both be null")
         for name in ("terminal_quota", "finalization_budget"):
             value = contract[name]
             if isinstance(value, bool) or not isinstance(value, int) or value < 0:

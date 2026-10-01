@@ -6,7 +6,7 @@ metadata:
   audience: user-and-developer
   language: en
   counterpart: CHANGELOG_ZH.md
-  revision: "2026-10-01.1"
+  revision: "2026-10-01.2"
   status: v0.1.0rc1
 ---
 
@@ -16,6 +16,11 @@ metadata:
 
 ## Unreleased
 
+- Agent runtime profiles may now set `max_turns_per_node` to `null` to omit
+  artificial per-node, tool-turn and cumulative task model-call ceilings. The
+  Registry records this as explicit unmetered authority while provider retry,
+  owner-stop, workspace resource and PetriNet settlement controls remain in
+  force. Positive integer profiles retain their existing bounded behavior.
 - Agent tasks and workflows can now bind explicitly registered native-plugin
   operations to provider-visible tool names per node or stage. Bindings admit
   exact effects, preserve per-call receipts and structured results, and keep

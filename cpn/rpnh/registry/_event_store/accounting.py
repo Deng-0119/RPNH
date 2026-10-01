@@ -39,16 +39,19 @@ def _returned_attempt_counts_toward_cap(
             and attempt_metadata["finalization_scope"] is None))
 
 def _project_actual_model_call_counts(
-        total_returned_calls: int, limit: int,
+        total_returned_calls: int, limit: int | None,
 ) -> tuple[int, int]:
     """Project the raw settled total and its post-limit excess."""
 
     if (isinstance(total_returned_calls, bool)
             or not isinstance(total_returned_calls, int)
             or total_returned_calls < 0
-            or isinstance(limit, bool) or not isinstance(limit, int)
-            or limit < 1):
+            or (limit is not None
+                and (isinstance(limit, bool) or not isinstance(limit, int)
+                     or limit < 1))):
         raise ValueError("actual model-call projection values are invalid")
+    if limit is None:
+        return total_returned_calls, 0
     return total_returned_calls, max(0, total_returned_calls - limit)
 
 def _accountable_model_call_event_sql() -> str:
@@ -462,7 +465,7 @@ def _current_task_recovery_manifest_row(
 
 def _registered_model_call_limits(
         db: sqlite3.Connection, *, task_id: str,
-) -> tuple[int, int]:
+) -> tuple[int | None, int | None]:
     """Return ordinary/hard limits including owner-authorized generations.
 
     The startup manifest remains the immutable per-generation budget
@@ -497,9 +500,15 @@ def _registered_model_call_limits(
         current_ordinary, current_hard,
         generation_ordinary, generation_hard,
     )
-    if any(isinstance(value, bool) or not isinstance(value, int) or value < 1
+    if any(value is not None and (
+            isinstance(value, bool) or not isinstance(value, int) or value < 1)
            for value in values):
         raise ValueError("registered model-call limits are invalid")
+    if any(value is None for value in values):
+        if not all(value is None for value in values):
+            raise ValueError(
+                "registered model-call limits mix bounded and unbounded authority")
+        return None, None
 
     rows = db.execute(
         "SELECT o.metadata_json FROM objects o JOIN transactions t ON "
@@ -759,7 +768,7 @@ def install_published_model_call_baseline_v1(
             db.rollback()
             raise RegistryConflict(
                 "destination model-call limit is malformed") from exc
-        if published_call_count > limit:
+        if limit is not None and published_call_count > limit:
             db.rollback()
             raise TaskModelCallLimitExceeded(
                 "imported published calls exceed the destination cap")
@@ -892,7 +901,7 @@ def task_model_call_terminal_phase_entered(store) -> bool:
         return _task_model_call_terminal_phase_entered(
             db, task_id=task_id)
 
-def actual_model_call_limit(store) -> int:
+def actual_model_call_limit(store) -> int | None:
     """Return the effective hard limit for the current execution generation."""
     from ..event_store import RegistryCorruptError
 
@@ -911,7 +920,7 @@ def actual_model_call_limit(store) -> int:
     return hard
 
 
-def ordinary_model_call_limit(store) -> int:
+def ordinary_model_call_limit(store) -> int | None:
     """Return the effective ordinary-call limit for the current generation."""
     from ..event_store import RegistryCorruptError
 
