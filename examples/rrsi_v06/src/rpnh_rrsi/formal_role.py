@@ -317,6 +317,82 @@ def _visible_text(value: object, *, limit: int = 4000) -> str:
     return text[:half] + "\n...[middle truncated]...\n" + text[-half:]
 
 
+def _analyst_visible_input(input_value: Mapping[str, Any]) -> dict[str, Any]:
+    """Project Analyst metadata without exposing trace or response bodies."""
+    visible = {
+        key: input_value[key]
+        for key in ("prior_mode_names", "history")
+        if key in input_value
+    }
+    protocol = input_value.get("protocol")
+    if isinstance(protocol, Mapping) and "protocol_id" in protocol:
+        visible["protocol"] = {"protocol_id": protocol["protocol_id"]}
+    manifest = input_value.get("evolve_manifest")
+    if isinstance(manifest, Mapping):
+        projected_manifest = {
+            key: manifest[key]
+            for key in ("manifest_id", "split")
+            if key in manifest
+        }
+        tasks = manifest.get("tasks")
+        if isinstance(tasks, list):
+            projected_manifest["tasks"] = [
+                {
+                    key: row[key]
+                    for key in ("task_id", "weight", "scorer")
+                    if key in row
+                }
+                for row in tasks
+                if isinstance(row, Mapping)
+            ]
+        visible["evolve_manifest"] = projected_manifest
+    incumbent = input_value.get("incumbent")
+    if isinstance(incumbent, Mapping):
+        projected_incumbent = {
+            key: incumbent[key]
+            for key in ("split", "evaluation_id", "execution_id", "candidate_id")
+            if key in incumbent
+        }
+        aggregate = incumbent.get("aggregate")
+        if isinstance(aggregate, Mapping):
+            projected_incumbent["aggregate"] = {
+                key: aggregate[key]
+                for key in (
+                    "score", "cost", "expected_slots", "missing_slots",
+                    "known_token_slots", "positive_token_slots",
+                    "token_coverage", "known_token_total", "cost_comparable",
+                )
+                if key in aggregate
+            }
+        trials = incumbent.get("trials")
+        if isinstance(trials, list):
+            projected_incumbent["trials"] = [
+                {
+                    key: row[key]
+                    for key in (
+                        "task_id", "repetition", "reward", "weight",
+                        "tokens", "trial_result_ref",
+                    )
+                    if key in row
+                }
+                for row in trials
+                if isinstance(row, Mapping)
+            ]
+        visible["incumbent"] = projected_incumbent
+    traces = input_value.get("traces")
+    if isinstance(traces, list):
+        visible["traces"] = [
+            {
+                key: row[key]
+                for key in ("task_id", "group", "reward", "trace_ref")
+                if key in row
+            }
+            for row in traces
+            if isinstance(row, Mapping)
+        ]
+    return visible
+
+
 def _initial_messages(request: Mapping[str, Any]) -> list[dict[str, Any]]:
     role = request["role"]
     common = (
@@ -344,9 +420,15 @@ def _initial_messages(request: Mapping[str, Any]) -> list[dict[str, Any]]:
             "and whole diff. Submit accepted or rejected with a concrete reason."
         ),
     }[role]
+    input_value = request["input"]
+    model_input = (
+        _analyst_visible_input(input_value)
+        if role == "analyst"
+        else input_value
+    )
     return [
         {"role": "system", "content": instructions + " " + common},
-        {"role": "user", "content": canonical_json(request["input"]).decode("utf-8")},
+        {"role": "user", "content": canonical_json(model_input).decode("utf-8")},
     ]
 
 

@@ -242,6 +242,10 @@ def test_role_rejects_explicit_length_truncation_before_effect() -> None:
 
 
 def test_analyst_digest_many_uses_independent_restricted_digester(tmp_path):
+    trace_marker = "RAW_TRACE_SENTINEL"
+    incumbent_marker = "INCUMBENT_RESPONSE_SENTINEL"
+    incumbent_raw_marker = "INCUMBENT_RAW_INPUT_SENTINEL"
+    manifest_marker = "EVOLVE_MANIFEST_RAW_SENTINEL"
     selection = _selection(tmp_path)
     analyst_port = ScriptedPort(selection, [
         _response(_call("batch", "rrsi_digest_many", {"requests": [{
@@ -274,8 +278,30 @@ def test_analyst_digest_many_uses_independent_restricted_digester(tmp_path):
         request=_request("analyst", "analyst-0", {
             "files": [],
             "traces": [{"task_id": "task-a", "trace_ref": "trace-a",
-                        "text": "VALUE = 1\nExpected VALUE = 2"}],
+                        "group": "failure", "reward": 0,
+                        "text": f"{trace_marker}\nExpected VALUE = 2"}],
             "task_table": [{"task_id": "task-a"}],
+            "evolve_manifest": {
+                "manifest_id": "evolve", "split": "evolve",
+                "tasks": [{
+                    "task_id": "task-a", "raw_input": manifest_marker,
+                    "expected": manifest_marker, "weight": 1,
+                    "scorer": "exact",
+                }],
+            },
+            "incumbent": {
+                "split": "evolve", "evaluation_id": "evolve-h0",
+                "candidate_id": "H0", "aggregate": {"score": 0.0},
+                "trials": [{
+                    "task_id": "task-a", "repetition": 0,
+                    "reward": 0, "weight": 1,
+                    "trial_result_ref": {"resource_id": "trace-a"},
+                    "request": {"raw_task_input": {
+                        "raw": incumbent_raw_marker}},
+                    "result": {"execution_trace": incumbent_marker},
+                }],
+                "source_files": [{"content": incumbent_marker}],
+            },
         }),
         selection=selection, llm_input_port=analyst_port,
         digest_runner=digest_runner)
@@ -285,6 +311,27 @@ def test_analyst_digest_many_uses_independent_restricted_digester(tmp_path):
     assert [row["status"] for row in digests] == ["submitted", "unknown_task"]
     assert digests[0]["digest"] == "The trace shows VALUE is stale."
     assert len(child_ports) == 1
+    analyst_requests = json.dumps(analyst_port.requests, sort_keys=True)
+    assert trace_marker not in analyst_requests
+    assert incumbent_marker not in analyst_requests
+    assert incumbent_raw_marker not in analyst_requests
+    assert manifest_marker not in analyst_requests
+    initial_visible = json.loads(
+        analyst_port.requests[0]["messages"][1]["content"])
+    assert initial_visible["traces"] == [{
+        "group": "failure", "reward": 0,
+        "task_id": "task-a", "trace_ref": "trace-a",
+    }]
+    assert initial_visible["incumbent"]["trials"] == [{
+        "repetition": 0, "reward": 0, "task_id": "task-a",
+        "trial_result_ref": {"resource_id": "trace-a"}, "weight": 1,
+    }]
+    assert initial_visible["evolve_manifest"] == {
+        "manifest_id": "evolve", "split": "evolve",
+        "tasks": [{"scorer": "exact", "task_id": "task-a", "weight": 1}],
+    }
+    assert "The trace shows VALUE is stale." in analyst_requests
+    assert trace_marker in json.dumps(child_ports[0].requests, sort_keys=True)
     assert all(row["tools"] == tool_catalog("digester")
                for row in child_ports[0].requests)
     assert "rrsi_edit_source" not in {

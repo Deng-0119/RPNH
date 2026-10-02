@@ -292,6 +292,17 @@ def _validate_provider_messages(messages: object) -> list[dict[str, Any]]:
     return normalized
 
 
+def _build_and_validate_messages(build_messages, raw: object) -> list[dict[str, Any]]:
+    """Evaluate the restricted candidate and classify its own runtime defect."""
+    try:
+        messages = build_messages(raw)
+    except TypeError as exc:
+        raise FormalPolicyContractError(
+            "formal policy build_messages(raw) could not evaluate the frozen input: "
+            f"{type(exc).__name__}: {exc}") from exc
+    return _validate_provider_messages(messages)
+
+
 def _materialize_and_build(request: Mapping[str, Any], run_root: Path) -> tuple[list[dict[str, Any]], str]:
     for source in request["source_files"]:
         relative = _normal_relative_path(source["path"])
@@ -305,8 +316,9 @@ def _materialize_and_build(request: Mapping[str, Any], run_root: Path) -> tuple[
     if not policy_path.is_file() or not policy_path.is_relative_to(run_root):
         raise ValueError("formal policy.py was not materialized under the run root")
     build_messages = _restricted_build_messages(policy_path)
-    messages = build_messages(request["raw_task_input"])
-    return _validate_provider_messages(messages), str(policy_path)
+    messages = _build_and_validate_messages(
+        build_messages, request["raw_task_input"])
+    return messages, str(policy_path)
 
 
 def _lower_policy(_config: Mapping[str, Any], context: BindingContext) -> PNFragment:

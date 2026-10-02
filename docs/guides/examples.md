@@ -34,7 +34,7 @@ them instead of being silently relabelled as current execution.
 | The same real semantic task through each host | Example 5, installed task | Authorized profile |
 | A real clinical document/data packet | Example 6, JB steering packet | Authorized profile |
 | A real numerical optimal-control task | Example 7, 3-DOF powered descent | Authorized profile |
-| Recursive role evolution with independent child Registries | Example 8, RRSI v0.6 application | Authorized profile |
+| Two-round RRSI Policy evolution with independent child Registries | Example 8, RRSI v0.6 application | Authorized profile |
 | A public business-workflow benchmark with retained task scores | AutomationBench example | Offline result inspection; authorized profile for new runs |
 
 ## Prerequisites

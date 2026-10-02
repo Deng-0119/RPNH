@@ -15,7 +15,7 @@
 | 真实临床文档／数据 packet | [JB steering packet](jb_steering_packet/README_ZH.md) | ![JB workflow](jb_steering_packet/assets/jb-steering-petrinet.png) | 用户自有精确真实 profile |
 | 真实数值最优控制任务 | [3-DOF 动力下降](three_dof_powered_descent/README_ZH.md) | ![3-DOF workflow](three_dof_powered_descent/assets/three-dof-petrinet.png) | 用户自有精确真实 profile |
 | Office benchmark 接入与评分结果 | [HarnessAudit Office](harnessaudit_office/README_ZH.md) | 查看用户生成运行的命令；未归档截图 | 离线查看成绩；显式配置后执行／评分 |
-| 独立 child run 驱动的递归角色演化 | [RRSI v0.6 application](rrsi_v06/README_ZH.md) | 查看用户生成 child Registry 的命令；未归档截图 | 用户自有精确真实 profile |
+| 独立 child run 驱动的 RRSI 两轮 Policy 演化 | [RRSI v0.6 application](rrsi_v06/README_ZH.md) | 查看用户生成 child Registry 的命令；未归档截图 | 用户自有精确真实 profile |
 | 公开业务 workflow benchmark 与逐题成绩 | [AutomationBench](automationbench/README_ZH.md) | 查看用户生成运行的命令；未归档截图 | 离线查看保留结果；实时执行需要已授权 profile |
 
 每个可运行 workflow 都会创建真实 Registry，可用

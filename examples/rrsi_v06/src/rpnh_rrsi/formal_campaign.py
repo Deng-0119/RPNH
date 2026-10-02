@@ -16,8 +16,8 @@ from typing import Any, Callable, Mapping
 from .formal_observation import ObservedInputPort, usage_summary
 from .formal_policy import (
     FormalPolicyContractError,
+    _build_and_validate_messages,
     _restricted_build_messages,
-    _validate_provider_messages,
     run_policy_trial,
 )
 from .formal_protocol import (
@@ -299,7 +299,8 @@ def _smoke(run_dir: Path, manifest: Mapping[str, Any],
                 "error": f"{type(exc).__name__}: {exc}"}
     for task in protocol.evolve.tasks:
         try:
-            _validate_provider_messages(build_messages(_json(task.raw_input)))
+            _build_and_validate_messages(
+                build_messages, _json(task.raw_input))
         except FormalPolicyContractError as exc:
             return {"passed": False,
                     "check": "python_compile_import_build_messages_evolve_inputs/v1",
@@ -553,6 +554,7 @@ def run_formal_campaign(*, run_dir: Path, protocol, selection, llm_input_port=No
                                                        None, None, None, None))
                 round_decisions.append({"round": round_index, "candidate_id": candidate_id,
                                         "outcome": "smoke_fail", "smoke": smoke,
+                                        "critic_calls": 1, "candidate_trials": 0,
                                         "selected_id": incumbent_id, "adopted": False})
                 continue
             candidate_sources = [{"path": item["path"], "content": item["after"], "mode": item["mode"],

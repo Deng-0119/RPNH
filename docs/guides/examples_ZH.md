@@ -32,7 +32,7 @@ PetriNet 投影。脚本化模型只是确定性协议替身，不是语言模�
 | 通过不同宿主执行同一真实语义任务 | 案例 5，安装版任务 | 已授权 profile |
 | 真实临床文档／数据 packet | 案例 6，JB steering packet | 已授权 profile |
 | 真实数值最优控制任务 | 案例 7，3-DOF 动力下降 | 已授权 profile |
-| 独立 child Registry 驱动的递归角色演化 | 案例 8，RRSI v0.6 application | 已授权 profile |
+| 独立 child Registry 驱动的 RRSI 两轮 Policy 演化 | 案例 8，RRSI v0.6 application | 已授权 profile |
 | 带保留逐题成绩的公开业务 workflow benchmark | AutomationBench 示例 | 离线查看结果；新运行需要已授权 profile |
 
 ## 前置条件
