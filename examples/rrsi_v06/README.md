@@ -8,6 +8,13 @@ RPNH Registry and PetriNet runtime. It does not add a second harness, change
 Critic, and Policy occurrences are independent RPNH child runs with their own
 Registry evidence.
 
+The project objective is framework-level feasibility: demonstrate that a
+state-of-the-art RSI design, represented here by the public RRSI method, can be
+implemented and operated normally as an application on the current RPNH
+harness. "State of the art" qualifies the RSI framework being implemented; it
+does not turn this local fixture into a reproduction of the paper's benchmark
+scores.
+
 The checked-in timeout fixture demonstrates the application and selection
 mechanics. It is not an official Google RRSI benchmark domain and is not a
 reproduction of the paper's reported results. The official source and domain

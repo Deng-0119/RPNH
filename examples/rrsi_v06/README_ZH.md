@@ -7,6 +7,10 @@ application。它不增加第二套 harness，不修改 `cpn/`，也不绑定特
 Analyst、Digester、Proposer、Critic 与 Policy occurrence 都是独立的 RPNH child run，
 各自保留 Registry 证据。
 
+本项目的目标是验证框架级可行性：以公开 RRSI 方法代表当前先进的 RSI 框架，证明它能够
+作为 application 在当前 RPNH harness 上实现并正常运行。“先进/SOTA”修饰的是所实现的
+RSI 框架，不表示这个本地 fixture 已复现论文 benchmark 分数。
+
 仓库内的 timeout fixture 用于演示 application 与选择机制；它不是 Google RRSI 的官方
 benchmark domain，也不复现论文报告结果。官方源码与 domain adapter 已公开在
 [`google-research/rrsi`](https://github.com/google-research/rrsi)，其外部 benchmark 依赖

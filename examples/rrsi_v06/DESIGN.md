@@ -33,6 +33,12 @@ Policy child runs.
 
 ## Method scope
 
+The acceptance target is framework-level: the public RRSI role loop,
+independent evaluations, evidence flow, and score/cost selection can be
+implemented and used on the current RPNH harness. This establishes RPNH
+feasibility for a state-of-the-art RSI framework, not parity with the paper's
+reported benchmark performance.
+
 The selection implementation follows the public RRSI Algorithm 2 cost rule and
 uses a deterministic bootstrap with seed 7 and 2,000 repetitions for this local
 fixture. The local coefficients, task manifests, source fixture, gate, and smoke

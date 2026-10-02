@@ -27,6 +27,10 @@ child run 中评估。
 
 ## 方法范围
 
+验收目标位于框架层：公开 RRSI 的角色循环、独立评估、证据流与分数/成本选择可以在当前
+RPNH harness 上实现并正常使用。这证明 RPNH 能承载先进的 RSI 框架，不等于达到或复现论文
+报告的 benchmark 性能。
+
 选择实现遵循公开 RRSI Algorithm 2 的成本规则；本地 fixture 的 bootstrap 固定 seed 7、
 2,000 次。本地系数、task manifest、source fixture、gate 和 smoke check 是示例配置，不是
 论文官方 domain 设置。

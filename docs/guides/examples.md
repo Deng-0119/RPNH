@@ -6,7 +6,7 @@ metadata:
   audience: user-and-developer
   language: en
   counterpart: examples_ZH.md
-  revision: "2026-10-02.1"
+  revision: "2026-10-02.2"
   status: current-instructions-with-dated-evidence
   basis: "current main commands; deterministic runs and dated authorized live evidence explicitly separated"
 ---
@@ -341,6 +341,9 @@ This provider-neutral application runs Analyst, Digester, Proposer, Critic and
 Policy occurrences as independent RPNH child Registries. The checked-in timeout
 fixture exercises a frozen two-round local protocol and the public RRSI
 selection rule; it is not an official paper benchmark domain or result.
+Its framework-level purpose is to demonstrate that a state-of-the-art RSI
+design can be implemented and operated on the current RPNH harness; it does not
+claim reproduction of the paper's reported benchmark scores.
 
 The example contains no execution profile or archived run. Its offline tests
 use scripted input ports; a real campaign requires a separately authorized,
