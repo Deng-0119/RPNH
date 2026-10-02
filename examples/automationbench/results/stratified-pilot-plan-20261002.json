@@ -1,0 +1,413 @@
+{
+  "all_task_breadth_counts": {
+    "broad": 180,
+    "focused": 153,
+    "standard": 267
+  },
+  "created_at": "2026-10-02T09:37:47.609142+00:00",
+  "domain_counts": {
+    "finance": 100,
+    "hr": 100,
+    "marketing": 100,
+    "operations": 100,
+    "sales": 100,
+    "support": 100
+  },
+  "eligibility": {
+    "eligible_count": 580,
+    "excluded_chatgpt_business_service_count": 15,
+    "excluded_chatgpt_business_service_task_ids": [
+      "operations-0046",
+      "operations-0051",
+      "sales-0051",
+      "sales-0052",
+      "sales-0053",
+      "sales-0056",
+      "sales-0057",
+      "sales-0072",
+      "sales-0074",
+      "sales-0075",
+      "sales-0076",
+      "sales-0077",
+      "sales-0092",
+      "sales-0093",
+      "sales-0094"
+    ],
+    "excluded_prior_attempt_count": 5,
+    "excluded_prior_attempt_task_ids": [
+      "operations-0022",
+      "sales-0003",
+      "sales-0009",
+      "sales-0014",
+      "sales-0078"
+    ]
+  },
+  "execution_policy": {
+    "continue_after_scored_task_failure": true,
+    "executor_profile": "current local default (expected deepseek-v4-pro)",
+    "full_600_claimed": false,
+    "one_fresh_attempt_per_selected_task": true,
+    "stop_after_infrastructure_or_configuration_failure": true
+  },
+  "integration_breadth_definition": {
+    "broad": "5-8 allowed business services",
+    "focused": "2-3 allowed business services",
+    "standard": "4 allowed business services"
+  },
+  "sampling": {
+    "cell_eligible_counts": {
+      "finance:broad": 7,
+      "finance:focused": 45,
+      "finance:standard": 48,
+      "hr:broad": 21,
+      "hr:focused": 20,
+      "hr:standard": 59,
+      "marketing:broad": 9,
+      "marketing:focused": 41,
+      "marketing:standard": 50,
+      "operations:broad": 42,
+      "operations:focused": 5,
+      "operations:standard": 50,
+      "sales:broad": 27,
+      "sales:focused": 30,
+      "sales:standard": 26,
+      "support:broad": 61,
+      "support:focused": 6,
+      "support:standard": 33
+    },
+    "rule": "Within every domain x integration-breadth cell, select the eligible task with the lexicographically smallest SHA-256(seed:task_id).",
+    "sample_count": 18,
+    "score_blind": true,
+    "seed": "rpnh-automationbench-stratified-pilot-20261002-v1",
+    "selected_workflow_family_counts": {
+      "communication_and_outreach": 3,
+      "content_and_campaigns": 1,
+      "financial_transactions": 3,
+      "multi_system_orchestration": 4,
+      "record_and_case_lifecycle": 6,
+      "scheduling_and_events": 1
+    }
+  },
+  "schema": "rpnh-ab-local/stratified-pilot-plan/v1",
+  "selected_tasks": [
+    {
+      "assertion_count": 4,
+      "domain": "finance",
+      "integration_breadth": "focused",
+      "run_root_name": "sp01",
+      "sample_index": 1,
+      "service_count": 3,
+      "services": [
+        "gmail",
+        "google_drive",
+        "google_sheets"
+      ],
+      "task_id": "finance-0019",
+      "task_name": "finance.dept_expense_rollup",
+      "workflow_family": "financial_transactions"
+    },
+    {
+      "assertion_count": 11,
+      "domain": "finance",
+      "integration_breadth": "standard",
+      "run_root_name": "sp02",
+      "sample_index": 2,
+      "service_count": 4,
+      "services": [
+        "gmail",
+        "google_drive",
+        "google_sheets",
+        "quickbooks"
+      ],
+      "task_id": "finance-0015",
+      "task_name": "finance.payment_reconciliation",
+      "workflow_family": "financial_transactions"
+    },
+    {
+      "assertion_count": 12,
+      "domain": "finance",
+      "integration_breadth": "broad",
+      "run_root_name": "sp03",
+      "sample_index": 3,
+      "service_count": 5,
+      "services": [
+        "gmail",
+        "google_drive",
+        "google_sheets",
+        "quickbooks",
+        "slack"
+      ],
+      "task_id": "finance-0076",
+      "task_name": "finance.qb_void_stale_invoices",
+      "workflow_family": "financial_transactions"
+    },
+    {
+      "assertion_count": 8,
+      "domain": "hr",
+      "integration_breadth": "focused",
+      "run_root_name": "sp04",
+      "sample_index": 4,
+      "service_count": 3,
+      "services": [
+        "gmail",
+        "google_drive",
+        "google_sheets"
+      ],
+      "task_id": "hr-0009",
+      "task_name": "hr.candidate_rejection_followup",
+      "workflow_family": "communication_and_outreach"
+    },
+    {
+      "assertion_count": 8,
+      "domain": "hr",
+      "integration_breadth": "standard",
+      "run_root_name": "sp05",
+      "sample_index": 5,
+      "service_count": 4,
+      "services": [
+        "airtable",
+        "gmail",
+        "google_drive",
+        "google_sheets"
+      ],
+      "task_id": "hr-0035",
+      "task_name": "hr.airtable_recruitment_analytics",
+      "workflow_family": "record_and_case_lifecycle"
+    },
+    {
+      "assertion_count": 9,
+      "domain": "hr",
+      "integration_breadth": "broad",
+      "run_root_name": "sp06",
+      "sample_index": 6,
+      "service_count": 5,
+      "services": [
+        "gmail",
+        "google_drive",
+        "google_sheets",
+        "jira",
+        "slack"
+      ],
+      "task_id": "hr-0072",
+      "task_name": "hr.equipment_provisioning",
+      "workflow_family": "multi_system_orchestration"
+    },
+    {
+      "assertion_count": 28,
+      "domain": "marketing",
+      "integration_breadth": "focused",
+      "run_root_name": "sp07",
+      "sample_index": 7,
+      "service_count": 3,
+      "services": [
+        "gmail",
+        "hubspot",
+        "slack"
+      ],
+      "task_id": "marketing-0083",
+      "task_name": "marketing.app_review_triage",
+      "workflow_family": "record_and_case_lifecycle"
+    },
+    {
+      "assertion_count": 22,
+      "domain": "marketing",
+      "integration_breadth": "standard",
+      "run_root_name": "sp08",
+      "sample_index": 8,
+      "service_count": 4,
+      "services": [
+        "gmail",
+        "google_drive",
+        "google_sheets",
+        "slack"
+      ],
+      "task_id": "marketing-0043",
+      "task_name": "marketing.content_repurpose",
+      "workflow_family": "content_and_campaigns"
+    },
+    {
+      "assertion_count": 13,
+      "domain": "marketing",
+      "integration_breadth": "broad",
+      "run_root_name": "sp09",
+      "sample_index": 9,
+      "service_count": 5,
+      "services": [
+        "facebook_pages",
+        "gmail",
+        "google_drive",
+        "google_sheets",
+        "slack"
+      ],
+      "task_id": "marketing-0086",
+      "task_name": "marketing.product_launch_channel_plan",
+      "workflow_family": "multi_system_orchestration"
+    },
+    {
+      "assertion_count": 9,
+      "domain": "operations",
+      "integration_breadth": "focused",
+      "run_root_name": "sp10",
+      "sample_index": 10,
+      "service_count": 2,
+      "services": [
+        "gmail",
+        "trello"
+      ],
+      "task_id": "operations-0009",
+      "task_name": "operations.trello_vendor_hold_email",
+      "workflow_family": "communication_and_outreach"
+    },
+    {
+      "assertion_count": 20,
+      "domain": "operations",
+      "integration_breadth": "standard",
+      "run_root_name": "sp11",
+      "sample_index": 11,
+      "service_count": 4,
+      "services": [
+        "gmail",
+        "google_drive",
+        "google_sheets",
+        "hubspot"
+      ],
+      "task_id": "operations-0047",
+      "task_name": "operations.hubspot_lead_qualification",
+      "workflow_family": "record_and_case_lifecycle"
+    },
+    {
+      "assertion_count": 10,
+      "domain": "operations",
+      "integration_breadth": "broad",
+      "run_root_name": "sp12",
+      "sample_index": 12,
+      "service_count": 6,
+      "services": [
+        "confluence",
+        "gmail",
+        "google_drive",
+        "google_sheets",
+        "jira",
+        "twilio"
+      ],
+      "task_id": "operations-0028",
+      "task_name": "operations.twilio_afterhours_incident",
+      "workflow_family": "multi_system_orchestration"
+    },
+    {
+      "assertion_count": 17,
+      "domain": "sales",
+      "integration_breadth": "focused",
+      "run_root_name": "sp13",
+      "sample_index": 13,
+      "service_count": 3,
+      "services": [
+        "google_drive",
+        "google_sheets",
+        "salesforce"
+      ],
+      "task_id": "sales-0002",
+      "task_name": "sales.negative_selection",
+      "workflow_family": "record_and_case_lifecycle"
+    },
+    {
+      "assertion_count": 11,
+      "domain": "sales",
+      "integration_breadth": "standard",
+      "run_root_name": "sp14",
+      "sample_index": 14,
+      "service_count": 4,
+      "services": [
+        "calendly",
+        "gmail",
+        "google_calendar",
+        "salesforce"
+      ],
+      "task_id": "sales-0034",
+      "task_name": "sales.calendly_reschedule_chain",
+      "workflow_family": "scheduling_and_events"
+    },
+    {
+      "assertion_count": 24,
+      "domain": "sales",
+      "integration_breadth": "broad",
+      "run_root_name": "sp15",
+      "sample_index": 15,
+      "service_count": 5,
+      "services": [
+        "gmail",
+        "google_drive",
+        "google_sheets",
+        "linkedin",
+        "salesforce"
+      ],
+      "task_id": "sales-0065",
+      "task_name": "sales.competitive_displacement_outreach",
+      "workflow_family": "communication_and_outreach"
+    },
+    {
+      "assertion_count": 37,
+      "domain": "support",
+      "integration_breadth": "focused",
+      "run_root_name": "sp16",
+      "sample_index": 16,
+      "service_count": 3,
+      "services": [
+        "google_drive",
+        "google_sheets",
+        "gorgias"
+      ],
+      "task_id": "support-0058",
+      "task_name": "support.gorgias_channel_consolidation",
+      "workflow_family": "record_and_case_lifecycle"
+    },
+    {
+      "assertion_count": 30,
+      "domain": "support",
+      "integration_breadth": "standard",
+      "run_root_name": "sp17",
+      "sample_index": 17,
+      "service_count": 4,
+      "services": [
+        "google_drive",
+        "google_sheets",
+        "slack",
+        "zendesk"
+      ],
+      "task_id": "support-0041",
+      "task_name": "support.zendesk_gdpr_purge",
+      "workflow_family": "record_and_case_lifecycle"
+    },
+    {
+      "assertion_count": 30,
+      "domain": "support",
+      "integration_breadth": "broad",
+      "run_root_name": "sp18",
+      "sample_index": 18,
+      "service_count": 7,
+      "services": [
+        "gmail",
+        "google_drive",
+        "google_sheets",
+        "helpscout",
+        "hubspot",
+        "salesforce",
+        "slack"
+      ],
+      "task_id": "support-0032",
+      "task_name": "support.helpscout_hubspot_deal_alerts",
+      "workflow_family": "multi_system_orchestration"
+    }
+  ],
+  "source_task_count": 600,
+  "split": "public",
+  "workflow_family_counts": {
+    "analysis_and_reconciliation": 54,
+    "communication_and_outreach": 27,
+    "content_and_campaigns": 29,
+    "financial_transactions": 61,
+    "multi_system_orchestration": 101,
+    "record_and_case_lifecycle": 249,
+    "scheduling_and_events": 79
+  }
+}

@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "rpnh-automationbench"
+version = "0.2.0"
+description = "RPNH native-agent adapter for the AutomationBench public task set"
+requires-python = ">=3.13"
+dependencies = ["jsonschema>=4.20,<5"]
+
+[project.optional-dependencies]
+test = ["pytest>=8,<10"]
+
+[project.scripts]
+rpnh-ab = "rpnh_ab.cli:main"
+
+[project.entry-points."rpnh.plugins"]
+ab_api = "rpnh_ab.plugin:factory"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"
+markers = ["integration: requires the real pinned upstream and an installed RPNH"]

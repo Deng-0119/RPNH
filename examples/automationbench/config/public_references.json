@@ -1,0 +1,27 @@
+{
+  "schema": "rpnh-ab/public-references/v2",
+  "observed_on": "2026-10-02",
+  "source": "zapier/AutomationBench README at the pinned source commit",
+  "source_url": "https://github.com/zapier/AutomationBench/blob/4a8e1061254004d9dac807054eed33fad7d1ff14/README.md",
+  "source_tree_commit": "4a8e1061254004d9dac807054eed33fad7d1ff14",
+  "reported_run_commit": null,
+  "dataset": "AutomationBench public 600",
+  "metric": "task_completed_correctly mean / strict pass rate",
+  "rows": [
+    {"model": "Claude Opus 5", "effort": "max", "pass_rate": 0.5030},
+    {"model": "Kimi K3", "effort": "max", "pass_rate": 0.4667},
+    {"model": "Claude Fable 5", "effort": "max", "pass_rate": 0.4617},
+    {"model": "GPT-5.6 Sol", "effort": "max", "pass_rate": 0.4583},
+    {"model": "Gemini 3.6 Flash", "effort": "high", "pass_rate": 0.4500},
+    {"model": "Claude Opus 4.8", "effort": "max", "pass_rate": 0.4100},
+    {"model": "Gemini 3.5 Flash", "effort": "high", "pass_rate": 0.3833},
+    {"model": "GPT-5.6 Terra", "effort": "max", "pass_rate": 0.3717},
+    {"model": "Claude Sonnet 5", "effort": "max", "pass_rate": 0.3467},
+    {"model": "GLM 5.2", "effort": "max", "pass_rate": 0.2617}
+  ],
+  "published_per_task_records_in_pinned_tree": false,
+  "source_internal_tool_model_setup": "not fully specified in published rows",
+  "local_executor_label_in_table": false,
+  "comparison": "descriptive only; not a matched control",
+  "exclude": "private held-out leaderboard results"
+}

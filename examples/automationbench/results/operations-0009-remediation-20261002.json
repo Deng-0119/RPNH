@@ -1,0 +1,19 @@
+{
+  "actual_model_calls": 11,
+  "admitted": true,
+  "at": "2026-10-02T12:18:33.299011+00:00",
+  "benchmark_task_success": true,
+  "execution_status": "host_terminal",
+  "full_batch_claimed": false,
+  "host_quiescent": true,
+  "infrastructure_success": true,
+  "normalization_events": 0,
+  "partial_credit": 1.0,
+  "schema": "rpnh-ab-local/single-result/v1",
+  "score_status": "scored",
+  "successful_tool_dispatches": 26,
+  "task_completed_correctly": 1.0,
+  "task_id": "operations-0009",
+  "task_name": "operations.trello_vendor_hold_email",
+  "world_owner_quiescent": true
+}

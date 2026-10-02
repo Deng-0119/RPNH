@@ -1,12 +1,12 @@
 ---
 name: rpnh-examples
-description: "Run progressive offline examples and one installed cross-host live task."
+description: "Run progressive offline examples, one installed cross-host task, and retained benchmark examples."
 metadata:
   document-kind: tutorial
   audience: user-and-developer
   language: en
   counterpart: examples_ZH.md
-  revision: "2026-10-02.2"
+  revision: "2026-10-02.3"
   status: current-instructions-with-dated-evidence
   basis: "current main commands; deterministic runs and dated authorized live evidence explicitly separated"
 ---
@@ -35,6 +35,7 @@ them instead of being silently relabelled as current execution.
 | A real clinical document/data packet | Example 6, JB steering packet | Authorized profile |
 | A real numerical optimal-control task | Example 7, 3-DOF powered descent | Authorized profile |
 | Recursive role evolution with independent child Registries | Example 8, RRSI v0.6 application | Authorized profile |
+| A public business-workflow benchmark with retained task scores | AutomationBench example | Offline result inspection; authorized profile for new runs |
 
 ## Prerequisites
 
@@ -349,6 +350,26 @@ The example contains no execution profile or archived run. Its offline tests
 use scripted input ports; a real campaign requires a separately authorized,
 user-owned execution profile. Follow the complete
 [RRSI application guide](../../examples/rrsi_v06/README.md).
+
+## Benchmark example: AutomationBench public workflows
+
+The AutomationBench example connects one native RPNH actor to the pinned
+upstream's three API tools and simulated business worlds. Its checked-in,
+score-blind 18-task pilot covers six domains and three integration-width
+strata. Strict first attempts produced 8/18 complete tasks, 17/18 scored
+infrastructure closures, 437 model calls and 1,081 successful tool dispatches.
+
+Inspect the retained result without a provider call:
+
+```bash
+python -I examples/automationbench/example.py results
+```
+
+The example includes task-level scores, the separate remediation record, a
+descriptive comparison with published public-600 aggregates, and the native
+adapter. It does not claim a full 600-task score or a matched leaderboard
+comparison. Follow the complete
+[AutomationBench guide](../../examples/automationbench/README.md).
 
 ## What to inspect and change
 

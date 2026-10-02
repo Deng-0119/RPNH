@@ -1,0 +1,28 @@
+{
+  "schema": "rpnh-ab/selection-spec/v2",
+  "status": "provider-neutral template; not the retained result manifest",
+  "upstream_repository": "zapier/AutomationBench",
+  "upstream_commit": "4a8e1061254004d9dac807054eed33fad7d1ff14",
+  "upstream_package_version": "1.0.6",
+  "rpnh_repository": "Deng-0119/RPNH",
+  "rpnh_reviewed_commit": "1da3648c401a1cecd323530f75181ad98af6d574",
+  "split": "public",
+  "domains": ["sales", "marketing", "operations", "support", "finance", "hr"],
+  "tasks_per_domain": 100,
+  "expected_tasks": 600,
+  "repetitions": 1,
+  "ordering": "declared domain order then native per-domain loader order",
+  "toolset": "api",
+  "tool_names": ["api_search", "api_fetch", "base64_encode"],
+  "executor": "user-owned exact authorized RPNH execution profile",
+  "judge": "no added LLM judge; original programmatic state rubric",
+  "cumulative_caps": {
+    "model_calls": null,
+    "tool_calls": null,
+    "task_seconds": null,
+    "amount": null
+  },
+  "dataset_vendored": false,
+  "resolved_manifest_generation": "rpnh-ab prepare",
+  "retained_result_manifest": "../results/stratified-pilot-plan-20261002.json"
+}

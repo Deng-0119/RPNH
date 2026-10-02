@@ -1,12 +1,12 @@
 ---
 name: rpnh-examples
-description: "运行递进的离线案例，以及一个安装版跨宿主真实任务。"
+description: "运行递进的离线案例、一个安装版跨宿主任务和保留的 benchmark 示例。"
 metadata:
   document-kind: tutorial
   audience: user-and-developer
   language: zh-CN
   counterpart: examples.md
-  revision: "2026-10-02.2"
+  revision: "2026-10-02.3"
   status: current-instructions-with-dated-evidence
   basis: "current main commands; deterministic runs and dated authorized live evidence explicitly separated"
 ---
@@ -33,6 +33,7 @@ PetriNet 投影。脚本化模型只是确定性协议替身，不是语言模�
 | 真实临床文档／数据 packet | 案例 6，JB steering packet | 已授权 profile |
 | 真实数值最优控制任务 | 案例 7，3-DOF 动力下降 | 已授权 profile |
 | 独立 child Registry 驱动的递归角色演化 | 案例 8，RRSI v0.6 application | 已授权 profile |
+| 带保留逐题成绩的公开业务 workflow benchmark | AutomationBench 示例 | 离线查看结果；新运行需要已授权 profile |
 
 ## 前置条件
 
@@ -309,6 +310,22 @@ occurrence 作为彼此独立的 RPNH child Registry 运行。仓库内的 timeo
 示例不包含 execution profile 或历史 run。离线测试使用脚本化 input port；真实 campaign
 要求用户另行授权并提供自己的 execution profile。完整步骤见
 [RRSI application 指南](../../examples/rrsi_v06/README_ZH.md)。
+
+## Benchmark 示例：AutomationBench 公开业务任务
+
+AutomationBench example 将一个 RPNH native actor 接入固定上游的三项 API 工具和模拟业务 world。
+仓库内保留的 score-blind 18 题 pilot 覆盖六个业务域与三种集成宽度。严格首轮为 8/18 满分、
+17/18 基础设施闭环并评分，共 437 次模型调用和 1,081 次成功工具分派。
+
+以下命令不调用 provider，可直接查看保留结果：
+
+```bash
+python -I examples/automationbench/example.py results
+```
+
+example 包含逐题成绩、独立修复复验、与原始 public-600 汇总的描述性比较及 native 适配器；
+它不声称完成 600 题或形成同条件榜单对照。完整说明见
+[AutomationBench 指南](../../examples/automationbench/README_ZH.md)。
 
 ## 查看与修改
 

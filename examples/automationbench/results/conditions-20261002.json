@@ -1,0 +1,40 @@
+{
+  "schema": "rpnh-ab/published-pilot-condition/v1",
+  "date": "2026-10-02",
+  "scope": "score-blind 18-task public pilot; not the public-600 score",
+  "upstream": {
+    "repository": "zapier/AutomationBench",
+    "commit": "4a8e1061254004d9dac807054eed33fad7d1ff14",
+    "package_version": "1.0.6",
+    "split": "public",
+    "toolset": "api",
+    "business_services": "local AutomationBench simulated worlds"
+  },
+  "rpnh": {
+    "first_eight_attempts_commit": "3492ba2fb50e40173afebae627138afea0bc2f24",
+    "remaining_attempts_and_remediation_commit": "1da3648c401a1cecd323530f75181ad98af6d574",
+    "execution_core_cpn_tree_diff": false,
+    "host": "native WSL",
+    "unix_socket_verified": true
+  },
+  "executor": {
+    "model_label": "deepseek-v4-pro",
+    "reasoning_effort": null,
+    "provider_label": "volcano",
+    "transport": "https",
+    "execution_profile_included": false,
+    "credential_values_recorded": false
+  },
+  "scoring": {
+    "judge": "none",
+    "rubric": "pinned upstream programmatic end-state assertions",
+    "strict_metric": "task_completed_correctly",
+    "partial_metric": "partial_credit"
+  },
+  "first_attempt_summary": "stratified-pilot-first-attempt-20261002.json",
+  "plan": "stratified-pilot-plan-20261002.json",
+  "remediation": "operations-0009-remediation-20261002.json",
+  "raw_registry_and_provider_evidence_public": false,
+  "full_600_claimed": false,
+  "matched_public_result_comparison_claimed": false
+}
