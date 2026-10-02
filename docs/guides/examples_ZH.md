@@ -6,7 +6,7 @@ metadata:
   audience: user-and-developer
   language: zh-CN
   counterpart: examples.md
-  revision: "2026-09-29.3"
+  revision: "2026-10-02.1"
   status: current-instructions-with-dated-evidence
   basis: "current main commands; deterministic runs and dated authorized live evidence explicitly separated"
 ---
@@ -32,6 +32,7 @@ PetriNet 投影。脚本化模型只是确定性协议替身，不是语言模�
 | 通过不同宿主执行同一真实语义任务 | 案例 5，安装版任务 | 已授权 profile |
 | 真实临床文档／数据 packet | 案例 6，JB steering packet | 已授权 profile |
 | 真实数值最优控制任务 | 案例 7，3-DOF 动力下降 | 已授权 profile |
+| 独立 child Registry 驱动的递归角色演化 | 案例 8，RRSI v0.6 application | 已授权 profile |
 
 ## 前置条件
 
@@ -296,6 +297,16 @@ workflow，也不选择 provider/model。离线聚合分析器在不发布参与
 solver 退出状态本身不够。
 
 完整步骤见 [3-DOF 复现指南](../../examples/three_dof_powered_descent/README_ZH.md)。
+
+## 案例 8：RRSI v0.6 application
+
+这个 provider-neutral application 把 Analyst、Digester、Proposer、Critic 与 Policy
+occurrence 作为彼此独立的 RPNH child Registry 运行。仓库内的 timeout fixture 用于执行
+冻结的两轮本地协议与公开 RRSI 选择规则，不是论文官方 benchmark domain 或论文结果。
+
+示例不包含 execution profile 或历史 run。离线测试使用脚本化 input port；真实 campaign
+要求用户另行授权并提供自己的 execution profile。完整步骤见
+[RRSI application 指南](../../examples/rrsi_v06/README_ZH.md)。
 
 ## 查看与修改
 

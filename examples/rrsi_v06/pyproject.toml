@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "rpnh-rrsi-v06-example"
+version = "0.1.0"
+description = "Provider-neutral RRSI v0.6 application example for RPNH"
+requires-python = ">=3.11"
+license = "MIT"
+license-files = ["LICENSE"]
+dependencies = [
+  "jsonschema>=4.20,<5",
+  "rpnh-harness>=0.1.0rc1,<0.2",
+]
+
+[project.optional-dependencies]
+test = ["pytest>=8,<10"]
+
+[project.scripts]
+rpnh-rrsi = "rpnh_rrsi.formal_cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"

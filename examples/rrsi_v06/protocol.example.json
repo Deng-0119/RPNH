@@ -1,0 +1,95 @@
+{
+  "scope": "formal_rrsi_v06_b0_local/v1",
+  "protocol_id": "rrsi-v06-b0-example",
+  "conformance_profile": "application_petri_conformance/v1",
+  "recovery": "B0",
+  "source_basis": {
+    "official_rrsi_revision": "be50316e1db05914068a973f322770ef08ed7ba1",
+    "official_source": "public_and_reviewed",
+    "official_domain_manifests": "public_and_reviewed",
+    "external_benchmark_assets": "not_required_by_this_local_fixture",
+    "official_method_parameters": "public_but_not_the_local_fixture_configuration",
+    "local_fixture": "frozen_timeout_application_conformance",
+    "reproduction_claim": "not_an_official_paper_benchmark_reproduction"
+  },
+  "execution": {
+    "round_count": 2,
+    "variants_per_round": 1,
+    "repair_rounds": 0,
+    "safe_missing_retry_max": 1
+  },
+  "method": {
+    "repetitions": 1,
+    "calibration_repetitions": 2,
+    "n_fail_traces": 1,
+    "n_success_traces": 1,
+    "history": {"recent": 40, "unmeasured": 4},
+    "attribution": {"tail": 20},
+    "selection": {
+      "beta0": 0.1,
+      "beta1": 1.0,
+      "w_s": 1.0,
+      "w_c": 1.0,
+      "w_n": 0.0
+    },
+    "role_limits": {
+      "Proposer": {"max_generations": 40, "max_edits": 80},
+      "Analyst": {"max_actions": 30},
+      "Digester": {"max_actions": 15, "max_output_tokens": 6000},
+      "Critic": {"max_actions": 3}
+    }
+  },
+  "source_fixture": {
+    "fixture_id": "timeout-policy-formal-v1",
+    "files": [
+      {
+        "path": "policy.py",
+        "mode": 493,
+        "purpose": "policy",
+        "content": "def build_messages(raw):\n    return [{\n        'role': 'system',\n        'content': ('You are the Policy model. Emit only JSON {\\\"timeout\\\": integer}. '\n                    'Interpret raw input as an integer timeout, including zero-padded integers; '\n                    'missing or null input must default 30. Blank input is unsupported and must '\n                    'emit {\\\"timeout\\\": 0}.'),\n    }, {\n        'role': 'user',\n        'content': str(raw),\n    }]\n"
+      },
+      {"path": "agent/__init__.py", "mode": 420, "purpose": "agent_init", "content": ""}
+    ],
+    "editable_paths": ["policy.py"]
+  },
+  "scorer": {
+    "scorer_id": "formal_rrsi_v06_exact_timeout_json/v1",
+    "response_contract": "exact_json_object_only_timeout_integer_equal_expected",
+    "decoding": {
+      "execution_profile": "user_owned_exact_profile",
+      "sampling": "adapter_defined"
+    },
+    "outer_bounds": {"max_llm_attempts": 1, "max_tool_turns": 0},
+    "candidate_may_change": ["policy.py"]
+  },
+  "task_manifests": {
+    "calibration": {
+      "manifest_id": "formal-calibration-v1",
+      "split": "calibration",
+      "tasks": [{"task_id": "calibration-positive", "raw_input": {"raw": "15"}, "expected": 15, "weight": 1, "scorer": "formal_rrsi_v06_exact_timeout_json/v1"}]
+    },
+    "evolve": {
+      "manifest_id": "formal-evolve-v1",
+      "split": "evolve",
+      "tasks": [
+        {"task_id": "evolve-missing", "raw_input": {}, "expected": 30, "weight": 1, "scorer": "formal_rrsi_v06_exact_timeout_json/v1"},
+        {"task_id": "evolve-null", "raw_input": {"raw": null}, "expected": 30, "weight": 1, "scorer": "formal_rrsi_v06_exact_timeout_json/v1"},
+        {"task_id": "evolve-blank", "raw_input": {"raw": ""}, "expected": 30, "weight": 1, "scorer": "formal_rrsi_v06_exact_timeout_json/v1"}
+      ]
+    },
+    "heldout": {
+      "manifest_id": "formal-heldout-v1",
+      "split": "heldout",
+      "tasks": [
+        {"task_id": "heldout-whitespace", "raw_input": {"raw": " \t "}, "expected": 30, "weight": 1, "scorer": "formal_rrsi_v06_exact_timeout_json/v1"},
+        {"task_id": "heldout-positive", "raw_input": {"raw": "15"}, "expected": 15, "weight": 1, "scorer": "formal_rrsi_v06_exact_timeout_json/v1"},
+        {"task_id": "heldout-zero-padded", "raw_input": {"raw": "0007"}, "expected": 7, "weight": 1, "scorer": "formal_rrsi_v06_exact_timeout_json/v1"}
+      ]
+    },
+    "export": {
+      "manifest_id": "formal-export-v1",
+      "split": "export",
+      "tasks": [{"task_id": "export-positive", "raw_input": {"raw": "42"}, "expected": 42, "weight": 1, "scorer": "formal_rrsi_v06_exact_timeout_json/v1"}]
+    }
+  }
+}

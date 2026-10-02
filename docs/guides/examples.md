@@ -6,7 +6,7 @@ metadata:
   audience: user-and-developer
   language: en
   counterpart: examples_ZH.md
-  revision: "2026-09-29.3"
+  revision: "2026-10-02.1"
   status: current-instructions-with-dated-evidence
   basis: "current main commands; deterministic runs and dated authorized live evidence explicitly separated"
 ---
@@ -34,6 +34,7 @@ them instead of being silently relabelled as current execution.
 | The same real semantic task through each host | Example 5, installed task | Authorized profile |
 | A real clinical document/data packet | Example 6, JB steering packet | Authorized profile |
 | A real numerical optimal-control task | Example 7, 3-DOF powered descent | Authorized profile |
+| Recursive role evolution with independent child Registries | Example 8, RRSI v0.6 application | Authorized profile |
 
 ## Prerequisites
 
@@ -333,6 +334,18 @@ the resulting trajectory to satisfy terminal, dynamics and path checks; a
 solver exit status is insufficient.
 
 Follow the complete [3-DOF reproduction guide](../../examples/three_dof_powered_descent/README.md).
+
+## Example 8: RRSI v0.6 application
+
+This provider-neutral application runs Analyst, Digester, Proposer, Critic and
+Policy occurrences as independent RPNH child Registries. The checked-in timeout
+fixture exercises a frozen two-round local protocol and the public RRSI
+selection rule; it is not an official paper benchmark domain or result.
+
+The example contains no execution profile or archived run. Its offline tests
+use scripted input ports; a real campaign requires a separately authorized,
+user-owned execution profile. Follow the complete
+[RRSI application guide](../../examples/rrsi_v06/README.md).
 
 ## What to inspect and change
 

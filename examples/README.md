@@ -15,6 +15,7 @@ Choose an example by the behavior you want to see:
 | Real clinical document/data packet | [JB steering packet](jb_steering_packet/README.md) | ![JB workflow](jb_steering_packet/assets/jb-steering-petrinet.png) | User-owned exact live profile |
 | Real numerical optimal-control task | [3-DOF powered descent](three_dof_powered_descent/README.md) | ![3-DOF workflow](three_dof_powered_descent/assets/three-dof-petrinet.png) | User-owned exact live profile |
 | Office benchmark integration and scored results | [HarnessAudit Office](harnessaudit_office/README.md) | Viewer command for user-generated runs; no archived screenshot | Read results offline; run/score require explicit local profiles |
+| Recursive role evolution with independent child runs | [RRSI v0.6 application](rrsi_v06/README.md) | Viewer command for user-generated child Registries; no archived screenshot | User-owned exact live profile |
 
 Each runnable workflow creates a real Registry that can be opened with
 `rpnh net --run RUN_DIR --view --no-open`. Scripted fixtures exercise the same
