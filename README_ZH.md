@@ -138,7 +138,7 @@ Registry／run 中从用户所选切面追加新的执行代次。详见
 | JB 临床 packet | 公开临床来源、文档／数据分析和 Designer 自主设计图 | [复现 JB](examples/jb_steering_packet/README_ZH.md) |
 | 3-DOF 动力下降 | 数值实现、独立验证和 Designer 自主设计图 | [复现 3-DOF](examples/three_dof_powered_descent/README_ZH.md) |
 | HarnessAudit Office benchmark | 原生团队、登记业务工具、原始评分与完整结果边界 | [Office 示例](examples/harnessaudit_office/README_ZH.md) |
-| AutomationBench 公开业务任务 | 原生 managed tools、冻结模拟 world、逐题 strict 评分与已保留的 18 题 pilot | [AutomationBench 示例](examples/automationbench/README_ZH.md) |
+| AutomationBench 公开业务任务 | 已保留 native 18 题 pilot，以及新增 native/DSH 执行、冻结 cohort 与可审计证据工具 | [AutomationBench 示例](examples/automationbench/README_ZH.md) |
 
 执行案例中的实际 dashboard 图注明其运行来源。Benchmark examples 提供成绩记录与新运行的
 viewer 命令，不宣称已归档运行截图。[完整案例指南](docs/guides/examples_ZH.md)记录计算、文档、串行、并行、长流程和

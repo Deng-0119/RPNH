@@ -51,14 +51,14 @@ DSH CLI 仍是更窄的宿主：它将 `--plugin-config ABSOLUTE_PATH` 与一个
 `--managed-tool NAME=PLUGIN/OPERATION` 同时使用，并且只准入 pure operation。名称的每个
 组成部分均须匹配 `[a-z][a-z0-9_]{0,47}`；这不是任意 DSH 插件或 MCP 挂载。
 
-DSH backend 在通用 SDK 限额之外，额外要求**声明的结果上限不超过 65536 字节（64 KiB）**。SDK 默认值为 1048576 字节，因此在原生插件接口有效的插件，也可能在 DSH worker 启动前被拒绝。两者都不是推荐的业务值：`max_result_bytes` 应由 operation 有界的合法输出推导。当前 demo 约束输入域并声明 1024 字节，高于其最大序列化输出且低于 DSH ceiling。启动参数不能改写插件声明；修订插件时仍须遵守正常版本与精确身份规则。
+DSH backend 使用共享的**16777216 字节（16 MiB）声明结果上限**。SDK 默认值仍是 1048576 字节。两者都不是推荐的业务值：`max_result_bytes` 应由 operation 有界的合法输出推导。当前 demo 约束输入域并声明 1024 字节，高于其最大序列化输出且低于共享 ceiling。启动参数不能改写插件声明；修订插件时仍须遵守正常版本与精确身份规则。
 
 owner-bound 受管调用服务核对调用方 execution、工具身份和参数，并记录 started 以及
 returned、failed 或 outcome-unknown 回执。仍由活动执行者持有的调用不会因并发观察者而被
 改写为未知结果；所有权丢失后，已经 dispatch 却没有持久终态证据的调用需要
 reconciliation，不能自动重试。Registry 中的完整结果与模型可见的有界投影是不同证据；
 保存全文不代表 provider 实际收到了全文。inspector 在 worker 执行前校验参数；DSH 路径还
-将工具声明、最坏结果大小和下一次模型响应纳入整体 2 MiB frame 检查。已经持久记录的插件
+将工具声明、最坏结果大小和下一次模型响应纳入整体 68 MiB frame 检查。已经持久记录的插件
 失败是一条精确关联的 `isError: true` 工具结果，不是成功值。DSH 每个模型响应只支持一次
 有关联的工具调用，再进入下一模型步骤；不隐含支持并行 DSH 工具批次。
 
@@ -68,7 +68,7 @@ reconciliation，不能自动重试。Registry 中的完整结果与模型可见
 ## 适配接口
 Codex 兼容层把客户端交互映射到既有 main-session/control/model-selection 边界；固定版本和不支持的 slash 命令属于实质支持范围。
 
-DSH 中 `createApplication(config)` 创建真实上层宿主、Registry bridge、capability host、projection；`runHeadless(config, task, json)` 执行；`readHistory(config, id)` 仅用 owner client，不构造效果服务；`resumeSession(config, id)` 恢复已存活跃请求。Python `DshBackend` 持有会话 owner。离线数值模式使用精确确定性路由；配置文本和显式受管工具通过 `registered_llm/v1` 使用精确的共享 external-provider 或 local-process selection。请求／响应 frame 上限为 2 MiB；observation 在 products/Success 前仍是候选。
+DSH 中 `createApplication(config)` 创建真实上层宿主、Registry bridge、capability host、projection；`runHeadless(config, task, json)` 执行；`readHistory(config, id)` 仅用 owner client，不构造效果服务；`resumeSession(config, id)` 恢复已存活跃请求。Python `DshBackend` 持有会话 owner。离线数值模式使用精确确定性路由；配置文本和显式受管工具通过 `registered_llm/v1` 使用精确的共享 external-provider 或 local-process selection。请求／响应 frame 上限为 68 MiB。新 session 默认 48 个 module attempt，也可显式选择正整数 `--attempt-budget` 或 `unmetered`；resume 保持已持久化声明。observation 在 products/Success 前仍是候选。
 
 离线与配置 envelope 分别是 `application/rpnh_dsh_envelope/v1`、`/v2`，capability protocol 仍是 `rpnh/dsh/v1`，不代表任意上游/API 兼容。精确输出验证后登记的 completion 可支持有界的“只补结算”恢复；这不使不完整或未知的 provider 响应变得可重放。真实命令与支持边界见[适配指南](../guides/adapters_ZH.md)。
 

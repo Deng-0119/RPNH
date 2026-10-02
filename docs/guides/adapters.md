@@ -100,7 +100,13 @@ arbitrary DSH/MCP tools remain unavailable. Configured mode rejects
 internal v2 envelope may carry an empty `data` array; users do not need to
 supply a numeric snapshot for text requests.
 
-The launcher sends a public profile summary. The configured child Registry records route/model attribution and configuration revision, not endpoint, credential binding or static header values. This is not a guarantee that task text or responses contain no sensitive information: preserve runtime data privately. The entire request/response frame is bounded at 2 MiB. The request, history and selected maximum response must pass the pre-dispatch bound; setting the response cap to 2 MiB alone does not guarantee that the enclosing frame fits. A general profile with a larger `max_response_bytes` remains valid for core RPNH but is not DSH-compatible. Build an explicit user-owned DSH profile for the same provider, credential route and exact model with enough frame headroom; do not silently rewrite the selected profile.
+The launcher sends a public profile summary. The configured child Registry records route/model attribution and configuration revision, not endpoint, credential binding or static header values. This is not a guarantee that task text or responses contain no sensitive information: preserve runtime data privately. The entire request/response frame is bounded at 68 MiB. The request, history and selected maximum response must pass the pre-dispatch bound; setting the response cap to 68 MiB alone does not guarantee that the enclosing frame fits. A general profile with a larger `max_response_bytes` remains valid for core RPNH but is not DSH-compatible. Build an explicit user-owned DSH profile for the same provider, credential route and exact model with enough frame headroom; do not silently rewrite the selected profile.
+
+New DSH sessions default to a 48-attempt module budget. The launcher accepts a
+positive `--attempt-budget` or the explicit value `unmetered`; the latter is
+intended for a known protocol such as the AutomationBench adapter that can
+legitimately exceed 48 model/tool turns. Resume keeps the persisted declaration
+and does not accept a new budget.
 
 A rejection before Registry turn admission is now emitted as an explicit
 headless error and nonzero exit, rather than an empty final message. It still
@@ -123,7 +129,8 @@ checkpoint; recovery validates the archive instead of rescanning the live tree.
 An empty writer-epoch gap is harmless; a later writer fact invalidates the old
 completion. Registration and immutable resume material are checked before a
 new writer opens. Managed tool arguments are schema-checked before execution,
-their declared result limit is capped at 64 KiB, and durable plugin failures
+their declared result limit uses the shared 16 MiB `PluginOperation` ceiling,
+and durable plugin failures
 return as correlated error tool results. The inspector also requires the worst
 declared result plus the next model response to fit before starting a worker.
 Do not erase state, change the selected identity, or wrap the command in a

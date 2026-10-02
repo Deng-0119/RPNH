@@ -34,9 +34,9 @@ metadata:
 | `write_file` 拒绝目录、特殊文件或含 NUL 的路径 | 精确 firing-private 目标和返回的 tool error | 在后续 action 中修正路径。可确定的路径／类型错误会在下级执行子网启动前拒绝；不能编辑 Registry 或把被拒绝写入标为成功。 |
 | 需要从较早 task 切面继续 | `/task ID checkpoints`、当前 owner 状态及所选切面后的外部效果 | 先停止／协调 owner，再执行 `reopen CHECKPOINT [:: REASON]`；不编辑 marking、不复制 Registry、不复用物理 attempt 身份 |
 | resources-only 空图 | 是否真的声明资源节点 | 无资源时有效，不为展示造节点 |
-| DSH 拒绝 provider/model、输入或响应预算 | 离线／配置模式、精确 selection 和整体 2 MiB frame | 保持同一路线和 exact model，但构建显式用户自有 DSH profile，使响应上限为 frame 留出余量；配置工具还需要显式纯 native-plugin allowlist |
+| DSH 拒绝 provider/model、输入或响应预算 | 离线／配置模式、精确 selection 和整体 68 MiB frame | 保持同一路线和 exact model，但构建显式用户自有 DSH profile，使响应上限为 frame 留出余量；配置工具还需要显式纯 native-plugin allowlist |
 | DSH 拒绝受管工具目录 | 绝对路径的 `--plugin-config`、配对的 `--managed-tool NAME=PLUGIN/OPERATION`、唯一小写名称、object 输入 schema 和 pure effect | 修正所选声明／配置，不关闭 guard 或自动挂载任意已安装工具 |
-| `managed DSH tool result limit exceeds 64 KiB` | 所选 operation 声明的 `max_result_bytes`，不是某次实际结果大小 | 根据 operation 的合法输出域声明上限。当前 demo 在约束输入后使用 1 KiB；不能未经分析就照抄 DSH 上限或 SDK 默认值。 |
+| `managed DSH tool result limit exceeds 16 MiB` | 所选 operation 声明的 `max_result_bytes`，不是某次实际结果大小 | 根据 operation 的合法输出域声明上限。当前 demo 在约束输入后使用 1 KiB；不能未经分析就照抄共享上限或 SDK 默认值。 |
 | 工具参数或下一响应预算被拒绝 | 所选输入 schema；工具声明、历史、最坏结果和下一响应 | 执行前修正请求或获准限额；预期结果很小不能覆盖声明的上界 |
 | 有关联的 `isError: true` 工具结果 | 已持久登记的 managed-plugin 失败 receipt | 工具执行失败，模型可以处理该失败；不能改标成功值或盲目重试 |
 | DSH resume 拒绝 stale execution | 精确 completion 事件、原 registration/profile/catalog、writer 历史、effect/workspace 边界 | 使用原 selection 与 allowlist；缺少合格证据不授权重新运行 provider/tool |

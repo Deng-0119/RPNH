@@ -11,6 +11,20 @@ from uuid import uuid4
 from .backend import DshBackend, PROTOCOL, MAX_BYTES
 
 
+def _attempt_budget(value):
+    if value == 'unmetered':
+        return None
+    try:
+        budget = int(value)
+    except ValueError as exc:
+        raise argparse.ArgumentTypeError(
+            'attempt budget must be a positive integer or unmetered') from exc
+    if budget < 1 or str(budget) != value:
+        raise argparse.ArgumentTypeError(
+            'attempt budget must be a positive integer or unmetered')
+    return budget
+
+
 def main():
     p = argparse.ArgumentParser(description='RPNH-backed DSH owner (private stdio)')
     p.add_argument('--root', type=Path, required=True)
@@ -21,6 +35,7 @@ def main():
     mode.add_argument('--execution-path', type=Path)
     p.add_argument('--plugin-config', type=Path)
     p.add_argument('--managed-tool', action='append', default=[])
+    p.add_argument('--attempt-budget', type=_attempt_budget, default=48)
     args = p.parse_args()
     import re
     if not re.fullmatch(r'[A-Za-z0-9_-]{1,100}', args.session):
@@ -92,6 +107,7 @@ def main():
         execution_config_path=args.execution_path,
         plugin_config_path=args.plugin_config,
         managed_tools=(managed_tools if managed_tools else None),
+        attempt_budget=args.attempt_budget,
         offline=(True if args.offline else False))
     threading.Thread(target=reader, daemon=True).start()
     write({'kind':'ready', 'session_id':args.session})

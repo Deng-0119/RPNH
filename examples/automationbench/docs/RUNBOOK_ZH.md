@@ -42,37 +42,82 @@ RPNH_AB_UPSTREAM="$AB_UPSTREAM" \
 会经过 Unix socket 与 Registry，但不调用真实 provider。
 如果系统临时目录对 Unix socket 来说过长，把 `RPNH_AB_TMPDIR` 设为仓库外的短可写目录。
 
-## 4. 准备新条件
+## 4. 选择并检查新条件
 
 `PROFILE` 必须是已经另行授权的 RPNH execution-selection JSON，不是 API key 文件，并且必须留在
 仓库外。
 
+不提供 selection 选项表示全部 600 题 public split；`--split simple` 表示独立 200 题 simple
+split；`--cohort` 表示计划内精确且有序的 task ID。已保留 18 题 plan 可以作为一个*新* condition
+的输入，但不会续接历史 run：
+
 ```bash
-rpnh-ab doctor --upstream "$AB_UPSTREAM" --profile "$PROFILE" --work "$AB_WORK"
-rpnh-ab prepare --upstream "$AB_UPSTREAM" --profile "$PROFILE" --work "$AB_WORK"
+AB_COHORT="$PWD/examples/automationbench/results/stratified-pilot-plan-20261002.json"
+
+rpnh-ab doctor --upstream "$AB_UPSTREAM" --profile "$PROFILE" \
+  --work "$AB_WORK" --cohort "$AB_COHORT"
+rpnh-ab bridge-smoke --upstream "$AB_UPSTREAM" --work "$AB_WORK"
+rpnh-ab prepare --upstream "$AB_UPSTREAM" --profile "$PROFILE" \
+  --work "$AB_WORK" --cohort "$AB_COHORT" --host native
 ```
 
-`doctor` 和 `prepare` 不调用模型。默认 public plan 包含全部 600 题；继续前先检查 `plan.json` 和
-`conditions.json`。
+`doctor`、`bridge-smoke` 和 `prepare` 都不调用模型。`doctor` 会记录所选 plan digest；`run` 会拒绝
+来自另一 selection 的 doctor 记录。继续前检查 `plan.json`、`conditions.json` 和 `doctor.json`。
 
-批次门禁还要求与条件完全一致的 `rpnh-ab/acceptance-manifest/v1`，覆盖 installed runtime、managed
-schema/effect、真实脚本化 host 执行、输出边界、超过 48 次调用的无累计上限 fixture、静止停止和
-world/rubric 对照。不得用单元测试或 startup probe 伪造 passed manifest。当前公开 example 不包含
-权威 manifest producer；该部署绑定记录由 deployment owner 负责生成。上面的 integration test
-提供核心 native 证据，但本身不是 passed manifest。在部署方实现并审查 producer 之前，package 的
-batch `run` 必须保持阻断。
+## 5. 生成 installed-host acceptance
 
-## 5. 实时执行与离线维护
+批次门禁要求绑定 condition 的 `rpnh-ab/acceptance-manifest/v1`。必须经已安装 host 生成，不能复制
+单元测试 fixture：
 
-只有部署方实现自己的受审 manifest producer 后，仍需明确授权和 matching manifest，才能用带
-`--acceptance ... --launch-output ...` 的 `prepare` 生成 launch request，再调用
-`rpnh-ab run ... --config ...`。这些只是接口名称，不是本仓库提供的开箱即用 invocation。实时 run
-可能产生付费外部模型调用。除非修改固定上游（适配器会拒绝），它不会连接生产业务 SaaS 账号。
+```bash
+rpnh-ab accept-host --upstream "$AB_UPSTREAM" --work "$AB_WORK" --host native
+```
 
-`score`、`reproject` 和 `summarize` 只能读取已保留冻结证据。`export` 排除私有 profile、原始
-Registry 数据库和 provider transcript。不要为了让汇总完整而重跑失败任务；修复复验应使用新条件，
-并保留首轮。
+producer 只运行确定性合成 world 与 local-process adapter。七项记录覆盖 installed runtime、managed
+schema/effect、真实 host 执行、结果边界、超过 48 次的无累计上限分派、静止停止和匹配的上游
+world/rubric 行为；真实 provider 与生产业务 API 调用数均为零。门禁会重新解析底层 attempt、
+lifecycle、tool event、score 与 host/Registry 证据；复制标签或通用 proof 文件不能通过。
 
-保留 pilot 使用任务专属 native driver，完整证据留在私有实验归档中；本 example 没有把它冒充成
-通用 batch manifest。仓库内 18 题结果是历史证据；这些命令用于准备新条件，不会自动复现完全
-相同的 provider 结果。
+用完全相同参数再次执行幂等 prepare，把该 manifest 绑定到 launch request：
+
+```bash
+rpnh-ab prepare --upstream "$AB_UPSTREAM" --profile "$PROFILE" \
+  --work "$AB_WORK" --cohort "$AB_COHORT" --host native \
+  --acceptance "$AB_WORK/host-acceptance/acceptance.json" \
+  --launch-output "$AB_WORK/launch.json"
+```
+
+## 6. 实时执行与控制界面
+
+以下命令需要明确授权，并可能产生付费模型调用：
+
+```bash
+rpnh-ab run --upstream "$AB_UPSTREAM" --profile "$PROFILE" \
+  --work "$AB_WORK" --config "$AB_WORK/launch.json"
+```
+
+shell、Basic、Codex 与 OpenCode terminal 都使用同一 CLI，不会改变 benchmark actor。可从另一个
+terminal 执行：
+
+```bash
+rpnh-ab status --work "$AB_WORK"
+rpnh-ab stop --work "$AB_WORK"
+```
+
+若使用可选 DSH 执行宿主，应准备专用固定 checkout，并在两次 `prepare` 与 `accept-host` 中加入
+`--host dsh --dsh-checkout "$DSH_CHECKOUT"`。acceptance 绑定宿主，不能在 native 和 DSH condition
+之间复用。checkout 可以是干净状态，也可以只包含 `integrations/dsh/prepare.sh` 应用的精确幂等
+factory seam；两者规范化为同一个 post-prepare identity，其他任何 tracked change 都会被拒绝。
+
+除非修改固定上游（适配器会拒绝），live run 不会连接生产业务 SaaS 账号。
+
+## 7. 离线证据维护
+
+`score`、`reproject` 和 `summarize` 只能读取已保留冻结证据。lifecycle、task identity、task
+contract、scoring input 或 final world 不再匹配的 score 一律不合格。`export` 包含 normalization
+event 与实际导出字节清单，同时排除私有 profile、原始 Registry 数据库和 provider transcript。
+不要为了让汇总完整而重跑失败任务；修复复验应使用新条件，并保留首轮。
+
+保留 pilot 使用 [`EXPERIMENT_ZH.md`](../EXPERIMENT_ZH.md) 记录的历史 native condition；本
+example 没有把它冒充成新生成的通用 batch manifest。这些命令用于准备新条件，不会自动复现或
+覆盖当时的 provider 结果。

@@ -353,8 +353,8 @@ user-owned execution profile. Follow the complete
 
 ## Benchmark example: AutomationBench public workflows
 
-The AutomationBench example connects one native RPNH actor to the pinned
-upstream's three API tools and simulated business worlds. Its checked-in,
+The retained AutomationBench experiment connected one native RPNH actor to the
+pinned upstream's three API tools and simulated business worlds. Its checked-in,
 score-blind 18-task pilot covers six domains and three integration-width
 strata. Strict first attempts produced 8/18 complete tasks, 17/18 scored
 infrastructure closures, 437 model calls and 1,081 successful tool dispatches.
@@ -366,9 +366,12 @@ python -I examples/automationbench/example.py results
 ```
 
 The example includes task-level scores, the separate remediation record, a
-descriptive comparison with published public-600 aggregates, and the native
-adapter. It does not claim a full 600-task score or a matched leaderboard
-comparison. Follow the complete
+descriptive comparison with published public-600 aggregates, and explicit
+historical conditions. Current extensions add native/DSH installed-host
+acceptance, exact frozen-cohort selection, strict score eligibility, and one
+canonical CLI that can be operated from shell, Basic, Codex or OpenCode. Those
+extensions are not evidence for the historical score. It does not claim a full
+600-task score or a matched leaderboard comparison. Follow the complete
 [AutomationBench guide](../../examples/automationbench/README.md).
 
 ## What to inspect and change

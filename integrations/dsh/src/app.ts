@@ -67,6 +67,7 @@ const usage = `Managed DSH application (experimental; provider execution is supp
   --offline --root DIR --data-file NUMBERS.json --task TEXT [--deny] [--json]
   --execution PATH --root DIR --task TEXT [--deny] [--json]
     [--plugin-config /ABS/PLUGINS.json --managed-tool NAME=PLUGIN/OPERATION ...]
+    [--attempt-budget POSITIVE_INTEGER|unmetered]
   --history --root DIR --session-id ID
   (--offline | --execution PATH) --resume --root DIR --session-id ID
 History is read from the Registry. Resume uses the stored request, not a new prompt.`
@@ -139,6 +140,15 @@ function managedToolSelections(raw: string[] | undefined): ReadonlyArray<{ name:
   }
   return Object.freeze(output)
 }
+function attemptBudget(raw: string | undefined): number | null | undefined {
+  if (raw === undefined) return undefined
+  if (raw === 'unmetered') return null
+  const value = Number(raw)
+  if (!Number.isSafeInteger(value) || value < 1 || String(value) !== raw) {
+    throw new Error('--attempt-budget requires a positive integer or unmetered')
+  }
+  return value
+}
 async function main(): Promise<void> {
   const { values } = parseArgs({ options: {
     offline: { type: 'boolean' }, root: { type: 'string' }, 'data-file': { type: 'string' },
@@ -146,6 +156,7 @@ async function main(): Promise<void> {
     history: { type: 'boolean' }, resume: { type: 'boolean' }, 'session-id': { type: 'string' },
     python: { type: 'string' }, 'execution-path': { type: 'string' }, 'execution-profile': { type: 'string' },
     'plugin-config': { type: 'string' }, 'managed-tool': { type: 'string', multiple: true },
+    'attempt-budget': { type: 'string' },
     help: { type: 'boolean' },
   }, allowPositionals: false })
   if (values.help) { console.log(usage); return }
@@ -156,7 +167,7 @@ async function main(): Promise<void> {
     tools: ['read_dataset', 'sum_values'] }
   if (values.history) {
     if (!values['session-id'] || values.task || values['data-file'] || values.deny
-      || values['plugin-config'] || values['managed-tool']) throw new Error(usage)
+      || values['plugin-config'] || values['managed-tool'] || values['attempt-budget']) throw new Error(usage)
     console.log(JSON.stringify(await readHistory(common, values['session-id'])))
     return
   }
@@ -181,13 +192,16 @@ async function main(): Promise<void> {
       profile: configuredProfile(nonempty(values['execution-profile'], 'execution profile')) } }
   }
   if (values.resume) {
-    if (!values['session-id'] || values.task || values['data-file'] || values.deny) throw new Error(usage)
+    if (!values['session-id'] || values.task || values['data-file'] || values.deny
+      || values['attempt-budget']) throw new Error(usage)
     const result = await resumeSession(config, values['session-id'])
     console.log(JSON.stringify(result))
     process.exitCode = ['terminal', 'idle'].includes(result.status) ? 0 : 1
     return
   }
   if (!values.task || values['session-id']) throw new Error(usage)
+  const budget = attemptBudget(values['attempt-budget'])
+  if (budget !== undefined) config.attemptBudget = budget
   if (values.offline) {
     if (!values['data-file']) throw new Error(usage)
     const data: unknown = JSON.parse(await readFile(resolve(base, values['data-file']), 'utf8'))

@@ -62,7 +62,7 @@ together with one or more `--managed-tool NAME=PLUGIN/OPERATION` arguments and
 admits pure operations only. Each name component must match
 `[a-z][a-z0-9_]{0,47}`. This is not arbitrary DSH plugin or MCP mounting.
 
-The DSH backend imposes a **65536-byte (64 KiB) declared result ceiling** in addition to the general SDK limits. The SDK default is 1048576 bytes, so an otherwise valid plugin can be rejected before any worker starts. Neither value is a recommended business limit: derive `max_result_bytes` from the operation's bounded legal output. The current demo operations constrain their input domains and declare 1024 bytes, which is above their maximum serialized output and below the DSH ceiling. Changing a launch flag does not change a plugin declaration; keep normal version and exact-identity rules when revising one.
+The DSH backend uses the shared **16777216-byte (16 MiB) declared result ceiling**. The SDK default remains 1048576 bytes. Neither value is a recommended business limit: derive `max_result_bytes` from the operation's bounded legal output. The current demo operations constrain their input domains and declare 1024 bytes, which is above their maximum serialized output and below the shared ceiling. Changing a launch flag does not change a plugin declaration; keep normal version and exact-identity rules when revising one.
 
 The owner-bound managed invocation service validates the exact caller execution,
 tool identity and arguments, and records started plus returned, failed, or
@@ -73,7 +73,7 @@ retried automatically. The Registry result and the bounded model-visible
 projection are separate evidence; storing a full result is not proof that a
 provider received it. The inspector checks arguments before worker execution;
 the DSH path also checks declarations, worst-case tool-result size and the next
-model response against its 2 MiB frame. A durably recorded plugin failure is one
+model response against its 68 MiB frame. A durably recorded plugin failure is one
 correlated `isError: true` tool result, not a successful value. DSH supports one
 correlated tool call per model response before the next model step; parallel DSH
 tool batches are not implied.
@@ -83,7 +83,7 @@ The declaration `pure` is a contract for trusted installed code, not an OS secur
 ## Adapter interfaces
 The Codex compatibility layer maps client interactions onto the existing main-session/control/model-selection boundaries. Its fixed client version and unsupported slash-command distinctions are part of support, not cosmetic details.
 
-For managed DSH, `createApplication(config)` constructs the genuine upper-layer host, Registry bridge, capability host and projection. `runHeadless(config, task, json = false)` executes that host; `readHistory(config, id)` uses the owner client without constructing effect services; `resumeSession(config, id)` resumes the stored active request. Python `DshBackend` is the session owner. Offline numeric execution uses the exact deterministic route; configured text and explicit managed tools use an exact shared external-provider or local-process selection through `registered_llm/v1`. Request/response frames are bounded at 2 MiB. Observations remain candidates until existing products/Success settlement.
+For managed DSH, `createApplication(config)` constructs the genuine upper-layer host, Registry bridge, capability host and projection. `runHeadless(config, task, json = false)` executes that host; `readHistory(config, id)` uses the owner client without constructing effect services; `resumeSession(config, id)` resumes the stored active request. Python `DshBackend` is the session owner. Offline numeric execution uses the exact deterministic route; configured text and explicit managed tools use an exact shared external-provider or local-process selection through `registered_llm/v1`. Request/response frames are bounded at 68 MiB. A new session defaults to 48 module attempts and may explicitly select a positive `--attempt-budget` or `unmetered`; resume retains the persisted declaration. Observations remain candidates until existing products/Success settlement.
 
 The offline and configured envelopes are `application/rpnh_dsh_envelope/v1` and `/v2`; the capability protocol remains `rpnh/dsh/v1`. These are not declarations of arbitrary upstream/API compatibility. A completion recorded after validated outputs can support bounded settlement-only recovery; that does not make an incomplete or unknown provider response replayable. See [adapters](../guides/adapters.md) for actual commands and support boundaries.
 

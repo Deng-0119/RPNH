@@ -94,7 +94,11 @@ rpnh-dsh "$DSH_SOURCE" --execution "$EXECUTION" \
 与 `--execution` 互斥。内部 v2 envelope 可以携带空 `data` 数组，不意味着用户提交文本
 时还必须提供数值快照。
 
-launcher 传递公开 profile 摘要。配置模式的子 Registry 记录 route/model 归属及配置修订，不记录 endpoint、credential binding 或静态 header 值。这不保证任务文本或响应中没有敏感内容，运行数据仍需私下保存。请求／响应整体 frame 上限为 2 MiB；当前请求、历史和所选最大响应需通过派发前上界检查，仅把响应上限设为 2 MiB 并不能保证外层 frame 装得下。`max_response_bytes` 更大的通用 profile 对 core RPNH 仍然有效，但与 DSH 不兼容；应为同一 provider、credential route 和 exact model 显式构建留有 frame 余量的用户自有 DSH profile，不能静默改写所选 profile。
+launcher 传递公开 profile 摘要。配置模式的子 Registry 记录 route/model 归属及配置修订，不记录 endpoint、credential binding 或静态 header 值。这不保证任务文本或响应中没有敏感内容，运行数据仍需私下保存。请求／响应整体 frame 上限为 68 MiB；当前请求、历史和所选最大响应需通过派发前上界检查，仅把响应上限设为 68 MiB 并不能保证外层 frame 装得下。`max_response_bytes` 更大的通用 profile 对 core RPNH 仍然有效，但与 DSH 不兼容；应为同一 provider、credential route 和 exact model 显式构建留有 frame 余量的用户自有 DSH profile，不能静默改写所选 profile。
+
+新 DSH session 的 module attempt 预算默认是 48。launcher 接受正整数
+`--attempt-budget`，或显式值 `unmetered`；后者适用于 AutomationBench adapter 这类按已知
+协议可能合理超过 48 个模型／工具回合的工作负载。resume 保持已持久化声明，不接受新预算。
 
 Registry turn 准入前的拒绝现在会作为明确的 headless 错误和非零退出返回，不再表现为空
 final。它仍未产生 provider 调用，不能记作模型失败。
@@ -111,7 +115,8 @@ completion，不再次调用 provider 或工具。缺少该事件时会在 write
 completion 引用其精确不可变 workspace candidate，且该 candidate 由 `map_ready` 下级执行
 checkpoint 持有时才具备资格；恢复会校验归档，不重新扫描 live tree。空 writer-epoch 间隔
 无害，但后续 writer 一旦发布事实，旧 completion 即失效。registration 与不可变恢复材料会在
-新 writer 打开前校验。受管工具参数在执行前按 schema 校验，声明结果上限为 64 KiB，
+新 writer 打开前校验。受管工具参数在执行前按 schema 校验，声明结果上限使用共享的
+16 MiB `PluginOperation` 上限，
 持久登记的插件失败会形成精确关联的错误工具结果。inspector 还会在 worker 启动前确认
 声明的最坏结果连同下一模型响应能够装入 frame。
 不要删状态、换选择身份或套重试脚本。复用 provider 已配置的有界恢复策略，不等于能够

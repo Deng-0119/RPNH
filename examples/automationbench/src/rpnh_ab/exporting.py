@@ -2,6 +2,7 @@
 from __future__ import annotations
 import json
 import os
+import hashlib
 from pathlib import Path
 import zipfile
 from .io import load, now
@@ -13,6 +14,7 @@ def export_return(work: Path, output: Path) -> dict:
         raise FileExistsError("return ZIP already exists; use a new name")
     plan = load(work / "plan.json")
     included = []
+    inventory = []
     redactions = []
     # Exact known credential values only: do not guess from phone/ID-like text.
     # Originals remain untouched locally. Unknown credentials still require review.
@@ -21,8 +23,7 @@ def export_return(work: Path, output: Path) -> dict:
                                 ("_API_KEY", "_ACCESS_TOKEN", "_SECRET_KEY"))},
                            key=len, reverse=True)
     with zipfile.ZipFile(output, "x", compression=zipfile.ZIP_DEFLATED) as archive:
-        def add_file(path, name):
-            data = path.read_bytes()
+        def add_bytes(name, data):
             changed = False
             for value in secret_values:
                 raw = value.encode("utf-8")
@@ -33,7 +34,12 @@ def export_return(work: Path, output: Path) -> dict:
                 redactions.append(name)
             archive.writestr(name, data)
 
-        archive.writestr("summary.json", json.dumps(summarize(plan, work), ensure_ascii=False, indent=2))
+            inventory.append({"path": name, "sha256": hashlib.sha256(data).hexdigest(), "byte_size": len(data)})
+
+        def add_file(path, name):
+            add_bytes(name, path.read_bytes())
+
+        add_bytes("summary.json", json.dumps(summarize(plan, work), ensure_ascii=False, indent=2).encode("utf-8"))
         for name in ("plan.json", "conditions.json", "tool_schemas.json", "doctor.json", "native_acceptance.json", "acceptance.json"):
             path = work / name
             if path.is_file():
@@ -45,7 +51,8 @@ def export_return(work: Path, output: Path) -> dict:
             # provider raw logs or unrestricted directory recursion.
             names = ("attempt.json", "public_task.json", "task_contract.json", "scoring_input.json",
                      "final_world.json", "lifecycle.json", "native_evidence.json", "dsh_evidence.json",
-                     "tool_events.jsonl", "transport_events.jsonl", "bridge_registry_check.json", "latest_projection.json")
+                     "tool_events.jsonl", "transport_events.jsonl", "normalization_events.jsonl",
+                     "bridge_registry_check.json", "latest_projection.json")
             for name in names:
                 path = attempt / name
                 if path.is_file():
@@ -58,11 +65,12 @@ def export_return(work: Path, output: Path) -> dict:
                 relative = path.relative_to(work).as_posix()
                 add_file(path, relative)
                 included.append(relative)
-        report = {"schema": "rpnh-ab/return/v1", "at": now(), "file_count": len(included)+2,
+        report = {"schema": "rpnh-ab/return/v1", "at": now(), "file_count": len(inventory)+1,
                   "native_registry_raw_included": False, "private_profiles_included": False,
                   "incomplete_attempts_preserved_in_plan": True,
                   "known_credential_redactions": redactions,
                   "redaction_scope": "exact current environment credential values >=8 characters, copied export only; not a complete secret detector",
-                  "note": "Keep the complete work root locally. Missing final states cannot be reconstructed from this ZIP alone."}
+                  "note": "Keep the complete work root locally. Missing final states cannot be reconstructed from this ZIP alone.",
+                  "exported_file_inventory": inventory}
         archive.writestr("RETURN_MANIFEST.json", json.dumps(report, ensure_ascii=False, indent=2))
     return report

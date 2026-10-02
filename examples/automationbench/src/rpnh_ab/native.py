@@ -136,8 +136,8 @@ def run(spec, control_root: Path, *, stop_path: Path | None = None) -> dict:
             "control_root": str(control_root), "log_path": str(handle.log_path)}
 
 
-def project_registry(run_dir: Path, output: Path) -> dict:
-    """Read exact frozen authority. Raw native run stays intact beside this view."""
+def inspect_registry(run_dir: Path) -> tuple[dict, list[dict]]:
+    """Read exact frozen authority without writing a projection."""
     from cpn.rpnh.agent_tasks import agent_task_catalog
     from cpn.rpnh.registry._registry import _RegistryCore
     core = _RegistryCore(run_dir, create=False, read_only=True, catalog=agent_task_catalog())
@@ -153,7 +153,7 @@ def project_registry(run_dir: Path, output: Path) -> dict:
             raise RuntimeError("native authority changed during post-exit projection")
         views.append(active)
     temporary = {identity for active in views[1:] for kind, identity in active.temporary_members if kind == "object"}
-    routes, action_count, llm_specs, provider_specs = [], 0, 0, 0
+    routes, action_count, llm_specs, provider_specs, records = [], 0, 0, 0, []
     kinds = ("agent_action/v3", "run_terminal_evidence/v1", "provider_attempt_spec/v1",
              "llm_call_spec/v2", "llm_call_spec/v3")
     for kind in kinds:
@@ -167,8 +167,9 @@ def project_registry(run_dir: Path, output: Path) -> dict:
                      if str(row["version_id"]) in temporary and str(row["version_id"]) not in seen]
         for row, authority in rows:
             document = json.loads(str(row["metadata_json"]))
-            append(output / "registry_objects.jsonl", {"object_type": kind,
-                   "version_id": str(row["version_id"]), "authority": authority, "document": document})
+            records.append({"object_type": kind,
+                   "version_id": str(row["version_id"]), "authority": authority,
+                   "document": document})
             if kind == "agent_action/v3":
                 action_count += 1
             elif kind == "provider_attempt_spec/v1":
@@ -179,7 +180,7 @@ def project_registry(run_dir: Path, output: Path) -> dict:
             elif kind.startswith("llm_call_spec/"):
                 llm_specs += 1
     counts = list(core.event_store.actual_model_call_counts())
-    return {"source": "native_registry_exact_authority", "canonical_through_ordinal": view.through_ordinal,
+    facts = {"source": "native_registry_exact_authority", "canonical_through_ordinal": view.through_ordinal,
             "active_firing_authorities": len(views)-1, "managed_action_records": action_count,
             "actual_model_call_counts": counts, "actual_model_calls": sum(counts),
             "model_accounting_scope": "native executor/provider calls; excludes model calls inside upstream business tools",
@@ -189,3 +190,12 @@ def project_registry(run_dir: Path, output: Path) -> dict:
                          "distinct_registered_routes": len(routes),
                          "opaque_gateway_fallback": "not_observable_without_provider_evidence"},
             "proves_model_consumption_of_each_tool_result": False}
+    return facts, records
+
+
+def project_registry(run_dir: Path, output: Path) -> dict:
+    """Project exact frozen authority while leaving the raw run intact."""
+    facts, records = inspect_registry(run_dir)
+    for record in records:
+        append(output / "registry_objects.jsonl", record)
+    return facts

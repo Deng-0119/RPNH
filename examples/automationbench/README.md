@@ -1,9 +1,9 @@
-# AutomationBench public tasks on native RPNH
+# AutomationBench retained experiment and host extensions
 
 English | [中文](README_ZH.md)
 
 This example preserves a real, score-blind 18-task AutomationBench pilot and
-the native RPNH adapter used to produce it. The run covered all six public
+the native RPNH adapter used to produce it. The historical run covered all six public
 business domains and three integration-width strata. It used a real external
 model route; AutomationBench's business SaaS systems remained local simulated
 worlds.
@@ -15,7 +15,9 @@ failure was retained and later passed in a separate remediation run; it does
 not replace the first attempt.
 
 - [Results and task-level scores](RESULTS.md)
+- [Exact historical experiment condition](EXPERIMENT.md)
 - [Comparison with published public-600 results](COMPARISON.md)
+- [Current native/DSH and Codex/Basic/OpenCode adaptation](EXTENSIONS.md)
 - [Design and execution boundary](DESIGN.md)
 - [Local runbook](docs/RUNBOOK.md)
 - [Protocol](docs/PROTOCOL.md)
@@ -41,7 +43,7 @@ The checked-in machine-readable records are:
 Raw Registry databases, provider transcripts, execution profiles, credentials,
 and local absolute paths are deliberately not included.
 
-## Architecture
+## Historical architecture
 
 ```text
 public task prompt -> native RPNH actor -> managed AutomationBench tools
@@ -79,18 +81,19 @@ Set `RPNH_AB_UPSTREAM` to an independently installed checkout at
 `4a8e1061254004d9dac807054eed33fad7d1ff14` to run the pinned-upstream and
 scripted native-worker integration checks. They make no real provider calls.
 
-## Run with your own profile
+## Run a new condition with your own profile
 
-The adapter contains `doctor`, bridge `acceptance`, `prepare`, guarded `run`,
-`score`, `reproject`, `summarize`, and `export` commands. This published example
-does not ship the deployment-specific seven-case acceptance-manifest producer,
-so the batch `run` path is intentionally not turnkey. Any deployment that adds
-that producer must separately authorize its RPNH execution profile and retain
-the condition-bound evidence. Keep profiles, work directories, and Registries
-outside this repository; see the [runbook](docs/RUNBOOK.md).
+The extension contains `doctor`, `bridge-smoke`, `prepare`, the seven-case
+`accept-host` producer, guarded `run`, `status`, `stop`, `score`, `reproject`,
+`summarize`, and `export`. Native RPNH and the pinned DSH integration are
+execution hosts. Basic, Codex and OpenCode are control surfaces that invoke the
+same canonical CLI; they are not additional benchmark actors. Keep profiles,
+work directories and Registries outside this repository. See the
+[extension boundary](EXTENSIONS.md) and [runbook](docs/RUNBOOK.md).
 
-The default preparation path can select all 600 public tasks, but the retained
-result in this example is only the frozen 18-task pilot. It is not an official
+The default preparation path can select all 600 public tasks; `--cohort` can
+resolve only the frozen 18 task identities into a new condition. The retained
+result itself remains the historical 18-task pilot. It is not an official
 AutomationBench leaderboard submission, a representative estimate of the
 public-600 score, or a matched comparison with another model or harness.
 

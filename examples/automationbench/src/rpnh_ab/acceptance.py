@@ -33,6 +33,10 @@ def acceptance(upstream, work: Path) -> dict:
     handlers = {"api_search": api_search_handler, "api_fetch": api_fetch_handler,
                 "base64_encode": base64_encode_handler}
     direct_state = upstream.start(row)
+    # The upstream injects current_time independently on every world start.
+    # Align that non-business fixture field before comparing the two execution
+    # paths; all tool calls and resulting business state remain exact.
+    direct_state["world"].meta.current_time = state["world"].meta.current_time
     records = []
     with Broker(upstream, state, target, "smoke-no-model") as broker:
         for i, tool in enumerate(TOOLS):

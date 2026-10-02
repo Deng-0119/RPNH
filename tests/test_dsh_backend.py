@@ -6,7 +6,8 @@ import sys
 from types import SimpleNamespace
 import pytest
 from cpn.dsh.backend import (
-    DshBackend, MAX_BYTES, MAX_MANAGED_TOOL_RESULT_BYTES, REVISION,
+    DEFAULT_ATTEMPT_BUDGET, DshBackend, MAX_BYTES,
+    MAX_MANAGED_TOOL_RESULT_BYTES, REVISION, declaration,
 )
 from cpn.llm_adapters.config import LLMExecutionSelection
 from cpn.plugins import (
@@ -396,6 +397,50 @@ def test_full_multistep_and_registry_only_reopen_without_reexecution(tmp_path):
     assert reopened.turn(r)['replayed'] is True
     changed={**r,'data':[9]}
     with pytest.raises(ValueError,match='reused'): reopened.turn(changed)
+
+
+def test_default_budget_stays_48_and_unmetered_declaration_has_no_cap(tmp_path):
+    assert DEFAULT_ATTEMPT_BUDGET == 48
+    assert declaration().to_dict()['budget_buckets'] == [{
+        'bucket_id': 'dsh', 'budget_scope': 'module',
+        'finalization_scope': None, 'max_attempts': 48,
+    }]
+    assert declaration(attempt_budget=None).to_dict()['budget_buckets'] == [{
+        'bucket_id': 'dsh', 'budget_scope': 'module',
+        'finalization_scope': None, 'max_attempts': None,
+    }]
+    unmetered = DshBackend(
+        tmp_path, 's1', PhysicalCounter(), create=True, attempt_budget=None)
+    assert unmetered.attempt_budget is None
+
+
+def test_unmetered_resume_uses_persisted_registry_budget_not_constructor(
+        tmp_path,
+):
+    effect = PhysicalCounter()
+    first = DshBackend(
+        tmp_path, 's1', effect, create=True, attempt_budget=None)
+
+    def stop_before_first_tool(_owner, execution):
+        if execution.operation.firing.transition_id == 'dsh.tool':
+            first.cancel()
+
+    first.before_dispatch = stop_before_first_tool
+    assert first.turn(request())['status'] == 'stopped_by_owner'
+
+    reopened = DshBackend(tmp_path, 's1', effect, attempt_budget=1)
+    resumed = reopened.resume()
+
+    assert resumed['status'] == 'terminal'
+    assert resumed['answer']['text'] == '12'
+
+
+def test_launcher_is_executable_as_a_python_module():
+    result = __import__('subprocess').run(
+        [sys.executable, '-m', 'cpn.dsh.launcher', '--help'],
+        text=True, capture_output=True, check=False)
+    assert result.returncode == 0
+    assert 'pinned DSH source checkout' in result.stdout
 
 
 def test_empty_session_resume_is_public_failure_without_dispatch(tmp_path):
@@ -846,7 +891,7 @@ def test_configured_managed_tool_declarations_are_in_pre_admission_budget(
     assert effect_calls == []
 
 
-def test_configured_managed_tool_result_limit_is_bounded_at_construction(
+def test_registered_managed_tool_result_limit_is_bounded_at_16_mib(
         tmp_path, monkeypatch,
 ):
     import cpn.plugins.catalog as plugin_catalog
@@ -867,7 +912,7 @@ def test_configured_managed_tool_result_limit_is_bounded_at_construction(
     }), encoding='utf-8')
     selection = configured_selection(tmp_path)
 
-    with pytest.raises(ValueError, match='exceeds 64 KiB'):
+    with pytest.raises(ValueError, match='invalid registered execution limits'):
         DshBackend(
             tmp_path, 's1', ManagedConfiguredEffect(), create=True,
             offline=False, selection=selection,
@@ -913,7 +958,7 @@ def test_configured_managed_tool_future_frame_is_denied_before_worker(
     turn['policy']['tools'] = ['double_value']
     route = turn['route']
     chosen = None
-    for size in range(800_000, 1_000_001, 10_000):
+    for size in range(1_000_000, 8_000_001, 1_000_000):
         turn['messages'][0]['content'][0]['text'] = 'x' * size
         messages = turn['messages']
         if not backend._configured_frame_budget_fits(

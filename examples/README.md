@@ -16,7 +16,7 @@ Choose an example by the behavior you want to see:
 | Real numerical optimal-control task | [3-DOF powered descent](three_dof_powered_descent/README.md) | ![3-DOF workflow](three_dof_powered_descent/assets/three-dof-petrinet.png) | User-owned exact live profile |
 | Office benchmark integration and scored results | [HarnessAudit Office](harnessaudit_office/README.md) | Viewer command for user-generated runs; no archived screenshot | Read results offline; run/score require explicit local profiles |
 | Two-round RRSI Policy evolution with independent child runs | [RRSI v0.6 application](rrsi_v06/README.md) | Viewer command for user-generated child Registries; no archived screenshot | User-owned exact live profile |
-| Public business-workflow benchmark and task-level scores | [AutomationBench](automationbench/README.md) | Viewer command for user-generated runs; no archived screenshot | Read retained results offline; live run requires an authorized profile |
+| Retained business-workflow benchmark and host extensions | [AutomationBench](automationbench/README.md) | Historical task scores plus native/DSH acceptance and frozen-cohort tooling | Read retained results offline; new live runs require an authorized profile |
 
 Each runnable workflow creates a real Registry that can be opened with
 `rpnh net --run RUN_DIR --view --no-open`. Scripted fixtures exercise the same

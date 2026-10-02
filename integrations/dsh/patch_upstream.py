@@ -1,11 +1,12 @@
 """Prepare the narrow factory seam in the pinned DSH checkout."""
 
+from __future__ import annotations
+
 from pathlib import Path
 import sys
 
 
-target = Path(sys.argv[1]) / "packages/core/agent-loop/src/index.ts"
-source = target.read_text(encoding="utf-8")
+FACTORY_PATH = "packages/core/agent-loop/src/index.ts"
 
 replacements = (
     (
@@ -39,22 +40,40 @@ replacements = (
     ),
 )
 
-markers = tuple(updated for _original, updated in replacements)
-present = tuple(marker in source for marker in markers)
-if all(present):
-    print("Pinned DSH factory seam is already prepared")
-    raise SystemExit(0)
-if any(present):
-    raise SystemExit("DSH factory seam is only partially prepared")
+def prepared_source(source: str) -> tuple[str, bool]:
+    """Return the exact prepared source and whether a change is required."""
+    markers = tuple(updated for _original, updated in replacements)
+    present = tuple(marker in source for marker in markers)
+    if all(present):
+        return source, False
+    if any(present):
+        raise ValueError("DSH factory seam is only partially prepared")
+    for original, _updated in replacements:
+        if source.count(original) != 1:
+            raise ValueError(
+                "DSH factory source differs from the pinned semantic seam: "
+                f"expected one occurrence of {original!r}"
+            )
+    for original, updated in replacements:
+        source = source.replace(original, updated, 1)
+    return source, True
 
-for original, _updated in replacements:
-    if source.count(original) != 1:
-        raise SystemExit(
-            "DSH factory source differs from the pinned semantic seam: "
-            f"expected one occurrence of {original!r}"
-        )
 
-for original, updated in replacements:
-    source = source.replace(original, updated, 1)
+def main(argv: list[str] | None = None) -> int:
+    arguments = sys.argv[1:] if argv is None else argv
+    if len(arguments) != 1:
+        raise SystemExit("pass the pinned DSH checkout")
+    target = Path(arguments[0]) / FACTORY_PATH
+    try:
+        source, changed = prepared_source(target.read_text(encoding="utf-8"))
+    except ValueError as exc:
+        raise SystemExit(str(exc)) from exc
+    if not changed:
+        print("Pinned DSH factory seam is already prepared")
+        return 0
+    target.write_text(source, encoding="utf-8")
+    return 0
 
-target.write_text(source, encoding="utf-8")
+
+if __name__ == "__main__":
+    raise SystemExit(main())

@@ -176,9 +176,9 @@ not disable owner stop, provider retry handling, workspace resource bounds,
 context-window handling or Registry/PetriNet admission and settlement.
 
 A native `PluginOperation` declares `timeout_seconds` (1–7200, default 60) and
-`max_result_bytes` (1–16777216, SDK default 1048576). DSH-managed tools add a
-fixed 65536-byte compatibility ceiling, so choose an operation's declared
-bound from its legal output and keep it within the selected host's ceiling.
+`max_result_bytes` (1–16777216, SDK default 1048576). DSH-managed tools use the
+same 16777216-byte ceiling. Choose each operation's declared bound from its
+legal output rather than copying either the ceiling or default.
 The plugin catalog root has fixed `schema_version: rpnh/plugins/v1` and a
 `plugins` array. Each selected item has exactly `name`, `entry_point`, `version`,
 `config`, and `environment`. `config` must satisfy that installed plugin's own
@@ -220,8 +220,8 @@ dashboard bounds.
 The following are deliberately not operator policy: schema/protocol versions,
 Registry identity shapes, socket-path and HTTP status validity, credential size
 validation, IPC command framing, Codex/OpenCode/DSH version pins, OpenCode's
-256 KiB request and 4 MiB response/snapshot limits, DSH's 2 MiB frame and
-64 KiB managed-tool ceiling, the workspace command's 1 MiB captured-output
+256 KiB request and 4 MiB response/snapshot limits, DSH's 68 MiB frame and
+16 MiB managed-tool ceiling, the workspace command's 1 MiB captured-output
 contract, and the current fixed Codex permission projection
 (`danger-full-access`, `approvalPolicy=never`, user reviewer). OpenCode
 permission/workspace reply APIs remain unavailable. Read-only projection also

@@ -1,9 +1,9 @@
-# AutomationBench 公开任务 × 原生 RPNH
+# AutomationBench 已保留实验与宿主扩展
 
 [English](README.md) | 中文
 
 本 example 保留了一次真实、score-blind 的 AutomationBench 18 题分层 pilot，以及生成结果所用
-的 RPNH native 适配器。试验覆盖六个 public 业务域和三种集成宽度，使用真实外部模型路线；
+的 RPNH native 适配器。历史试验覆盖六个 public 业务域和三种集成宽度，使用真实外部模型路线；
 AutomationBench 的业务 SaaS 仍是本地模拟世界。
 
 严格首轮结果为 8/18 题满分、17/18 基础设施闭环、437 次模型调用和 1,081 次成功业务工具
@@ -11,7 +11,9 @@ AutomationBench 的业务 SaaS 仍是本地模拟世界。
 随后在独立修复复验中通过；复验不覆盖首轮记录。
 
 - [结果与逐题得分](RESULTS_ZH.md)
+- [历史实验的精确条件](EXPERIMENT_ZH.md)
 - [与公开 600 题报道的比较](COMPARISON_ZH.md)
+- [当前 native/DSH 与 Codex/Basic/OpenCode 适配](EXTENSIONS_ZH.md)
 - [设计与执行边界](DESIGN_ZH.md)
 - [本地运行手册](docs/RUNBOOK_ZH.md)
 - [实验协议](docs/PROTOCOL_ZH.md)
@@ -36,7 +38,7 @@ python -I examples/automationbench/example.py results --json
 
 原始 Registry 数据库、provider transcript、execution profile、凭据和本机绝对路径不会提交。
 
-## 结构
+## 历史实验结构
 
 ```text
 public task prompt -> RPNH native actor -> 受管 AutomationBench 工具
@@ -70,15 +72,16 @@ python -m pytest examples/automationbench/tests -q -m 'not integration'
 `4a8e1061254004d9dac807054eed33fad7d1ff14` 的 AutomationBench checkout，可运行固定上游和
 脚本化 native-worker 集成检查；这些检查不调用真实 provider。
 
-## 使用自己的 profile 运行
+## 使用自己的 profile 建立新条件
 
-适配器包含 `doctor`、bridge `acceptance`、`prepare`、带门禁的 `run`、`score`、`reproject`、
-`summarize` 和 `export`。当前公开 example 不提供部署专属的七项 acceptance-manifest producer，
-因此 batch `run` 有意不是开箱即用入口。部署方若补充 producer，仍须另行授权 RPNH execution
-profile 并保留绑定条件的证据。profile、work 目录和 Registry 都应放在仓库外；详见
-[运行手册](docs/RUNBOOK_ZH.md)。
+扩展包含 `doctor`、`bridge-smoke`、`prepare`、七项 `accept-host` producer、带门禁的 `run`、
+`status`、`stop`、`score`、`reproject`、`summarize` 与 `export`。RPNH native 和固定版本的 DSH
+integration 是执行宿主；Basic、Codex 与 OpenCode 是调用同一权威 CLI 的控制界面，不是额外的
+benchmark actor。profile、work 目录和 Registry 都应放在仓库外；详见
+[扩展边界](EXTENSIONS_ZH.md)和[运行手册](docs/RUNBOOK_ZH.md)。
 
-默认准备路径可以选择全部 600 个 public task，但本 example 保留的结果仅是冻结的 18 题 pilot。
+默认准备路径可以选择全部 600 个 public task；`--cohort` 可把冻结的 18 个 task identity 解析为
+一个新 condition，但本 example 已保留的结果仍只是历史 18 题 pilot。
 它不是 AutomationBench 官方榜单提交，不是 public-600 代表性估计，也不是与其他模型或 harness
 的同条件比较。
 

@@ -62,8 +62,13 @@ COMPONENT = 'rpnh/dsh-driver/v1'
 EXECUTOR = 'rpnh/dsh-capability/v1'
 CONFIGURED_EXECUTOR = 'rpnh/dsh-configured-capability/v1'
 TERMINAL = 'rpnh/dsh-terminal/v1'
-MAX_BYTES = 2 * 1024 * 1024
-MAX_MANAGED_TOOL_RESULT_BYTES = 64 * 1024
+MAX_MANAGED_TOOL_RESULT_BYTES = 16 * 1024 * 1024
+# A managed result is rendered into a tool message and the configured DSH
+# request carries that message in both its formal arguments and provider DTO.
+# Four result-sized regions plus bounded envelope headroom covers the exact
+# local transport without truncating a valid PluginOperation result.
+MAX_BYTES = 4 * MAX_MANAGED_TOOL_RESULT_BYTES + 4 * 1024 * 1024
+DEFAULT_ATTEMPT_BUDGET = 48
 STAGES = ('inspect', 'accept', 'reject_request', 'model', 'inspect_tool', 'tool', 'reject_tool', 'finalize')
 
 ENVELOPE_SCHEMA = {
@@ -311,7 +316,11 @@ def _lower(config, context):
 
 
 def declaration(*, configured: bool = False,
-                managed_tools: ManagedPluginToolCatalog | None = None):
+                managed_tools: ManagedPluginToolCatalog | None = None,
+                attempt_budget: int | None = DEFAULT_ATTEMPT_BUDGET):
+    if (attempt_budget is not None
+            and (type(attempt_budget) is not int or attempt_budget < 1)):
+        raise ValueError('DSH attempt budget must be null or a positive integer')
     if managed_tools is not None and not configured:
         raise ValueError('managed provider tools require configured DSH')
     managed_tools = managed_tools or ManagedPluginToolCatalog(
@@ -359,7 +368,7 @@ def declaration(*, configured: bool = False,
         'required_schemas': [
             envelope, CONFIG, *((CONFIG_V2,) if configured else ())],
         'budgets': {},
-        'budget_buckets': [{**binding, 'max_attempts': 48}]})
+        'budget_buckets': [{**binding, 'max_attempts': attempt_budget}]})
 
 
 def registration(executor=None,
@@ -508,6 +517,7 @@ class DshBackend:
             selection: LLMExecutionSelection | None = None,
             plugin_config_path: Path | None = None,
             managed_tools: Mapping[str, str] | None = None,
+            attempt_budget: int | None = DEFAULT_ATTEMPT_BUDGET,
             input_port_factory=build_llm_input_port,
     ):
         if not re.fullmatch(r'[A-Za-z0-9_-]{1,100}', session_id):
@@ -524,6 +534,10 @@ class DshBackend:
             raise ValueError('configured DSH cannot also use offline mode')
         if not callable(input_port_factory):
             raise TypeError('input port factory must be callable')
+        if (attempt_budget is not None
+                and (type(attempt_budget) is not int or attempt_budget < 1)):
+            raise ValueError(
+                'DSH attempt budget must be null or a positive integer')
         self.root, self.session_id, self.effect = root / session_id, session_id, effect
         self.execution_config_path = (
             execution_config_path.resolve()
@@ -559,7 +573,7 @@ class DshBackend:
             _plugin, operation = self.managed_tools.binding(tool.name)
             if operation.max_result_bytes > MAX_MANAGED_TOOL_RESULT_BYTES:
                 raise ValueError(
-                    'managed DSH tool result limit exceeds 64 KiB')
+                    'managed DSH tool result limit exceeds 16 MiB')
         self.managed_tool_names = tuple(
             tool.name for tool in self.managed_tools.tools)
         self.execution_profile = None
@@ -570,6 +584,7 @@ class DshBackend:
         elif execution_profile is not None:
             raise ValueError('offline DSH does not accept an execution profile')
         self.input_port_factory = input_port_factory
+        self.attempt_budget = attempt_budget
         self.root.mkdir(parents=True, exist_ok=True)
         self.core = _RegistryCore(self.root / 'main', create=create)
         self.thread = MainThreadRegistry(
@@ -625,7 +640,8 @@ class DshBackend:
                                                idempotency_key=request['request_id'])
         module = declaration(
             configured=self.configured,
-            managed_tools=(self.managed_tools if self.configured else None))
+            managed_tools=(self.managed_tools if self.configured else None),
+            attempt_budget=self.attempt_budget)
         history_messages = state['committed_history'][-1]['answer']['messages'] if state['committed_history'] else []
         envelope = {**request, 'messages': [*history_messages, *request['messages']], 'calls': [], 'step': 0}
         envelope_schema = ENVELOPE_V2 if self.configured else ENVELOPE
@@ -636,8 +652,10 @@ class DshBackend:
                 _DshExecutor(self),
                 self.managed_tools if self.configured else None),
             run_dir=attachment.attempt_path, task_input=inp,
-            entry_inputs={'request': inp}, budgets=ModuleBudgetDeclaration(tuple(module.to_dict()['budget_buckets']),
-                ('rpnh/module_declaration/v1',), 48, 0, 48, 0),
+            entry_inputs={'request': inp}, budgets=ModuleBudgetDeclaration(
+                tuple(module.to_dict()['budget_buckets']),
+                ('rpnh/module_declaration/v1',), self.attempt_budget, 0,
+                self.attempt_budget, 0),
             model_condition=self._model_condition,
             owner_statement=(
                 'Managed DSH profile over the shared registered provider'

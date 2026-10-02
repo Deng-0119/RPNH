@@ -160,8 +160,8 @@ owner-stop、provider 重试处理、workspace 资源约束、context-window 处
 Registry/PetriNet 的准入与 settlement。
 
 原生 `PluginOperation` 声明 `timeout_seconds`（1–7200，默认 60）和
-`max_result_bytes`（1–16777216，SDK 默认 1048576）。DSH managed tool 另有固定 65536-byte
-兼容上限，因此应按 operation 合法输出确定声明值，并满足所选宿主上限。plugin 配置和环境
+`max_result_bytes`（1–16777216，SDK 默认 1048576）。DSH managed tool 使用同一
+16777216-byte 上限；应按 operation 合法输出确定声明值，不能直接照抄上限或默认值。plugin 配置和环境
 plugin catalog 根对象固定使用 `schema_version: rpnh/plugins/v1` 和 `plugins` 数组。每个
 被选择项严格包含 `name`、`entry_point`、`version`、`config`、`environment`。
 `config` 必须符合已安装 plugin 自己发布的 schema；`environment` 只写变量名，secret 留在
@@ -197,7 +197,7 @@ workspace policy。
 
 以下内容不是用户策略：schema/protocol 版本、Registry identity 形状、socket path 与 HTTP
 状态合法性、credential 大小校验、IPC frame、Codex/OpenCode/DSH 版本固定、OpenCode 的
-256 KiB 请求与 4 MiB response/snapshot 上限、DSH 的 2 MiB frame 与 64 KiB managed-tool
+256 KiB 请求与 4 MiB response/snapshot 上限、DSH 的 68 MiB frame 与 16 MiB managed-tool
 上限、workspace 命令 1 MiB captured-output contract，以及当前固定的 Codex permission 投影
 （`danger-full-access`、`approvalPolicy=never`、user reviewer）。OpenCode
 permission/workspace reply API 仍不可用。只读投影在 Registry 读取期间发生推进时还会执行少量

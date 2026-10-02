@@ -1,6 +1,6 @@
 # 18 题分层 pilot 保留结果
 
-[English](RESULTS.md) | [示例](README_ZH.md) | [公开比较](COMPARISON_ZH.md)
+[English](RESULTS.md) | [示例](README_ZH.md) | [精确条件](EXPERIMENT_ZH.md) | [公开比较](COMPARISON_ZH.md)
 
 日期：2026-10-02。executor 标签：`deepseek-v4-pro`。该标签只记录本次本地配置路线，不构成
 项目支持模型承诺。

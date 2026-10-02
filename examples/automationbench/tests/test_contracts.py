@@ -59,9 +59,13 @@ def request(call="c1", **args):
 
 def prepared_attempt(path):
     path.mkdir(parents=True)
-    io.write_new(path / "attempt.json", {"id": "sales-0001"})
+    io.write_new(path / "task_contract.json", row())
+    io.write_new(path / "attempt.json", {"id": "sales-0001", "task_contract_sha256": "a" * 64,
+                 "task_contract_file_sha256": io.file_sha(path / "task_contract.json")})
     io.write_new(path / "final_world.json", {"state": "after"})
     io.write_new(path / "scoring_input.json", {"initial_state": {"state": "before"}, "info": {"assertions": []}})
+    io.write_new(path / "lifecycle.json", {"admitted": True, "execution_status": "host_terminal",
+                                             "host_quiescent": True, "world_owner_quiescent": True})
 
 
 def test_public_projection_never_contains_private_info():
@@ -306,6 +310,15 @@ def test_scoring_revision_retains_old_score(tmp_path):
     assert io.load(attempt / "score-0001.json")["partial_credit"] == 0.0
 
 
+def test_scoring_revision_cannot_rebaseline_changed_frozen_inputs(tmp_path):
+    attempt = tmp_path / "a"; prepared_attempt(attempt)
+    score_attempt(attempt, lambda *args: {"partial_credit": 0.0, "task_completed_correctly": 0.0})
+    (attempt / "final_world.json").write_text('{"state":"changed"}\n')
+    with pytest.raises(ValueError, match="stale"):
+        score_attempt(attempt, lambda *args: pytest.fail("must not rescore changed evidence"),
+                      revision=True)
+
+
 def test_no_score_from_live_checkpoint(tmp_path):
     io.write_new(tmp_path / "world.latest.json", {})
     with pytest.raises(ValueError):
@@ -367,10 +380,14 @@ def test_batch_retains_failed_attempt_and_continues_all_other_tasks(tmp_path, mo
     cases = [case(i, d) for d in PUBLIC_DOMAINS for i in range(1, 101)]
     plan = plan_for(cases, "public")
     io.write_new(tmp_path / "plan.json", plan)
-    io.write_new(tmp_path / "conditions.json", {"environment": {}, "rpnh": {}, "configured_model": {}, "business_tool_helper": {}, "benchmark_spec": {}, "execution_spec": {"executor_host":"native"}})
-    io.write_new(tmp_path / "doctor.json", {"status": "passed", "ready_for_live_batch": True})
+    io.write_new(tmp_path / "conditions.json", {"environment": {}, "rpnh": {}, "configured_model": {}, "business_tool_helper": {},
+                 "benchmark_spec": {"split": "public", "manifest_sha256": plan["manifest_sha256"],
+                                    "task_contracts": [task["task_contract_sha256"] for task in plan["tasks"]]},
+                 "execution_spec": {"executor_host":"native"}})
+    io.write_new(tmp_path / "doctor.json", {"status": "passed", "ready_for_live_batch": True,
+                                             "selected_split": "public",
+                                             "selected_manifest_sha256": plan["manifest_sha256"]})
     old = tmp_path / "attempts/sales-0001/a0001"; prepared_attempt(old)
-    io.write_new(old / "lifecycle.json", {"execution_status":"host_terminal"})
     import rpnh_ab.run_spec as rs
     monkeypatch.setattr(rs,"validate_acceptance",lambda *a: {})
     io.write_new(old / "score-0001.json", {"status": "scored", "partial_credit": 0.0, "task_completed_correctly": 0.0})

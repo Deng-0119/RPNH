@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import json
 from pathlib import Path
 import re
@@ -13,9 +14,21 @@ from rpnh_ab.upstream import normalize_api_fetch_arguments
 
 ROOT = Path(__file__).resolve().parents[1]
 
+HISTORICAL_SHA256 = {
+    "conditions-20261002.json": "cf640896fa90712242831f91129e97771418dce9403e512881ecef3ac9b30bb1",
+    "operations-0009-remediation-20261002.json": "89b7023928ffee28c9a63a1aba4acbb138f5f8ae446fa25dfdda17c9131ebfe8",
+    "stratified-pilot-first-attempt-20261002.json": "31d87b37c5475257a8c7d3d918c11363c180d912d09aaef0b5ddeae11f66767b",
+    "stratified-pilot-plan-20261002.json": "7f99846bd6247987dd9030342beaa9c0cd70ac675da35dcb30e9abd056f68f11",
+}
+
 
 def load(name: str) -> dict:
     return json.loads((ROOT / "results" / name).read_text(encoding="utf-8"))
+
+
+def test_historical_result_bytes_are_immutable() -> None:
+    for name, expected in HISTORICAL_SHA256.items():
+        assert hashlib.sha256((ROOT / "results" / name).read_bytes()).hexdigest() == expected
 
 
 def test_strict_first_attempt_summary_is_complete_and_not_public_600() -> None:

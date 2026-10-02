@@ -114,6 +114,55 @@ def test_benchmark_identity_independent_of_frontend_and_host(tmp_path,upstream):
         execution_spec(profile,'codex',{})
 
 
+def test_dsh_identity_normalizes_clean_and_exact_prepared_seam(
+        tmp_path, monkeypatch,
+):
+    import subprocess
+    import rpnh_ab.upstream as upstream_module
+    from integrations.dsh.patch_upstream import FACTORY_PATH, prepared_source
+    from rpnh_ab.run_spec import dsh_identity
+
+    checkout = tmp_path / 'dsh'
+    target = checkout / FACTORY_PATH
+    target.parent.mkdir(parents=True)
+    clean = "\n".join((
+        "import { ReactLoopAgent } from './react.js'",
+        "interface PreparedAgent {",
+        "  agent: ReactLoopAgent",
+        "}",
+        "let machine: ReactLoopAgent | undefined",
+        "const loopCtx = this.runtime.ctx",
+        "machine = new ReactLoopAgent(loopCtx, id, options, session)",
+        "  constructor(ctx: Context, config: Config) {",
+    ))
+    target.write_text(clean)
+    revision = 'ddefc45fbc7f8e46dd73185e68295696d1297887'
+    monkeypatch.setattr(upstream_module, 'git_identity',
+                        lambda _root: {'commit': revision, 'tracked_changes': ''})
+
+    def git_output(command, text=False):
+        if 'diff' in command:
+            changed = target.read_text() != clean
+            value = (FACTORY_PATH + '\0').encode() if changed else b''
+        elif 'show' in command:
+            return clean if text else clean.encode()
+        elif 'ls-files' in command:
+            value = (FACTORY_PATH + '\0').encode()
+        else:
+            raise AssertionError(command)
+        return value.decode() if text else value
+
+    monkeypatch.setattr(subprocess, 'check_output', git_output)
+    clean_identity = dsh_identity(checkout)
+    prepared, changed = prepared_source(clean)
+    assert changed is True
+    target.write_text(prepared)
+    assert dsh_identity(checkout) == clean_identity
+    target.write_text(prepared + '\n// unrelated change\n')
+    with pytest.raises(ValueError, match='neither clean nor exactly prepared'):
+        dsh_identity(checkout)
+
+
 def test_acceptance_rejects_header_only_stale_missing_and_modified_proof(tmp_path,upstream):
     _,_,b,e=frozen(tmp_path,upstream)
     path=tmp_path/'acceptance.json'
@@ -121,13 +170,17 @@ def test_acceptance_rejects_header_only_stale_missing_and_modified_proof(tmp_pat
     with pytest.raises(ValueError,match='schema'): validate_acceptance(path,b,e)
     proof=tmp_path/'proof.log';proof.write_text('component-only is not host proof')
     record={'schema':'rpnh-ab/acceptance-manifest/v1','identity':acceptance_identity(b,e),
-            'real_provider_calls':0,'real_business_api_calls':0,'cases':{}}
+            'real_provider_calls':0,'real_business_api_calls':0,
+            'historical_benchmark_tasks_executed':0,'synthetic_acceptance_only':True,
+            'cases':{}}
     path.write_text(json.dumps(record))
     with pytest.raises(ValueError,match='missing or blocked'): validate_acceptance(path,b,e)
     from rpnh_ab.io import file_sha
     for key in REQUIRED_ACCEPTANCE:
         record['cases'][key]={'status':'passed','evidence_path':str(proof),'evidence_sha256':file_sha(proof)}
-    path.write_text(json.dumps(record));validate_acceptance(path,b,e) # unit-only gate data
+    path.write_text(json.dumps(record))
+    with pytest.raises(ValueError, match='evidence'):
+        validate_acceptance(path,b,e)
     proof.write_text('changed')
     with pytest.raises(ValueError,match='evidence'):validate_acceptance(path,b,e)
     changed=copy.deepcopy(e);changed['executor_host']='dsh'
@@ -204,11 +257,218 @@ def test_manual_stop_is_retained_but_never_frozen_or_scored(tmp_path,upstream,mo
     assert not (attempt/'final_world.json').exists()
     assert not list(attempt.glob('score-*.json'))
 
+
+def _dsh_schemas():
+    return [{'type': 'function', 'function': {
+        'name': name, 'description': f'Execute {name}',
+        'parameters': {'type': 'object'},
+    }} for name in ('api_search', 'api_fetch', 'base64_encode')]
+
+
+def test_dsh_driver_uses_console_history_and_writes_durable_result(
+        tmp_path, monkeypatch,
+):
+    import rpnh_ab.drivers.dsh as driver_module
+
+    commands = []
+
+    class FinishedProcess:
+        pid = 43210
+
+        def __init__(self, command, *, stdout, stderr, start_new_session):
+            commands.append(command)
+            assert stderr is driver_module.subprocess.STDOUT
+            assert start_new_session is True
+            stdout.write(b'RPNH session: session-automationbench\n')
+            self.returncode = None
+
+        def poll(self):
+            return self.returncode
+
+        def wait(self, timeout=None):
+            self.returncode = 0
+            return 0
+
+    ref = {'entity_type': 'turn/v1', 'entity_id': 'turn-1',
+           'version_id': 'turn-version-1'}
+    history = {
+        'active': None, 'active_turn_ref': None,
+        'latest_turn_ref': ref, 'latest_committed_turn_ref': ref,
+        'committed_history': [{'answer': {'status': 'completed', 'text': 'done'}}],
+    }
+
+    def read_history(command, *, text, capture_output, check):
+        commands.append(command)
+        assert text and capture_output and check is False
+        return SimpleNamespace(
+            returncode=0, stdout=json.dumps(history), stderr='')
+
+    monkeypatch.setattr(driver_module.subprocess, 'Popen', FinishedProcess)
+    monkeypatch.setattr(driver_module.subprocess, 'run', read_history)
+    monkeypatch.setattr(driver_module, '_group_alive', lambda _process: False)
+    checkout = tmp_path / 'pinned-dsh'; checkout.mkdir()
+    profile = tmp_path / 'profile.json'; profile.write_text('{}')
+    run_dir = tmp_path / 'run'
+
+    lifecycle = driver_module.DshDriver().run(
+        run_dir=run_dir, profile=profile,
+        broker=SimpleNamespace(endpoint='/tmp/ab.sock', run_id='run-1'),
+        messages=[{'role': 'user', 'content': 'complete the task'}],
+        schemas=_dsh_schemas(), control_root=tmp_path / 'control',
+        dsh_checkout=checkout)
+
+    launch, history_command = commands
+    assert '--host-task' not in launch
+    assert launch[:4] == [
+        os.sys.executable, '-m', 'cpn.dsh.launcher', str(checkout.resolve())]
+    assert launch[launch.index('--execution') + 1] == str(profile.resolve())
+    assert launch[launch.index('--attempt-budget') + 1] == 'unmetered'
+    assert '--task' in launch and '--plugin-config' in launch
+    managed = [launch[index + 1] for index, value in enumerate(launch)
+               if value == '--managed-tool']
+    assert managed == [
+        'api_search=ab_api/api_search', 'api_fetch=ab_api/api_fetch',
+        'base64_encode=ab_api/base64_encode']
+    assert history_command[4:6] == ['--history', '--root']
+    assert history_command[-2:] == ['--session-id', 'session-automationbench']
+    result = load(run_dir / 'host-result.json')
+    assert result['history'] == history
+    assert result['session_id'] == 'session-automationbench'
+    assert result['outcome']['status'] == 'terminal'
+    assert result['admitted'] is True
+    assert result['host_quiescent'] is True
+    assert lifecycle['terminal'] == result
+    assert lifecycle['host_quiescent'] is True
+    assert not (run_dir / 'host-task.json').exists()
+
+
+def test_dsh_preexisting_stop_never_launches_a_host(
+        tmp_path, monkeypatch,
+):
+    import rpnh_ab.drivers.dsh as driver_module
+    monkeypatch.setattr(driver_module.subprocess, 'Popen',
+                        lambda *_args, **_kwargs: pytest.fail('stopped run must not spawn'))
+    checkout = tmp_path / 'pinned-dsh'; checkout.mkdir()
+    profile = tmp_path / 'profile.json'; profile.write_text('{}')
+    stop_path = tmp_path / 'stop.request'; stop_path.touch()
+
+    lifecycle = driver_module.DshDriver().run(
+        run_dir=tmp_path / 'run', profile=profile,
+        broker=SimpleNamespace(endpoint='/tmp/ab.sock', run_id='run-1'),
+        messages=[{'role': 'user', 'content': 'complete the task'}],
+        schemas=_dsh_schemas(), control_root=tmp_path / 'control',
+        dsh_checkout=checkout, stop_path=stop_path)
+
+    result = load(tmp_path / 'run' / 'host-result.json')
+    assert result['stop_requested'] is True
+    assert result['outcome']['status'] == 'nonterminal'
+    assert result['admitted'] is False
+    assert result['process_exit_confirmed'] is True
+    assert result['process_quiescent'] is True
+    assert result['process_group_alive'] is False
+    assert result['forced_termination'] is False
+    assert result['host_quiescent'] is True
+    assert lifecycle['manual_stop'] is True
+    assert lifecycle['terminal'] is None
+    assert lifecycle['host_quiescent'] is True
+    assert lifecycle['admitted'] is False
+
+
+def test_dsh_stop_while_active_is_nonterminal_but_host_quiescent(
+        tmp_path, monkeypatch,
+):
+    import rpnh_ab.drivers.dsh as driver_module
+    stop_path = tmp_path / 'stop.request'
+
+    class ActiveProcess:
+        pid = 43211
+
+        def __init__(self, _command, *, stdout, **_kwargs):
+            stdout.write(b'RPNH session: session-stopped\n')
+            self.returncode = None
+            self.polls = 0
+
+        def poll(self):
+            self.polls += 1
+            if self.polls == 1:
+                stop_path.touch()
+            return self.returncode
+
+        def wait(self, timeout=None):
+            return self.returncode
+
+    process = None
+
+    def start(*args, **kwargs):
+        nonlocal process
+        process = ActiveProcess(*args, **kwargs)
+        return process
+
+    def stop(active):
+        active.returncode = -15
+        return True
+
+    active_ref = {'entity_type': 'turn/v1', 'entity_id': 'turn-1',
+                  'version_id': 'turn-version-1'}
+    history = {
+        'active': {'state': 'running'}, 'active_turn_ref': active_ref,
+        'latest_turn_ref': active_ref, 'latest_committed_turn_ref': None,
+        'committed_history': [],
+    }
+    monkeypatch.setattr(driver_module.subprocess, 'Popen', start)
+    monkeypatch.setattr(driver_module.subprocess, 'run', lambda *_args, **_kwargs:
+        SimpleNamespace(returncode=0, stdout=json.dumps(history), stderr=''))
+    monkeypatch.setattr(driver_module, '_stop_group', stop)
+    monkeypatch.setattr(driver_module, '_group_alive', lambda _process: False)
+    checkout = tmp_path / 'pinned-dsh'; checkout.mkdir()
+    profile = tmp_path / 'profile.json'; profile.write_text('{}')
+
+    lifecycle = driver_module.DshDriver().run(
+        run_dir=tmp_path / 'run', profile=profile,
+        broker=SimpleNamespace(endpoint='/tmp/ab.sock', run_id='run-1'),
+        messages=[{'role': 'user', 'content': 'complete the task'}],
+        schemas=_dsh_schemas(), control_root=tmp_path / 'control',
+        dsh_checkout=checkout, stop_path=stop_path)
+
+    result = load(tmp_path / 'run' / 'host-result.json')
+    assert result['stop_requested'] is True
+    assert result['admitted'] is True
+    assert result['process_group_alive'] is False
+    assert result['forced_termination'] is True
+    assert result['host_quiescent'] is True
+    assert lifecycle['manual_stop'] is True
+    assert lifecycle['terminal'] is None
+    assert lifecycle['host_quiescent'] is True
+
+
+def test_dsh_stop_kills_surviving_group_after_leader_exit(monkeypatch):
+    import rpnh_ab.drivers.dsh as driver_module
+
+    class ExitedLeader:
+        pid = 43211
+        def poll(self): return 0
+
+    alive = {'value': True}
+    signals = []
+    def killpg(_pid, sig):
+        signals.append(sig)
+        if sig == driver_module.signal.SIGKILL:
+            alive['value'] = False
+    ticks = iter((0.0, 16.0, 17.0))
+    monkeypatch.setattr(driver_module, '_group_alive',
+                        lambda _process: alive['value'])
+    monkeypatch.setattr(driver_module.os, 'killpg', killpg)
+    monkeypatch.setattr(driver_module.time, 'monotonic', lambda: next(ticks))
+    monkeypatch.setattr(driver_module.time, 'sleep', lambda _seconds: None)
+    assert driver_module._stop_group(ExitedLeader()) is True
+    assert signals == [driver_module.signal.SIGTERM,
+                       driver_module.signal.SIGKILL]
+
 @pytest.mark.parametrize('result,admitted,quiet,terminal',[
-    ({'registry_path':'/exists','host_quiescent':True,'process_quiescent':True,'outcome':None,'admitted':False},False,False,False),
-    ({'registry_path':'/exists','host_quiescent':True,'process_quiescent':True,'outcome':{'status':'terminal','answer':'ok'},'admitted':True},True,True,True),
-    ({'registry_path':'/exists','host_quiescent':True,'process_quiescent':True,'outcome':{'status':'terminal'},'admitted':False},False,False,True),
-    ({'registry_path':'/exists','host_quiescent':False,'process_quiescent':True,'outcome':{'status':'terminal'},'admitted':True},True,False,True),
+    ({'registry_path':'/exists','process_exit_confirmed':True,'host_quiescent':True,'process_quiescent':True,'outcome':None,'admitted':False},False,True,False),
+    ({'registry_path':'/exists','process_exit_confirmed':True,'host_quiescent':True,'process_quiescent':True,'outcome':{'status':'terminal','answer':'ok'},'admitted':True},True,True,True),
+    ({'registry_path':'/exists','process_exit_confirmed':True,'host_quiescent':True,'process_quiescent':True,'outcome':{'status':'terminal'},'admitted':False},False,True,False),
+    ({'registry_path':'/exists','process_exit_confirmed':True,'host_quiescent':False,'process_quiescent':True,'outcome':{'status':'terminal'},'admitted':True},True,False,False),
 ])
 def test_dsh_result_mapping_cannot_turn_startup_failure_into_score(tmp_path,result,admitted,quiet,terminal):
     from rpnh_ab.drivers.dsh import lifecycle_from_result

@@ -313,7 +313,7 @@ occurrence 作为彼此独立的 RPNH child Registry 运行。仓库内的 timeo
 
 ## Benchmark 示例：AutomationBench 公开业务任务
 
-AutomationBench example 将一个 RPNH native actor 接入固定上游的三项 API 工具和模拟业务 world。
+已保留 AutomationBench 实验将一个 RPNH native actor 接入固定上游的三项 API 工具和模拟业务 world。
 仓库内保留的 score-blind 18 题 pilot 覆盖六个业务域与三种集成宽度。严格首轮为 8/18 满分、
 17/18 基础设施闭环并评分，共 437 次模型调用和 1,081 次成功工具分派。
 
@@ -323,8 +323,10 @@ AutomationBench example 将一个 RPNH native actor 接入固定上游的三项 
 python -I examples/automationbench/example.py results
 ```
 
-example 包含逐题成绩、独立修复复验、与原始 public-600 汇总的描述性比较及 native 适配器；
-它不声称完成 600 题或形成同条件榜单对照。完整说明见
+example 包含逐题成绩、独立修复复验、与原始 public-600 汇总的描述性比较及明确历史条件。当前
+扩展增加 native/DSH installed-host acceptance、精确冻结 cohort、严格 score 资格，以及可从 shell、
+Basic、Codex 或 OpenCode 操作的同一权威 CLI；这些扩展不是历史成绩的证据。它不声称完成 600 题
+或形成同条件榜单对照。完整说明见
 [AutomationBench 指南](../../examples/automationbench/README_ZH.md)。
 
 ## 查看与修改

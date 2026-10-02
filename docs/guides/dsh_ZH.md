@@ -58,10 +58,14 @@ rpnh-dsh /absolute/path/to/deepseek-harness \
 该命令可能产生真实模型调用。使用前必须记录选中的 profile、provider、exact model 和调用
 预算。RPNH 不会静默切换路线或模型。
 
-DSH 对完整 frame 施加 2 MiB 限制，其中包括历史、工具声明、请求正文和配置的最大响应。
+DSH 对完整 frame 施加 68 MiB 限制，其中包括历史、工具声明、请求正文和配置的最大响应。
 如果通用 profile 仅响应额度就占满或超过该 frame，系统会在模型 attempt 准入前拒绝它。
 用户应显式创建 DSH 专用 profile：保持同一 provider route、凭据和 exact model，只为宿主
 声明留有实际余量的响应预算。这是宿主预算，不是 provider 或 model fallback。
+
+新 session 的 module attempt 预算默认是 48。`--attempt-budget` 可指定其他正整数上限；仅当
+工作负载协议确实需要时，`--attempt-budget unmetered` 才移除这一项 module-attempt 上限。
+所选值会随 run 持久化；resume 使用原声明，因此不接受替换预算。
 
 ## 恢复边界
 

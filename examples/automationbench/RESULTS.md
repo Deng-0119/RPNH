@@ -1,6 +1,6 @@
 # Retained 18-task stratified pilot
 
-[中文](RESULTS_ZH.md) | [Example](README.md) | [Comparison](COMPARISON.md)
+[中文](RESULTS_ZH.md) | [Example](README.md) | [Exact condition](EXPERIMENT.md) | [Comparison](COMPARISON.md)
 
 Date: 2026-10-02. Executor label: `deepseek-v4-pro`. The label records the
 configured local route and is not a supported-model promise.

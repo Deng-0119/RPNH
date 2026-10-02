@@ -61,13 +61,19 @@ This command can make a real model call. Record the selected profile,
 provider, exact model and call budget before using it. RPNH never silently
 switches route or model.
 
-DSH applies a 2 MiB limit to the complete framed exchange, including history,
+DSH applies a 68 MiB limit to the complete framed exchange, including history,
 tool declarations, request content and the configured maximum response. A
 general profile whose response allowance alone consumes or exceeds that frame
 is rejected before model-attempt admission. Create an explicit user-owned DSH
 profile that keeps the same provider route, credentials and exact model while
 declaring realistic response headroom. This is a host-specific budget, not a
 provider or model fallback.
+
+New sessions use a 48-attempt module budget by default. A positive
+`--attempt-budget` selects a different explicit cap; `--attempt-budget
+unmetered` removes only that module-attempt cap for a workload whose protocol
+requires it. The selected value is persisted with the run. Resume uses that
+persisted declaration and therefore does not accept a replacement budget.
 
 ## Recovery boundary
 

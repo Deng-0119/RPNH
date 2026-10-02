@@ -1,6 +1,6 @@
 # Retained pilot protocol
 
-[中文](PROTOCOL_ZH.md) | [Results](../RESULTS.md)
+[中文](PROTOCOL_ZH.md) | [Results](../RESULTS.md) | [Exact condition](../EXPERIMENT.md) | [Current extensions](../EXTENSIONS.md)
 
 The retained result used the AutomationBench public split at commit
 `4a8e1061254004d9dac807054eed33fad7d1ff14`, the API toolset, and one fresh
@@ -23,4 +23,6 @@ remediation is separate.
 
 The adapter adds no LLM judge and no cumulative model-call, tool-call, spend, or
 task-duration limit. Per-request and managed-operation limits from the selected
-RPNH profile still apply and must be recorded for any new run.
+RPNH profile still apply and must be recorded for any new run. Current cohort,
+host-acceptance and DSH features are later extensions; they do not alter this
+retained protocol.

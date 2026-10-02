@@ -156,7 +156,7 @@ same Registry/run. See [usage](docs/guides/usage.md) and the
 | JB clinical packet | Public clinical sources, document/data analysis and a Designer-authored graph | [Reproduce JB](examples/jb_steering_packet/README.md) |
 | 3-DOF powered descent | Numerical implementation, independent validation and a Designer-authored graph | [Reproduce 3-DOF](examples/three_dof_powered_descent/README.md) |
 | HarnessAudit Office benchmark | Native agent teams, registered business tools, original scoring and retained results | [Office example](examples/harnessaudit_office/README.md) |
-| AutomationBench public workflows | Native managed tools, frozen simulated worlds, strict task-level scoring and a retained 18-task pilot | [AutomationBench example](examples/automationbench/README.md) |
+| AutomationBench public workflows | Retained native 18-task pilot plus new native/DSH execution, frozen-cohort and auditable evidence tooling | [AutomationBench example](examples/automationbench/README.md) |
 
 Execution-gallery pages identify the origin of their actual dashboard images.
 Benchmark examples supply scored records and viewer commands for newly

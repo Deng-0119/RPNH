@@ -14,13 +14,16 @@ def records(path: Path):
     return [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()]
 
 
-def crosscheck(attempt: Path, registry_path: Path | None = None) -> dict:
+def crosscheck(attempt: Path, registry_path: Path | None = None,
+               registry_rows: list[dict] | None = None) -> dict:
     events = records(attempt / "tool_events.jsonl")
     requests = {x["sequence"]: x["request"] for x in events if x["kind"] == "dispatch_started"}
     returned = {x["sequence"]: x["response"] for x in events
                 if x["kind"] == "dispatch_finished" and x["response"].get("ok") is True}
+    if registry_rows is not None and registry_path is not None:
+        raise ValueError("choose a Registry path or in-memory rows, not both")
     registry_path = registry_path or (attempt / "registry_objects.jsonl")
-    rows = records(registry_path)
+    rows = registry_rows if registry_rows is not None else records(registry_path)
     matched, mismatches, native_returned = set(), [], 0
     for row in rows:
         if row["object_type"] != "agent_action/v3":
@@ -38,7 +41,7 @@ def crosscheck(attempt: Path, registry_path: Path | None = None) -> dict:
             mismatches.append({"version_id": row["version_id"], "sequence": seq})
         else:
             matched.add(seq)
-    available = registry_path.is_file()
+    available = registry_rows is not None or registry_path.is_file()
     return {"schema": "rpnh-ab/bridge-registry-check/v1", "registry_projection_available": available,
             "environment_returned": len(returned), "native_returned_records": native_returned,
             "matched_unique_sequences": len(matched), "mismatches": mismatches,

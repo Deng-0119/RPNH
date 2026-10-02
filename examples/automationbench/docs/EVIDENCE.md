@@ -13,11 +13,23 @@ itself prove that the model consumed it, and a terminal prose report does not
 prove the business state. A score is valid only after host and world-owner
 quiescence are established.
 
-Attempts, interruptions, errors, and score revisions are append-only. A
-remediation path never replaces a first attempt. Reprojection and rescoring may
-read frozen evidence but must not replay business work.
+Attempts, interruptions, errors, and score revisions are append-only. A score
+is eligible only when its task ID and task-contract digest match the frozen
+plan, the private task-contract file still matches the digest fixed at attempt
+creation, its scoring-input and final-world hashes still match, and the retained
+lifecycle proves host/world-owner quiescence. A revision first validates the
+preceding score against those same inputs. A remediation path never replaces a
+first attempt. Reprojection and rescoring may read frozen evidence but must not
+replay business work.
 
-The public example contains sanitized plans and summaries only. Raw Registry
+The return ZIP includes `normalization_events.jsonl` when present and records
+the SHA-256 and size of every exported, post-redaction byte sequence. This
+inventory verifies the copy that was actually returned; it is not a hash of an
+unredacted private original.
+
+The historical public result contains sanitized plans and summaries only. New
+extension runs keep their plan, condition-bound seven-case host acceptance,
+attempt evidence and export in a caller-owned work directory. Raw Registry
 databases, request/response transcripts, private execution profiles, and local
 paths remain outside the repository. The checked-in summary supports auditing
 the reported arithmetic, not full replay of every provider interaction.

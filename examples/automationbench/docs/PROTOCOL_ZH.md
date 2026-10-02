@@ -1,6 +1,6 @@
 # 保留 pilot 的实验协议
 
-[English](PROTOCOL.md) | [结果](../RESULTS_ZH.md)
+[English](PROTOCOL.md) | [结果](../RESULTS_ZH.md) | [精确条件](../EXPERIMENT_ZH.md) | [当前扩展](../EXTENSIONS_ZH.md)
 
 本次保留结果使用 commit `4a8e1061254004d9dac807054eed33fad7d1ff14` 的 AutomationBench
 public split、API toolset，并对每个选中任务执行一次新首轮。抽样在评分前冻结。
@@ -16,4 +16,5 @@ public split、API toolset，并对每个选中任务执行一次新首轮。抽
 分数保持 null。主汇总是严格首轮 cohort；修复复验单列。
 
 适配器不增加 LLM judge，也不增加累计模型调用、工具调用、费用或整题时长上限。新运行仍须记录
-所选 RPNH profile 的单次请求和 managed operation 限制。
+所选 RPNH profile 的单次请求和 managed operation 限制。当前 cohort、host acceptance 与 DSH
+能力属于后续扩展，不改变本保留协议。

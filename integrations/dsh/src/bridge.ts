@@ -3,7 +3,8 @@ import { randomUUID } from 'node:crypto'
 import { Context, Service } from '@deepseek-ai/cordis'
 export const REVISION = 'ddefc45fbc7f8e46dd73185e68295696d1297887'
 export const PROTOCOL = 'rpnh/dsh/v1'
-export const LIMIT = 2 * 1024 * 1024
+export const MANAGED_TOOL_RESULT_LIMIT = 16 * 1024 * 1024
+export const LIMIT = 4 * MANAGED_TOOL_RESULT_LIMIT + 4 * 1024 * 1024
 export type JsonRecord = Record<string, any>
 export type PublicExecutionProfile = Readonly<{
   schema_version: 'rpnh/dsh_execution_profile/v2' | 'rpnh/dsh_execution_profile/v3'
@@ -36,6 +37,7 @@ export interface BridgeProcessConfig {
   execution?: BridgeExecution['execution']
   pluginConfigPath?: string
   managedTools?: readonly ManagedToolSelection[]
+  attemptBudget?: number | null
 }
 export interface BridgeRuntimeConfig extends BridgeProcessConfig {
   data: number[]
@@ -74,8 +76,12 @@ export class OwnerClient {
       ? []
       : ['--plugin-config', config.pluginConfigPath,
         ...(config.managedTools ?? []).flatMap(tool => ['--managed-tool', `${tool.name}=${tool.selector}`])]
+    const attemptBudgetArguments = config.attemptBudget === undefined
+      ? []
+      : ['--attempt-budget', config.attemptBudget === null ? 'unmetered' : String(config.attemptBudget)]
     this.process = spawn(config.python, ['-u', '-m', 'cpn.dsh.server', '--root', config.root,
       '--session', id, ...executionArguments, ...managedToolArguments,
+      ...attemptBudgetArguments,
       ...(create ? ['--create'] : [])], { stdio: ['pipe', 'pipe', 'pipe'] })
     this.readyPromise = new Promise<void>((resolve, reject) => { this.pending.set('ready', { resolve, reject }) })
     this.process.stderr.on('data', chunk => { this.stderr = (this.stderr + chunk.toString()).slice(-4096) })
