@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "rpnh-harnessaudit-bridge"
+version = "0.3.1"
+description = "RPNH Office benchmark example with independently installed HarnessAudit"
+requires-python = ">=3.11"
+dependencies = ["PyYAML>=6,<7", "jsonschema>=4.20,<5"]
+
+[project.optional-dependencies]
+test = ["pytest>=8,<10"]
+
+[project.scripts]
+rpnh-ha = "rpnh_ha.cli:main"
+
+[project.entry-points."rpnh.plugins"]
+ha_manager = "rpnh_ha.native_plugin:manager_factory"
+ha_admin = "rpnh_ha.native_plugin:admin_factory"
+ha_policy = "rpnh_ha.native_plugin:policy_factory"
+ha_extra = "rpnh_ha.native_plugin:extra_factory"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"

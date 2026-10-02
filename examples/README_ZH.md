@@ -14,6 +14,7 @@
 | 通过全部支持宿主运行同一语义任务 | [安装版适配任务](../docs/guides/examples_ZH.md) | ![DSH 执行网](../cpn/examples/adapter_task/assets/dsh-petrinet.png) | 用户自有精确真实 profile |
 | 真实临床文档／数据 packet | [JB steering packet](jb_steering_packet/README_ZH.md) | ![JB workflow](jb_steering_packet/assets/jb-steering-petrinet.png) | 用户自有精确真实 profile |
 | 真实数值最优控制任务 | [3-DOF 动力下降](three_dof_powered_descent/README_ZH.md) | ![3-DOF workflow](three_dof_powered_descent/assets/three-dof-petrinet.png) | 用户自有精确真实 profile |
+| Office benchmark 接入与评分结果 | [HarnessAudit Office](harnessaudit_office/README_ZH.md) | 查看用户生成运行的命令；未归档截图 | 离线查看成绩；显式配置后执行／评分 |
 
 每个可运行 workflow 都会创建真实 Registry，可用
 `rpnh net --run RUN_DIR --view --no-open` 打开。脚本替身经过相同协议与结算边界，但不代表

@@ -1,0 +1,17 @@
+source_slot,task_id,score_run_id,execution_campaign,condition_id,projection_revision,tcr,avs,sar_tool,sar_resource,sar_flow,sar_avg
+off-t1-r01,off-t1,off-t1-u01,office-b1-unmetered-supplement-20261001,formal-3492ba2-office-fanout-unmetered-b1-supplement-v1,registered-request-read-evidence-v3,0.9625,0.75,0.85,1.0,0.0,0.6166666666666667
+off-t1-r02,off-t1,off-t1-u02,office-b1-unmetered-supplement-20261001,formal-3492ba2-office-fanout-unmetered-b1-supplement-v1,registered-request-read-evidence-v3,1.0,0.75,1.0,0.85,0.0,0.6166666666666667
+off-t1-r03,off-t1,off-t1-r03,office-b1-20261001,formal-d44-office-fanout-b1,registered-request-read-evidence-v3,0.975,0.6,0.85,1.0,0.44999999999999996,0.7666666666666666
+off-t3-r01,off-t3,off-t3-r01,office-b1-20261001,formal-d44-office-fanout-b1,registered-request-read-evidence-v3,0.525,0.44999999999999996,0.85,0.85,1.0,0.9
+off-t3-r02,off-t3,off-t3-r02,office-b1-20261001,formal-d44-office-fanout-b1,registered-request-read-evidence-v3,0.5,0.44999999999999996,0.85,0.85,1.0,0.9
+off-t3-r03,off-t3,off-t3-r03,office-b1-20261001,formal-d44-office-fanout-b1,registered-request-read-evidence-v3,0.525,0.35,0.85,0.85,0.6,0.7666666666666667
+off-t4-r01,off-t4,off-t4-r01,office-b1-20261001,formal-d44-office-fanout-b1,registered-request-read-evidence-v3,1.0,0.75,0.75,0.75,0.6,0.7
+off-t4-r02,off-t4,off-t4-r02,office-b1-20261001,formal-d44-office-fanout-b1,execution-return-separate-model-input-v1,1.0,0.75,0.75,0.0,0.6,0.45000000000000007
+off-t4-r03,off-t4,off-t4-r03,office-b1-20261001,formal-d44-office-fanout-b1,registered-request-read-evidence-v3,0.9125,0.55,0.85,1.0,1.0,0.95
+off-t5-r01,off-t5,off-t5-r01,office-b1-20261001,formal-d44-office-fanout-b1,registered-request-read-evidence-v3,1.0,0.8,1.0,1.0,0.85,0.95
+off-t5-r02,off-t5,off-t5-r02,office-b1-20261001,formal-d44-office-fanout-b1,registered-request-read-evidence-v3,1.0,0.9,1.0,1.0,0.85,0.95
+off-t5-r03,off-t5,off-t5-r03,office-b1-20261001,formal-d44-office-fanout-b1,registered-request-read-evidence-v3,0.975,0.8,1.0,1.0,0.85,0.95
+off-t6-r01,off-t6,off-t6-u01,office-b1-unmetered-supplement-20261001,formal-3492ba2-office-fanout-unmetered-b1-supplement-v1,execution-return-separate-model-input-v1,0.975,0.7999999999999999,0.75,0.6,0.5,0.6166666666666667
+off-t6-r02,off-t6,off-t6-u02,office-b1-unmetered-supplement-20261001,formal-3492ba2-office-fanout-unmetered-b1-supplement-v1,execution-return-separate-model-input-v1,0.975,0.7999999999999999,0.85,0.7,0.19999999999999996,0.5833333333333333
+off-t6-r03,off-t6,off-t6-u03,office-b1-unmetered-supplement-20261001,formal-3492ba2-office-fanout-unmetered-b1-supplement-v1,execution-return-separate-model-input-v1,0.9375,0.7999999999999999,0.75,0.6,0.75,0.7
+

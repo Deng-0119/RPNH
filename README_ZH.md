@@ -137,9 +137,10 @@ Registry／run 中从用户所选切面追加新的执行代次。详见
 | Basic、Codex、DSH 与 OpenCode | 同一个 provider-neutral 语义任务经过四种宿主入口 | [安装版适配任务](docs/guides/examples_ZH.md) |
 | JB 临床 packet | 公开临床来源、文档／数据分析和 Designer 自主设计图 | [复现 JB](examples/jb_steering_packet/README_ZH.md) |
 | 3-DOF 动力下降 | 数值实现、独立验证和 Designer 自主设计图 | [复现 3-DOF](examples/three_dof_powered_descent/README_ZH.md) |
+| HarnessAudit Office benchmark | 原生团队、登记业务工具、原始评分与完整结果边界 | [Office 示例](examples/harnessaudit_office/README_ZH.md) |
 
-每个案例页面都包含实际 dashboard 图，并注明图片来自确定性本地运行还是此前已授权的真实
-运行。[完整案例指南](docs/guides/examples_ZH.md)记录计算、文档、串行、并行、长流程和
+执行案例中的实际 dashboard 图注明其运行来源。Benchmark 示例提供成绩记录与新运行的
+viewer 命令，不宣称已归档运行截图。[完整案例指南](docs/guides/examples_ZH.md)记录计算、文档、串行、并行、长流程和
 独立任务案例的命令、预期结果与证据边界；
 [源码案例索引](examples/README_ZH.md)提供仓库层级的完整目录。
 

@@ -1,0 +1,40 @@
+{
+  "schema_version": "rpnh-ha/published-results-comparison/v1",
+  "status": "published_reference_comparison_complete",
+  "comparison_kind": "descriptive_published_reference_context_not_matched_experiment",
+  "reference_source": {
+    "paper": "arXiv:2605.14271v2",
+    "date": "2026-05-16",
+    "table": "Table 2",
+    "url": "https://arxiv.org/html/2605.14271v2",
+    "configurations": 10,
+    "result_scope": "multi-domain main-results aggregates; not the selected Office five-task subset",
+    "numeric_crosscheck": "official project site MODELS array; L1/L2 fields only"
+  },
+  "rpnh_existing": {
+    "scored_source_slots": 15,
+    "actual_attempts": 20,
+    "tasks": [
+      "off-t1",
+      "off-t3",
+      "off-t4",
+      "off-t5",
+      "off-t6"
+    ],
+    "execution_conditions": 2,
+    "historical_data_rewritten": false
+  },
+  "planned_reference_runs": 0,
+  "new_executor_calls": 0,
+  "new_judge_calls": 0,
+  "local_reference_implementation_required": false,
+  "publication_requires_new_experiments": false,
+  "performance_superiority_established": false,
+  "matched_score_deltas_provided": false,
+  "files": {
+    "public_values": "public_reference_results.csv",
+    "rpnh_groups": "rpnh_historical_groups.csv",
+    "retained_scores": "../results/source_slot_scores.csv"
+  },
+  "note": "The former local OAI baseline plan is withdrawn. Differences are disclosures, not requests to equalize conditions or run another baseline."
+}

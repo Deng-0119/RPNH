@@ -1,0 +1,16 @@
+{
+  "rpnh": {
+    "repository": "Deng-0119/RPNH",
+    "commit": "3492ba2fb50e40173afebae627138afea0bc2f24"
+  },
+  "harnessaudit": {
+    "repository": "UCSB-AI/HarnessAudit",
+    "commit": "6317162590aeeb1c8dde32b880ac199933343e4a"
+  },
+  "new_run_defaults": {
+    "max_model_calls": null,
+    "max_tool_calls": null,
+    "max_seconds": null
+  },
+  "scope": "new runs; historical conditions remain in results/conditions.json"
+}

@@ -1,0 +1,120 @@
+{
+  "schema_version": "rpnh-ha/original-comparison-sources/v1",
+  "review_date": "2026-10-01",
+  "harnessaudit_commit": "6317162590aeeb1c8dde32b880ac199933343e4a",
+  "rpnh_commit": "3492ba2fb50e40173afebae627138afea0bc2f24",
+  "external_sources": [
+    {
+      "id": "frameworks",
+      "url": "https://github.com/UCSB-AI/HarnessAudit/blob/6317162590aeeb1c8dde32b880ac199933343e4a/multi_agent/frameworks/__init__.py",
+      "symbols": "get_framework_adapter"
+    },
+    {
+      "id": "launcher",
+      "url": "https://github.com/UCSB-AI/HarnessAudit/blob/6317162590aeeb1c8dde32b880ac199933343e4a/multi_agent/run_ma.sh",
+      "symbols": "HARNESS / FRAMEWORK / MAX_TURNS / AGENT_TIMEOUT"
+    },
+    {
+      "id": "oai_adapter",
+      "url": "https://github.com/UCSB-AI/HarnessAudit/blob/6317162590aeeb1c8dde32b880ac199933343e4a/multi_agent/frameworks/oai/adapter.py",
+      "symbols": "OAIAdapter.run; _build_run_config"
+    },
+    {
+      "id": "oai_tools",
+      "url": "https://github.com/UCSB-AI/HarnessAudit/blob/6317162590aeeb1c8dde32b880ac199933343e4a/multi_agent/frameworks/oai/tools.py",
+      "symbols": "_build_params_schema; _make_domain_handler; build_delegate_tool"
+    },
+    {
+      "id": "oai_prompts",
+      "url": "https://github.com/UCSB-AI/HarnessAudit/blob/6317162590aeeb1c8dde32b880ac199933343e4a/multi_agent/frameworks/oai/prompts.py",
+      "symbols": "build_oai_hub_prompt; build_oai_spoke_prompt"
+    },
+    {
+      "id": "clawteam",
+      "url": "https://github.com/UCSB-AI/HarnessAudit/blob/6317162590aeeb1c8dde32b880ac199933343e4a/multi_agent/frameworks/clawteam/adapter.py",
+      "symbols": "ClawTeamAdapter.run"
+    },
+    {
+      "id": "dispatch",
+      "url": "https://github.com/UCSB-AI/HarnessAudit/blob/6317162590aeeb1c8dde32b880ac199933343e4a/multi_agent/frameworks/core/tool_dispatch.py",
+      "symbols": "dispatch_tool"
+    },
+    {
+      "id": "completion",
+      "url": "https://github.com/UCSB-AI/HarnessAudit/blob/6317162590aeeb1c8dde32b880ac199933343e4a/multi_agent/completion_judge.py",
+      "symbols": "format_trajectory_evidence; evaluate_completion_checkpoints"
+    },
+    {
+      "id": "checker",
+      "url": "https://github.com/UCSB-AI/HarnessAudit/blob/6317162590aeeb1c8dde32b880ac199933343e4a/multi_agent/checker.py",
+      "symbols": "_communication_payload_to_scan; compute_metrics"
+    },
+    {
+      "id": "recognizer",
+      "url": "https://github.com/UCSB-AI/HarnessAudit/blob/6317162590aeeb1c8dde32b880ac199933343e4a/multi_agent/recognizer.py",
+      "symbols": "office regex registration"
+    },
+    {
+      "id": "managed",
+      "url": "https://github.com/Deng-0119/RPNH/blob/3492ba2fb50e40173afebae627138afea0bc2f24/cpn/plugins/managed_tools.py",
+      "symbols": "_authorize; invoke; _existing; _invoke_owned"
+    },
+    {
+      "id": "agent_task",
+      "url": "https://github.com/Deng-0119/RPNH/blob/3492ba2fb50e40173afebae627138afea0bc2f24/cpn/rpnh/agent_tasks.py",
+      "symbols": "AgentTaskSpec; _execute_agent_task"
+    },
+    {
+      "id": "graph",
+      "url": "https://github.com/Deng-0119/RPNH/blob/3492ba2fb50e40173afebae627138afea0bc2f24/cpn/rpnh/agent_workflows.py",
+      "symbols": "AgentWorkflowGraph; build_agent_workflow_module"
+    }
+  ],
+  "local_sources": [
+    "src/rpnh_ha/workflow.py",
+    "src/rpnh_ha/local_driver.py",
+    "src/rpnh_ha/scoring.py",
+    "src/rpnh_ha/registry_export.py",
+    "src/rpnh_ha/handoff_capture.py",
+    "results/source_slot_scores.csv",
+    "results/conditions.json"
+  ],
+  "method": "Read pinned source via GitHub connector and supplied example files. Source comparison is not a model experiment.",
+  "comparison_mode": "published_results_context",
+  "public_result_sources": [
+    {
+      "id": "paper-v2-table2",
+      "url": "https://arxiv.org/html/2605.14271v2#S5.T2",
+      "version": "2605.14271v2",
+      "published_date": "2026-05-16",
+      "fields": [
+        "sar_tool",
+        "sar_resource",
+        "sar_flow",
+        "sar_avg",
+        "avs",
+        "tcr"
+      ],
+      "scope": "multi-domain main results"
+    },
+    {
+      "id": "official-project",
+      "url": "https://harnessaudit.github.io/",
+      "source_url": "https://github.com/HarnessAudit/HarnessAudit.github.io/blob/main/index.html",
+      "source_lines": "1530-1581",
+      "checked_date": "2026-10-01",
+      "fields": "MODELS L1/L2",
+      "note": "numeric cross-check only; no task-level results inferred"
+    },
+    {
+      "id": "public-artifact-scope",
+      "url": "https://github.com/UCSB-AI/HarnessAudit#readme",
+      "checked_date": "2026-10-01",
+      "note": "README states that local traces, result JSONs, SQLite snapshots and paper build artifacts are not committed"
+    }
+  ],
+  "version_notes": [
+    "Only Table 2 L1/L2 fields were copied and cross-checked. Website headline Overall and some trade-off data are not used or silently reconciled.",
+    "Paper PDF could not be fetched by the browser due to its content-size limit; values were checked in the arXiv HTML table and official site data, not claimed as a PDF screenshot review."
+  ]
+}

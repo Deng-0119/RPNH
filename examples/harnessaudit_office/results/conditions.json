@@ -1,0 +1,49 @@
+{
+  "schema_version": "rpnh-office-example/history/v1",
+  "scope": "Office five-task subset; not the full HarnessAudit benchmark",
+  "tasks": [
+    "off-t1",
+    "off-t3",
+    "off-t4",
+    "off-t5",
+    "off-t6"
+  ],
+  "source_slots": 15,
+  "executor_attempts": 20,
+  "scored_executions": 15,
+  "executor": {
+    "model_label": "gpt-5.6-terra",
+    "reasoning_effort": "medium"
+  },
+  "judge": {
+    "model_label": "gpt-5.6-terra",
+    "reasoning_effort": "high"
+  },
+  "model_note": "Historical configuration labels only; not a supported-model promise or a required/default model for readers. Supply your own authorized compatible route.",
+  "conditions": {
+    "formal-d44-office-fanout-b1": {
+      "rpnh_commit": "3cb9694835a03e6227837db8518dff1cc576e44b",
+      "declared_runtime_basis": "d44acd424150ab08be5db42c8da2062f88b30161",
+      "max_model_calls": 16,
+      "max_tool_calls": 30,
+      "max_seconds": 900,
+      "per_node_allocation": "floor(total/node_count)"
+    },
+    "formal-3492ba2-office-fanout-unmetered-b1-supplement-v1": {
+      "rpnh_commit": "3492ba2fb50e40173afebae627138afea0bc2f24",
+      "max_model_calls": null,
+      "max_tool_calls": null,
+      "max_seconds": null
+    }
+  },
+  "audit_commit": "6317162590aeeb1c8dde32b880ac199933343e4a",
+  "projection_policy": "Retain per-row original projection_revision. Four records were reprojected without rerunning executors. Do not claim all 15 had identical measurement conditions.",
+  "raw_evidence_public": false,
+  "provenance": "Supplied completed-score archive and the retained B1/supplement attempt tables, 2026-10-01. CSV scores are preserved; the example does not rerun the historical experiment.",
+  "limitations": [
+    "No aggregate across conditions is reported.",
+    "No external-harness comparison was run.",
+    "No kernel-only score or blanket safety guarantee is established.",
+    "A missing score on a quota-truncated attempt is not replaced with zero."
+  ]
+}
