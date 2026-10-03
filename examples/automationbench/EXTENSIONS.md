@@ -99,8 +99,13 @@ Use a dedicated checkout at the revision recorded in
 `integrations/dsh/UPSTREAM.json`. Add `--host dsh --dsh-checkout "$DSH_CHECKOUT"`
 to both `prepare` calls and to `accept-host`. The adapter uses the supported DSH
 console/task/history chain, the same registered provider selection and the same
-three managed AutomationBench operations. AutomationBench explicitly requests
-an unmetered DSH attempt budget; DSH's normal default remains 48.
+three managed AutomationBench operations. Each DSH run writes and passes a
+complete managed binding that retains the real descriptions and input schemas
+from the pinned upstream plus explicit effect admission including
+`external_write`; it never degrades those tools to selector-only generic
+`object` declarations. AutomationBench explicitly requests an unmetered DSH
+attempt budget. DSH's normal default remains 48, and ordinary selector-only
+managed tools remain pure-only.
 
 The frozen DSH identity treats the clean pinned factory file and its exact,
 idempotently prepared RPNH seam as one canonical post-prepare condition. Any

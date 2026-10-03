@@ -10,7 +10,7 @@ from cpn.plugins.catalog import load_catalog
 from cpn.plugins.api import json_copy
 from rpnh_ab.broker import Broker
 from rpnh_ab.io import load, sha, write_new
-from rpnh_ab.plugin import bindings, configuration
+from rpnh_ab.plugin import bindings, configuration, factory
 from rpnh_ab.native import build_spec
 from rpnh_ab.run_spec import (benchmark_spec, execution_spec, acceptance_identity,
                              validate_acceptance, write_launch, load_launch, REQUIRED_ACCEPTANCE)
@@ -259,10 +259,75 @@ def test_manual_stop_is_retained_but_never_frozen_or_scored(tmp_path,upstream,mo
 
 
 def _dsh_schemas():
+    parameters = {
+        'api_search': {
+            'type': 'object', 'additionalProperties': False,
+            'properties': {
+                'query': {'type': 'string'},
+                'top_k': {'type': 'integer', 'minimum': 1},
+            },
+            'required': ['query'],
+        },
+        'api_fetch': {
+            'type': 'object', 'additionalProperties': False,
+            'properties': {
+                'method': {'type': 'string'}, 'url': {'type': 'string'},
+                'params': {}, 'body': {},
+            },
+            'required': ['method', 'url'],
+        },
+        'base64_encode': {
+            'type': 'object', 'additionalProperties': False,
+            'properties': {'text': {'type': 'string'}},
+            'required': ['text'],
+        },
+    }
     return [{'type': 'function', 'function': {
-        'name': name, 'description': f'Execute {name}',
-        'parameters': {'type': 'object'},
+        'name': name, 'description': f'Upstream AutomationBench {name}',
+        'parameters': parameters[name],
     }} for name in ('api_search', 'api_fetch', 'base64_encode')]
+
+
+def test_dsh_backend_catalog_uses_complete_automationbench_binding(
+        tmp_path, monkeypatch,
+):
+    import cpn.plugins.catalog as plugin_catalog
+    from cpn.dsh.backend import DshBackend
+    from cpn.llm_adapters import load_llm_execution_selection
+
+    monkeypatch.setattr(
+        plugin_catalog.metadata, 'entry_points',
+        lambda *, group: [SimpleNamespace(name='ab_api', load=lambda: factory)])
+    plugin_config = (tmp_path / 'plugins.json').resolve()
+    plugin_config.write_text(json.dumps(
+        configuration('/tmp/not-running.sock', 'catalog-test')))
+    selection_path = create_profile(tmp_path / 'profile', [])
+    selected = bindings(_dsh_schemas())['executor']
+
+    backend = DshBackend(
+        tmp_path / 'registry', 'catalog-test',
+        lambda _request: pytest.fail('catalog construction must not dispatch'),
+        create=True, offline=False,
+        selection=load_llm_execution_selection(selection_path),
+        plugin_config_path=plugin_config,
+        managed_tools=selected['tools'],
+        managed_tool_admitted_effects=selected['admitted_effects'])
+
+    for schema in _dsh_schemas():
+        function = schema['function']
+        declaration = backend.managed_tools.declaration(function['name'])
+        assert declaration.description == function['description']
+        assert json_copy(declaration.input_schema) == function['parameters']
+    assert backend.managed_tools.declaration('api_fetch').effect == 'external_write'
+
+    with pytest.raises(Exception, match='effect was not explicitly admitted'):
+        DshBackend(
+            tmp_path / 'pure-registry', 'catalog-test',
+            lambda _request: pytest.fail('catalog construction must not dispatch'),
+            create=True, offline=False,
+            selection=load_llm_execution_selection(selection_path),
+            plugin_config_path=plugin_config,
+            managed_tools=selected['tools'])
 
 
 def test_dsh_driver_uses_console_history_and_writes_durable_result(
@@ -324,11 +389,14 @@ def test_dsh_driver_uses_console_history_and_writes_durable_result(
     assert launch[launch.index('--execution') + 1] == str(profile.resolve())
     assert launch[launch.index('--attempt-budget') + 1] == 'unmetered'
     assert '--task' in launch and '--plugin-config' in launch
-    managed = [launch[index + 1] for index, value in enumerate(launch)
-               if value == '--managed-tool']
-    assert managed == [
-        'api_search=ab_api/api_search', 'api_fetch=ab_api/api_fetch',
-        'base64_encode=ab_api/base64_encode']
+    assert '--managed-tool' not in launch
+    binding_path = Path(launch[launch.index('--managed-bindings') + 1])
+    assert binding_path == (run_dir / 'managed-bindings.json').resolve()
+    binding_document = load(binding_path)
+    assert binding_document == {
+        'schema_version': 'rpnh/dsh_managed_bindings/v1',
+        **bindings(_dsh_schemas())['executor'],
+    }
     assert history_command[4:6] == ['--history', '--root']
     assert history_command[-2:] == ['--session-id', 'session-automationbench']
     result = load(run_dir / 'host-result.json')

@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: dsh.md
-  revision: "2026-09-29.2"
+  revision: "2026-10-03.1"
   status: source-reviewed-pre-release
 ---
 
@@ -66,6 +66,14 @@ DSH 对完整 frame 施加 68 MiB 限制，其中包括历史、工具声明、�
 新 session 的 module attempt 预算默认是 48。`--attempt-budget` 可指定其他正整数上限；仅当
 工作负载协议确实需要时，`--attempt-budget unmetered` 才移除这一项 module-attempt 上限。
 所选值会随 run 持久化；resume 使用原声明，因此不接受替换预算。
+
+需要覆盖 provider 可见工具 description 或 input schema 的应用集成，必须同时提供显式 plugin
+catalog 和绝对路径 `--managed-bindings` 文档。该文档使用
+`rpnh/dsh_managed_bindings/v1` schema：非空 `tools` mapping 中每项严格包含 `selector`、
+`description` 和 object `input_schema`，并提供非空且无重复的 `admitted_effects`。DSH 会核验每个
+已选已安装 operation 的真实 effect 是否在该列表中。旧的 selector-only
+`--managed-tool NAME=PLUGIN/OPERATION` 仍只准入 `pure`，并使用 plugin 自身的 description 与
+schema；它不会隐式放开外部 effect。
 
 ## 恢复边界
 

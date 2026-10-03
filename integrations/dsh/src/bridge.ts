@@ -37,6 +37,7 @@ export interface BridgeProcessConfig {
   execution?: BridgeExecution['execution']
   pluginConfigPath?: string
   managedTools?: readonly ManagedToolSelection[]
+  managedBindingsPath?: string
   attemptBudget?: number | null
 }
 export interface BridgeRuntimeConfig extends BridgeProcessConfig {
@@ -75,7 +76,10 @@ export class OwnerClient {
     const managedToolArguments = config.pluginConfigPath === undefined
       ? []
       : ['--plugin-config', config.pluginConfigPath,
-        ...(config.managedTools ?? []).flatMap(tool => ['--managed-tool', `${tool.name}=${tool.selector}`])]
+        ...(config.managedBindingsPath === undefined
+          ? (config.managedTools ?? []).flatMap(tool => [
+              '--managed-tool', `${tool.name}=${tool.selector}`])
+          : ['--managed-bindings', config.managedBindingsPath])]
     const attemptBudgetArguments = config.attemptBudget === undefined
       ? []
       : ['--attempt-budget', config.attemptBudget === null ? 'unmetered' : String(config.attemptBudget)]

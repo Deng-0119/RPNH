@@ -94,11 +94,11 @@ def main(argv: list[str] | None = None) -> int:
     request = json.loads(sys.stdin.buffer.read())
     scenario_path = Path(arguments[0]).resolve()
     scenario = json.loads(scenario_path.read_text(encoding="utf-8"))
-    result = response(request, scenario)
     requests_log = scenario.get("requests_log")
     if requests_log:
         with Path(requests_log).open("a", encoding="utf-8") as stream:
             stream.write(json.dumps(request, sort_keys=True) + "\n")
+    result = response(request, scenario)
     sys.stdout.write(json.dumps(result, ensure_ascii=True, sort_keys=True,
                                 separators=(",", ":")))
     return 0

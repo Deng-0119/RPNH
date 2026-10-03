@@ -1,14 +1,20 @@
 """Fast contract checks for the installed-host acceptance producer."""
 from __future__ import annotations
 
+import io
 import json
 from pathlib import Path
+import threading
+import time
 from types import SimpleNamespace
 
-from rpnh_ab.acceptance_manifest import produce
+from rpnh_ab.acceptance_manifest import produce, _stop_after_first_model_request
 from rpnh_ab.io import file_sha, load, write_new
 from rpnh_ab.offline_adapter import response
-from rpnh_ab.run_spec import REQUIRED_ACCEPTANCE, _validate_dsh_host_result
+from rpnh_ab.run_spec import (
+    REQUIRED_ACCEPTANCE, _validate_dsh_host_result,
+    _validate_dsh_managed_bindings,
+)
 
 
 def test_offline_adapter_uses_tools_then_host_specific_completion():
@@ -31,6 +37,92 @@ def test_offline_adapter_can_batch_many_tool_calls_in_one_model_turn():
     assert len({call["id"] for call in first["tool_calls"]}) == 50
     request["messages"].append({"role": "assistant", "content": "called"})
     assert response(request, scenario)["finish_reason"] == "stop"
+
+
+def test_stop_signal_waits_for_admitted_model_request(tmp_path):
+    requests_log = tmp_path / "requests.jsonl"
+    stop_path = tmp_path / "stop.request"
+    finished = threading.Event()
+    stop_signalled = threading.Event()
+    transition_lock = threading.Lock()
+    timer = threading.Thread(
+        target=_stop_after_first_model_request,
+        args=(requests_log, stop_path, finished, stop_signalled,
+              transition_lock))
+    timer.start()
+    time.sleep(0.1)
+    assert not stop_path.exists()
+    requests_log.write_text("{}\n", encoding="utf-8")
+    timer.join(timeout=1)
+    assert not timer.is_alive()
+    assert stop_path.is_file()
+    assert stop_signalled.is_set()
+
+    cancelled_stop = tmp_path / "cancelled.request"
+    finished.set()
+    _stop_after_first_model_request(
+        requests_log, cancelled_stop, finished, threading.Event(),
+        transition_lock)
+    assert not cancelled_stop.exists()
+
+
+def test_stop_signal_cannot_cross_finished_transition(tmp_path):
+    class BarrierLog:
+        def __init__(self, barrier):
+            self.barrier = barrier
+
+        def is_file(self):
+            self.barrier.wait(timeout=1)
+            return True
+
+        def stat(self):
+            return SimpleNamespace(st_size=1)
+
+    stop_path = tmp_path / "stop.request"
+    finished = threading.Event()
+    stop_signalled = threading.Event()
+    transition_lock = threading.Lock()
+    marker_checked = threading.Barrier(2)
+    transition_lock.acquire()
+    timer = threading.Thread(
+        target=_stop_after_first_model_request,
+        args=(BarrierLog(marker_checked), stop_path, finished,
+              stop_signalled, transition_lock))
+    timer.start()
+    marker_checked.wait(timeout=1)
+    finished.set()
+    transition_lock.release()
+    timer.join(timeout=1)
+    assert not timer.is_alive()
+    assert not stop_path.exists()
+    assert not stop_signalled.is_set()
+
+
+def test_offline_adapter_records_request_before_response(
+        tmp_path, monkeypatch,
+):
+    import rpnh_ab.offline_adapter as adapter
+
+    requests_log = tmp_path / "requests.jsonl"
+    scenario = tmp_path / "scenario.json"
+    scenario.write_text(json.dumps({
+        "steps": [], "requests_log": str(requests_log),
+    }), encoding="utf-8")
+    observed = []
+
+    def respond(_request, _scenario):
+        observed.append(requests_log.read_text(encoding="utf-8"))
+        return {"protocol": "llm_response_envelope/v1", "text": "done",
+                "tool_calls": [], "finish_reason": "stop"}
+
+    monkeypatch.setattr(adapter, "response", respond)
+    monkeypatch.setattr(adapter.sys, "stdin", SimpleNamespace(
+        buffer=io.BytesIO(json.dumps({"messages": [], "tools": []}).encode())))
+    output = io.StringIO()
+    monkeypatch.setattr(adapter.sys, "stdout", output)
+    assert adapter.main([str(scenario)]) == 0
+    assert observed and json.loads(observed[0]) == {"messages": [], "tools": []}
+    assert json.loads(output.getvalue())["text"] == "done"
 
 
 def test_lifecycle_doubles_cannot_certify_installed_host_acceptance(
@@ -65,6 +157,13 @@ def test_lifecycle_doubles_cannot_certify_installed_host_acceptance(
             "initial_state": {}, "info": {},
         })
         if case["id"].endswith("stop"):
+            (_profile.parent / "requests.jsonl").write_text(
+                "{}\n", encoding="utf-8")
+            deadline = time.monotonic() + 1
+            stop_path = Path(_kwargs["stop_path"])
+            while not stop_path.is_file() and time.monotonic() < deadline:
+                time.sleep(0.01)
+            assert stop_path.is_file()
             write_new(attempt / "lifecycle.json", {
                 "execution_status": "manual_stop", "admitted": True,
                 "host_quiescent": True, "world_owner_quiescent": False,
@@ -139,3 +238,30 @@ def test_dsh_raw_host_validation_reparses_terminal_history(tmp_path):
     path.write_text(json.dumps(raw))
     with pytest.raises(ValueError, match="terminal/history"):
         _validate_dsh_host_result(path, terminal=True)
+
+
+def test_dsh_binding_validation_reparses_complete_upstream_contract(tmp_path):
+    import pytest
+    from rpnh_ab.plugin import bindings
+
+    schemas = [{"type": "function", "function": {
+        "name": name,
+        "description": f"Exact upstream {name}",
+        "parameters": {
+            "type": "object", "additionalProperties": False,
+            "properties": {"value": {"type": "string"}},
+            "required": ["value"],
+        },
+    }} for name in ("api_search", "api_fetch", "base64_encode")]
+    path = tmp_path / "managed-bindings.json"
+    document = {
+        "schema_version": "rpnh/dsh_managed_bindings/v1",
+        **bindings(schemas)["executor"],
+    }
+    write_new(path, document)
+    assert _validate_dsh_managed_bindings(path, schemas) == document
+
+    document["tools"]["api_fetch"]["input_schema"] = {"type": "object"}
+    path.write_text(json.dumps(document), encoding="utf-8")
+    with pytest.raises(ValueError, match="frozen upstream schemas/effects"):
+        _validate_dsh_managed_bindings(path, schemas)

@@ -258,12 +258,13 @@ def test_dsh_launcher_resolves_public_profile_without_credentials(
     assert "headers" not in serialized
 
 
-def test_dsh_launcher_forwards_explicit_managed_tool_selection(
+def test_dsh_launcher_forwards_explicit_managed_bindings(
         monkeypatch, tmp_path: Path,
 ) -> None:
     runner = ROOT / "integrations/dsh/run.sh"
     selected = (tmp_path / "selection.json").resolve()
     plugin_config = (tmp_path / "plugins.json").resolve()
+    managed_bindings = (tmp_path / "managed-bindings.json").resolve()
     calls: list[list[str]] = []
     profile = SimpleNamespace(
         name="configured", selection_id="provider/exact-model",
@@ -302,14 +303,14 @@ def test_dsh_launcher_forwards_explicit_managed_tool_selection(
     assert launcher.main([
         "/tmp/pinned-dsh", "--execution", str(selected),
         "--plugin-config", str(plugin_config),
-        "--managed-tool", "double_value=demo/double",
+        "--managed-bindings", str(managed_bindings),
         "--root", "sessions", "--task", "test",
     ]) == 0
 
     command = calls[0]
     assert command[command.index("--plugin-config") + 1] == str(plugin_config)
-    assert command[command.index("--managed-tool") + 1] == (
-        "double_value=demo/double")
+    assert command[command.index("--managed-bindings") + 1] == str(
+        managed_bindings)
     assert command[command.index("--execution-path") + 1] == str(selected)
 
 

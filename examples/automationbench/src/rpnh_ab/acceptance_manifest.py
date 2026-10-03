@@ -4,7 +4,6 @@ from __future__ import annotations
 import json
 from pathlib import Path
 import threading
-import time
 
 from .constants import PLUGIN_RESULT_BYTES
 from .io import file_sha, load, sha, write_new
@@ -42,6 +41,21 @@ def _record(root: Path, name: str, value: dict) -> dict:
     write_new(path, value)
     return {"status": "passed", "evidence_path": str(path),
             "evidence_sha256": file_sha(path)}
+
+
+def _stop_after_first_model_request(
+        requests_log: Path, stop_path: Path, finished: threading.Event,
+        stop_signalled: threading.Event, transition_lock: threading.Lock,
+) -> None:
+    """Request stop only after the installed host has admitted model work."""
+    while not finished.wait(0.05):
+        if requests_log.is_file() and requests_log.stat().st_size:
+            with transition_lock:
+                if finished.is_set():
+                    return
+                stop_path.touch()
+                stop_signalled.set()
+            return
 
 
 def produce(upstream, work: Path, *, host: str, dsh_checkout: Path | None = None) -> dict:
@@ -96,17 +110,32 @@ def produce(upstream, work: Path, *, host: str, dsh_checkout: Path | None = None
 
     stop_profile = create_profile(root / "stop-profile", tool_steps(), delay_seconds=3)
     stop_path = root / "stop.request"
+    stop_finished = threading.Event()
+    stop_signalled = threading.Event()
+    stop_transition = threading.Lock()
     timer = threading.Thread(
-        target=lambda: (time.sleep(0.5), stop_path.touch()), daemon=True)
+        target=_stop_after_first_model_request,
+        args=(stop_profile.parent / "requests.jsonl", stop_path,
+              stop_finished, stop_signalled, stop_transition),
+        daemon=True)
     timer.start()
     stop_attempt = root / "stop-attempt"
-    stopped = one_attempt(
-        upstream, _case(row, "synthetic-host-stop"), stop_attempt, stop_profile,
-        executor_host=host, native_run_dir=root / "stop-host-run",
-        control_root=root / "stop-control", dsh_checkout=dsh_checkout,
-        stop_path=stop_path,
-    )
-    timer.join(timeout=5)
+    try:
+        stopped = one_attempt(
+            upstream, _case(row, "synthetic-host-stop"), stop_attempt, stop_profile,
+            executor_host=host, native_run_dir=root / "stop-host-run",
+            control_root=root / "stop-control", dsh_checkout=dsh_checkout,
+            stop_path=stop_path,
+        )
+    finally:
+        with stop_transition:
+            stop_finished.set()
+        timer.join(timeout=1)
+    if timer.is_alive():
+        raise RuntimeError("stop fixture coordinator did not exit")
+    if not stop_signalled.is_set():
+        raise RuntimeError(
+            "installed host ended before the stop fixture observed admitted model work")
     stop_lifecycle = load(stop_attempt / "lifecycle.json")
     if (not stopped or stop_lifecycle.get("admitted") is not True
             or not stop_lifecycle.get("host_quiescent")

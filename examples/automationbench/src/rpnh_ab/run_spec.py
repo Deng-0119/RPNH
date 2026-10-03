@@ -117,6 +117,18 @@ def _validate_dsh_host_result(path: Path, *, terminal: bool) -> dict:
     return value
 
 
+def _validate_dsh_managed_bindings(path: Path, schemas: list[dict]) -> dict:
+    from .plugin import bindings
+    expected = {
+        'schema_version': 'rpnh/dsh_managed_bindings/v1',
+        **bindings(schemas)['executor'],
+    }
+    value = load(path)
+    if value != expected:
+        raise ValueError('DSH managed bindings differ from frozen upstream schemas/effects')
+    return value
+
+
 def validate_acceptance(path, benchmark, execution):
     manifest_path = Path(path).resolve()
     value = load(manifest_path)
@@ -249,6 +261,13 @@ def validate_acceptance(path, benchmark, execution):
     else:
         success_raw=(root/'success-host-run'/'host-result.json').resolve()
         stop_raw=(root/'stop-host-run'/'host-result.json').resolve()
+        schemas=load(root.parent/'tool_schemas.json')
+        if sha(schemas) != benchmark.get('tool_schemas_sha256'):
+            raise ValueError('DSH acceptance tool schemas differ from frozen condition')
+        _validate_dsh_managed_bindings(
+            root/'success-host-run'/'managed-bindings.json', schemas)
+        _validate_dsh_managed_bindings(
+            root/'stop-host-run'/'managed-bindings.json', schemas)
         if (Path(host_evidence.get('raw_host_result','')).resolve() != success_raw
                 or Path(success_lifecycle.get('raw_host_result','')).resolve() != success_raw
                 or Path(load(stop_attempt/'dsh_evidence.json').get('raw_host_result','')).resolve() != stop_raw

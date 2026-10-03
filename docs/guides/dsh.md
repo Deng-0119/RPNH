@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: en
   counterpart: dsh_ZH.md
-  revision: "2026-09-29.2"
+  revision: "2026-10-03.1"
   status: source-reviewed-pre-release
 ---
 
@@ -74,6 +74,17 @@ New sessions use a 48-attempt module budget by default. A positive
 unmetered` removes only that module-attempt cap for a workload whose protocol
 requires it. The selected value is persisted with the run. Resume uses that
 persisted declaration and therefore does not accept a replacement budget.
+
+Application integrations that override provider-visible tool descriptions or
+input schemas pass both an explicit plugin catalog and an absolute
+`--managed-bindings` document. The document has schema
+`rpnh/dsh_managed_bindings/v1`, a nonempty `tools` mapping whose values contain
+exactly `selector`, `description`, and object `input_schema`, plus a nonempty
+unique `admitted_effects` list. DSH validates that each selected installed
+operation's actual effect is in that list. The legacy selector-only
+`--managed-tool NAME=PLUGIN/OPERATION` form remains pure-only and uses the
+plugin's own description and schema; it never implicitly grants external
+effects.
 
 ## Recovery boundary
 

@@ -83,7 +83,10 @@ rpnh-ab stop --work "$AB_WORK"
 使用 revision 与 `integrations/dsh/UPSTREAM.json` 一致的专用 checkout。在两次 `prepare` 和
 `accept-host` 中都加入 `--host dsh --dsh-checkout "$DSH_CHECKOUT"`。适配器使用受支持的 DSH
 console/task/history 链、同一个已登记 provider selection，以及同三项 AutomationBench managed
-operation。AutomationBench 会显式请求 DSH 无累计 attempt 上限；DSH 的普通默认值仍为 48。
+operation。每次 DSH run 都会生成并传递一份完整 managed binding：其中保留固定上游提供的真实
+description、input schema，以及包含 `external_write` 的显式 effect 准入；不会退化为只有 selector
+的通用 `object` 工具。AutomationBench 会显式请求 DSH 无累计 attempt 上限；DSH 的普通默认值仍为
+48，普通 selector-only managed tool 仍只准入 `pure`。
 
 冻结 DSH identity 时，固定 revision 的干净 factory 文件与经 RPNH 精确、幂等 seam 准备后的文件
 被规范化为同一个 post-prepare condition；其他任何 tracked change 都会被拒绝。`accept-host` 在执行

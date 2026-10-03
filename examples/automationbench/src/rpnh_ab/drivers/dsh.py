@@ -108,19 +108,25 @@ class DshDriver:
         task += ('\n\nComplete the business task using the visible tools. '
                  'Finish with a factual assistant report. Tool raw_result is '
                  'the exact upstream response. Do not request interactive user input.')
-        selected = bindings(schemas)['executor']['tools']
+        executor_binding = bindings(schemas)['executor']
+        selected = executor_binding['tools']
         expected_tools = {'api_search', 'api_fetch', 'base64_encode'}
         if set(selected) != expected_tools:
             raise ValueError('AutomationBench DSH requires exactly its three managed tools')
+        managed_bindings = (run_dir / 'managed-bindings.json').resolve()
+        write_new(managed_bindings, {
+            'schema_version': 'rpnh/dsh_managed_bindings/v1',
+            'tools': selected,
+            'admitted_effects': executor_binding['admitted_effects'],
+        })
         registry_root = (run_dir / 'registry').resolve()
         command = [
             sys.executable, '-m', 'cpn.dsh.launcher', str(Path(dsh_checkout).resolve()),
             '--execution', str(Path(profile).resolve()), '--root', str(registry_root),
             '--task', task, '--attempt-budget', 'unmetered',
             '--plugin-config', str(plugin),
+            '--managed-bindings', str(managed_bindings),
         ]
-        for name in ('api_search', 'api_fetch', 'base64_encode'):
-            command.extend(('--managed-tool', f"{name}={selected[name]['selector']}"))
 
         log_path = run_dir / 'host.log'
         stop_requested = stop.exists()

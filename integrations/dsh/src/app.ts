@@ -9,7 +9,7 @@ import ToolRuntime from '@deepseek-ai/dsh-tools'
 import AgentDefaultModelConfig from '@deepseek-ai/dsh-agent-default-model'
 import * as headless from '../packages/bundle/headless/src/index.ts'
 import { OwnerClient, RegistryBridge, selectedModel, type BridgeConfig, type BridgeProcessConfig,
-  type PublicExecutionProfile } from './bridge.ts'
+  type ManagedToolSelection, type PublicExecutionProfile } from './bridge.ts'
 import { CapabilityHost } from './capabilities.ts'
 import { RegistryProjectionPersistence } from './projection.ts'
 import { RegistryAgent, RegistryAgentLoop } from './agent.ts'
@@ -67,6 +67,7 @@ const usage = `Managed DSH application (experimental; provider execution is supp
   --offline --root DIR --data-file NUMBERS.json --task TEXT [--deny] [--json]
   --execution PATH --root DIR --task TEXT [--deny] [--json]
     [--plugin-config /ABS/PLUGINS.json --managed-tool NAME=PLUGIN/OPERATION ...]
+    [--plugin-config /ABS/PLUGINS.json --managed-bindings /ABS/BINDINGS.json]
     [--attempt-budget POSITIVE_INTEGER|unmetered]
   --history --root DIR --session-id ID
   (--offline | --execution PATH) --resume --root DIR --session-id ID
@@ -124,20 +125,67 @@ function configuredProfile(raw: string): PublicExecutionProfile {
     default_reasoning_effort: fallback as string | null,
   })
 }
-function managedToolSelections(raw: string[] | undefined): ReadonlyArray<{ name: string; selector: string }> {
-  const output: Array<{ name: string; selector: string }> = []
+function validManagedIdentity(name: unknown, selector: unknown): boolean {
+  return typeof name === 'string' && typeof selector === 'string'
+    && /^[a-z][a-z0-9_]{0,47}$/.test(name)
+    && /^[a-z][a-z0-9_]{0,47}\/[a-z][a-z0-9_]{0,47}$/.test(selector)
+}
+function managedToolSelections(raw: string[] | undefined): ReadonlyArray<ManagedToolSelection> {
+  const output: ManagedToolSelection[] = []
   const names = new Set<string>(); const selectors = new Set<string>()
   for (const item of raw ?? []) {
     const separator = item.indexOf('=')
     const name = separator < 0 ? '' : item.slice(0, separator)
     const selector = separator < 0 ? '' : item.slice(separator + 1)
-    if (!/^[a-z][a-z0-9_]{0,47}$/.test(name)
-      || !/^[a-z][a-z0-9_]{0,47}\/[a-z][a-z0-9_]{0,47}$/.test(selector)
+    if (!validManagedIdentity(name, selector)
       || names.has(name) || selectors.has(selector)) {
       throw new Error('--managed-tool requires unique NAME=PLUGIN/OPERATION lowercase identifiers')
     }
     names.add(name); selectors.add(selector); output.push(Object.freeze({ name, selector }))
   }
+  return Object.freeze(output)
+}
+function managedBindingsDocument(raw: string): ReadonlyArray<ManagedToolSelection> {
+  let value: unknown
+  try { value = JSON.parse(raw) } catch { throw new Error('--managed-bindings requires exact JSON') }
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    throw new Error('--managed-bindings requires an object')
+  }
+  const document = value as Record<string, unknown>
+  if (Object.keys(document).sort().join(',') !== 'admitted_effects,schema_version,tools'
+    || document.schema_version !== 'rpnh/dsh_managed_bindings/v1'
+    || !document.tools || typeof document.tools !== 'object' || Array.isArray(document.tools)
+    || !Array.isArray(document.admitted_effects) || document.admitted_effects.length === 0) {
+    throw new Error('invalid managed bindings document')
+  }
+  const effects = document.admitted_effects as unknown[]
+  const allowed = new Set(['pure', 'external_read', 'external_write'])
+  if (effects.some(effect => typeof effect !== 'string' || !allowed.has(effect))
+    || new Set(effects).size !== effects.length) {
+    throw new Error('invalid managed admitted effects')
+  }
+  const output: ManagedToolSelection[] = []
+  const names = new Set<string>(); const selectors = new Set<string>()
+  for (const [name, selected] of Object.entries(document.tools as Record<string, unknown>)) {
+    if (!selected || typeof selected !== 'object' || Array.isArray(selected)) {
+      throw new Error('invalid managed tool binding')
+    }
+    const binding = selected as Record<string, unknown>
+    const keys = Object.keys(binding).sort()
+    const input = binding.input_schema
+    if (keys.join(',') !== 'description,input_schema,selector'
+      || !validManagedIdentity(name, binding.selector)
+      || typeof binding.description !== 'string' || !binding.description.trim()
+      || !input || typeof input !== 'object' || Array.isArray(input)
+      || (input as Record<string, unknown>).type !== 'object'
+      || names.has(name) || selectors.has(binding.selector as string)) {
+      throw new Error('managed bindings require unique names/selectors, descriptions, and object input schemas')
+    }
+    const selector = binding.selector as string
+    names.add(name); selectors.add(selector)
+    output.push(Object.freeze({ name, selector }))
+  }
+  if (output.length === 0) throw new Error('managed bindings require at least one tool')
   return Object.freeze(output)
 }
 function attemptBudget(raw: string | undefined): number | null | undefined {
@@ -156,6 +204,7 @@ async function main(): Promise<void> {
     history: { type: 'boolean' }, resume: { type: 'boolean' }, 'session-id': { type: 'string' },
     python: { type: 'string' }, 'execution-path': { type: 'string' }, 'execution-profile': { type: 'string' },
     'plugin-config': { type: 'string' }, 'managed-tool': { type: 'string', multiple: true },
+    'managed-bindings': { type: 'string' },
     'attempt-budget': { type: 'string' },
     help: { type: 'boolean' },
   }, allowPositionals: false })
@@ -167,27 +216,42 @@ async function main(): Promise<void> {
     tools: ['read_dataset', 'sum_values'] }
   if (values.history) {
     if (!values['session-id'] || values.task || values['data-file'] || values.deny
-      || values['plugin-config'] || values['managed-tool'] || values['attempt-budget']) throw new Error(usage)
+      || values['plugin-config'] || values['managed-tool'] || values['managed-bindings']
+      || values['attempt-budget']) throw new Error(usage)
     console.log(JSON.stringify(await readHistory(common, values['session-id'])))
     return
   }
   const configured = values['execution-path'] !== undefined || values['execution-profile'] !== undefined
   if (Boolean(values.offline) === configured) throw new Error('select exactly one launcher-managed offline or configured profile')
+  if (values['managed-tool'] && values['managed-bindings']) {
+    throw new Error('--managed-tool and --managed-bindings are mutually exclusive')
+  }
+  if (values.offline && (values['plugin-config'] || values['managed-tool']
+    || values['managed-bindings'])) {
+    throw new Error('offline execution does not accept managed provider tools')
+  }
   let config: BridgeConfig
   if (values.offline) config = { ...common, execution: { kind: 'offline' } }
   else {
     const executionPath = nonempty(values['execution-path'], 'execution path')
     if (!isAbsolute(executionPath)) throw new Error('execution path must be absolute')
-    const selections = managedToolSelections(values['managed-tool'])
+    const managedBindingsPath = values['managed-bindings']
+    if (managedBindingsPath !== undefined && !isAbsolute(managedBindingsPath)) {
+      throw new Error('managed bindings path must be absolute')
+    }
+    const selections = managedBindingsPath === undefined
+      ? managedToolSelections(values['managed-tool'])
+      : managedBindingsDocument(await readFile(managedBindingsPath, 'utf8'))
     const pluginConfigPath = values['plugin-config']
     if ((pluginConfigPath === undefined) !== (selections.length === 0)) {
-      throw new Error('--plugin-config and at least one --managed-tool are required together')
+      throw new Error('--plugin-config and managed tools are required together')
     }
     if (pluginConfigPath !== undefined && !isAbsolute(pluginConfigPath)) {
       throw new Error('plugin config path must be absolute')
     }
     config = { ...common,
-      ...(pluginConfigPath === undefined ? {} : { pluginConfigPath, managedTools: selections }),
+      ...(pluginConfigPath === undefined ? {} : { pluginConfigPath, managedTools: selections,
+        ...(managedBindingsPath === undefined ? {} : { managedBindingsPath }) }),
       execution: { kind: 'configured', selectionPath: executionPath,
       profile: configuredProfile(nonempty(values['execution-profile'], 'execution profile')) } }
   }

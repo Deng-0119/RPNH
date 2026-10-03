@@ -25,6 +25,33 @@ def _attempt_budget(value):
     return budget
 
 
+def _managed_bindings(path):
+    try:
+        with path.open(encoding='utf-8') as stream:
+            def unique(pairs):
+                result = {}
+                for key, value in pairs:
+                    if key in result:
+                        raise ValueError('duplicate JSON key')
+                    result[key] = value
+                return result
+            document = json.load(
+                stream, object_pairs_hook=unique,
+                parse_constant=lambda _: (_ for _ in ()).throw(
+                    ValueError('nonfinite JSON')))
+    except (OSError, TypeError, ValueError, json.JSONDecodeError) as exc:
+        raise ValueError('managed bindings must be readable exact JSON') from exc
+    if (not isinstance(document, dict)
+            or set(document) != {
+                'schema_version', 'tools', 'admitted_effects'}
+            or document.get('schema_version') != 'rpnh/dsh_managed_bindings/v1'
+            or not isinstance(document.get('tools'), dict)
+            or not document['tools']
+            or not isinstance(document.get('admitted_effects'), list)):
+        raise ValueError('invalid managed bindings document')
+    return document
+
+
 def main():
     p = argparse.ArgumentParser(description='RPNH-backed DSH owner (private stdio)')
     p.add_argument('--root', type=Path, required=True)
@@ -35,6 +62,7 @@ def main():
     mode.add_argument('--execution-path', type=Path)
     p.add_argument('--plugin-config', type=Path)
     p.add_argument('--managed-tool', action='append', default=[])
+    p.add_argument('--managed-bindings', type=Path)
     p.add_argument('--attempt-budget', type=_attempt_budget, default=48)
     args = p.parse_args()
     import re
@@ -42,6 +70,10 @@ def main():
         p.error('invalid session id')
     if args.plugin_config is not None and not args.plugin_config.is_absolute():
         p.error('--plugin-config must be absolute')
+    if args.managed_tool and args.managed_bindings is not None:
+        p.error('--managed-tool and --managed-bindings are mutually exclusive')
+    if args.managed_bindings is not None and not args.managed_bindings.is_absolute():
+        p.error('--managed-bindings must be absolute')
     managed_tools = {}
     for item in args.managed_tool:
         name, separator, selector = item.partition('=')
@@ -49,8 +81,17 @@ def main():
                 or name in managed_tools):
             p.error('--managed-tool requires a unique NAME=PLUGIN/OPERATION')
         managed_tools[name] = selector
+    if args.managed_bindings is not None:
+        try:
+            document = _managed_bindings(args.managed_bindings)
+        except ValueError as exc:
+            p.error(str(exc))
+        managed_tools = document['tools']
+        admitted_effects = tuple(document['admitted_effects'])
+    else:
+        admitted_effects = ('pure',)
     if (args.plugin_config is None) != (not managed_tools):
-        p.error('--plugin-config and at least one --managed-tool are required together')
+        p.error('--plugin-config and managed tools are required together')
     if managed_tools and args.execution_path is None:
         p.error('managed tools require configured provider execution')
     session_root = args.root / args.session
@@ -107,6 +148,7 @@ def main():
         execution_config_path=args.execution_path,
         plugin_config_path=args.plugin_config,
         managed_tools=(managed_tools if managed_tools else None),
+        managed_tool_admitted_effects=admitted_effects,
         attempt_budget=args.attempt_budget,
         offline=(True if args.offline else False))
     threading.Thread(target=reader, daemon=True).start()

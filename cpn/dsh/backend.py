@@ -10,7 +10,7 @@ from dataclasses import fields
 import json
 import re
 from pathlib import Path
-from typing import Callable, Mapping
+from typing import Callable, Iterable, Mapping
 from jsonschema import Draft7Validator
 from cpn.components.execution_services import ExecutionServices
 from cpn.components.registered_host_llm import (
@@ -516,7 +516,8 @@ class DshBackend:
             offline: bool = True,
             selection: LLMExecutionSelection | None = None,
             plugin_config_path: Path | None = None,
-            managed_tools: Mapping[str, str] | None = None,
+            managed_tools: Mapping[str, object] | None = None,
+            managed_tool_admitted_effects: Iterable[str] = ("pure",),
             attempt_budget: int | None = DEFAULT_ATTEMPT_BUDGET,
             input_port_factory=build_llm_input_port,
     ):
@@ -556,17 +557,18 @@ class DshBackend:
             raise ValueError(
                 'managed tools require one explicit plugin config and allowlist')
         if managed_tools is not None:
-            if (not isinstance(managed_tools, Mapping) or not managed_tools
-                    or any(not isinstance(name, str)
-                           or not isinstance(selector, str)
-                           for name, selector in managed_tools.items())):
+            if not isinstance(managed_tools, Mapping) or not managed_tools:
                 raise ValueError('managed tool allowlist must be a nonempty mapping')
             if not self.configured:
                 raise ValueError('managed provider tools require configured DSH')
             selected_plugins = load_catalog(read_config(plugin_config_path))
             self.managed_tools = build_managed_plugin_tool_catalog(
-                selected_plugins, managed_tools)
+                selected_plugins, managed_tools,
+                admitted_effects=managed_tool_admitted_effects)
         else:
+            if tuple(managed_tool_admitted_effects) != ("pure",):
+                raise ValueError(
+                    'managed admitted effects require an explicit tool allowlist')
             self.managed_tools = build_managed_plugin_tool_catalog(
                 load_catalog(), ())
         for tool in self.managed_tools.tools:

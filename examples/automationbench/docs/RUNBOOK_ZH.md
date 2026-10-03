@@ -104,10 +104,17 @@ rpnh-ab status --work "$AB_WORK"
 rpnh-ab stop --work "$AB_WORK"
 ```
 
+`stop` 会阻止停止后的 world 冻结与评分，但不声称能撤销已经进入上游同步 business helper 的调用。
+在包含已配置 ChatGPT helper 的完整 public600 条件中，已经开始的 helper 调用必须返回后才能完成
+drain、宿主静止和 lifecycle 写入；这段等待不是重放，也不是 in-flight helper 取消。当前合成 stop
+acceptance 使用延迟 local model adapter，不覆盖正在执行的业务 helper。
+
 若使用可选 DSH 执行宿主，应准备专用固定 checkout，并在两次 `prepare` 与 `accept-host` 中加入
 `--host dsh --dsh-checkout "$DSH_CHECKOUT"`。acceptance 绑定宿主，不能在 native 和 DSH condition
 之间复用。checkout 可以是干净状态，也可以只包含 `integrations/dsh/prepare.sh` 应用的精确幂等
 factory seam；两者规范化为同一个 post-prepare identity，其他任何 tracked change 都会被拒绝。
+DSH attempt 内的 `managed-bindings.json` 保存三项工具的完整 selector、上游 description、上游
+input schema 与显式 admitted effects；`api_fetch` 的 `external_write` 不依赖 DSH 的 pure 默认值。
 
 除非修改固定上游（适配器会拒绝），live run 不会连接生产业务 SaaS 账号。
 

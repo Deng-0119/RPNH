@@ -14,6 +14,7 @@ from cpn.plugins import (
     BoundPlugin, PluginCatalog, PluginDefinition, PluginOperation,
     build_managed_plugin_tool_catalog,
 )
+from cpn.plugins.api import json_copy
 from cpn.rpnh.llm_contracts import LLMInputResponseBytes, LLMInputTarget
 from cpn.rpnh.inspection import project_registry_net
 from cpn.rpnh.registry._registry import _RegistryCore
@@ -190,7 +191,8 @@ def managed_double(_context, arguments):
 
 
 def managed_plugin_definition(
-        *, description='Double one integer', max_result_bytes=4096):
+        *, description='Double one integer', max_result_bytes=4096,
+        effect='pure'):
     return PluginDefinition('managed_test', '1', (
         PluginOperation(
             'double', description, {
@@ -198,7 +200,7 @@ def managed_plugin_definition(
                 'properties': {'value': {'type': 'integer'}},
                 'required': ['value'],
             }, {'type': 'integer'}, managed_double,
-            max_result_bytes=max_result_bytes),
+            effect=effect, max_result_bytes=max_result_bytes),
     ))
 
 
@@ -616,6 +618,75 @@ def test_configured_managed_plugin_tool_uses_shared_registry_boundary_once(
     assert {item['call_id'] for item in receipts} == {'call-double'}
     assert result['answer']['messages'][-3]['content'][0]['name'] == (
         'double_value')
+
+
+def test_configured_managed_tool_full_binding_and_effect_are_explicit(
+        tmp_path, monkeypatch,
+):
+    import cpn.plugins.catalog as plugin_catalog
+
+    monkeypatch.setattr(
+        plugin_catalog.metadata, 'entry_points',
+        lambda *, group: [SimpleNamespace(
+            name='managed-test', load=lambda: (
+                lambda: managed_plugin_definition(effect='external_write')))])
+    plugin_config = (tmp_path / 'plugins.json').resolve()
+    plugin_config.write_text(json.dumps({
+        'schema_version': 'rpnh/plugins/v1',
+        'plugins': [{
+            'name': 'managed_test', 'entry_point': 'managed-test',
+            'version': '1', 'config': {}, 'environment': [],
+        }],
+    }), encoding='utf-8')
+    selection = configured_selection(tmp_path)
+    binding = {'double_value': {
+        'selector': 'managed_test/double',
+        'description': 'Upstream-visible exact double operation',
+        'input_schema': {
+            'type': 'object', 'additionalProperties': False,
+            'properties': {'value': {'type': 'integer', 'minimum': 1}},
+            'required': ['value'],
+        },
+    }}
+
+    backend = DshBackend(
+        tmp_path / 'full', 's1', lambda _effect: None,
+        create=True, offline=False, selection=selection,
+        plugin_config_path=plugin_config, managed_tools=binding,
+        managed_tool_admitted_effects=('pure', 'external_write'))
+    declaration = backend.managed_tools.declaration('double_value')
+    assert declaration.description == 'Upstream-visible exact double operation'
+    assert json_copy(declaration.input_schema) == binding['double_value']['input_schema']
+    assert declaration.effect == 'external_write'
+
+    with pytest.raises(Exception, match='effect was not explicitly admitted'):
+        DshBackend(
+            tmp_path / 'pure-only', 's1', lambda _effect: None,
+            create=True, offline=False, selection=selection,
+            plugin_config_path=plugin_config, managed_tools=binding)
+
+
+def test_dsh_server_reads_exact_managed_bindings_document(tmp_path):
+    from cpn.dsh.server import _managed_bindings
+
+    path = (tmp_path / 'bindings.json').resolve()
+    document = {
+        'schema_version': 'rpnh/dsh_managed_bindings/v1',
+        'tools': {'double_value': {
+            'selector': 'managed_test/double',
+            'description': 'Exact double',
+            'input_schema': {'type': 'object'},
+        }},
+        'admitted_effects': ['pure', 'external_write'],
+    }
+    path.write_text(json.dumps(document), encoding='utf-8')
+    assert _managed_bindings(path) == document
+
+    path.write_text('{"schema_version":"rpnh/dsh_managed_bindings/v1",'
+                    '"schema_version":"duplicate","tools":{},'
+                    '"admitted_effects":["pure"]}', encoding='utf-8')
+    with pytest.raises(ValueError, match='readable exact JSON'):
+        _managed_bindings(path)
 
 
 def test_configured_v2_managed_tool_stop_reopens_with_exact_registration(
