@@ -25,16 +25,12 @@ heldout 与 export 的任务正文不会投影给演化 role。候选源码来�
 只允许修改 `policy.py`，在 Critic 与 smoke evaluation 前先经过固定检查，随后在独立 Policy
 child run 中评估。
 
-## 方法范围
+## 方法与执行约定
 
-验收目标位于框架层：公开 RRSI 的角色循环、独立评估、证据流与分数/成本选择可以在当前
-RPNH harness 上实现并正常使用。这证明 RPNH 能承载先进的 RSI 框架，不等于达到或复现论文
-报告的 benchmark 性能。
+本示例展示公开 RRSI 角色循环、独立评估、证据流与分数/成本选择在当前 RPNH harness 上的
+实现。选择过程遵循公开 RRSI Algorithm 2 成本规则；timeout fixture 的 bootstrap 使用
+seed 7、2,000 次，其系数、task manifest、source fixture、gate 和 smoke check 均冻结在
+`protocol.example.json` 中。
 
-选择实现遵循公开 RRSI Algorithm 2 的成本规则；本地 fixture 的 bootstrap 固定 seed 7、
-2,000 次。本地系数、task manifest、source fixture、gate 和 smoke check 是示例配置，不是
-论文官方 domain 设置。
-
-这是 B0 application conformance，不声称 strict AgentLoop conformance、B1 突然丢失自动
-对账、恶意代码 sandbox 或论文结果。源码身份使用显式 protocol/run/resource 值，不引入
-内容派生的 hash、checksum 或 fingerprint。
+运行采用 `application_petri_conformance/v1` 与 B0 recovery profile。源码身份通过显式
+protocol、run 和 resource 引用记录。

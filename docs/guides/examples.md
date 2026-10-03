@@ -338,17 +338,13 @@ Follow the complete [3-DOF reproduction guide](../../examples/three_dof_powered_
 
 ## Example 8: RRSI v0.6 application
 
-This provider-neutral application runs Analyst, Digester, Proposer, Critic and
-Policy occurrences as independent RPNH child Registries. The checked-in timeout
-fixture exercises a frozen two-round local protocol and the public RRSI
-selection rule; it is not an official paper benchmark domain or result.
-Its framework-level purpose is to demonstrate that a state-of-the-art RSI
-design can be implemented and operated on the current RPNH harness; it does not
-claim reproduction of the paper's reported benchmark scores.
+This provider-neutral application runs Analyst, Digester, Proposer, Critic, and
+Policy occurrences as independent RPNH child Registries. The included timeout
+fixture demonstrates two rounds of Policy evolution and the public RRSI
+selection rule on the current RPNH harness.
 
-The example contains no execution profile or archived run. Its offline tests
-use scripted input ports; a real campaign requires a separately authorized,
-user-owned execution profile. Follow the complete
+Offline tests use scripted input ports. To run a live campaign, authorize the
+experiment and provide your own execution profile. Follow the complete
 [RRSI application guide](../../examples/rrsi_v06/README.md).
 
 ## Benchmark example: AutomationBench public workflows

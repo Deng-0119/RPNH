@@ -2,20 +2,14 @@
 
 [English](README.md) | 中文
 
-本示例在现有 RPNH Registry 与 PetriNet 运行时之上实现一个有界、本地的 RRSI v0.6
-application。它不增加第二套 harness，不修改 `cpn/`，也不绑定特定 provider 或模型。
-Analyst、Digester、Proposer、Critic 与 Policy occurrence 都是独立的 RPNH child run，
-各自保留 Registry 证据。
+本示例在现有 RPNH Registry 与 PetriNet 运行时上实现公开 RRSI v0.6 方法，展示当前
+harness 如何承载 RSI 角色循环、独立评估与分数/成本选择。Analyst、Digester、Proposer、
+Critic 与 Policy occurrence 作为独立 RPNH child run 执行，各自保留 Registry 证据。
+provider 与模型由用户的 execution profile 选择。
 
-本项目的目标是验证框架级可行性：以公开 RRSI 方法代表当前先进的 RSI 框架，证明它能够
-作为 application 在当前 RPNH harness 上实现并正常运行。“先进/SOTA”修饰的是所实现的
-RSI 框架，不表示这个本地 fixture 已复现论文 benchmark 分数。
-
-仓库内的 timeout fixture 用于演示 application 与选择机制；它不是 Google RRSI 的官方
-benchmark domain，也不复现论文报告结果。官方源码与 domain adapter 已公开在
-[`google-research/rrsi`](https://github.com/google-research/rrsi)，其外部 benchmark 依赖
-未复制到本仓库。边界与第三方声明分别位于同目录的 `DESIGN_ZH.md` 和
-`THIRD_PARTY_NOTICES.md`。
+示例自带的 timeout fixture 用于执行两轮 Policy 演化。参考方法与 domain adapter 见
+[`google-research/rrsi`](https://github.com/google-research/rrsi)；应用设计见
+`DESIGN_ZH.md`，来源说明见 `THIRD_PARTY_NOTICES.md`。
 
 ## 结构
 
@@ -34,9 +28,8 @@ benchmark domain，也不复现论文报告结果。官方源码与 domain adapt
 ```
 
 campaign 只负责 application 协调。每个面向模型的 occurrence 都复用现有 registered-host
-binding、`start_run`、`Harness.exact_execute` 与 PetriNet 转移校验。CandidateManifest 使用
-显式 run/resource 引用和源文本，不引入 hash、checksum、fingerprint、第二个 Registry
-或新的 workflow 服务。
+binding、`start_run`、`Harness.exact_execute` 与 PetriNet 转移校验。CandidateManifest
+通过显式 run/resource 引用关联源文本与执行证据。
 
 ## 安装与测试
 
@@ -73,12 +66,13 @@ rpnh net --run "$RRSI_WORK/run/policy/evolve-h0/H0/evolve-missing-0" \
   --view --no-open
 ```
 
-本示例不提交 execution profile、Registry 数据库、run 目录、provider transcript 或历史
-实验结果。
+将 execution profile 与生成的运行材料保存在源码仓库之外，通过每次实验的报告和 child
+Registry 查看执行过程。
 
 ## 完成语义
 
-`formal_rrsi_v06_local_complete=true` 表示这个冻结的本地 fixture 已用真实
-Registry/PetriNet/provider 证据完成全部计划轮次与 Policy slot。注入的测试 runner 只能证明
-结构行为，不能产生该完成声明。这个声明不覆盖官方 coding、workspace 或 engineering
-benchmark payload，也不声称 strict AgentLoop conformance 或 B1 突然丢失自动对账。
+`formal_rrsi_v06_local_complete=true` 表示冻结 timeout fixture 的计划轮次与 Policy slot
+已完成，并具备 Registry、PetriNet 与 provider 证据。脚本测试标记为
+`injected_test_runners`，结构验证结果记录在
+`execution_evidence.structural_campaign_complete`。通过 `round_decisions`、H0/final 的
+evolve 与 heldout 汇总以及 `usage`，查看候选采用、成绩和 token 覆盖情况。

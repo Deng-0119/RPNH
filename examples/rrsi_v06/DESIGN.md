@@ -31,20 +31,13 @@ source is literal text from the Proposer result, restricted to `policy.py`,
 checked before the Critic and smoke evaluation, and then evaluated in separate
 Policy child runs.
 
-## Method scope
+## Method and execution profile
 
-The acceptance target is framework-level: the public RRSI role loop,
-independent evaluations, evidence flow, and score/cost selection can be
-implemented and used on the current RPNH harness. This establishes RPNH
-feasibility for a state-of-the-art RSI framework, not parity with the paper's
-reported benchmark performance.
+The example demonstrates the public RRSI role loop, independent evaluations,
+evidence flow, and score/cost selection on the current RPNH harness. Selection
+follows the public RRSI Algorithm 2 cost rule. The timeout fixture uses seed 7
+and 2,000 bootstrap repetitions, with its coefficients, task manifests, source
+fixture, gate, and smoke check frozen in `protocol.example.json`.
 
-The selection implementation follows the public RRSI Algorithm 2 cost rule and
-uses a deterministic bootstrap with seed 7 and 2,000 repetitions for this local
-fixture. The local coefficients, task manifests, source fixture, gate, and smoke
-check are example choices rather than official paper-domain settings.
-
-This is B0 application conformance. It does not claim strict AgentLoop
-conformance, B1 abrupt-loss reconciliation, hostile-code sandboxing, or a paper
-result. Source identities are explicit protocol/run/resource values; no
-content-derived hash, checksum, or fingerprint is introduced.
+Runs use `application_petri_conformance/v1` with the B0 recovery profile. Source
+identity is recorded through explicit protocol, run, and resource references.

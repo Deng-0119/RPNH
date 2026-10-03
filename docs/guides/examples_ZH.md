@@ -301,15 +301,12 @@ solver 退出状态本身不够。
 
 ## 案例 8：RRSI v0.6 application
 
-这个 provider-neutral application 把 Analyst、Digester、Proposer、Critic 与 Policy
-occurrence 作为彼此独立的 RPNH child Registry 运行。仓库内的 timeout fixture 用于执行
-冻结的两轮本地协议与公开 RRSI 选择规则，不是论文官方 benchmark domain 或论文结果。
-它的框架级目标是证明先进 RSI 设计能够在当前 RPNH harness 上实现并正常运行，不宣称复现
-论文报告的 benchmark 分数。
+这个 provider-neutral application 将 Analyst、Digester、Proposer、Critic 与 Policy
+occurrence 作为独立 RPNH child Registry 执行。示例自带的 timeout fixture 展示当前 RPNH
+harness 上的两轮 Policy 演化与公开 RRSI 选择规则。
 
-示例不包含 execution profile 或历史 run。离线测试使用脚本化 input port；真实 campaign
-要求用户另行授权并提供自己的 execution profile。完整步骤见
-[RRSI application 指南](../../examples/rrsi_v06/README_ZH.md)。
+离线测试使用脚本化 input port。执行真实 campaign 时，先授权本次实验并提供自己的
+execution profile。完整步骤见 [RRSI application 指南](../../examples/rrsi_v06/README_ZH.md)。
 
 ## Benchmark 示例：AutomationBench 公开业务任务
 
