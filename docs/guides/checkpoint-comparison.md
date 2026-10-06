@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: en
   counterpart: checkpoint-comparison_ZH.md
-  revision: "2026-10-06.1"
+  revision: "2026-10-06.2"
   status: initial-slice-browser-validation-pending
 ---
 
@@ -43,8 +43,18 @@ the previous result and invalidates pending responses. Repeated read clicks do n
 create duplicate in-flight requests. Close, newer dashboard navigation, browser
 Back/Forward, page departure, and page restoration discard comparison data. A
 failed request clears the entire previous result; there is no cached half-pair
-fallback. These lifecycle paths have offline Node/synthetic-DOM coverage; this is
-not a claim of actual browser/paint/accessibility verification.
+fallback. When the browser saves the page in its back/forward cache, the renderer
+and resize observer are retained while outstanding reads and timers are cancelled.
+On restoration, polling follows the selected live-refresh preference; a disabled
+preference or historical capture does not start polling. Ordinary page departure
+still disposes the renderer. Cancelling a previous-net read releases its busy
+navigation controls synchronously; saved historical captures remain paused until
+Return to live.
+
+Offline Node tests exercise full app startup, the actual lifecycle handlers and
+`NetRenderer` with controlled DOM/JointJS/layout dependencies, including repeated
+restoration and late responses. This is not actual browser cache-admission,
+paint, accessibility, or real JointJS verification.
 
 ## What is compared
 
@@ -134,7 +144,8 @@ Focused checks:
 
 ```sh
 python -m pytest -q tests/test_checkpoint_comparison.py
-node --test frontend/net-viewer/tests/comparison-view.test.mjs
+node --test frontend/net-viewer/tests/comparison-view.test.mjs \
+  frontend/net-viewer/tests/viewer-lifecycle.test.mjs
 ```
 
 The Python suite includes a socket-free real adopted Registry read, synthetic
@@ -152,6 +163,10 @@ The shared JSON fixture is produced from the Python projection and consumed by
 Node to check wire compatibility. Related checkpoint, navigation, token-resource,
 viewer-boundary and packaging checks remain relevant. Actual browser interaction,
 visual layout and accessibility, and the local-socket multi-checkpoint cases need
-verification in an environment that supports them. No real model API call is
+verification in an environment that supports them. In the 2026-10-06 cloud check,
+the original two multi-checkpoint tests stopped at `AF_UNIX` creation with
+`PermissionError` before assertions. The supported cloud browser could not open
+the standard local viewer (`ERR_BLOCKED_BY_CLIENT`). Both checks remain blocked;
+passing socket-free reads and synthetic lifecycle tests do not replace them. No real model API call is
 required for any comparison test. This slice adds no team execution, cross-source
 comparison, score ranking, Registry schema, or mutable viewer endpoint.

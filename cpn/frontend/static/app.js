@@ -44,6 +44,7 @@ function openComparison() {
     try {comparisonPanel.open(frame, checkpointView ? [] : timeline.items);}
     catch {comparisonPanel.close();notice(()=>tr('当前视图没有可比较的精确检查点。'));return;}
     stop();clearTimeout(timer);controller?.abort();timeline.begin();++historySerial;++probeSerial;
+    checkpointBusy=false;timeControls();
     cancelActivity();cancelTokenResource();
 }
 $('compare-checkpoints').onclick=openComparison;
@@ -722,7 +723,14 @@ async function start() {
     $('motion').onchange = () => { if (!$('motion').checked)
         clearMotion(); };
     $('motion').checked = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    window.addEventListener('pagehide', () => { cancelActivity();cancelTokenResource(); clearTimeout(timer); stop(); ++historySerial; ++probeSerial; timeline.begin(); controller?.abort(); renderer.dispose(); });
+    window.addEventListener('pagehide', event => {
+        cancelActivity();cancelTokenResource(); clearTimeout(timer); stop(); ++historySerial; ++probeSerial; timeline.begin(); controller?.abort();
+        checkpointBusy=false;
+        // A bfcache entry keeps this app instance: its paper and resize observer
+        // must survive, while pending reads and comparison state are discarded.
+        if (!event.persisted) renderer.dispose();
+    });
+    window.addEventListener('pageshow', event => { if (event.persisted) { timeControls();schedule(); } });
     await loadFrame(null);
 }
 start().catch(error => { notice(() => error.message); setHealth(() => tr("看板启动失败"), 'stale'); });

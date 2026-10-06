@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: checkpoint-comparison.md
-  revision: "2026-10-06.1"
+  revision: "2026-10-06.2"
   status: initial-slice-browser-validation-pending
 ---
 
@@ -34,7 +34,14 @@ Viewer 可以比较**同一 Registry、同一 exact 网版本中两个明确选�
 打开比较会暂停轮询和回放。更换选择立即清除旧结果并使在途响应失效；重复点击
 不会产生多个相同在途请求。关闭、切换看板观察、浏览器前进/后退、离开页面和
 恢复页面都会丢弃比较数据。读取失败清除整份旧结果，不回退到缓存或半份结果。
-这些路径已有离线 Node/模拟 DOM 检查；这不代表真实浏览器、绘制或无障碍验证通过。
+浏览器将页面保存到前进/后退缓存时，保留 renderer 和 resize observer，同时取消
+在途读取与计时器；恢复后按所选实时刷新偏好继续轮询，关闭刷新或历史 capture
+不会开启轮询。普通离开页面仍释放 renderer。取消上一个网的在途读取会同步释放
+导航忙状态；已显示的保存历史 capture 仍须显式返回实时才能继续读取。
+
+离线 Node 测试通过受控 DOM/JointJS/layout 依赖执行完整 app 启动、实际生命周期
+handler 和 `NetRenderer`，覆盖重复恢复与迟到响应；这不代表真实浏览器缓存准入、
+绘制、无障碍或真实 JointJS 验证通过。
 
 ## 实际比较范围
 
@@ -109,7 +116,8 @@ Registry 推进后可能需要重试同一个明确选择的 pair；重试不会
 
 ```sh
 python -m pytest -q tests/test_checkpoint_comparison.py
-node --test frontend/net-viewer/tests/comparison-view.test.mjs
+node --test frontend/net-viewer/tests/comparison-view.test.mjs \
+  frontend/net-viewer/tests/viewer-lifecycle.test.mjs
 ```
 
 Python 测试包括不使用 socket 的真实已采用 Registry 读取、合成来源/binding 替换
@@ -125,5 +133,9 @@ python -m pytest -q tests/test_checkpoint_comparison.py \
 共用 JSON fixture 由 Python projection 生成、由 Node 消费，核验 wire 兼容性。
 相关 checkpoint、导航、token-resource、Viewer 边界和打包检查仍适用。真实浏览器
 交互、视觉和无障碍，以及本地 socket 多检查点用例，需在支持它们的环境中验证。
+2026-10-06 云端检查中，原有两个多检查点测试在创建 `AF_UNIX` 时遇到
+`PermissionError`，尚未进入断言；受支持的云端浏览器无法打开标准本地 Viewer
+（`ERR_BLOCKED_BY_CLIENT`）。两项仍为 blocked；无 socket 读取和模拟生命周期
+测试通过不能替代它们。
 所有比较测试都不需要真实模型 API。本片不新增团队执行、跨来源比较、评分排名、
 Registry schema 或可变 Viewer 端点。

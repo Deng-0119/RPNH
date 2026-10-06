@@ -6,7 +6,7 @@ metadata:
   audience: user-and-developer
   language: en
   counterpart: CHANGELOG_ZH.md
-  revision: "2026-10-06.1"
+  revision: "2026-10-06.2"
   status: v0.1.0rc1
 ---
 
@@ -15,6 +15,9 @@ metadata:
 # Changelog
 
 ## Unreleased
+
+- Cancelling a previous-net read by opening comparison or leaving the page now
+  releases its navigation controls, preserving saved historical-capture restrictions.
 
 - Added an opt-in offline portable-package preview and exact local dependency
   lock through `rpnh package`, inert HOST declaration diagnostics, and read-only
@@ -25,7 +28,11 @@ metadata:
 - Portable-package resolution now applies the dependency-depth bound to every
   shared-dependency path and returns a structured error for invalid UTF-8 ZIP
   filenames. Checkpoint comparison resumes the selected live-refresh behavior
-  after browser navigation while clearing the previous pair.
+  after browser navigation while clearing the previous pair. A cached-page restore
+  now retains its renderer and resize observer, resumes only eligible live
+  polling, and still cancels stale work; ordinary departure releases the renderer.
+  Full-startup synthetic lifecycle tests cover this repair; actual-browser and
+  local-socket multi-checkpoint verification remain blocked in the cloud check.
 
 - Documentation builds now include linked result pages and downloads with validation; optional-Node tests preserve HTTP coverage, and wheel audits include the source-observation viewer module.
 

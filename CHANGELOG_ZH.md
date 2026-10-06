@@ -6,7 +6,7 @@ metadata:
   audience: user-and-developer
   language: zh-CN
   counterpart: CHANGELOG.md
-  revision: "2026-10-06.1"
+  revision: "2026-10-06.2"
   status: v0.1.0rc1
 ---
 
@@ -16,12 +16,18 @@ metadata:
 
 ## 未发布
 
+- 打开比较或离开页面取消上一个网的读取时，同步解除导航控件的忙状态，并继续保留
+  保存历史 capture 的暂停读取边界。
+
 - 新增 opt-in 离线声明包预览与 exact 本地依赖锁（`rpnh package`）、纯数据
   HOST 声明诊断，以及同一 Registry 两个 checkpoint 的只读比较。这些准备和
   观察入口不安装代码、不授予执行权，也不实现 candidate 到运行时桥接或双 owner 执行。
 
 - 可移植包解析现在对共享依赖的每条路径校验深度限制，并为 ZIP 文件名非法 UTF-8
   返回结构化错误；checkpoint 比较在浏览器导航后恢复所选实时刷新行为，同时清空旧比较。
+  缓存页面恢复现在保留 renderer 和 resize observer，仅恢复符合条件的实时轮询，
+  并取消旧在途工作；普通离开页面仍释放 renderer。完整启动的模拟生命周期测试
+  覆盖此修复；真实浏览器和本地 socket 多检查点验证在本次云端检查中仍为 blocked。
 
 - 文档构建现支持并校验链接的结果页与下载文件；可选Node测试保留HTTP覆盖，wheel审计纳入source-observation viewer模块。
 
