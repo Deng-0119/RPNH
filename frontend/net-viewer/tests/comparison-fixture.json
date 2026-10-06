@@ -1,0 +1,601 @@
+{
+  "schema_version": "rpnh/checkpoint_comparison/v1",
+  "comparison_mode": "descriptive",
+  "comparability": "not_established",
+  "global_atomic_snapshot": false,
+  "source": {
+    "run_dir": "/display-only/run",
+    "task_id": "task:44444444444444444444444444444444",
+    "net_ref": {
+      "entity_type": "net_instance/v1",
+      "logical_id": "net_instance:11111111111111111111111111111111",
+      "version_id": "net_instance_version:11111111111111111111111111111111"
+    }
+  },
+  "left_selector": {
+    "net_ref": {
+      "entity_type": "net_instance/v1",
+      "logical_id": "net_instance:11111111111111111111111111111111",
+      "version_id": "net_instance_version:11111111111111111111111111111111"
+    },
+    "checkpoint_ref": {
+      "entity_type": "marking_checkpoint/v1",
+      "logical_id": "marking_checkpoint:22222222222222222222222222222222",
+      "version_id": "marking_checkpoint_version:22222222222222222222222222222222"
+    },
+    "cut": 20
+  },
+  "right_selector": {
+    "net_ref": {
+      "entity_type": "net_instance/v1",
+      "logical_id": "net_instance:11111111111111111111111111111111",
+      "version_id": "net_instance_version:11111111111111111111111111111111"
+    },
+    "checkpoint_ref": {
+      "entity_type": "marking_checkpoint/v1",
+      "logical_id": "marking_checkpoint:33333333333333333333333333333333",
+      "version_id": "marking_checkpoint_version:33333333333333333333333333333333"
+    },
+    "cut": 30
+  },
+  "capture": {
+    "head_ordinal": 40,
+    "writer_fencing_epoch": 2
+  },
+  "left": {
+    "schema_version": "rpnh/checkpoint_view/v1",
+    "selector": {
+      "net_ref": {
+        "entity_type": "net_instance/v1",
+        "logical_id": "net_instance:11111111111111111111111111111111",
+        "version_id": "net_instance_version:11111111111111111111111111111111"
+      },
+      "checkpoint_ref": {
+        "entity_type": "marking_checkpoint/v1",
+        "logical_id": "marking_checkpoint:22222222222222222222222222222222",
+        "version_id": "marking_checkpoint_version:22222222222222222222222222222222"
+      },
+      "cut": 20
+    },
+    "capture": {
+      "head_ordinal": 40,
+      "writer_fencing_epoch": 2
+    },
+    "navigation": {
+      "previous_net_segment": null,
+      "coverage": "complete",
+      "end_reason": "initial_checkpoint",
+      "loaded_checkpoints": 2,
+      "max_chain": 2048
+    },
+    "adoption_evidence": {
+      "status": "no_evidence_at_cut",
+      "coverage": "complete",
+      "cut": 20,
+      "current_net_ref": null,
+      "records": []
+    },
+    "coverage": {
+      "topology": "selected_declaration",
+      "marking": "selected_checkpoint",
+      "bindings": "selected_net_exact_closure",
+      "firings": "not_provided",
+      "activity": "not_provided",
+      "cross_net_delta": "not_provided"
+    },
+    "frame": {
+      "schema_version": "rpnh/dashboard/v1",
+      "source": {
+        "mode": "registry_current",
+        "task_id": "task:44444444444444444444444444444444",
+        "run_dir": "/display-only/run",
+        "net_ref": {
+          "entity_type": "net_instance/v1",
+          "logical_id": "net_instance:11111111111111111111111111111111",
+          "version_id": "net_instance_version:11111111111111111111111111111111"
+        },
+        "verified_head_ordinal": 20,
+        "writer_fencing_epoch": 2
+      },
+      "net": {
+        "schema_version": "rpnh/net_view/v1",
+        "source": {
+          "mode": "registry_current",
+          "task_id": "task:44444444444444444444444444444444",
+          "run_dir": "/display-only/run",
+          "net_ref": {
+            "entity_type": "net_instance/v1",
+            "logical_id": "net_instance:11111111111111111111111111111111",
+            "version_id": "net_instance_version:11111111111111111111111111111111"
+          },
+          "verified_head_ordinal": 20,
+          "writer_fencing_epoch": 2
+        },
+        "summary": {},
+        "nodes": [
+          {
+            "id": "p",
+            "label": "<img src=x onerror=alert(1)>",
+            "kind": "place",
+            "category": "place",
+            "hidden_by_default": false,
+            "capacity": null,
+            "tokens": [
+              {
+                "token_ref": {
+                  "entity_type": "petri_token/v1",
+                  "logical_id": "petri_token:55555555555555555555555555555555",
+                  "version_id": "petri_token_version:55555555555555555555555555555555"
+                },
+                "place": "p",
+                "kind": null,
+                "resource_ref": null,
+                "active_in_checkpoint": true
+              }
+            ],
+            "active_token_count": 1
+          }
+        ],
+        "edges": [],
+        "marking": {
+          "checkpoint_ref": {
+            "entity_type": "marking_checkpoint/v1",
+            "logical_id": "marking_checkpoint:22222222222222222222222222222222",
+            "version_id": "marking_checkpoint_version:22222222222222222222222222222222"
+          },
+          "epoch": 0,
+          "token_count": 1,
+          "active_token_count": 1
+        }
+      },
+      "boundaries": {
+        "entry": [],
+        "exit": [],
+        "terminal_rules": []
+      },
+      "transition_bindings": [],
+      "position": {
+        "mode": "history",
+        "cursor": 20,
+        "latest_head": 40
+      },
+      "coverage": {
+        "history": "selected_saved_checkpoint",
+        "firings": "not_provided"
+      }
+    }
+  },
+  "right": {
+    "schema_version": "rpnh/checkpoint_view/v1",
+    "selector": {
+      "net_ref": {
+        "entity_type": "net_instance/v1",
+        "logical_id": "net_instance:11111111111111111111111111111111",
+        "version_id": "net_instance_version:11111111111111111111111111111111"
+      },
+      "checkpoint_ref": {
+        "entity_type": "marking_checkpoint/v1",
+        "logical_id": "marking_checkpoint:33333333333333333333333333333333",
+        "version_id": "marking_checkpoint_version:33333333333333333333333333333333"
+      },
+      "cut": 30
+    },
+    "capture": {
+      "head_ordinal": 40,
+      "writer_fencing_epoch": 2
+    },
+    "navigation": {
+      "previous_net_segment": null,
+      "coverage": "complete",
+      "end_reason": "initial_checkpoint",
+      "loaded_checkpoints": 2,
+      "max_chain": 2048
+    },
+    "adoption_evidence": {
+      "status": "no_evidence_at_cut",
+      "coverage": "complete",
+      "cut": 30,
+      "current_net_ref": null,
+      "records": []
+    },
+    "coverage": {
+      "topology": "selected_declaration",
+      "marking": "selected_checkpoint",
+      "bindings": "selected_net_exact_closure",
+      "firings": "not_provided",
+      "activity": "not_provided",
+      "cross_net_delta": "not_provided"
+    },
+    "frame": {
+      "schema_version": "rpnh/dashboard/v1",
+      "source": {
+        "mode": "registry_current",
+        "task_id": "task:44444444444444444444444444444444",
+        "run_dir": "/display-only/run",
+        "net_ref": {
+          "entity_type": "net_instance/v1",
+          "logical_id": "net_instance:11111111111111111111111111111111",
+          "version_id": "net_instance_version:11111111111111111111111111111111"
+        },
+        "verified_head_ordinal": 30,
+        "writer_fencing_epoch": 2
+      },
+      "net": {
+        "schema_version": "rpnh/net_view/v1",
+        "source": {
+          "mode": "registry_current",
+          "task_id": "task:44444444444444444444444444444444",
+          "run_dir": "/display-only/run",
+          "net_ref": {
+            "entity_type": "net_instance/v1",
+            "logical_id": "net_instance:11111111111111111111111111111111",
+            "version_id": "net_instance_version:11111111111111111111111111111111"
+          },
+          "verified_head_ordinal": 30,
+          "writer_fencing_epoch": 2
+        },
+        "summary": {},
+        "nodes": [
+          {
+            "id": "p",
+            "label": "<img src=x onerror=alert(1)>",
+            "kind": "place",
+            "category": "place",
+            "hidden_by_default": false,
+            "capacity": null,
+            "tokens": [
+              {
+                "token_ref": {
+                  "entity_type": "petri_token/v1",
+                  "logical_id": "petri_token:55555555555555555555555555555555",
+                  "version_id": "petri_token_version:55555555555555555555555555555555"
+                },
+                "place": "p",
+                "kind": null,
+                "resource_ref": null,
+                "active_in_checkpoint": false
+              }
+            ],
+            "active_token_count": 0
+          }
+        ],
+        "edges": [],
+        "marking": {
+          "checkpoint_ref": {
+            "entity_type": "marking_checkpoint/v1",
+            "logical_id": "marking_checkpoint:33333333333333333333333333333333",
+            "version_id": "marking_checkpoint_version:33333333333333333333333333333333"
+          },
+          "epoch": 0,
+          "token_count": 1,
+          "active_token_count": 0
+        }
+      },
+      "boundaries": {
+        "entry": [],
+        "exit": [],
+        "terminal_rules": []
+      },
+      "transition_bindings": [],
+      "position": {
+        "mode": "history",
+        "cursor": 30,
+        "latest_head": 40
+      },
+      "coverage": {
+        "history": "selected_saved_checkpoint",
+        "firings": "not_provided"
+      }
+    }
+  },
+  "coverage": {
+    "status": "partial",
+    "scope": "public_checkpoint_projection",
+    "unknown_axes": [
+      "definition_details",
+      "effective_execution",
+      "activity",
+      "resource_contents",
+      "native_scores",
+      "terminal_evidence"
+    ]
+  },
+  "axes": {
+    "definition": {
+      "coverage": "complete_in_declared_scope",
+      "rows": [
+        {
+          "subject": {
+            "kind": "boundaries"
+          },
+          "field": "entry",
+          "classification": "unchanged",
+          "left_fact": {
+            "status": "provided",
+            "value": []
+          },
+          "right_fact": {
+            "status": "provided",
+            "value": []
+          },
+          "reason_source": "current_analysis"
+        },
+        {
+          "subject": {
+            "kind": "boundaries"
+          },
+          "field": "exit",
+          "classification": "unchanged",
+          "left_fact": {
+            "status": "provided",
+            "value": []
+          },
+          "right_fact": {
+            "status": "provided",
+            "value": []
+          },
+          "reason_source": "current_analysis"
+        },
+        {
+          "subject": {
+            "kind": "boundaries"
+          },
+          "field": "terminal_rules",
+          "classification": "unchanged",
+          "left_fact": {
+            "status": "provided",
+            "value": []
+          },
+          "right_fact": {
+            "status": "provided",
+            "value": []
+          },
+          "reason_source": "current_analysis"
+        },
+        {
+          "subject": {
+            "kind": "nodes",
+            "id": "p"
+          },
+          "field": "capacity",
+          "classification": "unchanged",
+          "left_fact": {
+            "status": "provided",
+            "value": null
+          },
+          "right_fact": {
+            "status": "provided",
+            "value": null
+          },
+          "reason_source": "current_analysis"
+        },
+        {
+          "subject": {
+            "kind": "nodes",
+            "id": "p"
+          },
+          "field": "category",
+          "classification": "unchanged",
+          "left_fact": {
+            "status": "provided",
+            "value": "place"
+          },
+          "right_fact": {
+            "status": "provided",
+            "value": "place"
+          },
+          "reason_source": "current_analysis"
+        },
+        {
+          "subject": {
+            "kind": "nodes",
+            "id": "p"
+          },
+          "field": "hidden_by_default",
+          "classification": "unchanged",
+          "left_fact": {
+            "status": "provided",
+            "value": false
+          },
+          "right_fact": {
+            "status": "provided",
+            "value": false
+          },
+          "reason_source": "current_analysis"
+        },
+        {
+          "subject": {
+            "kind": "nodes",
+            "id": "p"
+          },
+          "field": "kind",
+          "classification": "unchanged",
+          "left_fact": {
+            "status": "provided",
+            "value": "place"
+          },
+          "right_fact": {
+            "status": "provided",
+            "value": "place"
+          },
+          "reason_source": "current_analysis"
+        },
+        {
+          "subject": {
+            "kind": "nodes",
+            "id": "p"
+          },
+          "field": "label",
+          "classification": "unchanged",
+          "left_fact": {
+            "status": "provided",
+            "value": "<img src=x onerror=alert(1)>"
+          },
+          "right_fact": {
+            "status": "provided",
+            "value": "<img src=x onerror=alert(1)>"
+          },
+          "reason_source": "current_analysis"
+        }
+      ]
+    },
+    "bindings": {
+      "coverage": "complete_in_declared_scope",
+      "rows": []
+    },
+    "tokens": {
+      "coverage": "complete_in_declared_scope",
+      "rows": [
+        {
+          "subject": {
+            "entity_type": "petri_token/v1",
+            "logical_id": "petri_token:55555555555555555555555555555555",
+            "version_id": "petri_token_version:55555555555555555555555555555555"
+          },
+          "field": "active_in_checkpoint",
+          "classification": "content_change",
+          "left_fact": {
+            "status": "provided",
+            "value": true
+          },
+          "right_fact": {
+            "status": "provided",
+            "value": false
+          },
+          "reason_source": "current_analysis"
+        },
+        {
+          "subject": {
+            "entity_type": "petri_token/v1",
+            "logical_id": "petri_token:55555555555555555555555555555555",
+            "version_id": "petri_token_version:55555555555555555555555555555555"
+          },
+          "field": "kind",
+          "classification": "unchanged",
+          "left_fact": {
+            "status": "provided",
+            "value": null
+          },
+          "right_fact": {
+            "status": "provided",
+            "value": null
+          },
+          "reason_source": "current_analysis"
+        },
+        {
+          "subject": {
+            "entity_type": "petri_token/v1",
+            "logical_id": "petri_token:55555555555555555555555555555555",
+            "version_id": "petri_token_version:55555555555555555555555555555555"
+          },
+          "field": "place",
+          "classification": "unchanged",
+          "left_fact": {
+            "status": "provided",
+            "value": "p"
+          },
+          "right_fact": {
+            "status": "provided",
+            "value": "p"
+          },
+          "reason_source": "current_analysis"
+        },
+        {
+          "subject": {
+            "entity_type": "petri_token/v1",
+            "logical_id": "petri_token:55555555555555555555555555555555",
+            "version_id": "petri_token_version:55555555555555555555555555555555"
+          },
+          "field": "resource_ref",
+          "classification": "unchanged",
+          "left_fact": {
+            "status": "provided",
+            "value": null
+          },
+          "right_fact": {
+            "status": "provided",
+            "value": null
+          },
+          "reason_source": "current_analysis"
+        }
+      ]
+    },
+    "marking": {
+      "coverage": "complete_in_declared_scope",
+      "rows": [
+        {
+          "subject": {
+            "kind": "marking"
+          },
+          "field": "active_token_count",
+          "classification": "content_change",
+          "left_fact": {
+            "status": "provided",
+            "value": 1
+          },
+          "right_fact": {
+            "status": "provided",
+            "value": 0
+          },
+          "reason_source": "current_analysis"
+        },
+        {
+          "subject": {
+            "kind": "marking"
+          },
+          "field": "epoch",
+          "classification": "unchanged",
+          "left_fact": {
+            "status": "provided",
+            "value": 0
+          },
+          "right_fact": {
+            "status": "provided",
+            "value": 0
+          },
+          "reason_source": "current_analysis"
+        },
+        {
+          "subject": {
+            "kind": "marking"
+          },
+          "field": "token_count",
+          "classification": "unchanged",
+          "left_fact": {
+            "status": "provided",
+            "value": 1
+          },
+          "right_fact": {
+            "status": "provided",
+            "value": 1
+          },
+          "reason_source": "current_analysis"
+        }
+      ]
+    },
+    "definition_details": {
+      "coverage": "not_provided",
+      "rows": []
+    },
+    "effective_execution": {
+      "coverage": "not_provided",
+      "rows": []
+    },
+    "activity": {
+      "coverage": "not_provided",
+      "rows": []
+    },
+    "resource_contents": {
+      "coverage": "not_provided",
+      "rows": []
+    },
+    "native_scores": {
+      "coverage": "not_provided",
+      "rows": []
+    },
+    "terminal_evidence": {
+      "coverage": "not_provided",
+      "rows": []
+    }
+  }
+}

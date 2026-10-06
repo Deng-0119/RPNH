@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: index.md
-  revision: "2026-10-06.1"
+  revision: "2026-10-06.2"
   status: source-reviewed-v0.1.0rc1
   basis: "core; adapter differences explicitly labelled"
 ---
@@ -37,6 +37,9 @@ metadata:
 | 使用固定版本 DSH 宿主 | [DSH 宿主适配器](guides/dsh_ZH.md) |
 | 在 PetriNet 看板中查看 run | [PetriNet 看板](guides/viewer_ZH.md) |
 | 查询并查看固定来源范围 | [SourceSet 查询](guides/source-queries_ZH.md) |
+| 离线预览声明包并锁定本地依赖 | [可移植包](guides/portable-packages_ZH.md) |
+| 对照已准备 HOST 的声明快照 | [HOST 声明诊断](guides/host-readiness_ZH.md) |
+| 只读比较同一 Registry 的两个 checkpoint | [Checkpoint 比较](guides/checkpoint-comparison_ZH.md) |
 | 理解执行闭环 | [架构](architecture/design_ZH.md) |
 | 阅读完整 harness 架构概览 | [Harness 架构](ARCHITECTURE_ZH.md) |
 | 比较 RPNH 权威与 Codex 展示 | [RPNH 与 Codex](RPNH_VS_CODEX_ZH.md) |

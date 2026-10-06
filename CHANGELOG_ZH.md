@@ -16,6 +16,13 @@ metadata:
 
 ## 未发布
 
+- 新增 opt-in 离线声明包预览与 exact 本地依赖锁（`rpnh package`）、纯数据
+  HOST 声明诊断，以及同一 Registry 两个 checkpoint 的只读比较。这些准备和
+  观察入口不安装代码、不授予执行权，也不实现 candidate 到运行时桥接或双 owner 执行。
+
+- 可移植包解析现在对共享依赖的每条路径校验深度限制，并为 ZIP 文件名非法 UTF-8
+  返回结构化错误；checkpoint 比较在浏览器导航后恢复所选实时刷新行为，同时清空旧比较。
+
 - 文档构建现支持并校验链接的结果页与下载文件；可选Node测试保留HTTP覆盖，wheel审计纳入source-observation viewer模块。
 
 - 集成显式opt-in作者/Assembly/graph、typed-v9、P4/P6、有界I02、Workset与normal-child

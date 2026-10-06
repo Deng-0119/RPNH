@@ -1,0 +1,74 @@
+{
+  "budgets": {},
+  "components": [
+    {
+      "config": {},
+      "config_schema": "application/portable_config/v1",
+      "key": "example/identity-component/v1",
+      "name": "step",
+      "operations": [
+        {
+          "executor": "example/identity-executor/v1",
+          "inputs": [
+            "request"
+          ],
+          "name": "run",
+          "outcomes": [
+            {
+              "name": "complete",
+              "products": [
+                {
+                  "port": "result"
+                }
+              ]
+            }
+          ],
+          "outputs": [
+            "result"
+          ]
+        }
+      ],
+      "ports": [
+        {
+          "direction": "input",
+          "name": "request",
+          "schema": "application/portable_text/v1"
+        },
+        {
+          "direction": "output",
+          "name": "result",
+          "schema": "application/portable_text/v1"
+        }
+      ]
+    }
+  ],
+  "entry": {
+    "request": {
+      "component": "step",
+      "port": "request"
+    }
+  },
+  "exit": {
+    "result": {
+      "component": "step",
+      "port": "result"
+    }
+  },
+  "links": [],
+  "name": "PortableIdentity",
+  "required_schemas": [
+    "application/portable_config/v1",
+    "application/portable_text/v1"
+  ],
+  "schema_version": "rpnh/module_declaration/v1",
+  "terminal": {
+    "config": {},
+    "key": "example/identity-terminal/v1",
+    "operation": "run",
+    "outcome": "complete",
+    "source": {
+      "component": "step",
+      "port": "result"
+    }
+  }
+}

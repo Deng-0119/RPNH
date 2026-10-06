@@ -25,7 +25,9 @@ workspace 或恢复状态的独立所有者。
 
 2026-10-06公开记录：freeze04首轮18题为5 PASS / 9 FAIL / 4 BLOCKED；独立repair四题为1 PASS / 3 FAIL。旧14道已评分题未重跑。 [结果与限制](examples/automationbench/PUBLIC_RESULTS_20261006_ZH.md).
 
-显式opt-in的[作者/graph接口](docs/reference/declarations_ZH.md)、[Workset与normal-child root](docs/reference/normal-child-root-contract_ZH.md)及[只读source查询](docs/guides/source-queries_ZH.md)已集成；[有限验收](docs/guides/release-validation_ZH.md)不等于全HOST/I00–I10/advanced25通过，真实browser仍BLOCKED。
+显式opt-in的[作者/graph接口](docs/reference/declarations_ZH.md)、[Workset与normal-child root](docs/reference/normal-child-root-contract_ZH.md)及[只读source查询](docs/guides/source-queries_ZH.md)已集成；[有限验收](docs/guides/release-validation_ZH.md)不等于全HOST/I00–I10/advanced25通过，历史 freeze04 的真实浏览器窗口为 BLOCKED。
+
+离线准备与查看入口包括[可移植包预览和精确本地锁](docs/guides/portable-packages_ZH.md)、[HOST 声明诊断](docs/guides/host-readiness_ZH.md)和[checkpoint 比较](docs/guides/checkpoint-comparison_ZH.md)。包命令使用安装后的 `rpnh`；HOST 诊断是显式 Python API。这些入口检查材料和已记录事实，不授予执行权。
 
 ## 先看一次多 Agent 运行
 

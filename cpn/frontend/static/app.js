@@ -1,3 +1,4 @@
+import { installComparisonPanel } from './comparison-view.mjs';
 import { SourceObservationState, sourceObservationPath, renderSourceObservation } from './source-observation.mjs';
 import { activityRequest, activityPath, normalizeActivityPage, mergeActivity, resolveActivityTarget } from './firing-activity.mjs';
 import { installWorksetPanel } from './worksets.mjs';
@@ -36,6 +37,17 @@ let showResources = JSON.parse($('bootstrap').textContent).showResources, hasDas
 const viewports = new Map();
 let checkpointView = null, checkpointProbe = null, probeSerial = 0, retainedCapture = false, checkpointBusy = false;
 const checkpointReturns = [];
+const comparisonPanel = installComparisonPanel($('comparison-panel'), {request, translate:tr, events:window, onClose:()=>schedule()});
+function openComparison() {
+    if (!frame) return;
+    // Validate exact choices before interrupting the existing observation flow.
+    try {comparisonPanel.open(frame, checkpointView ? [] : timeline.items);}
+    catch {comparisonPanel.close();notice(()=>tr('当前视图没有可比较的精确检查点。'));return;}
+    stop();clearTimeout(timer);controller?.abort();timeline.begin();++historySerial;++probeSerial;
+    cancelActivity();cancelTokenResource();
+}
+$('compare-checkpoints').onclick=openComparison;
+
 let activity = {observation:null,loading:false,error:null,stale:false,paused:false,expanded:new Set()}, activityGeneration=0, activityController=null;
 function cancelActivity(resume=false) {
     const wasPaused=activity.paused;
@@ -258,7 +270,7 @@ async function render(previous = null, ticket = timeline.serial, candidate = fra
         const relation = graph.edges.find(e => e.id === selection.id);
         if (relation) selection = {kind:'edge', id:relation.witness_arc_ids?.[0] ?? relation.source_ids[0]};
     }
-    if (frame && frame!==candidate) {cancelActivity();cancelTokenResource();}
+    if (frame && frame!==candidate) {comparisonPanel.close();cancelActivity();cancelTokenResource();}
     frame = candidate;
     if (resolved) {
         firingTarget = resolved.target;
@@ -381,7 +393,7 @@ async function loadHistory(before = null) {
         }
     }
 }
-function schedule() { clearTimeout(timer); if (!activity.paused && !checkpointView && !retainedCapture && !checkpointBusy && $('auto-refresh').checked)
+function schedule() { clearTimeout(timer); if (!comparisonPanel.state.open && !activity.paused && !checkpointView && !retainedCapture && !checkpointBusy && $('auto-refresh').checked)
     timer = setTimeout(async () => { if (timeline.mode === 'live')
         await loadFrame(null);
     else {
@@ -390,6 +402,7 @@ function schedule() { clearTimeout(timer); if (!activity.paused && !checkpointVi
     } }, 2500); }
 async function loadFrame(cursor) {
     if (checkpointView || retainedCapture || checkpointBusy) return;
+    comparisonPanel.close();
     ++probeSerial; checkpointProbe = null;
     cancelActivity();cancelTokenResource();
     const ticket = timeline.begin();
@@ -511,6 +524,7 @@ function retainedState() {
             nextBefore: timeline.nextBefore, historyHead: timeline.historyHead, endReason: timeline.endReason}};
 }
 function pauseCheckpointNavigation() {
+    comparisonPanel.close();
     cancelActivity();cancelTokenResource();
     stop(); clearTimeout(timer); controller?.abort(); ++historySerial; ++probeSerial;
     $('auto-refresh').checked = false;
@@ -612,7 +626,7 @@ function overviewEmpty() {
     }
 }
 function refreshLanguage() {
-    drawSourceObservation();
+    drawSourceObservation();comparisonPanel.refreshLanguage();
     const savedNotice=noticeMessage;
     const openDetails = [...$('detail').querySelectorAll('details')].map((d, i) => d.open ? i : -1), scroll = $('detail').scrollTop;
     applyLanguage(document);

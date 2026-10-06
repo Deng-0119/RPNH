@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: en
   counterpart: index_ZH.md
-  revision: "2026-10-06.1"
+  revision: "2026-10-06.2"
   status: source-reviewed-v0.1.0rc1
   basis: "core; adapter differences explicitly labelled"
 ---
@@ -41,6 +41,9 @@ has a corresponding Chinese page.
 | Operate the pinned DSH host | [DSH host adapter](guides/dsh.md) |
 | Inspect runs in the PetriNet dashboard | [PetriNet dashboard](guides/viewer.md) |
 | Query and inspect fixed source scopes | [SourceSet queries](guides/source-queries.md) |
+| Preview declaration packages and lock local dependencies offline | [Portable packages](guides/portable-packages.md) |
+| Diagnose declarations against an already-prepared HOST snapshot | [HOST declaration diagnostics](guides/host-readiness.md) |
+| Compare two checkpoints from one Registry without execution | [Checkpoint comparison](guides/checkpoint-comparison.md) |
 | Understand the closed execution design | [Architecture](architecture/design.md) |
 | Read the complete harness architecture overview | [Harness architecture](ARCHITECTURE.md) |
 | Compare RPNH authority with Codex presentation | [RPNH versus Codex](RPNH_VS_CODEX.md) |

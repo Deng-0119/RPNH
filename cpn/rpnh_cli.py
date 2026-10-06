@@ -36,7 +36,8 @@ def _parser() -> argparse.ArgumentParser:
             "Start with `rpnh init`; check configuration with `rpnh doctor`. "
             "Commands: `rpnh config {init|add|build|list|show|use|setup|doctor}` and "
             "`rpnh net --run RUN_DIR`; export installed examples with "
-            "`rpnh examples export --output DIR`"),
+            "`rpnh examples export --output DIR`; inspect data-only packages with "
+            "`rpnh package {preview|resolve} ZIP`"),
     )
     parser.add_argument(
         "--execution", type=Path,
@@ -600,6 +601,15 @@ def _run_basic_frontend(
 
 def main(argv: list[str] | None = None) -> int:
     arguments = list(sys.argv[1:] if argv is None else argv)
+    # Data-only package inspection must never enter plugin discovery or model
+    # configuration. Import its command only when explicitly selected.
+    if arguments and arguments[0] == "package":
+        from cpn.rpnh.collaboration.package_cli import main as package_main
+        try:
+            return package_main(arguments[1:])
+        except (OSError, RuntimeError, TypeError, ValueError) as exc:
+            print(f"rpnh package: error: {exc}", file=sys.stderr)
+            return 2
     from cpn.rpnh.onboarding import SetupCancelled
     if arguments and arguments[0] in {"init", "doctor"}:
         command = arguments[0]

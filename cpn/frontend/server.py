@@ -30,7 +30,7 @@ _ASSETS = {
     "/app.js": ("app.js", "application/javascript; charset=utf-8"),
     "/style.css": ("style.css", "text/css; charset=utf-8"),
     **{f"/{name}.mjs": (f"{name}.mjs", "application/javascript; charset=utf-8")
-       for name in ("model", "layout", "renderer", "panels", "dashboard-model", "checkpoint-view", "agent-members", "observation-panel", "i18n", "messages", "canvas-text", "overview", "wire-geometry")},
+       for name in ("model", "layout", "renderer", "panels", "dashboard-model", "checkpoint-view", "comparison-view", "agent-members", "observation-panel", "i18n", "messages", "canvas-text", "overview", "wire-geometry")},
     **{f"/assets/{name}.js": (f"assets/{name}.js", "application/javascript; charset=utf-8")
        for name in ("joint", "elk-api", "elk-worker")},
     "/assets/manifest.json": ("assets/manifest.json", "application/json; charset=utf-8"),
@@ -296,6 +296,27 @@ def handle_request(
         except ActivityAccessChanged:
             response = _response(403, "application/json; charset=utf-8", b'{"error":"access_changed"}')
         except (ValueError, TypeError, KeyError, RuntimeError, OSError, sqlite3.Error):
+            response = _response(503, "application/json; charset=utf-8", b'{"error":"read_failed"}')
+    elif path == "/api/v2/comparison-view":
+        from .comparison_view import (parse_query, validate_comparison_response,
+            ComparisonInvalid, ComparisonStale, ComparisonAccessChanged)
+        import sqlite3
+        try:
+            params = parse_query(urlsplit(target).query)
+            action = getattr(provider, "comparison_view", None)
+            if not callable(action):
+                response = _response(501, "application/json; charset=utf-8", b'{"error":"unsupported"}')
+            else:
+                payload = action(**params)
+                validate_comparison_response(payload, **params)
+                response = _response(200, "application/json; charset=utf-8", json.dumps(payload, ensure_ascii=False, allow_nan=False).encode("utf8"))
+        except ComparisonInvalid:
+            response = _response(400, "application/json; charset=utf-8", b'{"error":"invalid_query"}')
+        except ComparisonStale:
+            response = _response(409, "application/json; charset=utf-8", b'{"error":"stale_observation"}')
+        except ComparisonAccessChanged:
+            response = _response(403, "application/json; charset=utf-8", b'{"error":"access_changed"}')
+        except (ValueError, TypeError, KeyError, AttributeError, RuntimeError, OSError, sqlite3.Error):
             response = _response(503, "application/json; charset=utf-8", b'{"error":"read_failed"}')
     elif path == "/api/v2/checkpoint-view":
         from .checkpoint_view import (token_resource_target, validate_token_resource_response,

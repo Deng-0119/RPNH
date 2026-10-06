@@ -28,7 +28,9 @@ runtime—not separate owners of model, workspace or recovery state.
 
 Public record dated 2026-10-06: freeze04 first18 has 5 PASS / 9 FAIL / 4 BLOCKED; separate repair4 has 1 PASS / 3 FAIL. The old 14 scored tasks were not rerun. [Results and limits](examples/automationbench/PUBLIC_RESULTS_20261006.md).
 
-Explicit opt-in [author/graph interfaces](docs/reference/declarations.md), [Workset and normal-child roots](docs/reference/normal-child-root-contract.md), and [read-only source queries](docs/guides/source-queries.md) are integrated. [Finite validation](docs/guides/release-validation.md) is not full HOST/I00–I10/advanced25 acceptance; actual browser remains BLOCKED.
+Explicit opt-in [author/graph interfaces](docs/reference/declarations.md), [Workset and normal-child roots](docs/reference/normal-child-root-contract.md), and [read-only source queries](docs/guides/source-queries.md) are integrated. [Finite validation](docs/guides/release-validation.md) is not full HOST/I00–I10/advanced25 acceptance; the historical freeze04 browser window was BLOCKED.
+
+Offline preparation and inspection are available through [portable package preview and exact local locks](docs/guides/portable-packages.md), [HOST declaration diagnostics](docs/guides/host-readiness.md), and [checkpoint comparison](docs/guides/checkpoint-comparison.md). Package commands use the installed `rpnh` entry; the HOST diagnostic is an explicit Python API. These interfaces inspect materials and recorded facts without granting execution authority.
 
 ## See a multi-agent run
 

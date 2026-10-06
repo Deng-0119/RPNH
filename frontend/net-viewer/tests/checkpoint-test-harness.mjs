@@ -1,3 +1,4 @@
+import * as comparisonModule from '../../../cpn/frontend/static/comparison-view.mjs';
 import * as sourceObservationModule from '../../../cpn/frontend/static/source-observation.mjs';
 import * as activityModule from '../../../cpn/frontend/static/firing-activity.mjs';
 import {readFileSync} from 'node:fs';
@@ -42,7 +43,7 @@ function dom() {
 }
 
 export function checkpointApp(fetcher) {
-    const document = dom(), applied = [], motions = [], timers = new Map();
+    const document = dom(), window = new EventTarget(), applied = [], motions = [], timers = new Map();
     let timerId = 0;
     const renderer = {paper: {svg: document.createElement('svg')},
         apply: graph => applied.push(graph), decorate: () => ({visibleNodes: applied.at(-1)?.nodes.length ?? 0}),
@@ -51,9 +52,9 @@ export function checkpointApp(fetcher) {
     let getLayout = async graph => ({width: 600, height: 400,
         nodes: new Map(graph.nodes.map((n,i) => [n.id,{x:i*240,y:30,width:224,height:126}])), edges:new Map()});
     const layouts = {runs: 0, get: graph => getLayout(graph)};
-    const context = vm.createContext({...sourceObservationModule,...activityModule,...model, ...dashboard, ...checkpoint, ...locale, tr: locale.t,
+    const context = vm.createContext({...comparisonModule,...sourceObservationModule,...activityModule,...model, ...dashboard, ...checkpoint, ...locale, tr: locale.t,
         renderInspector, renderExecutionTable, renderObservationPanel, element, resolveFiringTarget,
-        document, window: {}, console, structuredClone, AbortController,
+        document, window, console, structuredClone, AbortController,
         setTimeout: (fn, ms) => { const id=++timerId;timers.set(id,{fn,ms});return id; },
         clearTimeout: id => timers.delete(id), fetch: fetcher,
         refreshCanvasText() {}, applyWireBridges: () => ({crossings:0}), injectedRenderer: renderer, injectedLayouts: layouts});
@@ -65,7 +66,7 @@ export function checkpointApp(fetcher) {
         renderer=injectedRenderer; layouts=injectedLayouts;
         ${modeBindings}
         globalThis.api={loadFrame,loadHistory,probeCheckpoint,openPreviousNet,returnCheckpointCapture,returnToLive,
-            render,select,schedule,timeControls,refreshLanguage,loadActivity,cancelActivity,selectActivity,openPetri,
+            render,select,schedule,timeControls,refreshLanguage,openComparison,comparisonPanel,loadActivity,cancelActivity,selectActivity,openPetri,
             activityState() {return activity;},
             resourceState() {return tokenResource;},
             closeActivity() {cancelActivity(true);detail();},
@@ -79,7 +80,7 @@ export function checkpointApp(fetcher) {
                 returnCount:checkpointReturns.length,viewports:[...viewports],playing,timeline,historySupported,nextBefore};}
         };`;
     vm.runInContext(script,context,{filename:'actual-checkpoint-app-with-dom.js'});
-    return {api:context.api,document,applied,motions,timers,setLayout:fn=>{getLayout=fn;}};
+    return {api:context.api,document,window,applied,motions,timers,setLayout:fn=>{getLayout=fn;}};
 }
 export const response = (payload,status=200) => ({ok:status===200,status,json:async()=>structuredClone(payload)});
 export const deferred = () => {let resolve;const promise=new Promise(r=>{resolve=r;});return {promise,resolve};};

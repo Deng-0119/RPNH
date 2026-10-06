@@ -41,3 +41,12 @@ html[lang="en"] .tools{flex-shrink:0}
 #source-observation-panel { margin: 0 20px 16px; padding: 18px; border: 1px solid var(--border, #ccd3dc); border-radius: 12px; background: var(--surface, #fff); }
 #source-observation-panel section { margin-top: 12px; padding-top: 8px; border-top: 1px solid #e3e7ed; }
 #source-observation-panel pre { overflow: auto; max-height: 240px; }
+
+/* Comparison is a separate read-only observation; no graph or Registry edits. */
+#comparison-panel{flex:0 1 auto;min-height:0;max-height:50vh;overflow:auto;margin:0 24px 16px;padding:20px;border:1px solid var(--border,#d8e0ea);border-radius:12px;background:var(--surface,#fff);overflow-wrap:anywhere}
+#comparison-panel h2{display:inline-block;margin:0 16px 12px 0}
+#comparison-panel section{padding:8px 0;border-top:1px solid var(--border,#d8e0ea)}
+#comparison-panel pre{white-space:pre-wrap;max-height:24rem;overflow:auto;font-size:12px}
+.comparison-controls{display:flex;align-items:end;flex-wrap:wrap;gap:12px;margin:12px 0}
+.comparison-controls label{display:flex;flex-direction:column;gap:6px;max-width:100%}
+.comparison-controls select{max-width:32rem;width:100%}

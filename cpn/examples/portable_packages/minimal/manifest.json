@@ -1,0 +1,161 @@
+{
+  "artifacts": [
+    {
+      "bytes": 1530,
+      "disclosure": "public",
+      "license_id": "package-license",
+      "media_type": "application/json",
+      "path": "declarations/main.json",
+      "role": "declaration",
+      "sha256": "d0a9a9b9b6032c156c2eda082fa19f69d5329415b970387455617c9361acf9f2"
+    },
+    {
+      "bytes": 175,
+      "disclosure": "public",
+      "license_id": "package-license",
+      "media_type": "application/schema+json",
+      "path": "schemas/config.json",
+      "role": "schema",
+      "sha256": "595b8e439a2224e39c3419e57eee217f79086ba92ec3335787e5211f83baaf32"
+    },
+    {
+      "bytes": 120,
+      "disclosure": "public",
+      "license_id": "package-license",
+      "media_type": "application/schema+json",
+      "path": "schemas/text.json",
+      "role": "schema",
+      "sha256": "43b98cf6f00be1cc3031c7f56ea2ba4739637c9d48711f3662f343c1bca96ec0"
+    },
+    {
+      "bytes": 1074,
+      "disclosure": "public",
+      "license_id": "package-license",
+      "media_type": "text/plain",
+      "path": "licenses/LICENSE.txt",
+      "role": "license",
+      "sha256": "d7f0ad666e3545d2af6ad5ce673d11a77ec135d622f9fe3da26b82aeaee0430c"
+    }
+  ],
+  "compatibility": {
+    "declaration_schemas": [
+      "rpnh/module_declaration/v1"
+    ],
+    "host_contracts": [
+      "example/identity-component/v1",
+      "example/identity-executor/v1",
+      "example/identity-terminal/v1"
+    ],
+    "runtime_contracts": []
+  },
+  "dependencies": [],
+  "disclosure": {
+    "classification": "public",
+    "excluded_categories": [
+      "secrets",
+      "local_bindings",
+      "runtime_evidence"
+    ],
+    "intended_audience": "public"
+  },
+  "entries": [
+    {
+      "completion_contract": {
+        "acceptor_requirement_ids": [
+          "finish"
+        ],
+        "failure_exits": [],
+        "open_obligations": [],
+        "success_exit": "result"
+      },
+      "declaration_path": "declarations/main.json",
+      "declaration_schema": "rpnh/module_declaration/v1",
+      "entry_id": "main",
+      "input_schema_ids": [
+        "application/portable_text/v1"
+      ],
+      "kind": "closed_module",
+      "output_schema_ids": [
+        "application/portable_text/v1"
+      ]
+    }
+  ],
+  "licenses": [
+    {
+      "expression": "MIT",
+      "license_id": "package-license",
+      "notice_paths": [],
+      "text_paths": [
+        "licenses/LICENSE.txt"
+      ]
+    }
+  ],
+  "origin": {
+    "commit": null,
+    "publisher_claim": "RPNH example authors",
+    "repository_url": "https://github.com/Deng-0119/RPNH",
+    "source_refs": []
+  },
+  "package_id": "example/portable-identity",
+  "policy_surface": [],
+  "provenance": [
+    {
+      "artifact_path": "declarations/main.json",
+      "origin_digest": null,
+      "origin_ref": null,
+      "relation": "authored"
+    },
+    {
+      "artifact_path": "schemas/config.json",
+      "origin_digest": null,
+      "origin_ref": null,
+      "relation": "authored"
+    },
+    {
+      "artifact_path": "schemas/text.json",
+      "origin_digest": null,
+      "origin_ref": null,
+      "relation": "authored"
+    },
+    {
+      "artifact_path": "licenses/LICENSE.txt",
+      "origin_digest": null,
+      "origin_ref": null,
+      "relation": "authored"
+    }
+  ],
+  "requirements": [
+    {
+      "contract_id": "example/identity-component/v1",
+      "data_classes": [
+        "task_output"
+      ],
+      "effects": [],
+      "kind": "component",
+      "required": true,
+      "requirement_id": "step"
+    },
+    {
+      "contract_id": "example/identity-executor/v1",
+      "data_classes": [
+        "task_output"
+      ],
+      "effects": [],
+      "kind": "executor",
+      "required": true,
+      "requirement_id": "run"
+    },
+    {
+      "contract_id": "example/identity-terminal/v1",
+      "data_classes": [
+        "task_output"
+      ],
+      "effects": [],
+      "kind": "terminal",
+      "required": true,
+      "requirement_id": "finish"
+    }
+  ],
+  "schema_version": "rpnh/share_package/v1",
+  "version": "1.0.0"
+}

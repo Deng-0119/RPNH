@@ -16,6 +16,17 @@ metadata:
 
 ## Unreleased
 
+- Added an opt-in offline portable-package preview and exact local dependency
+  lock through `rpnh package`, inert HOST declaration diagnostics, and read-only
+  comparison of two checkpoints from one Registry. These preparation and
+  observation interfaces do not install code, grant execution authority, or
+  implement candidate-to-runtime or dual-owner execution.
+
+- Portable-package resolution now applies the dependency-depth bound to every
+  shared-dependency path and returns a structured error for invalid UTF-8 ZIP
+  filenames. Checkpoint comparison resumes the selected live-refresh behavior
+  after browser navigation while clearing the previous pair.
+
 - Documentation builds now include linked result pages and downloads with validation; optional-Node tests preserve HTTP coverage, and wheel audits include the source-observation viewer module.
 
 - Integrated explicit opt-in author/Assembly/graph, typed-v9, P4/P6, bounded I02,

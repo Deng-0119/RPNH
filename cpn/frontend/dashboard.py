@@ -330,6 +330,10 @@ class RegistryDashboard:
             return checkpoint_view(self, net_ref=net_ref, checkpoint_ref=checkpoint_ref, cut=cut)
         return checkpoint_view(self, net_ref=net_ref, checkpoint_ref=checkpoint_ref, cut=cut, token_resource=token_resource)
 
+    def comparison_view(self, *, left_selector, right_selector):
+        from .comparison_view import comparison_view
+        return comparison_view(self, left_selector, right_selector)
+
     def dashboard(self, *, cursor=None):
         if cursor is not None and (type(cursor) is not int or cursor < 0):
             raise ValueError('invalid checkpoint cursor')
