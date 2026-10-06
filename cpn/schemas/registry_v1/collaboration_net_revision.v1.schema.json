@@ -1,0 +1,274 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "registry_v1/collaboration_net_revision/v1",
+  "title": "Immutable author NetRevision descriptor",
+  "description": "Pins exact author materials and provenance. Does not grant compilation, Branch publication, execution or adoption.",
+  "type": "object",
+  "additionalProperties": false,
+  "definitions": {
+    "revision_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "rpnh/collaboration/source_version_ref/v1"
+        },
+        "source_id": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[^\\s\\u0000-\\u001f\\u007f](?:[^\\u0000-\\u001f\\u007f]*[^\\s\\u0000-\\u001f\\u007f])?(?![\\s\\S])"
+        },
+        "ref": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "entity_type": {
+              "const": "collaboration_net_revision/v1"
+            },
+            "logical_id": {
+              "type": "string",
+              "pattern": "^resource:[a-f0-9]{32}(?![\\s\\S])"
+            },
+            "version_id": {
+              "type": "string",
+              "pattern": "^resource_version:[a-f0-9]{32}(?![\\s\\S])"
+            }
+          },
+          "required": [
+            "entity_type",
+            "logical_id",
+            "version_id"
+          ]
+        }
+      },
+      "required": [
+        "schema_version",
+        "source_id",
+        "ref"
+      ]
+    },
+    "task_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "rpnh/collaboration/source_version_ref/v1"
+        },
+        "source_id": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[^\\s\\u0000-\\u001f\\u007f](?:[^\\u0000-\\u001f\\u007f]*[^\\s\\u0000-\\u001f\\u007f])?(?![\\s\\S])"
+        },
+        "ref": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "entity_type": {
+              "const": "task/v1"
+            },
+            "logical_id": {
+              "type": "string",
+              "pattern": "^task:[a-f0-9]{32}(?![\\s\\S])"
+            },
+            "version_id": {
+              "type": "string",
+              "pattern": "^task_version:[a-f0-9]{32}(?![\\s\\S])"
+            }
+          },
+          "required": [
+            "entity_type",
+            "logical_id",
+            "version_id"
+          ]
+        }
+      },
+      "required": [
+        "schema_version",
+        "source_id",
+        "ref"
+      ]
+    },
+    "principal_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "rpnh/collaboration/source_version_ref/v1"
+        },
+        "source_id": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[^\\s\\u0000-\\u001f\\u007f](?:[^\\u0000-\\u001f\\u007f]*[^\\s\\u0000-\\u001f\\u007f])?(?![\\s\\S])"
+        },
+        "ref": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "entity_type": {
+              "const": "principal/v1"
+            },
+            "logical_id": {
+              "type": "string",
+              "pattern": "^principal:[a-f0-9]{32}(?![\\s\\S])"
+            },
+            "version_id": {
+              "type": "string",
+              "pattern": "^principal_version:[a-f0-9]{32}(?![\\s\\S])"
+            }
+          },
+          "required": [
+            "entity_type",
+            "logical_id",
+            "version_id"
+          ]
+        }
+      },
+      "required": [
+        "schema_version",
+        "source_id",
+        "ref"
+      ]
+    },
+    "resource_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "rpnh/collaboration/source_resource_ref/v1"
+        },
+        "source_id": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[^\\s\\u0000-\\u001f\\u007f](?:[^\\u0000-\\u001f\\u007f]*[^\\s\\u0000-\\u001f\\u007f])?(?![\\s\\S])"
+        },
+        "ref": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "resource_id": {
+              "type": "string",
+              "pattern": "^resource:[a-f0-9]{32}(?![\\s\\S])"
+            },
+            "resource_version_id": {
+              "type": "string",
+              "pattern": "^resource_version:[a-f0-9]{32}(?![\\s\\S])"
+            }
+          },
+          "required": [
+            "resource_id",
+            "resource_version_id"
+          ]
+        }
+      },
+      "required": [
+        "schema_version",
+        "source_id",
+        "ref"
+      ]
+    }
+  },
+  "properties": {
+    "schema_version": {
+      "const": "registry_v1/collaboration_net_revision/v1"
+    },
+    "revision_ref": {
+      "$ref": "#/definitions/revision_ref"
+    },
+    "owner_task_ref": {
+      "$ref": "#/definitions/task_ref"
+    },
+    "producer_principal_ref": {
+      "$ref": "#/definitions/principal_ref"
+    },
+    "command_id": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[^\\s\\u0000-\\u001f\\u007f](?:[^\\u0000-\\u001f\\u007f]*[^\\s\\u0000-\\u001f\\u007f])?(?![\\s\\S])"
+    },
+    "definition_kind": {
+      "enum": [
+        "closed_module",
+        "open_region"
+      ]
+    },
+    "definition_ref": {
+      "$ref": "#/definitions/resource_ref"
+    },
+    "parent_revision_refs": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/revision_ref"
+      },
+      "uniqueItems": true
+    },
+    "selected_change_refs": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/resource_ref"
+      },
+      "uniqueItems": true
+    },
+    "element_mapping_ref": {
+      "$ref": "#/definitions/resource_ref"
+    },
+    "boundary_mapping_ref": {
+      "$ref": "#/definitions/resource_ref"
+    },
+    "host_requirements_ref": {
+      "$ref": "#/definitions/resource_ref"
+    },
+    "open_region_contract_ref": {
+      "oneOf": [
+        {
+          "$ref": "#/definitions/resource_ref"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "required": [
+    "schema_version",
+    "revision_ref",
+    "owner_task_ref",
+    "producer_principal_ref",
+    "command_id",
+    "definition_kind",
+    "definition_ref",
+    "parent_revision_refs",
+    "selected_change_refs",
+    "element_mapping_ref",
+    "boundary_mapping_ref",
+    "host_requirements_ref",
+    "open_region_contract_ref"
+  ],
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "definition_kind": {
+            "const": "closed_module"
+          }
+        },
+        "required": [
+          "definition_kind"
+        ]
+      },
+      "then": {
+        "properties": {
+          "open_region_contract_ref": {
+            "type": "null"
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "open_region_contract_ref": {
+            "$ref": "#/definitions/resource_ref"
+          }
+        }
+      }
+    }
+  ]
+}

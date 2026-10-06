@@ -18,95 +18,9 @@ from .strict_contracts import _registered, ref_payload
 
 
 def hydrate_module_resource_plan(core, compiled, net_ref, net, root_ref, root, declaration_ref):
-    """Check persisted mechanical bindings against the sole compiled declaration."""
-    from .module_resources import prepare_module_resources, module_slot_bindings, compatible_slot_symbols
-    binding = net["module_resource_bindings"]
-    inputs = {name: _resource_from_payload(value)
-              for name, value in binding["owner_resource_inputs"].items()}
-    resource_symbols = {lease.name for lease in compiled.symbolic.lease_identities
-                        if lease.kind == "resource"}
-    if set(inputs) != resource_symbols:
-        raise ValueError("registered owner resource symbols differ from compiled leases")
-    for ref in inputs.values():
-        _, metadata = _registered(core, ref.as_version_ref(), "resource_version/v1")
-        schema_id = metadata["content_schema_ref"]
-        if (metadata["task_ref"] != root["task_ref"]
-                or ref_payload(ref.as_version_ref()) not in root["resource_refs"]
-                or schema_id not in compiled.source.required_schemas):
-            raise ValueError("resource binding lacks exact task/schema/root membership")
-        source = metadata["content_schema_authority_ref"]
-        authority = _resource_from_payload(source)
-        verified = core.verify_registered_content_schema_ref(authority,
-            schema_document_ref=authority.as_version_ref())
-        prepared = core.get_version(authority.resource_version_id)
-        if (verified.schema_id != schema_id
-                or json.loads(core.object_store.read_registered(prepared))
-                != compiled.registrations["schema"][schema_id]["schema"]):
-            raise ValueError("bound resource schema differs from exact registered declaration")
-    nodes = {}
-    outputs = {}
-    for value in net["node_refs"]:
-        ref = _version_from_payload(value)
-        _, metadata = _registered(core, ref, "node_declaration/v1")
-        name = metadata["transition_id"]
-        if name in nodes or metadata["team_design_root_ref"] != ref_payload(root_ref):
-            raise ValueError("resource projection has duplicate or foreign producer nodes")
-        nodes[name] = ref
-    by_node = {ref: name for name, ref in nodes.items()}
-    for value in net["output_binding_refs"]:
-        ref = _version_from_payload(value)
-        _, metadata = _registered(core, ref, "output_binding/v1")
-        node_ref = _version_from_payload(metadata["node_ref"])
-        key = (by_node[node_ref], metadata["output_port_id"])
-        if key in outputs or metadata["net_ref"] != ref_payload(net_ref):
-            raise ValueError("resource projection has duplicate or foreign output bindings")
-        outputs[key] = ref
-    preserved = {}
-    for name, value in binding["slot_refs"].items():
-        ref = _version_from_payload(value)
-        _, metadata = _registered(core, ref, "logical_artifact_slot/v1")
-        if metadata["team_design_root_ref"] != ref_payload(root_ref):
-            source_ref = _version_from_payload(metadata["authored_index_ref"])
-            source = load_compiled_net(json.loads(core.object_store.read_registered(
-                core.get_version(source_ref.version_id))))
-            if name not in compatible_slot_symbols(source, compiled):
-                raise ValueError("preserved slot differs from immutable creation schema contract")
-            source_slot = next(slot for slot in source.symbolic.logical_slots if slot.name == name)
-            _, producer = _registered(core, _version_from_payload(metadata["producer_node_ref"]),
-                                      "node_declaration/v1")
-            source_port = next(port for port in source.ports if port.name == source_slot.output_port)
-            if (producer["transition_id"] != source_slot.producer_transition
-                    or source_port.port_id != metadata["output_port_id"]):
-                raise ValueError("preserved slot creation producer differs from registered declaration")
-            preserved[name] = ref
-    plan = prepare_module_resources(compiled, root_ref=root_ref, net_ref=net_ref,
-        declaration_ref=declaration_ref, node_refs=nodes, output_binding_refs=outputs,
-        owner_resource_inputs=inputs, idempotency_key=binding["command_id"],
-        preserved_slot_refs=preserved)
-    if (binding["lease_refs"] != {name: ref_payload(ref) for name, ref in plan.lease_refs.items()}
-            or binding["slot_refs"] != {name: ref_payload(ref) for name, ref in plan.slot_refs.items()}
-            or binding.get("slot_bindings", {}) != module_slot_bindings(plan)):
-        raise ValueError("persisted resource identities differ from compiled exact bindings")
-    from .module_binding_authority import validate_module_bindings
-    validate_module_bindings(net, root,
-        {ref: _registered(core, ref, "output_binding/v1")[1] for ref in outputs.values()},
-        {ref: _registered(core, ref, "node_declaration/v1")[1] for ref in nodes.values()},
-        lambda value, expected: _registered(core, _version_from_payload(value), expected)[1], ValueError)
-    for slot in plan.proposed_slots:
-        _, metadata = _registered(core, slot.ref, "logical_artifact_slot/v1")
-        if (metadata != slot.metadata_dict()
-                or ref_payload(slot.ref) not in root["artifact_refs"]):
-            raise ValueError("logical slot lacks exact declared producer/schema/root authority")
-    slots = {slot.name: slot for slot in compiled.symbolic.logical_slots}
-    leases = {lease.name: lease for lease in compiled.symbolic.lease_identities}
-    for arc in compiled.symbolic.variable_resource_arcs:
-        for claim in arc.initial_claims:
-            lease = leases[claim.lease_identity]
-            if lease.kind == "slot" and claim.expected_resource is not None:
-                _, metadata = _registered(core, inputs[claim.expected_resource].as_version_ref())
-                if metadata["content_schema_ref"] != slots[lease.slot].schema:
-                    raise ValueError("slot expected resource schema differs from its declared product")
-    return plan
+    """Check persisted mechanical bindings using the original ordered reads."""
+    from ._module_resource_projection import _LegacyResourceReads, _resource_projection
+    return _resource_projection(_LegacyResourceReads(core), compiled, net_ref, net, root_ref, root, declaration_ref)
 
 
 def hydrate_module_runtime(core: _RegistryCore):

@@ -6,7 +6,7 @@ metadata:
   audience: user-and-developer
   language: zh-CN
   counterpart: CHANGELOG.md
-  revision: "2026-10-01.2"
+  revision: "2026-10-06.1"
   status: v0.1.0rc1
 ---
 
@@ -15,6 +15,20 @@ metadata:
 # 变更记录
 
 ## 未发布
+
+- 文档构建现支持并校验链接的结果页与下载文件；可选Node测试保留HTTP覆盖，wheel审计纳入source-observation viewer模块。
+
+- 集成显式opt-in作者/Assembly/graph、typed-v9、P4/P6、有界I02、Workset与normal-child
+  root能力及HTTP/Node只读观察；保持各自有限接受边界，真实browser仍因root/sandbox BLOCKED。
+- Bridge在最终渲染后检查本地声明context预算，并保留有界event/item类型诊断；不放宽工具
+  allowlist、不改变unknown提交语义、不保证准确token计数或强制CLI输出cap。
+- 增加2026-10-06公开AutomationBench first18与repair4精简结果及双语文档；旧分数和条件保持分离。
+  详见[有限验证](docs/guides/release-validation_ZH.md)，不宣称全HOST/I00–I10/advanced25接受。
+
+- 增加显式启用、来源权威的 Assembly v2，组合 closed 普通 v3 graph 与 plain-v1
+  成员，保留 exact source／fragment 来源、显式共享预算、final-context carrier 检查、
+  完整请求恢复及只读 exact-pair 验证。legacy v1 合同保持原义；open／递归组合、
+  更多 graph 版本、merge 和 runtime adoption 仍属后续工作。
 
 - Agent runtime profile 现在可将 `max_turns_per_node` 设为 `null`，从而不设置
   人工的逐 node、工具回合和全任务累计模型调用上限。Registry 会把它记录为显式的

@@ -204,7 +204,7 @@ def succeed_module_operation(core: _RegistryCore, kernel: _ResourceServiceKernel
         repository, supplied: RegisteredOperationOutputsAuthority, *,
         idempotency_key: str, registration=None,
         candidate_publisher: Callable | None = None,
-        workspace_plans: tuple[Mapping[str, Any], ...] = ()):
+        workspace_plans: tuple[Mapping[str, Any], ...] = (), workset_action=None):
     """Close one ordinary operation and publish exactly one real successor.
 
 The latest marking is read from the execution-owning Registry. No caller
@@ -219,7 +219,7 @@ checkpoint, executor body text, or diagnostic can grant settlement authority.
         idempotency_key=idempotency_key, registration=registration,
         candidate_publisher=candidate_publisher,
         workspace_plans=workspace_plans,
-        resource_access_writer_epoch=core.writer_epoch)
+        resource_access_writer_epoch=core.writer_epoch, workset_action=workset_action)
 
 
 def _succeed_verified_module_operation(
@@ -232,6 +232,7 @@ def _succeed_verified_module_operation(
         provider_submission_unknown_ref: VersionRef | None = None,
         allow_failed_invocations: bool = False,
         authorize_stale_lease_settlement: bool = False,
+        workset_action=None,
 ):
     """Project and stage Success after an ordinary or recovery-specific gate."""
 
@@ -257,6 +258,23 @@ def _succeed_verified_module_operation(
         raise ResourceIntegrityFault("Success firing differs from the current adopted net")
     _compiled, declared = repository.registered_compiled_operation(execution.operation)
     selected = next(item for item in declared.declaration.outcomes if item.name == outputs.selected_outcome_id)
+    from ..collaboration.worksets import CompleteWorksetNormalChildren
+    normal_child_closure = type(workset_action) is CompleteWorksetNormalChildren
+    ordinary_token_ref_scheme = None
+    normal_root_token_schema = None
+    if normal_child_closure:
+        if selected.effects:
+            raise ResourceIntegrityFault('normal root token allocation requires an effect-free outcome')
+        from .normal_root_token_allocation import (
+            NORMAL_ROOT_TOKEN_SCHEME, load_normal_root_token_schema,
+        )
+        with core.event_store.connect() as allocation_db:
+            allocation_db.execute('BEGIN')
+            allocation_cut = int(allocation_db.execute(
+                'SELECT COALESCE(MAX(ordinal),0) FROM events').fetchone()[0])
+            normal_root_token_schema = load_normal_root_token_schema(
+                core.event_store, allocation_db, task_id=core.task_id, cut=allocation_cut)
+        ordinary_token_ref_scheme = NORMAL_ROOT_TOKEN_SCHEME
     effects = None
     if selected.effects:
         if registration is None:
@@ -293,7 +311,8 @@ def _succeed_verified_module_operation(
         for event in effective_resource_access_events)
     projected, new_tokens = project_module_firing_success(
         executable, structure, prior, outputs, effects=effects,
-        resource_accesses=resource_accesses)
+        resource_accesses=resource_accesses,
+        ordinary_token_ref_scheme=ordinary_token_ref_scheme)
     formal_delta = derive_petri_marking_delta(prior, projected, new_tokens)
     revision = None
     declared_effects = None
@@ -321,6 +340,8 @@ def _succeed_verified_module_operation(
         result_metadata=prepared.result_metadata, terminal_ready_payload=prepared.terminal_ready_payload,
         workspace_plans=workspace_plans, disposition_relations=(), publish_checkpoint=True, idempotency_key=idempotency_key,
         declared_effects=declared_effects, revision=revision,
+        ordinary_token_ref_scheme=ordinary_token_ref_scheme,
+        normal_root_token_schema=normal_root_token_schema,
         historical_lease_writer_epoch=(
             resource_access_writer_epoch
             if authorize_stale_lease_settlement else None))
@@ -331,7 +352,8 @@ def _succeed_verified_module_operation(
     publication = stage_success_publication(core, tx, executable=executable, prior_marking=prior,
         settlement=prepared.settlement, operation_outputs=outputs, result_metadata=prepared.result_metadata,
         material=material, checkpoint_ref=material.checkpoint_ref, checkpoint=material.checkpoint,
-        workspace_plans=workspace_plans, idempotency_key=idempotency_key)
+        workspace_plans=workspace_plans, idempotency_key=idempotency_key,
+        normal_child_closure=normal_child_closure)
     from .agent_resource_broker import stage_firing_resource_lifecycle_seals
     stage_firing_resource_lifecycle_seals(
         core, tx,
@@ -344,6 +366,11 @@ def _succeed_verified_module_operation(
         operation_outputs=outputs, result_metadata=prepared.result_metadata, material=material,
         checkpoint_ref=material.checkpoint_ref, publication=publication, idempotency_key=idempotency_key,
         revision=revision)
+    if workset_action is not None:
+        from ..collaboration.worksets import stage_workset_success
+        stage_workset_success(core, tx, action=workset_action, outputs=outputs,
+            new_tokens=new_tokens, publication=publication, material=material,
+            command_id=idempotency_key)
     tx.commit()
     _executable, _structure, successor = hydrate_module_runtime(core)
     if successor.checkpoint_ref != material.checkpoint_ref:

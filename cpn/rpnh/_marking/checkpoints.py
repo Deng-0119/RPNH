@@ -563,15 +563,29 @@ def typed_snapshot(self, executable: ExecutableNetAuthority, registry: RegistryT
         validate_typed_marking_state(self._net, epoch=snapshot.epoch, next_token_id=snapshot.next_token_id, attempts=snapshot.attempts, tokens=snapshot.tokens, require_token_refs=True)
         return snapshot
 
-def pure_typed_snapshot(self, executable: 'ExecutableNetAuthority') -> 'TypedMarkingSnapshot':
+def pure_typed_snapshot(self, executable: 'ExecutableNetAuthority', *,
+        ordinary_token_ref_scheme: str | None = None,
+        allocation_firing_ref: VersionRef | None = None) -> 'TypedMarkingSnapshot':
     """Build a typed snapshot without Registry calls or mutable clocks."""
     from cpn.rpnh.registry.resources import AttemptCounterAuthority, ExecutableNetAuthority, PetriContinuation, PetriLeaseClaim, PetriOverrideWarning, PetriTokenState, TypedMarkingSnapshot
     if not isinstance(executable, ExecutableNetAuthority):
         raise MarkingStateError('pure_typed_snapshot requires an ExecutableNetAuthority')
     if not isinstance(self._net.registry_net_ref, VersionRef) or self._net.registry_net_ref != executable.net_ref:
         raise MarkingStateError('pure typed snapshot differs from its executable Registry closure')
+    from cpn.rpnh.registry.normal_root_token_allocation import (
+        NORMAL_ROOT_TOKEN_SCHEME, normal_root_token_ref,
+    )
+    if ordinary_token_ref_scheme is None:
+        if allocation_firing_ref is not None:
+            raise MarkingStateError('legacy token allocation cannot carry a firing selector')
+    elif (ordinary_token_ref_scheme != NORMAL_ROOT_TOKEN_SCHEME
+            or not isinstance(allocation_firing_ref, VersionRef)
+            or allocation_firing_ref.entity_type != 'transition_firing/v1'):
+        raise MarkingStateError('unknown or incomplete normal-root token allocation')
 
     def token_ref(token_id: int) -> VersionRef:
+        if ordinary_token_ref_scheme is not None:
+            return normal_root_token_ref(executable.net_ref, allocation_firing_ref, token_id)
         material = str(executable.net_ref.version_id)
         logical = TypedId('petri_token', uuid.uuid5(uuid.NAMESPACE_URL, f'd1-c:petri_token:{material}:{token_id}').hex)
         version = TypedId('petri_token_version', uuid.uuid5(uuid.NAMESPACE_URL, f'd1-c:petri_token_version:{material}:{token_id}').hex)

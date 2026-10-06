@@ -6,7 +6,7 @@ metadata:
   audience: user-and-developer
   language: en
   counterpart: CHANGELOG_ZH.md
-  revision: "2026-10-01.2"
+  revision: "2026-10-06.1"
   status: v0.1.0rc1
 ---
 
@@ -15,6 +15,24 @@ metadata:
 # Changelog
 
 ## Unreleased
+
+- Documentation builds now include linked result pages and downloads with validation; optional-Node tests preserve HTTP coverage, and wheel audits include the source-observation viewer module.
+
+- Integrated explicit opt-in author/Assembly/graph, typed-v9, P4/P6, bounded I02,
+  Workset and normal-child root capabilities with native HTTP/Node read-only
+  observation. Acceptance is finite; actual browser remains root/sandbox BLOCKED.
+- The bridge checks locally declared context budgets after final rendering and
+  retains bounded event/item type diagnostics. Tool allowlists and unknown
+  submission semantics remain unchanged; no exact token or CLI output-cap guarantee.
+- Added curated bilingual AutomationBench first18 and repair4 public results,
+  preserving historical scores and separate conditions. See
+  [finite validation](docs/guides/release-validation.md); no full HOST/I00–I10/advanced25 claim.
+
+- Added opt-in source-authoritative Assembly v2 for closed ordinary-v3 graph and
+  plain-v1 members, with exact source/fragment provenance, explicit shared budgets,
+  final-context carrier checks, complete-request recovery and read-only exact-pair
+  validation. Legacy v1 contracts remain intact; open/recursive composition,
+  broader graph versions, merge and runtime adoption remain later work.
 
 - Agent runtime profiles may now set `max_turns_per_node` to `null` to omit
   artificial per-node, tool-turn and cumulative task model-call ceilings. The

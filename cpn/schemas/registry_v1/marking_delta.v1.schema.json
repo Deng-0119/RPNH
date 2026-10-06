@@ -160,6 +160,7 @@
     "consumed_refs": {"type": "array", "items": {"$ref": "#/definitions/ref"}, "uniqueItems": true},
     "deposited_refs": {"type": "array", "items": {"$ref": "#/definitions/ref"}, "uniqueItems": true},
     "phase": {"enum": ["claim", "settlement"]},
+    "ordinary_token_ref_scheme": {"type": "string", "const": "normal_root_firing_scoped/v1"},
     "declared_effects": {
       "type": "object", "additionalProperties": false,
       "properties": {
@@ -169,6 +170,13 @@
     },
     "provider_submission_unknown_refs": {"type": "array", "items": {"$ref": "#/definitions/provider_submission_unknown_ref"}, "uniqueItems": true}
   },
+  "allOf": [{
+    "if": {"required": ["ordinary_token_ref_scheme"]},
+    "then": {"properties": {
+      "phase": {"const": "settlement"},
+      "transition_firing_refs": {"minItems": 1, "maxItems": 1}
+    }}
+  }],
   "required": [
     "marking_delta_ref", "net_instance_ref", "transition_firing_refs",
     "operation_binding_refs", "consumed_refs",

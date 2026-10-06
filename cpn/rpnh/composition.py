@@ -3,7 +3,7 @@ from dataclasses import asdict, replace
 import json
 
 from .module import SymbolicNet
-from .petri_contracts import DeclarationError
+from .petri_contracts import DeclarationError, _same_json_value
 
 
 def _inventory(value):
@@ -41,7 +41,7 @@ def compose_fragments(source, fragments):
         left, right = asdict(a), asdict(b)
         left.pop("name")
         right.pop("name")
-        return _inventory(left) == _inventory(right)
+        return _same_json_value(_inventory(left), _inventory(right))
 
     links, incoming = set(), set()
     for link in source.links:

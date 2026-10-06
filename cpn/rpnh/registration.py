@@ -125,6 +125,15 @@ class Registration:
             "identity": _data(identity, no_locators=True),
             "contracts": _data(contracts, no_locators=True),
         }
+        if "control_ir" in declaration["contracts"]:
+            if kind != "executor":
+                raise RegistrationError("control_ir atomic contracts belong to executors")
+            from .control_ir import validate_atomic_contract
+            from .control_types import ControlIRError
+            try:
+                validate_atomic_contract(declaration["contracts"]["control_ir"])
+            except ControlIRError as exc:
+                raise RegistrationError(str(exc)) from exc
         self._publish(kind, key, declaration)
         self._callables[kind][key] = implementation
 

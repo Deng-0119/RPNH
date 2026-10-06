@@ -1,0 +1,300 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "rpnh/collaboration/plain_transplant_author_command/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "rpnh/collaboration/plain_transplant_author_command/v1"
+    },
+    "algorithm": {
+      "const": "rpnh/plain_author_selective_resolution/v1"
+    },
+    "source_id": {
+      "type": "string"
+    },
+    "owner_task_ref": {
+      "$ref": "#/definitions/version_ref"
+    },
+    "producer_principal_ref": {
+      "$ref": "#/definitions/version_ref"
+    },
+    "command_id": {
+      "type": "string"
+    },
+    "analysis_ref": {
+      "$ref": "#/definitions/resource_ref"
+    },
+    "analysis_command_ref": {
+      "$ref": "#/definitions/resource_ref"
+    },
+    "requested_choices": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/choice"
+      }
+    },
+    "schema_authorities": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object"
+      }
+    },
+    "result_revision_ref": {
+      "$ref": "#/definitions/version_ref"
+    },
+    "parent_revision_refs": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 1,
+      "items": {
+        "$ref": "#/definitions/version_ref"
+      }
+    },
+    "selected_change_refs": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/resource_ref"
+      },
+      "uniqueItems": true
+    },
+    "prepared_materials": {
+      "type": "array",
+      "minItems": 5,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "role": {
+            "type": "string"
+          },
+          "schema": {
+            "type": "string"
+          },
+          "resource_ref": {
+            "$ref": "#/definitions/resource_ref"
+          },
+          "document": {
+            "type": "object"
+          },
+          "metadata": {
+            "type": "object"
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}(?![\\s\\S])"
+          }
+        },
+        "required": [
+          "role",
+          "schema",
+          "resource_ref",
+          "document",
+          "metadata",
+          "sha256"
+        ]
+      }
+    },
+    "schema_authority_sha256": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string",
+        "pattern": "^[a-f0-9]{64}(?![\\s\\S])"
+      }
+    },
+    "base_revision_ref": {
+      "$ref": "#/definitions/version_ref"
+    },
+    "incoming_revision_ref": {
+      "$ref": "#/definitions/version_ref"
+    },
+    "selected_subjects": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "dispositions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "subject": {
+            "type": "string"
+          },
+          "disposition": {
+            "enum": [
+              "imported",
+              "already_local",
+              "kept_local",
+              "selected_base",
+              "deleted_by_choice"
+            ]
+          },
+          "result": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "present": {
+                "type": "boolean"
+              },
+              "value": {}
+            },
+            "required": [
+              "present",
+              "value"
+            ]
+          }
+        },
+        "required": [
+          "subject",
+          "disposition",
+          "result"
+        ]
+      }
+    }
+  },
+  "required": [
+    "schema_version",
+    "algorithm",
+    "source_id",
+    "owner_task_ref",
+    "producer_principal_ref",
+    "command_id",
+    "analysis_ref",
+    "analysis_command_ref",
+    "requested_choices",
+    "schema_authorities",
+    "result_revision_ref",
+    "parent_revision_refs",
+    "selected_change_refs",
+    "prepared_materials",
+    "schema_authority_sha256",
+    "base_revision_ref",
+    "incoming_revision_ref",
+    "selected_subjects",
+    "dispositions"
+  ],
+  "definitions": {
+    "version_ref": {
+      "title": "Source version ref",
+      "description": "Source qualification supplies identity only; it does not resolve a source, prove target existence, or grant access.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "rpnh/collaboration/source_version_ref/v1"
+        },
+        "source_id": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[^\\s\\u0000-\\u001f\\u007f](?:[^\\u0000-\\u001f\\u007f]*[^\\s\\u0000-\\u001f\\u007f])?(?![\\s\\S])"
+        },
+        "ref": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "entity_type": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9_]*(?:/[a-z][a-z0-9_]*)*/v[1-9][0-9]*(?![\\s\\S])"
+            },
+            "logical_id": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}(?![\\s\\S])"
+            },
+            "version_id": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}(?![\\s\\S])"
+            }
+          },
+          "required": [
+            "entity_type",
+            "logical_id",
+            "version_id"
+          ]
+        }
+      },
+      "required": [
+        "schema_version",
+        "source_id",
+        "ref"
+      ]
+    },
+    "resource_ref": {
+      "title": "Source resource ref",
+      "description": "Source qualification supplies identity only; it does not resolve a source, prove target existence, or grant access.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "rpnh/collaboration/source_resource_ref/v1"
+        },
+        "source_id": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[^\\s\\u0000-\\u001f\\u007f](?:[^\\u0000-\\u001f\\u007f]*[^\\s\\u0000-\\u001f\\u007f])?(?![\\s\\S])"
+        },
+        "ref": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "resource_id": {
+              "type": "string",
+              "pattern": "^resource:[a-f0-9]{32}(?![\\s\\S])"
+            },
+            "resource_version_id": {
+              "type": "string",
+              "pattern": "^resource_version:[a-f0-9]{32}(?![\\s\\S])"
+            }
+          },
+          "required": [
+            "resource_id",
+            "resource_version_id"
+          ]
+        }
+      },
+      "required": [
+        "schema_version",
+        "source_id",
+        "ref"
+      ]
+    },
+    "choice": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "conflict_id": {
+          "type": "string",
+          "pattern": "^conflict:[a-f0-9]{64}(?![\\s\\S])"
+        },
+        "choice": {
+          "enum": [
+            "local",
+            "incoming",
+            "base",
+            "delete"
+          ]
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1
+        },
+        "delete_element_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^element:[a-f0-9]{32}(?![\\s\\S])"
+          }
+        }
+      },
+      "required": [
+        "conflict_id",
+        "choice",
+        "reason",
+        "delete_element_ids"
+      ]
+    }
+  }
+}

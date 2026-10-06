@@ -6,7 +6,7 @@ metadata:
   audience: user-and-developer
   language: en
   counterpart: examples_ZH.md
-  revision: "2026-10-02.3"
+  revision: "2026-10-06.1"
   status: current-instructions-with-dated-evidence
   basis: "current main commands; deterministic runs and dated authorized live evidence explicitly separated"
 ---
@@ -386,3 +386,5 @@ The accepted reference boundary is in [examples validation](examples-validation.
 It distinguishes deterministic fixtures, earlier authorized provider calls and
 current focused compatibility checks; none substitutes for validating a user's
 own route.
+
+Public record dated 2026-10-06: freeze04 first18 has 5 PASS / 9 FAIL / 4 BLOCKED; separate repair4 has 1 PASS / 3 FAIL. The old 14 scored tasks were not rerun. [2026-10-06 results](../../examples/automationbench/PUBLIC_RESULTS_20261006.md).

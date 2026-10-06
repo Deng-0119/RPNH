@@ -1,0 +1,131 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "rpnh/collaboration/open_region_contract/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "rpnh/collaboration/open_region_contract/v1"
+    },
+    "provenance_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "rpnh/collaboration/source_resource_ref/v1"
+        },
+        "source_id": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[^\\s\\u0000-\\u001f\\u007f](?:[^\\u0000-\\u001f\\u007f]*[^\\s\\u0000-\\u001f\\u007f])?(?![\\s\\S])"
+        },
+        "ref": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "resource_id": {
+              "type": "string",
+              "pattern": "^resource:[a-f0-9]{32}(?![\\s\\S])"
+            },
+            "resource_version_id": {
+              "type": "string",
+              "pattern": "^resource_version:[a-f0-9]{32}(?![\\s\\S])"
+            }
+          },
+          "required": [
+            "resource_id",
+            "resource_version_id"
+          ]
+        }
+      },
+      "required": [
+        "schema_version",
+        "source_id",
+        "ref"
+      ]
+    },
+    "boundary_inventory_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "rpnh/collaboration/source_resource_ref/v1"
+        },
+        "source_id": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[^\\s\\u0000-\\u001f\\u007f](?:[^\\u0000-\\u001f\\u007f]*[^\\s\\u0000-\\u001f\\u007f])?(?![\\s\\S])"
+        },
+        "ref": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "resource_id": {
+              "type": "string",
+              "pattern": "^resource:[a-f0-9]{32}(?![\\s\\S])"
+            },
+            "resource_version_id": {
+              "type": "string",
+              "pattern": "^resource_version:[a-f0-9]{32}(?![\\s\\S])"
+            }
+          },
+          "required": [
+            "resource_id",
+            "resource_version_id"
+          ]
+        }
+      },
+      "required": [
+        "schema_version",
+        "source_id",
+        "ref"
+      ]
+    },
+    "unresolved_item_ids": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^boundary:[a-f0-9]{32}(?![\\s\\S])"
+      }
+    },
+    "required_choices": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "item_id": {
+            "type": "string",
+            "pattern": "^boundary:[a-f0-9]{32}(?![\\s\\S])"
+          },
+          "choices": {
+            "type": "array",
+            "items": {
+              "enum": [
+                "context",
+                "completion",
+                "ingress",
+                "adapter"
+              ]
+            }
+          }
+        },
+        "required": [
+          "item_id",
+          "choices"
+        ]
+      }
+    },
+    "claim": {
+      "const": "open_only"
+    }
+  },
+  "required": [
+    "schema_version",
+    "provenance_ref",
+    "boundary_inventory_ref",
+    "unresolved_item_ids",
+    "required_choices",
+    "claim"
+  ]
+}

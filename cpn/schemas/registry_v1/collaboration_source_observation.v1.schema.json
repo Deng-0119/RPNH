@@ -1,0 +1,976 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "registry_v1/collaboration_source_observation/v1",
+  "title": "Immutable owner-recorded finite SourceSet observation",
+  "type": "object",
+  "additionalProperties": false,
+  "definitions": {
+    "task_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "rpnh/collaboration/source_version_ref/v1"
+        },
+        "source_id": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[^\\s\\u0000-\\u001f\\u007f](?:[^\\u0000-\\u001f\\u007f]*[^\\s\\u0000-\\u001f\\u007f])?(?![\\s\\S])"
+        },
+        "ref": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "entity_type": {
+              "const": "task/v1"
+            },
+            "logical_id": {
+              "type": "string",
+              "pattern": "^task:[a-f0-9]{32}(?![\\s\\S])"
+            },
+            "version_id": {
+              "type": "string",
+              "pattern": "^task_version:[a-f0-9]{32}(?![\\s\\S])"
+            }
+          },
+          "required": [
+            "entity_type",
+            "logical_id",
+            "version_id"
+          ]
+        }
+      },
+      "required": [
+        "schema_version",
+        "source_id",
+        "ref"
+      ]
+    },
+    "bootstrap_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "rpnh/collaboration/source_version_ref/v1"
+        },
+        "source_id": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[^\\s\\u0000-\\u001f\\u007f](?:[^\\u0000-\\u001f\\u007f]*[^\\s\\u0000-\\u001f\\u007f])?(?![\\s\\S])"
+        },
+        "ref": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "entity_type": {
+              "const": "bootstrap_command/v1"
+            },
+            "logical_id": {
+              "type": "string",
+              "pattern": "^bootstrap_command:[a-f0-9]{32}(?![\\s\\S])"
+            },
+            "version_id": {
+              "type": "string",
+              "pattern": "^bootstrap_command_version:[a-f0-9]{32}(?![\\s\\S])"
+            }
+          },
+          "required": [
+            "entity_type",
+            "logical_id",
+            "version_id"
+          ]
+        }
+      },
+      "required": [
+        "schema_version",
+        "source_id",
+        "ref"
+      ]
+    },
+    "set_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "rpnh/collaboration/source_version_ref/v1"
+        },
+        "source_id": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[^\\s\\u0000-\\u001f\\u007f](?:[^\\u0000-\\u001f\\u007f]*[^\\s\\u0000-\\u001f\\u007f])?(?![\\s\\S])"
+        },
+        "ref": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "entity_type": {
+              "const": "collaboration_source_observation/v1"
+            },
+            "logical_id": {
+              "type": "string",
+              "pattern": "^resource:[a-f0-9]{32}(?![\\s\\S])"
+            },
+            "version_id": {
+              "type": "string",
+              "pattern": "^resource_version:[a-f0-9]{32}(?![\\s\\S])"
+            }
+          },
+          "required": [
+            "entity_type",
+            "logical_id",
+            "version_id"
+          ]
+        }
+      },
+      "required": [
+        "schema_version",
+        "source_id",
+        "ref"
+      ]
+    },
+    "version_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "entity_type": {
+          "type": "string",
+          "minLength": 1
+        },
+        "logical_id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
+        },
+        "version_id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
+        }
+      },
+      "required": [
+        "entity_type",
+        "logical_id",
+        "version_id"
+      ]
+    },
+    "resource_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "resource_id": {
+          "type": "string",
+          "pattern": "^resource:[a-f0-9]{32}$"
+        },
+        "resource_version_id": {
+          "type": "string",
+          "pattern": "^resource_version:[a-f0-9]{32}$"
+        }
+      },
+      "required": [
+        "resource_id",
+        "resource_version_id"
+      ]
+    },
+    "head": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "ordinal": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "writer_fencing_epoch": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "task_control_sequence": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "stream_heads": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      },
+      "required": [
+        "ordinal",
+        "writer_fencing_epoch",
+        "task_control_sequence",
+        "stream_heads"
+      ]
+    },
+    "qualified_set_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "rpnh/collaboration/source_version_ref/v1"
+        },
+        "source_id": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[^\\s\\u0000-\\u001f\\u007f](?:[^\\u0000-\\u001f\\u007f]*[^\\s\\u0000-\\u001f\\u007f])?(?![\\s\\S])"
+        },
+        "ref": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "entity_type": {
+              "const": "collaboration_source_set/v1"
+            },
+            "logical_id": {
+              "type": "string",
+              "pattern": "^resource:[a-f0-9]{32}(?![\\s\\S])"
+            },
+            "version_id": {
+              "type": "string",
+              "pattern": "^resource_version:[a-f0-9]{32}(?![\\s\\S])"
+            }
+          },
+          "required": [
+            "entity_type",
+            "logical_id",
+            "version_id"
+          ]
+        }
+      },
+      "required": [
+        "schema_version",
+        "source_id",
+        "ref"
+      ]
+    },
+    "qualified_resource_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "rpnh/collaboration/source_resource_ref/v1"
+        },
+        "source_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "ref": {
+          "$ref": "#/definitions/resource_ref"
+        }
+      },
+      "required": [
+        "schema_version",
+        "source_id",
+        "ref"
+      ]
+    },
+    "authority": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "invocation_ref": {
+              "$ref": "#/definitions/qualified_version_ref"
+            },
+            "binding": {
+              "$ref": "#/definitions/qualified_version_ref"
+            },
+            "grant_states": {
+              "type": "array",
+              "items": {
+                "type": "array",
+                "minItems": 3,
+                "maxItems": 3
+              }
+            },
+            "writer": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          "required": [
+            "invocation_ref",
+            "binding",
+            "grant_states",
+            "writer"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "observer_principal_ref": {
+              "$ref": "#/definitions/qualified_version_ref"
+            },
+            "observer_profile_ref": {
+              "$ref": "#/definitions/qualified_version_ref"
+            },
+            "grant_ref": {
+              "$ref": "#/definitions/qualified_version_ref"
+            },
+            "reader_fence": {
+              "type": "string",
+              "minLength": 1
+            },
+            "writer": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          "required": [
+            "observer_principal_ref",
+            "observer_profile_ref",
+            "grant_ref",
+            "reader_fence",
+            "writer"
+          ]
+        }
+      ]
+    },
+    "query_facts": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "task_ref": {
+          "$ref": "#/definitions/qualified_version_ref"
+        },
+        "scope_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/qualified_version_ref"
+          }
+        },
+        "producer_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/qualified_version_ref"
+          }
+        },
+        "relation_filters": {
+          "type": "array",
+          "maxItems": 0
+        },
+        "media_types": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "address_name": {
+          "type": "null"
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000
+        }
+      },
+      "required": [
+        "task_ref",
+        "scope_refs",
+        "producer_refs",
+        "relation_filters",
+        "media_types",
+        "address_name",
+        "limit"
+      ]
+    },
+    "cursor": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "query_facts": {
+          "$ref": "#/definitions/query_facts"
+        },
+        "principal_ref": {
+          "$ref": "#/definitions/qualified_version_ref"
+        },
+        "grant_ref": {
+          "$ref": "#/definitions/qualified_version_ref"
+        },
+        "through_head": {
+          "$ref": "#/definitions/head"
+        },
+        "offset": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "authority_facts": {
+          "$ref": "#/definitions/authority"
+        }
+      },
+      "required": [
+        "query_facts",
+        "principal_ref",
+        "grant_ref",
+        "through_head",
+        "offset",
+        "authority_facts"
+      ]
+    },
+    "header": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "ref": {
+          "$ref": "#/definitions/qualified_resource_ref"
+        },
+        "task_ref": {
+          "$ref": "#/definitions/task_ref"
+        },
+        "round_ref": {
+          "oneOf": [
+            {
+              "$ref": "#/definitions/qualified_version_ref"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "net_ref": {
+          "oneOf": [
+            {
+              "$ref": "#/definitions/qualified_version_ref"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "producer_ref": {
+          "$ref": "#/definitions/qualified_version_ref"
+        },
+        "origin_kind": {
+          "type": "string",
+          "minLength": 1
+        },
+        "media_type": {
+          "type": "string",
+          "minLength": 1
+        },
+        "byte_size": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "content_schema_ref": {
+          "oneOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "content_schema_authority_ref": {
+          "oneOf": [
+            {
+              "oneOf": [
+                {
+                  "$ref": "#/definitions/qualified_version_ref"
+                },
+                {
+                  "$ref": "#/definitions/qualified_resource_ref"
+                }
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "display_summary": {
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "descriptor_labels": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "name": {
+                "type": "string",
+                "minLength": 1
+              },
+              "values": {
+                "type": "array",
+                "items": {
+                  "type": [
+                    "string",
+                    "number",
+                    "boolean",
+                    "null"
+                  ]
+                }
+              }
+            },
+            "required": [
+              "name",
+              "values"
+            ]
+          }
+        },
+        "relation_kinds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "published_at_head": {
+          "$ref": "#/definitions/head"
+        }
+      },
+      "required": [
+        "ref",
+        "task_ref",
+        "round_ref",
+        "net_ref",
+        "producer_ref",
+        "origin_kind",
+        "media_type",
+        "byte_size",
+        "content_schema_ref",
+        "content_schema_authority_ref",
+        "display_summary",
+        "descriptor_labels",
+        "relation_kinds",
+        "published_at_head"
+      ]
+    },
+    "coverage": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "state": {
+          "enum": [
+            "complete",
+            "partial",
+            "not_loaded",
+            "unavailable",
+            "denied",
+            "access_changed",
+            "read_failed",
+            "missing_dependency",
+            "not_established"
+          ]
+        },
+        "loaded_count": {
+          "oneOf": [
+            {
+              "type": "integer",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "total_count": {
+          "oneOf": [
+            {
+              "type": "integer",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "state",
+        "loaded_count",
+        "total_count"
+      ]
+    },
+    "row": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "source_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_ref": {
+          "$ref": "#/definitions/task_ref"
+        },
+        "access_path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "aliases": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "availability": {
+          "enum": [
+            "readable",
+            "not_established",
+            "unavailable",
+            "denied",
+            "access_changed",
+            "read_failed",
+            "missing_dependency"
+          ]
+        },
+        "cut": {
+          "oneOf": [
+            {
+              "$ref": "#/definitions/head"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "authority": {
+          "oneOf": [
+            {
+              "$ref": "#/definitions/authority"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "headers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/header"
+          }
+        },
+        "cursor": {
+          "oneOf": [
+            {
+              "$ref": "#/definitions/cursor"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "coverage": {
+          "$ref": "#/definitions/coverage"
+        },
+        "authority_head": {
+          "oneOf": [
+            {
+              "$ref": "#/definitions/head"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "source_id",
+        "source_ref",
+        "access_path",
+        "aliases",
+        "availability",
+        "cut",
+        "authority",
+        "headers",
+        "cursor",
+        "coverage",
+        "authority_head"
+      ]
+    },
+    "observation": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "rpnh/source_observation/v1"
+        },
+        "kind": {
+          "enum": [
+            "query",
+            "supplement"
+          ]
+        },
+        "source_set_ref": {
+          "$ref": "#/definitions/qualified_set_ref"
+        },
+        "previous_observation_ref": {
+          "oneOf": [
+            {
+              "$ref": "#/definitions/set_ref"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "supplement_of": {
+          "oneOf": [
+            {
+              "$ref": "#/definitions/set_ref"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "dependencies": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/qualified_resource_ref"
+          }
+        },
+        "query": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "limit": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 1000
+                },
+                "media_types": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                }
+              },
+              "required": [
+                "limit",
+                "media_types"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "sources": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/row"
+          }
+        },
+        "coverage": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "state": {
+              "enum": [
+                "complete",
+                "partial"
+              ]
+            },
+            "loaded_count": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "total_count": {
+              "oneOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "expected_source_count": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "missing_sources": {
+              "type": "array",
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "required": [
+            "state",
+            "loaded_count",
+            "total_count",
+            "expected_source_count",
+            "missing_sources"
+          ]
+        },
+        "causal_completeness": {
+          "const": "not_established"
+        },
+        "global_atomic_snapshot": {
+          "const": false
+        }
+      },
+      "required": [
+        "schema_version",
+        "kind",
+        "source_set_ref",
+        "previous_observation_ref",
+        "supplement_of",
+        "dependencies",
+        "query",
+        "sources",
+        "coverage",
+        "causal_completeness",
+        "global_atomic_snapshot"
+      ]
+    },
+    "qualified_version_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "rpnh/collaboration/source_version_ref/v1"
+        },
+        "source_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "ref": {
+          "$ref": "#/definitions/version_ref"
+        }
+      },
+      "required": [
+        "schema_version",
+        "source_id",
+        "ref"
+      ]
+    },
+    "invocation_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "rpnh/collaboration/source_version_ref/v1"
+        },
+        "source_id": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[^\\s\\u0000-\\u001f\\u007f](?:[^\\u0000-\\u001f\\u007f]*[^\\s\\u0000-\\u001f\\u007f])?(?![\\s\\S])"
+        },
+        "ref": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "entity_type": {
+              "const": "invocation/v1"
+            },
+            "logical_id": {
+              "type": "string",
+              "pattern": "^invocation:[a-f0-9]{32}$"
+            },
+            "version_id": {
+              "type": "string",
+              "pattern": "^invocation_version:[a-f0-9]{32}$"
+            }
+          },
+          "required": [
+            "entity_type",
+            "logical_id",
+            "version_id"
+          ]
+        }
+      },
+      "required": [
+        "schema_version",
+        "source_id",
+        "ref"
+      ]
+    },
+    "firing_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "rpnh/collaboration/source_version_ref/v1"
+        },
+        "source_id": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[^\\s\\u0000-\\u001f\\u007f](?:[^\\u0000-\\u001f\\u007f]*[^\\s\\u0000-\\u001f\\u007f])?(?![\\s\\S])"
+        },
+        "ref": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "entity_type": {
+              "const": "transition_firing/v1"
+            },
+            "logical_id": {
+              "type": "string",
+              "pattern": "^transition_firing:[a-f0-9]{32}$"
+            },
+            "version_id": {
+              "type": "string",
+              "pattern": "^transition_firing_version:[a-f0-9]{32}$"
+            }
+          },
+          "required": [
+            "entity_type",
+            "logical_id",
+            "version_id"
+          ]
+        }
+      },
+      "required": [
+        "schema_version",
+        "source_id",
+        "ref"
+      ]
+    }
+  },
+  "properties": {
+    "owner_task_ref": {
+      "$ref": "#/definitions/task_ref"
+    },
+    "command_id": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[^\\s\\u0000-\\u001f\\u007f](?:[^\\u0000-\\u001f\\u007f]*[^\\s\\u0000-\\u001f\\u007f])?(?![\\s\\S])"
+    },
+    "schema_version": {
+      "const": "registry_v1/collaboration_source_observation/v1"
+    },
+    "observation_ref": {
+      "$ref": "#/definitions/set_ref"
+    },
+    "observation": {
+      "$ref": "#/definitions/observation"
+    },
+    "producer_invocation_ref": {
+      "$ref": "#/definitions/invocation_ref"
+    },
+    "producer_firing_ref": {
+      "$ref": "#/definitions/firing_ref"
+    }
+  },
+  "required": [
+    "owner_task_ref",
+    "command_id",
+    "schema_version",
+    "observation_ref",
+    "observation",
+    "producer_invocation_ref",
+    "producer_firing_ref"
+  ]
+}

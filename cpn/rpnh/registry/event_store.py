@@ -964,6 +964,14 @@ def verified_adoption_lineage(event_store: 'EventStore', catalog: SchemaCatalog,
     return net_lineage.verified_adoption_lineage(event_store, catalog, task_id, _db=_db)
 
 
+def verified_adoption_prefix(event_store: 'EventStore', catalog: SchemaCatalog, task_id: TypedId, *,
+                             adoption_event_id: TypedId, _db: sqlite3.Connection | None=None) -> tuple[VersionRef, ...]:
+    """Exact-event semantic prefix; not a historical DB snapshot or execution grant."""
+    from ._event_store import net_lineage
+    return net_lineage.verified_adoption_prefix(event_store, catalog, task_id,
+        adoption_event_id=adoption_event_id, _db=_db)
+
+
 def verified_adoption_head(event_store: 'EventStore', catalog: SchemaCatalog, task_id: TypedId, *, _db: sqlite3.Connection | None=None) -> VersionRef:
     from ._event_store import net_lineage
     return net_lineage.verified_adoption_head(event_store, catalog, task_id, _db=_db)
@@ -1972,6 +1980,11 @@ class EventStore:
     def canonical_events(self, *, after_ordinal: int=0, through_ordinal: int | None=None, stream_id: str | None=None) -> tuple[EventEnvelope, ...]:
         from ._event_store import views
         return views.canonical_events(self, after_ordinal=after_ordinal, through_ordinal=through_ordinal, stream_id=stream_id)
+
+    def firing_activity_page(self, **kwargs):
+        """Read a bounded diagnostic activity page; never an authority view."""
+        from ._event_store import views
+        return views.firing_activity_page(self, **kwargs)
 
     def ordered_firing_record(self, firing_version_id: TypedId | str) -> Mapping[str, Any]:
         from ._event_store import views

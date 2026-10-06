@@ -19,3 +19,25 @@ html[lang="en"] .tools{flex-shrink:0}
 /* Agent Overview never reveals resources or technical metrics. */
 [hidden] { display: none !important; }
 #canvas-empty #open-petri-empty { pointer-events:auto; margin-top:16px; }
+
+/* Single-frame technical context. Keep all layout rules local to this card. */
+#observation-panel{flex:0 1 auto;min-height:0;max-height:28vh;overflow:auto;padding:10px 24px;border-bottom:1px solid var(--border);background:#fff;font-size:11px;line-height:1.5;overflow-wrap:anywhere}
+#observation-panel h2{margin:0 0 7px;font-size:12px}
+#observation-panel dl{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(145px,100%),1fr));gap:6px 16px;margin:0}
+#observation-panel dl>div{min-width:0}
+#observation-panel dt{color:var(--muted)}
+#observation-panel dd{margin:2px 0 0;font-variant-numeric:tabular-nums}
+#observation-panel p{margin:6px 0 0;color:#63738d}
+#observation-panel details{margin-top:7px;min-width:0}
+#observation-panel summary{cursor:pointer;color:#43516a}
+#observation-panel summary:focus-visible{outline:3px solid #87a6ff;outline-offset:2px}
+#observation-panel h3{font-size:11px;margin:8px 0 3px}
+#observation-panel pre{margin:0;max-width:100%;white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-word}
+@media(max-width:800px){#observation-panel{padding:9px 16px;max-height:25vh}}
+
+.checkpoint-navigation { display: flex; align-items: center; flex-wrap: wrap; gap: .5rem; margin: .4rem 0; }
+.checkpoint-navigation [role="status"] { font-size: .8rem; color: var(--muted, #52647b); overflow-wrap: anywhere; }
+
+#source-observation-panel { margin: 0 20px 16px; padding: 18px; border: 1px solid var(--border, #ccd3dc); border-radius: 12px; background: var(--surface, #fff); }
+#source-observation-panel section { margin-top: 12px; padding-top: 8px; border-top: 1px solid #e3e7ed; }
+#source-observation-panel pre { overflow: auto; max-height: 240px; }

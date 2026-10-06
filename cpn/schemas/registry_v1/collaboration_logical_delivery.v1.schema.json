@@ -1,0 +1,305 @@
+{
+  "$id": "registry_v1/collaboration_logical_delivery/v1",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "registry_v1/collaboration_logical_delivery/v1"
+    },
+    "record_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "rpnh/collaboration/source_version_ref/v1"
+        },
+        "source_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "ref": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "entity_type": {
+              "type": "string",
+              "minLength": 1
+            },
+            "logical_id": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
+            },
+            "version_id": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
+            }
+          },
+          "required": [
+            "entity_type",
+            "logical_id",
+            "version_id"
+          ]
+        }
+      },
+      "required": [
+        "schema_version",
+        "source_id",
+        "ref"
+      ]
+    },
+    "owner_task_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "rpnh/collaboration/source_version_ref/v1"
+        },
+        "source_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "ref": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "entity_type": {
+              "type": "string",
+              "minLength": 1
+            },
+            "logical_id": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
+            },
+            "version_id": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
+            }
+          },
+          "required": [
+            "entity_type",
+            "logical_id",
+            "version_id"
+          ]
+        }
+      },
+      "required": [
+        "schema_version",
+        "source_id",
+        "ref"
+      ]
+    },
+    "command_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "body": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "export_ref": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "schema_version": {
+              "const": "rpnh/collaboration/source_version_ref/v1"
+            },
+            "source_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "ref": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "entity_type": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "logical_id": {
+                  "type": "string",
+                  "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
+                },
+                "version_id": {
+                  "type": "string",
+                  "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
+                }
+              },
+              "required": [
+                "entity_type",
+                "logical_id",
+                "version_id"
+              ]
+            }
+          },
+          "required": [
+            "schema_version",
+            "source_id",
+            "ref"
+          ]
+        },
+        "target_owner_ref": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "schema_version": {
+              "const": "rpnh/collaboration/source_version_ref/v1"
+            },
+            "source_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "ref": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "entity_type": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "logical_id": {
+                  "type": "string",
+                  "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
+                },
+                "version_id": {
+                  "type": "string",
+                  "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
+                }
+              },
+              "required": [
+                "entity_type",
+                "logical_id",
+                "version_id"
+              ]
+            }
+          },
+          "required": [
+            "schema_version",
+            "source_id",
+            "ref"
+          ]
+        },
+        "target_workset_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "target_source_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "collection_version": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "generation": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "requirements_ref": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "schema_version": {
+              "const": "rpnh/collaboration/source_version_ref/v1"
+            },
+            "source_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "ref": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "entity_type": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "logical_id": {
+                  "type": "string",
+                  "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
+                },
+                "version_id": {
+                  "type": "string",
+                  "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
+                }
+              },
+              "required": [
+                "entity_type",
+                "logical_id",
+                "version_id"
+              ]
+            }
+          },
+          "required": [
+            "schema_version",
+            "source_id",
+            "ref"
+          ]
+        },
+        "input_binding_ref": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "schema_version": {
+              "const": "rpnh/collaboration/source_version_ref/v1"
+            },
+            "source_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "ref": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "entity_type": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "logical_id": {
+                  "type": "string",
+                  "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
+                },
+                "version_id": {
+                  "type": "string",
+                  "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
+                }
+              },
+              "required": [
+                "entity_type",
+                "logical_id",
+                "version_id"
+              ]
+            }
+          },
+          "required": [
+            "schema_version",
+            "source_id",
+            "ref"
+          ]
+        },
+        "slot": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "export_ref",
+        "target_owner_ref",
+        "target_workset_id",
+        "target_source_id",
+        "collection_version",
+        "generation",
+        "requirements_ref",
+        "input_binding_ref",
+        "slot"
+      ]
+    }
+  },
+  "required": [
+    "schema_version",
+    "record_ref",
+    "owner_task_ref",
+    "command_id",
+    "body"
+  ]
+}

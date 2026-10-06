@@ -7,6 +7,8 @@ artifact; these declaration exports alone are not execution acceptance evidence.
 from .registration import Registration, RegistrationError
 from .module import ModuleDeclaration, SymbolicNet
 from .petri_contracts import DeclarationError, PNFragment
+from .control_ir import ControlIR, ControlIRError, ControlIRCapabilityError
+from .control_eval import EvalError, EvalResult, ReadSet, evaluate_expression
 from .petri_primitives import (
     PetriStructureDelta, PetriStructureDeltaError, PetriStructureEdit,
     PetriStructureSnapshot, apply_petri_structure_delta,
@@ -51,6 +53,8 @@ def snapshot(owner_or_client):
 
 __all__ = (
     "Registration", "RegistrationError", "ModuleDeclaration", "SymbolicNet",
+    "ControlIR", "ControlIRError", "ControlIRCapabilityError",
+    "EvalError", "EvalResult", "ReadSet", "evaluate_expression",
     "DeclarationError", "PNFragment", "lower_module", "start_run", "snapshot",
     "PetriStructureDelta", "PetriStructureDeltaError", "PetriStructureEdit",
     "PetriStructureSnapshot", "apply_petri_structure_delta",

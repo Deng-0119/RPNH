@@ -200,14 +200,30 @@ class TransactionValidationContext:
 
         referenced_versions: set[str] = set()
         referenced_relations: set[str] = set()
+        from .source_identity import (
+            AUTHOR_REVISION_TYPE, has_qualified_references,
+            read_source_binding, source_aware_version_ids,
+        )
+        documents = [item.metadata for item in self.objects] + [event.payload for event in self.events]
+        binding = (read_source_binding(self.db, self.event_store.catalog, self.task_id)
+                   if self.event_store is not None and any(has_qualified_references(value) for value in documents) else None)
+        local_source = json.loads(binding["binding_metadata_json"])["source_id"] if binding is not None else None
+
+        def version_ids(value):
+            return (self.referenced_version_ids(value) if local_source is None else
+                    source_aware_version_ids(value, local_source_id=local_source, catalog=self.event_store.catalog))
+
         for item in self.objects:
+            if (local_source is not None and item.object_type == AUTHOR_REVISION_TYPE
+                    and item.metadata.get("revision_ref", {}).get("source_id") != local_source):
+                raise RegistryConflict("author self source differs from the bound local source")
             referenced_versions.update(
-                self.referenced_version_ids(item.metadata))
+                version_ids(item.metadata))
             referenced_relations.update(
                 self.referenced_relation_ids(item.metadata))
         for pending in self.events:
             referenced_versions.update(
-                self.referenced_version_ids(pending.payload))
+                version_ids(pending.payload))
             referenced_relations.update(
                 self.referenced_relation_ids(pending.payload))
         for version_id in referenced_versions - set(self.new_by_version):

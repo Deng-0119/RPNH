@@ -19,6 +19,7 @@ from .petri_contracts import (
     ArcDeclaration, ResetArcDeclaration, BindingContext, DeclarationError, OperationDeclaration,
     PNFragment, PlaceDeclaration, PortBinding, PortDeclaration,
     TransitionDeclaration, same_operation_contract, validate_registered_config,
+    _same_json_value,
     InitialTokenDeclaration, CountGuard, InputVerdictGuard, InputColourPredicate,
     ColourExpression, LeaseClaimExpression, LeaseClaimSetExpression,
     LeaseIdentityDeclaration,
@@ -194,7 +195,7 @@ class _ContractInventory:
         return self.declaration(category, key)
 
 
-def _verify(document, source, fragments):
+def _verify(document, source, fragments, *, offline_schema_validation=False):
     """Check wire against the recorded exact lowering inventory without lowering."""
     inventory = _ContractInventory(document["registrations"])
     for category, declarations in document["registrations"].items():
@@ -221,7 +222,8 @@ def _verify(document, source, fragments):
     for terminal in (source.terminal, *source.terminal_alternatives):
         inventory.resolve("tool", terminal.key)
         validate_registered_config(inventory, "tool", terminal.key,
-                                   terminal.config, source.required_schemas)
+                                   terminal.config, source.required_schemas,
+                                   _offline_schema_validation=offline_schema_validation)
     places, port_places, external, operations, transitions, arcs = {}, {}, {}, [], [], []
     for name, component in components.items():
         fragment = fragments[name]
@@ -230,27 +232,40 @@ def _verify(document, source, fragments):
             raise DeclarationError("Component config schema must be required")
         if contracts.get("config_schema", component.config_schema) != component.config_schema:
             raise DeclarationError("Component config schema differs from HOST contract")
-        Draft7Validator(inventory.declaration("schema", component.config_schema)["schema"]).validate(component.config)
-        fragment.validate(BindingContext(name, component.ports, source.required_schemas,
-                                        source.budgets, component.operations), inventory)
+        from .petri_contracts import _validate_schema_instance
+        _validate_schema_instance(inventory.declaration("schema", component.config_schema)["schema"], component.config,
+            offline_schema_validation=offline_schema_validation)
+        context = BindingContext(name, component.ports, source.required_schemas, source.budgets, component.operations)
+        if offline_schema_validation:
+            fragment.validate(context, inventory, _offline_schema_validation=True)
+        else:
+            fragment.validate(context, inventory)
         actual = {o.name: o for o in fragment.operations}
         if any(o.name not in actual for o in component.operations):
             raise DeclarationError("Missing declared operation")
         if any(not same_operation_contract(actual[o.name], o) for o in component.operations):
             raise DeclarationError("Explicit operation protocol differs from lowered inventory")
+    from .control_ir import verify_control_proof
+    verify_control_proof(source, fragments, inventory)
     composed, aliases = compose_fragments(source, fragments)
     expected = asdict(composed)
     operations = composed.operations
     port_places = composed.port_places
-    if _canonical(expected) != _canonical(document["symbolic"]):
+    if not _same_json_value(_canonical(expected), _canonical(document["symbolic"])):
         raise DeclarationError("Symbolic net differs from exact declaration/fragment composition")
+    if "rpnh_control_ir_v1" in (source.designer_constraints or {}):
+        # The explicit typed domain distinguishes Int from Rational. This must
+        # not tighten the legacy v1 numeric comparison outside that opt-in.
+        if json.dumps(_canonical(expected), sort_keys=True) != json.dumps(_canonical(document["symbolic"]), sort_keys=True):
+            raise DeclarationError("Typed symbolic net differs from exact lowering")
     if document["place_aliases"] != aliases:
         raise DeclarationError("Exact original logical place aliases required")
     expected_ops = _handles((op.name for op in operations), "op")
     expected_ports = _handles(port_places, "port")
     if document["operation_handles"] != expected_ops or document["port_handles"] != expected_ports:
         raise DeclarationError("Lexical handles must match sorted qualified symbolic inventory")
-    if _canonical(document["ports"]) != _canonical(_ports(source, fragments, expected, expected_ports)):
+    if not _same_json_value(_canonical(document["ports"]),
+                            _canonical(_ports(source, fragments, expected, expected_ports))):
         raise DeclarationError("Typed public/internal port inventory mismatch")
     if {k: set(v) for k, v in document["registrations"].items()} != inventory.used:
         raise DeclarationError("Registration inventory must contain exactly referenced declarations")
@@ -339,15 +354,73 @@ class CompiledPetriNet:
 
 def load_compiled_net(document: Mapping[str, Any] | str) -> CompiledPetriNet:
     """Rehydrate only the sole compiler wire format; never resolve HOST code."""
+    return _load_compiled_net(document, offline_schema_validation=False)
+
+
+def load_compiled_control_net(document: dict | str) -> CompiledPetriNet:
+    """Require an exact typed author proof; no coercible Python containers.
+
+    The ordinary loader intentionally accepts legacy v1 with no typed claim.
+    Use this entry when a consumer requires the ControlIR proof to be present.
+    """
+    from .control_types import data as control_data
+    from .control_ir import control_proof_key
     try:
-        value = _data(json.loads(document) if isinstance(document, str) else document)
+        incoming = json.loads(document) if type(document) is str else document
+    except json.JSONDecodeError as exc:
+        from .control_types import ControlIRError
+        raise ControlIRError("invalid_json", "$") from exc
+    incoming = control_data(incoming)
+    if type(incoming) is not dict or type(incoming.get("source")) is not dict:
+        from .control_types import fail
+        fail("control_proof_required", "$.source")
+    constraints = incoming["source"].get("designer_constraints", {})
+    if type(constraints) is not dict:
+        from .control_types import fail
+        fail("expected_record", "$.source.designer_constraints")
+    control_proof_key(constraints, required=True)
+    return _load_compiled_net(incoming, offline_schema_validation=True)
+
+
+def _load_compiled_net_offline(document: Mapping[str, Any] | str) -> CompiledPetriNet:
+    """Fixed opt-in reader: no implicit remote schema retrieval or HOST lower."""
+    return _load_compiled_net(document, offline_schema_validation=True)
+
+
+def _load_compiled_net(document, *, offline_schema_validation):
+    try:
+        incoming = json.loads(document) if isinstance(document, str) else document
+        # Inspect builtin dict storage without invoking Mapping/subclass hooks.
+        # The legacy Mapping API remains available for untyped v1 inventory.
+        def plain_dict_slot(value, key):
+            if not isinstance(value, dict):
+                return None
+            # Check before a lookup: a hostile non-string key may collide with
+            # the requested string's hash and run __eq__ inside dict.get.
+            if any(type(name) is not str for name in dict.keys(value)):
+                raise DeclarationError("Inventory object keys must be exact strings")
+            return dict.get(value, key)
+        raw_source = plain_dict_slot(incoming, "source")
+        raw_constraints = plain_dict_slot(raw_source, "designer_constraints")
+        plain_dict_slot(raw_constraints, "rpnh_control_ir_v1")
+        typed_proof = isinstance(raw_constraints, dict) and any(
+            type(key) is str and key.startswith("rpnh_control_ir_") for key in dict.keys(raw_constraints))
+        if typed_proof:
+            from .control_types import data as control_data
+            incoming = control_data(incoming)
+        value = _data(incoming)
         wire_schema = json.loads(WIRE_SCHEMA_PATH.read_text(encoding="utf-8"))
         source_schema = json.loads(SCHEMA_PATH.read_text(encoding="utf-8"))
         registry = Registry().with_resources((s["$id"], Resource.from_contents(s)) for s in (wire_schema, source_schema))
         MechanicalValidator(wire_schema, registry=registry).validate(value)
         source = ModuleDeclaration.from_dict(value["source"])
+        # A typed author proof opts into offline validation. Legacy v1 sources
+        # without this reserved proof keep their existing validator behavior.
+        from .control_ir import control_proof_key
+        if control_proof_key(source.designer_constraints or {}) is not None:
+            offline_schema_validation = True
         fragments = {k: _fragment(v) for k, v in value["fragments"].items()}
-        symbolic = _verify(value, source, fragments)
+        symbolic = _verify(value, source, fragments, offline_schema_validation=offline_schema_validation)
         operations = tuple(CompiledOperation(value["operation_handles"][op.name],
                                             op.executor, op, value["registrations"]["executor"][op.executor])
                            for op in symbolic.operations)
@@ -361,4 +434,4 @@ def load_compiled_net(document: Mapping[str, Any] | str) -> CompiledPetriNet:
         raise DeclarationError(f"Invalid compiled inventory: {exc}") from exc
 
 
-__all__ = ("CompiledPetriNet", "CompiledOperation", "CompiledPort", "load_compiled_net")
+__all__ = ("CompiledPetriNet", "CompiledOperation", "CompiledPort", "load_compiled_net", "load_compiled_control_net")

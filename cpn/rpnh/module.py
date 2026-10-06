@@ -218,8 +218,10 @@ class ModuleDeclaration:
     def to_json(self) -> str:
         return json.dumps(self.to_dict(), ensure_ascii=False)
 
-    def lower(self, registration: RegistrationView) -> SymbolicNet:
+    def lower(self, registration: RegistrationView, *, _offline_schema_validation=False) -> SymbolicNet:
         # Direct Python construction has exactly the same acceptance boundary.
+        if type(_offline_schema_validation) is not bool:
+            raise TypeError("offline schema validation is a fixed boolean policy")
         declaration = self.from_dict(self.to_dict())
         components = unique(declaration.components, "component")
         for key in declaration.required_schemas:
@@ -229,7 +231,8 @@ class ModuleDeclaration:
         for terminal in (declaration.terminal, *declaration.terminal_alternatives):
             registration.resolve("tool", terminal.key)
             validate_registered_config(registration, "tool", terminal.key,
-                                       terminal.config, declaration.required_schemas)
+                                       terminal.config, declaration.required_schemas,
+                                       _offline_schema_validation=_offline_schema_validation)
         fragments = {}
         endpoint_ports = {}
         for component in components.values():
@@ -240,7 +243,9 @@ class ModuleDeclaration:
             if contracts.get("config_schema", component.config_schema) != component.config_schema:
                 raise DeclarationError("Component config schema differs from HOST contract")
             try:
-                Draft7Validator(schema).validate(component.config)
+                from .petri_contracts import _validate_schema_instance
+                _validate_schema_instance(schema, component.config,
+                    offline_schema_validation=_offline_schema_validation)
             except ValidationError as exc:
                 raise DeclarationError(f"Invalid config for {component.name}: {exc.message}") from exc
             context = BindingContext(component.name, component.ports,
@@ -249,7 +254,10 @@ class ModuleDeclaration:
             fragment = registration.resolve("component", component.key)(component.config, context)
             if not isinstance(fragment, PNFragment):
                 raise DeclarationError("Registered lower must return a typed PNFragment")
-            fragment.validate(context, registration)
+            if _offline_schema_validation:
+                fragment.validate(context, registration, _offline_schema_validation=True)
+            else:
+                fragment.validate(context, registration)
             lowered_operations = {o.name: o for o in fragment.operations}
             if any(o.name not in lowered_operations or not same_operation_contract(
                     lowered_operations[o.name], o) for o in component.operations):

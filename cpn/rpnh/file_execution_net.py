@@ -154,34 +154,40 @@ def stage_execution_terminal_mappings(
         workspace_revision_ref: VersionRef | None,
         business_outcome: str,
         idempotency_key: str,
+        _normal_snapshot=None,
 ) -> tuple[VersionRef, ...]:
     """Require map-ready children and stage their mappings in Success."""
 
     child_stream = execution_child_stream_id(parent)
     tx.expect_current_stream_head(child_stream)
-    states = execution_states_for_parent(core, parent)
+    children = []
+    if _normal_snapshot is None:
+        for state in execution_states_for_parent(core, parent):
+            if not state.checkpoint.map_ready or not state.checkpoint.evidence_refs:
+                raise ResourceIntegrityFault(
+                    "business Success requires every execution instance map-ready")
+            children.append({"execution_instance_ref": _ref_payload(state.instance_ref),
+                "execution_checkpoint_ref": _ref_payload(state.checkpoint.checkpoint_ref),
+                "evidence_refs": [_ref_payload(ref) for ref in state.checkpoint.evidence_refs]})
+    else:
+        children = _normal_snapshot["children"]
     mapping_refs: list[VersionRef] = []
-    for state in states:
-        if (not state.checkpoint.map_ready
-                or not state.checkpoint.evidence_refs):
-            raise ResourceIntegrityFault(
-                "business Success requires every execution instance map-ready")
+    for child in children:
+        instance_ref = _version_from_payload(child["execution_instance_ref"])
         mapping_ref = VersionRef(
             "execution_terminal_mapping/v1",
             _stable_id(
                 "execution_terminal_mapping", idempotency_key,
-                state.instance_ref.version_id),
+                instance_ref.version_id),
             _stable_id(
                 "execution_terminal_mapping_version", idempotency_key,
-                state.instance_ref.version_id),
+                instance_ref.version_id),
         )
         metadata = {
             "execution_terminal_mapping_ref": _ref_payload(mapping_ref),
-            "execution_instance_ref": _ref_payload(state.instance_ref),
-            "execution_checkpoint_ref": _ref_payload(
-                state.checkpoint.checkpoint_ref),
-            "evidence_refs": [
-                _ref_payload(ref) for ref in state.checkpoint.evidence_refs],
+            "execution_instance_ref": child["execution_instance_ref"],
+            "execution_checkpoint_ref": child["execution_checkpoint_ref"],
+            "evidence_refs": child["evidence_refs"],
             "parent_invocation_ref": _ref_payload(parent.invocation_ref),
             "parent_business_firing_ref": _ref_payload(
                 parent.business_firing_ref),
@@ -206,20 +212,20 @@ def stage_execution_terminal_mappings(
             producer_invocation_id=parent.invocation_ref.entity_id,
         )
         targets = [
-            ("instance", state.instance_ref),
-            ("checkpoint", state.checkpoint.checkpoint_ref),
+            ("instance", instance_ref),
+            ("checkpoint", _version_from_payload(child["execution_checkpoint_ref"])),
             ("operation-result", operation_result_ref),
             ("successor-checkpoint", successor_checkpoint_ref),
         ]
         targets[2:2] = [
-            ("evidence", ref) for ref in state.checkpoint.evidence_refs]
+            ("evidence", _version_from_payload(ref)) for ref in child["evidence_refs"]]
         if workspace_revision_ref is not None:
             targets.append(("workspace-revision", workspace_revision_ref))
         for ordinal, (role, target) in enumerate(targets):
             tx.relate(TypedRelation(
                 _stable_id(
                     "relation", idempotency_key, "execution-mapping",
-                    state.instance_ref.version_id, ordinal),
+                    instance_ref.version_id, ordinal),
                 "derived_from", mapping_ref, target,
                 metadata={"execution_mapping_role": role}),
                 producer_invocation_id=parent.invocation_ref.entity_id)
@@ -237,10 +243,9 @@ def stage_execution_terminal_mappings(
             "parent_business_firing_ref": _ref_payload(
                 parent.business_firing_ref),
             "execution_instance_refs": [
-                _ref_payload(state.instance_ref) for state in states],
+                child["execution_instance_ref"] for child in children],
             "execution_checkpoint_refs": [
-                _ref_payload(state.checkpoint.checkpoint_ref)
-                for state in states],
+                child["execution_checkpoint_ref"] for child in children],
             "execution_terminal_mapping_refs": [
                 _ref_payload(ref) for ref in mapping_refs],
         },
@@ -248,6 +253,20 @@ def stage_execution_terminal_mappings(
         producer_invocation_id=parent.invocation_ref.entity_id,
     ))
     return tuple(mapping_refs)
+
+
+def stage_normal_execution_child_closure(core, tx, *, parent,
+        operation_result_ref, successor_checkpoint_ref, workspace_revision_ref,
+        business_outcome, idempotency_key):
+    """Opt-in object proof from the original mapping/event producer and TX."""
+    from .registry.execution_child_closure import capture_child_snapshot, stage_child_seal
+    snapshot = capture_child_snapshot(core, parent)
+    mappings = stage_execution_terminal_mappings(core, tx, parent=parent,
+        operation_result_ref=operation_result_ref, successor_checkpoint_ref=successor_checkpoint_ref,
+        workspace_revision_ref=workspace_revision_ref, business_outcome=business_outcome,
+        idempotency_key=idempotency_key, _normal_snapshot=snapshot)
+    return stage_child_seal(core, tx, snapshot, mappings, result_ref=operation_result_ref,
+        checkpoint_ref=successor_checkpoint_ref, command_id=idempotency_key)
 
 
 __all__ = (

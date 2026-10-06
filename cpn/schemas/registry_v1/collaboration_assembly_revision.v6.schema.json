@@ -1,0 +1,776 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "registry_v1/collaboration_assembly_revision/v6",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "registry_v1/collaboration_assembly_revision/v6"
+    },
+    "owner_task_ref": {
+      "$ref": "#/definitions/task_ref"
+    },
+    "producer_principal_ref": {
+      "$ref": "#/definitions/principal_ref"
+    },
+    "command_id": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[^\\s\\u0000-\\u001f\\u007f](?:[^\\u0000-\\u001f\\u007f]*[^\\s\\u0000-\\u001f\\u007f])?(?![\\s\\S])"
+    },
+    "plan_ref": {
+      "$ref": "#/definitions/resource_ref"
+    },
+    "generated_revision_ref": {
+      "$ref": "#/definitions/net_revision_ref"
+    },
+    "compiled_inventory_ref": {
+      "$ref": "#/definitions/resource_ref"
+    },
+    "lowering_mapping_ref": {
+      "$ref": "#/definitions/resource_ref"
+    },
+    "revision_ref": {
+      "$ref": "#/definitions/v6_ref"
+    },
+    "operation": {
+      "enum": [
+        "merge",
+        "edit"
+      ]
+    },
+    "parent_revision_refs": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 2,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/definitions/history_ref"
+      }
+    },
+    "lineage_root_ref": {
+      "$ref": "#/definitions/assembly_ref"
+    },
+    "analysis_ref": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/definitions/resource_ref"
+        }
+      ]
+    }
+  },
+  "required": [
+    "schema_version",
+    "owner_task_ref",
+    "producer_principal_ref",
+    "command_id",
+    "plan_ref",
+    "generated_revision_ref",
+    "compiled_inventory_ref",
+    "lowering_mapping_ref",
+    "revision_ref",
+    "operation",
+    "parent_revision_refs",
+    "lineage_root_ref",
+    "analysis_ref"
+  ],
+  "definitions": {
+    "task_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "rpnh/collaboration/source_version_ref/v1"
+        },
+        "source_id": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[^\\s\\u0000-\\u001f\\u007f](?:[^\\u0000-\\u001f\\u007f]*[^\\s\\u0000-\\u001f\\u007f])?(?![\\s\\S])"
+        },
+        "ref": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "entity_type": {
+              "const": "task/v1"
+            },
+            "logical_id": {
+              "type": "string",
+              "pattern": "^task:[a-f0-9]{32}(?![\\s\\S])"
+            },
+            "version_id": {
+              "type": "string",
+              "pattern": "^task_version:[a-f0-9]{32}(?![\\s\\S])"
+            }
+          },
+          "required": [
+            "entity_type",
+            "logical_id",
+            "version_id"
+          ]
+        }
+      },
+      "required": [
+        "schema_version",
+        "source_id",
+        "ref"
+      ]
+    },
+    "principal_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "rpnh/collaboration/source_version_ref/v1"
+        },
+        "source_id": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[^\\s\\u0000-\\u001f\\u007f](?:[^\\u0000-\\u001f\\u007f]*[^\\s\\u0000-\\u001f\\u007f])?(?![\\s\\S])"
+        },
+        "ref": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "entity_type": {
+              "const": "principal/v1"
+            },
+            "logical_id": {
+              "type": "string",
+              "pattern": "^principal:[a-f0-9]{32}(?![\\s\\S])"
+            },
+            "version_id": {
+              "type": "string",
+              "pattern": "^principal_version:[a-f0-9]{32}(?![\\s\\S])"
+            }
+          },
+          "required": [
+            "entity_type",
+            "logical_id",
+            "version_id"
+          ]
+        }
+      },
+      "required": [
+        "schema_version",
+        "source_id",
+        "ref"
+      ]
+    },
+    "resource_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "rpnh/collaboration/source_resource_ref/v1"
+        },
+        "source_id": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[^\\s\\u0000-\\u001f\\u007f](?:[^\\u0000-\\u001f\\u007f]*[^\\s\\u0000-\\u001f\\u007f])?(?![\\s\\S])"
+        },
+        "ref": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "resource_id": {
+              "type": "string",
+              "pattern": "^resource:[a-f0-9]{32}(?![\\s\\S])"
+            },
+            "resource_version_id": {
+              "type": "string",
+              "pattern": "^resource_version:[a-f0-9]{32}(?![\\s\\S])"
+            }
+          },
+          "required": [
+            "resource_id",
+            "resource_version_id"
+          ]
+        }
+      },
+      "required": [
+        "schema_version",
+        "source_id",
+        "ref"
+      ]
+    },
+    "net_revision_ref": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "schema_version": {
+              "const": "rpnh/collaboration/source_version_ref/v1"
+            },
+            "source_id": {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "^[^\\s\\u0000-\\u001f\\u007f](?:[^\\u0000-\\u001f\\u007f]*[^\\s\\u0000-\\u001f\\u007f])?(?![\\s\\S])"
+            },
+            "ref": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "entity_type": {
+                  "const": "collaboration_net_revision/v1"
+                },
+                "logical_id": {
+                  "type": "string",
+                  "pattern": "^resource:[a-f0-9]{32}(?![\\s\\S])"
+                },
+                "version_id": {
+                  "type": "string",
+                  "pattern": "^resource_version:[a-f0-9]{32}(?![\\s\\S])"
+                }
+              },
+              "required": [
+                "entity_type",
+                "logical_id",
+                "version_id"
+              ]
+            }
+          },
+          "required": [
+            "schema_version",
+            "source_id",
+            "ref"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "schema_version": {
+              "const": "rpnh/collaboration/source_version_ref/v1"
+            },
+            "source_id": {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "^[^\\s\\u0000-\\u001f\\u007f](?:[^\\u0000-\\u001f\\u007f]*[^\\s\\u0000-\\u001f\\u007f])?(?![\\s\\S])"
+            },
+            "ref": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "entity_type": {
+                  "const": "collaboration_net_revision/v2"
+                },
+                "logical_id": {
+                  "type": "string",
+                  "pattern": "^resource:[a-f0-9]{32}(?![\\s\\S])"
+                },
+                "version_id": {
+                  "type": "string",
+                  "pattern": "^resource_version:[a-f0-9]{32}(?![\\s\\S])"
+                }
+              },
+              "required": [
+                "entity_type",
+                "logical_id",
+                "version_id"
+              ]
+            }
+          },
+          "required": [
+            "schema_version",
+            "source_id",
+            "ref"
+          ]
+        }
+      ]
+    },
+    "assembly_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "rpnh/collaboration/source_version_ref/v1"
+        },
+        "source_id": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[^\\s\\u0000-\\u001f\\u007f](?:[^\\u0000-\\u001f\\u007f]*[^\\s\\u0000-\\u001f\\u007f])?(?![\\s\\S])"
+        },
+        "ref": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "entity_type": {
+              "const": "collaboration_assembly_revision/v2"
+            },
+            "logical_id": {
+              "type": "string",
+              "pattern": "^resource:[a-f0-9]{32}(?![\\s\\S])"
+            },
+            "version_id": {
+              "type": "string",
+              "pattern": "^resource_version:[a-f0-9]{32}(?![\\s\\S])"
+            }
+          },
+          "required": [
+            "entity_type",
+            "logical_id",
+            "version_id"
+          ]
+        }
+      },
+      "required": [
+        "schema_version",
+        "source_id",
+        "ref"
+      ]
+    },
+    "plain_revision_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "rpnh/collaboration/source_version_ref/v1"
+        },
+        "source_id": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[^\\s\\u0000-\\u001f\\u007f](?:[^\\u0000-\\u001f\\u007f]*[^\\s\\u0000-\\u001f\\u007f])?(?![\\s\\S])"
+        },
+        "ref": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "entity_type": {
+              "const": "collaboration_net_revision/v1"
+            },
+            "logical_id": {
+              "type": "string",
+              "pattern": "^resource:[a-f0-9]{32}(?![\\s\\S])"
+            },
+            "version_id": {
+              "type": "string",
+              "pattern": "^resource_version:[a-f0-9]{32}(?![\\s\\S])"
+            }
+          },
+          "required": [
+            "entity_type",
+            "logical_id",
+            "version_id"
+          ]
+        }
+      },
+      "required": [
+        "schema_version",
+        "source_id",
+        "ref"
+      ]
+    },
+    "history_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "rpnh/collaboration/source_version_ref/v1"
+        },
+        "source_id": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[^\\s\\u0000-\\u001f\\u007f](?:[^\\u0000-\\u001f\\u007f]*[^\\s\\u0000-\\u001f\\u007f])?(?![\\s\\S])"
+        },
+        "ref": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "entity_type": {
+              "enum": [
+                "collaboration_assembly_revision/v2",
+                "collaboration_assembly_revision/v6"
+              ]
+            },
+            "logical_id": {
+              "type": "string",
+              "pattern": "^resource:[a-f0-9]{32}(?![\\s\\S])"
+            },
+            "version_id": {
+              "type": "string",
+              "pattern": "^resource_version:[a-f0-9]{32}(?![\\s\\S])"
+            }
+          },
+          "required": [
+            "entity_type",
+            "logical_id",
+            "version_id"
+          ]
+        }
+      },
+      "required": [
+        "schema_version",
+        "source_id",
+        "ref"
+      ]
+    },
+    "v6_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "rpnh/collaboration/source_version_ref/v1"
+        },
+        "source_id": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[^\\s\\u0000-\\u001f\\u007f](?:[^\\u0000-\\u001f\\u007f]*[^\\s\\u0000-\\u001f\\u007f])?(?![\\s\\S])"
+        },
+        "ref": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "entity_type": {
+              "const": "collaboration_assembly_revision/v6"
+            },
+            "logical_id": {
+              "type": "string",
+              "pattern": "^resource:[a-f0-9]{32}(?![\\s\\S])"
+            },
+            "version_id": {
+              "type": "string",
+              "pattern": "^resource_version:[a-f0-9]{32}(?![\\s\\S])"
+            }
+          },
+          "required": [
+            "entity_type",
+            "logical_id",
+            "version_id"
+          ]
+        }
+      },
+      "required": [
+        "schema_version",
+        "source_id",
+        "ref"
+      ]
+    },
+    "author_plan": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string",
+          "pattern": "^[A-Za-z][A-Za-z0-9_-]*(?![\\s\\S])"
+        },
+        "connections": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "source_member_id": {
+                "type": "string",
+                "pattern": "^member:[a-f0-9]{32}(?![\\s\\S])"
+              },
+              "source_exit_element_id": {
+                "type": "string",
+                "pattern": "^element:[a-f0-9]{32}(?![\\s\\S])"
+              },
+              "target_member_id": {
+                "type": "string",
+                "pattern": "^member:[a-f0-9]{32}(?![\\s\\S])"
+              },
+              "target_entry_element_id": {
+                "type": "string",
+                "pattern": "^element:[a-f0-9]{32}(?![\\s\\S])"
+              }
+            },
+            "required": [
+              "source_member_id",
+              "source_exit_element_id",
+              "target_member_id",
+              "target_entry_element_id"
+            ]
+          }
+        },
+        "completion": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "member_id": {
+              "type": "string",
+              "pattern": "^member:[a-f0-9]{32}(?![\\s\\S])"
+            },
+            "terminal_element_id": {
+              "type": "string",
+              "pattern": "^element:[a-f0-9]{32}(?![\\s\\S])"
+            }
+          },
+          "required": [
+            "member_id",
+            "terminal_element_id"
+          ]
+        },
+        "budget_policy": {
+          "const": "shared_exact"
+        },
+        "deployment_intent": {
+          "const": "same_run_candidate"
+        },
+        "members": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "member_id": {
+                "type": "string",
+                "pattern": "^member:[a-f0-9]{32}(?![\\s\\S])"
+              },
+              "display_name": {
+                "type": "string"
+              },
+              "revision_ref": {
+                "$ref": "#/definitions/net_revision_ref"
+              }
+            },
+            "required": [
+              "member_id",
+              "display_name",
+              "revision_ref"
+            ]
+          },
+          "minItems": 1
+        }
+      },
+      "required": [
+        "name",
+        "connections",
+        "completion",
+        "budget_policy",
+        "deployment_intent",
+        "members"
+      ]
+    },
+    "choice": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "subject": {
+          "type": "string",
+          "minLength": 1
+        },
+        "choice": {
+          "enum": [
+            "left",
+            "right",
+            "base",
+            "delete",
+            "exact"
+          ]
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1
+        },
+        "value": {}
+      },
+      "required": [
+        "subject",
+        "choice",
+        "reason"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "choice": {
+                "const": "exact"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "value"
+            ]
+          },
+          "else": {
+            "not": {
+              "required": [
+                "value"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "authority_pin": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "authority_ref": {
+          "type": "object"
+        },
+        "bytes": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      },
+      "required": [
+        "authority_ref",
+        "bytes",
+        "sha256"
+      ]
+    },
+    "material_spec": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "role": {
+          "type": "string"
+        },
+        "key": {
+          "type": "string"
+        },
+        "schema": {
+          "type": "string"
+        },
+        "resource_ref": {
+          "$ref": "#/definitions/resource_ref"
+        },
+        "document": {
+          "type": "object"
+        },
+        "metadata": {
+          "type": "object"
+        },
+        "bytes": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      },
+      "required": [
+        "role",
+        "key",
+        "schema",
+        "resource_ref",
+        "document",
+        "metadata",
+        "bytes",
+        "sha256"
+      ]
+    },
+    "object_spec": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "role": {
+          "type": "string"
+        },
+        "object_type": {
+          "type": "string"
+        },
+        "schema": {
+          "type": "string"
+        },
+        "revision_ref": {
+          "type": "object"
+        },
+        "document": {
+          "type": "object"
+        },
+        "metadata": {
+          "type": "object"
+        },
+        "media_type": {
+          "const": "application/json"
+        },
+        "schema_authority": {
+          "$ref": "#/definitions/authority_pin"
+        }
+      },
+      "required": [
+        "role",
+        "object_type",
+        "schema",
+        "revision_ref",
+        "document",
+        "metadata",
+        "media_type",
+        "schema_authority"
+      ]
+    },
+    "input_proof_pins": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "descriptors": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "ref": {
+                "type": "object"
+              },
+              "bytes": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "sha256": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              },
+              "metadata": {
+                "type": "object"
+              }
+            },
+            "required": [
+              "ref",
+              "bytes",
+              "sha256",
+              "metadata"
+            ]
+          }
+        },
+        "materials": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "resource_ref": {
+                "$ref": "#/definitions/resource_ref"
+              },
+              "bytes": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "sha256": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              },
+              "metadata": {
+                "type": "object"
+              }
+            },
+            "required": [
+              "resource_ref",
+              "bytes",
+              "sha256",
+              "metadata"
+            ]
+          }
+        }
+      },
+      "required": [
+        "descriptors",
+        "materials"
+      ]
+    }
+  }
+}

@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: en
   counterpart: configuration_ZH.md
-  revision: "2026-10-01.1"
+  revision: "2026-10-06.1"
   status: source-reviewed-pre-release
 ---
 
@@ -232,3 +232,32 @@ change requiring compatibility tests, not a supported configuration action.
 
 See [models](models.md) for setup examples, [customization](customization.md)
 for declarations/plugins, and [viewer](viewer.md) for evidence boundaries.
+
+## Codex local-process bridge: declared context and diagnostics
+
+For an explicitly selected registered profile, align Registry profile metadata
+`context_window_tokens` with the bridge argument `--model-context-window`,
+which is forwarded as the CLI configuration key `model_context_window`. A
+CLI-only declaration does not populate Registry context-pressure policy.
+These are locally declared capacities, not officially verified model limits.
+
+Before CLI dispatch the bridge estimates the final rendered request budget as
+`ceil((prompt_UTF8_bytes + endpoint_instructions_UTF8_bytes + output_schema_file_bytes) / 4) + configured_output_reserve`.
+The prompt includes rendered history and tool schemas.
+`configured_output_reserve` comes from the bridge argument
+`--model-max-output-tokens`; it is the canonical output reserve, not an enforced
+CLI output cap. The historical repair condition used context 272000 and output
+reserve 128000; these are condition-specific values, not defaults or fixed
+constants in the general budget formula. The byte estimate is
+not an exact tokenizer count or a provider guarantee. Oversize estimates are
+refused as `context_budget_exceeded`; unknown submission bookkeeping remains
+conservative and never grants permission to replay.
+
+Unsupported event/item diagnostics retain only bounded ASCII protocol type
+identifiers (at most 64 characters) in private stderr audit metadata. No raw
+payload is retained by this diagnostic and no tool allowlist is relaxed.
+Registry failure codes do not retain those types; not every failure path is
+guaranteed a request-budget summary. A later run without the old unsupported
+item does not identify or fix its unknown root cause. Capacity rejection is not
+proof of context overflow. The [public result](../../examples/automationbench/PUBLIC_RESULTS_20261006.md)
+keeps configuration, canonical usage and provider-unknown fields separate.

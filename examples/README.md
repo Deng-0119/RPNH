@@ -32,3 +32,5 @@ rewrite the example's final-success image or reference result.
 Start with the [complete examples guide](../docs/guides/examples.md) and the
 [dashboard guide](../docs/guides/viewer.md). Generated
 profiles, Registry directories and provider transcripts stay outside this tree.
+
+Public record dated 2026-10-06: freeze04 first18 has 5 PASS / 9 FAIL / 4 BLOCKED; separate repair4 has 1 PASS / 3 FAIL. The old 14 scored tasks were not rerun. [Results and limits](automationbench/PUBLIC_RESULTS_20261006.md).

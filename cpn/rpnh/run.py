@@ -318,7 +318,7 @@ class RunOwner:
         return publish_operation_products(self._core, kernel, repository, execution,
             outcome_id=outcome_id, products=products, idempotency_key=command_id)
 
-    def succeed(self, outputs, *, command_id):
+    def succeed(self, outputs, *, command_id, workset_action=None):
         """Settle one generic registered operation; module policy stays outside H."""
         from .registry.firing_success import succeed_module_operation
         from .workspace_settlement import prepare_firing_workspace_plans
@@ -328,7 +328,7 @@ class RunOwner:
         result = succeed_module_operation(self._core, kernel, repository, outputs,
             idempotency_key=command_id, registration=self.registration,
             candidate_publisher=getattr(self, "revision_candidate_publisher", None),
-            workspace_plans=workspace_plans)
+            workspace_plans=workspace_plans, workset_action=workset_action)
         self.control.edits.advance()
         return result
 

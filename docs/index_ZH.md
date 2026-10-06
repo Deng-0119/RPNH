@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: index.md
-  revision: "2026-09-30.1"
+  revision: "2026-10-06.1"
   status: source-reviewed-v0.1.0rc1
   basis: "core; adapter differences explicitly labelled"
 ---
@@ -36,6 +36,7 @@ metadata:
 | 使用固定版本 OpenCode 展示前端 | [OpenCode 前端](guides/opencode_ZH.md) |
 | 使用固定版本 DSH 宿主 | [DSH 宿主适配器](guides/dsh_ZH.md) |
 | 在 PetriNet 看板中查看 run | [PetriNet 看板](guides/viewer_ZH.md) |
+| 查询并查看固定来源范围 | [SourceSet 查询](guides/source-queries_ZH.md) |
 | 理解执行闭环 | [架构](architecture/design_ZH.md) |
 | 阅读完整 harness 架构概览 | [Harness 架构](ARCHITECTURE_ZH.md) |
 | 比较 RPNH 权威与 Codex 展示 | [RPNH 与 Codex](RPNH_VS_CODEX_ZH.md) |
@@ -43,6 +44,7 @@ metadata:
 | 核对 viewer 证据边界 | [展示观察](DISPLAY_OBSERVATION_ZH.md) |
 | 审计源码整合与排除项 | [源码来源](PROVENANCE_ZH.md) |
 | 查看已解决观察与重新开启条件 | [工程后续记录](DEFERRED_ENGINEERING_WORK_ZH.md) |
+| 编写适配区域的普通后继与独立复制 | [开放区域普通后继](reference/open-region-descendants_ZH.md) |
 | 查询声明与编译契约 | [声明参考](reference/declarations_ZH.md) |
 | 理解 runtime/owner/原子记录 | [运行与 Registry](reference/runtime-registry_ZH.md) |
 | 定位会话/AgentLoop/模型边界 | [Agent 与模型](reference/agents_ZH.md) |
@@ -51,6 +53,8 @@ metadata:
 | 查看发布变更与项目规则 | [变更记录](../CHANGELOG_ZH.md)、[参与贡献](../CONTRIBUTING_ZH.md)、[安全报告](../SECURITY_ZH.md) |
 | 查看历史全量离线基线与当前定向增量 | [发布验收](guides/release-validation_ZH.md) |
 | 查看带日期的 focused／真实案例证据 | [案例验证](guides/examples-validation_ZH.md) |
+| 显式引入所选普通作者变化 | [普通作者选择性移植](reference/plain-transplant_ZH.md) |
+| 编写选择性移植的普通后继与独立复制 | [移植普通后继](reference/plain-transplant-descendants_ZH.md) |
 
 ## 如何阅读参考
 明确区分声明契约、高级可信宿主接口与私有模块。各页源码路径是仓库内定位信息，不是独立安装说明。可选 API 按能力标注，必须与所选源码/产物核对；自动生成页面不授予 SDK 稳定性承诺。
@@ -62,3 +66,24 @@ metadata:
 应用重试策略的分离。离线检查只能证明确定性行为和打包完整性，不能证明用户自有 provider
 route 可用。原始真实 API 证据保存在源码树之外并需要单独授权；不含秘密的脱敏验收摘要可以
 随对应案例发布。
+
+- [本地 Workset 与接纳](reference/worksets_ZH.md)
+
+## 当前有限验收与公开结果
+
+[有限集成与浏览器阻断](guides/release-validation_ZH.md) · [AutomationBench first18 + repair4](../examples/automationbench/PUBLIC_RESULTS_20261006_ZH.md)
+
+## 已集成的显式合同
+
+| 主题 | 合同 |
+|---|---|
+| Graph作者接口 | [graph-authoring](reference/graph-authoring_ZH.md) |
+| Graph source merge / P6 | [graph-source-merge](reference/graph-source-merge_ZH.md) |
+| Assembly完整历史merge / P4 | [assembly-full-history-merge](reference/assembly-full-history-merge_ZH.md) |
+| 显式split/fusion | [author-identity-transform-contract](reference/author-identity-transform-contract_ZH.md) |
+| Plain merge分析 | [plain-merge-analysis](reference/plain-merge-analysis_ZH.md) |
+| Plain merge结果 | [plain-merge-result](reference/plain-merge-result_ZH.md) |
+| Merge组合 | [plain-merge-composition](reference/plain-merge-composition_ZH.md) |
+| 嵌套Assembly merge | [plain-merge-nested-assembly](reference/plain-merge-nested-assembly_ZH.md) |
+| 开放区域作者接口 | [open-region-authoring](reference/open-region-authoring_ZH.md) |
+| Normal-child root闭合 | [normal-child-root-contract](reference/normal-child-root-contract_ZH.md) |

@@ -909,7 +909,14 @@ def validate_firing_event(context, pending):
             validate_provider_candidate_output(invocation, output_ref)
         from ...declared_effect_validation import validate_declared_effect_success
         try:
+            from ...normal_root_token_allocation import normal_root_allocation_scheme
+            ordinary_token_ref_scheme = normal_root_allocation_scheme(
+                objects=objects, task_id=task_id, transaction_id=transaction_id,
+                firing=firing, invocation=invocation, result=result, delta=delta,
+                completion=completion, checkpoint=checkpoint)
             if operation_revisions:
+                if ordinary_token_ref_scheme is not None:
+                    raise RegistryConflict('normal root token allocation does not support operation revision')
                 from ...module_revision import validate_operation_revision_success
                 validate_operation_revision_success(event_store, event_store.catalog, db,
                     pending=operation_revisions[0], firing=firing, invocation=invocation,
@@ -919,7 +926,8 @@ def validate_firing_event(context, pending):
             else:
                 validate_declared_effect_success(event_store, db, firing=firing, invocation=invocation,
                     result=result, delta=delta, predecessor=predecessor, checkpoint=checkpoint,
-                    exact=exact_ref_exists, metadata=version_metadata)
+                    exact=exact_ref_exists, metadata=version_metadata,
+                    ordinary_token_ref_scheme=ordinary_token_ref_scheme)
         except RegistryConflict:
             raise
         except Exception as exc:
@@ -1681,6 +1689,23 @@ def validate_authoritative_references(
         transaction_id=transaction_id, idempotency_key=idempotency_key,
         transaction_writer_epoch=transaction_writer_epoch)
     context.validate_reference_visibility()
+    from ...execution_child_closure import validate_child_seal_publication
+    validate_child_seal_publication(context)
+    # Skip only a known-empty native batch; custom sequences still reach validation.
+    if not ((type(objects) is tuple or type(objects) is list) and len(objects) == 0):
+        from ..workset_publication import validate_workset_publication
+        validate_workset_publication(context)
+    from ..source_identity import uses_source_binding_namespace, validate_source_binding
+    if uses_source_binding_namespace(objects, events, task_id):
+        validate_source_binding(context)
+    if objects or any(getattr(event, "stream_id", "").startswith("object:")
+                      or event.event_type == "object_version_published/v1" for event in events):
+        from ..branch_publication import validate_branch_publication
+        validate_branch_publication(context)
+        from ..source_sets import validate_source_set_publication
+        validate_source_set_publication(context)
+        from ..source_observations import validate_observation_publication
+        validate_observation_publication(context)
     provider.validate_provider_provenance(context)
     provider.validate_attempt_response_boundary(context)
     operation.validate_operation_contract_objects(context)

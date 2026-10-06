@@ -761,3 +761,319 @@ def provisional_firing_events(
             (str(firing_version_id),),
         ).fetchall()
     return tuple(store._row_to_envelope(row) for row in rows)
+
+
+# Display-only activity observations. These values never produce FiringView or
+# become inputs to execution, canonical marking or lifecycle reconstruction.
+ACTIVITY_TYPES = ('firing_admitted/v1', 'transition_firing_started/v1',
+                  'operation_execution_started/v1')
+ACTIVITY_MAX_BYTES = 8 * 1024 * 1024
+ACTIVITY_DESCRIPTOR_BYTES = 256 * 1024
+ACTIVITY_TX_EVENTS = 2048
+ACTIVITY_DEADLINE_SECONDS = 2.0
+
+
+class ActivityStaleError(RuntimeError):
+    pass
+
+
+class ActivityCursorError(ValueError):
+    pass
+
+
+def activity_reference(value, kind):
+    stems = {'native_run_identity': ('run', 'run_version'),
+             'node_declaration': ('node', 'node_declaration_version')}
+    stem = kind.split('/')[0]
+    expected = stems.get(stem, (stem, stem + '_version'))
+    if (type(value) is not dict or set(value) != {'entity_type', 'logical_id', 'version_id'}
+            or value['entity_type'] != kind or any(type(v) is not str for v in value.values())
+            or (TypedId.parse(value['logical_id']).kind, TypedId.parse(value['version_id']).kind) != expected):
+        raise ValueError('activity requires exact typed references')
+    return dict(value)
+
+
+def _activity_head(db, reserve=None):
+    # Control scalars are bounded too; an untrusted TEXT epoch cannot allocate
+    # an arbitrary string before conversion to an integer.
+    size = db.execute("SELECT LENGTH(CAST(value AS BLOB)) FROM registry_meta WHERE key='writer_epoch'").fetchone()
+    if size is None or type(size[0]) is not int or not 1 <= size[0] <= 20:
+        raise ValueError('activity writer epoch has invalid bounded storage')
+    if reserve is not None:
+        reserve(80 + size[0])
+    head = int(db.execute('SELECT COALESCE(MAX(ordinal),0) FROM events').fetchone()[0])
+    epoch = db.execute("SELECT value FROM registry_meta WHERE key='writer_epoch'").fetchone()[0]
+    if type(epoch) is not str or not epoch.isascii() or not epoch.isdecimal():
+        raise ValueError('activity writer epoch is not an unsigned integer')
+    return head, int(epoch)
+
+
+def _provisional_activity_root(root, invocation_version_id):
+    """The existing provisional diagnostic root predicate, without member scan."""
+    return (root is not None and root['state'] == 'PROVISIONAL'
+            and str(root['invocation_version_id']) == invocation_version_id)
+
+
+
+def _activity_descriptor_bytes(object_store, prepared):
+    """Read only a validated exact descriptor, with a hard content read bound."""
+    if (prepared.object_type not in ('transition_firing/v1', 'firing_admission/v1',
+            'invocation/v1', 'operation_execution_lease/v1')
+            or prepared.media_type != 'application/json'
+            or type(prepared.size) is not int or not 0 <= prepared.size <= ACTIVITY_DESCRIPTOR_BYTES):
+        raise ValueError('activity body is outside the descriptor allowlist or budget')
+    object_store.validate_envelope(prepared)
+    if prepared.storage_locator != object_store.locator_for_version(prepared.version_id):
+        raise ValueError('activity descriptor locator is not exact')
+    path = object_store.path_for_version(prepared.version_id)
+    if path.stat().st_size != prepared.size:
+        raise ValueError('activity descriptor file size differs before reading')
+    with path.open('rb') as stream:
+        body = stream.read(prepared.size + 1)
+    if len(body) != prepared.size:
+        raise ValueError('activity descriptor size changed during bounded read')
+    return body
+
+
+def firing_activity_page(store, *, catalog, object_store, scope, bindings,
+                         expected_capture, limit, after=None):
+    """One bounded metadata observation in BEGIN, followed by a fresh H/E guard.
+
+    ``scope`` and ``bindings`` come from the selected checkpoint's verified
+    closure. The caller still checks its source binding before and after this
+    read. No business resource body, completion, result or settlement is read.
+    """
+    import time
+    from .queries import firing_activity_event_rows, _activity_rows, ACTIVITY_EVENT_COLUMNS, ACTIVITY_OBJECT_COLUMNS
+    from ..event_store import fact_event_envelope
+    from ..models import PreparedObject
+    if not store.read_only or type(limit) is not int or not 1 <= limit <= 100:
+        raise ValueError('activity requires a read-only store and bounded page')
+    head, epoch = expected_capture
+    deadline = time.monotonic() + ACTIVITY_DEADLINE_SECONDS
+    def check_time():
+        if time.monotonic() >= deadline:
+            raise RuntimeError('activity read deadline exceeded')
+    task = activity_reference(scope['task_ref'], 'task/v1')
+    activity_reference(scope['run_ref'], 'native_run_identity/v1')
+    net = activity_reference(scope['net_ref'], 'net_instance/v1')
+    members = {b['transition_id']: b for b in bindings}
+    if not members or sorted(members) != scope['transition_ids']:
+        raise ValueError('activity subject differs from selected bindings')
+    used_bytes, transactions, descriptors = 0, {}, {}
+    def reserve(byte_count):
+        nonlocal used_bytes
+        if type(byte_count) is not int or byte_count < 0 or byte_count > ACTIVITY_MAX_BYTES - used_bytes:
+            raise RuntimeError('activity verification byte budget exceeded')
+        used_bytes += byte_count
+        check_time()
+    with store.connect() as db:
+        db.set_progress_handler(lambda: int(time.monotonic() >= deadline), 1000)
+        db.execute('BEGIN')
+        try:
+            if _activity_head(db, reserve) != (head, epoch):
+                raise ActivityStaleError('activity observation changed')
+            def read_rows(label, columns, source_sql, parameters=(), max_rows=1, max_cell_bytes=None):
+                return _activity_rows(db, columns=columns, source_sql=source_sql, parameters=parameters,
+                    reserve=reserve, max_rows=max_rows, label=label, max_cell_bytes=max_cell_bytes)
+            def read_one(label, columns, source_sql, parameters=(), max_cell_bytes=None):
+                values = read_rows(label, columns, source_sql, parameters, max_cell_bytes=max_cell_bytes)
+                return values[0] if values else None
+            def transaction(key):
+                if key in transactions:
+                    return transactions[key]
+                tx = read_one('transaction', ('transaction_id','task_id','status','writer_epoch'),
+                    'transactions WHERE transaction_id=?', (key,))
+                out = read_one('outbox', ('task_id','writer_epoch','event_ids_json'),
+                    'outbox WHERE transaction_id=?', (key,))
+                rows = read_rows('transaction-events', ACTIVITY_EVENT_COLUMNS,
+                    'events WHERE transaction_id=? ORDER BY ordinal', (key,), max_rows=ACTIVITY_TX_EVENTS)
+                events = [store._row_to_envelope(r) for r in rows]
+                terminals = [e for e in events if e.event_type in ('transaction_committed/v1', 'transaction_aborted/v1')]
+                if len(terminals) != 1 or terminals[0].event_type != 'transaction_committed/v1':
+                    raise ValueError('activity transaction has no unique commit')
+                terminal = terminals[0]
+                if (events[-1] != terminal or terminal.ordinal > head or tx is None or out is None
+                        or tx['status'] != 'committed' or tx['task_id'] != task['logical_id']
+                        or out['task_id'] != tx['task_id'] or str(terminal.task_id) != tx['task_id']
+                        or int(tx['writer_epoch']) != int(out['writer_epoch'])
+                        or int(tx['writer_epoch']) != terminal.writer_fencing_epoch
+                        or json.loads(out['event_ids_json']) != [str(e.event_id) for e in events]):
+                    raise ValueError('activity transaction terminal/outbox differs')
+                for e in events:
+                    if (str(e.transaction_id) != key or e.task_id != terminal.task_id
+                            or e.writer_fencing_epoch != terminal.writer_fencing_epoch
+                            or e.ordinal > terminal.ordinal):
+                        raise ValueError('activity transaction envelope differs')
+                    catalog.validate_fact_envelope(fact_event_envelope(e))
+                    catalog.validate_event_payload(e.event_type, e.payload, criticality=e.criticality)
+                transactions[key] = terminal, {str(e.event_id): e for e in events}
+                return transactions[key]
+            # The evidence head is a complete commit, not an arbitrary ordinal.
+            last = read_one('head-transaction', ('transaction_id',), 'events WHERE ordinal=?', (head,))
+            if last is None or transaction(last['transaction_id'])[0].ordinal != head:
+                raise ValueError('activity head is not a complete commit boundary')
+            def member(kind, identity, firing_id, txid):
+                rows = read_rows('member', ('firing_version_id','transaction_id'),
+                    'firing_temporary_members WHERE member_kind=? AND member_identity=?', (kind, identity), max_rows=2)
+                if len(rows) != 1 or rows[0]['firing_version_id'] != firing_id or rows[0]['transaction_id'] != txid:
+                    raise ValueError('activity member identity is ambiguous or inconsistent')
+            def descriptor(ref, kind, root):
+                ref = activity_reference(ref, kind)
+                key = canonical_json(ref)
+                if key in descriptors:
+                    return descriptors[key]
+                row = read_one('descriptor', ACTIVITY_OBJECT_COLUMNS, 'objects WHERE version_id=?',
+                    (ref['version_id'],), max_cell_bytes=ACTIVITY_DESCRIPTOR_BYTES)
+                if (row is None or row['object_type'] != kind or row['logical_id'] != ref['logical_id']
+                        or not 0 <= row['size'] <= ACTIVITY_DESCRIPTOR_BYTES
+                        or len(row['metadata_json'].encode()) > ACTIVITY_DESCRIPTOR_BYTES):
+                    raise ValueError('activity descriptor identity or budget differs')
+                meta = json.loads(row['metadata_json'])
+                terminal, events = transaction(row['transaction_id'])
+                pub = events.get(row['published_event_id'])
+                if (pub is None or pub.event_type != 'object_version_published/v1'
+                        or canonical_json(pub.payload.get('metadata')) != canonical_json(meta)
+                        or (str(pub.producer_invocation_id) if pub.producer_invocation_id else None) != row['producer_invocation_id']
+                        or any(pub.payload.get(k) != row[k] for k in ('object_type', 'logical_id', 'version_id', 'size', 'media_type', 'schema_ref', 'storage_locator'))):
+                    raise ValueError('activity descriptor publication differs')
+                member('object', ref['version_id'], root['firing_version_id'], row['transaction_id'])
+                member('transaction', row['transaction_id'], root['firing_version_id'], row['transaction_id'])
+                catalog.validate_instance(kind, category='object', instance=meta)
+                if meta.get(kind.split('/')[0] + '_ref') != ref:
+                    raise ValueError('activity descriptor self identity differs')
+                prepared = PreparedObject(object_type=kind, logical_id=TypedId.parse(ref['logical_id']),
+                    version_id=TypedId.parse(ref['version_id']), size=row['size'], media_type=row['media_type'],
+                    schema_ref=row['schema_ref'], storage_locator=row['storage_locator'], metadata=meta,
+                    producer_invocation_id=TypedId.parse(row['producer_invocation_id']) if row['producer_invocation_id'] else None)
+                object_store.validate_envelope(prepared)
+                reserve(prepared.size + 1)
+                body = _activity_descriptor_bytes(object_store, prepared)
+                if len(body) != row['size'] or canonical_json(json.loads(body)) != canonical_json(meta):
+                    raise ValueError('activity registered descriptor differs')
+                if root['state'] == 'PUBLISHED':
+                    predicate = store._canonical_member_sql(member_kind='object', member_identity_sql='o.version_id', published_event_sql='e.ordinal')
+                    ok = db.execute('SELECT 1 FROM objects o JOIN events e ON e.event_id=o.published_event_id WHERE o.version_id=? AND ' + predicate,
+                                    (ref['version_id'], head, head, head, head)).fetchone()
+                    if ok is None:
+                        raise ValueError('published activity descriptor is not canonical')
+                descriptors[key] = meta
+                return meta
+            args = dict(task_id=task['logical_id'], net_ref=net, transition_ids=scope['transition_ids'], event_types=ACTIVITY_TYPES, head=head, reserve=reserve)
+            # A cursor is only a position; independently prove its event belongs
+            # to this query in the same snapshot before reading its successor.
+            if after is not None:
+                prior = firing_activity_event_rows(db, **args, after=(after[0], ''), limit=1)
+                if len(prior) != 1 or (prior[0]['ordinal'], prior[0]['event_id']) != tuple(after):
+                    raise ActivityCursorError('activity cursor is outside the exact query')
+            rows = firing_activity_event_rows(db, **args, after=after or (0, ''), limit=limit + 1)
+            has_more = len(rows) > limit
+            records, firings, verified = [], {}, {}
+            for row in rows[:limit]:
+                e = store._row_to_envelope(row)
+                p = e.payload
+                ref = activity_reference(p['transition_firing_ref'], 'transition_firing/v1')
+                fid = ref['version_id']
+                if row['activity_firing_version_id'] != fid:
+                    raise ValueError('activity event and firing member differ')
+                if fid not in verified:
+                    root = read_one('publication', ('firing_version_id','firing_logical_id',
+                        'invocation_version_id','invocation_logical_id','net_version_id',
+                        'operation_binding_version_id','admission_checkpoint_version_id','state',
+                        'opened_transaction_id','published_transaction_id'),
+                        'firing_publications WHERE firing_version_id=?', (fid,))
+                    if root is None or root['state'] not in ('PROVISIONAL', 'PUBLISHED'):
+                        raise ValueError('activity publication root unavailable')
+                    invocation_ref = activity_reference(p['invocation_ref'], 'invocation/v1')
+                    if (root['firing_logical_id'] != ref['logical_id']
+                            or root['invocation_logical_id'] != invocation_ref['logical_id']
+                            or root['invocation_version_id'] != invocation_ref['version_id']):
+                        raise ValueError('activity publication identity differs')
+                    transaction(root['opened_transaction_id'])
+                    member('transaction', root['opened_transaction_id'], fid, root['opened_transaction_id'])
+                    if root['state'] == 'PROVISIONAL':
+                        if not _provisional_activity_root(root, invocation_ref['version_id']) or root['published_transaction_id'] is not None:
+                            raise ValueError('activity diagnostic root differs')
+                        visible = None
+                    else:
+                        if not root['published_transaction_id']:
+                            raise ValueError('activity publication has no commit')
+                        visible = transaction(root['published_transaction_id'])[0].ordinal
+                        member('transaction', root['published_transaction_id'], fid, root['published_transaction_id'])
+                    f = descriptor(ref, 'transition_firing/v1', root)
+                    a = descriptor(f['firing_admission_ref'], 'firing_admission/v1', root)
+                    i = descriptor(invocation_ref, 'invocation/v1', root)
+                    lease = descriptor(i['operation_execution_lease_ref'], 'operation_execution_lease/v1', root)
+                    binding = members.get(f['transition_id'])
+                    if (binding is None or f['task_ref'] != task or i['task_ref'] != task
+                            or f['net_instance_ref'] != net or i['net_instance_ref'] != net
+                            or f['node_ref'] != binding['node_ref'] or i['own_node_ref'] != binding['node_ref']
+                            or f['operation_binding_ref'] != binding['operation_binding_ref'] or i['operation_binding_ref'] != binding['operation_binding_ref']
+                            or f['principal_ref'] != binding['principal_ref'] or i['principal_ref'] != binding['principal_ref']
+                            or i['authority_decision_ref'] != binding['authority_decision_ref']
+                            or i['team_design_root_ref'] != scope['team_design_root_ref']
+                            or i['task_branch_ref'] != scope['task_branch_ref'] or f['task_branch_ref'] != scope['task_branch_ref']
+                            or f['task_round_ref'] != scope['task_round_ref'] or i['task_round_ref'] != scope['task_round_ref']
+                            or i['own_transition_firing_ref'] != ref or a['transition_firing_ref'] != ref
+                            or a['invocation_ref'] != invocation_ref or lease['invocation_ref'] != invocation_ref
+                            or a['operation_execution_lease_ref'] != i['operation_execution_lease_ref']
+                            or f['admission_marking_checkpoint_ref'] != a['admission_marking_checkpoint_ref']
+                            or i['admission_marking_checkpoint_ref'] != a['admission_marking_checkpoint_ref']
+                            or root['admission_checkpoint_version_id'] != a['admission_marking_checkpoint_ref']['version_id']
+                            or root['net_version_id'] != net['version_id']
+                            or root['operation_binding_version_id'] != binding['operation_binding_ref']['version_id']
+                            or any(f[k] != a[k] for k in ('logical_tau', 'claim_marking_delta_ref'))):
+                        raise ValueError('activity firing/admission/invocation/binding differs')
+                    activity_reference(f['node_ref'], 'node_declaration/v1')
+                    activity_reference(f['operation_binding_ref'], 'operation_binding/v1')
+                    activity_reference(f['admission_marking_checkpoint_ref'], 'marking_checkpoint/v1')
+                    verified[fid] = root, f, a, i, binding
+                    firings[fid] = {'firing_ref': ref, 'node_ref': f['node_ref'], 'transition_id': f['transition_id'],
+                        'attempt_index': f['attempt_index'], 'admission_checkpoint_ref': f['admission_marking_checkpoint_ref'],
+                        'invocation_ref': invocation_ref, 'publication_class_at_evidence': root['state'],
+                        'publication_visible_position': visible,
+                        'business_outcome': 'not_provided', 'completion': 'not_provided', 'result': 'not_provided',
+                        'successor_checkpoint': 'not_provided', 'delta': 'not_provided'}
+                root, f, a, i, binding = verified[fid]
+                if (ref != f['transition_firing_ref']
+                        or p['invocation_ref'] != i['invocation_ref'] or p['operation_execution_lease_ref'] != i['operation_execution_lease_ref']
+                        or str(e.task_id) != task['logical_id'] or str(e.net_instance_id) != net['logical_id']
+                        or str(e.task_round_id) != f['task_round_ref']['logical_id']
+                        or str(e.producer_invocation_id) != i['invocation_ref']['logical_id']
+                        or e.branch_id != scope['branch_id']):
+                    raise ValueError('activity event exact identity differs')
+                if e.event_type in ACTIVITY_TYPES[:2]:
+                    if (str(e.transaction_id) != root['opened_transaction_id'] or p['firing_admission_ref'] != f['firing_admission_ref']
+                            or any(p[k] != a[k] for k in ('logical_tau', 'claim_marking_delta_ref'))):
+                        raise ValueError('activity admission/start witness differs')
+                elif (p['operation_binding_ref'] != binding['operation_binding_ref']
+                      or p['executable_transition_binding_ref'] != binding['executable_binding_ref']
+                      or any(p[k] != binding[k] for k in ('operation_spec_ref', 'principal_ref', 'authority_decision_ref'))
+                      or p['agent_ref'] != f['agent_ref'] or p['agent_ref'] != i['agent_ref']):
+                    raise ValueError('activity operation-start witness differs')
+                member('event', str(e.event_id), fid, str(e.transaction_id))
+                member('transaction', str(e.transaction_id), fid, str(e.transaction_id))
+                commit = transaction(str(e.transaction_id))[0].ordinal
+                if not e.ordinal <= commit <= head:
+                    raise ValueError('activity record/commit positions differ')
+                if root['state'] == 'PUBLISHED':
+                    predicate = store._canonical_member_sql(member_kind='event', member_identity_sql='e.event_id', published_event_sql='e.ordinal')
+                    if db.execute('SELECT 1 FROM events e WHERE e.event_id=? AND ' + predicate,
+                                  (str(e.event_id), head, head, head, head)).fetchone() is None:
+                        raise ValueError('published activity event is not canonical')
+                records.append({'firing_ref': ref, 'event_id': str(e.event_id), 'event_type': e.event_type,
+                    'transaction_id': str(e.transaction_id), 'recorded_ordinal': e.ordinal,
+                    'recorded_at': e.recorded_at, 'transaction_commit_ordinal': commit})
+            check_time()
+        finally:
+            db.execute('ROLLBACK')
+            db.set_progress_handler(None, 0)
+    with store.connect() as fresh:
+        fresh.execute('BEGIN')
+        try:
+            if _activity_head(fresh, reserve) != (head, epoch):
+                raise ActivityStaleError('activity observation changed')
+        finally:
+            fresh.execute('ROLLBACK')
+    return {'firings': list(firings.values()), 'records': records, 'has_more': has_more,
+            'last_key': [records[-1]['recorded_ordinal'], records[-1]['event_id']] if records else after}

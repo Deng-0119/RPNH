@@ -649,6 +649,31 @@ def _node_output_handle(
             else _output_handle(node_id, port_id))
 
 
+
+def _graph_io(graph: AgentWorkflowGraph):
+    """Pure source relationships shared by builder, lowerer and provenance."""
+    producer_for = {(arc.target.node_id, arc.target.port_id): arc for arc in graph.arcs}
+    outgoing = {(node.node_id, port.port_id): tuple(arc for arc in graph.arcs
+        if (arc.source.node_id, arc.source.port_id) == (node.node_id, port.port_id))
+        for node in graph.nodes for port in node.output_ports}
+    return producer_for, outgoing
+
+
+def _graph_activation_ports(graph, node, producer_for):
+    ingress = (graph.ingress.node_id, graph.ingress.port_id)
+    initial = tuple(port for port in node.input_ports
+        if (node.node_id, port.port_id) == ingress
+        or producer_for[node.node_id, port.port_id].kind == "dependency")
+    feedback = tuple(port for port in node.input_ports
+        if (node.node_id, port.port_id) != ingress
+        and producer_for[node.node_id, port.port_id].kind == "feedback")
+    return initial, feedback
+
+
+def _graph_output_route(consumers):
+    return "rework" if {edge.kind for edge in consumers} == {"feedback"} else "complete"
+
+
 def lower_agent_workflow_graph(
         config: Mapping[str, Any], context: BindingContext,
 ) -> PNFragment:
@@ -664,14 +689,7 @@ def lower_agent_workflow_graph(
         raise DeclarationError(
             "workflow graph operations must exactly match node activations")
 
-    producer_for = {
-        (arc.target.node_id, arc.target.port_id): arc
-        for arc in graph.arcs
-    }
-    outgoing: dict[tuple[str, str], list[AgentWorkflowArc]] = {}
-    for arc in graph.arcs:
-        outgoing.setdefault(
-            (arc.source.node_id, arc.source.port_id), []).append(arc)
+    producer_for, outgoing = _graph_io(graph)
 
     ingress_key = (graph.ingress.node_id, graph.ingress.port_id)
     egress_key = (graph.egress.node_id, graph.egress.port_id)
@@ -726,15 +744,7 @@ def lower_agent_workflow_graph(
                     PortBinding(handle, _data_place(*key)))
 
     for node in graph.nodes:
-        initial_ports = tuple(
-            port for port in node.input_ports
-            if (node.node_id, port.port_id) == ingress_key
-            or producer_for[(node.node_id, port.port_id)].kind
-            == "dependency")
-        feedback_ports = tuple(
-            port for port in node.input_ports
-            if (node.node_id, port.port_id) != ingress_key
-            and producer_for[(node.node_id, port.port_id)].kind == "feedback")
+        initial_ports, feedback_ports = _graph_activation_ports(graph, node, producer_for)
         variants = [(node.node_id, initial_ports, "dependency")]
         if feedback_ports:
             variants.append((
@@ -825,8 +835,7 @@ def lower_agent_workflow_graph(
                 key = (node.node_id, port.port_id)
                 place = _data_place(*key)
                 consumers = outgoing.get(key, [])
-                kinds = {edge.kind for edge in consumers}
-                route = "rework" if kinds == {"feedback"} else "complete"
+                route = _graph_output_route(consumers)
                 weight = max(1, len(consumers))
                 arcs.append(ArcDeclaration(
                     place, operation_name, "output", weight=weight,
@@ -841,10 +850,7 @@ def lower_agent_workflow_graph(
                     and node.node_id == graph.ingress.node_id
                     and arc_kind == "dependency"):
                 for outcome in {
-                        "rework" if {
-                            edge.kind for edge in outgoing.get(
-                                (node.node_id, port.port_id), ())
-                        } == {"feedback"} else "complete"
+                        _graph_output_route(outgoing.get((node.node_id, port.port_id), ()))
                         for port in node.output_ports}:
                     arcs.append(ArcDeclaration(
                         _rework_permit_place(), operation_name, "output",
@@ -915,28 +921,11 @@ def build_agent_workflow_module(
                          graph.max_rework_cycles * max_attempts_per_node),
     } if graph.max_rework_cycles else None)
     buckets = [*node_buckets, *((rework_bucket,) if rework_bucket else ())]
-    producer_for = {
-        (arc.target.node_id, arc.target.port_id): arc
-        for arc in graph.arcs}
-    outgoing: dict[tuple[str, str], tuple[AgentWorkflowArc, ...]] = {}
-    for node in graph.nodes:
-        for port in node.output_ports:
-            key = (node.node_id, port.port_id)
-            outgoing[key] = tuple(
-                arc for arc in graph.arcs
-                if (arc.source.node_id, arc.source.port_id) == key)
+    producer_for, outgoing = _graph_io(graph)
     ingress_key = (graph.ingress.node_id, graph.ingress.port_id)
     operations = []
     for node, bucket in zip(graph.nodes, node_buckets, strict=True):
-        initial_ports = tuple(
-            port for port in node.input_ports
-            if (node.node_id, port.port_id) == ingress_key
-            or producer_for[(node.node_id, port.port_id)].kind
-            == "dependency")
-        feedback_ports = tuple(
-            port for port in node.input_ports
-            if (node.node_id, port.port_id) != ingress_key
-            and producer_for[(node.node_id, port.port_id)].kind == "feedback")
+        initial_ports, feedback_ports = _graph_activation_ports(graph, node, producer_for)
         semantic_outputs = [
             _node_output_handle(graph, node.node_id, port.port_id)
             for port in node.output_ports]
@@ -944,9 +933,8 @@ def build_agent_workflow_module(
         rework_products = []
         for port, handle in zip(
                 node.output_ports, semantic_outputs, strict=True):
-            kinds = {arc.kind for arc in outgoing[
-                node.node_id, port.port_id]}
-            (rework_products if kinds == {"feedback"}
+            route = _graph_output_route(outgoing[node.node_id, port.port_id])
+            (rework_products if route == "rework"
              else complete_products).append({"port": handle})
         semantic_outcomes = [{
             "name": "complete", "products": complete_products,

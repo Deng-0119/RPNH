@@ -163,7 +163,7 @@ def _historical_heads(
 def _canonical_heads(
         self, ordinals: Iterable[int | None],
 ) -> Mapping[int, RegistryHead]:
-    """Build many canonical heads from one permanently-visible history pass."""
+    """Build each head from facts canonically visible at that exact cut."""
 
     requested_values = tuple(dict.fromkeys(ordinals))
     if any(value is not None and type(value) is not int
@@ -182,12 +182,23 @@ def _canonical_heads(
         raise StaleAuthorityHead(
             "canonical Registry head is outside published history")
     writer_epoch = store.writer_epoch
-    pending = set(requested)
     heads: dict[int, RegistryHead] = {}
-    stream_heads: dict[str, int] = {}
-    task_control_sequence = 0
-
-    def capture(ordinal: int) -> None:
+    for ordinal in requested:
+        # Promotion publishes earlier events at the Success commit, not at their
+        # original event ordinals. A prefix of today's canonical events would
+        # therefore rewrite a head captured before that promotion.
+        events = store.canonical_events(through_ordinal=ordinal)
+        if ordinal and (not events or events[-1].ordinal != ordinal):
+            raise StaleAuthorityHead(
+                "canonical Registry head snapshot changed during hydration")
+        stream_heads: dict[str, int] = {}
+        task_control_sequence = 0
+        for event in events:
+            stream_heads[event.stream_id] = event.stream_sequence
+            if (event.task_id == self._ResourceServiceKernel__core.task_id
+                    and event.task_control_sequence is not None):
+                task_control_sequence = max(
+                    task_control_sequence, event.task_control_sequence)
         heads[ordinal] = RegistryHead(
             ordinal=ordinal,
             writer_fencing_epoch=writer_epoch,
@@ -195,21 +206,7 @@ def _canonical_heads(
             stream_heads=dict(stream_heads),
         )
 
-    if 0 in pending:
-        capture(0)
-        pending.remove(0)
-    for event in current:
-        stream_heads[event.stream_id] = event.stream_sequence
-        if (event.task_id == self._ResourceServiceKernel__core.task_id
-                and event.task_control_sequence is not None):
-            task_control_sequence = max(
-                task_control_sequence, event.task_control_sequence)
-        if event.ordinal in pending:
-            capture(event.ordinal)
-            pending.remove(event.ordinal)
-            if not pending:
-                break
-    if pending or store.writer_epoch != writer_epoch:
+    if store.writer_epoch != writer_epoch:
         raise StaleAuthorityHead(
             "canonical Registry head snapshot changed during hydration")
     return heads

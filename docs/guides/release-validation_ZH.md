@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: release-validation.md
-  revision: "2026-09-29.6"
+  revision: "2026-10-06.1"
   status: historical-full-baseline-current-focused-delta
 ---
 
@@ -17,15 +17,74 @@ metadata:
 本页把历史完整套件基线与后续定向验证分开，只提供脱敏摘要，不复制本地日志或私有
 Registry 数据。历史总数不能表述成当前 `main` 的完整套件结果。
 
+## 2026-10-06 有限集成与bridge修复
+
+benchmark实际执行源条件称为 **freeze04** 与 **repair**。其旧manifest不描述本次最终发布文件集合；
+本次另有文档、包装检查及测试修改。集成包括typed-v9、P4完整历史Assembly merge、
+P6 graph source merge、有界I02/shared-graph gate，以及Workset/normal-root读取器、token分配、
+ordinary revision和native HTTP/Node消费者。云端ownership交接已经完成，旧等待文字属历史。
+这些是有限验收，不是完整HOST、全I00–I10或全部advanced25验收。
+
+| 既有证据 | 接受边界 |
+|---|---|
+| 先行typed / P4 / I02 | writer节点23 / 38 / 10；独立节点11 / 10 / 7 |
+| 先行P6 | writer在freeze03上32、04上6；独立在03上5、04上1；不重标为全部04 |
+| 动态normal-root writer | 64 case / 192 phases；另一次R02 Success-wins窗口1 case / 3 phases |
+| 集成独立执行 | 8个exit0窗口、31次执行 / 93 phases / 30不同节点；02上8、03上22、04上1 |
+| 有限reader/root场景 | 跨Success保留refs/bytes、独立T01 run terminal、ordinary revision、旧catalog拒绝、精确replay/twochild、7损坏副本只读拒绝、attach-wins与独立CAS；R02仅一个明确Success-wins次序 |
+| 原生观察 | HTTP、Node与mock DOM通过；不是实际浏览器DOM |
+| 实际browser | Chromium启动exit1，root/sandbox限制，BLOCKED；pytest skip不是PASS；无页面/真实DOM/截图接受 |
+| Bridge修复 | writer52项、独立六个exit0窗口50个不同用例；重叠，不是102 unique |
+| Installed native-host准备 | 两个独立离线窗口，各7 PASS |
+
+有限并发检查不保证任意调度或child数量。真实browser未重试或关闭sandbox。源码恢复和收集数量
+不是测试通过。业务结果单列于[AutomationBench first18 + repair4](../../examples/automationbench/PUBLIC_RESULTS_20261006_ZH.md)。
+人工审阅未运行，污染未知，强worker OS隔离未证明。上述历史证据与下方本次发布检查分开，
+历史计数不累加到本次结果。
+
+## 2026-10-06 发布验证
+
+独立执行者在Linux/WSL、Python 3.13与Node 22.22.1上对集成发布源完成定向检查。
+这是有限边界验证，不是完整套件或全HOST/I00–I10/advanced25接受。
+
+| 本次发布检查 | 实际结果 |
+|---|---|
+| 定向Python测试 | 198个不同节点通过，已含全部30个bridge用例；重复执行只计一次 |
+| 文档unittest套件 | 26 tests OK，与198个定向Python节点分开记录 |
+| Node测试 | 224个不同test title通过；mock DOM/Node证据不是实际浏览器接受 |
+| 可选Node边界 | 无Node时HTTP 1 PASS、JavaScript 1 SKIP；重复HTTP节点不增加198节点计数 |
+| Schema与包资源 | 268个schema验证通过，另检查1个catalog JSON；wheel和sdist均核验全部674个预期打包文件 |
+| 构建与安装 | wheel/sdist构建、wheel安装、依赖检查与wheel资产审计exit0；源码树外7条installed零模型命令通过 |
+| Viewer重建 | 6个资产重建后与入库文件逐字节相等 |
+| 文档check/build | 122个维护页面 / 61组语言对，另有30个支持文档；构建152个HTML页面 |
+| 构建文档链接 | 检查10,983个本地链接，failures为空；64个外链未联网读取 |
+| 文档示例 | 2个双语schema示例与空catalog有效，3种非法变更被拒绝；语法/schema检查不执行示例或验证live transport |
+
+文档结果结合最终check/build/link验证与已记录的unittest和example检查。构建器还对链接的
+5个JSON、4个CSV、3个Python文档做语法检查。结果支持页可构建，但不成为维护主题，
+也不放宽维护页面的metadata与语言对要求。
+
+初始失败单独保留：bridge runner对相对路径`dir_fd`的guard解释、Node依赖解析问题，
+均在任务内runner/依赖设置中修正，并重跑受影响检查。此前docs checker失败通过支持链接的
+结果文档及下载文件解决，仍保留链接与metadata校验。原失败不删除、不重标为PASS。
+可选Node测试拆分与wheel审计修复属于发布测试/打包改动，不是新运行时行为，也不改变
+既有benchmark实际执行源身份。
+
+本次发布检查没有真实provider、model、judge或browser调用。此前实际browser的root/sandbox
+启动阻断仍为BLOCKED；没有重试、绕过sandbox或页面/真实DOM/截图通过声明。
+
+
 ## 纳入的源码边界
 
+本节旧提交与套件仅描述历史基线；本次集成边界以上方2026-10-06有限记录为准。
+
 本记录中最后一次完整离线套件于 2026-09-28 针对运行时提交
-`073a4516013443fadfcd05fa81d29c4aa1b5391b` 执行。当前运行时文档还覆盖截至
+`073a4516013443fadfcd05fa81d29c4aa1b5391b` 执行。该历史记录还覆盖截至
 `87e98356a1ba78b6afd7bae93d26704e030467a3` 的定向变更：跨前端 canonical session
 ownership、下级执行网、workspace 版本历史、任意 checkpoint reopen、compaction／恢复
 闭环、Registry 校验与 runtime 重试策略分离，以及 workspace 目标准入前拒绝、特殊文件
 安全的 snapshot 恢复、Viewer 独立连接处理与有限 socket I/O 超时，以及严格 wheel vendor
-asset 校验。该 SHA 之后的发布版本、打包 metadata 与纯文档变更不改变执行边界。
+asset 校验。后续运行时集成有上方单列的有限证据；历史基线不认证本次集成发布树。
 
 统一代码树包含 core Registry/PetriNet 执行、Basic、Codex 与 OpenCode 前端、原生插件、
 共享 provider/profile 层、可选 DSH 宿主和只读 PetriNet viewer。不包含历史分支证据、

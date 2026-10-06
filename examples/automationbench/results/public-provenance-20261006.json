@@ -1,0 +1,110 @@
+{
+  "schema": "rpnh-ab/public-provenance/v1",
+  "date": "2026-10-06",
+  "upstream": "https://github.com/zapier/AutomationBench",
+  "upstream_revision": "4a8e1061254004d9dac807054eed33fad7d1ff14",
+  "scorer_revision": "4a8e1061254004d9dac807054eed33fad7d1ff14",
+  "upstream_license": "https://github.com/zapier/AutomationBench/blob/4a8e1061254004d9dac807054eed33fad7d1ff14/LICENSE",
+  "source_conditions": [
+    {
+      "id": "freeze04-first18",
+      "source": "freeze04",
+      "planned": 18,
+      "started": 16,
+      "scored": 14,
+      "PASS": 5,
+      "FAIL": 9,
+      "BLOCKED": 4,
+      "registered_submissions": 164,
+      "canonical_responses": 162,
+      "unknown_submission_usage": 2,
+      "complete_usage": null,
+      "full18_pass_rate": null,
+      "full18_mean_partial_credit": null
+    },
+    {
+      "id": "freeze04-smoke",
+      "source": "freeze04",
+      "planned": 1,
+      "started": 1,
+      "scored": 1,
+      "PASS": 1,
+      "registered_submissions": 9,
+      "canonical_responses": 9
+    },
+    {
+      "id": "repair-four",
+      "source": "repair",
+      "planned": 4,
+      "started": 4,
+      "scored": 4,
+      "PASS": 1,
+      "FAIL": 3,
+      "BLOCKED": 0,
+      "registered_submissions": 66,
+      "canonical_responses": 66,
+      "registered_context_window_tokens": 272000,
+      "cli_context_window_tokens": 272000,
+      "verified_binding_count": 66,
+      "successful_budget_summary_count": 66,
+      "canonical_output_reserve": 128000,
+      "cli_output_cap": null,
+      "canonical_usage": {
+        "input": 1985969,
+        "output": 25260,
+        "derived_input_plus_output": 2011229,
+        "cached_input": 303360,
+        "cache_write_input": 0,
+        "reasoning_output": 10248
+      },
+      "actual_initial_materialized_world": null,
+      "actual_initial_clock": null
+    }
+  ],
+  "selection": {
+    "seed": "20261006",
+    "excluded_prior_or_helper_tasks": 38,
+    "rule": "min SHA256(UTF8(seed + \":\" + adapter_task_id)) per domain x width, tie canonical native_identity JSON lexicographically",
+    "rubric_or_result_used_for_selection": false,
+    "strata": "six domains x three integration widths",
+    "C3": "Post-stop execution partition of three already frozen marketing tasks; not a preregistered condition."
+  },
+  "observed_configuration": {
+    "requested_model": "gpt-5.6-terra",
+    "effort": "medium",
+    "route": "local_process",
+    "model_is_product_default": false,
+    "fallback_used": false,
+    "response_model_id": null,
+    "provider_request_id": null
+  },
+  "measurement": {
+    "wire_requests": null,
+    "billed_cost": null,
+    "upstream_provider_observed_usage": null,
+    "usage_scope": "retained canonical fields, not independently observed provider billing; total derives input+output without adding cache/reasoning subsets"
+  },
+  "boundaries": {
+    "old_scored14_rerun_on_repair": false,
+    "extra_repair_smoke": false,
+    "old_unknown_replayed": false,
+    "human_review": "NOT_RUN",
+    "pretraining_contamination": "UNKNOWN",
+    "strong_worker_os_isolation": "UNPROVEN",
+    "full_benchmark": false
+  },
+  "other_families": {
+    "SpreadsheetBench_V1": "BLOCKED_existing_adapter_and_environment",
+    "SWE_bench_Verified": "BLOCKED_existing_adapter_and_environment",
+    "Office": "NOT_RUN_trigger_not_established",
+    "GAIA": "NOT_RUN_candidate",
+    "tau2": "NOT_RUN_candidate"
+  },
+  "evidence_sources": [
+    "benchmark-v2 frozen cohort and independent evaluation",
+    "historical failure attribution supplement",
+    "bounded repair independent evaluation",
+    "repair failure attribution supplement and final read-only artifact review"
+  ],
+  "public_material_scope": "Curated identities, scores, counts and provenance only; no input dataset, gold answers, world, transcripts, private result objects or archives."
+}

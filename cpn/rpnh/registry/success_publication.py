@@ -47,6 +47,7 @@ class SuccessPublication:
     event_ref: VersionRef
     transaction_ref: VersionRef
     workspace_revision_ref: VersionRef | None
+    execution_child_seal_ref: VersionRef | None = None
 
 
 def _check_success_authority(
@@ -196,6 +197,8 @@ def stage_success_material(
         declared_effects: Mapping[str, Any] | None = None,
         revision=None,
         historical_lease_writer_epoch: int | None = None,
+        ordinary_token_ref_scheme: str | None = None,
+        normal_root_token_schema: Mapping[str, Any] | None = None,
 ) -> SuccessMaterial:
     _check_success_authority(
         core, kernel, tx, executable, prior_marking, projected, new_tokens,
@@ -244,6 +247,18 @@ def stage_success_material(
             _ref_payload(ref) for ref in formal_delta.deposited_token_refs],
         "phase": "settlement",
     }
+    if ordinary_token_ref_scheme is not None:
+        from .normal_root_token_allocation import (
+            NORMAL_ROOT_TOKEN_SCHEME, validate_normal_root_token_delta,
+        )
+        if (ordinary_token_ref_scheme != NORMAL_ROOT_TOKEN_SCHEME
+                or normal_root_token_schema is None
+                or declared_effects is not None or revision is not None):
+            raise ResourceIntegrityFault('normal root token allocation lacks exact capability')
+        delta['ordinary_token_ref_scheme'] = ordinary_token_ref_scheme
+        validate_normal_root_token_delta(normal_root_token_schema, delta)
+    elif normal_root_token_schema is not None:
+        raise ResourceIntegrityFault('legacy Success cannot carry normal allocation capability')
     if declared_effects is not None:
         delta["declared_effects"] = dict(declared_effects)
         if revision is not None:
@@ -438,7 +453,8 @@ def stage_success_publication(
         result_metadata: Mapping[str, Any], material: SuccessMaterial,
         checkpoint_ref: VersionRef, checkpoint: Mapping[str, Any],
         workspace_plans: tuple[Mapping[str, Any], ...],
-        idempotency_key: str,
+    idempotency_key: str,
+    normal_child_closure: bool = False,
 ) -> SuccessPublication:
     context = settlement.canonical.context
     firing = operation_outputs.execution.operation.firing
@@ -475,8 +491,10 @@ def stage_success_publication(
     from ..file_execution_net import (
         execution_parent,
         stage_execution_terminal_mappings,
+        stage_normal_execution_child_closure,
     )
-    stage_execution_terminal_mappings(
+    child_publication = (stage_normal_execution_child_closure if normal_child_closure
+                         else stage_execution_terminal_mappings)(
         core, tx,
         parent=execution_parent(context),
         operation_result_ref=result_ref,
@@ -573,7 +591,7 @@ def stage_success_publication(
         idempotency_key=idempotency_key)
     return SuccessPublication(
         completion_ref, MappingProxyType(completion), event_ref, transaction_ref,
-        workspace_revision_ref)
+        workspace_revision_ref, child_publication if normal_child_closure else None)
 
 
 def stage_success_completion(

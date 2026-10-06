@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: runtime-registry.md
-  revision: "2026-09-29.3"
+  revision: "2026-10-04.1"
   status: source-reviewed-v0.1.0rc1
   basis: "core; adapter differences explicitly labelled"
 ---
@@ -98,6 +98,37 @@ create/update/delete、精确且可空的 before/after resource 引用与有界�
 和 mode，delta 链保存逐路径版本谱系。Finalization 会先冻结
 `workspace_revision_candidate/v1`；并发 head merge 与最终 path delta 仍由 Success owner
 相对于当前 lineage head 计算。
+
+## 显式保留 slot 的候选计划（按需启用）
+
+`cpn.rpnh.collaboration.preserved_candidate_publisher.PreservedCandidatePlanPublisher`
+是高级可信宿主入口，只准备一份惰性的 `collaboration_candidate_plan/v2`。
+Registry 必须显式包含 `candidate_v2_schema_data()`。入口要求已有 owner gateway、
+producer principal、显式 `Registration` 和同源 plain closed Module revision。
+它接受使用当前支持的确定性 operation 协议的已登记组件，不接受 tools 或可选运行期
+HOST 选择。既有 v1/default publisher 保持原支持范围。
+
+非空 `selected_slot_refs` 必须同时提供 typed `PreservedBasis` 和显式
+`selected_schema_refs`。每个符号只能选择该 basis 中精确且兼容的 slot。
+所选 schema 必须是作者冻结 `schema_refs` 按这些符号的 schema ID 得到的唯一投影，
+并与 basis output 的 exact schema resource refs 相等。同字节的另一 ref 不能替代
+该身份。空选择要求 basis 与所选 schema refs 均为空。
+
+首次发布在实际提交的同一个 SQLite cut 内重验静态 owner、作者、wire、资源、slot
+与字节证据；所选 adoption event 必须仍为当前事件，stale basis 会被拒绝。
+成功发布后，完整请求的精确重放使用冻结的历史 basis，后续 adoption 不改变它。
+v1/v2 共享稳定的 command/ID 命名空间；完全相同的既有 v1 请求返回原格式，输入变化
+则发生冲突。
+
+只有不可变 prewrite 文件不代表计划已成功登记。相同字节的中断 prewrite 可以重试
+首次准入，但不享有历史重放豁免；改变请求不能覆盖同一 version 文件。
+重新选择 basis 时应使用新 command。
+
+producer 在实际提交的写事务外使用所给 Registration 真实编译。固定 Core 门验证
+静态材料和机械 wire 兼容性，不证明任意输入 fragment 由哪个 HOST callable 生成。
+该入口不发布 graph、manifest、readiness、adoption 或执行权威。
+graph-authoritative v1–v4 来源、Assembly 输入及运行期 provider/workspace bindings
+在此入口仍未支持。
 
 ## 读取、恢复与兼容
 `snapshot(owner_or_client)` 委托已有 owner/client，不新开 writer。快照包含精确 run/task/net/checkpoint、声明、marking、控制队列和 enabled transition，同时明确 `global_liveness=UNKNOWN`，不授予完成权威。

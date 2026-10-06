@@ -273,6 +273,7 @@ CURRENT_CONTENT_SCHEMA_REFS = (
     "registry_v1/typed_relation/v1",
     "rpnh/executable_net/v1",
     "rpnh/module_declaration/v1",
+    "rpnh/typed_call/v1",
     "rpnh/owner_control/v1",
     "rpnh/resource_access_contract/v1",
     "runtime/llm_request_envelope/v1",

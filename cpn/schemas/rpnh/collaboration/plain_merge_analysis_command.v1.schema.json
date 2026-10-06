@@ -1,0 +1,520 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "rpnh/collaboration/plain_merge_analysis_command/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "rpnh/collaboration/plain_merge_analysis_command/v1"
+    },
+    "analysis": {
+      "$ref": "#/definitions/analysis"
+    }
+  },
+  "required": [
+    "schema_version",
+    "analysis"
+  ],
+  "definitions": {
+    "version_ref": {
+      "title": "Source version ref",
+      "description": "Source qualification supplies identity only; it does not resolve a source, prove target existence, or grant access.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "rpnh/collaboration/source_version_ref/v1"
+        },
+        "source_id": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[^\\s\\u0000-\\u001f\\u007f](?:[^\\u0000-\\u001f\\u007f]*[^\\s\\u0000-\\u001f\\u007f])?(?![\\s\\S])"
+        },
+        "ref": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "entity_type": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9_]*(?:/[a-z][a-z0-9_]*)*/v[1-9][0-9]*(?![\\s\\S])"
+            },
+            "logical_id": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}(?![\\s\\S])"
+            },
+            "version_id": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}(?![\\s\\S])"
+            }
+          },
+          "required": [
+            "entity_type",
+            "logical_id",
+            "version_id"
+          ]
+        }
+      },
+      "required": [
+        "schema_version",
+        "source_id",
+        "ref"
+      ]
+    },
+    "resource_ref": {
+      "title": "Source resource ref",
+      "description": "Source qualification supplies identity only; it does not resolve a source, prove target existence, or grant access.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "rpnh/collaboration/source_resource_ref/v1"
+        },
+        "source_id": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[^\\s\\u0000-\\u001f\\u007f](?:[^\\u0000-\\u001f\\u007f]*[^\\s\\u0000-\\u001f\\u007f])?(?![\\s\\S])"
+        },
+        "ref": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "resource_id": {
+              "type": "string",
+              "pattern": "^resource:[a-f0-9]{32}(?![\\s\\S])"
+            },
+            "resource_version_id": {
+              "type": "string",
+              "pattern": "^resource_version:[a-f0-9]{32}(?![\\s\\S])"
+            }
+          },
+          "required": [
+            "resource_id",
+            "resource_version_id"
+          ]
+        }
+      },
+      "required": [
+        "schema_version",
+        "source_id",
+        "ref"
+      ]
+    },
+    "request": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "local_revision_ref": {
+          "$ref": "#/definitions/version_ref"
+        },
+        "incoming_revision_ref": {
+          "$ref": "#/definitions/version_ref"
+        },
+        "asserted_base_revision_ref": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/version_ref"
+            }
+          ]
+        }
+      },
+      "required": [
+        "local_revision_ref",
+        "incoming_revision_ref",
+        "asserted_base_revision_ref"
+      ]
+    },
+    "pin": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "revision_ref": {
+          "$ref": "#/definitions/version_ref"
+        },
+        "definition_ref": {
+          "$ref": "#/definitions/resource_ref"
+        },
+        "element_mapping_ref": {
+          "$ref": "#/definitions/resource_ref"
+        },
+        "boundary_mapping_ref": {
+          "$ref": "#/definitions/resource_ref"
+        },
+        "host_requirements_ref": {
+          "$ref": "#/definitions/resource_ref"
+        }
+      },
+      "required": [
+        "revision_ref",
+        "definition_ref",
+        "element_mapping_ref",
+        "boundary_mapping_ref",
+        "host_requirements_ref"
+      ]
+    },
+    "model": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "contract": {
+          "const": "rpnh/plain_author_normalization/v1"
+        },
+        "atoms": {
+          "type": "object"
+        },
+        "dependencies": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "locators": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "derived_resource_dependencies": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "component_element_id": {
+                "type": "string",
+                "pattern": "^element:[a-f0-9]{32}(?![\\s\\S])"
+              },
+              "carrier_kinds": {
+                "type": "array",
+                "uniqueItems": true,
+                "minItems": 1,
+                "items": {
+                  "enum": [
+                    "lease_identities",
+                    "lease_pools",
+                    "variable_resource_arcs",
+                    "logical_slots",
+                    "reset_arcs",
+                    "resource_places",
+                    "lease_claim_arcs"
+                  ]
+                }
+              }
+            },
+            "required": [
+              "component_element_id",
+              "carrier_kinds"
+            ]
+          }
+        }
+      },
+      "required": [
+        "contract",
+        "atoms",
+        "dependencies",
+        "locators",
+        "derived_resource_dependencies"
+      ]
+    },
+    "state": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "present": {
+          "type": "boolean"
+        },
+        "value": {}
+      },
+      "required": [
+        "present",
+        "value"
+      ]
+    },
+    "difference": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "subject": {
+          "type": "string"
+        },
+        "base": {
+          "$ref": "#/definitions/state"
+        },
+        "local": {
+          "$ref": "#/definitions/state"
+        },
+        "incoming": {
+          "$ref": "#/definitions/state"
+        },
+        "change": {
+          "enum": [
+            "same",
+            "both",
+            "local",
+            "incoming"
+          ]
+        }
+      },
+      "required": [
+        "subject",
+        "base",
+        "local",
+        "incoming",
+        "change"
+      ]
+    },
+    "conflict": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "conflict_id": {
+          "type": "string",
+          "pattern": "^conflict:[a-f0-9]{64}(?![\\s\\S])"
+        },
+        "reason": {
+          "enum": [
+            "divergent_atom",
+            "concurrent_identity_introduction",
+            "delete_modify",
+            "delete_dependency",
+            "name_collision",
+            "coupled_contract",
+            "lowered_resource_coupling"
+          ]
+        },
+        "subjects": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "base": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "subject": {
+                "type": "string"
+              },
+              "present": {
+                "type": "boolean"
+              },
+              "value": {}
+            },
+            "required": [
+              "subject",
+              "present",
+              "value"
+            ]
+          }
+        },
+        "local": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "subject": {
+                "type": "string"
+              },
+              "present": {
+                "type": "boolean"
+              },
+              "value": {}
+            },
+            "required": [
+              "subject",
+              "present",
+              "value"
+            ]
+          }
+        },
+        "incoming": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "subject": {
+                "type": "string"
+              },
+              "present": {
+                "type": "boolean"
+              },
+              "value": {}
+            },
+            "required": [
+              "subject",
+              "present",
+              "value"
+            ]
+          }
+        }
+      },
+      "required": [
+        "conflict_id",
+        "reason",
+        "subjects",
+        "base",
+        "local",
+        "incoming"
+      ]
+    },
+    "analysis": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "rpnh/collaboration/plain_merge_analysis/v1"
+        },
+        "algorithm": {
+          "const": "rpnh/plain_author_three_way_analysis/v1"
+        },
+        "normalization": {
+          "const": "rpnh/plain_author_normalization/v1"
+        },
+        "source_id": {
+          "type": "string"
+        },
+        "owner_task_ref": {
+          "$ref": "#/definitions/version_ref"
+        },
+        "producer_principal_ref": {
+          "$ref": "#/definitions/version_ref"
+        },
+        "command_id": {
+          "type": "string"
+        },
+        "command_ref": {
+          "$ref": "#/definitions/resource_ref"
+        },
+        "request": {
+          "$ref": "#/definitions/request"
+        },
+        "status": {
+          "enum": [
+            "analyzed",
+            "unrelated_histories",
+            "multiple_bases"
+          ]
+        },
+        "base_revision_ref": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/version_ref"
+            }
+          ]
+        },
+        "nearest_common_bases": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/version_ref"
+          }
+        },
+        "inputs": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "base": {
+              "oneOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "$ref": "#/definitions/pin"
+                }
+              ]
+            },
+            "local": {
+              "$ref": "#/definitions/pin"
+            },
+            "incoming": {
+              "$ref": "#/definitions/pin"
+            }
+          },
+          "required": [
+            "base",
+            "local",
+            "incoming"
+          ]
+        },
+        "ancestry": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/pin"
+          }
+        },
+        "normalized": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {},
+              "required": []
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "base": {
+                  "$ref": "#/definitions/model"
+                },
+                "local": {
+                  "$ref": "#/definitions/model"
+                },
+                "incoming": {
+                  "$ref": "#/definitions/model"
+                }
+              },
+              "required": [
+                "base",
+                "local",
+                "incoming"
+              ]
+            }
+          ]
+        },
+        "differences": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/difference"
+          }
+        },
+        "conflicts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/conflict"
+          }
+        }
+      },
+      "required": [
+        "schema_version",
+        "algorithm",
+        "normalization",
+        "source_id",
+        "owner_task_ref",
+        "producer_principal_ref",
+        "command_id",
+        "command_ref",
+        "request",
+        "status",
+        "base_revision_ref",
+        "nearest_common_bases",
+        "inputs",
+        "ancestry",
+        "normalized",
+        "differences",
+        "conflicts"
+      ]
+    }
+  }
+}

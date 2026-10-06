@@ -1,0 +1,120 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "registry_v1/collaboration_source_binding/v1",
+  "title": "One-time trusted local source identity binding",
+  "description": "An explicit local owner-registration object, not a remote trust or access grant.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "registry_v1/collaboration_source_binding/v1"
+    },
+    "binding_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "entity_type": {
+          "const": "collaboration_source_binding/v1"
+        },
+        "logical_id": {
+          "type": "string",
+          "pattern": "^resource:[a-f0-9]{32}(?![\\s\\S])"
+        },
+        "version_id": {
+          "type": "string",
+          "pattern": "^resource_version:[a-f0-9]{32}(?![\\s\\S])"
+        }
+      },
+      "required": [
+        "entity_type",
+        "logical_id",
+        "version_id"
+      ]
+    },
+    "source_id": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[^\\s\\u0000-\\u001f\\u007f](?:[^\\u0000-\\u001f\\u007f]*[^\\s\\u0000-\\u001f\\u007f])?(?![\\s\\S])"
+    },
+    "task_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "entity_type": {
+          "const": "task/v1"
+        },
+        "logical_id": {
+          "type": "string",
+          "pattern": "^task:[a-f0-9]{32}(?![\\s\\S])"
+        },
+        "version_id": {
+          "type": "string",
+          "pattern": "^task_version:[a-f0-9]{32}(?![\\s\\S])"
+        }
+      },
+      "required": [
+        "entity_type",
+        "logical_id",
+        "version_id"
+      ]
+    },
+    "native_run_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "entity_type": {
+          "const": "native_run_identity/v1"
+        },
+        "logical_id": {
+          "type": "string",
+          "pattern": "^run:[a-f0-9]{32}(?![\\s\\S])"
+        },
+        "version_id": {
+          "type": "string",
+          "pattern": "^run_version:[a-f0-9]{32}(?![\\s\\S])"
+        }
+      },
+      "required": [
+        "entity_type",
+        "logical_id",
+        "version_id"
+      ]
+    },
+    "bootstrap_command_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "entity_type": {
+          "const": "bootstrap_command/v1"
+        },
+        "logical_id": {
+          "type": "string",
+          "pattern": "^bootstrap_command:[a-f0-9]{32}(?![\\s\\S])"
+        },
+        "version_id": {
+          "type": "string",
+          "pattern": "^bootstrap_command_version:[a-f0-9]{32}(?![\\s\\S])"
+        }
+      },
+      "required": [
+        "entity_type",
+        "logical_id",
+        "version_id"
+      ]
+    },
+    "command_id": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[^\\s\\u0000-\\u001f\\u007f](?:[^\\u0000-\\u001f\\u007f]*[^\\s\\u0000-\\u001f\\u007f])?(?![\\s\\S])"
+    }
+  },
+  "required": [
+    "schema_version",
+    "binding_ref",
+    "source_id",
+    "task_ref",
+    "native_run_ref",
+    "bootstrap_command_ref",
+    "command_id"
+  ]
+}

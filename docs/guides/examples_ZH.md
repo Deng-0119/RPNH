@@ -6,7 +6,7 @@ metadata:
   audience: user-and-developer
   language: zh-CN
   counterpart: examples.md
-  revision: "2026-10-02.3"
+  revision: "2026-10-06.1"
   status: current-instructions-with-dated-evidence
   basis: "current main commands; deterministic runs and dated authorized live evidence explicitly separated"
 ---
@@ -335,3 +335,5 @@ Basic、Codex 或 OpenCode 操作的同一权威 CLI；这些扩展不是历史�
 
 验收参考边界见[案例验证](examples-validation_ZH.md)。其中区分确定性 fixture、此前授权
 的 provider 调用和当前定向兼容检查，均不能替代用户对自有 route 的验证。
+
+2026-10-06公开记录：freeze04首轮18题为5 PASS / 9 FAIL / 4 BLOCKED；独立repair四题为1 PASS / 3 FAIL。旧14道已评分题未重跑。 [2026-10-06结果](../../examples/automationbench/PUBLIC_RESULTS_20261006_ZH.md).

@@ -30,3 +30,5 @@
 请从[完整案例指南](../docs/guides/examples_ZH.md)和
 [看板指南](../docs/guides/viewer_ZH.md)开始。生成的 profile、Registry 目录和 provider
 transcript 均保存在仓库之外。
+
+2026-10-06公开记录：freeze04首轮18题为5 PASS / 9 FAIL / 4 BLOCKED；独立repair四题为1 PASS / 3 FAIL。旧14道已评分题未重跑。 [结果与限制](automationbench/PUBLIC_RESULTS_20261006_ZH.md).

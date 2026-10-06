@@ -663,14 +663,23 @@ def validate_operation_revision_success(store, catalog, db, *, pending, firing,
         fail("run authority reinterprets cumulative facts/prospective source")
 
 
-def verified_operation_revision_fields(store, catalog, db, event):
+def verified_operation_revision_fields(store, catalog, db, event, *, _prefix_reads=None):
     """Current hydration accepts only the exact generic ordinary-Success bridge."""
     from .event_store import RegistryCorruptError, _exact_object_metadata, _CANONICAL_EVENT_SQL
+    if _prefix_reads is not None:
+        from ._event_store.adoption_reads import AdoptionPrefixReads
+        if (type(_prefix_reads) is not AdoptionPrefixReads or _prefix_reads.db is not db
+                or _prefix_reads.store is not store or _prefix_reads.task_id != event.task_id):
+            raise TypeError("operation prefix witness requires its fixed same-cut reader")
+    def metadata(store, ref, *, expected_type=None, db=None):
+        if _prefix_reads is not None:
+            return _prefix_reads.metadata(ref, expected_type)
+        return _exact_object_metadata(store, ref, expected_type=expected_type, db=db)
     w = event.payload["operation_revision"]
     refs = (("source_ref", "resource_version/v1"), ("candidate_declaration_ref", "resource_version/v1"),
         ("source_firing_ref", "transition_firing/v1"), ("operation_result_ref", "operation_result/v1"),
         ("predecessor_checkpoint_ref", "marking_checkpoint/v1"), ("successor_checkpoint_ref", "marking_checkpoint/v1"))
-    values = {field: _exact_object_metadata(store, _version_from_payload(w[field]), expected_type=kind, db=db) for field, kind in refs}
+    values = {field: metadata(store, _version_from_payload(w[field]), expected_type=kind, db=db) for field, kind in refs}
     checkpoint = values["successor_checkpoint_ref"]
     result = values["operation_result_ref"]
     firing = values["source_firing_ref"]
@@ -680,6 +689,9 @@ def verified_operation_revision_fields(store, catalog, db, event):
         (str(event.transaction_id),)).fetchall()
     if len(rows) != 1 or len(commits) != 1:
         raise RegistryCorruptError("operation adoption lacks ONE SAMEtransaction Success/checkpoint")
+    if _prefix_reads is not None:
+        _prefix_reads.event(rows[0])
+        _prefix_reads.event(commits[0])
     settled = json.loads(rows[0]["payload_json"])
     commit = json.loads(commits[0]["payload_json"])
     if (settled["transition_firing_ref"] != w["source_firing_ref"] or settled["operation_result_ref"] != w["operation_result_ref"]

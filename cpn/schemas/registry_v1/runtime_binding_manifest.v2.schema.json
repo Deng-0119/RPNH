@@ -1,0 +1,590 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "registry_v1/runtime_binding_manifest/v2",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "registry_v1/runtime_binding_manifest/v2"
+    },
+    "manifest_ref": {
+      "$ref": "#/definitions/manifest_ref"
+    },
+    "plan_ref": {
+      "$ref": "#/definitions/plan_ref"
+    },
+    "source_id": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[^\\s\\u0000-\\u001f\\u007f](?:[^\\u0000-\\u001f\\u007f]*[^\\s\\u0000-\\u001f\\u007f])?(?![\\s\\S])"
+    },
+    "author_ref": {
+      "$ref": "#/definitions/qualified_ref"
+    },
+    "task_ref": {
+      "$ref": "#/definitions/task_ref"
+    },
+    "run_ref": {
+      "$ref": "#/definitions/run_ref"
+    },
+    "task_round_ref": {
+      "$ref": "#/definitions/round_ref"
+    },
+    "net_ref": {
+      "$ref": "#/definitions/net_ref"
+    },
+    "root_ref": {
+      "$ref": "#/definitions/root_ref"
+    },
+    "declaration_ref": {
+      "$ref": "#/definitions/resource_ref"
+    },
+    "object_refs": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/version_ref"
+      }
+    },
+    "entries": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "transition_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "executable_ref": {
+            "$ref": "#/definitions/executable_ref"
+          },
+          "operation_binding_ref": {
+            "$ref": "#/definitions/binding_ref"
+          },
+          "operation_spec_ref": {
+            "$ref": "#/definitions/spec_ref"
+          },
+          "host_binding": {
+            "$ref": "#/definitions/host_binding"
+          },
+          "dependencies": {
+            "$ref": "#/definitions/dependencies"
+          }
+        },
+        "required": [
+          "transition_id",
+          "executable_ref",
+          "operation_binding_ref",
+          "operation_spec_ref",
+          "host_binding",
+          "dependencies"
+        ]
+      }
+    }
+  },
+  "required": [
+    "schema_version",
+    "manifest_ref",
+    "plan_ref",
+    "source_id",
+    "author_ref",
+    "task_ref",
+    "run_ref",
+    "task_round_ref",
+    "net_ref",
+    "root_ref",
+    "declaration_ref",
+    "object_refs",
+    "entries"
+  ],
+  "definitions": {
+    "version_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "entity_type": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*(?:/[a-z][a-z0-9_]*)*/v[1-9][0-9]*(?![\\s\\S])"
+        },
+        "logical_id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}(?![\\s\\S])"
+        },
+        "version_id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}(?![\\s\\S])"
+        }
+      },
+      "required": [
+        "entity_type",
+        "logical_id",
+        "version_id"
+      ]
+    },
+    "resource_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "resource_id": {
+          "type": "string",
+          "pattern": "^resource:[a-f0-9]{32}(?![\\s\\S])"
+        },
+        "resource_version_id": {
+          "type": "string",
+          "pattern": "^resource_version:[a-f0-9]{32}(?![\\s\\S])"
+        }
+      },
+      "required": [
+        "resource_id",
+        "resource_version_id"
+      ]
+    },
+    "qualified_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "rpnh/collaboration/source_version_ref/v1"
+        },
+        "source_id": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[^\\s\\u0000-\\u001f\\u007f](?:[^\\u0000-\\u001f\\u007f]*[^\\s\\u0000-\\u001f\\u007f])?(?![\\s\\S])"
+        },
+        "ref": {
+          "$ref": "#/definitions/version_ref"
+        }
+      },
+      "required": [
+        "schema_version",
+        "source_id",
+        "ref"
+      ]
+    },
+    "plan_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "entity_type": {
+          "const": "collaboration_candidate_plan/v2"
+        },
+        "logical_id": {
+          "type": "string",
+          "pattern": "^resource:[a-f0-9]{32}(?![\\s\\S])"
+        },
+        "version_id": {
+          "type": "string",
+          "pattern": "^resource_version:[a-f0-9]{32}(?![\\s\\S])"
+        }
+      },
+      "required": [
+        "entity_type",
+        "logical_id",
+        "version_id"
+      ]
+    },
+    "manifest_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "entity_type": {
+          "const": "runtime_binding_manifest/v2"
+        },
+        "logical_id": {
+          "type": "string",
+          "pattern": "^resource:[a-f0-9]{32}(?![\\s\\S])"
+        },
+        "version_id": {
+          "type": "string",
+          "pattern": "^resource_version:[a-f0-9]{32}(?![\\s\\S])"
+        }
+      },
+      "required": [
+        "entity_type",
+        "logical_id",
+        "version_id"
+      ]
+    },
+    "readiness_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "entity_type": {
+          "const": "binding_readiness/v2"
+        },
+        "logical_id": {
+          "type": "string",
+          "pattern": "^resource:[a-f0-9]{32}(?![\\s\\S])"
+        },
+        "version_id": {
+          "type": "string",
+          "pattern": "^resource_version:[a-f0-9]{32}(?![\\s\\S])"
+        }
+      },
+      "required": [
+        "entity_type",
+        "logical_id",
+        "version_id"
+      ]
+    },
+    "task_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "entity_type": {
+          "const": "task/v1"
+        },
+        "logical_id": {
+          "type": "string",
+          "pattern": "^task:[a-f0-9]{32}(?![\\s\\S])"
+        },
+        "version_id": {
+          "type": "string",
+          "pattern": "^task_version:[a-f0-9]{32}(?![\\s\\S])"
+        }
+      },
+      "required": [
+        "entity_type",
+        "logical_id",
+        "version_id"
+      ]
+    },
+    "run_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "entity_type": {
+          "const": "native_run_identity/v1"
+        },
+        "logical_id": {
+          "type": "string",
+          "pattern": "^run:[a-f0-9]{32}(?![\\s\\S])"
+        },
+        "version_id": {
+          "type": "string",
+          "pattern": "^run_version:[a-f0-9]{32}(?![\\s\\S])"
+        }
+      },
+      "required": [
+        "entity_type",
+        "logical_id",
+        "version_id"
+      ]
+    },
+    "round_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "entity_type": {
+          "const": "task_round/v1"
+        },
+        "logical_id": {
+          "type": "string",
+          "pattern": "^task_round:[a-f0-9]{32}(?![\\s\\S])"
+        },
+        "version_id": {
+          "type": "string",
+          "pattern": "^task_round_version:[a-f0-9]{32}(?![\\s\\S])"
+        }
+      },
+      "required": [
+        "entity_type",
+        "logical_id",
+        "version_id"
+      ]
+    },
+    "principal_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "entity_type": {
+          "const": "principal/v1"
+        },
+        "logical_id": {
+          "type": "string",
+          "pattern": "^principal:[a-f0-9]{32}(?![\\s\\S])"
+        },
+        "version_id": {
+          "type": "string",
+          "pattern": "^principal_version:[a-f0-9]{32}(?![\\s\\S])"
+        }
+      },
+      "required": [
+        "entity_type",
+        "logical_id",
+        "version_id"
+      ]
+    },
+    "net_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "entity_type": {
+          "const": "net_instance/v1"
+        },
+        "logical_id": {
+          "type": "string",
+          "pattern": "^net_instance:[a-f0-9]{32}(?![\\s\\S])"
+        },
+        "version_id": {
+          "type": "string",
+          "pattern": "^net_instance_version:[a-f0-9]{32}(?![\\s\\S])"
+        }
+      },
+      "required": [
+        "entity_type",
+        "logical_id",
+        "version_id"
+      ]
+    },
+    "root_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "entity_type": {
+          "const": "team_design_root/v1"
+        },
+        "logical_id": {
+          "type": "string",
+          "pattern": "^team_design_root:[a-f0-9]{32}(?![\\s\\S])"
+        },
+        "version_id": {
+          "type": "string",
+          "pattern": "^team_design_root_version:[a-f0-9]{32}(?![\\s\\S])"
+        }
+      },
+      "required": [
+        "entity_type",
+        "logical_id",
+        "version_id"
+      ]
+    },
+    "binding_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "entity_type": {
+          "const": "operation_binding/v1"
+        },
+        "logical_id": {
+          "type": "string",
+          "pattern": "^operation_binding:[a-f0-9]{32}(?![\\s\\S])"
+        },
+        "version_id": {
+          "type": "string",
+          "pattern": "^operation_binding_version:[a-f0-9]{32}(?![\\s\\S])"
+        }
+      },
+      "required": [
+        "entity_type",
+        "logical_id",
+        "version_id"
+      ]
+    },
+    "spec_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "entity_type": {
+          "const": "operation_spec/v1"
+        },
+        "logical_id": {
+          "type": "string",
+          "pattern": "^operation_spec:[a-f0-9]{32}(?![\\s\\S])"
+        },
+        "version_id": {
+          "type": "string",
+          "pattern": "^operation_spec_version:[a-f0-9]{32}(?![\\s\\S])"
+        }
+      },
+      "required": [
+        "entity_type",
+        "logical_id",
+        "version_id"
+      ]
+    },
+    "executable_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "entity_type": {
+          "const": "executable_transition_binding/v1"
+        },
+        "logical_id": {
+          "type": "string",
+          "pattern": "^executable_transition_binding:[a-f0-9]{32}(?![\\s\\S])"
+        },
+        "version_id": {
+          "type": "string",
+          "pattern": "^executable_transition_binding_version:[a-f0-9]{32}(?![\\s\\S])"
+        }
+      },
+      "required": [
+        "entity_type",
+        "logical_id",
+        "version_id"
+      ]
+    },
+    "host_binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "agent_ref": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "entity_type": {
+                  "const": "agent/v1"
+                },
+                "logical_id": {
+                  "type": "string",
+                  "pattern": "^agent:[a-f0-9]{32}(?![\\s\\S])"
+                },
+                "version_id": {
+                  "type": "string",
+                  "pattern": "^agent_version:[a-f0-9]{32}(?![\\s\\S])"
+                }
+              },
+              "required": [
+                "entity_type",
+                "logical_id",
+                "version_id"
+              ]
+            }
+          ]
+        },
+        "activation_ref": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/version_ref"
+            }
+          ]
+        },
+        "llm_input_target_ref": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/resource_ref"
+            }
+          ]
+        },
+        "workspace_binding_ref": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "entity_type": {
+                  "const": "workspace_binding/v1"
+                },
+                "logical_id": {
+                  "type": "string",
+                  "pattern": "^workspace_binding:[a-f0-9]{32}(?![\\s\\S])"
+                },
+                "version_id": {
+                  "type": "string",
+                  "pattern": "^workspace_binding_version:[a-f0-9]{32}(?![\\s\\S])"
+                }
+              },
+              "required": [
+                "entity_type",
+                "logical_id",
+                "version_id"
+              ]
+            }
+          ]
+        },
+        "module_artifact_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/version_ref"
+          }
+        },
+        "extra_resource_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/resource_ref"
+          }
+        }
+      },
+      "required": [
+        "agent_ref",
+        "activation_ref",
+        "llm_input_target_ref",
+        "workspace_binding_ref",
+        "module_artifact_refs",
+        "extra_resource_refs"
+      ]
+    },
+    "dependencies": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "catalog": {
+          "$ref": "#/definitions/qualified_ref"
+        },
+        "prompt": {
+          "$ref": "#/definitions/qualified_ref"
+        },
+        "backend": {
+          "$ref": "#/definitions/qualified_ref"
+        },
+        "transport": {
+          "$ref": "#/definitions/qualified_ref"
+        },
+        "environment": {
+          "$ref": "#/definitions/qualified_ref"
+        },
+        "workspace_profile": {
+          "$ref": "#/definitions/qualified_ref"
+        },
+        "inventory": {
+          "$ref": "#/definitions/qualified_ref"
+        },
+        "managed_tools": {
+          "$ref": "#/definitions/qualified_ref"
+        }
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "ref": {
+          "$ref": "#/definitions/version_ref"
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}(?![\\s\\S])"
+        },
+        "size": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "media_type": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "ref",
+        "sha256",
+        "size",
+        "media_type"
+      ]
+    }
+  }
+}

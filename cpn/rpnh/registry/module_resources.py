@@ -140,6 +140,29 @@ def module_slot_bindings(plan):
         for slot in plan.logical_slots}
 
 
+def _validate_owner_resource_inputs(symbolic, owner_resource_inputs):
+    """Shared fixed resource-symbol resolution, before prospective slot IDs.
+
+    Resource identity aliases are constrained within each pool/claim group,
+    not globally. Fresh slot IDs use another typed identity domain; preserved
+    slot identity checks remain in the complete resource projection below.
+    """
+    resources = {item.name for item in symbolic.lease_identities if item.kind == "resource"}
+    if not isinstance(owner_resource_inputs, Mapping) or set(owner_resource_inputs) != resources:
+        raise ValueError("owner resources must cover the exact qualified resource lease symbols")
+    if any(not isinstance(ref, ResourceVersionRef) for ref in owner_resource_inputs.values()):
+        raise TypeError("owner resources require actual ResourceVersionRef values")
+    for pool in symbolic.lease_pools:
+        identities = tuple(owner_resource_inputs[name] for name in pool.initial_resources)
+        if len(set(identities)) != len(identities):
+            raise ValueError("declared pool symbols resolve to repeated actual lease identities")
+    for arc in symbolic.variable_resource_arcs:
+        identities = tuple(owner_resource_inputs[claim.lease_identity] for claim in arc.initial_claims
+            if claim.lease_identity in resources)
+        if len(set(identities)) != len(identities):
+            raise ValueError("declared claims resolve to repeated actual lease identities")
+
+
 def prepare_module_resources(
     compiled: CompiledPetriNet, *, root_ref: VersionRef, net_ref: VersionRef,
     declaration_ref: ResourceVersionRef, node_refs: Mapping[str, VersionRef],
@@ -176,11 +199,7 @@ objects, or claim that its proposed slot refs have already been registered.
         raise ValueError("output refs must cover exact producer/compiled-port handles")
     for ref in output_binding_refs.values():
         _typed_ref(ref, "output_binding/v1")
-    resource_symbols = {item.name for item in symbolic.lease_identities if item.kind == "resource"}
-    if not isinstance(owner_resource_inputs, Mapping) or set(owner_resource_inputs) != resource_symbols:
-        raise ValueError("owner resources must cover the exact qualified resource lease symbols")
-    if any(not isinstance(ref, ResourceVersionRef) for ref in owner_resource_inputs.values()):
-        raise TypeError("owner resources require actual ResourceVersionRef values")
+    _validate_owner_resource_inputs(symbolic, owner_resource_inputs)
 
     if (not isinstance(preserved_slot_refs, Mapping)
             or not set(preserved_slot_refs) <= {slot.name for slot in symbolic.logical_slots}):

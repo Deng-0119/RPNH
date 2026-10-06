@@ -49,8 +49,21 @@ def colour_key(value):
     return type(value), value
 
 
+def _validate_schema_instance(schema, instance, *, offline_schema_validation=False):
+    """Finite wire-reader policy; legacy callers keep their existing validator."""
+    from jsonschema import Draft7Validator
+    if type(offline_schema_validation) is not bool:
+        raise TypeError("offline schema validation is a fixed boolean policy")
+    if offline_schema_validation:
+        from referencing import Registry
+        Draft7Validator(schema, registry=Registry()).validate(instance)
+    else:
+        Draft7Validator(schema).validate(instance)
+
+
 def validate_registered_config(registration: RegistrationView, category: str, key: str,
-                               config: Mapping[str, Any], required_schemas: tuple[str, ...]):
+                               config: Mapping[str, Any], required_schemas: tuple[str, ...], *,
+                               _offline_schema_validation=False):
     """Apply a HOST registered config contract, when that handler declares one."""
     from jsonschema import Draft7Validator, ValidationError
 
@@ -61,7 +74,7 @@ def validate_registered_config(registration: RegistrationView, category: str, ke
             raise DeclarationError(f"Handler config schema must be required: {config_schema}")
         schema = registered(registration, "schema", config_schema)["schema"]
         try:
-            Draft7Validator(schema).validate(config)
+            _validate_schema_instance(schema, config, offline_schema_validation=_offline_schema_validation)
         except ValidationError as exc:
             raise DeclarationError(f"Invalid registered {category} config: {exc.message}") from exc
 
@@ -231,12 +244,30 @@ class OperationDeclaration:
                 raise DeclarationError(f"Invalid output type for {name}: {exc.message}") from exc
 
 
+def _same_json_value(left: Any, right: Any) -> bool:
+    """Tighten existing data equality only for JSON boolean/number distinctions.
+
+    Numeric int/float equality and the existing container comparison remain
+    unchanged. Callers own validation and any inventory-order normalization.
+    """
+    if left != right:
+        return False
+    if isinstance(left, bool) or isinstance(right, bool):
+        return type(left) is type(right)
+    if isinstance(left, Mapping) and isinstance(right, Mapping):
+        return all(_same_json_value(left[key], right[key]) for key in left)
+    if isinstance(left, (tuple, list)) and isinstance(right, (tuple, list)):
+        return all(_same_json_value(a, b) for a, b in zip(left, right))
+    return True
+
+
 def same_operation_contract(left: OperationDeclaration, right: OperationDeclaration) -> bool:
     """Compare declared bundles, not incidental outcome/product array order.
 
     Input/output tuples are the ordered executor ABI and remain exact. Config
     arrays remain application data. Effects are a simultaneous declared bundle;
-    their identity/config/bindings and multiplicity are preserved.
+    their identity/config/bindings and multiplicity are preserved. JSON booleans
+    never equal numbers; existing numeric int/float equivalence is unchanged.
     """
     def normalized(operation):
         outcomes = tuple(replace(outcome,
@@ -246,7 +277,8 @@ def same_operation_contract(left: OperationDeclaration, right: OperationDeclarat
         ) for outcome in sorted(operation.outcomes, key=lambda outcome: outcome.name))
         return replace(operation, outcomes=outcomes, tools=tuple(sorted(operation.tools)))
 
-    return normalized(left) == normalized(right)
+    left, right = normalized(left), normalized(right)
+    return left == right and _same_json_value(asdict(left), asdict(right))
 
 
 @dataclass(frozen=True)
@@ -415,7 +447,7 @@ class PNFragment:
     logical_slots: tuple[LogicalSlotBinding, ...] = ()
     reset_arcs: tuple[ResetArcDeclaration, ...] = ()
 
-    def validate(self, context: BindingContext, registration: RegistrationView):
+    def validate(self, context: BindingContext, registration: RegistrationView, *, _offline_schema_validation=False):
         for items, kind in ((self.places, PlaceDeclaration), (self.transitions, TransitionDeclaration),
                 (self.arcs, ArcDeclaration), (self.ports, PortBinding), (self.operations, OperationDeclaration),
                 (self.internal_ports, PortDeclaration), (self.internal_bindings, PortBinding),
@@ -469,7 +501,8 @@ class PNFragment:
                         raise DeclarationError("Initial token schema outside place variants")
                     from jsonschema import Draft7Validator, ValidationError
                     try:
-                        Draft7Validator(registered(registration, "schema", token.schema)["schema"]).validate(token.value)
+                        _validate_schema_instance(registered(registration, "schema", token.schema)["schema"], token.value,
+                            offline_schema_validation=_offline_schema_validation)
                     except ValidationError as exc:
                         raise DeclarationError(f"Invalid initial token data: {exc.message}") from exc
                 elif token.value is not None:
@@ -503,7 +536,8 @@ class PNFragment:
             if operation.request_port is not None and operation.request_port not in operation.inputs:
                 raise DeclarationError("Request binding must name an exact operation input")
             validate_registered_config(registration, "executor", operation.executor,
-                                       operation.config, context.required_schemas)
+                                       operation.config, context.required_schemas,
+                                       _offline_schema_validation=_offline_schema_validation)
             for key in operation.tools:
                 registration.resolve("tool", key)
                 registered(registration, "tool", key)
@@ -536,7 +570,8 @@ class PNFragment:
                 for effect in outcome.effects:
                     registration.resolve("tool", effect.key)
                     validate_registered_config(registration, "tool", effect.key,
-                                               effect.config, context.required_schemas)
+                                               effect.config, context.required_schemas,
+                                               _offline_schema_validation=_offline_schema_validation)
                     if any(port not in operation.inputs + operation.outputs for port in effect.bindings.values()):
                         raise DeclarationError("Effect binding outside operation ports")
                     if any(port in operation.outputs and port not in products for port in effect.bindings.values()):

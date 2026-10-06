@@ -23,10 +23,14 @@ _STATIC_ROOT = Path(__file__).with_name("static")
 _SCHEMA_VERSION = "rpnh/net_view/v1"
 _REQUEST_TIMEOUT_SECONDS = 5.0
 _ASSETS = {
+    "/source-observation.mjs": ("source-observation.mjs", "text/javascript; charset=utf-8"),
+    "/worksets.mjs": ("worksets.mjs", "text/javascript; charset=utf-8"),
+    "/firing-activity.mjs": ("firing-activity.mjs", "text/javascript; charset=utf-8"),
+
     "/app.js": ("app.js", "application/javascript; charset=utf-8"),
     "/style.css": ("style.css", "text/css; charset=utf-8"),
     **{f"/{name}.mjs": (f"{name}.mjs", "application/javascript; charset=utf-8")
-       for name in ("model", "layout", "renderer", "panels", "dashboard-model", "i18n", "messages", "canvas-text", "overview", "wire-geometry")},
+       for name in ("model", "layout", "renderer", "panels", "dashboard-model", "checkpoint-view", "agent-members", "observation-panel", "i18n", "messages", "canvas-text", "overview", "wire-geometry")},
     **{f"/assets/{name}.js": (f"assets/{name}.js", "application/javascript; charset=utf-8")
        for name in ("joint", "elk-api", "elk-worker")},
     "/assets/manifest.json": ("assets/manifest.json", "application/json; charset=utf-8"),
@@ -237,6 +241,106 @@ def handle_request(
             ).encode("utf-8"))
         else:
             response = _response(200, content_type, asset.read_bytes())
+    elif path == "/api/v2/source-observation":
+        from .source_observation import parse_query, ObservationNotSelected
+        import sqlite3
+        try:
+            params = parse_query(urlsplit(target).query)
+            action = getattr(provider, 'source_observation', None)
+            if not callable(action):
+                raise NotImplementedError('unsupported')
+            payload = action(**params)
+            if payload.get('schema_version') != 'rpnh/source_observation/v1':
+                raise RuntimeError('source observation response version differs')
+            response = _response(200, 'application/json; charset=utf-8', json.dumps(payload, ensure_ascii=False, allow_nan=False).encode('utf8'))
+        except NotImplementedError:
+            response = _response(501, 'application/json; charset=utf-8', b'{"error":"not_provided"}')
+        except ObservationNotSelected:
+            response = _response(403, 'application/json; charset=utf-8', b'{"error":"not_selected"}')
+        except (ValueError, TypeError, KeyError):
+            response = _response(400, 'application/json; charset=utf-8', b'{"error":"invalid_query"}')
+        except (RuntimeError, OSError, sqlite3.Error):
+            response = _response(503, 'application/json; charset=utf-8', b'{"error":"read_failed"}')
+    elif path == "/api/v2/worksets":
+        if urlsplit(target).query:
+            response = _response(400, "application/json; charset=utf-8", b'{"error":"invalid_query"}')
+        elif not callable(getattr(provider, "worksets", None)):
+            response = _response(501, "application/json; charset=utf-8", b'{"error":"unsupported"}')
+        else:
+            try:
+                payload = provider.worksets()
+                if payload.get("schema_version") not in {"rpnh/workset_view/v1", "rpnh/workset_view/v2"}:
+                    raise ValueError("Workset projection schema differs")
+                response = _response(200, "application/json; charset=utf-8", json.dumps(payload, allow_nan=False).encode("utf8"))
+            except (ValueError, RuntimeError):
+                response = _response(409, "application/json; charset=utf-8", b'{"error":"workset_unavailable"}')
+    elif path == "/api/v2/firing-activity":
+        from .firing_activity import parse_query, ActivityQueryError, ActivityStaleError, ActivityAccessChanged
+        from cpn.rpnh.registry._event_store.views import ActivityCursorError
+        import sqlite3
+        try:
+            params = parse_query(urlsplit(target).query)
+            action = getattr(provider, "firing_activity", None)
+            if not callable(action):
+                response = _response(501, "application/json; charset=utf-8", b'{"error":"unsupported"}')
+            else:
+                payload = action(**params)
+                selected = {k: params[k] for k in ("net_ref", "checkpoint_ref", "cut")}
+                if payload.get("schema_version") != "rpnh/firing_activity/v1" or payload.get("selector") != selected:
+                    raise RuntimeError("activity response identity differs")
+                response = _response(200, "application/json; charset=utf-8", json.dumps(payload, ensure_ascii=False, allow_nan=False).encode("utf8"))
+        except (ActivityQueryError, ActivityCursorError):
+            response = _response(400, "application/json; charset=utf-8", b'{"error":"invalid_query"}')
+        except ActivityStaleError:
+            response = _response(409, "application/json; charset=utf-8", b'{"error":"stale_observation"}')
+        except ActivityAccessChanged:
+            response = _response(403, "application/json; charset=utf-8", b'{"error":"access_changed"}')
+        except (ValueError, TypeError, KeyError, RuntimeError, OSError, sqlite3.Error):
+            response = _response(503, "application/json; charset=utf-8", b'{"error":"read_failed"}')
+    elif path == "/api/v2/checkpoint-view":
+        from .checkpoint_view import (token_resource_target, validate_token_resource_response,
+            TokenResourceInvalid, TokenResourceStale, TokenResourceAccessChanged)
+        import sqlite3
+        extended = "token_resource" in parse_qs(urlsplit(target).query, keep_blank_values=True)
+        action = getattr(provider, "checkpoint_view", None)
+        if not callable(action):
+            response = _response(501, "application/json; charset=utf-8", b'{"error":"Saved checkpoint views are unsupported"}')
+        else:
+            try:
+                query = parse_qs(urlsplit(target).query, keep_blank_values=True, strict_parsing=True)
+                if set(query) != ({"net_ref", "checkpoint_ref", "cut", "token_resource"} if extended else {"net_ref", "checkpoint_ref", "cut"}) or any(len(v) != 1 for v in query.values()):
+                    raise ValueError("checkpoint-view requires exactly net_ref, checkpoint_ref and cut")
+                text = query["cut"][0]
+                if not text.isascii() or not text.isdecimal() or text.startswith("0"):
+                    raise ValueError("cut must be a positive canonical decimal ordinal")
+                def unique_object(pairs):
+                    result = {}
+                    for key, value in pairs:
+                        if key in result:
+                            raise ValueError("duplicate reference field")
+                        result[key] = value
+                    return result
+                from .checkpoint_view import selector
+                selected = selector(json.loads(query["net_ref"][0], object_pairs_hook=unique_object),
+                                    json.loads(query["checkpoint_ref"][0], object_pairs_hook=unique_object), int(text))
+                resource_target = token_resource_target(json.loads(query['token_resource'][0], object_pairs_hook=unique_object)) if extended else None
+                payload = action(**selected, token_resource=resource_target) if extended else action(**selected)
+                if extended and type(payload) is not dict:
+                    raise ValueError("invalid metadata response container")
+                if payload.get("schema_version") != "rpnh/checkpoint_view/v1" or payload.get("selector") != selected:
+                    raise ValueError("checkpoint-view returned a different selector")
+                if extended:
+                    validate_token_resource_response(payload, resource_target)
+                _validate_projection(payload["frame"]["net"])
+                response = _response(200, "application/json; charset=utf-8", json.dumps(payload, ensure_ascii=False, allow_nan=False).encode("utf8"))
+            except TokenResourceStale:
+                response = _response(409, "application/json; charset=utf-8", b'{"error":"stale_observation"}')
+            except TokenResourceAccessChanged:
+                response = _response(403, "application/json; charset=utf-8", b'{"error":"access_changed"}')
+            except (TypeError, ValueError, KeyError) as exc:
+                response = _response(400, "application/json; charset=utf-8", json.dumps({"error": "invalid_target" if extended else str(exc)}, ensure_ascii=False).encode("utf8"))
+            except (RuntimeError, OSError, sqlite3.Error) as exc:
+                response = _response(503, "application/json; charset=utf-8", json.dumps({"error": "read_failed" if extended else str(exc)}, ensure_ascii=False).encode("utf8"))
     elif path in {"/api/v1/dashboard", "/api/v1/history"}:
         action = getattr(provider, "dashboard" if path.endswith("dashboard") else "history", None)
         if not callable(action):

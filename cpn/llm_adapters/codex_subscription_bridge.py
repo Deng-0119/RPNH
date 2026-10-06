@@ -3,9 +3,11 @@
 from __future__ import annotations
 
 import argparse
+from dataclasses import asdict, dataclass
 import json
 import os
 from pathlib import Path
+import re
 import subprocess
 import sys
 import tempfile
@@ -33,9 +35,48 @@ _BRIDGE_FAILURE_PREFIX = "bridge: local_bridge_failure: "
 class CodexSubscriptionBridgeError(RuntimeError):
     """The Codex process did not produce one safe canonical model response."""
 
-    def __init__(self, message: str, *, failure_code: str = "codex_bridge_failure") -> None:
+    def __init__(self, message: str, *, failure_code: str = "codex_bridge_failure",
+                 diagnostic: CodexItemDiagnostic | None = None) -> None:
         super().__init__(message)
         self.failure_code = failure_code
+        self.diagnostic = diagnostic
+
+
+@dataclass(frozen=True)
+class CodexItemDiagnostic:
+    """Protocol type names only; never retain the item or its contents."""
+
+    event_type: str | None
+    item_type: str | None
+
+
+def _diagnostic_type(value: object) -> str | None:
+    if value is None:
+        return None
+    if isinstance(value, str) and re.fullmatch(r"[A-Za-z][A-Za-z0-9_.-]{0,63}", value):
+        return value
+    return "<invalid-type>"
+
+
+def _unsupported_event_failure(event: Mapping[str, Any]) -> CodexSubscriptionBridgeError | None:
+    event_type = event.get("type")
+    if not isinstance(event_type, str):
+        return CodexSubscriptionBridgeError(
+            "Codex event lacks a valid type", failure_code="codex_unsupported_event",
+            diagnostic=CodexItemDiagnostic(_diagnostic_type(event_type), None))
+    if event_type in {"item.started", "item.updated", "item.completed"}:
+        item = event.get("item")
+        item_type = item.get("type") if isinstance(item, Mapping) else None
+        if not isinstance(item_type, str) or item_type not in _ALLOWED_ITEM_TYPES:
+            return CodexSubscriptionBridgeError(
+                "Codex attempted a built-in tool or unsupported item",
+                failure_code="codex_unsupported_item",
+                diagnostic=CodexItemDiagnostic(event_type, _diagnostic_type(item_type)))
+    elif event_type not in _CODEX_LIFECYCLE_EVENTS | _CODEX_FAILURE_EVENT_TYPES:
+        return CodexSubscriptionBridgeError(
+            "Codex emitted unsupported event type", failure_code="codex_unsupported_event",
+            diagnostic=CodexItemDiagnostic(_diagnostic_type(event_type), None))
+    return None
 
 
 # These instructions belong to RPNH, not to the terminal client or provider.
@@ -69,6 +110,51 @@ def _build_endpoint_prompt(request: Mapping[str, Any]) -> str:
         f"{canonical_request}\n"
         "REQUEST_JSON_END"
     )
+
+
+@dataclass(frozen=True)
+class CodexRequestBudget:
+    """Local rendered-byte estimate, not an upstream tokenizer or output cap.
+
+    Prompt bytes include messages/history and RPNH tool schemas. CLI/wire
+    framing and hidden provider instructions are unknown. Historical usage
+    projection remains the Registry's separate proactive pressure estimate.
+    """
+
+    prompt_bytes: int
+    instructions_bytes: int
+    output_schema_bytes: int
+    reserved_output_tokens: int
+    context_window_tokens: int
+    estimator: str = "rendered_utf8_bytes_div4_ceil"
+
+    @property
+    def estimated_input_tokens(self) -> int:
+        return (self.prompt_bytes + self.instructions_bytes + self.output_schema_bytes + 3) // 4
+
+    @property
+    def estimated_total_tokens(self) -> int:
+        return self.estimated_input_tokens + self.reserved_output_tokens
+
+    def as_document(self) -> dict[str, Any]:
+        return {**asdict(self), "estimated_input_tokens": self.estimated_input_tokens,
+                "estimated_total_tokens": self.estimated_total_tokens,
+                "exact_token_count": False, "cli_output_cap_enforced": False}
+
+
+def _request_budget(*, prompt: str, response_schema: bytes,
+                    reserved_output_tokens: int, context_window_tokens: int) -> CodexRequestBudget:
+    return CodexRequestBudget(
+        len(prompt.encode("utf-8")), len(RPNH_ENDPOINT_INSTRUCTIONS.encode("utf-8")),
+        len(response_schema), reserved_output_tokens, context_window_tokens)
+
+
+def _validate_request_budget(budget: CodexRequestBudget) -> None:
+    if budget.estimated_total_tokens > budget.context_window_tokens:
+        raise CodexSubscriptionBridgeError(
+            "Rendered request estimate plus output reserve exceeds configured context window; "
+            + json.dumps(budget.as_document(), sort_keys=True, separators=(",", ":")),
+            failure_code="context_budget_exceeded")
 
 
 def _codex_argv(
@@ -195,9 +281,13 @@ def _codex_failure_from_events(stdout: bytes) -> CodexSubscriptionBridgeError | 
             event = json.loads(raw_line)
         except (UnicodeDecodeError, json.JSONDecodeError):
             continue
-        if (isinstance(event, Mapping)
-                and event.get("type") in _CODEX_FAILURE_EVENT_TYPES):
-            return _codex_event_failure(event)
+        if isinstance(event, Mapping):
+            event_type = event.get("type")
+            if isinstance(event_type, str) and event_type in _CODEX_FAILURE_EVENT_TYPES:
+                return _codex_event_failure(event)
+            unsupported = _unsupported_event_failure(event)
+            if unsupported is not None:
+                return unsupported
     return None
 
 
@@ -212,17 +302,14 @@ def _canonical_response_from_codex_events(stdout: bytes) -> bytes:
             continue
         event = _event_document(raw_line, ordinal=ordinal)
         event_type = event.get("type")
-        if not isinstance(event_type, str):
-            raise CodexSubscriptionBridgeError(
-                f"Codex event {ordinal} lacks a type")
+        unsupported = _unsupported_event_failure(event)
+        if unsupported is not None:
+            raise unsupported
         if event_type in _CODEX_FAILURE_EVENT_TYPES:
             raise _codex_event_failure(event)
         if event_type in {"item.started", "item.updated", "item.completed"}:
             item = event.get("item")
             item_type = item.get("type") if isinstance(item, Mapping) else None
-            if item_type not in _ALLOWED_ITEM_TYPES:
-                raise CodexSubscriptionBridgeError(
-                    "Codex attempted a built-in tool or unsupported item")
             if event_type == "item.completed" and item_type == "agent_message":
                 text = item.get("text")
                 if not isinstance(text, str) or not text:
@@ -241,9 +328,6 @@ def _canonical_response_from_codex_events(stdout: bytes) -> bytes:
             completion_usage = usage
             saw_completed_turn = True
             continue
-        if event_type not in _CODEX_LIFECYCLE_EVENTS:
-            raise CodexSubscriptionBridgeError(
-                f"Codex emitted unsupported event type {event_type!r}")
     if not saw_completed_turn or len(final_messages) != 1:
         raise CodexSubscriptionBridgeError(
             "Codex did not produce exactly one completed final message")
@@ -324,6 +408,11 @@ def main(argv: Sequence[str] | None = None) -> int:
             expected_max_output_tokens=args.model_max_output_tokens,
         )
         prompt = _build_endpoint_prompt(request)
+        budget = _request_budget(
+            prompt=prompt, response_schema=args.response_schema.read_bytes(),
+            reserved_output_tokens=args.model_max_output_tokens,
+            context_window_tokens=args.model_context_window)
+        _validate_request_budget(budget)
         with tempfile.TemporaryDirectory(
                 prefix="codex-subscription-endpoint-", dir=Path.cwd()) as root:
             runtime_root = Path(root)
@@ -364,11 +453,17 @@ def main(argv: Sequence[str] | None = None) -> int:
         CodexSubscriptionBridgeError, ResponseEnvelopeError, OSError, ValueError,
     ) as exc:
         failure_code = getattr(exc, "failure_code", "codex_bridge_failure")
+        diagnostic = getattr(exc, "diagnostic", None)
+        diagnostic_text = (
+            " | diagnostic=" + json.dumps(asdict(diagnostic), sort_keys=True)
+            if diagnostic is not None else "")
         print(
-            f"{_BRIDGE_FAILURE_PREFIX}{failure_code} | {exc}",
+            f"{_BRIDGE_FAILURE_PREFIX}{failure_code} | {exc}{diagnostic_text}",
             file=sys.stderr,
         )
         return 1
+    print("bridge: request_budget: " + json.dumps(
+        budget.as_document(), sort_keys=True, separators=(",", ":")), file=sys.stderr)
     sys.stdout.buffer.write(response_bytes)
     return 0
 

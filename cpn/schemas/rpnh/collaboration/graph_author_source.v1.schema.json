@@ -1,0 +1,200 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "additionalProperties": false,
+  "$id": "rpnh/collaboration/graph_author_source/v1",
+  "definitions": {
+    "port": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "port_id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]{0,47}$"
+        },
+        "artifact_id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]{0,47}$"
+        }
+      },
+      "required": [
+        "port_id",
+        "artifact_id"
+      ]
+    },
+    "endpoint": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "node_id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]{0,47}$"
+        },
+        "port_id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]{0,47}$"
+        }
+      },
+      "required": [
+        "node_id",
+        "port_id"
+      ]
+    }
+  },
+  "properties": {
+    "schema_version": {
+      "const": "rpnh/collaboration/graph_author_source/v1"
+    },
+    "component_key": {
+      "const": "rpnh/agent-workflow-graph/v3"
+    },
+    "config_schema": {
+      "const": "application/rpnh_agent_workflow_graph_config/v3"
+    },
+    "graph": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "nodes": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "node_id": {
+                "type": "string",
+                "pattern": "^[a-z][a-z0-9_]{0,47}$"
+              },
+              "instruction": {
+                "type": "string",
+                "minLength": 1
+              },
+              "input_ports": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "$ref": "#/definitions/port"
+                }
+              },
+              "output_ports": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "$ref": "#/definitions/port"
+                }
+              },
+              "execution": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "role": {
+                    "type": "string",
+                    "enum": [
+                      "actor",
+                      "critic",
+                      "finalization_reviewer"
+                    ]
+                  },
+                  "tools": {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "array",
+                        "uniqueItems": true,
+                        "items": {
+                          "type": "string",
+                          "pattern": "^[a-z][a-z0-9_]{0,47}$"
+                        }
+                      }
+                    ]
+                  },
+                  "profile_id": {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "string",
+                        "pattern": "^[a-z][a-z0-9_]{0,47}$"
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "role",
+                  "tools",
+                  "profile_id"
+                ]
+              }
+            },
+            "required": [
+              "node_id",
+              "instruction",
+              "input_ports",
+              "output_ports",
+              "execution"
+            ]
+          }
+        },
+        "arcs": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "arc_id": {
+                "type": "string",
+                "pattern": "^[a-z][a-z0-9_]{0,47}$"
+              },
+              "source": {
+                "$ref": "#/definitions/endpoint"
+              },
+              "target": {
+                "$ref": "#/definitions/endpoint"
+              },
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "dependency",
+                  "feedback"
+                ]
+              }
+            },
+            "required": [
+              "arc_id",
+              "source",
+              "target",
+              "kind"
+            ]
+          }
+        },
+        "ingress": {
+          "$ref": "#/definitions/endpoint"
+        },
+        "egress": {
+          "$ref": "#/definitions/endpoint"
+        },
+        "max_rework_cycles": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "required": [
+        "nodes",
+        "arcs",
+        "ingress",
+        "egress",
+        "max_rework_cycles"
+      ]
+    }
+  },
+  "required": [
+    "schema_version",
+    "component_key",
+    "config_schema",
+    "graph"
+  ]
+}

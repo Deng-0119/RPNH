@@ -1,0 +1,191 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "rpnh/collaboration/plain_author_transform_map/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "rpnh/collaboration/plain_author_transform_map/v1"
+    },
+    "contract": {
+      "const": "rpnh/plain_author_identity_transform/v1"
+    },
+    "source_revision_ref": {
+      "$ref": "#/definitions/version_ref"
+    },
+    "retained_element_ids": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^element:[a-f0-9]{32}(?![\\s\\S])"
+      },
+      "uniqueItems": true
+    },
+    "transform_groups": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "enum": [
+              "split",
+              "fusion"
+            ]
+          },
+          "source_revision_ref": {
+            "$ref": "#/definitions/version_ref"
+          },
+          "source_element_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^element:[a-f0-9]{32}(?![\\s\\S])"
+            },
+            "minItems": 1,
+            "uniqueItems": true
+          },
+          "target_element_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^element:[a-f0-9]{32}(?![\\s\\S])"
+            },
+            "minItems": 1,
+            "uniqueItems": true
+          }
+        },
+        "required": [
+          "kind",
+          "source_revision_ref",
+          "source_element_ids",
+          "target_element_ids"
+        ]
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "copy_sources": {
+      "type": "object",
+      "propertyNames": {
+        "type": "string",
+        "pattern": "^element:[a-f0-9]{32}(?![\\s\\S])"
+      },
+      "additionalProperties": {
+        "type": "string",
+        "pattern": "^element:[a-f0-9]{32}(?![\\s\\S])"
+      }
+    },
+    "created_element_ids": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^element:[a-f0-9]{32}(?![\\s\\S])"
+      },
+      "uniqueItems": true
+    },
+    "removed_element_ids": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^element:[a-f0-9]{32}(?![\\s\\S])"
+      },
+      "uniqueItems": true
+    }
+  },
+  "required": [
+    "schema_version",
+    "contract",
+    "source_revision_ref",
+    "retained_element_ids",
+    "transform_groups",
+    "copy_sources",
+    "created_element_ids",
+    "removed_element_ids"
+  ],
+  "definitions": {
+    "version_ref": {
+      "title": "Source version ref",
+      "description": "Source qualification supplies identity only; it does not resolve a source, prove target existence, or grant access.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "rpnh/collaboration/source_version_ref/v1"
+        },
+        "source_id": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[^\\s\\u0000-\\u001f\\u007f](?:[^\\u0000-\\u001f\\u007f]*[^\\s\\u0000-\\u001f\\u007f])?(?![\\s\\S])"
+        },
+        "ref": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "entity_type": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9_]*(?:/[a-z][a-z0-9_]*)*/v[1-9][0-9]*(?![\\s\\S])"
+            },
+            "logical_id": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}(?![\\s\\S])"
+            },
+            "version_id": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}(?![\\s\\S])"
+            }
+          },
+          "required": [
+            "entity_type",
+            "logical_id",
+            "version_id"
+          ]
+        }
+      },
+      "required": [
+        "schema_version",
+        "source_id",
+        "ref"
+      ]
+    },
+    "resource_ref": {
+      "title": "Source resource ref",
+      "description": "Source qualification supplies identity only; it does not resolve a source, prove target existence, or grant access.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "rpnh/collaboration/source_resource_ref/v1"
+        },
+        "source_id": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[^\\s\\u0000-\\u001f\\u007f](?:[^\\u0000-\\u001f\\u007f]*[^\\s\\u0000-\\u001f\\u007f])?(?![\\s\\S])"
+        },
+        "ref": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "resource_id": {
+              "type": "string",
+              "pattern": "^resource:[a-f0-9]{32}(?![\\s\\S])"
+            },
+            "resource_version_id": {
+              "type": "string",
+              "pattern": "^resource_version:[a-f0-9]{32}(?![\\s\\S])"
+            }
+          },
+          "required": [
+            "resource_id",
+            "resource_version_id"
+          ]
+        }
+      },
+      "required": [
+        "schema_version",
+        "source_id",
+        "ref"
+      ]
+    }
+  }
+}

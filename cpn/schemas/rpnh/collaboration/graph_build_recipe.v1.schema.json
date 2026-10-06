@@ -1,0 +1,135 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "additionalProperties": false,
+  "$id": "rpnh/collaboration/graph_build_recipe/v1",
+  "properties": {
+    "schema_version": {
+      "const": "rpnh/collaboration/graph_build_recipe/v1"
+    },
+    "builder_contract": {
+      "const": "rpnh/ordinary_workflow_graph_builder/v1"
+    },
+    "executor_key": {
+      "type": "string",
+      "minLength": 1
+    },
+    "terminal_key": {
+      "type": "string",
+      "minLength": 1
+    },
+    "tools": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "required_schemas": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "max_attempts_per_node": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "integer",
+          "minimum": 1
+        }
+      ]
+    },
+    "plugin_catalog": {
+      "type": "null"
+    },
+    "managed_tools": {
+      "type": "object",
+      "maxProperties": 0
+    },
+    "managed_tool_names": {
+      "type": "object",
+      "maxProperties": 0
+    },
+    "declaration_refs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "enum": [
+              "schema",
+              "component",
+              "executor",
+              "tool",
+              "analyzer"
+            ]
+          },
+          "key": {
+            "type": "string",
+            "minLength": 1
+          },
+          "resource_ref": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "schema_version": {
+                "const": "rpnh/collaboration/source_resource_ref/v1"
+              },
+              "source_id": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "^[^\\s\\u0000-\\u001f\\u007f](?:[^\\u0000-\\u001f\\u007f]*[^\\s\\u0000-\\u001f\\u007f])?(?![\\s\\S])"
+              },
+              "ref": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "resource_id": {
+                    "type": "string",
+                    "pattern": "^resource:[a-f0-9]{32}(?![\\s\\S])"
+                  },
+                  "resource_version_id": {
+                    "type": "string",
+                    "pattern": "^resource_version:[a-f0-9]{32}(?![\\s\\S])"
+                  }
+                },
+                "required": [
+                  "resource_id",
+                  "resource_version_id"
+                ]
+              }
+            },
+            "required": [
+              "schema_version",
+              "source_id",
+              "ref"
+            ]
+          }
+        },
+        "required": [
+          "kind",
+          "key",
+          "resource_ref"
+        ]
+      }
+    }
+  },
+  "required": [
+    "schema_version",
+    "builder_contract",
+    "executor_key",
+    "terminal_key",
+    "tools",
+    "required_schemas",
+    "max_attempts_per_node",
+    "plugin_catalog",
+    "managed_tools",
+    "managed_tool_names",
+    "declaration_refs"
+  ]
+}

@@ -35,6 +35,7 @@ def project_module_firing_success(
     *, effects: PreparedModuleEffects | None = None,
     resource_accesses: tuple[
         RegisteredPetriFiringResourceAccess, ...] = (),
+    ordinary_token_ref_scheme: str | None = None,
 ) -> tuple[TypedMarkingAuthority, tuple[tuple[VersionRef, PetriTokenState], ...]]:
     """Project typed PN/declaration semantics and bounded prepared effects.
 
@@ -184,7 +185,10 @@ def project_module_firing_success(
         raise MarkingStateError("Module projection deposited an undeclared output")
     marking.record_settled_attempt(firing.transition_id, firing.attempt_index)
     # This invokes Core's local PN, colour, identity and exact-ref validators.
-    snapshot = marking.pure_typed_snapshot(executable)
+    snapshot = marking.pure_typed_snapshot(executable,
+        ordinary_token_ref_scheme=ordinary_token_ref_scheme,
+        allocation_firing_ref=(firing.transition_firing_ref
+            if ordinary_token_ref_scheme is not None else None))
     capacities = {place.name: place.capacity for place in selected.compiled.symbolic.places}
     occupied = Counter(state.place for state in snapshot.tokens)
     if any(capacities[place] is not None and count > capacities[place]

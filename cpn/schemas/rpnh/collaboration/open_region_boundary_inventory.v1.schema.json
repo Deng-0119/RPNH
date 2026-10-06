@@ -1,0 +1,446 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "rpnh/collaboration/open_region_boundary_inventory/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "rpnh/collaboration/open_region_boundary_inventory/v1"
+    },
+    "provenance_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "rpnh/collaboration/source_resource_ref/v1"
+        },
+        "source_id": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[^\\s\\u0000-\\u001f\\u007f](?:[^\\u0000-\\u001f\\u007f]*[^\\s\\u0000-\\u001f\\u007f])?(?![\\s\\S])"
+        },
+        "ref": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "resource_id": {
+              "type": "string",
+              "pattern": "^resource:[a-f0-9]{32}(?![\\s\\S])"
+            },
+            "resource_version_id": {
+              "type": "string",
+              "pattern": "^resource_version:[a-f0-9]{32}(?![\\s\\S])"
+            }
+          },
+          "required": [
+            "resource_id",
+            "resource_version_id"
+          ]
+        }
+      },
+      "required": [
+        "schema_version",
+        "source_id",
+        "ref"
+      ]
+    },
+    "scanner": {
+      "const": "source_declaration_and_actual_fragments/v1"
+    },
+    "source_compile_signature": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "payload_bytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "payload_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}(?![\\s\\S])"
+        }
+      },
+      "required": [
+        "payload_bytes",
+        "payload_sha256"
+      ]
+    },
+    "coverage": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "enum": [
+              "data",
+              "control",
+              "feedback",
+              "lease",
+              "pool",
+              "slot",
+              "reset",
+              "external_dependency",
+              "effect",
+              "completion"
+            ]
+          },
+          "status": {
+            "enum": [
+              "complete",
+              "unsupported"
+            ]
+          },
+          "source_locations": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "revision_ref": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "schema_version": {
+                      "const": "rpnh/collaboration/source_version_ref/v1"
+                    },
+                    "source_id": {
+                      "type": "string",
+                      "minLength": 1,
+                      "pattern": "^[^\\s\\u0000-\\u001f\\u007f](?:[^\\u0000-\\u001f\\u007f]*[^\\s\\u0000-\\u001f\\u007f])?(?![\\s\\S])"
+                    },
+                    "ref": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "entity_type": {
+                          "type": "string",
+                          "pattern": "^[a-z][a-z0-9_]*(?:/[a-z][a-z0-9_]*)*/v[1-9][0-9]*(?![\\s\\S])"
+                        },
+                        "logical_id": {
+                          "type": "string",
+                          "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}(?![\\s\\S])"
+                        },
+                        "version_id": {
+                          "type": "string",
+                          "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}(?![\\s\\S])"
+                        }
+                      },
+                      "required": [
+                        "entity_type",
+                        "logical_id",
+                        "version_id"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "schema_version",
+                    "source_id",
+                    "ref"
+                  ]
+                },
+                "material_role": {
+                  "enum": [
+                    "definition",
+                    "compiled_inventory"
+                  ]
+                },
+                "json_pointer": {
+                  "type": "string"
+                },
+                "element_id": {
+                  "oneOf": [
+                    {
+                      "type": "string",
+                      "pattern": "^element:[a-f0-9]{32}(?![\\s\\S])"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              },
+              "required": [
+                "revision_ref",
+                "material_role",
+                "json_pointer",
+                "element_id"
+              ]
+            }
+          }
+        },
+        "required": [
+          "kind",
+          "status",
+          "source_locations"
+        ]
+      }
+    },
+    "items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "item_id": {
+            "type": "string",
+            "pattern": "^boundary:[a-f0-9]{32}(?![\\s\\S])"
+          },
+          "kind": {
+            "enum": [
+              "data",
+              "control",
+              "feedback",
+              "lease",
+              "pool",
+              "slot",
+              "reset",
+              "external_dependency",
+              "effect",
+              "completion"
+            ]
+          },
+          "source_locations": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "revision_ref": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "schema_version": {
+                      "const": "rpnh/collaboration/source_version_ref/v1"
+                    },
+                    "source_id": {
+                      "type": "string",
+                      "minLength": 1,
+                      "pattern": "^[^\\s\\u0000-\\u001f\\u007f](?:[^\\u0000-\\u001f\\u007f]*[^\\s\\u0000-\\u001f\\u007f])?(?![\\s\\S])"
+                    },
+                    "ref": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "entity_type": {
+                          "type": "string",
+                          "pattern": "^[a-z][a-z0-9_]*(?:/[a-z][a-z0-9_]*)*/v[1-9][0-9]*(?![\\s\\S])"
+                        },
+                        "logical_id": {
+                          "type": "string",
+                          "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}(?![\\s\\S])"
+                        },
+                        "version_id": {
+                          "type": "string",
+                          "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}(?![\\s\\S])"
+                        }
+                      },
+                      "required": [
+                        "entity_type",
+                        "logical_id",
+                        "version_id"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "schema_version",
+                    "source_id",
+                    "ref"
+                  ]
+                },
+                "material_role": {
+                  "enum": [
+                    "definition",
+                    "compiled_inventory"
+                  ]
+                },
+                "json_pointer": {
+                  "type": "string"
+                },
+                "element_id": {
+                  "oneOf": [
+                    {
+                      "type": "string",
+                      "pattern": "^element:[a-f0-9]{32}(?![\\s\\S])"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              },
+              "required": [
+                "revision_ref",
+                "material_role",
+                "json_pointer",
+                "element_id"
+              ]
+            }
+          },
+          "selected_element_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^element:[a-f0-9]{32}(?![\\s\\S])"
+            }
+          },
+          "outside_element_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^element:[a-f0-9]{32}(?![\\s\\S])"
+            }
+          },
+          "contract": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "facts": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "semantic_key": {
+                      "enum": [
+                        "schema",
+                        "direction",
+                        "cardinality",
+                        "order",
+                        "generation",
+                        "outcome",
+                        "completion",
+                        "arbitration",
+                        "resource",
+                        "effect"
+                      ]
+                    },
+                    "value": {},
+                    "source_locations": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "properties": {
+                          "revision_ref": {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "properties": {
+                              "schema_version": {
+                                "const": "rpnh/collaboration/source_version_ref/v1"
+                              },
+                              "source_id": {
+                                "type": "string",
+                                "minLength": 1,
+                                "pattern": "^[^\\s\\u0000-\\u001f\\u007f](?:[^\\u0000-\\u001f\\u007f]*[^\\s\\u0000-\\u001f\\u007f])?(?![\\s\\S])"
+                              },
+                              "ref": {
+                                "type": "object",
+                                "additionalProperties": false,
+                                "properties": {
+                                  "entity_type": {
+                                    "type": "string",
+                                    "pattern": "^[a-z][a-z0-9_]*(?:/[a-z][a-z0-9_]*)*/v[1-9][0-9]*(?![\\s\\S])"
+                                  },
+                                  "logical_id": {
+                                    "type": "string",
+                                    "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}(?![\\s\\S])"
+                                  },
+                                  "version_id": {
+                                    "type": "string",
+                                    "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}(?![\\s\\S])"
+                                  }
+                                },
+                                "required": [
+                                  "entity_type",
+                                  "logical_id",
+                                  "version_id"
+                                ]
+                              }
+                            },
+                            "required": [
+                              "schema_version",
+                              "source_id",
+                              "ref"
+                            ]
+                          },
+                          "material_role": {
+                            "enum": [
+                              "definition",
+                              "compiled_inventory"
+                            ]
+                          },
+                          "json_pointer": {
+                            "type": "string"
+                          },
+                          "element_id": {
+                            "oneOf": [
+                              {
+                                "type": "string",
+                                "pattern": "^element:[a-f0-9]{32}(?![\\s\\S])"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          }
+                        },
+                        "required": [
+                          "revision_ref",
+                          "material_role",
+                          "json_pointer",
+                          "element_id"
+                        ]
+                      }
+                    }
+                  },
+                  "required": [
+                    "semantic_key",
+                    "value",
+                    "source_locations"
+                  ]
+                }
+              },
+              "unknowns": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "required": [
+              "facts",
+              "unknowns"
+            ]
+          },
+          "extraction_disposition": {
+            "enum": [
+              "internal",
+              "boundary",
+              "outer_owned",
+              "needs_adapter",
+              "unrepresentable"
+            ]
+          }
+        },
+        "required": [
+          "item_id",
+          "kind",
+          "source_locations",
+          "selected_element_ids",
+          "outside_element_ids",
+          "contract",
+          "extraction_disposition"
+        ]
+      }
+    }
+  },
+  "required": [
+    "schema_version",
+    "provenance_ref",
+    "scanner",
+    "source_compile_signature",
+    "coverage",
+    "items"
+  ]
+}

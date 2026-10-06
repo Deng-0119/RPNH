@@ -1,5 +1,6 @@
 import { t as tr, messageError } from './i18n.mjs';
 import { overviewGraph } from './overview.mjs';
+import { agentMemberSummaries, agentCardState } from './agent-members.mjs';
 /** Product read-model: abstraction is reversible; it never fires a transition. */
 import { validateSnapshot, stable, firingSummary, referenceText, head } from './model.mjs';
 export const DASHBOARD = 'rpnh/dashboard/v1';
@@ -38,6 +39,82 @@ export function normalizeFrame(value) {
     }
     return value;
 }
+function observationFrame(frame) {
+    if (frame?.schema_version !== DASHBOARD || !['live', 'history'].includes(frame.position?.mode))
+        throw new TypeError('Expected normalizeFrame output');
+    // The old normalizer checks net/run/head, but leaves these capture hints
+    // optional. Missing hints are not conflicts; explicit disagreement is.
+    for (const key of ['mode', 'writer_fencing_epoch', 'task_id']) {
+        const source = frame.source?.[key], nested = frame.net.source?.[key];
+        if (source != null && nested != null && stable(source) !== stable(nested))
+            throw new TypeError(`Conflicting observation source ${key}`);
+    }
+    return frame;
+}
+/** Coverage of disclosed firing rows on this frame's transitions, not all activity.
+ * Input is normalizeFrame output. Unknown/partial empty data is never true zero.
+ */
+export function observationCoverage(frame) {
+    observationFrame(frame);
+    const transitions = frame.net.nodes.filter(n => n.kind === 'transition');
+    const declaration = typeof frame.coverage?.firings === 'string' ? frame.coverage.firings : null;
+    const scope = { kind: 'frame_transition_firings', declaration,
+        transition_ids: transitions.map(n => n.id) };
+    const missing = [];
+    const result = (state, loaded_count = null, total_count = null) =>
+        ({ state, scope, loaded_count, total_count, missing });
+    if (frame.source.mode !== 'registry_current') {
+        missing.push('registry_observation');
+        return result('unsupported');
+    }
+    if (['not_provided', 'not_disclosed', 'unsupported', 'read_failed', 'stale_observation'].includes(declaration)) {
+        missing.push(`firings:${declaration}`);
+        return result(declaration);
+    }
+    const expected = frame.position.mode === 'history' ? 'canonical_only' : 'current_observations';
+    if (declaration !== expected) missing.push('firing_scope');
+    if (frame.source.net_ref == null) missing.push('net_ref');
+    if (head(frame.net) == null) missing.push('observation_cut');
+    let loaded = 0, provided = 0;
+    for (const node of transitions) {
+        if (Array.isArray(node.runtime?.firings)) {
+            loaded += node.runtime.firings.length;
+            provided++;
+        } else missing.push(`runtime.firings:${node.id}`);
+    }
+    if (!missing.length) return result('complete', loaded, loaded);
+    return result(provided || declaration === 'partial' ? 'partial' : 'not_provided', loaded || null);
+}
+/** Detached, single-frame read context. Call normalizeFrame before this helper.
+ * Compatibility hints are not cross-source authority. No history-page cursor,
+ * SourceSet, access path or disclosure evidence is supplied by the old frame.
+ */
+export function observationContext(frame) {
+    observationFrame(frame);
+    const registry = frame.source.mode === 'registry_current';
+    const historical = frame.position.mode === 'history';
+    const ordinal = registry ? head(frame.net) : null;
+    const writer = registry ? frame.source.writer_fencing_epoch ?? null : null;
+    return structuredClone({
+        mode: historical ? 'canonical-as-of' : 'current',
+        source_set: null, manifest_version: null, query_scope: null,
+        local_source: { mode: frame.source.mode, task_id: frame.source.task_id ?? null,
+            run_dir: frame.source.run_dir ?? null },
+        checkpoint_selector: registry ? frame.position.cursor ?? null : null,
+        observed_capture: { latest_head_ordinal: registry ? frame.position.latest_head ?? null : null,
+            writer_fencing_epoch: writer },
+        source_cuts: [{
+            source: { source_locator: null, record_ref: null, concept_id: null },
+            net_ref: frame.source.net_ref ?? null,
+            checkpoint_ref: frame.net.marking?.checkpoint_ref ?? null,
+            cut: ordinal == null ? null : { head_ordinal: ordinal,
+                // History carries today's capture epoch, not the historical writer's.
+                writer_fencing_epoch: historical ? null : writer },
+            cursor: null, path_ref: null, disclosure_ref: null, query_scope: null,
+            coverage: observationCoverage(frame),
+        }],
+    });
+}
 export function scope(frame) { return stable([frame.source.task_id ?? null, frame.source.run_dir ?? null, frame.source.net_ref ?? null]); }
 const namePart = id => String(id).replace(/\.run$/, '').split('.').join(' · ').replaceAll('_', ' ') || String(id);
 export function nodePresentation(node, frame) {
@@ -59,6 +136,7 @@ export function nodePresentation(node, frame) {
     return { role, type, name, description, group: metadata.group ?? '', declared: Boolean(metadata.name), entries, exits, terminals };
 }
 export function cardState(node) {
+    if (node.agent_summary) return agentCardState(node.agent_summary);
     if (node.kind === 'place')
         return Number.isInteger(node.active_token_count) ? tr("{0} 个有效 token", node.active_token_count) : tr("状态未提供");
     if (!node.runtime)
@@ -79,8 +157,14 @@ export function displayGraph(frame, mode = 'flow') {
     const raw = frame.net, nodes = raw.nodes.map(n => ({ ...n, display: nodePresentation(n, frame), source_ids: [n.id] }));
     if (mode === 'overview') {
         const view = overviewGraph({ ...raw, nodes }, frame.agent_nodes);
-        view.nodes = view.nodes.map(n => ({...n, display: {...n.display,
-            description: frame.presentation?.nodes?.[n.id]?.description ?? tr('执行这个流程中已声明的智能体任务。')}}));
+        const summaries = agentMemberSummaries(frame, view.nodes);
+        view.nodes = view.nodes.map((n, index) => {
+            const summary = summaries[index];
+            return {...n, agent_summary: summary,
+                runtime: {firings: summary.rows.filter(row => !row.conflict).map(row => row.firing)},
+                display: {...n.display,
+                    description: frame.presentation?.nodes?.[n.id]?.description ?? tr('执行这个流程中已声明的智能体任务。')}};
+        });
         return view;
     }
     const incoming = new Map(), outgoing = new Map(), by = new Map(nodes.map(n => [n.id, n]));

@@ -111,7 +111,8 @@ class RegistryDashboard:
     """Callable v1 provider plus optional dashboard/history methods for the server."""
     def __init__(self, run_dir: Path, *, catalog: SchemaCatalog, presentation=None,
                  binding=None, max_checkpoints: int = DEFAULT_MAX_CHECKPOINTS,
-                 max_firings: int = DEFAULT_MAX_FIRINGS):
+                 max_firings: int = DEFAULT_MAX_FIRINGS, source_observations=None,
+                 workset_source_readers=None):
         if not isinstance(catalog, SchemaCatalog):
             raise TypeError('an explicit SchemaCatalog is required')
         if (type(max_checkpoints) is not int or max_checkpoints < 1
@@ -120,6 +121,8 @@ class RegistryDashboard:
         self.run_dir, self.catalog = Path(run_dir).resolve(), catalog
         self.presentation, self.binding = presentation, binding
         self.max_checkpoints, self.max_firings = max_checkpoints, max_firings
+        self.source_observations = source_observations
+        self.workset_source_readers = dict(workset_source_readers or {})
         core = self._open()
         self.task_id = str(core.task_id)
 
@@ -306,6 +309,27 @@ class RegistryDashboard:
                                'executable_binding_ref': binding['executable_binding_ref']})
         return agents
 
+    def source_observation(self, **kwargs):
+        self._bound()
+        if self.source_observations is None:
+            raise NotImplementedError('SourceSet observations were not selected for this Viewer')
+        return self.source_observations(**kwargs)
+
+    def firing_activity(self, **kwargs):
+        from .firing_activity import firing_activity
+        return firing_activity(self, **kwargs)
+
+    def worksets(self):
+        from .worksets import workset_view
+        self._bound()
+        return workset_view(self._open(), source_readers=self.workset_source_readers)
+
+    def checkpoint_view(self, *, net_ref, checkpoint_ref, cut, token_resource=None):
+        from .checkpoint_view import checkpoint_view
+        if token_resource is None:
+            return checkpoint_view(self, net_ref=net_ref, checkpoint_ref=checkpoint_ref, cut=cut)
+        return checkpoint_view(self, net_ref=net_ref, checkpoint_ref=checkpoint_ref, cut=cut, token_resource=token_resource)
+
     def dashboard(self, *, cursor=None):
         if cursor is not None and (type(cursor) is not int or cursor < 0):
             raise ValueError('invalid checkpoint cursor')
@@ -324,6 +348,7 @@ class RegistryDashboard:
             if token['net_instance_ref'] != exact(obs['source']['net_ref']):
                 raise ValueError('token belongs to another net')
             tokens.append({'token_ref': ref, 'place': token['place'], 'kind': token['kind'],
+                           'resource_ref': token['resource_ref'],
                            'active_in_checkpoint': token['epoch'] == checkpoint['epoch'] and token['consumed_by'] is None})
         firings = self._firings(core, obs, upper, cursor is not None)
         for node in net['nodes']:

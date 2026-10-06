@@ -1,0 +1,648 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "rpnh/collaboration/assembly_lowering_map/v9",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "rpnh/collaboration/assembly_lowering_map/v9"
+    },
+    "origins": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "member_id": {
+            "type": "string",
+            "pattern": "^member:[a-f0-9]{32}(?![\\s\\S])"
+          },
+          "revision_ref": {
+            "$ref": "#/definitions/net_revision_ref"
+          },
+          "element_id": {
+            "type": "string",
+            "pattern": "^element:[a-f0-9]{32}(?![\\s\\S])"
+          },
+          "kind": {
+            "enum": [
+              "module",
+              "component",
+              "port",
+              "operation",
+              "link",
+              "entry",
+              "exit",
+              "terminal"
+            ]
+          },
+          "source_locator": {
+            "type": "string",
+            "minLength": 1
+          },
+          "disposition": {
+            "enum": [
+              "retained",
+              "flattened",
+              "consumed",
+              "root_completion",
+              "not_root_completion"
+            ]
+          },
+          "declaration_locators": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        "required": [
+          "member_id",
+          "revision_ref",
+          "element_id",
+          "kind",
+          "source_locator",
+          "disposition",
+          "declaration_locators"
+        ]
+      }
+    },
+    "introduced": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "source_locator": {
+            "type": "string",
+            "minLength": 1
+          },
+          "declaration_locators": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        "required": [
+          "source_locator",
+          "declaration_locators"
+        ]
+      }
+    },
+    "declarations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "element_id": {
+            "type": "string",
+            "pattern": "^element:[a-f0-9]{32}(?![\\s\\S])"
+          },
+          "kind": {
+            "enum": [
+              "module",
+              "component",
+              "port",
+              "operation",
+              "link",
+              "entry",
+              "exit",
+              "terminal"
+            ]
+          },
+          "locator": {
+            "type": "string",
+            "minLength": 1
+          },
+          "compiled_targets": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        "required": [
+          "element_id",
+          "kind",
+          "locator",
+          "compiled_targets"
+        ]
+      }
+    },
+    "place_aliases": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "original_place": {
+            "type": "string",
+            "minLength": 1
+          },
+          "compiled_place": {
+            "type": "string",
+            "minLength": 1
+          },
+          "compiled_targets": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        "required": [
+          "original_place",
+          "compiled_place",
+          "compiled_targets"
+        ]
+      }
+    },
+    "origin_contract": {
+      "const": "rpnh/collaboration/finite_typed_member_origins/v1"
+    },
+    "member_proofs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "member_id": {
+            "type": "string",
+            "pattern": "^member:[a-f0-9]{32}(?![\\s\\S])"
+          },
+          "revision_ref": {
+            "$ref": "#/definitions/net_revision_ref"
+          },
+          "resolution": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "proof_kind": {
+                "enum": [
+                  "plain_closed_v1",
+                  "finite_control_ir_v1"
+                ]
+              },
+              "definition_ref": {
+                "$ref": "#/definitions/resource_ref"
+              },
+              "element_mapping_ref": {
+                "$ref": "#/definitions/resource_ref"
+              },
+              "boundary_mapping_ref": {
+                "$ref": "#/definitions/resource_ref"
+              },
+              "host_requirements_ref": {
+                "$ref": "#/definitions/resource_ref"
+              },
+              "constraints": {
+                "type": "object"
+              },
+              "original_materials": {
+                "type": "array",
+                "items": [
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "role": {
+                        "const": "definition"
+                      },
+                      "schema": {
+                        "const": "rpnh/module_declaration/v1"
+                      },
+                      "resource_ref": {
+                        "$ref": "#/definitions/resource_ref"
+                      },
+                      "bytes": {
+                        "type": "integer",
+                        "minimum": 1
+                      },
+                      "sha256": {
+                        "type": "string",
+                        "pattern": "^[a-f0-9]{64}(?![\\s\\S])"
+                      },
+                      "metadata": {
+                        "type": "object"
+                      },
+                      "schema_authority_sha256": {
+                        "type": "string",
+                        "pattern": "^[a-f0-9]{64}(?![\\s\\S])"
+                      }
+                    },
+                    "required": [
+                      "role",
+                      "schema",
+                      "resource_ref",
+                      "bytes",
+                      "sha256",
+                      "metadata",
+                      "schema_authority_sha256"
+                    ]
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "role": {
+                        "const": "element_mapping"
+                      },
+                      "schema": {
+                        "const": "rpnh/collaboration/author_element_map/v1"
+                      },
+                      "resource_ref": {
+                        "$ref": "#/definitions/resource_ref"
+                      },
+                      "bytes": {
+                        "type": "integer",
+                        "minimum": 1
+                      },
+                      "sha256": {
+                        "type": "string",
+                        "pattern": "^[a-f0-9]{64}(?![\\s\\S])"
+                      },
+                      "metadata": {
+                        "type": "object"
+                      },
+                      "schema_authority_sha256": {
+                        "type": "string",
+                        "pattern": "^[a-f0-9]{64}(?![\\s\\S])"
+                      }
+                    },
+                    "required": [
+                      "role",
+                      "schema",
+                      "resource_ref",
+                      "bytes",
+                      "sha256",
+                      "metadata",
+                      "schema_authority_sha256"
+                    ]
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "role": {
+                        "const": "boundary_mapping"
+                      },
+                      "schema": {
+                        "const": "rpnh/collaboration/author_boundary_map/v1"
+                      },
+                      "resource_ref": {
+                        "$ref": "#/definitions/resource_ref"
+                      },
+                      "bytes": {
+                        "type": "integer",
+                        "minimum": 1
+                      },
+                      "sha256": {
+                        "type": "string",
+                        "pattern": "^[a-f0-9]{64}(?![\\s\\S])"
+                      },
+                      "metadata": {
+                        "type": "object"
+                      },
+                      "schema_authority_sha256": {
+                        "type": "string",
+                        "pattern": "^[a-f0-9]{64}(?![\\s\\S])"
+                      }
+                    },
+                    "required": [
+                      "role",
+                      "schema",
+                      "resource_ref",
+                      "bytes",
+                      "sha256",
+                      "metadata",
+                      "schema_authority_sha256"
+                    ]
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "role": {
+                        "const": "host_requirements"
+                      },
+                      "schema": {
+                        "const": "rpnh/collaboration/author_host_requirements/v1"
+                      },
+                      "resource_ref": {
+                        "$ref": "#/definitions/resource_ref"
+                      },
+                      "bytes": {
+                        "type": "integer",
+                        "minimum": 1
+                      },
+                      "sha256": {
+                        "type": "string",
+                        "pattern": "^[a-f0-9]{64}(?![\\s\\S])"
+                      },
+                      "metadata": {
+                        "type": "object"
+                      },
+                      "schema_authority_sha256": {
+                        "type": "string",
+                        "pattern": "^[a-f0-9]{64}(?![\\s\\S])"
+                      }
+                    },
+                    "required": [
+                      "role",
+                      "schema",
+                      "resource_ref",
+                      "bytes",
+                      "sha256",
+                      "metadata",
+                      "schema_authority_sha256"
+                    ]
+                  }
+                ],
+                "minItems": 4,
+                "maxItems": 4,
+                "additionalItems": false
+              }
+            },
+            "required": [
+              "proof_kind",
+              "definition_ref",
+              "element_mapping_ref",
+              "boundary_mapping_ref",
+              "host_requirements_ref",
+              "constraints",
+              "original_materials"
+            ]
+          },
+          "claim": {
+            "enum": [
+              "plain_closed_v1",
+              "finite_control_ir_v1"
+            ]
+          }
+        },
+        "required": [
+          "member_id",
+          "revision_ref",
+          "resolution",
+          "claim"
+        ]
+      }
+    },
+    "fragment_origins": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "member_id": {
+            "type": "string",
+            "pattern": "^member:[a-f0-9]{32}(?![\\s\\S])"
+          },
+          "revision_ref": {
+            "$ref": "#/definitions/net_revision_ref"
+          },
+          "source_component_element_id": {
+            "type": "string",
+            "pattern": "^element:[a-f0-9]{32}(?![\\s\\S])"
+          },
+          "component": {
+            "type": "string"
+          },
+          "fields": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "field": {
+                  "type": "string"
+                },
+                "fragment_pointers": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "required": [
+                "field",
+                "fragment_pointers"
+              ]
+            }
+          },
+          "claim": {
+            "enum": [
+              "plain_closed_v1",
+              "finite_control_ir_v1"
+            ]
+          },
+          "source_component_locator": {
+            "type": "string"
+          },
+          "context": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "component": {
+                "type": "string"
+              },
+              "ports": {
+                "type": "array",
+                "items": {
+                  "type": "object"
+                }
+              },
+              "required_schemas": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "budgets": {
+                "type": "object"
+              },
+              "operations": {
+                "type": "array",
+                "items": {
+                  "type": "object"
+                }
+              }
+            },
+            "required": [
+              "component",
+              "ports",
+              "required_schemas",
+              "budgets",
+              "operations"
+            ]
+          },
+          "fragment_pointer": {
+            "type": "string"
+          },
+          "fragment_signature": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "bytes": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "sha256": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              }
+            },
+            "required": [
+              "bytes",
+              "sha256"
+            ]
+          }
+        },
+        "required": [
+          "member_id",
+          "revision_ref",
+          "source_component_element_id",
+          "component",
+          "fields",
+          "claim",
+          "source_component_locator",
+          "context",
+          "fragment_pointer",
+          "fragment_signature"
+        ]
+      }
+    },
+    "carrier_origins": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "member_id": {
+            "type": "string"
+          },
+          "source_port": {
+            "type": "string"
+          },
+          "source_carrier": {
+            "type": "string"
+          },
+          "final_port": {
+            "type": "string"
+          },
+          "final_cut_carrier": {
+            "type": "string"
+          },
+          "final_fused_carrier": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "member_id",
+          "source_port",
+          "source_carrier",
+          "final_port",
+          "final_cut_carrier",
+          "final_fused_carrier"
+        ]
+      }
+    }
+  },
+  "required": [
+    "schema_version",
+    "origins",
+    "introduced",
+    "declarations",
+    "place_aliases",
+    "origin_contract",
+    "member_proofs",
+    "fragment_origins",
+    "carrier_origins"
+  ],
+  "definitions": {
+    "net_revision_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "rpnh/collaboration/source_version_ref/v1"
+        },
+        "source_id": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[^\\s\\u0000-\\u001f\\u007f](?:[^\\u0000-\\u001f\\u007f]*[^\\s\\u0000-\\u001f\\u007f])?(?![\\s\\S])"
+        },
+        "ref": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "entity_type": {
+              "const": "collaboration_net_revision/v1"
+            },
+            "logical_id": {
+              "type": "string",
+              "pattern": "^resource:[a-f0-9]{32}(?![\\s\\S])"
+            },
+            "version_id": {
+              "type": "string",
+              "pattern": "^resource_version:[a-f0-9]{32}(?![\\s\\S])"
+            }
+          },
+          "required": [
+            "entity_type",
+            "logical_id",
+            "version_id"
+          ]
+        }
+      },
+      "required": [
+        "schema_version",
+        "source_id",
+        "ref"
+      ]
+    },
+    "resource_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "rpnh/collaboration/source_resource_ref/v1"
+        },
+        "source_id": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[^\\s\\u0000-\\u001f\\u007f](?:[^\\u0000-\\u001f\\u007f]*[^\\s\\u0000-\\u001f\\u007f])?(?![\\s\\S])"
+        },
+        "ref": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "resource_id": {
+              "type": "string",
+              "pattern": "^resource:[a-f0-9]{32}(?![\\s\\S])"
+            },
+            "resource_version_id": {
+              "type": "string",
+              "pattern": "^resource_version:[a-f0-9]{32}(?![\\s\\S])"
+            }
+          },
+          "required": [
+            "resource_id",
+            "resource_version_id"
+          ]
+        }
+      },
+      "required": [
+        "schema_version",
+        "source_id",
+        "ref"
+      ]
+    }
+  }
+}

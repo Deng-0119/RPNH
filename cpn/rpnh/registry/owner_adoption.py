@@ -406,7 +406,7 @@ def validate_owner_adoption(store, catalog, db, *, task_id, transaction_id,
         raise RegistryConflict("owner adoption exact command/checkpoint authority is malformed") from exc
 
 
-def verified_owner_adoption_fields(store, catalog, db, event):
+def verified_owner_adoption_fields(store, catalog, db, event, *, _prefix_reads=None):
     """Read the sole owner witness, requiring its SAMEtransaction checkpoint/result."""
     from .event_store import RegistryCorruptError, _exact_object_metadata, _CANONICAL_EVENT_SQL
     from .object_store import ObjectStore
@@ -416,8 +416,23 @@ def verified_owner_adoption_fields(store, catalog, db, event):
     )
     p = event.payload
     object_store = ObjectStore(store.path.parent / "objects", catalog, read_only=True)
+    if _prefix_reads is not None:
+        from ._event_store.adoption_reads import AdoptionPrefixReads
+        if (type(_prefix_reads) is not AdoptionPrefixReads or _prefix_reads.db is not db
+                or _prefix_reads.store is not store or _prefix_reads.task_id != event.task_id):
+            raise TypeError("owner prefix witness requires its fixed same-cut reader")
+    def metadata(store, ref, *, expected_type=None, db=None):
+        if _prefix_reads is not None:
+            return _prefix_reads.metadata(ref, expected_type)
+        return _exact_object_metadata(store, ref, expected_type=expected_type, db=db)
     def document(ref):
+        if _prefix_reads is not None:
+            return _prefix_reads.document(ref)
         return json.loads(object_store.path_for_version(ref.version_id).read_bytes())
+    def compiled_document(ref):
+        if _prefix_reads is not None:
+            return _prefix_reads.compiled(ref)
+        return load_compiled_net(document(ref))
     try:
         if not all(field in p for field in OWNER_FIELDS):
             raise RegistryCorruptError("owner adoption witness is incomplete")
@@ -427,15 +442,17 @@ def verified_owner_adoption_fields(store, catalog, db, event):
                 ("submission_checkpoint_ref", "marking_checkpoint/v1"),
                 ("owner_predecessor_checkpoint_ref", "marking_checkpoint/v1"),
                 ("owner_candidate_checkpoint_ref", "marking_checkpoint/v1")):
-            _exact_object_metadata(store, _version_from_payload(p[field]), expected_type=expected, db=db)
+            metadata(store, _version_from_payload(p[field]), expected_type=expected, db=db)
         rows = db.execute("SELECT e.* FROM events e WHERE e.task_id=? AND "
             "e.event_type='marking_checkpoint_committed/v1' AND e.transaction_id=? AND "
             f"{_CANONICAL_EVENT_SQL}", (str(event.task_id), str(event.transaction_id))).fetchall()
         if len(rows) != 1:
             raise RegistryCorruptError("owner adoption lacks one SAMEtransaction checkpoint commit")
+        if _prefix_reads is not None:
+            _prefix_reads.event(rows[0])
         commit = json.loads(rows[0]["payload_json"])
         checkpoint_ref = _version_from_payload(p["owner_candidate_checkpoint_ref"])
-        checkpoint = _exact_object_metadata(store, checkpoint_ref,
+        checkpoint = metadata(store, checkpoint_ref,
             expected_type="marking_checkpoint/v1", db=db)
         result_ref = _version_from_payload(p["owner_command_result_ref"])
         for ref in (checkpoint_ref, result_ref):
@@ -463,20 +480,18 @@ def verified_owner_adoption_fields(store, catalog, db, event):
                 or result["data"]["predecessor_checkpoint_ref"] != p["owner_predecessor_checkpoint_ref"]
                 or result["data"]["owner_input_mappings"] != p["owner_input_mappings"]):
             raise RegistryCorruptError("owner adoption result bytes differ from exact bridge")
-        old_net = _exact_object_metadata(store,
+        old_net = metadata(store,
             _version_from_payload(p["supersedes_net_ref"]),
             expected_type="net_instance/v1", db=db)
-        candidate_net = _exact_object_metadata(store,
+        candidate_net = metadata(store,
             _version_from_payload(p["net_instance_ref"]),
             expected_type="net_instance/v1", db=db)
         old_declaration = _resource_from_payload(
             old_net["team_net_declaration_resource_ref"])
         candidate_declaration = _resource_from_payload(
             candidate_net["team_net_declaration_resource_ref"])
-        old_compiled = load_compiled_net(document(
-            old_declaration.as_version_ref()))
-        candidate_compiled = load_compiled_net(document(
-            candidate_declaration.as_version_ref()))
+        old_compiled = compiled_document(old_declaration.as_version_ref())
+        candidate_compiled = compiled_document(candidate_declaration.as_version_ref())
         structure_delta = derive_petri_structure_delta(
             old_compiled.symbolic, candidate_compiled.symbolic)
         verify_petri_structure_delta(

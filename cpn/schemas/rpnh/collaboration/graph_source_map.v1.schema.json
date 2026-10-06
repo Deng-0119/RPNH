@@ -1,0 +1,116 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "rpnh/collaboration/graph_source_map/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "rpnh/collaboration/graph_source_map/v1"
+    },
+    "elements": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "element_id": {
+            "type": "string",
+            "pattern": "^element:[a-f0-9]{32}(?![\\s\\S])"
+          },
+          "kind": {
+            "enum": [
+              "graph",
+              "node",
+              "input_port",
+              "output_port",
+              "arc",
+              "ingress",
+              "egress"
+            ]
+          },
+          "locator": {
+            "type": "string",
+            "minLength": 1
+          },
+          "copied_from": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "revision_ref": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "schema_version": {
+                        "const": "rpnh/collaboration/source_version_ref/v1"
+                      },
+                      "source_id": {
+                        "type": "string",
+                        "minLength": 1,
+                        "pattern": "^[^\\s\\u0000-\\u001f\\u007f](?:[^\\u0000-\\u001f\\u007f]*[^\\s\\u0000-\\u001f\\u007f])?(?![\\s\\S])"
+                      },
+                      "ref": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "properties": {
+                          "entity_type": {
+                            "type": "string",
+                            "pattern": "^[a-z][a-z0-9_]*(?:/[a-z][a-z0-9_]*)*/v[1-9][0-9]*(?![\\s\\S])"
+                          },
+                          "logical_id": {
+                            "type": "string",
+                            "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}(?![\\s\\S])"
+                          },
+                          "version_id": {
+                            "type": "string",
+                            "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}(?![\\s\\S])"
+                          }
+                        },
+                        "required": [
+                          "entity_type",
+                          "logical_id",
+                          "version_id"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "schema_version",
+                      "source_id",
+                      "ref"
+                    ]
+                  },
+                  "element_id": {
+                    "type": "string",
+                    "pattern": "^element:[a-f0-9]{32}(?![\\s\\S])"
+                  }
+                },
+                "required": [
+                  "revision_ref",
+                  "element_id"
+                ]
+              }
+            ]
+          }
+        },
+        "required": [
+          "element_id",
+          "kind",
+          "locator",
+          "copied_from"
+        ]
+      }
+    },
+    "source_contract": {
+      "const": "rpnh/collaboration/graph_author_source/v1"
+    }
+  },
+  "required": [
+    "schema_version",
+    "source_contract",
+    "elements"
+  ]
+}

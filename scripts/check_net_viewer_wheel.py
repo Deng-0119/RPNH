@@ -19,6 +19,12 @@ REQUIRED_STATIC_FILES = (
     "canvas-text.mjs",
     "overview.mjs",
     "wire-geometry.mjs",
+    "checkpoint-view.mjs",
+    "agent-members.mjs",
+    "observation-panel.mjs",
+    "source-observation.mjs",
+    "firing-activity.mjs",
+    "worksets.mjs",
 )
 REQUIRED_VENDOR_FILES = (
     "joint.js",

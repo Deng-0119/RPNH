@@ -15,9 +15,11 @@
 <nav aria-label="Dashboard views and graph controls" class="toolbar" data-i18n-aria-label="看板视图与图形控制">
 <div aria-label="Information level" class="segmented" data-i18n-aria-label="信息层级" role="group"><button aria-pressed="true" data-i18n="简化概览" id="mode-overview">Overview</button><button aria-pressed="false" data-i18n="详细流程" id="mode-flow">Detailed flow</button><button aria-pressed="false" data-i18n="Petri 网" id="mode-petri">PetriNet</button><button aria-pressed="false" data-i18n="执行列表" id="mode-list">Executions</button></div>
 <div class="searchbox"><input aria-label="Search steps" data-i18n-aria-label="搜索步骤" data-i18n-placeholder="查找步骤、名称或 ID" id="search" placeholder="Find a step, name or ID" type="search"/><button aria-label="Locate the next search result" data-i18n="定位" data-i18n-aria-label="定位下一个搜索结果" id="find-next">Locate</button><span aria-live="polite" id="search-status"></span></div>
-<div class="tools"><button aria-pressed="false" data-i18n="资源 (0)" id="resources">Resources (0)</button><button data-i18n="定位活动" id="focus-current">Locate activity</button><button data-i18n="刷新" id="refresh">Refresh</button><label class="live-toggle"><input checked="" id="auto-refresh" type="checkbox"/><span data-i18n="实时">Live</span></label></div>
+<div class="tools"><button data-i18n="已记录来源查询" id="source-observations">Recorded source queries</button><button data-i18n="工作集" id="worksets">Worksets</button><button aria-pressed="false" data-i18n="资源 (0)" id="resources">Resources (0)</button><button data-i18n="定位活动" id="focus-current">Locate activity</button><button data-i18n="刷新" id="refresh">Refresh</button><label class="live-toggle"><input checked="" id="auto-refresh" type="checkbox"/><span data-i18n="实时">Live</span></label></div>
 </nav>
 <div class="error-banner" hidden="" id="error-banner" role="status"></div>
+<section aria-labelledby="observation-panel-title" hidden id="observation-panel"></section>
+<section aria-labelledby="source-observation-title" hidden id="source-observation-panel"></section>
 <main id="workspace">
 <section aria-label="Workflow canvas and execution list" class="canvas-section" data-i18n-aria-label="流程画布与执行列表">
 <div class="canvas-topline"><span data-i18n="简化概览 · 左 → 右 · 点击关系展开底层细节" id="mode-caption">Overview · Left → right · Select a connection for details</span><span id="counts"></span></div>
@@ -38,6 +40,7 @@
 </main>
 <section aria-label="Run history replay" class="timeline" data-i18n-aria-label="运行历史回放">
 <div class="timeline-heading"><div><strong data-i18n="运行时间轴" id="timeline-title">Run timeline</strong><span data-i18n="正在检查历史能力…" id="timeline-scope">Checking history availability…</span></div><button aria-pressed="true" class="primary" data-i18n="● 实时位置" id="back-live">● Live position</button></div>
+<div class="checkpoint-navigation"><button id="previous-net" data-i18n="前一网段" hidden="">Previous net segment</button><button id="return-capture" data-i18n="返回保留视图" hidden="">Return to retained view</button><span id="checkpoint-status" role="status"></span></div>
 <div class="time-controls"><button aria-label="Previous checkpoint" data-i18n-aria-label="上一个检查点" disabled="" id="previous">◀</button><button aria-label="Play history without executing the task" data-i18n="播放" data-i18n-aria-label="播放历史，不执行任务" disabled="" id="play">Play</button><button aria-label="Next checkpoint" data-i18n-aria-label="下一个检查点" disabled="" id="next">▶</button><select aria-label="Replay speed" data-i18n-aria-label="回放速度" id="speed"><option value="1400">1×</option><option value="700">2×</option><option value="2800">0.5×</option></select><input aria-label="Select a historical checkpoint" data-i18n-aria-label="选择历史检查点" disabled="" id="time-slider" max="0" min="0" step="1" type="range" value="0"/><span id="time-position">—</span><button data-i18n="更早记录" hidden="" id="load-earlier">Earlier records</button></div>
 <div class="timeline-note"><span data-i18n="时间轴只改变观看位置，不控制真实任务。" id="change-summary">The timeline changes the view only, not task execution.</span><label><input checked="" id="motion" type="checkbox"/><span data-i18n="变化示意动画">Animate changes</span></label></div>
 </section>

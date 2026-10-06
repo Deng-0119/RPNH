@@ -950,3 +950,96 @@ def outbox_rows(store) -> tuple[sqlite3.Row, ...]:
     """Committed fact-batch notifications, written atomically with their facts."""
     with store.connect() as db:
         return tuple(db.execute("SELECT * FROM outbox ORDER BY rowid"))
+
+
+# Fixed, explicit columns for the new reader only. Never SELECT * a growing
+# schema, and never materialize variable-width cells before the byte preflight.
+ACTIVITY_EVENT_COLUMNS = (
+    'ordinal', 'event_id', 'event_type', 'event_schema_version', 'criticality',
+    'task_id', 'branch_id', 'task_round_id', 'net_instance_id', 'stream_id',
+    'aggregate_id', 'aggregate_type', 'stream_sequence', 'aggregate_version',
+    'task_control_sequence', 'idempotency_key', 'command_id', 'correlation_id',
+    'causation_event_id', 'parent_event_ids_json', 'producer_principal',
+    'producer_invocation_id', 'transaction_id', 'occurred_at', 'recorded_at',
+    'payload_schema_ref', 'payload_json', 'writer_fencing_epoch',
+    'previous_event_hash', 'event_hash')
+ACTIVITY_OBJECT_COLUMNS = (
+    'logical_id', 'version_id', 'object_type', 'size', 'media_type', 'schema_ref',
+    'producer_invocation_id', 'storage_locator', 'metadata_json',
+    'transaction_id', 'published_event_id')
+
+
+def _activity_cell_bytes(value):
+    if value is None:
+        return 0
+    if isinstance(value, bytes):
+        return len(value)
+    if type(value) in (str, int, float):
+        return len(str(value).encode('utf8'))
+    raise ValueError('activity SQL cell has an unsupported storage value')
+
+
+def _activity_row_bytes(row):
+    # Account transported UTF-8/BLOB values plus explicit per-row/cell overhead.
+    # This is a material budget, not a claim about Python allocator heap size.
+    return 32 + sum(8 + _activity_cell_bytes(row[k]) for k in row.keys())
+
+
+def _activity_rows(db, *, columns, source_sql, parameters, reserve,
+                   max_rows, label, reject_overflow=True, max_cell_bytes=None):
+    """Scalar byte preflight then bounded contents in this same BEGIN snapshot.
+
+    All SQL fragments/columns are module-internal constants, not request input.
+    Every materialization is reserved, even if another query read the same event.
+    The caller's transaction/descriptor caches avoid subsequent materializations.
+    """
+    if not db.in_transaction or not 1 <= max_rows <= 2048 + 1:
+        raise ValueError('activity material read requires a bounded snapshot')
+    expressions = [column.split(' AS ')[0] for column in columns]
+    lengths = ['COALESCE(LENGTH(CAST(' + expression + ' AS BLOB)),0)' for expression in expressions]
+    size = str(32 + 8 * len(columns)) + '+' + '+'.join(lengths)
+    cell = lengths[0] if len(lengths) == 1 else 'MAX(' + ','.join(lengths) + ')'
+    args = (*parameters, max_rows + int(reject_overflow))
+    sizes = db.execute(
+        '/* activity-preflight:' + label + ' */ SELECT COUNT(*),'
+        'COALESCE(SUM(activity_row_bytes),0),COALESCE(MAX(activity_cell_bytes),0) '
+        'FROM (SELECT ' + size + ' AS activity_row_bytes,' + cell +
+        ' AS activity_cell_bytes FROM ' + source_sql + ' LIMIT ?)', args).fetchone()
+    if (sizes is None or type(sizes[0]) is not int or not 0 <= sizes[0] <= max_rows
+            or type(sizes[1]) is not int or sizes[1] < 0
+            or (max_cell_bytes is not None and sizes[2] > max_cell_bytes)):
+        raise RuntimeError('activity row count or cell byte budget exceeded')
+    reserve(sizes[1])
+    rows = db.execute('/* activity-material:' + label + ' */ SELECT ' + ','.join(columns)
+                      + ' FROM ' + source_sql + ' LIMIT ?', args).fetchall()
+    if len(rows) != sizes[0] or sum(_activity_row_bytes(row) for row in rows) != sizes[1]:
+        raise ValueError('activity material differs from byte preflight')
+    return rows
+
+
+def firing_activity_event_rows(db, *, task_id, net_ref, transition_ids,
+                               event_types, head, reserve, after=(0, ''), limit=50):
+    """Bounded event keyset in the caller's read transaction; no authority grant."""
+    if not db.in_transaction or not 1 <= limit <= 101:
+        raise ValueError('activity query requires a snapshot and bounded limit')
+    slots = ','.join('?' for _ in transition_ids)
+    types = ','.join('?' for _ in event_types)
+    source = (
+        "events e LEFT JOIN firing_temporary_members m ON "
+        "m.member_kind='event' AND m.member_identity=e.event_id "
+        "LEFT JOIN firing_publications p ON p.firing_version_id=m.firing_version_id "
+        "LEFT JOIN objects f ON f.version_id=m.firing_version_id "
+        "WHERE e.task_id=? AND e.net_instance_id=? "
+        f"AND e.event_type IN ({types}) AND e.ordinal<=? "
+        "AND (e.ordinal>? OR (e.ordinal=? AND e.event_id>?)) "
+        # Missing roots/descriptors reach validation, never silently disappear.
+        "AND (p.net_version_id=? OR json_extract(f.metadata_json,'$.net_instance_ref.version_id')=? OR p.firing_version_id IS NULL) "
+        f"AND (json_extract(f.metadata_json,'$.transition_id') IN ({slots}) "
+        "OR f.version_id IS NULL) ORDER BY e.ordinal,e.event_id")
+    return _activity_rows(db,
+        columns=tuple('e.' + name for name in ACTIVITY_EVENT_COLUMNS) +
+                ('m.firing_version_id AS activity_firing_version_id',),
+        source_sql=source,
+        parameters=(task_id, net_ref['logical_id'], *event_types, head, after[0], after[0],
+                    after[1], net_ref['version_id'], net_ref['version_id'], *transition_ids),
+        reserve=reserve, max_rows=limit, label='candidates', reject_overflow=False)

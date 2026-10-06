@@ -478,6 +478,15 @@ def publish_batch(event_store: "EventStore", *, task_id: TypedId, branch_id: str
         existing = db.execute(
             "SELECT transaction_id,status,command_json FROM transactions WHERE task_id=? AND idempotency_key=?",
             (str(task_id), idempotency_key)).fetchone()
+        from .preserved_plan_commit import validate_preserved_plan_commit
+        validate_preserved_plan_commit(
+            event_store, db, task_id=task_id, branch_id=branch_id,
+            task_round_id=task_round_id, net_instance_id=net_instance_id,
+            transaction_id=transaction_id, idempotency_key=idempotency_key,
+            objects=objects, events=events, relations=relations,
+            command_material=command_material, existing=existing,
+            extra_commands=bool(snapshot_predecessors or dependency_root_predecessor
+                or publication_commands or workspace_head_commands))
         if existing is not None:
             if existing["status"] not in {"committed", "aborted"}:
                 db.rollback()

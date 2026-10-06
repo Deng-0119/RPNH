@@ -1,0 +1,238 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "rpnh/collaboration/prospective_member_intent/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "rpnh/collaboration/prospective_member_intent/v1"
+    },
+    "kind": {
+      "const": "prospective"
+    },
+    "source_id": {
+      "type": "string"
+    },
+    "owner_task_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "rpnh/collaboration/source_version_ref/v1"
+        },
+        "source_id": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[^\\s\\u0000-\\u001f\\u007f](?:[^\\u0000-\\u001f\\u007f]*[^\\s\\u0000-\\u001f\\u007f])?(?![\\s\\S])"
+        },
+        "ref": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "entity_type": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9_]*(?:/[a-z][a-z0-9_]*)*/v[1-9][0-9]*(?![\\s\\S])"
+            },
+            "logical_id": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}(?![\\s\\S])"
+            },
+            "version_id": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}(?![\\s\\S])"
+            }
+          },
+          "required": [
+            "entity_type",
+            "logical_id",
+            "version_id"
+          ]
+        }
+      },
+      "required": [
+        "schema_version",
+        "source_id",
+        "ref"
+      ]
+    },
+    "assembly_protocol": {
+      "const": "collaboration_assembly_revision/v4"
+    },
+    "resolver_contract": {
+      "const": "rpnh/collaboration/direct_adapted_member_resolver/v1"
+    },
+    "assembly_command_id": {
+      "type": "string"
+    },
+    "parent_assembly_revision_ref": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "schema_version": {
+              "const": "rpnh/collaboration/source_version_ref/v1"
+            },
+            "source_id": {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "^[^\\s\\u0000-\\u001f\\u007f](?:[^\\u0000-\\u001f\\u007f]*[^\\s\\u0000-\\u001f\\u007f])?(?![\\s\\S])"
+            },
+            "ref": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "entity_type": {
+                  "type": "string",
+                  "pattern": "^[a-z][a-z0-9_]*(?:/[a-z][a-z0-9_]*)*/v[1-9][0-9]*(?![\\s\\S])"
+                },
+                "logical_id": {
+                  "type": "string",
+                  "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}(?![\\s\\S])"
+                },
+                "version_id": {
+                  "type": "string",
+                  "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}(?![\\s\\S])"
+                }
+              },
+              "required": [
+                "entity_type",
+                "logical_id",
+                "version_id"
+              ]
+            }
+          },
+          "required": [
+            "schema_version",
+            "source_id",
+            "ref"
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "target_scope": {
+      "const": "direct_member"
+    },
+    "member_id": {
+      "type": "string",
+      "pattern": "^member:[a-f0-9]{32}(?![\\s\\S])"
+    },
+    "ingress_expectations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "item_id": {
+            "type": "string",
+            "pattern": "^boundary:[a-f0-9]{32}(?![\\s\\S])"
+          },
+          "kind": {
+            "enum": [
+              "public_entry",
+              "assembly_connection"
+            ]
+          },
+          "other_member_id": {
+            "oneOf": [
+              {
+                "type": "string",
+                "pattern": "^member:[a-f0-9]{32}(?![\\s\\S])"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "other_revision_ref": {
+            "oneOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "schema_version": {
+                    "const": "rpnh/collaboration/source_version_ref/v1"
+                  },
+                  "source_id": {
+                    "type": "string",
+                    "minLength": 1,
+                    "pattern": "^[^\\s\\u0000-\\u001f\\u007f](?:[^\\u0000-\\u001f\\u007f]*[^\\s\\u0000-\\u001f\\u007f])?(?![\\s\\S])"
+                  },
+                  "ref": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "entity_type": {
+                        "type": "string",
+                        "pattern": "^[a-z][a-z0-9_]*(?:/[a-z][a-z0-9_]*)*/v[1-9][0-9]*(?![\\s\\S])"
+                      },
+                      "logical_id": {
+                        "type": "string",
+                        "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}(?![\\s\\S])"
+                      },
+                      "version_id": {
+                        "type": "string",
+                        "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}(?![\\s\\S])"
+                      }
+                    },
+                    "required": [
+                      "entity_type",
+                      "logical_id",
+                      "version_id"
+                    ]
+                  }
+                },
+                "required": [
+                  "schema_version",
+                  "source_id",
+                  "ref"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "other_exit_element_id": {
+            "oneOf": [
+              {
+                "type": "string",
+                "pattern": "^element:[a-f0-9]{32}(?![\\s\\S])"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "item_id",
+          "kind",
+          "other_member_id",
+          "other_revision_ref",
+          "other_exit_element_id"
+        ]
+      }
+    },
+    "completion_expectation": {
+      "const": "member_primary_terminal"
+    }
+  },
+  "required": [
+    "schema_version",
+    "kind",
+    "source_id",
+    "owner_task_ref",
+    "assembly_protocol",
+    "resolver_contract",
+    "assembly_command_id",
+    "parent_assembly_revision_ref",
+    "target_scope",
+    "member_id",
+    "ingress_expectations",
+    "completion_expectation"
+  ]
+}

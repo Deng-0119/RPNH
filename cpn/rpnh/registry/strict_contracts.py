@@ -160,6 +160,67 @@ def _publish_json(core: Any, object_type: str, ref: VersionRef,
     return ref
 
 
+def _operation_port_payload(port: Any, *, input_port: bool) -> dict[str, Any]:
+    payload = {
+        "port_id": port.port_id,
+        "place": port.place,
+        "schema_ref": ref_payload(port.schema_ref),
+        "content_schema_ref": content_schema_ref_payload(
+            port.content_schema_ref),
+        "cardinality": {
+            "minimum": port.minimum,
+            "maximum": port.maximum,
+        },
+    }
+    if port.lease_identity_ref is not None and not input_port:
+        raise StrictContractError(
+            "operation output port cannot declare a lease identity")
+    payload["lease_identity_ref"] = (
+        ref_payload(port.lease_identity_ref)
+        if port.lease_identity_ref is not None else None)
+    if port.input_projections:
+        if not input_port:
+            raise StrictContractError(
+                "operation output port cannot publish input projections")
+        payload["input_projections"] = [
+            {
+                "producer_content_schema_ref": (
+                    projection.producer_content_schema_ref),
+                "field_projection": [
+                    {
+                        "producer_path": field.producer_path,
+                        "consumer_path": field.consumer_path,
+                    }
+                    for field in projection.field_projection
+                ],
+            }
+            for projection in port.input_projections
+        ]
+    return payload
+
+
+def _operation_spec_metadata(*, spec_ref: VersionRef, operation_id: str,
+        executor_key: str, declaration: Mapping[str, Any], transport: str,
+        llm_prompt_port_id: str | None, input_payloads: Sequence[Mapping[str, Any]],
+        output_payloads: Sequence[Mapping[str, Any]], allowed_tool_ids: Sequence[str]) -> dict[str, Any]:
+    """Pure exact spec data; the existing producer retains all authority checks."""
+    metadata = {
+        "operation_spec_id": str(spec_ref.entity_id),
+        "operation_spec_version_id": str(spec_ref.version_id),
+        "operation_spec_ref": ref_payload(spec_ref),
+        "operation_id": operation_id,
+        "executor_key": executor_key,
+        "implementation_identity": declaration["identity"],
+        "implementation_contracts": declaration["contracts"],
+        "transport": transport,
+        "llm_prompt_port_id": llm_prompt_port_id,
+        "input_ports": input_payloads,
+        "output_ports": output_payloads,
+        "allowed_tool_ids": list(allowed_tool_ids),
+    }
+    return metadata
+
+
 def publish_operation_spec(
         core: Any, *, operation_id: str, executor_key: str,
         input_ports: Sequence[Any], output_ports: Sequence[Any],
@@ -211,62 +272,14 @@ def publish_operation_spec(
         _stable_id("operation_spec_version", idempotency_key),
     )
 
-    def port_payload(port: Any, *, input_port: bool) -> dict[str, Any]:
-        payload = {
-            "port_id": port.port_id,
-            "place": port.place,
-            "schema_ref": ref_payload(port.schema_ref),
-            "content_schema_ref": content_schema_ref_payload(
-                port.content_schema_ref),
-            "cardinality": {
-                "minimum": port.minimum,
-                "maximum": port.maximum,
-            },
-        }
-        if port.lease_identity_ref is not None and not input_port:
-            raise StrictContractError(
-                "operation output port cannot declare a lease identity")
-        payload["lease_identity_ref"] = (
-            ref_payload(port.lease_identity_ref)
-            if port.lease_identity_ref is not None else None)
-        if port.input_projections:
-            if not input_port:
-                raise StrictContractError(
-                    "operation output port cannot publish input projections")
-            payload["input_projections"] = [
-                {
-                    "producer_content_schema_ref": (
-                        projection.producer_content_schema_ref),
-                    "field_projection": [
-                        {
-                            "producer_path": field.producer_path,
-                            "consumer_path": field.consumer_path,
-                        }
-                        for field in projection.field_projection
-                    ],
-                }
-                for projection in port.input_projections
-            ]
-        return payload
-
-    input_payloads = [port_payload(port, input_port=True) for port in inputs]
-    output_payloads = [port_payload(port, input_port=False) for port in outputs]
+    input_payloads = [_operation_port_payload(port, input_port=True) for port in inputs]
+    output_payloads = [_operation_port_payload(port, input_port=False) for port in outputs]
     transport = registered_operation_transport(executor_key)
     declaration = registered_operation_contract(executor_key)
-    metadata = {
-        "operation_spec_id": str(spec_ref.entity_id),
-        "operation_spec_version_id": str(spec_ref.version_id),
-        "operation_spec_ref": ref_payload(spec_ref),
-        "operation_id": operation_id,
-        "executor_key": executor_key,
-        "implementation_identity": declaration["identity"],
-        "implementation_contracts": declaration["contracts"],
-        "transport": transport,
-        "llm_prompt_port_id": llm_prompt_port_id,
-        "input_ports": input_payloads,
-        "output_ports": output_payloads,
-        "allowed_tool_ids": list(tools),
-    }
+    metadata = _operation_spec_metadata(spec_ref=spec_ref, operation_id=operation_id,
+        executor_key=executor_key, declaration=declaration, transport=transport,
+        llm_prompt_port_id=llm_prompt_port_id, input_payloads=input_payloads,
+        output_payloads=output_payloads, allowed_tool_ids=tools)
     OperationSpecAuthority(
         operation_spec_ref=spec_ref,
         operation_id=operation_id,

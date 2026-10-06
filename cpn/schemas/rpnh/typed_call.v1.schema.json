@@ -1,0 +1,2325 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "rpnh/typed_call/v1",
+  "description": "Static compatible-profile author call contracts. Validation grants no runtime call capability.",
+  "oneOf": [
+    {
+      "const": {
+        "schema_version": "rpnh/typed_call/v1",
+        "site": "Q.segment_compact",
+        "callee": "C",
+        "context": {
+          "caller_case_ref": "ExactRef<review Case>",
+          "caller_phase_ref": "ExactRef<review phase>",
+          "caller_binding_ref": "ExactRef<DefinitionBinding>",
+          "parent_firing_ref": "ExactRef<transition_firing/v1>",
+          "business_invocation_ref": "ExactRef<invocation/v1>",
+          "generation": "NonNegativeInt",
+          "call_occurrence": "(caller_case_ref, static_call_site, local_call_ordinal)",
+          "expected_parent_head": "ExactRef<caller state head>"
+        },
+        "inputs": [
+          {
+            "port": "loop",
+            "type": "ExactRef<agent_loop/v1>",
+            "mode": "explicit",
+            "source_path": "QB.current_loop_ref",
+            "producer": "Q.read_boundary或此前C返回后已更新的Q.case",
+            "default": "无默认；必需",
+            "omission_allowed": false,
+            "validation": "存在、WAITING_FOR_LLM、属于CTX.parent_firing和business_invocation",
+            "on_missing": "fault:CALL_INPUT_MISSING",
+            "on_mismatch": "fault:CALL_INPUT_MISMATCH",
+            "on_unresolvable_old_binding": "reconciliation_required:BINDING_UNRESOLVABLE"
+          },
+          {
+            "port": "reason",
+            "type": "Enum{turn_cap,response_length,context_pressure}",
+            "mode": "literal",
+            "source_path": "turn_cap",
+            "producer": "Q.segment_compact",
+            "default": "无默认；必需",
+            "omission_allowed": false,
+            "validation": "严格等于本调用点原因",
+            "on_missing": "fault:CALL_INPUT_MISSING",
+            "on_mismatch": "fault:CALL_INPUT_MISMATCH",
+            "on_unresolvable_old_binding": "reconciliation_required:BINDING_UNRESOLVABLE"
+          },
+          {
+            "port": "force",
+            "type": "Bool",
+            "mode": "literal",
+            "source_path": true,
+            "producer": "Q.segment_compact",
+            "default": "无默认；必需",
+            "omission_allowed": false,
+            "validation": "force==(reason in {turn_cap,response_length})",
+            "on_missing": "fault:CALL_INPUT_MISSING",
+            "on_mismatch": "fault:CALL_INPUT_MISMATCH",
+            "on_unresolvable_old_binding": "reconciliation_required:BINDING_UNRESOLVABLE"
+          },
+          {
+            "port": "target",
+            "type": "ExactRef<resource_version/v1, llm_input_target/v1>",
+            "mode": "project",
+            "source_path": "QB.target_ref",
+            "producer": "Q.prepare或segment attach内有限材料物化",
+            "default": "无默认；必需",
+            "omission_allowed": false,
+            "validation": "与loop model_condition及operation.llm_input_target_ref相同；C未知只允许非pressure；等于本prepared-context材料中的target_ref，字段名属于review QB，不冒充现有API",
+            "on_missing": "fault:CALL_INPUT_MISSING",
+            "on_mismatch": "fault:CALL_INPUT_MISMATCH",
+            "on_unresolvable_old_binding": "reconciliation_required:BINDING_UNRESOLVABLE"
+          },
+          {
+            "port": "history_refs",
+            "type": "OrderedSeq<ExactRef>",
+            "mode": "project",
+            "source_path": "QB.history_refs",
+            "producer": "context.py::prepare_agent_turn_context_v1 / latest overlay投影",
+            "default": "无默认；必需",
+            "omission_allowed": false,
+            "validation": "顺序完整并绑定QB.current_loop_ref与overlay cut；空序列是合法值但不是缺字段",
+            "on_missing": "fault:CALL_INPUT_MISSING",
+            "on_mismatch": "fault:CALL_INPUT_MISMATCH",
+            "on_unresolvable_old_binding": "reconciliation_required:BINDING_UNRESOLVABLE"
+          },
+          {
+            "port": "reduction_settings",
+            "type": "ReductionSettings{checkpoint_prompt,tool_output_byte_limit,retained_history_token_limit}",
+            "mode": "project_then_finite_derive",
+            "source_path": "deref(QB.reduction_source_ref) + deref(target)",
+            "producer": "typed reduction resolver",
+            "default": "参数缺省只由原配置解析器在绑定时生成（10000/20000/0.90等见PAR）；调用时不能默取",
+            "omission_allowed": false,
+            "validation": "target.context_compaction_retained_tokens非None优先；否则已知C取min(setting,max(1,C//4))；未知C用setting；ratio另来自同binding的PAR14",
+            "on_missing": "fault:CALL_INPUT_MISSING",
+            "on_mismatch": "fault:CALL_INPUT_MISMATCH",
+            "on_unresolvable_old_binding": "reconciliation_required:BINDING_UNRESOLVABLE"
+          },
+          {
+            "port": "return_call_site",
+            "type": "ExactCallOccurrence",
+            "mode": "attach_generated",
+            "source_path": "CTX.call_occurrence",
+            "producer": "CALL.attach",
+            "default": "无默认；必需",
+            "omission_allowed": false,
+            "validation": "绑定此Q.case、静态site、local_call_ordinal及父phase，不能仅字符串site",
+            "on_missing": "fault:CALL_INPUT_MISSING",
+            "on_mismatch": "fault:CALL_INPUT_MISMATCH",
+            "on_unresolvable_old_binding": "reconciliation_required:BINDING_UNRESOLVABLE"
+          }
+        ],
+        "returns": [
+          {
+            "outcome": "normal_return",
+            "payload_type": "CompactionReturn",
+            "required_payload_fields": [
+              "waiting_loop_ref:ExactRef<agent_loop/v1>",
+              "compaction_ref:ExactRef<agent_context_compaction/v3>",
+              "overlay_material:ExactProjection<compaction_ref.replacement_history>",
+              "source_loop_ref:ExactRef",
+              "context_session_ordinal:NonNegativeInt",
+              "history_cut:OrderedSeq<ExactRef>",
+              "compaction_identity",
+              "request_recipe_ref:ExactRef<resource_version/v1>"
+            ],
+            "identity_and_version_checks": "新完成或already_completed都必须引用同compaction_id/trigger_reason的已登记compaction v3与其agent_loop_ref；没有NoOp/null成功。waiting为同loop/parent的合法提交后继。forced length还必须匹配原中断ref，后续Q.length_close_check复核。",
+            "parent_case_updates": [
+              "Q.case.current_loop_ref := waiting_loop_ref（不再次写loop）",
+              "Q.case.overlay_material/history_cut := 返回compaction的精确投影及覆盖引用",
+              "废弃Q.case.prepared_context/pressure测量缓存；目标与配置binding不变",
+              "Q.phase := Q.p.role_boundary"
+            ],
+            "expected_parent_heads": [
+              "本call仍等待的精确parent continuation/state head",
+              "callee返回材料中声明的合法loop predecessor→successor链（仅涉及该call状态；不可用同名最新loop替代）",
+              "若读取了可变source stream用于归属判断，其显式read-set head；不可变receipt按ref验证，不要求其为全局latest"
+            ],
+            "apply_boundary": "RETURN_APPLIED_AND_PARENT_CONTINUATION",
+            "parent_destination": "Q.p.role_boundary",
+            "duplicate_late_policy": "COMMON_RETURN"
+          },
+          {
+            "outcome": "blocked",
+            "payload_type": "CallBlocked",
+            "required_payload_fields": [
+              "last_committed_loop_ref or NotApplicable",
+              "exact_evidence_refs",
+              "reason_code",
+              "affected_call_refs",
+              "unresolved_obligation_refs",
+              "closure_class",
+              "continuation_disposition",
+              "block_kind",
+              "block_evidence_or_exact_authority"
+            ],
+            "identity_and_version_checks": "blocked须有对应block evidence；interrupted区分请求/确认及submission phase，必须符合所选SC；reconciliation含旧binding/attempt/义务；fault关联错误材料且无自动retry。",
+            "parent_case_updates": [
+              "Q.case.last_failure := exact envelope",
+              "Q.phase := Q.p.blocked",
+              "只认领可验证已提交loop后继；没有后继不伪造WAITING",
+              "不重置累计量、不丢未决义务、不直接释放activity或提交parent Success"
+            ],
+            "expected_parent_heads": [
+              "本call仍等待的精确parent continuation/state head",
+              "callee返回材料中声明的合法loop predecessor→successor链（仅涉及该call状态；不可用同名最新loop替代）",
+              "若读取了可变source stream用于归属判断，其显式read-set head；不可变receipt按ref验证，不要求其为全局latest"
+            ],
+            "apply_boundary": "RETURN_APPLIED_AND_PARENT_CONTINUATION",
+            "parent_destination": "Q.p.blocked",
+            "duplicate_late_policy": "COMMON_RETURN"
+          },
+          {
+            "outcome": "reconciliation_required",
+            "payload_type": "CallReconciliation",
+            "required_payload_fields": [
+              "last_committed_loop_ref or NotApplicable",
+              "exact_evidence_refs",
+              "reason_code",
+              "affected_call_refs",
+              "unresolved_obligation_refs",
+              "closure_class",
+              "continuation_disposition",
+              "reconciliation_subject_refs",
+              "missing_or_conflicting_material_description"
+            ],
+            "identity_and_version_checks": "blocked须有对应block evidence；interrupted区分请求/确认及submission phase，必须符合所选SC；reconciliation含旧binding/attempt/义务；fault关联错误材料且无自动retry。",
+            "parent_case_updates": [
+              "Q.case.last_failure := exact envelope",
+              "Q.phase := Q.p.reconcile",
+              "只认领可验证已提交loop后继；没有后继不伪造WAITING",
+              "不重置累计量、不丢未决义务、不直接释放activity或提交parent Success"
+            ],
+            "expected_parent_heads": [
+              "本call仍等待的精确parent continuation/state head",
+              "callee返回材料中声明的合法loop predecessor→successor链（仅涉及该call状态；不可用同名最新loop替代）",
+              "若读取了可变source stream用于归属判断，其显式read-set head；不可变receipt按ref验证，不要求其为全局latest"
+            ],
+            "apply_boundary": "RETURN_APPLIED_AND_PARENT_CONTINUATION",
+            "parent_destination": "Q.p.reconcile",
+            "duplicate_late_policy": "COMMON_RETURN"
+          },
+          {
+            "outcome": "interrupted",
+            "payload_type": "CallInterrupted",
+            "required_payload_fields": [
+              "last_committed_loop_ref or NotApplicable",
+              "exact_evidence_refs",
+              "reason_code",
+              "affected_call_refs",
+              "unresolved_obligation_refs",
+              "closure_class",
+              "continuation_disposition",
+              "stop_request_ref or authenticated original stop observation",
+              "submission_state:{not_submitted,submission_unknown,response_complete,NotApplicable}",
+              "local_stop_confirmation:Confirmed|Pending",
+              "applicable_stop_cut_id"
+            ],
+            "identity_and_version_checks": "blocked须有对应block evidence；interrupted区分请求/确认及submission phase，必须符合所选SC；reconciliation含旧binding/attempt/义务；fault关联错误材料且无自动retry。",
+            "parent_case_updates": [
+              "Q.case.last_failure := exact envelope",
+              "Q.phase := Q.p.stopped_pending",
+              "只认领可验证已提交loop后继；没有后继不伪造WAITING",
+              "不重置累计量、不丢未决义务、不直接释放activity或提交parent Success"
+            ],
+            "expected_parent_heads": [
+              "本call仍等待的精确parent continuation/state head",
+              "callee返回材料中声明的合法loop predecessor→successor链（仅涉及该call状态；不可用同名最新loop替代）",
+              "若读取了可变source stream用于归属判断，其显式read-set head；不可变receipt按ref验证，不要求其为全局latest"
+            ],
+            "apply_boundary": "RETURN_APPLIED_AND_PARENT_CONTINUATION",
+            "parent_destination": "Q.p.stopped_pending",
+            "duplicate_late_policy": "COMMON_RETURN"
+          },
+          {
+            "outcome": "fault",
+            "payload_type": "CallContractFault",
+            "required_payload_fields": [
+              "last_committed_loop_ref or NotApplicable",
+              "exact_evidence_refs",
+              "reason_code",
+              "affected_call_refs",
+              "unresolved_obligation_refs",
+              "closure_class",
+              "continuation_disposition",
+              "error_boundary",
+              "offending_binding_or_fact_ref"
+            ],
+            "identity_and_version_checks": "blocked须有对应block evidence；interrupted区分请求/确认及submission phase，必须符合所选SC；reconciliation含旧binding/attempt/义务；fault关联错误材料且无自动retry。",
+            "parent_case_updates": [
+              "Q.case.last_failure := exact envelope",
+              "Q.phase := Q.p.fault",
+              "只认领可验证已提交loop后继；没有后继不伪造WAITING",
+              "不重置累计量、不丢未决义务、不直接释放activity或提交parent Success"
+            ],
+            "expected_parent_heads": [
+              "本call仍等待的精确parent continuation/state head",
+              "callee返回材料中声明的合法loop predecessor→successor链（仅涉及该call状态；不可用同名最新loop替代）",
+              "若读取了可变source stream用于归属判断，其显式read-set head；不可变receipt按ref验证，不要求其为全局latest"
+            ],
+            "apply_boundary": "RETURN_APPLIED_AND_PARENT_CONTINUATION",
+            "parent_destination": "Q.p.fault",
+            "duplicate_late_policy": "COMMON_RETURN"
+          }
+        ],
+        "pre_attach_rejection": {
+          "missing_or_wrong_type": "fault/CALL_INPUT_MISSING_OR_TYPE",
+          "alias_conflict": "fault/CALL_INPUT_ALIAS_CONFLICT",
+          "authority_or_ref_mismatch": "fault/CALL_INPUT_MISMATCH",
+          "old_binding_unresolvable": "reconciliation_required/BINDING_UNRESOLVABLE",
+          "partial_attach": "同一attach事务失败不得留下half child；若旧call已存在先核对，不生成新call ordinal"
+        },
+        "common_return": {
+          "type": "CallReturnEnvelope",
+          "required_identity_fields": [
+            "caller_case_ref",
+            "call_occurrence",
+            "callee_case_ref",
+            "callee_binding_ref",
+            "parent_firing_ref",
+            "business_invocation_ref",
+            "generation",
+            "result_ref",
+            "outcome",
+            "expected_continuation_head",
+            "return_contract_version"
+          ],
+          "identity_validation": "return只归attach的callee/parent/call occurrence；版本对照冻结binding链；不按节点名/schema相同接收",
+          "atomic_apply": "只消费本call occurrence的独立return wake；读取immutable result；CAS对应parent continuation head；applied receipt+parent phase/字段更新同事务。callee已提交loop等状态则仅对其指针认领，不二次增加loop revision。",
+          "duplicate": "(result_ref,call_occurrence,generation)已applied且payload相同→返回同一既有applied；不新wake、loop revision或Success。相同identity异payload→conflict。",
+          "late": "父phase已关闭/代次不合→原call的late evidence；不解锁新代、不覆写旧outcome；仍可按独立reconciliation规程追加证据。",
+          "stale": "本call仍在等待但其continuation head改变→重读该确切call自己的当前head，只能复用已applied或进入reconciliation；不绑定另一call。",
+          "business_boundary": "所有即时return均不是parent settled；最终child mapping与workspace仍在父Success。"
+        }
+      }
+    },
+    {
+      "const": {
+        "schema_version": "rpnh/typed_call/v1",
+        "site": "Q.length_call",
+        "callee": "C",
+        "context": {
+          "caller_case_ref": "ExactRef<review Case>",
+          "caller_phase_ref": "ExactRef<review phase>",
+          "caller_binding_ref": "ExactRef<DefinitionBinding>",
+          "parent_firing_ref": "ExactRef<transition_firing/v1>",
+          "business_invocation_ref": "ExactRef<invocation/v1>",
+          "generation": "NonNegativeInt",
+          "call_occurrence": "(caller_case_ref, static_call_site, local_call_ordinal)",
+          "expected_parent_head": "ExactRef<caller state head>"
+        },
+        "inputs": [
+          {
+            "port": "loop",
+            "type": "ExactRef<agent_loop/v1>",
+            "mode": "explicit",
+            "source_path": "QB.current_loop_ref",
+            "producer": "Q.read_boundary或此前C返回后已更新的Q.case",
+            "default": "无默认；必需",
+            "omission_allowed": false,
+            "validation": "存在、WAITING_FOR_LLM、属于CTX.parent_firing和business_invocation",
+            "on_missing": "fault:CALL_INPUT_MISSING",
+            "on_mismatch": "fault:CALL_INPUT_MISMATCH",
+            "on_unresolvable_old_binding": "reconciliation_required:BINDING_UNRESOLVABLE"
+          },
+          {
+            "port": "reason",
+            "type": "Enum{turn_cap,response_length,context_pressure}",
+            "mode": "literal",
+            "source_path": "response_length",
+            "producer": "Q.length_call",
+            "default": "无默认；必需",
+            "omission_allowed": false,
+            "validation": "严格等于本调用点原因",
+            "on_missing": "fault:CALL_INPUT_MISSING",
+            "on_mismatch": "fault:CALL_INPUT_MISMATCH",
+            "on_unresolvable_old_binding": "reconciliation_required:BINDING_UNRESOLVABLE"
+          },
+          {
+            "port": "force",
+            "type": "Bool",
+            "mode": "literal",
+            "source_path": true,
+            "producer": "Q.length_call",
+            "default": "无默认；必需",
+            "omission_allowed": false,
+            "validation": "force==(reason in {turn_cap,response_length})",
+            "on_missing": "fault:CALL_INPUT_MISSING",
+            "on_mismatch": "fault:CALL_INPUT_MISMATCH",
+            "on_unresolvable_old_binding": "reconciliation_required:BINDING_UNRESOLVABLE"
+          },
+          {
+            "port": "target",
+            "type": "ExactRef<resource_version/v1, llm_input_target/v1>",
+            "mode": "project",
+            "source_path": "QB.target_ref",
+            "producer": "Q.prepare或segment attach内有限材料物化",
+            "default": "无默认；必需",
+            "omission_allowed": false,
+            "validation": "与loop model_condition及operation.llm_input_target_ref相同；C未知只允许非pressure；等于本prepared-context材料中的target_ref，字段名属于review QB，不冒充现有API",
+            "on_missing": "fault:CALL_INPUT_MISSING",
+            "on_mismatch": "fault:CALL_INPUT_MISMATCH",
+            "on_unresolvable_old_binding": "reconciliation_required:BINDING_UNRESOLVABLE"
+          },
+          {
+            "port": "history_refs",
+            "type": "OrderedSeq<ExactRef>",
+            "mode": "project",
+            "source_path": "QB.history_refs",
+            "producer": "context.py::prepare_agent_turn_context_v1 / latest overlay投影",
+            "default": "无默认；必需",
+            "omission_allowed": false,
+            "validation": "顺序完整并绑定QB.current_loop_ref与overlay cut；空序列是合法值但不是缺字段",
+            "on_missing": "fault:CALL_INPUT_MISSING",
+            "on_mismatch": "fault:CALL_INPUT_MISMATCH",
+            "on_unresolvable_old_binding": "reconciliation_required:BINDING_UNRESOLVABLE"
+          },
+          {
+            "port": "reduction_settings",
+            "type": "ReductionSettings{checkpoint_prompt,tool_output_byte_limit,retained_history_token_limit}",
+            "mode": "project_then_finite_derive",
+            "source_path": "deref(QB.reduction_source_ref) + deref(target)",
+            "producer": "typed reduction resolver",
+            "default": "参数缺省只由原配置解析器在绑定时生成（10000/20000/0.90等见PAR）；调用时不能默取",
+            "omission_allowed": false,
+            "validation": "target.context_compaction_retained_tokens非None优先；否则已知C取min(setting,max(1,C//4))；未知C用setting；ratio另来自同binding的PAR14",
+            "on_missing": "fault:CALL_INPUT_MISSING",
+            "on_mismatch": "fault:CALL_INPUT_MISMATCH",
+            "on_unresolvable_old_binding": "reconciliation_required:BINDING_UNRESOLVABLE"
+          },
+          {
+            "port": "return_call_site",
+            "type": "ExactCallOccurrence",
+            "mode": "attach_generated",
+            "source_path": "CTX.call_occurrence",
+            "producer": "CALL.attach",
+            "default": "无默认；必需",
+            "omission_allowed": false,
+            "validation": "绑定此Q.case、静态site、local_call_ordinal及父phase，不能仅字符串site",
+            "on_missing": "fault:CALL_INPUT_MISSING",
+            "on_mismatch": "fault:CALL_INPUT_MISMATCH",
+            "on_unresolvable_old_binding": "reconciliation_required:BINDING_UNRESOLVABLE"
+          }
+        ],
+        "returns": [
+          {
+            "outcome": "normal_return",
+            "payload_type": "CompactionReturn",
+            "required_payload_fields": [
+              "waiting_loop_ref:ExactRef<agent_loop/v1>",
+              "compaction_ref:ExactRef<agent_context_compaction/v3>",
+              "overlay_material:ExactProjection<compaction_ref.replacement_history>",
+              "source_loop_ref:ExactRef",
+              "context_session_ordinal:NonNegativeInt",
+              "history_cut:OrderedSeq<ExactRef>",
+              "compaction_identity",
+              "request_recipe_ref:ExactRef<resource_version/v1>"
+            ],
+            "identity_and_version_checks": "新完成或already_completed都必须引用同compaction_id/trigger_reason的已登记compaction v3与其agent_loop_ref；没有NoOp/null成功。waiting为同loop/parent的合法提交后继。forced length还必须匹配原中断ref，后续Q.length_close_check复核。",
+            "parent_case_updates": [
+              "Q.case.current_loop_ref := waiting_loop_ref（不再次写loop）",
+              "Q.case.overlay_material/history_cut := 返回compaction的精确投影及覆盖引用",
+              "废弃Q.case.prepared_context/pressure测量缓存；目标与配置binding不变",
+              "Q.phase := Q.p.length_reprepare"
+            ],
+            "expected_parent_heads": [
+              "本call仍等待的精确parent continuation/state head",
+              "callee返回材料中声明的合法loop predecessor→successor链（仅涉及该call状态；不可用同名最新loop替代）",
+              "若读取了可变source stream用于归属判断，其显式read-set head；不可变receipt按ref验证，不要求其为全局latest"
+            ],
+            "apply_boundary": "RETURN_APPLIED_AND_PARENT_CONTINUATION",
+            "parent_destination": "Q.p.length_reprepare",
+            "duplicate_late_policy": "COMMON_RETURN"
+          },
+          {
+            "outcome": "blocked",
+            "payload_type": "CallBlocked",
+            "required_payload_fields": [
+              "last_committed_loop_ref or NotApplicable",
+              "exact_evidence_refs",
+              "reason_code",
+              "affected_call_refs",
+              "unresolved_obligation_refs",
+              "closure_class",
+              "continuation_disposition",
+              "block_kind",
+              "block_evidence_or_exact_authority"
+            ],
+            "identity_and_version_checks": "blocked须有对应block evidence；interrupted区分请求/确认及submission phase，必须符合所选SC；reconciliation含旧binding/attempt/义务；fault关联错误材料且无自动retry。",
+            "parent_case_updates": [
+              "Q.case.last_failure := exact envelope",
+              "Q.phase := Q.p.blocked",
+              "只认领可验证已提交loop后继；没有后继不伪造WAITING",
+              "不重置累计量、不丢未决义务、不直接释放activity或提交parent Success"
+            ],
+            "expected_parent_heads": [
+              "本call仍等待的精确parent continuation/state head",
+              "callee返回材料中声明的合法loop predecessor→successor链（仅涉及该call状态；不可用同名最新loop替代）",
+              "若读取了可变source stream用于归属判断，其显式read-set head；不可变receipt按ref验证，不要求其为全局latest"
+            ],
+            "apply_boundary": "RETURN_APPLIED_AND_PARENT_CONTINUATION",
+            "parent_destination": "Q.p.blocked",
+            "duplicate_late_policy": "COMMON_RETURN"
+          },
+          {
+            "outcome": "reconciliation_required",
+            "payload_type": "CallReconciliation",
+            "required_payload_fields": [
+              "last_committed_loop_ref or NotApplicable",
+              "exact_evidence_refs",
+              "reason_code",
+              "affected_call_refs",
+              "unresolved_obligation_refs",
+              "closure_class",
+              "continuation_disposition",
+              "reconciliation_subject_refs",
+              "missing_or_conflicting_material_description"
+            ],
+            "identity_and_version_checks": "blocked须有对应block evidence；interrupted区分请求/确认及submission phase，必须符合所选SC；reconciliation含旧binding/attempt/义务；fault关联错误材料且无自动retry。",
+            "parent_case_updates": [
+              "Q.case.last_failure := exact envelope",
+              "Q.phase := Q.p.reconcile",
+              "只认领可验证已提交loop后继；没有后继不伪造WAITING",
+              "不重置累计量、不丢未决义务、不直接释放activity或提交parent Success"
+            ],
+            "expected_parent_heads": [
+              "本call仍等待的精确parent continuation/state head",
+              "callee返回材料中声明的合法loop predecessor→successor链（仅涉及该call状态；不可用同名最新loop替代）",
+              "若读取了可变source stream用于归属判断，其显式read-set head；不可变receipt按ref验证，不要求其为全局latest"
+            ],
+            "apply_boundary": "RETURN_APPLIED_AND_PARENT_CONTINUATION",
+            "parent_destination": "Q.p.reconcile",
+            "duplicate_late_policy": "COMMON_RETURN"
+          },
+          {
+            "outcome": "interrupted",
+            "payload_type": "CallInterrupted",
+            "required_payload_fields": [
+              "last_committed_loop_ref or NotApplicable",
+              "exact_evidence_refs",
+              "reason_code",
+              "affected_call_refs",
+              "unresolved_obligation_refs",
+              "closure_class",
+              "continuation_disposition",
+              "stop_request_ref or authenticated original stop observation",
+              "submission_state:{not_submitted,submission_unknown,response_complete,NotApplicable}",
+              "local_stop_confirmation:Confirmed|Pending",
+              "applicable_stop_cut_id"
+            ],
+            "identity_and_version_checks": "blocked须有对应block evidence；interrupted区分请求/确认及submission phase，必须符合所选SC；reconciliation含旧binding/attempt/义务；fault关联错误材料且无自动retry。",
+            "parent_case_updates": [
+              "Q.case.last_failure := exact envelope",
+              "Q.phase := Q.p.stopped_pending",
+              "只认领可验证已提交loop后继；没有后继不伪造WAITING",
+              "不重置累计量、不丢未决义务、不直接释放activity或提交parent Success"
+            ],
+            "expected_parent_heads": [
+              "本call仍等待的精确parent continuation/state head",
+              "callee返回材料中声明的合法loop predecessor→successor链（仅涉及该call状态；不可用同名最新loop替代）",
+              "若读取了可变source stream用于归属判断，其显式read-set head；不可变receipt按ref验证，不要求其为全局latest"
+            ],
+            "apply_boundary": "RETURN_APPLIED_AND_PARENT_CONTINUATION",
+            "parent_destination": "Q.p.stopped_pending",
+            "duplicate_late_policy": "COMMON_RETURN"
+          },
+          {
+            "outcome": "fault",
+            "payload_type": "CallContractFault",
+            "required_payload_fields": [
+              "last_committed_loop_ref or NotApplicable",
+              "exact_evidence_refs",
+              "reason_code",
+              "affected_call_refs",
+              "unresolved_obligation_refs",
+              "closure_class",
+              "continuation_disposition",
+              "error_boundary",
+              "offending_binding_or_fact_ref"
+            ],
+            "identity_and_version_checks": "blocked须有对应block evidence；interrupted区分请求/确认及submission phase，必须符合所选SC；reconciliation含旧binding/attempt/义务；fault关联错误材料且无自动retry。",
+            "parent_case_updates": [
+              "Q.case.last_failure := exact envelope",
+              "Q.phase := Q.p.fault",
+              "只认领可验证已提交loop后继；没有后继不伪造WAITING",
+              "不重置累计量、不丢未决义务、不直接释放activity或提交parent Success"
+            ],
+            "expected_parent_heads": [
+              "本call仍等待的精确parent continuation/state head",
+              "callee返回材料中声明的合法loop predecessor→successor链（仅涉及该call状态；不可用同名最新loop替代）",
+              "若读取了可变source stream用于归属判断，其显式read-set head；不可变receipt按ref验证，不要求其为全局latest"
+            ],
+            "apply_boundary": "RETURN_APPLIED_AND_PARENT_CONTINUATION",
+            "parent_destination": "Q.p.fault",
+            "duplicate_late_policy": "COMMON_RETURN"
+          }
+        ],
+        "pre_attach_rejection": {
+          "missing_or_wrong_type": "fault/CALL_INPUT_MISSING_OR_TYPE",
+          "alias_conflict": "fault/CALL_INPUT_ALIAS_CONFLICT",
+          "authority_or_ref_mismatch": "fault/CALL_INPUT_MISMATCH",
+          "old_binding_unresolvable": "reconciliation_required/BINDING_UNRESOLVABLE",
+          "partial_attach": "同一attach事务失败不得留下half child；若旧call已存在先核对，不生成新call ordinal"
+        },
+        "common_return": {
+          "type": "CallReturnEnvelope",
+          "required_identity_fields": [
+            "caller_case_ref",
+            "call_occurrence",
+            "callee_case_ref",
+            "callee_binding_ref",
+            "parent_firing_ref",
+            "business_invocation_ref",
+            "generation",
+            "result_ref",
+            "outcome",
+            "expected_continuation_head",
+            "return_contract_version"
+          ],
+          "identity_validation": "return只归attach的callee/parent/call occurrence；版本对照冻结binding链；不按节点名/schema相同接收",
+          "atomic_apply": "只消费本call occurrence的独立return wake；读取immutable result；CAS对应parent continuation head；applied receipt+parent phase/字段更新同事务。callee已提交loop等状态则仅对其指针认领，不二次增加loop revision。",
+          "duplicate": "(result_ref,call_occurrence,generation)已applied且payload相同→返回同一既有applied；不新wake、loop revision或Success。相同identity异payload→conflict。",
+          "late": "父phase已关闭/代次不合→原call的late evidence；不解锁新代、不覆写旧outcome；仍可按独立reconciliation规程追加证据。",
+          "stale": "本call仍在等待但其continuation head改变→重读该确切call自己的当前head，只能复用已applied或进入reconciliation；不绑定另一call。",
+          "business_boundary": "所有即时return均不是parent settled；最终child mapping与workspace仍在父Success。"
+        }
+      }
+    },
+    {
+      "const": {
+        "schema_version": "rpnh/typed_call/v1",
+        "site": "Q.pressure_call",
+        "callee": "C",
+        "context": {
+          "caller_case_ref": "ExactRef<review Case>",
+          "caller_phase_ref": "ExactRef<review phase>",
+          "caller_binding_ref": "ExactRef<DefinitionBinding>",
+          "parent_firing_ref": "ExactRef<transition_firing/v1>",
+          "business_invocation_ref": "ExactRef<invocation/v1>",
+          "generation": "NonNegativeInt",
+          "call_occurrence": "(caller_case_ref, static_call_site, local_call_ordinal)",
+          "expected_parent_head": "ExactRef<caller state head>"
+        },
+        "inputs": [
+          {
+            "port": "loop",
+            "type": "ExactRef<agent_loop/v1>",
+            "mode": "explicit",
+            "source_path": "QB.current_loop_ref",
+            "producer": "Q.read_boundary或此前C返回后已更新的Q.case",
+            "default": "无默认；必需",
+            "omission_allowed": false,
+            "validation": "存在、WAITING_FOR_LLM、属于CTX.parent_firing和business_invocation",
+            "on_missing": "fault:CALL_INPUT_MISSING",
+            "on_mismatch": "fault:CALL_INPUT_MISMATCH",
+            "on_unresolvable_old_binding": "reconciliation_required:BINDING_UNRESOLVABLE"
+          },
+          {
+            "port": "reason",
+            "type": "Enum{turn_cap,response_length,context_pressure}",
+            "mode": "literal",
+            "source_path": "context_pressure",
+            "producer": "Q.pressure_call",
+            "default": "无默认；必需",
+            "omission_allowed": false,
+            "validation": "严格等于本调用点原因",
+            "on_missing": "fault:CALL_INPUT_MISSING",
+            "on_mismatch": "fault:CALL_INPUT_MISMATCH",
+            "on_unresolvable_old_binding": "reconciliation_required:BINDING_UNRESOLVABLE"
+          },
+          {
+            "port": "force",
+            "type": "Bool",
+            "mode": "literal",
+            "source_path": false,
+            "producer": "Q.pressure_call",
+            "default": "无默认；必需",
+            "omission_allowed": false,
+            "validation": "force==(reason in {turn_cap,response_length})",
+            "on_missing": "fault:CALL_INPUT_MISSING",
+            "on_mismatch": "fault:CALL_INPUT_MISMATCH",
+            "on_unresolvable_old_binding": "reconciliation_required:BINDING_UNRESOLVABLE"
+          },
+          {
+            "port": "target",
+            "type": "ExactRef<resource_version/v1, llm_input_target/v1>",
+            "mode": "project",
+            "source_path": "QB.target_ref",
+            "producer": "Q.prepare或segment attach内有限材料物化",
+            "default": "无默认；必需",
+            "omission_allowed": false,
+            "validation": "与loop model_condition及operation.llm_input_target_ref相同；C未知只允许非pressure；等于本prepared-context材料中的target_ref，字段名属于review QB，不冒充现有API",
+            "on_missing": "fault:CALL_INPUT_MISSING",
+            "on_mismatch": "fault:CALL_INPUT_MISMATCH",
+            "on_unresolvable_old_binding": "reconciliation_required:BINDING_UNRESOLVABLE"
+          },
+          {
+            "port": "history_refs",
+            "type": "OrderedSeq<ExactRef>",
+            "mode": "project",
+            "source_path": "QB.history_refs",
+            "producer": "context.py::prepare_agent_turn_context_v1 / latest overlay投影",
+            "default": "无默认；必需",
+            "omission_allowed": false,
+            "validation": "顺序完整并绑定QB.current_loop_ref与overlay cut；空序列是合法值但不是缺字段",
+            "on_missing": "fault:CALL_INPUT_MISSING",
+            "on_mismatch": "fault:CALL_INPUT_MISMATCH",
+            "on_unresolvable_old_binding": "reconciliation_required:BINDING_UNRESOLVABLE"
+          },
+          {
+            "port": "reduction_settings",
+            "type": "ReductionSettings{checkpoint_prompt,tool_output_byte_limit,retained_history_token_limit}",
+            "mode": "project_then_finite_derive",
+            "source_path": "deref(QB.reduction_source_ref) + deref(target)",
+            "producer": "typed reduction resolver",
+            "default": "参数缺省只由原配置解析器在绑定时生成（10000/20000/0.90等见PAR）；调用时不能默取",
+            "omission_allowed": false,
+            "validation": "target.context_compaction_retained_tokens非None优先；否则已知C取min(setting,max(1,C//4))；未知C用setting；ratio另来自同binding的PAR14",
+            "on_missing": "fault:CALL_INPUT_MISSING",
+            "on_mismatch": "fault:CALL_INPUT_MISMATCH",
+            "on_unresolvable_old_binding": "reconciliation_required:BINDING_UNRESOLVABLE"
+          },
+          {
+            "port": "return_call_site",
+            "type": "ExactCallOccurrence",
+            "mode": "attach_generated",
+            "source_path": "CTX.call_occurrence",
+            "producer": "CALL.attach",
+            "default": "无默认；必需",
+            "omission_allowed": false,
+            "validation": "绑定此Q.case、静态site、local_call_ordinal及父phase，不能仅字符串site",
+            "on_missing": "fault:CALL_INPUT_MISSING",
+            "on_mismatch": "fault:CALL_INPUT_MISMATCH",
+            "on_unresolvable_old_binding": "reconciliation_required:BINDING_UNRESOLVABLE"
+          }
+        ],
+        "returns": [
+          {
+            "outcome": "normal_return",
+            "payload_type": "CompactionReturn",
+            "required_payload_fields": [
+              "waiting_loop_ref:ExactRef<agent_loop/v1>",
+              "compaction_ref:ExactRef<agent_context_compaction/v3>",
+              "overlay_material:ExactProjection<compaction_ref.replacement_history>",
+              "source_loop_ref:ExactRef",
+              "context_session_ordinal:NonNegativeInt",
+              "history_cut:OrderedSeq<ExactRef>",
+              "compaction_identity",
+              "request_recipe_ref:ExactRef<resource_version/v1>"
+            ],
+            "identity_and_version_checks": "新完成或already_completed都必须引用同compaction_id/trigger_reason的已登记compaction v3与其agent_loop_ref；没有NoOp/null成功。waiting为同loop/parent的合法提交后继。forced length还必须匹配原中断ref，后续Q.length_close_check复核。",
+            "parent_case_updates": [
+              "Q.case.current_loop_ref := waiting_loop_ref（不再次写loop）",
+              "Q.case.overlay_material/history_cut := 返回compaction的精确投影及覆盖引用",
+              "废弃Q.case.prepared_context/pressure测量缓存；目标与配置binding不变",
+              "Q.phase := Q.p.pressure_reprepare"
+            ],
+            "expected_parent_heads": [
+              "本call仍等待的精确parent continuation/state head",
+              "callee返回材料中声明的合法loop predecessor→successor链（仅涉及该call状态；不可用同名最新loop替代）",
+              "若读取了可变source stream用于归属判断，其显式read-set head；不可变receipt按ref验证，不要求其为全局latest"
+            ],
+            "apply_boundary": "RETURN_APPLIED_AND_PARENT_CONTINUATION",
+            "parent_destination": "Q.p.pressure_reprepare",
+            "duplicate_late_policy": "COMMON_RETURN"
+          },
+          {
+            "outcome": "blocked",
+            "payload_type": "CallBlocked",
+            "required_payload_fields": [
+              "last_committed_loop_ref or NotApplicable",
+              "exact_evidence_refs",
+              "reason_code",
+              "affected_call_refs",
+              "unresolved_obligation_refs",
+              "closure_class",
+              "continuation_disposition",
+              "block_kind",
+              "block_evidence_or_exact_authority"
+            ],
+            "identity_and_version_checks": "blocked须有对应block evidence；interrupted区分请求/确认及submission phase，必须符合所选SC；reconciliation含旧binding/attempt/义务；fault关联错误材料且无自动retry。",
+            "parent_case_updates": [
+              "Q.case.last_failure := exact envelope",
+              "Q.phase := Q.p.blocked",
+              "只认领可验证已提交loop后继；没有后继不伪造WAITING",
+              "不重置累计量、不丢未决义务、不直接释放activity或提交parent Success"
+            ],
+            "expected_parent_heads": [
+              "本call仍等待的精确parent continuation/state head",
+              "callee返回材料中声明的合法loop predecessor→successor链（仅涉及该call状态；不可用同名最新loop替代）",
+              "若读取了可变source stream用于归属判断，其显式read-set head；不可变receipt按ref验证，不要求其为全局latest"
+            ],
+            "apply_boundary": "RETURN_APPLIED_AND_PARENT_CONTINUATION",
+            "parent_destination": "Q.p.blocked",
+            "duplicate_late_policy": "COMMON_RETURN"
+          },
+          {
+            "outcome": "reconciliation_required",
+            "payload_type": "CallReconciliation",
+            "required_payload_fields": [
+              "last_committed_loop_ref or NotApplicable",
+              "exact_evidence_refs",
+              "reason_code",
+              "affected_call_refs",
+              "unresolved_obligation_refs",
+              "closure_class",
+              "continuation_disposition",
+              "reconciliation_subject_refs",
+              "missing_or_conflicting_material_description"
+            ],
+            "identity_and_version_checks": "blocked须有对应block evidence；interrupted区分请求/确认及submission phase，必须符合所选SC；reconciliation含旧binding/attempt/义务；fault关联错误材料且无自动retry。",
+            "parent_case_updates": [
+              "Q.case.last_failure := exact envelope",
+              "Q.phase := Q.p.reconcile",
+              "只认领可验证已提交loop后继；没有后继不伪造WAITING",
+              "不重置累计量、不丢未决义务、不直接释放activity或提交parent Success"
+            ],
+            "expected_parent_heads": [
+              "本call仍等待的精确parent continuation/state head",
+              "callee返回材料中声明的合法loop predecessor→successor链（仅涉及该call状态；不可用同名最新loop替代）",
+              "若读取了可变source stream用于归属判断，其显式read-set head；不可变receipt按ref验证，不要求其为全局latest"
+            ],
+            "apply_boundary": "RETURN_APPLIED_AND_PARENT_CONTINUATION",
+            "parent_destination": "Q.p.reconcile",
+            "duplicate_late_policy": "COMMON_RETURN"
+          },
+          {
+            "outcome": "interrupted",
+            "payload_type": "CallInterrupted",
+            "required_payload_fields": [
+              "last_committed_loop_ref or NotApplicable",
+              "exact_evidence_refs",
+              "reason_code",
+              "affected_call_refs",
+              "unresolved_obligation_refs",
+              "closure_class",
+              "continuation_disposition",
+              "stop_request_ref or authenticated original stop observation",
+              "submission_state:{not_submitted,submission_unknown,response_complete,NotApplicable}",
+              "local_stop_confirmation:Confirmed|Pending",
+              "applicable_stop_cut_id"
+            ],
+            "identity_and_version_checks": "blocked须有对应block evidence；interrupted区分请求/确认及submission phase，必须符合所选SC；reconciliation含旧binding/attempt/义务；fault关联错误材料且无自动retry。",
+            "parent_case_updates": [
+              "Q.case.last_failure := exact envelope",
+              "Q.phase := Q.p.stopped_pending",
+              "只认领可验证已提交loop后继；没有后继不伪造WAITING",
+              "不重置累计量、不丢未决义务、不直接释放activity或提交parent Success"
+            ],
+            "expected_parent_heads": [
+              "本call仍等待的精确parent continuation/state head",
+              "callee返回材料中声明的合法loop predecessor→successor链（仅涉及该call状态；不可用同名最新loop替代）",
+              "若读取了可变source stream用于归属判断，其显式read-set head；不可变receipt按ref验证，不要求其为全局latest"
+            ],
+            "apply_boundary": "RETURN_APPLIED_AND_PARENT_CONTINUATION",
+            "parent_destination": "Q.p.stopped_pending",
+            "duplicate_late_policy": "COMMON_RETURN"
+          },
+          {
+            "outcome": "fault",
+            "payload_type": "CallContractFault",
+            "required_payload_fields": [
+              "last_committed_loop_ref or NotApplicable",
+              "exact_evidence_refs",
+              "reason_code",
+              "affected_call_refs",
+              "unresolved_obligation_refs",
+              "closure_class",
+              "continuation_disposition",
+              "error_boundary",
+              "offending_binding_or_fact_ref"
+            ],
+            "identity_and_version_checks": "blocked须有对应block evidence；interrupted区分请求/确认及submission phase，必须符合所选SC；reconciliation含旧binding/attempt/义务；fault关联错误材料且无自动retry。",
+            "parent_case_updates": [
+              "Q.case.last_failure := exact envelope",
+              "Q.phase := Q.p.fault",
+              "只认领可验证已提交loop后继；没有后继不伪造WAITING",
+              "不重置累计量、不丢未决义务、不直接释放activity或提交parent Success"
+            ],
+            "expected_parent_heads": [
+              "本call仍等待的精确parent continuation/state head",
+              "callee返回材料中声明的合法loop predecessor→successor链（仅涉及该call状态；不可用同名最新loop替代）",
+              "若读取了可变source stream用于归属判断，其显式read-set head；不可变receipt按ref验证，不要求其为全局latest"
+            ],
+            "apply_boundary": "RETURN_APPLIED_AND_PARENT_CONTINUATION",
+            "parent_destination": "Q.p.fault",
+            "duplicate_late_policy": "COMMON_RETURN"
+          }
+        ],
+        "pre_attach_rejection": {
+          "missing_or_wrong_type": "fault/CALL_INPUT_MISSING_OR_TYPE",
+          "alias_conflict": "fault/CALL_INPUT_ALIAS_CONFLICT",
+          "authority_or_ref_mismatch": "fault/CALL_INPUT_MISMATCH",
+          "old_binding_unresolvable": "reconciliation_required/BINDING_UNRESOLVABLE",
+          "partial_attach": "同一attach事务失败不得留下half child；若旧call已存在先核对，不生成新call ordinal"
+        },
+        "common_return": {
+          "type": "CallReturnEnvelope",
+          "required_identity_fields": [
+            "caller_case_ref",
+            "call_occurrence",
+            "callee_case_ref",
+            "callee_binding_ref",
+            "parent_firing_ref",
+            "business_invocation_ref",
+            "generation",
+            "result_ref",
+            "outcome",
+            "expected_continuation_head",
+            "return_contract_version"
+          ],
+          "identity_validation": "return只归attach的callee/parent/call occurrence；版本对照冻结binding链；不按节点名/schema相同接收",
+          "atomic_apply": "只消费本call occurrence的独立return wake；读取immutable result；CAS对应parent continuation head；applied receipt+parent phase/字段更新同事务。callee已提交loop等状态则仅对其指针认领，不二次增加loop revision。",
+          "duplicate": "(result_ref,call_occurrence,generation)已applied且payload相同→返回同一既有applied；不新wake、loop revision或Success。相同identity异payload→conflict。",
+          "late": "父phase已关闭/代次不合→原call的late evidence；不解锁新代、不覆写旧outcome；仍可按独立reconciliation规程追加证据。",
+          "stale": "本call仍在等待但其continuation head改变→重读该确切call自己的当前head，只能复用已applied或进入reconciliation；不绑定另一call。",
+          "business_boundary": "所有即时return均不是parent settled；最终child mapping与workspace仍在父Success。"
+        }
+      }
+    },
+    {
+      "const": {
+        "schema_version": "rpnh/typed_call/v1",
+        "site": "Q.normal_call",
+        "callee": "N",
+        "context": {
+          "caller_case_ref": "ExactRef<review Case>",
+          "caller_phase_ref": "ExactRef<review phase>",
+          "caller_binding_ref": "ExactRef<DefinitionBinding>",
+          "parent_firing_ref": "ExactRef<transition_firing/v1>",
+          "business_invocation_ref": "ExactRef<invocation/v1>",
+          "generation": "NonNegativeInt",
+          "call_occurrence": "(caller_case_ref, static_call_site, local_call_ordinal)",
+          "expected_parent_head": "ExactRef<caller state head>"
+        },
+        "inputs": [
+          {
+            "port": "consumer_kind",
+            "type": "Enum{normal,leaf,compaction}",
+            "mode": "literal",
+            "source_path": "normal",
+            "producer": "Q.normal_call",
+            "default": "无默认；必需",
+            "omission_allowed": false,
+            "validation": "本次只能该值；leaf合同保留但不是本轮七点中的新入口",
+            "on_missing": "fault:CALL_INPUT_MISSING",
+            "on_mismatch": "fault:CALL_INPUT_MISMATCH",
+            "on_unresolvable_old_binding": "reconciliation_required:BINDING_UNRESOLVABLE"
+          },
+          {
+            "port": "invocation_ref",
+            "type": "InvocationRefBinding<llm_invocation_spec/v1>",
+            "mode": "project",
+            "source_path": "RB.llm_invocation_ref",
+            "producer": "Q.prepare/原normal prepare身份部分",
+            "default": "无默认；必需",
+            "omission_allowed": false,
+            "validation": "registered/planned二选一；N.reserve绑定同一identity并验证parent invocation；不是业务invocation_ref",
+            "on_missing": "fault:CALL_INPUT_MISSING",
+            "on_mismatch": "fault:CALL_INPUT_MISMATCH",
+            "on_unresolvable_old_binding": "reconciliation_required:BINDING_UNRESOLVABLE"
+          },
+          {
+            "port": "recipe_ref",
+            "type": "RecipeRefBinding<resource_version/v1>",
+            "mode": "project",
+            "source_path": "RB.recipe_ref",
+            "producer": "Q.prepare/原normal provider request物化",
+            "default": "无默认；必需",
+            "omission_allowed": false,
+            "validation": "普通也有recipe；Pending仅首次物化前；retry维持同一registered request_ref",
+            "on_missing": "fault:CALL_INPUT_MISSING",
+            "on_mismatch": "fault:CALL_INPUT_MISMATCH",
+            "on_unresolvable_old_binding": "reconciliation_required:BINDING_UNRESOLVABLE"
+          },
+          {
+            "port": "request_binding",
+            "type": "ExactRef<RequestBinding>",
+            "mode": "explicit",
+            "source_path": "Q.case.normal_request_binding_ref",
+            "producer": "Q.prepare/有限请求物化",
+            "default": "无默认；必需",
+            "omission_allowed": false,
+            "validation": "绑定exact请求bytes、target、catalog、loop、driver、stop、原user/历史refs；缺失不调用",
+            "on_missing": "fault:CALL_INPUT_MISSING",
+            "on_mismatch": "fault:CALL_INPUT_MISMATCH",
+            "on_unresolvable_old_binding": "reconciliation_required:BINDING_UNRESOLVABLE"
+          },
+          {
+            "port": "neutral_max",
+            "type": "PositiveInt",
+            "mode": "literal",
+            "source_path": 1,
+            "producer": "Q.normal_call",
+            "default": "无默认；必需",
+            "omission_allowed": false,
+            "validation": "兼容normal/leaf/compaction=1/1/2；不是physical count",
+            "on_missing": "fault:CALL_INPUT_MISSING",
+            "on_mismatch": "fault:CALL_INPUT_MISMATCH",
+            "on_unresolvable_old_binding": "reconciliation_required:BINDING_UNRESOLVABLE"
+          },
+          {
+            "port": "retryable_set",
+            "type": "FiniteSet<FailureDisposition>",
+            "mode": "project",
+            "source_path": "deref(request_binding).retry_policy_ref -> .retryable_set",
+            "producer": "绑定于consumer policy的PAR34",
+            "default": "无默认；必需",
+            "omission_allowed": false,
+            "validation": "兼容精确{no_input,protocol_rejected,provider_retryable}；集合不存在为配置错误",
+            "on_missing": "fault:CALL_INPUT_MISSING",
+            "on_mismatch": "fault:CALL_INPUT_MISMATCH",
+            "on_unresolvable_old_binding": "reconciliation_required:BINDING_UNRESOLVABLE"
+          },
+          {
+            "port": "ledger_binding",
+            "type": "ExactRef<LedgerBinding>",
+            "mode": "project",
+            "source_path": "deref(request_binding).ledger_scope_ref",
+            "producer": "owner已采用operation budget与当前ledger scope",
+            "default": "无默认；必需",
+            "omission_allowed": false,
+            "validation": "必须与parent firing/operation/consumer匹配；PendingReservation不能放行dispatch",
+            "on_missing": "fault:CALL_INPUT_MISSING",
+            "on_mismatch": "fault:CALL_INPUT_MISMATCH",
+            "on_unresolvable_old_binding": "reconciliation_required:BINDING_UNRESOLVABLE"
+          }
+        ],
+        "returns": [
+          {
+            "outcome": "validated_candidate",
+            "payload_type": "ValidatedLLMCandidate",
+            "required_payload_fields": [
+              "neutral_attempt_ref",
+              "llm_invocation_ref",
+              "recipe_ref",
+              "ledger_call_ref",
+              "provider_attempt_ref",
+              "canonical_response_ref/bytes",
+              "raw_response_ref",
+              "consumer_kind",
+              "waiting_or_compacting_loop_ref"
+            ],
+            "identity_and_version_checks": "consumer/LLM invocation/recipe/request_bytes/model/catalog及parent全匹配；raw已登记并满足consumer语法；normal允许合法length观测，摘要不允许length/tools/空文本。",
+            "parent_case_updates": [
+              "Q.case.response_candidate := exact candidate",
+              "Q.case.attempt_ref/ledger_call_ref := returned refs",
+              "Q.phase := Q.p.record_turn",
+              "不在N提前写ordinary turn或compaction overlay"
+            ],
+            "expected_parent_heads": [
+              "本call仍等待的精确parent continuation/state head",
+              "callee返回材料中声明的合法loop predecessor→successor链（仅涉及该call状态；不可用同名最新loop替代）",
+              "若读取了可变source stream用于归属判断，其显式read-set head；不可变receipt按ref验证，不要求其为全局latest"
+            ],
+            "apply_boundary": "RETURN_APPLIED_AND_PARENT_CONTINUATION",
+            "parent_destination": "Q.p.record_turn",
+            "duplicate_late_policy": "COMMON_RETURN"
+          },
+          {
+            "outcome": "blocked",
+            "payload_type": "CallBlocked",
+            "required_payload_fields": [
+              "last_committed_loop_ref or NotApplicable",
+              "exact_evidence_refs",
+              "reason_code",
+              "affected_call_refs",
+              "unresolved_obligation_refs",
+              "closure_class",
+              "continuation_disposition",
+              "block_kind",
+              "block_evidence_or_exact_authority"
+            ],
+            "identity_and_version_checks": "blocked须有对应block evidence；interrupted区分请求/确认及submission phase，必须符合所选SC；reconciliation含旧binding/attempt/义务；fault关联错误材料且无自动retry。",
+            "parent_case_updates": [
+              "Q.case.last_failure := exact envelope",
+              "Q.phase := Q.p.blocked",
+              "只认领可验证已提交loop后继；没有后继不伪造WAITING",
+              "不重置累计量、不丢未决义务、不直接释放activity或提交parent Success"
+            ],
+            "expected_parent_heads": [
+              "本call仍等待的精确parent continuation/state head",
+              "callee返回材料中声明的合法loop predecessor→successor链（仅涉及该call状态；不可用同名最新loop替代）",
+              "若读取了可变source stream用于归属判断，其显式read-set head；不可变receipt按ref验证，不要求其为全局latest"
+            ],
+            "apply_boundary": "RETURN_APPLIED_AND_PARENT_CONTINUATION",
+            "parent_destination": "Q.p.blocked",
+            "duplicate_late_policy": "COMMON_RETURN"
+          },
+          {
+            "outcome": "reconciliation_required",
+            "payload_type": "CallReconciliation",
+            "required_payload_fields": [
+              "last_committed_loop_ref or NotApplicable",
+              "exact_evidence_refs",
+              "reason_code",
+              "affected_call_refs",
+              "unresolved_obligation_refs",
+              "closure_class",
+              "continuation_disposition",
+              "reconciliation_subject_refs",
+              "missing_or_conflicting_material_description"
+            ],
+            "identity_and_version_checks": "blocked须有对应block evidence；interrupted区分请求/确认及submission phase，必须符合所选SC；reconciliation含旧binding/attempt/义务；fault关联错误材料且无自动retry。",
+            "parent_case_updates": [
+              "Q.case.last_failure := exact envelope",
+              "Q.phase := Q.p.reconcile",
+              "只认领可验证已提交loop后继；没有后继不伪造WAITING",
+              "不重置累计量、不丢未决义务、不直接释放activity或提交parent Success"
+            ],
+            "expected_parent_heads": [
+              "本call仍等待的精确parent continuation/state head",
+              "callee返回材料中声明的合法loop predecessor→successor链（仅涉及该call状态；不可用同名最新loop替代）",
+              "若读取了可变source stream用于归属判断，其显式read-set head；不可变receipt按ref验证，不要求其为全局latest"
+            ],
+            "apply_boundary": "RETURN_APPLIED_AND_PARENT_CONTINUATION",
+            "parent_destination": "Q.p.reconcile",
+            "duplicate_late_policy": "COMMON_RETURN"
+          },
+          {
+            "outcome": "interrupted",
+            "payload_type": "CallInterrupted",
+            "required_payload_fields": [
+              "last_committed_loop_ref or NotApplicable",
+              "exact_evidence_refs",
+              "reason_code",
+              "affected_call_refs",
+              "unresolved_obligation_refs",
+              "closure_class",
+              "continuation_disposition",
+              "stop_request_ref or authenticated original stop observation",
+              "submission_state:{not_submitted,submission_unknown,response_complete,NotApplicable}",
+              "local_stop_confirmation:Confirmed|Pending",
+              "applicable_stop_cut_id"
+            ],
+            "identity_and_version_checks": "blocked须有对应block evidence；interrupted区分请求/确认及submission phase，必须符合所选SC；reconciliation含旧binding/attempt/义务；fault关联错误材料且无自动retry。",
+            "parent_case_updates": [
+              "Q.case.last_failure := exact envelope",
+              "Q.phase := Q.p.stopped_pending",
+              "只认领可验证已提交loop后继；没有后继不伪造WAITING",
+              "不重置累计量、不丢未决义务、不直接释放activity或提交parent Success"
+            ],
+            "expected_parent_heads": [
+              "本call仍等待的精确parent continuation/state head",
+              "callee返回材料中声明的合法loop predecessor→successor链（仅涉及该call状态；不可用同名最新loop替代）",
+              "若读取了可变source stream用于归属判断，其显式read-set head；不可变receipt按ref验证，不要求其为全局latest"
+            ],
+            "apply_boundary": "RETURN_APPLIED_AND_PARENT_CONTINUATION",
+            "parent_destination": "Q.p.stopped_pending",
+            "duplicate_late_policy": "COMMON_RETURN"
+          },
+          {
+            "outcome": "fault",
+            "payload_type": "CallContractFault",
+            "required_payload_fields": [
+              "last_committed_loop_ref or NotApplicable",
+              "exact_evidence_refs",
+              "reason_code",
+              "affected_call_refs",
+              "unresolved_obligation_refs",
+              "closure_class",
+              "continuation_disposition",
+              "error_boundary",
+              "offending_binding_or_fact_ref"
+            ],
+            "identity_and_version_checks": "blocked须有对应block evidence；interrupted区分请求/确认及submission phase，必须符合所选SC；reconciliation含旧binding/attempt/义务；fault关联错误材料且无自动retry。",
+            "parent_case_updates": [
+              "Q.case.last_failure := exact envelope",
+              "Q.phase := Q.p.fault",
+              "只认领可验证已提交loop后继；没有后继不伪造WAITING",
+              "不重置累计量、不丢未决义务、不直接释放activity或提交parent Success"
+            ],
+            "expected_parent_heads": [
+              "本call仍等待的精确parent continuation/state head",
+              "callee返回材料中声明的合法loop predecessor→successor链（仅涉及该call状态；不可用同名最新loop替代）",
+              "若读取了可变source stream用于归属判断，其显式read-set head；不可变receipt按ref验证，不要求其为全局latest"
+            ],
+            "apply_boundary": "RETURN_APPLIED_AND_PARENT_CONTINUATION",
+            "parent_destination": "Q.p.fault",
+            "duplicate_late_policy": "COMMON_RETURN"
+          }
+        ],
+        "pre_attach_rejection": {
+          "missing_or_wrong_type": "fault/CALL_INPUT_MISSING_OR_TYPE",
+          "alias_conflict": "fault/CALL_INPUT_ALIAS_CONFLICT",
+          "authority_or_ref_mismatch": "fault/CALL_INPUT_MISMATCH",
+          "old_binding_unresolvable": "reconciliation_required/BINDING_UNRESOLVABLE",
+          "partial_attach": "同一attach事务失败不得留下half child；若旧call已存在先核对，不生成新call ordinal"
+        },
+        "common_return": {
+          "type": "CallReturnEnvelope",
+          "required_identity_fields": [
+            "caller_case_ref",
+            "call_occurrence",
+            "callee_case_ref",
+            "callee_binding_ref",
+            "parent_firing_ref",
+            "business_invocation_ref",
+            "generation",
+            "result_ref",
+            "outcome",
+            "expected_continuation_head",
+            "return_contract_version"
+          ],
+          "identity_validation": "return只归attach的callee/parent/call occurrence；版本对照冻结binding链；不按节点名/schema相同接收",
+          "atomic_apply": "只消费本call occurrence的独立return wake；读取immutable result；CAS对应parent continuation head；applied receipt+parent phase/字段更新同事务。callee已提交loop等状态则仅对其指针认领，不二次增加loop revision。",
+          "duplicate": "(result_ref,call_occurrence,generation)已applied且payload相同→返回同一既有applied；不新wake、loop revision或Success。相同identity异payload→conflict。",
+          "late": "父phase已关闭/代次不合→原call的late evidence；不解锁新代、不覆写旧outcome；仍可按独立reconciliation规程追加证据。",
+          "stale": "本call仍在等待但其continuation head改变→重读该确切call自己的当前head，只能复用已applied或进入reconciliation；不绑定另一call。",
+          "business_boundary": "所有即时return均不是parent settled；最终child mapping与workspace仍在父Success。"
+        },
+        "not_applicable": {
+          "compaction_id,retention/trigger_fields": "NotApplicable(normal)"
+        }
+      }
+    },
+    {
+      "const": {
+        "schema_version": "rpnh/typed_call/v1",
+        "site": "C.request_summary",
+        "callee": "N",
+        "context": {
+          "caller_case_ref": "ExactRef<review Case>",
+          "caller_phase_ref": "ExactRef<review phase>",
+          "caller_binding_ref": "ExactRef<DefinitionBinding>",
+          "parent_firing_ref": "ExactRef<transition_firing/v1>",
+          "business_invocation_ref": "ExactRef<invocation/v1>",
+          "generation": "NonNegativeInt",
+          "call_occurrence": "(caller_case_ref, static_call_site, local_call_ordinal)",
+          "expected_parent_head": "ExactRef<caller state head>"
+        },
+        "inputs": [
+          {
+            "port": "consumer_kind",
+            "type": "Enum{normal,leaf,compaction}",
+            "mode": "literal",
+            "source_path": "compaction",
+            "producer": "C.request_summary",
+            "default": "无默认；必需",
+            "omission_allowed": false,
+            "validation": "本次只能该值；leaf合同保留但不是本轮七点中的新入口",
+            "on_missing": "fault:CALL_INPUT_MISSING",
+            "on_mismatch": "fault:CALL_INPUT_MISMATCH",
+            "on_unresolvable_old_binding": "reconciliation_required:BINDING_UNRESOLVABLE"
+          },
+          {
+            "port": "invocation_ref",
+            "type": "InvocationRefBinding<llm_invocation_spec/v1>",
+            "mode": "project",
+            "source_path": "CB.llm_invocation_ref",
+            "producer": "C.prepare_recipe",
+            "default": "无默认；必需",
+            "omission_allowed": false,
+            "validation": "registered/planned二选一；N.reserve绑定同一identity并验证parent invocation；不是业务invocation_ref",
+            "on_missing": "fault:CALL_INPUT_MISSING",
+            "on_mismatch": "fault:CALL_INPUT_MISMATCH",
+            "on_unresolvable_old_binding": "reconciliation_required:BINDING_UNRESOLVABLE"
+          },
+          {
+            "port": "recipe_ref",
+            "type": "RecipeRefBinding<resource_version/v1>",
+            "mode": "project",
+            "source_path": "CB.recipe_ref",
+            "producer": "C.prepare_recipe",
+            "default": "无默认；必需",
+            "omission_allowed": false,
+            "validation": "普通也有recipe；Pending仅首次物化前；retry维持同一registered request_ref",
+            "on_missing": "fault:CALL_INPUT_MISSING",
+            "on_mismatch": "fault:CALL_INPUT_MISMATCH",
+            "on_unresolvable_old_binding": "reconciliation_required:BINDING_UNRESOLVABLE"
+          },
+          {
+            "port": "request_binding",
+            "type": "ExactRef<RequestBinding>",
+            "mode": "explicit",
+            "source_path": "CB.request_binding",
+            "producer": "C.prepare_recipe",
+            "default": "无默认；必需",
+            "omission_allowed": false,
+            "validation": "绑定exact请求bytes、target、catalog、loop、driver、stop、原user/历史refs；缺失不调用",
+            "on_missing": "fault:CALL_INPUT_MISSING",
+            "on_mismatch": "fault:CALL_INPUT_MISMATCH",
+            "on_unresolvable_old_binding": "reconciliation_required:BINDING_UNRESOLVABLE"
+          },
+          {
+            "port": "neutral_max",
+            "type": "PositiveInt",
+            "mode": "literal",
+            "source_path": 2,
+            "producer": "C.request_summary",
+            "default": "无默认；必需",
+            "omission_allowed": false,
+            "validation": "兼容normal/leaf/compaction=1/1/2；不是physical count",
+            "on_missing": "fault:CALL_INPUT_MISSING",
+            "on_mismatch": "fault:CALL_INPUT_MISMATCH",
+            "on_unresolvable_old_binding": "reconciliation_required:BINDING_UNRESOLVABLE"
+          },
+          {
+            "port": "retryable_set",
+            "type": "FiniteSet<FailureDisposition>",
+            "mode": "project",
+            "source_path": "deref(request_binding).retry_policy_ref -> .retryable_set",
+            "producer": "绑定于consumer policy的PAR34",
+            "default": "无默认；必需",
+            "omission_allowed": false,
+            "validation": "兼容精确{no_input,protocol_rejected,provider_retryable}；集合不存在为配置错误",
+            "on_missing": "fault:CALL_INPUT_MISSING",
+            "on_mismatch": "fault:CALL_INPUT_MISMATCH",
+            "on_unresolvable_old_binding": "reconciliation_required:BINDING_UNRESOLVABLE"
+          },
+          {
+            "port": "ledger_binding",
+            "type": "ExactRef<LedgerBinding>",
+            "mode": "project",
+            "source_path": "deref(request_binding).ledger_scope_ref",
+            "producer": "owner已采用operation budget与当前ledger scope",
+            "default": "无默认；必需",
+            "omission_allowed": false,
+            "validation": "必须与parent firing/operation/consumer匹配；PendingReservation不能放行dispatch",
+            "on_missing": "fault:CALL_INPUT_MISSING",
+            "on_mismatch": "fault:CALL_INPUT_MISMATCH",
+            "on_unresolvable_old_binding": "reconciliation_required:BINDING_UNRESOLVABLE"
+          }
+        ],
+        "returns": [
+          {
+            "outcome": "validated_candidate",
+            "payload_type": "ValidatedLLMCandidate",
+            "required_payload_fields": [
+              "neutral_attempt_ref",
+              "llm_invocation_ref",
+              "recipe_ref",
+              "ledger_call_ref",
+              "provider_attempt_ref",
+              "canonical_response_ref/bytes",
+              "raw_response_ref",
+              "consumer_kind",
+              "waiting_or_compacting_loop_ref"
+            ],
+            "identity_and_version_checks": "consumer/LLM invocation/recipe/request_bytes/model/catalog及parent全匹配；raw已登记并满足consumer语法；normal允许合法length观测，摘要不允许length/tools/空文本。",
+            "parent_case_updates": [
+              "C.case.response_candidate := exact candidate",
+              "C.case.attempt_ref/ledger_call_ref := returned refs",
+              "C.phase := C.p.build_replacement",
+              "不在N提前写ordinary turn或compaction overlay"
+            ],
+            "expected_parent_heads": [
+              "本call仍等待的精确parent continuation/state head",
+              "callee返回材料中声明的合法loop predecessor→successor链（仅涉及该call状态；不可用同名最新loop替代）",
+              "若读取了可变source stream用于归属判断，其显式read-set head；不可变receipt按ref验证，不要求其为全局latest"
+            ],
+            "apply_boundary": "RETURN_APPLIED_AND_PARENT_CONTINUATION",
+            "parent_destination": "C.p.build_replacement",
+            "duplicate_late_policy": "COMMON_RETURN"
+          },
+          {
+            "outcome": "blocked",
+            "payload_type": "CallBlocked",
+            "required_payload_fields": [
+              "last_committed_loop_ref or NotApplicable",
+              "exact_evidence_refs",
+              "reason_code",
+              "affected_call_refs",
+              "unresolved_obligation_refs",
+              "closure_class",
+              "continuation_disposition",
+              "block_kind",
+              "block_evidence_or_exact_authority"
+            ],
+            "identity_and_version_checks": "blocked须有对应block evidence；interrupted区分请求/确认及submission phase，必须符合所选SC；reconciliation含旧binding/attempt/义务；fault关联错误材料且无自动retry。",
+            "parent_case_updates": [
+              "C.case.last_failure := exact envelope",
+              "C.phase := C.p.blocked",
+              "只认领可验证已提交loop后继；没有后继不伪造WAITING",
+              "不重置累计量、不丢未决义务、不直接释放activity或提交parent Success"
+            ],
+            "expected_parent_heads": [
+              "本call仍等待的精确parent continuation/state head",
+              "callee返回材料中声明的合法loop predecessor→successor链（仅涉及该call状态；不可用同名最新loop替代）",
+              "若读取了可变source stream用于归属判断，其显式read-set head；不可变receipt按ref验证，不要求其为全局latest"
+            ],
+            "apply_boundary": "RETURN_APPLIED_AND_PARENT_CONTINUATION",
+            "parent_destination": "C.p.blocked",
+            "duplicate_late_policy": "COMMON_RETURN"
+          },
+          {
+            "outcome": "reconciliation_required",
+            "payload_type": "CallReconciliation",
+            "required_payload_fields": [
+              "last_committed_loop_ref or NotApplicable",
+              "exact_evidence_refs",
+              "reason_code",
+              "affected_call_refs",
+              "unresolved_obligation_refs",
+              "closure_class",
+              "continuation_disposition",
+              "reconciliation_subject_refs",
+              "missing_or_conflicting_material_description"
+            ],
+            "identity_and_version_checks": "blocked须有对应block evidence；interrupted区分请求/确认及submission phase，必须符合所选SC；reconciliation含旧binding/attempt/义务；fault关联错误材料且无自动retry。",
+            "parent_case_updates": [
+              "C.case.last_failure := exact envelope",
+              "C.phase := C.p.reconcile",
+              "只认领可验证已提交loop后继；没有后继不伪造WAITING",
+              "不重置累计量、不丢未决义务、不直接释放activity或提交parent Success"
+            ],
+            "expected_parent_heads": [
+              "本call仍等待的精确parent continuation/state head",
+              "callee返回材料中声明的合法loop predecessor→successor链（仅涉及该call状态；不可用同名最新loop替代）",
+              "若读取了可变source stream用于归属判断，其显式read-set head；不可变receipt按ref验证，不要求其为全局latest"
+            ],
+            "apply_boundary": "RETURN_APPLIED_AND_PARENT_CONTINUATION",
+            "parent_destination": "C.p.reconcile",
+            "duplicate_late_policy": "COMMON_RETURN"
+          },
+          {
+            "outcome": "interrupted",
+            "payload_type": "CallInterrupted",
+            "required_payload_fields": [
+              "last_committed_loop_ref or NotApplicable",
+              "exact_evidence_refs",
+              "reason_code",
+              "affected_call_refs",
+              "unresolved_obligation_refs",
+              "closure_class",
+              "continuation_disposition",
+              "stop_request_ref or authenticated original stop observation",
+              "submission_state:{not_submitted,submission_unknown,response_complete,NotApplicable}",
+              "local_stop_confirmation:Confirmed|Pending",
+              "applicable_stop_cut_id"
+            ],
+            "identity_and_version_checks": "blocked须有对应block evidence；interrupted区分请求/确认及submission phase，必须符合所选SC；reconciliation含旧binding/attempt/义务；fault关联错误材料且无自动retry。",
+            "parent_case_updates": [
+              "C.case.last_failure := exact envelope",
+              "C.phase := C.p.stopped_pending",
+              "只认领可验证已提交loop后继；没有后继不伪造WAITING",
+              "不重置累计量、不丢未决义务、不直接释放activity或提交parent Success"
+            ],
+            "expected_parent_heads": [
+              "本call仍等待的精确parent continuation/state head",
+              "callee返回材料中声明的合法loop predecessor→successor链（仅涉及该call状态；不可用同名最新loop替代）",
+              "若读取了可变source stream用于归属判断，其显式read-set head；不可变receipt按ref验证，不要求其为全局latest"
+            ],
+            "apply_boundary": "RETURN_APPLIED_AND_PARENT_CONTINUATION",
+            "parent_destination": "C.p.stopped_pending",
+            "duplicate_late_policy": "COMMON_RETURN"
+          },
+          {
+            "outcome": "fault",
+            "payload_type": "CallContractFault",
+            "required_payload_fields": [
+              "last_committed_loop_ref or NotApplicable",
+              "exact_evidence_refs",
+              "reason_code",
+              "affected_call_refs",
+              "unresolved_obligation_refs",
+              "closure_class",
+              "continuation_disposition",
+              "error_boundary",
+              "offending_binding_or_fact_ref"
+            ],
+            "identity_and_version_checks": "blocked须有对应block evidence；interrupted区分请求/确认及submission phase，必须符合所选SC；reconciliation含旧binding/attempt/义务；fault关联错误材料且无自动retry。",
+            "parent_case_updates": [
+              "C.case.last_failure := exact envelope",
+              "C.phase := C.p.fault",
+              "只认领可验证已提交loop后继；没有后继不伪造WAITING",
+              "不重置累计量、不丢未决义务、不直接释放activity或提交parent Success"
+            ],
+            "expected_parent_heads": [
+              "本call仍等待的精确parent continuation/state head",
+              "callee返回材料中声明的合法loop predecessor→successor链（仅涉及该call状态；不可用同名最新loop替代）",
+              "若读取了可变source stream用于归属判断，其显式read-set head；不可变receipt按ref验证，不要求其为全局latest"
+            ],
+            "apply_boundary": "RETURN_APPLIED_AND_PARENT_CONTINUATION",
+            "parent_destination": "C.p.fault",
+            "duplicate_late_policy": "COMMON_RETURN"
+          }
+        ],
+        "pre_attach_rejection": {
+          "missing_or_wrong_type": "fault/CALL_INPUT_MISSING_OR_TYPE",
+          "alias_conflict": "fault/CALL_INPUT_ALIAS_CONFLICT",
+          "authority_or_ref_mismatch": "fault/CALL_INPUT_MISMATCH",
+          "old_binding_unresolvable": "reconciliation_required/BINDING_UNRESOLVABLE",
+          "partial_attach": "同一attach事务失败不得留下half child；若旧call已存在先核对，不生成新call ordinal"
+        },
+        "common_return": {
+          "type": "CallReturnEnvelope",
+          "required_identity_fields": [
+            "caller_case_ref",
+            "call_occurrence",
+            "callee_case_ref",
+            "callee_binding_ref",
+            "parent_firing_ref",
+            "business_invocation_ref",
+            "generation",
+            "result_ref",
+            "outcome",
+            "expected_continuation_head",
+            "return_contract_version"
+          ],
+          "identity_validation": "return只归attach的callee/parent/call occurrence；版本对照冻结binding链；不按节点名/schema相同接收",
+          "atomic_apply": "只消费本call occurrence的独立return wake；读取immutable result；CAS对应parent continuation head；applied receipt+parent phase/字段更新同事务。callee已提交loop等状态则仅对其指针认领，不二次增加loop revision。",
+          "duplicate": "(result_ref,call_occurrence,generation)已applied且payload相同→返回同一既有applied；不新wake、loop revision或Success。相同identity异payload→conflict。",
+          "late": "父phase已关闭/代次不合→原call的late evidence；不解锁新代、不覆写旧outcome；仍可按独立reconciliation规程追加证据。",
+          "stale": "本call仍在等待但其continuation head改变→重读该确切call自己的当前head，只能复用已applied或进入reconciliation；不绑定另一call。",
+          "business_boundary": "所有即时return均不是parent settled；最终child mapping与workspace仍在父Success。"
+        },
+        "not_applicable": {
+          "compaction_id,retention/trigger_fields": "本consumer必须在CB存在；不能套normal缺省"
+        }
+      }
+    },
+    {
+      "const": {
+        "schema_version": "rpnh/typed_call/v1",
+        "site": "N.adapter_call",
+        "callee": "A",
+        "context": {
+          "caller_case_ref": "ExactRef<review Case>",
+          "caller_phase_ref": "ExactRef<review phase>",
+          "caller_binding_ref": "ExactRef<DefinitionBinding>",
+          "parent_firing_ref": "ExactRef<transition_firing/v1>",
+          "business_invocation_ref": "ExactRef<invocation/v1>",
+          "generation": "NonNegativeInt",
+          "call_occurrence": "(caller_case_ref, static_call_site, local_call_ordinal)",
+          "expected_parent_head": "ExactRef<caller state head>"
+        },
+        "inputs": [
+          {
+            "port": "adapter_instance_ref",
+            "type": "ExactInstanceIdentity",
+            "mode": "project",
+            "source_path": "deref(RB.adapter_instance_binding).instance_ref",
+            "producer": "N.reserve返回的request_binding所用装配",
+            "default": "无默认；必需",
+            "omission_allowed": false,
+            "validation": "同一adapter实例串行域；丢旧handle仅按显式restore contract重建，否则reconcile",
+            "on_missing": "fault:CALL_INPUT_MISSING",
+            "on_mismatch": "fault:CALL_INPUT_MISMATCH",
+            "on_unresolvable_old_binding": "reconciliation_required:BINDING_UNRESOLVABLE"
+          },
+          {
+            "port": "route_binding",
+            "type": "RouteBindingSource{adapter_instance_ref,route_catalog_ref,route_selection_rule,route_selection_stream,observed_selection_head}",
+            "mode": "exact_ref_projection_to_frozen_value",
+            "source_path": "project(AB.instance_ref,AB.route_catalog_ref,AB.route_selection_rule,AB.route_selection_stream,AB.route_selection_head)",
+            "producer": "原adapter装配及已选route记录",
+            "default": "无默认；必需",
+            "omission_allowed": false,
+            "validation": "不是把元组冒充Ref；沿AB固定的selection stream/规则，在adapter mutex取得后记录一个新head观察并固定本次route。若head变更只重读同一stream，不查同名新配置；丢失原stream/handle或旧route不在原catalog则typed拒绝/核对。",
+            "on_missing": "fault:CALL_INPUT_MISSING",
+            "on_mismatch": "fault:CALL_INPUT_MISMATCH",
+            "on_unresolvable_old_binding": "reconciliation_required:BINDING_UNRESOLVABLE"
+          },
+          {
+            "port": "request_bytes",
+            "type": "FrozenBytes / ExactByteRangeRef",
+            "mode": "project",
+            "source_path": "RB.canonical_request_bytes",
+            "producer": "N.reserve返回LLMCallAttempt",
+            "default": "无默认；必需",
+            "omission_allowed": false,
+            "validation": "有限读取原recipe重建envelope，与N.reserve返回的LLMCallAttempt.canonical_request_bytes精确相同；不假设持久attempt文档本身有此字段。A.bind再按选定outbound model转换；同formal重发物理bytes不变。",
+            "on_missing": "fault:CALL_INPUT_MISSING",
+            "on_mismatch": "fault:CALL_INPUT_MISMATCH",
+            "on_unresolvable_old_binding": "reconciliation_required:BINDING_UNRESOLVABLE"
+          },
+          {
+            "port": "recovery_policy",
+            "type": "ExactRef<ExternalProviderRecoveryPolicy>",
+            "mode": "project",
+            "source_path": "deref(RB.adapter_instance_binding).recovery_policy_ref",
+            "producer": "固定装配配置",
+            "default": "无默认；必需",
+            "omission_allowed": false,
+            "validation": "strategy及probe/cycle/deadline齐备；未证实全局默认不得填写",
+            "on_missing": "fault:CALL_INPUT_MISSING",
+            "on_mismatch": "fault:CALL_INPUT_MISMATCH",
+            "on_unresolvable_old_binding": "reconciliation_required:BINDING_UNRESOLVABLE"
+          },
+          {
+            "port": "driver_contract",
+            "type": "ExactRef<DriverContract>",
+            "mode": "project",
+            "source_path": "RB.driver_contract_ref",
+            "producer": "HOST装配",
+            "default": "无默认；必需",
+            "omission_allowed": false,
+            "validation": "请求协议、transport、实例归属、计量、cancel支持及stop profile均对应；与AB.driver_contract_ref一致",
+            "on_missing": "fault:CALL_INPUT_MISSING",
+            "on_mismatch": "fault:CALL_INPUT_MISMATCH",
+            "on_unresolvable_old_binding": "reconciliation_required:BINDING_UNRESOLVABLE"
+          },
+          {
+            "port": "owner_stop",
+            "type": "StopBinding",
+            "mode": "project",
+            "source_path": "RB.owner_stop_binding",
+            "producer": "owner snapshot/事件入口",
+            "default": "无默认；必需",
+            "omission_allowed": false,
+            "validation": "观察谁由binding固定，新的stop事实按SC表摄取；不是普通Bool",
+            "on_missing": "fault:CALL_INPUT_MISSING",
+            "on_mismatch": "fault:CALL_INPUT_MISMATCH",
+            "on_unresolvable_old_binding": "reconciliation_required:BINDING_UNRESOLVABLE"
+          }
+        ],
+        "returns": [
+          {
+            "outcome": "response_candidate",
+            "payload_type": "AdapterResponseCandidate",
+            "required_payload_fields": [
+              "neutral_attempt_ref",
+              "ledger_call_ref",
+              "provider_attempt_ref",
+              "physical_formal_attempt_id",
+              "canonical_response_ref/bytes",
+              "raw_receipt_ref",
+              "adapter_local_return_ref",
+              "physical_observation_refs",
+              "unresolved_remote_refs"
+            ],
+            "identity_and_version_checks": "来自本adapter invocation所选formal而非probe；逐层attempt相同；本地return与remote obligations分离；compatible/strict组合见05。",
+            "parent_case_updates": [
+              "N.case.adapter_result := candidate",
+              "N.phase := N.p.validate",
+              "N持有原consumer/request binding；A本地串行许可已按调用闭合归还",
+              "旧formal unknown仅保留，不被新结果或probe洗掉"
+            ],
+            "expected_parent_heads": [
+              "本call仍等待的精确parent continuation/state head",
+              "callee返回材料中声明的合法loop predecessor→successor链（仅涉及该call状态；不可用同名最新loop替代）",
+              "若读取了可变source stream用于归属判断，其显式read-set head；不可变receipt按ref验证，不要求其为全局latest"
+            ],
+            "apply_boundary": "RETURN_APPLIED_AND_PARENT_CONTINUATION",
+            "parent_destination": "N.p.validate",
+            "duplicate_late_policy": "COMMON_RETURN"
+          },
+          {
+            "outcome": "neutral_failure",
+            "payload_type": "NeutralFailure",
+            "required_payload_fields": [
+              "neutral_attempt_ref",
+              "disposition",
+              "failure_code",
+              "submission_state",
+              "last_formal_result_ref",
+              "recovery_reason",
+              "physical_observation_refs"
+            ],
+            "identity_and_version_checks": "failure保持原正式请求关联；探测失败原因可附加，不能拿probe当business attempt。",
+            "parent_case_updates": [
+              "N.case.failure := exact failure",
+              "N.phase := N.p.record_failure",
+              "不修改attempt ordinal；登记失败后由N.retry guards决定"
+            ],
+            "expected_parent_heads": [
+              "本call仍等待的精确parent continuation/state head",
+              "callee返回材料中声明的合法loop predecessor→successor链（仅涉及该call状态；不可用同名最新loop替代）",
+              "若读取了可变source stream用于归属判断，其显式read-set head；不可变receipt按ref验证，不要求其为全局latest"
+            ],
+            "apply_boundary": "RETURN_APPLIED_AND_PARENT_CONTINUATION",
+            "parent_destination": "N.p.record_failure",
+            "duplicate_late_policy": "COMMON_RETURN"
+          },
+          {
+            "outcome": "interrupted",
+            "payload_type": "CallInterrupted",
+            "required_payload_fields": [
+              "last_committed_loop_ref or NotApplicable",
+              "exact_evidence_refs",
+              "reason_code",
+              "affected_call_refs",
+              "unresolved_obligation_refs",
+              "closure_class",
+              "continuation_disposition",
+              "stop_request_ref or authenticated original stop observation",
+              "submission_state:{not_submitted,submission_unknown,response_complete,NotApplicable}",
+              "local_stop_confirmation:Confirmed|Pending",
+              "applicable_stop_cut_id"
+            ],
+            "identity_and_version_checks": "blocked须有对应block evidence；interrupted区分请求/确认及submission phase，必须符合所选SC；reconciliation含旧binding/attempt/义务；fault关联错误材料且无自动retry。",
+            "parent_case_updates": [
+              "N.case.last_failure := exact envelope",
+              "N.phase := N.p.interrupted",
+              "只认领可验证已提交loop后继；没有后继不伪造WAITING",
+              "不重置累计量、不丢未决义务、不直接释放activity或提交parent Success"
+            ],
+            "expected_parent_heads": [
+              "本call仍等待的精确parent continuation/state head",
+              "callee返回材料中声明的合法loop predecessor→successor链（仅涉及该call状态；不可用同名最新loop替代）",
+              "若读取了可变source stream用于归属判断，其显式read-set head；不可变receipt按ref验证，不要求其为全局latest"
+            ],
+            "apply_boundary": "RETURN_APPLIED_AND_PARENT_CONTINUATION",
+            "parent_destination": "N.p.interrupted",
+            "duplicate_late_policy": "COMMON_RETURN"
+          },
+          {
+            "outcome": "reconciliation_required",
+            "payload_type": "CallReconciliation",
+            "required_payload_fields": [
+              "last_committed_loop_ref or NotApplicable",
+              "exact_evidence_refs",
+              "reason_code",
+              "affected_call_refs",
+              "unresolved_obligation_refs",
+              "closure_class",
+              "continuation_disposition",
+              "reconciliation_subject_refs",
+              "missing_or_conflicting_material_description"
+            ],
+            "identity_and_version_checks": "blocked须有对应block evidence；interrupted区分请求/确认及submission phase，必须符合所选SC；reconciliation含旧binding/attempt/义务；fault关联错误材料且无自动retry。",
+            "parent_case_updates": [
+              "N.case.last_failure := exact envelope",
+              "N.phase := N.p.reconcile",
+              "只认领可验证已提交loop后继；没有后继不伪造WAITING",
+              "不重置累计量、不丢未决义务、不直接释放activity或提交parent Success"
+            ],
+            "expected_parent_heads": [
+              "本call仍等待的精确parent continuation/state head",
+              "callee返回材料中声明的合法loop predecessor→successor链（仅涉及该call状态；不可用同名最新loop替代）",
+              "若读取了可变source stream用于归属判断，其显式read-set head；不可变receipt按ref验证，不要求其为全局latest"
+            ],
+            "apply_boundary": "RETURN_APPLIED_AND_PARENT_CONTINUATION",
+            "parent_destination": "N.p.reconcile",
+            "duplicate_late_policy": "COMMON_RETURN"
+          },
+          {
+            "outcome": "fault",
+            "payload_type": "CallContractFault",
+            "required_payload_fields": [
+              "last_committed_loop_ref or NotApplicable",
+              "exact_evidence_refs",
+              "reason_code",
+              "affected_call_refs",
+              "unresolved_obligation_refs",
+              "closure_class",
+              "continuation_disposition",
+              "error_boundary",
+              "offending_binding_or_fact_ref"
+            ],
+            "identity_and_version_checks": "blocked须有对应block evidence；interrupted区分请求/确认及submission phase，必须符合所选SC；reconciliation含旧binding/attempt/义务；fault关联错误材料且无自动retry。",
+            "parent_case_updates": [
+              "N.case.last_failure := exact envelope",
+              "N.phase := N.p.fault",
+              "只认领可验证已提交loop后继；没有后继不伪造WAITING",
+              "不重置累计量、不丢未决义务、不直接释放activity或提交parent Success"
+            ],
+            "expected_parent_heads": [
+              "本call仍等待的精确parent continuation/state head",
+              "callee返回材料中声明的合法loop predecessor→successor链（仅涉及该call状态；不可用同名最新loop替代）",
+              "若读取了可变source stream用于归属判断，其显式read-set head；不可变receipt按ref验证，不要求其为全局latest"
+            ],
+            "apply_boundary": "RETURN_APPLIED_AND_PARENT_CONTINUATION",
+            "parent_destination": "N.p.fault",
+            "duplicate_late_policy": "COMMON_RETURN"
+          }
+        ],
+        "pre_attach_rejection": {
+          "missing_or_wrong_type": "fault/CALL_INPUT_MISSING_OR_TYPE",
+          "alias_conflict": "fault/CALL_INPUT_ALIAS_CONFLICT",
+          "authority_or_ref_mismatch": "fault/CALL_INPUT_MISMATCH",
+          "old_binding_unresolvable": "reconciliation_required/BINDING_UNRESOLVABLE",
+          "partial_attach": "同一attach事务失败不得留下half child；若旧call已存在先核对，不生成新call ordinal"
+        },
+        "common_return": {
+          "type": "CallReturnEnvelope",
+          "required_identity_fields": [
+            "caller_case_ref",
+            "call_occurrence",
+            "callee_case_ref",
+            "callee_binding_ref",
+            "parent_firing_ref",
+            "business_invocation_ref",
+            "generation",
+            "result_ref",
+            "outcome",
+            "expected_continuation_head",
+            "return_contract_version"
+          ],
+          "identity_validation": "return只归attach的callee/parent/call occurrence；版本对照冻结binding链；不按节点名/schema相同接收",
+          "atomic_apply": "只消费本call occurrence的独立return wake；读取immutable result；CAS对应parent continuation head；applied receipt+parent phase/字段更新同事务。callee已提交loop等状态则仅对其指针认领，不二次增加loop revision。",
+          "duplicate": "(result_ref,call_occurrence,generation)已applied且payload相同→返回同一既有applied；不新wake、loop revision或Success。相同identity异payload→conflict。",
+          "late": "父phase已关闭/代次不合→原call的late evidence；不解锁新代、不覆写旧outcome；仍可按独立reconciliation规程追加证据。",
+          "stale": "本call仍在等待但其continuation head改变→重读该确切call自己的当前head，只能复用已applied或进入reconciliation；不绑定另一call。",
+          "business_boundary": "所有即时return均不是parent settled；最终child mapping与workspace仍在父Success。"
+        },
+        "additional_call_context": {
+          "neutral_attempt_ref": "N.case.neutral_attempt_ref（reserve已登记）",
+          "ledger_call_ref": "N.case.ledger_call_ref",
+          "provider_attempt_ref": "N.case.provider_attempt_ref",
+          "request_binding": "N.case.request_binding_ref",
+          "consumer_kind": "N.consumer_kind"
+        }
+      }
+    },
+    {
+      "const": {
+        "schema_version": "rpnh/typed_call/v1",
+        "site": "M.observe_existing",
+        "callee": "O",
+        "context": {
+          "caller_case_ref": "ExactRef<review Case>",
+          "caller_phase_ref": "ExactRef<review phase>",
+          "caller_binding_ref": "ExactRef<DefinitionBinding>",
+          "parent_firing_ref": "ExactRef<transition_firing/v1>",
+          "business_invocation_ref": "ExactRef<invocation/v1>",
+          "generation": "NonNegativeInt",
+          "call_occurrence": "(caller_case_ref, static_call_site, local_call_ordinal)",
+          "expected_parent_head": "ExactRef<caller state head>"
+        },
+        "inputs": [
+          {
+            "port": "subscription_ref",
+            "type": "ExactRef<review SubscriptionBinding>",
+            "mode": "attach_generated",
+            "source_path": "SUB.subscription_ref",
+            "producer": "M.observe_existing::CALL.attach",
+            "default": "无默认；必需",
+            "omission_allowed": false,
+            "validation": "同call_identity+consumer occurrence+generation+catalog唯一创建或复用；O.subscribe确认相同head",
+            "on_missing": "PRE_ATTACH_FAULT:CALL_INPUT_MISSING",
+            "on_mismatch": "PRE_ATTACH_FAULT:CALL_INPUT_MISMATCH",
+            "on_unresolvable_old_binding": "PRE_ATTACH_RECONCILIATION:BINDING_UNRESOLVABLE"
+          },
+          {
+            "port": "consumer_call_site",
+            "type": "ExactCallOccurrence",
+            "mode": "attach_generated",
+            "source_path": "CTX.call_occurrence",
+            "producer": "CALL.attach",
+            "default": "无默认；必需",
+            "omission_allowed": false,
+            "validation": "此observer实例自己的continuation；与owner终态发布call-site不同",
+            "on_missing": "PRE_ATTACH_FAULT:CALL_INPUT_MISSING",
+            "on_mismatch": "PRE_ATTACH_FAULT:CALL_INPUT_MISMATCH",
+            "on_unresolvable_old_binding": "PRE_ATTACH_RECONCILIATION:BINDING_UNRESOLVABLE"
+          },
+          {
+            "port": "call_identity",
+            "type": "ManagedCallIdentity(execution_ref,firing_ref,call_id)",
+            "mode": "project",
+            "source_path": "MB.call_identity",
+            "producer": "M.validate/M.lookup",
+            "default": "无默认；必需",
+            "omission_allowed": false,
+            "validation": "exact original caller/material，与started/terminal receipt中一致；名称/args相似不足",
+            "on_missing": "PRE_ATTACH_FAULT:CALL_INPUT_MISSING",
+            "on_mismatch": "PRE_ATTACH_FAULT:CALL_INPUT_MISMATCH",
+            "on_unresolvable_old_binding": "PRE_ATTACH_RECONCILIATION:BINDING_UNRESOLVABLE"
+          },
+          {
+            "port": "generation",
+            "type": "NonNegativeInt",
+            "mode": "explicit",
+            "source_path": "CTX.generation",
+            "producer": "M入口binding",
+            "default": "无默认；必需",
+            "omission_allowed": false,
+            "validation": "不从观察者当前另一任务或新generation替换",
+            "on_missing": "PRE_ATTACH_FAULT:CALL_INPUT_MISSING",
+            "on_mismatch": "PRE_ATTACH_FAULT:CALL_INPUT_MISMATCH",
+            "on_unresolvable_old_binding": "PRE_ATTACH_RECONCILIATION:BINDING_UNRESOLVABLE"
+          },
+          {
+            "port": "catalog_binding",
+            "type": "ExactRef<ManagedCatalogBinding>",
+            "mode": "project",
+            "source_path": "MB.catalog_binding",
+            "producer": "已admitted caller目录和HOST registration",
+            "default": "无默认；必需",
+            "omission_allowed": false,
+            "validation": "visible及原plugin schema、registration_key、effect、catalog版本一致",
+            "on_missing": "PRE_ATTACH_FAULT:CALL_INPUT_MISSING",
+            "on_mismatch": "PRE_ATTACH_FAULT:CALL_INPUT_MISMATCH",
+            "on_unresolvable_old_binding": "PRE_ATTACH_RECONCILIATION:BINDING_UNRESOLVABLE"
+          }
+        ],
+        "returns": [
+          {
+            "outcome": "returned",
+            "payload_type": "ObservedReturnedReceipt",
+            "required_payload_fields": [
+              "subscription_ref",
+              "consumer_call_site",
+              "observed_call_identity",
+              "generation",
+              "catalog_binding",
+              "observer_applied_ref",
+              "original_owner_ref",
+              "terminal_receipt_ref(returned)",
+              "validated_output_ref/value"
+            ],
+            "identity_and_version_checks": "已attach的SUB与本consumer/generation/catalog一致；returned/failed核对原terminal exact receipt；unknown可以是原unknown或observer无法解析原binding的observation_gap（不得替owner制造terminal）；conflict/取消只关闭自己的观察，不伪造原call结论。",
+            "parent_case_updates": [
+              "M.case.observed_receipt_ref / observer_applied_ref := returned refs",
+              "M.phase := M.p.returned",
+              "不新写managed terminal、不执行handler、不归还原owner的effect许可"
+            ],
+            "expected_parent_heads": [
+              "本call仍等待的精确parent continuation/state head",
+              "callee返回材料中声明的合法loop predecessor→successor链（仅涉及该call状态；不可用同名最新loop替代）",
+              "若读取了可变source stream用于归属判断，其显式read-set head；不可变receipt按ref验证，不要求其为全局latest"
+            ],
+            "apply_boundary": "RETURN_APPLIED_AND_PARENT_CONTINUATION",
+            "parent_destination": "M.p.returned",
+            "duplicate_late_policy": "COMMON_RETURN"
+          },
+          {
+            "outcome": "failed",
+            "payload_type": "ObservedFailedReceipt",
+            "required_payload_fields": [
+              "subscription_ref",
+              "consumer_call_site",
+              "observed_call_identity",
+              "generation",
+              "catalog_binding",
+              "observer_applied_ref",
+              "original_owner_ref",
+              "terminal_receipt_ref(failed)",
+              "error_code",
+              "started_receipt_ref",
+              "unresolved_obligation_refs"
+            ],
+            "identity_and_version_checks": "已attach的SUB与本consumer/generation/catalog一致；returned/failed核对原terminal exact receipt；unknown可以是原unknown或observer无法解析原binding的observation_gap（不得替owner制造terminal）；conflict/取消只关闭自己的观察，不伪造原call结论。",
+            "parent_case_updates": [
+              "M.case.observed_receipt_ref / observer_applied_ref := returned refs",
+              "M.phase := M.p.failed",
+              "不新写managed terminal、不执行handler、不归还原owner的effect许可"
+            ],
+            "expected_parent_heads": [
+              "本call仍等待的精确parent continuation/state head",
+              "callee返回材料中声明的合法loop predecessor→successor链（仅涉及该call状态；不可用同名最新loop替代）",
+              "若读取了可变source stream用于归属判断，其显式read-set head；不可变receipt按ref验证，不要求其为全局latest"
+            ],
+            "apply_boundary": "RETURN_APPLIED_AND_PARENT_CONTINUATION",
+            "parent_destination": "M.p.failed",
+            "duplicate_late_policy": "COMMON_RETURN"
+          },
+          {
+            "outcome": "unknown",
+            "payload_type": "ObservedUnknownReceipt",
+            "required_payload_fields": [
+              "subscription_ref",
+              "consumer_call_site",
+              "observed_call_identity",
+              "generation",
+              "catalog_binding",
+              "observer_applied_ref",
+              "original_owner_ref",
+              "terminal_receipt_ref(outcome_unknown) OR typed observation_gap_ref",
+              "error_code",
+              "started_receipt_ref OR explicit MissingOriginalReceipt",
+              "unresolved_obligation_refs"
+            ],
+            "identity_and_version_checks": "已attach的SUB与本consumer/generation/catalog一致；returned/failed核对原terminal exact receipt；unknown可以是原unknown或observer无法解析原binding的observation_gap（不得替owner制造terminal）；conflict/取消只关闭自己的观察，不伪造原call结论。",
+            "parent_case_updates": [
+              "M.case.observed_receipt_ref / observer_applied_ref := returned refs",
+              "M.phase := M.p.reconciliation_required",
+              "不新写managed terminal、不执行handler、不归还原owner的effect许可"
+            ],
+            "expected_parent_heads": [
+              "本call仍等待的精确parent continuation/state head",
+              "callee返回材料中声明的合法loop predecessor→successor链（仅涉及该call状态；不可用同名最新loop替代）",
+              "若读取了可变source stream用于归属判断，其显式read-set head；不可变receipt按ref验证，不要求其为全局latest"
+            ],
+            "apply_boundary": "RETURN_APPLIED_AND_PARENT_CONTINUATION",
+            "parent_destination": "M.p.reconciliation_required",
+            "duplicate_late_policy": "COMMON_RETURN"
+          },
+          {
+            "outcome": "subscription_cancelled",
+            "payload_type": "ObserverSubscriptionClosure",
+            "required_payload_fields": [
+              "subscription_ref",
+              "consumer_call_site",
+              "observed_call_identity",
+              "generation",
+              "catalog_binding",
+              "observer_applied_ref",
+              "original_owner_ref",
+              "own_subscription_closure_ref",
+              "cancel_command_ref",
+              "profile_ref(EARLY) OR lawful prior consumer closure"
+            ],
+            "identity_and_version_checks": "已attach的SUB与本consumer/generation/catalog一致；returned/failed核对原terminal exact receipt；unknown可以是原unknown或observer无法解析原binding的observation_gap（不得替owner制造terminal）；conflict/取消只关闭自己的观察，不伪造原call结论。 compatible Event.wait不新增取消出口；SC-M04/E01。",
+            "parent_case_updates": [
+              "M.case.observed_receipt_ref / observer_applied_ref := returned refs",
+              "M.phase := M.p.observer_cancelled",
+              "不新写managed terminal、不执行handler、不归还原owner的effect许可"
+            ],
+            "expected_parent_heads": [
+              "本call仍等待的精确parent continuation/state head",
+              "callee返回材料中声明的合法loop predecessor→successor链（仅涉及该call状态；不可用同名最新loop替代）",
+              "若读取了可变source stream用于归属判断，其显式read-set head；不可变receipt按ref验证，不要求其为全局latest"
+            ],
+            "apply_boundary": "RETURN_APPLIED_AND_PARENT_CONTINUATION",
+            "parent_destination": "M.p.observer_cancelled",
+            "duplicate_late_policy": "COMMON_RETURN"
+          },
+          {
+            "outcome": "conflict",
+            "payload_type": "ObserverContractConflict",
+            "required_payload_fields": [
+              "subscription_ref",
+              "consumer_call_site",
+              "observed_call_identity",
+              "generation",
+              "catalog_binding",
+              "observer_applied_ref",
+              "original_owner_ref",
+              "conflict_evidence_ref",
+              "offending_ref_set"
+            ],
+            "identity_and_version_checks": "已attach的SUB与本consumer/generation/catalog一致；returned/failed核对原terminal exact receipt；unknown可以是原unknown或observer无法解析原binding的observation_gap（不得替owner制造terminal）；conflict/取消只关闭自己的观察，不伪造原call结论。",
+            "parent_case_updates": [
+              "M.case.observed_receipt_ref / observer_applied_ref := returned refs",
+              "M.phase := M.p.fault",
+              "不新写managed terminal、不执行handler、不归还原owner的effect许可"
+            ],
+            "expected_parent_heads": [
+              "本call仍等待的精确parent continuation/state head",
+              "callee返回材料中声明的合法loop predecessor→successor链（仅涉及该call状态；不可用同名最新loop替代）",
+              "若读取了可变source stream用于归属判断，其显式read-set head；不可变receipt按ref验证，不要求其为全局latest"
+            ],
+            "apply_boundary": "RETURN_APPLIED_AND_PARENT_CONTINUATION",
+            "parent_destination": "M.p.fault",
+            "duplicate_late_policy": "COMMON_RETURN"
+          }
+        ],
+        "pre_attach_rejection": {
+          "missing_or_wrong_type": "PRE_ATTACH_FAULT→M.p.fault",
+          "alias_conflict": "PRE_ATTACH_FAULT→M.p.fault",
+          "authority_or_ref_mismatch": "PRE_ATTACH_FAULT→M.p.fault",
+          "old_binding_unresolvable": "PRE_ATTACH_RECONCILIATION→M.p.reconciliation_required",
+          "payload": "BindingIssue{caller_case_ref,call_occurrence,offending_port,error_code,exact_binding_refs,expected_parent_head}；不要求尚未创建的subscription/child/applied/terminal refs",
+          "commit": "不进入O、不创建原managed terminal；原parent phase与问题后继/applied-contract-issue同提交；无half attach",
+          "not_callee_return": "预attach拒绝属于call协议验证出口，不强迫它伪装O已返回"
+        },
+        "common_return": {
+          "type": "CallReturnEnvelope",
+          "required_identity_fields": [
+            "caller_case_ref",
+            "call_occurrence",
+            "callee_case_ref",
+            "callee_binding_ref",
+            "parent_firing_ref",
+            "business_invocation_ref",
+            "generation",
+            "result_ref",
+            "outcome",
+            "expected_continuation_head",
+            "return_contract_version"
+          ],
+          "identity_validation": "return只归attach的callee/parent/call occurrence；版本对照冻结binding链；不按节点名/schema相同接收",
+          "atomic_apply": "只消费本call occurrence的独立return wake；读取immutable result；CAS对应parent continuation head；applied receipt+parent phase/字段更新同事务。callee已提交loop等状态则仅对其指针认领，不二次增加loop revision。",
+          "duplicate": "(result_ref,call_occurrence,generation)已applied且payload相同→返回同一既有applied；不新wake、loop revision或Success。相同identity异payload→conflict。",
+          "late": "父phase已关闭/代次不合→原call的late evidence；不解锁新代、不覆写旧outcome；仍可按独立reconciliation规程追加证据。",
+          "stale": "本call仍在等待但其continuation head改变→重读该确切call自己的当前head，只能复用已applied或进入reconciliation；不绑定另一call。",
+          "business_boundary": "所有即时return均不是parent settled；最终child mapping与workspace仍在父Success。"
+        }
+      }
+    }
+  ],
+  "x-source-version": "review-0.4",
+  "x-binding-records": [
+    {
+      "id": "CTX",
+      "type": "CallContext",
+      "fields": {
+        "caller_case_ref": "ExactRef<review Case>",
+        "caller_phase_ref": "ExactRef<review phase>",
+        "caller_binding_ref": "ExactRef<DefinitionBinding>",
+        "parent_firing_ref": "ExactRef<transition_firing/v1>",
+        "business_invocation_ref": "ExactRef<invocation/v1>",
+        "generation": "NonNegativeInt",
+        "call_occurrence": "(caller_case_ref, static_call_site, local_call_ordinal)",
+        "expected_parent_head": "ExactRef<caller state head>"
+      },
+      "producer": "caller现有phase材料；attach时复制精确引用并CAS，不以静态节点名充当调用发生实例",
+      "availability": "每个七调用点均必有；旧binding无法解析进reconciliation_required"
+    },
+    {
+      "id": "QB",
+      "type": "QBoundaryMaterial",
+      "fields": {
+        "current_loop_ref": "ExactRef<agent_loop/v1>",
+        "prepared_context_ref": "ExactRef<review prepared-context material>",
+        "target_ref": "ExactRef<resource_version/v1, llm_input_target/v1>",
+        "history_refs": "OrderedSeq<ExactRef<agent_turn/v1>>; overlay/response来源另在prepared_context材料明确保留",
+        "reduction_source_ref": "ExactRef<effective reduction configuration>",
+        "role": "DeclaredRole",
+        "task_ledger_binding": "ExactRef<ledger scope binding>",
+        "owner_stop_binding": "StopBinding"
+      },
+      "producer": "Q.read_boundary读取固定execution/loop；Q.prepare按context.py材料构造；segment路径尚未Q.prepare时，attach的有限输入物化按同一loop调用对应纯材料构造，禁止暗跳下一个控制节点",
+      "availability": "输入材料与loop/overlay/配置版本一致；segment分支没有历史快照时显式产生而非取全局history"
+    },
+    {
+      "id": "CB",
+      "type": "CompactionPreparedMaterial",
+      "fields": {
+        "loop_ref": "ExactRef<agent_loop/v1, COMPACTING>",
+        "llm_invocation_ref": "InvocationRefBinding",
+        "recipe_ref": "ExactRef<resource_version/v1, registered compaction request>",
+        "request_binding": "ExactRef<RequestBinding>",
+        "ledger_binding": "ExactRef<LedgerBinding>",
+        "reduction_settings": "ReductionSettings",
+        "history_refs": "OrderedSeq<ExactRef>",
+        "compaction_identity": "ExactCompactionIdentity"
+      },
+      "producer": "C.prepare_recipe将原prepare_agent_context_compaction_v1的有限材料计算与已提交begin材料显式绑定；不在此隐藏重试",
+      "availability": "begin/recipe的实际多个旧提交依次保留；N.reserve复用已存在attempt或完成未完成预留，不双扣量"
+    },
+    {
+      "id": "RB",
+      "type": "RequestBinding",
+      "fields": {
+        "business_invocation_ref": "ExactRef<invocation/v1>",
+        "loop_ref": "ExactRef<agent_loop/v1>",
+        "llm_invocation_ref": "InvocationRefBinding",
+        "recipe_ref": "RecipeRefBinding",
+        "target_ref": "ExactRef<resource_version/v1>",
+        "canonical_request_bytes": "FrozenBytes or ExactByteRangeRef",
+        "catalog_ref": "ExactRef<resource_version/v1>",
+        "adapter_instance_binding": "ExactRef<AdapterInstanceBinding>",
+        "driver_contract_ref": "ExactRef<driver contract>",
+        "owner_stop_binding": "StopBinding",
+        "consumer_contract_ref": "ExactRef<consumer response contract>",
+        "ledger_scope_ref": "ExactRef<LedgerBinding>",
+        "retry_policy_ref": "ExactRef<consumer retry policy>",
+        "source_context_ref": "ExactRef<prepared context material>"
+      },
+      "producer": "普通请求由Q.prepare/首次N.reserve既有准备路径物化；压缩请求由CB固定；绑定只指向一个精确版本，不以current同名配置解析",
+      "availability": "planned请求材料不可当已登记调用；首次reserve完成前没有dispatch权；具体保存可合入现有资源，不强制新对象类型"
+    },
+    {
+      "id": "AB",
+      "type": "AdapterInstanceBinding",
+      "fields": {
+        "instance_ref": "ExactInstanceIdentity",
+        "route_catalog_ref": "ExactRef<configured route inventory>",
+        "route_selection_rule": "restore_exact_selected_else_first",
+        "route_selection_head": "ExactHeadRef or ExplicitNoPriorSelection",
+        "recovery_policy_ref": "ExactRef<ExternalProviderRecoveryPolicy>",
+        "driver_contract_ref": "ExactRef<driver contract>",
+        "instance_restore_contract": "ExactRef or NotSupported",
+        "route_selection_stream": "ExactStreamIdentity within original adapter binding"
+      },
+      "producer": "HOST装配所供精确adapter实例与声明；A.serial_acquire后A.bind读取声明的路由选择head并固定本次route，不按模型名字合并实例",
+      "availability": "过程local handle失去且无恢复合同→reconciliation_required；不能随意新建同名实例并接回旧调用"
+    },
+    {
+      "id": "LB",
+      "type": "LedgerBinding",
+      "fields": {
+        "owner_run_ref": "ExactRef<run>",
+        "operation_execution_ref": "ExactRef<operation_execution_lease/v1>",
+        "business_invocation_ref": "ExactRef<invocation/v1>",
+        "budget_scope": "ExactDeclaredScope",
+        "reservation_class": "DeclaredReservationClass",
+        "provider_call_ref": "ExactRef<llm_call/v2> or PendingReservation",
+        "provider_attempt_ref": "ExactRef<provider_attempt/v2> or PendingReservation",
+        "expected_ledger_head": "ExactHeadRef"
+      },
+      "producer": "沿已采用operation budget binding与ProviderAttemptLedger对应scope；每次预留返回确切call/attempt",
+      "availability": "PendingReservation只在reserve前合法；neutral attempt/ledger refs不可互换"
+    },
+    {
+      "id": "MB",
+      "type": "ManagedCallBinding",
+      "fields": {
+        "execution_ref": "ExactRef<operation_execution_lease/v1>",
+        "firing_ref": "ExactRef<transition_firing/v1>",
+        "call_id": "BoundCallId",
+        "arguments": "FrozenJSON",
+        "catalog_binding": "ExactRef<managed catalog + caller registration binding>",
+        "call_identity": "(execution_ref,firing_ref,call_id)",
+        "generation": "BoundGeneration",
+        "owner_stop_binding": "StopBinding"
+      },
+      "producer": "M.validate沿已admitted执行和catalog进行双schema验证；M.lookup读同call的receipt/custody",
+      "availability": "同key异args/catalog→conflict；名称相同不接受替代"
+    },
+    {
+      "id": "SUB",
+      "type": "SubscriptionBinding",
+      "fields": {
+        "subscription_ref": "ExactRef<review subscription>",
+        "consumer_call_site": "ExactCallOccurrence",
+        "observed_call_identity": "MB.call_identity",
+        "generation": "BoundGeneration",
+        "catalog_binding": "MB.catalog_binding",
+        "expected_consumer_head": "ExactRef<caller continuation>"
+      },
+      "producer": "M.observe_existing的attach用(call identity,consumer occurrence,generation,catalog binding)唯一创建/复用；O.subscribe只确认同一订阅，不另生成第二订阅",
+      "availability": "terminal先于attach也补投；仅拥有观察/返回权，无handler/terminal发布权"
+    },
+    {
+      "id": "STOP",
+      "type": "StopBinding",
+      "fields": {
+        "owner_run_ref": "ExactRef",
+        "owner_control_scope_ref": "ExactRef",
+        "observation_contract_ref": "ExactRef<StopCutProfile>",
+        "last_observed_stop_fact_ref": "Optional<ExactRef>",
+        "last_observed_head": "ExactHeadRef"
+      },
+      "producer": "固定谁的stop及如何观察；fresh stop由owner事件/明确snapshot输入，不冻结永远false，不在guard暗读任意全局状态",
+      "availability": "not_observed不是no_stop；按SC表指定观察点才产生取消结果，其他phase只能记录"
+    },
+    {
+      "id": "INV",
+      "type": "InvocationRefBinding",
+      "fields": {
+        "registered": "ExactRef<llm_invocation_spec/v1>",
+        "planned": "ExplicitProspectiveExactRef + frozen invocation document + reservation identity"
+      },
+      "producer": "二选一tag：已有spec为registered；首次普通请求由既有prepare的有限身份分配产生planned。planned只是指定待发布身份，不是已登记ref存在性声明；N.reserve提交后变registered",
+      "availability": "禁止传business invocation/v1替代；同planned身份异文档冲突；不能默按名称找spec"
+    },
+    {
+      "id": "RECIPE",
+      "type": "RecipeRefBinding",
+      "fields": {
+        "compaction": "ExactRef<resource_version/v1, compaction request recipe>",
+        "normal": "ExactRef<resource_version/v1, normal provider request> or ExplicitPendingRecipe(request_binding)"
+      },
+      "producer": "不以recipe=null表示普通请求无请求配方；普通请求也有provider.call.request_resource_ref。仅compaction专属compaction_id/retention fields为NotApplicable(normal)",
+      "availability": "Pending只在首次预留/物化前，N.reserve后必须为确切注册request_ref；重试不换recipe"
+    }
+  ],
+  "x-alias-rules": [
+    {
+      "old": "invocation",
+      "canonical": "invocation_ref",
+      "scope": "Q.normal_call,C.request_summary→N；含义仅llm_invocation_spec，不是business invocation",
+      "rule": "仅迁移旧review表示；两者同时出现且不一致→CALL_INPUT_ALIAS_CONFLICT；新版调用只用canonical"
+    },
+    {
+      "old": "recipe",
+      "canonical": "recipe_ref",
+      "scope": "Q.normal_call,C.request_summary→N",
+      "rule": "仅迁移旧review表示；两者同时出现且不一致→CALL_INPUT_ALIAS_CONFLICT；新版调用只用canonical"
+    },
+    {
+      "old": "neutral_attempt",
+      "canonical": "neutral_attempt_ref",
+      "scope": "N.adapter_call的common context",
+      "rule": "仅迁移旧review表示；两者同时出现且不一致→CALL_INPUT_ALIAS_CONFLICT；新版调用只用canonical"
+    },
+    {
+      "old": "call_site",
+      "canonical": "return_call_site",
+      "scope": "Q→C输入；静态name与call occurrence分离",
+      "rule": "仅迁移旧review表示；两者同时出现且不一致→CALL_INPUT_ALIAS_CONFLICT；新版调用只用canonical"
+    },
+    {
+      "old": "subscriber",
+      "canonical": "caller_case_ref",
+      "scope": "M→O common context；不能替代subscription_ref",
+      "rule": "仅迁移旧review表示；两者同时出现且不一致→CALL_INPUT_ALIAS_CONFLICT；新版调用只用canonical"
+    },
+    {
+      "old": "current_loop",
+      "canonical": "current_loop_ref",
+      "scope": "Q根输入",
+      "rule": "仅迁移旧review表示；两者同时出现且不一致→CALL_INPUT_ALIAS_CONFLICT；新版调用只用canonical"
+    },
+    {
+      "old": "loop",
+      "canonical": "loop_ref",
+      "scope": "只作为解引用字段别名；C端口名仍loop，其值必须exact loop ref",
+      "rule": "仅迁移旧review表示；两者同时出现且不一致→CALL_INPUT_ALIAS_CONFLICT；新版调用只用canonical"
+    }
+  ],
+  "x-root-alias-rules": {
+    "Q.current_loop": "QB.current_loop_ref",
+    "Q.history": "QB.history_refs (ordered immutable refs, not ambient mutable history)",
+    "Q.target": "QB.target_ref (exact resource whose validated payload is LLMInputTarget)",
+    "M.args": "MB.arguments (frozen original arguments)",
+    "H.parent_continuation": "exact original continuation; not reconstruct from latest definition"
+  },
+  "x-projection-records": [
+    {
+      "id": "PreparedContextMaterial",
+      "fields": {
+        "loop_ref": "ExactRef<agent_loop/v1>",
+        "target_ref": "ExactRef<resource_version/v1>",
+        "history_refs": "OrderedSeq<agent_turn/v1 ref>",
+        "overlay_ref": "ExactRef<agent_context_compaction/v3> or ExplicitNone",
+        "request_source_refs": "OrderedSeq<ExactRef>",
+        "visible_history_bytes": "FrozenBytes",
+        "source_heads": "ExplicitReadSet"
+      },
+      "origin": "context.py prepare_agent_turn_context_v1读取的prior/overlay/target/prompt/catalog；字段为review投影不是新增公开API"
+    },
+    {
+      "id": "ConsumerRetryPolicy",
+      "fields": {
+        "consumer_kind": "normal|leaf|compaction",
+        "neutral_max": "1|1|2 in compatible",
+        "retryable_set": "{no_input,protocol_rejected,provider_retryable}",
+        "boundary_formula": "attempt_ordinal+1 < neutral_max"
+      },
+      "origin": "PAR15/PAR32–34，固定模板常量在binding时显式存在"
+    },
+    {
+      "id": "RouteBindingSource",
+      "fields": {
+        "adapter_instance_ref": "ExactInstanceIdentity",
+        "route_catalog_ref": "ExactRef",
+        "route_selection_rule": "restore_exact_selected_else_first",
+        "route_selection_stream": "ExactStreamIdentity",
+        "observed_selection_head": "ExactHeadRef or ExplicitNoPriorSelection"
+      },
+      "origin": "只投影原AB，不是无来源的新独立route对象"
+    },
+    {
+      "id": "BindingIssue",
+      "fields": {
+        "caller_case_ref": "ExactRef",
+        "call_occurrence": "ExactCallOccurrence",
+        "offending_port": "DeclaredPort",
+        "error_code": "TypedErrorCode",
+        "exact_binding_refs": "Seq<ExactRef>",
+        "expected_parent_head": "ExactHeadRef"
+      },
+      "origin": "CALL.attach前验证失败；还没有callee与subscription时不伪造其refs"
+    }
+  ],
+  "x-source-projection-table": [
+    {
+      "consumer": "QB.target_ref/QB.history_refs",
+      "fixed_source": "https://github.com/Deng-0119/RPNH/blob/f1bf5bce55358fc8ebd81a01dadadaa4a804846d/cpn/components/agent_loop/context.py#L967-L1065",
+      "mapping": "把本execution允许的target/连续prior-turn refs/最新overlay投影成PreparedContextMaterial；读取的是输入ref，不重新选历史策略"
+    },
+    {
+      "consumer": "RB.recipe_ref + canonical_request_bytes",
+      "fixed_source": "https://github.com/Deng-0119/RPNH/blob/f1bf5bce55358fc8ebd81a01dadadaa4a804846d/cpn/components/execution_services.py#L237-L280",
+      "mapping": "provider.call.request_resource_ref对应recipe；_optional_input_authority重建envelope并比较attempt.canonical_request_bytes；不可把DTO属性当作持久文档字段"
+    },
+    {
+      "consumer": "CB.llm_invocation_ref/recipe_ref/LB",
+      "fixed_source": "https://github.com/Deng-0119/RPNH/blob/f1bf5bce55358fc8ebd81a01dadadaa4a804846d/cpn/components/agent_loop/compaction.py#L599-L712",
+      "mapping": "同compaction invocation和request recipe；每个允许新neutral attempt有新ledger call/provider reservation；多个旧commit次序不合并"
+    },
+    {
+      "consumer": "C.already_completed return",
+      "fixed_source": "https://github.com/Deng-0119/RPNH/blob/f1bf5bce55358fc8ebd81a01dadadaa4a804846d/cpn/components/agent_loop/compaction.py#L503-L543",
+      "mapping": "读取同compaction_ref，校验id/reason，hydrate document.agent_loop_ref；不允许NoOp成功"
+    },
+    {
+      "consumer": "AB route/driver/stop",
+      "fixed_source": "https://github.com/Deng-0119/RPNH/blob/f1bf5bce55358fc8ebd81a01dadadaa4a804846d/cpn/components/execution_services.py#L33-L63",
+      "mapping": "实际HOST是否支持interruptible由原绑定确定；StopBinding冻结观察域而非永久false布尔；SC表固定切点"
+    },
+    {
+      "consumer": "SUB/MB",
+      "fixed_source": "https://github.com/Deng-0119/RPNH/blob/f1bf5bce55358fc8ebd81a01dadadaa4a804846d/cpn/plugins/managed_tools.py#L875-L936",
+      "mapping": "原active-call/receipt关联为基础；SUB持久化和call macro是新review合同，不宣称现有API已提供subscription ref"
+    }
+  ]
+}

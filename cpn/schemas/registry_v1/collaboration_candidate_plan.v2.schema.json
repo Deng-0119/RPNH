@@ -1,0 +1,2863 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "registry_v1/collaboration_candidate_plan/v2",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "registry_v1/collaboration_candidate_plan/v2"
+    },
+    "plan_ref": {
+      "$ref": "#/definitions/plan_ref"
+    },
+    "manifest_ref": {
+      "$ref": "#/definitions/manifest_ref"
+    },
+    "source_id": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[^\\s\\u0000-\\u001f\\u007f](?:[^\\u0000-\\u001f\\u007f]*[^\\s\\u0000-\\u001f\\u007f])?(?![\\s\\S])"
+    },
+    "command_id": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[^\\s\\u0000-\\u001f\\u007f](?:[^\\u0000-\\u001f\\u007f]*[^\\s\\u0000-\\u001f\\u007f])?(?![\\s\\S])"
+    },
+    "owner_task_ref": {
+      "$ref": "#/definitions/task_ref"
+    },
+    "producer_principal_ref": {
+      "$ref": "#/definitions/qualified_ref"
+    },
+    "author_ref": {
+      "$ref": "#/definitions/qualified_ref"
+    },
+    "principal_ref": {
+      "$ref": "#/definitions/principal_ref"
+    },
+    "bootstrap_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "entity_type": {
+          "const": "bootstrap_command/v1"
+        },
+        "logical_id": {
+          "type": "string",
+          "pattern": "^bootstrap_command:[a-f0-9]{32}(?![\\s\\S])"
+        },
+        "version_id": {
+          "type": "string",
+          "pattern": "^bootstrap_command_version:[a-f0-9]{32}(?![\\s\\S])"
+        }
+      },
+      "required": [
+        "entity_type",
+        "logical_id",
+        "version_id"
+      ]
+    },
+    "task_round_ref": {
+      "$ref": "#/definitions/round_ref"
+    },
+    "authority_decision_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "entity_type": {
+          "const": "user_authority_decision/v1"
+        },
+        "logical_id": {
+          "type": "string",
+          "pattern": "^user_authority_decision:[a-f0-9]{32}(?![\\s\\S])"
+        },
+        "version_id": {
+          "type": "string",
+          "pattern": "^user_authority_decision_version:[a-f0-9]{32}(?![\\s\\S])"
+        }
+      },
+      "required": [
+        "entity_type",
+        "logical_id",
+        "version_id"
+      ]
+    },
+    "run_identity": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "run_ref": {
+          "$ref": "#/definitions/run_ref"
+        },
+        "task_ref": {
+          "$ref": "#/definitions/task_ref"
+        },
+        "task_branch_ref": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "entity_type": {
+              "const": "task_branch/v1"
+            },
+            "logical_id": {
+              "type": "string",
+              "pattern": "^task_branch:[a-f0-9]{32}(?![\\s\\S])"
+            },
+            "version_id": {
+              "type": "string",
+              "pattern": "^task_branch_version:[a-f0-9]{32}(?![\\s\\S])"
+            }
+          },
+          "required": [
+            "entity_type",
+            "logical_id",
+            "version_id"
+          ]
+        },
+        "genesis_manifest_ref": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "entity_type": {
+              "const": "native_genesis_manifest/v1"
+            },
+            "logical_id": {
+              "type": "string",
+              "pattern": "^native_genesis:[a-f0-9]{32}(?![\\s\\S])"
+            },
+            "version_id": {
+              "type": "string",
+              "pattern": "^native_genesis_version:[a-f0-9]{32}(?![\\s\\S])"
+            }
+          },
+          "required": [
+            "entity_type",
+            "logical_id",
+            "version_id"
+          ]
+        },
+        "branch_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "protocol_versions": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "required": [
+        "run_ref",
+        "task_ref",
+        "task_branch_ref",
+        "genesis_manifest_ref",
+        "branch_id",
+        "protocol_versions"
+      ]
+    },
+    "graph_command_key": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[^\\s\\u0000-\\u001f\\u007f](?:[^\\u0000-\\u001f\\u007f]*[^\\s\\u0000-\\u001f\\u007f])?(?![\\s\\S])"
+    },
+    "operation_command_key": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[^\\s\\u0000-\\u001f\\u007f](?:[^\\u0000-\\u001f\\u007f]*[^\\s\\u0000-\\u001f\\u007f])?(?![\\s\\S])"
+    },
+    "schema_refs": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/definitions/resource_ref"
+      }
+    },
+    "operation_refs": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/definitions/spec_ref"
+      }
+    },
+    "compiled": {
+      "$ref": "#/definitions/compiled_wire"
+    },
+    "host_requirements": {
+      "$ref": "#/definitions/author_host"
+    },
+    "entry_inputs": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "array",
+        "items": {
+          "$ref": "#/definitions/resource_ref"
+        }
+      }
+    },
+    "owner_resource_inputs": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/definitions/resource_ref"
+      }
+    },
+    "owner_input_resources": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/resource_ref"
+      }
+    },
+    "preserved_slot_refs": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/definitions/slot_ref"
+      }
+    },
+    "host_bindings": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/definitions/host_binding"
+      }
+    },
+    "runtime_dependencies": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/definitions/dependencies"
+      }
+    },
+    "command_context": {
+      "type": "object"
+    },
+    "host_inventory": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "resource_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/version_ref"
+          }
+        },
+        "artifact_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/version_ref"
+          }
+        }
+      },
+      "required": [
+        "resource_refs",
+        "artifact_refs"
+      ]
+    },
+    "dependency_evidence": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/evidence"
+      }
+    },
+    "preserved_basis": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/definitions/preserved_basis"
+        }
+      ]
+    }
+  },
+  "required": [
+    "schema_version",
+    "plan_ref",
+    "manifest_ref",
+    "source_id",
+    "command_id",
+    "owner_task_ref",
+    "producer_principal_ref",
+    "author_ref",
+    "principal_ref",
+    "bootstrap_ref",
+    "task_round_ref",
+    "authority_decision_ref",
+    "run_identity",
+    "graph_command_key",
+    "operation_command_key",
+    "schema_refs",
+    "operation_refs",
+    "compiled",
+    "host_requirements",
+    "entry_inputs",
+    "owner_resource_inputs",
+    "owner_input_resources",
+    "preserved_slot_refs",
+    "host_bindings",
+    "runtime_dependencies",
+    "command_context",
+    "host_inventory",
+    "dependency_evidence",
+    "preserved_basis"
+  ],
+  "definitions": {
+    "version_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "entity_type": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*(?:/[a-z][a-z0-9_]*)*/v[1-9][0-9]*(?![\\s\\S])"
+        },
+        "logical_id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}(?![\\s\\S])"
+        },
+        "version_id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}(?![\\s\\S])"
+        }
+      },
+      "required": [
+        "entity_type",
+        "logical_id",
+        "version_id"
+      ]
+    },
+    "resource_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "resource_id": {
+          "type": "string",
+          "pattern": "^resource:[a-f0-9]{32}(?![\\s\\S])"
+        },
+        "resource_version_id": {
+          "type": "string",
+          "pattern": "^resource_version:[a-f0-9]{32}(?![\\s\\S])"
+        }
+      },
+      "required": [
+        "resource_id",
+        "resource_version_id"
+      ]
+    },
+    "qualified_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "rpnh/collaboration/source_version_ref/v1"
+        },
+        "source_id": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[^\\s\\u0000-\\u001f\\u007f](?:[^\\u0000-\\u001f\\u007f]*[^\\s\\u0000-\\u001f\\u007f])?(?![\\s\\S])"
+        },
+        "ref": {
+          "$ref": "#/definitions/version_ref"
+        }
+      },
+      "required": [
+        "schema_version",
+        "source_id",
+        "ref"
+      ]
+    },
+    "plan_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "entity_type": {
+          "const": "collaboration_candidate_plan/v2"
+        },
+        "logical_id": {
+          "type": "string",
+          "pattern": "^resource:[a-f0-9]{32}(?![\\s\\S])"
+        },
+        "version_id": {
+          "type": "string",
+          "pattern": "^resource_version:[a-f0-9]{32}(?![\\s\\S])"
+        }
+      },
+      "required": [
+        "entity_type",
+        "logical_id",
+        "version_id"
+      ]
+    },
+    "manifest_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "entity_type": {
+          "const": "runtime_binding_manifest/v2"
+        },
+        "logical_id": {
+          "type": "string",
+          "pattern": "^resource:[a-f0-9]{32}(?![\\s\\S])"
+        },
+        "version_id": {
+          "type": "string",
+          "pattern": "^resource_version:[a-f0-9]{32}(?![\\s\\S])"
+        }
+      },
+      "required": [
+        "entity_type",
+        "logical_id",
+        "version_id"
+      ]
+    },
+    "readiness_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "entity_type": {
+          "const": "binding_readiness/v2"
+        },
+        "logical_id": {
+          "type": "string",
+          "pattern": "^resource:[a-f0-9]{32}(?![\\s\\S])"
+        },
+        "version_id": {
+          "type": "string",
+          "pattern": "^resource_version:[a-f0-9]{32}(?![\\s\\S])"
+        }
+      },
+      "required": [
+        "entity_type",
+        "logical_id",
+        "version_id"
+      ]
+    },
+    "task_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "entity_type": {
+          "const": "task/v1"
+        },
+        "logical_id": {
+          "type": "string",
+          "pattern": "^task:[a-f0-9]{32}(?![\\s\\S])"
+        },
+        "version_id": {
+          "type": "string",
+          "pattern": "^task_version:[a-f0-9]{32}(?![\\s\\S])"
+        }
+      },
+      "required": [
+        "entity_type",
+        "logical_id",
+        "version_id"
+      ]
+    },
+    "run_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "entity_type": {
+          "const": "native_run_identity/v1"
+        },
+        "logical_id": {
+          "type": "string",
+          "pattern": "^run:[a-f0-9]{32}(?![\\s\\S])"
+        },
+        "version_id": {
+          "type": "string",
+          "pattern": "^run_version:[a-f0-9]{32}(?![\\s\\S])"
+        }
+      },
+      "required": [
+        "entity_type",
+        "logical_id",
+        "version_id"
+      ]
+    },
+    "round_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "entity_type": {
+          "const": "task_round/v1"
+        },
+        "logical_id": {
+          "type": "string",
+          "pattern": "^task_round:[a-f0-9]{32}(?![\\s\\S])"
+        },
+        "version_id": {
+          "type": "string",
+          "pattern": "^task_round_version:[a-f0-9]{32}(?![\\s\\S])"
+        }
+      },
+      "required": [
+        "entity_type",
+        "logical_id",
+        "version_id"
+      ]
+    },
+    "principal_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "entity_type": {
+          "const": "principal/v1"
+        },
+        "logical_id": {
+          "type": "string",
+          "pattern": "^principal:[a-f0-9]{32}(?![\\s\\S])"
+        },
+        "version_id": {
+          "type": "string",
+          "pattern": "^principal_version:[a-f0-9]{32}(?![\\s\\S])"
+        }
+      },
+      "required": [
+        "entity_type",
+        "logical_id",
+        "version_id"
+      ]
+    },
+    "net_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "entity_type": {
+          "const": "net_instance/v1"
+        },
+        "logical_id": {
+          "type": "string",
+          "pattern": "^net_instance:[a-f0-9]{32}(?![\\s\\S])"
+        },
+        "version_id": {
+          "type": "string",
+          "pattern": "^net_instance_version:[a-f0-9]{32}(?![\\s\\S])"
+        }
+      },
+      "required": [
+        "entity_type",
+        "logical_id",
+        "version_id"
+      ]
+    },
+    "root_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "entity_type": {
+          "const": "team_design_root/v1"
+        },
+        "logical_id": {
+          "type": "string",
+          "pattern": "^team_design_root:[a-f0-9]{32}(?![\\s\\S])"
+        },
+        "version_id": {
+          "type": "string",
+          "pattern": "^team_design_root_version:[a-f0-9]{32}(?![\\s\\S])"
+        }
+      },
+      "required": [
+        "entity_type",
+        "logical_id",
+        "version_id"
+      ]
+    },
+    "binding_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "entity_type": {
+          "const": "operation_binding/v1"
+        },
+        "logical_id": {
+          "type": "string",
+          "pattern": "^operation_binding:[a-f0-9]{32}(?![\\s\\S])"
+        },
+        "version_id": {
+          "type": "string",
+          "pattern": "^operation_binding_version:[a-f0-9]{32}(?![\\s\\S])"
+        }
+      },
+      "required": [
+        "entity_type",
+        "logical_id",
+        "version_id"
+      ]
+    },
+    "spec_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "entity_type": {
+          "const": "operation_spec/v1"
+        },
+        "logical_id": {
+          "type": "string",
+          "pattern": "^operation_spec:[a-f0-9]{32}(?![\\s\\S])"
+        },
+        "version_id": {
+          "type": "string",
+          "pattern": "^operation_spec_version:[a-f0-9]{32}(?![\\s\\S])"
+        }
+      },
+      "required": [
+        "entity_type",
+        "logical_id",
+        "version_id"
+      ]
+    },
+    "executable_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "entity_type": {
+          "const": "executable_transition_binding/v1"
+        },
+        "logical_id": {
+          "type": "string",
+          "pattern": "^executable_transition_binding:[a-f0-9]{32}(?![\\s\\S])"
+        },
+        "version_id": {
+          "type": "string",
+          "pattern": "^executable_transition_binding_version:[a-f0-9]{32}(?![\\s\\S])"
+        }
+      },
+      "required": [
+        "entity_type",
+        "logical_id",
+        "version_id"
+      ]
+    },
+    "host_binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "agent_ref": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "entity_type": {
+                  "const": "agent/v1"
+                },
+                "logical_id": {
+                  "type": "string",
+                  "pattern": "^agent:[a-f0-9]{32}(?![\\s\\S])"
+                },
+                "version_id": {
+                  "type": "string",
+                  "pattern": "^agent_version:[a-f0-9]{32}(?![\\s\\S])"
+                }
+              },
+              "required": [
+                "entity_type",
+                "logical_id",
+                "version_id"
+              ]
+            }
+          ]
+        },
+        "activation_ref": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/version_ref"
+            }
+          ]
+        },
+        "llm_input_target_ref": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/resource_ref"
+            }
+          ]
+        },
+        "workspace_binding_ref": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "entity_type": {
+                  "const": "workspace_binding/v1"
+                },
+                "logical_id": {
+                  "type": "string",
+                  "pattern": "^workspace_binding:[a-f0-9]{32}(?![\\s\\S])"
+                },
+                "version_id": {
+                  "type": "string",
+                  "pattern": "^workspace_binding_version:[a-f0-9]{32}(?![\\s\\S])"
+                }
+              },
+              "required": [
+                "entity_type",
+                "logical_id",
+                "version_id"
+              ]
+            }
+          ]
+        },
+        "module_artifact_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/version_ref"
+          }
+        },
+        "extra_resource_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/resource_ref"
+          }
+        }
+      },
+      "required": [
+        "agent_ref",
+        "activation_ref",
+        "llm_input_target_ref",
+        "workspace_binding_ref",
+        "module_artifact_refs",
+        "extra_resource_refs"
+      ]
+    },
+    "dependencies": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "catalog": {
+          "$ref": "#/definitions/qualified_ref"
+        },
+        "prompt": {
+          "$ref": "#/definitions/qualified_ref"
+        },
+        "backend": {
+          "$ref": "#/definitions/qualified_ref"
+        },
+        "transport": {
+          "$ref": "#/definitions/qualified_ref"
+        },
+        "environment": {
+          "$ref": "#/definitions/qualified_ref"
+        },
+        "workspace_profile": {
+          "$ref": "#/definitions/qualified_ref"
+        },
+        "inventory": {
+          "$ref": "#/definitions/qualified_ref"
+        },
+        "managed_tools": {
+          "$ref": "#/definitions/qualified_ref"
+        }
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "ref": {
+          "$ref": "#/definitions/version_ref"
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}(?![\\s\\S])"
+        },
+        "size": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "media_type": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "ref",
+        "sha256",
+        "size",
+        "media_type"
+      ]
+    },
+    "compiled_wire": {
+      "title": "Compiled RPNH publication inventory (not an authoring schema)",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "source",
+        "fragments",
+        "symbolic",
+        "registrations",
+        "operation_handles",
+        "port_handles",
+        "place_aliases",
+        "ports"
+      ],
+      "properties": {
+        "schema_version": {
+          "const": "rpnh/executable_net/v1"
+        },
+        "source": {
+          "$ref": "#/definitions/compiled_wire/definitions/module"
+        },
+        "fragments": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/compiled_wire/definitions/fragment"
+          }
+        },
+        "symbolic": {
+          "$ref": "#/definitions/compiled_wire/definitions/net"
+        },
+        "registrations": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "object"
+            }
+          }
+        },
+        "operation_handles": {
+          "$ref": "#/definitions/compiled_wire/definitions/handles"
+        },
+        "port_handles": {
+          "$ref": "#/definitions/compiled_wire/definitions/handles"
+        },
+        "place_aliases": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/compiled_wire/definitions/symbol"
+          }
+        },
+        "ports": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/compiled_wire/definitions/compiled_port"
+          }
+        }
+      },
+      "definitions": {
+        "symbol": {
+          "type": "string",
+          "pattern": "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)?$"
+        },
+        "key": {
+          "type": "string",
+          "minLength": 1
+        },
+        "symbols": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/definitions/compiled_wire/definitions/symbol"
+          }
+        },
+        "keys": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/definitions/compiled_wire/definitions/key"
+          }
+        },
+        "schema_id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*(?:/[a-z][a-z0-9_]*)+/v[1-9][0-9]*$"
+        },
+        "handles": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]{0,63}$"
+          }
+        },
+        "place": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "name",
+            "schema",
+            "channel",
+            "capacity",
+            "token_kind",
+            "schema_variants",
+            "colours",
+            "initial_tokens",
+            "reusable"
+          ],
+          "properties": {
+            "name": {
+              "$ref": "#/definitions/compiled_wire/definitions/symbol"
+            },
+            "schema": {
+              "$ref": "#/definitions/compiled_wire/definitions/schema_id"
+            },
+            "channel": {
+              "enum": [
+                "data",
+                "control"
+              ]
+            },
+            "capacity": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 1
+            },
+            "token_kind": {
+              "enum": [
+                "data",
+                "agent_resource",
+                "counter",
+                "decision",
+                "resource_lease"
+              ]
+            },
+            "schema_variants": {
+              "type": "array",
+              "uniqueItems": true,
+              "items": {
+                "$ref": "#/definitions/compiled_wire/definitions/schema_id"
+              }
+            },
+            "colours": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/compiled_wire/definitions/colour"
+              }
+            },
+            "initial_tokens": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/compiled_wire/definitions/initial_token"
+              }
+            },
+            "reusable": {
+              "type": "boolean"
+            }
+          }
+        },
+        "port": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "name",
+            "direction",
+            "schema",
+            "channel",
+            "cardinality"
+          ],
+          "properties": {
+            "name": {
+              "$ref": "#/definitions/compiled_wire/definitions/symbol"
+            },
+            "direction": {
+              "enum": [
+                "input",
+                "output"
+              ]
+            },
+            "schema": {
+              "$ref": "#/definitions/compiled_wire/definitions/schema_id"
+            },
+            "channel": {
+              "enum": [
+                "data",
+                "control"
+              ]
+            },
+            "cardinality": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "cardinality_minimum": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0,
+              "description": "Inclusive minimum; omitted or null uses cardinality."
+            },
+            "cardinality_maximum": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0,
+              "description": "Inclusive maximum; omitted or null uses cardinality."
+            }
+          }
+        },
+        "compiled_port": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "name",
+            "direction",
+            "schema",
+            "channel",
+            "cardinality",
+            "place",
+            "port_id",
+            "public"
+          ],
+          "properties": {
+            "name": {
+              "$ref": "#/definitions/compiled_wire/definitions/symbol"
+            },
+            "direction": {
+              "enum": [
+                "input",
+                "output"
+              ]
+            },
+            "schema": {
+              "$ref": "#/definitions/compiled_wire/definitions/schema_id"
+            },
+            "channel": {
+              "enum": [
+                "data",
+                "control"
+              ]
+            },
+            "cardinality": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "cardinality_minimum": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0,
+              "description": "Inclusive minimum; omitted or null uses cardinality."
+            },
+            "cardinality_maximum": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0,
+              "description": "Inclusive maximum; omitted or null uses cardinality."
+            },
+            "place": {
+              "$ref": "#/definitions/compiled_wire/definitions/symbol"
+            },
+            "port_id": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9_]{0,63}$"
+            },
+            "public": {
+              "type": "boolean"
+            }
+          }
+        },
+        "binding": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "name",
+            "place"
+          ],
+          "properties": {
+            "name": {
+              "$ref": "#/definitions/compiled_wire/definitions/symbol"
+            },
+            "place": {
+              "$ref": "#/definitions/compiled_wire/definitions/symbol"
+            }
+          }
+        },
+        "product": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "port",
+            "minimum",
+            "maximum"
+          ],
+          "properties": {
+            "port": {
+              "$ref": "#/definitions/compiled_wire/definitions/symbol"
+            },
+            "minimum": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "maximum": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        },
+        "effect": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "key",
+            "bindings",
+            "config",
+            "references"
+          ],
+          "properties": {
+            "key": {
+              "$ref": "#/definitions/compiled_wire/definitions/key"
+            },
+            "bindings": {
+              "type": "object",
+              "additionalProperties": {
+                "$ref": "#/definitions/compiled_wire/definitions/symbol"
+              }
+            },
+            "config": {
+              "type": "object"
+            },
+            "references": {
+              "type": "object",
+              "propertyNames": {
+                "type": "string",
+                "pattern": "^[A-Za-z][A-Za-z0-9_-]*$"
+              },
+              "additionalProperties": {
+                "$ref": "#/definitions/compiled_wire/definitions/symbol_reference"
+              }
+            }
+          }
+        },
+        "outcome": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "name",
+            "products",
+            "effects"
+          ],
+          "properties": {
+            "name": {
+              "$ref": "#/definitions/compiled_wire/definitions/symbol"
+            },
+            "products": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/compiled_wire/definitions/product"
+              }
+            },
+            "effects": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/compiled_wire/definitions/effect"
+              }
+            }
+          }
+        },
+        "operation": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "name",
+            "executor",
+            "inputs",
+            "outputs",
+            "outcomes",
+            "tools",
+            "config",
+            "request_port",
+            "budget_binding"
+          ],
+          "properties": {
+            "name": {
+              "$ref": "#/definitions/compiled_wire/definitions/symbol"
+            },
+            "executor": {
+              "$ref": "#/definitions/compiled_wire/definitions/key"
+            },
+            "inputs": {
+              "$ref": "#/definitions/compiled_wire/definitions/symbols"
+            },
+            "outputs": {
+              "$ref": "#/definitions/compiled_wire/definitions/symbols"
+            },
+            "outcomes": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "$ref": "#/definitions/compiled_wire/definitions/outcome"
+              }
+            },
+            "tools": {
+              "$ref": "#/definitions/compiled_wire/definitions/keys"
+            },
+            "config": {
+              "type": "object"
+            },
+            "request_port": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/compiled_wire/definitions/symbol"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "budget_binding": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/compiled_wire/definitions/operationBudgetBinding"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          }
+        },
+        "transition": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "name",
+            "operation",
+            "count_guards",
+            "input_verdicts"
+          ],
+          "properties": {
+            "name": {
+              "$ref": "#/definitions/compiled_wire/definitions/symbol"
+            },
+            "operation": {
+              "$ref": "#/definitions/compiled_wire/definitions/symbol"
+            },
+            "count_guards": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/compiled_wire/definitions/count_guard"
+              }
+            },
+            "input_verdicts": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/compiled_wire/definitions/input_verdict"
+              }
+            }
+          }
+        },
+        "arc": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "place",
+            "transition",
+            "direction",
+            "weight",
+            "mode",
+            "outcome",
+            "emit",
+            "forward_source",
+            "colour_expression",
+            "output_predicates",
+            "lease_claims",
+            "lease_claim_exclusions",
+            "lease_claim_set",
+            "effect_selector"
+          ],
+          "properties": {
+            "place": {
+              "$ref": "#/definitions/compiled_wire/definitions/symbol"
+            },
+            "transition": {
+              "$ref": "#/definitions/compiled_wire/definitions/symbol"
+            },
+            "direction": {
+              "enum": [
+                "input",
+                "output"
+              ]
+            },
+            "weight": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "mode": {
+              "enum": [
+                "consume",
+                "read",
+                "borrow",
+                "guard",
+                "produce",
+                "return"
+              ]
+            },
+            "outcome": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/compiled_wire/definitions/symbol"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "emit": {
+              "enum": [
+                "produced",
+                "content_less",
+                "forward",
+                "control_only",
+                "route_selected",
+                "lease_mint"
+              ]
+            },
+            "forward_source": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/compiled_wire/definitions/symbol"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "colour_expression": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/compiled_wire/definitions/colour_expression"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "output_predicates": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/compiled_wire/definitions/input_verdict"
+              }
+            },
+            "lease_claims": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/compiled_wire/definitions/lease_claim_expression"
+              }
+            },
+            "lease_claim_exclusions": {
+              "$ref": "#/definitions/compiled_wire/definitions/symbols"
+            },
+            "lease_claim_set": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/compiled_wire/definitions/lease_claim_set_expression"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "effect_selector": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/compiled_wire/definitions/symbol"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          }
+        },
+        "reset_arc": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "place",
+            "transition",
+            "selector",
+            "outcome"
+          ],
+          "properties": {
+            "place": {
+              "$ref": "#/definitions/compiled_wire/definitions/symbol"
+            },
+            "transition": {
+              "$ref": "#/definitions/compiled_wire/definitions/symbol"
+            },
+            "selector": {
+              "$ref": "#/definitions/compiled_wire/definitions/symbol"
+            },
+            "outcome": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/compiled_wire/definitions/symbol"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          }
+        },
+        "fragment": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "places",
+            "transitions",
+            "arcs",
+            "ports",
+            "operations",
+            "internal_ports",
+            "internal_bindings",
+            "lease_identities",
+            "lease_pools",
+            "variable_resource_arcs",
+            "logical_slots",
+            "reset_arcs"
+          ],
+          "properties": {
+            "places": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/compiled_wire/definitions/place"
+              }
+            },
+            "transitions": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/compiled_wire/definitions/transition"
+              }
+            },
+            "arcs": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/compiled_wire/definitions/arc"
+              }
+            },
+            "ports": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/compiled_wire/definitions/binding"
+              }
+            },
+            "operations": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/compiled_wire/definitions/operation"
+              }
+            },
+            "internal_ports": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/compiled_wire/definitions/port"
+              }
+            },
+            "internal_bindings": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/compiled_wire/definitions/binding"
+              }
+            },
+            "lease_identities": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/compiled_wire/definitions/lease_identity"
+              }
+            },
+            "lease_pools": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/compiled_wire/definitions/lease_pool"
+              }
+            },
+            "variable_resource_arcs": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/compiled_wire/definitions/variable_resource_arc"
+              }
+            },
+            "logical_slots": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/compiled_wire/definitions/logical_slot"
+              }
+            },
+            "reset_arcs": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/compiled_wire/definitions/reset_arc"
+              }
+            }
+          }
+        },
+        "net": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "name",
+            "places",
+            "transitions",
+            "arcs",
+            "operations",
+            "port_places",
+            "entry",
+            "exit",
+            "terminal",
+            "required_schemas",
+            "budgets",
+            "designer_constraints",
+            "analyzers",
+            "lease_identities",
+            "lease_pools",
+            "variable_resource_arcs",
+            "logical_slots",
+            "budget_buckets",
+            "terminal_alternatives",
+            "reset_arcs"
+          ],
+          "properties": {
+            "name": {
+              "$ref": "#/definitions/compiled_wire/definitions/symbol"
+            },
+            "places": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/compiled_wire/definitions/place"
+              }
+            },
+            "transitions": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/compiled_wire/definitions/transition"
+              }
+            },
+            "arcs": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/compiled_wire/definitions/arc"
+              }
+            },
+            "operations": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/compiled_wire/definitions/operation"
+              }
+            },
+            "port_places": {
+              "type": "object",
+              "additionalProperties": {
+                "$ref": "#/definitions/compiled_wire/definitions/symbol"
+              }
+            },
+            "entry": {
+              "type": "object",
+              "additionalProperties": {
+                "$ref": "#/definitions/compiled_wire/definitions/symbol"
+              }
+            },
+            "exit": {
+              "type": "object",
+              "additionalProperties": {
+                "$ref": "#/definitions/compiled_wire/definitions/symbol"
+              }
+            },
+            "terminal": {
+              "$ref": "#/definitions/compiled_wire/definitions/module/definitions/terminal"
+            },
+            "required_schemas": {
+              "type": "array",
+              "uniqueItems": true,
+              "items": {
+                "$ref": "#/definitions/compiled_wire/definitions/schema_id"
+              }
+            },
+            "budgets": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "number",
+                "minimum": 0
+              }
+            },
+            "designer_constraints": {
+              "type": "object"
+            },
+            "analyzers": {
+              "$ref": "#/definitions/compiled_wire/definitions/keys"
+            },
+            "lease_identities": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/compiled_wire/definitions/lease_identity"
+              }
+            },
+            "lease_pools": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/compiled_wire/definitions/lease_pool"
+              }
+            },
+            "variable_resource_arcs": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/compiled_wire/definitions/variable_resource_arc"
+              }
+            },
+            "logical_slots": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/compiled_wire/definitions/logical_slot"
+              }
+            },
+            "reset_arcs": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/compiled_wire/definitions/reset_arc"
+              }
+            },
+            "budget_buckets": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/compiled_wire/definitions/budget_bucket"
+              }
+            },
+            "terminal_alternatives": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/compiled_wire/definitions/module/definitions/terminal"
+              }
+            }
+          }
+        },
+        "module": {
+          "title": "Symbolic RPNH ModuleDeclaration",
+          "description": "Only symbolic identities and registered keys. Mechanical Registry identities are minted by the trusted execution host after lowering.",
+          "type": "object",
+          "properties": {
+            "schema_version": {
+              "const": "rpnh/module_declaration/v1"
+            },
+            "name": {
+              "type": "string",
+              "pattern": "^[A-Za-z][A-Za-z0-9_-]*$"
+            },
+            "components": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/compiled_wire/definitions/module/definitions/component"
+              },
+              "minItems": 1
+            },
+            "links": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/compiled_wire/definitions/module/definitions/link"
+              },
+              "minItems": 0
+            },
+            "entry": {
+              "type": "object",
+              "propertyNames": {
+                "type": "string",
+                "pattern": "^[A-Za-z][A-Za-z0-9_-]*$"
+              },
+              "additionalProperties": {
+                "$ref": "#/definitions/compiled_wire/definitions/module/definitions/endpoint"
+              }
+            },
+            "exit": {
+              "type": "object",
+              "propertyNames": {
+                "type": "string",
+                "pattern": "^[A-Za-z][A-Za-z0-9_-]*$"
+              },
+              "additionalProperties": {
+                "$ref": "#/definitions/compiled_wire/definitions/module/definitions/endpoint"
+              },
+              "minProperties": 1
+            },
+            "terminal": {
+              "$ref": "#/definitions/compiled_wire/definitions/module/definitions/terminal"
+            },
+            "required_schemas": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^[a-z][a-z0-9_]*(?:/[a-z][a-z0-9_]*)+/v[1-9][0-9]*$"
+              },
+              "minItems": 1,
+              "uniqueItems": true
+            },
+            "budgets": {
+              "type": "object",
+              "propertyNames": {
+                "type": "string",
+                "pattern": "^[A-Za-z][A-Za-z0-9_-]*$"
+              },
+              "additionalProperties": {
+                "type": "number",
+                "minimum": 0
+              }
+            },
+            "designer_constraints": {
+              "type": "object"
+            },
+            "analyzers": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "minItems": 0,
+              "uniqueItems": true
+            },
+            "budget_buckets": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/compiled_wire/definitions/module/definitions/budget_bucket"
+              }
+            },
+            "terminal_alternatives": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/compiled_wire/definitions/module/definitions/terminal"
+              }
+            }
+          },
+          "required": [
+            "schema_version",
+            "name",
+            "components",
+            "links",
+            "entry",
+            "exit",
+            "terminal",
+            "required_schemas",
+            "budgets"
+          ],
+          "additionalProperties": false,
+          "definitions": {
+            "endpoint": {
+              "type": "object",
+              "properties": {
+                "component": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z][A-Za-z0-9_-]*$"
+                },
+                "port": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z][A-Za-z0-9_-]*$"
+                }
+              },
+              "required": [
+                "component",
+                "port"
+              ],
+              "additionalProperties": false
+            },
+            "port": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z][A-Za-z0-9_-]*$"
+                },
+                "direction": {
+                  "enum": [
+                    "input",
+                    "output"
+                  ]
+                },
+                "schema": {
+                  "type": "string",
+                  "pattern": "^[a-z][a-z0-9_]*(?:/[a-z][a-z0-9_]*)+/v[1-9][0-9]*$"
+                },
+                "channel": {
+                  "enum": [
+                    "data",
+                    "control"
+                  ],
+                  "default": "data"
+                },
+                "cardinality": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "default": 1
+                },
+                "cardinality_minimum": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "minimum": 0,
+                  "description": "Inclusive minimum; omitted or null uses cardinality."
+                },
+                "cardinality_maximum": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "minimum": 0,
+                  "description": "Inclusive maximum; omitted or null uses cardinality."
+                }
+              },
+              "required": [
+                "name",
+                "direction",
+                "schema"
+              ],
+              "additionalProperties": false
+            },
+            "product": {
+              "type": "object",
+              "properties": {
+                "port": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z][A-Za-z0-9_-]*$"
+                },
+                "minimum": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "default": 1
+                },
+                "maximum": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "default": 1
+                }
+              },
+              "required": [
+                "port"
+              ],
+              "additionalProperties": false
+            },
+            "effect": {
+              "type": "object",
+              "properties": {
+                "key": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "bindings": {
+                  "type": "object",
+                  "propertyNames": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z][A-Za-z0-9_-]*$"
+                  },
+                  "additionalProperties": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z][A-Za-z0-9_-]*$"
+                  }
+                },
+                "config": {
+                  "type": "object"
+                },
+                "references": {
+                  "type": "object",
+                  "propertyNames": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z][A-Za-z0-9_-]*$"
+                  },
+                  "additionalProperties": {
+                    "$ref": "#/definitions/compiled_wire/definitions/module/definitions/symbol_reference"
+                  }
+                }
+              },
+              "required": [
+                "key"
+              ],
+              "additionalProperties": false
+            },
+            "outcome": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z][A-Za-z0-9_-]*$"
+                },
+                "products": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/compiled_wire/definitions/module/definitions/product"
+                  },
+                  "minItems": 0
+                },
+                "effects": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/compiled_wire/definitions/module/definitions/effect"
+                  },
+                  "minItems": 0
+                }
+              },
+              "required": [
+                "name",
+                "products"
+              ],
+              "additionalProperties": false
+            },
+            "operation": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z][A-Za-z0-9_-]*$"
+                },
+                "executor": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "inputs": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z][A-Za-z0-9_-]*$"
+                  },
+                  "minItems": 0,
+                  "uniqueItems": true
+                },
+                "outputs": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z][A-Za-z0-9_-]*$"
+                  },
+                  "minItems": 0,
+                  "uniqueItems": true
+                },
+                "outcomes": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/compiled_wire/definitions/module/definitions/outcome"
+                  },
+                  "minItems": 1
+                },
+                "tools": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "minItems": 0,
+                  "uniqueItems": true
+                },
+                "config": {
+                  "type": "object"
+                },
+                "request_port": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "pattern": "^[A-Za-z][A-Za-z0-9_-]*$"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "budget_binding": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/definitions/compiled_wire/definitions/module/definitions/operationBudgetBinding"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              },
+              "required": [
+                "name",
+                "executor",
+                "inputs",
+                "outputs",
+                "outcomes"
+              ],
+              "additionalProperties": false
+            },
+            "component": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z][A-Za-z0-9_-]*$"
+                },
+                "key": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "config_schema": {
+                  "type": "string",
+                  "pattern": "^[a-z][a-z0-9_]*(?:/[a-z][a-z0-9_]*)+/v[1-9][0-9]*$"
+                },
+                "config": {
+                  "type": "object"
+                },
+                "ports": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/compiled_wire/definitions/module/definitions/port"
+                  },
+                  "minItems": 0
+                },
+                "operations": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/compiled_wire/definitions/module/definitions/operation"
+                  },
+                  "minItems": 0,
+                  "description": "Optional explicit operation protocols. Trusted registered lower may supply internal operations; any listed protocol is preserved exactly."
+                }
+              },
+              "required": [
+                "name",
+                "key",
+                "config_schema",
+                "config",
+                "ports"
+              ],
+              "additionalProperties": false
+            },
+            "link": {
+              "type": "object",
+              "properties": {
+                "source": {
+                  "$ref": "#/definitions/compiled_wire/definitions/module/definitions/endpoint"
+                },
+                "target": {
+                  "$ref": "#/definitions/compiled_wire/definitions/module/definitions/endpoint"
+                }
+              },
+              "required": [
+                "source",
+                "target"
+              ],
+              "additionalProperties": false
+            },
+            "terminal": {
+              "type": "object",
+              "properties": {
+                "key": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "source": {
+                  "$ref": "#/definitions/compiled_wire/definitions/module/definitions/endpoint"
+                },
+                "operation": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z][A-Za-z0-9_-]*$"
+                },
+                "outcome": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z][A-Za-z0-9_-]*$"
+                },
+                "config": {
+                  "type": "object"
+                }
+              },
+              "required": [
+                "key",
+                "source",
+                "operation",
+                "outcome",
+                "config"
+              ],
+              "additionalProperties": false
+            },
+            "budget_bucket": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "bucket_id",
+                "budget_scope",
+                "finalization_scope",
+                "max_attempts"
+              ],
+              "properties": {
+                "bucket_id": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "budget_scope": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "finalization_scope": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "max_attempts": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "minimum": 1
+                }
+              }
+            },
+            "operationBudgetBinding": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "bucket_id",
+                "budget_scope"
+              ],
+              "properties": {
+                "bucket_id": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "budget_scope": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "finalization_scope": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              }
+            },
+            "symbol_reference": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "name"
+              ],
+              "properties": {
+                "kind": {
+                  "enum": [
+                    "place",
+                    "transition",
+                    "slot"
+                  ]
+                },
+                "name": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z][A-Za-z0-9_-]*$"
+                }
+              }
+            }
+          }
+        },
+        "colour": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "string",
+              "minLength": 1
+            }
+          ]
+        },
+        "initial_token": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "count",
+            "schema",
+            "colour",
+            "value"
+          ],
+          "properties": {
+            "count": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/compiled_wire/definitions/schema_id"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "colour": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/compiled_wire/definitions/colour"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "value": {}
+          }
+        },
+        "symbol_reference": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "name"
+          ],
+          "properties": {
+            "kind": {
+              "enum": [
+                "place",
+                "transition",
+                "slot"
+              ]
+            },
+            "name": {
+              "$ref": "#/definitions/compiled_wire/definitions/symbol"
+            }
+          }
+        },
+        "operationBudgetBinding": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "bucket_id",
+            "budget_scope"
+          ],
+          "properties": {
+            "bucket_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "budget_scope": {
+              "type": "string",
+              "minLength": 1
+            },
+            "finalization_scope": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          }
+        },
+        "count_guard": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "place",
+            "comparison",
+            "threshold",
+            "scope"
+          ],
+          "properties": {
+            "place": {
+              "$ref": "#/definitions/compiled_wire/definitions/symbol"
+            },
+            "comparison": {
+              "enum": [
+                "threshold",
+                "inhibitor",
+                "lt",
+                "le",
+                "eq",
+                "ne",
+                "ge",
+                "gt"
+              ]
+            },
+            "threshold": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "scope": {
+              "enum": [
+                "reader",
+                "all"
+              ]
+            }
+          }
+        },
+        "input_verdict": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "place",
+            "expected"
+          ],
+          "properties": {
+            "place": {
+              "$ref": "#/definitions/compiled_wire/definitions/symbol"
+            },
+            "expected": {
+              "$ref": "#/definitions/compiled_wire/definitions/colour"
+            }
+          }
+        },
+        "colour_expression": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "value",
+            "source_place",
+            "member",
+            "candidates",
+            "selected",
+            "present",
+            "absent"
+          ],
+          "properties": {
+            "kind": {
+              "enum": [
+                "literal",
+                "input_colour",
+                "membership"
+              ]
+            },
+            "value": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/compiled_wire/definitions/colour"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "source_place": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/compiled_wire/definitions/symbol"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "member": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/compiled_wire/definitions/symbol"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "candidates": {
+              "$ref": "#/definitions/compiled_wire/definitions/symbols"
+            },
+            "selected": {
+              "$ref": "#/definitions/compiled_wire/definitions/symbols"
+            },
+            "present": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/compiled_wire/definitions/colour"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "absent": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/compiled_wire/definitions/colour"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          }
+        },
+        "lease_identity": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "name",
+            "kind",
+            "slot"
+          ],
+          "properties": {
+            "name": {
+              "$ref": "#/definitions/compiled_wire/definitions/symbol"
+            },
+            "kind": {
+              "enum": [
+                "resource",
+                "slot"
+              ]
+            },
+            "slot": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/compiled_wire/definitions/symbol"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          }
+        },
+        "lease_claim": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "lease_identity",
+            "expected_resource",
+            "access_mode"
+          ],
+          "properties": {
+            "lease_identity": {
+              "$ref": "#/definitions/compiled_wire/definitions/symbol"
+            },
+            "expected_resource": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/compiled_wire/definitions/symbol"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "access_mode": {
+              "enum": [
+                "read",
+                "edit",
+                "produce"
+              ]
+            }
+          }
+        },
+        "lease_claim_expression": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "lease_identity",
+            "access_mode",
+            "expected_resource_source"
+          ],
+          "properties": {
+            "lease_identity": {
+              "$ref": "#/definitions/compiled_wire/definitions/symbol"
+            },
+            "access_mode": {
+              "enum": [
+                "read",
+                "edit",
+                "produce"
+              ]
+            },
+            "expected_resource_source": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/compiled_wire/definitions/symbol"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          }
+        },
+        "lease_claim_set_expression": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "inherit_input_claims",
+            "operation_resource_updates",
+            "claim_output_products",
+            "registered_pool_subset",
+            "access_mode"
+          ],
+          "properties": {
+            "inherit_input_claims": {
+              "type": "boolean"
+            },
+            "operation_resource_updates": {
+              "type": "boolean"
+            },
+            "claim_output_products": {
+              "type": "boolean"
+            },
+            "registered_pool_subset": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/compiled_wire/definitions/symbol"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "access_mode": {
+              "const": "read"
+            }
+          }
+        },
+        "lease_pool": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "name",
+            "place",
+            "initial_resources",
+            "initial_slots"
+          ],
+          "properties": {
+            "name": {
+              "$ref": "#/definitions/compiled_wire/definitions/symbol"
+            },
+            "place": {
+              "$ref": "#/definitions/compiled_wire/definitions/symbol"
+            },
+            "initial_resources": {
+              "$ref": "#/definitions/compiled_wire/definitions/symbols"
+            },
+            "initial_slots": {
+              "$ref": "#/definitions/compiled_wire/definitions/symbols"
+            }
+          }
+        },
+        "variable_resource_arc": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "transition",
+            "claim_token_place",
+            "lease_pool",
+            "initial_claims",
+            "input_inscription",
+            "output_inscription"
+          ],
+          "properties": {
+            "transition": {
+              "$ref": "#/definitions/compiled_wire/definitions/symbol"
+            },
+            "claim_token_place": {
+              "$ref": "#/definitions/compiled_wire/definitions/symbol"
+            },
+            "lease_pool": {
+              "$ref": "#/definitions/compiled_wire/definitions/symbol"
+            },
+            "initial_claims": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/compiled_wire/definitions/lease_claim"
+              }
+            },
+            "input_inscription": {
+              "const": "consume_exact_claim_multiset"
+            },
+            "output_inscription": {
+              "const": "return_exact_claim_multiset"
+            }
+          }
+        },
+        "logical_slot": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "name",
+            "producer_transition",
+            "output_port",
+            "candidate_place",
+            "published_place",
+            "schema",
+            "reviewer_transition",
+            "route_transitions",
+            "consumer_transitions",
+            "artifact_id",
+            "artifact_synopsis",
+            "content_kind"
+          ],
+          "properties": {
+            "name": {
+              "$ref": "#/definitions/compiled_wire/definitions/symbol"
+            },
+            "producer_transition": {
+              "$ref": "#/definitions/compiled_wire/definitions/symbol"
+            },
+            "output_port": {
+              "$ref": "#/definitions/compiled_wire/definitions/symbol"
+            },
+            "candidate_place": {
+              "$ref": "#/definitions/compiled_wire/definitions/symbol"
+            },
+            "published_place": {
+              "$ref": "#/definitions/compiled_wire/definitions/symbol"
+            },
+            "schema": {
+              "$ref": "#/definitions/compiled_wire/definitions/schema_id"
+            },
+            "reviewer_transition": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/compiled_wire/definitions/symbol"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "route_transitions": {
+              "$ref": "#/definitions/compiled_wire/definitions/symbols"
+            },
+            "consumer_transitions": {
+              "$ref": "#/definitions/compiled_wire/definitions/symbols"
+            },
+            "artifact_id": {
+              "type": "string"
+            },
+            "artifact_synopsis": {
+              "type": "string"
+            },
+            "content_kind": {
+              "type": "string"
+            }
+          }
+        },
+        "budget_bucket": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "bucket_id",
+            "budget_scope",
+            "finalization_scope",
+            "max_attempts"
+          ],
+          "properties": {
+            "bucket_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "budget_scope": {
+              "type": "string",
+              "minLength": 1
+            },
+            "finalization_scope": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "max_attempts": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 1
+            }
+          }
+        }
+      }
+    },
+    "author_host": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "rpnh/collaboration/author_host_requirements/v1"
+        },
+        "registrations": {
+          "type": "object"
+        },
+        "declaration_refs": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "kind": {
+                "enum": [
+                  "schema",
+                  "component",
+                  "executor",
+                  "tool",
+                  "analyzer"
+                ]
+              },
+              "key": {
+                "type": "string",
+                "minLength": 1
+              },
+              "resource_ref": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "schema_version": {
+                    "const": "rpnh/collaboration/source_resource_ref/v1"
+                  },
+                  "source_id": {
+                    "type": "string",
+                    "minLength": 1,
+                    "pattern": "^[^\\s\\u0000-\\u001f\\u007f](?:[^\\u0000-\\u001f\\u007f]*[^\\s\\u0000-\\u001f\\u007f])?(?![\\s\\S])"
+                  },
+                  "ref": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "resource_id": {
+                        "type": "string",
+                        "pattern": "^resource:[a-f0-9]{32}(?![\\s\\S])"
+                      },
+                      "resource_version_id": {
+                        "type": "string",
+                        "pattern": "^resource_version:[a-f0-9]{32}(?![\\s\\S])"
+                      }
+                    },
+                    "required": [
+                      "resource_id",
+                      "resource_version_id"
+                    ]
+                  }
+                },
+                "required": [
+                  "schema_version",
+                  "source_id",
+                  "ref"
+                ]
+              }
+            },
+            "required": [
+              "kind",
+              "key",
+              "resource_ref"
+            ]
+          }
+        }
+      },
+      "required": [
+        "schema_version",
+        "registrations",
+        "declaration_refs"
+      ]
+    },
+    "slot_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "entity_type": {
+          "const": "logical_artifact_slot/v1"
+        },
+        "logical_id": {
+          "type": "string",
+          "pattern": "^logical_slot:[a-f0-9]{32}(?![\\s\\S])"
+        },
+        "version_id": {
+          "type": "string",
+          "pattern": "^logical_slot_version:[a-f0-9]{32}(?![\\s\\S])"
+        }
+      },
+      "required": [
+        "entity_type",
+        "logical_id",
+        "version_id"
+      ]
+    },
+    "preserved_basis": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "const": "exact_adopted_net"
+        },
+        "net_ref": {
+          "$ref": "#/definitions/net_ref"
+        },
+        "adoption_event": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "event_type": {
+              "const": "net_adopted/v1"
+            },
+            "event_id": {
+              "type": "string",
+              "pattern": "^event:[a-f0-9]{32}(?![\\s\\S])"
+            },
+            "transaction_id": {
+              "type": "string",
+              "pattern": "^transaction:[a-f0-9]{32}(?![\\s\\S])"
+            },
+            "task_control_sequence": {
+              "type": "integer",
+              "minimum": 1,
+              "description": "Draft7 integer grammar; the fixed typed consumer also rejects Python bool/float values."
+            }
+          },
+          "required": [
+            "event_type",
+            "event_id",
+            "transaction_id",
+            "task_control_sequence"
+          ]
+        },
+        "adoption_event_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}(?![\\s\\S])"
+        }
+      },
+      "required": [
+        "kind",
+        "net_ref",
+        "adoption_event",
+        "adoption_event_sha256"
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "preserved_slot_refs": {
+            "maxProperties": 0
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "preserved_basis": {
+            "type": "null"
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "preserved_basis": {
+            "$ref": "#/definitions/preserved_basis"
+          }
+        }
+      }
+    }
+  ]
+}

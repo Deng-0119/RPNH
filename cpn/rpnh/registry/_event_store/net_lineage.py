@@ -61,10 +61,15 @@ def _canonical_ref_array(value: Any, *, label: str) -> tuple[VersionRef, ...]:
 def validate_registered_net_closure(event_store: "EventStore", catalog: SchemaCatalog,
                                     net_ref: VersionRef, *,
                                     _db: sqlite3.Connection | None = None,
+                                    _memo: dict | None = None,
+                                    _prefix_reads=None,
                                     ) -> Mapping[str, Any]:
     """Validate one immutable model-designed workflow/net exact-ref closure."""
-    key = str(net_ref.version_id)
-    memo = event_store._net_closure_memo
+    key = (str(net_ref.version_id) if _memo is None else
+           (net_ref.entity_type, str(net_ref.entity_id), str(net_ref.version_id)))
+    if _memo is not None and type(_memo) is not dict:
+        raise TypeError("net closure local memo must be a plain per-read dictionary")
+    memo = event_store._net_closure_memo if _memo is None else _memo
     if key in memo:
         return memo[key]
     if _db is None:
@@ -74,12 +79,21 @@ def validate_registered_net_closure(event_store: "EventStore", catalog: SchemaCa
         # every authority check; this only changes I/O locality.
         with event_store.connect() as db:
             return validate_registered_net_closure(
-                event_store, catalog, net_ref, _db=db)
+                event_store, catalog, net_ref, _db=db, _memo=_memo, _prefix_reads=_prefix_reads)
+    if _prefix_reads is not None:
+        from .adoption_reads import AdoptionPrefixReads
+        if (type(_prefix_reads) is not AdoptionPrefixReads or _prefix_reads.db is not _db
+                or _prefix_reads.store is not event_store):
+            raise TypeError("prefix net closure requires its fixed same-cut reader")
+    def read_metadata(store, ref, *, expected_type=None, db=None, rows=None):
+        if _prefix_reads is not None:
+            return _prefix_reads.metadata(ref, expected_type)
+        return _exact_object_metadata(store, ref, expected_type=expected_type, db=db, rows=rows)
     rows = {
         str(row["version_id"]): row
         for row in _db.execute("SELECT * FROM objects").fetchall()
     }
-    net = _exact_object_metadata(
+    net = read_metadata(
         event_store, net_ref, expected_type="net_instance/v1",
         db=_db, rows=rows)
     catalog.validate_instance("net_instance/v1", category="object", instance=net)
@@ -90,7 +104,7 @@ def validate_registered_net_closure(event_store: "EventStore", catalog: SchemaCa
     except (KeyError, TypeError, ValueError) as exc:
         raise RegistryCorruptError(
             "net lacks an exact workflow-design root ref") from exc
-    root = _exact_object_metadata(
+    root = read_metadata(
         event_store, root_ref, expected_type="team_design_root/v1",
         db=_db, rows=rows)
     catalog.validate_instance("team_design_root/v1", category="object", instance=root)
@@ -124,7 +138,7 @@ def validate_registered_net_closure(event_store: "EventStore", catalog: SchemaCa
         closure_refs[field] = refs
         closure_metadata[field] = {}
         for ref in refs:
-            metadata = _exact_object_metadata(
+            metadata = read_metadata(
                 event_store, ref, expected_type=expected_type,
                 db=_db, rows=rows)
             catalog.validate_instance(
@@ -215,10 +229,10 @@ def validate_registered_net_closure(event_store: "EventStore", catalog: SchemaCa
         if output_node_ref not in node_refs:
             raise RegistryCorruptError(
                 "output binding node is outside the registered net closure")
-        action = _exact_object_metadata(
+        action = read_metadata(
             event_store, action_ref, expected_type="operation_spec/v1",
             db=_db, rows=rows)
-        _exact_object_metadata(event_store, place_ref, db=_db, rows=rows)
+        read_metadata(event_store, place_ref, db=_db, rows=rows)
         output_port_id = output.get("output_port_id")
         matching_ports = tuple(
             port for port in action.get("output_ports", ())
@@ -237,10 +251,10 @@ def validate_registered_net_closure(event_store: "EventStore", catalog: SchemaCa
             ref = _version_ref_from_payload(net[field])
         except (KeyError, TypeError, ValueError) as exc:
             raise RegistryCorruptError(f"net {field} is malformed") from exc
-        _exact_object_metadata(event_store, ref, db=_db, rows=rows)
+        read_metadata(event_store, ref, db=_db, rows=rows)
     from ..module_binding_authority import validate_module_bindings
     def exact_module_binding(value, expected):
-        return _exact_object_metadata(event_store, _version_ref_from_payload(value),
+        return read_metadata(event_store, _version_ref_from_payload(value),
                                       expected_type=expected, db=_db, rows=rows)
     validate_module_bindings(net, root, closure_metadata["output_binding_refs"],
                             closure_metadata["node_refs"], exact_module_binding, RegistryCorruptError)
@@ -268,6 +282,22 @@ def verified_adoption_lineage(
     maximum_sequence = max(
         (int(row["task_control_sequence"] or 0)
          for row in event_rows), default=0)
+    result = _verify_adoption_events(event_store, catalog, event_rows, _db=_db)
+    event_store._adoption_lineage_memo[task_key] = (maximum_sequence, result)
+    return result
+
+
+def _verify_adoption_events(event_store, catalog, event_rows, *, _db, offline=False, closure_memo=None, _prefix_reads=None):
+    """One shared adoption semantic loop; callers own the chosen boundary."""
+    prefix_reads = None
+    if offline:
+        from .adoption_reads import AdoptionPrefixReads
+        prefix_reads = (_prefix_reads if _prefix_reads is not None else AdoptionPrefixReads(event_store, catalog, _db,
+            TypedId.parse(event_rows[0]["task_id"], expected="task"))) if event_rows else None
+        if prefix_reads is not None and (type(prefix_reads) is not AdoptionPrefixReads
+                or prefix_reads.store is not event_store or prefix_reads.catalog is not catalog
+                or prefix_reads.db is not _db or str(prefix_reads.task_id) != event_rows[0]["task_id"]):
+            raise TypeError("adoption prefix requires its fixed same-cut read context")
     lineage: list[VersionRef] = []
     head: VersionRef | None = None
     events = sorted(
@@ -282,8 +312,13 @@ def verified_adoption_lineage(
         str(row["event_id"]): row for row in event_rows
     }
     for event in events:
-        event_store._verified_persisted_event_record(
-            _db, rows_by_event_id[str(event.event_id)])
+        row = rows_by_event_id[str(event.event_id)]
+        if offline and (type(row["task_control_sequence"]) is not int or row["task_control_sequence"] < 1):
+            raise RegistryCorruptError("adoption prefix requires positive integral task-control positions")
+        if prefix_reads is None:
+            event_store._verified_persisted_event_record(_db, row)
+        else:
+            prefix_reads.event(row)
         if event.task_control_sequence is None:
             raise RegistryCorruptError("net adoption is outside task control")
         try:
@@ -295,7 +330,7 @@ def verified_adoption_lineage(
         if supersedes != head or candidate == head:
             raise RegistryCorruptError("net adoption chain is forked or discontinuous")
         closure = validate_registered_net_closure(
-            event_store, catalog, candidate, _db=_db)
+            event_store, catalog, candidate, _db=_db, _memo=closure_memo, _prefix_reads=prefix_reads)
         expected = {
             "net_instance_ref": _exact_ref_payload(candidate),
             "team_design_root_ref": closure["team_design_root_ref"],
@@ -419,11 +454,16 @@ def verified_adoption_lineage(
             })
         if "owner_command_ref" in event.payload:
             from ..owner_adoption import verified_owner_adoption_fields
-            expected.update(verified_owner_adoption_fields(
-                event_store, catalog, _db, event))
+            if offline:
+                expected.update(verified_owner_adoption_fields(event_store, catalog, _db, event, _prefix_reads=prefix_reads))
+            else:
+                expected.update(verified_owner_adoption_fields(event_store, catalog, _db, event))
         if "operation_revision" in event.payload:
             from ..module_revision import verified_operation_revision_fields
-            expected.update(verified_operation_revision_fields(event_store, catalog, _db, event))
+            if prefix_reads is None:
+                expected.update(verified_operation_revision_fields(event_store, catalog, _db, event))
+            else:
+                expected.update(verified_operation_revision_fields(event_store, catalog, _db, event, _prefix_reads=prefix_reads))
         if supersedes is not None and not ({"owner_command_ref", "operation_revision"} & event.payload.keys()):
             raise RegistryCorruptError("current adoption requires an owner or registered operation witness")
         if dict(event.payload) != expected:
@@ -431,10 +471,53 @@ def verified_adoption_lineage(
                 "net adoption fact differs from the immutable registered closure")
         head = candidate
         lineage.append(candidate)
-    result = tuple(lineage)
-    event_store._adoption_lineage_memo[task_key] = (
-        maximum_sequence, result)
-    return result
+    return tuple(lineage)
+
+
+def verified_adoption_prefix(event_store: "EventStore", catalog: SchemaCatalog,
+                             task_id: TypedId, *, adoption_event_id: TypedId,
+                             _db: sqlite3.Connection | None = None, _prefix_reads=None) -> tuple[VersionRef, ...]:
+    """Verify the exact adoption-event semantic prefix at one current DB cut.
+
+    Later adoption semantics are outside this prefix. Existing full stream /
+    task-control structural integrity checks still apply. This is not an old
+    SQLite snapshot or a complete payload/evidence collector, and grants no
+    slot preservation, current selection, or execution permission.
+    """
+    def copied_id(value, kind):
+        if (type(value) is not TypedId or type(value.kind) is not str or value.kind != kind
+                or type(value.value) is not str):
+            raise TypeError("adoption prefix requires standard exact task/event TypedIds")
+        return TypedId(kind, value.value)
+    task_id = copied_id(task_id, "task")
+    event_id = copied_id(adoption_event_id, "event")
+    if _db is None:
+        if _prefix_reads is not None:
+            raise TypeError("supplied prefix reads require their existing SQLite cut")
+        with event_store.connect() as db:
+            db.execute("BEGIN")
+            return verified_adoption_prefix(event_store, catalog, task_id, adoption_event_id=event_id, _db=db)
+    if not isinstance(_db, sqlite3.Connection) or not _db.in_transaction:
+        raise TypeError("adoption prefix requires an existing SQLite read cut")
+    from pathlib import Path
+    databases = _db.execute("PRAGMA database_list").fetchall()
+    main = next((row for row in databases if row["name"] == "main"), None)
+    if main is None or not main["file"] or Path(main["file"]).resolve() != event_store.path.resolve():
+        raise RegistryCorruptError("adoption prefix connection belongs to another Registry")
+    anchor = _db.execute("SELECT e.* FROM events e WHERE e.event_id=? AND e.task_id=? "
+        "AND e.event_type='net_adopted/v1' AND " + _CANONICAL_EVENT_SQL,
+        (str(event_id), str(task_id))).fetchone()
+    if (anchor is None or type(anchor["task_control_sequence"]) is not int
+            or anchor["task_control_sequence"] < 1):
+        raise RegistryCorruptError("exact canonical adoption prefix anchor is unavailable")
+    rows = _db.execute("SELECT e.* FROM events e WHERE e.task_id=? AND e.event_type='net_adopted/v1' "
+        "AND e.task_control_sequence<=? AND " + _CANONICAL_EVENT_SQL + " ORDER BY e.task_control_sequence",
+        (str(task_id), anchor["task_control_sequence"])).fetchall()
+    if not rows or rows[-1]["event_id"] != str(event_id):
+        raise RegistryCorruptError("adoption prefix cannot substitute a nearby/current event")
+    # A fresh local memo cannot reuse or overwrite authority from another cut.
+    return _verify_adoption_events(event_store, catalog, rows, _db=_db, offline=True, closure_memo={}, _prefix_reads=_prefix_reads)
+
 
 def verified_adoption_head(event_store: "EventStore", catalog: SchemaCatalog,
                            task_id: TypedId, *,

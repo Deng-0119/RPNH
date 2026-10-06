@@ -26,6 +26,10 @@ runtime—not separate owners of model, workspace or recovery state.
 | Observation | Terminal projections and a local read-only PetriNet dashboard |
 | Recovery | Owner-stop resume and user-selected checkpoint reopen |
 
+Public record dated 2026-10-06: freeze04 first18 has 5 PASS / 9 FAIL / 4 BLOCKED; separate repair4 has 1 PASS / 3 FAIL. The old 14 scored tasks were not rerun. [Results and limits](examples/automationbench/PUBLIC_RESULTS_20261006.md).
+
+Explicit opt-in [author/graph interfaces](docs/reference/declarations.md), [Workset and normal-child roots](docs/reference/normal-child-root-contract.md), and [read-only source queries](docs/guides/source-queries.md) are integrated. [Finite validation](docs/guides/release-validation.md) is not full HOST/I00–I10/advanced25 acceptance; actual browser remains BLOCKED.
+
 ## See a multi-agent run
 
 This dashboard comes from the checked-in `parallel` example after a completed
@@ -157,7 +161,7 @@ same Registry/run. See [usage](docs/guides/usage.md) and the
 | 3-DOF powered descent | Numerical implementation, independent validation and a Designer-authored graph | [Reproduce 3-DOF](examples/three_dof_powered_descent/README.md) |
 | HarnessAudit Office benchmark | Native agent teams, registered business tools, original scoring and retained results | [Office example](examples/harnessaudit_office/README.md) |
 | RRSI v0.6 Policy evolution | Two-round Policy evolution with independent child Registries and score/cost selection | [RRSI example](examples/rrsi_v06/README.md) |
-| AutomationBench public workflows | Retained native 18-task pilot plus new native/DSH execution, frozen-cohort and auditable evidence tooling | [AutomationBench example](examples/automationbench/README.md) |
+| AutomationBench public workflows | Historical pilot, freeze04 first18 and separate repair4 with condition-specific scores and limits | [AutomationBench example](examples/automationbench/README.md) |
 
 Execution-gallery pages identify the origin of their actual dashboard images.
 Benchmark examples supply scored records and viewer commands for newly

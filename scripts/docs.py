@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
-"""Check/build only maintained Markdown; never import RPNH or execute examples."""
+"""Check/build maintained Markdown and linked support; never execute examples."""
 from __future__ import annotations
 import argparse
 import ast
 from collections import Counter
+import csv
 from dataclasses import dataclass
 from html import escape
 import json
@@ -66,7 +67,7 @@ def slug(text: str) -> str:
     return re.sub(r'\s+', '-', re.sub(r'[^\w\s-]', '', text.lower())).strip('-')
 
 
-def parse_page(path: Path) -> Page:
+def parse_page(path: Path, *, maintained: bool = True) -> Page:
     text = path.read_text(encoding='utf-8')
     if text.startswith('---\n'):
         _, front, text = text.split('---\n', 2)
@@ -92,6 +93,8 @@ def parse_page(path: Path) -> Page:
         meta = {'name': name, 'revision': revision,
                 'language': 'zh-CN' if path.stem.endswith('_ZH') else 'en',
                 'counterpart': 'README.md' if path.stem.endswith('_ZH') else 'README_ZH.md'}
+    elif not maintained:
+        meta = {'language': 'zh-CN' if path.stem.endswith('_ZH') else 'en'}
     else:
         raise ValueError(f'{path}: front matter required')
     if meta['language'] not in {'en', 'zh-CN'}:
@@ -111,9 +114,9 @@ def parse_page(path: Path) -> Page:
         if token.tag == 'h1':
             h1 += 1
             title = text
-    if h1 != 1:
+    if maintained and h1 != 1:
         raise ValueError(f'{path}: require exactly one H1, got {h1}')
-    return Page(path.resolve(), meta, tokens, title, headings)
+    return Page(path.resolve(), meta, tokens, title or path.stem, headings)
 
 
 def local_target(page: Path, href: str, root: Path) -> tuple[Path, str] | None:
@@ -211,10 +214,82 @@ def headings_in(tokens) -> dict[str, str]:
     return headings
 
 
+def supporting_documents(root: Path, pages: dict[Path, Page]):
+    """Follow linked example Markdown and bounded public document downloads.
+
+    Support stays outside maintained topic navigation and language pairing.
+    Maintained pages still require direct reachability through maintained pages.
+    Legal downloads retain their source-relative paths, including nested notices.
+    """
+    support, downloads = {}, set()
+    queue = list(pages.values())
+    while queue:
+        page = queue.pop()
+        for token in children(page.tokens):
+            if token.type != 'link_open':
+                continue
+            target = local_target(page.path, token.attrGet('href'), root)
+            if target is None:
+                continue
+            dest, _anchor = target
+            if dest in pages or dest in support or dest in downloads:
+                continue
+            relative = dest.relative_to(root)
+            parts = relative.parts
+            markdown = (len(parts) >= 2 and parts[0] == 'examples'
+                        and dest.suffix == '.md')
+            json_document = dest.suffix == '.json' and (
+                (len(parts) == 4 and parts[0] == 'examples' and parts[2] == 'results')
+                or (len(parts) == 3 and parts[:2] == ('docs', 'reference'))
+                or parts[:2] == ('cpn', 'schemas'))
+            csv_document = (dest.suffix == '.csv' and len(parts) == 4
+                            and parts[0] == 'examples'
+                            and parts[2] in {'results', 'comparison'})
+            python_source = (dest.suffix == '.py' and len(parts) >= 4
+                             and parts[0] == 'examples' and parts[2] == 'src')
+            legal = dest.name in STATIC_DOCUMENTS
+            if not (markdown or json_document or csv_document or python_source or legal):
+                continue  # The link checker reports unsupported destinations.
+            if not dest.is_file():
+                raise ValueError(f'{page.path}: undocumented or missing link {dest}')
+            if legal or json_document or csv_document or python_source:
+                downloads.add(dest)
+            else:
+                support[dest] = parse_page(dest, maintained=False)
+                queue.append(support[dest])
+    return support, downloads
+
+
 def check(root: Path) -> tuple[dict[Path, Page], dict[str, int]]:
+    pages, _support, _downloads, stats = checked_documents(root)
+    return pages, stats
+
+
+def checked_documents(root: Path):
     root = root.resolve()
     pages = {path.resolve(): parse_page(path) for path in pages_in(root)}
-    stats = Counter(pages=len(pages))
+    support, downloads = supporting_documents(root, pages)
+    documents = {**pages, **support}
+    stats = Counter(pages=len(pages), support_documents=len(support))
+    for path in sorted(downloads):
+        if path.suffix == '.json':
+            try:
+                json.loads(path.read_text(encoding='utf-8'), parse_constant=lambda value: (
+                    _ for _ in ()).throw(ValueError(f'nonfinite JSON: {value}')))
+            except ValueError as exc:
+                raise ValueError(f'{path}: invalid JSON document: {exc}') from exc
+            stats['json_documents_syntax_only'] += 1
+        elif path.suffix == '.csv':
+            try:
+                with path.open(encoding='utf-8', newline='') as handle:
+                    for _row in csv.reader(handle, strict=True):
+                        pass
+            except csv.Error as exc:
+                raise ValueError(f'{path}: invalid CSV document: {exc}') from exc
+            stats['csv_documents_syntax_only'] += 1
+        elif path.suffix == '.py':
+            ast.parse(path.read_text(encoding='utf-8'), filename=str(path))
+            stats['python_documents_syntax_only'] += 1
     image_assets = set()
     names = set()
     for path, page in pages.items():
@@ -231,6 +306,7 @@ def check(root: Path) -> tuple[dict[Path, Page], dict[str, int]]:
                 or pair.metadata['revision'] != page.metadata['revision']
                 or pair.metadata['language'] == page.metadata['language']):
             raise ValueError(f'{path}: counterpart mismatch')
+    for path, page in documents.items():
         for token in children(page.tokens):
             if token.type == 'image':
                 image_assets.add(reviewed_image_target(
@@ -242,13 +318,13 @@ def check(root: Path) -> tuple[dict[Path, Page], dict[str, int]]:
                     stats['external_links_not_fetched'] += 1
                 else:
                     dest, anchor = target
-                    if dest not in pages and dest.name not in STATIC_DOCUMENTS:
+                    if dest not in documents and dest not in downloads:
                         raise ValueError(f'{path}: undocumented or missing link {dest}')
-                    if dest.name in STATIC_DOCUMENTS and not dest.is_file():
-                        raise ValueError(f'{path}: missing linked legal document {dest}')
-                    if anchor and (dest not in pages or anchor not in pages[dest].headings):
+                    if anchor and (dest not in documents or anchor not in documents[dest].headings):
                         raise ValueError(f'{path}: missing anchor {anchor}')
-                    stats['internal_links' if dest in pages else 'legal_links'] += 1
+                    kind = ('internal_links' if dest in pages else
+                            'legal_links' if dest.name in STATIC_DOCUMENTS else 'support_links')
+                    stats[kind] += 1
             if token.type != 'fence':
                 continue
             language = token.info.strip().split(' ', 1)[0]
@@ -308,7 +384,7 @@ def check(root: Path) -> tuple[dict[Path, Page], dict[str, int]]:
     stats['reachable_pages'] = len(reachable)
     stats['language_pairs'] = len(pages) // 2
     stats['reviewed_image_assets'] = len(image_assets)
-    return pages, dict(stats)
+    return pages, support, downloads, dict(stats)
 
 
 def html_path(relative: Path) -> Path:
@@ -380,13 +456,14 @@ def build(root: Path, output: Path) -> dict[str, int]:
     root, output = root.resolve(), output.resolve()
     if output.exists() or output.is_relative_to(root):
         raise ValueError('Use a new output directory outside the source tree')
-    pages, stats = check(root)
-    assets = set()
+    pages, support, downloads, stats = checked_documents(root)
+    documents = {**pages, **support}
+    assets = set(downloads)
     output.mkdir(parents=True)
-    for path, page in pages.items():
+    for path, page in documents.items():
         relative = html_path(path.relative_to(root))
         def href_for(target: Path) -> str:
-            destination = (html_path(target.relative_to(root)) if target in pages
+            destination = (html_path(target.relative_to(root)) if target in documents
                            else target.relative_to(root))
             return Path(os.path.relpath(destination, relative.parent)).as_posix()
         for token in children(page.tokens):
@@ -417,8 +494,12 @@ def build(root: Path, output: Path) -> dict[str, int]:
                 for p, other in items)
             + '</section>'
             for (_order, label), items in sorted(groups.items()))
-        counterpart = (path.parent / page.metadata['counterpart']).resolve()
-        switch = '中文' if page.metadata['language'] == 'en' else 'English'
+        language_link = ''
+        if path in pages:
+            counterpart = (path.parent / page.metadata['counterpart']).resolve()
+            switch = '中文' if page.metadata['language'] == 'en' else 'English'
+            language_link = (f' · <a href="{escape(href_for(counterpart))}" '
+                             f'lang="{pages[counterpart].metadata["language"]}">{switch}</a>')
         toc = ''.join(f'<a href="#{escape(key)}">{escape(value)}</a>'
                       for key, value in list(page.headings.items())[1:])
         body = PARSER.renderer.render(page.tokens, PARSER.options, {})
@@ -428,8 +509,7 @@ def build(root: Path, output: Path) -> dict[str, int]:
         html = (f'<!doctype html><html lang="{page.metadata["language"]}"><head>'
                 '<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">'
                 f'<title>{escape(page.title)} — RPNH</title><style>{CSS}</style></head><body>'
-                f'<header><a href="{escape(href_for(root / "README.md"))}">RPNH</a> · '
-                f'<a href="{escape(href_for(counterpart))}" lang="{pages[counterpart].metadata["language"]}">{switch}</a>'
+                f'<header><a href="{escape(href_for(root / "README.md"))}">RPNH</a>{language_link}'
                 '</header><div class="layout"><nav aria-label="Topics">'
                 f'{navigation}</nav><main><div class="toc">{toc}</div>{body}'
                 f'<footer>{footer}</footer>'
@@ -445,7 +525,7 @@ def build(root: Path, output: Path) -> dict[str, int]:
         destination = output / source.relative_to(root)
         destination.parent.mkdir(parents=True, exist_ok=True)
         shutil.copyfile(source, destination)
-    return {'built_html_pages': len(pages), **stats}
+    return {'built_html_pages': len(documents), **stats}
 
 
 def main() -> int:

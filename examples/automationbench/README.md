@@ -24,6 +24,8 @@ not replace the first attempt.
 - [Evidence rules](docs/EVIDENCE.md)
 - [Offline verification](docs/OFFLINE_VERIFICATION.md)
 
+Public record dated 2026-10-06: freeze04 first18 has 5 PASS / 9 FAIL / 4 BLOCKED; separate repair4 has 1 PASS / 3 FAIL. The old 14 scored tasks were not rerun. [Results and limits](PUBLIC_RESULTS_20261006.md).
+
 ## Inspect the retained result
 
 No package installation, model call, or file write is needed:

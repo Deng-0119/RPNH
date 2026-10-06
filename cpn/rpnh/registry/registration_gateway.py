@@ -32,6 +32,16 @@ class RegistryRegistrationGateway:
         self._bootstrap_ref = bootstrap_ref
         self._refs: dict[tuple[str, str], ResourceVersionRef] = {}
 
+    def publish_source_set(self, *, members, command_id, expected=None, expected_sequence=0):
+        """Publish an opt-in expected source manifest; never grant source access."""
+        from ..collaboration.source_sets import _publish_source_set
+        return _publish_source_set(self, members=members, command_id=command_id, expected=expected, expected_sequence=expected_sequence)
+
+    def record_source_observation(self, *, query, draft, command_id):
+        """Explicitly record a finite query; query and Viewer paths never call this."""
+        from ..collaboration.source_observations import _record_source_observation
+        return _record_source_observation(self, query=query, draft=draft, command_id=command_id)
+
     def __call__(self, kind: str, key: str, declaration: dict) -> ResourceVersionRef:
         if (kind not in {"schema", "component", "executor", "tool", "analyzer"}
                 or declaration.get("kind") != kind or declaration.get("key") != key):
@@ -77,6 +87,63 @@ class RegistryRegistrationGateway:
     @property
     def declaration_refs(self) -> dict[tuple[str, str], ResourceVersionRef]:
         return dict(self._refs)
+
+    def bind_source_identity(self, *, source_id: str, command_id: str):
+        """Explicit opt-in source association by this trusted owner/HOST.
+
+        Uses the same current writer and registered task/bootstrap authority as
+        schema publication. This is not a task-authored operation or an access
+        grant, and a declared principal string is not an authorization input.
+        """
+        from cpn.rpnh.collaboration.sources import _bind_source_identity
+        return _bind_source_identity(
+            self._core, task_ref=self._task_ref, bootstrap_ref=self._bootstrap_ref,
+            source_id=source_id, command_id=command_id,
+        )
+
+    def create_author_branch(self, *, head_revision_ref, command_id: str, upstream_branch_ref=None):
+        """Create a local author Branch; this does not adopt its head in a run."""
+        from cpn.rpnh.collaboration.branches import _create_branch
+        return _create_branch(self._core, task_ref=self._task_ref, bootstrap_ref=self._bootstrap_ref,
+                              head_revision_ref=head_revision_ref, command_id=command_id,
+                              upstream_branch_ref=upstream_branch_ref)
+
+    def advance_author_branch(self, *, expected_branch_version_ref, expected_head_revision_ref,
+                              expected_stream_head: int, next_revision_ref, command_id: str):
+        """Publish a direct descendant with all three caller expectations fixed."""
+        from cpn.rpnh.collaboration.branches import _advance_branch
+        return _advance_branch(self._core, task_ref=self._task_ref, bootstrap_ref=self._bootstrap_ref,
+            expected_branch_version_ref=expected_branch_version_ref, expected_head_revision_ref=expected_head_revision_ref,
+            expected_stream_head=expected_stream_head, next_revision_ref=next_revision_ref, command_id=command_id)
+
+    def create_graph_author_branch(self, *, head_revision_ref, command_id: str, upstream_branch_ref=None):
+        """Opt-in graph-v2 descriptor Branch, without compile or adoption."""
+        from cpn.rpnh.collaboration.branches import _create_graph_branch
+        return _create_graph_branch(self._core, task_ref=self._task_ref, bootstrap_ref=self._bootstrap_ref,
+            head_revision_ref=head_revision_ref, command_id=command_id, upstream_branch_ref=upstream_branch_ref)
+
+    def advance_graph_author_branch(self, *, expected_branch_version_ref, expected_head_revision_ref,
+                                    expected_stream_head: int, next_revision_ref, command_id: str):
+        """Advance graph-v2 only, using the shared Branch-family command domain."""
+        from cpn.rpnh.collaboration.branches import _advance_graph_branch
+        return _advance_graph_branch(self._core, task_ref=self._task_ref, bootstrap_ref=self._bootstrap_ref,
+            expected_branch_version_ref=expected_branch_version_ref, expected_head_revision_ref=expected_head_revision_ref,
+            expected_stream_head=expected_stream_head, next_revision_ref=next_revision_ref, command_id=command_id)
+
+
+    def create_graph_merge_branch(self, *, head_revision_ref, command_id: str, upstream_branch_ref=None):
+        """Create an opt-in v3 Branch; no material proof or runtime adoption."""
+        from cpn.rpnh.collaboration.branches import _create_graph_merge_branch
+        return _create_graph_merge_branch(self._core, task_ref=self._task_ref, bootstrap_ref=self._bootstrap_ref,
+            head_revision_ref=head_revision_ref, command_id=command_id, upstream_branch_ref=upstream_branch_ref)
+
+    def advance_graph_merge_branch(self, *, expected_branch_version_ref, expected_head_revision_ref,
+                                   expected_stream_head: int, next_revision_ref, command_id: str):
+        """Direct-parent membership and the shared exact three-axis CAS contract."""
+        from cpn.rpnh.collaboration.branches import _advance_graph_merge_branch
+        return _advance_graph_merge_branch(self._core, task_ref=self._task_ref, bootstrap_ref=self._bootstrap_ref,
+            expected_branch_version_ref=expected_branch_version_ref, expected_head_revision_ref=expected_head_revision_ref,
+            expected_stream_head=expected_stream_head, next_revision_ref=next_revision_ref, command_id=command_id)
 
 
 __all__ = ("RegistryRegistrationGateway",)

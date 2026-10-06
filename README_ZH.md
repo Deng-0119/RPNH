@@ -23,6 +23,10 @@ workspace 或恢复状态的独立所有者。
 | 查看 | 终端投影和本地只读 PetriNet 看板 |
 | 恢复 | owner-stop resume 与用户选择 checkpoint 的 reopen |
 
+2026-10-06公开记录：freeze04首轮18题为5 PASS / 9 FAIL / 4 BLOCKED；独立repair四题为1 PASS / 3 FAIL。旧14道已评分题未重跑。 [结果与限制](examples/automationbench/PUBLIC_RESULTS_20261006_ZH.md).
+
+显式opt-in的[作者/graph接口](docs/reference/declarations_ZH.md)、[Workset与normal-child root](docs/reference/normal-child-root-contract_ZH.md)及[只读source查询](docs/guides/source-queries_ZH.md)已集成；[有限验收](docs/guides/release-validation_ZH.md)不等于全HOST/I00–I10/advanced25通过，真实browser仍BLOCKED。
+
 ## 先看一次多 Agent 运行
 
 下图来自仓库内 `parallel` 案例完成后的真实 Registry 看板。`prepare` 会同时启用两个独立
@@ -139,7 +143,7 @@ Registry／run 中从用户所选切面追加新的执行代次。详见
 | 3-DOF 动力下降 | 数值实现、独立验证和 Designer 自主设计图 | [复现 3-DOF](examples/three_dof_powered_descent/README_ZH.md) |
 | HarnessAudit Office benchmark | 原生团队、登记业务工具、原始评分与完整结果边界 | [Office 示例](examples/harnessaudit_office/README_ZH.md) |
 | RRSI v0.6 Policy 演化 | 独立 child Registry 驱动的两轮 Policy 演化与分数/成本选择 | [RRSI 示例](examples/rrsi_v06/README_ZH.md) |
-| AutomationBench 公开业务任务 | 已保留 native 18 题 pilot，以及新增 native/DSH 执行、冻结 cohort 与可审计证据工具 | [AutomationBench 示例](examples/automationbench/README_ZH.md) |
+| AutomationBench 公开业务任务 | 历史pilot、freeze04首轮18题与独立repair四题；按条件保留评分与限制 | [AutomationBench 示例](examples/automationbench/README_ZH.md) |
 
 执行案例中的实际 dashboard 图注明其运行来源。Benchmark examples 提供成绩记录与新运行的
 viewer 命令，不宣称已归档运行截图。[完整案例指南](docs/guides/examples_ZH.md)记录计算、文档、串行、并行、长流程和

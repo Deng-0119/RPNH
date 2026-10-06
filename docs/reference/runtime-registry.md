@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: en
   counterpart: runtime-registry_ZH.md
-  revision: "2026-09-29.3"
+  revision: "2026-10-04.1"
   status: source-reviewed-v0.1.0rc1
   basis: "core; adapter differences explicitly labelled"
 ---
@@ -89,6 +89,42 @@ special file.
 Instance attachment and Success sealing share one per-firing execution-child stream. Success compare-and-appends the sealed instance/checkpoint/mapping set, so an attachment racing with settlement makes one transaction stale instead of leaving an unmapped running child after business publication. Execution settle artifacts include their predecessor checkpoint and command identity; a losing stale attempt cannot reserve immutable version locators needed by the valid retry.
 
 Every settled workspace revision carries sorted `path_deltas`. Each delta records create/update/delete, exact nullable before/after resource references and bounded summaries. Full archives preserve the bytes and modes; the delta chain preserves per-path version lineage. Finalization first freezes `workspace_revision_candidate/v1`; concurrent-head merge and final path deltas are still calculated by the Success owner against the current lineage head.
+
+## Explicit preserved candidate plans (opt-in)
+
+`cpn.rpnh.collaboration.preserved_candidate_publisher.PreservedCandidatePlanPublisher`
+is an advanced trusted-host entry for one inert `collaboration_candidate_plan/v2`.
+The Registry must explicitly include `candidate_v2_schema_data()`. The entry
+requires the existing owner gateway, producer principal, explicit `Registration`
+and a same-source plain closed Module revision. It accepts registered components
+using the supported deterministic operation protocol without tools or optional
+runtime HOST selections. The existing v1/default publisher retains its scope.
+
+For nonempty `selected_slot_refs`, supply a typed `PreservedBasis` and explicit
+`selected_schema_refs`. Each symbol must name the exact compatible slot in that
+basis. Selected schemas must be the unique projection of the author's frozen
+`schema_refs` onto those symbols' schema IDs, and must equal the basis outputs'
+exact schema resource refs. Equal bytes under another ref do not substitute for
+that identity. Empty selections require no basis or selected schema refs.
+
+First publication rechecks static owner, author, wire, resource, slot and byte
+evidence in the committing SQLite cut. The selected adoption event must still
+be current. A stale basis is rejected. After successful publication, an exact
+complete-request replay uses the frozen historical basis even after a later
+adoption. v1 and v2 share the stable command/ID namespace; an exact existing v1
+request returns its original format, while changed input conflicts.
+
+An immutable prewrite file alone is not a registered successful plan. An exact
+interrupted prewrite may retry first admission; it receives no historical
+replay exemption. Changing its request cannot overwrite the same version file.
+Use a new command for a newly selected basis.
+
+The producer performs real compilation with the supplied Registration outside
+the committing write transaction. The fixed Core gate validates static material
+and mechanical wire compatibility; it does not attest which HOST callable
+produced arbitrary supplied fragments. This entry publishes no graph, manifest,
+readiness, adoption or execution authority. Graph-authoritative v1–v4 sources,
+Assembly inputs and runtime provider/workspace bindings remain unsupported here.
 
 ## Read, recovery and compatibility
 `snapshot(owner_or_client)` delegates to the existing owner or client; it does not open another writer. Owner snapshots expose exact run/task/net/checkpoint refs, declaration, marking, pending controls and enabled transitions, with `global_liveness` explicitly `UNKNOWN`. They do not grant completion authority.

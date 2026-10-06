@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: en
   counterpart: release-validation_ZH.md
-  revision: "2026-09-29.6"
+  revision: "2026-10-06.1"
   status: historical-full-baseline-current-focused-delta
 ---
 
@@ -19,19 +19,88 @@ validation. It is a sanitized summary, not a copy of local logs or private
 Registry data. The historical total must not be presented as a complete-suite
 result for current `main`.
 
+## 2026-10-06 finite integration and bridge repair
+
+The benchmark execution source conditions are named **freeze04** and **repair**.
+Their historical manifests do not describe the final publication file set, which
+additionally includes documentation, packaging-check and test changes. This
+integration includes typed-v9, P4 full-history Assembly merge, P6 graph source
+merge and the bounded I02/shared-graph gate, plus Workset/normal-root readers,
+token allocation, ordinary revision and native HTTP/Node consumers. Prior
+cloud ownership handoff has completed; earlier waiting statements are historical.
+These are finite acceptances, not full HOST, all I00–I10 or advanced25 acceptance.
+
+| Prior evidence | Accepted boundary |
+|---|---|
+| Local early typed / P4 / I02 | Writer nodes 23 / 38 / 10; independent nodes 11 / 10 / 7 |
+| Local early P6 | Writer 32 on freeze03 + 6 on freeze04; independent 5 on 03 + 1 on 04; never relabelled all on 04 |
+| Dynamic normal-root writer | 64 cases / 192 phases; separate R02 Success-wins window: 1 case / 3 phases |
+| Integration independent execution | 8 exit-zero windows, 31 executions / 93 phases / 30 distinct nodes: 8 executions on freeze02, 22 on freeze03, 1 on freeze04 |
+| Finite reader/root cases | Retained refs/bytes across Success, separate T01 run terminal, ordinary revision, legacy-catalog rejection, exact replay/twochild, 7 damaged-copy read-only refusals, attach-wins and separate CAS; R02 covers one explicit Success-wins order |
+| Native observation | HTTP and Node PASS; mock DOM PASS; not actual browser DOM |
+| Actual browser | Chromium startup exit 1: root/sandbox restriction, BLOCKED; pytest skip is not PASS; no successful page/DOM/screenshot validation |
+| Bridge repair | Writer 52 tests; independent 50 distinct tests across six exit-zero windows; overlap, not 102 unique |
+| Installed native-host preparation | Two separate offline windows, 7 PASS each |
+
+Finite concurrency checks do not guarantee arbitrary scheduling or child counts.
+The real browser was not retried or run without its sandbox. Source restoration
+and collection counts are not test passes. Repair business results are separately
+reported in [AutomationBench first18 + repair4](../../examples/automationbench/PUBLIC_RESULTS_20261006.md).
+Human review was not run, contamination remains unknown and strong worker OS
+isolation is unproven. The prior evidence above remains separate from the new
+publication checks below; its counts are not added to the new results.
+
+## 2026-10-06 publication validation
+
+Independent scoped checks against the integrated publication source passed on
+Linux/WSL with Python 3.13 and Node 22.22.1. These are finite boundary checks,
+not a complete test suite or full HOST/I00–I10/advanced25 acceptance.
+
+| Publication check | Actual result |
+|---|---|
+| Scoped Python tests | 198 distinct passed nodes, including all 30 bridge cases; repeated executions are counted once |
+| Documentation unittest suite | 26 tests OK, recorded separately from the 198 scoped Python nodes |
+| Node tests | 224 distinct passed test titles; mock DOM/Node evidence is not real-browser acceptance |
+| Optional-Node boundary | With Node absent: HTTP 1 PASS, JavaScript 1 SKIP; the repeated HTTP node does not increase the 198-node count |
+| Schema and package resources | 268 schemas validated and 1 catalog JSON checked; all 674 expected packaged files verified in both wheel and sdist |
+| Build and installation | Wheel/sdist build, wheel installation, dependency check and wheel asset audit exited 0; 7 installed zero-model commands passed outside the source tree |
+| Viewer rebuild | 6 assets rebuilt byte-equal to the checked-in files |
+| Documentation check/build | 122 maintained pages / 61 language pairs, plus 30 supporting documents; 152 HTML pages built |
+| Built documentation links | 10,983 local links checked, failures empty; 64 external links were not fetched |
+| Documentation examples | 2 bilingual schema examples and the empty catalog valid; 3 invalid mutations rejected; syntax/schema checks do not execute examples or validate live transport |
+
+The documentation results combine the final check/build/link validation with
+the recorded unittest and example checks. The builder also syntax-checked 5 linked JSON, 4 CSV
+and 3 Python documents. Supporting result pages are built without becoming
+maintained topics or relaxing their metadata and language-pair requirements.
+
+Initial failures are retained separately: the bridge runner's relative-path
+`dir_fd` guard interpretation and Node dependency resolution were corrected
+within the task-local runner/dependency setup, with affected checks rerun.
+The earlier documentation checker failures were resolved by supporting linked
+result documents and downloads while preserving link and metadata validation.
+Those failures are not erased or relabelled as passes. The optional-Node test
+split and wheel audit repair are publication test/packaging changes, not new
+runtime behavior or new benchmark execution source identities.
+
+No real provider, model, judge or browser calls were made for these publication
+checks. The prior actual browser root/sandbox launch remains BLOCKED; no retry,
+sandbox bypass or real page/DOM/screenshot success is claimed.
+
+
 ## Included source boundary
 
 The last complete offline suite in this record ran against runtime commit
-`073a4516013443fadfcd05fa81d29c4aa1b5391b` on 2026-09-28. Current runtime
-documentation additionally covers focused changes through
+`073a4516013443fadfcd05fa81d29c4aa1b5391b` on 2026-09-28. That historical runtime
+record additionally covers focused changes through
 `87e98356a1ba78b6afd7bae93d26704e030467a3`: canonical cross-frontend session
 ownership, subordinate execution nets, workspace version history, arbitrary
 checkpoint reopen, compaction/recovery closure and separation of Registry
 validation from runtime retry policy, plus pre-admission workspace destination
 rejection, special-file-safe snapshot restoration, independent Viewer connection
 handling with a finite socket I/O timeout, and strict wheel vendor-asset
-validation. Release-version, packaging-metadata and documentation-only changes
-after that SHA do not change the execution boundary.
+validation. Later runtime integration has its own finite evidence above; this historical
+baseline does not certify the integrated publication tree.
 
 The unified tree contains core Registry/PetriNet execution, Basic, Codex and
 OpenCode frontends, native plugins, the shared provider/profile layer, the

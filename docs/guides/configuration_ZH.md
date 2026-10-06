@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: configuration.md
-  revision: "2026-10-01.1"
+  revision: "2026-10-06.1"
   status: source-reviewed-pre-release
 ---
 
@@ -206,3 +206,23 @@ authority contract；修改源码属于需要兼容测试的实现变更，不�
 
 配置案例见[模型配置](models_ZH.md)，声明/plugin 见[自定义](customization_ZH.md)，证据边界见
 [看板](viewer_ZH.md)。
+
+## Codex local-process bridge：声明context与诊断
+
+显式选择registered profile时，将Registry profile metadata的`context_window_tokens`
+与bridge参数`--model-context-window`对齐；后者传给CLI配置键`model_context_window`。
+只配CLI不会填入Registry context-pressure策略。这些是本地声明容量，不是官方已验证模型上限。
+
+CLI分派前，bridge按最终渲染请求估算
+`ceil((prompt_UTF8_bytes + endpoint_instructions_UTF8_bytes + output_schema_file_bytes) / 4) + configured_output_reserve`。
+prompt包括渲染后的history与tool schemas。`configured_output_reserve`来自bridge参数
+`--model-max-output-tokens`，是canonical输出预留，不是强制CLI输出cap。历史repair条件
+使用context 272000、输出预留128000；它们仅属于该次条件，不是默认值或通用公式中的固定常量。
+字节估算不是准确tokenizer计数或provider保证。超出声明窗口时以`context_budget_exceeded`
+拒绝；unknown submission记账仍保守，不自动授权回放。
+
+unsupported event/item诊断仅在私有stderr审计metadata保留最多64字符的有界ASCII协议类型。
+该诊断不保留raw payload、不放宽工具allowlist。Registry failure code不保留这些类型，失败
+路径不保证都有request-budget摘要。旧unsupported item不再出现不等于已确定或修复未知根因；
+容量拒绝不是context溢出证明。[公开结果](../../examples/automationbench/PUBLIC_RESULTS_20261006_ZH.md)
+将配置、canonical usage及provider未知字段分开。

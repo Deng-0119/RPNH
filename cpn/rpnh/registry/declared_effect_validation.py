@@ -64,10 +64,36 @@ def _durable_reset_retirement_reason(
 
 
 def validate_declared_effect_success(store, db, *, firing, invocation, result,
-        delta, predecessor, checkpoint, exact, metadata):
-    """Called only within EventStore's existing settlement BEGIN IMMEDIATE."""
+        delta, predecessor, checkpoint, exact, metadata, require_ordinary=False,
+        published_transaction_id=None, historical_cut=None,
+        ordinary_token_ref_scheme=None):
+    """Validate an original settlement cut or its exact canonical read snapshot."""
     def fail(message):
         raise RegistryConflict("declared effect Success: " + message)
+
+    if (published_transaction_id is None) != (historical_cut is None):
+        fail("canonical read requires both publication transaction and historical cut")
+    if historical_cut is not None and (type(historical_cut) is not int or historical_cut < 0):
+        fail("canonical read cut is malformed")
+    if published_transaction_id is not None and not require_ordinary:
+        fail("canonical read is restricted to ordinary collaboration closure")
+    if 'ordinary_token_ref_scheme' in delta:
+        from .normal_root_token_allocation import (
+            NORMAL_ROOT_TOKEN_SCHEME, load_normal_root_token_schema,
+            validate_normal_root_token_delta,
+        )
+        if (ordinary_token_ref_scheme != NORMAL_ROOT_TOKEN_SCHEME
+                or delta['ordinary_token_ref_scheme'] != ordinary_token_ref_scheme):
+            fail('normal token marker lacks its independently bound Success')
+        capability_cut = (historical_cut if historical_cut is not None else int(
+            db.execute('SELECT COALESCE(MAX(ordinal),0) FROM events').fetchone()[0]))
+        persisted_schema = load_normal_root_token_schema(store, db,
+            task_id=TypedId.parse(invocation['task_ref']['logical_id'], expected='task'),
+            cut=capability_cut)
+        validate_normal_root_token_delta(persisted_schema, delta)
+        require_ordinary = True
+    elif ordinary_token_ref_scheme is not None:
+        fail('normal token allocation selector lacks its exact delta marker')
 
     def obj(ref, kind=None):
         if not exact(ref, kind):
@@ -102,7 +128,7 @@ def validate_declared_effect_success(store, db, *, firing, invocation, result,
     declaration_meta = obj(declaration_ref, "resource_version/v1")
     closure = delta.get("declared_effects")
     if declaration_meta.get("content_schema_ref") != "rpnh/executable_net/v1":
-        if closure is not None:
+        if closure is not None or require_ordinary:
             fail("effect closure requires the current registered Module declaration")
         return
     compiled = load_compiled_net(json.loads(payload(declaration_ref)))
@@ -117,7 +143,12 @@ def validate_declared_effect_success(store, db, *, firing, invocation, result,
                     if not colours or o.name in colours]
         if any(o.effects for o in possible):
             fail("selected registered effects lack their instruction closure")
-        return
+        if not require_ordinary:
+            return
+        if len(colours) != 1 or len(possible) != 1:
+            fail("ordinary collaboration Success requires one durable selected outcome")
+        # Local validation input only; no synthetic event or effect is published.
+        closure = {"selected_outcome_id": possible[0].name, "effects": []}
     selected = next(o for o in operation.declaration.outcomes if o.name == closure["selected_outcome_id"])
     if len(closure["effects"]) != len(selected.effects):
         fail("witness differs from the complete selected effect contract")
@@ -204,7 +235,9 @@ def validate_declared_effect_success(store, db, *, firing, invocation, result,
             "kind": None, "verdict": selected.name, "continuation": None, "lease_claims": ()})
     validate_compiled_output_bundle(operation.declaration, {name: len(values) for name, values in grouped.items()},
         declared_outcomes=tuple(colours), selected_outcome_id=selected.name)
-    if not selected.effects:
+    if require_ordinary and selected.effects:
+        fail("ordinary collaboration Success requires an effect-free selected outcome")
+    if not selected.effects and not require_ordinary:
         return
     lease_ref = invocation.get("operation_execution_lease_ref")
     invocation_ref = invocation.get("invocation_ref")
@@ -227,10 +260,20 @@ def validate_declared_effect_success(store, db, *, firing, invocation, result,
             != firing["operation_binding_ref"]
             or start.get("transition_firing_ref")
             != firing["transition_firing_ref"]
+            or (require_ordinary and start.get("claimed_input_refs") != firing["claimed_input_refs"])
             or not isinstance(start_bindings, list)
             or not isinstance(start_resources, list)
             or len(start_bindings) != len(start_resources)):
         fail("effect input differs from exact durable operation Start")
+    if require_ordinary:
+        if predecessor.get("workspace_revision_refs") or db.execute(
+                "SELECT 1 FROM events WHERE event_type='petri_firing_resource_accessed/v1' AND aggregate_id=?",
+                (firing["transition_firing_ref"]["logical_id"],)).fetchone():
+            fail("this ordinary collaboration projection requires no workspace or dynamic resource access")
+        for binding_ref, resource in zip(start_bindings, start_resources, strict=True):
+            binding_value = obj(binding_ref)
+            if binding_ref["entity_type"] == "petri_token/v1" and binding_value.get("resource_ref") != resource:
+                fail("durable Start input differs from its exact claimed occurrence")
     started_inputs = tuple(zip(start_bindings, start_resources, strict=True))
     for values in grouped.values():
         values.sort(key=lambda r: r["version_id"])
@@ -247,9 +290,21 @@ def validate_declared_effect_success(store, db, *, firing, invocation, result,
     # Core read is exact consume-return: it also retires its predecessor ref.
     consumed = {ref for ref in claimed if tokens[ref]["place"] in consumed_places}
     other_claims = set()
-    rows = db.execute("SELECT p.firing_version_id,o.metadata_json FROM firing_publications p JOIN objects o "
-        "ON o.version_id=p.firing_version_id WHERE p.state='PROVISIONAL' AND p.net_version_id=?",
-        (firing["net_instance_ref"]["version_id"],)).fetchall()
+    if published_transaction_id is None:
+        rows = db.execute("SELECT p.firing_version_id,o.metadata_json FROM firing_publications p JOIN objects o "
+            "ON o.version_id=p.firing_version_id WHERE p.state='PROVISIONAL' AND p.net_version_id=?",
+            (firing["net_instance_ref"]["version_id"],)).fetchall()
+    else:
+        current = db.execute("SELECT state,published_transaction_id FROM firing_publications WHERE firing_version_id=?",
+            (firing["transition_firing_ref"]["version_id"],)).fetchone()
+        if current is None or current["state"] != "PUBLISHED" or current["published_transaction_id"] != published_transaction_id:
+            fail("canonical read differs from the original published firing")
+        rows = db.execute("SELECT p.firing_version_id,o.metadata_json FROM firing_publications p JOIN objects o "
+            "ON o.version_id=p.firing_version_id JOIN events opened ON opened.event_id=o.published_event_id "
+            "LEFT JOIN events closed ON closed.transaction_id=p.published_transaction_id "
+            "AND closed.event_type='transaction_committed/v1' WHERE p.net_version_id=? AND opened.ordinal<=? "
+            "AND (p.state='PROVISIONAL' OR closed.ordinal>?)",
+            (firing["net_instance_ref"]["version_id"], historical_cut, historical_cut)).fetchall()
     if firing["transition_firing_ref"]["version_id"] not in {row["firing_version_id"] for row in rows}:
         fail("current firing lacks its live PROVISIONAL root")
     for row in rows:
@@ -454,7 +509,10 @@ def validate_declared_effect_success(store, db, *, firing, invocation, result,
     executable = ExecutableNetAuthority(_version_from_payload(firing["net_instance_ref"]),
         _version_from_payload(net["team_design_root_ref"]), NativeLaunchRegisteredArtifact(declaration,
         VerifiedResourceArtifact(header, None)), _resource_from_payload(net["team_net_declaration_resource_ref"]), (), None)
-    expected = local.pure_typed_snapshot(executable)
+    expected = local.pure_typed_snapshot(executable,
+        ordinary_token_ref_scheme=ordinary_token_ref_scheme,
+        allocation_firing_ref=(_version_from_payload(firing['transition_firing_ref'])
+            if ordinary_token_ref_scheme is not None else None))
     expected_tokens = {canonical_json(_ref_payload(state.token_ref)): petri_token_metadata(executable, state, state.token_ref)
                        for state in expected.tokens}
     actual_tokens = {canonical_json(ref): obj(ref, "petri_token/v1") for ref in checkpoint["token_refs"]}

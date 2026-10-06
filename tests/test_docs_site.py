@@ -29,6 +29,12 @@ class DocumentationTests(unittest.TestCase):
             dest = self.root / path.relative_to(ROOT)
             dest.parent.mkdir(parents=True, exist_ok=True)
             shutil.copyfile(path, dest)
+        pages = {path.resolve(): docs.parse_page(path) for path in docs.pages_in(ROOT)}
+        support, downloads = docs.supporting_documents(ROOT, pages)
+        for path in set(support) | downloads:
+            dest = self.root / path.relative_to(ROOT)
+            dest.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copyfile(path, dest)
         for path in docs.auxiliary_documents(ROOT):
             dest = self.root / path.relative_to(ROOT)
             dest.parent.mkdir(parents=True, exist_ok=True)
@@ -130,7 +136,9 @@ class DocumentationTests(unittest.TestCase):
         output = Path(self.tmp.name) / 'site'
         before = {name for name in sys.modules if name == 'cpn' or name.startswith('cpn.')}
         result = docs.build(self.root, output)
-        self.assertEqual(result['built_html_pages'], len(docs.pages_in(ROOT)))
+        self.assertEqual(
+            result['built_html_pages'],
+            len(docs.pages_in(ROOT)) + result['support_documents'])
         home = (output / 'index.html').read_text()
         self.assertIn('index_ZH.html', home)
         self.assertIn('docs/guides/installation.html', home)
@@ -221,6 +229,204 @@ class DocumentationTests(unittest.TestCase):
         output.mkdir()
         with self.assertRaisesRegex(ValueError, 'new output directory'):
             docs.build(self.root, output)
+
+
+@unittest.skipIf(docs is None, 'Install docs/requirements.txt to run documentation checks')
+class SupportingDocumentTests(unittest.TestCase):
+    """Small source tree isolates support policy from unrelated product docs."""
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmp.cleanup)
+        self.root = Path(self.tmp.name) / 'source'
+        self.root.mkdir()
+        self.output = Path(self.tmp.name) / 'site'
+        for name in docs.ROOT_PROJECT_DOCUMENTS:
+            zh = name.endswith('_ZH.md')
+            topic = name.removesuffix('_ZH.md').removesuffix('.md')
+            counterpart = topic + ('.md' if zh else '_ZH.md')
+            self.write(name, (
+                f'---\nname: {topic}\ndescription: Project policy\nmetadata:\n'
+                f'  document-kind: policy\n  language: {"zh-CN" if zh else "en"}\n'
+                f'  counterpart: {counterpart}\n  revision: "1"\n  status: current\n'
+                f'---\n# {topic}\n'))
+        self.write('README.md', '# Home\n[中文](README_ZH.md)\n' + '\n'.join(
+            f'[{name}]({name})' for name in docs.ROOT_PROJECT_DOCUMENTS)
+            + '\n[Example](examples/demo/README.md)\n')
+        self.write('README_ZH.md', '# 首页\n[English](README.md)\n')
+        self.write('examples/demo/README.md',
+                   '# Demo\n[中文](README_ZH.md)\n[Results](RESULTS.md#scores)\n')
+        self.write('examples/demo/README_ZH.md', '# 示例\n[English](README.md)\n')
+        self.write('examples/demo/RESULTS.md',
+                   '# Results\n## Scores\n[Data](results/scores.json)\n'
+                   '[More](details/METHOD.md#method)\n[Back](README.md)\n'
+                   '[Legal](THIRD_PARTY_NOTICES.md)\n'
+                   '[Scores](results/scores.csv)\n[Comparison](comparison/groups.csv)\n'
+                   '[Source](src/rpnh_demo/workflow.py)\n')
+        self.write('examples/demo/details/METHOD.md',
+                   '# Method\n[Results](../RESULTS.md#scores)\n'
+                   '[Home](../../../README.md)\n'
+                   '[Matrix](../../../docs/reference/matrix.json)\n'
+                   '[Schema](../../../cpn/schemas/rpnh/example.schema.json)\n')
+        self.write('examples/demo/results/scores.json', '{"passed": 1}\n')
+        self.write('examples/demo/results/scores.csv', 'task,score\nexample,1\n')
+        self.write('examples/demo/comparison/groups.csv', 'group,count\npublic,1\n')
+        self.write('examples/demo/src/rpnh_demo/workflow.py',
+                   'raise RuntimeError("source must never execute")\n')
+        self.write('docs/reference/matrix.json', '{"status": "NOT_RUN"}\n')
+        self.write('cpn/schemas/rpnh/example.schema.json', '{"type": "object"}\n')
+        self.write('examples/demo/THIRD_PARTY_NOTICES.md', '# Demo license\n')
+
+    def write(self, relative, text):
+        path = self.root / relative
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(text, encoding='utf-8')
+        return path
+
+    def link(self, href):
+        path = self.root / 'examples/demo/RESULTS.md'
+        path.write_text(path.read_text() + f'\n[Target]({href})\n', encoding='utf-8')
+
+    def test_linked_support_is_validated_and_built_without_becoming_topics(self):
+        self.write('examples/demo/UNLINKED.md', '# Unlinked\n[Bad](missing.md)\n')
+        self.write('examples/demo/results/unlinked.json', 'invalid JSON')
+        self.write('examples/demo/runner.py', 'raise RuntimeError("do not run")\n')
+        self.write('examples/demo/results/unlinked.csv', '"unterminated')
+        self.write('examples/demo/comparison/unlinked.csv', '"unterminated')
+        self.write('examples/demo/src/rpnh_demo/unlinked.py', 'def broken(')
+        pages, stats = docs.check(self.root)
+        self.assertEqual(len(pages), len(docs.pages_in(self.root)))
+        self.assertEqual(stats['reachable_pages'], len(pages))
+        self.assertEqual(stats['language_pairs'] * 2, len(pages))
+        self.assertEqual(stats['support_documents'], 2)
+        self.assertEqual(stats['json_documents_syntax_only'], 3)
+        self.assertEqual(stats['csv_documents_syntax_only'], 2)
+        self.assertEqual(stats['python_documents_syntax_only'], 1)
+        result = docs.build(self.root, self.output)
+        self.assertEqual(result['built_html_pages'], len(pages) + 2)
+        example = (self.output / 'examples/demo/README.html').read_text()
+        self.assertIn('href="RESULTS.html#scores"', example)
+        results = (self.output / 'examples/demo/RESULTS.html').read_text()
+        self.assertIn('id="scores"', results)
+        self.assertIn('href="results/scores.json"', results)
+        self.assertIn('href="results/scores.csv"', results)
+        self.assertIn('href="comparison/groups.csv"', results)
+        self.assertIn('href="src/rpnh_demo/workflow.py"', results)
+        self.assertIn('href="details/METHOD.html#method"', results)
+        self.assertIn('href="README.html"', results)
+        self.assertIn('href="THIRD_PARTY_NOTICES.md"', results)
+        method = (self.output / 'examples/demo/details/METHOD.html').read_text()
+        self.assertIn('href="../../../index.html"', method)
+        self.assertIn('href="../RESULTS.html#scores"', method)
+        for relative in ('examples/demo/results/scores.json',
+                         'docs/reference/matrix.json',
+                         'cpn/schemas/rpnh/example.schema.json',
+                         'examples/demo/THIRD_PARTY_NOTICES.md',
+                         'examples/demo/results/scores.csv',
+                         'examples/demo/comparison/groups.csv',
+                         'examples/demo/src/rpnh_demo/workflow.py'):
+            self.assertEqual((self.output / relative).read_bytes(),
+                             (self.root / relative).read_bytes())
+        for relative in ('examples/demo/UNLINKED.html',
+                         'examples/demo/results/unlinked.json', 'examples/demo/runner.py',
+                         'examples/demo/results/unlinked.csv',
+                         'examples/demo/comparison/unlinked.csv',
+                         'examples/demo/src/rpnh_demo/unlinked.py'):
+            self.assertFalse((self.output / relative).exists())
+
+    def test_missing_support_documents_and_downloads_rejected(self):
+        for relative in ('examples/demo/RESULTS.md',
+                         'examples/demo/details/METHOD.md',
+                         'examples/demo/results/scores.json',
+                         'examples/demo/THIRD_PARTY_NOTICES.md',
+                         'examples/demo/results/scores.csv',
+                         'examples/demo/comparison/groups.csv',
+                         'examples/demo/src/rpnh_demo/workflow.py'):
+            with self.subTest(relative=relative):
+                path = self.root / relative
+                original = path.read_text()
+                path.unlink()
+                try:
+                    with self.assertRaisesRegex(ValueError, 'missing link'):
+                        docs.check(self.root)
+                finally:
+                    self.write(relative, original)
+
+    def test_invalid_support_json_rejected_before_build(self):
+        for payload in ('{"broken":', '{"score": NaN}', '{"score": Infinity}'):
+            with self.subTest(payload=payload):
+                self.write('examples/demo/results/scores.json', payload)
+                with self.assertRaisesRegex(ValueError, 'scores.json: invalid JSON document'):
+                    docs.build(self.root, self.output)
+                self.assertFalse(self.output.exists())
+
+    def test_invalid_linked_csv_and_python_rejected_before_build(self):
+        for relative, payload, error in (
+                ('examples/demo/results/scores.csv', '"unterminated', ValueError),
+                ('examples/demo/comparison/groups.csv', '"unterminated', ValueError),
+                ('examples/demo/src/rpnh_demo/workflow.py', 'def broken(', SyntaxError)):
+            with self.subTest(relative=relative):
+                path = self.root / relative
+                original = path.read_text()
+                self.write(relative, payload)
+                try:
+                    with self.assertRaises(error) as caught:
+                        docs.build(self.root, self.output)
+                    self.assertIn(path.name, str(caught.exception))
+                    self.assertFalse(self.output.exists())
+                finally:
+                    self.write(relative, original)
+
+    def test_support_links_keep_anchor_escape_and_type_checks(self):
+        path = self.root / 'examples/demo/RESULTS.md'
+        original = path.read_text()
+        for href, error in (
+                ('details/METHOD.md#missing', 'missing anchor'),
+                ('results/scores.json#missing', 'missing anchor'),
+                ('../../../outside.md', 'escapes'),
+                ('missing.md', 'missing link'),
+                ('directory.md', 'missing link'),
+                ('runner.py', 'undocumented'),
+                ('private.csv', 'undocumented'),
+                ('results/scores.csv#missing', 'missing anchor'),
+                ('src/rpnh_demo/workflow.py#missing', 'missing anchor'),
+                ('private.json', 'undocumented'),
+                ('../../..', 'escapes'),
+                ('../..', 'undocumented')):
+            with self.subTest(href=href):
+                (self.root / 'examples/demo/directory.md').mkdir(exist_ok=True)
+                self.write('examples/demo/runner.py', '# No code bundling\n')
+                self.write('examples/demo/private.csv', 'score\n1\n')
+                self.write('examples/demo/private.json', '{}')
+                self.write('examples/demo/RESULTS.md', original)
+                self.link(href)
+                with self.assertRaisesRegex(ValueError, error):
+                    docs.check(self.root)
+
+    def test_support_code_fences_are_syntax_checked(self):
+        self.write('examples/demo/details/METHOD.md', '# Method\n```json\n{"bad": NaN}\n```\n')
+        with self.assertRaisesRegex(ValueError, 'nonfinite JSON'):
+            docs.check(self.root)
+
+    def test_support_does_not_relax_maintained_metadata_or_counterparts(self):
+        path = self.root / 'CONTRIBUTING.md'
+        original = path.read_text()
+        for text, error in (
+                ('# Contributing\n', 'front matter required'),
+                (original.replace('counterpart: CONTRIBUTING_ZH.md',
+                                  'counterpart: examples/demo/RESULTS.md'), 'counterpart missing')):
+            with self.subTest(error=error):
+                path.write_text(text, encoding='utf-8')
+                with self.assertRaisesRegex(ValueError, error):
+                    docs.check(self.root)
+
+    def test_support_links_do_not_satisfy_maintained_reachability(self):
+        path = self.root / 'README.md'
+        path.write_text(path.read_text().replace('[SECURITY.md](SECURITY.md)', ''),
+                        encoding='utf-8')
+        self.link('../../SECURITY.md')
+        with self.assertRaisesRegex(ValueError, 'Pages not reachable from README'):
+            docs.check(self.root)
 
 
 if __name__ == '__main__':
