@@ -6,8 +6,8 @@ metadata:
   audience: user-and-developer
   language: en
   counterpart: CHANGELOG_ZH.md
-  revision: "2026-10-07.1"
-  status: v0.1.0rc1
+  revision: "2026-10-07.2"
+  status: v0.1.0rc2-unreleased
 ---
 
 [English](CHANGELOG.md) | [中文](CHANGELOG_ZH.md)
@@ -15,6 +15,20 @@ metadata:
 # Changelog
 
 ## Unreleased
+
+- Prepared an unreleased `0.1.0rc2` local distribution identity so normal pip
+  upgrades replace the historical `0.1.0rc1` binary instead of silently retaining
+  older code. This version change does not publish a release or change either
+  historical release.
+- Expanded installed example discovery and named export with explicit reusable,
+  source/research and historical scopes. Exports remain user-owned copies and
+  refuse existing destinations. A custom adapter answer can be checked against
+  its own `--expected` file. Added a public deterministic v2 package example and
+  aligned bilingual setup, prerequisites and working-directory instructions.
+  Package runs can explicitly deliver their exact current terminal JSON to a
+  private output file with `--include-terminal-result`; default output remains
+  body-free, and oversized/non-JSON products have explicit omission statuses.
+
 
 - Direct native-plugin v1 copies and retained operations now compare their generated
   capability place and read arc when exact declarations, registrations and the

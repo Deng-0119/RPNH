@@ -15,13 +15,28 @@ This is read-only and makes no model or business API call.
 
 ## 2. Install an isolated pinned upstream
 
-Use a separate AutomationBench checkout at
-`4a8e1061254004d9dac807054eed33fad7d1ff14`. Do not copy its dataset into this
-repository. Install RPNH and this example in an isolated environment:
+**Install Python 3.13+ first.** The AutomationBench adapter declares this
+minimum; a Python 3.11/3.12 core-RPNH environment is not sufficient. Start from
+the RPNH source root in a new shell. The commands below use `python3.13`, create
+a separate environment, and initialize `AB_UPSTREAM` outside the repository.
+They read the pin from `examples/automationbench/config/selection.json`:
+[`zapier/AutomationBench`](https://github.com/zapier/AutomationBench), commit
+`4a8e1061254004d9dac807054eed33fad7d1ff14`, package `1.0.6`. Do not copy its
+dataset into this repository. Git and dependency installation need network
+access; these setup commands do not call a model:
 
 ```bash
-python -m pip install -e .
-python -m pip install -e './examples/automationbench[test]'
+SOURCE_ROOT="$PWD"
+AB_ENV_ROOT="$(mktemp -d "${TMPDIR:-/tmp}/rpnh-ab-env.XXXXXX")"
+python3.13 -m venv "$AB_ENV_ROOT/venv"
+. "$AB_ENV_ROOT/venv/bin/activate"
+python -m pip install -e "$SOURCE_ROOT"
+python -m pip install -e "$SOURCE_ROOT/examples/automationbench[test]"
+AB_UPSTREAM="$AB_ENV_ROOT/AutomationBench"
+AB_PIN="$(python -c 'import json; print(json.load(open("examples/automationbench/config/selection.json"))["upstream_commit"])')"
+git clone https://github.com/zapier/AutomationBench.git "$AB_UPSTREAM"
+git -C "$AB_UPSTREAM" checkout --detach "$AB_PIN"
+test "$(git -C "$AB_UPSTREAM" rev-parse HEAD)" = "$AB_PIN"
 python -m pip install -e "$AB_UPSTREAM"
 ```
 
@@ -57,7 +72,7 @@ a checked-in plan. The retained 18-task plan is a convenient input for a *new*
 condition; it does not continue the historical run:
 
 ```bash
-AB_COHORT="$PWD/examples/automationbench/results/stratified-pilot-plan-20261002.json"
+AB_COHORT="$SOURCE_ROOT/examples/automationbench/results/stratified-pilot-plan-20261002.json"
 
 rpnh-ab doctor --upstream "$AB_UPSTREAM" --profile "$PROFILE" \
   --work "$AB_WORK" --cohort "$AB_COHORT"

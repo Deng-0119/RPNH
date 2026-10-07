@@ -30,6 +30,13 @@ metadata:
 venv 创建成功不代表系统或工具要求满足。新环境创建前取消时，检查结果仍是目标缺失，
 不会用 base Python 冒充已准备的目标环境。
 
+## 从完整可运行示例开始
+
+[原生加法 v2 教程](guides/package-reuse-example_ZH.md)会生成下文所需的每份输入：
+`ROOT.zip`、精确 package lock、`SELECTION.json` 和 `OWNER.json`。它覆盖已有环境与新 venv、
+明确准备／启动审批，以及真正登记的结果。首次运行请先按教程操作；下方通用流程供已有材料时
+查阅。
+
 ## 安装后的命令流程
 
 使用已安装的 `rpnh package`。涉及材料的命令都接受
@@ -51,6 +58,11 @@ owner request，要求输入它的身份。非交互调用者使用同一 API �
 完整私有报告、路径及本机引用只保存到显式选择的文件。准备在 `--state-dir` 内以私有权限
 保存 digest 命名的不可变 plan、resolution、checks、binding、receipt；未覆盖路径时默认为
 `config_path().parent/environment-preparation/<binding_id>`，该目录不是 Registry。
+
+若要保存终态产物正文，请为 `run` 显式添加 `--include-terminal-result`，并指定私有
+`--output RUN.json` 文件。没有 `--output` 时该选项会被拒绝；标准输出仍只包含公开状态投影。
+结果通过既有且已授权的 Registry owner 读取。这个选项不会把准备 receipt 或进程退出改成
+业务成功证据。
 
 检查已准备环境时用 `--binding` 替换 `--selection`，并给出精确 `--resolved-selections`。
 new_venv selection 明确绝对 base_executable 和尚不存在的 prefix；binding 记录实际解释器和

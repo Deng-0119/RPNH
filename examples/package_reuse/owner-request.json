@@ -1,0 +1,43 @@
+{
+  "task_input": {
+    "schema_id": "application/plugin/demo/add/d36f355b4a3991d08915c3a6dc518dd33a378d5ca3446602c80026dc887ef79cd/input/v1",
+    "payload": {
+      "left": 2,
+      "right": 3
+    },
+    "summary": "Add the supplied integers 2 and 3"
+  },
+  "entry_inputs": {
+    "request": {
+      "schema_id": "application/plugin/demo/add/d36f355b4a3991d08915c3a6dc518dd33a378d5ca3446602c80026dc887ef79cd/input/v1",
+      "payload": {
+        "left": 2,
+        "right": 3
+      },
+      "summary": "Add the supplied integers 2 and 3"
+    }
+  },
+  "resource_inputs": {},
+  "inventory_input": null,
+  "budgets": {
+    "budget_buckets": [
+      {
+        "bucket_id": "plugin",
+        "budget_scope": "module",
+        "finalization_scope": null,
+        "max_attempts": 1
+      }
+    ],
+    "protocol_versions": [
+      "rpnh/module_declaration/v1"
+    ],
+    "ordinary_global_cap": 1,
+    "terminal_quota": 0,
+    "task_total_hard_cap": 1,
+    "finalization_budget": 0
+  },
+  "model_condition": "native-plugin-no-model",
+  "owner_statement": "Run this selected native-add package once with the displayed inputs",
+  "owner_name": "Local package example user",
+  "command_id": "package-reuse-native-add"
+}

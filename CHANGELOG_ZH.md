@@ -6,8 +6,8 @@ metadata:
   audience: user-and-developer
   language: zh-CN
   counterpart: CHANGELOG.md
-  revision: "2026-10-07.1"
-  status: v0.1.0rc1
+  revision: "2026-10-07.2"
+  status: v0.1.0rc2-unreleased
 ---
 
 [English](CHANGELOG.md) | [中文](CHANGELOG_ZH.md)
@@ -15,6 +15,17 @@ metadata:
 # 变更记录
 
 ## 未发布
+
+- 为尚未发布的本地构建物使用独立的 `0.1.0rc2` 版本，使普通 pip 升级能够替换
+  历史 `0.1.0rc1` 二进制，避免成功退出却保留旧代码。此版本变更不发布新版本，
+  也不修改任何历史发行记录。
+- 扩展安装后可用的示例目录和按名称导出，明确可复用、源码/研究及历史记录边界。
+  导出副本归用户所有，已有目标目录仍拒绝覆盖；自定义 adapter 答案可用自己的
+  `--expected` 文件校验。新增公开的确定性 v2 分享包示例，并对齐双语设置、
+  前置条件及工作目录说明。分享包运行可显式使用 `--include-terminal-result`
+  把当前 exact terminal 的 JSON 写入私有输出文件；默认输出仍不含正文，
+  超限或非 JSON 的产物会明确报告省略状态。
+
 
 - 对直接复制或保留的 native-plugin v1 operation，在 exact 声明、登记信息和完整
   原生 lowering 配方一致时，比较可验证其生成的 capability place 与 read arc。

@@ -1,14 +1,14 @@
 ---
 name: rpnh-examples
-description: "Run progressive offline examples, one installed cross-host task, and retained benchmark examples."
+description: "Run and customize reusable examples, an installed cross-host task, and retained benchmark examples."
 metadata:
   document-kind: tutorial
   audience: user-and-developer
   language: en
   counterpart: examples_ZH.md
-  revision: "2026-10-06.1"
+  revision: "2026-10-07.1"
   status: current-instructions-with-dated-evidence
-  basis: "current main commands; deterministic runs and dated authorized live evidence explicitly separated"
+  basis: "source candidate commands; deterministic runs and dated authorized live evidence explicitly separated"
 ---
 
 [English](examples.md) | [中文](examples_ZH.md)
@@ -19,12 +19,14 @@ The examples are organized by user task rather than implementation package.
 Every runnable workflow below creates a real Registry and PetriNet projection.
 A scripted model is a deterministic protocol fixture, not evidence of
 language-model reasoning. Provider-backed examples are explicitly separated.
-Commands and recovery semantics describe current `main`; screenshots and
+Commands and recovery semantics describe this source candidate; screenshots and
 acceptance tables retain the date and exact boundary of the run that produced
 them instead of being silently relabelled as current execution.
 
 | I want to see | Start here | Default |
 |---|---|---|
+| Copy and customize an example outside the checkout | [Dependency-complete export](#export-an-example-and-make-it-yours) | Native/scripted paths |
+| Prepare and execute a shared v2 package | [Native-add package tutorial](package-reuse-example.md) | No model; separate preparation and run approval |
 | Local arithmetic and registered resources | Example 1, native plugin | No model |
 | Serial calculation with a native operation | Example 2, hybrid summary | Scripted |
 | Serial versus parallel topology | Example 3, workflow patterns | Scripted |
@@ -40,9 +42,13 @@ them instead of being silently relabelled as current execution.
 ## Prerequisites
 
 Use Linux or WSL2, Python 3.11 or newer, and a source checkout. From its root,
-create an environment and install both packages:
+create an environment and install both packages. These are the core examples;
+AutomationBench installation has its own **Python 3.13+** requirement and
+separate environment. Unless a section says otherwise, keep this shell in the
+source root; exported paths below are absolute:
 
 ```bash
+SOURCE_ROOT="$PWD"
 python3 -m venv .venv
 . .venv/bin/activate
 python -m pip install .
@@ -268,22 +274,35 @@ EXAMPLE_PARENT="$(mktemp -d "${TMPDIR:-/tmp}/rpnh-adapter-example.XXXXXX")"
 EXAMPLE_ROOT="$EXAMPLE_PARENT/task"
 rpnh examples list
 rpnh examples export --output "$EXAMPLE_ROOT"
-cd "$EXAMPLE_ROOT"
 ```
 
-Read `README.md`, then choose exactly one host directory. Each guide requires
+Read `$EXAMPLE_ROOT/README.md`, then choose exactly one host directory.
+If a host guide requires `cd`, follow it in a separate shell or subshell so
+later source commands still run from `$SOURCE_ROOT`. Each guide requires
 an existing user-owned `EXECUTION_CONFIG`, a fresh operational root and one
 explicit task submission. No bundled file contains a provider, endpoint,
 credential or model choice. The common task computes count, total, mean,
 minimum and maximum for the same three batch values; it is a semantic task,
 not a READY health marker.
 
-Copy only the assistant's JSON object to `answer.json` and verify the task result:
+Copy only the assistant's JSON object to `$EXAMPLE_ROOT/answer.json` and verify
+the fixed bundled task result:
 
 ```bash
-rpnh examples verify --result answer.json
+rpnh examples verify --result "$EXAMPLE_ROOT/answer.json"
 ```
 
+By default the verifier reads the fixed expectations inside the installed
+package, not an edited exported `expected.json`. If you change the task while
+retaining the same numeric-summary contract, explicitly select its new expected
+file:
+
+```bash
+rpnh examples verify --result "$EXAMPLE_ROOT/answer.json" \
+  --expected "$EXAMPLE_ROOT/expected.json"
+```
+
+An application outside that numeric contract needs its own business validator.
 That check does not establish execution success by itself. Confirm the host's
 Registry terminal evidence, final registered result, selected-profile provenance
 and physical-call record. Basic, Codex and OpenCode share MainSession authority;
@@ -349,7 +368,7 @@ experiment and provide your own execution profile. Follow the complete
 
 ## Benchmark example: AutomationBench public workflows
 
-The retained AutomationBench experiment connected one native RPNH actor to the
+The retained **2026-10-02 pilot** connected one native RPNH actor to the
 pinned upstream's three API tools and simulated business worlds. Its checked-in,
 score-blind 18-task pilot covers six domains and three integration-width
 strata. Strict first attempts produced 8/18 complete tasks, 17/18 scored
@@ -358,7 +377,10 @@ infrastructure closures, 437 model calls and 1,081 successful tool dispatches.
 Inspect the retained result without a provider call:
 
 ```bash
-python -I examples/automationbench/example.py results
+(
+  cd "$SOURCE_ROOT"
+  python -I examples/automationbench/example.py results
+)
 ```
 
 The example includes task-level scores, the separate remediation record, a
@@ -369,6 +391,95 @@ canonical CLI that can be operated from shell, Basic, Codex or OpenCode. Those
 extensions are not evidence for the historical score. It does not claim a full
 600-task score or a matched leaderboard comparison. Follow the complete
 [AutomationBench guide](../../examples/automationbench/README.md).
+
+## Export an example and make it yours
+
+Use a wheel built from this source candidate for the named exports below. The
+older 2026-09-29 rc1 wheel exports only the adapter task. Listing and exporting
+are local file operations; they do not install dependencies or call a model.
+
+| `--example` | Exported material | What to do next |
+|---|---|---|
+| `adapter_task` (default) | Fixed cross-host task and expectations | Follow Example 5; real submission requires an authorized profile |
+| `native_plugin` | Standalone plugin source and inputs | Install it, edit inputs or handler, check and run |
+| `hybrid_summary` | Hybrid graph/runner, `_support` fixture and native plugin | Follow the complete copy-and-change path below |
+| `compose_serial` | Definition-only composition script | Follow its exported guide; composition is not execution |
+| `package_reuse` | Runnable v2 package author/receiver materials | Follow the [v2 package tutorial](package-reuse-example.md) |
+
+The source-only workflow gallery, task workspace and research/benchmark examples
+remain in the repository; `examples list` identifies the actual export choices.
+`rpnh examples export` copies example files. It is separate from `rpnh package`
+portable declaration packages and Registry definition exchange.
+
+### Change a dependency-complete hybrid copy
+
+Do not copy only `examples/hybrid_summary`: its runner imports the adjacent
+`examples/_support` fixture and defaults to the adjacent `examples/native_plugin`
+configuration. The named export copies this dependency closure and can be used
+outside a source checkout. Keep its relative directory layout. The command uses
+a temporary parent for a disposable demo; choose your own absent project
+directory instead when you want to keep and develop the copy.
+
+Run from your installed RPNH environment. The editable plugin install makes
+later handler edits take effect in that environment; use a dedicated environment
+rather than replacing a plugin used by active runs. This first change copies the
+known `39`/`13` variant input and explicitly selects your copies of all three
+editable files:
+
+```bash
+CUSTOM_ROOT="$(mktemp -d "${TMPDIR:-/tmp}/rpnh-custom-parent.XXXXXX")/hybrid"
+rpnh examples export --example hybrid_summary --output "$CUSTOM_ROOT"
+python -m pip install -e "$CUSTOM_ROOT/examples/native_plugin"
+cp "$CUSTOM_ROOT/examples/hybrid_summary/variant-input.txt" \
+  "$CUSTOM_ROOT/examples/hybrid_summary/my-input.txt"
+cp "$CUSTOM_ROOT/examples/hybrid_summary/graph.json" \
+  "$CUSTOM_ROOT/examples/hybrid_summary/my-graph.json"
+cp "$CUSTOM_ROOT/examples/native_plugin/plugins.json" \
+  "$CUSTOM_ROOT/examples/native_plugin/my-plugins.json"
+rpnh plugins --config "$CUSTOM_ROOT/examples/native_plugin/my-plugins.json" check
+python - "$CUSTOM_ROOT/examples/hybrid_summary/my-graph.json" <<'PYTHON'
+import json
+import sys
+from cpn.rpnh.agent_workflows import AgentWorkflowGraph
+with open(sys.argv[1], encoding="utf-8") as source:
+    AgentWorkflowGraph.from_mapping(json.load(source))
+print("Graph parsed; this does not establish execution success.")
+PYTHON
+CUSTOM_RUN="$CUSTOM_ROOT/runs/changed-input"
+python "$CUSTOM_ROOT/examples/hybrid_summary/run.py" \
+  --input "$CUSTOM_ROOT/examples/hybrid_summary/my-input.txt" \
+  --graph "$CUSTOM_ROOT/examples/hybrid_summary/my-graph.json" \
+  --plugins "$CUSTOM_ROOT/examples/native_plugin/my-plugins.json" \
+  --run-dir "$CUSTOM_RUN"
+rpnh net --run "$CUSTOM_RUN" --show-resources
+```
+
+The resulting final registered summary should report three batches, total `39`,
+mean `13`, minimum `9` and maximum `18`, with non-null terminal evidence. Inspect
+the actual result and Registry, not merely a zero exit status. Every additional
+run needs a new absent run directory.
+
+- **Input:** edit `my-input.txt`. The bundled scripted fixture recognizes the
+  `Batch values:` format; preserve it for deterministic input experiments.
+- **Graph:** edit `my-graph.json` and pass `--graph`. It controls real node
+  instructions, ports, arcs, ingress and egress. Parsing checks the graph
+  contract; it does not prove tool compatibility or business correctness.
+- **Plugin selection:** edit `my-plugins.json` and pass `--plugins`. The named
+  entry point/version must match an installed plugin; `rpnh plugins ... check`
+  checks that declared catalog before the workflow runs.
+- **Handler:** edit `examples/native_plugin/rpnh_demo.py` inside the export.
+  Keep operation schemas and result limits consistent with the new behavior;
+  update the plugin declaration/config together if its identity changes. Run
+  the catalog check again and use a fresh run.
+- **Model behavior:** `_support` is a narrow deterministic fixture. Arbitrary
+  prompt, node or output-shape changes require adapting that fixture or passing
+  a separately authorized `--execution "$EXECUTION_CONFIG"`. The latter can
+  make paid external calls; the export itself never picks a provider.
+
+For preparing another receiver's environment and launching a portable v2 native
+package, continue with the [runnable package tutorial](package-reuse-example.md).
+It constructs the archive, lock, selection and owner request explicitly, rather
+than assuming those files already exist.
 
 ## What to inspect and change
 

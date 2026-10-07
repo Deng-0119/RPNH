@@ -2,7 +2,7 @@
 
 [English](README.md) | 中文
 
-本 example 保留了一次真实、score-blind 的 AutomationBench 18 题分层 pilot，以及生成结果所用
+本 example 保留了 **2026-10-02** 的真实、score-blind AutomationBench 18 题分层 pilot，以及生成结果所用
 的 RPNH native 适配器。历史试验覆盖六个 public 业务域和三种集成宽度，使用真实外部模型路线；
 AutomationBench 的业务 SaaS 仍是本地模拟世界。
 
@@ -62,17 +62,26 @@ AutomationBench 负责题目加载、模拟业务世界、endpoint 实现和程�
 
 ## 安装与测试
 
-在 RPNH 源码根目录执行：
+**本 example 需要 Python 3.13 或更高版本**，与核心 RPNH 的 Python 3.11+ 前提不同。
+执行命令前先确保 `python3.13` 可用；下列步骤创建独立环境。在 RPNH 源码根目录执行：
 
 ```bash
-python -m pip install -e .
-python -m pip install -e './examples/automationbench[test]'
+SOURCE_ROOT="$PWD"
+AB_ENV_ROOT="$(mktemp -d "${TMPDIR:-/tmp}/rpnh-ab-env.XXXXXX")"
+python3.13 -m venv "$AB_ENV_ROOT/venv"
+. "$AB_ENV_ROOT/venv/bin/activate"
+python -m pip install -e "$SOURCE_ROOT"
+python -m pip install -e "$SOURCE_ROOT/examples/automationbench[test]"
 python -m pytest examples/automationbench/tests -q -m 'not integration'
 ```
 
-把 `RPNH_AB_UPSTREAM` 指向独立安装且位于
-`4a8e1061254004d9dac807054eed33fad7d1ff14` 的 AutomationBench checkout，可运行固定上游和
-脚本化 native-worker 集成检查；这些检查不调用真实 provider。
+清单 `config/selection.json` 将
+[`zapier/AutomationBench`](https://github.com/zapier/AutomationBench) 固定在
+`4a8e1061254004d9dac807054eed33fad7d1ff14`（包版本 `1.0.6`）。按
+[运行手册第 2 步](docs/RUNBOOK_ZH.md#2-独立安装固定上游)克隆、核对、安装，并初始化
+`AB_UPSTREAM`。把 `RPNH_AB_UPSTREAM` 指向同一 checkout，可运行固定上游与脚本化
+native-worker 集成检查。这些检查不调用真实 provider；上面的命令排除了它们，不能证明上游
+集成验收通过。
 
 ## 使用自己的 profile 建立新条件
 

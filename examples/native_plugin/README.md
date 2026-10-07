@@ -2,8 +2,18 @@
 
 English | [中文](README_ZH.md)
 
-Install this package into the same environment as RPNH, from the repository
-root. Each `RUN_DIR` below must not exist before the command starts.
+Start from a source checkout root or obtain an editable installed copy:
+
+```bash
+rpnh examples export --example native_plugin --output /absolute/absent/my-native
+cd /absolute/absent/my-native
+```
+
+Install this plugin into the same environment as RPNH. The editable install
+below uses your exported `rpnh_demo.py`, so later handler edits take effect.
+Each `RUN_DIR` must not exist before the command starts. Listing/exporting does
+not install or execute the plugin. Runtime requires supported local process and
+Unix-domain socket permissions, even though this example makes no model call.
 
 The image below is the actual PetriNet view of the completed `demo/add` run.
 The hidden resource counter shows that one declared plugin capability can be
@@ -13,7 +23,7 @@ request–operation–result path.
 ![Completed native-plugin PetriNet](assets/native-plugin-petrinet.png)
 
 ```bash
-python -m pip install ./examples/native_plugin
+python -m pip install -e ./examples/native_plugin
 rpnh plugins --config examples/native_plugin/plugins.json list
 rpnh plugins --config examples/native_plugin/plugins.json check
 DEMO_ROOT="$(mktemp -d "${TMPDIR:-/tmp}/rpnh-native.XXXXXX")"
@@ -31,6 +41,6 @@ of its registered instruction resource. `demo/summarize` is reused by the
 hybrid example; its direct input is in `summary-input.json`.
 
 For the complete walkthrough and cleanup notes, see the
-[new-user examples guide](../../docs/guides/examples.md). The common plugin
+[new-user examples guide](https://github.com/Deng-0119/RPNH/blob/main/docs/guides/examples.md). The common plugin
 contract and trust boundary are in the
-[customization guide](../../docs/guides/customization.md).
+[customization guide](https://github.com/Deng-0119/RPNH/blob/main/docs/guides/customization.md).

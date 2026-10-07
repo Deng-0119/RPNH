@@ -37,7 +37,13 @@ required = ["config/provider_models.json", "schemas/rpnh/module_declaration.v1.s
             "schemas/runtime/provider_model_catalog.v2.schema.json",
             "examples/adapter_task/manifest.json", "examples/adapter_task/task.txt",
             "examples/adapter_task/expected.json",
-            "examples/adapter_task/opencode/evidence.json"]
+            "examples/adapter_task/opencode/evidence.json",
+            "examples/catalog.json",
+            "examples/gallery/examples/native_plugin/rpnh_demo.py",
+            "examples/gallery/examples/hybrid_summary/run.py",
+            "examples/gallery/examples/_support/profile.py",
+            "examples/gallery/examples/net_operations/compose_serial.py",
+            "examples/gallery/examples/package_reuse/native-add-v2.zip"]
 for item in required:
     assert (package / item).is_file(), "Missing packaged resource: " + item
 assert any(p.is_file() for p in (package / "frontend/static").rglob("*")), "Missing static assets"
@@ -49,6 +55,8 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--python', type=Path, required=True)
     parser.add_argument('--source-root', type=Path, required=True)
+    parser.add_argument('--expected-version',
+                        help='require this exact installed distribution identity')
     args = parser.parse_args()
     # Do not resolve the venv interpreter symlink to its base interpreter.
     python = args.python.absolute()
@@ -76,6 +84,10 @@ def main() -> int:
                 print(result.stderr)
                 return 2
             provenance = json.loads(result.stdout)
+            if (args.expected_version is not None
+                    and provenance['version'] != args.expected_version):
+                raise ValueError('Installed version differs from --expected-version: '
+                                 + provenance['version'])
             if Path(provenance['package']).is_relative_to(source):
                 print('FAIL: imported package is in the source tree, not an isolated wheel install')
                 return 1
@@ -111,9 +123,43 @@ def main() -> int:
                 print('FAIL: installed example verification')
                 print(result.stderr)
                 return 1
+            # A user edits both the copied task and its contract. This is a
+            # deterministic verifier check, not evidence of a provider run.
+            custom = {'count': 3, 'total': 60, 'mean': 20,
+                      'minimum': 10, 'maximum': 30}
+            (example / 'task.txt').write_text(
+                'Summarize 10, 20, 30 using count, total, mean, minimum, maximum.',
+                encoding='utf-8')
+            (example / 'expected.json').write_text(json.dumps(custom), encoding='utf-8')
+            answer = example / 'custom-answer.json'
+            answer.write_text(json.dumps(custom), encoding='utf-8')
+            result = run([str(entry), 'examples', 'verify', '--result', str(answer),
+                          '--expected', str(example / 'expected.json')])
+            if result.returncode or json.loads(result.stdout).get('status') != 'PASS':
+                print('FAIL: user-owned custom example contract verification')
+                print(result.stderr)
+                return 1
+            result = run([str(entry), 'examples', 'verify', '--result', str(answer)])
+            if result.returncode == 0:
+                raise ValueError('Custom result unexpectedly passed the unchanged default contract')
+            named = ('native_plugin', 'hybrid_summary', 'compose_serial', 'package_reuse')
+            for name in named:
+                destination = work / ('user copy 中文 ' + name)
+                result = run([str(entry), 'examples', 'export', '--example', name,
+                              '--output', str(destination)])
+                if result.returncode or not (destination / 'manifest.json').is_file():
+                    raise ValueError('Installed named example export failed: ' + name)
+                (destination / 'user-note.txt').write_text('keep', encoding='utf-8')
+                repeated = run([str(entry), 'examples', 'export', '--example', name,
+                                '--output', str(destination)])
+                if repeated.returncode != 2 or (destination / 'user-note.txt').read_text() != 'keep':
+                    raise ValueError('Named export did not preserve existing user directory: ' + name)
             print(json.dumps({'installed_version': provenance['version'],
                               'outside_source': True, 'zero_model_commands_passed': len(commands),
                               'installed_example_exported': True,
+                              'custom_expected_contract_verified': True,
+                              'named_examples_exported_without_execution': list(named),
+                              'existing_user_directories_preserved': True,
                               'guarded_against_runtime_effects': True,
                               'live_calls': 0}, indent=2))
             return 0

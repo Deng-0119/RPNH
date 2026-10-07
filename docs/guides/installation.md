@@ -6,8 +6,8 @@ metadata:
   audience: operator-and-developer
   language: en
   counterpart: installation_ZH.md
-  revision: "2026-09-29.4"
-  status: source-reviewed-v0.1.0rc1
+  revision: "2026-10-07.1"
+  status: source-candidate-not-published
   basis: "unified main; host differences explicitly labelled"
 ---
 
@@ -18,18 +18,34 @@ metadata:
 ## Goal and prerequisites
 Install an explicitly selected RPNH source tree or wheel without calling a model. Runtime support remains **Linux, including WSL2**; native Windows and macOS are not supported by this candidate. Python is declared as `>=3.11`; this is not a claim that every Python/platform combination was tested. The runtime uses Unix sockets, POSIX process control and Linux-specific process inspection. A basic terminal does not require Codex or Node.
 
-The current distribution is named `rpnh-harness`, version `0.1.0rc1`, with imports under `cpn` and user entry `rpnh`. Required libraries are `jsonschema>=4.20,<5` and `websockets>=12,<16`. There are **no `codex` or `dsh` pip extras**. Do not install differently sourced copies of `cpn` into the same environment.
+The current distribution is named `rpnh-harness`, version `0.1.0rc2` (development candidate, not a published release), with imports under `cpn` and user entry `rpnh`. Required libraries are `jsonschema>=4.20,<5`, `packaging>=24,<27` and `websockets>=12,<16`. There are **no `codex` or `dsh` pip extras**. Do not install differently sourced copies of `cpn` into the same environment.
 
-The canonical public source repository is `Deng-0119/RPNH` on GitHub. The
-`v0.1.0rc1` GitHub prerelease contains the reviewed wheel and source distribution;
-no package-index publication is claimed. Install a release artifact or build the
-wheel from the exact tagged source rather than mixing independently sourced
-copies.
+The canonical public source repository is [`Deng-0119/RPNH`](https://github.com/Deng-0119/RPNH).
+Choose one provenance before installing:
+
+- This reviewed source candidate: build from the exact selected checkout/commit.
+  Public `main` may be ahead of the old rc1 release, but an ordinary clone does
+  not contain unpublished candidate changes. There is no rc2 release download
+  promised by these instructions.
+- [`v0.1.0rc1`](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc1): the
+  historical 2026-09-29 wheel/sdist, without subsequent `main` changes.
+- [`benchmark-baseline-2026-10-06`](https://github.com/Deng-0119/RPNH/releases/tag/benchmark-baseline-2026-10-06):
+  source-only at `f58a0f061d1daf4c09fc96c43237c613cc43f439`, preserving the dated
+  benchmark record; it does not provide a current runtime wheel.
+
+No package-index publication or blanket runtime acceptance is claimed. Older
+source snapshots and the published wheel both used `0.1.0rc1` despite different
+code. A version string alone cannot identify that source; `pip install --upgrade`
+can leave an already installed same-version wheel unchanged. Use a fresh
+virtual environment and record the commit or artifact digest. This source
+candidate uses rc2 so its wheel can be distinguished from the older rc1 wheel.
 
 ## Install from an approved source tree
 Run these Bash commands from its root (the directory containing `pyproject.toml`):
 
 ```bash
+SOURCE_ROOT="$PWD"
+git rev-parse HEAD
 python3 -m venv .venv
 . .venv/bin/activate
 python -m pip install .
@@ -56,13 +72,18 @@ python3 -m venv "$TEST_ROOT/venv"
 "$TEST_ROOT/venv/bin/python" -m pip install "$WHEEL"
 cd "$TEST_ROOT"
 "$TEST_ROOT/venv/bin/rpnh" --help
-"$TEST_ROOT/venv/bin/python" -c 'import cpn; print(cpn.__file__)'
+"$TEST_ROOT/venv/bin/python" -c 'import cpn; from importlib.metadata import version; print(version("rpnh-harness")); print(cpn.__file__)'
 ```
 
-The printed package path must be in this environment's `site-packages`, not the checkout. Use `scripts/check_installed_docs.py` from the source bundle for the guarded configuration smoke described in [development](development.md). That smoke does not validate a model or an interactive terminal.
+For this candidate, the printed version must be `0.1.0rc2`; `0.1.0rc1` identifies an older distribution. The printed package path must be in this environment's `site-packages`, not the checkout. Use `scripts/check_installed_docs.py` from the source bundle for the guarded configuration smoke described in [development](development.md). That smoke does not validate a model or an interactive terminal.
 
-The wheel also contains the provider-neutral cross-host task bundle. Exporting
-it is a zero-model file operation and does not require the source checkout:
+A wheel built from this source candidate contains named reusable example exports
+plus the default provider-neutral cross-host task. Exporting is a zero-model
+file operation and does not require the source checkout. The older rc1 wheel
+has only the adapter task. For current named exports, use
+`--example native_plugin`, `hybrid_summary`, `compose_serial` or `package_reuse`;
+see [export and customization](examples.md#export-an-example-and-make-it-yours)
+and the [runnable v2 tutorial](package-reuse-example.md).
 
 ```bash
 "$TEST_ROOT/venv/bin/rpnh" examples list

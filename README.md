@@ -19,7 +19,7 @@ runtime—not separate owners of model, workspace or recovery state.
 | At a glance | Current boundary |
 |---|---|
 | Platform | Linux or WSL2, Python 3.11+ |
-| Release | `v0.1.0rc1` public prerelease |
+| Source candidate | `0.1.0rc2` development candidate; older public binaries are `v0.1.0rc1` |
 | Installation | Source checkout or GitHub Release wheel/sdist |
 | Models | User-owned provider and exact-model catalog; no route is preselected |
 | Execution | Main session plus independent task/workflow Registries |
@@ -81,11 +81,23 @@ registered final result—not a picture or process exit—establish completion.
 
 ## Quick start
 
-Clone the repository on Linux or WSL2, then run from its root. The corresponding
-wheel and sdist are attached to the
-[`v0.1.0rc1` prerelease](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc1).
+Choose the source or release deliberately:
+
+- **Current source:** this checkout is the `0.1.0rc2` development candidate. Build
+  it from the selected source commit; no new rc2 binary release is claimed here.
+- **Older binaries:** the [`v0.1.0rc1` prerelease](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc1)
+  contains the 2026-09-29 wheel/sdist. These do not contain later `main` features.
+- **Historical benchmark snapshot:** [`benchmark-baseline-2026-10-06`](https://github.com/Deng-0119/RPNH/releases/tag/benchmark-baseline-2026-10-06)
+  is source-only at `f58a0f061d1daf4c09fc96c43237c613cc43f439`; it is not a new
+  runtime binary release or proof that every runtime journey passed.
+
+On Linux or WSL2, use the selected reviewed source checkout and run from its
+root. An ordinary clone of public `main` does not retrieve unpublished candidate
+changes. Record the selected commit and use a fresh environment; see
+[installation](docs/guides/installation.md) for wheel and upgrade checks.
 
 ```bash
+git rev-parse HEAD
 python3 -m venv .venv
 . .venv/bin/activate
 python -m pip install .
@@ -173,8 +185,13 @@ results and evidence boundaries for calculation, document, serial, parallel,
 long-process and independent-task examples. The
 [source example index](examples/README.md) provides the repository-level map.
 
-The installed distribution also includes the provider-neutral adapter task.
-Exporting it does not configure a provider or contact a model:
+A wheel built from this source candidate exports `native_plugin`,
+`hybrid_summary` (including its shared fixture and plugin), `compose_serial` and
+`package_reuse`, as well as the default provider-neutral `adapter_task`.
+Follow [export and customization](docs/guides/examples.md#export-an-example-and-make-it-yours)
+or the complete [runnable v2 package tutorial](docs/guides/package-reuse-example.md).
+The older rc1 wheel contains only the adapter export. Exporting never configures
+a provider or contacts a model:
 
 ```bash
 EXAMPLE_ROOT="$(mktemp -d "${TMPDIR:-/tmp}/rpnh-example-parent.XXXXXX")/adapter-task"

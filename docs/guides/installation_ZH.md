@@ -6,8 +6,8 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: installation.md
-  revision: "2026-09-29.4"
-  status: source-reviewed-v0.1.0rc1
+  revision: "2026-10-07.1"
+  status: source-candidate-not-published
   basis: "unified main; host differences explicitly labelled"
 ---
 
@@ -18,16 +18,30 @@ metadata:
 ## 目标与前提
 从明确指定的 RPNH 源码或 wheel 安装，不调用模型。当前运行支持范围仍是 **Linux（包括 WSL2）**，不支持原生 Windows 和 macOS。`pyproject.toml` 声明 Python `>=3.11`，不等于每个 Python/平台组合均已测试；运行时涉及 Unix socket、POSIX 进程控制和 Linux 进程检查。basic 文本前端不需要 Codex 或 Node。
 
-发行包名称是 `rpnh-harness`，版本 `0.1.0rc1`，Python 导入包为 `cpn`，用户命令为 `rpnh`。依赖是 `jsonschema>=4.20,<5`、`websockets>=12,<16`。当前**不存在 `codex`、`dsh` pip extra**。不要在同一环境安装来自不同维护线的两套 `cpn`。
+发行包名称是 `rpnh-harness`，版本 `0.1.0rc2`（开发候选版，尚非已发布版本），Python 导入包为 `cpn`，用户命令为 `rpnh`。依赖是 `jsonschema>=4.20,<5`、`packaging>=24,<27`、`websockets>=12,<16`。当前**不存在 `codex`、`dsh` pip extra**。不要在同一环境安装来自不同维护线的两套 `cpn`。
 
-Canonical 公开源码仓库是 GitHub 上的 `Deng-0119/RPNH`。`v0.1.0rc1` GitHub prerelease
-包含经过审查的 wheel 和源码分发包；当前不声称已发布包索引版本。应安装 release artifact，
-或从精确 tag 源码构建 wheel，不要混用来源不同的副本。
+Canonical 公开源码仓库是 [`Deng-0119/RPNH`](https://github.com/Deng-0119/RPNH)。
+安装前明确选择一种来源：
+
+- 本审查中的源码候选版：从精确选定的 checkout／提交构建。公开 `main` 可以领先旧 rc1
+  release，但普通 clone 不会包含尚未发布的候选变更。本文不承诺已有 rc2 release 下载。
+- [`v0.1.0rc1`](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc1)：
+  2026-09-29 的历史 wheel/sdist，不包含之后的 `main` 变更。
+- [`benchmark-baseline-2026-10-06`](https://github.com/Deng-0119/RPNH/releases/tag/benchmark-baseline-2026-10-06)：
+  提交 `f58a0f061d1daf4c09fc96c43237c613cc43f439` 的纯源码快照，用于保留注明日期的
+  benchmark 记录，不提供当前 runtime wheel。
+
+这里不声称已在包索引发布，也不声称 runtime 全面验收通过。此前不同代码的源码快照与已发布
+wheel 都使用过 `0.1.0rc1`，因此版本字符串不能单独识别源码；`pip install --upgrade` 可能
+保留已安装的同版本旧 wheel。请使用全新虚拟环境并记录提交或产物摘要。本源码候选版改用 rc2，
+使所构建 wheel 能与旧 rc1 wheel 区分。
 
 ## 从批准的源码安装
 在包含 `pyproject.toml` 的源码根目录运行 Bash：
 
 ```bash
+SOURCE_ROOT="$PWD"
+git rev-parse HEAD
 python3 -m venv .venv
 . .venv/bin/activate
 python -m pip install .
@@ -54,12 +68,16 @@ python3 -m venv "$TEST_ROOT/venv"
 "$TEST_ROOT/venv/bin/python" -m pip install "$WHEEL"
 cd "$TEST_ROOT"
 "$TEST_ROOT/venv/bin/rpnh" --help
-"$TEST_ROOT/venv/bin/python" -c 'import cpn; print(cpn.__file__)'
+"$TEST_ROOT/venv/bin/python" -c 'import cpn; from importlib.metadata import version; print(version("rpnh-harness")); print(cpn.__file__)'
 ```
 
-输出应来自新环境的 `site-packages`，不能来自源码目录。[开发维护](development_ZH.md)介绍源码包内 `scripts/check_installed_docs.py` 的受限零模型配置检查；它不验证模型和交互式终端。
+本候选版输出版本应为 `0.1.0rc2`；若仍为 `0.1.0rc1`，说明是旧发行包。包路径应来自新环境的 `site-packages`，不能来自源码目录。[开发维护](development_ZH.md)介绍源码包内 `scripts/check_installed_docs.py` 的受限零模型配置检查；它不验证模型和交互式终端。
 
-wheel 还包含 provider-neutral 的跨宿主任务包。导出只是零模型文件操作，不需要源码 checkout：
+从本源码候选版构建的 wheel 包含命名可复用案例以及默认的 provider-neutral 跨宿主任务。
+导出只是零模型文件操作，不需要源码 checkout。旧 rc1 wheel 只包含 adapter 任务。当前命名
+导出可使用 `--example native_plugin`、`hybrid_summary`、`compose_serial` 或 `package_reuse`；
+详见[导出与修改](examples_ZH.md#导出案例并改成自己的应用)与
+[可运行 v2 教程](package-reuse-example_ZH.md)。
 
 ```bash
 "$TEST_ROOT/venv/bin/rpnh" examples list

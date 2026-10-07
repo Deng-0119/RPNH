@@ -2,7 +2,7 @@
 
 English | [中文](README_ZH.md)
 
-This example preserves a real, score-blind 18-task AutomationBench pilot and
+This example preserves the real, score-blind **2026-10-02** 18-task AutomationBench pilot and
 the native RPNH adapter used to produce it. The historical run covered all six public
 business domains and three integration-width strata. It used a real external
 model route; AutomationBench's business SaaS systems remained local simulated
@@ -71,17 +71,28 @@ the tool-event evidence.
 
 ## Install and test
 
-From the RPNH source root:
+**Python 3.13 or newer is required for this example**, even though the core
+RPNH package supports Python 3.11+. Have `python3.13` available before running
+these commands; they create an independent environment. From the RPNH source root:
 
 ```bash
-python -m pip install -e .
-python -m pip install -e './examples/automationbench[test]'
+SOURCE_ROOT="$PWD"
+AB_ENV_ROOT="$(mktemp -d "${TMPDIR:-/tmp}/rpnh-ab-env.XXXXXX")"
+python3.13 -m venv "$AB_ENV_ROOT/venv"
+. "$AB_ENV_ROOT/venv/bin/activate"
+python -m pip install -e "$SOURCE_ROOT"
+python -m pip install -e "$SOURCE_ROOT/examples/automationbench[test]"
 python -m pytest examples/automationbench/tests -q -m 'not integration'
 ```
 
-Set `RPNH_AB_UPSTREAM` to an independently installed checkout at
-`4a8e1061254004d9dac807054eed33fad7d1ff14` to run the pinned-upstream and
-scripted native-worker integration checks. They make no real provider calls.
+The manifest `config/selection.json` pins
+[`zapier/AutomationBench`](https://github.com/zapier/AutomationBench) at
+`4a8e1061254004d9dac807054eed33fad7d1ff14` (package `1.0.6`). Follow
+[runbook step 2](docs/RUNBOOK.md#2-install-an-isolated-pinned-upstream) to clone,
+verify and install it, and initialize `AB_UPSTREAM`. Set `RPNH_AB_UPSTREAM` to
+that same checkout for the pinned-upstream/scripted native-worker integration
+checks. Those checks make no real provider calls; the command above excludes
+them and does not establish upstream integration acceptance.
 
 ## Run a new condition with your own profile
 

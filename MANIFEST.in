@@ -1,4 +1,4 @@
-include AGENTS.md
+include AGENTS.md setup.py
 include CHANGELOG.md CHANGELOG_ZH.md
 include CONTRIBUTING.md CONTRIBUTING_ZH.md
 include LICENSE README.md README_ZH.md
@@ -6,7 +6,7 @@ include SECURITY.md SECURITY_ZH.md
 include THIRD_PARTY_NOTICES.md
 
 recursive-include docs *.json *.md *.txt
-recursive-include examples *.json *.md *.png *.py *.toml *.txt
+recursive-include examples *.json *.md *.png *.py *.toml *.txt *.zip *.in
 include examples/harnessaudit_office/results/*.csv
 include examples/harnessaudit_office/comparison/*.csv
 recursive-include scripts *.py

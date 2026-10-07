@@ -1,0 +1,246 @@
+{
+  "schema_version": "rpnh/example_catalog/v1",
+  "examples": [
+    {
+      "id": "adapter_task",
+      "title": "One task across four live adapters",
+      "title_zh": "四个真实适配器的同一任务",
+      "exportable": true,
+      "execution_boundary": "user-authorized provider calls",
+      "source_url": "https://github.com/Deng-0119/RPNH/tree/main/cpn/examples/adapter_task",
+      "paths": [],
+      "prerequisites": [
+        "A user-owned exact execution profile and the selected host. Export and verify are offline."
+      ],
+      "prerequisites_zh": [
+        "用户自有、明确授权的 execution profile，以及所选宿主。导出与验证均离线。"
+      ],
+      "modify": [
+        "task.txt",
+        "expected.json"
+      ],
+      "commands": [
+        "rpnh examples verify --result answer.json --expected expected.json"
+      ],
+      "guide": "README.md",
+      "export_command": "rpnh examples export --example adapter_task --output /absolute/absent/my-example"
+    },
+    {
+      "id": "native_plugin",
+      "title": "Editable native plugin and resource",
+      "title_zh": "可修改的原生插件与资源",
+      "exportable": true,
+      "execution_boundary": "no model; runtime requires supported local process/IPC permissions",
+      "source_url": "https://github.com/Deng-0119/RPNH/tree/main/examples/native_plugin",
+      "paths": [
+        "examples/native_plugin"
+      ],
+      "prerequisites": [
+        "Python 3.11+ and installed rpnh-harness in the same environment.",
+        "Install the exported plugin with the explicit command below; exporting never installs or executes it.",
+        "Linux/POSIX runtime with the process and Unix-domain socket permissions required by the harness."
+      ],
+      "prerequisites_zh": [
+        "Python 3.11+，且同一环境已安装 rpnh-harness。",
+        "按下方命令明确安装导出的插件；导出操作不会安装或执行代码。",
+        "运行需 Linux/POSIX 与 harness 所需的进程及 Unix-domain socket 权限。"
+      ],
+      "modify": [
+        "examples/native_plugin/input.json",
+        "examples/native_plugin/rpnh_demo.py",
+        "examples/native_plugin/plugins.json"
+      ],
+      "commands": [
+        "python -m pip install -e ./examples/native_plugin",
+        "rpnh plugins --config examples/native_plugin/plugins.json list",
+        "rpnh plugins --config examples/native_plugin/plugins.json check",
+        "rpnh plugins --config examples/native_plugin/plugins.json run demo/add --input examples/native_plugin/input.json --run-dir /absolute/absent/add-run"
+      ],
+      "guide": "examples/native_plugin/README.md",
+      "export_command": "rpnh examples export --example native_plugin --output /absolute/absent/my-example"
+    },
+    {
+      "id": "hybrid_summary",
+      "title": "Editable model/program/model workflow",
+      "title_zh": "可修改的模型/程序/模型工作流",
+      "exportable": true,
+      "execution_boundary": "scripted local fixture by default; real provider only with explicit --execution",
+      "source_url": "https://github.com/Deng-0119/RPNH/tree/main/examples/hybrid_summary",
+      "paths": [
+        "examples/hybrid_summary",
+        "examples/native_plugin",
+        "examples/_support"
+      ],
+      "prerequisites": [
+        "Python 3.11+ and installed rpnh-harness in the same environment.",
+        "Install the included native_plugin; keep examples/_support and native_plugin beside hybrid_summary.",
+        "Scripted runs still need supported local process/IPC permissions. A live profile is optional and separately authorized."
+      ],
+      "prerequisites_zh": [
+        "Python 3.11+，且同一环境已安装 rpnh-harness。",
+        "安装随附 native_plugin；保留 hybrid_summary 同级的 examples/_support 和 native_plugin。",
+        "脚本化运行仍需本地进程/IPC 权限；真实 profile 为额外授权的可选项。"
+      ],
+      "modify": [
+        "examples/hybrid_summary/input.txt",
+        "examples/hybrid_summary/variant-input.txt",
+        "examples/hybrid_summary/graph.json",
+        "examples/native_plugin/rpnh_demo.py",
+        "examples/_support/scripted_model.py"
+      ],
+      "commands": [
+        "python -m pip install -e ./examples/native_plugin",
+        "python examples/hybrid_summary/run.py --run-dir /absolute/absent/hybrid-run",
+        "python examples/hybrid_summary/run.py --input examples/hybrid_summary/variant-input.txt --run-dir /absolute/absent/variant-run"
+      ],
+      "guide": "examples/hybrid_summary/README.md",
+      "export_command": "rpnh examples export --example hybrid_summary --output /absolute/absent/my-example"
+    },
+    {
+      "id": "compose_serial",
+      "title": "Two-stage definition composition only",
+      "title_zh": "仅定义层的两阶段组合",
+      "exportable": true,
+      "execution_boundary": "definition only; no Registry run, executor registration or model call",
+      "source_url": "https://github.com/Deng-0119/RPNH/tree/main/examples/net_operations",
+      "paths": [
+        "examples/net_operations/compose_serial.py"
+      ],
+      "prerequisites": [
+        "Python 3.11+ and installed rpnh-harness.",
+        "This prints a ModuleDeclaration. Running it as a task additionally requires matching trusted executor, component, terminal and schema registrations; none are installed by this export."
+      ],
+      "prerequisites_zh": [
+        "Python 3.11+，且已安装 rpnh-harness。",
+        "本例只输出 ModuleDeclaration；执行为任务还需匹配的受信 executor/component/terminal/schema 注册，本次导出不会安装这些注册。"
+      ],
+      "modify": [
+        "examples/net_operations/compose_serial.py"
+      ],
+      "commands": [
+        "python examples/net_operations/compose_serial.py"
+      ],
+      "guide": null,
+      "export_command": "rpnh examples export --example compose_serial --output /absolute/absent/my-example"
+    },
+    {
+      "id": "package_reuse",
+      "title": "Reusable v2 package and trusted native profile",
+      "title_zh": "可复用 v2 包与受信原生 profile",
+      "exportable": true,
+      "execution_boundary": "data-only package authoring and resolution; execution is a separate explicit step",
+      "source_url": "https://github.com/Deng-0119/RPNH/tree/main/examples/package_reuse",
+      "paths": [
+        "examples/package_reuse",
+        "examples/native_plugin"
+      ],
+      "prerequisites": [
+        "Python 3.11+ and installed rpnh-harness.",
+        "Follow the included guide to build/install the trusted native plugin and prepare a v2 package.",
+        "Preview and resolve do not execute package code. Runtime needs supported process/IPC permissions."
+      ],
+      "prerequisites_zh": [
+        "Python 3.11+，且已安装 rpnh-harness。",
+        "按随附指南构建/安装受信原生插件并准备 v2 包。",
+        "preview 与 resolve 不执行包代码；运行仍需支持的进程/IPC 权限。"
+      ],
+      "modify": [
+        "examples/package_reuse/owner-request.json",
+        "examples/package_reuse/expected-output.json",
+        "examples/package_reuse/build_package.py",
+        "examples/native_plugin/rpnh_demo.py"
+      ],
+      "commands": [],
+      "guide": "examples/package_reuse/README.md",
+      "export_command": "rpnh examples export --example package_reuse --output /absolute/absent/my-example"
+    },
+    {
+      "id": "workflow_patterns",
+      "title": "Serial, parallel, document and long-process gallery",
+      "exportable": false,
+      "execution_boundary": "scripted by default; optional live profile",
+      "source_url": "https://github.com/Deng-0119/RPNH/tree/main/examples/workflow_patterns",
+      "prerequisites": [
+        "Source checkout plus examples/_support; read its guide before choosing a scenario."
+      ]
+    },
+    {
+      "id": "task_workspace",
+      "title": "Independent task workspaces",
+      "exportable": false,
+      "execution_boundary": "scripted local process",
+      "source_url": "https://github.com/Deng-0119/RPNH/tree/main/examples/task_workspace",
+      "prerequisites": [
+        "Source checkout plus examples/_support and supported local process/IPC permissions."
+      ]
+    },
+    {
+      "id": "net_operations",
+      "title": "Live net replacement",
+      "exportable": false,
+      "execution_boundary": "explicit live provider calls",
+      "source_url": "https://github.com/Deng-0119/RPNH/tree/main/examples/net_operations",
+      "prerequisites": [
+        "Source checkout and separately authorized exact execution profile. compose_serial is the separately exportable definition-only subset."
+      ]
+    },
+    {
+      "id": "jb_steering_packet",
+      "title": "Clinical document/data research packet",
+      "exportable": false,
+      "execution_boundary": "explicit live provider calls",
+      "source_url": "https://github.com/Deng-0119/RPNH/tree/main/examples/jb_steering_packet",
+      "prerequisites": [
+        "Linux/WSL2, source checkout, installed RPNH and a separately authorized exact execution profile.",
+        "Obtain the official article/supplements listed in sources.json; those files and participant rows are not redistributed here.",
+        "Preparation embeds participant-level workbook text in the prompt. Review source/privacy terms and explicitly acknowledge that data transfer before any provider-backed run."
+      ]
+    },
+    {
+      "id": "three_dof_powered_descent",
+      "title": "Numerical optimal-control research example",
+      "exportable": false,
+      "execution_boundary": "explicit live provider calls",
+      "source_url": "https://github.com/Deng-0119/RPNH/tree/main/examples/three_dof_powered_descent",
+      "prerequisites": [
+        "Linux/WSL2, source checkout, installed RPNH and a separately authorized exact execution profile.",
+        "The selected workspace must provide numerical packages used by the task (NumPy/SciPy is the documented common path); read sources.json and the source guide."
+      ]
+    },
+    {
+      "id": "harnessaudit_office",
+      "title": "HarnessAudit Office benchmark",
+      "exportable": false,
+      "execution_boundary": "retained results offline; new runs require authorized profiles",
+      "source_url": "https://github.com/Deng-0119/RPNH/tree/main/examples/harnessaudit_office",
+      "prerequisites": [
+        "Linux/WSL2, Python 3.11+, source checkout and separately installed examples/harnessaudit_office dependencies (PyYAML, jsonschema).",
+        "Separately install UCSB-AI/HarnessAudit pinned at 6317162590aeeb1c8dde32b880ac199933343e4a with its oai extra; read source-pins.json and THIRD_PARTY_NOTICES.",
+        "Retained results need no provider. New runs/scoring require the setup in the source guide and explicitly authorized local profiles."
+      ]
+    },
+    {
+      "id": "rrsi_v06",
+      "title": "RRSI v0.6 application",
+      "exportable": false,
+      "execution_boundary": "explicit live provider calls",
+      "source_url": "https://github.com/Deng-0119/RPNH/tree/main/examples/rrsi_v06",
+      "prerequisites": [
+        "Python 3.11+, source checkout and separately installed examples/rrsi_v06 package/test dependencies.",
+        "Read THIRD_PARTY_NOTICES and the protocol; new provider-backed rounds and independent child runs require a user-owned, explicitly authorized exact execution profile."
+      ]
+    },
+    {
+      "id": "automationbench",
+      "title": "AutomationBench benchmark and extensions",
+      "exportable": false,
+      "execution_boundary": "retained results offline; new live runs need authorization",
+      "source_url": "https://github.com/Deng-0119/RPNH/tree/main/examples/automationbench",
+      "prerequisites": [
+        "Python 3.13+ in an independent environment (core RPNH only requires Python 3.11+).",
+        "A source checkout plus separately installed zapier/AutomationBench pinned at 4a8e1061254004d9dac807054eed33fad7d1ff14 (1.0.6); follow its README/RUNBOOK and license terms.",
+        "A user-owned, separately authorized exact execution profile for new live runs. Retained results are readable offline; benchmark execution dependencies are not exported."
+      ]
+    }
+  ]
+}

@@ -48,6 +48,14 @@ A venv can be created successfully while system/tool requirements still block
 preparation. A cancelled not-yet-created venv is checked as a missing target; its
 base interpreter is never represented as the prepared environment.
 
+## Start with a complete runnable example
+
+The [native-add v2 tutorial](guides/package-reuse-example.md) creates every input
+used below: `ROOT.zip`, the exact package lock, `SELECTION.json`, and `OWNER.json`.
+It covers an existing environment and a new venv, explicit preparation/launch
+approval, and the genuine registered result. Use it for a first run; the generic
+workflow below is a reference for materials you already possess.
+
 ## Installed command workflow
 
 Use installed `rpnh package` commands. Every material-bearing command accepts
@@ -74,6 +82,12 @@ complete private reports, paths and local references go only to explicitly chose
 files. Preparation saves immutable digest-named plan, resolution, checks, binding
 and receipt files with private permissions in `--state-dir`, or by default under
 `config_path().parent/environment-preparation/<binding_id>`. This is not a Registry.
+
+To retain the terminal product body, explicitly add `--include-terminal-result`
+to `run` and supply a private `--output RUN.json` file. The flag is rejected
+without `--output`; standard output remains a public status projection. The
+result is read through the existing authorized Registry owner. This option does
+not turn a preparation receipt or a process exit into business success.
 
 `--binding` replaces `--selection` when checking an already prepared environment;
 also provide its exact `--resolved-selections`. A selection for `new_venv` names an

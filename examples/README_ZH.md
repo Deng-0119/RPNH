@@ -2,6 +2,13 @@
 
 [English](README.md) | 中文
 
+若要把案例拿到自己的项目中，先看
+[包含完整依赖的导出与修改教程](../docs/guides/examples_ZH.md#导出案例并改成自己的应用)。
+命名导出包括 `native_plugin`、`hybrid_summary`、`compose_serial`、`package_reuse` 和默认
+`adapter_task`；其余仍是源码案例。[v2 原生加法教程](../docs/guides/package-reuse-example_ZH.md)
+会构建可分享包，并完整演示环境准备和真实执行。这些新导出需要本源码候选版构建的 wheel，
+旧 rc1 wheel 不包含它们。AutomationBench 另有 Python 3.13+ 与固定上游的准备要求。
+
 可以按希望观察的行为选择案例：
 
 | 目标 | 案例 | 实际 dashboard | 默认模型边界 |

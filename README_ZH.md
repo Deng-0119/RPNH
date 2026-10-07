@@ -16,7 +16,7 @@ workspace 或恢复状态的独立所有者。
 | 概览 | 当前边界 |
 |---|---|
 | 平台 | Linux 或 WSL2，Python 3.11+ |
-| 发布 | `v0.1.0rc1` 公开预发布版 |
+| 源码候选版 | `0.1.0rc2` 开发候选版；旧公开二进制为 `v0.1.0rc1` |
 | 安装 | 源码 checkout 或 GitHub Release wheel/sdist |
 | 模型 | 用户自有 provider 与 exact-model catalog；不预选 route |
 | 执行 | 主会话，以及相互独立的 task/workflow Registry |
@@ -69,10 +69,21 @@ transition、交接 place、并行分叉弧和全输入 join：
 
 ## 快速开始
 
-在 Linux 或 WSL2 中克隆仓库，然后从仓库根目录执行。对应 wheel 与 sdist 附在
-[`v0.1.0rc1` prerelease](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc1)中。
+请明确选择源码或发行产物：
+
+- **当前源码：**本 checkout 是 `0.1.0rc2` 开发候选版，应从选定的源码提交构建；
+  此处不声称已经发布新的 rc2 二进制产物。
+- **旧二进制：**[`v0.1.0rc1` prerelease](https://github.com/Deng-0119/RPNH/releases/tag/v0.1.0rc1)
+  中的 wheel/sdist 来自 2026-09-29，不包含之后 `main` 新增的功能。
+- **历史 benchmark 快照：**[`benchmark-baseline-2026-10-06`](https://github.com/Deng-0119/RPNH/releases/tag/benchmark-baseline-2026-10-06)
+  是提交 `f58a0f061d1daf4c09fc96c43237c613cc43f439` 的纯源码发行版；它不是新 runtime
+  二进制发行版，也不证明所有 runtime 用户流程均已通过。
+
+在 Linux 或 WSL2 中使用选定且已审查的源码 checkout，从根目录安装。普通的公开 `main`
+clone 不会取得尚未发布的候选变更。记录所选提交，并使用全新环境；wheel 和升级检查见[安装指南](docs/guides/installation_ZH.md)。
 
 ```bash
+git rev-parse HEAD
 python3 -m venv .venv
 . .venv/bin/activate
 python -m pip install .
@@ -152,7 +163,11 @@ viewer 命令，不宣称已归档运行截图。[完整案例指南](docs/guide
 独立任务案例的命令、预期结果与证据边界；
 [源码案例索引](examples/README_ZH.md)提供仓库层级的完整目录。
 
-安装包还包含 provider-neutral 适配任务。导出操作不会配置 provider 或联系模型：
+从本源码候选版构建的 wheel 可导出 `native_plugin`、`hybrid_summary`（含共享替身和插件）、
+`compose_serial`、`package_reuse`，以及默认的 provider-neutral `adapter_task`。
+详见[导出与修改](docs/guides/examples_ZH.md#导出案例并改成自己的应用)，或完整的
+[可运行 v2 分享包教程](docs/guides/package-reuse-example_ZH.md)。旧 rc1 wheel 只包含 adapter
+导出。导出操作不会配置 provider 或联系模型：
 
 ```bash
 EXAMPLE_ROOT="$(mktemp -d "${TMPDIR:-/tmp}/rpnh-example-parent.XXXXXX")/adapter-task"

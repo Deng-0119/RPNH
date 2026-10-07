@@ -7,7 +7,7 @@ metadata:
   language: zh-CN
   counterpart: index.md
   revision: "2026-10-07.1"
-  status: source-reviewed-v0.1.0rc1
+  status: source-candidate-not-published
   basis: "core; adapter differences explicitly labelled"
 ---
 
@@ -17,7 +17,7 @@ metadata:
 
 需要先连续了解项目定位、执行模型和评估边界，可以从[技术报告](technical-report_ZH.md)开始。
 
-先读安装和精确模型配置，再选择最接近目标应用的案例。指南描述当前 `main`；带日期的验证
+先读安装和精确模型配置，再选择最接近目标应用的案例。指南描述本次选定的源码快照；带日期的验证
 记录保留其实际测试的旧版本边界，不能自动作为后续提交的认证。每个主题都有对应英文页。
 
 | 需求 | 阅读 |
@@ -25,6 +25,8 @@ metadata:
 | 首次了解 RPNH，再试用或集成 | [技术报告](technical-report_ZH.md) |
 | 安装 core/basic、源码或 wheel | [安装](guides/installation_ZH.md) |
 | 运行原生、混合、任务与安装版跨宿主案例 | [案例](guides/examples_ZH.md) |
+| 导出包含完整依赖的案例并修改 | [可复用案例](guides/examples_ZH.md#导出案例并改成自己的应用) |
+| 构建可运行 v2 包并准备接收端 | [原生加法分享包教程](guides/package-reuse-example_ZH.md) |
 | 理解源码目录与安装包边界 | [仓库目录图](guides/repository-layout_ZH.md) |
 | 配置 route、模型与全部受支持运行上限 | [配置总表](guides/configuration_ZH.md)、[模型配置](guides/models_ZH.md) |
 | 控制会话/任务并恢复 | [使用](guides/usage_ZH.md) |

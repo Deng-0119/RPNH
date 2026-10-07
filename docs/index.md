@@ -7,7 +7,7 @@ metadata:
   language: en
   counterpart: index_ZH.md
   revision: "2026-10-07.1"
-  status: source-reviewed-v0.1.0rc1
+  status: source-candidate-not-published
   basis: "core; adapter differences explicitly labelled"
 ---
 
@@ -19,8 +19,8 @@ For a continuous introduction to the project's purpose, execution model and
 evaluation boundaries, read the [technical report](technical-report.md).
 
 Start with installation and exact model configuration, then choose the example
-closest to the application you want to build. The guides describe current
-`main`; dated validation records preserve the exact older revision they tested
+closest to the application you want to build. The guides describe this selected
+source snapshot; dated validation records preserve the exact older revision they tested
 and must not be read as automatic certification of later commits. Each topic
 has a corresponding Chinese page.
 
@@ -29,6 +29,8 @@ has a corresponding Chinese page.
 | Understand RPNH before trying or integrating it | [Technical report](technical-report.md) |
 | Install core/basic, source or wheel | [Installation](guides/installation.md) |
 | Run native, hybrid, task and installed cross-host examples | [Examples](guides/examples.md) |
+| Export and modify a dependency-complete example | [Reusable examples](guides/examples.md#export-an-example-and-make-it-yours) |
+| Build a runnable v2 package and prepare its receiver | [Native-add package tutorial](guides/package-reuse-example.md) |
 | Understand the source tree and packaged boundaries | [Repository map](guides/repository-layout.md) |
 | Configure routes, models and every supported runtime limit | [Configuration reference](guides/configuration.md), [models](guides/models.md) |
 | Operate sessions/tasks and recover | [Usage](guides/usage.md) |

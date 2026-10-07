@@ -45,3 +45,19 @@ Each host directory also contains a sanitized `evidence.json` from the
 verification and physical response counts separately. They contain no run ID,
 local path, endpoint, credential or raw transcript and do not replace a user's
 own validation of their selected route.
+
+## Modify the task and expected answer
+
+The default verifier always checks the installed stock task. If you edit
+`task.txt` and `expected.json`, explicitly select your local expected fixture:
+
+```bash
+rpnh examples verify --result answer.json --expected expected.json
+```
+
+The fixture must contain exactly `count`, `total`, `mean`, `minimum`, `maximum`
+in that order, with finite JSON numbers, a positive integer count and coherent
+summary arithmetic. Verification does not execute a task or prove Registry
+settlement. Export to a new directory when upgrading; existing output directories
+are refused, preserving your edits. Discover other reusable code examples with
+`rpnh examples list`, then use `export --example NAME --output DIR`.

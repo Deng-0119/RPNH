@@ -2,6 +2,15 @@
 
 English | [中文](README_ZH.md)
 
+To take an example into your own project, start with
+[dependency-complete export and customization](../docs/guides/examples.md#export-an-example-and-make-it-yours).
+Named exports are `native_plugin`, `hybrid_summary`, `compose_serial`,
+`package_reuse` and the default `adapter_task`; the rest remain source examples.
+The [v2 native-add tutorial](../docs/guides/package-reuse-example.md) constructs a
+shareable package and walks through environment preparation and genuine execution.
+Use this source candidate's wheel, not the historical rc1 wheel, for these new
+exports. AutomationBench has its own Python 3.13+ and pinned-upstream setup.
+
 Choose an example by the behavior you want to see:
 
 | Goal | Example | Actual dashboard | Default model boundary |

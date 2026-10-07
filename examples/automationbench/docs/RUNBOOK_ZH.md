@@ -15,12 +15,26 @@ python -I examples/automationbench/example.py results --json
 
 ## 2. 独立安装固定上游
 
-使用位于 `4a8e1061254004d9dac807054eed33fad7d1ff14` 的独立 AutomationBench checkout，
-不要把其题库复制进本仓库。在隔离环境中安装 RPNH、example 和固定上游：
+**先安装 Python 3.13+。** AutomationBench adapter 声明了这一最低版本，核心 RPNH 的
+Python 3.11/3.12 环境不足以安装它。请在新 shell 中从 RPNH 源码根目录开始。下列步骤使用
+`python3.13`，创建独立环境，并将 `AB_UPSTREAM` 初始化为仓库外目录。固定版本读取自
+`examples/automationbench/config/selection.json`：
+[`zapier/AutomationBench`](https://github.com/zapier/AutomationBench)，提交
+`4a8e1061254004d9dac807054eed33fad7d1ff14`，包版本 `1.0.6`。不要把其题库复制进本仓库。
+Git 和依赖安装需要联网；这些准备命令不调用模型：
 
 ```bash
-python -m pip install -e .
-python -m pip install -e './examples/automationbench[test]'
+SOURCE_ROOT="$PWD"
+AB_ENV_ROOT="$(mktemp -d "${TMPDIR:-/tmp}/rpnh-ab-env.XXXXXX")"
+python3.13 -m venv "$AB_ENV_ROOT/venv"
+. "$AB_ENV_ROOT/venv/bin/activate"
+python -m pip install -e "$SOURCE_ROOT"
+python -m pip install -e "$SOURCE_ROOT/examples/automationbench[test]"
+AB_UPSTREAM="$AB_ENV_ROOT/AutomationBench"
+AB_PIN="$(python -c 'import json; print(json.load(open("examples/automationbench/config/selection.json"))["upstream_commit"])')"
+git clone https://github.com/zapier/AutomationBench.git "$AB_UPSTREAM"
+git -C "$AB_UPSTREAM" checkout --detach "$AB_PIN"
+test "$(git -C "$AB_UPSTREAM" rev-parse HEAD)" = "$AB_PIN"
 python -m pip install -e "$AB_UPSTREAM"
 ```
 
@@ -52,7 +66,7 @@ split；`--cohort` 表示计划内精确且有序的 task ID。已保留 18 题 
 的输入，但不会续接历史 run：
 
 ```bash
-AB_COHORT="$PWD/examples/automationbench/results/stratified-pilot-plan-20261002.json"
+AB_COHORT="$SOURCE_ROOT/examples/automationbench/results/stratified-pilot-plan-20261002.json"
 
 rpnh-ab doctor --upstream "$AB_UPSTREAM" --profile "$PROFILE" \
   --work "$AB_WORK" --cohort "$AB_COHORT"

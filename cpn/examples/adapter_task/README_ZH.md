@@ -40,3 +40,13 @@ rpnh examples verify --result answer.json
 每个宿主目录还分别包含 2026-09-26 验收运行的脱敏 `evidence.json`。摘要将 Registry 权威、
 语义验证和物理响应计数分开记录，不包含 run ID、本地路径、endpoint、凭据或原始 transcript，
 也不能替代用户对自己所选路线的验证。
+
+## 修改任务与预期答案
+
+默认验证器始终检查安装版原始任务。修改 `task.txt` 与 `expected.json` 后，须明确指定本地预期文件：
+
+```bash
+rpnh examples verify --result answer.json --expected expected.json
+```
+
+预期文件须按顺序恰好包含 `count`、`total`、`mean`、`minimum`、`maximum`；值须为有限 JSON 数字，count 为正整数，且汇总算术一致。验证不会执行任务，也不能证明 Registry 结算。升级时导出到新目录；已有目标目录会被拒绝，以保留用户修改。用 `rpnh examples list` 查找其他可复用代码案例，再用 `export --example NAME --output DIR` 获取。

@@ -1,14 +1,14 @@
 ---
 name: rpnh-examples
-description: "运行递进的离线案例、一个安装版跨宿主任务和保留的 benchmark 示例。"
+description: "运行和修改可复用案例、安装版跨宿主任务和保留的 benchmark 示例。"
 metadata:
   document-kind: tutorial
   audience: user-and-developer
   language: zh-CN
   counterpart: examples.md
-  revision: "2026-10-06.1"
+  revision: "2026-10-07.1"
   status: current-instructions-with-dated-evidence
-  basis: "current main commands; deterministic runs and dated authorized live evidence explicitly separated"
+  basis: "source candidate commands; deterministic runs and dated authorized live evidence explicitly separated"
 ---
 
 [English](examples.md) | [中文](examples_ZH.md)
@@ -18,11 +18,13 @@ metadata:
 案例按用户任务而不是实现包组织。下面每个可运行 workflow 都会创建真实 Registry 与
 PetriNet 投影。脚本化模型只是确定性协议替身，不是语言模型推理证据；provider-backed
 案例与离线案例明确分开。
-命令和恢复语义描述当前 `main`；截图与验收表保留生成它们的日期和精确边界，不会被静默
+命令和恢复语义描述本源码候选版；截图与验收表保留生成它们的日期和精确边界，不会被静默
 改标为当前执行结果。
 
 | 想查看的内容 | 从哪里开始 | 默认模式 |
 |---|---|---|
+| 在 checkout 外复制并修改案例 | [包含完整依赖的导出](#导出案例并改成自己的应用) | 原生／脚本化路径 |
+| 准备并执行分享的 v2 包 | [原生加法分享包教程](package-reuse-example_ZH.md) | 不使用模型；准备与运行分别授权 |
 | 本地计算与登记资源 | 案例 1，原生插件 | 不使用模型 |
 | 带原生 operation 的串行计算 | 案例 2，混合汇总 | 脚本替身 |
 | 串行与并行拓扑对比 | 案例 3，工作流模式 | 脚本替身 |
@@ -37,9 +39,12 @@ PetriNet 投影。脚本化模型只是确定性协议替身，不是语言模�
 
 ## 前置条件
 
-使用 Linux 或 WSL2、Python 3.11 或更高版本，并在源码仓库根目录安装两个包：
+核心案例使用 Linux 或 WSL2、Python 3.11 或更高版本，并在源码仓库根目录安装两个包。
+AutomationBench 安装另有 **Python 3.13+** 前提，应使用独立环境。除非另有说明，请保持当前
+shell 位于源码根目录；下文导出路径均使用绝对路径：
 
 ```bash
+SOURCE_ROOT="$PWD"
 python3 -m venv .venv
 . .venv/bin/activate
 python -m pip install .
@@ -243,21 +248,29 @@ EXAMPLE_PARENT="$(mktemp -d "${TMPDIR:-/tmp}/rpnh-adapter-example.XXXXXX")"
 EXAMPLE_ROOT="$EXAMPLE_PARENT/task"
 rpnh examples list
 rpnh examples export --output "$EXAMPLE_ROOT"
-cd "$EXAMPLE_ROOT"
 ```
 
-先阅读 `README_ZH.md`，再选择一个宿主目录。每份说明都要求已有的用户自有
+先阅读 `$EXAMPLE_ROOT/README_ZH.md`，再选择一个宿主目录。
+若宿主指南要求 `cd`，请在单独 shell 或子 shell 中执行，后续源码命令仍从 `$SOURCE_ROOT` 运行。每份说明都要求已有的用户自有
 `EXECUTION_CONFIG`、新的运行根目录和一次明确任务提交。捆绑文件不包含 provider、
 endpoint、凭据或模型选择。公共任务对同一组三个批次数值计算数量、总量、平均值、最小值
 和最大值，是语义任务而不是 READY 健康标记。
 
-只把 assistant 的 JSON 对象复制到 `answer.json`，再验证任务结果：
+只把 assistant 的 JSON 对象复制到 `$EXAMPLE_ROOT/answer.json`，再验证固定捆绑任务的结果：
 
 ```bash
-rpnh examples verify --result answer.json
+rpnh examples verify --result "$EXAMPLE_ROOT/answer.json"
 ```
 
-该检查本身不能证明执行成功；还须核对宿主的 Registry 终态证据、已登记 final result、
+默认 verifier 始终读取安装包内的固定预期值，不会自动读取你修改过的导出 `expected.json`。
+若仍使用相同的数值汇总合同，但已修改任务及预期值，需要显式选择新的预期文件：
+
+```bash
+rpnh examples verify --result "$EXAMPLE_ROOT/answer.json" \
+  --expected "$EXAMPLE_ROOT/expected.json"
+```
+
+超出这一数值合同的自定义应用需要自己的业务校验器。该检查本身不能证明执行成功；还须核对宿主的 Registry 终态证据、已登记 final result、
 所选 profile provenance 与物理调用记录。Basic、Codex 和 OpenCode 共用 MainSession 权威；
 DSH 通过同一 provider adapter 使用自己的登记宿主 turn。案例不会假装 DSH 提供 Basic 专属的
 任务／workflow 控制。
@@ -310,14 +323,17 @@ execution profile。完整步骤见 [RRSI application 指南](../../examples/rrs
 
 ## Benchmark 示例：AutomationBench 公开业务任务
 
-已保留 AutomationBench 实验将一个 RPNH native actor 接入固定上游的三项 API 工具和模拟业务 world。
+已保留的 **2026-10-02 pilot** 将一个 RPNH native actor 接入固定上游的三项 API 工具和模拟业务 world。
 仓库内保留的 score-blind 18 题 pilot 覆盖六个业务域与三种集成宽度。严格首轮为 8/18 满分、
 17/18 基础设施闭环并评分，共 437 次模型调用和 1,081 次成功工具分派。
 
 以下命令不调用 provider，可直接查看保留结果：
 
 ```bash
-python -I examples/automationbench/example.py results
+(
+  cd "$SOURCE_ROOT"
+  python -I examples/automationbench/example.py results
+)
 ```
 
 example 包含逐题成绩、独立修复复验、与原始 public-600 汇总的描述性比较及明确历史条件。当前
@@ -325,6 +341,83 @@ example 包含逐题成绩、独立修复复验、与原始 public-600 汇总的
 Basic、Codex 或 OpenCode 操作的同一权威 CLI；这些扩展不是历史成绩的证据。它不声称完成 600 题
 或形成同条件榜单对照。完整说明见
 [AutomationBench 指南](../../examples/automationbench/README_ZH.md)。
+
+## 导出案例并改成自己的应用
+
+以下命名导出需要从本源码候选版构建的 wheel。2026-09-29 的旧 rc1 wheel 只能导出 adapter
+任务。列举和导出都是本地文件操作，不安装依赖，也不调用模型。
+
+| `--example` | 导出内容 | 下一步 |
+|---|---|---|
+| `adapter_task`（默认） | 固定跨宿主任务及预期值 | 按案例 5 操作；真实提交需已授权 profile |
+| `native_plugin` | 独立插件源码及输入 | 安装，修改输入或 handler，检查并运行 |
+| `hybrid_summary` | 混合 graph/runner、`_support` 替身及原生插件 | 按下文完整复制与修改流程操作 |
+| `compose_serial` | 纯定义组合脚本 | 按导出指南操作；组合不等于执行 |
+| `package_reuse` | 可运行 v2 包的作者端／接收端材料 | 按 [v2 分享包教程](package-reuse-example_ZH.md)操作 |
+
+工作流案例库、任务工作区及研究／benchmark 示例仍保留在源码仓库；`examples list` 列出实际
+支持的导出项。`rpnh examples export` 复制案例文件，与 `rpnh package` 的可移植声明包以及
+Registry definition exchange 是不同入口。
+
+### 修改包含完整依赖的混合案例副本
+
+不要只复制 `examples/hybrid_summary`：runner 会导入相邻 `examples/_support` 的替身，
+并默认读取相邻 `examples/native_plugin` 的配置。命名导出复制这些依赖，可在源码 checkout
+之外使用。请保留导出后的相对目录结构。命令使用临时父目录作为可丢弃演示；若要保留副本
+继续开发，请改为自己选择的、尚不存在的项目目录。
+
+从已安装 RPNH 的环境执行。editable 插件安装会让后续 handler 修改在该环境生效；请用独立
+环境，不要替换正在执行任务的插件。首次修改复制已知总量 `39`、平均值 `13` 的变体输入，并
+显式选择三份可编辑文件副本：
+
+```bash
+CUSTOM_ROOT="$(mktemp -d "${TMPDIR:-/tmp}/rpnh-custom-parent.XXXXXX")/hybrid"
+rpnh examples export --example hybrid_summary --output "$CUSTOM_ROOT"
+python -m pip install -e "$CUSTOM_ROOT/examples/native_plugin"
+cp "$CUSTOM_ROOT/examples/hybrid_summary/variant-input.txt" \
+  "$CUSTOM_ROOT/examples/hybrid_summary/my-input.txt"
+cp "$CUSTOM_ROOT/examples/hybrid_summary/graph.json" \
+  "$CUSTOM_ROOT/examples/hybrid_summary/my-graph.json"
+cp "$CUSTOM_ROOT/examples/native_plugin/plugins.json" \
+  "$CUSTOM_ROOT/examples/native_plugin/my-plugins.json"
+rpnh plugins --config "$CUSTOM_ROOT/examples/native_plugin/my-plugins.json" check
+python - "$CUSTOM_ROOT/examples/hybrid_summary/my-graph.json" <<'PYTHON'
+import json
+import sys
+from cpn.rpnh.agent_workflows import AgentWorkflowGraph
+with open(sys.argv[1], encoding="utf-8") as source:
+    AgentWorkflowGraph.from_mapping(json.load(source))
+print("Graph parsed; this does not establish execution success.")
+PYTHON
+CUSTOM_RUN="$CUSTOM_ROOT/runs/changed-input"
+python "$CUSTOM_ROOT/examples/hybrid_summary/run.py" \
+  --input "$CUSTOM_ROOT/examples/hybrid_summary/my-input.txt" \
+  --graph "$CUSTOM_ROOT/examples/hybrid_summary/my-graph.json" \
+  --plugins "$CUSTOM_ROOT/examples/native_plugin/my-plugins.json" \
+  --run-dir "$CUSTOM_RUN"
+rpnh net --run "$CUSTOM_RUN" --show-resources
+```
+
+最终登记汇总应为 3 个批次、总量 `39`、平均值 `13`、最小值 `9`、最大值 `18`，且 terminal
+证据非空。检查实际结果与 Registry，不能只看进程退出码。后续每次运行都要用新的、不存在的
+run 目录。
+
+- **输入：**修改 `my-input.txt`。捆绑的脚本替身识别 `Batch values:` 格式；确定性输入实验
+  请保留这一格式。
+- **图：**修改 `my-graph.json` 并传入 `--graph`。它控制真实节点指令、port、arc、ingress
+  和 egress。解析只检查图合同，不证明工具兼容或业务结果正确。
+- **插件选择：**修改 `my-plugins.json` 并传入 `--plugins`。entry point/version 必须匹配
+  已安装插件；`rpnh plugins ... check` 在 workflow 运行前检查所声明的 catalog。
+- **处理函数：**修改导出目录内 `examples/native_plugin/rpnh_demo.py`。operation schema
+  和结果大小限制须与新行为一致；身份变更时同步更新插件声明和配置。再次检查 catalog，并使用
+  新 run。
+- **模型行为：**`_support` 只是窄范围确定性替身。任意修改 prompt、节点或输出结构时，需要
+  同步适配替身，或传入另行授权的 `--execution "$EXECUTION_CONFIG"`。后者可能产生付费外部
+  调用；导出操作本身不选择 provider。
+
+若要准备另一接收端的环境并启动可移植 v2 原生包，继续阅读
+[可运行分享包教程](package-reuse-example_ZH.md)。它明确生成 archive、lock、selection 和
+owner request，而不是假设这些文件已经存在。
 
 ## 查看与修改
 

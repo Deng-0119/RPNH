@@ -1,0 +1,38 @@
+{
+  "host_profile_id": "rpnh-native/v1",
+  "mode": "new_venv",
+  "plugins": [
+    {
+      "configuration_ref": "/ABSOLUTE/PATH/TO/examples/package_reuse/plugins.json",
+      "plugin_id": "demo",
+      "scoped_requirement_id": {
+        "entry_id": "main",
+        "manifest_digest": "18d76c73e4e88dd1a4178ac530fdbbf7b342308c6929082ec6b1cfb46a77423a",
+        "requirement_id": "demo-plugin"
+      }
+    }
+  ],
+  "python_selection": {
+    "base_executable": "/ABSOLUTE/PATH/TO/python",
+    "prefix": "/ABSOLUTE/ABSENT/new-venv"
+  },
+  "schema_version": "rpnh/environment_selection/v1",
+  "selection_id": "native-add-new-venv",
+  "services": [],
+  "target": {
+    "entry_id": "main",
+    "package_lock_digest": "d11e0bf715ed44c313d05f6fb68389b36a01996f431a9a57409ce328f33ed8cb",
+    "requirement_artifacts": [
+      {
+        "artifact_digest": "a01f88b577d3339dfba7d25c75bcf2a138598fb7161f80020a53e0e62fb30f95",
+        "artifact_path": "environment/requirements.json",
+        "entry_id": "main",
+        "manifest_digest": "18d76c73e4e88dd1a4178ac530fdbbf7b342308c6929082ec6b1cfb46a77423a"
+      }
+    ],
+    "requirements_digest": "74413ce85ed8d607b9a235cb1105c83d32f04201ebd9f63188e83b8552b6b704",
+    "root_archive_digest": "dcf39e977f589bdd284772f47138e86bc7a273161c9cfaa06cd928619e6b4f7b",
+    "root_manifest_digest": "18d76c73e4e88dd1a4178ac530fdbbf7b342308c6929082ec6b1cfb46a77423a"
+  },
+  "tools": []
+}

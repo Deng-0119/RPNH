@@ -29,6 +29,7 @@ from .host_readiness import snapshot_host_declarations
 PROFILE_GROUP = "rpnh.environment_hosts"
 NATIVE_PROFILE = "rpnh-native/v1"
 MAX_REQUEST = 16 * 1024 * 1024
+TERMINAL_RESULT_MAX_BYTES = 64 * 1024
 
 
 @dataclass(frozen=True)
@@ -114,8 +115,11 @@ def _native_plugin_metadata(*, requirement, binding, interpreter):
         raise ValueError("selected plugin configuration differs")
     selected = rows[0]
     installed = [ep for ep in metadata.entry_points(group="rpnh.plugins") if ep.name == selected["entry_point"]]
+    if not installed:
+        return {"status": "missing", "reason_code": "ENVIRONMENT_PLUGIN_MISSING",
+                "identity": None, "evidence_level": "installed_metadata"}
     if len(installed) != 1:
-        raise ValueError("selected installed plugin missing")
+        raise ValueError("selected installed plugin is ambiguous")
     ep = installed[0]
     compatible = (requirement["api_contract"] == API_VERSION
         and SpecifierSet(requirement["version_specifier"]).contains(selected["version"], prereleases=True))
@@ -265,8 +269,99 @@ def _evidence_publisher(requirements, resolution, check, receipt, snapshot, prof
     return publish
 
 
-def run_here(requirements, binding, resolution, receipt, owner_request, run_dir, *, owner_ready=None):
+def _terminal_result(owner, evidence_ref, stop_reason):
+    """Explicit local delivery by this run's existing owner, never a reader grant.
+
+    Only the current exact terminal product is eligible. No history scan,
+    alternate Registry, arbitrary resource locator or inferred success is used.
+    Bodies are omitted unless they are bounded strict UTF-8 JSON.
+    """
+    from ..registry.publication import _version_from_payload
+    from ..registry.resources import ResourceVersionRef
+    from ..registry.run_authority import current_run_execution_authority
+    from ..registry.strict_contracts import ref_payload
+    if evidence_ref is None:
+        return {"status": "not_terminal"}
+    core = owner._core
+    kernel, _ = owner.operation_repository()
+    authority_ref, authority = current_run_execution_authority(core, kernel)
+
+    def exact(ref, kind):
+        prepared = kernel._exact_object(ref, expected_type=kind)
+        if prepared.size > MAX_REQUEST:
+            raise EnvironmentContractError("ENVIRONMENT_RESULT_INTEGRITY_ERROR", "terminal authority exceeds bound")
+        document = strict_json(core.object_store.read_registered(prepared), path="terminal-authority")
+        core.catalog.validate_instance(kind, category="object", instance=document)
+        if document != dict(prepared.metadata):
+            raise EnvironmentContractError("ENVIRONMENT_RESULT_INTEGRITY_ERROR", "terminal authority bytes differ")
+        return document
+
+    evidence = exact(evidence_ref, "run_terminal_evidence/v1")
+    checkpoint_ref = _version_from_payload(evidence["final_checkpoint_ref"])
+    checkpoint = exact(checkpoint_ref, "marking_checkpoint/v1")
+    index_ref = _version_from_payload(evidence["final_result_index_ref"])
+    index = exact(index_ref, "final_result_index/v1")
+    expected_run, expected_task = ref_payload(owner.identity.run_ref), ref_payload(owner.identity.task_ref)
+    if (stop_reason != "terminal" or authority["status"] != "terminal"
+            or authority["run_ref"] != expected_run or authority["task_ref"] != expected_task
+            or authority["terminal_evidence_ref"] != ref_payload(evidence_ref)
+            or authority["latest_checkpoint_ref"] != ref_payload(checkpoint_ref)
+            or evidence["terminal_evidence_ref"] != ref_payload(evidence_ref)
+            or evidence["run_ref"] != expected_run
+            or checkpoint["marking_checkpoint_ref"] != ref_payload(checkpoint_ref)
+            or checkpoint["net_instance_ref"] != ref_payload(owner.publication.net_ref)
+            or index["final_result_index_ref"] != ref_payload(index_ref)
+            or index["terminal_result_ref"] != evidence["terminal_result_ref"]
+            or index["terminal_occurrence_ref"] != evidence["terminal_occurrence_ref"]
+            or index["terminal_outcome"] != evidence["run_outcome"]):
+        raise EnvironmentContractError("ENVIRONMENT_RESULT_INTEGRITY_ERROR", "current terminal identities differ")
+    if len({core.event_store.object_row(ref.version_id)["transaction_id"]
+            for ref in (authority_ref, evidence_ref, index_ref)}) != 1:
+        raise EnvironmentContractError("ENVIRONMENT_RESULT_INTEGRITY_ERROR", "terminal closure is not one registered transaction")
+    result_ref = _version_from_payload(evidence["terminal_result_ref"])
+    if result_ref.entity_type != "resource_version/v1":
+        raise EnvironmentContractError("ENVIRONMENT_RESULT_INTEGRITY_ERROR", "terminal result is not a resource")
+    prepared = kernel._prepared(ResourceVersionRef(result_ref.entity_id, result_ref.version_id))
+    if prepared.metadata.get("task_ref") != expected_task:
+        raise EnvironmentContractError("ENVIRONMENT_RESULT_INTEGRITY_ERROR", "terminal result belongs to another task")
+    details = {"terminal_result_ref": ref_payload(result_ref),
+        "terminal_evidence_ref": ref_payload(evidence_ref),
+        "run_execution_authority_ref": ref_payload(authority_ref),
+        "final_checkpoint_ref": ref_payload(checkpoint_ref),
+        "run_outcome": evidence["run_outcome"], "media_type": prepared.media_type,
+        "byte_count": prepared.size}
+    return {**details, **_bounded_terminal_json(core, prepared)}
+
+
+def _bounded_terminal_json(core, prepared):
+    """Encode only a previously owner-validated product; never resolve a ref."""
+    from .share_packages import PackageError
+    if prepared.size > TERMINAL_RESULT_MAX_BYTES:
+        return {"status": "omitted_oversize"}
+    if prepared.media_type != "application/json":
+        return {"status": "omitted_non_json"}
+    # The kernel has validated the exact resource and its provenance. Apply a
+    # physical read bound as well, so an enlarged backing file is not loaded.
+    store = core.object_store
+    store.validate_envelope(prepared)
+    if prepared.storage_locator != store.locator_for_version(prepared.version_id):
+        raise EnvironmentContractError("ENVIRONMENT_RESULT_INTEGRITY_ERROR", "terminal storage identity differs")
+    with store.path_for_version(prepared.version_id).open("rb") as stream:
+        raw = stream.read(TERMINAL_RESULT_MAX_BYTES + 1)
+    if len(raw) != prepared.size:
+        raise EnvironmentContractError("ENVIRONMENT_RESULT_INTEGRITY_ERROR", "terminal registered byte count differs")
+    try:
+        output = strict_json(raw, path="terminal-result")
+    except PackageError:
+        return {"status": "omitted_non_json"}
+    return {"status": "available", "content_sha256": sha256(raw), "output": output}
+
+
+def run_here(requirements, binding, resolution, receipt, owner_request, run_dir, *, owner_ready=None,
+             include_terminal_result=False):
     """Use the existing owner, admission, dispatch, settlement and terminal path."""
+    if type(include_terminal_result) is not bool:
+        raise TypeError("include_terminal_result must be a bool")
     destination = Path(run_dir)
     if destination.exists() or destination.is_symlink():
         raise EnvironmentContractError("ENVIRONMENT_RUN_ALREADY_EXISTS", "run directory exists; use existing owner/resume protocol")
@@ -338,25 +433,34 @@ def run_here(requirements, binding, resolution, receipt, owner_request, run_dir,
             if stop.is_set():
                 runner.executor.request_owner_stop()
             result = runner.run()
-        return {"schema_version": "rpnh/package_run_result/v1", "target": requirements.target.to_dict(),
+        response = {"schema_version": "rpnh/package_run_result/v1", "target": requirements.target.to_dict(),
             "run_ref": ref_payload(owner.identity.run_ref), "task_ref": ref_payload(owner.identity.task_ref),
             "net_ref": ref_payload(owner.publication.net_ref), "stop_reason": result.stop_reason,
             "terminal_evidence_ref": None if result.terminal_evidence_ref is None else ref_payload(result.terminal_evidence_ref),
             "actual_model_call_counts": list(owner._core.event_store.actual_model_call_counts()),
             "host_python": {"executable_realpath": os.path.realpath(sys.executable), "prefix_realpath": os.path.realpath(sys.prefix)}}
+        if include_terminal_result:
+            response["terminal_result"] = _terminal_result(owner, result.terminal_evidence_ref, result.stop_reason)
+        return response
     finally:
         loop.close()
         if prior is not None:
             signal.signal(signal.SIGINT, prior)
 
 
-def host_request(requirements, archive, local_packages, binding, resolution, *, mode, receipt=None, owner_request=None, run_dir=None):
-    return {"schema_version": "rpnh/private_environment_host_request/v1", "mode": mode,
+def host_request(requirements, archive, local_packages, binding, resolution, *, mode, receipt=None, owner_request=None, run_dir=None,
+                 include_terminal_result=False):
+    if type(include_terminal_result) is not bool:
+        raise TypeError("include_terminal_result must be a bool")
+    request = {"schema_version": "rpnh/private_environment_host_request/v1", "mode": mode,
         "archive": str(Path(archive).absolute()), "local_packages": [str(Path(p).absolute()) for p in local_packages],
         "entry_id": requirements.target.to_dict()["entry_id"], "package_lock": requirements.package_lock.to_dict(),
         "target": requirements.target.to_dict(), "binding": binding.to_dict(), "resolution": resolution.to_dict(),
         "receipt": None if receipt is None else receipt.to_dict(), "owner_request": owner_request,
         "run_dir": None if run_dir is None else str(Path(run_dir).absolute())}
+    if include_terminal_result:
+        request["include_terminal_result"] = True
+    return request
 
 
 def invoke_selected_host(request, binding, *, timeout=None, cancelled=None):
@@ -481,14 +585,18 @@ def start_selected_host(request, binding):
     return ExistingRunHandle(process, result)
 
 
-def launch_package(package_lock, verified_packages, binding, receipt, *, owner_request, execution_context):
+def launch_package(package_lock, verified_packages, binding, receipt, *, owner_request, execution_context,
+                   include_terminal_result=False):
     """A launch is separately authorized; receipt/JSON cannot supply authority."""
+    if type(include_terminal_result) is not bool:
+        raise TypeError("include_terminal_result must be a bool")
     from .environment_requirements import read_environment_requirements
     requirements = read_environment_requirements(package_lock, verified_packages, entry_id=binding.to_dict()["target"]["entry_id"])
     if not callable(execution_context.authorize_run) or not execution_context.authorize_run(binding.digest, owner_request, str(execution_context.run_dir)):
         raise EnvironmentContractError("RUN_AUTHORIZATION_REQUIRED", "business run requires distinct trusted execution authorization")
     request = host_request(requirements, execution_context.archive, execution_context.local_packages,
-        binding, execution_context.resolution, mode="run", receipt=receipt, owner_request=owner_request, run_dir=execution_context.run_dir)
+        binding, execution_context.resolution, mode="run", receipt=receipt, owner_request=owner_request,
+        run_dir=execution_context.run_dir, include_terminal_result=include_terminal_result)
     if Path(execution_context.run_dir).exists():
         raise EnvironmentContractError("ENVIRONMENT_RUN_ALREADY_EXISTS", "run directory exists; use existing owner/resume protocol")
     return start_selected_host(request, binding)
@@ -501,7 +609,10 @@ def main(argv=None):
             raise EnvironmentContractError("ENVIRONMENT_HOST_PROTOCOL_ERROR", "HOST request exceeds bound")
         request = strict_json(raw, path="selected-host-request")
         fields = {"schema_version", "mode", "archive", "local_packages", "entry_id", "package_lock", "target", "binding", "resolution", "receipt", "owner_request", "run_dir"}
-        if set(request) != fields or request["schema_version"] != "rpnh/private_environment_host_request/v1" or request["mode"] not in {"assemble", "run"}:
+        if (set(request) not in (fields, fields | {"include_terminal_result"})
+                or type(request.get("include_terminal_result", False)) is not bool
+                or (request.get("include_terminal_result", False) and request.get("mode") != "run")
+                or request["schema_version"] != "rpnh/private_environment_host_request/v1" or request["mode"] not in {"assemble", "run"}):
             raise EnvironmentContractError("ENVIRONMENT_HOST_PROTOCOL_ERROR", "unsupported HOST request")
         requirements = _revalidate_material(request)
         if requirements.target.to_dict() != request["target"]:
@@ -517,7 +628,8 @@ def main(argv=None):
                 sys.stdout.write(canonical_bytes({"status": "owner_ready", "result": value}).decode("ascii") + "\n")
                 sys.stdout.flush()
             result = run_here(requirements, binding, resolution, PreparationReceipt.from_dict(request["receipt"]),
-                              request["owner_request"], request["run_dir"], owner_ready=owner_ready)
+                              request["owner_request"], request["run_dir"], owner_ready=owner_ready,
+                              include_terminal_result=request.get("include_terminal_result", False))
         sys.stdout.write(canonical_bytes({"status": "ok", "result": result}).decode("ascii"))
         return 0
     except Exception as exc:

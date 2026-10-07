@@ -503,9 +503,9 @@ def build(root: Path, output: Path) -> dict[str, int]:
         toc = ''.join(f'<a href="#{escape(key)}">{escape(value)}</a>'
                       for key, value in list(page.headings.items())[1:])
         body = PARSER.renderer.render(page.tokens, PARSER.options, {})
-        footer = ('按源码核对的 v0.1.0rc1 文档。本站不会执行示例。'
+        footer = ('当前源码快照的文档；发行与验收范围见对应指南。本站不会执行示例。'
                   if page.metadata['language'] == 'zh-CN' else
-                  'Source-reviewed v0.1.0rc1 documentation. Examples are not executed by this site.')
+                  'Source-snapshot documentation; see the guides for release and validation scope. Examples are not executed by this site.')
         html = (f'<!doctype html><html lang="{page.metadata["language"]}"><head>'
                 '<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">'
                 f'<title>{escape(page.title)} — RPNH</title><style>{CSS}</style></head><body>'

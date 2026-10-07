@@ -93,12 +93,16 @@ def main(argv=None):
             command.add_argument("--receipt", required=True)
             command.add_argument("--owner-request", required=True)
             command.add_argument("--run-dir", required=True)
+            command.add_argument("--include-terminal-result", action="store_true",
+                help="include bounded terminal JSON in private --output only; requires --output")
         command.add_argument("--output", help="write the private complete document; refuses overwrite")
     setup = commands.add_parser("setup-instructions")
     setup.add_argument("--plan", required=True)
     setup.add_argument("--format", choices=("text", "json"), default="text")
     setup.add_argument("--output", required=True, help="private local setup document destination; refuses overwrite")
     args = parser.parse_args(argv)
+    if getattr(args, "include_terminal_result", False) and not args.output:
+        parser.error("--include-terminal-result requires a private --output file")
     try:
         if args.output and Path(args.output).exists():
             raise EnvironmentContractError("ENVIRONMENT_OUTPUT_EXISTS", "output already exists; choose another filename")
@@ -153,11 +157,14 @@ def main(argv=None):
             exact = sha256(canonical_bytes({"binding_digest": local.digest, "owner_request": request, "run_dir": str(Path(args.run_dir).absolute())}))
             def authorize_run(binding_digest, owner_request, run_dir):
                 return _confirm("Separate business run authorization. Run directory: " + str(Path(run_dir).absolute()) +
+                    ("\nDeliver bounded terminal JSON to private output: " + str(Path(args.output).absolute())
+                     if args.include_terminal_result else "") +
                     "\nExact owner request: " + canonical_bytes(owner_request).decode("ascii"), exact)
             result = launch_package(lock, requirements.previews, local, receipt, owner_request=request,
-                execution_context=LaunchExecutionContext(args.archive, tuple(args.local_package), resolution, args.run_dir, authorize_run)).wait()
+                execution_context=LaunchExecutionContext(args.archive, tuple(args.local_package), resolution, args.run_dir, authorize_run),
+                include_terminal_result=args.include_terminal_result).wait()
             # Local interpreter paths stay in an explicitly requested private result.
-            public = {key: value for key, value in result.items() if key != "host_python"}
+            public = {key: value for key, value in result.items() if key not in {"host_python", "terminal_result"}}
         if args.output:
             _private_write(args.output, result.to_bytes() if hasattr(result, "to_bytes") else canonical_bytes(result))
         print(canonical_bytes(public).decode("ascii"))

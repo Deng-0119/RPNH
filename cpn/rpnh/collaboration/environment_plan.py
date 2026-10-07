@@ -178,7 +178,16 @@ def resolve_local_wheels(requirements, selection, check, wheel_paths=(), *, allo
             selections = [r for r in selections if not (r["kind"] == "plugin" and r["scoped_requirement_id"] == scope)]
             selections.append({"kind": "plugin", "scoped_requirement_id": scope, "identity": identity,
                 "source_contract": "rpnh/wheel_plugin_metadata/v1", "evidence_level": "artifact_verified"})
-            problems = [r for r in problems if not (r["scoped_requirement_id"] == scope and r["reason_code"] == "ENVIRONMENT_PROBE_UNSUPPORTED")]
+            # Exact inert wheel metadata can supply this missing plugin. It
+            # cannot explain a crashed/ambiguous probe or another requirement.
+            # Keep the original check as the installed-state observation;
+            # readiness still requires installation and a fresh HOST check.
+            replaceable = {row["reason_code"] for row in check.to_dict()["checks"]
+                if row["scoped_requirement_id"] == scope and row["check_id"].startswith("plugins:")
+                and (row["status"], row["reason_code"]) in {
+                    ("unsupported", "ENVIRONMENT_PROBE_UNSUPPORTED"),
+                    ("missing", "ENVIRONMENT_PLUGIN_MISSING")}}
+            problems = [r for r in problems if not (r["scoped_requirement_id"] == scope and r["reason_code"] in replaceable)]
     resolution = EnvironmentResolutionLock.from_dict({"schema_version": "rpnh/environment_resolution_lock/v1",
         "target": sd["target"], "resolver_contract": RESOLVER, "target_platform": inventory["platform"],
         "selections": selections, "unresolved": problems, "coverage": ["selected_local_wheel_hashes", "installed_metadata_only",
