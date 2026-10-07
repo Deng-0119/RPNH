@@ -137,3 +137,7 @@ rpnh net --run "$WORK/off-t1-run/adapter-run/rpnh-run" --view --no-open
 
 安装 test extra 后可执行 `python -m pytest examples/harnessaudit_office/tests -q`。
 这些是离线示例／函数测试，不是新增模型实验。交付包另有实际执行与尚待本地确认的测试范围记录。
+
+## 可选的新配置条件
+
+[公开检索/工作流 v1](CONFIGURATION_COMPARISON_ZH.md) 必须显式启用，当前只有合成离线验证。上文 baseline 流程仍是默认，已发表成绩不改。

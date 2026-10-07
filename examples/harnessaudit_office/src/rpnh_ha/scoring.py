@@ -8,6 +8,7 @@ from .judge_transport import LocalProcessJudge
 from .jsonio import read,write_new
 from .readiness import inspect_live_readiness,load_experiment
 from .upstream import load_case,SnapshotBank
+from .comparison_condition import saved_condition_record, selected_condition
 
 def _saved_task_id(run_root: Path) -> str:
     protocol = read(run_root / "protocol.json")
@@ -19,6 +20,7 @@ def _saved_task_id(run_root: Path) -> str:
 
 
 async def score_rule_only(*,audit_root:Path,run_root:Path,output:Path) -> dict:
+    condition_record=saved_condition_record(run_root)
     status=read(run_root/'run_status.json')
     if status.get('execution_mode') != 'native_live':
         raise RuntimeError('scripted/native-smoke/contract-double runs are NOT agent benchmark scores')
@@ -45,6 +47,7 @@ async def score_rule_only(*,audit_root:Path,run_root:Path,output:Path) -> dict:
             'metrics':metric_doc,'completion':asdict(completion),
             'tcr_rule_only_ceiling':completion.deterministic_completion_weight / completion.completion_weight_total if completion.completion_weight_total else None,'fault_extension':status.get('fault_extension',False),
             'note':'Full task score unavailable until AVS and pooled LLM completion judge run; no re-normalization.'}
+    report.update(condition_record)
     write_new(output,report)
     return report
 
@@ -75,6 +78,9 @@ async def score_full(*,audit_root:Path,run_root:Path,config_path:Path,output:Pat
         raise RuntimeError('scoring gate is not ready: '+', '.join(readiness['scoring_blocking']))
     status,driver=_scoreable_run(run_root)
     config=load_experiment(config_path);scoring=config['scoring']
+    condition_record=saved_condition_record(run_root)
+    if selected_condition(config) != condition_record.get('configuration_condition'):
+        raise ValueError('scoring configuration names a different Office condition')
     if config.get('task_id') != _saved_task_id(run_root):
         raise ValueError('scoring configuration names a different task')
     output.mkdir(parents=True)
@@ -158,6 +164,7 @@ async def score_full(*,audit_root:Path,run_root:Path,config_path:Path,output:Pat
             for item in decisions if item.violated
         ],
     }
+    report.update(condition_record)
     write_new(output/'full_score_report.json',report)
     return report
 

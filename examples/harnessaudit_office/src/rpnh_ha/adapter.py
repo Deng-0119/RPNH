@@ -19,33 +19,40 @@ from .projection import ObservationCollector, save_normalized_actions
 from .state_diff import diagnose_case
 from .office_cases import plugin_roles_for_task
 from .task_view import public_task
+from .comparison_condition import extend_public_task, effects_for, condition_manifest, comparison_evidence_report
+from .knowledge_discovery import ComparisonDispatch
 
 
 class RPNHHarnessAuditAdapter:
     framework_id = "rpnh_office_b1"
 
     def __init__(self, *, driver, root: Path, execution_profile: Path, limits: LiveLimits,
-                 bank_factory, dispatch, fault: FaultSpec = FaultSpec()):
+                 bank_factory, dispatch, fault: FaultSpec = FaultSpec(), configuration_condition: str | None = None):
         if driver is None or not callable(getattr(driver, "execute", None)):
             raise RuntimeError("a native driver is required for task execution")
         self.driver, self.root = driver, Path(root)
         self.execution_profile, self.limits = Path(execution_profile), limits
         self.bank_factory, self.dispatch, self.fault = bank_factory, dispatch, fault
+        effects_for(configuration_condition)
+        self.configuration_condition = configuration_condition
+        if configuration_condition:
+            self.framework_id = "rpnh_office_public_discovery_workflow_v1"
 
     async def run(self, ctx, initial_input):
         from multi_agent.frameworks.core.base import RunOutcome
         if not isinstance(initial_input, str): raise ValueError("Office campaign uses text-only initial input")
         if self.root.exists(): raise FileExistsError("a fresh adapter run directory is required")
-        public = public_task(ctx.task, ctx.catalog)
+        public = extend_public_task(public_task(ctx.task, ctx.catalog), self.configuration_condition)
         view = public.as_dict()
         if initial_input != view["goal"]:
             raise ValueError("unexpected augmented input; declare a separate protocol before adding instructions")
         if not self.execution_profile.is_file(): raise FileNotFoundError("exact execution profile missing")
         self.root.mkdir(parents=True)
         roles = {r["role"] for r in view["agents"]}
-        collector = ObservationCollector(roles=roles, tools=set(OFFICE_EFFECTS))
+        effects = effects_for(self.configuration_condition)
+        collector = ObservationCollector(roles=roles, tools=set(effects))
         write_new(self.root / "public_input.json", view)
-        write_new(self.root / "protocol.json", {
+        protocol = {
             "framework": self.framework_id, "task_id": view["task_id"],
             "hidden_rules_exposed": False, "tool_filtering": "none",
             "driver": type(self.driver).__module__ + "." + type(self.driver).__qualname__,
@@ -57,7 +64,19 @@ class RPNHHarnessAuditAdapter:
             "role_inventory": [row["role"] for row in view["agents"]],
             "node_count": len(view["agents"]) + 1,
             "track": "original-task-adapter-corrected",
-        })
+        }
+        if self.configuration_condition:
+            from .workflow import build_business_workflow
+            graph, _ = build_business_workflow(public)
+            protocol.update({"configuration_condition": self.configuration_condition,
+                             "condition_id": self.configuration_condition,
+                             "condition_manifest": condition_manifest(public, graph, max_model_calls=self.limits.max_model_calls),
+                             "requiredness_policy": "comparison-writes-require-policy-evidence",
+                             "tool_filtering": "phase-effect-only; no hidden-role-tool-filter",
+                             "workflow_origin": "public-hub-evidence-execute-verify-v1",
+                             "node_count": len(graph.nodes),
+                             "track": "configuration-comparison; not historical baseline"})
+        write_new(self.root / "protocol.json", protocol)
         result = None
         error = None
         before = after = None
@@ -67,15 +86,21 @@ class RPNHHarnessAuditAdapter:
         try:
             counters = save_initial(ctx.bank, initial_path)
             transferred_factory = factory_from_snapshot(self.bank_factory, initial_path, counters)
-            with BackendService(run_id=ctx.run_id, root=self.root / "backend", tools=OFFICE_EFFECTS,
-                                bank_factory=transferred_factory, dispatch=self.dispatch, fault=self.fault,
+            dispatch = ComparisonDispatch(self.dispatch) if self.configuration_condition else self.dispatch
+            with BackendService(run_id=ctx.run_id, root=self.root / "backend", tools=effects,
+                                bank_factory=transferred_factory, dispatch=dispatch, fault=self.fault,
                                 max_calls=self.limits.max_tool_calls,
                                 plugin_roles=plugin_roles_for_task(view)) as service:
                 before = service.snapshot(self.root / "bank.before.sqlite")
                 try:
+                    if self.configuration_condition:
+                        from .comparison_plugin import configuration as plugin_configuration
+                    else:
+                        plugin_configuration = configuration
                     request = DriverRequest(task=public, initial_input=initial_input,
                         run_dir=self.root / "rpnh-run", execution_profile=self.execution_profile,
-                        plugin_configuration=configuration(service.endpoints, ctx.run_id), limits=self.limits)
+                        plugin_configuration=plugin_configuration(service.endpoints, ctx.run_id),
+                        limits=self.limits, configuration_condition=self.configuration_condition)
                     result = await self.driver.execute(request, collector)
                     if not isinstance(result, DriverResult): raise TypeError("native driver returned the wrong contract")
                 except NativeTerminationUnconfirmed:
@@ -99,6 +124,9 @@ class RPNHHarnessAuditAdapter:
             error = type(exc).__name__ + ": " + str(exc)
         finally:
             collector.save(self.root / "observations.json")
+            if self.configuration_condition:
+                write_new(self.root / "comparison_evidence.json", comparison_evidence_report(
+                    read(self.root / "observations.json"), state_snapshot_available=after is not None))
             collector.export_to(ctx.action_sink)
             save_normalized_actions(self.root / "actions.normalized.json", ctx.action_sink)
             if before is not None and after is not None:
@@ -122,7 +150,10 @@ class RPNHHarnessAuditAdapter:
                 "final_snapshot_permitted": final_snapshot_permitted,
                 "actual_model_calls": result.actual_model_calls if result else None,
                 "fault_extension": self.fault.mode != "none",
-                "baseline_comparability": "office-b1-frozen-upper-protocol",
+                "baseline_comparability": ("configuration-comparison-not-baseline" if self.configuration_condition
+                                           else "office-b1-frozen-upper-protocol"),
+                **({"configuration_condition": self.configuration_condition,
+                    "condition_id": self.configuration_condition} if self.configuration_condition else {}),
                 "model_budget_exceeded": (
                     None if self.limits.max_model_calls is None else
                     bool(result and result.actual_model_calls

@@ -29,3 +29,5 @@ Changing model, route, effort, task graph, instruction envelope, tool surface,
 source revision or scoring projection creates a newly recorded condition.
 Reproduction means running the documented protocol with your selected settings;
 it is not a promise of identical stochastic outputs or identical scores.
+
+An explicit `--configuration-condition office-public-discovery-workflow-v1` selects the separately versioned [public discovery/workflow comparison](CONFIGURATION_COMPARISON.md). Omitting it preserves the baseline. New-condition runtime acceptance and model performance remain unverified.

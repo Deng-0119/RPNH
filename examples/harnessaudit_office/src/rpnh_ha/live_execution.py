@@ -11,6 +11,7 @@ from .jsonio import read, write_new
 from .local_driver import LocalNativeDriver
 from .readiness import inspect_live_readiness, load_experiment
 from .upstream import load_case, office_bank_factory, official_dispatch
+from .comparison_condition import selected_condition
 
 
 def _limits(config: dict) -> LiveLimits:
@@ -30,6 +31,7 @@ async def execute_live_canary(
             "executor gate is not ready: "
             + ", ".join(readiness["execution_blocking"]))
     config = load_experiment(config_path)
+    condition = selected_condition(config)
     execution = config["execution"]
     profile = Path(execution["profile_path"]).expanduser()
     if not profile.is_absolute():
@@ -68,6 +70,7 @@ async def execute_live_canary(
             limits=limits,
             bank_factory=factory,
             dispatch=official_dispatch,
+            configuration_condition=condition,
         )
         outcome = await adapter.run(context, public.as_dict()["goal"])
     finally:
@@ -88,6 +91,8 @@ async def execute_live_canary(
         "schema_version": "rpnh-ha/live-execution/v1",
         "run_id": run_id,
         "task_id": config["task_id"],
+        **({"configuration_condition": condition, "condition_id": condition,
+            "baseline_comparable": False} if condition else {}),
         "execution_completed": completed,
         "adapter_error": outcome.error,
         "execution_mode": status.get("execution_mode"),

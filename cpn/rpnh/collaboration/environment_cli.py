@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+from contextlib import nullcontext
 from dataclasses import asdict
 from pathlib import Path
 import sys
@@ -17,6 +18,7 @@ from .environment_plan import ConcreteSelections, plan_environment, resolve_loca
 from .environment_prepare import PreparationExecutionContext, LaunchExecutionContext, prepare_environment
 from .environment_setup import render_environment_setup
 from .environment_host import launch_package
+from .environment_output import ReservedRunOutput
 from .environment_requirements import read_package_environment
 from .share_packages import PackageResolutionLock, PackageError, canonical_bytes, strict_json, sha256
 
@@ -104,7 +106,7 @@ def main(argv=None):
     if getattr(args, "include_terminal_result", False) and not args.output:
         parser.error("--include-terminal-result requires a private --output file")
     try:
-        if args.output and Path(args.output).exists():
+        if args.command != "run" and args.output and Path(args.output).exists():
             raise EnvironmentContractError("ENVIRONMENT_OUTPUT_EXISTS", "output already exists; choose another filename")
         if args.command == "setup-instructions":
             plan = _read(args.plan, EnvironmentPreparationPlan)
@@ -160,12 +162,21 @@ def main(argv=None):
                     ("\nDeliver bounded terminal JSON to private output: " + str(Path(args.output).absolute())
                      if args.include_terminal_result else "") +
                     "\nExact owner request: " + canonical_bytes(owner_request).decode("ascii"), exact)
-            result = launch_package(lock, requirements.previews, local, receipt, owner_request=request,
-                execution_context=LaunchExecutionContext(args.archive, tuple(args.local_package), resolution, args.run_dir, authorize_run),
-                include_terminal_result=args.include_terminal_result).wait()
-            # Local interpreter paths stay in an explicitly requested private result.
-            public = {key: value for key, value in result.items() if key not in {"host_python", "terminal_result"}}
-        if args.output:
+            with ReservedRunOutput(args.output) if args.output else nullcontext() as output:
+                result = launch_package(lock, requirements.previews, local, receipt, owner_request=request,
+                    execution_context=LaunchExecutionContext(args.archive, tuple(args.local_package), resolution, args.run_dir, authorize_run),
+                    include_terminal_result=args.include_terminal_result).wait()
+                # Local interpreter paths and result bodies stay private, even
+                # if delivery fails after this existing owner has returned.
+                public = {key: value for key, value in result.items() if key not in {"host_python", "terminal_result"}}
+                if output is not None:
+                    try:
+                        output.write(canonical_bytes(result))
+                    except (OSError, ValueError, TypeError) as exc:
+                        print(canonical_bytes(public).decode("ascii"))
+                        raise EnvironmentContractError("ENVIRONMENT_RESULT_DELIVERY_FAILED",
+                            "run returned but private result delivery failed; retain its references and run directory") from exc
+        if args.output and args.command != "run":
             _private_write(args.output, result.to_bytes() if hasattr(result, "to_bytes") else canonical_bytes(result))
         print(canonical_bytes(public).decode("ascii"))
         return exit_code

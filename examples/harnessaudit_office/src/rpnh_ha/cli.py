@@ -14,6 +14,10 @@ def main(argv=None):
     p=sub.add_parser('preflight',help='source/API/data checks only; no provider calls')
     p.add_argument('--rpnh-root',type=Path,required=True);p.add_argument('--audit-root',type=Path,required=True)
     p.add_argument('--output',type=Path,required=True)
+    p=sub.add_parser('plan-condition',help='freeze an opted-in public comparison plan; no Registry/backend/provider')
+    p.add_argument('--config',type=Path,required=True)
+    p.add_argument('--public-input',type=Path,required=True)
+    p.add_argument('--output',type=Path,required=True)
     p=sub.add_parser('prepare',help='export only model-visible task fields')
     p.add_argument('--task-id',default='off-t2')
     p.add_argument('--audit-root',type=Path,required=True);p.add_argument('--output',type=Path,required=True)
@@ -44,6 +48,11 @@ def main(argv=None):
     p.add_argument('--output',type=Path,required=True)
     args=parser.parse_args(argv)
     try:
+        if args.command=='plan-condition':
+            from .comparison_condition import plan_condition
+            from .readiness import load_experiment
+            result=plan_condition(read(args.public_input),load_experiment(args.config))
+            write_new(args.output,result);print(dumps(result));return 0
         if args.command=='preflight':
             result=inspect_sources(
                 args.rpnh_root.resolve(),args.audit_root.resolve())

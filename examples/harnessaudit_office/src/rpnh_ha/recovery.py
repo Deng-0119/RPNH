@@ -22,6 +22,7 @@ from .projection import (
 from .registry_export import export_registry
 from .task_view import PublicTask, assert_no_hidden_keys
 from .workflow import build_business_workflow
+from .comparison_condition import condition_of, effects_for, saved_condition_record, comparison_evidence_report
 
 
 def _action_sink(run_id: str):
@@ -57,11 +58,12 @@ def recover_live_evidence(*, run_root: Path, output: Path) -> dict:
             or public.get("schema_version") != "rpnh-ha/public-task/v2"):
         raise ValueError("source public input is not the pinned task projection")
     assert_no_hidden_keys(public)
+    condition_record = saved_condition_record(run_root)
     task = PublicTask(dumps(public))
     _graph, roles_by_node = build_business_workflow(task)
     roles = {row["role"] for row in public["agents"]}
     tools = {row["name"] for row in public["tools"]}
-    if tools != set(OFFICE_EFFECTS):
+    if tools != set(effects_for(condition_of(task))):
         raise ValueError("source public tool inventory differs from the bridge catalog")
 
     monitor = read(run_root / "rpnh-monitor.json")
@@ -166,8 +168,17 @@ def recover_live_evidence(*, run_root: Path, output: Path) -> dict:
     }
 
     output.mkdir(parents=True)
+    recovered_status.update(condition_record)
+    report.update(condition_record)
+    if condition_record:
+        for relative in ("public_input.json", "protocol.json", "configuration_condition.json"):
+            if (run_root / relative).is_file():
+                shutil.copy2(run_root / relative, output / relative)
     write_new(output / "capture_diagnostics.json", exported.capture_diagnostics)
     collector.save(output / "observations.json")
+    if condition_record:
+        write_new(output / "comparison_evidence.json", comparison_evidence_report(
+            read(output / "observations.json"), state_snapshot_available=(run_root / "bank.after.sqlite").is_file()))
     save_normalized_actions(output / "actions.normalized.json", sink)
     write_new(output / "driver_result.json", result.__dict__)
     write_new(output / "crosswalk.json", links)
@@ -208,11 +219,12 @@ def reproject_live_evidence(*, run_root: Path, output: Path) -> dict:
             or public.get("schema_version") != "rpnh-ha/public-task/v2"):
         raise ValueError("source public input is not the pinned task projection")
     assert_no_hidden_keys(public)
+    condition_record = saved_condition_record(run_root)
     task = PublicTask(dumps(public))
     _graph, roles_by_node = build_business_workflow(task)
     roles = {row["role"] for row in public["agents"]}
     tools = {row["name"] for row in public["tools"]}
-    if tools != set(OFFICE_EFFECTS):
+    if tools != set(effects_for(condition_of(task))):
         raise ValueError(
             "source public tool inventory differs from the bridge catalog")
 
@@ -314,6 +326,8 @@ def reproject_live_evidence(*, run_root: Path, output: Path) -> dict:
     }
 
     output.mkdir(parents=True)
+    reprojected_status.update(condition_record)
+    report.update(condition_record)
     write_new(output / "capture_diagnostics.json", exported.capture_diagnostics)
     write_new(output / "projection_provenance.json", {
         "projection_revision": "execution-return-separate-model-input-v1",
@@ -324,6 +338,9 @@ def reproject_live_evidence(*, run_root: Path, output: Path) -> dict:
         "provider_calls_made": 0,
     })
     collector.save(output / "observations.json")
+    if condition_record:
+        write_new(output / "comparison_evidence.json", comparison_evidence_report(
+            read(output / "observations.json"), state_snapshot_available=bank_path.is_file()))
     save_normalized_actions(output / "actions.normalized.json", sink)
     write_new(output / "driver_result.json", result.__dict__)
     write_new(output / "crosswalk.json", links)
@@ -332,6 +349,7 @@ def reproject_live_evidence(*, run_root: Path, output: Path) -> dict:
     for relative in (
             Path("bank.after.sqlite"), Path("public_input.json"),
             Path("protocol.json"), Path("rpnh-monitor.json"),
+            Path("configuration_condition.json"),
             Path("backend/witness.jsonl")):
         source = run_root / relative
         if source.is_file():

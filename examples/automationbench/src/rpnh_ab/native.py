@@ -23,12 +23,19 @@ This final report closes the native task; it is not a substitute for required bu
 """.strip()
 
 
-def graph_for(messages):
+def graph_for(messages, *, configuration_condition=None):
     from cpn.rpnh.agent_workflows import (
         AgentWorkflowGraph, AgentWorkflowNode, AgentWorkflowPort,
         AgentWorkflowEndpoint, AgentWorkflowExecution)
     system, prompt = split_prompt(messages)
-    instruction = system + "\n\n" + NATIVE_INSTRUCTION if system else NATIVE_INSTRUCTION
+    native_instruction = NATIVE_INSTRUCTION
+    if configuration_condition is not None:
+        native_instruction = native_instruction.replace(
+            "The tool output envelope's raw_result field is the exact upstream response text.",
+            "The tool output envelope's raw_result field is the actor-visible response text. "
+            "Under this explicit API comparison condition, api_search metadata may be corrected; "
+            "a pre_dispatch error means that request was rejected before any upstream action.")
+    instruction = system + "\n\n" + native_instruction if system else native_instruction
     node = AgentWorkflowNode("executor", instruction,
             (AgentWorkflowPort("request", "task"),),
             (AgentWorkflowPort("result", "final_answer"),),
@@ -39,12 +46,12 @@ def graph_for(messages):
     return graph, prompt
 
 
-def build_spec(run_dir: Path, profile: Path, endpoint: str, run_id: str, messages, schemas):
+def build_spec(run_dir: Path, profile: Path, endpoint: str, run_id: str, messages, schemas, *, configuration_condition=None):
     from cpn.plugins.catalog import load_catalog
     from cpn.rpnh.agent_tasks import AgentTaskSpec
     config = configuration(endpoint, run_id)
     catalog = load_catalog(config)
-    graph, prompt = graph_for(messages)
+    graph, prompt = graph_for(messages, configuration_condition=configuration_condition)
     return AgentTaskSpec(run_dir=run_dir, prompt=prompt, stages=(),
             execution_config_path=profile, workflow_graph=graph,
             max_attempts_per_stage=None, max_parallel_nodes=1,

@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: en
   counterpart: environment-preparation_ZH.md
-  revision: "2026-10-07.1"
+  revision: "2026-10-07.2"
   status: source-reviewed-pre-release
 ---
 
@@ -88,6 +88,11 @@ to `run` and supply a private `--output RUN.json` file. The flag is rejected
 without `--output`; standard output remains a public status projection. The
 result is read through the existing authorized Registry owner. This option does
 not turn a preparation receipt or a process exit into business success.
+`run --output` reserves a private file before business approval. A result-save
+failure after the run returns reports `ENVIRONMENT_RESULT_DELIVERY_FAILED` and
+retains redacted run references on stdout; do not rerun the business operation to
+recover delivery. See the [full tutorial](../examples/package_reuse/README.md)
+for output-path requirements, cancellation cleanup and failure handling.
 
 `--binding` replaces `--selection` when checking an already prepared environment;
 also provide its exact `--resolved-selections`. A selection for `new_venv` names an
@@ -158,7 +163,7 @@ Existing run directories are rejected rather than starting another writer; use t
 existing explicit owner/resume protocol. Installer, assembly, drift and business
 runtime failures retain their distinct stages and genuine partial evidence.
 
-Exit codes: `0` command contract completed; `2` argument/contract error; `3` missing,
+Exit codes: `0` command contract completed; `2` argument/contract/result-delivery error; `3` missing,
 unresolved or incompatible environment; `4` authorization/incomplete preparation;
 `5` drift/interruption. The Python launcher returns an `ExistingRunHandle` only after its genuine owner/control
 socket exists. `handle.wait()` returns existing run/task/net and terminal/result facts;

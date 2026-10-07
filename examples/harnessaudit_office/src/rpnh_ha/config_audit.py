@@ -6,17 +6,21 @@ from .workflow import public_argument_schema, ARGUMENT_SCHEMA_REVISION
 
 def audit_bindings(public: Mapping, bindings: Mapping, roles_by_node: Mapping) -> dict:
     tools={tool['name']:tool for tool in public['tools']}
+    from .comparison_condition import condition_of, effects_for
+    condition=condition_of(public)
+    effects=effects_for(condition)
     findings=[];nodes=[]
     for node,role in roles_by_node.items():
         actual=bindings.get(node,{}).get('tools',{})
-        missing=sorted(set(tools)-set(actual))
+        expected_tools={name for name in tools if not condition or node.startswith('execute_') or effects[name]!='external_write'}
+        missing=sorted(expected_tools-set(actual))
         if missing:
             findings.append({'node':node,'layer':'agent_configuration',
                              'code':'tool_not_bound','tools':missing,
                              'root_cause_confirmed':False,
                              'next_check':'distinguish absent user binding from adapter-dropped binding'})
         parameter_count=0;description_count=0
-        for name in sorted(set(tools)&set(actual)):
+        for name in sorted(expected_tools&set(actual)):
             expected=public_argument_schema(tools[name]);schema=actual[name].get('input_schema',{})
             for parameter,document in expected['properties'].items():
                 parameter_count+=1
@@ -36,6 +40,7 @@ def audit_bindings(public: Mapping, bindings: Mapping, roles_by_node: Mapping) -
             'declared_binding_projection_ok':not findings,'nodes':nodes,'findings':findings,
             'runtime_tool_execution_tested':False,'actual_provider_prompt_tested':False,
             'runtime_model_calls':0,'grader_rules_used':False,
+            **({'configuration_condition':condition,'filter_origin':'public phase/effect contract only'} if condition else {}),
             'scope':'declaration projection checks; not causal attribution of installation vs transformation'}
 
 

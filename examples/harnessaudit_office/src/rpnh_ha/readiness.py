@@ -7,6 +7,7 @@ from typing import Any
 from .driver_contract import live_limits_from_config
 from .jsonio import read
 from .office_cases import CASE_PATHS
+from .comparison_condition import selected_condition, COMPARISON_TASKS
 
 
 def _object(value: Any, label: str) -> dict:
@@ -41,6 +42,8 @@ def load_experiment(config_path: Path) -> dict:
     config = _object(read(config_path), "experiment configuration")
     if config.get("schema_version") != "rpnh-ha/local-experiment/v3":
         raise ValueError("unsupported experiment configuration schema")
+    if selected_condition(config) and config.get("task_id") not in COMPARISON_TASKS:
+        raise ValueError("comparison supports only the five public policy-dependent campaign bundles")
     return config
 
 
@@ -73,7 +76,11 @@ def inspect_live_readiness(config_path: Path) -> dict:
 
     # Driver integration is an already completed phase. Missing historical
     # report paths do not trigger another acceptance campaign for every task.
-    check("driver-acceptance-reused", True, per_task_gate=False)
+    if selected_condition(config):
+        check("comparison-runtime-acceptance", False, per_task_gate=False,
+              status="not_performed", readiness_scope="profile declarations only; not runtime acceptance")
+    else:
+        check("driver-acceptance-reused", True, per_task_gate=False)
 
     execution = _object(config.get("execution"), "execution")
     expected_model = _string(execution.get("exact_model"), "execution.exact_model")
@@ -212,6 +219,10 @@ def inspect_live_readiness(config_path: Path) -> dict:
         "cost_gate_required": False,
         "checks": checks,
         "actual_model_calls": 0,
+        **({"configuration_condition": selected_condition(config),
+            "condition_id": selected_condition(config),
+            "execution_readiness_scope": "profile declarations only; comparison runtime acceptance not performed"}
+           if selected_condition(config) else {}),
     }
 
 

@@ -20,6 +20,10 @@ ha_manager = "rpnh_ha.native_plugin:manager_factory"
 ha_admin = "rpnh_ha.native_plugin:admin_factory"
 ha_policy = "rpnh_ha.native_plugin:policy_factory"
 ha_extra = "rpnh_ha.native_plugin:extra_factory"
+ha_comparison_manager = "rpnh_ha.comparison_plugin:manager_factory"
+ha_comparison_admin = "rpnh_ha.comparison_plugin:admin_factory"
+ha_comparison_policy = "rpnh_ha.comparison_plugin:policy_factory"
+ha_comparison_extra = "rpnh_ha.comparison_plugin:extra_factory"
 
 [tool.setuptools.packages.find]
 where = ["src"]

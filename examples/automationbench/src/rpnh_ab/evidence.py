@@ -17,9 +17,12 @@ def records(path: Path):
 def crosscheck(attempt: Path, registry_path: Path | None = None,
                registry_rows: list[dict] | None = None) -> dict:
     events = records(attempt / "tool_events.jsonl")
-    requests = {x["sequence"]: x["request"] for x in events if x["kind"] == "dispatch_started"}
-    returned = {x["sequence"]: x["response"] for x in events
+    requests = {x["sequence"]: x["request"] for x in events if x["kind"] in {"dispatch_started", "pre_dispatch_rejected"}}
+    environment_returned = {x["sequence"]: x["response"] for x in events
                 if x["kind"] == "dispatch_finished" and x["response"].get("ok") is True}
+    rejected = {x["sequence"]: x["response"] for x in events
+                if x["kind"] == "pre_dispatch_rejected" and x["response"].get("ok") is True}
+    returned = {**environment_returned, **rejected}
     if registry_rows is not None and registry_path is not None:
         raise ValueError("choose a Registry path or in-memory rows, not both")
     registry_path = registry_path or (attempt / "registry_objects.jsonl")
@@ -42,10 +45,16 @@ def crosscheck(attempt: Path, registry_path: Path | None = None,
         else:
             matched.add(seq)
     available = registry_rows is not None or registry_path.is_file()
-    return {"schema": "rpnh-ab/bridge-registry-check/v1", "registry_projection_available": available,
-            "environment_returned": len(returned), "native_returned_records": native_returned,
+    report = {"schema": "rpnh-ab/bridge-registry-check/v1", "registry_projection_available": available,
+            "environment_returned": len(environment_returned), "native_returned_records": native_returned,
             "matched_unique_sequences": len(matched), "mismatches": mismatches,
-            "environment_returns_without_matching_registered_return": sorted(set(returned)-matched),
-            "all_environment_returns_registered": available and not mismatches and set(returned) == matched,
+            "environment_returns_without_matching_registered_return": sorted(set(environment_returned)-matched),
+            "all_environment_returns_registered": available and not mismatches and set(environment_returned).issubset(matched),
             "proves_subsequent_model_consumption": False,
             "classification": "evidence diagnostic, not a replacement for upstream state scoring"}
+
+    if rejected:
+        report["all_tool_returns_registered"] = available and not mismatches and set(returned) == matched
+        report["pre_dispatch_rejections_returned"] = len(rejected)
+        report["pre_dispatch_rejections_without_matching_registered_return"] = sorted(set(rejected)-matched)
+    return report

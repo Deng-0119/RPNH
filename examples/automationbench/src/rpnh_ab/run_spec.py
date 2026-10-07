@@ -28,11 +28,14 @@ def benchmark_spec(plan, schemas, *, business_mode):
         raise ValueError('business backend must be explicit; placeholder mode is not an accepted condition')
     if plan.get('upstream_commit') != UPSTREAM_COMMIT:
         raise ValueError('upstream pin differs')
-    return {'schema':'rpnh-ab/benchmark-spec/v1', 'upstream_commit':UPSTREAM_COMMIT,
+    result = {'schema':'rpnh-ab/benchmark-spec/v1', 'upstream_commit':UPSTREAM_COMMIT,
             'split':plan['split'], 'manifest_sha256':plan['manifest_sha256'],
             'task_contracts':[t['task_contract_sha256'] for t in plan['tasks']],
             'tool_schemas_sha256':sha(schemas), 'rubric':'automationbench.rubric:partial_credit,task_completed_correctly',
             'business_tool_mode':business_mode}
+    if plan.get('configuration_condition') is not None:
+        result['configuration_condition'] = plan['configuration_condition']
+    return result
 
 
 def execution_spec(profile, host, rpnh_identity, *, host_identity=None):
@@ -84,10 +87,13 @@ def dsh_identity(checkout):
 def acceptance_identity(benchmark, execution):
     # Scripted and live provider identities deliberately differ. Acceptance
     # validates host/tool/code, not the production provider's network access.
-    return {'benchmark_sha256':sha(benchmark), 'executor_host':execution['executor_host'],
+    result = {'benchmark_sha256':sha(benchmark), 'executor_host':execution['executor_host'],
             'rpnh':execution['rpnh'], 'example_sources':execution['example_sources'],
             'host_identity':execution['host_identity'], 'limits':execution['limits'],
             'tool_schemas_sha256':benchmark['tool_schemas_sha256']}
+    if benchmark.get('configuration_condition') is not None:
+        result['configuration_condition'] = benchmark['configuration_condition']
+    return result
 
 
 def _validate_dsh_host_result(path: Path, *, terminal: bool) -> dict:
@@ -148,6 +154,11 @@ def validate_acceptance(path, benchmark, execution):
     root = manifest_path.parent
     success_attempt = root / 'success-attempt'
     stop_attempt = root / 'stop-attempt'
+    if benchmark.get('configuration_condition') is not None:
+        for attempt in (success_attempt, stop_attempt):
+            path = attempt / 'attempt.json'
+            if not path.is_file() or load(path).get('configuration_condition') != benchmark['configuration_condition']:
+                raise ValueError('acceptance attempt configuration condition differs')
     records = {}
     for key in REQUIRED_ACCEPTANCE:
         case=cases[key]
@@ -287,6 +298,8 @@ def write_launch(path, *, work, upstream, profile, host='native', acceptance,
                  native_run_root=None, dsh_checkout=None, parent_session_root=None):
     work=Path(work).resolve(); conditions=load(work/'conditions.json')
     benchmark=conditions['benchmark_spec']; execution=conditions['execution_spec']
+    if benchmark.get('configuration_condition') is not None and host != 'native':
+        raise ValueError('API comparison condition currently supports only the native host')
     if host != execution['executor_host']:
         raise ValueError('launch host differs from frozen condition')
     payload={'schema':'rpnh-ab/launch/v1','example_id':'automationbench',
@@ -298,6 +311,8 @@ def write_launch(path, *, work, upstream, profile, host='native', acceptance,
              'native_run_root':str(Path(native_run_root).resolve()) if native_run_root else None,
              'dsh_checkout':str(Path(dsh_checkout).resolve()) if dsh_checkout else None,
              'parent_session_root':str(Path(parent_session_root).resolve()) if parent_session_root else None}
+    if benchmark.get('configuration_condition') is not None:
+        payload['configuration_condition'] = benchmark['configuration_condition']
     payload['request_sha256']=sha(payload)
     write_new(Path(path),payload)
     return payload
@@ -308,6 +323,8 @@ def load_launch(path, *, selected_profile=None, require_acceptance=True, validat
     required={'schema','example_id','batch_id','work','upstream','profile','executor_host',
               'benchmark_sha256','condition_digest','acceptance','native_run_root',
               'dsh_checkout','parent_session_root','request_sha256'}
+    if 'configuration_condition' in value:
+        required.add('configuration_condition')
     if set(value)!=required or value.get('schema')!='rpnh-ab/launch/v1' or value.get('example_id')!='automationbench':
         raise ValueError('invalid prepared AutomationBench launch request')
     if value['executor_host'] not in HOSTS or not re.fullmatch(r'ab-[0-9a-f]{20}',value['batch_id']):
@@ -317,8 +334,12 @@ def load_launch(path, *, selected_profile=None, require_acceptance=True, validat
         raise ValueError('launch request digest mismatch')
     work=Path(value['work']); conditions=load(work/'conditions.json')
     benchmark=conditions['benchmark_spec']; execution=conditions['execution_spec']
+    if value.get('configuration_condition') != benchmark.get('configuration_condition'):
+        raise ValueError('launch configuration condition differs from frozen benchmark')
     if sha(benchmark)!=value['benchmark_sha256'] or sha(execution)!=value['condition_digest']:
         raise ValueError('frozen benchmark or execution digest differs')
+    if benchmark.get('configuration_condition') is not None and value['executor_host'] != 'native':
+        raise ValueError('API comparison condition currently supports only the native host')
     if execution['executor_host']!=value['executor_host']:
         raise ValueError('frozen executor host differs')
     if validate_current:

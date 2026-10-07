@@ -22,3 +22,5 @@
 
 模型、路由、effort、图、指令封装、工具面、源码或评分投影变化均需另记条件。
 可复现指按明确协议运行并检查证据，不承诺随机输出或分数逐字一致。
+
+显式添加 `--configuration-condition office-public-discovery-workflow-v1` 才选择独立的[公开检索/工作流对照条件](CONFIGURATION_COMPARISON_ZH.md)。省略即保留 baseline；新条件运行验收和模型效果仍未验证。

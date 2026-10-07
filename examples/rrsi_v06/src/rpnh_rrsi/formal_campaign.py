@@ -13,7 +13,11 @@ from pathlib import Path
 import re
 from typing import Any, Callable, Mapping
 
+from .formal_execution import raise_if_stopped
 from .formal_observation import ObservedInputPort, usage_summary
+from .formal_reporting import (
+    CampaignProgress, add_secondary_failure, failure_summary,
+)
 from .formal_policy import (
     FormalPolicyContractError,
     _build_and_validate_messages,
@@ -319,12 +323,67 @@ def _token(observations: list[dict[str, Any]]) -> int | None:
     return total if isinstance(total, int) and not isinstance(total, bool) and total >= 0 else None
 
 
+def _invoke_child(*, kind, label, owner, run_dir, runner, base_port,
+                  progress, interruption_requested=None, **kwargs):
+    """Keep started/returned children and attempts even when a runner raises."""
+    observed = ObservedInputPort(base_port)
+    previous_stage = progress.stage
+    progress.stage = f"{kind}:{label}:before_start"
+    entry = {"kind": kind, "label": label,
+             "run_dir": str(run_dir.relative_to(progress.destination)),
+             "status": "planned", "run_ref": None, "termination": None,
+             "terminal_evidence_ref": None, "output_ref": None,
+             "transition_trace": None, "attempts": []}
+    progress.report["child_runs"].append(entry)
+    primary_error = None
+    try:
+        progress.checkpoint()
+        raise_if_stopped(interruption_requested)
+        entry["status"] = "started"
+        progress.stage = f"{kind}:{label}:runner"
+        progress.checkpoint()
+        if interruption_requested is not None:
+            kwargs["interruption_requested"] = interruption_requested
+        envelope = runner(run_dir=run_dir, llm_input_port=observed, **kwargs)
+        progress.stage = f"{kind}:{label}:result"
+        entry.update(_child_evidence(kind, label, envelope, []))
+        entry["status"] = "returned"
+        # Retain completed results even if the containing evaluation aborts.
+        entry["result"] = _json(envelope.get("result"))
+        return envelope
+    except BaseException as exc:
+        primary_error = exc
+        error = failure_summary(exc, stage=progress.stage)
+        entry["status"] = error["status"]
+        entry["error"] = error
+        if getattr(exc, "rrsi_run_refs", None) is not None:
+            entry["run_ref"] = _ref(exc.rrsi_run_refs)
+        if progress.failure is None:
+            progress.failure = error
+        raise
+    finally:
+        observations = list(observed.observations())
+        entry["attempts"] = observations
+        progress.report["attempt_inventory"].extend(
+            {"owner": owner, "label": label, **row} for row in observations)
+        try:
+            progress.checkpoint()
+        except BaseException as secondary:
+            if primary_error is None:
+                raise
+            add_secondary_failure(primary_error, secondary, stage="report_write")
+        finally:
+            progress.stage = previous_stage
+
+
 def _evaluate(*, run_dir: Path, protocol: FormalProtocol, selection: Any,
               evaluation_id: str, candidate_id: str,
               source_files: list[dict[str, Any]], split: str, repetitions: int,
               policy_runner: Callable[..., Mapping[str, Any]], base_port: Any,
               child_evidence: list[dict[str, Any]], attempt_inventory: list[dict[str, Any]],
-              phase_order: list[str]) -> dict[str, Any]:
+              phase_order: list[str], progress: CampaignProgress,
+              interruption_requested=None) -> dict[str, Any]:
+    progress.stage = f"evaluation:{evaluation_id}:prepare"
     manifest = getattr(protocol, split)
     rows: list[dict[str, Any]] = []
     for task in manifest.tasks:
@@ -341,17 +400,16 @@ def _evaluate(*, run_dir: Path, protocol: FormalProtocol, selection: Any,
                        "task_id": task.task_id, "repetition": repetition, "attempt": attempt,
                        "occurrence_id": occurrence_id, "source_files": policy_sources,
                        "raw_task_input": _json(task.raw_input), "expected": task.expected, "weight": task.weight}
-            observed = ObservedInputPort(base_port)
             label = f"{evaluation_id}:{candidate_id}:{task.task_id}:{repetition}"
             phase_order.append(f"policy:{label}")
-            envelope = policy_runner(
+            envelope = _invoke_child(
+                kind="policy", label=label, owner="Policy",
                 run_dir=run_dir / "policy" / evaluation_id / candidate_id /
-                f"{task.task_id}-{repetition}", protocol=protocol,
-                request=request, selection=selection, llm_input_port=observed)
-            observations = list(observed.observations())
-            child_evidence.append(_child_evidence("policy", label, envelope, observations))
-            for observation in observations:
-                attempt_inventory.append({"owner": "Policy", "label": label, **observation})
+                f"{task.task_id}-{repetition}", runner=policy_runner,
+                base_port=base_port, progress=progress,
+                interruption_requested=interruption_requested,
+                protocol=protocol, request=request, selection=selection)
+            observations = child_evidence[-1]["attempts"]
             result = envelope.get("result")
             if not isinstance(result, Mapping):
                 raise FormalCampaignError("Policy child did not return typed trial result")
@@ -360,14 +418,17 @@ def _evaluate(*, run_dir: Path, protocol: FormalProtocol, selection: Any,
                          "run_refs": _ref(envelope.get("run_refs")), "reward": result.get("reward", 0),
                          "weight": task.weight, "tokens": _token(observations),
                          "usage": usage_summary(observations)})
+    progress.stage = f"evaluation:{evaluation_id}:aggregate"
     plans = [TaskPlan(task.task_id, tuple(float(task.weight) for _ in range(repetitions)))
              for task in manifest.tasks]
     observations = [TrialObservation(row["task_id"], row["repetition"], float(row["reward"]),
                                      row["tokens"], str(row["trial_result_ref"])) for row in rows]
     aggregate: AggregateResult = aggregate_trials(project_trial_rows(plans, observations))
-    return {"split": split, "evaluation_id": evaluation_id,
-            "candidate_id": candidate_id, "trials": rows,
-            "aggregate": asdict(aggregate), "source_files": _json(source_files)}
+    result = {"split": split, "evaluation_id": evaluation_id,
+              "candidate_id": candidate_id, "trials": rows,
+              "aggregate": asdict(aggregate), "source_files": _json(source_files)}
+    progress.report["completed_evaluations"].append(result)
+    return result
 
 
 def _trace_input(evaluation: Mapping[str, Any]) -> list[dict[str, Any]]:
@@ -400,39 +461,58 @@ def _trace_input(evaluation: Mapping[str, Any]) -> list[dict[str, Any]]:
 
 
 def run_formal_campaign(*, run_dir: Path, protocol, selection, llm_input_port=None,
-                        role_runner=run_role_session, policy_runner=run_policy_trial) -> dict:
+                        role_runner=run_role_session, policy_runner=run_policy_trial,
+                        interruption_requested=None) -> dict:
     """Run the complete two-round formal local campaign without real-provider shortcuts."""
+    if interruption_requested is not None and not callable(interruption_requested):
+        raise TypeError("interruption_requested must be callable")
     production_runners = (
         role_runner is run_role_session
         and policy_runner is run_policy_trial
         and llm_input_port is None)
     destination = _validate_start(run_dir=run_dir, protocol=protocol, selection=selection)
     destination.mkdir(parents=True)
-    (destination / "protocol.json").write_text(json.dumps(formal_protocol_mapping(protocol), indent=2,
-                                                          ensure_ascii=False) + "\n", encoding="utf-8")
     created_port = False
-    if llm_input_port is None:
-        from cpn.llm_adapters import build_llm_input_port
-        llm_input_port = build_llm_input_port(selection, destination_run_root=destination)
-        created_port = True
+    primary_error = None
     child_evidence: list[dict[str, Any]] = []
     attempt_inventory: list[dict[str, Any]] = []
     phase_order: list[str] = []
-    role_attempts: list[dict[str, Any]] = []
+    progress = CampaignProgress(destination, {
+        "schema_version": "rrsi_v06/formal_campaign_report/v1",
+        "scope": protocol.scope,
+        "protocol": {"ref": protocol.protocol_id, "path": "protocol.json"},
+        "execution_selection": {
+            "model_condition": selection.input_target.model_condition,
+            "adapter_kind": selection.adapter_kind,
+        },
+        "report_status": "running", "termination": None,
+        "campaign_complete": False, "formal_rrsi_v06_local_complete": False,
+        "child_runs": child_evidence, "attempt_inventory": attempt_inventory,
+        "phase_order": phase_order, "completed_evaluations": [],
+    })
 
     def invoke_role(*, label: str, request: Mapping[str, Any], digest_runner=None) -> Mapping[str, Any]:
-        observed = ObservedInputPort(llm_input_port)
         phase_order.append(f"role:{label}")
-        envelope = role_runner(run_dir=destination / "roles" / label.replace(":", "-"), request=request,
-                               selection=selection, llm_input_port=observed, digest_runner=digest_runner)
-        rows = list(observed.observations())
-        child_evidence.append(_child_evidence("role", label, envelope, rows))
-        for row in rows:
-            role_attempts.append({"owner": request["role"], "label": label, **row})
-            attempt_inventory.append({"owner": request["role"], "label": label, **row})
-        return envelope
+        return _invoke_child(
+            kind="role", label=label, owner=request["role"],
+            run_dir=destination / "roles" / label.replace(":", "-"),
+            runner=role_runner, base_port=llm_input_port, progress=progress,
+            interruption_requested=interruption_requested,
+            request=request, selection=selection, digest_runner=digest_runner)
 
     try:
+        progress.checkpoint()
+        progress.stage = "protocol_write"
+        (destination / "protocol.json").write_text(
+            json.dumps(formal_protocol_mapping(protocol), indent=2,
+                       ensure_ascii=False) + "\n", encoding="utf-8")
+        progress.stage = "input_port_build"
+        raise_if_stopped(interruption_requested)
+        if llm_input_port is None:
+            from cpn.llm_adapters import build_llm_input_port
+            llm_input_port = build_llm_input_port(selection, destination_run_root=destination)
+            created_port = True
+        progress.stage = "campaign_execution"
         h0_sources = _sources(protocol)
         phase_order.append("calibration_h0")
         calibration = _evaluate(run_dir=destination, protocol=protocol, selection=selection,
@@ -440,7 +520,8 @@ def run_formal_campaign(*, run_dir: Path, protocol, selection, llm_input_port=No
                                 source_files=h0_sources, split="calibration", repetitions=2,
                                 policy_runner=policy_runner, base_port=llm_input_port,
                                 child_evidence=child_evidence, attempt_inventory=attempt_inventory,
-                                phase_order=phase_order)
+                                phase_order=phase_order, progress=progress,
+                              interruption_requested=interruption_requested)
         calibration_scores = [row["reward"] for row in calibration["trials"]]
         calibration_result = calibrate_noise_band(
             calibration_scores,
@@ -454,7 +535,8 @@ def run_formal_campaign(*, run_dir: Path, protocol, selection, llm_input_port=No
                               source_files=h0_sources, split="evolve", repetitions=1,
                               policy_runner=policy_runner, base_port=llm_input_port,
                               child_evidence=child_evidence, attempt_inventory=attempt_inventory,
-                              phase_order=phase_order)
+                              phase_order=phase_order, progress=progress,
+                              interruption_requested=interruption_requested)
         incumbent_id, incumbent_sources, incumbent_eval = "H0", h0_sources, h0_evolve
         score_star = float(h0_evolve["aggregate"]["score"])
         selection_parameters = SelectionParameters(
@@ -464,6 +546,8 @@ def run_formal_campaign(*, run_dir: Path, protocol, selection, llm_input_port=No
         manifests: list[dict[str, Any]] = []
         round_decisions: list[dict[str, Any]] = []
 
+        progress.report.update({"candidate_manifests": manifests,
+                                "round_decisions": round_decisions})
         for round_index in range(1, 3):
             round_id = f"round-{round_index}"
             phase_order.append(f"{round_id}:search")
@@ -546,6 +630,7 @@ def run_formal_campaign(*, run_dir: Path, protocol, selection, llm_input_port=No
                                         "selected_id": incumbent_id, "adopted": False})
                 continue
             phase_order.append(f"{round_id}:smoke")
+            progress.stage = f"{round_id}:smoke"
             smoke = _smoke(destination / "candidates" / candidate_id,
                            manifest, protocol)
             if not smoke["passed"]:
@@ -565,7 +650,8 @@ def run_formal_campaign(*, run_dir: Path, protocol, selection, llm_input_port=No
                                        source_files=candidate_sources, split="evolve",
                                        repetitions=1, policy_runner=policy_runner, base_port=llm_input_port,
                                        child_evidence=child_evidence, attempt_inventory=attempt_inventory,
-                                       phase_order=phase_order)
+                                       phase_order=phase_order, progress=progress,
+                              interruption_requested=interruption_requested)
             candidate_aggregate = candidate_eval["aggregate"]
             incumbent_aggregate = incumbent_eval["aggregate"]
             candidate_score, incumbent_score = candidate_aggregate["score"], incumbent_aggregate["score"]
@@ -610,7 +696,8 @@ def run_formal_campaign(*, run_dir: Path, protocol, selection, llm_input_port=No
                                source_files=h0_sources, split="heldout", repetitions=1,
                                policy_runner=policy_runner, base_port=llm_input_port,
                                child_evidence=child_evidence, attempt_inventory=attempt_inventory,
-                               phase_order=phase_order)
+                               phase_order=phase_order, progress=progress,
+                              interruption_requested=interruption_requested)
         phase_order.append("hfinal_heldout")
         hfinal_heldout = _evaluate(run_dir=destination, protocol=protocol, selection=selection,
                                    evaluation_id="heldout-final",
@@ -618,14 +705,16 @@ def run_formal_campaign(*, run_dir: Path, protocol, selection, llm_input_port=No
                                    source_files=incumbent_sources, split="heldout", repetitions=1,
                                    policy_runner=policy_runner, base_port=llm_input_port,
                                    child_evidence=child_evidence, attempt_inventory=attempt_inventory,
-                                   phase_order=phase_order)
+                                   phase_order=phase_order, progress=progress,
+                              interruption_requested=interruption_requested)
         phase_order.append("export")
         export = _evaluate(run_dir=destination, protocol=protocol, selection=selection,
                            evaluation_id="export-final", candidate_id=incumbent_id,
                            source_files=incumbent_sources, split="export", repetitions=1,
                            policy_runner=policy_runner, base_port=llm_input_port,
                            child_evidence=child_evidence, attempt_inventory=attempt_inventory,
-                           phase_order=phase_order)
+                           phase_order=phase_order, progress=progress,
+                              interruption_requested=interruption_requested)
         round_completion = []
         for round_index in range(1, protocol.execution["round_count"] + 1):
             prefix = f"round-{round_index}:"
@@ -706,7 +795,7 @@ def run_formal_campaign(*, run_dir: Path, protocol, selection, llm_input_port=No
                   "h0_heldout": h0_heldout, "hfinal_heldout": hfinal_heldout, "export": export,
                   "candidate_manifests": manifests, "round_decisions": round_decisions,
                   "child_runs": child_evidence, "attempt_inventory": attempt_inventory,
-                  "usage": {"roles": usage_summary(role_attempts),
+                  "usage": {"roles": usage_summary([item for item in attempt_inventory if item["owner"] != "Policy"]),
                             "policy": usage_summary([item for item in attempt_inventory if item["owner"] == "Policy"])},
                   "phase_order": phase_order, "history": [asdict(item) for item in history.entries],
                   "attribution_tail": attribution[-20:],
@@ -719,14 +808,36 @@ def run_formal_campaign(*, run_dir: Path, protocol, selection, llm_input_port=No
                   },
                   "campaign_complete": campaign_complete,
                   "formal_rrsi_v06_local_complete": campaign_complete}
-        (destination / "formal-report.json").write_text(json.dumps(report, indent=2, ensure_ascii=False) + "\n",
-                                                         encoding="utf-8")
+        report.update({"report_status": "completed",
+                       "termination": {"status": "completed", "stage": "campaign_end"},
+                       "completed_evaluations": progress.report["completed_evaluations"]})
+        progress.report = report
+        if created_port:
+            # Close before publishing completion; never retry a failing close.
+            created_port = False
+            progress.stage = "input_port_close"
+            close = getattr(llm_input_port, "close", None)
+            if callable(close):
+                close()
+        progress.stage = "report_write"
+        progress.checkpoint()
         return report
+    except BaseException as exc:
+        primary_error = exc
+        progress.failed(exc)
+        raise
     finally:
         if created_port and llm_input_port is not None:
             close = getattr(llm_input_port, "close", None)
             if callable(close):
-                close()
+                try:
+                    close()
+                except BaseException as secondary:
+                    if primary_error is None:
+                        progress.stage = "input_port_close"
+                        progress.failed(secondary)
+                        raise
+                    add_secondary_failure(primary_error, secondary, stage="input_port_close")
 
 
 __all__ = ("FormalCampaignError", "build_candidate_manifest", "fixed_precheck", "run_formal_campaign")

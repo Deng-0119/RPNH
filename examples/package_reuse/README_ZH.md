@@ -30,18 +30,19 @@ rpnh examples export --example package_reuse --output "$WORK/tutorial"
 cd "$WORK/tutorial"
 SAMPLE="$PWD/examples/package_reuse"
 CONTROL_PYTHON="$(python -c 'import sys; print(sys.executable)')"
-mkdir "$WORK/wheelhouse"
-python -m pip download --only-binary=:all: --dest "$WORK/wheelhouse" "$RPNH_WHEEL"
-python -m pip wheel --no-deps --wheel-dir "$WORK/wheelhouse" ./examples/native_plugin
-WHEELS=()
-for wheel in "$WORK"/wheelhouse/*.whl; do WHEELS+=(--wheel "$wheel"); done
+CONTROL_WHEELHOUSE="$WORK/wheelhouse"
+mkdir "$CONTROL_WHEELHOUSE"
+"$CONTROL_PYTHON" -m pip download --only-binary=:all: --dest "$CONTROL_WHEELHOUSE" "$RPNH_WHEEL"
+"$CONTROL_PYTHON" -m pip wheel --no-deps --wheel-dir "$CONTROL_WHEELHOUSE" ./examples/native_plugin
+NATIVE_WHEEL="$CONTROL_WHEELHOUSE/rpnh_native_demo-0.3.0-py3-none-any.whl"
+test -f "$NATIVE_WHEEL" || exit 1
 MATERIAL=(--archive "$SAMPLE/native-add-v2.zip" --lock "$SAMPLE/native-add-v2.lock.json" --entry main)
 rpnh package preview "$SAMPLE/native-add-v2.zip"
 rpnh package resolve "$SAMPLE/native-add-v2.zip" > "$WORK/recomputed-package-lock.json"
 cmp "$SAMPLE/native-add-v2.lock.json" "$WORK/recomputed-package-lock.json"
 ```
 
-只有上面的 pip 获取/构建步骤会使用包索引。包解析器和准备安装器只使用明确传入的
+本教程中只有显式的 pip 获取/构建步骤会使用包索引。包解析器和准备安装器只使用明确传入的
 本地 wheel 字节，不会下载或偷偷补充缺失依赖。离线时，从经过批准的 wheel 缓存
 提供同样的完整闭包即可。
 
@@ -71,23 +72,63 @@ Harness 直接依赖 `jsonschema>=4.20,<5`、`packaging>=24,<27`、
 
 ## 2A. 使用已有环境
 
-第一次体验可先建立用户自己的已有环境，只安装同一个 harness 及其声明依赖。
-如果要使用现有环境，把 `EXISTING_PYTHON` 改为其 Python 的绝对路径，并跳过
-创建和安装命令。批准前审阅计划中的所有变更。
+下面两种设置**选择一种**，然后运行共同的 selection 命令。
+第一次体验可建立用户自己的已有环境，明确使用与控制端相同的 Python，
+只安装精确的 harness wheel 及其依赖：
 
 ```bash
-python3 -m venv "$WORK/existing-python"
+"$CONTROL_PYTHON" -m venv "$WORK/existing-python"
 EXISTING_PYTHON="$WORK/existing-python/bin/python"
-"$EXISTING_PYTHON" -m pip install --no-index --find-links "$WORK/wheelhouse" "$RPNH_WHEEL"
+WHEELHOUSE="$CONTROL_WHEELHOUSE"
+"$EXISTING_PYTHON" -m pip install --no-index --find-links "$WHEELHOUSE" "$RPNH_WHEEL"
+```
+
+也可以选择自己的已有 CPython 3.11+ 环境。保持控制端激活，不要激活目标环境。
+使用**目标解释器**为两个精确本地根 wheel 及其全部传递依赖解析一个全新的独立
+wheelhouse。此获取步骤不会把它们安装到该环境中：
+
+```bash
+read -r -p 'Absolute path to your existing Python: ' EXISTING_PYTHON
+test -x "$EXISTING_PYTHON" || exit 1
+"$EXISTING_PYTHON" -m pip --version
+WHEELHOUSE="$WORK/wheelhouse-existing"
+mkdir "$WHEELHOUSE"
+"$EXISTING_PYTHON" -m pip download --only-binary=:all: --dest "$WHEELHOUSE" \
+  "$RPNH_WHEEL" "$NATIVE_WHEEL"
+```
+
+运行此命令块前，目标必须已有可用 pip。如果没有，先停止；对于用户自有且支持
+CPython ensurepip 的环境，可运行 `"$EXISTING_PYTHON" -m ensurepip --upgrade`，
+再从新的 shell/工作目录重试。对于受管理解释器，使用管理员支持的 pip 设置方式。
+不要改用控制端 pip，也不要绕过 externally managed 环境限制。
+离线时，在新的 `WHEELHOUSE` 提供适合该目标且经过批准的完整闭包，
+包含精确 harness 和 demo wheel，代替下载步骤。
+
+上面的 demo wheel 来自导出的可信 `rpnh-native-demo==0.3.0` 源码构建，
+其 `py3-none-any` 标签允许在支持的 Python 版本间复用。不要复制控制端专用的
+`rpds-py`、`websockets` 等二进制依赖，也不要混合不同 Python/ABI/平台的 wheel。
+每一个传入的 wheel 都会按所选解释器检查；即使是不相关的不兼容 wheel，也会触发
+`ENVIRONMENT_WHEEL_PLATFORM_INCOMPATIBLE`。目标 Python 或平台变化后，
+必须重新收集完整闭包。换机器时还需使用本机有效路径，重新生成
+selection/check/resolution/plan。
+
+完成任一种设置后，选择该已有解释器：
+
+```bash
 ROUTE="$WORK/existing"
 mkdir "$ROUTE"
 python "$SAMPLE/select_environment.py" --python "$EXISTING_PYTHON" --output "$ROUTE/selection.json"
 ```
 
-然后执行第 3 节。首次检查通常返回 `3`，因为 demo 插件还没安装。
+然后执行第 3 节。首次体验环境的初始检查通常返回 `3`，因为 demo 插件尚未安装。
 精确计划应添加 `rpnh-native-demo`，再装配真实 HOST，不应替换已有 harness。
-如果你选的环境需要替换已有包，先检查冲突；这些变更需要显式使用
-`--allow-existing-changes` 重新解析，并重新批准计划。
+批准前审阅所有变更。如果所选环境需要替换已有包，先检查冲突；这些变更需要显式
+使用 `--allow-existing-changes` 重新解析，并重新批准计划。
+
+解析器可能保留已有的兼容 distribution。版本 metadata 相同不能证明已安装文件
+来自 `RPNH_WHEEL`；精确候选版验收需要上面的全新体验环境，或单独核对安装载荷。
+HOST 由该 harness 提供，插件来自精确 demo wheel；准备就绪仍需要在真实目标中
+完成 HOST 装配和 after-check。
 
 ## 2B. 从精确 wheel 创建新 venv
 
@@ -95,6 +136,7 @@ python "$SAMPLE/select_environment.py" --python "$EXISTING_PYTHON" --output "$RO
 负责。先设置以下变量，再执行第 3 节：
 
 ```bash
+WHEELHOUSE="$CONTROL_WHEELHOUSE"
 ROUTE="$WORK/new-venv"
 mkdir "$ROUTE"
 python "$SAMPLE/select_environment.py" --python "$CONTROL_PYTHON" \
@@ -110,6 +152,7 @@ python "$SAMPLE/select_environment.py" --python "$CONTROL_PYTHON" \
 选另一个尚不存在的目标，形成独立接收方路径，而不是复用前一条路径的 receipt：
 
 ```bash
+WHEELHOUSE="$CONTROL_WHEELHOUSE"
 ROUTE="$WORK/setup-document"
 mkdir "$ROUTE"
 python "$SAMPLE/select_environment.py" --python "$CONTROL_PYTHON" \
@@ -125,10 +168,13 @@ ZIP 和包锁仍保持不变。
 
 ## 3. 检查、解析、审阅并准备所选路径
 
-每选择一条路径，执行一次本节。初始检查受阻是预期行为；状态码不是 `0` 或 `3`
+每选择一条路径，执行一次本节。只从该路径的 `WHEELHOUSE` 重新构造 `WHEELS`，
+不要保留上一条路径的 wheel 参数。初始检查受阻是预期行为；状态码不是 `0` 或 `3`
 时必须停止。
 
 ```bash
+WHEELS=()
+for wheel in "$WHEELHOUSE"/*.whl; do WHEELS+=(--wheel "$wheel"); done
 if rpnh package check-environment "${MATERIAL[@]}" \
   --selection "$ROUTE/selection.json" --output "$ROUTE/check.json"; then
   CHECK_STATUS=0
@@ -187,6 +233,15 @@ rpnh net --run "$RUN_DIR" --view --no-open
 它读取真正 owner 命令明确保存的私有结果文件，不能为手工编造的 JSON 认证。
 普通 stdout 仍只展示引用和计数；结果字节只写入明确选择的私有 `--output` 文件。
 
+`run --output` 应选择位于已有可写目录中的新文件名，并放在尚不存在的运行目录之外。
+CLI 会在请求业务运行授权前预留私有文件；已有文件或符号链接、父目录不存在或目标
+不可写都会阻止启动。取消时只清理 CLI 自己的空预留文件。如果运行已返回，但结果
+保存失败，命令以非零状态退出并报告 `ENVIRONMENT_RESULT_DELIVERY_FAILED`；stdout
+仍保留该次运行的脱敏引用和停止原因。CLI 会尽可能清理自己的不完整输出，绝不删除
+替换后的文件。不要把残留文件当作完整结果，也不要为恢复交付而重跑业务。
+保留运行目录及返回引用，用 `rpnh net --run "$RUN_DIR"` 查看已有 Registry/运行；
+查看器不会重新导出 terminal 正文。
+
 查看器会打印本地 loopback URL，请在自己的浏览器打开。查看 request → operation →
 result、已完成操作及其 checkpoint/token 引用；**Show resources** 会显示注册的
 插件能力。查看器只读，不授予执行权限，图像也不能单独证明业务结果。按 Ctrl-C
@@ -232,7 +287,7 @@ python "$SAMPLE/verify_result.py" --result "$ROUTE/custom-result.json" --expecte
 `build_package.py` 展示了这个固定 `demo/add` 示例的真实公开 SDK 作者流程：
 
 ```bash
-python -m pip install --no-index --find-links "$WORK/wheelhouse" rpnh-native-demo==0.3.0
+"$CONTROL_PYTHON" -m pip install --no-index --find-links "$CONTROL_WHEELHOUSE" "$NATIVE_WHEEL"
 python "$SAMPLE/build_package.py" --output "$WORK/rebuilt-stock-package"
 cmp "$SAMPLE/native-add-v2.zip" "$WORK/rebuilt-stock-package/native-add-v2.zip"
 ```

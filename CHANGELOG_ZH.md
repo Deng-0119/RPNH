@@ -6,7 +6,7 @@ metadata:
   audience: user-and-developer
   language: zh-CN
   counterpart: CHANGELOG.md
-  revision: "2026-10-07.2"
+  revision: "2026-10-07.3"
   status: v0.1.0rc2-unreleased
 ---
 
@@ -15,6 +15,16 @@ metadata:
 # 变更记录
 
 ## 未发布
+
+- 分享包运行现在在启动 owner 前预留全新的私有输出；若运行后的结果交付失败，
+  CLI 保留不含正文的 run 引用，报告独立的交付错误，不重跑业务操作。双语复用教程
+  改用所选接收 Python 收集独立的依赖 wheel 闭包，继续保留严格兼容性校验。
+- AutomationBench 现在在分派前保存不可变的 materialized initial-world 快照和来源记录。
+  报告仅公开摘要元数据，私有导出保留对应证据。此被动捕获不固定时钟、不改变
+  world／tools／prompt，不修改评分资格，也不替换历史结果。
+- RRSI 现在逐阶段保存 campaign 进度，保留明确分类的不完整结果、已有 child 引用及
+  失败调用观察。报告区分 input-port 调用和可见响应 usage，与未知的物理请求总数／
+  成本；协作停止 callback 通过既有 owner-stop 路径传递，不改变评分、候选决策或重试策略。
 
 - 为尚未发布的本地构建物使用独立的 `0.1.0rc2` 版本，使普通 pip 升级能够替换
   历史 `0.1.0rc1` 二进制，避免成功退出却保留旧代码。此版本变更不发布新版本，

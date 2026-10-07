@@ -22,6 +22,8 @@ AutomationBench 的业务 SaaS 仍是本地模拟世界。
 
 2026-10-06公开记录：freeze04首轮18题为5 PASS / 9 FAIL / 4 BLOCKED；独立repair四题为1 PASS / 3 FAIL。旧14道已评分题未重跑。 [结果与限制](PUBLIC_RESULTS_20261006_ZH.md).
 
+- [显式 API 契约可见性对照条件](docs/CONFIGURATION_COMPARISON_ZH.md)
+
 ## 查看已保留结果
 
 以下命令不需要安装 package，不调用模型，也不写文件：

@@ -5,6 +5,7 @@ on resume. Logs prove environment execution, not subsequent model consumption.
 """
 from __future__ import annotations
 import copy
+import json
 import os
 from pathlib import Path
 import socketserver
@@ -12,6 +13,7 @@ import tempfile
 import threading
 from .constants import OPERATION_TIMEOUT_SECONDS, TOOLS
 from .io import append, now, receive, replace_checkpoint, send, sha
+from .configuration_condition import overlay_search, pre_dispatch_error, selected
 
 
 class Broker:
@@ -49,11 +51,36 @@ class Broker:
                 return {"ok": False, "error": "world_owner_closed_or_checkpoint_failed"}
             self.sequence += 1
             seq = self.sequence
+            condition = selected(self.upstream)
+            if condition is not None:
+                error = pre_dispatch_error(request["tool"], request["arguments"])
+                if error is not None:
+                    response = {"ok": True, "result": json.dumps(error), "request_sequence": seq}
+                    # A rejection is a returned tool result, never an upstream
+                    # dispatch. Preserve the original arguments privately.
+                    append(self.attempt / "tool_events.jsonl", {
+                        "kind": "pre_dispatch_rejected", "at": now(), "sequence": seq,
+                        "request": request, "request_sha256": digest,
+                        "response": response, "configuration_condition": condition,
+                        "upstream_dispatched": False, "effect_status": "not_started"})
+                    self.cache[key] = (digest, response)
+                    return copy.deepcopy(response)
             append(self.attempt / "tool_events.jsonl", {"kind": "dispatch_started", "at": now(),
                    "sequence": seq, "request": request, "request_sha256": digest})
             try:
                 raw = self.upstream.dispatch(self.state, request["tool"], request["arguments"])
-                response = {"ok": True, "result": raw, "request_sequence": seq}
+                visible = raw
+                if condition is not None and request["tool"] == "api_search":
+                    visible, endpoints = overlay_search(raw)
+                    append(self.attempt / "api_search_metadata_events.jsonl", {
+                        "schema": "rpnh-ab/api-search-metadata/v1", "at": now(),
+                        "sequence": seq, "request_sha256": digest,
+                        "configuration_condition": condition,
+                        "raw_upstream_result": raw, "actor_visible_result": visible,
+                        "raw_upstream_sha256": sha(raw), "actor_visible_sha256": sha(visible),
+                        "changed_endpoint_ids": endpoints,
+                        "proves_subsequent_model_consumption": False})
+                response = {"ok": True, "result": visible, "request_sequence": seq}
             except Exception as exc:
                 response = {"ok": False, "error": f"{type(exc).__name__}: {exc}", "request_sequence": seq}
             self.cache[key] = (digest, response)

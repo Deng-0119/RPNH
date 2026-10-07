@@ -41,3 +41,30 @@ fixture, gate, and smoke check frozen in `protocol.example.json`.
 
 Runs use `application_petri_conformance/v1` with the B0 recovery profile. Source
 identity is recorded through explicit protocol, run, and resource references.
+
+## Execution-control reporting revision
+
+`formal_reporting.py` writes replace-only application snapshots. It is not an
+execution ledger authority: started/returned/failed/interrupted child entries
+only describe what this coordinator observed, with Registry references when
+available. `completed_evaluations` contains only completed evaluations; unfinished
+trials are retained in `child_runs` without synthesizing aggregates. The existing
+v1 report envelope is retained with `execution_control_version` identifying the
+new observation/control behavior. Only explicitly allowlisted transport codes
+are public; arbitrary failure codes and exception messages are omitted.
+
+`formal_execution.py` composes the existing `ExecutionServices` callback and
+`Harness.request_owner_stop`. A stop is latched once, checked before execution,
+at dispatcher preparation, and through a supporting transport's callback. An
+already admitted operation follows the core's existing settlement rules; durable
+completion wins over a racing stop. The worker pool drains before returning.
+This example creates no new interruption routes and makes no promise to kill
+an uncooperative legacy port. No new OS signal or CLI cancellation UX is added.
+
+These changes do not identify causes of historical experiments. Effective
+profile/source provenance remains more complete in child Registries than in the
+top-level report. The frozen `safe_missing_retry_max=1` allowance remains inactive
+at application level; zero retries are performed. The existing Digester limit
+is 6000 digest characters with the shared execution target's token limit; this
+revision does not reinterpret the frozen `max_output_tokens` field or change it.
+Those provenance and unit-contract improvements require separate follow-up.

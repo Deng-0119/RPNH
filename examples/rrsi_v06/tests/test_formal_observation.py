@@ -90,7 +90,13 @@ def test_observation_uses_exact_public_attempt_and_response() -> None:
         "provider_attempt:" + "1" * 32)
     assert rows[0]["submission_state"] == "response_observed"
     assert usage_summary(rows) == {
+        "input_port_invocations": 1,
         "physical_attempts": 1,
+        "physical_attempts_semantics": "deprecated_alias_of_input_port_invocations",
+        "usage_scope": "visible_final_responses_only",
+        "provider_physical_calls": None,
+        "provider_physical_total_tokens": None,
+        "provider_physical_cost_complete": False,
         "response_observed_attempts": 1,
         "known_usage_attempts": 1,
         "unknown_usage_attempts": 0,
@@ -143,3 +149,90 @@ def test_usage_summary_does_not_treat_invalid_raw_total_as_known(
     }])
     assert summary["known_usage_attempts"] == 0
     assert summary["total_tokens"] is None
+
+
+@pytest.mark.parametrize("error", [KeyboardInterrupt("private detail"),
+                                   SystemExit("private detail"),
+                                   TimeoutError("private detail")])
+def test_observation_retains_aborted_invocation_without_exception_payload(error):
+    class Port(_SuccessPort):
+        def request_once(self, _attempt):
+            raise error
+
+    port = ObservedInputPort(Port())
+    with pytest.raises(type(error)) as caught:
+        port.request_once(_attempt())
+    assert caught.value is error
+    rows = port.observations()
+    assert len(rows) == 1
+    assert rows[0]["submission_state"] == "unknown"
+    assert rows[0]["error_type"] == type(error).__name__
+    assert "private detail" not in json.dumps(rows)
+
+
+def test_malformed_response_is_observed_and_classified_without_retry():
+    class Port(_SuccessPort):
+        def request_once(self, _attempt):
+            return b"private non-JSON body"
+
+    port = ObservedInputPort(Port())
+    with pytest.raises(ValueError):
+        port.request_once(_attempt())
+    row, = port.observations()
+    assert row["submission_state"] == "response_observed"
+    assert row["outcome"] == "unclassified_exception"
+    assert row["canonical_response"] is None
+    assert "private non-JSON" not in json.dumps(row)
+
+
+def test_interruptible_method_receives_exact_callback_and_preserves_typed_stop():
+    from cpn.rpnh.llm_contracts import LLMInputPortInterrupted
+    callback = lambda: True
+    error = LLMInputPortInterrupted(submission_state="submission_unknown")
+
+    class Port(_SuccessPort):
+        def request_once(self, _attempt):
+            raise AssertionError("ordinary request must not be called")
+
+        def request_once_interruptible(self, attempt, *, interruption_requested):
+            assert interruption_requested is callback
+            raise error
+
+    port = ObservedInputPort(Port())
+    with pytest.raises(LLMInputPortInterrupted) as caught:
+        port.request_once_interruptible(_attempt(), interruption_requested=callback)
+    assert caught.value is error
+    row, = port.observations()
+    assert row["outcome"] == "owner_interrupted"
+    assert row["submission_state"] == "submission_unknown"
+
+
+def test_pre_stopped_legacy_port_does_not_dispatch():
+    from cpn.rpnh.llm_contracts import LLMInputPortInterrupted
+
+    class Port(_SuccessPort):
+        def request_once(self, _attempt):
+            raise AssertionError("legacy request must not be called")
+
+    port = ObservedInputPort(Port())
+    with pytest.raises(LLMInputPortInterrupted):
+        port.request_once_interruptible(_attempt(), interruption_requested=lambda: True)
+    assert port.observations()[0]["submission_state"] == "not_submitted"
+
+
+@pytest.mark.parametrize("code, expected", [
+    ("connection_lost", "connection_lost"),
+    ("response_headers_timeout", "response_headers_timeout"),
+    ("secret=provider-private-token", "input_port_failure"),
+])
+def test_only_bounded_public_failure_codes_are_exported(code, expected):
+    class Port(_SuccessPort):
+        def request_once(self, _attempt):
+            raise LLMInputPortFailure("submission_unknown",
+                                     submission_state="submission_unknown",
+                                     failure_code=code)
+
+    port = ObservedInputPort(Port())
+    with pytest.raises(LLMInputPortFailure):
+        port.request_once(_attempt())
+    assert port.observations()[0]["failure_code"] == expected

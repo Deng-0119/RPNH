@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: package-reuse-example.md
-  revision: "2026-10-07.1"
+  revision: "2026-10-07.2"
   status: source-reviewed-pre-release
 ---
 
@@ -26,7 +26,7 @@ metadata:
 教程覆盖：
 
 1. 预览惰性包，并重算其精确包锁
-2. 收集声明依赖的完整本地 wheel 闭包
+2. 使用所选目标 Python 收集声明依赖的完整本地 wheel 闭包，不混合不同 ABI/平台的 wheel
 3. 选择已有解释器、尚不存在的新 venv，或本地人员/agent 操作说明路径
 4. 对同一个精确包目标执行检查、解析、规划，并审阅 setup 文档
 5. 授权真正的安装与 HOST 装配，再检查其精确绑定
@@ -36,6 +36,11 @@ metadata:
 三条路径只有接收环境选择不同。ZIP、manifest、包锁、入口和声明需求摘要保持一致。
 只改输入需要新的 owner 请求和运行目录；修改图、插件、配置、schema 或资源字节，
 则必须重新生成包材料并重新准备接收环境。
+
+默认体验环境使用控制端 Python 创建。如果选择另一个已有 Python，按教程在该
+解释器下为精确 harness/demo wheel 及其全部传递依赖收集独立闭包，并针对每条路径
+重新构造 wheel 参数。解析器可能保留已有兼容包；版本 metadata 相同并不能证明
+它们来自所选候选 wheel。精确候选验收仍需安装载荷证据和真实 HOST 装配。
 
 此纯原生示例不需要 provider 或数值计算包。可信 HOST 是已有 `rpnh-native/v1`，
 操作是已有 `demo/add`，没有另外编造工作流或运行时。

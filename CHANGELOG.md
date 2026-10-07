@@ -6,7 +6,7 @@ metadata:
   audience: user-and-developer
   language: en
   counterpart: CHANGELOG_ZH.md
-  revision: "2026-10-07.2"
+  revision: "2026-10-07.3"
   status: v0.1.0rc2-unreleased
 ---
 
@@ -15,6 +15,22 @@ metadata:
 # Changelog
 
 ## Unreleased
+
+- Package runs now reserve a new private output before owner startup. If result
+  delivery later fails, the CLI preserves redacted run references and reports a
+  distinct delivery error without rerunning the business operation. The bilingual
+  reuse guide now collects a separate dependency wheel closure with the selected
+  receiver Python and retains strict compatibility checks.
+- AutomationBench now retains an immutable materialized initial-world snapshot
+  and provenance before dispatch. Reports expose only summary metadata, and
+  private exports retain the corresponding evidence. This passive capture does
+  not freeze the clock, alter the world/tools/prompts, change scoring eligibility,
+  or replace historical results.
+- RRSI now checkpoints campaign progress and retains typed incomplete outcomes,
+  earlier child references, and observed failed invocations. Reports distinguish
+  input-port invocations and visible-response usage from unknown physical request
+  totals/costs. Cooperative stop callbacks are forwarded through the existing
+  owner-stop path; the grading, candidate decisions, and retry policy are unchanged.
 
 - Prepared an unreleased `0.1.0rc2` local distribution identity so normal pip
   upgrades replace the historical `0.1.0rc1` binary instead of silently retaining

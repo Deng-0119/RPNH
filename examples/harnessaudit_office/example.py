@@ -86,6 +86,10 @@ def configure(args: argparse.Namespace) -> int:
             "max_output_tokens": 512, "transport_status": "ready",
         },
     }
+    condition = getattr(args, "configuration_condition", None)
+    if condition:
+        document["configuration_condition"] = condition
+        document["condition_id"] = condition
     output.parent.mkdir(parents=True, exist_ok=True)
     with output.open("x", encoding="utf-8") as stream:
         json.dump(document, stream, ensure_ascii=False, indent=2)
@@ -110,12 +114,18 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--judge-effort", required=True)
     p.add_argument("--output", type=Path, required=True)
     p.add_argument("--authorize", action="store_true", help="mark these user-selected routes authorized; still makes no call")
+    p.add_argument("--configuration-condition", choices=("office-public-discovery-workflow-v1",),
+                   help="explicit opt-in public discovery/evidence/action/readback condition; baseline remains the default")
     p = sub.add_parser("prepare", help="save only the selected task's model-visible inputs; no model call")
     p.add_argument("--task-id", choices=TASKS, default="off-t1")
     p.add_argument("--audit-root", type=Path, required=True)
     p.add_argument("--output", type=Path, required=True)
     p = sub.add_parser("check-config", help="inspect execution/scoring readiness separately; no model call")
     p.add_argument("--config", type=Path, required=True)
+    p = sub.add_parser("plan-condition", help="freeze a comparison plan from saved public input; no model/backend/Registry")
+    p.add_argument("--config", type=Path, required=True)
+    p.add_argument("--public-input", type=Path, required=True)
+    p.add_argument("--output", type=Path, required=True)
     for name, help_text in (("run", "run one fresh model-backed task"), ("score", "score an existing execution; may call judge models")):
         p = sub.add_parser(name, help=help_text)
         p.add_argument("--config", type=Path, required=True)
@@ -139,9 +149,9 @@ def main(argv: list[str] | None = None) -> int:
                 raise ValueError("audit-root must point to the installed HarnessAudit source checkout")
             sys.path.insert(0, str(audit_root))
         from rpnh_ha.cli import main as bridge_main
-        names = {"prepare": "prepare", "check-config": "live-readiness", "run": "live-execute", "score": "score-full", "reproject": "reproject-live"}
+        names = {"prepare": "prepare", "check-config": "live-readiness", "run": "live-execute", "score": "score-full", "reproject": "reproject-live", "plan-condition": "plan-condition"}
         forwarded = [names[args.command]]
-        for field in ("task_id", "config", "audit_root", "run_root", "output"):
+        for field in ("task_id", "config", "audit_root", "run_root", "output", "public_input"):
             value = getattr(args, field, None)
             if value is not None:
                 forwarded.extend(("--" + field.replace("_", "-"), str(value)))

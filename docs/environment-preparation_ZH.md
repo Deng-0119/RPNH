@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: environment-preparation.md
-  revision: "2026-10-07.1"
+  revision: "2026-10-07.2"
   status: source-reviewed-pre-release
 ---
 
@@ -63,6 +63,9 @@ owner request，要求输入它的身份。非交互调用者使用同一 API �
 `--output RUN.json` 文件。没有 `--output` 时该选项会被拒绝；标准输出仍只包含公开状态投影。
 结果通过既有且已授权的 Registry owner 读取。这个选项不会把准备 receipt 或进程退出改成
 业务成功证据。
+`run --output` 会在业务授权前预留私有文件；返回后的结果保存失败会报告
+`ENVIRONMENT_RESULT_DELIVERY_FAILED` 并保留 stdout 中的脱敏运行引用，不应重跑业务来
+恢复交付。输出路径要求、取消清理和失败处理见[完整教程](../examples/package_reuse/README_ZH.md)。
 
 检查已准备环境时用 `--binding` 替换 `--selection`，并给出精确 `--resolved-selections`。
 new_venv selection 明确绝对 base_executable 和尚不存在的 prefix；binding 记录实际解释器和
@@ -116,7 +119,7 @@ owner 控制传输不可用（包括 AF_UNIX 被拒绝）是真实运行边界�
 而不是重复建立 writer；需要恢复时沿用已有明确 owner／resume 协议。安装、装配、漂移及业务
 运行失败保留各自阶段和真实的部分证据。
 
-退出码：0 合同操作完成；2 参数／合同错误；3 缺项、未解析或不兼容；4 需要授权或准备不完整；
+退出码：0 合同操作完成；2 参数／合同／结果交付错误；3 缺项、未解析或不兼容；4 需要授权或准备不完整；
 5 漂移／中断。Python launcher 仅在真实 owner／控制 socket 建立后返回 ExistingRunHandle；
 handle.wait() 取得既有 run/task/net 及 terminal 事实，handle.request_stop() 向同一个 owner 发出
 停止信号，CLI 等待该 handle。交给既有 owner 后沿用其真实停止／terminal 语义。自动测试离线执行，真实

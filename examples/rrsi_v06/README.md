@@ -85,3 +85,34 @@ evidence. Scripted tests use `injected_test_runners`; their structural result is
 recorded in `execution_evidence.structural_campaign_complete`. Read
 `round_decisions`, the H0/final evolve and heldout aggregates, and `usage` to
 inspect adoption, scores, and token coverage.
+
+## Partial reports, usage, and cooperative stop
+
+Execution-control revision `rrsi_v06/execution_control/v2` keeps the frozen
+protocol, prompts, scorer, selection formula, and B0 no-application-retry policy.
+`formal-report.json` is atomically checkpointed before/after child execution.
+`report_status` is `running`, `incomplete`, or `completed`; this describes report
+execution, independently of `formal_rrsi_v06_local_complete`. An abort preserves
+known child references, completed child results/evaluations, and observed input
+attempts. `termination` records the stage and error class without exception text.
+A failed child has no invented reward. The original exception is still raised.
+If writing fails, the last valid snapshot may remain `running`; sanitized
+secondary-error notes accompany the original exception. A killed process or
+unavailable storage cannot guarantee a final report.
+
+`usage.roles.input_port_invocations` / `usage.policy.input_port_invocations` counts calls to the neutral input port. The legacy
+`physical_attempts` value remains a deprecated alias with explicit semantics;
+it does not count adapter probes or recovery calls. `total_tokens` and the
+existing method's `cost_comparable` cover visible final-response usage only.
+`provider_physical_calls` and `provider_physical_total_tokens` remain unknown,
+and `provider_physical_cost_complete` is false. Reconcile transport details with
+the private adapter audit; never publish credentials or raw exception payloads.
+
+Python callers can pass `interruption_requested=<callable>` to
+`run_formal_campaign`, `run_policy_trial`, or `run_role_session`. The callback
+reaches the existing Harness owner-stop and interruptible input-port boundary.
+A legacy port can stop before submission but cannot promise in-flight
+cancellation. The CLI does not install a new signal handler, and this revision
+does not add resubmission, resume logic, or checkpoint routes. A caller should
+use a cooperative stop callback for orderly cancellation. Standard interrupts
+are recorded when they unwind through the report boundary.

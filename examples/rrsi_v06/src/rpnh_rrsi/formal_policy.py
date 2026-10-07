@@ -7,7 +7,6 @@ ledger remain the authority for the execution itself.
 from __future__ import annotations
 
 import ast
-from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
 import json
 from pathlib import Path, PurePosixPath
@@ -16,7 +15,6 @@ from typing import Any, Mapping, Sequence
 
 from jsonschema import Draft7Validator, ValidationError
 
-from cpn.components.execution_services import ExecutionServices
 from cpn.components.registered_host_llm import (
     EXECUTION_PROVENANCE_DOCUMENT,
     EXECUTION_PROVENANCE_SCHEMA,
@@ -26,7 +24,6 @@ from cpn.components.registered_host_llm import (
     registered_host_llm_schema_data,
 )
 from cpn.rpnh.control_server import OwnerEventLoop
-from cpn.rpnh.harness import Harness
 from cpn.rpnh.module import ModuleDeclaration
 from cpn.rpnh.petri_contracts import (
     ArcDeclaration, BindingContext, PNFragment, PlaceDeclaration,
@@ -40,6 +37,8 @@ from cpn.rpnh.registry.schema_catalog import SchemaCatalog, canonical_json
 from cpn.rpnh.resource_access import ResourceReadContract
 from cpn.rpnh.run import OwnerInput, start_run
 
+
+from .formal_execution import child_failure_refs, close_child, execute_child
 
 SCHEMA_PREFIX = "application/rrsi_v06/formal_policy"
 POLICY_REQUEST = f"{SCHEMA_PREFIX}/request/v1"
@@ -528,7 +527,7 @@ def _version_ref(ref) -> dict[str, str]:
 
 def _run_policy_trial_unchecked(*, run_dir: Path,
                                 request: Mapping[str, Any], selection,
-                                llm_input_port=None) -> dict[str, Any]:
+                                llm_input_port=None, interruption_requested=None) -> dict[str, Any]:
     """Low-level trial primitive; callers must not label it a formal campaign."""
     from cpn.llm_adapters.config import LLMExecutionSelection
     if not isinstance(selection, LLMExecutionSelection):
@@ -545,6 +544,8 @@ def _run_policy_trial_unchecked(*, run_dir: Path,
         _RUNTIME_CONTEXTS[occurrence_id] = _PolicyRuntime(destination, sink)
     created_port = False
     event_loop = None
+    owner = None
+    primary_error = None
     try:
         if llm_input_port is None:
             from cpn.llm_adapters import build_llm_input_port
@@ -566,11 +567,9 @@ def _run_policy_trial_unchecked(*, run_dir: Path,
                           command_id=f"rrsi-v06:formal-policy:{occurrence_id}:fresh", catalog=policy_catalog(),
                           host_execution_bindings=bindings)
         event_loop = OwnerEventLoop(owner, destination / "owner.sock")
-        services = ExecutionServices(owner=owner, event_loop=event_loop, llm_input_port=llm_input_port)
-        with ThreadPoolExecutor(max_workers=1) as workers:
-            harness_result = Harness(owner=owner, event_loop=event_loop,
-                                     prepare_dispatcher=services.prepare_dispatcher,
-                                     submit_operation=workers.submit, max_in_flight=1).exact_execute()
+        harness_result = execute_child(
+            owner=owner, event_loop=event_loop, llm_input_port=llm_input_port,
+            interruption_requested=interruption_requested)
         if (harness_result.stop_reason != "terminal" or not harness_result.goal_reached
                 or harness_result.terminal_evidence_ref is None or len(harness_result.goal_resource_refs) != 1):
             raise RuntimeError("formal policy did not reach one terminal result")
@@ -586,15 +585,19 @@ def _run_policy_trial_unchecked(*, run_dir: Path,
                 "terminal_evidence_ref": _version_ref(harness_result.terminal_evidence_ref),
                 "output_ref": _resource_ref(output_ref), "transition_trace": trace,
                 "result": matches[0]["value"]}
+    except BaseException as exc:
+        primary_error = exc
+        child_failure_refs(exc, owner)
+        raise
     finally:
-        if event_loop is not None:
-            event_loop.close()
-        if created_port and llm_input_port is not None:
-            close = getattr(llm_input_port, "close", None)
-            if callable(close):
-                close()
-        with _RUNTIME_LOCK:
-            _RUNTIME_CONTEXTS.pop(occurrence_id, None)
+        try:
+            close_child(owner=owner, event_loop=event_loop,
+                        input_port=llm_input_port, created_port=created_port,
+                        primary_error=primary_error)
+        finally:
+            with _RUNTIME_LOCK:
+                _RUNTIME_CONTEXTS.pop(occurrence_id, None)
+
 
 
 def _formal_request(protocol, request: Mapping[str, Any], selection) -> dict[str, Any]:
@@ -654,13 +657,14 @@ def _formal_request(protocol, request: Mapping[str, Any], selection) -> dict[str
 
 
 def run_policy_trial(*, run_dir: Path, protocol, request: Mapping[str, Any],
-                     selection, llm_input_port=None) -> dict[str, Any]:
+                     selection, llm_input_port=None, interruption_requested=None) -> dict[str, Any]:
     """Execute one protocol-bound formal Policy-agent trial."""
     destination = Path(run_dir).resolve()
     value = _formal_request(protocol, request, selection)
     return _run_policy_trial_unchecked(
         run_dir=destination, request=value, selection=selection,
-        llm_input_port=llm_input_port)
+        llm_input_port=llm_input_port,
+        interruption_requested=interruption_requested)
 
 
 __all__ = ("POLICY_CONFIG", "POLICY_MODEL_CONFIG", "POLICY_REQUEST", "POLICY_RESPONSE", "POLICY_RESULT", "POLICY_STATE",

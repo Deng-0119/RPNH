@@ -31,19 +31,20 @@ rpnh examples export --example package_reuse --output "$WORK/tutorial"
 cd "$WORK/tutorial"
 SAMPLE="$PWD/examples/package_reuse"
 CONTROL_PYTHON="$(python -c 'import sys; print(sys.executable)')"
-mkdir "$WORK/wheelhouse"
-python -m pip download --only-binary=:all: --dest "$WORK/wheelhouse" "$RPNH_WHEEL"
-python -m pip wheel --no-deps --wheel-dir "$WORK/wheelhouse" ./examples/native_plugin
-WHEELS=()
-for wheel in "$WORK"/wheelhouse/*.whl; do WHEELS+=(--wheel "$wheel"); done
+CONTROL_WHEELHOUSE="$WORK/wheelhouse"
+mkdir "$CONTROL_WHEELHOUSE"
+"$CONTROL_PYTHON" -m pip download --only-binary=:all: --dest "$CONTROL_WHEELHOUSE" "$RPNH_WHEEL"
+"$CONTROL_PYTHON" -m pip wheel --no-deps --wheel-dir "$CONTROL_WHEELHOUSE" ./examples/native_plugin
+NATIVE_WHEEL="$CONTROL_WHEELHOUSE/rpnh_native_demo-0.3.0-py3-none-any.whl"
+test -f "$NATIVE_WHEEL" || exit 1
 MATERIAL=(--archive "$SAMPLE/native-add-v2.zip" --lock "$SAMPLE/native-add-v2.lock.json" --entry main)
 rpnh package preview "$SAMPLE/native-add-v2.zip"
 rpnh package resolve "$SAMPLE/native-add-v2.zip" > "$WORK/recomputed-package-lock.json"
 cmp "$SAMPLE/native-add-v2.lock.json" "$WORK/recomputed-package-lock.json"
 ```
 
-Only these `pip` acquisition/build steps use the package index. The package
-resolver and preparation installer use the explicitly supplied local wheel
+Only the explicit `pip` acquisition/build steps in this walkthrough use the
+package index. The package resolver and preparation installer use the supplied local wheel
 bytes; they never download or silently fill missing dependencies. If offline,
 provide the same wheel closure from your approved wheel cache instead.
 
@@ -75,25 +76,69 @@ are in each generated `resolution.json`, not guessed from this list. Build-only
 
 ## 2A. Use an existing environment
 
-For a safe first trial, create a user-owned existing environment containing only
-the same harness and its declared dependencies. To use your own environment,
-replace `EXISTING_PYTHON` with its absolute Python path and skip its creation and
-installation commands. Review any planned changes before approving them.
+Choose **one** of the following setups, then use the common selection block.
+For a safe first trial, create a user-owned existing environment with the same
+Python as the controller, containing only the exact harness and its dependencies:
 
 ```bash
-python3 -m venv "$WORK/existing-python"
+"$CONTROL_PYTHON" -m venv "$WORK/existing-python"
 EXISTING_PYTHON="$WORK/existing-python/bin/python"
-"$EXISTING_PYTHON" -m pip install --no-index --find-links "$WORK/wheelhouse" "$RPNH_WHEEL"
+WHEELHOUSE="$CONTROL_WHEELHOUSE"
+"$EXISTING_PYTHON" -m pip install --no-index --find-links "$WHEELHOUSE" "$RPNH_WHEEL"
+```
+
+Alternatively, use your own existing CPython 3.11+ environment. Keep the controller
+active; do not activate the target. Resolve both exact local roots and all their
+transitive dependencies with the **target interpreter** into a new, separate
+wheelhouse. This acquisition does not install them into that environment:
+
+```bash
+read -r -p 'Absolute path to your existing Python: ' EXISTING_PYTHON
+test -x "$EXISTING_PYTHON" || exit 1
+"$EXISTING_PYTHON" -m pip --version
+WHEELHOUSE="$WORK/wheelhouse-existing"
+mkdir "$WHEELHOUSE"
+"$EXISTING_PYTHON" -m pip download --only-binary=:all: --dest "$WHEELHOUSE" \
+  "$RPNH_WHEEL" "$NATIVE_WHEEL"
+```
+
+The target must have working pip before this block. If it does not, stop; in a
+user-owned environment where CPython supports it, bootstrap with
+`"$EXISTING_PYTHON" -m ensurepip --upgrade`, then retry in a fresh shell/work directory.
+For a managed interpreter, use its administrator-supported pip setup instead.
+Do not substitute controller pip or bypass an externally managed environment.
+Offline, supply an approved complete wheel closure for this target in the new
+`WHEELHOUSE`, including the exact harness and demo wheels, instead of downloading.
+
+The demo wheel above is the exported trusted `rpnh-native-demo==0.3.0` build;
+its `py3-none-any` tag permits reuse across the supported Python versions. Do not
+copy controller-specific binary dependencies such as `rpds-py` or `websockets`,
+or mix Python/ABI/platform wheel sets. Every supplied wheel is checked against
+the selected interpreter; an unrelated incompatible wheel also causes
+`ENVIRONMENT_WHEEL_PLATFORM_INCOMPATIBLE`. Changing the target Python or platform
+requires a fresh complete closure. A different machine also needs locally valid
+paths and regenerated selection/check/resolution/plan.
+
+After either setup, select that existing interpreter:
+
+```bash
 ROUTE="$WORK/existing"
 mkdir "$ROUTE"
 python "$SAMPLE/select_environment.py" --python "$EXISTING_PYTHON" --output "$ROUTE/selection.json"
 ```
 
-Continue with section 3. The first check normally exits `3` because the demo
-plugin is not installed yet. The exact plan should add `rpnh-native-demo`, then
-assemble the actual HOST. It should not replace your harness. If your chosen
-existing environment needs replacements, stop to inspect the conflict; a new
-resolution with explicit `--allow-existing-changes` is required for those changes.
+Continue with section 3. The trial's first check normally exits `3` because the
+demo plugin is not installed yet. Its exact plan should add `rpnh-native-demo`,
+then assemble the actual HOST without replacing the harness. Review every planned
+change. If your chosen existing environment needs replacements, stop to inspect
+the conflict; a new resolution with explicit `--allow-existing-changes` is
+required for those changes.
+
+The resolver can keep compatible installed distributions. Matching version
+metadata alone does not prove those files came from `RPNH_WHEEL`; exact-candidate
+verification needs the fresh trial above or separate installed-payload evidence.
+The HOST is provided by that harness, and the plugin by the exact demo wheel;
+readiness still requires the actual target HOST assembly and after-check.
 
 ## 2B. Create a new venv from the exact wheels
 
@@ -101,6 +146,7 @@ Keep the controller active. Do not pre-create `new-python`; preparation owns
 that explicitly approved action. Run section 3 using these variables:
 
 ```bash
+WHEELHOUSE="$CONTROL_WHEELHOUSE"
 ROUTE="$WORK/new-venv"
 mkdir "$ROUTE"
 python "$SAMPLE/select_environment.py" --python "$CONTROL_PYTHON" \
@@ -118,6 +164,7 @@ Use another absent target so this is a separate receiver route, not reuse of a
 previous receipt:
 
 ```bash
+WHEELHOUSE="$CONTROL_WHEELHOUSE"
 ROUTE="$WORK/setup-document"
 mkdir "$ROUTE"
 python "$SAMPLE/select_environment.py" --python "$CONTROL_PYTHON" \
@@ -134,10 +181,14 @@ there and approve that new plan. Reuse the same ZIP and package lock.
 
 ## 3. Check, resolve, review and prepare the selected route
 
-Run this block once for each route selected above. A blocked initial check is
-expected; any status other than `0` or `3` must stop the walkthrough.
+Run this block once for each route selected above. Rebuild `WHEELS` from only
+that route's `WHEELHOUSE`; do not retain a previous route's wheel arguments.
+A blocked initial check is expected; any status other than `0` or `3` must stop
+the walkthrough.
 
 ```bash
+WHEELS=()
+for wheel in "$WHEELHOUSE"/*.whl; do WHEELS+=(--wheel "$wheel"); done
 if rpnh package check-environment "${MATERIAL[@]}" \
   --selection "$ROUTE/selection.json" --output "$ROUTE/check.json"; then
   CHECK_STATUS=0
@@ -201,6 +252,19 @@ emitted by the real owner command; it cannot authenticate a manually invented
 JSON file. Normal stdout remains a reference/count projection; result bytes go
 only to the explicitly chosen private `--output` file.
 
+For `run --output`, choose a new filename in an existing writable directory
+outside the absent run directory. The CLI reserves a private file before asking
+for business-run approval; an existing file or symlink, missing parent, or
+unwritable destination blocks launch. Cancellation removes the CLI's own empty
+reservation. If the run returns but saving its result fails, the command exits
+nonzero with `ENVIRONMENT_RESULT_DELIVERY_FAILED`; stdout still contains that
+run's redacted references and stop reason. The CLI removes its own incomplete
+output where possible and never deletes a replacement file. Do not treat any
+leftover file as a complete result or rerun the business operation to recover
+delivery. Keep the run directory and returned references, and inspect the existing
+Registry/run with `rpnh net --run "$RUN_DIR"`; the viewer does not re-export the
+terminal body.
+
 The viewer prints a local loopback URL. Open it in your own browser. Look for
 request → operation → result, the completed operation and its checkpoint/token
 references; **Show resources** reveals the registered plugin capability. This
@@ -250,7 +314,7 @@ selection/check/resolve/plan/prepare for that new target. `build_package.py`
 shows the real public SDK authoring for this fixed `demo/add` example:
 
 ```bash
-python -m pip install --no-index --find-links "$WORK/wheelhouse" rpnh-native-demo==0.3.0
+"$CONTROL_PYTHON" -m pip install --no-index --find-links "$CONTROL_WHEELHOUSE" "$NATIVE_WHEEL"
 python "$SAMPLE/build_package.py" --output "$WORK/rebuilt-stock-package"
 cmp "$SAMPLE/native-add-v2.zip" "$WORK/rebuilt-stock-package/native-add-v2.zip"
 ```

@@ -39,6 +39,10 @@ def build_business_workflow(
     inventory. It does not inspect grader rules, useful tools, checkpoints, or
     a golden action path.
     """
+    from .comparison_condition import condition_of
+    if condition_of(task) is not None:
+        from .comparison_workflow import build_comparison_workflow
+        return build_comparison_workflow(task, tool_ids_by_node=tool_ids_by_node)
     from cpn.rpnh.agent_workflows import (
         AgentWorkflowArc as Arc,
         AgentWorkflowEndpoint as Endpoint,

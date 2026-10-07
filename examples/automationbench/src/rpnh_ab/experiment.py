@@ -11,6 +11,7 @@ import uuid
 from contextlib import contextmanager
 from urllib.parse import urlsplit
 from .broker import Broker
+from .configuration_condition import BASELINE, configure, freeze_plan, restore_frozen, selected
 from .cohort import plan_for_cohort, resolve_frozen_cases
 from .constants import CONDITION_ID, PUBLIC_DOMAINS, RPNH_REVIEWED_COMMIT, UPSTREAM_COMMIT
 from .io import append, file_sha, load, now, replace_checkpoint, sha, write_new
@@ -70,6 +71,48 @@ def environment_identity() -> dict:
             "adapter_sources": sources}
 
 
+def initial_evidence_sources(upstream) -> dict:
+    """Record source identities without copying paths, credentials or task data."""
+    identity = getattr(upstream, "identity", {})
+    root = Path(__file__).parent
+    sources = {path.relative_to(root).as_posix(): file_sha(path)
+               for path in sorted(root.rglob("*.py"))}
+    return {"upstream_pinned_commit": UPSTREAM_COMMIT,
+            "upstream_commit": identity.get("commit"),
+            "upstream_tracked_clean": (not identity["tracked_changes"]
+                                       if "tracked_changes" in identity else None),
+            "adapter_sources_sha256": sha(sources)}
+
+
+def preserve_initial_world(upstream, state: dict, attempt: Path) -> dict:
+    """Freeze the materialized world before the host or dispatch lane starts.
+
+    This is private evidence, not a replacement scoring input or actor input.
+    In particular, record upstream's clock as materialized; never set it here.
+    """
+    path = attempt / "world.initial.materialized.json"
+    write_new(path, upstream.dump_world(state))
+    # Read the retained bytes, not a possibly aliased live world dictionary.
+    frozen = load(path)
+    record = load(attempt / "attempt.json")
+    meta = frozen.get("meta", {})
+    write_new(attempt / "initial_world_provenance.json", {
+        "schema": "rpnh-ab/initial-world/v1", "at": now(),
+        "capture_stage": "before_host_start_and_tool_dispatch",
+        "clock_policy": "record_upstream_materialized_value_unchanged",
+        "task_id": record["id"], "attempt": record["attempt"],
+        "attempt_file_sha256": file_sha(attempt / "attempt.json"),
+        "task_contract_sha256": record["task_contract_sha256"],
+        "task_contract_file_sha256": record["task_contract_file_sha256"],
+        "sources": record["initial_evidence_sources"],
+        "world_file": path.name, "world_sha256": file_sha(path),
+        "world_byte_size": path.stat().st_size,
+        "current_time": meta.get("current_time"),
+        "allowed_services": meta.get("allowed_services"),
+    })
+    return frozen
+
+
 def plan_for(cases: list[dict], split: str) -> dict:
     expected = 600 if split == "public" else 200
     if len(cases) != expected:
@@ -84,7 +127,10 @@ def plan_for(cases: list[dict], split: str) -> dict:
 
 
 def prepare(upstream, work: Path, profile: Path, split: str | None = None, *, cohort: Path | None = None,
-            executor_host="native", host_identity=None) -> dict:
+            executor_host="native", host_identity=None, configuration_condition=BASELINE) -> dict:
+    if configuration_condition != BASELINE and executor_host != "native":
+        raise ValueError("API comparison condition currently supports only the native host")
+    condition = configure(upstream, configuration_condition)
     work = work.resolve()
     work.mkdir(parents=True, exist_ok=True)
     # Linux privacy defaults; the model never receives this directory as a tool.
@@ -100,6 +146,7 @@ def prepare(upstream, work: Path, profile: Path, split: str | None = None, *, co
         split = split or "public"
         cases = upstream.cases(split)
         plan = plan_for(cases, split)
+    plan = freeze_plan(plan, condition)
     configured = profile_identity(profile)
     conditions = {"schema": "rpnh-ab/condition/v1", "condition_id": plan["condition_id"],
           "split": split, "upstream": upstream.identity, "rpnh": installed_rpnh_identity(),
@@ -115,6 +162,8 @@ def prepare(upstream, work: Path, profile: Path, split: str | None = None, *, co
           "fallback_policy": "no adapter-created model fallback; archive registered routes; opaque provider routing may be unknown"}
     from .run_spec import benchmark_spec, execution_spec
     conditions["benchmark_spec"] = benchmark_spec(plan, upstream.schemas, business_mode="native_real_api")
+    if condition is not None:
+        conditions["configuration_condition"] = condition
     conditions["execution_spec"] = execution_spec(profile, executor_host, conditions["rpnh"], host_identity=host_identity)
     conditions["executor_host"] = executor_host
     conditions["agent"] = "one frozen actor; host-owned execution; shared world and upstream rubric"
@@ -129,8 +178,9 @@ def prepare(upstream, work: Path, profile: Path, split: str | None = None, *, co
 
 
 def doctor(upstream, profile: Path, work: Path, *, split: str | None = None,
-           cohort: Path | None = None) -> dict:
+           cohort: Path | None = None, configuration_condition=BASELINE) -> dict:
     """No paid calls: validate the selected condition and its upstream split."""
+    condition = configure(upstream, configuration_condition)
     from jsonschema import Draft7Validator
     from automationbench.rubric.registry import AssertionRegistry, STRICT_MODE
     import automationbench.rubric.assertions  # registration only
@@ -147,6 +197,7 @@ def doctor(upstream, profile: Path, work: Path, *, split: str | None = None,
         split = split or "public"
         selected_cases = upstream.cases(split)
         selected_plan = plan_for(selected_cases, split)
+    selected_plan = freeze_plan(selected_plan, condition)
     cases = upstream.cases(selected_plan["split"])
     selected_ids = {case["id"] for case in selected_cases}
     domain_counts = {}
@@ -168,10 +219,11 @@ def doctor(upstream, profile: Path, work: Path, *, split: str | None = None,
             helper_capable_cases.append(case["id"])
         domain_counts[case["domain"]] = domain_counts.get(case["domain"], 0) + 1
     spec = build_spec(work / "doctor-native-never-started", profile, "/tmp/not-started.sock",
-                      "declaration-check", public_messages(cases[0]["row"]), upstream.schemas)
+                      "declaration-check", public_messages(cases[0]["row"]), upstream.schemas,
+                      configuration_condition=condition)
     if spec.max_attempts_per_stage is not None:
         raise ValueError("unexpected cumulative model call allowance")
-    return {"schema": "rpnh-ab/doctor/v1", "at": now(), "status": "passed",
+    report = {"schema": "rpnh-ab/doctor/v1", "at": now(), "status": "passed",
             "worlds_initialized": len(cases), "domain_counts": domain_counts,
             "selected_tasks": len(selected_cases),
             "selected_split": selected_plan["split"],
@@ -186,9 +238,15 @@ def doctor(upstream, profile: Path, work: Path, *, split: str | None = None,
             "model_calls": 0, "native_worker_started": False,
             "limitations": ["not a live RPNH worker acceptance", "not a benchmark result", "not an all-tool semantic audit"]}
 
+    if condition is not None:
+        report["configuration_condition"] = condition
+    return report
+
 
 def one_attempt(upstream, case: dict, attempt: Path, profile: Path, *, executor_host="native", native_run_dir=None, control_root=None, dsh_checkout=None, stop_path=None) -> bool:
     """Return True on manual stop. Errors become retained attempts, never reruns."""
+    if selected(upstream) is not None and executor_host != "native":
+        raise ValueError("API comparison condition currently supports only the native host")
     attempt.mkdir(parents=True, exist_ok=False)
     # Freeze the private task payload before creating the attempt identity so a
     # later score revision cannot silently re-baseline changed rubric inputs.
@@ -197,20 +255,23 @@ def one_attempt(upstream, case: dict, attempt: Path, profile: Path, *, executor_
         "id": case["id"], "task_name": case["task_name"], "domain": case["domain"],
         "attempt": "a0001", "execution_mode": executor_host + "_live",
         "task_contract_sha256": case["task_contract_sha256"],
-        "task_contract_file_sha256": file_sha(attempt / "task_contract.json")})
+        "task_contract_file_sha256": file_sha(attempt / "task_contract.json"),
+        "initial_evidence_sources": initial_evidence_sources(upstream),
+        **({"configuration_condition": selected(upstream)} if selected(upstream) is not None else {})})
     write_new(attempt / "public_task.json", {"prompt": public_messages(case["row"])})
-    state, lifecycle, broker = None, {}, None
+    state, lifecycle, broker, driver = None, {}, None, None
     manual = False
     admitted = False
     host_run_dir = native_run_dir or (attempt / executor_host)
     upstream.normalization_log = attempt / "normalization_events.jsonl"
     from .drivers import get_driver
-    driver = get_driver(executor_host)
     try:
+        driver = get_driver(executor_host)
         state = upstream.start(case["row"])
+        initial_world = preserve_initial_world(upstream, state, attempt)
         write_new(attempt / "scoring_input.json", {"initial_state": state["initial_state"],
                                                    "info": state["info"]})
-        replace_checkpoint(attempt / "world.latest.json", upstream.dump_world(state))
+        replace_checkpoint(attempt / "world.latest.json", initial_world)
         with Broker(upstream, state, attempt, uuid.uuid4().hex) as broker:
             lifecycle = driver.run(run_dir=host_run_dir, profile=profile, broker=broker,
                          messages=public_messages(case["row"]), schemas=upstream.schemas,
@@ -242,7 +303,7 @@ def one_attempt(upstream, case: dict, attempt: Path, profile: Path, *, executor_
     lifecycle["executor_host"] = executor_host
     lifecycle["at"] = now()
     write_new(attempt / "lifecycle.json", lifecycle)
-    if host_run_dir.exists():
+    if driver is not None and host_run_dir.exists():
         try:
             facts = driver.project(host_run_dir, attempt)
         except Exception as exc:
@@ -262,6 +323,9 @@ def one_attempt(upstream, case: dict, attempt: Path, profile: Path, *, executor_
 def run_batch(upstream, work: Path, profile: Path, *, launch=None, progress=None) -> dict:
     plan = load(work / "plan.json")
     conditions = load(work / "conditions.json")
+    condition = restore_frozen(upstream, conditions)
+    if plan.get("configuration_condition") != condition:
+        raise ValueError("plan configuration condition differs from frozen conditions")
     if launch is None:
         raise ValueError("run requires a validated prepared launch request with host-bound acceptance")
     from .run_spec import load_launch
@@ -272,7 +336,7 @@ def run_batch(upstream, work: Path, profile: Path, *, launch=None, progress=None
     stop_path=work/'stop.request'
     if plan.get("schema") == "rpnh-ab/plan/v1":
         cases = upstream.cases(plan["split"])
-        if plan_for(cases, plan["split"]) != plan:
+        if freeze_plan(plan_for(cases, plan["split"]), condition) != plan:
             raise ValueError("resolved task plan differs from the frozen plan")
     elif plan.get("schema") == "rpnh-ab/cohort-plan/v1":
         cases = resolve_frozen_cases(upstream, plan)
@@ -293,6 +357,8 @@ def run_batch(upstream, work: Path, profile: Path, *, launch=None, progress=None
     if (doctor_record.get("selected_split") != plan["split"]
             or doctor_record.get("selected_manifest_sha256") != plan["manifest_sha256"]):
         raise ValueError("doctor check belongs to another task selection")
+    if doctor_record.get("configuration_condition") != condition:
+        raise ValueError("doctor check belongs to another configuration condition")
     if not doctor_record.get("ready_for_live_batch", False):
         raise ValueError(str(doctor_record.get("configuration_blocker", "real tool backend readiness not recorded")))
     if helper_environment() != conditions.get("business_tool_helper"):

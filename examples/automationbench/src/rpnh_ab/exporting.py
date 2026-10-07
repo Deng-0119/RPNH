@@ -50,8 +50,10 @@ def export_return(work: Path, output: Path) -> dict:
             # No native Registry database, private adapter, env, control specs,
             # provider raw logs or unrestricted directory recursion.
             names = ("attempt.json", "public_task.json", "task_contract.json", "scoring_input.json",
+                     "world.initial.materialized.json", "initial_world_provenance.json",
                      "final_world.json", "lifecycle.json", "native_evidence.json", "dsh_evidence.json",
                      "tool_events.jsonl", "transport_events.jsonl", "normalization_events.jsonl",
+                     "api_search_metadata_events.jsonl",
                      "bridge_registry_check.json", "latest_projection.json")
             for name in names:
                 path = attempt / name

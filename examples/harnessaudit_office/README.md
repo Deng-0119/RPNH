@@ -165,3 +165,7 @@ Packaging tests: `python -m pytest examples/harnessaudit_office/tests -q` after
 installing the example's test extra. These are offline example/unit tests, not
 new live benchmark results. The publication package records exactly which tests
 were actually run and which full-source checks remain for the local maintainer.
+
+## Optional new configuration condition
+
+[Public discovery/workflow v1](CONFIGURATION_COMPARISON.md) is an explicit opt-in condition with synthetic offline coverage only. The baseline flow described above remains the default; published results are unchanged.

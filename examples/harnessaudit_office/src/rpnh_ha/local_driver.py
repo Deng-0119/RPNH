@@ -13,6 +13,7 @@ from typing import Mapping
 from .office_cases import plugin_roles_for_task
 from .lifecycle import NativeTerminationUnconfirmed, OwnedProcessTree
 from .constants import OFFICE_EFFECTS
+from .comparison_condition import condition_of, effects_for, condition_manifest, POLICY_ARGUMENT
 from .driver_contract import DriverRequest, DriverResult
 from .registry_export import (
     _authority_views, _rows_for_authority, export_registry,
@@ -173,23 +174,35 @@ def _nonterminal_worker_result(
 def managed_bindings(request: DriverRequest, roles_by_node: Mapping[str, str]):
     """Project every public office tool through each node's role-bound plugin."""
     tools = {item["name"]: item for item in request.task.as_dict()["tools"]}
-    if set(tools) != set(OFFICE_EFFECTS):
+    condition = condition_of(request.task)
+    if condition != request.configuration_condition:
+        raise ValueError("driver request and public input condition disagree")
+    effects = effects_for(condition)
+    if set(tools) != set(effects):
         raise ValueError("public office tool inventory differs from the bridge catalog")
     plugin_by_role = {role: plugin for plugin, role in plugin_roles_for_task(request.task.as_dict()).items()}
     if set(roles_by_node.values()) - set(plugin_by_role):
         raise ValueError("workflow names an unbound business role")
+    def schema(tool):
+        result = public_argument_schema(tool)
+        if condition and effects[tool["name"]] == "external_write":
+            result["required"] = [POLICY_ARGUMENT]
+        return result
+
     return {
         node: {
             "tools": {
                 name: {
                     "selector": f"{plugin_by_role[role]}/{name}",
                     "description": tools[name]["description"],
-                    "input_schema": public_argument_schema(tools[name]),
+                    "input_schema": schema(tools[name]),
                 }
                 for name in sorted(tools)
+                if not condition or node.startswith("execute_") or effects[name] != "external_write"
             },
-            "admitted_effects": [
-                "pure", "external_read", "external_write"],
+            "admitted_effects": (["pure", "external_read", "external_write"]
+                                 if not condition or node.startswith("execute_")
+                                 else ["pure", "external_read"]),
         }
         for node, role in roles_by_node.items()
     }
@@ -389,6 +402,12 @@ class LocalNativeDriver:
         graph, roles_by_node = build_business_workflow(request.task)
         bindings = managed_bindings(request, roles_by_node)
         catalog = load_catalog(request.plugin_configuration)
+        if request.configuration_condition:
+            from .jsonio import write_new
+            write_new(request.run_dir.parent / "configuration_condition.json",
+                      {**condition_manifest(request.task, graph, bindings=bindings,
+                                            max_model_calls=request.limits.max_model_calls),
+                       "native_plugin_catalog_digest": catalog.digest})
         spec = AgentTaskSpec(
             run_dir=Path(request.run_dir),
             prompt=request.initial_input,

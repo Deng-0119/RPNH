@@ -42,6 +42,7 @@ class DriverRequest:
     execution_profile: Path
     plugin_configuration: dict
     limits: LiveLimits
+    configuration_condition: str | None = None
 
 
 @dataclass(frozen=True)

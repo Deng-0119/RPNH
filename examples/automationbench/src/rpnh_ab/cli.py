@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 import sys
 from .io import load, now, replace_checkpoint, write_new
+from .configuration_condition import BASELINE, CHOICES
 from .scoring import score_attempt, summarize
 
 
@@ -25,6 +26,8 @@ def main(argv=None) -> int:
             sub.add_argument("--profile", type=Path, required=True,
                              help="existing authorized native RPNH execution-selection JSON; never copied")
         if name in {"doctor", "prepare"}:
+            sub.add_argument("--configuration-condition", choices=CHOICES, default=BASELINE,
+                             help="explicit new API visibility condition; baseline is unchanged")
             selection = sub.add_mutually_exclusive_group()
             selection.add_argument("--split", choices=("public", "simple"))
             selection.add_argument("--cohort", type=Path,
@@ -128,7 +131,8 @@ def main(argv=None) -> int:
                             raise ValueError('--host dsh requires --dsh-checkout')
                         host_identity=dsh_identity(args.dsh_checkout)
                     report = prepare(upstream, args.work, profile, args.split, cohort=args.cohort,
-                                     executor_host=args.host, host_identity=host_identity)
+                                     executor_host=args.host, host_identity=host_identity,
+                                     configuration_condition=args.configuration_condition)
                     if args.launch_output:
                         if not args.acceptance:raise ValueError('--launch-output requires --acceptance')
                         report={"plan":report,"launch":write_launch(args.launch_output,work=args.work,upstream=args.upstream,
@@ -136,7 +140,8 @@ def main(argv=None) -> int:
                            dsh_checkout=args.dsh_checkout,parent_session_root=args.parent_session_root)}
                 elif args.command == "doctor":
                     report = doctor(upstream, profile, args.work,
-                                    split=args.split, cohort=args.cohort)
+                                    split=args.split, cohort=args.cohort,
+                                    configuration_condition=args.configuration_condition)
                     replace_checkpoint(args.work / "doctor.json", report)
                 else:
                     from .run_spec import load_launch

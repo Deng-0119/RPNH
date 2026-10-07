@@ -62,6 +62,8 @@ def produce(upstream, work: Path, *, host: str, dsh_checkout: Path | None = None
     """Produce the seven-case gate; never touch checked-in historical results."""
     work = Path(work).resolve()
     conditions = load(work / "conditions.json")
+    from .configuration_condition import restore_frozen
+    restore_frozen(upstream, conditions)
     benchmark, execution = conditions["benchmark_spec"], conditions["execution_spec"]
     if execution.get("executor_host") != host:
         raise ValueError("acceptance host differs from the prepared execution condition")
