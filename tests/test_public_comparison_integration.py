@@ -7,6 +7,7 @@ from copy import deepcopy
 from datetime import datetime, timedelta, timezone
 import json
 import uuid
+import pytest
 
 from cpn.frontend.comparison_context import ComparisonProvider, comparison_context
 from cpn.rpnh.collaboration import SourceQualifiedVersionRef, SourceQualifiedResourceRef
@@ -137,3 +138,215 @@ def test_actual_assembly_v9_is_selectable_with_member_hierarchy(tmp_path, monkey
         restored = comparison_context(reader, full)
         assert restored['request_echo']['source_cuts'] == result['request_echo']['source_cuts']
         assert restored['left']['graph'] == result['left']['graph']
+
+
+def native_author_world(path):
+    """Synthetic regression owner only; never business acceptance evidence."""
+    from types import SimpleNamespace
+    from test_registry_typed_exchange import world as owner_world
+    from test_native_plugins import catalog
+    from cpn.plugins.runtime import plugin_registration, build_plugin_module
+    from cpn.rpnh.collaboration import ClosedModuleAuthor
+    core, original = owner_world(path, 'native-regression', observer=True)
+    author = ClosedModuleAuthor(original.gateway, plugin_registration(catalog()), original.producer)
+    module = build_plugin_module(catalog(), 'test_plugin/add')
+    from cpn.rpnh.collaboration.materials import _elements
+    ids = {locator: 'element:' + uuid.uuid4().hex for locator in _elements(module)}
+    first = author.publish(module=module, element_ids=ids, command_id='native:first')
+    return {'core': core, 'gateway': author.gateway, 'principal': author.producer.ref,
+        'source': 'native-regression', 'owner': SimpleNamespace(task_ref=author.gateway._task_ref),
+        'author': author, 'first': first, 'module': module, 'ids': ids}
+
+
+def native_copy(w, module=None, *, lineage_only=False, rename=False, author=None):
+    module = module or w['module']
+    from cpn.rpnh.collaboration.materials import _elements
+    ids = {locator: 'element:' + uuid.uuid4().hex for locator in _elements(module)}
+    def prior(locator):
+        return locator.replace('/renamed', '/plugin').replace('/execute', '/run') if rename else locator
+    copies = {} if lineage_only else {identity: w['ids'][prior(locator)] for locator, identity in ids.items()}
+    return (author or w['author']).publish(module=module, element_ids=ids,
+        copy_sources=copies, parent_ref=w['first'].revision.revision_ref, command_id='native:copy')
+
+
+def test_native_generated_correspondence_verifies_exact_recipe_without_lowering(tmp_path, monkeypatch):
+    w = native_author_world(tmp_path / 'native')
+    copied = native_copy(w)
+    def forbidden(*args, **kwargs):
+        raise AssertionError('public reader must not invoke compiler or lowerer')
+    monkeypatch.setattr('cpn.rpnh.compiler.compile_module', forbidden)
+    monkeypatch.setattr('cpn.plugins.host.lower_plugin_operation', forbidden)
+    with public_reader(w) as reader:
+        before = counts(w)
+        projection = reader.read_public_projection(entry_ref=copied.revision.revision_ref,
+            at_cut=reader.capture_cut(w['source']))['record']
+        rows = projection['generated_correspondences']
+        assert {row['subject_kind'] for row in rows} == {'node', 'edge'}
+        assert all(row['semantic_claim'] == 'author_correspondence' and row['relation_kind'] == 'copied_from' for row in rows)
+        assert all(row['source_revision_ref'] == w['first'].revision.revision_ref.to_dict() for row in rows)
+        assert all(len(row['evidence_refs']) == 4 for row in rows)
+        assert counts(w) == before
+
+
+@pytest.mark.parametrize('change', ['config', 'operation', 'plugin', 'lineage_only'])
+def test_native_generated_correspondence_never_guesses_changed_semantics(tmp_path, change):
+    from dataclasses import replace
+    from test_native_plugins import catalog, fixture_plugin
+    from cpn.plugins import PluginCatalog, BoundPlugin
+    from cpn.plugins.runtime import plugin_registration, build_plugin_module
+    from cpn.rpnh.collaboration import ClosedModuleAuthor
+    w = native_author_world(tmp_path / change)
+    selected = catalog()
+    selector = 'test_plugin/add'
+    if change == 'config':
+        selected = PluginCatalog((BoundPlugin(fixture_plugin(), {'offset': 3}),))
+    elif change == 'plugin':
+        selected = PluginCatalog((BoundPlugin(replace(fixture_plugin(), version='2.0'), {'offset': 2}),))
+    elif change == 'operation':
+        selector = 'test_plugin/wrong'
+    registration = plugin_registration(selected)
+    known = {(row['kind'], row['key']) for row in registration.declarations()}
+    # Both immutable versions must remain available to validate the parent.
+    for row in w['author'].registration.declarations():
+        kind, key = row['kind'], row['key']
+        if (kind, key) in known:
+            assert registration.declaration(kind, key) == row
+        elif kind == 'schema':
+            registration.register_schema(key, row['schema'])
+        else:
+            getattr(registration, 'register_' + kind)(key, w['author'].registration.resolve(kind, key),
+                identity=row['identity'], contracts=row['contracts'])
+    author = ClosedModuleAuthor(w['gateway'], registration, w['author'].producer)
+    copied = native_copy(w, build_plugin_module(selected, selector), author=author,
+        lineage_only=change == 'lineage_only')
+    with public_reader(w) as reader:
+        projection = reader.read_public_projection(entry_ref=copied.revision.revision_ref,
+            at_cut=reader.capture_cut(w['source']))['record']
+        assert projection['generated_correspondences'] == []
+        pair = comparison_context(reader, request(reader, chosen(w['first']), chosen(copied)))
+        assert pair['presentation']['recommended_mode'] != 'reliable_diff'
+        assert any(ep['subject_id'] == 'plugin.capability' for ep in pair['mapping']['unmapped']['right']['subjects'])
+        assert not any(evidence['verification_contract'] == 'rpnh/native_capability_derivation/v1'
+            for relation in pair['mapping']['relations'] for evidence in relation['evidence'])
+        assert any(row['classification'] == 'unknown' and 'plugin.capability' in row['field_path']
+            for row in pair['axes']['definition']['rows'])
+
+
+def test_native_generated_correspondence_uses_declarations_across_renaming(tmp_path):
+    w = native_author_world(tmp_path / 'rename')
+    document = w['module'].to_dict()
+    document['components'][0]['name'] = 'renamed'
+    document['components'][0]['operations'][0]['name'] = 'execute'
+    for endpoint in (*document['entry'].values(), *document['exit'].values(), document['terminal']['source']):
+        endpoint['component'] = 'renamed'
+    document['terminal']['operation'] = 'execute'
+    copied = native_copy(w, ModuleDeclaration.from_dict(document), rename=True)
+    with public_reader(w) as reader:
+        projection = reader.read_public_projection(entry_ref=copied.revision.revision_ref,
+            at_cut=reader.capture_cut(w['source']))['record']
+        rows = projection['generated_correspondences']
+        assert len(rows) == 2
+        assert all(row['source_subject_id'] != row['target_subject_id'] for row in rows)
+
+
+def test_native_parent_projection_denial_keeps_generated_subjects_unknown(tmp_path):
+    w = native_author_world(tmp_path / 'denied')
+    copied = native_copy(w)
+    with public_reader(w) as reader:
+        original = reader.read_public_projection(entry_ref=w['first'].revision.revision_ref,
+            at_cut=reader.capture_cut(w['source']))['record']
+    with public_reader(w, material_filter=lambda ref: ref.to_dict() != original['projection_ref']) as reader:
+        projection = reader.read_public_projection(entry_ref=copied.revision.revision_ref,
+            at_cut=reader.capture_cut(w['source']))['record']
+        assert projection['mapping_coverage'] == 'verified'
+        assert projection['generated_correspondences'] == []
+
+
+@pytest.mark.parametrize('reverse', [False, True], ids=['direct', 'reverse'])
+def test_native_consumer_copy_closes_all_subjects_with_author_direction(tmp_path, reverse):
+    w = native_author_world(tmp_path / 'consumer')
+    copied = native_copy(w)
+    left, right = (copied, w['first']) if reverse else (w['first'], copied)
+    with public_reader(w) as reader:
+        before = counts(w)
+        pair = comparison_context(reader, request(reader, chosen(left), chosen(right)))
+        assert pair['presentation']['recommended_mode'] == 'reliable_diff'
+        assert pair['mapping']['coverage'] == 'complete_in_declared_scope'
+        relations = pair['mapping']['relations']
+        assert len(relations) == 7
+        assert all(row['validation'] == 'verified' and row['semantic_claim'] == 'author_correspondence'
+            and row['relation_kind'] == 'copied_from'
+            and row['author_direction'] == ('right_to_left' if reverse else 'left_to_right') for row in relations)
+        generated = [row for row in relations if any(e['verification_contract'] ==
+            'rpnh/native_capability_derivation/v1' for e in row['evidence'])]
+        assert len(generated) == 2
+        for side in ('left', 'right'):
+            assert not pair['mapping']['unmapped'][side]['subjects']
+            assert {(row[side][0]['subject_kind'], row[side][0]['subject_id']) for row in generated} == {
+                ('node', 'plugin.capability'), ('edge', 'edge:arc:plugin.capability:plugin.run:read:-:1')}
+        assert pair['axes']['definition']['counts']['unknown'] == 0
+        # The configuration axis compares the newly published exact refs;
+        # closed PN correspondence does not make these refs equal or claim
+        # equality of their underlying configuration bodies.
+        configuration = pair['axes']['configuration']
+        assert configuration['coverage'] == 'partial'
+        assert configuration['counts']['known_same'] == 0
+        assert {row['field_path'] for row in configuration['rows']} == {
+            'configuration.host_requirements_ref', 'configuration.declared_configuration_ref'}
+        assert all(row['classification'] == 'known_changed' for row in configuration['rows'])
+        assert pair['axes']['runtime']['coverage'] == 'not_provided'
+        assert counts(w) == before
+
+
+def test_native_consumer_copied_revision_self_comparison_is_exact_identity(tmp_path):
+    w = native_author_world(tmp_path / 'self')
+    copied = native_copy(w)
+    with public_reader(w) as reader:
+        pair = comparison_context(reader, request(reader, chosen(copied), chosen(copied)))
+        assert pair['presentation']['recommended_mode'] == 'reliable_diff'
+        relations = pair['mapping']['relations']
+        assert len(relations) == 7
+        assert all(row['relation_kind'] == 'same_exact_subject' and row['semantic_claim'] == 'identity'
+            and row['author_direction'] is None for row in relations)
+        assert not any(e['verification_contract'] == 'rpnh/native_capability_derivation/v1'
+            for row in relations for e in row['evidence'])
+        assert all(not pair['mapping']['unmapped'][side]['subjects'] for side in ('left', 'right'))
+
+
+def test_native_consumer_capability_scope_returns_full_pair_at_original_cut(tmp_path):
+    w = native_author_world(tmp_path / 'scope')
+    copied = native_copy(w)
+    with public_reader(w) as reader:
+        req = request(reader, chosen(w['first']), chosen(copied))
+        full = comparison_context(reader, req)
+        scoped_request = deepcopy(req)
+        scoped_request['source_cuts'] = full['request_echo']['source_cuts']
+        scoped_request['scope'] = {'kind': 'selected_pair', **{side: {
+            'kind': 'nodes', 'node_ids': ['plugin.capability']} for side in ('left', 'right')}}
+        scoped = comparison_context(reader, scoped_request)
+        assert scoped['presentation']['recommended_mode'] == 'reliable_diff'
+        assert len(scoped['mapping']['relations']) == 1
+        relation = scoped['mapping']['relations'][0]
+        assert relation['semantic_claim'] == 'author_correspondence'
+        for side in ('left', 'right'):
+            assert len(relation[side]) == 1 and relation[side][0]['subject_kind'] == 'node'
+            assert relation[side][0]['subject_id'] == 'plugin.capability'
+            assert scoped[side]['scope_resolution']['member_node_ids'] == ['plugin.capability']
+            assert scoped[side]['graph']['edges'] == []
+            assert len(scoped[side]['graph']['boundary_edges']) == 1
+            assert not scoped['mapping']['unmapped'][side]['subjects']
+        # The full return must retain the observation even after a genuine
+        # authorized append. It must not silently capture the newer head.
+        w['author'].publish(module=w['module'], element_ids=w['ids'],
+            parent_ref=w['first'].revision.revision_ref, command_id='native:after-scope')
+        navigation = scoped['presentation']['full_pair_navigation']
+        restored_request = deepcopy(req)
+        restored_request['source_cuts'] = navigation['source_cuts']
+        restored_request['scope'] = navigation['scope']
+        restored = comparison_context(reader, restored_request)
+        assert restored['request_echo']['source_cuts'] == full['request_echo']['source_cuts']
+        assert restored['presentation']['recommended_mode'] == 'reliable_diff'
+        assert restored['mapping'] == full['mapping']
+        for side in ('left', 'right'):
+            assert restored[side]['selected_target'] == full[side]['selected_target']
+            assert restored[side]['graph'] == full[side]['graph']

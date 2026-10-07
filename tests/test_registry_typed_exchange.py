@@ -202,6 +202,42 @@ def test_allocator_reserves_generated_and_preserved_casefold_paths():
     assert paths.allocate('subnet-exchange.json')=='subnet-exchange-0001.json'
 
 
+def test_native_generated_mapping_is_direct_and_reverse_query_preserves_provenance(tmp_path):
+    # Private synthetic owner setup is a labelled regression fixture, not a
+    # substitute for the actual Numbers public-owner acceptance run.
+    from test_public_comparison_integration import native_author_world, native_copy, public_reader
+    w = native_author_world(tmp_path / 'native')
+    copied = native_copy(w)
+    with public_reader(w) as session:
+        cut = session.capture_cut(w['source'])
+        mapping = session.read_public_mapping(left_ref=copied.revision.revision_ref,
+            right_ref=w['first'].revision.revision_ref, at_cut=cut)
+        assert len(mapping['generated_correspondences']) == 2
+        assert mapping['runtime_identity'] == 'not_established'
+        assert all(row['source_revision_ref'] == w['first'].revision.revision_ref.to_dict()
+            and row['target_revision_ref'] == copied.revision.revision_ref.to_dict()
+            for row in mapping['generated_correspondences'])
+
+
+@pytest.mark.parametrize('alter', ['capacity', 'read_mode', 'implementation'])
+def test_unrecognized_native_generated_recipe_remains_unsupported(tmp_path, alter):
+    from test_public_comparison_integration import native_author_world
+    from cpn.rpnh.collaboration.public_projections import _native_capability_roles
+    from copy import deepcopy
+    w = native_author_world(tmp_path / alter)
+    compiled = w['first'].compiled
+    fragment = compiled.fragments['plugin']
+    if alter == 'capacity':
+        fragment = replace(fragment, places=tuple(replace(p, capacity=2) if p.name == 'capability' else p for p in fragment.places))
+    elif alter == 'read_mode':
+        fragment = replace(fragment, arcs=tuple(replace(a, mode='consume') if a.mode == 'read' else a for a in fragment.arcs))
+    registrations = deepcopy(compiled.registrations)
+    if alter == 'implementation':
+        registrations['component']['rpnh/native-plugin-operation/v1']['identity']['revision'] = 'v2'
+    candidate = replace(compiled, fragments={'plugin': fragment}, registrations=registrations)
+    assert _native_capability_roles(candidate, w['first'].element_map) == {}
+
+
 def test_real_net_projection_reuses_stored_inventory_without_database_or_host_reads(tmp_path,monkeypatch):
     from test_module_graph_projection import graph_arguments
     from cpn.rpnh.registry.module_nets import publish_module_net

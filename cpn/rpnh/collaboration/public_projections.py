@@ -106,6 +106,125 @@ def _groups(revision, elements, parent=None, transform=None, transform_ref=None)
     return groups, closure
 
 
+def _native_capability_roles(compiled, elements):
+    """Recognize the recorded native v1 recipe, without calling its lowerer.
+
+    Local names only address exact declaration/fragment bindings. They never
+    establish correspondence across revisions. Semantics stay inside this
+    reader; capability/config bodies are not added to the public projection.
+    """
+    from dataclasses import asdict
+    from ..petri_contracts import (PNFragment, PlaceDeclaration, InitialTokenDeclaration,
+        TransitionDeclaration, ArcDeclaration, PortDeclaration, PortBinding)
+    ids = {row['locator']: row['element_id'] for row in elements['elements']}
+    _, edges, _ = _safe_graph(compiled)
+    roles = {}
+    for component in compiled.source.components:
+        if component.key != 'rpnh/native-plugin-operation/v1' or len(component.operations) != 1:
+            continue
+        registered = compiled.registrations['component'][component.key]
+        if registered['identity'] != {'implementation_id': 'rpnh.native_plugin_component', 'revision': 'v1'}:
+            continue
+        operation = component.operations[0]
+        binding = component.config.get('native_plugin', {})
+        capability = binding.get('capability_port')
+        ports = {port.name: port for port in component.ports}
+        if (set(ports) != {'request', 'result'} or not capability
+                or canonical_json(operation.config) != canonical_json(component.config)
+                or operation.inputs != ('request', capability) or operation.outputs != ('result',)
+                or operation.request_port is not None or [o.name for o in operation.outcomes] != ['complete']):
+            continue
+        expected = PNFragment(
+            places=(PlaceDeclaration('request', ports['request'].schema),
+                PlaceDeclaration('result', ports['result'].schema),
+                PlaceDeclaration(capability, binding['capability_schema'], capacity=1,
+                    initial_tokens=(InitialTokenDeclaration(schema=binding['capability_schema'],
+                        value=binding['capability']),))),
+            transitions=(TransitionDeclaration(operation.name, operation.name),),
+            arcs=(ArcDeclaration('request', operation.name, 'input'),
+                ArcDeclaration(capability, operation.name, 'input', mode='read'),
+                ArcDeclaration('result', operation.name, 'output', mode='produce', outcome='complete')),
+            ports=(PortBinding('request', 'request'), PortBinding('result', 'result')),
+            operations=component.operations,
+            internal_ports=(PortDeclaration(capability, 'input', binding['capability_schema']),),
+            internal_bindings=(PortBinding(capability, capability),))
+        if canonical_json(asdict(compiled.fragments[component.name])) != canonical_json(asdict(expected)):
+            continue
+        port = next((p for p in compiled.ports if p.name == f'{component.name}.{capability}' and not p.public), None)
+        if port is None:
+            continue
+        # Shared/fused carriers are outside this single generated-place recipe.
+        if sum(p.place == port.place for p in compiled.ports) != 1:
+            continue
+        transition = f'{component.name}.{operation.name}'
+        reads = [edge for edge in edges if edge['source'] == port.place
+            and edge['target'] == transition and edge['kind'] == 'arc' and edge['mode'] == 'read']
+        if len(reads) != 1:
+            continue
+        operation_doc = asdict(operation)
+        operation_doc.pop('name')
+        schemas = {p.schema for p in component.ports} | {component.config_schema, binding['capability_schema']}
+        semantics = {'component_registration': registered, 'config': component.config,
+            'operation': operation_doc, 'ports': [asdict(p) for p in component.ports],
+            'executor_registration': compiled.registrations['executor'][operation.executor],
+            'schemas': {key: compiled.registrations['schema'][key] for key in sorted(schemas)},
+            'tools': {key: compiled.registrations['tool'][key] for key in operation.tools}}
+        roles[ids[f'/components/{component.name}/operations/{operation.name}']] = {
+            'node': port.place, 'edge': reads[0]['id'], 'semantics': semantics}
+    return roles
+
+
+def _generated_correspondences(core, result, compiled, elements, parent, snapshot):
+    """Direct verified author derivation plus exact native lowering semantics.
+
+    Only two generated subjects are covered. This is neither author element
+    identity nor runtime/token continuity, and does not compose parent history.
+    """
+    if parent is None or result['producer_contract'] == PRODUCER_CONTRACTS[2]:
+        return []
+    current = _native_capability_roles(compiled, elements)
+    groups = [g for g in result['mapping_groups'] if g['relation_kind'] in
+        {'copied_from', 'retained_author_element'} and len(g['source_element_ids']) == 1
+        and len(g['target_element_ids']) == 1 and g['target_element_ids'][0] in current]
+    if not groups:
+        return []
+    source_ref = parent.revision.revision_ref.to_dict()
+    try:
+        # Verify the parent's own exact definition/boundary/HOST/fragment closure;
+        # no recursion through its ancestry or invocation of compiler/HOST code.
+        previous = _read_topology_only(core, source_ref, snapshot=snapshot)
+    except Exception as exc:
+        if getattr(exc, 'code', None) in {'PROJECTION_UNAVAILABLE', 'UNSUPPORTED_READER_VERSION',
+                'MATERIAL_ACCESS_NOT_GRANTED', 'NOT_DISCLOSED'}:
+            return []
+        raise
+    if previous['producer_contract'] != PRODUCER_CONTRACTS[0]:
+        return []
+    from ..executable_net import _load_compiled_net_offline
+    raw, _ = payload_at(core, previous['projection_ref'], snapshot, material=True,
+        max_bytes=getattr(snapshot, 'max_material_bytes', 4*1024*1024))
+    stored = json.loads(raw)
+    old = _native_capability_roles(_load_compiled_net_offline(stored['compiled']), stored['elements'])
+    rows = []
+    for group in groups:
+        if group['source_revision_ref'] != source_ref or group['target_revision_ref'] != result['author_revision_ref']:
+            continue
+        left = old.get(group['source_element_ids'][0])
+        right = current[group['target_element_ids'][0]]
+        if left is None or canonical_json(left['semantics']) != canonical_json(right['semantics']):
+            continue
+        for kind in ('node', 'edge'):
+            rows.append({'source_revision_ref': source_ref, 'target_revision_ref': result['author_revision_ref'],
+                'relation_kind': group['relation_kind'], 'semantic_claim': 'author_correspondence',
+                'subject_kind': kind, 'source_subject_id': left[kind], 'target_subject_id': right[kind],
+                'source_occurrence_path': [], 'target_occurrence_path': [],
+                'source_operation_element_id': group['source_element_ids'][0],
+                'target_operation_element_id': group['target_element_ids'][0],
+                'verification_contract': 'rpnh/native_capability_derivation/v1',
+                'evidence_refs': [*deepcopy(group['evidence_refs']), previous['projection_ref'], result['projection_ref']]})
+    return rows
+
+
 def make_public_projection(revision, compiled, elements, *, producer_contract, parent=None,
                            transform=None, transform_ref=None, assembly_plan=None, assembly_mapping=None,
                            generated_revision_ref=None, mapping_ref=None, configuration_refs=None):
@@ -391,6 +510,8 @@ def _read_public_projection_complete(core, entry_ref, *, snapshot):
         result['mapping_coverage']='verified'
         result['projection_ref'] = projection_ref
         result['integrity'] = {'status':'verified_recorded_sha256','sha256':hashlib.sha256(raw).hexdigest()}
+        result['generated_correspondences'] = _generated_correspondences(
+            core, result, compiled, stored['elements'], parent, snapshot)
         return result
     except TypedReadError: raise
     except (ValueError,KeyError,TypeError) as exc:
@@ -503,7 +624,10 @@ def read_public_mapping(core, left_ref, right_ref, *, snapshot):
     a,b = left['target_ref'],right['target_ref']
     groups = [group for value in (left,right) for group in value['mapping_groups']
         if (group['source_revision_ref'],group['target_revision_ref']) in ((a,b),(b,a))]
+    generated = [row for value in (left,right) for row in value.get('generated_correspondences', [])
+        if (row['source_revision_ref'],row['target_revision_ref']) in ((a,b),(b,a))]
     return {'schema_version':'rpnh/public_author_mapping/v1','groups':groups,
+        'generated_correspondences': generated,
         'left_projection_ref':left['projection_ref'],'right_projection_ref':right['projection_ref'],
         'runtime_identity':'not_established','general_many_to_many':'unsupported'}
 

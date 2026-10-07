@@ -16,6 +16,12 @@ metadata:
 
 ## Unreleased
 
+- Direct native-plugin v1 copies and retained operations now compare their generated
+  capability place and read arc when exact declarations, registrations and the
+  complete native lowering recipe agree. These are verified author correspondence,
+  without runtime or token continuity. Changed or unavailable evidence stays unknown.
+  Viewer toolbars wrap to keep controls accessible at ordinary desktop widths.
+
 - Added opt-in v2 package environment declarations, exact local preparation
   contracts and selected-interpreter HOST entrypoints; independent owner-issued
   Registry read sessions with fixed cuts and explicit body permissions; typed

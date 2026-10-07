@@ -71,6 +71,15 @@ there is no Cartesian expansion or inferred runtime identity. General many-to-
 many mapping is unsupported. Manual visual pairing changes only this displayed
 comparison and never increases reliability or writes a Registry fact.
 
+For a direct copy or retained operation using the registered native-plugin v1
+component, the reader can also verify its generated capability place and read
+arc. It checks the complete stored lowering recipe and exact configuration,
+operation, plugin/executor, tool and schema registrations against the authorized
+parent projection. This proof uses `rpnh/native_capability_derivation/v1` and
+means author correspondence only. It never composes a chain of parents, compiles
+a net, or establishes token continuity. Changed configuration, missing parent
+material authority, other lowerers and shared capability carriers remain unknown.
+
 ## Four independent axes
 
 - Definition compares the explicitly provided public node/arc fields through

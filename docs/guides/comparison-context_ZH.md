@@ -54,6 +54,13 @@ retained author identity 与复制来源是不同声明。一个保留的来源�
 两侧后仍明确复制方向。split/fusion 保留包含弧的整组关系，不展开为笛卡尔积，也不推断 runtime
 identity。一般多对多仍 unsupported。手工视觉配对仅作用于当前显示，不提高可靠性，不写 Registry。
 
+对于使用已登记 native-plugin v1 组件的直接复制或保留 operation，读取器也可
+验证生成的 capability place 和 read arc。它向已授权的 parent projection 核对
+完整的存储 lowering 配方，以及 exact 配置、operation、plugin/executor、tool 和
+schema 登记信息。该证明使用 `rpnh/native_capability_derivation/v1`，仅表示作者
+对应关系；不会串联 parent 历史、编译网或证明 token 连续性。配置变化、缺失
+parent 材料权限、其他 lowerer 和共享 capability carrier 继续保持 unknown。
+
 ## 四个独立轴
 
 - definition：通过已验证的主体对应，比较明确提供的公开节点/弧字段

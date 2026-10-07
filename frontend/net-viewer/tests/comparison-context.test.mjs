@@ -22,6 +22,8 @@ for(const [name,mutate] of [
  ['scope substitution',v=>v.left.scope_resolution.member_node_ids.pop()],
  ['evidence source substitution',v=>v.mapping.relations[0].evidence[0].source_id='other'],
  ['mapping endpoint substitution',v=>v.mapping.relations[0].left[0].subject_id='other'],
+ ['native derivation cannot establish identity',v=>v.mapping.relations[0].evidence[0].verification_contract='rpnh/native_capability_derivation/v1'],
+ ['unknown projection contract',v=>v.mapping.relations[0].evidence[0].verification_contract='rpnh/native_capability_derivation/v2'],
  ['false runtime authority',v=>v.authority='execute'],
 ])test('reject whole context: '+name,async()=>{const {request,context}=fresh();mutate(context);await assert.rejects(normalizeComparisonContext(context,request));});
 

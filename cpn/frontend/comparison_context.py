@@ -381,13 +381,13 @@ def _relations(sides, projections, observations, limits):
                           'coverage': 'complete_relation', 'author_direction': None,
                           'reason_code': 'exact_identity' if claim == 'identity' else
                               'mapping_unsupported' if validation != 'verified' else 'verified_author_mapping'})
+    revisions = {side: projections[side].get('author_revision_ref') for side in sides}
     if _same_definition(sides['left']['selected_target'], sides['right']['selected_target']):
         ref = _target_ref(sides['left']['selected_target'])
         for kind, identity in sorted(subject_keys['left'] & subject_keys['right']):
             append('same_exact_subject', [_endpoint('left', graphs['left'], kind, identity)],
                    [_endpoint('right', graphs['right'], kind, identity)], [ref], 'identity')
     else:
-        revisions = {side: projections[side].get('author_revision_ref') for side in sides}
         if all(revisions.values()):
             # Only producer-verified direct history. Shared names, common ancestors
             # and multi-generation composition establish no PN correspondence.
@@ -488,6 +488,37 @@ def _relations(sides, projections, observations, limits):
                     append(kind, [_endpoint('left', graphs['left'], 'edge', a['edge_id'])],
                            [_endpoint('right', graphs['right'], 'edge', b['edge_id'])], refs, 'author_correspondence')
                     relations[-1]['author_direction'] = direction
+    # Reader-verified direct native capability derivation. No name pairing,
+    # no runtime identity, and no promotion of an incomplete selected scope.
+    for projection in projections.values():
+        for row in projection.get('generated_correspondences', []):
+            _object(row, ('source_revision_ref', 'target_revision_ref', 'relation_kind',
+                'semantic_claim', 'subject_kind', 'source_subject_id', 'target_subject_id',
+                'source_occurrence_path', 'target_occurrence_path', 'source_operation_element_id',
+                'target_operation_element_id', 'verification_contract', 'evidence_refs'))
+            if (row['verification_contract'] != 'rpnh/native_capability_derivation/v1'
+                    or row['relation_kind'] not in {'copied_from', 'retained_author_element'}
+                    or row['semantic_claim'] != 'author_correspondence'
+                    or row['subject_kind'] not in {'node', 'edge'}):
+                raise ComparisonContextError('read_failed')
+            reference(row['source_revision_ref']); reference(row['target_revision_ref'])
+            for field in ('source_subject_id', 'target_subject_id',
+                          'source_operation_element_id', 'target_operation_element_id'):
+                _text(row[field])
+            direct = row['source_revision_ref'] == revisions['left'] and row['target_revision_ref'] == revisions['right']
+            reverse = row['source_revision_ref'] == revisions['right'] and row['target_revision_ref'] == revisions['left']
+            if not (direct or reverse): continue
+            kind = row['subject_kind']
+            a, b = ('source', 'target') if direct else ('target', 'source')
+            left_id, right_id = row[a + '_subject_id'], row[b + '_subject_id']
+            if (kind, left_id) not in subject_keys['left'] or (kind, right_id) not in subject_keys['right']:
+                continue
+            occurrence(row[a + '_occurrence_path']); occurrence(row[b + '_occurrence_path'])
+            append(row['relation_kind'],
+                [_endpoint('left', graphs['left'], kind, left_id, row[a + '_occurrence_path'])],
+                [_endpoint('right', graphs['right'], kind, right_id, row[b + '_occurrence_path'])],
+                row['evidence_refs'], 'author_correspondence', contract=row['verification_contract'])
+            relations[-1]['author_direction'] = 'left_to_right' if direct else 'right_to_left'
     # Copied origins may legitimately participate in retained + several copy
     # relations. Do not impose one-to-one uniqueness or form a Cartesian product.
     unique = {}
@@ -1135,8 +1166,16 @@ def validate_comparison_context(value, request):
             _object(e, ('source_id', 'evidence_ref', 'evidence_kind', 'selected_endpoints', 'source_cut', 'access_revision', 'verification_contract', 'validation'))
             reference(e['evidence_ref'], source_id=e['source_id'])
             state = observations[e['source_id']]
+            native_derivation = e['verification_contract'] == 'rpnh/native_capability_derivation/v1'
+            if native_derivation and (relation['semantic_claim'] != 'author_correspondence'
+                or relation['relation_kind'] not in {'copied_from', 'retained_author_element'}
+                or len(relation['left']) != 1 or len(relation['right']) != 1
+                or relation['left'][0]['subject_kind'] not in {'node', 'edge'}
+                or relation['left'][0]['subject_kind'] != relation['right'][0]['subject_kind']):
+                raise ComparisonContextError('invalid_response')
             if (e['source_cut'] != state['cut'] or e['access_revision'] != state['access_revision']
-                or e['evidence_kind'] != 'exact_public_projection' or e['verification_contract'] != 'rpnh/public_pn_projection/v1'
+                or e['evidence_kind'] != 'exact_public_projection'
+                or e['verification_contract'] not in {'rpnh/public_pn_projection/v1', 'rpnh/native_capability_derivation/v1'}
                 or e['validation'] != 'verified' or e['selected_endpoints'] != relation['left'] + relation['right']):
                 raise ComparisonContextError('invalid_response')
     presence_ids = set()

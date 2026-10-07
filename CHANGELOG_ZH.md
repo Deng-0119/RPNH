@@ -16,6 +16,11 @@ metadata:
 
 ## 未发布
 
+- 对直接复制或保留的 native-plugin v1 operation，在 exact 声明、登记信息和完整
+  原生 lowering 配方一致时，比较可验证其生成的 capability place 与 read arc。
+  这仅表示作者对应关系，不证明运行态或 token 连续性；证据变化或不可用时保持 unknown。
+  Viewer 工具栏现在自动换行，使普通桌面宽度下的控件保持可访问。
+
 - 新增显式选择的 v2 分享包环境声明、精确本机准备合同和所选解释器 HOST
   入口；既有 owner 签发的独立 Registry 固定 cut 读会话与显式正文权限；
   类型化定义交换；以及定义、配置、材料、运行态四轴分离的跨网比较。
