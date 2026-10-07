@@ -1,0 +1,260 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "registry_v1/agent_tool_program_call/v1",
+  "title": "agent_tool_program_call factual owner record",
+  "type": "object",
+  "additionalProperties": false,
+  "definitions": {
+    "ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "entity_type": {
+          "type": "string"
+        },
+        "logical_id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
+        },
+        "version_id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
+        }
+      },
+      "required": [
+        "entity_type",
+        "logical_id",
+        "version_id"
+      ]
+    },
+    "resource_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "resource_id": {
+          "type": "string",
+          "pattern": "^resource:[a-f0-9]{32}$"
+        },
+        "resource_version_id": {
+          "type": "string",
+          "pattern": "^resource_version:[a-f0-9]{32}$"
+        }
+      },
+      "required": [
+        "resource_id",
+        "resource_version_id"
+      ]
+    }
+  },
+  "properties": {
+    "program_invocation_ref": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/ref"
+        },
+        {
+          "properties": {
+            "entity_type": {
+              "const": "agent_tool_program_invocation/v1"
+            }
+          }
+        }
+      ]
+    },
+    "agent_action_ref": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/ref"
+        },
+        {
+          "properties": {
+            "entity_type": {
+              "const": "agent_action/v2"
+            }
+          }
+        }
+      ]
+    },
+    "program_call_ref": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/ref"
+        },
+        {
+          "properties": {
+            "entity_type": {
+              "const": "agent_tool_program_call/v1"
+            }
+          }
+        }
+      ]
+    },
+    "logical_key": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 384
+    },
+    "managed_call_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "tool_name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "registration_key": {
+      "type": "string",
+      "minLength": 1
+    },
+    "arguments": {},
+    "effect": {
+      "enum": [
+        "pure",
+        "external_read",
+        "external_write"
+      ]
+    },
+    "accepted_ordinal": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "status": {
+      "enum": [
+        "planned",
+        "started",
+        "returned",
+        "failed",
+        "outcome_unknown",
+        "rejected"
+      ]
+    },
+    "started_receipt_ref": {
+      "oneOf": [
+        {
+          "$ref": "#/definitions/resource_ref"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "terminal_receipt_ref": {
+      "oneOf": [
+        {
+          "$ref": "#/definitions/resource_ref"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "output": {},
+    "error": {}
+  },
+  "required": [
+    "program_invocation_ref",
+    "agent_action_ref",
+    "program_call_ref",
+    "logical_key",
+    "managed_call_id",
+    "tool_name",
+    "registration_key",
+    "arguments",
+    "effect",
+    "accepted_ordinal",
+    "status",
+    "started_receipt_ref",
+    "terminal_receipt_ref",
+    "output",
+    "error"
+  ],
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "enum": [
+              "returned",
+              "failed",
+              "outcome_unknown"
+            ]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "started_receipt_ref": {
+            "$ref": "#/definitions/resource_ref"
+          },
+          "terminal_receipt_ref": {
+            "$ref": "#/definitions/resource_ref"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "returned"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "error": {
+            "type": "null"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "enum": [
+              "failed",
+              "outcome_unknown"
+            ]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "output": {
+            "type": "null"
+          },
+          "error": {
+            "type": "object"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "rejected"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "started_receipt_ref": {
+            "type": "null"
+          },
+          "terminal_receipt_ref": {
+            "type": "null"
+          },
+          "output": {
+            "type": "null"
+          },
+          "error": {
+            "type": "object"
+          }
+        }
+      }
+    }
+  ]
+}

@@ -234,14 +234,16 @@ class _ManagedCompactionPort:
                     value = json.loads(message["content"])
                 except (TypeError, ValueError):
                     continue
-                if value.get("result_kind") == (
+                if value.get("kind") == (
                         "managed_native_plugin_result/v1"):
                     projections.append(value)
             assert len(projections) == 1
             self.projection = projections[0]
-            assert "output" not in self.projection
+            assert self.projection["output"] == {
+                "node": "first", "nested": [5, {"ok": True}]}
+            assert self.projection["reader"] is None
             return self._text_response(
-                text="Managed evidence retained by exact references.",
+                text="Managed evidence body and exact references retained.",
                 finish_reason="stop")
         if len(self.requests) == 2:
             return self._text_response(
@@ -568,7 +570,7 @@ def test_json_null_output_has_canonical_size_four(tmp_path, monkeypatch):
     assert managed[0]["output_size_bytes"] == 4
 
 
-def test_managed_result_compaction_envelope_replays_only_exact_refs(
+def test_managed_result_compaction_preserves_body_without_callable_reader(
         tmp_path, monkeypatch):
     from cpn.rpnh.agent_tasks import AgentStage, AgentTaskSpec, run_agent_task
     from test_main_session_registry import _write_execution_profile
@@ -595,8 +597,10 @@ def test_managed_result_compaction_envelope_replays_only_exact_refs(
         "agent_action/v3")
     assert port.projection["terminal_receipt_ref"][
         "resource_version_id"].startswith("resource_version:")
-    assert port.projection["provider_content_delivery"] == "not_recorded"
-    assert port.projection["output_replayed"] is False
+    assert port.projection["output"]["nested"][0] == 5
+    assert port.projection["reader"] is None
+    assert "provider_content_delivery" not in port.projection
+    assert "model_consumption_confirmed" not in port.projection
 
 
 def test_managed_visible_name_cannot_shadow_write_file(tmp_path):

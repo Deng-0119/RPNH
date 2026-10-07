@@ -21,11 +21,17 @@ AGENT_TOOL_NAMES = (
     "query_registry_resources",
     "read_action_output",
     "read_file",
+    "read_managed_output",
+    "read_tool_program_output",
     "request_resource",
+    "run_tool_program",
     "search_text",
     "workspace",
     "write_file",
 )
+DEFAULT_AGENT_TOOL_NAMES = tuple(
+    name for name in AGENT_TOOL_NAMES
+    if name not in {"read_managed_output", "read_tool_program_output", "run_tool_program"})
 
 DELEGATE_LEAF_TOOL_NAME = "delegate_leaf"
 REQUEST_RESOURCE_TOOL_NAME = "request_resource"
@@ -294,6 +300,50 @@ TOOL_ARGUMENT_SCHEMAS: dict[str, dict[str, Any]] = {
     },
 }
 
+TOOL_ARGUMENT_SCHEMAS["read_managed_output"] = {
+    "type": "object", "additionalProperties": False,
+    "properties": {
+        "agent_action_ref": {
+            "type": "object", "additionalProperties": False,
+            "properties": {
+                "entity_type": {"const": "agent_action/v3"},
+                "logical_id": {"type": "string", "pattern": "^agent_action:[a-f0-9]{32}$"},
+                "version_id": {"type": "string", "pattern": "^agent_action_version:[a-f0-9]{32}$"},
+            },
+            "required": ["entity_type", "logical_id", "version_id"],
+        },
+        "terminal_receipt_ref": {
+            "type": "object", "additionalProperties": False,
+            "properties": {
+                "resource_id": {"type": "string", "pattern": "^resource:[a-f0-9]{32}$"},
+                "resource_version_id": {"type": "string", "pattern": "^resource_version:[a-f0-9]{32}$"},
+            },
+            "required": ["resource_id", "resource_version_id"],
+        },
+        "offset_chars": {"type": "integer", "minimum": 0},
+        "max_bytes": {"type": "integer", "minimum": 1, "maximum": 10000},
+    },
+    "required": ["agent_action_ref", "terminal_receipt_ref"],
+}
+TOOL_ARGUMENT_SCHEMAS["run_tool_program"] = {
+    "type": "object", "additionalProperties": False,
+    "properties": {
+        "source": {"type": "string", "minLength": 1, "maxLength": 65536},
+        "arguments": {"type": "object"},
+    },
+    "required": ["source", "arguments"],
+}
+TOOL_ARGUMENT_SCHEMAS["read_tool_program_output"] = {
+    "type": "object", "additionalProperties": False,
+    "properties": {
+        "agent_action_ref": TOOL_ARGUMENT_SCHEMAS["read_action_output"]["properties"]["agent_action_ref"],
+        "output_resource_ref": TOOL_ARGUMENT_SCHEMAS["read_managed_output"]["properties"]["terminal_receipt_ref"],
+        "offset_chars": {"type": "integer", "minimum": 0},
+        "max_bytes": {"type": "integer", "minimum": 1, "maximum": 10000},
+    },
+    "required": ["agent_action_ref", "output_resource_ref"],
+}
+
 
 @dataclass(frozen=True, slots=True)
 class AgentToolCatalog:
@@ -376,6 +426,21 @@ def _canonical_agent_tool_catalog_payload() -> bytes:
                         "32768."),
                     "read_file": (
                         READ_FILE_MODEL_DESCRIPTION),
+                    "read_managed_output": (
+                        "Read the registered JSON output of an earlier returned managed "
+                        "agent_action/v3 in this loop. Copy its exact action and terminal "
+                        "receipt locator, then follow next_offset_chars. max_bytes includes "
+                        "the complete page envelope; this read never executes the handler."),
+                    "read_tool_program_output": (
+                        "Read a bounded page of an earlier closed tool program in this loop "
+                        "using its exact parent action and output resource. Follow next_offset_chars; "
+                        "max_bytes includes the complete page envelope. source_status preserves returned, "
+                        "failed, cancelled or outcome_unknown. Never rerun the program for display."),
+                    "run_tool_program": (
+                        "Run a bounded isolated Python program with the selected tools broker. "
+                        "Run module-level source, use synchronous tools.call with explicit stable logical "
+                        "keys or tools.parallel, and publish result(value). Every child is independently admitted and recorded; "
+                        "the program has no host files, network, credentials or owner access."),
                     "request_resource": (
                         "Request read or owner-only edit access to one exact "
                         "registered resource in this firing. Registry/Petri lock "
@@ -492,10 +557,15 @@ def parse_agent_tool_catalog(payload: bytes) -> AgentToolCatalog:
     return AgentToolCatalog("registry_agent_tool_catalog/v1", payload, names)
 
 
-def build_agent_tool_catalog() -> AgentToolCatalog:
-    payload = _canonical_agent_tool_catalog_payload()
+def build_agent_tool_catalog(*, tool_names: tuple[str, ...] | None = None) -> AgentToolCatalog:
+    names = DEFAULT_AGENT_TOOL_NAMES if tool_names is None else tuple(tool_names)
+    if names != tuple(sorted(set(names))) or set(names) - set(AGENT_TOOL_NAMES):
+        raise ValueError("agent tool catalog requires unique sorted supported names")
+    document = json.loads(_canonical_agent_tool_catalog_payload())
+    document["tools"] = [tool for tool in document["tools"] if tool["name"] in names]
+    payload = _canonical_catalog_document(document)
     return AgentToolCatalog(
-        "registry_agent_tool_catalog/v1", payload, AGENT_TOOL_NAMES)
+        "registry_agent_tool_catalog/v1", payload, names)
 
 
 def derive_atomic_subtask_tools(
@@ -556,6 +626,17 @@ def model_visible_agent_tool_description(name: str) -> str:
             "semantically required."),
         "read_file": (
             READ_FILE_MODEL_DESCRIPTION),
+        "read_managed_output": (
+            "Read a bounded page of an earlier returned managed result using its exact "
+            "agent_action/v3 and terminal receipt refs. Follow next_offset_chars; the "
+            "complete serialized page fits max_bytes. Never replay a tool just to recover output."),
+        "read_tool_program_output": (
+            "Read exact registered program results, child outcomes and aggregate provenance "
+            "from an earlier same-loop parent action without running any tool again."),
+        "run_tool_program": (
+            "Use synchronous tools.call/parallel/read_result in isolated Python source and publish result(value). "
+            "Use explicit logical call keys, bounded parallel calls and catchable known errors; "
+            "each call retains separate registered evidence and authority."),
         "request_resource": (
             "Request read or owner-only edit access to one exact registered "
             "resource in this firing."),

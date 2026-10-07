@@ -16,6 +16,16 @@ metadata:
 
 ## Unreleased
 
+- Added explicitly selected managed result paging, bounded pure/conflict-domain
+  tool scheduling and isolated Python programs using the same owner, permissions,
+  managed receipts and run capacity. Partial program results remain readable
+  with their actual status; unknown effects require owner reconciliation.
+- Added read-only result/request evidence, source descriptions and no-listener
+  preflight, inert plugin inspection and portable author selfchecks. Comparison
+  field filters and split/fusion navigation preserve existing graph renderers.
+- Added separate AB/Office readback comparison conditions while preserving
+  existing defaults and archived launch identities.
+
 - Package runs now reserve a new private output before owner startup. If result
   delivery later fails, the CLI preserves redacted run references and reports a
   distinct delivery error without rerunning the business operation. The bilingual

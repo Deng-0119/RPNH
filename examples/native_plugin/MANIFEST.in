@@ -1,1 +1,4 @@
 include rpnh_environment_plugins.json
+include selfcheck_declaration.py selfcheck_terminal.py
+include AUTHOR_VERSIONS.md AUTHOR_VERSIONS_ZH.md
+include README.md README_ZH.md plugins.json input.json expected-output.json

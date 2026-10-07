@@ -29,6 +29,8 @@ workspace 或恢复状态的独立所有者。
 
 离线准备与查看入口包括[可移植包预览和精确本地锁](docs/guides/portable-packages_ZH.md)、[HOST 声明诊断](docs/guides/host-readiness_ZH.md)和[checkpoint 比较](docs/guides/checkpoint-comparison_ZH.md)。包命令使用安装后的 `rpnh`；HOST 诊断是显式 Python API。这些入口检查材料和已记录事实，不授予执行权。
 
+[受控 managed 工具](docs/controlled-managed-tools.zh.md)介绍精确结果分页、有界并发、隔离 Python 程序、只读结果证据与来源预检。新能力通过显式 HOST 策略选择；既有默认工具目录与基准对照条件保持原样。
+
 ## 先看一次多 Agent 运行
 
 下图来自仓库内 `parallel` 案例完成后的真实 Registry 看板。`prepare` 会同时启用两个独立

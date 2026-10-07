@@ -35,7 +35,11 @@ def test_catalog_and_projection_surfaces_remain_canonical() -> None:
     catalog = tools.build_agent_tool_catalog()
     assert tools.parse_agent_tool_catalog(catalog.payload) == catalog
     assert tuple(item["name"] for item in catalog.tool_descriptors) == (
-        tools.AGENT_TOOL_NAMES)
+        tools.DEFAULT_AGENT_TOOL_NAMES)
+    assert "read_managed_output" not in catalog.tool_names
+    with_reader = tools.build_agent_tool_catalog(tool_names=tools.AGENT_TOOL_NAMES)
+    assert "read_managed_output" in with_reader.tool_names
+    assert tools.parse_agent_tool_catalog(with_reader.payload) == with_reader
     assert tools.bounded_agent_read_projection(
         b"abcd", {"offset_chars": 1, "max_chars": 2},
     ) == {

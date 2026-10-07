@@ -16,7 +16,8 @@ from .io import file_sha, sha
 
 BASELINE = "baseline"
 CONDITION = "api-contract-visibility-v1"
-CHOICES = (BASELINE, CONDITION)
+READBACK_CONDITION = "api-contract-visibility-readback-v2"
+CHOICES = (BASELINE, CONDITION, READBACK_CONDITION)
 
 # Only public interface facts verified against the pinned schema and mutators.
 # These strings also define the independently hashed overlay payload.
@@ -80,7 +81,7 @@ def configure(upstream, name: str = BASELINE) -> dict | None:
         "configuration_condition.py", "broker.py", "native.py", "plugin.py",
         "drivers/native.py", "evidence.py")}
     payload = {
-        "schema": "rpnh-ab/configuration-condition/v1", "id": CONDITION,
+        "schema": "rpnh-ab/configuration-condition/v1", "id": name,
         "upstream_commit": UPSTREAM_COMMIT,
         "catalog_sha256": sha(catalog), "overlay_sha256": sha(OVERLAY),
         "implementation_sha256": sha(implementation),

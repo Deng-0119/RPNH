@@ -40,6 +40,10 @@ required = ["config/provider_models.json", "schemas/rpnh/module_declaration.v1.s
             "examples/adapter_task/opencode/evidence.json",
             "examples/catalog.json",
             "examples/gallery/examples/native_plugin/rpnh_demo.py",
+            "examples/gallery/examples/native_plugin/selfcheck_declaration.py",
+            "examples/gallery/examples/native_plugin/selfcheck_terminal.py",
+            "examples/gallery/examples/native_plugin/AUTHOR_VERSIONS.md",
+            "examples/gallery/examples/native_plugin/AUTHOR_VERSIONS_ZH.md",
             "examples/gallery/examples/hybrid_summary/run.py",
             "examples/gallery/examples/_support/profile.py",
             "examples/gallery/examples/net_operations/compose_serial.py",
@@ -102,7 +106,8 @@ def main() -> int:
                         ['package', 'resolve-environment', '--help'],
                         ['package', 'prepare-environment', '--help'],
                         ['package', 'setup-instructions', '--help'],
-                        ['package', 'run', '--help'], ['net', '--help']]
+                        ['package', 'run', '--help'], ['net', '--help'],
+                        ['plugins', '--help'], ['plugins', 'inspect']]
             for arguments in commands:
                 result = run([str(entry), *arguments])
                 if result.returncode:

@@ -470,6 +470,12 @@ class CompactionExecutionMixin:
             if not isinstance(action.result_metadata, Mapping):
                 raise ResourceIntegrityFault(
                     "compaction history action lacks result metadata")
+            if action.result_metadata.get("kind") == "managed_native_plugin_result/v1":
+                from .managed_output import render_managed_output
+                return render_managed_output(
+                    action.result_metadata, _ref_payload(action_ref),
+                    reader_available="read_managed_output" in catalog.tool_names,
+                    max_bytes=reduction_settings.tool_output_byte_limit)
             from .compact import prior_tool_result_reference
             try:
                 return prior_tool_result_reference(

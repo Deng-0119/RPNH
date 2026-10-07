@@ -78,10 +78,11 @@ def execute_worker(handler, packet, *, environment_names, timeout_seconds, cance
         started = True
         writer.close()
         while True:
-            if cancelled():
+            # A complete buffered reply wins a simultaneous stop/deadline.
+            if cancelled() and not reader.poll(0):
                 event.set()
                 raise WorkerFailure("cancelled_after_start")
-            if time.monotonic() >= deadline:
+            if time.monotonic() >= deadline and not reader.poll(0):
                 event.set()
                 raise WorkerFailure("deadline_exceeded")
             if reader.poll(0.05):
@@ -97,9 +98,13 @@ def execute_worker(handler, packet, *, environment_names, timeout_seconds, cance
                     raise WorkerFailure("worker_protocol_failed")
                 return result["value"]
             if cancelled():
+                if reader.poll(0):
+                    continue
                 event.set()
                 raise WorkerFailure("cancelled_after_start")
             if time.monotonic() >= deadline:
+                if reader.poll(0):
+                    continue
                 event.set()
                 raise WorkerFailure("deadline_exceeded")
             if not process.is_alive():

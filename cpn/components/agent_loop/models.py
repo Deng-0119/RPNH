@@ -731,7 +731,7 @@ class AgentActionRecord:
                 and self.result_refs):
             raise AgentLoopProtocolError(
                 "resource catalog metadata must not deliver resource bodies")
-        if (self.tool_name == "read_action_output"
+        if (self.tool_name in {"read_action_output", "read_managed_output", "read_tool_program_output"}
                 and self.state != AgentLoopState.ACTION_REJECTED):
             if (self.state != AgentLoopState.ACTION_APPLIED
                     or not isinstance(self.result_metadata, Mapping)):
@@ -751,6 +751,20 @@ class AgentActionRecord:
             if self.result_refs != (source_action_ref,):
                 raise AgentLoopProtocolError(
                     "action output result ref differs from its exact source action")
+            if (self.tool_name == "read_managed_output"
+                    and (not isinstance(self.arguments, Mapping)
+                         or self.arguments.get("agent_action_ref") != raw_action_ref
+                         or self.arguments.get("terminal_receipt_ref")
+                         != self.result_metadata["terminal_receipt_ref"]
+                         or self.arguments.get("offset_chars", 0)
+                         != self.result_metadata["offset_chars"])):
+                raise AgentLoopProtocolError(
+                    "managed output page differs from its requested locator")
+            if (self.tool_name == "read_tool_program_output"
+                    and (self.arguments.get("agent_action_ref") != raw_action_ref
+                         or self.arguments.get("output_resource_ref") != self.result_metadata["output_resource_ref"]
+                         or self.arguments.get("offset_chars", 0) != self.result_metadata["offset_chars"])):
+                raise AgentLoopProtocolError("program output page differs from its requested locator")
         if (self.tool_name == "delegate_leaf"
                 and self.state != AgentLoopState.ACTION_REJECTED):
             if (self.state != AgentLoopState.ACTION_APPLIED
@@ -912,6 +926,20 @@ class AgentActionRecord:
                     "kind", "agent_action_ref", "stream", "content",
                     "offset_chars", "next_offset_chars", "total_chars",
                     "source_output_truncated"})),
+            "read_managed_output": (
+                "managed_output_page/v1", frozenset({
+                    "kind", "agent_action_ref", "terminal_receipt_ref",
+                    "reader", "content", "offset_chars", "next_offset_chars",
+                    "total_chars", "truncated"})),
+            "read_tool_program_output": (
+                "tool_program_output_page/v1", frozenset({
+                    "kind", "agent_action_ref", "output_resource_ref", "reader",
+                    "content", "offset_chars", "next_offset_chars", "total_chars",
+                    "truncated", "source_status"})),
+            "run_tool_program": (
+                "tool_program_result/v1", frozenset({
+                    "kind", "program_invocation_ref", "output_resource_ref", "status",
+                    "call_count", "reader", "agent_action_ref"})),
             "read_file": (
                 "registered_file_read/v1", frozenset({
                     "kind", "path", "resource_ref", "use_receipt_ref"})),
@@ -1264,6 +1292,50 @@ class AgentActionRecord:
                 and ((next_offset is None and offset + len(content) >= total)
                      or next_offset is not None)
                 and isinstance(value["source_output_truncated"], bool))
+        elif self.tool_name in {"read_managed_output", "read_tool_program_output"}:
+            offset, next_offset = value["offset_chars"], value["next_offset_chars"]
+            total, content = value["total_chars"], value["content"]
+            valid = (
+                typed_ref(value["agent_action_ref"],
+                          "agent_action/v3" if self.tool_name == "read_managed_output" else "agent_action/v2",
+                          "agent_action", "agent_action_version")
+                and resource_ref(value["terminal_receipt_ref"] if self.tool_name == "read_managed_output"
+                                 else value["output_resource_ref"])
+                and value["reader"] == self.tool_name
+                and (self.tool_name == "read_managed_output"
+                     or value["source_status"] in {"returned", "failed", "cancelled", "outcome_unknown"})
+                and isinstance(content, str)
+                and type(offset) is int and type(total) is int
+                and 0 <= offset <= total and offset + len(content) <= total
+                and type(value["truncated"]) is bool
+                and ((next_offset is None and offset + len(content) == total
+                      and value["truncated"] is False)
+                     or (type(next_offset) is int and next_offset == offset + len(content)
+                         and offset < next_offset < total
+                         and value["truncated"] is True)))
+            if valid:
+                budget = self.arguments.get("max_bytes", 10000)
+                valid = (type(budget) is int and budget > 0
+                         and len(json.dumps(dict(value), ensure_ascii=True,
+                                            sort_keys=True, separators=(",", ":"),
+                                            allow_nan=False).encode("utf-8")) <= budget)
+        elif self.tool_name == "run_tool_program":
+            valid = (
+                typed_ref(value["program_invocation_ref"], "agent_tool_program_invocation/v1",
+                          "invocation", "invocation_version")
+                and resource_ref(value["output_resource_ref"])
+                and typed_ref(value["agent_action_ref"], "agent_action/v2",
+                              "agent_action", "agent_action_version")
+                and value["agent_action_ref"]["logical_id"] == self.action_id
+                and value["status"] in {"returned", "failed", "cancelled", "outcome_unknown"}
+                and type(value["call_count"]) is int and value["call_count"] >= 0
+                and value["reader"] == "read_tool_program_output")
+            if valid:
+                raw=value["output_resource_ref"]
+                expected_ref=VersionRef("resource_version/v1",
+                    TypedId.parse(raw["resource_id"],expected="resource"),
+                    TypedId.parse(raw["resource_version_id"],expected="resource_version"))
+                valid=self.result_refs==(expected_ref,)
         elif self.tool_name == "read_file":
             valid = (
                 isinstance(value["path"], str) and bool(value["path"])

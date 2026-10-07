@@ -84,7 +84,9 @@ def make_optional_agent_host_bindings(llm_input_target: LLMInputTarget, *,
         transport_contract: Mapping | None = None,
         execution_profiles: Mapping | None = None,
         workspace_policy: WorkspacePolicy | None = None,
-        managed_catalogs: Mapping | None = None):
+        managed_catalogs: Mapping | None = None,
+        managed_tool_policy: Mapping | None = None,
+        tool_program_policy: Mapping | None = None):
     """Return the public ``start_run(host_execution_bindings=...)`` factory.
 
     The owner must pass the same exact model condition to start_run and this
@@ -404,7 +406,18 @@ def make_optional_agent_host_bindings(llm_input_target: LLMInputTarget, *,
                 "surface_kind": "parent_current", "workspace_scope": "firing_private_projection",
                 "tools": tools}, "optional_agent_tool_catalog")
             managed_binding = None
+            scheduler_binding = None
+            program_binding = None
             if managed is not None:
+                if tool_program_policy is not None and any(
+                        item["name"] == "run_tool_program" for item in tools):
+                    program_binding = static(
+                        f"tool-program:{name}", json_copy(tool_program_policy),
+                        "optional_tool_program_policy")
+                if managed_tool_policy is not None:
+                    scheduler_binding = static(
+                        f"managed-scheduler:{name}", json_copy(managed_tool_policy),
+                        "optional_managed_tool_scheduler")
                 managed_binding = static(
                     f"managed-tools:{name}", {
                         "schema_version": "rpnh/agent_loop_managed_tool_bindings/v1",
@@ -447,6 +460,8 @@ def make_optional_agent_host_bindings(llm_input_target: LLMInputTarget, *,
                 module_artifact_refs=(environment, workspace_profile),
                 extra_resource_refs=(catalog, prompt, inventory)
                 + (() if managed_binding is None else (managed_binding,))
+                + (() if scheduler_binding is None else (scheduler_binding,))
+                + (() if program_binding is None else (program_binding,))
                 + (() if backend is None else (backend, transport)))
         return MappingProxyType(result)
 

@@ -37,3 +37,20 @@ rpnh net --run "$DEMO_ROOT/add-run" --show-resources
 
 完整步骤和清理说明见[新用户案例指南](https://github.com/Deng-0119/RPNH/blob/main/docs/guides/examples_ZH.md)；通用插件契约和
 信任边界见[自定义指南](https://github.com/Deng-0119/RPNH/blob/main/docs/guides/customization_ZH.md)。
+
+## 两个可带走的作者检查入口
+
+wheel/源码一致性检查需显式 wheel 安装；上方 editable 快速入门仍可用于普通开发：
+
+```bash
+python -m build --wheel --no-isolation --outdir ./wheels ./examples/native_plugin
+python -m pip install --no-index --no-deps --force-reinstall ./wheels/rpnh_native_demo-0.3.0-py3-none-any.whl
+python -I examples/native_plugin/selfcheck_declaration.py --output declaration.json
+python -I examples/native_plugin/selfcheck_terminal.py --run-dir /absolute/absent/author-run --result terminal.json
+```
+
+构建依赖需已从批准的本地来源准备。声明入口会执行所选可信 factory，检查完整
+schema/资源/安装来源，不执行 operation 或绑定 HOST。终态入口沿公共 runtime
+运行声明为 pure 的操作，保存真实 result、terminal ref 与模型计数。exit 0 表示
+PASS，1 为验证失败，终态 IPC 不可用报告 BLOCKED/2；每次使用新的输出路径。
+[两版本差异与重新绑定](AUTHOR_VERSIONS_ZH.md)说明改名、版本、完整 descriptor 与新 lock。

@@ -1,0 +1,310 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "registry_v1/agent_tool_program_invocation/v1",
+  "title": "agent_tool_program_invocation factual owner record",
+  "type": "object",
+  "additionalProperties": false,
+  "definitions": {
+    "ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "entity_type": {
+          "type": "string"
+        },
+        "logical_id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
+        },
+        "version_id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
+        }
+      },
+      "required": [
+        "entity_type",
+        "logical_id",
+        "version_id"
+      ]
+    },
+    "resource_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "resource_id": {
+          "type": "string",
+          "pattern": "^resource:[a-f0-9]{32}$"
+        },
+        "resource_version_id": {
+          "type": "string",
+          "pattern": "^resource_version:[a-f0-9]{32}$"
+        }
+      },
+      "required": [
+        "resource_id",
+        "resource_version_id"
+      ]
+    }
+  },
+  "properties": {
+    "program_invocation_ref": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/ref"
+        },
+        {
+          "properties": {
+            "entity_type": {
+              "const": "agent_tool_program_invocation/v1"
+            }
+          }
+        }
+      ]
+    },
+    "agent_action_ref": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/ref"
+        },
+        {
+          "properties": {
+            "entity_type": {
+              "const": "agent_action/v2"
+            }
+          }
+        }
+      ]
+    },
+    "agent_loop_ref": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/ref"
+        },
+        {
+          "properties": {
+            "entity_type": {
+              "const": "agent_loop/v1"
+            }
+          }
+        }
+      ]
+    },
+    "agent_turn_ref": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/ref"
+        },
+        {
+          "properties": {
+            "entity_type": {
+              "const": "agent_turn/v1"
+            }
+          }
+        }
+      ]
+    },
+    "execution_ref": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/ref"
+        },
+        {
+          "properties": {
+            "entity_type": {
+              "const": "operation_execution_lease/v1"
+            }
+          }
+        }
+      ]
+    },
+    "tool_catalog_ref": {
+      "$ref": "#/definitions/resource_ref"
+    },
+    "policy_ref": {
+      "$ref": "#/definitions/resource_ref"
+    },
+    "policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "profile_id": {
+          "const": "linux_isolated_python/v1"
+        },
+        "tools": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "budget": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "wall_seconds": {
+              "type": "number",
+              "exclusiveMinimum": 0
+            },
+            "cpu_seconds": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "memory_bytes": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "process_limit": {
+              "const": 1
+            },
+            "max_output_bytes": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "max_frame_bytes": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "max_calls": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "max_parallel": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "max_source_bytes": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "scratch_bytes": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "required": [
+            "wall_seconds",
+            "cpu_seconds",
+            "memory_bytes",
+            "process_limit",
+            "max_output_bytes",
+            "max_frame_bytes",
+            "max_calls",
+            "max_parallel",
+            "max_source_bytes",
+            "scratch_bytes"
+          ]
+        }
+      },
+      "required": [
+        "profile_id",
+        "tools",
+        "budget"
+      ]
+    },
+    "source": {
+      "type": "string",
+      "minLength": 1
+    },
+    "arguments": {},
+    "settlement_key": {
+      "type": "string",
+      "minLength": 1
+    },
+    "status": {
+      "enum": [
+        "admitted",
+        "returned",
+        "failed",
+        "outcome_unknown",
+        "cancelled"
+      ]
+    },
+    "call_refs": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "allOf": [
+          {
+            "$ref": "#/definitions/ref"
+          },
+          {
+            "properties": {
+              "entity_type": {
+                "const": "agent_tool_program_call/v1"
+              }
+            }
+          }
+        ]
+      }
+    },
+    "output_resource_ref": {
+      "oneOf": [
+        {
+          "$ref": "#/definitions/resource_ref"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "runtime_identity": {
+      "type": [
+        "object",
+        "null"
+      ]
+    }
+  },
+  "required": [
+    "program_invocation_ref",
+    "agent_action_ref",
+    "agent_loop_ref",
+    "agent_turn_ref",
+    "execution_ref",
+    "tool_catalog_ref",
+    "policy_ref",
+    "policy",
+    "source",
+    "arguments",
+    "settlement_key",
+    "status",
+    "call_refs",
+    "output_resource_ref",
+    "runtime_identity"
+  ],
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "admitted"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "output_resource_ref": {
+            "type": "null"
+          },
+          "runtime_identity": {
+            "type": "null"
+          },
+          "call_refs": {
+            "maxItems": 0
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "output_resource_ref": {
+            "$ref": "#/definitions/resource_ref"
+          },
+          "runtime_identity": {
+            "type": "object"
+          }
+        }
+      }
+    }
+  ]
+}

@@ -23,6 +23,7 @@ from cpn.rpnh.registry.errors import (
     StaleAuthorityHead, UnauthorizedResourceDelivery,
 )
 from cpn.rpnh.registry.firing_authority import canonical_invocation
+from cpn.rpnh.registry.event_store import TaskModelCallLimitExceeded
 from cpn.rpnh.registry.identities import TypedId, new_id
 from cpn.rpnh.registry.invocations import InvocationLifecycle
 from cpn.rpnh.registry.agent_resource_broker import (
@@ -282,7 +283,7 @@ class TurnExecutionMixin:
 
 import time
 
-from cpn.rpnh.llm_contracts import LLMInputPortFailure
+from cpn.rpnh.llm_contracts import LLMInputPortFailure, LLMInputPortInterrupted
 from cpn.rpnh.response_protocol import LLMResponseProtocolError
 from .compact import ContextPressurePolicy, ContextReductionSettings
 from .models import (
@@ -292,7 +293,16 @@ from .service import (
     CompletedAgentContextCompaction, CompletedAgentLLMInvocation,
     PreparedAgentContextCompaction, PreparedAgentLLMTurn,
     PreparedParentOwnedDelegatedSubtaskCall, _LLMExecutionBlock,
+    _AgentLLMInputInterrupted,
 )
+
+
+class _AgentTaskModelCallLimitExceeded(TaskModelCallLimitExceeded):
+    """Preserve the committed head when a task cap stops normal dispatch."""
+
+    def __init__(self, message: str, *, waiting_loop: AgentLoopSnapshot):
+        self.waiting_loop = waiting_loop
+        super().__init__(message)
 
 
 def request_agent_turn_v1(
@@ -341,11 +351,18 @@ def request_agent_turn_v1(
                 tool_output_byte_limit=(
                     self._reduction_settings.tool_output_byte_limit))
     while True:
-        prepared = self._registry.prepare_agent_llm_turn_v1(
-            execution, current_loop, catalog,
-            turn_context.initialization,
-            idempotency_key=idempotency_key,
-            prepared_context=turn_context)
+        try:
+            if self._registry.task_model_call_handoff_required_v1(execution):
+                raise TaskModelCallLimitExceeded(
+                    "registered task model-call cap is exhausted before dispatch")
+            prepared = self._registry.prepare_agent_llm_turn_v1(
+                execution, current_loop, catalog,
+                turn_context.initialization,
+                idempotency_key=idempotency_key,
+                prepared_context=turn_context)
+        except TaskModelCallLimitExceeded as exhausted:
+            raise _AgentTaskModelCallLimitExceeded(
+                str(exhausted), waiting_loop=current_loop) from exhausted
         if not isinstance(prepared, PreparedAgentLLMTurn):
             raise AgentLoopProtocolError(
                 "Registry returned no generic LLM attempt")
@@ -357,6 +374,13 @@ def request_agent_turn_v1(
                 turn_context):
             try:
                 response_bytes = self._input_port.request_once(attempt)
+            except TaskModelCallLimitExceeded as exhausted:
+                raise _AgentTaskModelCallLimitExceeded(
+                    str(exhausted), waiting_loop=current_loop) from exhausted
+            except LLMInputPortInterrupted as interrupted:
+                raise _AgentLLMInputInterrupted(
+                    submission_state=interrupted.submission_state,
+                    waiting_loop=current_loop) from interrupted
             except LLMInputPortFailure as failure:
                 disposition = failure.disposition
                 failure_code = failure.failure_code

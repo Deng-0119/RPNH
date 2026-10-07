@@ -114,7 +114,7 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--judge-effort", required=True)
     p.add_argument("--output", type=Path, required=True)
     p.add_argument("--authorize", action="store_true", help="mark these user-selected routes authorized; still makes no call")
-    p.add_argument("--configuration-condition", choices=("office-public-discovery-workflow-v1",),
+    p.add_argument("--configuration-condition", choices=("office-public-discovery-workflow-v1", "office-public-discovery-readback-v2"),
                    help="explicit opt-in public discovery/evidence/action/readback condition; baseline remains the default")
     p = sub.add_parser("prepare", help="save only the selected task's model-visible inputs; no model call")
     p.add_argument("--task-id", choices=TASKS, default="off-t1")

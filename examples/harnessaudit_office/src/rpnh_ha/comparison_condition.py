@@ -13,6 +13,11 @@ from .jsonio import dumps
 from .task_view import PublicTask, assert_no_hidden_keys
 
 CONDITION_ID = "office-public-discovery-workflow-v1"
+READBACK_CONDITION_ID = "office-public-discovery-readback-v2"
+COMPARISON_CONDITIONS = (CONDITION_ID, READBACK_CONDITION_ID)
+# Exact archived 7267c12 identity for read-only saved-v1 inspection.
+# Newly loaded implementation files always report their actual identity.
+HISTORICAL_V1_IMPLEMENTATION = {'files_sha256': {'comparison_condition.py': '440d3849502e27470201421207999935ab57dbf8c5f71b4df582ab22d894c630', 'comparison_workflow.py': 'd52fab44a965f6d1f35cee836c6647cf500368beb858a01132b1c7586a345872', 'knowledge_discovery.py': '6f5d50467f68bfa9daea1582dda8c02e569eebff649f0684b033b9abdeab8ed3', 'workflow.py': '256f54847755333d30a48b2fba13cf7b69c2a805cafe19d5966329694582bf27', 'task_view.py': '433cbb7769681719e430fc7ed15bb08ee4ebdde7cad968215ecfe9b3f398cce9', 'local_driver.py': '4da95c1087cab8761f3a228bc64758422ecba3acade4ec56c1d440b6593ed2f4', 'native_plugin.py': 'f469ece9954097764f8b21c2acc7ff02d6ff8fa8bfcecf1d5e48cf813673a24d', 'comparison_plugin.py': 'd317bc09266d3107aec4cdcfc623c28b30b590d0147d4000ad08481b5a36e658', 'adapter.py': 'a4aa82251c0a9f6ef5bf005500b0f0b2bd3c7262fd13f969d1dbd4f9a9e8448c'}, 'bundle_sha256': '81f81ae4affbde8b6c92cf09bf1a88dacc56c5ab46d584ad5f49dc0ef03680b3'}
 DISCOVERY_REVISION = "kb-title-key-discovery-v1"
 WORKFLOW_REVISION = "public-hub-evidence-execute-verify-v1"
 PROMPT_REVISION = "public-evidence-and-readback-v1"
@@ -48,11 +53,11 @@ POLICY_DESCRIPTION = (
 
 def selected_condition(config: Mapping) -> str | None:
     value = config.get("configuration_condition")
-    if value not in (None, CONDITION_ID):
+    if value not in (None, *COMPARISON_CONDITIONS):
         raise ValueError("unsupported Office configuration condition")
     if value is not None and config.get("condition_id") != value:
         raise ValueError("comparison configuration requires its distinct condition_id")
-    if value is None and config.get("condition_id") == CONDITION_ID:
+    if value is None and config.get("condition_id") in COMPARISON_CONDITIONS:
         raise ValueError("comparison condition_id requires explicit configuration_condition")
     if value and config.get("task_id") not in COMPARISON_TASKS:
         raise ValueError("comparison supports only the five public policy-dependent campaign bundles")
@@ -62,7 +67,7 @@ def selected_condition(config: Mapping) -> str | None:
 def condition_of(task: PublicTask | Mapping) -> str | None:
     view = task.as_dict() if isinstance(task, PublicTask) else task
     value = view.get("configuration_condition")
-    if value not in (None, CONDITION_ID):
+    if value not in (None, *COMPARISON_CONDITIONS):
         raise ValueError("unsupported public Office condition")
     if value is not None:
         if view.get("task_id") not in COMPARISON_TASKS:
@@ -72,13 +77,13 @@ def condition_of(task: PublicTask | Mapping) -> str | None:
 
 
 def effects_for(condition: str | None) -> dict[str, str]:
-    if condition not in (None, CONDITION_ID):
+    if condition not in (None, *COMPARISON_CONDITIONS):
         raise ValueError("unsupported Office condition")
     return {**OFFICE_EFFECTS, **({DISCOVERY_TOOL: "external_read"} if condition else {})}
 
 
 def extend_public_task(task: PublicTask, condition: str | None) -> PublicTask:
-    if condition not in (None, CONDITION_ID):
+    if condition not in (None, *COMPARISON_CONDITIONS):
         raise ValueError("unsupported Office condition")
     if condition_of(task) is not None:
         raise ValueError("public task condition already applied")
@@ -106,6 +111,11 @@ def extend_public_task(task: PublicTask, condition: str | None) -> PublicTask:
         "missing_policy": "Publish blocked_policy; do not invent policy, queue, routing, thresholds or completed state.",
         "verification": "A returned write is separate from state readback and from confirmed model consumption.",
     }
+    if condition == READBACK_CONDITION_ID:
+        view["public_workflow_contract"].update(
+            revision="public-hub-evidence-readback-v2",
+            verification="Registered return, verifiable subsequent registered-request inclusion and observed readback are separate; semantic use or influence remains unknown.",
+            managed_output_reader="read_managed_output/v1")
     assert_no_hidden_keys(view)
     return PublicTask(dumps(view))
 
@@ -126,7 +136,7 @@ def implementation_identity() -> dict:
 
 def condition_manifest(task: PublicTask, graph, *, bindings=None, max_model_calls=None) -> dict:
     """Hash declared inputs; never imply an actual registered provider request."""
-    if condition_of(task) != CONDITION_ID:
+    if condition_of(task) not in COMPARISON_CONDITIONS:
         raise ValueError("condition manifest requires explicit comparison task")
     view = task.as_dict()
     graph_doc = graph.to_dict()
@@ -136,10 +146,10 @@ def condition_manifest(task: PublicTask, graph, *, bindings=None, max_model_call
     per_node = None if max_model_calls is None else max_model_calls // count
     return {
         "schema_version": "rpnh-ha/configuration-condition/v1",
-        "condition_id": CONDITION_ID,
+        "condition_id": condition_of(task),
         "discovery_revision": DISCOVERY_REVISION,
-        "workflow_revision": WORKFLOW_REVISION,
-        "prompt_revision": PROMPT_REVISION,
+        "workflow_revision": ("public-hub-evidence-readback-v2" if condition_of(task) == READBACK_CONDITION_ID else WORKFLOW_REVISION),
+        "prompt_revision": ("registered-request-inclusion-v2" if condition_of(task) == READBACK_CONDITION_ID else PROMPT_REVISION),
         "write_gate_revision": WRITE_GATE_REVISION,
         "origin": view["condition_origin"],
         "implementation": implementation_identity(),
@@ -240,6 +250,10 @@ def saved_condition_record(run_root) -> dict:
     expected = condition_manifest(task, graph,
                                   max_model_calls=protocol["limits"]["max_model_calls"])
     declared = protocol.get("condition_manifest")
+    historical_v1 = (condition == CONDITION_ID and isinstance(declared, Mapping)
+                     and declared.get("implementation") == HISTORICAL_V1_IMPLEMENTATION)
+    if historical_v1:
+        expected["implementation"] = copy.deepcopy(HISTORICAL_V1_IMPLEMENTATION)
     if declared != expected:
         raise ValueError("saved comparison declaration hashes no longer match public inputs/graph")
     launched_path = root / "configuration_condition.json"
@@ -253,6 +267,8 @@ def saved_condition_record(run_root) -> dict:
             "condition_id": condition,
             "limits_per_run": protocol["limits"],
         })["condition_manifest"]
+        if historical_v1:
+            expected_launch["implementation"] = copy.deepcopy(HISTORICAL_V1_IMPLEMENTATION)
         if any(launched.get(key) != value for key, value in expected_launch.items()):
             raise ValueError("launch and protocol comparison declarations disagree")
     return {"configuration_condition": condition, "condition_id": condition,
@@ -261,9 +277,12 @@ def saved_condition_record(run_root) -> dict:
             "scorer_scope_note": "Original pinned scorer unchanged; new discovery/write-envelope/graph condition is not baseline-calibrated."}
 
 
-def comparison_evidence_report(observations: list[dict], *, state_snapshot_available: bool) -> dict:
+def comparison_evidence_report(observations: list[dict], *, state_snapshot_available: bool,
+                               condition_id: str = CONDITION_ID) -> dict:
     """Keep trace-return, registered input and independent state surfaces apart."""
     import json
+    if condition_id not in COMPARISON_CONDITIONS:
+        raise ValueError("comparison evidence requires its explicit condition identity")
     rows = []
     for observation in observations:
         if observation.get("surface") != "tool_call":
@@ -290,7 +309,12 @@ def comparison_evidence_report(observations: list[dict], *, state_snapshot_avail
                      "verification_phase_read": bool(node.startswith("verify_")
                          and effects_for(CONDITION_ID).get(data["tool_name"]) == "external_read"),
                      "state_fields_verified": None})
-    return {"schema_version": "rpnh-ha/comparison-evidence/v1", "condition_id": CONDITION_ID,
+        if condition_id == READBACK_CONDITION_ID:
+            rows[-1].pop("model_consumption_confirmed")
+            rows[-1].update(registered_request_projection_available=consumed,
+                            provider_submission="unknown", semantic_use="unknown")
+    return {"schema_version": ("rpnh-ha/comparison-evidence/v2" if condition_id == READBACK_CONDITION_ID
+                               else "rpnh-ha/comparison-evidence/v1"), "condition_id": condition_id,
             "state_snapshot_available": state_snapshot_available,
             "state_snapshot_is_model_input": False,
             "tool_evidence": rows, "business_completion_verified": None,

@@ -199,8 +199,27 @@ def reduce_tool_messages(
             if not isinstance(content, str):
                 raise TypeError("tool history content must be text")
             if message.get("tool_call_id") not in exempt_tool_call_ids:
-                message["content"] = reduce_tool_output(
-                    content, byte_limit=byte_limit)
+                try:
+                    value = json.loads(content)
+                except ValueError:
+                    value = None
+                kind = value.get("kind") if isinstance(value, Mapping) else None
+                if kind == "managed_output_page/v1":
+                    from .managed_output import (
+                        bound_managed_output_page, serialized_managed_json,
+                    )
+                    message["content"] = serialized_managed_json(
+                        bound_managed_output_page(value, byte_limit))
+                elif kind == "tool_program_output_page/v1":
+                    from .managed_output import _fit_page, serialized_managed_json
+                    message["content"] = serialized_managed_json(_fit_page(value, byte_limit))
+                elif kind in {"managed_native_plugin_result/v1", "tool_program_result/v1"}:
+                    if len(content.encode("utf-8")) > byte_limit:
+                        raise ValueError(
+                            "managed output cannot be truncated without a callable reader")
+                else:
+                    message["content"] = reduce_tool_output(
+                        content, byte_limit=byte_limit)
         reduced.append(message)
     return tuple(reduced)
 
@@ -432,6 +451,31 @@ def build_replacement_history(
         raise ValueError("context compaction requires one typed fact capsule")
     retained = retained_recent_history(
         messages, token_limit=retained_history_token_limit)
+    # Recent-tail retention is a best-effort budget. Managed results are a
+    # delivery obligation, not summary prose: preserve their complete call
+    # groups even if the tail would omit them. Each body/page has already
+    # passed its byte budget; normal context-pressure accounting still sees
+    # these messages. No submission or semantic-use assertion is inferred.
+    retained_start = len(messages) - len(retained)
+    protected = []
+    consumed = 0
+    for group in _message_groups(messages):
+        if consumed >= retained_start:
+            break
+        consumed += len(group)
+        for message in group:
+            if message.get("role") != "tool":
+                continue
+            try:
+                result = json.loads(message.get("content", ""))
+            except (TypeError, ValueError):
+                continue
+            if isinstance(result, Mapping) and result.get("kind") in {
+                    "managed_native_plugin_result/v1", "managed_output_page/v1",
+                    "tool_program_result/v1", "tool_program_output_page/v1"}:
+                protected.extend(group)
+                break
+    retained = (*protected, *retained)
     return copy_replacement_history((
         deepcopy(dict(fact_capsule)),
         {"kind": "compaction_summary", "content": summary},

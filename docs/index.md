@@ -51,6 +51,7 @@ has a corresponding Chinese page.
 | Compare exact nets with four independent evidence axes | [Cross-net comparison](guides/comparison-context.md) |
 | Diagnose declarations against an already-prepared HOST snapshot | [HOST declaration diagnostics](guides/host-readiness.md) |
 | Compare two checkpoints from one Registry without execution | [Checkpoint comparison](guides/checkpoint-comparison.md) |
+| Page registered results, schedule managed calls and run isolated programs | [Controlled managed tools](controlled-managed-tools.md) |
 | Understand the closed execution design | [Architecture](architecture/design.md) |
 | Read the complete harness architecture overview | [Harness architecture](ARCHITECTURE.md) |
 | Compare RPNH authority with Codex presentation | [RPNH versus Codex](RPNH_VS_CODEX.md) |

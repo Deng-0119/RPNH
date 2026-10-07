@@ -538,6 +538,14 @@ class CompletedAgentContextCompaction:
                 "completed context compaction requires exact current authority")
 
 
+class _AgentLLMInputInterrupted(LLMInputPortInterrupted):
+    """Carry the committed post-compaction head across an interrupted input."""
+
+    def __init__(self, *, submission_state, waiting_loop):
+        super().__init__(submission_state=submission_state)
+        self.waiting_loop = waiting_loop
+
+
 class _LLMExecutionBlock(BaseException):
     """Process-local LLM wait/block; never a firing outcome."""
 
@@ -942,20 +950,37 @@ class AgentLoopService:
                     block_authority=blocked.authority,
                     timing_observation=self._operation_timing_observation(
                         execution, waiting.loop_id))
-            except LLMInputPortInterrupted:
+            except LLMInputPortInterrupted as interrupted:
                 if not self._interruption_requested(execution):
                     raise AgentLoopProtocolError(
                         "LLM input reported interruption without an owner stop")
+                checkpoint_loop = (
+                    interrupted.waiting_loop
+                    if isinstance(interrupted, _AgentLLMInputInterrupted) else waiting)
+                self._require_snapshot(checkpoint_loop, state=AgentLoopState.WAITING_FOR_LLM)
+                if (checkpoint_loop.loop_id != waiting.loop_id
+                        or checkpoint_loop.invocation_ref != waiting.invocation_ref
+                        or checkpoint_loop.tool_catalog_ref != waiting.tool_catalog_ref):
+                    raise AgentLoopProtocolError("interrupted LLM input crossed its exact loop")
                 return AgentLoopInterruptionCheckpoint(
-                    waiting, self._operation_timing_observation(
-                        execution, waiting.loop_id))
-            except TaskModelCallLimitExceeded:
+                    checkpoint_loop, self._operation_timing_observation(
+                        execution, checkpoint_loop.loop_id))
+            except TaskModelCallLimitExceeded as exhausted:
                 if segment_role not in {
                         "actor", "critic", "finalization_reviewer"}:
                     raise
+                from .turn_execution import _AgentTaskModelCallLimitExceeded
+                cap_loop = (
+                    exhausted.waiting_loop
+                    if isinstance(exhausted, _AgentTaskModelCallLimitExceeded) else waiting)
+                self._require_snapshot(cap_loop, state=AgentLoopState.WAITING_FOR_LLM)
+                if (cap_loop.loop_id != waiting.loop_id
+                        or cap_loop.invocation_ref != waiting.invocation_ref
+                        or cap_loop.tool_catalog_ref != waiting.tool_catalog_ref):
+                    raise AgentLoopProtocolError("task cap crossed its exact loop")
                 loop = (
                     self._registry.handoff_agent_task_model_call_cap_v1(
-                        execution, waiting,
+                        execution, cap_loop,
                         idempotency_key=(
                             f"{idempotency_key}:task-call-cap-handoff")))
                 self._require_snapshot(
@@ -1258,6 +1283,51 @@ class AgentLoopService:
             pass
         return stored, turn
 
+    def _schedule_managed_turn(self, execution, loop, turn, actions):
+        """Wait outside the owner, then pass one complete ordinal result set."""
+        get_scheduler = getattr(self._registry, "managed_agent_scheduler_v1", None)
+        if get_scheduler is None:
+            return None
+        selected = get_scheduler(execution, loop)
+        if selected is None:
+            return None
+        scheduler, bindings = selected
+        from .tool_validation import ValidatedAgentToolAction
+        from cpn.plugins.managed_scheduler import ManagedToolCall
+        calls = []
+        for ordinal, action in enumerate(actions):
+            call, validation = action.tool_call, action.validation
+            if call.action_identity_kind != "tool_call_id":
+                return None
+            binding = bindings.get(call.tool_name)
+            if isinstance(validation, ValidatedAgentToolAction):
+                # Control/workspace calls retain their existing ordering and
+                # staged-output semantics. This selected policy schedules a
+                # whole managed turn, including its ordinary invalid items.
+                if binding is None or binding["effect"] not in scheduler.policy.admitted_effects:
+                    return None
+                arguments = validation.arguments
+            else:
+                arguments = {}
+            calls.append(ManagedToolCall(
+                ordinal, call.tool_name, call.action_identity_key, arguments,
+                None if binding is None else binding["registration_key"]))
+        by_id = {call.call_id: call for call in calls}
+        def finish(prepared, completion):
+            material = json.loads(prepared.receipt_material)
+            call = by_id[material["call_id"]]
+            return self._registry.finish_managed_agent_call_v1(
+                execution, loop, turn, call, prepared, completion)
+        batch = scheduler.run(
+            calls, operation_key=str(execution.operation_execution_lease_ref.version_id),
+            prepare=lambda call: self._registry.prepare_managed_agent_call_v1(
+                execution, loop, turn, call),
+            finish=finish, cancelled=lambda: self._interruption_requested(execution))
+        if (len(batch.outcomes) != len(actions)
+                or tuple(item.ordinal for item in batch.outcomes) != tuple(range(len(actions)))):
+            raise AgentLoopProtocolError("managed scheduler omitted an original turn item")
+        return {item.ordinal: item for item in batch.outcomes}
+
     def _settle_stored_turn(
         self, execution: object, stored: AgentLoopSnapshot,
         turn: AgentTurnRecord | AgentLengthInterruptionRecord, *,
@@ -1327,6 +1397,22 @@ class AgentLoopService:
                 permitted_tool_names=permitted_tool_names,
                 idempotency_key=idempotency_key)
         external_tool_results: dict[str, Mapping[str, Any]] = {}
+        tool_program_results = {}
+        if (len(prepared) == 1
+                and isinstance(prepared[0].validation, ValidatedAgentToolAction)
+                and prepared[0].validation.tool_name == "run_tool_program"):
+            from .program_runner import execute_registered_tool_program, ToolProgramNotAdmitted
+            try:
+                result = execute_registered_tool_program(
+                    self._registry, execution, stored, turn, prepared[0],
+                    settlement_key=f"{idempotency_key}:actions",
+                    cancelled=lambda: self._interruption_requested(execution))
+            except ToolProgramNotAdmitted:
+                # Rejection before admission has no worker or program result.
+                # The owner applies its ordinary explicit rejection below.
+                pass
+            else:
+                tool_program_results[prepared[0].validation.action_id] = result
         workspace_snapshot = None
         workspace_root = None
         for prepared_action in prepared:
@@ -1358,7 +1444,7 @@ class AgentLoopService:
                         execution, stored, turn, prepared,
                         permitted_tool_names=permitted_tool_names,
                         idempotency_key=idempotency_key)
-        if self._interruption_requested(execution):
+        if self._interruption_requested(execution) and not tool_program_results:
             if workspace_snapshot is not None:
                 assert workspace_root is not None
                 from cpn.rpnh.workspace_settlement import _restore_tree
@@ -1410,12 +1496,20 @@ class AgentLoopService:
             delegated_settlement_kwargs = (
                 {"delegated_subtask_results": delegated_results}
                 if delegated_results else {})
+            managed_outcomes = self._schedule_managed_turn(
+                execution, stored, turn, prepared)
+            managed_settlement_kwargs = (
+                {"managed_tool_outcomes": managed_outcomes}
+                if managed_outcomes is not None else {})
             settlement = self._registry.settle_agent_turn_actions_v1(
                 stored, turn, prepared,
                 permitted_tool_names=permitted_tool_names,
                 idempotency_key=f"{idempotency_key}:actions",
                 execution=execution,
                 **delegated_settlement_kwargs,
+                **managed_settlement_kwargs,
+                **({"tool_program_results": tool_program_results}
+                   if tool_program_results else {}),
                 external_tool_results=external_tool_results,
                 **settlement_timing_kwargs)
         if isinstance(settlement, OperationExecutionBlockAuthority):

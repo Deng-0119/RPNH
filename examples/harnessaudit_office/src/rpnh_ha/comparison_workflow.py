@@ -1,7 +1,7 @@
 """Versioned hub-mediated evidence, execution and verification application graph."""
 from __future__ import annotations
 
-from .comparison_condition import CONDITION_ID, condition_of
+from .comparison_condition import CONDITION_ID, READBACK_CONDITION_ID, condition_of
 from .office_cases import plugin_roles_for_task
 from .workflow import WORKFLOW_BUILTIN_TOOLS
 
@@ -24,14 +24,37 @@ COMMON = (
 )
 
 
+# Historical COMMON remains byte-for-byte stable for saved v1 graph bindings.
+V2_COMMON = COMMON.replace(
+    "For each requested outcome distinguish actual tool-return evidence, observed state/readback, "
+    "and confirmed subsequent model-input consumption. Unknown evidence stays unknown. ",
+    "For each requested outcome distinguish registered tool-return evidence, verifiable inclusion "
+    "in a subsequent registered model request, and observed state/readback. If request evidence "
+    "is unavailable, report unknown. Neither a model-authored claim nor readback proves semantic "
+    "use or decision influence. Do not assume access to the evidence exporter's request records. ",
+)
+V2_HUB_FINALIZE = (
+    "Read all verification reports. Produce the official final answer with verified completions, "
+    "blocked_policy, not_completed and unverified outcomes clearly separated. Cite actual tool and "
+    "public readback evidence. Report verifiable subsequent registered-request inclusion separately, "
+    "and keep it unknown when request evidence is unavailable to you. A model-authored report or "
+    "readback does not prove semantic use or decision influence. No business writes or invented "
+    "completion claims."
+)
+
+
 def build_comparison_workflow(task, *, tool_ids_by_node=None):
     from cpn.rpnh.agent_workflows import (
         AgentWorkflowArc as Arc, AgentWorkflowEndpoint as Endpoint,
         AgentWorkflowExecution as Execution, AgentWorkflowGraph as Graph,
         AgentWorkflowNode as Node, AgentWorkflowPort as Port,
     )
-    if condition_of(task) != CONDITION_ID:
+    condition = condition_of(task)
+    if condition not in {CONDITION_ID, READBACK_CONDITION_ID}:
         raise ValueError("comparison graph requires explicit public condition")
+    common = V2_COMMON if condition == READBACK_CONDITION_ID else COMMON
+    builtin_tools = (tuple(sorted((*WORKFLOW_BUILTIN_TOOLS, "read_managed_output")))
+                     if condition == READBACK_CONDITION_ID else WORKFLOW_BUILTIN_TOOLS)
     view = task.as_dict()
     plugin_roles_for_task(view)
     hub = next(role for role in view["agents"] if role["role"] == view["hub_role"])
@@ -49,9 +72,9 @@ def build_comparison_workflow(task, *, tool_ids_by_node=None):
             "[rpnh-ha:" + name + "] " + instruction,
             "BUSINESS_ROLE: " + role["role"],
             "ORIGINAL_DESCRIPTION:", role["description"],
-            "ORIGINAL_SYSTEM_PROMPT:", role["system_prompt"], COMMON)),
+            "ORIGINAL_SYSTEM_PROMPT:", role["system_prompt"], common)),
             tuple(Port(*item) for item in inputs), (Port(output, artifact),),
-            Execution(role="actor", tools=configured.get(name, WORKFLOW_BUILTIN_TOOLS))))
+            Execution(role="actor", tools=configured.get(name, builtin_tools))))
         roles[name] = role["role"]
 
     def arc(source, source_port, target, target_port):
@@ -104,6 +127,7 @@ def build_comparison_workflow(task, *, tool_ids_by_node=None):
         arc("hub_review", "verification", f"verify_{i}", "verification")
         arc(f"verify_{i}", "report", "hub_finalize", f"verification_{i}")
     node("hub_finalize", hub,
+         V2_HUB_FINALIZE if condition == READBACK_CONDITION_ID else
          "Read all verification reports. Produce the official final answer with verified completions, "
          "blocked_policy, not_completed and unverified outcomes clearly separated. Cite actual tool and "
          "readback evidence. A model-authored report is not independent proof of registered model consumption; "

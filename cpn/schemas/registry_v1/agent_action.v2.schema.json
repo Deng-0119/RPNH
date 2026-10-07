@@ -277,6 +277,104 @@
             "llm_invocation_attempt_ref": {"$ref": "#/definitions/ref"}
           },
           "required": ["kind", "result_resource_ref", "child_session_id", "local_sequence", "llm_invocation_ref", "llm_invocation_attempt_ref"]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "const": "managed_output_page/v1"
+            },
+            "agent_action_ref": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "entity_type": {
+                  "const": "agent_action/v3"
+                },
+                "logical_id": {
+                  "type": "string",
+                  "pattern": "^agent_action:[a-f0-9]{32}$"
+                },
+                "version_id": {
+                  "type": "string",
+                  "pattern": "^agent_action_version:[a-f0-9]{32}$"
+                }
+              },
+              "required": [
+                "entity_type",
+                "logical_id",
+                "version_id"
+              ]
+            },
+            "terminal_receipt_ref": {
+              "$ref": "#/definitions/resource_ref"
+            },
+            "reader": {
+              "const": "read_managed_output"
+            },
+            "content": {
+              "type": "string"
+            },
+            "offset_chars": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "next_offset_chars": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0
+            },
+            "total_chars": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "truncated": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "kind",
+            "agent_action_ref",
+            "terminal_receipt_ref",
+            "reader",
+            "content",
+            "offset_chars",
+            "next_offset_chars",
+            "total_chars",
+            "truncated"
+          ]
+        },
+        {
+          "type": "object", "additionalProperties": false,
+          "properties": {
+            "kind": {"const": "tool_program_result/v1"},
+            "program_invocation_ref": {"type": "object", "additionalProperties": false, "properties": {"entity_type": {"const": "agent_tool_program_invocation/v1"}, "logical_id": {"type": "string", "pattern": "^invocation:[a-f0-9]{32}$"}, "version_id": {"type": "string", "pattern": "^invocation_version:[a-f0-9]{32}$"}}, "required": ["entity_type", "logical_id", "version_id"]},
+            "agent_action_ref": {"type": "object", "additionalProperties": false, "properties": {"entity_type": {"const": "agent_action/v2"}, "logical_id": {"type": "string", "pattern": "^agent_action:[a-f0-9]{32}$"}, "version_id": {"type": "string", "pattern": "^agent_action_version:[a-f0-9]{32}$"}}, "required": ["entity_type", "logical_id", "version_id"]},
+            "output_resource_ref": {"$ref": "#/definitions/resource_ref"},
+            "status": {"enum": ["returned", "failed", "cancelled", "outcome_unknown"]},
+            "call_count": {"type": "integer", "minimum": 0},
+            "reader": {"const": "read_tool_program_output"}
+          },
+          "required": ["kind", "program_invocation_ref", "agent_action_ref", "output_resource_ref", "status", "call_count", "reader"]
+        },
+        {
+          "type": "object", "additionalProperties": false,
+          "properties": {
+            "kind": {"const": "tool_program_output_page/v1"},
+            "agent_action_ref": {"type": "object", "additionalProperties": false, "properties": {"entity_type": {"const": "agent_action/v2"}, "logical_id": {"type": "string", "pattern": "^agent_action:[a-f0-9]{32}$"}, "version_id": {"type": "string", "pattern": "^agent_action_version:[a-f0-9]{32}$"}}, "required": ["entity_type", "logical_id", "version_id"]},
+            "output_resource_ref": {"$ref": "#/definitions/resource_ref"},
+            "reader": {"const": "read_tool_program_output"},
+            "content": {"type": "string"},
+            "offset_chars": {"type": "integer", "minimum": 0},
+            "next_offset_chars": {"type": ["integer", "null"], "minimum": 0},
+            "total_chars": {"type": "integer", "minimum": 0},
+            "truncated": {"type": "boolean"},
+            "source_status": {"enum": ["returned", "failed", "cancelled", "outcome_unknown"]}
+          },
+          "required": ["kind", "agent_action_ref", "output_resource_ref", "reader", "content", "offset_chars", "next_offset_chars", "total_chars", "truncated", "source_status"]
         }
       ]
     }

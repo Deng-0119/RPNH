@@ -38,12 +38,14 @@
       "prerequisites": [
         "Python 3.11+ and installed rpnh-harness in the same environment.",
         "Install the exported plugin with the explicit command below; exporting never installs or executes it.",
-        "Linux/POSIX runtime with the process and Unix-domain socket permissions required by the harness."
+        "Linux/POSIX runtime with the process and Unix-domain socket permissions required by the harness.",
+        "The declaration selfcheck checks a wheel installation: explicitly build/install your plugin wheel first; editable imports are diagnosed. It executes trusted selected factory code."
       ],
       "prerequisites_zh": [
         "Python 3.11+，且同一环境已安装 rpnh-harness。",
         "按下方命令明确安装导出的插件；导出操作不会安装或执行代码。",
-        "运行需 Linux/POSIX 与 harness 所需的进程及 Unix-domain socket 权限。"
+        "运行需 Linux/POSIX 与 harness 所需的进程及 Unix-domain socket 权限。",
+        "声明自检核对 wheel 安装：请先明确构建并安装插件 wheel；editable 导入会被诊断。此检查执行所选可信 factory 代码。"
       ],
       "modify": [
         "examples/native_plugin/input.json",
@@ -54,7 +56,11 @@
         "python -m pip install -e ./examples/native_plugin",
         "rpnh plugins --config examples/native_plugin/plugins.json list",
         "rpnh plugins --config examples/native_plugin/plugins.json check",
-        "rpnh plugins --config examples/native_plugin/plugins.json run demo/add --input examples/native_plugin/input.json --run-dir /absolute/absent/add-run"
+        "rpnh plugins --config examples/native_plugin/plugins.json run demo/add --input examples/native_plugin/input.json --run-dir /absolute/absent/add-run",
+        "python -m build --wheel --no-isolation --outdir ./wheels ./examples/native_plugin",
+        "python -m pip install --no-index --no-deps --force-reinstall ./wheels/rpnh_native_demo-0.3.0-py3-none-any.whl",
+        "python -I examples/native_plugin/selfcheck_declaration.py --output declaration.json",
+        "python -I examples/native_plugin/selfcheck_terminal.py --run-dir /absolute/absent/author-run --result terminal.json"
       ],
       "guide": "examples/native_plugin/README.md",
       "export_command": "rpnh examples export --example native_plugin --output /absolute/absent/my-example"

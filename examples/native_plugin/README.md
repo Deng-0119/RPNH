@@ -44,3 +44,24 @@ For the complete walkthrough and cleanup notes, see the
 [new-user examples guide](https://github.com/Deng-0119/RPNH/blob/main/docs/guides/examples.md). The common plugin
 contract and trust boundary are in the
 [customization guide](https://github.com/Deng-0119/RPNH/blob/main/docs/guides/customization.md).
+
+## Two portable author checks
+
+For wheel/source consistency use an explicit wheel installation (the editable
+quickstart above remains supported for normal development):
+
+```bash
+python -m build --wheel --no-isolation --outdir ./wheels ./examples/native_plugin
+python -m pip install --no-index --no-deps --force-reinstall ./wheels/rpnh_native_demo-0.3.0-py3-none-any.whl
+python -I examples/native_plugin/selfcheck_declaration.py --output declaration.json
+python -I examples/native_plugin/selfcheck_terminal.py --run-dir /absolute/absent/author-run --result terminal.json
+```
+
+Build dependencies must already be available from your approved local source.
+The declaration entry executes trusted selected factories and checks complete
+schemas/resources/install sources; it does not execute operations or bind a HOST.
+The terminal entry runs a declared pure operation through the public runtime and
+saves the genuine result with terminal reference and model counts. Exit 0 means
+PASS, 1 means failed validation; terminal IPC unavailability reports BLOCKED/2.
+Use new output paths for every check. [Two-version differences and rebinding](AUTHOR_VERSIONS.md)
+explains explicit renaming, versioning, full descriptors and new locks.

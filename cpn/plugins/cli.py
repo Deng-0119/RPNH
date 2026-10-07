@@ -13,6 +13,7 @@ def main(argv=None):
     parser.add_argument("--config", type=Path, help="owner-selected plugin JSON (or RPNH_PLUGIN_CONFIG)")
     sub = parser.add_subparsers(dest="command", required=True)
     sub.add_parser("list")
+    sub.add_parser("inspect", help="inspect installed metadata and explicit selection without loading factories")
     sub.add_parser("check")
     build = sub.add_parser("build")
     build.add_argument("operation")
@@ -21,6 +22,11 @@ def main(argv=None):
     run.add_argument("--input", type=Path, required=True, help="schema-valid JSON request file")
     run.add_argument("--run-dir", type=Path, required=True)
     args = parser.parse_args(argv)
+    if args.command == "inspect":
+        from .catalog import inspect_plugins
+        value = inspect_plugins(read_config(args.config))
+        print(json.dumps(value, ensure_ascii=False, indent=2, sort_keys=True))
+        return 0
     catalog = load_catalog(read_config(args.config))
     if args.command == "list":
         value = {"catalog_digest": catalog.digest, "operations": catalog.describe()}

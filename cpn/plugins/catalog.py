@@ -106,29 +106,7 @@ def load_catalog(document=None, *, factories=None) -> PluginCatalog:
     """
     if document is None:
         return PluginCatalog()
-    value = json_copy(document)
-    if (not isinstance(value, dict) or set(value) != {"schema_version", "plugins"}
-            or value["schema_version"] != CONFIG_VERSION or not isinstance(value["plugins"], list)):
-        raise PluginError("invalid plugin configuration document")
-    rows = value["plugins"]
-    # Check the entire input before importing any selected factory.
-    seen = set()
-    for row in rows:
-        if (not isinstance(row, dict)
-                or set(row) != {"name", "entry_point", "version", "config", "environment"}
-                or not isinstance(row["entry_point"], str) or not row["entry_point"]
-                or not isinstance(row["config"], dict)
-                or not isinstance(row["environment"], list)):
-            raise PluginError("plugin selection requires name/entry_point/version/config/environment")
-        symbol(row["name"]); version(row["version"])
-        if row["name"] in seen:
-            raise PluginError("duplicate selected plugin")
-        seen.add(row["name"])
-        import re
-        if (len(set(row["environment"])) != len(row["environment"])
-                or any(not isinstance(x, str) or not re.fullmatch(r"[A-Z_][A-Z0-9_]*", x)
-                       for x in row["environment"])):
-            raise PluginError("environment contains invalid or duplicate variable names")
+    rows = _selection_rows(document)
     installed = None if factories is not None else metadata.entry_points(group=ENTRY_POINT_GROUP)
     configured = []
     for row in rows:
@@ -166,3 +144,148 @@ def read_config(path: Path | None = None):
             return result
         return json.load(stream, object_pairs_hook=unique,
                          parse_constant=lambda _: (_ for _ in ()).throw(PluginError("nonfinite config")))
+
+
+def _selection_rows(document):
+    if document is None:
+        return []
+    value = json_copy(document)
+    if (not isinstance(value, dict) or set(value) != {"schema_version", "plugins"}
+            or value["schema_version"] != CONFIG_VERSION or not isinstance(value["plugins"], list)):
+        raise PluginError("invalid plugin configuration document")
+    rows = value["plugins"]
+    # Check the entire input before importing any selected factory.
+    seen = set()
+    for row in rows:
+        if (not isinstance(row, dict)
+                or set(row) != {"name", "entry_point", "version", "config", "environment"}
+                or not isinstance(row["entry_point"], str) or not row["entry_point"]
+                or not isinstance(row["config"], dict)
+                or not isinstance(row["environment"], list)):
+            raise PluginError("plugin selection requires name/entry_point/version/config/environment")
+        symbol(row["name"]); version(row["version"])
+        if row["name"] in seen:
+            raise PluginError("duplicate selected plugin")
+        seen.add(row["name"])
+        import re
+        if (len(set(row["environment"])) != len(row["environment"])
+                or any(not isinstance(x, str) or not re.fullmatch(r"[A-Z_][A-Z0-9_]*", x)
+                       for x in row["environment"])):
+            raise PluginError("environment contains invalid or duplicate variable names")
+    return rows
+
+
+INERT_METADATA_FILE = "rpnh_environment_plugins.json"
+
+
+def read_plugin_metadata(text):
+    """Validate the existing inert wheel/installed metadata contract; no imports.
+
+    None means missing metadata, not an invitation to execute a factory.
+    """
+    if text is None:
+        return None
+    def unique(pairs):
+        result = {}
+        for key, value in pairs:
+            if key in result:
+                raise PluginError("duplicate inert metadata key: " + key)
+            result[key] = value
+        return result
+    try:
+        value = json.loads(text, object_pairs_hook=unique)
+    except (ValueError, TypeError) as exc:
+        raise PluginError("invalid " + INERT_METADATA_FILE) from exc
+    if (not isinstance(value, dict) or set(value) != {"schema_version", "plugins"}
+            or value["schema_version"] != "rpnh/installed_plugin_metadata/v1"
+            or not isinstance(value["plugins"], list) or len(value["plugins"]) > 128):
+        raise PluginError("invalid inert plugin metadata document")
+    seen = set()
+    for row in value["plugins"]:
+        if (not isinstance(row, dict)
+                or set(row) != {"plugin_id", "version", "api_contract", "entry_point"}
+                or any(not isinstance(v, str) or not v or len(v) > 240 for v in row.values())):
+            raise PluginError("invalid inert plugin metadata row")
+        version(row["version"])
+        key = row["plugin_id"], row["entry_point"]
+        if key in seen:
+            raise PluginError("duplicate inert plugin declaration")
+        seen.add(key)
+    return value
+
+
+def inspect_plugins(document=None):
+    """Observe installed entry points and explicit selections without loading code.
+
+    This plugin catalog observation is separate from Registry source authority.
+    Metadata is an inert declaration, never a verified PluginDefinition or HOST
+    binding. Installed file identities are not original wheel artifact hashes.
+    Config values/environment names are deliberately not included in this view.
+    """
+    selected = _selection_rows(document)
+    installed = list(metadata.entry_points(group=ENTRY_POINT_GROUP))
+    rows = []
+    for ep in sorted(installed, key=lambda item: (item.name, item.value)):
+        raw = ep.dist.read_text(INERT_METADATA_FILE)
+        error = None
+        try:
+            inert = read_plugin_metadata(raw)
+        except PluginError as exc:
+            inert, error = None, str(exc)
+        declarations = [] if inert is None else [r for r in inert["plugins"] if r["entry_point"] == ep.name]
+        choices = [{"name": r["name"], "version": r["version"]}
+                   for r in selected if r["entry_point"] == ep.name]
+        rows.append({
+            "entry_point": ep.name, "entry_point_value": ep.value,
+            "installed_distribution": {"name": ep.dist.metadata["Name"], "version": ep.dist.version,
+                "location": str(Path(ep.dist.locate_file("")).resolve()), "wheel_sha256": None},
+            "inert_metadata": {"status": "invalid" if error else "declared" if declarations else "unknown",
+                "source": INERT_METADATA_FILE, "declarations": declarations, "error": error},
+            "selection": {"status": "selected" if choices else "not_selected", "identities": choices,
+                "entry_point_resolution": "unique" if sum(p.name == ep.name for p in installed) == 1 else "ambiguous"},
+            "factory_loaded": "not_checked", "host_bound": "not_checked",
+        })
+    for choice in selected:
+        if not any(ep.name == choice["entry_point"] for ep in installed):
+            rows.append({"entry_point": choice["entry_point"], "entry_point_value": None,
+                "installed_distribution": None,
+                "inert_metadata": {"status": "unknown", "source": INERT_METADATA_FILE,
+                    "declarations": [], "error": None},
+                "selection": {"status": "selected", "identities": [{"name": choice["name"], "version": choice["version"]}],
+                    "entry_point_resolution": "missing"},
+                "factory_loaded": "not_checked", "host_bound": "not_checked"})
+    return {"schema_version": "rpnh/plugin_inspection/v1", "plugins": rows,
+        "note": "No factory imported. Inert declarations and selected versions are not factory verification or HOST binding; wheel SHA is unknown."}
+
+
+def inspect_plugin_wheel(path):
+    """Read an explicit wheel's inert declarations without installing/importing.
+
+    This does not verify PluginDefinition, dependencies, or execution readiness.
+    No wheel member is extracted. Missing declarations stay unknown.
+    """
+    import configparser
+    from email.parser import Parser
+    import zipfile
+    with zipfile.ZipFile(path) as archive:
+        metadata_files = [n for n in archive.namelist() if n.endswith(".dist-info/METADATA")]
+        if len(metadata_files) != 1:
+            raise PluginError("wheel requires one distribution METADATA")
+        prefix = metadata_files[0].rsplit("/", 1)[0] + "/"
+        distribution = Parser().parsestr(archive.read(metadata_files[0]).decode("utf-8"))
+        name = prefix + INERT_METADATA_FILE
+        inert = read_plugin_metadata(archive.read(name).decode("utf-8") if name in archive.namelist() else None)
+        entrypoints = configparser.ConfigParser(interpolation=None)
+        entrypoints.optionxform = str
+        ep_name = prefix + "entry_points.txt"
+        if ep_name in archive.namelist():
+            entrypoints.read_string(archive.read(ep_name).decode("utf-8"))
+        entries = dict(entrypoints[ENTRY_POINT_GROUP]) if entrypoints.has_section(ENTRY_POINT_GROUP) else {}
+        if inert and any(row["entry_point"] not in entries for row in inert["plugins"]):
+            raise PluginError("wheel inert declaration has no matching rpnh.plugins entry point")
+        return {"schema_version": "rpnh/plugin_wheel_inspection/v1",
+            "wheel": str(Path(path).resolve()),
+            "distribution": {"name": distribution["Name"], "version": distribution["Version"]},
+            "entry_points": entries, "inert_metadata": {"status": "unknown" if inert is None else "declared", "document": inert},
+            "installed": "not_checked", "selected": "not_checked",
+            "factory_loaded": "not_checked", "host_bound": "not_checked"}

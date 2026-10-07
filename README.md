@@ -34,6 +34,11 @@ Offline preparation and inspection are available through [portable package previ
 
 ## See a multi-agent run
 
+[Controlled managed tools](docs/controlled-managed-tools.md) covers exact result
+paging, bounded parallel calls, isolated Python programs, read-only result
+evidence and source preflight. These capabilities use explicit HOST policies;
+existing tool catalogs and benchmark comparison conditions retain their defaults.
+
 This dashboard comes from the checked-in `parallel` example after a completed
 Registry run. `prepare` enables two independent Agents; `join` becomes eligible
 only after both registered products are available.

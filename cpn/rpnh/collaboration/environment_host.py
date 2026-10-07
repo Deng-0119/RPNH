@@ -121,13 +121,17 @@ def _native_plugin_metadata(*, requirement, binding, interpreter):
     if len(installed) != 1:
         raise ValueError("selected installed plugin is ambiguous")
     ep = installed[0]
+    # Identity version/API come from the selected configuration and this adapter,
+    # not a loaded PluginDefinition. Preserve preflight compatibility decisions;
+    # actual factory validation still happens in native_profile.registration.
+    # implementation_digest fingerprints installed code, not the original wheel.
     compatible = (requirement["api_contract"] == API_VERSION
         and SpecifierSet(requirement["version_specifier"]).contains(selected["version"], prereleases=True))
-    return {"status": "satisfied" if compatible else "incompatible", "reason_code": "PLUGIN_METADATA_OBSERVED" if compatible else "ENVIRONMENT_PLUGIN_INCOMPATIBLE",
+    return {"status": "satisfied" if compatible else "incompatible", "reason_code": "PLUGIN_SELECTION_OBSERVED" if compatible else "ENVIRONMENT_PLUGIN_INCOMPATIBLE",
         "identity": {"plugin_id": requirement["plugin_id"], "version": selected["version"], "api_contract": API_VERSION,
             "distribution": __import__("packaging.utils", fromlist=["canonicalize_name"]).canonicalize_name(ep.dist.metadata["Name"]),
             "implementation_digest": sha256(canonical_bytes({"code": _distribution_fingerprint(ep.dist, ep.module), "entry_point": ep.value})),
-            "configuration_digest": sha256(Path(binding["configuration_ref"]).read_bytes())}, "evidence_level": "installed_metadata"}
+            "configuration_digest": sha256(Path(binding["configuration_ref"]).read_bytes())}, "evidence_level": "configuration_observed"}
 
 
 def native_profile(local):

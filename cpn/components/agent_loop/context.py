@@ -706,6 +706,10 @@ def optional_agent_loop_schema_data():
     schemas[EXECUTION_PROVENANCE_SCHEMA] = EXECUTION_PROVENANCE_DOCUMENT
     recipe_schema = json.loads((root / "logical_provider_request_recipe.v1.schema.json").read_text())
     schemas[recipe_schema["$id"]] = recipe_schema
+    from .program_execution import program_execution_schema_data
+    program_schemas, program_types = program_execution_schema_data()
+    schemas.update(program_schemas)
+    types.extend(program_types)
     return schemas, tuple(types)
 
 
@@ -986,6 +990,12 @@ class ContextExecutionMixin:
 
         def render_tool_result(action, action_ref):
             result = action.result_metadata
+            if result and result["kind"] == "managed_native_plugin_result/v1":
+                from .managed_output import render_managed_output
+                return render_managed_output(
+                    result, _ref_payload(action_ref),
+                    reader_available="read_managed_output" in catalog.tool_names,
+                    max_bytes=tool_output_byte_limit)
             if (result and result["kind"] == "workspace_execution/v1"):
                 return dict(
                     result, agent_action_ref=_ref_payload(action_ref))

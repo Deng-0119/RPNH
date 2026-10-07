@@ -34,7 +34,7 @@ from cpn.rpnh.registry.operation_execution import verify_operation_execution
 from cpn.rpnh.registry.publication import (
     _append_direct_resource_version_publication, _direct_resource_metadata,
     _provider_request_resource_metadata, _ref_payload, _registry_type_catalog_ref,
-    _resource_from_payload, _stable_id,
+    _resource_from_payload, _stable_id, _version_from_payload,
 )
 from cpn.rpnh.registry.resource_service import _resource_payload
 from cpn.rpnh.registry.resource_verification import verify_resource
@@ -108,6 +108,21 @@ def _read_action_output(
     return service._read_action_output(
         execution, loop, turn, arguments, idempotency_key)
 
+
+def _read_managed_output(
+        *, service, execution, loop, turn, arguments, idempotency_key):
+    return service._read_managed_output(
+        execution, loop, turn, arguments, idempotency_key)
+
+
+def _read_tool_program_output(
+        *, service, execution, loop, turn, arguments, idempotency_key):
+    return service._read_tool_program_output(execution, loop, turn, arguments, idempotency_key)
+
+
+def _run_tool_program(**_kwargs):
+    raise ValueError("tool programs require owner preparation and the isolated HOST executor")
+
 def _query_registry_resources(
         *, service, execution, loop, turn, arguments, idempotency_key):
     return service._query_registry_resources(
@@ -177,6 +192,15 @@ OPTIONAL_TOOL_BINDINGS = {
         ("read_action_output", _read_action_output,
          "Read a bounded stdout or stderr page from an earlier workspace action in this firing.",
          TOOL_ARGUMENT_SCHEMAS["read_action_output"]),
+        ("read_managed_output", _read_managed_output,
+         "Read one exact returned managed result from this loop without executing it again.",
+         TOOL_ARGUMENT_SCHEMAS["read_managed_output"]),
+        ("read_tool_program_output", _read_tool_program_output,
+         "Read a returned registered tool program result without executing its children.",
+         TOOL_ARGUMENT_SCHEMAS["read_tool_program_output"]),
+        ("run_tool_program", _run_tool_program,
+         "Prepare a selected isolated tool program; its execution runs outside the owner.",
+         TOOL_ARGUMENT_SCHEMAS["run_tool_program"]),
         ("query_registry_resources", _query_registry_resources,
          "Search body-free metadata for workspace resources visible to this firing.",
          TOOL_ARGUMENT_SCHEMAS["query_registry_resources"]),
@@ -223,7 +247,8 @@ class ActionExecutionMixin:
 
     def settle_agent_turn_actions_v1(self, loop, turn, actions, *, permitted_tool_names, idempotency_key,
                                     execution=None, timing_evidence=None, delegated_subtask_results=None,
-                                    external_tool_results=None):
+                                    external_tool_results=None, managed_tool_outcomes=None,
+                                    tool_program_results=None):
         execution = self._execution(execution, loop)
         catalog = self.current_agent_tool_catalog_v1(execution)
         if permitted_tool_names != catalog.tool_names or actions != self.prepare_agent_turn_actions_v1(loop, turn):
@@ -232,6 +257,11 @@ class ActionExecutionMixin:
                     (item.tool_call, item.validation) for item in self.prepare_agent_turn_actions_v1(loop, turn)):
                 raise ResourceIntegrityFault("optional action batch differs from exact registered raw turn")
         delegated_subtask_results = dict(delegated_subtask_results or {})
+        tool_program_results = dict(tool_program_results or {})
+        program_block = None
+        if tool_program_results and (len(actions) != 1 or set(tool_program_results) != {
+                actions[0].validation.action_id}):
+            raise ResourceIntegrityFault("program result differs from its single original action")
         delegated_action_ids = {
             item.validation.action_id for item in actions
             if isinstance(item.validation, ValidatedAgentToolAction)
@@ -275,7 +305,8 @@ class ActionExecutionMixin:
             managed_name = call.tool_name
             managed_binding = managed_bindings.get(managed_name, {})
             managed_action = None
-            if reconciliation_required is not None:
+            if (reconciliation_required is not None
+                    and (managed_tool_outcomes is None or ordinal not in managed_tool_outcomes)):
                 error = (
                     "tool was not dispatched after an external-write outcome "
                     "became uncertain")
@@ -285,6 +316,29 @@ class ActionExecutionMixin:
                 error = "tool not declared in this optional surface"
             elif validation.tool_name == "request_resource":
                 error = "request_resource must be the only tool call in its turn"
+            elif validation.tool_name == "run_tool_program":
+                from .program_execution import CompletedToolProgram, PROGRAM_TYPE
+                result = tool_program_results.get(validation.action_id)
+                if result is None:
+                    error = "run_tool_program requires one action and an explicit paired HOST program policy"
+                elif not isinstance(result, CompletedToolProgram):
+                    raise ResourceIntegrityFault("program action lacks its registered completion")
+                else:
+                    metadata = dict(result.metadata)
+                    fact = self._program_fact(
+                        _version_from_payload(metadata["program_invocation_ref"]), PROGRAM_TYPE)
+                    if (fact["status"] != metadata["status"]
+                            or fact["output_resource_ref"] != metadata["output_resource_ref"]
+                            or fact["agent_action_ref"] != _ref_payload(
+                                self.mechanical_lifecycle.action_ref(validation.action_id, idempotency_key))
+                            or fact["source"] != validation.arguments["source"]
+                            or fact["arguments"] != validation.arguments["arguments"]
+                            or metadata["call_count"] != len(fact["call_refs"])):
+                        raise ResourceIntegrityFault("program completion crossed its registered parent material")
+                    refs = (_resource_from_payload(fact["output_resource_ref"]).as_version_ref(),)
+                    if refs != result.result_refs:
+                        raise ResourceIntegrityFault("program completion crossed its exact output resource")
+                    program_block = result.block_authority
             elif validation.tool_name == "delegate_leaf":
                 result = delegated_subtask_results.get(validation.action_id)
                 if (not isinstance(result, ParentOwnedDelegatedSubtaskResult)
@@ -384,15 +438,39 @@ class ActionExecutionMixin:
                         validation.tool_name, validation.arguments)
                 except PluginError as exc:
                     error = str(exc)
+                if error is None and managed_tool_outcomes is not None:
+                    outcome = managed_tool_outcomes.get(ordinal)
+                    if outcome is None or outcome.call_id != call.action_identity_key:
+                        raise ResourceIntegrityFault("managed batch lacks its exact ordinal outcome")
+                    if outcome.not_started:
+                        error_code = "managed_not_dispatched"
+                        error = "managed call was not dispatched after batch stop"
                 if error is None:
                     try:
-                        result = managed_service.invoke(
-                            validation.tool_name, execution=execution,
-                            call_id=call.action_identity_key,
-                            arguments=validation.arguments,
-                            interruption_requested=getattr(
-                                self, "managed_plugin_interruption_requested",
-                                lambda: False))
+                        if managed_tool_outcomes is None:
+                            result = managed_service.invoke(
+                                validation.tool_name, execution=execution,
+                                call_id=call.action_identity_key,
+                                arguments=validation.arguments,
+                                interruption_requested=getattr(
+                                    self, "managed_plugin_interruption_requested",
+                                    lambda: False))
+                        else:
+                            outcome = managed_tool_outcomes.get(ordinal)
+                            if outcome is None or outcome.call_id != call.action_identity_key:
+                                raise ResourceIntegrityFault("managed batch lacks its exact ordinal outcome")
+                            key, receipt_refs = managed_service._refs(
+                                execution, call.action_identity_key)
+                            # The owner reads its durable observation again;
+                            # a worker-returned aggregate is not publication
+                            # authority for a managed output or failure.
+                            result = managed_service._existing(
+                                execution, declaration, call.action_identity_key,
+                                validation.arguments, key, receipt_refs)
+                            if not isinstance(result, Mapping):
+                                raise ResourceIntegrityFault("managed batch returned no durable result")
+                            if outcome.error is not None or result != outcome.result:
+                                raise ResourceIntegrityFault("managed batch differs from its durable receipt")
                         managed_action = {
                             "provider_name": declaration.name,
                             "registration_key": declaration.registration_key,
@@ -639,6 +717,8 @@ class ActionExecutionMixin:
                 exact_error_ref=action_ref,
                 retry_not_before_utc=None)
             return block, committed_loop
+        if program_block is not None:
+            return program_block, committed_loop
         return committed_loop, committed_records
 
     def interrupt_agent_turn_actions_v1(

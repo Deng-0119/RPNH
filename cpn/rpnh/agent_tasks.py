@@ -110,6 +110,8 @@ class AgentTaskSpec:
     owner_socket_path: Path | None = None
     managed_bindings: Mapping[str, Mapping[str, Any]] = field(
         default_factory=dict)
+    managed_tool_policy: Mapping[str, Any] | None = None
+    tool_program_policy: Mapping[str, Any] | None = None
 
     def __post_init__(self) -> None:
         if (not isinstance(self.run_dir, Path)
@@ -246,6 +248,27 @@ class AgentTaskSpec:
                 "managed tool names cannot collide with reserved built-in tools")
         from cpn.plugins.api import frozen
         object.__setattr__(self, "managed_bindings", frozen(normalized))
+        if self.managed_tool_policy is not None:
+            if not normalized or not isinstance(self.managed_tool_policy, Mapping):
+                raise ValueError("managed scheduling requires explicit managed bindings and policy")
+            from cpn.components.agent_loop.managed_execution import managed_scheduler_policy_from_document
+            policy = managed_scheduler_policy_from_document(self.managed_tool_policy)
+            object.__setattr__(self, "managed_tool_policy", frozen(policy.identity()))
+        if self.tool_program_policy is not None:
+            if self.managed_tool_policy is None:
+                raise ValueError("tool programs require the shared managed scheduler policy")
+            from cpn.components.agent_loop.program_execution import validate_program_policy
+            program, budget = validate_program_policy(self.tool_program_policy)
+            if budget.max_parallel > policy.max_in_flight:
+                raise ValueError("program parallelism exceeds shared run capacity")
+            program_nodes = [node for node in (() if self.workflow_graph is None else self.workflow_graph.nodes)
+                             if "run_tool_program" in (node.execution.tools or ())]
+            if not program_nodes or any(
+                    "read_tool_program_output" not in (node.execution.tools or ())
+                    or not set(program["tools"]).issubset(normalized.get(node.node_id, {}).get("tools", {}))
+                    for node in program_nodes):
+                raise ValueError("program tools require a paired reader and exact node managed bindings")
+            object.__setattr__(self, "tool_program_policy", frozen(program))
 
     @property
     def kind(self) -> str:
@@ -283,6 +306,8 @@ class AgentTaskSpec:
                     "owner socket must remain inside its child Registry")
             return {
                 "schema_version": (
+                    "rpnh/agent_task_spec/v12" if self.tool_program_policy is not None else
+                    "rpnh/agent_task_spec/v10" if self.managed_tool_policy is not None else
                     "rpnh/agent_task_spec/v8" if self.managed_bindings
                     else "rpnh/agent_task_spec/v6"),
                 **({"plugin_configuration": json_copy(self.plugin_configuration),
@@ -311,9 +336,15 @@ class AgentTaskSpec:
                 "owner_socket_relative_path": socket_relative,
                 **({"managed_bindings": json_copy(self.managed_bindings)}
                    if self.managed_bindings else {}),
+                **({"managed_tool_policy": json_copy(self.managed_tool_policy)}
+                   if self.managed_tool_policy is not None else {}),
+                **({"tool_program_policy": json_copy(self.tool_program_policy)}
+                   if self.tool_program_policy is not None else {}),
             }
         return {
             "schema_version": (
+                "rpnh/agent_task_spec/v11" if self.tool_program_policy is not None else
+                "rpnh/agent_task_spec/v9" if self.managed_tool_policy is not None else
                 "rpnh/agent_task_spec/v7" if self.managed_bindings
                 else "rpnh/agent_task_spec/v5"),
             **({"plugin_configuration": json_copy(self.plugin_configuration),
@@ -341,6 +372,10 @@ class AgentTaskSpec:
                 else str(self.owner_socket_path)),
             **({"managed_bindings": json_copy(self.managed_bindings)}
                if self.managed_bindings else {}),
+                **({"managed_tool_policy": json_copy(self.managed_tool_policy)}
+                   if self.managed_tool_policy is not None else {}),
+                **({"tool_program_policy": json_copy(self.tool_program_policy)}
+                   if self.tool_program_policy is not None else {}),
         }
 
     @classmethod
@@ -390,8 +425,16 @@ class AgentTaskSpec:
             fields_v7 | plugin_fields
             if version == "rpnh/agent_task_spec/v7" else
             fields_v8 | plugin_fields
-            if version == "rpnh/agent_task_spec/v8" else set())
-        if version in {"rpnh/agent_task_spec/v6", "rpnh/agent_task_spec/v8"}:
+            if version == "rpnh/agent_task_spec/v8" else
+            fields_v7 | plugin_fields | {"managed_tool_policy"}
+            if version == "rpnh/agent_task_spec/v9" else
+            fields_v8 | plugin_fields | {"managed_tool_policy"}
+            if version == "rpnh/agent_task_spec/v10" else
+            fields_v7 | plugin_fields | {"managed_tool_policy", "tool_program_policy"}
+            if version == "rpnh/agent_task_spec/v11" else
+            fields_v8 | plugin_fields | {"managed_tool_policy", "tool_program_policy"}
+            if version == "rpnh/agent_task_spec/v12" else set())
+        if version in {"rpnh/agent_task_spec/v6", "rpnh/agent_task_spec/v8", "rpnh/agent_task_spec/v10", "rpnh/agent_task_spec/v12"}:
             if document_root is None:
                 raise ValueError(
                     "v6 worker document requires its parent directory")
@@ -438,6 +481,8 @@ class AgentTaskSpec:
                 plugin_catalog_digest=value.get("plugin_catalog_digest"),
                 owner_socket_path=socket_path,
                 managed_bindings=value.get("managed_bindings", {}),
+                managed_tool_policy=value.get("managed_tool_policy"),
+                tool_program_policy=value.get("tool_program_policy"),
             )
         invalid_owner_socket_path = (
             isinstance(value, Mapping)
@@ -447,7 +492,7 @@ class AgentTaskSpec:
         if (not isinstance(value, Mapping)
                 or set(value) != expected_fields
                 or not isinstance(value.get("stages"), list)
-                or (version in {"rpnh/agent_task_spec/v3", "rpnh/agent_task_spec/v4", "rpnh/agent_task_spec/v5", "rpnh/agent_task_spec/v7"}
+                or (version in {"rpnh/agent_task_spec/v3", "rpnh/agent_task_spec/v4", "rpnh/agent_task_spec/v5", "rpnh/agent_task_spec/v7", "rpnh/agent_task_spec/v9", "rpnh/agent_task_spec/v11"}
                     and not isinstance(value.get("execution_profiles"), Mapping))
                 or invalid_owner_socket_path):
             raise ValueError("agent task worker document is not current")
@@ -474,6 +519,8 @@ class AgentTaskSpec:
                 None if value.get("owner_socket_path") is None
                 else Path(value["owner_socket_path"])),
             managed_bindings=value.get("managed_bindings", {}),
+            managed_tool_policy=value.get("managed_tool_policy"),
+            tool_program_policy=value.get("tool_program_policy"),
         )
 
 
@@ -662,7 +709,8 @@ def build_agent_task_module(
                 "outputs": ["result", "interrupt_return_request"],
                 "request_port": "request",
                 "tools": sorted({
-                    *OPTIONAL_TOOL_BINDINGS,
+                    *(name for name in OPTIONAL_TOOL_BINDINGS
+                      if name not in {"read_managed_output", "read_tool_program_output", "run_tool_program"}),
                     *managed_tools.get(stage.stage_id, ()),
                 }),
                 "config": {
@@ -908,7 +956,8 @@ def _execute_agent_task(
             spec.workflow_graph,
             executor_key=EXECUTOR_KEY,
             terminal_key=TERMINAL_KEY,
-            tools=OPTIONAL_TOOL_BINDINGS,
+            tools=tuple(name for name in OPTIONAL_TOOL_BINDINGS
+                        if name not in {"read_managed_output", "read_tool_program_output", "run_tool_program"}),
             required_schemas=(CONFIG_SCHEMA_ID, *schemas),
             max_attempts_per_node=spec.max_attempts_per_stage,
             plugin_catalog=plugin_catalog,
@@ -937,6 +986,7 @@ def _execute_agent_task(
     resumed_transition_profiles = None
     transition_profiles = None
     result = None
+    managed_capacity = None
     try:
         host_bindings = make_optional_agent_host_bindings(
             selection.input_target,
@@ -961,6 +1011,8 @@ def _execute_agent_task(
                 if profile_id != "default"
             },
             managed_catalogs=managed_catalogs,
+            managed_tool_policy=spec.managed_tool_policy,
+            tool_program_policy=spec.tool_program_policy,
         )
         if resume:
             # Validate every exact model/provider route through a read-only
@@ -1041,6 +1093,15 @@ def _execute_agent_task(
                 }))
             services._optional_agent_service.managed_plugin_interruption_requested = (
                 stop_requested.is_set)
+        if spec.managed_tool_policy is not None:
+            from cpn.components.agent_loop.managed_execution import managed_scheduler_policy_from_document
+            from cpn.plugins.managed_scheduler import ManagedRunCapacity
+            policy = managed_scheduler_policy_from_document(spec.managed_tool_policy)
+            managed_capacity = ManagedRunCapacity(policy.max_in_flight)
+            services._optional_agent_service.managed_scheduler_policy = policy
+            services._optional_agent_service.managed_run_capacity = managed_capacity
+        if spec.tool_program_policy is not None:
+            services._optional_agent_service.tool_program_policy = spec.tool_program_policy
         with ThreadPoolExecutor(
                 max_workers=spec.max_parallel_nodes) as workers:
             runner = Orchestrator(
@@ -1058,6 +1119,8 @@ def _execute_agent_task(
                 *((port,) if port is not None else ()),
                 *transition_ports.values())):
             owned_port.close()
+        if managed_capacity is not None:
+            managed_capacity.close()
         if event_loop is not None:
             event_loop.close()
         signal.signal(signal.SIGINT, previous)

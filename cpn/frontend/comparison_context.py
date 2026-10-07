@@ -956,6 +956,14 @@ class ComparisonProvider:
             return comparison_context(self.session, request)
 
     def comparison_selection(self, *, cursor=None):
+        with self._lock:
+            try:
+                return self._comparison_selection(cursor=cursor)
+            except Exception:
+                self._selection_pages.clear()
+                raise
+
+    def _comparison_selection(self, *, cursor=None):
         from cpn.rpnh.collaboration.registry_read_contracts import IndexQuery, TypedIndexClause
         import secrets
         with self._lock:
@@ -986,7 +994,7 @@ class ComparisonProvider:
                 _text(cursor, 256)
                 state = self._selection_pages.get(cursor)
                 if state is None: raise ComparisonContextError('stale_observation')
-            self.session.final_recheck(tuple(state['cuts']))
+            self.session.final_recheck()
             if state['response'] is not None: return deepcopy(state['response'])
             entries, next_state = [], None
             if state['specs']:
@@ -1019,10 +1027,11 @@ class ComparisonProvider:
                 continuation = 'selection_' + secrets.token_urlsafe(24)
                 self._selection_pages[continuation] = next_state
             response = {'schema_version': 'rpnh/comparison_selection/v1', 'session_id': description['session_id'],
+                'sources': deepcopy(description['sources']),
                 'targets': targets, 'source_cuts': {sid: cut.to_dict() for sid, cut in state['cuts'].items()},
                 'next_cursor': continuation,
                 'limits': {key: min(value, description.get('effective_limits', {}).get(key, value)) for key, value in LIMITS.items()}}
-            self.session.final_recheck(tuple(state['cuts']))
+            self.session.final_recheck()
             state['response'] = deepcopy(response)
             return response
 

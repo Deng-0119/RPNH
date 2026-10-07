@@ -15,8 +15,8 @@
     "agent_turn_ref": {"$ref": "#/definitions/ref"},
     "agent_action_ref": {"$ref": "#/definitions/ref"},
     "operation_or_tool_identity": {"type": "string", "minLength": 1},
-    "code": {"enum": ["provider_tool_call_invalid", "arguments_not_text", "tool_not_permitted", "arguments_invalid", "loop_ref_mismatch", "permission_denied", "ref_invalid", "revision_conflict", "critic_document_invalid", "structural_closure_failed", "transaction_failed", "owner_interrupted"]},
-    "error_code": {"enum": ["provider_tool_call_invalid", "arguments_not_text", "tool_not_permitted", "arguments_invalid", "loop_ref_mismatch", "permission_denied", "ref_invalid", "revision_conflict", "critic_document_invalid", "structural_closure_failed", "transaction_failed", "owner_interrupted"]},
+    "code": {"enum": ["provider_tool_call_invalid", "arguments_not_text", "tool_not_permitted", "arguments_invalid", "managed_not_dispatched", "loop_ref_mismatch", "permission_denied", "ref_invalid", "revision_conflict", "critic_document_invalid", "structural_closure_failed", "transaction_failed", "owner_interrupted"]},
+    "error_code": {"enum": ["provider_tool_call_invalid", "arguments_not_text", "tool_not_permitted", "arguments_invalid", "managed_not_dispatched", "loop_ref_mismatch", "permission_denied", "ref_invalid", "revision_conflict", "critic_document_invalid", "structural_closure_failed", "transaction_failed", "owner_interrupted"]},
     "boundary": {"enum": ["validation", "revision", "authorization", "commit", "execution", "semantic_document_contract", "owner_interruption"]},
     "classification": {"enum": ["model_correctable_invocation_mismatch", "framework_contract_mismatch", "owner_interruption"]},
     "detail": {"type": "string", "minLength": 1},
@@ -45,7 +45,7 @@
     {
       "if": {"properties": {"classification": {"const": "model_correctable_invocation_mismatch"}}},
       "then": {
-        "properties": {"code": {"enum": ["provider_tool_call_invalid", "arguments_not_text", "tool_not_permitted", "arguments_invalid", "loop_ref_mismatch", "permission_denied", "ref_invalid", "revision_conflict", "critic_document_invalid", "structural_closure_failed"]}, "consecutive_count": {"const": 1}, "disposition": {"const": "return_to_same_agent_loop"}, "block_kind": {"type": "null"}}
+        "properties": {"code": {"enum": ["provider_tool_call_invalid", "arguments_not_text", "tool_not_permitted", "arguments_invalid", "managed_not_dispatched", "loop_ref_mismatch", "permission_denied", "ref_invalid", "revision_conflict", "critic_document_invalid", "structural_closure_failed"]}, "consecutive_count": {"const": 1}, "disposition": {"const": "return_to_same_agent_loop"}, "block_kind": {"type": "null"}}
       }
     },
     {

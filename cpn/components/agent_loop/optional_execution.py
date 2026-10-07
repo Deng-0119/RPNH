@@ -10,6 +10,8 @@ from cpn.rpnh.registry.errors import ResourceIntegrityFault
 from cpn.rpnh.registry.operation_execution import verify_operation_execution
 
 from .mechanical_lifecycle import AgentLoopMechanicalLifecycle
+from .managed_execution import ManagedExecutionMixin
+from .program_execution import ProgramExecutionMixin
 from .action_execution import (
     EXECUTION_PROVENANCE_DOCUMENT, EXECUTION_PROVENANCE_SCHEMA,
     OPTIONAL_TOOL_BINDINGS, ActionExecutionMixin,
@@ -26,7 +28,7 @@ from .turn_records import TurnRecordsExecutionMixin
 from .workspace import WorkspaceExecutionMixin
 
 
-class OptionalAgentLoopRegistryService(ContextExecutionMixin, LoopStateExecutionMixin, TurnExecutionMixin, TurnRecordsExecutionMixin, ActionExecutionMixin, WorkspaceExecutionMixin, CompactionExecutionMixin, DelegationExecutionMixin, ResourceWaitExecutionMixin):
+class OptionalAgentLoopRegistryService(ProgramExecutionMixin, ManagedExecutionMixin, ContextExecutionMixin, LoopStateExecutionMixin, TurnExecutionMixin, TurnRecordsExecutionMixin, ActionExecutionMixin, WorkspaceExecutionMixin, CompactionExecutionMixin, DelegationExecutionMixin, ResourceWaitExecutionMixin):
     """Sole owner-side gateway; feature bodies live in functional modules."""
 
     def __init__(self, *, owner, kernel, repository, provider_attempts, invoke_tool):
@@ -44,6 +46,14 @@ class OptionalAgentLoopRegistryService(ContextExecutionMixin, LoopStateExecution
         methods = {name: getattr(self, name) for name, member in vars(AgentLoopRegistryPort).items()
                    if not name.startswith("_") and callable(member)}
         methods["current_agent_tool_catalog_v1"] = self.current_agent_tool_catalog_v1
+        methods["managed_agent_scheduler_v1"] = self.managed_agent_scheduler_v1
+        methods["prepare_managed_agent_call_v1"] = self.prepare_managed_agent_call_v1
+        methods["finish_managed_agent_call_v1"] = self.finish_managed_agent_call_v1
+        for name in ("begin_tool_program_v1", "prepare_program_child_v1",
+                     "finish_program_child_v1", "complete_tool_program_v1",
+                     "read_program_child_output_v1", "current_tool_program_policy_v1",
+                     "tool_program_work_root_v1", "reject_program_child_v1"):
+            methods[name] = getattr(self, name)
         methods["finalize_agent_workspace_v1"] = (
             self.finalize_agent_workspace_v1)
         methods["interrupt_agent_turn_actions_v1"] = (
@@ -54,6 +64,19 @@ class OptionalAgentLoopRegistryService(ContextExecutionMixin, LoopStateExecution
         # materialization/dispatch/permit hooks. This is hydration, not routing.
         methods["provider_attempt_for_agent_llm_v1"] = self.provider_attempt_for_agent_llm_v1
         return methods
+
+    def current_tool_program_policy_v1(self, execution, loop):
+        self._execution(execution, loop)
+        from cpn.plugins.api import json_copy
+        from .program_execution import validate_program_policy
+        policy = getattr(self, "tool_program_policy", None)
+        if policy is None:
+            return None
+        return validate_program_policy(json_copy(policy))[0]
+
+    def tool_program_work_root_v1(self, execution, loop):
+        self._execution(execution, loop)
+        return self.core.root / "runtime" / "tool-programs"
 
     def _execution(self, execution, loop=None):
         execution = verify_operation_execution(self.core, self.kernel, self.repository, execution)

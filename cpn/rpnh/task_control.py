@@ -574,6 +574,12 @@ class TaskControl:
                 core.event_store.actual_model_call_counts()),
         }
 
+    def result_evidence(self, task_id: str) -> Mapping[str, Any]:
+        """Inspect existing registered result/request facts without starting an owner."""
+        from .agent_result_inspection import project_registry_agent_results
+        return project_registry_agent_results(
+            self.get(task_id).run_dir, catalog=agent_task_catalog())
+
     def snapshot(self, task_id: str) -> Mapping[str, Any]:
         handle = self.get(task_id)
         if not self._channel_ready(handle.socket_path):

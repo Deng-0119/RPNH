@@ -126,7 +126,8 @@ class RPNHHarnessAuditAdapter:
             collector.save(self.root / "observations.json")
             if self.configuration_condition:
                 write_new(self.root / "comparison_evidence.json", comparison_evidence_report(
-                    read(self.root / "observations.json"), state_snapshot_available=after is not None))
+                    read(self.root / "observations.json"), state_snapshot_available=after is not None,
+                    condition_id=self.configuration_condition))
             collector.export_to(ctx.action_sink)
             save_normalized_actions(self.root / "actions.normalized.json", ctx.action_sink)
             if before is not None and after is not None:

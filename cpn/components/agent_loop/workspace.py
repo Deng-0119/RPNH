@@ -902,6 +902,32 @@ class WorkspaceExecutionMixin:
             "use_receipt_ref": _ref_payload(delivery_ref),
         }
 
+    def _read_managed_output(
+            self, execution, loop, turn, arguments, _key):
+        """Read only a returned managed action already settled in this loop."""
+        from .managed_output import (
+            bounded_managed_output_projection, validate_managed_locator,
+        )
+        self._execution(execution, loop)
+        raw_ref = arguments.get("agent_action_ref")
+        validate_managed_locator(raw_ref, arguments.get("terminal_receipt_ref"))
+        action_ref = _version_from_payload(raw_ref)
+        source = self.mechanical_lifecycle.hydrate_action(action_ref)
+        if (source.loop_id != loop.loop_id
+                or source.turn_sequence >= turn.sequence
+                or source.state != AgentLoopState.ACTION_APPLIED
+                or source.tool_error_ref is not None
+                or not isinstance(source.managed_action, Mapping)
+                or source.managed_action.get("outcome") != "returned"
+                or source.managed_action.get("terminal_receipt_ref")
+                != arguments["terminal_receipt_ref"]):
+            raise ValueError(
+                "read_managed_output requires an earlier settled returned action in this loop")
+        # The immutable v3 action is the output authority. Never invoke its
+        # handler or expose other fields from the backing terminal receipt.
+        result = bounded_managed_output_projection(source.result_metadata, arguments)
+        return (action_ref,), result
+
     def _read_action_output(
             self, execution, loop, turn, arguments, _key):
         self._execution(execution, loop)

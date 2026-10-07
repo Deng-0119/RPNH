@@ -16,6 +16,10 @@ metadata:
 
 ## 未发布
 
+- 新增显式选择的 managed 结果分页、pure／冲突域有界调度与隔离 Python 程序，复用同一 owner、权限、真实回执及运行额度。部分程序结果按实际状态回读；未知副作用保留 owner reconciliation。
+- 新增只读结果／请求证据、来源描述与无 listener 预检、inert 插件检查及可移植作者自检。比较字段过滤与 split／fusion 导航保留已有 graph renderer。
+- AB／Office 新增独立回读对照条件，保留既有默认条件与已归档启动身份。
+
 - 分享包运行现在在启动 owner 前预留全新的私有输出；若运行后的结果交付失败，
   CLI 保留不含正文的 run 引用，报告独立的交付错误，不重跑业务操作。双语复用教程
   改用所选接收 Python 收集独立的依赖 wheel 闭包，继续保留严格兼容性校验。

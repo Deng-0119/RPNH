@@ -216,13 +216,18 @@ def _net_parser() -> argparse.ArgumentParser:
     source = parser.add_mutually_exclusive_group(required=True)
     source.add_argument("--run", type=Path)
     source.add_argument("--read-host-config", type=Path,
-                        help="trusted local independent read-HOST JSON; requires --view")
+                        help="trusted local independent read-HOST JSON; use --view or --preflight")
     parser.add_argument("--format", choices=("text", "json"), default="text")
     parser.add_argument("--show-resources", action="store_true")
     parser.add_argument("--resources-only", action="store_true")
     parser.add_argument("--node")
     parser.add_argument("--output", type=Path)
-    parser.add_argument("--view", action="store_true")
+    mode = parser.add_mutually_exclusive_group()
+    mode.add_argument("--view", action="store_true")
+    mode.add_argument("--preflight", action="store_true",
+                      help="describe the selected read-HOST and close it without a listener or object query")
+    mode.add_argument("--result-evidence", action="store_true",
+                      help="inspect registered result/request evidence and existing stop limits for --run")
     parser.add_argument("--no-open", action="store_true")
     parser.add_argument("--host", default="127.0.0.1")
     parser.add_argument("--port", type=int, default=0)
@@ -233,6 +238,23 @@ def _net_parser() -> argparse.ArgumentParser:
 
 def _net_command(argv: Sequence[str]) -> int:
     args = _net_parser().parse_args(argv)
+    if args.preflight or args.result_evidence:
+        if (args.show_resources or args.resources_only or args.node is not None
+                or args.output is not None or args.no_open
+                or args.host != "127.0.0.1" or args.port != 0):
+            raise ValueError("inspection modes cannot use viewer or resource-projection options")
+        if args.preflight:
+            if args.read_host_config is None:
+                raise ValueError("--preflight requires --read-host-config")
+            from cpn.rpnh.collaboration.reader_preflight import preflight_read_host
+            preflight_read_host(args.read_host_config, emit=_print_json)
+        else:
+            if args.run is None:
+                raise ValueError("--result-evidence requires --run")
+            from cpn.rpnh.agent_result_inspection import project_registry_agent_results
+            from cpn.rpnh.agent_tasks import agent_task_catalog
+            _print_json(project_registry_agent_results(args.run, catalog=agent_task_catalog()))
+        return 0
     if args.view:
         incompatible = []
         if args.resources_only:

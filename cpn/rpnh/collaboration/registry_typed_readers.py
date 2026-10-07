@@ -226,6 +226,8 @@ def _kind(field):
 class TypedReaderCatalog:
     version = 'rpnh/typed_reader_catalog/v1'
     entry_types = tuple(sorted(_FIELDS))
+    public_projection_types = ('net_instance/v1', 'marking_checkpoint/v1',
+        'collaboration_net_revision/v1', 'collaboration_assembly_revision/v9')
 
     def fingerprint(self):
         return hashlib.sha256(canonical_json({'version':self.version,'fields':_FIELDS,

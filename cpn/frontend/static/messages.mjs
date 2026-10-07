@@ -1,5 +1,6 @@
 /** Built-in UI messages only. Never translate run data, IDs or user metadata. */
 export const EN = Object.freeze({
+  "来源访问与读取范围": "Source access and read scopes",
   "没有获授权的可比较对象": "No authorized comparable objects",
   "比较独立网": "Compare independent nets",
   "选择两侧 exact 对象；同名不建立身份。四轴分别保留未知，跨来源没有全局原子快照。": "Choose exact objects on both sides. Matching names establish no identity. Each axis preserves unknowns; sources are not a global atomic snapshot.",

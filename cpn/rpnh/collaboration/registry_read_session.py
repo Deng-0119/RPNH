@@ -210,20 +210,26 @@ class RegistryReadSession:
         self.expires_at = datetime.now(timezone.utc) + timedelta(seconds=self.limits.session_seconds)
         self._sources, self._failures, self._cuts, self._cursors = {}, {}, {}, {}
         self._closed = False
-        if type(request.selection) is SelectedSourceSet:
-            self._verify_source_set(request.selection)
-        for selection in request.selection.sources:
-            source_id = selection.source_ref.source_id
-            try:
-                resolved, authority, binding = self._resolve(selection)
-                self._sources[source_id] = _Source(selection, resolved, authority, binding, _schema_fingerprint(resolved.core))
-                if authority.expires_at is not None:
-                    self.expires_at = min(self.expires_at, authority.expires_at)
-            except RegistryReadSessionError as exc:
-                self._failures[source_id] = exc.code
-        if not self._sources:
-            raise RegistryReadSessionError(next(iter(self._failures.values()), 'NOT_DISCLOSED'))
-        self.final_recheck()
+        try:
+            if type(request.selection) is SelectedSourceSet:
+                self._verify_source_set(request.selection)
+            for selection in request.selection.sources:
+                source_id = selection.source_ref.source_id
+                try:
+                    resolved, authority, binding = self._resolve(selection)
+                    self._sources[source_id] = _Source(selection, resolved, authority, binding, _schema_fingerprint(resolved.core))
+                    if authority.expires_at is not None:
+                        self.expires_at = min(self.expires_at, authority.expires_at)
+                except RegistryReadSessionError as exc:
+                    if exc.code == 'ACCESS_CHANGED':
+                        raise
+                    self._failures[source_id] = exc.code
+            if not self._sources:
+                raise RegistryReadSessionError(next(iter(self._failures.values()), 'NOT_DISCLOSED'))
+            self.final_recheck()
+        except Exception:
+            self.close()
+            raise
 
     def _verify_source_set(self, selection):
         from .source_sets import read_source_set
@@ -231,6 +237,7 @@ class RegistryReadSession:
             raise RegistryReadSessionError('AUTHORITY_NOT_CONFIGURED')
         # Manifest presence is explicit trusted HOST configuration; it only
         # restricts selected members and never grants access to their sources.
+        source = None
         try:
             source = self._host.source_set_resolver(selection.source_set_ref)
             if type(source) is not ResolvedReadSource or source.closed:
@@ -244,11 +251,16 @@ class RegistryReadSession:
             self._manifest = (source, selection.source_set_ref, document_digest(manifest.to_dict()),
                 source.binding_generation, str(source.core.event_store.path.resolve()), _schema_fingerprint(source.core))
         except RegistryReadSessionError:
+            if type(source) is ResolvedReadSource:
+                source.close()
             raise
         except Exception as exc:
+            if type(source) is ResolvedReadSource:
+                source.close()
             raise RegistryReadSessionError('NOT_DISCLOSED') from exc
 
     def _resolve(self, selection):
+        resolved = None
         try:
             self._host.authority_provider.assert_selection_configured(self._caller, selection.source_ref, selection.access_path)
             resolved = self._host.source_resolver(selection.source_ref.source_id, selection.access_path)
@@ -265,8 +277,12 @@ class RegistryReadSession:
             binding = (resolved.binding_generation, str(path), stat.st_dev, stat.st_ino, identity.event_id)
             return resolved, authority, binding
         except RegistryReadSessionError:
+            if type(resolved) is ResolvedReadSource:
+                resolved.close()
             raise
         except Exception as exc:
+            if type(resolved) is ResolvedReadSource:
+                resolved.close()
             raise RegistryReadSessionError('SOURCE_UNAVAILABLE') from exc
 
     def _alive(self):
@@ -293,6 +309,7 @@ class RegistryReadSession:
         if hasattr(self, '_manifest'):
             from .source_sets import read_source_set
             previous, ref, digest, generation, path, schema = self._manifest
+            current = None
             try:
                 current = self._host.source_set_resolver(ref)
                 if (type(current) is not ResolvedReadSource or current.closed or previous.closed
@@ -303,6 +320,9 @@ class RegistryReadSession:
             except Exception as exc:
                 self._cuts.clear(); self._cursors.clear()
                 raise RegistryReadSessionError('ACCESS_CHANGED') from exc
+            finally:
+                if type(current) is ResolvedReadSource and current is not previous:
+                    current.close()
         ids = tuple(self._sources) if source_ids is None else tuple(source_ids)
         for source_id in ids:
             source = self._sources.get(source_id)
@@ -310,6 +330,7 @@ class RegistryReadSession:
                 raise RegistryReadSessionError(self._failures.get(source_id, 'NOT_DISCLOSED'))
             if source.failure:
                 raise RegistryReadSessionError(source.failure)
+            resolved = None
             try:
                 resolved, authority, binding = self._resolve(source.selection)
                 if (binding != source.binding or authority.revision != source.authority.revision
@@ -319,6 +340,9 @@ class RegistryReadSession:
             except RegistryReadSessionError as exc:
                 self._invalidate(source_id, 'ACCESS_CHANGED')
                 raise RegistryReadSessionError('ACCESS_CHANGED') from exc
+            finally:
+                if type(resolved) is ResolvedReadSource and resolved is not source.resolved:
+                    resolved.close()
         # A callback/revalidation can consume the last fraction of a TTL or
         # change the reader catalog. Check these again at actual delivery.
         self._alive()
@@ -345,6 +369,7 @@ class RegistryReadSession:
         states += [{'source_id': key, 'source_ref': None, 'cut': None, 'access_revision': None,
                     'access_state': code, 'coverage': {'state': 'unavailable', 'loaded_count': None, 'total_count': None}}
                    for key, code in self._failures.items()]
+        self.final_recheck()
         return {'session_id': self.session_id, 'expires_at': self.expires_at.isoformat(),
                 'effective_limits': self.limits.to_dict(), 'sources': states,
                 'entry_types': list(self._catalog.entry_types),
@@ -364,11 +389,15 @@ class RegistryReadSession:
         index_fields = {kind: list(fields) for kind, fields in source.authority.scope.index_fields.items() if kind in supported}
         record_fields = {kind: list(fields) for kind, fields in source.authority.scope.record_fields.items() if kind in supported}
         return {'source_id': source_id, 'source_ref': source.selection.source_ref.to_dict(),
+                'access_path': source.selection.access_path,
                 'cut': None if cut is None else cut.to_dict(), 'access_revision': source.authority.revision,
                 'access_state': 'readable', 'coverage': {'state': 'not_queried', 'loaded_count': None, 'total_count': None},
                 'capabilities': {'index': list(index_fields), 'index_fields': index_fields,
                     'record': list(record_fields), 'record_fields': record_fields, 'material': bool(source.authority.scope.material_refs),
-                    'export': bool(source.authority.scope.export_refs)}}
+                    'export': bool(source.authority.scope.export_refs),
+                    'projection': [kind for kind in getattr(self._catalog, 'public_projection_types', ())
+                        if kind in record_fields and set(self._catalog.default_record_projection(kind)) <= set(record_fields[kind])],
+                    'execution': 'not_checked'}}
 
     def _authorize(self, source_id, reference, operation, fields=()):
         from .registry_typed_readers import wire_ref

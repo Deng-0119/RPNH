@@ -1,5 +1,5 @@
 /** Explicit exact-pair navigation. No graph data is an execution capability. */
-import { stable } from './model.mjs';
+import { stable, nodeKey, edgeKey } from './model.mjs';
 import { NetRenderer } from './renderer.mjs';
 import { LayoutCache } from './layout.mjs';
 
@@ -101,9 +101,9 @@ export async function normalizeComparisonContext(value,request){
 }
 
 export class ComparisonContextState {
-    constructor(){this.generation=0;this.open=false;this.loading=false;this.value=null;this.error=null;this.request=null;this.ticket=null;this.selection={left:null,right:null};this.scope={kind:'full_pair',left:{kind:'full_net'},right:{kind:'full_net'}};this.axes=[...AXES];this.visualPairs=[];this.cuts=null;this.session=null;this.options=[];this.nextCursor=null;this.limits=null;this.indexLoaded=false;}
+    constructor(){this.generation=0;this.open=false;this.loading=false;this.value=null;this.error=null;this.request=null;this.ticket=null;this.selection={left:null,right:null};this.scope={kind:'full_pair',left:{kind:'full_net'},right:{kind:'full_net'}};this.axes=[...AXES];this.visualPairs=[];this.cuts=null;this.session=null;this.options=[];this.sources=[];this.nextCursor=null;this.limits=null;this.indexLoaded=false;}
     clear(){++this.generation;this.value=null;this.error=null;this.loading=false;this.ticket=null;}
-    close(){this.clear();this.open=false;this.request=null;this.options=[];this.cuts=null;this.session=null;this.selection={left:null,right:null};this.visualPairs=[];this.indexLoaded=false;this.nextCursor=null;this.limits=null;this.source_left=null;this.source_right=null;}
+    close(){this.clear();this.open=false;this.request=null;this.options=[];this.sources=[];this.cuts=null;this.session=null;this.selection={left:null,right:null};this.visualPairs=[];this.indexLoaded=false;this.nextCursor=null;this.limits=null;this.source_left=null;this.source_right=null;}
     change(patch){this.clear();Object.assign(this,patch);}
     begin(){if(!this.open||this.loading||!this.selection.left||!this.selection.right||!this.session)return null;this.clear();this.loading=true;const request={schema_version:'rpnh/comparison_request/v1',session_id:this.session,client_request_id:'comparison-'+this.generation,left:structuredClone(this.selection.left),right:structuredClone(this.selection.right),source_cuts:structuredClone(this.cuts),scope:structuredClone(this.scope),axes:[...this.axes],view_preference:this.preference??'auto',visual_pairs:structuredClone(this.visualPairs),limits:structuredClone(this.limits)};this.request=request;this.ticket={generation:this.generation,request:structuredClone(request)};return this.ticket;}
     accepts(ticket){return this.open&&ticket?.generation===this.generation&&same(ticket.request,this.request);}
@@ -113,7 +113,7 @@ export class ComparisonContextState {
 
 /** Independent selectors plus two real NetRenderer/ELK panels. */
 export function installComparisonContextPanel(container,{request,translate=t=>t,events=globalThis.window,onClose=()=>{},onOpen=()=>{}}={}){
-    const state=new ComparisonContextState();let controller=null,indexController=null,joint=null,elk=null,renderers=[],renderEpoch=0,indexGeneration=0,indexLoading=false,activeIndexCursor=null,selected={left:null,right:null},rowLimit=100;
+    const state=new ComparisonContextState();let controller=null,indexController=null,joint=null,elk=null,renderers=[],renderEpoch=0,indexGeneration=0,indexLoading=false,activeIndexCursor=null,selected={left:null,right:null};
     const make=(tag,text)=>{const el=container.ownerDocument.createElement(tag);if(text!==undefined)el.textContent=String(text);return el;};
     const button=(text,fn)=>{const b=make('button',translate(text));b.onclick=fn;return b;};
     function clearRenderers(){++renderEpoch;for(const renderer of renderers)renderer.dispose();renderers=[];selected={left:null,right:null};}
@@ -122,15 +122,15 @@ export function installComparisonContextPanel(container,{request,translate=t=>t,
     function choose(side,target){const selection={...state.selection,[side]:target};invalidate({selection,scope:{kind:'full_pair',left:{kind:'full_net'},right:{kind:'full_net'}},visualPairs:[],preference:'auto'});}
     async function readIndex(more=false){const cursor=more?state.nextCursor:null;if(indexLoading&&activeIndexCursor===cursor)return;indexController?.abort();indexController=new AbortController();const generation=state.generation,indexTicket=++indexGeneration;indexLoading=true;activeIndexCursor=cursor;
         try{const raw=await request('/api/v2/comparison-selection'+(cursor?'?'+new URLSearchParams({cursor}):''),indexController.signal);if(!state.open||generation!==state.generation||indexTicket!==indexGeneration)return;
-            object(raw,['schema_version','session_id','targets','source_cuts','next_cursor','limits']);if(raw.schema_version!=='rpnh/comparison_selection/v1')invalid();text(raw.session_id);for(const item of array(raw.targets)){object(item,['target','label','read_state']);comparisonTarget(item.target);text(item.label);if(item.read_state!=='not_read')invalid();}for(const [sid,c] of Object.entries(raw.source_cuts)){cut(c);if(c.source_id!==sid)invalid();}
-            if(more&&(state.session!==raw.session_id||!same(state.cuts,raw.source_cuts)))invalid();
-            const options=more?[...state.options,...raw.targets]:raw.targets;if(new Set(options.map(v=>stable(v.target))).size!==options.length)invalid();state.options=options;state.session=raw.session_id;state.cuts=raw.source_cuts;state.limits=raw.limits;state.nextCursor=raw.next_cursor;state.indexLoaded=true;state.error=null;indexLoading=false;draw();
-        }catch(error){if(error.name!=='AbortError'&&state.open&&generation===state.generation&&indexTicket===indexGeneration){indexLoading=false;clearRenderers();state.clear();state.error=errorCode(error);if(state.error==='access_changed'){state.options=[];state.nextCursor=null;state.cuts=null;state.session=null;state.limits=null;state.indexLoaded=false;}draw();}}
+            object(raw,['schema_version','session_id','targets','source_cuts','next_cursor','limits'],['sources']);const sources=raw.sources??[];const sourceIds=new Set();for(const source of array(sources)){text(source.source_id);if(sourceIds.has(source.source_id))invalid();sourceIds.add(source.source_id);text(source.access_state);object(source.coverage,['state','loaded_count','total_count']);if(source.coverage.loaded_count!==null||source.coverage.total_count!==null)invalid();if(source.access_state==='readable'){object(source,['source_id','source_ref','cut','access_revision','access_state','coverage','capabilities','access_path']);if(source.coverage.state!=='not_queried')invalid();object(source.capabilities,['index','index_fields','record','record_fields','projection','material','export','execution']);if(source.capabilities.execution!=='not_checked')invalid();}else{object(source,['source_id','source_ref','cut','access_revision','access_state','coverage']);if(source.coverage.state!=='unavailable')invalid();}}if(raw.schema_version!=='rpnh/comparison_selection/v1')invalid();text(raw.session_id);for(const item of array(raw.targets)){object(item,['target','label','read_state']);comparisonTarget(item.target);text(item.label);if(item.read_state!=='not_read')invalid();}for(const [sid,c] of Object.entries(raw.source_cuts)){cut(c);if(c.source_id!==sid)invalid();}
+            if(more&&(state.session!==raw.session_id||!same(state.cuts,raw.source_cuts)||!same(state.sources,sources)))invalid();
+            const options=more?[...state.options,...raw.targets]:raw.targets;if(new Set(options.map(v=>stable(v.target))).size!==options.length)invalid();state.options=options;state.sources=structuredClone(sources);state.session=raw.session_id;state.cuts=raw.source_cuts;state.limits=raw.limits;state.nextCursor=raw.next_cursor;state.indexLoaded=true;state.error=null;indexLoading=false;draw();
+        }catch(error){if(error.name!=='AbortError'&&state.open&&generation===state.generation&&indexTicket===indexGeneration){indexLoading=false;clearRenderers();state.clear();state.error=errorCode(error);if(state.error==='access_changed'){state.options=[];state.sources=[];state.nextCursor=null;state.cuts=null;state.session=null;state.limits=null;state.indexLoaded=false;state.selection={left:null,right:null};state.source_left=null;state.source_right=null;}draw();}}
         finally{if(indexTicket===indexGeneration&&indexLoading){indexLoading=false;activeIndexCursor=null;if(state.open)draw();}}
     }
     async function load(){const ticket=state.begin();if(!ticket)return;indexController?.abort();indexController=null;++indexGeneration;indexLoading=false;activeIndexCursor=null;controller?.abort();controller=new AbortController();clearRenderers();draw();
         try{const raw=await request(comparisonContextPath(ticket.request),controller.signal);if(await state.accept(ticket,raw))draw();}
-        catch(error){if(state.accepts(ticket)){state.fail(ticket,error);clearRenderers();draw();}}
+        catch(error){if(state.accepts(ticket)){state.fail(ticket,error);clearRenderers();if(state.error==='access_changed'){state.sources=[];state.options=[];state.cuts=null;state.session=null;state.limits=null;state.nextCursor=null;state.indexLoaded=false;state.selection={left:null,right:null};state.source_left=null;state.source_right=null;}draw();}}
     }
     function changeScope(side,next){const scopeValue={kind:'selected_pair',left:structuredClone(state.scope.left),right:structuredClone(state.scope.right),[side]:structuredClone(next)};
         if(scopeValue.left.kind==='full_net'&&scopeValue.right.kind==='full_net')scopeValue.kind='full_pair';invalidate({scope:scopeValue,visualPairs:[]});load();}
@@ -138,17 +138,90 @@ export function installComparisonContextPanel(container,{request,translate=t=>t,
         if(nav.availability==='available'){state.preference='full_pair';draw();return;}
         invalidate({scope:structuredClone(nav.scope),cuts:structuredClone(nav.source_cuts),preference:'full_pair',visualPairs:[]});load();}
     function select(side,kind,id){if(!state.value)return;selected[side]={kind,id};const index=side==='left'?0:1;renderers[index]?.decorate({showResources:true,selection:selected[side]});const details=container.querySelector(`[data-comparison-details="${side}"]`);if(details){const graph=state.value[side].graph;const item=graph[kind==='node'?'nodes':'edges'].find(n=>n.id===id);details.textContent=item?JSON.stringify(item,null,2):'';}updateSelectionButtons();}
-    function updateSelectionButtons(){const pair=container.querySelector('[data-visual-pair]');if(pair)pair.disabled=!selected.left||!selected.right;for(const side of ['left','right']){const b=container.querySelector(`[data-node-scope="${side}"]`);if(b)b.disabled=selected[side]?.kind!=='node';}}
-    function addVisualPair(){if(!state.value||!selected.left||!selected.right)return;const pair={pair_id:'visual-'+(state.visualPairs.length+1)};for(const side of ['left','right'])pair[side]=[{side,target_key:state.value[side].graph.target_key,subject_kind:selected[side].kind,subject_id:selected[side].id,occurrence_path:[]}];invalidate({visualPairs:[...state.visualPairs,pair]});load();}
-    function showRelation(relation){if(!state.value)return;for(const side of ['left','right']){const first=relation[side][0];if(first){select(side,first.subject_kind,first.subject_id);renderers[side==='left'?0:1]?.center(first.subject_kind,first.subject_id);}}const details=container.querySelector('[data-mapping-details]');if(details)details.textContent=JSON.stringify(relation,null,2);}
+    function updateSelectionButtons(){const pair=container.querySelector('[data-visual-pair]');if(pair)pair.disabled=!selected.left||!selected.right||selected.left.kind==='group'||selected.right.kind==='group';for(const side of ['left','right']){const b=container.querySelector(`[data-node-scope="${side}"]`);if(b)b.disabled=selected[side]?.kind!=='node';}}
+    function addVisualPair(){if(!state.value||!selected.left||!selected.right||selected.left.kind==='group'||selected.right.kind==='group')return;const pair={pair_id:'visual-'+(state.visualPairs.length+1)};for(const side of ['left','right'])pair[side]=[{side,target_key:state.value[side].graph.target_key,subject_kind:selected[side].kind,subject_id:selected[side].id,occurrence_path:[]}];invalidate({visualPairs:[...state.visualPairs,pair]});load();}
+    // A relation is a group of explicit DTO endpoints, never a guessed pair.
+    // Reuse the existing renderer's graph/layout and viewport restore surface;
+    // neither navigation nor field-panel updates recreate a renderer.
+    function showRelation(relation){
+        if(!state.value)return;
+        for(const side of ['left','right']){
+            const endpoints=relation[side],renderer=renderers[side==='left'?0:1];
+            selected[side]=endpoints.length===1?{kind:endpoints[0].subject_kind,id:endpoints[0].subject_id}:{kind:'group',endpoints};
+            if(renderer){
+                renderer.decorate({showResources:true,selection:endpoints.length===1?selected[side]:null});
+                const points=[];
+                for(const ep of endpoints){
+                    const isNode=ep.subject_kind==='node';
+                    const cell=renderer.graph.getCell(isNode?nodeKey(ep.subject_id):edgeKey(ep.subject_id));
+                    cell?.attr(isNode?'body/strokeWidth':'line/strokeWidth',3.5);
+                    if(isNode)cell?.attr('root/aria-pressed','true');
+                    const position=(isNode?renderer.layout.nodes:renderer.layout.edges).get(ep.subject_id);
+                    if(isNode&&position)points.push({x:position.x,y:position.y},{x:position.x+position.width,y:position.y+position.height});
+                    else for(const section of position?.sections??[])points.push(section.startPoint,...(section.bendPoints??[]),section.endPoint);
+                }
+                if(points.length){
+                    const bounds=points.reduce((b,p)=>({left:Math.min(b.left,p.x),top:Math.min(b.top,p.y),right:Math.max(b.right,p.x),bottom:Math.max(b.bottom,p.y)}),{left:Infinity,top:Infinity,right:-Infinity,bottom:-Infinity});
+                    const x=bounds.left,y=bounds.top,width=bounds.right-x,height=bounds.bottom-y;
+                    const w=renderer.element.clientWidth,h=renderer.element.clientHeight;
+                    if(w>0&&h>0){const scale=Math.min(1.3,.92*Math.min(w/Math.max(1,width),h/Math.max(1,height)));renderer.restore({scale,tx:w/2-(x+width/2)*scale,ty:h/2-(y+height/2)*scale});}
+                }
+            }
+            const details=container.querySelector(`[data-comparison-details="${side}"]`);
+            if(details)details.textContent=JSON.stringify(endpoints.map(ep=>({endpoint:ep,subject:state.value[side].graph[ep.subject_kind==='node'?'nodes':'edges'].find(item=>item.id===ep.subject_id)})),null,2);
+        }
+        updateSelectionButtons();
+        const details=container.querySelector('[data-mapping-details]');
+        if(details){
+            details.replaceChildren(make('pre',JSON.stringify(relation,null,2)));
+            for(const side of ['left','right'])for(const ep of relation[side]){
+                const b=make('button',`${side} · ${ep.subject_kind} · ${ep.subject_id}`);
+                b.dataset.relationEndpoint=side;
+                b.onclick=()=>{select(side,ep.subject_kind,ep.subject_id);renderers[side==='left'?0:1]?.center(ep.subject_kind,ep.subject_id);};
+                details.append(b);
+            }
+            details.parentElement.open=true;
+        }
+    }
+    function fieldSection(axis,value){
+        const a=value.axes[axis],section=make('details');section.className='comparison-axis';section.dataset.comparisonAxis=axis;
+        section.append(make('summary',translate({definition:'定义',configuration:'配置',materials:'材料',runtime:'运行事实'}[axis])+' · '+a.coverage));
+        const counts=make('p',a.counts.loaded_count===null?translate('未提供，保持未知'):translate('已计算字段 {0} 项：不同 {1}，相同 {2}，未知 {3}',a.counts.loaded_count,a.counts.known_changed,a.counts.known_same,a.counts.unknown));
+        counts.dataset.scopeCounts=axis;section.append(counts);
+        if(axis==='runtime')section.append(make('p',translate('运行覆盖仅含所选检查点 marking 与 token 引用；firing、活动和完成证据未知。')));
+        const filter=make('select');filter.dataset.fieldFilter=axis;filter.setAttribute('aria-label',['字段不同','已提供字段相同','未知'].map(label=>translate(label)).join(' / '));
+        for(const classification of ['all','known_changed','known_same','unknown']){const option=make('option',classification);option.value=classification;filter.append(option);}filter.value='all';
+        const rows=make('div');rows.dataset.fieldRows=axis;
+        const shown=make('p');shown.setAttribute('aria-live','polite');shown.dataset.fieldCount=axis;
+        let limit=100;
+        const rowElements=new Map(),relations=new Map(value.mapping.relations.map(r=>[r.relation_id,r]));
+        function rowElement(row){
+            if(rowElements.has(row.row_id))return rowElements.get(row.row_id);
+            const r=make('details');r.dataset.fieldRow=row.row_id;
+            r.append(make('summary',row.classification+' · '+row.field_path),make('pre',JSON.stringify({left:row.left_fact,right:row.right_fact,reason_code:row.reason_code,evidence_refs:row.evidence_refs},null,2)));
+            const relation=relations.get(row.subject_relation_id);
+            if(relation){const b=button('定位',()=>showRelation(relation));b.append(make('span',` · ${relation.relation_kind} · ${relation.left.length} ↔ ${relation.right.length}`));b.dataset.fieldRelation=relation.relation_id;r.append(b);}
+            rowElements.set(row.row_id,r);return r;
+        }
+        const more=button('显示更多字段',()=>{limit+=100;update();if(more.hidden)filter.focus?.();});
+        more.dataset.moreFields=axis;
+        function update(){
+            const matching=a.rows.filter(row=>filter.value==='all'||row.classification===filter.value),visible=matching.slice(0,limit);
+            rows.replaceChildren(...visible.map(rowElement));
+            shown.textContent=`${visible.length} / ${matching.length}`;
+            more.hidden=visible.length===matching.length;
+        }
+        filter.onchange=()=>{limit=100;update();};
+        section.append(filter,shown,rows,more);update();return section;
+    }
     function draw(){clearRenderers();container.hidden=!state.open;if(!state.open){container.replaceChildren();return;}
         const title=make('h2',translate('比较独立网'));title.id='comparison-context-title';const heading=make('div');heading.className='comparison-heading';heading.append(title,button('关闭比较',()=>close(true)));const children=[heading,make('p',translate('选择两侧 exact 对象；同名不建立身份。四轴分别保留未知，跨来源没有全局原子快照。'))];
         const controls=make('div');controls.className='comparison-controls';
-        for(const side of ['left','right']){const wrapper=make('div');wrapper.className='comparison-selector';const label=make('label',translate(side==='left'?'左侧对象':'右侧对象'));const sourceSelect=make('select');sourceSelect.setAttribute('aria-label',translate(side==='left'?'左侧来源':'右侧来源'));const allSources=[...new Set(state.options.map(x=>x.target.source_id))];const placeholder=make('option',translate('选择来源'));placeholder.value='';sourceSelect.append(placeholder);for(const source of allSources){const option=make('option',source);option.value=source;sourceSelect.append(option);}sourceSelect.value=state.selection[side]?.source_id??state['source_'+side]??'';
+        for(const side of ['left','right']){const wrapper=make('div');wrapper.className='comparison-selector';const label=make('label',translate(side==='left'?'左侧对象':'右侧对象'));const sourceSelect=make('select');sourceSelect.setAttribute('aria-label',translate(side==='left'?'左侧来源':'右侧来源'));const allSources=[...new Set([...state.sources.map(x=>x.source_id),...state.options.map(x=>x.target.source_id)])];const placeholder=make('option',translate('选择来源'));placeholder.value='';sourceSelect.append(placeholder);for(const source of allSources){const description=state.sources.find(x=>x.source_id===source);const option=make('option',source+(description?' · '+description.access_state:''));option.value=source;sourceSelect.append(option);}sourceSelect.value=state.selection[side]?.source_id??state['source_'+side]??'';
             const targetSelect=make('select');targetSelect.setAttribute('aria-label',translate(side==='left'?'左侧对象':'右侧对象'));const empty=make('option',translate('选择精确对象'));empty.value='';targetSelect.append(empty);state.options.forEach((option,index)=>{if(option.target.source_id!==sourceSelect.value)return;const el=make('option',option.label);el.value=String(index);targetSelect.append(el);});targetSelect.value=state.selection[side]?String(state.options.findIndex(x=>same(x.target,state.selection[side]))):'';
-            sourceSelect.onchange=()=>{state['source_'+side]=sourceSelect.value;choose(side,null);};targetSelect.onchange=()=>choose(side,targetSelect.value===''?null:structuredClone(state.options[Number(targetSelect.value)].target));label.append(sourceSelect,targetSelect);wrapper.append(label);controls.append(wrapper);}
+            sourceSelect.onchange=()=>{state['source_'+side]=sourceSelect.value;choose(side,null);};targetSelect.onchange=()=>choose(side,targetSelect.value===''?null:structuredClone(state.options[Number(targetSelect.value)].target));label.append(sourceSelect,targetSelect);wrapper.append(label);const source=state.sources.find(x=>x.source_id===sourceSelect.value);if(source){const disclosure=make('details');disclosure.dataset.sourceDescription=side;disclosure.append(make('summary',translate('来源访问与读取范围')),make('pre',JSON.stringify({source_id:source.source_id,access_state:source.access_state,coverage:source.coverage,...(source.capabilities?{capabilities:source.capabilities}:{})},null,2)));wrapper.append(disclosure);}controls.append(wrapper);}
         const read=button('读取比较',load);read.disabled=state.loading||!state.session||!state.selection.left||!state.selection.right;controls.append(read,button('交换两侧',()=>{const selection={left:state.selection.right,right:state.selection.left},scopes={kind:state.scope.kind,left:state.scope.right,right:state.scope.left};invalidate({selection,scope:scopes,visualPairs:[]});}));
-        controls.append(button('新观察',()=>{invalidate({selection:{left:null,right:null},options:[],cuts:null,nextCursor:null,limits:null,indexLoaded:false,scope:{kind:'full_pair',left:{kind:'full_net'},right:{kind:'full_net'}},visualPairs:[]});readIndex();}));
+        controls.append(button('新观察',()=>{invalidate({selection:{left:null,right:null},options:[],sources:[],cuts:null,nextCursor:null,limits:null,indexLoaded:false,scope:{kind:'full_pair',left:{kind:'full_net'},right:{kind:'full_net'}},visualPairs:[]});readIndex();}));
         if(state.nextCursor){const more=button('更多精确对象',()=>readIndex(true));more.disabled=indexLoading;controls.append(more);}children.push(controls);
         const axes=make('div');axes.className='comparison-axes-select';for(const axis of AXES){const label=make('label',translate({definition:'定义',configuration:'配置',materials:'材料',runtime:'运行事实'}[axis])),input=make('input');input.type='checkbox';input.checked=state.axes.includes(axis);input.onchange=()=>invalidate({axes:AXES.filter(a=>a===axis?input.checked:state.axes.includes(a))});label.prepend(input);axes.append(label);}children.push(axes);
         if(state.loading)children.push(make('p',translate('正在读取完整比较…')));
@@ -165,8 +238,8 @@ export function installComparisonContextPanel(container,{request,translate=t=>t,
                 panel.append(make('p',translate('当前范围：{0} 个节点，{1} 条内部弧，{2} 条边界连接',s.graph.nodes.length,s.graph.edges.length,s.graph.boundary_edges.length)));
                 const wrap=make('div');wrap.className='comparison-canvas-wrap';const canvas=make('div');canvas.className='comparison-paper';canvas.dataset.comparisonPaper=side;canvas.tabIndex=0;canvas.setAttribute('aria-label',translate(side==='left'?'左侧 Petri 网':'右侧 Petri 网'));wrap.append(canvas);panel.append(wrap);
                 const boundaries=make('details');boundaries.append(make('summary',translate('边界连接')),make('pre',JSON.stringify(s.graph.boundary_edges,null,2)));panel.append(boundaries);const details=make('pre');details.dataset.comparisonDetails=side;panel.append(details);panels.append(panel);}
-            children.push(panels);const mapping=make('details');mapping.append(make('summary',translate('对应证据与视觉配对')));for(const relation of value.mapping.relations){const b=make('button',`${relation.relation_kind} · ${relation.left.length} ↔ ${relation.right.length} · ${relation.validation}${relation.author_direction?' · '+relation.author_direction:''}`);b.onclick=()=>showRelation(relation);mapping.append(b);}for(const pair of state.visualPairs){const b=make('button',translate('仅视觉')+' · '+pair.pair_id);b.onclick=()=>showRelation(pair);mapping.append(b);}const detail=make('pre');detail.dataset.mappingDetails='';mapping.append(detail);children.push(mapping);
-            for(const axis of AXES){const a=value.axes[axis],section=make('details');section.className='comparison-axis';section.append(make('summary',translate({definition:'定义',configuration:'配置',materials:'材料',runtime:'运行事实'}[axis])+' · '+a.coverage));if(a.counts.loaded_count===null)section.append(make('p',translate('未提供，保持未知')));else section.append(make('p',translate('已计算字段 {0} 项：不同 {1}，相同 {2}，未知 {3}',a.counts.loaded_count,a.counts.known_changed,a.counts.known_same,a.counts.unknown)));if(axis==='runtime')section.append(make('p',translate('运行覆盖仅含所选检查点 marking 与 token 引用；firing、活动和完成证据未知。')));for(const row of a.rows.slice(0,rowLimit)){const r=make('details');r.append(make('summary',row.classification+' · '+row.field_path),make('pre',JSON.stringify({left:row.left_fact,right:row.right_fact},null,2)));section.append(r);}if(a.rows.length>rowLimit)section.append(button('显示更多字段',()=>{rowLimit+=100;draw();}));children.push(section);}
+            children.push(panels);const mapping=make('details');mapping.append(make('summary',translate('对应证据与视觉配对')));for(const relation of value.mapping.relations){const b=make('button',`${relation.relation_kind} · ${relation.left.length} ↔ ${relation.right.length} · ${relation.validation}${relation.author_direction?' · '+relation.author_direction:''}`);b.onclick=()=>showRelation(relation);mapping.append(b);}for(const pair of state.visualPairs){const b=make('button',translate('仅视觉')+' · '+pair.pair_id);b.onclick=()=>showRelation(pair);mapping.append(b);}const detail=make('div');detail.dataset.mappingDetails='';mapping.append(detail);children.push(mapping);
+            for(const axis of AXES)children.push(fieldSection(axis,value));
             children.push(make('p',translate('不同不表示优劣、业务等价或可安全替换；未提供不等于零。')));
         }
         container.replaceChildren(...children);if(state.value)renderPair(state.value);

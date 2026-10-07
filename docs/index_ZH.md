@@ -47,6 +47,7 @@ metadata:
 | 按四个独立证据轴比较精确网图 | [跨网比较](guides/comparison-context_ZH.md) |
 | 对照已准备 HOST 的声明快照 | [HOST 声明诊断](guides/host-readiness_ZH.md) |
 | 只读比较同一 Registry 的两个 checkpoint | [Checkpoint 比较](guides/checkpoint-comparison_ZH.md) |
+| 回读已登记结果、调度 managed 调用与运行隔离程序 | [受控 managed 工具](controlled-managed-tools.zh.md) |
 | 理解执行闭环 | [架构](architecture/design_ZH.md) |
 | 阅读完整 harness 架构概览 | [Harness 架构](ARCHITECTURE_ZH.md) |
 | 比较 RPNH 权威与 Codex 展示 | [RPNH 与 Codex](RPNH_VS_CODEX_ZH.md) |

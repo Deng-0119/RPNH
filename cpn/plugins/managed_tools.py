@@ -9,7 +9,9 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 import hashlib
 import json
-from threading import Event, Lock
+from concurrent.futures import Future
+from threading import RLock
+import pickle
 from types import MappingProxyType
 from typing import Any, Iterable, Mapping
 
@@ -428,6 +430,69 @@ def _resource_ref_payload(ref: Any) -> dict[str, str]:
     }
 
 
+@dataclass(frozen=True, slots=True)
+class PreparedManagedInvocation:
+    """Owner-authorized worker data. Contains no Registry or execution handle."""
+
+    receipt_key: str
+    receipt_material: bytes
+    started_receipt: bytes
+    started_receipt_ref: Mapping[str, str]
+    packet: bytes
+    handler: Any
+    environment_names: tuple[str, ...]
+    timeout_seconds: float
+    effect: str
+    protocol_version: str
+
+
+@dataclass(frozen=True, slots=True)
+class ManagedInvocationObservation:
+    """Observe an existing dispatch outside the owner; never dispatch it again."""
+
+    future: Future
+
+
+@dataclass(frozen=True, slots=True)
+class ManagedWorkerCompletion:
+    output: Any = None
+    error_code: str | None = None
+    may_have_executed: bool = True
+    observation_lost: bool = False
+
+
+def execute_prepared_invocation(prepared: PreparedManagedInvocation, *, cancelled):
+    """Worker-only execution. Terminal validation/publication belong to finish."""
+    from .worker import WorkerFailure, execute_worker
+    try:
+        if cancelled():
+            return ManagedWorkerCompletion(
+                error_code="cancelled_before_start", may_have_executed=False)
+        output = execute_worker(
+            prepared.handler, pickle.loads(prepared.packet),
+            environment_names=prepared.environment_names,
+            timeout_seconds=prepared.timeout_seconds, cancelled=cancelled)
+        return ManagedWorkerCompletion(output=output)
+    except WorkerFailure as exc:
+        return ManagedWorkerCompletion(
+            error_code=exc.code, may_have_executed=exc.may_have_executed)
+    except Exception:
+        return ManagedWorkerCompletion(
+            error_code="worker_observation_lost", observation_lost=True)
+
+
+@dataclass
+class _ActiveManagedInvocation:
+    future: Future = field(default_factory=Future)
+    material: bytes | None = None
+    prepared: PreparedManagedInvocation | None = None
+    execution: Any = None
+    declaration: Any = None
+    arguments: Any = None
+    refs: Any = None
+    call_id: str = ""
+
+
 class ManagedPluginInvocationService:
     """Owner-bound durable execution service for managed native-plugin tools.
 
@@ -439,10 +504,10 @@ class ManagedPluginInvocationService:
 
     # One RunOwner/core is process-exclusive. Services reconstructed over that
     # same live owner still share this small coordinator, so a duplicate
-    # observer waits for the active executor instead of misclassifying its
-    # durable started receipt as executor loss.
-    _active_lock = Lock()
-    _active_calls: dict[tuple[int, str], Event] = {}
+    # observer gets the active executor's Future instead of misclassifying its
+    # durable started receipt as executor loss. Waiting is outside new owner APIs.
+    _active_lock = RLock()
+    _active_calls: dict[tuple[int, str], _ActiveManagedInvocation] = {}
 
     def __init__(self, owner: Any, kernel: Any, repository: Any,
                  catalog: ManagedPluginToolCatalog) -> None:
@@ -472,22 +537,22 @@ class ManagedPluginInvocationService:
         self.repository = repository
         self.catalog = catalog
 
-    def _enter_active_call(self, key: str) -> tuple[Event, bool]:
+    def _enter_active_call(self, key: str):
         active_key = (id(self.core), key)
         with self._active_lock:
-            event = self._active_calls.get(active_key)
-            if event is not None:
-                return event, False
-            event = Event()
-            self._active_calls[active_key] = event
-            return event, True
+            active = self._active_calls.get(active_key)
+            if active is not None:
+                return active, False
+            active = _ActiveManagedInvocation()
+            # Observers cannot cancel a dispatched owner's terminal publication.
+            active.future.set_running_or_notify_cancel()
+            self._active_calls[active_key] = active
+            return active, True
 
-    def _leave_active_call(self, key: str, event: Event) -> None:
-        active_key = (id(self.core), key)
+    def _leave_active_call(self, key: str, active) -> None:
         with self._active_lock:
-            if self._active_calls.get(active_key) is event:
-                self._active_calls.pop(active_key)
-                event.set()
+            if self._active_calls.get((id(self.core), key)) is active:
+                self._active_calls.pop((id(self.core), key))
 
     def _authorize(self, execution: Any, declaration: ManagedToolDeclaration):
         from cpn.rpnh.executable_net import load_compiled_net
@@ -512,7 +577,7 @@ class ManagedPluginInvocationService:
         declared = next(
             item for item in compiled.operations
             if item.operation_id == operation.spec.operation_id)
-        if tuple(declared.declaration.tools) != operation.spec.allowed_tool_ids:
+        if tuple(sorted(declared.declaration.tools)) != operation.spec.allowed_tool_ids:
             raise OperationAuthorityError(
                 "managed caller tool inventory differs from admitted operation")
         registered = self.owner.registration.declaration(
@@ -868,106 +933,191 @@ class ManagedPluginInvocationService:
                 else _resource_ref_payload(terminal_ref)),
         }
 
-    def invoke(self, name: str, *, execution: Any, call_id: str,
-               arguments: Mapping[str, Any],
-               interruption_requested=None,
-               registration_key: str | None = None) -> Mapping[str, Any]:
+    def prepare(self, name: str, *, execution: Any, call_id: str,
+                arguments: Mapping[str, Any], registration_key: str | None = None,
+                allowed_effects: tuple[str, ...] | None = None,
+                scheduling_policy=None
+                ) -> PreparedManagedInvocation | ManagedInvocationObservation:
+        """Owner-only admission, called only after a worker slot is reserved.
+
+        An observer receives the same Future immediately. No wait or worker
+        execution occurs here. Receipt identity deliberately excludes turn ID.
+        """
         declaration, plugin, operation, arguments = self.validate_arguments(
             name, arguments, registration_key=registration_key)
         if (not isinstance(call_id, str) or not call_id.strip()
                 or len(call_id) > 512):
-            raise PluginError(
-                "managed tool call id must be a nonempty bounded string")
+            raise PluginError("managed tool call id must be a nonempty bounded string")
+        if scheduling_policy is not None:
+            from .managed_scheduler import ManagedSchedulerPolicy
+            if not isinstance(scheduling_policy, ManagedSchedulerPolicy):
+                raise TypeError("prepare requires an exact managed scheduling policy")
+            scheduling_policy.validate_declaration(declaration)
+        if allowed_effects is not None and declaration.effect not in allowed_effects:
+            raise PluginError("managed effect is outside the scheduler policy")
+        execution = self._authorize(execution, declaration)
+        key, refs = self._refs(execution, call_id)
+        material = canonical(self._call_material(
+            execution, declaration, call_id, arguments))
+        with self._active_lock:
+            active, owns_call = self._enter_active_call(key)
+            if not owns_call:
+                if active.material != material:
+                    raise ManagedPluginInvocationConflict(
+                        "managed call id was reused with different tool or arguments")
+                return ManagedInvocationObservation(active.future)
+            active.material = material
+            try:
+                if self.core.event_store.object_row(
+                        refs["started"].resource_version_id) is not None:
+                    result = self._existing(
+                        execution, declaration, call_id, arguments, key, refs)
+                    active.future.set_result(result)
+                    self._leave_active_call(key, active)
+                    return ManagedInvocationObservation(active.future)
+                self._check_reconciliation_block(execution, key)
+                # Build all bounded worker material before the durable claim.
+                packet = pickle.dumps(self._packet(
+                    execution, declaration.selector, plugin, operation,
+                    call_id, arguments))
+                if not self._claim(
+                        execution, declaration, call_id, arguments, key, refs):
+                    result = self._existing(
+                        execution, declaration, call_id, arguments, key, refs)
+                    active.future.set_result(result)
+                    self._leave_active_call(key, active)
+                    return ManagedInvocationObservation(active.future)
+                started = self._read_receipt(execution, key, refs["started"], "started")
+                prepared = PreparedManagedInvocation(
+                    key, material, canonical(started),
+                    frozen(_resource_ref_payload(refs["started"])),
+                    packet, operation.handler, tuple(plugin.environment),
+                    operation.timeout_seconds, declaration.effect,
+                    declaration.protocol_version)
+                active.prepared = prepared
+                active.execution = execution
+                active.declaration = declaration
+                active.arguments = arguments
+                active.refs = refs
+                active.call_id = call_id
+                return prepared
+            except BaseException as exc:
+                active.future.set_exception(exc)
+                self._leave_active_call(key, active)
+                raise
+
+    def _check_reconciliation_block(self, execution, key):
+        # The durable unknown blocks NEW calls in the same operation, including
+        # after service/process reconstruction. Existing terminal replay is safe.
+        prefix = (f"managed-plugin:{execution.operation_execution_lease_ref.version_id}:"
+                  f"{execution.operation.firing.transition_firing_ref.version_id}:")
+        started_keys, terminal_keys = set(), set()
+        for row in self.core.event_store.object_rows_by_type("resource_version/v1"):
+            metadata = json.loads(row["metadata_json"])
+            descriptors = metadata.get("descriptors", {})
+            receipt_key = str(descriptors.get("managed_plugin_call", ""))
+            if not receipt_key.startswith(prefix):
+                continue
+            phase = descriptors.get("phase")
+            if phase == "outcome_unknown":
+                raise ManagedPluginInvocationReconciliationRequired(
+                    "managed operation has an unresolved outcome; no new dispatch")
+            if phase == "started":
+                started_keys.add(receipt_key)
+            elif phase in {"returned", "failed"}:
+                terminal_keys.add(receipt_key)
+        if any((id(self.core), candidate) not in self._active_calls
+               for candidate in started_keys - terminal_keys):
+            raise ManagedPluginInvocationReconciliationRequired(
+                "managed operation has an unobserved admission; no new dispatch")
+
+    def finish(self, prepared: PreparedManagedInvocation,
+               completion: ManagedWorkerCompletion) -> Mapping[str, Any]:
+        """Owner-only terminal observation with fresh authority/identity checks."""
+        if not isinstance(prepared, PreparedManagedInvocation):
+            raise TypeError("finish requires an exact prepared invocation")
+        with self._active_lock:
+            active = self._active_calls.get((id(self.core), prepared.receipt_key))
+            if active is None or active.prepared is not prepared:
+                raise ManagedPluginInvocationConflict(
+                    "finish differs from the exact active owner admission")
+            try:
+                declaration = active.declaration
+                execution = self._authorize(active.execution, declaration)
+                material = canonical(self._call_material(
+                    execution, declaration, active.call_id, active.arguments))
+                if material != prepared.receipt_material:
+                    raise ManagedPluginInvocationConflict("finish receipt identity changed")
+                started = self._read_receipt(
+                    execution, prepared.receipt_key, active.refs["started"], "started")
+                expected_started = {**json.loads(material), "state": "started"}
+                if declaration.protocol_version != "v1":
+                    expected_started["admitted_at_utc"] = started.get("admitted_at_utc") if started else None
+                if (started != expected_started
+                        or canonical(started) != prepared.started_receipt
+                        or dict(prepared.started_receipt_ref)
+                        != _resource_ref_payload(active.refs["started"])):
+                    raise ManagedPluginInvocationConflict("finish admission receipt changed")
+                if not isinstance(completion, ManagedWorkerCompletion):
+                    raise TypeError("finish requires a worker completion")
+                code = completion.error_code
+                output = completion.output
+                if code is None:
+                    try:
+                        output = validate(declaration.output_schema, output)
+                        if len(canonical(output)) > declaration.max_result_bytes:
+                            code = "result_limit_exceeded"
+                    except PluginError:
+                        code = "output_schema_mismatch"
+                phase = "returned" if code is None else (
+                    "outcome_unknown" if completion.observation_lost or (
+                        declaration.effect == "external_write"
+                        and completion.may_have_executed) else "failed")
+                self._terminal(
+                    execution, declaration, active.call_id, active.arguments,
+                    prepared.receipt_key, active.refs, phase,
+                    **({"output": output} if code is None else {"error_code": code}))
+                # Reuse the exact durable replay parser for success and failure.
+                result = self._existing(
+                    execution, declaration, active.call_id, active.arguments,
+                    prepared.receipt_key, active.refs)
+                active.future.set_result(result)
+                return result
+            except BaseException as exc:
+                active.future.set_exception(exc)
+                raise
+            finally:
+                self._leave_active_call(prepared.receipt_key, active)
+
+    def invoke(self, name: str, *, execution: Any, call_id: str,
+               arguments: Mapping[str, Any], interruption_requested=None,
+               registration_key: str | None = None) -> Mapping[str, Any]:
+        """Legacy synchronous entry. Parallel callers must use prepare/finish.
+
+        Only this compatibility path waits for an observer; the owner gateway
+        for the bounded scheduler always returns the observation immediately.
+        """
         if interruption_requested is None:
             interruption_requested = lambda: False
         if not callable(interruption_requested):
             raise TypeError("interruption probe must be callable")
-
-        execution = self._authorize(execution, declaration)
-        key, refs = self._refs(execution, call_id)
-        active, owns_call = self._enter_active_call(key)
-        if not owns_call:
-            active.wait()
-            replay = self._existing(
-                execution, declaration, call_id, arguments, key, refs)
-            assert replay is not None
-            return replay
+        prepared = self.prepare(
+            name, execution=execution, call_id=call_id, arguments=arguments,
+            registration_key=registration_key)
+        if isinstance(prepared, ManagedInvocationObservation):
+            return prepared.future.result()
         try:
-            return self._invoke_owned(
-                declaration, plugin, operation, execution, call_id,
-                arguments, interruption_requested, key, refs)
-        finally:
-            self._leave_active_call(key, active)
-
-    def _invoke_owned(
-            self, declaration: ManagedToolDeclaration, plugin: BoundPlugin,
-            operation: Any, execution: Any, call_id: str,
-            arguments: Mapping[str, Any], interruption_requested: Any,
-            key: str, refs: Mapping[str, Any],
-    ) -> Mapping[str, Any]:
-        if self.core.event_store.object_row(
-                refs["started"].resource_version_id) is not None:
-            replay = self._existing(
-                execution, declaration, call_id, arguments, key, refs)
-            assert replay is not None
-            return replay
-        if not self._claim(
-                execution, declaration, call_id, arguments, key, refs):
-            replay = self._existing(
-                execution, declaration, call_id, arguments, key, refs)
-            assert replay is not None
-            return replay
-
-        from .worker import WorkerFailure, execute_worker
-        try:
-            output = execute_worker(
-                operation.handler,
-                self._packet(
-                    execution, declaration.selector, plugin, operation,
-                    call_id, arguments),
-                environment_names=plugin.environment,
-                timeout_seconds=operation.timeout_seconds,
-                cancelled=interruption_requested)
-            output = validate(declaration.output_schema, output)
-        except (WorkerFailure, PluginError) as exc:
-            code = (
-                exc.code if isinstance(exc, WorkerFailure)
-                else "output_schema_mismatch")
-            phase = (
-                "outcome_unknown"
-                if (declaration.effect == "external_write"
-                    and (not isinstance(exc, WorkerFailure)
-                         or exc.may_have_executed))
-                else "failed")
-            self._terminal(
-                execution, declaration, call_id, arguments, key, refs,
-                phase, error_code=code)
-            if declaration.protocol_version == "v1":
-                raise ManagedPluginInvocationFailed(code) from exc
-            evidence = self._failure_result(
-                declaration, call_id, code, phase, refs["started"],
-                refs[phase], self._read_receipt(
-                    execution, key, refs["started"], "started")[
-                        "admitted_at_utc"])
-            if phase == "outcome_unknown":
-                raise ManagedPluginInvocationReconciliationRequired(
-                    "managed external write outcome requires reconciliation",
-                    evidence=evidence) from exc
-            raise ManagedPluginInvocationFailed(
-                code, evidence=evidence) from exc
-
-        self._terminal(
-            execution, declaration, call_id, arguments, key, refs,
-            "returned", output=output)
-        started = self._read_receipt(
-            execution, key, refs["started"], "started")
-        assert started is not None
-        admitted_at = (
-            None if declaration.protocol_version == "v1"
-            else started["admitted_at_utc"])
-        return self._result(
-            declaration, call_id, output, refs["started"], refs["returned"],
-            admitted_at)
+            completion = execute_prepared_invocation(
+                prepared, cancelled=interruption_requested)
+        except BaseException as exc:
+            # A lost synchronous executor leaves its claim for reconciliation.
+            with self._active_lock:
+                active = self._active_calls.get((id(self.core), prepared.receipt_key))
+                if active is not None:
+                    active.future.set_exception(exc)
+                    self._leave_active_call(prepared.receipt_key, active)
+            raise
+        return self.finish(prepared, completion)
 
     def validate_arguments(
             self, name: str, arguments: Mapping[str, Any], *,

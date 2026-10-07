@@ -35,11 +35,16 @@ def graph_for(messages, *, configuration_condition=None):
             "The tool output envelope's raw_result field is the actor-visible response text. "
             "Under this explicit API comparison condition, api_search metadata may be corrected; "
             "a pre_dispatch error means that request was rejected before any upstream action.")
+    readback = (configuration_condition is not None
+                and configuration_condition.get("id") == "api-contract-visibility-readback-v2")
+    tools = ("complete_interaction", "read_file", "read_managed_output", "write_file") if readback else ("complete_interaction", "read_file", "write_file")
+    if readback:
+        native_instruction += "\nManaged results carry exact action/receipt locators. Use read_managed_output to retrieve omitted JSON pages; never repeat a business call to display its output. A subsequent registered request can prove content inclusion, not semantic use."
     instruction = system + "\n\n" + native_instruction if system else native_instruction
     node = AgentWorkflowNode("executor", instruction,
             (AgentWorkflowPort("request", "task"),),
             (AgentWorkflowPort("result", "final_answer"),),
-            AgentWorkflowExecution(role="actor", tools=("complete_interaction", "read_file", "write_file"),
+            AgentWorkflowExecution(role="actor", tools=tools,
                                    profile_id=None))
     graph = AgentWorkflowGraph((node,), (), AgentWorkflowEndpoint("executor", "request"),
                                AgentWorkflowEndpoint("executor", "result"))
