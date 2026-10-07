@@ -185,3 +185,54 @@ __all__ += ("AssemblyMemberV9", "AssemblyRevisionV9", "AssemblyAuthorV9", "Valid
 
 from .schema_catalog import candidate_schema_data, candidate_v2_schema_data
 __all__ += ("candidate_schema_data", "candidate_v2_schema_data")
+
+# New optional surfaces stay lazy: importing collaboration must not open a
+# Registry, probe an environment, discover plugins, or initialize a HOST.
+_OPTIONAL_PUBLIC_EXPORTS = {
+    **{name: '.environment_contracts' for name in (
+        'EnvironmentContractError', 'PackageTarget')},
+    **{name: '.environment_requirements' for name in (
+        'EnvironmentRequirements', 'ScopedEnvironmentRequirements', 'PackageEnvironment',
+        'EnvironmentRequirementsSet', 'read_environment_requirements', 'read_package_environment')},
+    **{name: '.environment_local_contracts' for name in (
+        'EnvironmentSelection', 'LocalEnvironmentBinding', 'EnvironmentResolutionLock',
+        'EnvironmentCheckReport', 'EnvironmentPreparationPlan', 'PreparationReceipt')},
+    **{name: '.environment_check' for name in (
+        'ProbePolicy', 'check_environment')},
+    **{name: '.environment_plan' for name in (
+        'ConcreteSelections', 'resolve_local_wheels', 'plan_environment')},
+    **{name: '.environment_prepare' for name in (
+        'PreparationExecutionContext', 'PreparedEnvironmentResult',
+        'LaunchExecutionContext', 'prepare_environment')},
+    **{name: '.environment_host' for name in (
+        'HostProfile', 'ExistingRunHandle', 'launch_package')},
+    'render_environment_setup': '.environment_setup',
+    **{name: '.registry_read_contracts' for name in (
+        'RegistryReadSessionError', 'ReadLimits', 'SourceSelection', 'ExplicitSources',
+        'SelectedSourceSet', 'ReadSessionRequest', 'PublicRegistryHead', 'SourceCut',
+        'HistoricalCutRequest', 'TypedPredicate', 'TypedIndexClause', 'IndexQuery')},
+    **{name: '.registry_read_session' for name in (
+        'RegistryReadHostBinding', 'RegistryReadSession', 'ExistingReadAuthorityProvider',
+        'ResolvedReadSource', 'open_readonly_source', 'open_registry_session',
+        'query_index', 'read_exact', 'read_material')},
+    **{name: '.registry_typed_readers' for name in (
+        'TypedReaderCatalog', 'TypedReadError', 'DEFAULT_TYPED_READER_CATALOG')},
+    **{name: '.subnet_exchange' for name in (
+        'SubnetExchangeError', 'SubnetExportPlan', 'SubnetExportResult',
+        'SubnetImportPlan', 'SubnetImportResult', 'TargetRegistrySelection',
+        'plan_subnet_export', 'export_subnet', 'plan_subnet_import', 'import_subnet')},
+    **{name: '.read_host_config' for name in (
+        'ReadHostConfiguration', 'load_read_host_config', 'open_read_host_session')},
+    'registry_read_schema_data': '.schema_catalog',
+}
+__all__ += tuple(_OPTIONAL_PUBLIC_EXPORTS)
+
+
+def __getattr__(name):
+    module = _OPTIONAL_PUBLIC_EXPORTS.get(name)
+    if module is None:
+        raise AttributeError(name)
+    from importlib import import_module
+    value = getattr(import_module(module, __name__), name)
+    globals()[name] = value
+    return value

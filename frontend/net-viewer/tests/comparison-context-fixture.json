@@ -1,0 +1,3358 @@
+{
+  "request": {
+    "schema_version": "rpnh/comparison_request/v1",
+    "session_id": "rs_3YEJuivV4r3ECT0rc-g2r-oT7HhClesW",
+    "client_request_id": "test-exact-pair",
+    "left": {
+      "kind": "author_revision",
+      "source_id": "source-a",
+      "revision_ref": {
+        "schema_version": "rpnh/collaboration/source_version_ref/v1",
+        "source_id": "source-a",
+        "ref": {
+          "entity_type": "collaboration_net_revision/v1",
+          "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+          "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+        }
+      }
+    },
+    "right": {
+      "kind": "author_revision",
+      "source_id": "source-a",
+      "revision_ref": {
+        "schema_version": "rpnh/collaboration/source_version_ref/v1",
+        "source_id": "source-a",
+        "ref": {
+          "entity_type": "collaboration_net_revision/v1",
+          "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+          "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+        }
+      }
+    },
+    "source_cuts": null,
+    "scope": {
+      "kind": "full_pair",
+      "left": {
+        "kind": "full_net"
+      },
+      "right": {
+        "kind": "full_net"
+      }
+    },
+    "axes": [
+      "definition",
+      "configuration",
+      "materials",
+      "runtime"
+    ],
+    "view_preference": "auto",
+    "visual_pairs": [],
+    "limits": {
+      "max_nodes_per_side": 10000,
+      "max_edges_per_side": 30000,
+      "max_mapping_relations": 20000,
+      "max_field_rows": 200000,
+      "max_evidence_reads": 20000,
+      "max_response_bytes": 16000000
+    }
+  },
+  "context": {
+    "schema_version": "rpnh/comparison_context/v1",
+    "client_request_id": "test-exact-pair",
+    "context_id": "ae2d5b7dddb5da4506f078dc9b63ea093a25da907bbe7b2957eaca10fa9bfcd5",
+    "purpose": "descriptive_read_only",
+    "request_echo": {
+      "left": {
+        "kind": "author_revision",
+        "source_id": "source-a",
+        "revision_ref": {
+          "schema_version": "rpnh/collaboration/source_version_ref/v1",
+          "source_id": "source-a",
+          "ref": {
+            "entity_type": "collaboration_net_revision/v1",
+            "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+            "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+          }
+        }
+      },
+      "right": {
+        "kind": "author_revision",
+        "source_id": "source-a",
+        "revision_ref": {
+          "schema_version": "rpnh/collaboration/source_version_ref/v1",
+          "source_id": "source-a",
+          "ref": {
+            "entity_type": "collaboration_net_revision/v1",
+            "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+            "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+          }
+        }
+      },
+      "scope": {
+        "kind": "full_pair",
+        "left": {
+          "kind": "full_net"
+        },
+        "right": {
+          "kind": "full_net"
+        }
+      },
+      "axes": [
+        "definition",
+        "configuration",
+        "materials",
+        "runtime"
+      ],
+      "view_preference": "auto",
+      "visual_pairs": [],
+      "source_cuts": {
+        "source-a": {
+          "source_id": "source-a",
+          "cut_id": "cut_9s93lbPpUzKjNbcyMvszo8E8szgB0ZDM",
+          "head": {
+            "ordinal": 59,
+            "writer_fencing_epoch": 2
+          },
+          "reader_contract_version": "rpnh/registry_read/v1"
+        }
+      }
+    },
+    "global_atomic_snapshot": false,
+    "publication": "complete_pair",
+    "sources": [
+      {
+        "observation_key": "7d85d54ceeb2da44d6df14fa8eb023e1f64db9564b6b9177c099c5a3cb0b4172",
+        "source_state": {
+          "source_id": "source-a",
+          "source_ref": {
+            "schema_version": "rpnh/collaboration/source_version_ref/v1",
+            "source_id": "source-a",
+            "ref": {
+              "entity_type": "task/v1",
+              "logical_id": "task:f1f0a15c953e47558d0a82db91e0b11e",
+              "version_id": "task_version:cf92255a4d52426cafea140c6ebead28"
+            }
+          },
+          "cut": {
+            "source_id": "source-a",
+            "cut_id": "cut_9s93lbPpUzKjNbcyMvszo8E8szgB0ZDM",
+            "head": {
+              "ordinal": 59,
+              "writer_fencing_epoch": 2
+            },
+            "reader_contract_version": "rpnh/registry_read/v1"
+          },
+          "access_revision": "9c5f15533383c1ecdb088c1e8f8f061f9998cc0a6a9e82ffba487eadb4db2c87",
+          "access_state": "readable",
+          "coverage": {
+            "state": "not_queried",
+            "loaded_count": null,
+            "total_count": null
+          }
+        },
+        "final_recheck": "passed"
+      }
+    ],
+    "left": {
+      "selected_target": {
+        "kind": "author_revision",
+        "source_id": "source-a",
+        "revision_ref": {
+          "schema_version": "rpnh/collaboration/source_version_ref/v1",
+          "source_id": "source-a",
+          "ref": {
+            "entity_type": "collaboration_net_revision/v1",
+            "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+            "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+          }
+        }
+      },
+      "source_observation_key": "7d85d54ceeb2da44d6df14fa8eb023e1f64db9564b6b9177c099c5a3cb0b4172",
+      "scope_resolution": {
+        "scope_key": "220d84de19ce5783b79f3f9d488c34e7df68e60b267c9079c2ba57fd2bdb6670",
+        "requested_scope": {
+          "kind": "full_net"
+        },
+        "resolved_scope": {
+          "kind": "full_net"
+        },
+        "member_node_ids": [
+          "step.request",
+          "step.result",
+          "step.run"
+        ],
+        "member_edge_ids": [
+          "edge:arc:step.request:step.run:consume:-:1",
+          "edge:arc:step.run:step.result:produce:complete:1"
+        ],
+        "boundary_edges": [],
+        "membership_evidence_refs": [],
+        "coverage": "complete_in_declared_scope"
+      },
+      "graph": {
+        "schema_version": "rpnh/comparison_pn/v1",
+        "target_key": "c7f1dcdb27beb3471fbab26d360a59f5fe7422cfc1ed86be2e49043d9edd65cb",
+        "scope_key": "220d84de19ce5783b79f3f9d488c34e7df68e60b267c9079c2ba57fd2bdb6670",
+        "nodes": [
+          {
+            "capacity": null,
+            "category": "place",
+            "hidden_by_default": false,
+            "id": "step.request",
+            "kind": "place",
+            "label": "step.request",
+            "schema": "application/net_operation_test_text/v1",
+            "token_kind": "data"
+          },
+          {
+            "capacity": null,
+            "category": "place",
+            "hidden_by_default": false,
+            "id": "step.result",
+            "kind": "place",
+            "label": "step.result",
+            "schema": "application/net_operation_test_text/v1",
+            "token_kind": "data"
+          },
+          {
+            "category": "execution",
+            "executor": "test/net-operation-business/v1",
+            "hidden_by_default": false,
+            "id": "step.run",
+            "inputs": [
+              "step.request"
+            ],
+            "kind": "transition",
+            "label": "step.run",
+            "operation": "step.run",
+            "operation_id": "op_0",
+            "outputs": [
+              "step.result"
+            ]
+          }
+        ],
+        "edges": [
+          {
+            "direction": "input",
+            "emit": "produced",
+            "forward_source": null,
+            "hidden_by_default": false,
+            "id": "edge:arc:step.request:step.run:consume:-:1",
+            "kind": "arc",
+            "mode": "consume",
+            "outcome": null,
+            "resource": false,
+            "source": "step.request",
+            "target": "step.run",
+            "weight": 1
+          },
+          {
+            "direction": "output",
+            "emit": "produced",
+            "forward_source": null,
+            "hidden_by_default": false,
+            "id": "edge:arc:step.run:step.result:produce:complete:1",
+            "kind": "arc",
+            "mode": "produce",
+            "outcome": "complete",
+            "resource": false,
+            "source": "step.run",
+            "target": "step.result",
+            "weight": 1
+          }
+        ],
+        "boundary_edges": [],
+        "topology_coverage": "complete_in_declared_scope"
+      },
+      "hierarchy_navigation": {
+        "coverage": "provided",
+        "scopes": [
+          {
+            "edge_ids": [
+              "edge:arc:step.request:step.run:consume:-:1",
+              "edge:arc:step.run:step.result:produce:complete:1"
+            ],
+            "evidence_refs": [],
+            "label": "Simple",
+            "node_ids": [
+              "step.request",
+              "step.result",
+              "step.run"
+            ],
+            "parent_scope": null,
+            "scope": {
+              "kind": "module",
+              "selector": {
+                "declaration_ref": {
+                  "ref": {
+                    "entity_type": "collaboration_net_revision/v1",
+                    "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                    "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                  },
+                  "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                  "source_id": "source-a"
+                },
+                "element_id": "element:0bff24aa13854c90b4cf495b1580374f",
+                "occurrence_path": []
+              }
+            }
+          }
+        ]
+      },
+      "public_definition_provenance": {
+        "descriptor_refs": [
+          {
+            "schema_version": "rpnh/collaboration/source_version_ref/v1",
+            "source_id": "source-a",
+            "ref": {
+              "entity_type": "collaboration_net_revision/v1",
+              "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+              "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+            }
+          }
+        ],
+        "mapping_refs": [
+          {
+            "schema_version": "rpnh/collaboration/source_resource_ref/v1",
+            "source_id": "source-a",
+            "ref": {
+              "resource_id": "resource:ebb811907bf95f6cb4361d14786a325a",
+              "resource_version_id": "resource_version:0a902d8450f25536868263d9c00ad906"
+            }
+          }
+        ],
+        "status": "verified"
+      },
+      "axis_input_coverage": {
+        "definition": {
+          "coverage": "complete_in_declared_scope",
+          "reason_codes": []
+        },
+        "configuration": {
+          "coverage": "not_provided",
+          "reason_codes": [
+            "not_provided"
+          ]
+        },
+        "materials": {
+          "coverage": "not_provided",
+          "reason_codes": [
+            "not_provided"
+          ]
+        },
+        "runtime": {
+          "coverage": "not_provided",
+          "reason_codes": [
+            "not_captured"
+          ]
+        }
+      }
+    },
+    "right": {
+      "selected_target": {
+        "kind": "author_revision",
+        "source_id": "source-a",
+        "revision_ref": {
+          "schema_version": "rpnh/collaboration/source_version_ref/v1",
+          "source_id": "source-a",
+          "ref": {
+            "entity_type": "collaboration_net_revision/v1",
+            "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+            "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+          }
+        }
+      },
+      "source_observation_key": "7d85d54ceeb2da44d6df14fa8eb023e1f64db9564b6b9177c099c5a3cb0b4172",
+      "scope_resolution": {
+        "scope_key": "220d84de19ce5783b79f3f9d488c34e7df68e60b267c9079c2ba57fd2bdb6670",
+        "requested_scope": {
+          "kind": "full_net"
+        },
+        "resolved_scope": {
+          "kind": "full_net"
+        },
+        "member_node_ids": [
+          "step.request",
+          "step.result",
+          "step.run"
+        ],
+        "member_edge_ids": [
+          "edge:arc:step.request:step.run:consume:-:1",
+          "edge:arc:step.run:step.result:produce:complete:1"
+        ],
+        "boundary_edges": [],
+        "membership_evidence_refs": [],
+        "coverage": "complete_in_declared_scope"
+      },
+      "graph": {
+        "schema_version": "rpnh/comparison_pn/v1",
+        "target_key": "c7f1dcdb27beb3471fbab26d360a59f5fe7422cfc1ed86be2e49043d9edd65cb",
+        "scope_key": "220d84de19ce5783b79f3f9d488c34e7df68e60b267c9079c2ba57fd2bdb6670",
+        "nodes": [
+          {
+            "capacity": null,
+            "category": "place",
+            "hidden_by_default": false,
+            "id": "step.request",
+            "kind": "place",
+            "label": "step.request",
+            "schema": "application/net_operation_test_text/v1",
+            "token_kind": "data"
+          },
+          {
+            "capacity": null,
+            "category": "place",
+            "hidden_by_default": false,
+            "id": "step.result",
+            "kind": "place",
+            "label": "step.result",
+            "schema": "application/net_operation_test_text/v1",
+            "token_kind": "data"
+          },
+          {
+            "category": "execution",
+            "executor": "test/net-operation-business/v1",
+            "hidden_by_default": false,
+            "id": "step.run",
+            "inputs": [
+              "step.request"
+            ],
+            "kind": "transition",
+            "label": "step.run",
+            "operation": "step.run",
+            "operation_id": "op_0",
+            "outputs": [
+              "step.result"
+            ]
+          }
+        ],
+        "edges": [
+          {
+            "direction": "input",
+            "emit": "produced",
+            "forward_source": null,
+            "hidden_by_default": false,
+            "id": "edge:arc:step.request:step.run:consume:-:1",
+            "kind": "arc",
+            "mode": "consume",
+            "outcome": null,
+            "resource": false,
+            "source": "step.request",
+            "target": "step.run",
+            "weight": 1
+          },
+          {
+            "direction": "output",
+            "emit": "produced",
+            "forward_source": null,
+            "hidden_by_default": false,
+            "id": "edge:arc:step.run:step.result:produce:complete:1",
+            "kind": "arc",
+            "mode": "produce",
+            "outcome": "complete",
+            "resource": false,
+            "source": "step.run",
+            "target": "step.result",
+            "weight": 1
+          }
+        ],
+        "boundary_edges": [],
+        "topology_coverage": "complete_in_declared_scope"
+      },
+      "hierarchy_navigation": {
+        "coverage": "provided",
+        "scopes": [
+          {
+            "edge_ids": [
+              "edge:arc:step.request:step.run:consume:-:1",
+              "edge:arc:step.run:step.result:produce:complete:1"
+            ],
+            "evidence_refs": [],
+            "label": "Simple",
+            "node_ids": [
+              "step.request",
+              "step.result",
+              "step.run"
+            ],
+            "parent_scope": null,
+            "scope": {
+              "kind": "module",
+              "selector": {
+                "declaration_ref": {
+                  "ref": {
+                    "entity_type": "collaboration_net_revision/v1",
+                    "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                    "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                  },
+                  "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                  "source_id": "source-a"
+                },
+                "element_id": "element:0bff24aa13854c90b4cf495b1580374f",
+                "occurrence_path": []
+              }
+            }
+          }
+        ]
+      },
+      "public_definition_provenance": {
+        "descriptor_refs": [
+          {
+            "schema_version": "rpnh/collaboration/source_version_ref/v1",
+            "source_id": "source-a",
+            "ref": {
+              "entity_type": "collaboration_net_revision/v1",
+              "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+              "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+            }
+          }
+        ],
+        "mapping_refs": [
+          {
+            "schema_version": "rpnh/collaboration/source_resource_ref/v1",
+            "source_id": "source-a",
+            "ref": {
+              "resource_id": "resource:ebb811907bf95f6cb4361d14786a325a",
+              "resource_version_id": "resource_version:0a902d8450f25536868263d9c00ad906"
+            }
+          }
+        ],
+        "status": "verified"
+      },
+      "axis_input_coverage": {
+        "definition": {
+          "coverage": "complete_in_declared_scope",
+          "reason_codes": []
+        },
+        "configuration": {
+          "coverage": "not_provided",
+          "reason_codes": [
+            "not_provided"
+          ]
+        },
+        "materials": {
+          "coverage": "not_provided",
+          "reason_codes": [
+            "not_provided"
+          ]
+        },
+        "runtime": {
+          "coverage": "not_provided",
+          "reason_codes": [
+            "not_captured"
+          ]
+        }
+      }
+    },
+    "mapping": {
+      "contract_version": "rpnh/comparison_mapping/v1",
+      "coverage": "complete_in_declared_scope",
+      "relations": [
+        {
+          "relation_id": "2ece969d8e556765d6c724341c8e0d2f4dde742c8a87a0046e056719e7647109",
+          "relation_kind": "same_exact_subject",
+          "left": [
+            {
+              "side": "left",
+              "target_key": "c7f1dcdb27beb3471fbab26d360a59f5fe7422cfc1ed86be2e49043d9edd65cb",
+              "subject_kind": "node",
+              "subject_id": "step.request",
+              "occurrence_path": []
+            }
+          ],
+          "right": [
+            {
+              "side": "right",
+              "target_key": "c7f1dcdb27beb3471fbab26d360a59f5fe7422cfc1ed86be2e49043d9edd65cb",
+              "subject_kind": "node",
+              "subject_id": "step.request",
+              "occurrence_path": []
+            }
+          ],
+          "validation": "verified",
+          "semantic_claim": "identity",
+          "evidence": [
+            {
+              "source_id": "source-a",
+              "evidence_ref": {
+                "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                "source_id": "source-a",
+                "ref": {
+                  "entity_type": "collaboration_net_revision/v1",
+                  "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                  "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                }
+              },
+              "evidence_kind": "exact_public_projection",
+              "selected_endpoints": [
+                {
+                  "side": "left",
+                  "target_key": "c7f1dcdb27beb3471fbab26d360a59f5fe7422cfc1ed86be2e49043d9edd65cb",
+                  "subject_kind": "node",
+                  "subject_id": "step.request",
+                  "occurrence_path": []
+                },
+                {
+                  "side": "right",
+                  "target_key": "c7f1dcdb27beb3471fbab26d360a59f5fe7422cfc1ed86be2e49043d9edd65cb",
+                  "subject_kind": "node",
+                  "subject_id": "step.request",
+                  "occurrence_path": []
+                }
+              ],
+              "source_cut": {
+                "source_id": "source-a",
+                "cut_id": "cut_9s93lbPpUzKjNbcyMvszo8E8szgB0ZDM",
+                "head": {
+                  "ordinal": 59,
+                  "writer_fencing_epoch": 2
+                },
+                "reader_contract_version": "rpnh/registry_read/v1"
+              },
+              "access_revision": "9c5f15533383c1ecdb088c1e8f8f061f9998cc0a6a9e82ffba487eadb4db2c87",
+              "verification_contract": "rpnh/public_pn_projection/v1",
+              "validation": "verified"
+            }
+          ],
+          "coverage": "complete_relation",
+          "author_direction": null,
+          "reason_code": "exact_identity"
+        },
+        {
+          "relation_id": "7dedb4cc9fa62c89114b33f0019dc6037d4c36e20a353b98fc21ae135cc5b721",
+          "relation_kind": "same_exact_subject",
+          "left": [
+            {
+              "side": "left",
+              "target_key": "c7f1dcdb27beb3471fbab26d360a59f5fe7422cfc1ed86be2e49043d9edd65cb",
+              "subject_kind": "node",
+              "subject_id": "step.result",
+              "occurrence_path": []
+            }
+          ],
+          "right": [
+            {
+              "side": "right",
+              "target_key": "c7f1dcdb27beb3471fbab26d360a59f5fe7422cfc1ed86be2e49043d9edd65cb",
+              "subject_kind": "node",
+              "subject_id": "step.result",
+              "occurrence_path": []
+            }
+          ],
+          "validation": "verified",
+          "semantic_claim": "identity",
+          "evidence": [
+            {
+              "source_id": "source-a",
+              "evidence_ref": {
+                "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                "source_id": "source-a",
+                "ref": {
+                  "entity_type": "collaboration_net_revision/v1",
+                  "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                  "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                }
+              },
+              "evidence_kind": "exact_public_projection",
+              "selected_endpoints": [
+                {
+                  "side": "left",
+                  "target_key": "c7f1dcdb27beb3471fbab26d360a59f5fe7422cfc1ed86be2e49043d9edd65cb",
+                  "subject_kind": "node",
+                  "subject_id": "step.result",
+                  "occurrence_path": []
+                },
+                {
+                  "side": "right",
+                  "target_key": "c7f1dcdb27beb3471fbab26d360a59f5fe7422cfc1ed86be2e49043d9edd65cb",
+                  "subject_kind": "node",
+                  "subject_id": "step.result",
+                  "occurrence_path": []
+                }
+              ],
+              "source_cut": {
+                "source_id": "source-a",
+                "cut_id": "cut_9s93lbPpUzKjNbcyMvszo8E8szgB0ZDM",
+                "head": {
+                  "ordinal": 59,
+                  "writer_fencing_epoch": 2
+                },
+                "reader_contract_version": "rpnh/registry_read/v1"
+              },
+              "access_revision": "9c5f15533383c1ecdb088c1e8f8f061f9998cc0a6a9e82ffba487eadb4db2c87",
+              "verification_contract": "rpnh/public_pn_projection/v1",
+              "validation": "verified"
+            }
+          ],
+          "coverage": "complete_relation",
+          "author_direction": null,
+          "reason_code": "exact_identity"
+        },
+        {
+          "relation_id": "8cfbd1c14943a61f1e787ba0bf09652d4465ca0e6d57d9cf1c0d832841d0d6f0",
+          "relation_kind": "same_exact_subject",
+          "left": [
+            {
+              "side": "left",
+              "target_key": "c7f1dcdb27beb3471fbab26d360a59f5fe7422cfc1ed86be2e49043d9edd65cb",
+              "subject_kind": "node",
+              "subject_id": "step.run",
+              "occurrence_path": []
+            }
+          ],
+          "right": [
+            {
+              "side": "right",
+              "target_key": "c7f1dcdb27beb3471fbab26d360a59f5fe7422cfc1ed86be2e49043d9edd65cb",
+              "subject_kind": "node",
+              "subject_id": "step.run",
+              "occurrence_path": []
+            }
+          ],
+          "validation": "verified",
+          "semantic_claim": "identity",
+          "evidence": [
+            {
+              "source_id": "source-a",
+              "evidence_ref": {
+                "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                "source_id": "source-a",
+                "ref": {
+                  "entity_type": "collaboration_net_revision/v1",
+                  "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                  "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                }
+              },
+              "evidence_kind": "exact_public_projection",
+              "selected_endpoints": [
+                {
+                  "side": "left",
+                  "target_key": "c7f1dcdb27beb3471fbab26d360a59f5fe7422cfc1ed86be2e49043d9edd65cb",
+                  "subject_kind": "node",
+                  "subject_id": "step.run",
+                  "occurrence_path": []
+                },
+                {
+                  "side": "right",
+                  "target_key": "c7f1dcdb27beb3471fbab26d360a59f5fe7422cfc1ed86be2e49043d9edd65cb",
+                  "subject_kind": "node",
+                  "subject_id": "step.run",
+                  "occurrence_path": []
+                }
+              ],
+              "source_cut": {
+                "source_id": "source-a",
+                "cut_id": "cut_9s93lbPpUzKjNbcyMvszo8E8szgB0ZDM",
+                "head": {
+                  "ordinal": 59,
+                  "writer_fencing_epoch": 2
+                },
+                "reader_contract_version": "rpnh/registry_read/v1"
+              },
+              "access_revision": "9c5f15533383c1ecdb088c1e8f8f061f9998cc0a6a9e82ffba487eadb4db2c87",
+              "verification_contract": "rpnh/public_pn_projection/v1",
+              "validation": "verified"
+            }
+          ],
+          "coverage": "complete_relation",
+          "author_direction": null,
+          "reason_code": "exact_identity"
+        },
+        {
+          "relation_id": "8feb83f87c0814d236fbeb7a24a05e0a3d1f98e60c98a460bd492712f74dde9d",
+          "relation_kind": "same_exact_subject",
+          "left": [
+            {
+              "side": "left",
+              "target_key": "c7f1dcdb27beb3471fbab26d360a59f5fe7422cfc1ed86be2e49043d9edd65cb",
+              "subject_kind": "edge",
+              "subject_id": "edge:arc:step.run:step.result:produce:complete:1",
+              "occurrence_path": []
+            }
+          ],
+          "right": [
+            {
+              "side": "right",
+              "target_key": "c7f1dcdb27beb3471fbab26d360a59f5fe7422cfc1ed86be2e49043d9edd65cb",
+              "subject_kind": "edge",
+              "subject_id": "edge:arc:step.run:step.result:produce:complete:1",
+              "occurrence_path": []
+            }
+          ],
+          "validation": "verified",
+          "semantic_claim": "identity",
+          "evidence": [
+            {
+              "source_id": "source-a",
+              "evidence_ref": {
+                "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                "source_id": "source-a",
+                "ref": {
+                  "entity_type": "collaboration_net_revision/v1",
+                  "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                  "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                }
+              },
+              "evidence_kind": "exact_public_projection",
+              "selected_endpoints": [
+                {
+                  "side": "left",
+                  "target_key": "c7f1dcdb27beb3471fbab26d360a59f5fe7422cfc1ed86be2e49043d9edd65cb",
+                  "subject_kind": "edge",
+                  "subject_id": "edge:arc:step.run:step.result:produce:complete:1",
+                  "occurrence_path": []
+                },
+                {
+                  "side": "right",
+                  "target_key": "c7f1dcdb27beb3471fbab26d360a59f5fe7422cfc1ed86be2e49043d9edd65cb",
+                  "subject_kind": "edge",
+                  "subject_id": "edge:arc:step.run:step.result:produce:complete:1",
+                  "occurrence_path": []
+                }
+              ],
+              "source_cut": {
+                "source_id": "source-a",
+                "cut_id": "cut_9s93lbPpUzKjNbcyMvszo8E8szgB0ZDM",
+                "head": {
+                  "ordinal": 59,
+                  "writer_fencing_epoch": 2
+                },
+                "reader_contract_version": "rpnh/registry_read/v1"
+              },
+              "access_revision": "9c5f15533383c1ecdb088c1e8f8f061f9998cc0a6a9e82ffba487eadb4db2c87",
+              "verification_contract": "rpnh/public_pn_projection/v1",
+              "validation": "verified"
+            }
+          ],
+          "coverage": "complete_relation",
+          "author_direction": null,
+          "reason_code": "exact_identity"
+        },
+        {
+          "relation_id": "992e42cbf81bc9e895b20ee2231e7a2f31c2f0a33f5731b8d0999153db0b074d",
+          "relation_kind": "same_exact_subject",
+          "left": [
+            {
+              "side": "left",
+              "target_key": "c7f1dcdb27beb3471fbab26d360a59f5fe7422cfc1ed86be2e49043d9edd65cb",
+              "subject_kind": "edge",
+              "subject_id": "edge:arc:step.request:step.run:consume:-:1",
+              "occurrence_path": []
+            }
+          ],
+          "right": [
+            {
+              "side": "right",
+              "target_key": "c7f1dcdb27beb3471fbab26d360a59f5fe7422cfc1ed86be2e49043d9edd65cb",
+              "subject_kind": "edge",
+              "subject_id": "edge:arc:step.request:step.run:consume:-:1",
+              "occurrence_path": []
+            }
+          ],
+          "validation": "verified",
+          "semantic_claim": "identity",
+          "evidence": [
+            {
+              "source_id": "source-a",
+              "evidence_ref": {
+                "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                "source_id": "source-a",
+                "ref": {
+                  "entity_type": "collaboration_net_revision/v1",
+                  "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                  "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                }
+              },
+              "evidence_kind": "exact_public_projection",
+              "selected_endpoints": [
+                {
+                  "side": "left",
+                  "target_key": "c7f1dcdb27beb3471fbab26d360a59f5fe7422cfc1ed86be2e49043d9edd65cb",
+                  "subject_kind": "edge",
+                  "subject_id": "edge:arc:step.request:step.run:consume:-:1",
+                  "occurrence_path": []
+                },
+                {
+                  "side": "right",
+                  "target_key": "c7f1dcdb27beb3471fbab26d360a59f5fe7422cfc1ed86be2e49043d9edd65cb",
+                  "subject_kind": "edge",
+                  "subject_id": "edge:arc:step.request:step.run:consume:-:1",
+                  "occurrence_path": []
+                }
+              ],
+              "source_cut": {
+                "source_id": "source-a",
+                "cut_id": "cut_9s93lbPpUzKjNbcyMvszo8E8szgB0ZDM",
+                "head": {
+                  "ordinal": 59,
+                  "writer_fencing_epoch": 2
+                },
+                "reader_contract_version": "rpnh/registry_read/v1"
+              },
+              "access_revision": "9c5f15533383c1ecdb088c1e8f8f061f9998cc0a6a9e82ffba487eadb4db2c87",
+              "verification_contract": "rpnh/public_pn_projection/v1",
+              "validation": "verified"
+            }
+          ],
+          "coverage": "complete_relation",
+          "author_direction": null,
+          "reason_code": "exact_identity"
+        }
+      ],
+      "explicit_presence_changes": [],
+      "unmapped": {
+        "left": {
+          "scope_key": "220d84de19ce5783b79f3f9d488c34e7df68e60b267c9079c2ba57fd2bdb6670",
+          "subjects": [],
+          "coverage": "complete_in_declared_scope"
+        },
+        "right": {
+          "scope_key": "220d84de19ce5783b79f3f9d488c34e7df68e60b267c9079c2ba57fd2bdb6670",
+          "subjects": [],
+          "coverage": "complete_in_declared_scope"
+        }
+      },
+      "reason_codes": [
+        "exact_identity"
+      ]
+    },
+    "presentation": {
+      "recommended_mode": "reliable_diff",
+      "display_mode": "reliable_diff",
+      "full_pair_navigation": {
+        "availability": "available",
+        "reason_code": "exact_identity",
+        "targets": {
+          "left": {
+            "kind": "author_revision",
+            "source_id": "source-a",
+            "revision_ref": {
+              "schema_version": "rpnh/collaboration/source_version_ref/v1",
+              "source_id": "source-a",
+              "ref": {
+                "entity_type": "collaboration_net_revision/v1",
+                "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+              }
+            }
+          },
+          "right": {
+            "kind": "author_revision",
+            "source_id": "source-a",
+            "revision_ref": {
+              "schema_version": "rpnh/collaboration/source_version_ref/v1",
+              "source_id": "source-a",
+              "ref": {
+                "entity_type": "collaboration_net_revision/v1",
+                "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+              }
+            }
+          }
+        },
+        "source_cuts": {
+          "source-a": {
+            "source_id": "source-a",
+            "cut_id": "cut_9s93lbPpUzKjNbcyMvszo8E8szgB0ZDM",
+            "head": {
+              "ordinal": 59,
+              "writer_fencing_epoch": 2
+            },
+            "reader_contract_version": "rpnh/registry_read/v1"
+          }
+        },
+        "scope": {
+          "kind": "full_pair",
+          "left": {
+            "kind": "full_net"
+          },
+          "right": {
+            "kind": "full_net"
+          }
+        },
+        "view_preference": "full_pair"
+      }
+    },
+    "axes": {
+      "definition": {
+        "axis": "definition",
+        "coverage": "complete_in_declared_scope",
+        "scope_key": "d89274f3d2e6c5c80cfea6e9fec598e4c18500ae4951e8d933b361e6f694bf8c",
+        "rows": [
+          {
+            "row_id": "14809e5d68823d1657ae6569996f6e00b8a789444216e4013354bdf6ad3c9739",
+            "subject_relation_id": "2ece969d8e556765d6c724341c8e0d2f4dde742c8a87a0046e056719e7647109",
+            "subject_scope": "d89274f3d2e6c5c80cfea6e9fec598e4c18500ae4951e8d933b361e6f694bf8c",
+            "field_path": "definition.capacity",
+            "comparator_contract": "rpnh/json_equal/v1",
+            "left_fact": {
+              "state": "provided",
+              "value": null,
+              "evidence_refs": [
+                {
+                  "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                  "source_id": "source-a",
+                  "ref": {
+                    "entity_type": "collaboration_net_revision/v1",
+                    "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                    "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                  }
+                }
+              ]
+            },
+            "right_fact": {
+              "state": "provided",
+              "value": null,
+              "evidence_refs": [
+                {
+                  "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                  "source_id": "source-a",
+                  "ref": {
+                    "entity_type": "collaboration_net_revision/v1",
+                    "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                    "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                  }
+                }
+              ]
+            },
+            "classification": "known_same",
+            "reason_code": "exact_identity",
+            "evidence_refs": [
+              {
+                "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                "source_id": "source-a",
+                "ref": {
+                  "entity_type": "collaboration_net_revision/v1",
+                  "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                  "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                }
+              }
+            ],
+            "interpretation": "current_analysis"
+          },
+          {
+            "row_id": "ac4b1145ccf547b8f47b32f504af5f97962c0672b430965c9420b9fbacd5b906",
+            "subject_relation_id": "2ece969d8e556765d6c724341c8e0d2f4dde742c8a87a0046e056719e7647109",
+            "subject_scope": "d89274f3d2e6c5c80cfea6e9fec598e4c18500ae4951e8d933b361e6f694bf8c",
+            "field_path": "definition.category",
+            "comparator_contract": "rpnh/json_equal/v1",
+            "left_fact": {
+              "state": "provided",
+              "value": "place",
+              "evidence_refs": [
+                {
+                  "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                  "source_id": "source-a",
+                  "ref": {
+                    "entity_type": "collaboration_net_revision/v1",
+                    "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                    "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                  }
+                }
+              ]
+            },
+            "right_fact": {
+              "state": "provided",
+              "value": "place",
+              "evidence_refs": [
+                {
+                  "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                  "source_id": "source-a",
+                  "ref": {
+                    "entity_type": "collaboration_net_revision/v1",
+                    "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                    "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                  }
+                }
+              ]
+            },
+            "classification": "known_same",
+            "reason_code": "exact_identity",
+            "evidence_refs": [
+              {
+                "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                "source_id": "source-a",
+                "ref": {
+                  "entity_type": "collaboration_net_revision/v1",
+                  "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                  "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                }
+              }
+            ],
+            "interpretation": "current_analysis"
+          },
+          {
+            "row_id": "263061dcfecedc02f196638d1653ede5c984ecfb2fbf0f2cab042705c1e23d0b",
+            "subject_relation_id": "2ece969d8e556765d6c724341c8e0d2f4dde742c8a87a0046e056719e7647109",
+            "subject_scope": "d89274f3d2e6c5c80cfea6e9fec598e4c18500ae4951e8d933b361e6f694bf8c",
+            "field_path": "definition.hidden_by_default",
+            "comparator_contract": "rpnh/json_equal/v1",
+            "left_fact": {
+              "state": "provided",
+              "value": false,
+              "evidence_refs": [
+                {
+                  "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                  "source_id": "source-a",
+                  "ref": {
+                    "entity_type": "collaboration_net_revision/v1",
+                    "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                    "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                  }
+                }
+              ]
+            },
+            "right_fact": {
+              "state": "provided",
+              "value": false,
+              "evidence_refs": [
+                {
+                  "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                  "source_id": "source-a",
+                  "ref": {
+                    "entity_type": "collaboration_net_revision/v1",
+                    "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                    "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                  }
+                }
+              ]
+            },
+            "classification": "known_same",
+            "reason_code": "exact_identity",
+            "evidence_refs": [
+              {
+                "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                "source_id": "source-a",
+                "ref": {
+                  "entity_type": "collaboration_net_revision/v1",
+                  "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                  "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                }
+              }
+            ],
+            "interpretation": "current_analysis"
+          },
+          {
+            "row_id": "6e2b01ad7cb3504492bed3f7da0322b3fdb750f536570b6819ebdb3a0a4319c5",
+            "subject_relation_id": "2ece969d8e556765d6c724341c8e0d2f4dde742c8a87a0046e056719e7647109",
+            "subject_scope": "d89274f3d2e6c5c80cfea6e9fec598e4c18500ae4951e8d933b361e6f694bf8c",
+            "field_path": "definition.kind",
+            "comparator_contract": "rpnh/json_equal/v1",
+            "left_fact": {
+              "state": "provided",
+              "value": "place",
+              "evidence_refs": [
+                {
+                  "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                  "source_id": "source-a",
+                  "ref": {
+                    "entity_type": "collaboration_net_revision/v1",
+                    "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                    "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                  }
+                }
+              ]
+            },
+            "right_fact": {
+              "state": "provided",
+              "value": "place",
+              "evidence_refs": [
+                {
+                  "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                  "source_id": "source-a",
+                  "ref": {
+                    "entity_type": "collaboration_net_revision/v1",
+                    "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                    "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                  }
+                }
+              ]
+            },
+            "classification": "known_same",
+            "reason_code": "exact_identity",
+            "evidence_refs": [
+              {
+                "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                "source_id": "source-a",
+                "ref": {
+                  "entity_type": "collaboration_net_revision/v1",
+                  "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                  "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                }
+              }
+            ],
+            "interpretation": "current_analysis"
+          },
+          {
+            "row_id": "71addeb1b31aaa4fc2081b71c17706640785d94eecf94698575b249a5fab3554",
+            "subject_relation_id": "2ece969d8e556765d6c724341c8e0d2f4dde742c8a87a0046e056719e7647109",
+            "subject_scope": "d89274f3d2e6c5c80cfea6e9fec598e4c18500ae4951e8d933b361e6f694bf8c",
+            "field_path": "definition.label",
+            "comparator_contract": "rpnh/json_equal/v1",
+            "left_fact": {
+              "state": "provided",
+              "value": "step.request",
+              "evidence_refs": [
+                {
+                  "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                  "source_id": "source-a",
+                  "ref": {
+                    "entity_type": "collaboration_net_revision/v1",
+                    "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                    "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                  }
+                }
+              ]
+            },
+            "right_fact": {
+              "state": "provided",
+              "value": "step.request",
+              "evidence_refs": [
+                {
+                  "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                  "source_id": "source-a",
+                  "ref": {
+                    "entity_type": "collaboration_net_revision/v1",
+                    "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                    "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                  }
+                }
+              ]
+            },
+            "classification": "known_same",
+            "reason_code": "exact_identity",
+            "evidence_refs": [
+              {
+                "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                "source_id": "source-a",
+                "ref": {
+                  "entity_type": "collaboration_net_revision/v1",
+                  "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                  "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                }
+              }
+            ],
+            "interpretation": "current_analysis"
+          },
+          {
+            "row_id": "a1f6130e734f176336ddc1d7f6de4743297e095996401b1bec89307ef99dc43a",
+            "subject_relation_id": "2ece969d8e556765d6c724341c8e0d2f4dde742c8a87a0046e056719e7647109",
+            "subject_scope": "d89274f3d2e6c5c80cfea6e9fec598e4c18500ae4951e8d933b361e6f694bf8c",
+            "field_path": "definition.schema",
+            "comparator_contract": "rpnh/json_equal/v1",
+            "left_fact": {
+              "state": "provided",
+              "value": "application/net_operation_test_text/v1",
+              "evidence_refs": [
+                {
+                  "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                  "source_id": "source-a",
+                  "ref": {
+                    "entity_type": "collaboration_net_revision/v1",
+                    "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                    "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                  }
+                }
+              ]
+            },
+            "right_fact": {
+              "state": "provided",
+              "value": "application/net_operation_test_text/v1",
+              "evidence_refs": [
+                {
+                  "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                  "source_id": "source-a",
+                  "ref": {
+                    "entity_type": "collaboration_net_revision/v1",
+                    "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                    "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                  }
+                }
+              ]
+            },
+            "classification": "known_same",
+            "reason_code": "exact_identity",
+            "evidence_refs": [
+              {
+                "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                "source_id": "source-a",
+                "ref": {
+                  "entity_type": "collaboration_net_revision/v1",
+                  "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                  "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                }
+              }
+            ],
+            "interpretation": "current_analysis"
+          },
+          {
+            "row_id": "3e930783239100303d7c4b649c0f63cc201f6c25052f425c40334c1acc318633",
+            "subject_relation_id": "2ece969d8e556765d6c724341c8e0d2f4dde742c8a87a0046e056719e7647109",
+            "subject_scope": "d89274f3d2e6c5c80cfea6e9fec598e4c18500ae4951e8d933b361e6f694bf8c",
+            "field_path": "definition.token_kind",
+            "comparator_contract": "rpnh/json_equal/v1",
+            "left_fact": {
+              "state": "provided",
+              "value": "data",
+              "evidence_refs": [
+                {
+                  "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                  "source_id": "source-a",
+                  "ref": {
+                    "entity_type": "collaboration_net_revision/v1",
+                    "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                    "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                  }
+                }
+              ]
+            },
+            "right_fact": {
+              "state": "provided",
+              "value": "data",
+              "evidence_refs": [
+                {
+                  "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                  "source_id": "source-a",
+                  "ref": {
+                    "entity_type": "collaboration_net_revision/v1",
+                    "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                    "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                  }
+                }
+              ]
+            },
+            "classification": "known_same",
+            "reason_code": "exact_identity",
+            "evidence_refs": [
+              {
+                "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                "source_id": "source-a",
+                "ref": {
+                  "entity_type": "collaboration_net_revision/v1",
+                  "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                  "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                }
+              }
+            ],
+            "interpretation": "current_analysis"
+          },
+          {
+            "row_id": "176a78afca97526a32bb91d18ffff674f5e6eeac11ba8adf1de3cc90e64bf48a",
+            "subject_relation_id": "7dedb4cc9fa62c89114b33f0019dc6037d4c36e20a353b98fc21ae135cc5b721",
+            "subject_scope": "d89274f3d2e6c5c80cfea6e9fec598e4c18500ae4951e8d933b361e6f694bf8c",
+            "field_path": "definition.capacity",
+            "comparator_contract": "rpnh/json_equal/v1",
+            "left_fact": {
+              "state": "provided",
+              "value": null,
+              "evidence_refs": [
+                {
+                  "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                  "source_id": "source-a",
+                  "ref": {
+                    "entity_type": "collaboration_net_revision/v1",
+                    "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                    "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                  }
+                }
+              ]
+            },
+            "right_fact": {
+              "state": "provided",
+              "value": null,
+              "evidence_refs": [
+                {
+                  "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                  "source_id": "source-a",
+                  "ref": {
+                    "entity_type": "collaboration_net_revision/v1",
+                    "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                    "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                  }
+                }
+              ]
+            },
+            "classification": "known_same",
+            "reason_code": "exact_identity",
+            "evidence_refs": [
+              {
+                "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                "source_id": "source-a",
+                "ref": {
+                  "entity_type": "collaboration_net_revision/v1",
+                  "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                  "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                }
+              }
+            ],
+            "interpretation": "current_analysis"
+          },
+          {
+            "row_id": "67af59b92ae4da5e14c18b259b43c126ec4aadbab05990f95ab73dda34867e17",
+            "subject_relation_id": "7dedb4cc9fa62c89114b33f0019dc6037d4c36e20a353b98fc21ae135cc5b721",
+            "subject_scope": "d89274f3d2e6c5c80cfea6e9fec598e4c18500ae4951e8d933b361e6f694bf8c",
+            "field_path": "definition.category",
+            "comparator_contract": "rpnh/json_equal/v1",
+            "left_fact": {
+              "state": "provided",
+              "value": "place",
+              "evidence_refs": [
+                {
+                  "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                  "source_id": "source-a",
+                  "ref": {
+                    "entity_type": "collaboration_net_revision/v1",
+                    "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                    "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                  }
+                }
+              ]
+            },
+            "right_fact": {
+              "state": "provided",
+              "value": "place",
+              "evidence_refs": [
+                {
+                  "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                  "source_id": "source-a",
+                  "ref": {
+                    "entity_type": "collaboration_net_revision/v1",
+                    "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                    "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                  }
+                }
+              ]
+            },
+            "classification": "known_same",
+            "reason_code": "exact_identity",
+            "evidence_refs": [
+              {
+                "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                "source_id": "source-a",
+                "ref": {
+                  "entity_type": "collaboration_net_revision/v1",
+                  "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                  "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                }
+              }
+            ],
+            "interpretation": "current_analysis"
+          },
+          {
+            "row_id": "3a15d9d515679016beb51e4646f9c519ae84f579e02dbc9815421f8fc210b7b3",
+            "subject_relation_id": "7dedb4cc9fa62c89114b33f0019dc6037d4c36e20a353b98fc21ae135cc5b721",
+            "subject_scope": "d89274f3d2e6c5c80cfea6e9fec598e4c18500ae4951e8d933b361e6f694bf8c",
+            "field_path": "definition.hidden_by_default",
+            "comparator_contract": "rpnh/json_equal/v1",
+            "left_fact": {
+              "state": "provided",
+              "value": false,
+              "evidence_refs": [
+                {
+                  "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                  "source_id": "source-a",
+                  "ref": {
+                    "entity_type": "collaboration_net_revision/v1",
+                    "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                    "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                  }
+                }
+              ]
+            },
+            "right_fact": {
+              "state": "provided",
+              "value": false,
+              "evidence_refs": [
+                {
+                  "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                  "source_id": "source-a",
+                  "ref": {
+                    "entity_type": "collaboration_net_revision/v1",
+                    "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                    "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                  }
+                }
+              ]
+            },
+            "classification": "known_same",
+            "reason_code": "exact_identity",
+            "evidence_refs": [
+              {
+                "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                "source_id": "source-a",
+                "ref": {
+                  "entity_type": "collaboration_net_revision/v1",
+                  "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                  "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                }
+              }
+            ],
+            "interpretation": "current_analysis"
+          },
+          {
+            "row_id": "f44334c5011aab5c725f671d0305e9948a2524c5ef3e1147703b7c139eabfa94",
+            "subject_relation_id": "7dedb4cc9fa62c89114b33f0019dc6037d4c36e20a353b98fc21ae135cc5b721",
+            "subject_scope": "d89274f3d2e6c5c80cfea6e9fec598e4c18500ae4951e8d933b361e6f694bf8c",
+            "field_path": "definition.kind",
+            "comparator_contract": "rpnh/json_equal/v1",
+            "left_fact": {
+              "state": "provided",
+              "value": "place",
+              "evidence_refs": [
+                {
+                  "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                  "source_id": "source-a",
+                  "ref": {
+                    "entity_type": "collaboration_net_revision/v1",
+                    "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                    "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                  }
+                }
+              ]
+            },
+            "right_fact": {
+              "state": "provided",
+              "value": "place",
+              "evidence_refs": [
+                {
+                  "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                  "source_id": "source-a",
+                  "ref": {
+                    "entity_type": "collaboration_net_revision/v1",
+                    "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                    "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                  }
+                }
+              ]
+            },
+            "classification": "known_same",
+            "reason_code": "exact_identity",
+            "evidence_refs": [
+              {
+                "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                "source_id": "source-a",
+                "ref": {
+                  "entity_type": "collaboration_net_revision/v1",
+                  "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                  "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                }
+              }
+            ],
+            "interpretation": "current_analysis"
+          },
+          {
+            "row_id": "da0fcb547fa1c4cf3a5f29787655269b8d17b8f1f92abb81b09237f968ed235b",
+            "subject_relation_id": "7dedb4cc9fa62c89114b33f0019dc6037d4c36e20a353b98fc21ae135cc5b721",
+            "subject_scope": "d89274f3d2e6c5c80cfea6e9fec598e4c18500ae4951e8d933b361e6f694bf8c",
+            "field_path": "definition.label",
+            "comparator_contract": "rpnh/json_equal/v1",
+            "left_fact": {
+              "state": "provided",
+              "value": "step.result",
+              "evidence_refs": [
+                {
+                  "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                  "source_id": "source-a",
+                  "ref": {
+                    "entity_type": "collaboration_net_revision/v1",
+                    "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                    "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                  }
+                }
+              ]
+            },
+            "right_fact": {
+              "state": "provided",
+              "value": "step.result",
+              "evidence_refs": [
+                {
+                  "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                  "source_id": "source-a",
+                  "ref": {
+                    "entity_type": "collaboration_net_revision/v1",
+                    "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                    "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                  }
+                }
+              ]
+            },
+            "classification": "known_same",
+            "reason_code": "exact_identity",
+            "evidence_refs": [
+              {
+                "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                "source_id": "source-a",
+                "ref": {
+                  "entity_type": "collaboration_net_revision/v1",
+                  "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                  "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                }
+              }
+            ],
+            "interpretation": "current_analysis"
+          },
+          {
+            "row_id": "c31d92ce2576144ee2c671a766d43467288bdc584e88ee4809e1fede96cb9cb7",
+            "subject_relation_id": "7dedb4cc9fa62c89114b33f0019dc6037d4c36e20a353b98fc21ae135cc5b721",
+            "subject_scope": "d89274f3d2e6c5c80cfea6e9fec598e4c18500ae4951e8d933b361e6f694bf8c",
+            "field_path": "definition.schema",
+            "comparator_contract": "rpnh/json_equal/v1",
+            "left_fact": {
+              "state": "provided",
+              "value": "application/net_operation_test_text/v1",
+              "evidence_refs": [
+                {
+                  "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                  "source_id": "source-a",
+                  "ref": {
+                    "entity_type": "collaboration_net_revision/v1",
+                    "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                    "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                  }
+                }
+              ]
+            },
+            "right_fact": {
+              "state": "provided",
+              "value": "application/net_operation_test_text/v1",
+              "evidence_refs": [
+                {
+                  "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                  "source_id": "source-a",
+                  "ref": {
+                    "entity_type": "collaboration_net_revision/v1",
+                    "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                    "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                  }
+                }
+              ]
+            },
+            "classification": "known_same",
+            "reason_code": "exact_identity",
+            "evidence_refs": [
+              {
+                "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                "source_id": "source-a",
+                "ref": {
+                  "entity_type": "collaboration_net_revision/v1",
+                  "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                  "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                }
+              }
+            ],
+            "interpretation": "current_analysis"
+          },
+          {
+            "row_id": "a761f2b3dd6e99ece2e2429a36096712aaef1d33dd1c5bc2cc18d9231fd0c8e1",
+            "subject_relation_id": "7dedb4cc9fa62c89114b33f0019dc6037d4c36e20a353b98fc21ae135cc5b721",
+            "subject_scope": "d89274f3d2e6c5c80cfea6e9fec598e4c18500ae4951e8d933b361e6f694bf8c",
+            "field_path": "definition.token_kind",
+            "comparator_contract": "rpnh/json_equal/v1",
+            "left_fact": {
+              "state": "provided",
+              "value": "data",
+              "evidence_refs": [
+                {
+                  "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                  "source_id": "source-a",
+                  "ref": {
+                    "entity_type": "collaboration_net_revision/v1",
+                    "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                    "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                  }
+                }
+              ]
+            },
+            "right_fact": {
+              "state": "provided",
+              "value": "data",
+              "evidence_refs": [
+                {
+                  "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                  "source_id": "source-a",
+                  "ref": {
+                    "entity_type": "collaboration_net_revision/v1",
+                    "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                    "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                  }
+                }
+              ]
+            },
+            "classification": "known_same",
+            "reason_code": "exact_identity",
+            "evidence_refs": [
+              {
+                "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                "source_id": "source-a",
+                "ref": {
+                  "entity_type": "collaboration_net_revision/v1",
+                  "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                  "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                }
+              }
+            ],
+            "interpretation": "current_analysis"
+          },
+          {
+            "row_id": "2788c40faac0ff8ed8a2899a44bda4922a9895726a7f685cdb1022f053967cd3",
+            "subject_relation_id": "8cfbd1c14943a61f1e787ba0bf09652d4465ca0e6d57d9cf1c0d832841d0d6f0",
+            "subject_scope": "d89274f3d2e6c5c80cfea6e9fec598e4c18500ae4951e8d933b361e6f694bf8c",
+            "field_path": "definition.category",
+            "comparator_contract": "rpnh/json_equal/v1",
+            "left_fact": {
+              "state": "provided",
+              "value": "execution",
+              "evidence_refs": [
+                {
+                  "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                  "source_id": "source-a",
+                  "ref": {
+                    "entity_type": "collaboration_net_revision/v1",
+                    "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                    "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                  }
+                }
+              ]
+            },
+            "right_fact": {
+              "state": "provided",
+              "value": "execution",
+              "evidence_refs": [
+                {
+                  "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                  "source_id": "source-a",
+                  "ref": {
+                    "entity_type": "collaboration_net_revision/v1",
+                    "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                    "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                  }
+                }
+              ]
+            },
+            "classification": "known_same",
+            "reason_code": "exact_identity",
+            "evidence_refs": [
+              {
+                "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                "source_id": "source-a",
+                "ref": {
+                  "entity_type": "collaboration_net_revision/v1",
+                  "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                  "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                }
+              }
+            ],
+            "interpretation": "current_analysis"
+          },
+          {
+            "row_id": "b545764935f6109d4569a0d3193833475d19f0ec92400e09d5542d780ff1dee1",
+            "subject_relation_id": "8cfbd1c14943a61f1e787ba0bf09652d4465ca0e6d57d9cf1c0d832841d0d6f0",
+            "subject_scope": "d89274f3d2e6c5c80cfea6e9fec598e4c18500ae4951e8d933b361e6f694bf8c",
+            "field_path": "definition.executor",
+            "comparator_contract": "rpnh/json_equal/v1",
+            "left_fact": {
+              "state": "provided",
+              "value": "test/net-operation-business/v1",
+              "evidence_refs": [
+                {
+                  "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                  "source_id": "source-a",
+                  "ref": {
+                    "entity_type": "collaboration_net_revision/v1",
+                    "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                    "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                  }
+                }
+              ]
+            },
+            "right_fact": {
+              "state": "provided",
+              "value": "test/net-operation-business/v1",
+              "evidence_refs": [
+                {
+                  "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                  "source_id": "source-a",
+                  "ref": {
+                    "entity_type": "collaboration_net_revision/v1",
+                    "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                    "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                  }
+                }
+              ]
+            },
+            "classification": "known_same",
+            "reason_code": "exact_identity",
+            "evidence_refs": [
+              {
+                "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                "source_id": "source-a",
+                "ref": {
+                  "entity_type": "collaboration_net_revision/v1",
+                  "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                  "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                }
+              }
+            ],
+            "interpretation": "current_analysis"
+          },
+          {
+            "row_id": "bbfbcbd82c31f16e503498547140f684a50ea6f2cfc799742d74983c9b99eaa8",
+            "subject_relation_id": "8cfbd1c14943a61f1e787ba0bf09652d4465ca0e6d57d9cf1c0d832841d0d6f0",
+            "subject_scope": "d89274f3d2e6c5c80cfea6e9fec598e4c18500ae4951e8d933b361e6f694bf8c",
+            "field_path": "definition.hidden_by_default",
+            "comparator_contract": "rpnh/json_equal/v1",
+            "left_fact": {
+              "state": "provided",
+              "value": false,
+              "evidence_refs": [
+                {
+                  "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                  "source_id": "source-a",
+                  "ref": {
+                    "entity_type": "collaboration_net_revision/v1",
+                    "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                    "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                  }
+                }
+              ]
+            },
+            "right_fact": {
+              "state": "provided",
+              "value": false,
+              "evidence_refs": [
+                {
+                  "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                  "source_id": "source-a",
+                  "ref": {
+                    "entity_type": "collaboration_net_revision/v1",
+                    "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                    "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                  }
+                }
+              ]
+            },
+            "classification": "known_same",
+            "reason_code": "exact_identity",
+            "evidence_refs": [
+              {
+                "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                "source_id": "source-a",
+                "ref": {
+                  "entity_type": "collaboration_net_revision/v1",
+                  "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                  "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                }
+              }
+            ],
+            "interpretation": "current_analysis"
+          },
+          {
+            "row_id": "0f163f9b36ff4e0e565ec8689ec0a57829edc9f3779ee969bc26835de2f99822",
+            "subject_relation_id": "8cfbd1c14943a61f1e787ba0bf09652d4465ca0e6d57d9cf1c0d832841d0d6f0",
+            "subject_scope": "d89274f3d2e6c5c80cfea6e9fec598e4c18500ae4951e8d933b361e6f694bf8c",
+            "field_path": "definition.inputs",
+            "comparator_contract": "rpnh/json_equal/v1",
+            "left_fact": {
+              "state": "provided",
+              "value": [
+                "step.request"
+              ],
+              "evidence_refs": [
+                {
+                  "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                  "source_id": "source-a",
+                  "ref": {
+                    "entity_type": "collaboration_net_revision/v1",
+                    "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                    "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                  }
+                }
+              ]
+            },
+            "right_fact": {
+              "state": "provided",
+              "value": [
+                "step.request"
+              ],
+              "evidence_refs": [
+                {
+                  "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                  "source_id": "source-a",
+                  "ref": {
+                    "entity_type": "collaboration_net_revision/v1",
+                    "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                    "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                  }
+                }
+              ]
+            },
+            "classification": "known_same",
+            "reason_code": "exact_identity",
+            "evidence_refs": [
+              {
+                "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                "source_id": "source-a",
+                "ref": {
+                  "entity_type": "collaboration_net_revision/v1",
+                  "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                  "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                }
+              }
+            ],
+            "interpretation": "current_analysis"
+          },
+          {
+            "row_id": "7fa752c673b21b8d491bd0246fd14792ec0b8190014aeb39d91da15237a1c2c0",
+            "subject_relation_id": "8cfbd1c14943a61f1e787ba0bf09652d4465ca0e6d57d9cf1c0d832841d0d6f0",
+            "subject_scope": "d89274f3d2e6c5c80cfea6e9fec598e4c18500ae4951e8d933b361e6f694bf8c",
+            "field_path": "definition.kind",
+            "comparator_contract": "rpnh/json_equal/v1",
+            "left_fact": {
+              "state": "provided",
+              "value": "transition",
+              "evidence_refs": [
+                {
+                  "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                  "source_id": "source-a",
+                  "ref": {
+                    "entity_type": "collaboration_net_revision/v1",
+                    "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                    "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                  }
+                }
+              ]
+            },
+            "right_fact": {
+              "state": "provided",
+              "value": "transition",
+              "evidence_refs": [
+                {
+                  "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                  "source_id": "source-a",
+                  "ref": {
+                    "entity_type": "collaboration_net_revision/v1",
+                    "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                    "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                  }
+                }
+              ]
+            },
+            "classification": "known_same",
+            "reason_code": "exact_identity",
+            "evidence_refs": [
+              {
+                "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                "source_id": "source-a",
+                "ref": {
+                  "entity_type": "collaboration_net_revision/v1",
+                  "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                  "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                }
+              }
+            ],
+            "interpretation": "current_analysis"
+          },
+          {
+            "row_id": "1534df78621a31bc37f9bbf68ac16c496bafaba68282bac2025072fdca7624b2",
+            "subject_relation_id": "8cfbd1c14943a61f1e787ba0bf09652d4465ca0e6d57d9cf1c0d832841d0d6f0",
+            "subject_scope": "d89274f3d2e6c5c80cfea6e9fec598e4c18500ae4951e8d933b361e6f694bf8c",
+            "field_path": "definition.label",
+            "comparator_contract": "rpnh/json_equal/v1",
+            "left_fact": {
+              "state": "provided",
+              "value": "step.run",
+              "evidence_refs": [
+                {
+                  "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                  "source_id": "source-a",
+                  "ref": {
+                    "entity_type": "collaboration_net_revision/v1",
+                    "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                    "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                  }
+                }
+              ]
+            },
+            "right_fact": {
+              "state": "provided",
+              "value": "step.run",
+              "evidence_refs": [
+                {
+                  "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                  "source_id": "source-a",
+                  "ref": {
+                    "entity_type": "collaboration_net_revision/v1",
+                    "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                    "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                  }
+                }
+              ]
+            },
+            "classification": "known_same",
+            "reason_code": "exact_identity",
+            "evidence_refs": [
+              {
+                "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                "source_id": "source-a",
+                "ref": {
+                  "entity_type": "collaboration_net_revision/v1",
+                  "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                  "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                }
+              }
+            ],
+            "interpretation": "current_analysis"
+          },
+          {
+            "row_id": "1a47a7094d06dc3d2d485d6f747ba7a3c8c842b1d3b6cfd2c2a13ae1cc8a4c97",
+            "subject_relation_id": "8cfbd1c14943a61f1e787ba0bf09652d4465ca0e6d57d9cf1c0d832841d0d6f0",
+            "subject_scope": "d89274f3d2e6c5c80cfea6e9fec598e4c18500ae4951e8d933b361e6f694bf8c",
+            "field_path": "definition.operation",
+            "comparator_contract": "rpnh/json_equal/v1",
+            "left_fact": {
+              "state": "provided",
+              "value": "step.run",
+              "evidence_refs": [
+                {
+                  "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                  "source_id": "source-a",
+                  "ref": {
+                    "entity_type": "collaboration_net_revision/v1",
+                    "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                    "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                  }
+                }
+              ]
+            },
+            "right_fact": {
+              "state": "provided",
+              "value": "step.run",
+              "evidence_refs": [
+                {
+                  "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                  "source_id": "source-a",
+                  "ref": {
+                    "entity_type": "collaboration_net_revision/v1",
+                    "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                    "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                  }
+                }
+              ]
+            },
+            "classification": "known_same",
+            "reason_code": "exact_identity",
+            "evidence_refs": [
+              {
+                "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                "source_id": "source-a",
+                "ref": {
+                  "entity_type": "collaboration_net_revision/v1",
+                  "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                  "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                }
+              }
+            ],
+            "interpretation": "current_analysis"
+          },
+          {
+            "row_id": "a3be911deb617684f4a462baf033d793e2057480f42b22a97ba17387ac2e5d90",
+            "subject_relation_id": "8cfbd1c14943a61f1e787ba0bf09652d4465ca0e6d57d9cf1c0d832841d0d6f0",
+            "subject_scope": "d89274f3d2e6c5c80cfea6e9fec598e4c18500ae4951e8d933b361e6f694bf8c",
+            "field_path": "definition.operation_id",
+            "comparator_contract": "rpnh/json_equal/v1",
+            "left_fact": {
+              "state": "provided",
+              "value": "op_0",
+              "evidence_refs": [
+                {
+                  "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                  "source_id": "source-a",
+                  "ref": {
+                    "entity_type": "collaboration_net_revision/v1",
+                    "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                    "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                  }
+                }
+              ]
+            },
+            "right_fact": {
+              "state": "provided",
+              "value": "op_0",
+              "evidence_refs": [
+                {
+                  "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                  "source_id": "source-a",
+                  "ref": {
+                    "entity_type": "collaboration_net_revision/v1",
+                    "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                    "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                  }
+                }
+              ]
+            },
+            "classification": "known_same",
+            "reason_code": "exact_identity",
+            "evidence_refs": [
+              {
+                "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                "source_id": "source-a",
+                "ref": {
+                  "entity_type": "collaboration_net_revision/v1",
+                  "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                  "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                }
+              }
+            ],
+            "interpretation": "current_analysis"
+          },
+          {
+            "row_id": "3b317638436b7eb4bb4ee7d3dab8b2cb20bf37313bab042971e4cbc5621f6dee",
+            "subject_relation_id": "8cfbd1c14943a61f1e787ba0bf09652d4465ca0e6d57d9cf1c0d832841d0d6f0",
+            "subject_scope": "d89274f3d2e6c5c80cfea6e9fec598e4c18500ae4951e8d933b361e6f694bf8c",
+            "field_path": "definition.outputs",
+            "comparator_contract": "rpnh/json_equal/v1",
+            "left_fact": {
+              "state": "provided",
+              "value": [
+                "step.result"
+              ],
+              "evidence_refs": [
+                {
+                  "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                  "source_id": "source-a",
+                  "ref": {
+                    "entity_type": "collaboration_net_revision/v1",
+                    "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                    "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                  }
+                }
+              ]
+            },
+            "right_fact": {
+              "state": "provided",
+              "value": [
+                "step.result"
+              ],
+              "evidence_refs": [
+                {
+                  "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                  "source_id": "source-a",
+                  "ref": {
+                    "entity_type": "collaboration_net_revision/v1",
+                    "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                    "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                  }
+                }
+              ]
+            },
+            "classification": "known_same",
+            "reason_code": "exact_identity",
+            "evidence_refs": [
+              {
+                "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                "source_id": "source-a",
+                "ref": {
+                  "entity_type": "collaboration_net_revision/v1",
+                  "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                  "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                }
+              }
+            ],
+            "interpretation": "current_analysis"
+          },
+          {
+            "row_id": "96b9f6ab25c5dbbda3b18305e8c58f1ae9e5447b35d886416b89b501782cf325",
+            "subject_relation_id": "8feb83f87c0814d236fbeb7a24a05e0a3d1f98e60c98a460bd492712f74dde9d",
+            "subject_scope": "d89274f3d2e6c5c80cfea6e9fec598e4c18500ae4951e8d933b361e6f694bf8c",
+            "field_path": "definition.direction",
+            "comparator_contract": "rpnh/json_equal/v1",
+            "left_fact": {
+              "state": "provided",
+              "value": "output",
+              "evidence_refs": [
+                {
+                  "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                  "source_id": "source-a",
+                  "ref": {
+                    "entity_type": "collaboration_net_revision/v1",
+                    "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                    "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                  }
+                }
+              ]
+            },
+            "right_fact": {
+              "state": "provided",
+              "value": "output",
+              "evidence_refs": [
+                {
+                  "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                  "source_id": "source-a",
+                  "ref": {
+                    "entity_type": "collaboration_net_revision/v1",
+                    "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                    "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                  }
+                }
+              ]
+            },
+            "classification": "known_same",
+            "reason_code": "exact_identity",
+            "evidence_refs": [
+              {
+                "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                "source_id": "source-a",
+                "ref": {
+                  "entity_type": "collaboration_net_revision/v1",
+                  "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                  "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                }
+              }
+            ],
+            "interpretation": "current_analysis"
+          },
+          {
+            "row_id": "3d9c6132f0a5b792d7a9c4985390e5b67854306f391419c981d656f1b7ca3767",
+            "subject_relation_id": "8feb83f87c0814d236fbeb7a24a05e0a3d1f98e60c98a460bd492712f74dde9d",
+            "subject_scope": "d89274f3d2e6c5c80cfea6e9fec598e4c18500ae4951e8d933b361e6f694bf8c",
+            "field_path": "definition.emit",
+            "comparator_contract": "rpnh/json_equal/v1",
+            "left_fact": {
+              "state": "provided",
+              "value": "produced",
+              "evidence_refs": [
+                {
+                  "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                  "source_id": "source-a",
+                  "ref": {
+                    "entity_type": "collaboration_net_revision/v1",
+                    "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                    "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                  }
+                }
+              ]
+            },
+            "right_fact": {
+              "state": "provided",
+              "value": "produced",
+              "evidence_refs": [
+                {
+                  "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                  "source_id": "source-a",
+                  "ref": {
+                    "entity_type": "collaboration_net_revision/v1",
+                    "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                    "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                  }
+                }
+              ]
+            },
+            "classification": "known_same",
+            "reason_code": "exact_identity",
+            "evidence_refs": [
+              {
+                "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                "source_id": "source-a",
+                "ref": {
+                  "entity_type": "collaboration_net_revision/v1",
+                  "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                  "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                }
+              }
+            ],
+            "interpretation": "current_analysis"
+          },
+          {
+            "row_id": "c03717ef6e6979d5e1dc18d149763117f6b15c2e251f84ef268ce3cf96ec553d",
+            "subject_relation_id": "8feb83f87c0814d236fbeb7a24a05e0a3d1f98e60c98a460bd492712f74dde9d",
+            "subject_scope": "d89274f3d2e6c5c80cfea6e9fec598e4c18500ae4951e8d933b361e6f694bf8c",
+            "field_path": "definition.forward_source",
+            "comparator_contract": "rpnh/json_equal/v1",
+            "left_fact": {
+              "state": "provided",
+              "value": null,
+              "evidence_refs": [
+                {
+                  "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                  "source_id": "source-a",
+                  "ref": {
+                    "entity_type": "collaboration_net_revision/v1",
+                    "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                    "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                  }
+                }
+              ]
+            },
+            "right_fact": {
+              "state": "provided",
+              "value": null,
+              "evidence_refs": [
+                {
+                  "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                  "source_id": "source-a",
+                  "ref": {
+                    "entity_type": "collaboration_net_revision/v1",
+                    "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                    "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                  }
+                }
+              ]
+            },
+            "classification": "known_same",
+            "reason_code": "exact_identity",
+            "evidence_refs": [
+              {
+                "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                "source_id": "source-a",
+                "ref": {
+                  "entity_type": "collaboration_net_revision/v1",
+                  "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                  "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                }
+              }
+            ],
+            "interpretation": "current_analysis"
+          },
+          {
+            "row_id": "cbed03677f7a35efcde36a593dd3975aacd2fdddedf18f6b01e3400a6240600a",
+            "subject_relation_id": "8feb83f87c0814d236fbeb7a24a05e0a3d1f98e60c98a460bd492712f74dde9d",
+            "subject_scope": "d89274f3d2e6c5c80cfea6e9fec598e4c18500ae4951e8d933b361e6f694bf8c",
+            "field_path": "definition.hidden_by_default",
+            "comparator_contract": "rpnh/json_equal/v1",
+            "left_fact": {
+              "state": "provided",
+              "value": false,
+              "evidence_refs": [
+                {
+                  "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                  "source_id": "source-a",
+                  "ref": {
+                    "entity_type": "collaboration_net_revision/v1",
+                    "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                    "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                  }
+                }
+              ]
+            },
+            "right_fact": {
+              "state": "provided",
+              "value": false,
+              "evidence_refs": [
+                {
+                  "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                  "source_id": "source-a",
+                  "ref": {
+                    "entity_type": "collaboration_net_revision/v1",
+                    "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                    "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                  }
+                }
+              ]
+            },
+            "classification": "known_same",
+            "reason_code": "exact_identity",
+            "evidence_refs": [
+              {
+                "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                "source_id": "source-a",
+                "ref": {
+                  "entity_type": "collaboration_net_revision/v1",
+                  "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                  "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                }
+              }
+            ],
+            "interpretation": "current_analysis"
+          },
+          {
+            "row_id": "5fba83e06e293ddce7e3283377f23cb45c0b673776fbbba42d1879288d89a1cc",
+            "subject_relation_id": "8feb83f87c0814d236fbeb7a24a05e0a3d1f98e60c98a460bd492712f74dde9d",
+            "subject_scope": "d89274f3d2e6c5c80cfea6e9fec598e4c18500ae4951e8d933b361e6f694bf8c",
+            "field_path": "definition.kind",
+            "comparator_contract": "rpnh/json_equal/v1",
+            "left_fact": {
+              "state": "provided",
+              "value": "arc",
+              "evidence_refs": [
+                {
+                  "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                  "source_id": "source-a",
+                  "ref": {
+                    "entity_type": "collaboration_net_revision/v1",
+                    "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                    "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                  }
+                }
+              ]
+            },
+            "right_fact": {
+              "state": "provided",
+              "value": "arc",
+              "evidence_refs": [
+                {
+                  "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                  "source_id": "source-a",
+                  "ref": {
+                    "entity_type": "collaboration_net_revision/v1",
+                    "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                    "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                  }
+                }
+              ]
+            },
+            "classification": "known_same",
+            "reason_code": "exact_identity",
+            "evidence_refs": [
+              {
+                "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                "source_id": "source-a",
+                "ref": {
+                  "entity_type": "collaboration_net_revision/v1",
+                  "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                  "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                }
+              }
+            ],
+            "interpretation": "current_analysis"
+          },
+          {
+            "row_id": "aea89fc8302182bfa7f9cfb2081815f56136eae14d3cf3daf179f80a4e95cdf2",
+            "subject_relation_id": "8feb83f87c0814d236fbeb7a24a05e0a3d1f98e60c98a460bd492712f74dde9d",
+            "subject_scope": "d89274f3d2e6c5c80cfea6e9fec598e4c18500ae4951e8d933b361e6f694bf8c",
+            "field_path": "definition.mode",
+            "comparator_contract": "rpnh/json_equal/v1",
+            "left_fact": {
+              "state": "provided",
+              "value": "produce",
+              "evidence_refs": [
+                {
+                  "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                  "source_id": "source-a",
+                  "ref": {
+                    "entity_type": "collaboration_net_revision/v1",
+                    "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                    "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                  }
+                }
+              ]
+            },
+            "right_fact": {
+              "state": "provided",
+              "value": "produce",
+              "evidence_refs": [
+                {
+                  "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                  "source_id": "source-a",
+                  "ref": {
+                    "entity_type": "collaboration_net_revision/v1",
+                    "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                    "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                  }
+                }
+              ]
+            },
+            "classification": "known_same",
+            "reason_code": "exact_identity",
+            "evidence_refs": [
+              {
+                "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                "source_id": "source-a",
+                "ref": {
+                  "entity_type": "collaboration_net_revision/v1",
+                  "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                  "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                }
+              }
+            ],
+            "interpretation": "current_analysis"
+          },
+          {
+            "row_id": "b991707319ffca2b3d459642d3107c56631699e87e90dd696457a02c3983fa79",
+            "subject_relation_id": "8feb83f87c0814d236fbeb7a24a05e0a3d1f98e60c98a460bd492712f74dde9d",
+            "subject_scope": "d89274f3d2e6c5c80cfea6e9fec598e4c18500ae4951e8d933b361e6f694bf8c",
+            "field_path": "definition.outcome",
+            "comparator_contract": "rpnh/json_equal/v1",
+            "left_fact": {
+              "state": "provided",
+              "value": "complete",
+              "evidence_refs": [
+                {
+                  "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                  "source_id": "source-a",
+                  "ref": {
+                    "entity_type": "collaboration_net_revision/v1",
+                    "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                    "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                  }
+                }
+              ]
+            },
+            "right_fact": {
+              "state": "provided",
+              "value": "complete",
+              "evidence_refs": [
+                {
+                  "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                  "source_id": "source-a",
+                  "ref": {
+                    "entity_type": "collaboration_net_revision/v1",
+                    "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                    "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                  }
+                }
+              ]
+            },
+            "classification": "known_same",
+            "reason_code": "exact_identity",
+            "evidence_refs": [
+              {
+                "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                "source_id": "source-a",
+                "ref": {
+                  "entity_type": "collaboration_net_revision/v1",
+                  "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                  "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                }
+              }
+            ],
+            "interpretation": "current_analysis"
+          },
+          {
+            "row_id": "b223f0f97bc0573d40ba679a89cc6c2f31db29fe30402861f0c29f4b4b345f10",
+            "subject_relation_id": "8feb83f87c0814d236fbeb7a24a05e0a3d1f98e60c98a460bd492712f74dde9d",
+            "subject_scope": "d89274f3d2e6c5c80cfea6e9fec598e4c18500ae4951e8d933b361e6f694bf8c",
+            "field_path": "definition.resource",
+            "comparator_contract": "rpnh/json_equal/v1",
+            "left_fact": {
+              "state": "provided",
+              "value": false,
+              "evidence_refs": [
+                {
+                  "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                  "source_id": "source-a",
+                  "ref": {
+                    "entity_type": "collaboration_net_revision/v1",
+                    "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                    "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                  }
+                }
+              ]
+            },
+            "right_fact": {
+              "state": "provided",
+              "value": false,
+              "evidence_refs": [
+                {
+                  "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                  "source_id": "source-a",
+                  "ref": {
+                    "entity_type": "collaboration_net_revision/v1",
+                    "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                    "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                  }
+                }
+              ]
+            },
+            "classification": "known_same",
+            "reason_code": "exact_identity",
+            "evidence_refs": [
+              {
+                "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                "source_id": "source-a",
+                "ref": {
+                  "entity_type": "collaboration_net_revision/v1",
+                  "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                  "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                }
+              }
+            ],
+            "interpretation": "current_analysis"
+          },
+          {
+            "row_id": "4a08709803c857d0d80c6f0b74c9c3697787bb0831fb597418fb16428d1fe5ad",
+            "subject_relation_id": "8feb83f87c0814d236fbeb7a24a05e0a3d1f98e60c98a460bd492712f74dde9d",
+            "subject_scope": "d89274f3d2e6c5c80cfea6e9fec598e4c18500ae4951e8d933b361e6f694bf8c",
+            "field_path": "definition.source",
+            "comparator_contract": "rpnh/json_equal/v1",
+            "left_fact": {
+              "state": "provided",
+              "value": "step.run",
+              "evidence_refs": [
+                {
+                  "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                  "source_id": "source-a",
+                  "ref": {
+                    "entity_type": "collaboration_net_revision/v1",
+                    "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                    "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                  }
+                }
+              ]
+            },
+            "right_fact": {
+              "state": "provided",
+              "value": "step.run",
+              "evidence_refs": [
+                {
+                  "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                  "source_id": "source-a",
+                  "ref": {
+                    "entity_type": "collaboration_net_revision/v1",
+                    "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                    "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                  }
+                }
+              ]
+            },
+            "classification": "known_same",
+            "reason_code": "exact_identity",
+            "evidence_refs": [
+              {
+                "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                "source_id": "source-a",
+                "ref": {
+                  "entity_type": "collaboration_net_revision/v1",
+                  "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                  "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                }
+              }
+            ],
+            "interpretation": "current_analysis"
+          },
+          {
+            "row_id": "8f717908aff574073bf99c512d801ca5e5e760926309f4c716176a27ce2cadfe",
+            "subject_relation_id": "8feb83f87c0814d236fbeb7a24a05e0a3d1f98e60c98a460bd492712f74dde9d",
+            "subject_scope": "d89274f3d2e6c5c80cfea6e9fec598e4c18500ae4951e8d933b361e6f694bf8c",
+            "field_path": "definition.target",
+            "comparator_contract": "rpnh/json_equal/v1",
+            "left_fact": {
+              "state": "provided",
+              "value": "step.result",
+              "evidence_refs": [
+                {
+                  "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                  "source_id": "source-a",
+                  "ref": {
+                    "entity_type": "collaboration_net_revision/v1",
+                    "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                    "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                  }
+                }
+              ]
+            },
+            "right_fact": {
+              "state": "provided",
+              "value": "step.result",
+              "evidence_refs": [
+                {
+                  "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                  "source_id": "source-a",
+                  "ref": {
+                    "entity_type": "collaboration_net_revision/v1",
+                    "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                    "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                  }
+                }
+              ]
+            },
+            "classification": "known_same",
+            "reason_code": "exact_identity",
+            "evidence_refs": [
+              {
+                "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                "source_id": "source-a",
+                "ref": {
+                  "entity_type": "collaboration_net_revision/v1",
+                  "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                  "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                }
+              }
+            ],
+            "interpretation": "current_analysis"
+          },
+          {
+            "row_id": "33ec4a3529e3ef0a666dd99c9c8822015871662d653b15c4b52b2f864d5732c3",
+            "subject_relation_id": "8feb83f87c0814d236fbeb7a24a05e0a3d1f98e60c98a460bd492712f74dde9d",
+            "subject_scope": "d89274f3d2e6c5c80cfea6e9fec598e4c18500ae4951e8d933b361e6f694bf8c",
+            "field_path": "definition.weight",
+            "comparator_contract": "rpnh/json_equal/v1",
+            "left_fact": {
+              "state": "provided",
+              "value": 1,
+              "evidence_refs": [
+                {
+                  "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                  "source_id": "source-a",
+                  "ref": {
+                    "entity_type": "collaboration_net_revision/v1",
+                    "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                    "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                  }
+                }
+              ]
+            },
+            "right_fact": {
+              "state": "provided",
+              "value": 1,
+              "evidence_refs": [
+                {
+                  "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                  "source_id": "source-a",
+                  "ref": {
+                    "entity_type": "collaboration_net_revision/v1",
+                    "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                    "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                  }
+                }
+              ]
+            },
+            "classification": "known_same",
+            "reason_code": "exact_identity",
+            "evidence_refs": [
+              {
+                "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                "source_id": "source-a",
+                "ref": {
+                  "entity_type": "collaboration_net_revision/v1",
+                  "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                  "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                }
+              }
+            ],
+            "interpretation": "current_analysis"
+          },
+          {
+            "row_id": "293f7a4dbeff70e0100c4b0665c5c3f10403b44a91233c43429e3fbe146ce3d1",
+            "subject_relation_id": "992e42cbf81bc9e895b20ee2231e7a2f31c2f0a33f5731b8d0999153db0b074d",
+            "subject_scope": "d89274f3d2e6c5c80cfea6e9fec598e4c18500ae4951e8d933b361e6f694bf8c",
+            "field_path": "definition.direction",
+            "comparator_contract": "rpnh/json_equal/v1",
+            "left_fact": {
+              "state": "provided",
+              "value": "input",
+              "evidence_refs": [
+                {
+                  "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                  "source_id": "source-a",
+                  "ref": {
+                    "entity_type": "collaboration_net_revision/v1",
+                    "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                    "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                  }
+                }
+              ]
+            },
+            "right_fact": {
+              "state": "provided",
+              "value": "input",
+              "evidence_refs": [
+                {
+                  "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                  "source_id": "source-a",
+                  "ref": {
+                    "entity_type": "collaboration_net_revision/v1",
+                    "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                    "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                  }
+                }
+              ]
+            },
+            "classification": "known_same",
+            "reason_code": "exact_identity",
+            "evidence_refs": [
+              {
+                "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                "source_id": "source-a",
+                "ref": {
+                  "entity_type": "collaboration_net_revision/v1",
+                  "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                  "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                }
+              }
+            ],
+            "interpretation": "current_analysis"
+          },
+          {
+            "row_id": "e5cb47d2bcb8e7223c7d235dec0b7a3bb857a770db08b980af2e1602d5895b8e",
+            "subject_relation_id": "992e42cbf81bc9e895b20ee2231e7a2f31c2f0a33f5731b8d0999153db0b074d",
+            "subject_scope": "d89274f3d2e6c5c80cfea6e9fec598e4c18500ae4951e8d933b361e6f694bf8c",
+            "field_path": "definition.emit",
+            "comparator_contract": "rpnh/json_equal/v1",
+            "left_fact": {
+              "state": "provided",
+              "value": "produced",
+              "evidence_refs": [
+                {
+                  "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                  "source_id": "source-a",
+                  "ref": {
+                    "entity_type": "collaboration_net_revision/v1",
+                    "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                    "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                  }
+                }
+              ]
+            },
+            "right_fact": {
+              "state": "provided",
+              "value": "produced",
+              "evidence_refs": [
+                {
+                  "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                  "source_id": "source-a",
+                  "ref": {
+                    "entity_type": "collaboration_net_revision/v1",
+                    "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                    "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                  }
+                }
+              ]
+            },
+            "classification": "known_same",
+            "reason_code": "exact_identity",
+            "evidence_refs": [
+              {
+                "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                "source_id": "source-a",
+                "ref": {
+                  "entity_type": "collaboration_net_revision/v1",
+                  "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                  "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                }
+              }
+            ],
+            "interpretation": "current_analysis"
+          },
+          {
+            "row_id": "a9270545e270e579f55c7c4c13de55795b0afa05daa69ccbffac7e6adc559c28",
+            "subject_relation_id": "992e42cbf81bc9e895b20ee2231e7a2f31c2f0a33f5731b8d0999153db0b074d",
+            "subject_scope": "d89274f3d2e6c5c80cfea6e9fec598e4c18500ae4951e8d933b361e6f694bf8c",
+            "field_path": "definition.forward_source",
+            "comparator_contract": "rpnh/json_equal/v1",
+            "left_fact": {
+              "state": "provided",
+              "value": null,
+              "evidence_refs": [
+                {
+                  "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                  "source_id": "source-a",
+                  "ref": {
+                    "entity_type": "collaboration_net_revision/v1",
+                    "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                    "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                  }
+                }
+              ]
+            },
+            "right_fact": {
+              "state": "provided",
+              "value": null,
+              "evidence_refs": [
+                {
+                  "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                  "source_id": "source-a",
+                  "ref": {
+                    "entity_type": "collaboration_net_revision/v1",
+                    "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                    "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                  }
+                }
+              ]
+            },
+            "classification": "known_same",
+            "reason_code": "exact_identity",
+            "evidence_refs": [
+              {
+                "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                "source_id": "source-a",
+                "ref": {
+                  "entity_type": "collaboration_net_revision/v1",
+                  "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                  "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                }
+              }
+            ],
+            "interpretation": "current_analysis"
+          },
+          {
+            "row_id": "2815188bd04980245566263e5c5914ea6abf8a4110e6544b41872f0365165fc3",
+            "subject_relation_id": "992e42cbf81bc9e895b20ee2231e7a2f31c2f0a33f5731b8d0999153db0b074d",
+            "subject_scope": "d89274f3d2e6c5c80cfea6e9fec598e4c18500ae4951e8d933b361e6f694bf8c",
+            "field_path": "definition.hidden_by_default",
+            "comparator_contract": "rpnh/json_equal/v1",
+            "left_fact": {
+              "state": "provided",
+              "value": false,
+              "evidence_refs": [
+                {
+                  "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                  "source_id": "source-a",
+                  "ref": {
+                    "entity_type": "collaboration_net_revision/v1",
+                    "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                    "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                  }
+                }
+              ]
+            },
+            "right_fact": {
+              "state": "provided",
+              "value": false,
+              "evidence_refs": [
+                {
+                  "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                  "source_id": "source-a",
+                  "ref": {
+                    "entity_type": "collaboration_net_revision/v1",
+                    "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                    "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                  }
+                }
+              ]
+            },
+            "classification": "known_same",
+            "reason_code": "exact_identity",
+            "evidence_refs": [
+              {
+                "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                "source_id": "source-a",
+                "ref": {
+                  "entity_type": "collaboration_net_revision/v1",
+                  "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                  "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                }
+              }
+            ],
+            "interpretation": "current_analysis"
+          },
+          {
+            "row_id": "ff339715dbffa6b7769b324d397b98b776d224ec399106cd8a76be1d8b63ff58",
+            "subject_relation_id": "992e42cbf81bc9e895b20ee2231e7a2f31c2f0a33f5731b8d0999153db0b074d",
+            "subject_scope": "d89274f3d2e6c5c80cfea6e9fec598e4c18500ae4951e8d933b361e6f694bf8c",
+            "field_path": "definition.kind",
+            "comparator_contract": "rpnh/json_equal/v1",
+            "left_fact": {
+              "state": "provided",
+              "value": "arc",
+              "evidence_refs": [
+                {
+                  "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                  "source_id": "source-a",
+                  "ref": {
+                    "entity_type": "collaboration_net_revision/v1",
+                    "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                    "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                  }
+                }
+              ]
+            },
+            "right_fact": {
+              "state": "provided",
+              "value": "arc",
+              "evidence_refs": [
+                {
+                  "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                  "source_id": "source-a",
+                  "ref": {
+                    "entity_type": "collaboration_net_revision/v1",
+                    "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                    "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                  }
+                }
+              ]
+            },
+            "classification": "known_same",
+            "reason_code": "exact_identity",
+            "evidence_refs": [
+              {
+                "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                "source_id": "source-a",
+                "ref": {
+                  "entity_type": "collaboration_net_revision/v1",
+                  "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                  "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                }
+              }
+            ],
+            "interpretation": "current_analysis"
+          },
+          {
+            "row_id": "91ff11d1d73fdbad9106058464dbe36d6c708d6a3becc506c7a2ceceefa6b16f",
+            "subject_relation_id": "992e42cbf81bc9e895b20ee2231e7a2f31c2f0a33f5731b8d0999153db0b074d",
+            "subject_scope": "d89274f3d2e6c5c80cfea6e9fec598e4c18500ae4951e8d933b361e6f694bf8c",
+            "field_path": "definition.mode",
+            "comparator_contract": "rpnh/json_equal/v1",
+            "left_fact": {
+              "state": "provided",
+              "value": "consume",
+              "evidence_refs": [
+                {
+                  "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                  "source_id": "source-a",
+                  "ref": {
+                    "entity_type": "collaboration_net_revision/v1",
+                    "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                    "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                  }
+                }
+              ]
+            },
+            "right_fact": {
+              "state": "provided",
+              "value": "consume",
+              "evidence_refs": [
+                {
+                  "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                  "source_id": "source-a",
+                  "ref": {
+                    "entity_type": "collaboration_net_revision/v1",
+                    "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                    "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                  }
+                }
+              ]
+            },
+            "classification": "known_same",
+            "reason_code": "exact_identity",
+            "evidence_refs": [
+              {
+                "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                "source_id": "source-a",
+                "ref": {
+                  "entity_type": "collaboration_net_revision/v1",
+                  "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                  "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                }
+              }
+            ],
+            "interpretation": "current_analysis"
+          },
+          {
+            "row_id": "2393f03c5ed152779d909330e0b238a9b8b64b043da793b969b2d7413fd79ea2",
+            "subject_relation_id": "992e42cbf81bc9e895b20ee2231e7a2f31c2f0a33f5731b8d0999153db0b074d",
+            "subject_scope": "d89274f3d2e6c5c80cfea6e9fec598e4c18500ae4951e8d933b361e6f694bf8c",
+            "field_path": "definition.outcome",
+            "comparator_contract": "rpnh/json_equal/v1",
+            "left_fact": {
+              "state": "provided",
+              "value": null,
+              "evidence_refs": [
+                {
+                  "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                  "source_id": "source-a",
+                  "ref": {
+                    "entity_type": "collaboration_net_revision/v1",
+                    "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                    "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                  }
+                }
+              ]
+            },
+            "right_fact": {
+              "state": "provided",
+              "value": null,
+              "evidence_refs": [
+                {
+                  "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                  "source_id": "source-a",
+                  "ref": {
+                    "entity_type": "collaboration_net_revision/v1",
+                    "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                    "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                  }
+                }
+              ]
+            },
+            "classification": "known_same",
+            "reason_code": "exact_identity",
+            "evidence_refs": [
+              {
+                "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                "source_id": "source-a",
+                "ref": {
+                  "entity_type": "collaboration_net_revision/v1",
+                  "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                  "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                }
+              }
+            ],
+            "interpretation": "current_analysis"
+          },
+          {
+            "row_id": "4b75b4af1bbb4edaa11b090f213eff1dc4c8a4d45f84c72224fc79ca2da6d6f2",
+            "subject_relation_id": "992e42cbf81bc9e895b20ee2231e7a2f31c2f0a33f5731b8d0999153db0b074d",
+            "subject_scope": "d89274f3d2e6c5c80cfea6e9fec598e4c18500ae4951e8d933b361e6f694bf8c",
+            "field_path": "definition.resource",
+            "comparator_contract": "rpnh/json_equal/v1",
+            "left_fact": {
+              "state": "provided",
+              "value": false,
+              "evidence_refs": [
+                {
+                  "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                  "source_id": "source-a",
+                  "ref": {
+                    "entity_type": "collaboration_net_revision/v1",
+                    "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                    "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                  }
+                }
+              ]
+            },
+            "right_fact": {
+              "state": "provided",
+              "value": false,
+              "evidence_refs": [
+                {
+                  "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                  "source_id": "source-a",
+                  "ref": {
+                    "entity_type": "collaboration_net_revision/v1",
+                    "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                    "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                  }
+                }
+              ]
+            },
+            "classification": "known_same",
+            "reason_code": "exact_identity",
+            "evidence_refs": [
+              {
+                "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                "source_id": "source-a",
+                "ref": {
+                  "entity_type": "collaboration_net_revision/v1",
+                  "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                  "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                }
+              }
+            ],
+            "interpretation": "current_analysis"
+          },
+          {
+            "row_id": "dbc968f6106d6ad7a988ecf2b0ac78cb336d8cc1bbb6d54cead83004572fc85d",
+            "subject_relation_id": "992e42cbf81bc9e895b20ee2231e7a2f31c2f0a33f5731b8d0999153db0b074d",
+            "subject_scope": "d89274f3d2e6c5c80cfea6e9fec598e4c18500ae4951e8d933b361e6f694bf8c",
+            "field_path": "definition.source",
+            "comparator_contract": "rpnh/json_equal/v1",
+            "left_fact": {
+              "state": "provided",
+              "value": "step.request",
+              "evidence_refs": [
+                {
+                  "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                  "source_id": "source-a",
+                  "ref": {
+                    "entity_type": "collaboration_net_revision/v1",
+                    "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                    "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                  }
+                }
+              ]
+            },
+            "right_fact": {
+              "state": "provided",
+              "value": "step.request",
+              "evidence_refs": [
+                {
+                  "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                  "source_id": "source-a",
+                  "ref": {
+                    "entity_type": "collaboration_net_revision/v1",
+                    "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                    "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                  }
+                }
+              ]
+            },
+            "classification": "known_same",
+            "reason_code": "exact_identity",
+            "evidence_refs": [
+              {
+                "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                "source_id": "source-a",
+                "ref": {
+                  "entity_type": "collaboration_net_revision/v1",
+                  "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                  "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                }
+              }
+            ],
+            "interpretation": "current_analysis"
+          },
+          {
+            "row_id": "500f22afc3ddbe7174bd84afd70685c74b2c6685c49b8bc0f80d603884fe12e0",
+            "subject_relation_id": "992e42cbf81bc9e895b20ee2231e7a2f31c2f0a33f5731b8d0999153db0b074d",
+            "subject_scope": "d89274f3d2e6c5c80cfea6e9fec598e4c18500ae4951e8d933b361e6f694bf8c",
+            "field_path": "definition.target",
+            "comparator_contract": "rpnh/json_equal/v1",
+            "left_fact": {
+              "state": "provided",
+              "value": "step.run",
+              "evidence_refs": [
+                {
+                  "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                  "source_id": "source-a",
+                  "ref": {
+                    "entity_type": "collaboration_net_revision/v1",
+                    "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                    "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                  }
+                }
+              ]
+            },
+            "right_fact": {
+              "state": "provided",
+              "value": "step.run",
+              "evidence_refs": [
+                {
+                  "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                  "source_id": "source-a",
+                  "ref": {
+                    "entity_type": "collaboration_net_revision/v1",
+                    "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                    "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                  }
+                }
+              ]
+            },
+            "classification": "known_same",
+            "reason_code": "exact_identity",
+            "evidence_refs": [
+              {
+                "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                "source_id": "source-a",
+                "ref": {
+                  "entity_type": "collaboration_net_revision/v1",
+                  "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                  "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                }
+              }
+            ],
+            "interpretation": "current_analysis"
+          },
+          {
+            "row_id": "28ea0013727c349ad8bd7ac34290dcd262031efedcdd4c62a517ddec5a4142c8",
+            "subject_relation_id": "992e42cbf81bc9e895b20ee2231e7a2f31c2f0a33f5731b8d0999153db0b074d",
+            "subject_scope": "d89274f3d2e6c5c80cfea6e9fec598e4c18500ae4951e8d933b361e6f694bf8c",
+            "field_path": "definition.weight",
+            "comparator_contract": "rpnh/json_equal/v1",
+            "left_fact": {
+              "state": "provided",
+              "value": 1,
+              "evidence_refs": [
+                {
+                  "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                  "source_id": "source-a",
+                  "ref": {
+                    "entity_type": "collaboration_net_revision/v1",
+                    "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                    "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                  }
+                }
+              ]
+            },
+            "right_fact": {
+              "state": "provided",
+              "value": 1,
+              "evidence_refs": [
+                {
+                  "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                  "source_id": "source-a",
+                  "ref": {
+                    "entity_type": "collaboration_net_revision/v1",
+                    "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                    "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                  }
+                }
+              ]
+            },
+            "classification": "known_same",
+            "reason_code": "exact_identity",
+            "evidence_refs": [
+              {
+                "schema_version": "rpnh/collaboration/source_version_ref/v1",
+                "source_id": "source-a",
+                "ref": {
+                  "entity_type": "collaboration_net_revision/v1",
+                  "logical_id": "resource:57c95949c3f951d09c76ffd40a6c21b7",
+                  "version_id": "resource_version:0cad7dbe19db513baa1d0e354a0347c5"
+                }
+              }
+            ],
+            "interpretation": "current_analysis"
+          }
+        ],
+        "counts": {
+          "scope_key": "d89274f3d2e6c5c80cfea6e9fec598e4c18500ae4951e8d933b361e6f694bf8c",
+          "unit": "field_rows",
+          "loaded_count": 45,
+          "total_count": 45,
+          "known_changed": 0,
+          "known_same": 45,
+          "unknown": 0,
+          "coverage": "complete_in_declared_scope"
+        },
+        "unknown_reasons": []
+      },
+      "configuration": {
+        "axis": "configuration",
+        "coverage": "not_provided",
+        "scope_key": "d89274f3d2e6c5c80cfea6e9fec598e4c18500ae4951e8d933b361e6f694bf8c",
+        "rows": [],
+        "counts": {
+          "scope_key": "d89274f3d2e6c5c80cfea6e9fec598e4c18500ae4951e8d933b361e6f694bf8c",
+          "unit": "field_rows",
+          "loaded_count": null,
+          "total_count": null,
+          "known_changed": null,
+          "known_same": null,
+          "unknown": null,
+          "coverage": "not_provided"
+        },
+        "unknown_reasons": [
+          "not_provided"
+        ]
+      },
+      "materials": {
+        "axis": "materials",
+        "coverage": "not_provided",
+        "scope_key": "d89274f3d2e6c5c80cfea6e9fec598e4c18500ae4951e8d933b361e6f694bf8c",
+        "rows": [],
+        "counts": {
+          "scope_key": "d89274f3d2e6c5c80cfea6e9fec598e4c18500ae4951e8d933b361e6f694bf8c",
+          "unit": "field_rows",
+          "loaded_count": null,
+          "total_count": null,
+          "known_changed": null,
+          "known_same": null,
+          "unknown": null,
+          "coverage": "not_provided"
+        },
+        "unknown_reasons": [
+          "not_provided"
+        ]
+      },
+      "runtime": {
+        "axis": "runtime",
+        "coverage": "not_provided",
+        "scope_key": "d89274f3d2e6c5c80cfea6e9fec598e4c18500ae4951e8d933b361e6f694bf8c",
+        "rows": [],
+        "counts": {
+          "scope_key": "d89274f3d2e6c5c80cfea6e9fec598e4c18500ae4951e8d933b361e6f694bf8c",
+          "unit": "field_rows",
+          "loaded_count": null,
+          "total_count": null,
+          "known_changed": null,
+          "known_same": null,
+          "unknown": null,
+          "coverage": "not_provided"
+        },
+        "unknown_reasons": [
+          "not_provided"
+        ]
+      }
+    },
+    "comparability": "not_established",
+    "authority": "display_only"
+  }
+}

@@ -1,0 +1,350 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "rpnh/registry_read_session_request/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "selection",
+    "purpose",
+    "limits"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "rpnh/registry_read_session_request/v1"
+    },
+    "purpose": {
+      "type": "string",
+      "minLength": 1
+    },
+    "limits": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "max_sources": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "max_clauses": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "max_predicates": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "max_in_values": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "max_projection_fields": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "max_page_size": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "max_query_bytes": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "max_response_bytes": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "max_scan_rows": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "max_scan_bytes": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "max_material_bytes": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "max_cuts": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "max_cursors": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "session_seconds": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "selection": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "sources"
+          ],
+          "properties": {
+            "kind": {
+              "const": "explicit"
+            },
+            "sources": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 64,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "source_ref",
+                  "access_path"
+                ],
+                "properties": {
+                  "source_ref": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "schema_version",
+                      "source_id",
+                      "ref"
+                    ],
+                    "properties": {
+                      "schema_version": {
+                        "enum": [
+                          "rpnh/collaboration/source_version_ref/v1",
+                          "rpnh/collaboration/source_resource_ref/v1"
+                        ]
+                      },
+                      "source_id": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "ref": {
+                        "oneOf": [
+                          {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                              "entity_type",
+                              "logical_id",
+                              "version_id"
+                            ],
+                            "properties": {
+                              "entity_type": {
+                                "type": "string",
+                                "pattern": "^[a-z][a-z0-9_]*(?:/[a-z][a-z0-9_]*)*/v[1-9][0-9]*$"
+                              },
+                              "logical_id": {
+                                "type": "string",
+                                "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
+                              },
+                              "version_id": {
+                                "type": "string",
+                                "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                              "resource_id",
+                              "resource_version_id"
+                            ],
+                            "properties": {
+                              "resource_id": {
+                                "type": "string",
+                                "pattern": "^resource:[a-f0-9]{32}$"
+                              },
+                              "resource_version_id": {
+                                "type": "string",
+                                "pattern": "^resource_version:[a-f0-9]{32}$"
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "access_path": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "sources",
+            "source_set_ref"
+          ],
+          "properties": {
+            "kind": {
+              "const": "source_set"
+            },
+            "sources": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 64,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "source_ref",
+                  "access_path"
+                ],
+                "properties": {
+                  "source_ref": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "schema_version",
+                      "source_id",
+                      "ref"
+                    ],
+                    "properties": {
+                      "schema_version": {
+                        "enum": [
+                          "rpnh/collaboration/source_version_ref/v1",
+                          "rpnh/collaboration/source_resource_ref/v1"
+                        ]
+                      },
+                      "source_id": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "ref": {
+                        "oneOf": [
+                          {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                              "entity_type",
+                              "logical_id",
+                              "version_id"
+                            ],
+                            "properties": {
+                              "entity_type": {
+                                "type": "string",
+                                "pattern": "^[a-z][a-z0-9_]*(?:/[a-z][a-z0-9_]*)*/v[1-9][0-9]*$"
+                              },
+                              "logical_id": {
+                                "type": "string",
+                                "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
+                              },
+                              "version_id": {
+                                "type": "string",
+                                "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                              "resource_id",
+                              "resource_version_id"
+                            ],
+                            "properties": {
+                              "resource_id": {
+                                "type": "string",
+                                "pattern": "^resource:[a-f0-9]{32}$"
+                              },
+                              "resource_version_id": {
+                                "type": "string",
+                                "pattern": "^resource_version:[a-f0-9]{32}$"
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "access_path": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                }
+              }
+            },
+            "source_set_ref": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "schema_version",
+                "source_id",
+                "ref"
+              ],
+              "properties": {
+                "schema_version": {
+                  "enum": [
+                    "rpnh/collaboration/source_version_ref/v1",
+                    "rpnh/collaboration/source_resource_ref/v1"
+                  ]
+                },
+                "source_id": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "ref": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "entity_type",
+                        "logical_id",
+                        "version_id"
+                      ],
+                      "properties": {
+                        "entity_type": {
+                          "type": "string",
+                          "pattern": "^[a-z][a-z0-9_]*(?:/[a-z][a-z0-9_]*)*/v[1-9][0-9]*$"
+                        },
+                        "logical_id": {
+                          "type": "string",
+                          "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
+                        },
+                        "version_id": {
+                          "type": "string",
+                          "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "resource_id",
+                        "resource_version_id"
+                      ],
+                      "properties": {
+                        "resource_id": {
+                          "type": "string",
+                          "pattern": "^resource:[a-f0-9]{32}$"
+                        },
+                        "resource_version_id": {
+                          "type": "string",
+                          "pattern": "^resource_version:[a-f0-9]{32}$"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

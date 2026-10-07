@@ -1,0 +1,319 @@
+{
+  "$id": "rpnh/environment_selection/v1",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "additionalProperties": false,
+  "properties": {
+    "host_profile_id": {
+      "maxLength": 240,
+      "minLength": 1,
+      "type": "string"
+    },
+    "mode": {
+      "enum": [
+        "existing",
+        "new_venv"
+      ]
+    },
+    "plugins": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "configuration_ref": {
+            "maxLength": 240,
+            "minLength": 1,
+            "type": "string"
+          },
+          "plugin_id": {
+            "maxLength": 240,
+            "minLength": 1,
+            "type": "string"
+          },
+          "scoped_requirement_id": {
+            "additionalProperties": false,
+            "properties": {
+              "entry_id": {
+                "maxLength": 120,
+                "pattern": "^[A-Za-z][A-Za-z0-9_-]*$",
+                "type": "string"
+              },
+              "manifest_digest": {
+                "pattern": "^[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "requirement_id": {
+                "maxLength": 120,
+                "pattern": "^[A-Za-z][A-Za-z0-9_-]*$",
+                "type": "string"
+              }
+            },
+            "required": [
+              "manifest_digest",
+              "entry_id",
+              "requirement_id"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "scoped_requirement_id",
+          "plugin_id",
+          "configuration_ref"
+        ],
+        "type": "object"
+      },
+      "maxItems": 128,
+      "minItems": 0,
+      "type": "array"
+    },
+    "python_selection": {
+      "oneOf": [
+        {
+          "additionalProperties": false,
+          "properties": {
+            "executable": {
+              "maxLength": 4096,
+              "minLength": 1,
+              "type": "string"
+            }
+          },
+          "required": [
+            "executable"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "base_executable": {
+              "maxLength": 4096,
+              "minLength": 1,
+              "type": "string"
+            },
+            "prefix": {
+              "maxLength": 4096,
+              "minLength": 1,
+              "type": "string"
+            }
+          },
+          "required": [
+            "base_executable",
+            "prefix"
+          ],
+          "type": "object"
+        }
+      ]
+    },
+    "schema_version": {
+      "const": "rpnh/environment_selection/v1"
+    },
+    "selection_id": {
+      "maxLength": 240,
+      "minLength": 1,
+      "type": "string"
+    },
+    "services": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "credential_ref": {
+            "anyOf": [
+              {
+                "maxLength": 240,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "model_condition": {
+            "maxLength": 240,
+            "minLength": 1,
+            "type": "string"
+          },
+          "profile_ref": {
+            "maxLength": 240,
+            "minLength": 1,
+            "type": "string"
+          },
+          "scoped_requirement_id": {
+            "additionalProperties": false,
+            "properties": {
+              "entry_id": {
+                "maxLength": 120,
+                "pattern": "^[A-Za-z][A-Za-z0-9_-]*$",
+                "type": "string"
+              },
+              "manifest_digest": {
+                "pattern": "^[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "requirement_id": {
+                "maxLength": 120,
+                "pattern": "^[A-Za-z][A-Za-z0-9_-]*$",
+                "type": "string"
+              }
+            },
+            "required": [
+              "manifest_digest",
+              "entry_id",
+              "requirement_id"
+            ],
+            "type": "object"
+          },
+          "service_contract_id": {
+            "maxLength": 240,
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "scoped_requirement_id",
+          "service_contract_id",
+          "profile_ref",
+          "credential_ref",
+          "model_condition"
+        ],
+        "type": "object"
+      },
+      "maxItems": 128,
+      "minItems": 0,
+      "type": "array"
+    },
+    "target": {
+      "additionalProperties": false,
+      "properties": {
+        "entry_id": {
+          "maxLength": 120,
+          "pattern": "^[A-Za-z][A-Za-z0-9_-]*$",
+          "type": "string"
+        },
+        "package_lock_digest": {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "requirement_artifacts": {
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "artifact_digest": {
+                "pattern": "^[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "artifact_path": {
+                "maxLength": 240,
+                "minLength": 1,
+                "type": "string"
+              },
+              "entry_id": {
+                "maxLength": 120,
+                "pattern": "^[A-Za-z][A-Za-z0-9_-]*$",
+                "type": "string"
+              },
+              "manifest_digest": {
+                "pattern": "^[0-9a-f]{64}$",
+                "type": "string"
+              }
+            },
+            "required": [
+              "manifest_digest",
+              "entry_id",
+              "artifact_path",
+              "artifact_digest"
+            ],
+            "type": "object"
+          },
+          "maxItems": 64,
+          "minItems": 1,
+          "type": "array",
+          "uniqueItems": true
+        },
+        "requirements_digest": {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "root_archive_digest": {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "root_manifest_digest": {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "package_lock_digest",
+        "root_manifest_digest",
+        "root_archive_digest",
+        "entry_id",
+        "requirement_artifacts",
+        "requirements_digest"
+      ],
+      "type": "object"
+    },
+    "tools": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "executable": {
+            "maxLength": 4096,
+            "minLength": 1,
+            "type": "string"
+          },
+          "scoped_requirement_id": {
+            "additionalProperties": false,
+            "properties": {
+              "entry_id": {
+                "maxLength": 120,
+                "pattern": "^[A-Za-z][A-Za-z0-9_-]*$",
+                "type": "string"
+              },
+              "manifest_digest": {
+                "pattern": "^[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "requirement_id": {
+                "maxLength": 120,
+                "pattern": "^[A-Za-z][A-Za-z0-9_-]*$",
+                "type": "string"
+              }
+            },
+            "required": [
+              "manifest_digest",
+              "entry_id",
+              "requirement_id"
+            ],
+            "type": "object"
+          },
+          "tool_contract_id": {
+            "maxLength": 240,
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "scoped_requirement_id",
+          "tool_contract_id",
+          "executable"
+        ],
+        "type": "object"
+      },
+      "maxItems": 128,
+      "minItems": 0,
+      "type": "array"
+    }
+  },
+  "required": [
+    "schema_version",
+    "selection_id",
+    "target",
+    "mode",
+    "python_selection",
+    "tools",
+    "plugins",
+    "services",
+    "host_profile_id"
+  ],
+  "type": "object"
+}

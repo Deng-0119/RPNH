@@ -1,0 +1,751 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "rpnh/package_resolution_lock/v2",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "rpnh/package_resolution_lock/v2"
+    },
+    "resolver_contract": {
+      "const": "rpnh/package_resolver/v2"
+    },
+    "root_manifest_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "root_entry_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z][A-Za-z0-9_-]*$",
+      "maxLength": 120
+    },
+    "nodes": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "package_id": {
+                "type": "string",
+                "pattern": "^[a-z][a-z0-9_.-]*(?:/[a-z][a-z0-9_.-]*)+$",
+                "maxLength": 160
+              },
+              "version": {
+                "type": "string",
+                "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$",
+                "maxLength": 64
+              },
+              "manifest_digest": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$"
+              },
+              "archive_digest": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$"
+              },
+              "artifacts": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "path": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 240
+                    },
+                    "sha256": {
+                      "type": "string",
+                      "pattern": "^[0-9a-f]{64}$"
+                    },
+                    "bytes": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 4194304
+                    }
+                  },
+                  "required": [
+                    "path",
+                    "sha256",
+                    "bytes"
+                  ]
+                },
+                "minItems": 1,
+                "maxItems": 127
+              },
+              "origin": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "repository_url": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 1024
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "commit": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 1024
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "publisher_claim": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 1024
+                  },
+                  "source_refs": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "schema_version": {
+                          "const": "rpnh/collaboration/source_version_ref/v1"
+                        },
+                        "source_id": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 1024
+                        },
+                        "ref": {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "properties": {
+                            "entity_type": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 1024
+                            },
+                            "logical_id": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 1024
+                            },
+                            "version_id": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 1024
+                            }
+                          },
+                          "required": [
+                            "entity_type",
+                            "logical_id",
+                            "version_id"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "schema_version",
+                        "source_id",
+                        "ref"
+                      ]
+                    },
+                    "minItems": 0,
+                    "maxItems": 128
+                  }
+                },
+                "required": [
+                  "repository_url",
+                  "commit",
+                  "publisher_claim",
+                  "source_refs"
+                ]
+              },
+              "provenance": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "artifact_path": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 240
+                    },
+                    "relation": {
+                      "enum": [
+                        "authored",
+                        "copied",
+                        "derived"
+                      ]
+                    },
+                    "origin_ref": {
+                      "anyOf": [
+                        {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "properties": {
+                            "schema_version": {
+                              "const": "rpnh/collaboration/source_version_ref/v1"
+                            },
+                            "source_id": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 1024
+                            },
+                            "ref": {
+                              "type": "object",
+                              "additionalProperties": false,
+                              "properties": {
+                                "entity_type": {
+                                  "type": "string",
+                                  "minLength": 1,
+                                  "maxLength": 1024
+                                },
+                                "logical_id": {
+                                  "type": "string",
+                                  "minLength": 1,
+                                  "maxLength": 1024
+                                },
+                                "version_id": {
+                                  "type": "string",
+                                  "minLength": 1,
+                                  "maxLength": 1024
+                                }
+                              },
+                              "required": [
+                                "entity_type",
+                                "logical_id",
+                                "version_id"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "schema_version",
+                            "source_id",
+                            "ref"
+                          ]
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "origin_digest": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "pattern": "^[0-9a-f]{64}$"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "artifact_path",
+                    "relation",
+                    "origin_ref",
+                    "origin_digest"
+                  ]
+                },
+                "minItems": 0,
+                "maxItems": 128
+              },
+              "manifest_schema": {
+                "const": "rpnh/share_package/v2"
+              },
+              "environment_requirements": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "entry_id": {
+                      "type": "string",
+                      "pattern": "^[A-Za-z][A-Za-z0-9_-]*$",
+                      "maxLength": 120
+                    },
+                    "artifact_path": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 240
+                    },
+                    "artifact_digest": {
+                      "type": "string",
+                      "pattern": "^[0-9a-f]{64}$"
+                    },
+                    "schema_version": {
+                      "const": "rpnh/environment_requirements/v1"
+                    }
+                  },
+                  "required": [
+                    "entry_id",
+                    "artifact_path",
+                    "artifact_digest",
+                    "schema_version"
+                  ]
+                },
+                "minItems": 1,
+                "maxItems": 1
+              }
+            },
+            "required": [
+              "package_id",
+              "version",
+              "manifest_digest",
+              "archive_digest",
+              "artifacts",
+              "origin",
+              "provenance",
+              "manifest_schema",
+              "environment_requirements"
+            ]
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "package_id": {
+                "type": "string",
+                "pattern": "^[a-z][a-z0-9_.-]*(?:/[a-z][a-z0-9_.-]*)+$",
+                "maxLength": 160
+              },
+              "version": {
+                "type": "string",
+                "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$",
+                "maxLength": 64
+              },
+              "manifest_digest": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$"
+              },
+              "archive_digest": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$"
+              },
+              "artifacts": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "path": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 240
+                    },
+                    "sha256": {
+                      "type": "string",
+                      "pattern": "^[0-9a-f]{64}$"
+                    },
+                    "bytes": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 4194304
+                    }
+                  },
+                  "required": [
+                    "path",
+                    "sha256",
+                    "bytes"
+                  ]
+                },
+                "minItems": 1,
+                "maxItems": 127
+              },
+              "origin": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "repository_url": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 1024
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "commit": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 1024
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "publisher_claim": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 1024
+                  },
+                  "source_refs": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "schema_version": {
+                          "const": "rpnh/collaboration/source_version_ref/v1"
+                        },
+                        "source_id": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 1024
+                        },
+                        "ref": {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "properties": {
+                            "entity_type": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 1024
+                            },
+                            "logical_id": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 1024
+                            },
+                            "version_id": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 1024
+                            }
+                          },
+                          "required": [
+                            "entity_type",
+                            "logical_id",
+                            "version_id"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "schema_version",
+                        "source_id",
+                        "ref"
+                      ]
+                    },
+                    "minItems": 0,
+                    "maxItems": 128
+                  }
+                },
+                "required": [
+                  "repository_url",
+                  "commit",
+                  "publisher_claim",
+                  "source_refs"
+                ]
+              },
+              "provenance": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "artifact_path": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 240
+                    },
+                    "relation": {
+                      "enum": [
+                        "authored",
+                        "copied",
+                        "derived"
+                      ]
+                    },
+                    "origin_ref": {
+                      "anyOf": [
+                        {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "properties": {
+                            "schema_version": {
+                              "const": "rpnh/collaboration/source_version_ref/v1"
+                            },
+                            "source_id": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 1024
+                            },
+                            "ref": {
+                              "type": "object",
+                              "additionalProperties": false,
+                              "properties": {
+                                "entity_type": {
+                                  "type": "string",
+                                  "minLength": 1,
+                                  "maxLength": 1024
+                                },
+                                "logical_id": {
+                                  "type": "string",
+                                  "minLength": 1,
+                                  "maxLength": 1024
+                                },
+                                "version_id": {
+                                  "type": "string",
+                                  "minLength": 1,
+                                  "maxLength": 1024
+                                }
+                              },
+                              "required": [
+                                "entity_type",
+                                "logical_id",
+                                "version_id"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "schema_version",
+                            "source_id",
+                            "ref"
+                          ]
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "origin_digest": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "pattern": "^[0-9a-f]{64}$"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "artifact_path",
+                    "relation",
+                    "origin_ref",
+                    "origin_digest"
+                  ]
+                },
+                "minItems": 0,
+                "maxItems": 128
+              },
+              "manifest_schema": {
+                "const": "rpnh/share_package/v1"
+              },
+              "environment_requirements": {
+                "const": "not_declared"
+              }
+            },
+            "required": [
+              "package_id",
+              "version",
+              "manifest_digest",
+              "archive_digest",
+              "artifacts",
+              "origin",
+              "provenance",
+              "manifest_schema",
+              "environment_requirements"
+            ]
+          }
+        ]
+      },
+      "minItems": 1,
+      "maxItems": 64
+    },
+    "edges": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "from_manifest_digest": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "dependency_id": {
+            "type": "string",
+            "pattern": "^[A-Za-z][A-Za-z0-9_-]*$",
+            "maxLength": 120
+          },
+          "to_manifest_digest": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "required": {
+            "const": true
+          }
+        },
+        "required": [
+          "from_manifest_digest",
+          "dependency_id",
+          "to_manifest_digest",
+          "required"
+        ]
+      },
+      "minItems": 0,
+      "maxItems": 256
+    },
+    "selected_features": {
+      "type": "array",
+      "maxItems": 0
+    },
+    "schema_closure": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "schema_id": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]*(?:/[a-z][a-z0-9_]*)+/v[1-9][0-9]*$"
+          },
+          "artifact_digest": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "artifact_path": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 240
+          },
+          "direct_refs": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "schema_id": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 240
+                },
+                "fragment": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "maxLength": 1024
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              },
+              "required": [
+                "schema_id",
+                "fragment"
+              ]
+            },
+            "minItems": 0,
+            "maxItems": 100000
+          },
+          "manifest_digest": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          }
+        },
+        "required": [
+          "schema_id",
+          "artifact_digest",
+          "artifact_path",
+          "direct_refs",
+          "manifest_digest"
+        ]
+      },
+      "minItems": 0,
+      "maxItems": 8192
+    },
+    "compatibility_results": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "check_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1024
+          },
+          "status": {
+            "enum": [
+              "satisfied",
+              "missing",
+              "incompatible",
+              "not_checked"
+            ]
+          },
+          "code": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1024
+          },
+          "artifact_path": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 240
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "detail": {
+            "anyOf": [
+              {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 1024
+                },
+                "minItems": 0,
+                "maxItems": 8192
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "check_id",
+          "status",
+          "code"
+        ]
+      },
+      "minItems": 0,
+      "maxItems": 8192
+    },
+    "execution_permitted": {
+      "const": false
+    }
+  },
+  "required": [
+    "schema_version",
+    "resolver_contract",
+    "root_manifest_digest",
+    "root_entry_id",
+    "nodes",
+    "edges",
+    "selected_features",
+    "schema_closure",
+    "compatibility_results",
+    "execution_permitted"
+  ]
+}

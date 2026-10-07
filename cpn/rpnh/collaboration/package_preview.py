@@ -19,6 +19,7 @@ from .share_packages import (
     DEFAULT_LIMITS, DRAFT7, MANIFEST_PATH, MODULE_SCHEMA, PACKAGE_SCHEMA,
     PARSER_CONTRACT, PREVIEW_SCHEMA, SCHEMA_ID, PackageError, PackagePreview,
     canonical_bytes, manifest_schema, safe_path, sha256, strict_json,
+    PACKAGE_SCHEMA_V2, PREVIEW_SCHEMA_V2, PARSER_CONTRACT_V2,
 )
 
 _StrictValidator = validators.extend(Draft7Validator, type_checker=Draft7Validator.TYPE_CHECKER.redefine(
@@ -168,12 +169,14 @@ def _url_claim(value):
 
 def _manifest(payload, limits):
     document = strict_json(payload, path=MANIFEST_PATH, limits=limits)
-    if not isinstance(document, dict) or document.get("schema_version") != PACKAGE_SCHEMA:
+    if not isinstance(document, dict) or document.get("schema_version") not in (PACKAGE_SCHEMA, PACKAGE_SCHEMA_V2):
         raise PackageError("UNSUPPORTED_PACKAGE_SCHEMA", "unsupported manifest schema")
-    error = next(_StrictValidator(manifest_schema()).iter_errors(document), None)
+    error = next(_StrictValidator(manifest_schema(document["schema_version"])).iter_errors(document), None)
     if error is not None:
         code = "UNKNOWN_FIELD" if error.validator == "additionalProperties" else "INVALID_MANIFEST"
-        raise PackageError(code, "manifest does not satisfy the bounded v1 contract", artifact_path=MANIFEST_PATH)
+        raise PackageError(code, "manifest does not satisfy the bounded v1 contract"
+                           if document["schema_version"] == PACKAGE_SCHEMA else
+                           "manifest does not satisfy the bounded v2 contract", artifact_path=MANIFEST_PATH)
     _url_claim(document["origin"]["repository_url"])
     for dependency in document["dependencies"]:
         _url_claim(dependency["acquisition_hint"])
@@ -217,6 +220,15 @@ def _inventory(manifest, members, limits):
             raise PackageError("INVALID_PROVENANCE", "copied/derived material requires original digest")
         if row["relation"] == "copied" and row["origin_digest"] != artifacts[row["artifact_path"]]["sha256"]:
             raise PackageError("INVALID_PROVENANCE", "copied bytes differ from claimed original digest")
+    if manifest["schema_version"] == PACKAGE_SCHEMA_V2:
+        from .environment_requirements import validate_environment_requirements
+        for entry in manifest["entries"]:
+            path = safe_path(entry["environment_requirements_path"])
+            row = artifacts.get(path)
+            if row is None or row["role"] != "document" or row["media_type"] != "application/json":
+                raise PackageError("INVALID_ENVIRONMENT_REQUIREMENTS", "requirements must reference an inventoried JSON document")
+            validate_environment_requirements(members[path], entry_id=entry["entry_id"],
+                host_requirement_ids=[row["requirement_id"] for row in manifest["requirements"]], limits=limits)
     return artifacts, parsed
 
 
@@ -251,7 +263,14 @@ def _module(manifest, artifacts, parsed):
         operations = _unique(component.get("operations", []), "name", "INVALID_DECLARATION")
         for operation in operations.values():
             for direction, key in (("input", "inputs"), ("output", "outputs")):
-                if any(name not in local_ports or local_ports[name]["direction"] != direction for name in operation[key]):
+                # v2 permits input ports supplied by the explicitly selected
+                # trusted component lower (for example native capabilities).
+                # They are not boundary endpoints and confer no execution right.
+                # Actual internal port existence/schema is checked by compile.
+                allow_internal = manifest["schema_version"] == PACKAGE_SCHEMA_V2 and direction == "input"
+                if any((name not in local_ports and not allow_internal)
+                       or (name in local_ports and local_ports[name]["direction"] != direction)
+                       for name in operation[key]):
                     raise PackageError("INVALID_DECLARATION", "operation names an absent or wrong-direction port")
             _unique(operation["outcomes"], "name", "INVALID_DECLARATION")
             for outcome in operation["outcomes"]:
@@ -513,7 +532,12 @@ def preview_package(source, *, limits=DEFAULT_LIMITS) -> PackagePreview:
         checks.append(_check("dependency_resolution", "not_checked", "LOCAL_RESOLUTION_REQUIRED"))
     else:
         checks.append(_check("dependency_resolution", "satisfied", "NO_DEPENDENCIES"))
-    report = {"schema_version": PREVIEW_SCHEMA, "parser_contract": PARSER_CONTRACT,
+    is_v2 = manifest["schema_version"] == PACKAGE_SCHEMA_V2
+    if is_v2:
+        checks.append(_check("environment_requirements", "satisfied", "ENVIRONMENT_REQUIREMENTS_DECLARED"))
+        checks.append(_check("internal_port_binding", "not_checked", "TRUSTED_HOST_COMPILATION_REQUIRED"))
+    report = {"schema_version": PREVIEW_SCHEMA_V2 if is_v2 else PREVIEW_SCHEMA,
+        "parser_contract": PARSER_CONTRACT_V2 if is_v2 else PARSER_CONTRACT,
         "package_id": manifest["package_id"], "version": manifest["version"],
         "manifest_digest": sha256(manifest_bytes), "archive_digest": sha256(archive_bytes),
         "entries": manifest["entries"], "artifacts": manifest["artifacts"],
@@ -524,3 +548,12 @@ def preview_package(source, *, limits=DEFAULT_LIMITS) -> PackagePreview:
     return PackagePreview(manifest_bytes, archive_bytes,
                           tuple(sorted((key, value) for key, value in members.items() if key != MANIFEST_PATH)),
                           canonical_bytes(report))
+
+
+def preview_package_v1(source, *, limits=DEFAULT_LIMITS) -> PackagePreview:
+    """Explicit legacy reader; never interpret a v2 environment declaration."""
+    archive_bytes, members = _read_archive(source, limits)
+    document = strict_json(members[MANIFEST_PATH], path=MANIFEST_PATH, limits=limits)
+    if type(document) is not dict or document.get("schema_version") != PACKAGE_SCHEMA:
+        raise PackageError("UNSUPPORTED_PACKAGE_SCHEMA", "legacy reader supports package v1 only")
+    return preview_package(archive_bytes, limits=limits)

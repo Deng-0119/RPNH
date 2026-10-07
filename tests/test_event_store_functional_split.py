@@ -541,6 +541,16 @@ def test_authoritative_coordinator_preserves_domain_and_event_order(
         provider, "validate_provider_outcome_event",
         lambda context, pending: order.append("provider-outcome"))
 
+    # This is a coordinator ordering fixture, not a fabricated full validation
+    # context. Mock all cross-domain callbacks and assert the retained hooks.
+    from cpn.rpnh.registry import execution_child_closure, observer_access
+    monkeypatch.setattr(execution_child_closure, "validate_child_seal_publication",
+        lambda context: order.append("child-seal"))
+    monkeypatch.setattr(observer_access, "validate_observer_publications",
+        lambda context: order.append("observer-access"))
+    monkeypatch.setattr(provider, "validate_registered_host_llm_event",
+        lambda context, pending: order.append("registered-host-llm"))
+
     firing.validate_authoritative_references(
         object(), object(), task_id=new_id("task"), branch_id="main",
         task_round_id=None, net_instance_id=None,
@@ -549,10 +559,10 @@ def test_authoritative_coordinator_preserves_domain_and_event_order(
         events=(regular, terminal), relations=())
 
     assert order == [
-        "visibility", "provider-provenance", "attempt-response",
+        "visibility", "child-seal", "observer-access", "provider-provenance", "attempt-response",
         "operation-contracts", "native-resume", "resource-objects",
         "structural", "firing:ordinary/v1",
-        "provider-pre-resource", "resource-event", "provider-attempt",
+        "provider-pre-resource", "resource-event", "registered-host-llm", "provider-attempt",
         "operation-event", "provider-outcome",
         "firing:operation_terminal_ready/v1",
     ]

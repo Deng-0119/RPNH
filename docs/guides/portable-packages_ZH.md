@@ -14,6 +14,8 @@ metadata:
 
 # 可移植包预览与精确本地锁
 
+本页说明保留的 v1 合同。正式绑定的环境要求和版本化 v2 路径见[包环境声明](package-environments_ZH.md)。
+
 首实现读取只含一个 closed Module 的纯数据 ZIP，并从明确提供的本地 ZIP 中解析精确依赖。
 它不将包导入 Registry，不准备 HOST、不安装插件、不 lower/compile Module、不采用图、不执行
 operation，也不联网获取材料或运行包内代码。所有结果明确包含 `execution_permitted=false`。

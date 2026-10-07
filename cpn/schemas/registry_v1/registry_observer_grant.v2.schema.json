@@ -1,0 +1,217 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "registry_v1/registry_observer_grant/v2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "self_ref",
+    "owner_task_ref",
+    "publisher_bootstrap_ref",
+    "source_id",
+    "command_id",
+    "observer_principal_ref",
+    "observer_profile_ref",
+    "task_ref",
+    "grant_ref",
+    "issued_writer_fencing_epoch",
+    "issued_task_control_sequence",
+    "reader_fence",
+    "expires_at",
+    "purpose"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "registry_v1/registry_observer_grant/v2"
+    },
+    "self_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "entity_type",
+        "logical_id",
+        "version_id"
+      ],
+      "properties": {
+        "entity_type": {
+          "type": "string",
+          "minLength": 1
+        },
+        "logical_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "version_id": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "owner_task_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "entity_type",
+        "logical_id",
+        "version_id"
+      ],
+      "properties": {
+        "entity_type": {
+          "type": "string",
+          "minLength": 1
+        },
+        "logical_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "version_id": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "publisher_bootstrap_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "entity_type",
+        "logical_id",
+        "version_id"
+      ],
+      "properties": {
+        "entity_type": {
+          "type": "string",
+          "minLength": 1
+        },
+        "logical_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "version_id": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "source_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "command_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "observer_principal_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "entity_type",
+        "logical_id",
+        "version_id"
+      ],
+      "properties": {
+        "entity_type": {
+          "type": "string",
+          "minLength": 1
+        },
+        "logical_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "version_id": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "observer_profile_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "entity_type",
+        "logical_id",
+        "version_id"
+      ],
+      "properties": {
+        "entity_type": {
+          "type": "string",
+          "minLength": 1
+        },
+        "logical_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "version_id": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "task_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "entity_type",
+        "logical_id",
+        "version_id"
+      ],
+      "properties": {
+        "entity_type": {
+          "type": "string",
+          "minLength": 1
+        },
+        "logical_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "version_id": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "grant_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "entity_type",
+        "logical_id",
+        "version_id"
+      ],
+      "properties": {
+        "entity_type": {
+          "type": "string",
+          "minLength": 1
+        },
+        "logical_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "version_id": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "issued_writer_fencing_epoch": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "issued_task_control_sequence": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "reader_fence": {
+      "type": "string",
+      "minLength": 1
+    },
+    "expires_at": {
+      "type": "string",
+      "minLength": 1
+    },
+    "purpose": {
+      "type": "string",
+      "minLength": 1
+    }
+  }
+}

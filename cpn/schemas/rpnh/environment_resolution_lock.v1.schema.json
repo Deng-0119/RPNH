@@ -1,0 +1,972 @@
+{
+  "$id": "rpnh/environment_resolution_lock/v1",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "additionalProperties": false,
+  "properties": {
+    "coverage": {
+      "items": {
+        "maxLength": 240,
+        "minLength": 1,
+        "type": "string"
+      },
+      "maxItems": 128,
+      "minItems": 0,
+      "type": "array"
+    },
+    "resolver_contract": {
+      "maxLength": 240,
+      "minLength": 1,
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "rpnh/environment_resolution_lock/v1"
+    },
+    "selections": {
+      "items": {
+        "oneOf": [
+          {
+            "additionalProperties": false,
+            "properties": {
+              "evidence_level": {
+                "enum": [
+                  "author_declared",
+                  "configuration_observed",
+                  "installed_metadata",
+                  "artifact_verified",
+                  "local_probe",
+                  "host_assembled",
+                  "runtime_observed"
+                ]
+              },
+              "identity": {
+                "additionalProperties": false,
+                "properties": {
+                  "abi": {
+                    "maxLength": 240,
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "implementation": {
+                    "maxLength": 240,
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "platform": {
+                    "maxLength": 240,
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "version": {
+                    "maxLength": 240,
+                    "minLength": 1,
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "implementation",
+                  "version",
+                  "abi",
+                  "platform"
+                ],
+                "type": "object"
+              },
+              "kind": {
+                "const": "python"
+              },
+              "scoped_requirement_id": {
+                "anyOf": [
+                  {
+                    "additionalProperties": false,
+                    "properties": {
+                      "entry_id": {
+                        "maxLength": 120,
+                        "pattern": "^[A-Za-z][A-Za-z0-9_-]*$",
+                        "type": "string"
+                      },
+                      "manifest_digest": {
+                        "pattern": "^[0-9a-f]{64}$",
+                        "type": "string"
+                      },
+                      "requirement_id": {
+                        "maxLength": 120,
+                        "pattern": "^[A-Za-z][A-Za-z0-9_-]*$",
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "manifest_digest",
+                      "entry_id",
+                      "requirement_id"
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "source_contract": {
+                "maxLength": 240,
+                "minLength": 1,
+                "type": "string"
+              }
+            },
+            "required": [
+              "scoped_requirement_id",
+              "kind",
+              "identity",
+              "source_contract",
+              "evidence_level"
+            ],
+            "type": "object"
+          },
+          {
+            "additionalProperties": false,
+            "properties": {
+              "evidence_level": {
+                "enum": [
+                  "author_declared",
+                  "configuration_observed",
+                  "installed_metadata",
+                  "artifact_verified",
+                  "local_probe",
+                  "host_assembled",
+                  "runtime_observed"
+                ]
+              },
+              "identity": {
+                "additionalProperties": false,
+                "properties": {
+                  "artifact_digest": {
+                    "anyOf": [
+                      {
+                        "pattern": "^[0-9a-f]{64}$",
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "name": {
+                    "maxLength": 240,
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "requires_dist": {
+                    "items": {
+                      "maxLength": 1024,
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "maxItems": 128,
+                    "minItems": 0,
+                    "type": "array"
+                  },
+                  "requires_python": {
+                    "maxLength": 1024,
+                    "type": "string"
+                  },
+                  "version": {
+                    "maxLength": 240,
+                    "minLength": 1,
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "name",
+                  "version",
+                  "requires_dist",
+                  "requires_python",
+                  "artifact_digest"
+                ],
+                "type": "object"
+              },
+              "kind": {
+                "const": "distribution"
+              },
+              "scoped_requirement_id": {
+                "anyOf": [
+                  {
+                    "additionalProperties": false,
+                    "properties": {
+                      "entry_id": {
+                        "maxLength": 120,
+                        "pattern": "^[A-Za-z][A-Za-z0-9_-]*$",
+                        "type": "string"
+                      },
+                      "manifest_digest": {
+                        "pattern": "^[0-9a-f]{64}$",
+                        "type": "string"
+                      },
+                      "requirement_id": {
+                        "maxLength": 120,
+                        "pattern": "^[A-Za-z][A-Za-z0-9_-]*$",
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "manifest_digest",
+                      "entry_id",
+                      "requirement_id"
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "source_contract": {
+                "maxLength": 240,
+                "minLength": 1,
+                "type": "string"
+              }
+            },
+            "required": [
+              "scoped_requirement_id",
+              "kind",
+              "identity",
+              "source_contract",
+              "evidence_level"
+            ],
+            "type": "object"
+          },
+          {
+            "additionalProperties": false,
+            "properties": {
+              "evidence_level": {
+                "enum": [
+                  "author_declared",
+                  "configuration_observed",
+                  "installed_metadata",
+                  "artifact_verified",
+                  "local_probe",
+                  "host_assembled",
+                  "runtime_observed"
+                ]
+              },
+              "identity": {
+                "additionalProperties": false,
+                "properties": {
+                  "architecture": {
+                    "maxLength": 240,
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "os_family": {
+                    "maxLength": 240,
+                    "minLength": 1,
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "os_family",
+                  "architecture"
+                ],
+                "type": "object"
+              },
+              "kind": {
+                "const": "platform"
+              },
+              "scoped_requirement_id": {
+                "anyOf": [
+                  {
+                    "additionalProperties": false,
+                    "properties": {
+                      "entry_id": {
+                        "maxLength": 120,
+                        "pattern": "^[A-Za-z][A-Za-z0-9_-]*$",
+                        "type": "string"
+                      },
+                      "manifest_digest": {
+                        "pattern": "^[0-9a-f]{64}$",
+                        "type": "string"
+                      },
+                      "requirement_id": {
+                        "maxLength": 120,
+                        "pattern": "^[A-Za-z][A-Za-z0-9_-]*$",
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "manifest_digest",
+                      "entry_id",
+                      "requirement_id"
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "source_contract": {
+                "maxLength": 240,
+                "minLength": 1,
+                "type": "string"
+              }
+            },
+            "required": [
+              "scoped_requirement_id",
+              "kind",
+              "identity",
+              "source_contract",
+              "evidence_level"
+            ],
+            "type": "object"
+          },
+          {
+            "additionalProperties": false,
+            "properties": {
+              "evidence_level": {
+                "enum": [
+                  "author_declared",
+                  "configuration_observed",
+                  "installed_metadata",
+                  "artifact_verified",
+                  "local_probe",
+                  "host_assembled",
+                  "runtime_observed"
+                ]
+              },
+              "identity": {
+                "additionalProperties": false,
+                "properties": {
+                  "capabilities": {
+                    "items": {
+                      "maxLength": 240,
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "maxItems": 128,
+                    "minItems": 0,
+                    "type": "array"
+                  },
+                  "content_digest": {
+                    "anyOf": [
+                      {
+                        "pattern": "^[0-9a-f]{64}$",
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "tool_contract_id": {
+                    "maxLength": 240,
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "version": {
+                    "maxLength": 240,
+                    "minLength": 1,
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "tool_contract_id",
+                  "version",
+                  "content_digest",
+                  "capabilities"
+                ],
+                "type": "object"
+              },
+              "kind": {
+                "const": "tool"
+              },
+              "scoped_requirement_id": {
+                "anyOf": [
+                  {
+                    "additionalProperties": false,
+                    "properties": {
+                      "entry_id": {
+                        "maxLength": 120,
+                        "pattern": "^[A-Za-z][A-Za-z0-9_-]*$",
+                        "type": "string"
+                      },
+                      "manifest_digest": {
+                        "pattern": "^[0-9a-f]{64}$",
+                        "type": "string"
+                      },
+                      "requirement_id": {
+                        "maxLength": 120,
+                        "pattern": "^[A-Za-z][A-Za-z0-9_-]*$",
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "manifest_digest",
+                      "entry_id",
+                      "requirement_id"
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "source_contract": {
+                "maxLength": 240,
+                "minLength": 1,
+                "type": "string"
+              }
+            },
+            "required": [
+              "scoped_requirement_id",
+              "kind",
+              "identity",
+              "source_contract",
+              "evidence_level"
+            ],
+            "type": "object"
+          },
+          {
+            "additionalProperties": false,
+            "properties": {
+              "evidence_level": {
+                "enum": [
+                  "author_declared",
+                  "configuration_observed",
+                  "installed_metadata",
+                  "artifact_verified",
+                  "local_probe",
+                  "host_assembled",
+                  "runtime_observed"
+                ]
+              },
+              "identity": {
+                "additionalProperties": false,
+                "properties": {
+                  "api_contract": {
+                    "maxLength": 240,
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "configuration_digest": {
+                    "anyOf": [
+                      {
+                        "pattern": "^[0-9a-f]{64}$",
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "distribution": {
+                    "maxLength": 240,
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "implementation_digest": {
+                    "anyOf": [
+                      {
+                        "pattern": "^[0-9a-f]{64}$",
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "plugin_id": {
+                    "maxLength": 240,
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "version": {
+                    "maxLength": 240,
+                    "minLength": 1,
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "plugin_id",
+                  "version",
+                  "api_contract",
+                  "distribution",
+                  "implementation_digest",
+                  "configuration_digest"
+                ],
+                "type": "object"
+              },
+              "kind": {
+                "const": "plugin"
+              },
+              "scoped_requirement_id": {
+                "anyOf": [
+                  {
+                    "additionalProperties": false,
+                    "properties": {
+                      "entry_id": {
+                        "maxLength": 120,
+                        "pattern": "^[A-Za-z][A-Za-z0-9_-]*$",
+                        "type": "string"
+                      },
+                      "manifest_digest": {
+                        "pattern": "^[0-9a-f]{64}$",
+                        "type": "string"
+                      },
+                      "requirement_id": {
+                        "maxLength": 120,
+                        "pattern": "^[A-Za-z][A-Za-z0-9_-]*$",
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "manifest_digest",
+                      "entry_id",
+                      "requirement_id"
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "source_contract": {
+                "maxLength": 240,
+                "minLength": 1,
+                "type": "string"
+              }
+            },
+            "required": [
+              "scoped_requirement_id",
+              "kind",
+              "identity",
+              "source_contract",
+              "evidence_level"
+            ],
+            "type": "object"
+          },
+          {
+            "additionalProperties": false,
+            "properties": {
+              "evidence_level": {
+                "enum": [
+                  "author_declared",
+                  "configuration_observed",
+                  "installed_metadata",
+                  "artifact_verified",
+                  "local_probe",
+                  "host_assembled",
+                  "runtime_observed"
+                ]
+              },
+              "identity": {
+                "additionalProperties": false,
+                "properties": {
+                  "model_condition": {
+                    "maxLength": 240,
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "profile_digest": {
+                    "pattern": "^[0-9a-f]{64}$",
+                    "type": "string"
+                  },
+                  "service_contract_id": {
+                    "maxLength": 240,
+                    "minLength": 1,
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "service_contract_id",
+                  "model_condition",
+                  "profile_digest"
+                ],
+                "type": "object"
+              },
+              "kind": {
+                "const": "service"
+              },
+              "scoped_requirement_id": {
+                "anyOf": [
+                  {
+                    "additionalProperties": false,
+                    "properties": {
+                      "entry_id": {
+                        "maxLength": 120,
+                        "pattern": "^[A-Za-z][A-Za-z0-9_-]*$",
+                        "type": "string"
+                      },
+                      "manifest_digest": {
+                        "pattern": "^[0-9a-f]{64}$",
+                        "type": "string"
+                      },
+                      "requirement_id": {
+                        "maxLength": 120,
+                        "pattern": "^[A-Za-z][A-Za-z0-9_-]*$",
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "manifest_digest",
+                      "entry_id",
+                      "requirement_id"
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "source_contract": {
+                "maxLength": 240,
+                "minLength": 1,
+                "type": "string"
+              }
+            },
+            "required": [
+              "scoped_requirement_id",
+              "kind",
+              "identity",
+              "source_contract",
+              "evidence_level"
+            ],
+            "type": "object"
+          },
+          {
+            "additionalProperties": false,
+            "properties": {
+              "evidence_level": {
+                "enum": [
+                  "author_declared",
+                  "configuration_observed",
+                  "installed_metadata",
+                  "artifact_verified",
+                  "local_probe",
+                  "host_assembled",
+                  "runtime_observed"
+                ]
+              },
+              "identity": {
+                "additionalProperties": false,
+                "properties": {
+                  "contract_id": {
+                    "maxLength": 240,
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "identity_digest": {
+                    "anyOf": [
+                      {
+                        "pattern": "^[0-9a-f]{64}$",
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "satisfied": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "contract_id",
+                  "satisfied",
+                  "identity_digest"
+                ],
+                "type": "object"
+              },
+              "kind": {
+                "const": "system"
+              },
+              "scoped_requirement_id": {
+                "anyOf": [
+                  {
+                    "additionalProperties": false,
+                    "properties": {
+                      "entry_id": {
+                        "maxLength": 120,
+                        "pattern": "^[A-Za-z][A-Za-z0-9_-]*$",
+                        "type": "string"
+                      },
+                      "manifest_digest": {
+                        "pattern": "^[0-9a-f]{64}$",
+                        "type": "string"
+                      },
+                      "requirement_id": {
+                        "maxLength": 120,
+                        "pattern": "^[A-Za-z][A-Za-z0-9_-]*$",
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "manifest_digest",
+                      "entry_id",
+                      "requirement_id"
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "source_contract": {
+                "maxLength": 240,
+                "minLength": 1,
+                "type": "string"
+              }
+            },
+            "required": [
+              "scoped_requirement_id",
+              "kind",
+              "identity",
+              "source_contract",
+              "evidence_level"
+            ],
+            "type": "object"
+          },
+          {
+            "additionalProperties": false,
+            "properties": {
+              "evidence_level": {
+                "enum": [
+                  "author_declared",
+                  "configuration_observed",
+                  "installed_metadata",
+                  "artifact_verified",
+                  "local_probe",
+                  "host_assembled",
+                  "runtime_observed"
+                ]
+              },
+              "identity": {
+                "additionalProperties": false,
+                "properties": {
+                  "implementation_digest": {
+                    "pattern": "^[0-9a-f]{64}$",
+                    "type": "string"
+                  },
+                  "profile_id": {
+                    "maxLength": 240,
+                    "minLength": 1,
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "profile_id",
+                  "implementation_digest"
+                ],
+                "type": "object"
+              },
+              "kind": {
+                "const": "host_profile"
+              },
+              "scoped_requirement_id": {
+                "anyOf": [
+                  {
+                    "additionalProperties": false,
+                    "properties": {
+                      "entry_id": {
+                        "maxLength": 120,
+                        "pattern": "^[A-Za-z][A-Za-z0-9_-]*$",
+                        "type": "string"
+                      },
+                      "manifest_digest": {
+                        "pattern": "^[0-9a-f]{64}$",
+                        "type": "string"
+                      },
+                      "requirement_id": {
+                        "maxLength": 120,
+                        "pattern": "^[A-Za-z][A-Za-z0-9_-]*$",
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "manifest_digest",
+                      "entry_id",
+                      "requirement_id"
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "source_contract": {
+                "maxLength": 240,
+                "minLength": 1,
+                "type": "string"
+              }
+            },
+            "required": [
+              "scoped_requirement_id",
+              "kind",
+              "identity",
+              "source_contract",
+              "evidence_level"
+            ],
+            "type": "object"
+          }
+        ]
+      },
+      "maxItems": 128,
+      "minItems": 0,
+      "type": "array"
+    },
+    "target": {
+      "additionalProperties": false,
+      "properties": {
+        "entry_id": {
+          "maxLength": 120,
+          "pattern": "^[A-Za-z][A-Za-z0-9_-]*$",
+          "type": "string"
+        },
+        "package_lock_digest": {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "requirement_artifacts": {
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "artifact_digest": {
+                "pattern": "^[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "artifact_path": {
+                "maxLength": 240,
+                "minLength": 1,
+                "type": "string"
+              },
+              "entry_id": {
+                "maxLength": 120,
+                "pattern": "^[A-Za-z][A-Za-z0-9_-]*$",
+                "type": "string"
+              },
+              "manifest_digest": {
+                "pattern": "^[0-9a-f]{64}$",
+                "type": "string"
+              }
+            },
+            "required": [
+              "manifest_digest",
+              "entry_id",
+              "artifact_path",
+              "artifact_digest"
+            ],
+            "type": "object"
+          },
+          "maxItems": 64,
+          "minItems": 1,
+          "type": "array",
+          "uniqueItems": true
+        },
+        "requirements_digest": {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "root_archive_digest": {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "root_manifest_digest": {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "package_lock_digest",
+        "root_manifest_digest",
+        "root_archive_digest",
+        "entry_id",
+        "requirement_artifacts",
+        "requirements_digest"
+      ],
+      "type": "object"
+    },
+    "target_platform": {
+      "additionalProperties": false,
+      "properties": {
+        "architecture": {
+          "maxLength": 240,
+          "minLength": 1,
+          "type": "string"
+        },
+        "os_family": {
+          "maxLength": 240,
+          "minLength": 1,
+          "type": "string"
+        }
+      },
+      "required": [
+        "os_family",
+        "architecture"
+      ],
+      "type": "object"
+    },
+    "unresolved": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "reason_code": {
+            "maxLength": 240,
+            "minLength": 1,
+            "type": "string"
+          },
+          "scoped_requirement_id": {
+            "anyOf": [
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "entry_id": {
+                    "maxLength": 120,
+                    "pattern": "^[A-Za-z][A-Za-z0-9_-]*$",
+                    "type": "string"
+                  },
+                  "manifest_digest": {
+                    "pattern": "^[0-9a-f]{64}$",
+                    "type": "string"
+                  },
+                  "requirement_id": {
+                    "maxLength": 120,
+                    "pattern": "^[A-Za-z][A-Za-z0-9_-]*$",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "manifest_digest",
+                  "entry_id",
+                  "requirement_id"
+                ],
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "scoped_requirement_id",
+          "reason_code"
+        ],
+        "type": "object"
+      },
+      "maxItems": 128,
+      "minItems": 0,
+      "type": "array"
+    }
+  },
+  "required": [
+    "schema_version",
+    "target",
+    "resolver_contract",
+    "target_platform",
+    "selections",
+    "unresolved",
+    "coverage"
+  ],
+  "type": "object"
+}

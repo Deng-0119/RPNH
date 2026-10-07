@@ -1,0 +1,43 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "rpnh/registry_source_cut/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "source_id",
+    "cut_id",
+    "head",
+    "reader_contract_version"
+  ],
+  "properties": {
+    "source_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "cut_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "head": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ordinal",
+        "writer_fencing_epoch"
+      ],
+      "properties": {
+        "ordinal": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "writer_fencing_epoch": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "reader_contract_version": {
+      "const": "rpnh/registry_read/v1"
+    }
+  }
+}

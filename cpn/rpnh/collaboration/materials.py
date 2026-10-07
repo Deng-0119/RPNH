@@ -456,6 +456,9 @@ class ClosedModuleAuthor:
             with self.core.event_store.connect() as db:
                 db.execute("BEGIN")
                 self._validate_materials(db, revision, _binding(db, self.core), parent)
+            from .public_projections import publish_public_projection
+            publish_public_projection(self, ValidatedClosedRevision(revision, module, compiled,
+                element_map, boundary_map, host), parent=parent)
             tx = self.core.begin(idempotency_key=key)
             tx.prewrite(object_type=NET_REVISION_TYPE, logical_id=reference.ref.entity_id, version_id=reference.ref.version_id,
                 payload=canonical_json(revision.to_dict()), metadata=revision.to_dict(), media_type="application/json", schema_ref=NET_REVISION_SCHEMA)

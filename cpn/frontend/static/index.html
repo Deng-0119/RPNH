@@ -15,12 +15,13 @@
 <nav aria-label="Dashboard views and graph controls" class="toolbar" data-i18n-aria-label="看板视图与图形控制">
 <div aria-label="Information level" class="segmented" data-i18n-aria-label="信息层级" role="group"><button aria-pressed="true" data-i18n="简化概览" id="mode-overview">Overview</button><button aria-pressed="false" data-i18n="详细流程" id="mode-flow">Detailed flow</button><button aria-pressed="false" data-i18n="Petri 网" id="mode-petri">PetriNet</button><button aria-pressed="false" data-i18n="执行列表" id="mode-list">Executions</button></div>
 <div class="searchbox"><input aria-label="Search steps" data-i18n-aria-label="搜索步骤" data-i18n-placeholder="查找步骤、名称或 ID" id="search" placeholder="Find a step, name or ID" type="search"/><button aria-label="Locate the next search result" data-i18n="定位" data-i18n-aria-label="定位下一个搜索结果" id="find-next">Locate</button><span aria-live="polite" id="search-status"></span></div>
-<div class="tools"><button data-i18n="比较检查点" id="compare-checkpoints">Compare checkpoints</button><button data-i18n="已记录来源查询" id="source-observations">Recorded source queries</button><button data-i18n="工作集" id="worksets">Worksets</button><button aria-pressed="false" data-i18n="资源 (0)" id="resources">Resources (0)</button><button data-i18n="定位活动" id="focus-current">Locate activity</button><button data-i18n="刷新" id="refresh">Refresh</button><label class="live-toggle"><input checked="" id="auto-refresh" type="checkbox"/><span data-i18n="实时">Live</span></label></div>
+<div class="tools"><button data-i18n="比较独立网" id="compare-nets">Compare independent nets</button><button data-i18n="比较检查点" id="compare-checkpoints">Compare checkpoints</button><button data-i18n="已记录来源查询" id="source-observations">Recorded source queries</button><button data-i18n="工作集" id="worksets">Worksets</button><button aria-pressed="false" data-i18n="资源 (0)" id="resources">Resources (0)</button><button data-i18n="定位活动" id="focus-current">Locate activity</button><button data-i18n="刷新" id="refresh">Refresh</button><label class="live-toggle"><input checked="" id="auto-refresh" type="checkbox"/><span data-i18n="实时">Live</span></label></div>
 </nav>
 <div class="error-banner" hidden="" id="error-banner" role="status"></div>
 <section aria-labelledby="observation-panel-title" hidden id="observation-panel"></section>
 <section aria-labelledby="source-observation-title" hidden id="source-observation-panel"></section>
 <section aria-labelledby="comparison-title" hidden id="comparison-panel"></section>
+<section aria-labelledby="comparison-context-title" hidden id="comparison-context-panel" tabindex="0"></section>
 <main id="workspace">
 <section aria-label="Workflow canvas and execution list" class="canvas-section" data-i18n-aria-label="流程画布与执行列表">
 <div class="canvas-topline"><span data-i18n="简化概览 · 左 → 右 · 点击关系展开底层细节" id="mode-caption">Overview · Left → right · Select a connection for details</span><span id="counts"></span></div>

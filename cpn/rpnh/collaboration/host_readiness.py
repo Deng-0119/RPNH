@@ -227,3 +227,118 @@ def diagnose_candidate_plan(core, plan_ref: VersionRef,
 
 __all__ = ("HostDeclarationSnapshot", "HostReadinessDiagnostic", "snapshot_host_declarations",
            "diagnose_host_requirements", "diagnose_candidate_plan")
+
+
+@dataclass(frozen=True, slots=True)
+class PackageHostDiagnostic:
+    """A flat package inventory diagnostic, never author identity or readiness."""
+    _document_bytes: bytes
+
+    def to_dict(self):
+        return json.loads(self._document_bytes)
+
+    @property
+    def execution_ready(self):
+        return False
+
+
+def diagnose_package_host_requirements(requirements, snapshot=None, *, expected_declarations=None):
+    """Map flat package contracts to a prepared HOST without loading it.
+
+    ``terminal`` maps to Registration's ``tool`` kind. ``effect`` remains an
+    independent runtime policy/capability check. Flat contract names cannot be
+    passed as complete expected declarations or prove implementation identity.
+    An optional full author expectation is checked with the existing exact
+    declaration diagnostic; otherwise actual compilation must check contracts.
+    """
+    from .environment_requirements import PackageEnvironment
+    from .share_packages import canonical_bytes, strict_json
+    from ..registry.schema_catalog import PROTECTED_SCHEMA_REFS
+    if type(requirements) is not PackageEnvironment:
+        raise TypeError("verified package requirements are required")
+    if snapshot is not None and type(snapshot) is not HostDeclarationSnapshot:
+        raise TypeError("HOST snapshot must be an inert HostDeclarationSnapshot or None")
+    actual = {} if snapshot is None else snapshot.registrations
+    checks = []
+    status = "not_checked" if snapshot is None else "matched"
+    schemas = {}
+    required_schema_ids = set()
+    for preview in requirements.previews:
+        entry = preview.manifest["entries"][0]
+        declaration = strict_json(dict(preview.artifacts)[entry["declaration_path"]], path=entry["declaration_path"])
+        required_schema_ids.update(declaration["required_schemas"])
+        for row in preview.manifest["artifacts"]:
+            if row["role"] == "schema":
+                document = strict_json(dict(preview.artifacts)[row["path"]], path=row["path"])
+                schemas[document["$id"]] = document
+    for scoped in requirements.requirements:
+        for requirement in sorted(scoped.host_requirements, key=lambda row: row["requirement_id"]):
+            if not requirement["required"]:
+                continue
+            source_kind = requirement["kind"]
+            kind = {"terminal": "tool", "effect": None}.get(source_kind, source_kind)
+            key = requirement["contract_id"]
+            declaration = actual.get(kind, {}).get(key) if kind is not None else None
+            if kind is None:
+                state, reason = "not_checked", "EFFECT_PERMISSION_REQUIRES_RUNTIME"
+            elif snapshot is None:
+                state, reason = "not_checked", "HOST_NOT_ASSEMBLED"
+            elif declaration is None:
+                state, reason = "missing", "HOST_CONTRACT_MISSING"
+                status = "missing"
+            else:
+                state, reason = "matched", "HOST_CONTRACT_PRESENT"
+            checks.append({"scoped_requirement_id": {"manifest_digest": scoped.manifest_digest,
+                "entry_id": scoped.entry_id, "requirement_id": requirement["requirement_id"]},
+                "kind": source_kind, "registration_kind": kind, "contract_id": key,
+                "status": state, "reason_code": reason,
+                "host_declaration_digest": None if declaration is None else _digest(declaration)})
+    dependency_rows = {row["schema_id"]: row for row in requirements.package_lock.to_dict()["schema_closure"]}
+    pending = list(required_schema_ids)
+    while pending:
+        identity = pending.pop()
+        for reference in dependency_rows.get(identity, {}).get("direct_refs", []):
+            target = reference["schema_id"]
+            if target not in required_schema_ids:
+                required_schema_ids.add(target)
+                pending.append(target)
+    schema_checks = []
+    for identity, expected in sorted(schemas.items()):
+        if identity not in required_schema_ids:
+            continue
+        declaration = actual.get("schema", {}).get(identity)
+        if snapshot is None or identity in PROTECTED_SCHEMA_REFS:
+            state, reason = "not_checked", "TRUSTED_HOST_COMPILATION_REQUIRED"
+        elif declaration is None:
+            state, reason = "missing", "HOST_SCHEMA_MISSING"
+            status = "missing" if status != "mismatch" else status
+        elif canonical_bytes(declaration["schema"]) != canonical_bytes(expected):
+            state, reason = "mismatch", "HOST_SCHEMA_CONTENT_MISMATCH"
+            status = "mismatch"
+        else:
+            state, reason = "matched", "HOST_SCHEMA_MATCHED"
+        schema_checks.append({"schema_id": identity, "status": state, "reason_code": reason})
+    author_status = "not_supplied"
+    expected_digest = None
+    if expected_declarations is not None:
+        expected = _registrations(expected_declarations)
+        if any(row["registration_kind"] is not None and row["contract_id"] not in
+               expected.get(row["registration_kind"], {}) for row in checks):
+            raise ValueError("author expectations must cover every required HOST declaration")
+        exact = diagnose_host_requirements(expected_declarations, snapshot).to_dict()
+        author_status = exact["declarations_status"]
+        expected_digest = exact["required_declarations_digest"]
+        if author_status != "matched":
+            status = author_status
+    report = {"purpose": "diagnostic", "evidence_scope": "package_contract_presence_and_schema",
+        "execution_ready": False, "declarations_status": status,
+        "host_declarations_digest": None if snapshot is None else snapshot.declarations_digest,
+        "required_declarations_digest": expected_digest,
+        "author_implementation_identity": author_status,
+        "contract_compatibility": "requires_compilation", "declaration_checks": checks,
+        "schema_checks": schema_checks, "permission": "not_checked", "capacity": "not_checked",
+        "callable_identity": "not_checked", "lowering": "not_checked", "reservation": "not_reserved"}
+    return PackageHostDiagnostic(canonical_bytes(report))
+
+
+__all__ += ("PackageHostDiagnostic", "diagnose_package_host_requirements")

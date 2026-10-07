@@ -24,6 +24,16 @@ dist = md.distribution("rpnh-harness")
 assert Path(dist.locate_file("cpn/__init__.py")).resolve() == Path(cpn.__file__).resolve()
 assert any(ep.name == "rpnh" and ep.value == "cpn.rpnh_cli:main" for ep in dist.entry_points)
 required = ["config/provider_models.json", "schemas/rpnh/module_declaration.v1.schema.json",
+            "schemas/rpnh/share_package.v2.schema.json",
+            "schemas/rpnh/package_preview.v2.schema.json",
+            "schemas/rpnh/package_resolution_lock.v2.schema.json",
+            "schemas/rpnh/environment_requirements.v1.schema.json",
+            "schemas/rpnh/package_target.v1.schema.json",
+            "schemas/rpnh/registry_read_session_request.v1.schema.json",
+            "schemas/rpnh/registry_source_cut.v1.schema.json",
+            "schemas/rpnh/registry_index_query.v1.schema.json",
+            "schemas/registry_v1/registry_observer_grant.v2.schema.json",
+            "frontend/static/comparison-context.mjs",
             "schemas/runtime/provider_model_catalog.v2.schema.json",
             "examples/adapter_task/manifest.json", "examples/adapter_task/task.txt",
             "examples/adapter_task/expected.json",
@@ -75,7 +85,12 @@ def main() -> int:
                 return 2
             commands = [['--help'], ['config', '--help'], ['config', 'init'],
                         ['config', 'build'], ['config', 'build', '--check'], ['config', 'list'],
-                        ['examples', 'list']]
+                        ['examples', 'list'], ['package', '--help'],
+                        ['package', 'check-environment', '--help'],
+                        ['package', 'resolve-environment', '--help'],
+                        ['package', 'prepare-environment', '--help'],
+                        ['package', 'setup-instructions', '--help'],
+                        ['package', 'run', '--help'], ['net', '--help']]
             for arguments in commands:
                 result = run([str(entry), *arguments])
                 if result.returncode:

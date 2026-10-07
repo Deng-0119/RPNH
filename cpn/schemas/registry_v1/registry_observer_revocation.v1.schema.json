@@ -1,0 +1,120 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "registry_v1/registry_observer_revocation/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "self_ref",
+    "owner_task_ref",
+    "publisher_bootstrap_ref",
+    "source_id",
+    "command_id",
+    "grant_ref"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "registry_v1/registry_observer_revocation/v1"
+    },
+    "self_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "entity_type",
+        "logical_id",
+        "version_id"
+      ],
+      "properties": {
+        "entity_type": {
+          "type": "string",
+          "minLength": 1
+        },
+        "logical_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "version_id": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "owner_task_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "entity_type",
+        "logical_id",
+        "version_id"
+      ],
+      "properties": {
+        "entity_type": {
+          "type": "string",
+          "minLength": 1
+        },
+        "logical_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "version_id": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "publisher_bootstrap_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "entity_type",
+        "logical_id",
+        "version_id"
+      ],
+      "properties": {
+        "entity_type": {
+          "type": "string",
+          "minLength": 1
+        },
+        "logical_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "version_id": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "source_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "command_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "grant_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "entity_type",
+        "logical_id",
+        "version_id"
+      ],
+      "properties": {
+        "entity_type": {
+          "type": "string",
+          "minLength": 1
+        },
+        "logical_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "version_id": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,506 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "rpnh/environment_requirements/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "rpnh/environment_requirements/v1"
+    },
+    "entry_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z][A-Za-z0-9_-]*$",
+      "maxLength": 120
+    },
+    "python": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "requirement_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z][A-Za-z0-9_-]*$",
+          "maxLength": 120
+        },
+        "implementation": {
+          "const": "cpython"
+        },
+        "version_specifier": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        }
+      },
+      "required": [
+        "requirement_id",
+        "implementation",
+        "version_specifier"
+      ]
+    },
+    "distributions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "requirement_id": {
+            "type": "string",
+            "pattern": "^[A-Za-z][A-Za-z0-9_-]*$",
+            "maxLength": 120
+          },
+          "satisfies_host_requirement_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^[A-Za-z][A-Za-z0-9_-]*$",
+              "maxLength": 120
+            },
+            "minItems": 0,
+            "maxItems": 128,
+            "uniqueItems": true
+          },
+          "name": {
+            "type": "string",
+            "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+            "maxLength": 160
+          },
+          "version_specifier": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 240
+          }
+        },
+        "required": [
+          "requirement_id",
+          "satisfies_host_requirement_ids",
+          "name",
+          "version_specifier"
+        ]
+      },
+      "minItems": 1,
+      "maxItems": 128
+    },
+    "system_requirements": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "requirement_id": {
+                "type": "string",
+                "pattern": "^[A-Za-z][A-Za-z0-9_-]*$",
+                "maxLength": 120
+              },
+              "satisfies_host_requirement_ids": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z][A-Za-z0-9_-]*$",
+                  "maxLength": 120
+                },
+                "minItems": 0,
+                "maxItems": 128,
+                "uniqueItems": true
+              },
+              "kind": {
+                "const": "platform"
+              },
+              "os_family": {
+                "enum": [
+                  "linux",
+                  "macos",
+                  "windows",
+                  "freebsd"
+                ]
+              },
+              "architecture": {
+                "enum": [
+                  "x86_64",
+                  "aarch64",
+                  "arm64",
+                  "x86",
+                  "ppc64le",
+                  "s390x"
+                ]
+              }
+            },
+            "required": [
+              "requirement_id",
+              "satisfies_host_requirement_ids",
+              "kind",
+              "os_family",
+              "architecture"
+            ]
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "requirement_id": {
+                "type": "string",
+                "pattern": "^[A-Za-z][A-Za-z0-9_-]*$",
+                "maxLength": 120
+              },
+              "satisfies_host_requirement_ids": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z][A-Za-z0-9_-]*$",
+                  "maxLength": 120
+                },
+                "minItems": 0,
+                "maxItems": 128,
+                "uniqueItems": true
+              },
+              "kind": {
+                "const": "capability"
+              },
+              "capability_contract_id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9_./:-]*$",
+                "maxLength": 240
+              },
+              "constraint": {
+                "anyOf": [
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "boolean"
+                      },
+                      {
+                        "type": "number"
+                      },
+                      {
+                        "type": "string",
+                        "maxLength": 240
+                      }
+                    ]
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "operator": {
+                        "enum": [
+                          "present",
+                          "eq",
+                          "gte",
+                          "lte"
+                        ]
+                      },
+                      "value": {
+                        "anyOf": [
+                          {
+                            "type": "null"
+                          },
+                          {
+                            "type": "boolean"
+                          },
+                          {
+                            "type": "number"
+                          },
+                          {
+                            "type": "string",
+                            "maxLength": 240
+                          }
+                        ]
+                      }
+                    },
+                    "required": [
+                      "operator",
+                      "value"
+                    ]
+                  }
+                ]
+              }
+            },
+            "required": [
+              "requirement_id",
+              "satisfies_host_requirement_ids",
+              "kind",
+              "capability_contract_id",
+              "constraint"
+            ]
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "requirement_id": {
+                "type": "string",
+                "pattern": "^[A-Za-z][A-Za-z0-9_-]*$",
+                "maxLength": 120
+              },
+              "satisfies_host_requirement_ids": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z][A-Za-z0-9_-]*$",
+                  "maxLength": 120
+                },
+                "minItems": 0,
+                "maxItems": 128,
+                "uniqueItems": true
+              },
+              "kind": {
+                "const": "os_package"
+              },
+              "manager_contract_id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9_./:-]*$",
+                "maxLength": 240
+              },
+              "name": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9_./:-]*$",
+                "maxLength": 240
+              },
+              "version_constraint": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 240
+              }
+            },
+            "required": [
+              "requirement_id",
+              "satisfies_host_requirement_ids",
+              "kind",
+              "manager_contract_id",
+              "name",
+              "version_constraint"
+            ]
+          }
+        ]
+      },
+      "minItems": 0,
+      "maxItems": 128
+    },
+    "tools": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "requirement_id": {
+            "type": "string",
+            "pattern": "^[A-Za-z][A-Za-z0-9_-]*$",
+            "maxLength": 120
+          },
+          "satisfies_host_requirement_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^[A-Za-z][A-Za-z0-9_-]*$",
+              "maxLength": 120
+            },
+            "minItems": 0,
+            "maxItems": 128,
+            "uniqueItems": true
+          },
+          "tool_contract_id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_./:-]*$",
+            "maxLength": 240
+          },
+          "version_constraint": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 240
+          },
+          "required_capabilities": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_./:-]*$",
+              "maxLength": 240
+            },
+            "minItems": 0,
+            "maxItems": 128,
+            "uniqueItems": true
+          }
+        },
+        "required": [
+          "requirement_id",
+          "satisfies_host_requirement_ids",
+          "tool_contract_id",
+          "version_constraint",
+          "required_capabilities"
+        ]
+      },
+      "minItems": 0,
+      "maxItems": 128
+    },
+    "plugins": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "requirement_id": {
+            "type": "string",
+            "pattern": "^[A-Za-z][A-Za-z0-9_-]*$",
+            "maxLength": 120
+          },
+          "satisfies_host_requirement_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^[A-Za-z][A-Za-z0-9_-]*$",
+              "maxLength": 120
+            },
+            "minItems": 0,
+            "maxItems": 128,
+            "uniqueItems": true
+          },
+          "plugin_id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_./:-]*$",
+            "maxLength": 240
+          },
+          "api_contract": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_./:-]*$",
+            "maxLength": 240
+          },
+          "version_specifier": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 240
+          },
+          "distribution_requirement_id": {
+            "type": "string",
+            "pattern": "^[A-Za-z][A-Za-z0-9_-]*$",
+            "maxLength": 120
+          }
+        },
+        "required": [
+          "requirement_id",
+          "satisfies_host_requirement_ids",
+          "plugin_id",
+          "api_contract",
+          "version_specifier",
+          "distribution_requirement_id"
+        ]
+      },
+      "minItems": 0,
+      "maxItems": 128
+    },
+    "services": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "requirement_id": {
+            "type": "string",
+            "pattern": "^[A-Za-z][A-Za-z0-9_-]*$",
+            "maxLength": 120
+          },
+          "satisfies_host_requirement_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^[A-Za-z][A-Za-z0-9_-]*$",
+              "maxLength": 120
+            },
+            "minItems": 0,
+            "maxItems": 128,
+            "uniqueItems": true
+          },
+          "service_contract_id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_./:-]*$",
+            "maxLength": 240
+          },
+          "required_capabilities": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_./:-]*$",
+              "maxLength": 240
+            },
+            "minItems": 0,
+            "maxItems": 128,
+            "uniqueItems": true
+          },
+          "model_constraint": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "kind": {
+                    "const": "exact"
+                  },
+                  "model_condition": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 1024
+                  }
+                },
+                "required": [
+                  "kind",
+                  "model_condition"
+                ]
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "kind": {
+                    "const": "capabilities"
+                  },
+                  "contract_ids": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9_./:-]*$",
+                      "maxLength": 240
+                    },
+                    "minItems": 0,
+                    "maxItems": 128,
+                    "uniqueItems": true
+                  }
+                },
+                "required": [
+                  "kind",
+                  "contract_ids"
+                ]
+              }
+            ]
+          },
+          "authentication_required": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "requirement_id",
+          "satisfies_host_requirement_ids",
+          "service_contract_id",
+          "required_capabilities",
+          "model_constraint",
+          "authentication_required"
+        ]
+      },
+      "minItems": 0,
+      "maxItems": 128
+    }
+  },
+  "required": [
+    "schema_version",
+    "entry_id",
+    "python",
+    "distributions",
+    "system_requirements",
+    "tools",
+    "plugins",
+    "services"
+  ]
+}

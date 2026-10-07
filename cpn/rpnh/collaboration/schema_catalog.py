@@ -635,3 +635,37 @@ def candidate_v2_schema_data():
             schema_ref=schema, criticality=None, permission="task-scoped", retention="permanent",
             recovery_rule="exact-versioned-candidate-plan-replay", integrity_rule="fixed-preserved-basis-candidate-closure"))
     return documents, (*definitions, *extra), paths
+
+
+def registry_read_schema_data():
+    """Finite opt-in inventory for the installed independent read HOST.
+
+    Composition loads inert installed schemas only. It neither changes the
+    mechanical defaults nor imports plugins, executes definitions or grants access.
+    """
+    from ..registry.observer_access import observer_access_schema_data
+    from .registry_read_contracts import registry_read_contract_schema_data
+    factories = (candidate_v2_schema_data, typed_assembly_schema_data,
+                 graph_merge_assembly_schema_data, assembly_merge_schema_data,
+                 plain_transplant_derived_assembly_schema_data,
+                 open_region_derived_assembly_schema_data,
+                 plain_merge_nested_assembly_schema_data,
+                 normal_child_root_schema_data, source_observation_schema_data,
+                 plain_transform_assembly_schema_data, observer_access_schema_data,
+                 registry_read_contract_schema_data)
+    documents, definitions, paths = {}, {}, {}
+    for factory in factories:
+        added, types, locations = factory()
+        for key, value in added.items():
+            if key in documents and documents[key] != value:
+                raise ValueError("read HOST schema composition conflicts")
+            documents[key] = value
+        for value in types:
+            if value.name in definitions and definitions[value.name] != value:
+                raise ValueError("read HOST type composition conflicts")
+            definitions[value.name] = value
+        for key, value in locations.items():
+            if key in paths and paths[key] != value:
+                raise ValueError("read HOST schema provenance conflicts")
+            paths[key] = value
+    return documents, tuple(definitions[k] for k in sorted(definitions)), paths

@@ -35,7 +35,8 @@ def _parser() -> argparse.ArgumentParser:
         epilog=(
             "Start with `rpnh init`; check configuration with `rpnh doctor`. "
             "Commands: `rpnh config {init|add|build|list|show|use|setup|doctor}` and "
-            "`rpnh net --run RUN_DIR`; export installed examples with "
+            "`rpnh net --run RUN_DIR` or `rpnh net --read-host-config FILE --view`; "
+            "export installed examples with "
             "`rpnh examples export --output DIR`; inspect data-only packages with "
             "`rpnh package {preview|resolve} ZIP`"),
     )
@@ -212,7 +213,10 @@ def _choose_frontend(requested: str) -> str:
 def _net_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="rpnh net", description="RPNH read-only PetriNet viewer")
-    parser.add_argument("--run", required=True, type=Path)
+    source = parser.add_mutually_exclusive_group(required=True)
+    source.add_argument("--run", type=Path)
+    source.add_argument("--read-host-config", type=Path,
+                        help="trusted local independent read-HOST JSON; requires --view")
     parser.add_argument("--format", choices=("text", "json"), default="text")
     parser.add_argument("--show-resources", action="store_true")
     parser.add_argument("--resources-only", action="store_true")
@@ -242,6 +246,17 @@ def _net_command(argv: Sequence[str]) -> int:
         if incompatible:
             raise ValueError(
                 "rpnh net --view does not accept " + ", ".join(incompatible))
+    if args.read_host_config is not None:
+        if not args.view:
+            raise ValueError("--read-host-config requires --view")
+        from cpn.rpnh.collaboration.read_host_config import open_read_host_session
+        from cpn.frontend.comparison_context import ComparisonProvider
+        from cpn.frontend.server import serve_projection
+        with open_read_host_session(args.read_host_config) as session:
+            serve_projection(ComparisonProvider(session), host=args.host,
+                             port=args.port, open_browser=not args.no_open,
+                             show_resources=args.show_resources)
+        return 0
     forwarded = ["net", "view" if args.view else "show"]
     forwarded.extend(("--run", str(args.run)))
     if args.show_resources:
@@ -601,6 +616,11 @@ def _run_basic_frontend(
 
 def main(argv: list[str] | None = None) -> int:
     arguments = list(sys.argv[1:] if argv is None else argv)
+    # The selected interpreter invokes only this fixed, installed HOST entry.
+    # The stdin contract is data; it cannot select a module to import.
+    if arguments and arguments[0] == "_environment-host":
+        from cpn.rpnh.collaboration.environment_host import main as host_main
+        return host_main(arguments[1:])
     # Data-only package inspection must never enter plugin discovery or model
     # configuration. Import its command only when explicitly selected.
     if arguments and arguments[0] == "package":

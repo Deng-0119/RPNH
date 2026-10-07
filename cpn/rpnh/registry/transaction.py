@@ -56,6 +56,7 @@ class RegistryTransaction:
         self._initial_ordinal = event_store.max_ordinal()
         self._initial_heads: dict[str, int] = {}
         self._closed = False
+        self._expected_registry_ordinal: int | None = None
 
     def _initial_stream_head(self, stream_id: str) -> int:
         head = self._initial_heads.get(stream_id)
@@ -161,6 +162,18 @@ class RegistryTransaction:
         if self._closed or not callable(validator):
             raise RuntimeError("transaction precommit validator is unavailable")
         self._precommit_validators.append(validator)
+
+    def expect_registry_ordinal(self, ordinal: int) -> None:
+        """Require a complete target head under the native write transaction.
+
+        This is an admission CAS, not a lease or a new permission. Exact command
+        replay retains the normal idempotent semantics after subsequent writes.
+        """
+        if self._closed or type(ordinal) is not int or ordinal < 0:
+            raise ValueError("expected Registry ordinal must be nonnegative")
+        if self._expected_registry_ordinal is not None:
+            raise RuntimeError("expected Registry ordinal is already fixed")
+        self._expected_registry_ordinal = ordinal
 
     def expect_snapshot_predecessor(
             self, stream_id: str,
@@ -383,7 +396,8 @@ class RegistryTransaction:
             expected_dependency_root_predecessor=(
                 self._expected_dependency_root_predecessor),
             firing_publications=tuple(self._firing_publications),
-            workspace_head_advances=tuple(self._workspace_head_advances))
+            workspace_head_advances=tuple(self._workspace_head_advances),
+            expected_registry_ordinal=self._expected_registry_ordinal)
         self._closed = True
         return result
 

@@ -17,6 +17,11 @@ PREVIEW_SCHEMA = "rpnh/package_preview/v1"
 LOCK_SCHEMA = "rpnh/package_resolution_lock/v1"
 PARSER_CONTRACT = "rpnh/package_preview_parser/v1"
 RESOLVER_CONTRACT = "rpnh/package_resolver/v1"
+PACKAGE_SCHEMA_V2 = "rpnh/share_package/v2"
+PREVIEW_SCHEMA_V2 = "rpnh/package_preview/v2"
+LOCK_SCHEMA_V2 = "rpnh/package_resolution_lock/v2"
+PARSER_CONTRACT_V2 = "rpnh/package_preview_parser/v2"
+RESOLVER_CONTRACT_V2 = "rpnh/package_resolver/v2"
 DRAFT7 = "http://json-schema.org/draft-07/schema#"
 MODULE_SCHEMA = "rpnh/module_declaration/v1"
 SCHEMA_ID = r"^[a-z][a-z0-9_]*(?:/[a-z][a-z0-9_]*)+/v[1-9][0-9]*$"
@@ -140,12 +145,14 @@ def _array(item, *, minimum=0, maximum=128, unique=False):
     return result
 
 
-def manifest_schema() -> dict[str, Any]:
-    """Return a fresh complete schema for this deliberately bounded v1 slice.
+def manifest_schema(version=PACKAGE_SCHEMA) -> dict[str, Any]:
+    """Return a fresh closed schema; the default remains exactly package v1.
 
     Unsupported future features (policy mutation, optional features, multiple
     entries) cannot be silently interpreted as supported by this parser.
     """
+    if version not in (PACKAGE_SCHEMA, PACKAGE_SCHEMA_V2):
+        raise PackageError("UNSUPPORTED_PACKAGE_SCHEMA", "unsupported manifest schema")
     text = {"type": "string", "minLength": 1, "maxLength": 1024}
     identity = {"type": "string", "pattern": r"^[a-z][a-z0-9_.-]*(?:/[a-z][a-z0-9_.-]*)+$", "maxLength": 160}
     key = {"type": "string", "pattern": r"^[A-Za-z][A-Za-z0-9_-]*$", "maxLength": 120}
@@ -198,7 +205,12 @@ def manifest_schema() -> dict[str, Any]:
         "disclosure": _object({"classification": {"enum": ["public", "named_recipients"]},
             "intended_audience": text, "excluded_categories": _array(text, unique=True)}),
     }
-    return {"$schema": DRAFT7, "$id": PACKAGE_SCHEMA, **_object(properties)}
+    if version == PACKAGE_SCHEMA_V2:
+        properties["schema_version"] = {"const": PACKAGE_SCHEMA_V2}
+        entry = properties["entries"]["items"]
+        entry["properties"]["environment_requirements_path"] = path
+        entry["required"].append("environment_requirements_path")
+    return {"$schema": DRAFT7, "$id": version, **_object(properties)}
 
 
 @dataclass(frozen=True, slots=True)
@@ -254,3 +266,73 @@ class PackageResolutionLock:
     @property
     def package_lock_digest(self) -> str:
         return sha256(self.payload)
+
+
+def package_preview_schema(version=PREVIEW_SCHEMA_V2):
+    """Closed wire schema for the new preview version; v1 stays unchanged."""
+    if version != PREVIEW_SCHEMA_V2:
+        raise PackageError("UNSUPPORTED_PACKAGE_SCHEMA", "only the new preview schema is provided here")
+    m = manifest_schema(PACKAGE_SCHEMA_V2)["properties"]
+    properties = {key: m[key] for key in ("package_id", "version", "entries", "artifacts", "licenses",
+        "requirements", "dependencies", "origin", "provenance")}
+    properties.update({"schema_version": {"const": PREVIEW_SCHEMA_V2},
+        "parser_contract": {"const": PARSER_CONTRACT_V2},
+        "manifest_digest": {"type": "string", "pattern": DIGEST},
+        "archive_digest": {"type": "string", "pattern": DIGEST},
+        "schema_inventory": _array(_schema_inventory_row(), maximum=8192),
+        "checks": _array(_package_check_schema(), maximum=8192),
+        "execution_permitted": {"const": False}})
+    return {"$schema": DRAFT7, "$id": version, **_object(properties)}
+
+
+def _package_check_schema():
+    text = {"type": "string", "minLength": 1, "maxLength": 1024}
+    nullable = lambda schema: {"anyOf": [schema, {"type": "null"}]}
+    return _object({"check_id": text,
+        "status": {"enum": ["satisfied", "missing", "incompatible", "not_checked"]},
+        "code": text, "artifact_path": nullable({"type": "string", "maxLength": 240}),
+        "detail": nullable(_array(text, maximum=8192))}, required=["check_id", "status", "code"])
+
+
+def _schema_inventory_row(*, locked=False):
+    text = {"type": "string", "maxLength": 1024}
+    nullable = lambda schema: {"anyOf": [schema, {"type": "null"}]}
+    properties = {"schema_id": {"type": "string", "pattern": SCHEMA_ID},
+        "artifact_digest": {"type": "string", "pattern": DIGEST},
+        "artifact_path": {"type": "string", "minLength": 1, "maxLength": 240},
+        "direct_refs": _array(_object({"schema_id": {"type": "string", "minLength": 1, "maxLength": 240},
+            "fragment": nullable(text)}), maximum=100000)}
+    if locked:
+        properties["manifest_digest"] = {"type": "string", "pattern": DIGEST}
+    return _object(properties)
+
+
+def package_resolution_lock_schema(version=LOCK_SCHEMA_V2):
+    """Closed exact lock v2 schema; artifact hashes retain their raw domains."""
+    if version != LOCK_SCHEMA_V2:
+        raise PackageError("UNSUPPORTED_PACKAGE_SCHEMA", "only the new lock schema is provided here")
+    m = manifest_schema(PACKAGE_SCHEMA_V2)["properties"]
+    digest = {"type": "string", "pattern": DIGEST}
+    key = {"type": "string", "pattern": r"^[A-Za-z][A-Za-z0-9_-]*$", "maxLength": 120}
+    path = {"type": "string", "minLength": 1, "maxLength": 240}
+    requirements = _array(_object({"entry_id": key, "artifact_path": path,
+        "artifact_digest": digest, "schema_version": {"const": "rpnh/environment_requirements/v1"}}), minimum=1, maximum=1)
+    common_node = {"package_id": m["package_id"], "version": m["version"],
+        "manifest_digest": digest, "archive_digest": digest,
+        "artifacts": _array(_object({"path": path, "sha256": digest,
+            "bytes": {"type": "integer", "minimum": 0, "maximum": DEFAULT_LIMITS.artifact_bytes}}), minimum=1, maximum=127),
+        "origin": m["origin"], "provenance": m["provenance"]}
+    node = {"oneOf": [_object({**common_node, "manifest_schema": {"const": PACKAGE_SCHEMA_V2},
+                               "environment_requirements": requirements}),
+                       _object({**common_node, "manifest_schema": {"const": PACKAGE_SCHEMA},
+                               "environment_requirements": {"const": "not_declared"}})]}
+    properties = {"schema_version": {"const": version}, "resolver_contract": {"const": RESOLVER_CONTRACT_V2},
+        "root_manifest_digest": digest, "root_entry_id": key,
+        "nodes": _array(node, minimum=1, maximum=64),
+        "edges": _array(_object({"from_manifest_digest": digest, "dependency_id": key,
+            "to_manifest_digest": digest, "required": {"const": True}}), maximum=256),
+        "selected_features": {"type": "array", "maxItems": 0},
+        "schema_closure": _array(_schema_inventory_row(locked=True), maximum=8192),
+        "compatibility_results": _array(_package_check_schema(), maximum=8192),
+        "execution_permitted": {"const": False}}
+    return {"$schema": DRAFT7, "$id": version, **_object(properties)}

@@ -23,6 +23,7 @@ classifiers = [
 ]
 dependencies = [
   "jsonschema>=4.20,<5",
+  "packaging>=24,<27",
   "websockets>=12,<16",
 ]
 

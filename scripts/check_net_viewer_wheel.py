@@ -19,7 +19,7 @@ REQUIRED_STATIC_FILES = (
     "canvas-text.mjs",
     "overview.mjs",
     "wire-geometry.mjs",
-    "checkpoint-view.mjs", "comparison-view.mjs",
+    "checkpoint-view.mjs", "comparison-view.mjs", "comparison-context.mjs",
     "agent-members.mjs",
     "observation-panel.mjs",
     "source-observation.mjs",

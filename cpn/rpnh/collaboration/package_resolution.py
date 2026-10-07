@@ -7,6 +7,7 @@ from .package_preview import inspect_materials, preview_package, schema_checks
 from .share_packages import (
     DEFAULT_LIMITS, LOCK_SCHEMA, MANIFEST_PATH, RESOLVER_CONTRACT,
     PackageError, PackagePreview, PackageResolutionLock, canonical_bytes,
+    PACKAGE_SCHEMA, PACKAGE_SCHEMA_V2, LOCK_SCHEMA_V2, RESOLVER_CONTRACT_V2,
 )
 
 
@@ -69,7 +70,7 @@ def resolve_package(root, local_packages=(), root_entry_id="main", *, limits=DEF
     Inputs can be local paths, ZIP bytes, or PackagePreview values. A preview is
     re-read from its immutable archive bytes, never trusted as an authority.
     Range selection, optional features, HOST availability and execution remain
-    outside this v1 slice. Complete cross-document schema closure can be locked
+    outside inert package resolution. Complete cross-document schema closure can be locked
     while runtime compatibility is explicitly incompatible.
     """
     def preview(value, remaining):
@@ -107,6 +108,9 @@ def resolve_package(root, local_packages=(), root_entry_id="main", *, limits=DEF
         raise PackageError("PACKAGE_LIMIT_EXCEEDED", "local package aggregate byte limit")
     manifests = {digest: item.manifest for digest, item in candidates.items()}
     selected, edges = _walk(root_preview.manifest_digest, manifests, limits)
+    is_v2 = root_preview.manifest["schema_version"] == PACKAGE_SCHEMA_V2
+    if not is_v2 and any(manifests[digest]["schema_version"] != PACKAGE_SCHEMA for digest in selected):
+        raise PackageError("UNSUPPORTED_PACKAGE_SCHEMA", "v1 root cannot silently select v2 requirements")
     schemas = {}
     schema_owners = {}
     required = set()
@@ -128,6 +132,15 @@ def resolve_package(root, local_packages=(), root_entry_id="main", *, limits=DEF
             "artifacts": [{"path": row["path"], "sha256": row["sha256"], "bytes": row["bytes"]}
                           for row in sorted(manifest["artifacts"], key=lambda row: row["path"])],
             "origin": manifest["origin"], "provenance": manifest["provenance"]})
+        if is_v2:
+            nodes[-1]["manifest_schema"] = manifest["schema_version"]
+            nodes[-1]["environment_requirements"] = ([{
+                "entry_id": entry["entry_id"], "artifact_path": entry["environment_requirements_path"],
+                "artifact_digest": next(row["sha256"] for row in manifest["artifacts"]
+                                        if row["path"] == entry["environment_requirements_path"]),
+                "schema_version": "rpnh/environment_requirements/v1",
+            } for entry in manifest["entries"]] if manifest["schema_version"] == PACKAGE_SCHEMA_V2
+                else "not_declared")
     checks, schema_rows = schema_checks(schemas, required)
     closure = next(row for row in checks if row["check_id"] == "package_schema_closure_resolved")
     if closure["status"] != "satisfied":
@@ -140,7 +153,8 @@ def resolve_package(root, local_packages=(), root_entry_id="main", *, limits=DEF
         {"check_id": "origin_authority", "status": "not_checked", "code": "ORIGIN_UNVERIFIED"},
         {"check_id": "revocation", "status": "not_checked", "code": "REVOCATION_UNKNOWN"},
     ])
-    document = {"schema_version": LOCK_SCHEMA, "resolver_contract": RESOLVER_CONTRACT,
+    document = {"schema_version": LOCK_SCHEMA_V2 if is_v2 else LOCK_SCHEMA,
+        "resolver_contract": RESOLVER_CONTRACT_V2 if is_v2 else RESOLVER_CONTRACT,
         "root_manifest_digest": root_preview.manifest_digest, "root_entry_id": root_entry_id,
         "nodes": sorted(nodes, key=lambda row: row["package_id"]), "edges": edges,
         "selected_features": [], "schema_closure": schema_rows,

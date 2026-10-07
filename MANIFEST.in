@@ -11,3 +11,5 @@ include examples/harnessaudit_office/results/*.csv
 include examples/harnessaudit_office/comparison/*.csv
 recursive-include scripts *.py
 recursive-include tools *.py
+include tests/environment_neutral_fixture.py
+recursive-include tests/fixtures/environment_neutral *.py

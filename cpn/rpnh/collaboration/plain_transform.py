@@ -332,6 +332,14 @@ class PlainModuleTransformAuthor:
             with self.core.event_store.connect() as db:
                 db.execute("BEGIN")
                 _validate_transform_at(db, self.core, revision, self.registration, _binding_at(db, self.core), {revision.revision_ref})
+            from .public_projections import publish_public_projection, PRODUCER_CONTRACTS
+            with self.core.event_store.connect() as db:
+                db.execute("BEGIN")
+                projected = _validate_transform_at(db, self.core, revision, self.registration,
+                    _binding_at(db, self.core), {revision.revision_ref})
+            parent = validate_closed_revision(self.core, parent_ref, self.registration)
+            publish_public_projection(self.author, projected, parent=parent,
+                producer_contract=PRODUCER_CONTRACTS[1])
             tx = self.core.begin(idempotency_key=key)
             tx.prewrite(object_type=NET_REVISION_TYPE, logical_id=revision.revision_ref.ref.entity_id,
                 version_id=revision.revision_ref.ref.version_id, payload=canonical_json(revision.to_dict()),

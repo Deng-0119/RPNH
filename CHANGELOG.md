@@ -6,7 +6,7 @@ metadata:
   audience: user-and-developer
   language: en
   counterpart: CHANGELOG_ZH.md
-  revision: "2026-10-06.2"
+  revision: "2026-10-07.1"
   status: v0.1.0rc1
 ---
 
@@ -15,6 +15,22 @@ metadata:
 # Changelog
 
 ## Unreleased
+
+- Added opt-in v2 package environment declarations, exact local preparation
+  contracts and selected-interpreter HOST entrypoints; independent owner-issued
+  Registry read sessions with fixed cuts and explicit body permissions; typed
+  definition exchange; and cross-net comparison with separate definition,
+  configuration, materials and runtime axes. See [package environments](docs/guides/package-environments.md)
+  and the [independent reader](docs/guides/independent-registry-reader.md).
+  These are implementation-candidate surfaces. Preparation, unit/API checks and
+  rendering simulations do not prove actual business terminals or browser
+  lifecycle acceptance; dated evidence preserves remaining local blockers.
+
+- Imported-revision index queries now read only requested index and predicate
+  fields. Explicit material reads support strict UTF-8 with bounded byte counts
+  and current permission checks. Cross-net comparison releases superseded
+  pagination controls, clears revoked selection state, and returns to its
+  verified display recommendation after viewing a full pair.
 
 - Cancelling a previous-net read by opening comparison or leaving the page now
   releases its navigation controls, preserving saved historical-capture restrictions.

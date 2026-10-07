@@ -11,7 +11,21 @@ from .share_packages import PackageError
 
 
 def main(argv=None) -> int:
-    parser = argparse.ArgumentParser(prog="rpnh package", description="Inspect data-only ZIPs; never install or execute them")
+    arguments = list(sys.argv[1:] if argv is None else argv)
+    if arguments and arguments[0] in {
+            "check-environment", "resolve-environment", "plan-environment", "prepare-environment",
+            "setup-instructions", "run"}:
+        from .environment_cli import main as environment_main
+        return environment_main(arguments)
+    parser = argparse.ArgumentParser(
+        prog="rpnh package",
+        description=("Preview and resolve never install or execute package contents.\n"
+                     "Explicit environment commands prepare the selected receiving HOST."),
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog=("Environment commands: check-environment, resolve-environment, "
+                "plan-environment, prepare-environment, setup-instructions, run. "
+                "Use COMMAND --help for exact required inputs. Preview and resolve "
+                "remain data-only and never install or execute package contents."))
     commands = parser.add_subparsers(dest="command", required=True)
     preview = commands.add_parser("preview", help="preview one local ZIP without extraction or execution")
     preview.add_argument("archive")
@@ -19,7 +33,7 @@ def main(argv=None) -> int:
     resolve.add_argument("archive")
     resolve.add_argument("--local-package", action="append", default=[], metavar="ZIP")
     resolve.add_argument("--entry", default="main", metavar="ENTRY_ID")
-    args = parser.parse_args(argv)
+    args = parser.parse_args(arguments)
     try:
         if args.command == "preview":
             value = preview_package(args.archive).to_dict()

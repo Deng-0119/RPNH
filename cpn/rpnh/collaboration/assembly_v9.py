@@ -520,6 +520,10 @@ class AssemblyAuthorV9:
                     db, self.core, parent_ref, self.registration, final_binding, {reference})
                 _validate_materials_at(db, self.core, record, self.registration, final_binding,
                     final_parent, visiting={reference})
+            from .public_projections import publish_public_projection, PRODUCER_CONTRACTS
+            publish_public_projection(self.author,
+                ValidatedAssemblyRevisionV9(record, plan, generated, compiled, mapping),
+                producer_contract=PRODUCER_CONTRACTS[2])
             tx = self.core.begin(idempotency_key=key)
             tx.prewrite(object_type=ASSEMBLY_V9_TYPE, logical_id=reference.ref.entity_id, version_id=reference.ref.version_id,
                 payload=canonical_json(record.to_dict()), metadata=record.to_dict(), media_type="application/json", schema_ref=ASSEMBLY_V9_SCHEMA)

@@ -36,6 +36,7 @@ def publish_batch(event_store: "EventStore", *, task_id: TypedId, branch_id: str
                       str, str | None] | None = None,
                   firing_publications: Sequence[Mapping[str, object]] = (),
                   workspace_head_advances: Sequence[Mapping[str, object]] = (),
+                  expected_registry_ordinal: int | None = None,
                   ) -> tuple[EventEnvelope, ...]:
     """Validate and atomically append one complete Registry transaction."""
     from ..event_store import (
@@ -49,6 +50,9 @@ def publish_batch(event_store: "EventStore", *, task_id: TypedId, branch_id: str
         fact_event_envelope,
         prepared_object_envelope,
     )
+    if expected_registry_ordinal is not None and (
+            type(expected_registry_ordinal) is not int or expected_registry_ordinal < 0):
+        raise TypeError("expected Registry ordinal must be nonnegative")
     if transaction_id.kind != "transaction" or task_id.kind != "task":
         raise TypeError("publish_batch requires typed task and transaction ids")
     if not events:
@@ -629,6 +633,15 @@ def publish_batch(event_store: "EventStore", *, task_id: TypedId, branch_id: str
                 (existing["transaction_id"],)).fetchall()
             db.rollback()
             return tuple(event_store._row_to_envelope(row) for row in rows)
+
+        # Compare under the same BEGIN IMMEDIATE snapshot as the ensuing append.
+        # The normal exact command replay above must remain usable after head
+        # advancement; a new command cannot pass by racing an earlier precheck.
+        if expected_registry_ordinal is not None:
+            current_ordinal = int(db.execute("SELECT coalesce(max(ordinal),0) FROM events").fetchone()[0])
+            if current_ordinal != expected_registry_ordinal:
+                db.rollback()
+                raise RegistryConflict("expected Registry head changed")
 
         for command in workspace_head_commands:
             authority = db.execute(

@@ -1,3 +1,4 @@
+import { installComparisonContextPanel } from './comparison-context.mjs';
 import { installComparisonPanel } from './comparison-view.mjs';
 import { SourceObservationState, sourceObservationPath, renderSourceObservation } from './source-observation.mjs';
 import { activityRequest, activityPath, normalizeActivityPage, mergeActivity, resolveActivityTarget } from './firing-activity.mjs';
@@ -18,6 +19,7 @@ const sourceObservation = new SourceObservationState();
 let sourceObservationController=null;
 function drawSourceObservation(){renderSourceObservation($('source-observation-panel'),sourceObservation,{translate:tr,onSelect:loadSourceObservation,onClose:()=>{sourceObservationController?.abort();sourceObservation.close();drawSourceObservation();}});}
 async function loadSourceObservation(reference=null){
+    crossComparison.close();comparisonPanel.close();
     sourceObservationController?.abort();sourceObservationController=new AbortController();
     const selected=sourceObservation.begin(reference);drawSourceObservation();
     try{const raw=await request(sourceObservationPath(reference),sourceObservationController.signal);sourceObservation.accept(selected,raw);}
@@ -33,13 +35,18 @@ function setHealth(message, state) { healthMessage = message; $('health').textCo
 applyLanguage(document);
 $('language').value = getLanguage();
 let renderer, layouts, frame, graph, layout, selection = null, firingTarget = null, mode = 'overview', tab = 'about', controller, timer, playTimer, playing = false, findIndex = -1, renderSerial = 0, dragTimer, playGeneration = 0, historySerial = 0;
+const comparisonOnly=Boolean(JSON.parse($('bootstrap').textContent).comparisonOnly);
 let showResources = JSON.parse($('bootstrap').textContent).showResources, hasDashboard = true, historySupported = false, nextBefore = null, latestHead = null;
 const viewports = new Map();
 let checkpointView = null, checkpointProbe = null, probeSerial = 0, retainedCapture = false, checkpointBusy = false;
 const checkpointReturns = [];
+const crossComparison = installComparisonContextPanel($('comparison-context-panel'), {request, translate:tr, events:window,
+    onOpen:()=>{comparisonPanel.close();stop();clearTimeout(timer);controller?.abort();timeline.begin();++historySerial;++probeSerial;checkpointBusy=false;cancelActivity();cancelTokenResource();},onClose:()=>schedule()});
+$('compare-nets').onclick=()=>crossComparison.open();
 const comparisonPanel = installComparisonPanel($('comparison-panel'), {request, translate:tr, events:window, onClose:()=>schedule()});
 function openComparison() {
     if (!frame) return;
+    crossComparison.close();
     // Validate exact choices before interrupting the existing observation flow.
     try {comparisonPanel.open(frame, checkpointView ? [] : timeline.items);}
     catch {comparisonPanel.close();notice(()=>tr('当前视图没有可比较的精确检查点。'));return;}
@@ -271,7 +278,7 @@ async function render(previous = null, ticket = timeline.serial, candidate = fra
         const relation = graph.edges.find(e => e.id === selection.id);
         if (relation) selection = {kind:'edge', id:relation.witness_arc_ids?.[0] ?? relation.source_ids[0]};
     }
-    if (frame && frame!==candidate) {comparisonPanel.close();cancelActivity();cancelTokenResource();}
+    if (frame && frame!==candidate) {comparisonPanel.close();crossComparison.close();cancelActivity();cancelTokenResource();}
     frame = candidate;
     if (resolved) {
         firingTarget = resolved.target;
@@ -394,7 +401,7 @@ async function loadHistory(before = null) {
         }
     }
 }
-function schedule() { clearTimeout(timer); if (!comparisonPanel.state.open && !activity.paused && !checkpointView && !retainedCapture && !checkpointBusy && $('auto-refresh').checked)
+function schedule() { clearTimeout(timer); if (!comparisonOnly && !crossComparison.state.open && !comparisonPanel.state.open && !activity.paused && !checkpointView && !retainedCapture && !checkpointBusy && $('auto-refresh').checked)
     timer = setTimeout(async () => { if (timeline.mode === 'live')
         await loadFrame(null);
     else {
@@ -403,7 +410,7 @@ function schedule() { clearTimeout(timer); if (!comparisonPanel.state.open && !a
     } }, 2500); }
 async function loadFrame(cursor) {
     if (checkpointView || retainedCapture || checkpointBusy) return;
-    comparisonPanel.close();
+    comparisonPanel.close();crossComparison.close();
     ++probeSerial; checkpointProbe = null;
     cancelActivity();cancelTokenResource();
     const ticket = timeline.begin();
@@ -525,7 +532,7 @@ function retainedState() {
             nextBefore: timeline.nextBefore, historyHead: timeline.historyHead, endReason: timeline.endReason}};
 }
 function pauseCheckpointNavigation() {
-    comparisonPanel.close();
+    comparisonPanel.close();crossComparison.close();
     cancelActivity();cancelTokenResource();
     stop(); clearTimeout(timer); controller?.abort(); ++historySerial; ++probeSerial;
     $('auto-refresh').checked = false;
@@ -627,7 +634,7 @@ function overviewEmpty() {
     }
 }
 function refreshLanguage() {
-    drawSourceObservation();comparisonPanel.refreshLanguage();
+    drawSourceObservation();comparisonPanel.refreshLanguage();crossComparison.refreshLanguage();
     const savedNotice=noticeMessage;
     const openDetails = [...$('detail').querySelectorAll('details')].map((d, i) => d.open ? i : -1), scroll = $('detail').scrollTop;
     applyLanguage(document);
@@ -655,7 +662,8 @@ function refreshLanguage() {
 $('language').onchange = () => { setLanguage($('language').value); refreshLanguage(); };
 async function start() {
     await Promise.all([loadScript('/assets/joint.js'), loadScript('/assets/elk-api.js')]);
-    layouts = new LayoutCache(new window.ELK({ workerUrl: '/assets/elk-worker.js' }));
+    const elk = new window.ELK({ workerUrl: '/assets/elk-worker.js' });
+    layouts = new LayoutCache(elk);crossComparison.setRendering({joint:window.joint,elk});
     if (!$('paper')?.parentElement) throw messageError('PetriNet 画布缺少宿主容器');
     renderer = new NetRenderer(window.joint, $('paper'), selectRendered);
     for (const m of ['overview', 'flow', 'petri', 'list'])
@@ -731,7 +739,8 @@ async function start() {
         if (!event.persisted) renderer.dispose();
     });
     window.addEventListener('pageshow', event => { if (event.persisted) { timeControls();schedule(); } });
-    await loadFrame(null);
+    if(comparisonOnly){$('workspace').hidden=true;document.querySelector('.timeline').hidden=true;document.querySelector('.run-header').hidden=true;crossComparison.open();setHealth(()=>tr('独立只读比较已就绪'),'ok');}
+    else await loadFrame(null);
 }
 start().catch(error => { notice(() => error.message); setHealth(() => tr("看板启动失败"), 'stale'); });
 

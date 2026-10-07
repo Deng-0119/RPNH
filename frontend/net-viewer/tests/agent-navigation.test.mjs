@@ -1,3 +1,4 @@
+import * as comparisonContextModule from '../../../cpn/frontend/static/comparison-context.mjs';
 import * as comparisonModule from '../../../cpn/frontend/static/comparison-view.mjs';
 import * as sourceObservationModule from '../../../cpn/frontend/static/source-observation.mjs';
 import * as activityModule from '../../../cpn/frontend/static/firing-activity.mjs';
@@ -61,7 +62,7 @@ function app() {
         viewport: () => ({ scale: 1, tx: 0, ty: 0 }), fit: () => {}, restore: () => {}, center: () => {}, illustrate: () => {} };
     let getLayout = async graph => fakeLayout(graph);
     const layouts = { runs: 0, get: graph => getLayout(graph) };
-    const context = vm.createContext({...comparisonModule,...sourceObservationModule,...activityModule, ...model, ...dashboard, ...locale, tr: locale.t,
+    const context = vm.createContext({...comparisonContextModule,...comparisonModule,...sourceObservationModule,...activityModule, ...model, ...dashboard, ...locale, tr: locale.t,
         renderInspector, renderExecutionTable, renderObservationPanel, element, resolveFiringTarget,
         document, window: {}, console, structuredClone, setTimeout, clearTimeout, AbortController,
         refreshCanvasText: () => {}, applyWireBridges: () => ({ crossings: 0 }), injectedRenderer: renderer, injectedLayouts: layouts });

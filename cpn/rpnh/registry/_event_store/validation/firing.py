@@ -1698,6 +1698,8 @@ def validate_authoritative_references(
     from ..source_identity import uses_source_binding_namespace, validate_source_binding
     if uses_source_binding_namespace(objects, events, task_id):
         validate_source_binding(context)
+    from ...observer_access import validate_observer_publications
+    validate_observer_publications(context)
     if objects or any(getattr(event, "stream_id", "").startswith("object:")
                       or event.event_type == "object_version_published/v1" for event in events):
         from ..branch_publication import validate_branch_publication

@@ -30,7 +30,7 @@ _ASSETS = {
     "/app.js": ("app.js", "application/javascript; charset=utf-8"),
     "/style.css": ("style.css", "text/css; charset=utf-8"),
     **{f"/{name}.mjs": (f"{name}.mjs", "application/javascript; charset=utf-8")
-       for name in ("model", "layout", "renderer", "panels", "dashboard-model", "checkpoint-view", "comparison-view", "agent-members", "observation-panel", "i18n", "messages", "canvas-text", "overview", "wire-geometry")},
+       for name in ("model", "layout", "renderer", "panels", "dashboard-model", "checkpoint-view", "comparison-view", "comparison-context", "agent-members", "observation-panel", "i18n", "messages", "canvas-text", "overview", "wire-geometry")},
     **{f"/assets/{name}.js": (f"assets/{name}.js", "application/javascript; charset=utf-8")
        for name in ("joint", "elk-api", "elk-worker")},
     "/assets/manifest.json": ("assets/manifest.json", "application/json; charset=utf-8"),
@@ -228,7 +228,7 @@ def handle_request(
     if path == "/":
         body = (_STATIC_ROOT / "index.html").read_bytes().replace(
             b"__NET_VIEW_BOOTSTRAP__",
-            json.dumps({"showResources": show_resources}).encode("utf-8"),
+            json.dumps({"showResources": show_resources, "comparisonOnly": bool(getattr(provider, "comparison_only", False))}).encode("utf-8"),
         )
         response = _response(200, "text/html; charset=utf-8", body)
     elif path in _ASSETS:
@@ -296,6 +296,35 @@ def handle_request(
         except ActivityAccessChanged:
             response = _response(403, "application/json; charset=utf-8", b'{"error":"access_changed"}')
         except (ValueError, TypeError, KeyError, RuntimeError, OSError, sqlite3.Error):
+            response = _response(503, "application/json; charset=utf-8", b'{"error":"read_failed"}')
+    elif path in {"/api/v2/comparison-context", "/api/v2/comparison-selection"}:
+        from .comparison_context import (parse_query as parse_context_query,
+            validate_comparison_context, ComparisonContextError)
+        from cpn.rpnh.collaboration.registry_read_contracts import RegistryReadSessionError
+        from .comparison_context import _session_error
+        try:
+            if path.endswith("comparison-context"):
+                selected = parse_context_query(urlsplit(target).query)
+                action = getattr(provider, "comparison_context", None)
+                if not callable(action): raise ComparisonContextError("unsupported")
+                payload = action(selected)
+                validate_comparison_context(payload, selected)
+            else:
+                params = parse_qs(urlsplit(target).query, keep_blank_values=True, strict_parsing=True)
+                if set(params) - {"cursor"} or any(len(v) != 1 or not v[0] for v in params.values()):
+                    raise ComparisonContextError("invalid_query")
+                action = getattr(provider, "comparison_selection", None)
+                if not callable(action): raise ComparisonContextError("unsupported")
+                payload = action(cursor=params.get("cursor", [None])[0])
+                if payload.get("schema_version") != "rpnh/comparison_selection/v1":
+                    raise ComparisonContextError("read_failed")
+            response = _response(200, "application/json; charset=utf-8", json.dumps(payload, ensure_ascii=False, allow_nan=False).encode("utf8"))
+        except (ComparisonContextError, RegistryReadSessionError) as error:
+            code = error.code if isinstance(error, ComparisonContextError) else _session_error(error).code
+            status = {"invalid_query": 400, "access_changed": 403, "stale_observation": 409,
+                      "unsupported": 501, "scope_limit": 413, "projection_unavailable": 422}.get(code, 503)
+            response = _response(status, "application/json; charset=utf-8", json.dumps({"error": code}).encode())
+        except (ValueError, TypeError, KeyError, AttributeError, RuntimeError, OSError):
             response = _response(503, "application/json; charset=utf-8", b'{"error":"read_failed"}')
     elif path == "/api/v2/comparison-view":
         from .comparison_view import (parse_query, validate_comparison_response,
@@ -381,6 +410,8 @@ def handle_request(
                 response = _response(400, "application/json; charset=utf-8", json.dumps({"error": str(exc)}, ensure_ascii=False).encode("utf8"))
             except (RuntimeError, OSError) as exc:
                 response = _response(503, "application/json; charset=utf-8", json.dumps({"error": str(exc)}, ensure_ascii=False).encode("utf8"))
+    elif path == "/api/v1/net" and not callable(provider):
+        response = _response(501, "application/json; charset=utf-8", b'{"error":"unsupported"}')
     elif path == "/api/v1/net":
         try:
             projection = _validate_projection(provider())

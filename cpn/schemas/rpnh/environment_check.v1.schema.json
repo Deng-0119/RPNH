@@ -1,0 +1,637 @@
+{
+  "$id": "rpnh/environment_check/v1",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "additionalProperties": false,
+  "properties": {
+    "aggregate": {
+      "enum": [
+        "passed_for_checked_scope",
+        "blocked",
+        "incomplete",
+        "stale"
+      ]
+    },
+    "binding_digest": {
+      "anyOf": [
+        {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "binding_revision": {
+      "anyOf": [
+        {
+          "maxLength": 240,
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "checked_at": {
+      "maxLength": 240,
+      "minLength": 1,
+      "type": "string"
+    },
+    "checks": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "check_id": {
+            "maxLength": 240,
+            "minLength": 1,
+            "type": "string"
+          },
+          "evidence_level": {
+            "enum": [
+              "author_declared",
+              "configuration_observed",
+              "installed_metadata",
+              "artifact_verified",
+              "local_probe",
+              "host_assembled",
+              "runtime_observed"
+            ]
+          },
+          "expected": {
+            "additionalProperties": false,
+            "properties": {
+              "requirement_digest": {
+                "anyOf": [
+                  {
+                    "pattern": "^[0-9a-f]{64}$",
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            },
+            "required": [
+              "requirement_digest"
+            ],
+            "type": "object"
+          },
+          "observed": {
+            "additionalProperties": false,
+            "properties": {
+              "distribution": {
+                "anyOf": [
+                  {
+                    "additionalProperties": false,
+                    "properties": {
+                      "artifact_digest": {
+                        "anyOf": [
+                          {
+                            "pattern": "^[0-9a-f]{64}$",
+                            "type": "string"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "name": {
+                        "maxLength": 240,
+                        "minLength": 1,
+                        "type": "string"
+                      },
+                      "requires_dist": {
+                        "items": {
+                          "maxLength": 1024,
+                          "minLength": 1,
+                          "type": "string"
+                        },
+                        "maxItems": 128,
+                        "minItems": 0,
+                        "type": "array"
+                      },
+                      "requires_python": {
+                        "maxLength": 1024,
+                        "type": "string"
+                      },
+                      "version": {
+                        "maxLength": 240,
+                        "minLength": 1,
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "name",
+                      "version",
+                      "requires_dist",
+                      "requires_python",
+                      "artifact_digest"
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "host_profile": {
+                "anyOf": [
+                  {
+                    "additionalProperties": false,
+                    "properties": {
+                      "implementation_digest": {
+                        "pattern": "^[0-9a-f]{64}$",
+                        "type": "string"
+                      },
+                      "profile_id": {
+                        "maxLength": 240,
+                        "minLength": 1,
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "profile_id",
+                      "implementation_digest"
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "platform": {
+                "anyOf": [
+                  {
+                    "additionalProperties": false,
+                    "properties": {
+                      "architecture": {
+                        "maxLength": 240,
+                        "minLength": 1,
+                        "type": "string"
+                      },
+                      "os_family": {
+                        "maxLength": 240,
+                        "minLength": 1,
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "os_family",
+                      "architecture"
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "plugin": {
+                "anyOf": [
+                  {
+                    "additionalProperties": false,
+                    "properties": {
+                      "api_contract": {
+                        "maxLength": 240,
+                        "minLength": 1,
+                        "type": "string"
+                      },
+                      "configuration_digest": {
+                        "anyOf": [
+                          {
+                            "pattern": "^[0-9a-f]{64}$",
+                            "type": "string"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "distribution": {
+                        "maxLength": 240,
+                        "minLength": 1,
+                        "type": "string"
+                      },
+                      "implementation_digest": {
+                        "anyOf": [
+                          {
+                            "pattern": "^[0-9a-f]{64}$",
+                            "type": "string"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "plugin_id": {
+                        "maxLength": 240,
+                        "minLength": 1,
+                        "type": "string"
+                      },
+                      "version": {
+                        "maxLength": 240,
+                        "minLength": 1,
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "plugin_id",
+                      "version",
+                      "api_contract",
+                      "distribution",
+                      "implementation_digest",
+                      "configuration_digest"
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "present": {
+                "anyOf": [
+                  {
+                    "type": "boolean"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "python": {
+                "anyOf": [
+                  {
+                    "additionalProperties": false,
+                    "properties": {
+                      "abi": {
+                        "maxLength": 240,
+                        "minLength": 1,
+                        "type": "string"
+                      },
+                      "implementation": {
+                        "maxLength": 240,
+                        "minLength": 1,
+                        "type": "string"
+                      },
+                      "platform": {
+                        "maxLength": 240,
+                        "minLength": 1,
+                        "type": "string"
+                      },
+                      "version": {
+                        "maxLength": 240,
+                        "minLength": 1,
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "implementation",
+                      "version",
+                      "abi",
+                      "platform"
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "service": {
+                "anyOf": [
+                  {
+                    "additionalProperties": false,
+                    "properties": {
+                      "model_condition": {
+                        "maxLength": 240,
+                        "minLength": 1,
+                        "type": "string"
+                      },
+                      "profile_digest": {
+                        "pattern": "^[0-9a-f]{64}$",
+                        "type": "string"
+                      },
+                      "service_contract_id": {
+                        "maxLength": 240,
+                        "minLength": 1,
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "service_contract_id",
+                      "model_condition",
+                      "profile_digest"
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "system": {
+                "anyOf": [
+                  {
+                    "additionalProperties": false,
+                    "properties": {
+                      "contract_id": {
+                        "maxLength": 240,
+                        "minLength": 1,
+                        "type": "string"
+                      },
+                      "identity_digest": {
+                        "anyOf": [
+                          {
+                            "pattern": "^[0-9a-f]{64}$",
+                            "type": "string"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "satisfied": {
+                        "type": "boolean"
+                      }
+                    },
+                    "required": [
+                      "contract_id",
+                      "satisfied",
+                      "identity_digest"
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "tool": {
+                "anyOf": [
+                  {
+                    "additionalProperties": false,
+                    "properties": {
+                      "capabilities": {
+                        "items": {
+                          "maxLength": 240,
+                          "minLength": 1,
+                          "type": "string"
+                        },
+                        "maxItems": 128,
+                        "minItems": 0,
+                        "type": "array"
+                      },
+                      "content_digest": {
+                        "anyOf": [
+                          {
+                            "pattern": "^[0-9a-f]{64}$",
+                            "type": "string"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "tool_contract_id": {
+                        "maxLength": 240,
+                        "minLength": 1,
+                        "type": "string"
+                      },
+                      "version": {
+                        "maxLength": 240,
+                        "minLength": 1,
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "tool_contract_id",
+                      "version",
+                      "content_digest",
+                      "capabilities"
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            },
+            "required": [
+              "python",
+              "distribution",
+              "platform",
+              "tool",
+              "plugin",
+              "service",
+              "system",
+              "host_profile",
+              "present"
+            ],
+            "type": "object"
+          },
+          "reason_code": {
+            "maxLength": 240,
+            "minLength": 1,
+            "type": "string"
+          },
+          "scoped_requirement_id": {
+            "anyOf": [
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "entry_id": {
+                    "maxLength": 120,
+                    "pattern": "^[A-Za-z][A-Za-z0-9_-]*$",
+                    "type": "string"
+                  },
+                  "manifest_digest": {
+                    "pattern": "^[0-9a-f]{64}$",
+                    "type": "string"
+                  },
+                  "requirement_id": {
+                    "maxLength": 120,
+                    "pattern": "^[A-Za-z][A-Za-z0-9_-]*$",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "manifest_digest",
+                  "entry_id",
+                  "requirement_id"
+                ],
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "status": {
+            "enum": [
+              "not_checked",
+              "satisfied",
+              "missing",
+              "incompatible",
+              "unsupported",
+              "failed",
+              "stale"
+            ]
+          }
+        },
+        "required": [
+          "scoped_requirement_id",
+          "check_id",
+          "status",
+          "evidence_level",
+          "observed",
+          "expected",
+          "reason_code"
+        ],
+        "type": "object"
+      },
+      "maxItems": 128,
+      "minItems": 0,
+      "type": "array"
+    },
+    "execution_permitted": {
+      "const": false
+    },
+    "not_checked": {
+      "items": {
+        "maxLength": 240,
+        "minLength": 1,
+        "type": "string"
+      },
+      "maxItems": 128,
+      "minItems": 0,
+      "type": "array"
+    },
+    "probe_contracts": {
+      "items": {
+        "maxLength": 240,
+        "minLength": 1,
+        "type": "string"
+      },
+      "maxItems": 128,
+      "minItems": 0,
+      "type": "array"
+    },
+    "resolution_digest": {
+      "anyOf": [
+        {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "schema_version": {
+      "const": "rpnh/environment_check/v1"
+    },
+    "selection_digest": {
+      "anyOf": [
+        {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "target": {
+      "additionalProperties": false,
+      "properties": {
+        "entry_id": {
+          "maxLength": 120,
+          "pattern": "^[A-Za-z][A-Za-z0-9_-]*$",
+          "type": "string"
+        },
+        "package_lock_digest": {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "requirement_artifacts": {
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "artifact_digest": {
+                "pattern": "^[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "artifact_path": {
+                "maxLength": 240,
+                "minLength": 1,
+                "type": "string"
+              },
+              "entry_id": {
+                "maxLength": 120,
+                "pattern": "^[A-Za-z][A-Za-z0-9_-]*$",
+                "type": "string"
+              },
+              "manifest_digest": {
+                "pattern": "^[0-9a-f]{64}$",
+                "type": "string"
+              }
+            },
+            "required": [
+              "manifest_digest",
+              "entry_id",
+              "artifact_path",
+              "artifact_digest"
+            ],
+            "type": "object"
+          },
+          "maxItems": 64,
+          "minItems": 1,
+          "type": "array",
+          "uniqueItems": true
+        },
+        "requirements_digest": {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "root_archive_digest": {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "root_manifest_digest": {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "package_lock_digest",
+        "root_manifest_digest",
+        "root_archive_digest",
+        "entry_id",
+        "requirement_artifacts",
+        "requirements_digest"
+      ],
+      "type": "object"
+    }
+  },
+  "required": [
+    "schema_version",
+    "target",
+    "selection_digest",
+    "binding_revision",
+    "binding_digest",
+    "resolution_digest",
+    "checked_at",
+    "probe_contracts",
+    "checks",
+    "aggregate",
+    "not_checked",
+    "execution_permitted"
+  ],
+  "type": "object"
+}

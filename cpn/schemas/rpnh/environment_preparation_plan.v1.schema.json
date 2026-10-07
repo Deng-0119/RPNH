@@ -1,0 +1,407 @@
+{
+  "$id": "rpnh/environment_preparation_plan/v1",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "additionalProperties": false,
+  "properties": {
+    "actions": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "action_id": {
+            "maxLength": 240,
+            "minLength": 1,
+            "type": "string"
+          },
+          "expected_effect": {
+            "maxLength": 240,
+            "minLength": 1,
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "create_venv",
+              "install_distribution",
+              "configure_local_reference",
+              "manual_system_step",
+              "verify_local_capability",
+              "assemble_trusted_host"
+            ]
+          },
+          "options": {
+            "additionalProperties": false,
+            "properties": {
+              "artifact_digest": {
+                "anyOf": [
+                  {
+                    "pattern": "^[0-9a-f]{64}$",
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "base_executable": {
+                "anyOf": [
+                  {
+                    "maxLength": 4096,
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "host_profile_digest": {
+                "anyOf": [
+                  {
+                    "pattern": "^[0-9a-f]{64}$",
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "reference": {
+                "anyOf": [
+                  {
+                    "maxLength": 240,
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "source_path": {
+                "anyOf": [
+                  {
+                    "maxLength": 4096,
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "version": {
+                "anyOf": [
+                  {
+                    "maxLength": 240,
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            },
+            "required": [
+              "base_executable",
+              "version",
+              "artifact_digest",
+              "source_path",
+              "reference",
+              "host_profile_digest"
+            ],
+            "type": "object"
+          },
+          "retained_on_failure": {
+            "maxLength": 240,
+            "minLength": 1,
+            "type": "string"
+          },
+          "target": {
+            "additionalProperties": false,
+            "properties": {
+              "name": {
+                "anyOf": [
+                  {
+                    "maxLength": 240,
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "path": {
+                "anyOf": [
+                  {
+                    "maxLength": 4096,
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "scoped_requirement_id": {
+                "anyOf": [
+                  {
+                    "additionalProperties": false,
+                    "properties": {
+                      "entry_id": {
+                        "maxLength": 120,
+                        "pattern": "^[A-Za-z][A-Za-z0-9_-]*$",
+                        "type": "string"
+                      },
+                      "manifest_digest": {
+                        "pattern": "^[0-9a-f]{64}$",
+                        "type": "string"
+                      },
+                      "requirement_id": {
+                        "maxLength": 120,
+                        "pattern": "^[A-Za-z][A-Za-z0-9_-]*$",
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "manifest_digest",
+                      "entry_id",
+                      "requirement_id"
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            },
+            "required": [
+              "path",
+              "scoped_requirement_id",
+              "name"
+            ],
+            "type": "object"
+          },
+          "trusted_adapter_contract": {
+            "maxLength": 240,
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "action_id",
+          "kind",
+          "trusted_adapter_contract",
+          "target",
+          "options",
+          "expected_effect",
+          "retained_on_failure"
+        ],
+        "type": "object"
+      },
+      "maxItems": 128,
+      "minItems": 0,
+      "type": "array"
+    },
+    "authorization_requirements": {
+      "items": {
+        "maxLength": 240,
+        "minLength": 1,
+        "type": "string"
+      },
+      "maxItems": 128,
+      "minItems": 0,
+      "type": "array"
+    },
+    "based_on_check_digest": {
+      "pattern": "^[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "binding_revision": {
+      "anyOf": [
+        {
+          "maxLength": 240,
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "mode": {
+      "enum": [
+        "existing",
+        "new_venv"
+      ]
+    },
+    "plan_id": {
+      "maxLength": 240,
+      "minLength": 1,
+      "type": "string"
+    },
+    "resolution_digest": {
+      "anyOf": [
+        {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "schema_version": {
+      "const": "rpnh/environment_preparation_plan/v1"
+    },
+    "selection_digest": {
+      "anyOf": [
+        {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "target": {
+      "additionalProperties": false,
+      "properties": {
+        "entry_id": {
+          "maxLength": 120,
+          "pattern": "^[A-Za-z][A-Za-z0-9_-]*$",
+          "type": "string"
+        },
+        "package_lock_digest": {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "requirement_artifacts": {
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "artifact_digest": {
+                "pattern": "^[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "artifact_path": {
+                "maxLength": 240,
+                "minLength": 1,
+                "type": "string"
+              },
+              "entry_id": {
+                "maxLength": 120,
+                "pattern": "^[A-Za-z][A-Za-z0-9_-]*$",
+                "type": "string"
+              },
+              "manifest_digest": {
+                "pattern": "^[0-9a-f]{64}$",
+                "type": "string"
+              }
+            },
+            "required": [
+              "manifest_digest",
+              "entry_id",
+              "artifact_path",
+              "artifact_digest"
+            ],
+            "type": "object"
+          },
+          "maxItems": 64,
+          "minItems": 1,
+          "type": "array",
+          "uniqueItems": true
+        },
+        "requirements_digest": {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "root_archive_digest": {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "root_manifest_digest": {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "package_lock_digest",
+        "root_manifest_digest",
+        "root_archive_digest",
+        "entry_id",
+        "requirement_artifacts",
+        "requirements_digest"
+      ],
+      "type": "object"
+    },
+    "unresolved": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "reason_code": {
+            "maxLength": 240,
+            "minLength": 1,
+            "type": "string"
+          },
+          "scoped_requirement_id": {
+            "anyOf": [
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "entry_id": {
+                    "maxLength": 120,
+                    "pattern": "^[A-Za-z][A-Za-z0-9_-]*$",
+                    "type": "string"
+                  },
+                  "manifest_digest": {
+                    "pattern": "^[0-9a-f]{64}$",
+                    "type": "string"
+                  },
+                  "requirement_id": {
+                    "maxLength": 120,
+                    "pattern": "^[A-Za-z][A-Za-z0-9_-]*$",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "manifest_digest",
+                  "entry_id",
+                  "requirement_id"
+                ],
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "scoped_requirement_id",
+          "reason_code"
+        ],
+        "type": "object"
+      },
+      "maxItems": 128,
+      "minItems": 0,
+      "type": "array"
+    }
+  },
+  "required": [
+    "schema_version",
+    "plan_id",
+    "target",
+    "selection_digest",
+    "binding_revision",
+    "resolution_digest",
+    "based_on_check_digest",
+    "mode",
+    "actions",
+    "unresolved",
+    "authorization_requirements"
+  ],
+  "type": "object"
+}

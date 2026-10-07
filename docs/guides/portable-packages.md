@@ -14,6 +14,8 @@ metadata:
 
 # Portable package preview and exact local locks
 
+This page documents the retained v1 contract. For formally bound environment requirements and the versioned v2 path, see [package environments](package-environments.md).
+
 This first implementation inspects a data-only ZIP containing one closed Module
 and resolves its exact dependencies from explicitly supplied local ZIPs. It does
 not import a package into a Registry, prepare a HOST, install a plugin, lower or

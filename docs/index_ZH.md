@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: index.md
-  revision: "2026-10-06.2"
+  revision: "2026-10-07.1"
   status: source-reviewed-v0.1.0rc1
   basis: "core; adapter differences explicitly labelled"
 ---
@@ -38,6 +38,11 @@ metadata:
 | 在 PetriNet 看板中查看 run | [PetriNet 看板](guides/viewer_ZH.md) |
 | 查询并查看固定来源范围 | [SourceSet 查询](guides/source-queries_ZH.md) |
 | 离线预览声明包并锁定本地依赖 | [可移植包](guides/portable-packages_ZH.md) |
+| 准备精确 v2 分享包环境，保留 v1 原语义 | [分享包环境声明](guides/package-environments_ZH.md) |
+| 打开独立合法类型化读取和跨网比较 | [独立 Registry 读取](guides/independent-registry-reader_ZH.md) |
+| 理解固定 cut 类型化读合同与权限校验 | [Registry 读会话](reference/registry-read-sessions_ZH.md) |
+| 检查类型化公共投影与完整闭合定义交换 | [Registry 类型化投影与子网交换](guides/typed-registry-exchange_ZH.md) |
+| 按四个独立证据轴比较精确网图 | [跨网比较](guides/comparison-context_ZH.md) |
 | 对照已准备 HOST 的声明快照 | [HOST 声明诊断](guides/host-readiness_ZH.md) |
 | 只读比较同一 Registry 的两个 checkpoint | [Checkpoint 比较](guides/checkpoint-comparison_ZH.md) |
 | 理解执行闭环 | [架构](architecture/design_ZH.md) |

@@ -6,7 +6,7 @@ metadata:
   audience: user-and-developer
   language: zh-CN
   counterpart: CHANGELOG.md
-  revision: "2026-10-06.2"
+  revision: "2026-10-07.1"
   status: v0.1.0rc1
 ---
 
@@ -15,6 +15,18 @@ metadata:
 # 变更记录
 
 ## 未发布
+
+- 新增显式选择的 v2 分享包环境声明、精确本机准备合同和所选解释器 HOST
+  入口；既有 owner 签发的独立 Registry 固定 cut 读会话与显式正文权限；
+  类型化定义交换；以及定义、配置、材料、运行态四轴分离的跨网比较。
+  见[分享包环境](docs/guides/package-environments_ZH.md)和
+  [独立读取](docs/guides/independent-registry-reader_ZH.md)。这些接口处于实施候选阶段；
+  准备完成、单元/API 测试和渲染模拟不能证明业务 terminal 或真实浏览器生命周期
+  验收通过。注明日期的证据继续保留尚未解除的本机 blocker。
+
+- 导入修订的索引查询仅读取所请求的索引及谓词字段；显式正文读取支持严格 UTF-8，
+  保留按字节计算的限额和当前权限复核。跨网比较解除已被替代的分页忙状态，
+  清除失权后的选择数据，并在完整双网视图后恢复已验证的推荐显示模式。
 
 - 打开比较或离开页面取消上一个网的读取时，同步解除导航控件的忙状态，并继续保留
   保存历史 capture 的暂停读取边界。

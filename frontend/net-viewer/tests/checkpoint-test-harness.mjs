@@ -1,3 +1,4 @@
+import * as comparisonContextModule from '../../../cpn/frontend/static/comparison-context.mjs';
 import * as comparisonModule from '../../../cpn/frontend/static/comparison-view.mjs';
 import * as sourceObservationModule from '../../../cpn/frontend/static/source-observation.mjs';
 import {installWorksetPanel} from '../../../cpn/frontend/static/worksets.mjs';
@@ -15,15 +16,16 @@ import {resolveFiringTarget} from '../../../cpn/frontend/static/agent-members.mj
 // A deliberately minimal DOM/renderer/layout surface. This executes the real app
 // functions and panels, but does not claim browser, paint, accessibility or ELK QA.
 class Node extends EventTarget {
-    constructor(tag, document) { super(); this.tagName = tag; this.ownerDocument = document; this.children = []; this.dataset = {}; this.attributes = {}; this.text = ''; this.value = ''; this.checked = false; this.hidden = false; this.open = false; this.scrollTop = 0; this.clientWidth = 900; this.clientHeight = 600; this.classList = {add: value => {this.className = [this.className, value].filter(Boolean).join(' ');}}; }
+    constructor(tag, document) { super(); this.tagName = tag; this.ownerDocument = document; this.children = []; this.dataset = {}; this.style = {}; this.attributes = {}; this.text = ''; this.value = ''; this.checked = false; this.hidden = false; this.open = false; this.scrollTop = 0; this.clientWidth = 900; this.clientHeight = 600; this.classList = {add: value => {this.className = [this.className, value].filter(Boolean).join(' ');}}; }
     set textContent(value) { this.text = String(value); this.children = []; }
     get textContent() { return this.text + this.children.map(n => n.textContent).join(''); }
     set innerHTML(_) { throw new Error('HTML assignment is forbidden'); }
     append(...nodes) { this.children.push(...nodes); for (const n of nodes) n.parentElement = this; }
+    prepend(...nodes) { this.children.unshift(...nodes); for (const n of nodes) n.parentElement = this; }
     replaceChildren(...nodes) { this.text = ''; this.children = []; this.append(...nodes); }
     setAttribute(k, v) { this.attributes[k] = String(v); }
     getAttribute(k) { return this.attributes[k]; }
-    querySelectorAll(selector) { return walk(this).filter(n => n !== this && (selector.startsWith('.') ? n.className?.split(' ').includes(selector.slice(1)) : n.tagName === selector)); }
+    querySelectorAll(selector) { const attr=selector.match(/^\[data-([a-z-]+)(?:="([^"]*)")?\]$/); return walk(this).filter(n => n !== this && (attr ? Object.hasOwn(n.dataset,attr[1].replace(/-([a-z])/g,(_,c)=>c.toUpperCase())) && (attr[2]===undefined || n.dataset[attr[1].replace(/-([a-z])/g,(_,c)=>c.toUpperCase())]===attr[2]) : selector.startsWith('.') ? n.className?.split(' ').includes(selector.slice(1)) : n.tagName === selector)); }
     querySelector(selector) { return this.querySelectorAll(selector)[0] ?? null; }
     remove() { if (this.parentElement) this.parentElement.children = this.parentElement.children.filter(n => n !== this); this.parentElement = null; }
 }
@@ -62,7 +64,7 @@ export function checkpointApp(fetcher, {startup = false} = {}) {
         nodes: new Map(graph.nodes.map((n,i) => [n.id,{x:i*240,y:30,width:224,height:126,ports:[]}])), edges:new Map()});
     const layouts = {runs: 0, get: graph => getLayout(graph)};
     const runtime = startup ? rendererRuntime(document, window) : {};
-    const context = vm.createContext({...comparisonModule,...sourceObservationModule,...activityModule,...model, ...dashboard, ...checkpoint, ...locale, tr: locale.t,
+    const context = vm.createContext({...comparisonContextModule,...comparisonModule,...sourceObservationModule,...activityModule,...model, ...dashboard, ...checkpoint, ...locale, tr: locale.t,
         renderInspector, renderExecutionTable, renderObservationPanel, element, resolveFiringTarget, installWorksetPanel,
         document, window, console, structuredClone, AbortController, ...runtime,
         LayoutCache: class {constructor() {return layouts;}},
@@ -80,7 +82,7 @@ export function checkpointApp(fetcher, {startup = false} = {}) {
         : appSource.replace(/\nstart\(\)\.catch[\s\S]*$/,'')) + `
         ${startup ? '' : 'renderer=injectedRenderer; layouts=injectedLayouts;' + modeBindings}
         globalThis.api={loadFrame,loadHistory,probeCheckpoint,openPreviousNet,returnCheckpointCapture,returnToLive,
-            render,select,schedule,timeControls,refreshLanguage,openComparison,comparisonPanel,loadActivity,cancelActivity,selectActivity,openPetri,
+            render,select,schedule,timeControls,refreshLanguage,openComparison,comparisonPanel,crossComparison,loadActivity,cancelActivity,selectActivity,openPetri,
             viewer() {return renderer;},
             activityState() {return activity;},
             resourceState() {return tokenResource;},
