@@ -1,0 +1,13 @@
+{
+  "command": [
+    "/home/deng123/RPNH/task-erp-first-wave-20261008/work/tools/docker/docker",
+    "build",
+    "--network=none",
+    "--tag",
+    "rpnh-scb-native-fixture:20261008",
+    "/home/deng123/RPNH/task-first-wave-examples-20261008/work/native-docker-context"
+  ],
+  "exit_code": 0,
+  "elapsed_seconds": 14.998034715652466,
+  "scope": "minimal native fixture image; not the original general-purpose SCB prepared base or an ERP image"
+}

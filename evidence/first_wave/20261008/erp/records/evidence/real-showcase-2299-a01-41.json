@@ -1,0 +1,25 @@
+{
+  "id": "real-showcase-2299-a01-41",
+  "command": [
+    "/home/deng123/RPNH/task-erp-first-wave-20261008/venv/bin/python",
+    "-B",
+    "/home/deng123/RPNH/task-erp-first-wave-20261008/work/run_authorized_trial.py",
+    "--task",
+    "2299_hard_repair_plan_hard",
+    "--condition",
+    "erp-showcase-2299-a01",
+    "--run-root",
+    "/home/deng123/RPNH/task-erp-first-wave-20261008/r/h01"
+  ],
+  "cwd": "/home/deng123/RPNH/task-erp-first-wave-20261008",
+  "started_utc": "2026-10-08T06:50:57.586387+00:00",
+  "finished_utc": "2026-10-08T07:11:06.396727+00:00",
+  "duration_seconds": 1119.221,
+  "exit_code": 0,
+  "result": "PASS",
+  "counts": {},
+  "log": "evidence/real-showcase-2299-a01-41.log",
+  "source_base": "6f8ee2e406f3c70edb73206f861e56a0202b9f15",
+  "source_identity": "working tree on source_base; final freeze tracked separately",
+  "counts_not_additive_with_other_windows": true
+}

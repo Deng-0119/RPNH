@@ -1,0 +1,372 @@
+{
+  "artifacts": [
+    {
+      "bytes": 1013,
+      "hash_scope": "distributed_bytes",
+      "id": "prelaunch-observation",
+      "immutable": true,
+      "path": "prelaunch-observation.json",
+      "role": "test_log",
+      "sha256": "28a0cafac4e33cf805babd4a32a1b1c49bdab32e94dc4070d887bde7b9df4876",
+      "visibility": "public"
+    },
+    {
+      "bytes": 891,
+      "hash_scope": "retained_private_bytes",
+      "id": "original-run17-command",
+      "immutable": true,
+      "path": null,
+      "role": "test_log",
+      "sha256": "6076c9746792ddcd3b85fd8c80382ce12f051e54aa102f83affdb31ad639a7f6",
+      "visibility": "private"
+    },
+    {
+      "bytes": 62,
+      "hash_scope": "retained_private_bytes",
+      "id": "original-run17-log",
+      "immutable": true,
+      "path": null,
+      "role": "test_log",
+      "sha256": "4aecd99e1db538fb6b4d63f5225205547e40e64aa7a16caf548f18baa2bc2995",
+      "visibility": "private"
+    },
+    {
+      "bytes": 180,
+      "hash_scope": "retained_private_bytes",
+      "id": "original-package14-log",
+      "immutable": true,
+      "path": null,
+      "role": "environment",
+      "sha256": "a713f2ce64cafcdbea912093fdcfa14be0c277d58527703f489f4196045814d0",
+      "visibility": "private"
+    },
+    {
+      "bytes": 5820,
+      "hash_scope": "distributed_bytes",
+      "id": "task-identity",
+      "immutable": true,
+      "path": "task-identity.json",
+      "role": "task_identity",
+      "sha256": "d833e8e8849fe55acfd99573c4ae9c048291e0c292b72a055fca72b57c13feac",
+      "visibility": "public"
+    },
+    {
+      "bytes": 14272,
+      "hash_scope": "distributed_bytes",
+      "id": "source-identity",
+      "immutable": true,
+      "path": "source-identity.json",
+      "role": "environment",
+      "sha256": "b9a82871eadabef4fcc3322be5e0a9dac93e2f269031a481ddc7f12377ef9214",
+      "visibility": "public"
+    },
+    {
+      "bytes": 791,
+      "hash_scope": "distributed_bytes",
+      "id": "condition",
+      "immutable": true,
+      "path": "condition.json",
+      "role": "condition",
+      "sha256": "3f302f902f06f91d8b3780cd2577a7bc60bd4df020da0316f84b2644f575e277",
+      "visibility": "public"
+    }
+  ],
+  "condition": {
+    "artifact_id": "condition",
+    "sha256": "3f302f902f06f91d8b3780cd2577a7bc60bd4df020da0316f84b2644f575e277",
+    "unavailable_reason": null
+  },
+  "example_id": "erp_bench",
+  "findings": [],
+  "history": {
+    "note": "Each condition/attempt is retained as a distinct record; previous records are immutable.",
+    "policy": "append_only",
+    "previous_record_artifacts": []
+  },
+  "model": {
+    "configuration_artifact_id": null,
+    "configuration_sha256": null,
+    "exact_model": null,
+    "kind": "none",
+    "provider": null,
+    "unavailable_reason": "Legacy profile entry rejected before model selection materialization; no selected model identity exported."
+  },
+  "model_calls": {
+    "evidence": [],
+    "fake_provider_calls": null,
+    "real_provider_calls": null,
+    "reason": "No complete call accounting supplied; unknown is not zero.",
+    "status": "unknown"
+  },
+  "privacy": {
+    "note": "Public artifacts are allowlisted projections; raw reports and runtime state remain private.",
+    "raw_provider_transcripts_included": false,
+    "review_status": "pending",
+    "reviewed_public_artifacts": []
+  },
+  "public_notes": [
+    "Retrospective A01 startup record; original run17 command metadata and failure log remain unchanged and private.",
+    "Tested source identity is a later immutable Git reconstruction at 8980, checked against run17 source_base and retained package14 b385 owned-tree identity. This does not establish any other uncommitted runtime files or the original checkout path.",
+    "No binding to final6f8 or later source. No world, RPNH owner or model launch was reached; missing owner accounting remains unknown/null rather than fabricated zero.",
+    "Evaluation was blocked and no score is assigned. This history record authorizes no future model retry."
+  ],
+  "record_id": "erp-smoke-2000-a01-startup",
+  "registry_refs": [
+    {
+      "projection_artifact_id": null,
+      "purpose": "terminal_result",
+      "reason": "No actual owner projection supplied for this condition.",
+      "ref": null,
+      "status": "unavailable",
+      "task_id": null
+    }
+  ],
+  "schema_version": "rpnh/example-evidence/v1",
+  "scores": [],
+  "source": {
+    "base_commit": "ae09445fe1d9b973502bc5d2c961976c1d2c0163",
+    "changed_files": [
+      {
+        "base_sha256": null,
+        "final_sha256": "923ed4f326fb5c8e031185a02ad3bcad9aa683d7b94b7fc8d7683b53448bf5a3",
+        "path": "examples/erp_bench/README.md"
+      },
+      {
+        "base_sha256": null,
+        "final_sha256": "68e46512ba14dcd7471850e876c5615eb720175a08b7349e6f0d4aee92ce2d12",
+        "path": "examples/erp_bench/README_ZH.md"
+      },
+      {
+        "base_sha256": null,
+        "final_sha256": "71f73eaa86aae2adb2d5d335acb3274d7a333b6018f0ba30999f8851f13cc127",
+        "path": "examples/erp_bench/THIRD_PARTY_NOTICES.md"
+      },
+      {
+        "base_sha256": null,
+        "final_sha256": "a2010f343487d3f7618affe54f789f5487602331c0a8d03f49e9a7c547cf0499",
+        "path": "examples/erp_bench/licenses/ERP_BENCH_CC0_1.0.txt"
+      },
+      {
+        "base_sha256": null,
+        "final_sha256": "d7f0ad666e3545d2af6ad5ce673d11a77ec135d622f9fe3da26b82aeaee0430c",
+        "path": "examples/erp_bench/licenses/RPNH_MIT.txt"
+      },
+      {
+        "base_sha256": null,
+        "final_sha256": "f961e8493843a79b183a3a6873d83ff21f3524ca88ae490e4745c25a867e4e63",
+        "path": "examples/erp_bench/pyproject.toml"
+      },
+      {
+        "base_sha256": null,
+        "final_sha256": "90a9dd907482e29e7b62a2c594b6de8e29c1a1c5067fce9ce062d419b4bc835c",
+        "path": "examples/erp_bench/scripts/native_acceptance.py"
+      },
+      {
+        "base_sha256": null,
+        "final_sha256": "91447944015cec709e8aa7655f7e9d64e1e4508e7023a57fe3746911c0fc6fed",
+        "path": "examples/erp_bench/src/rpnh_erp_bench/__init__.py"
+      },
+      {
+        "base_sha256": null,
+        "final_sha256": "56eaa724e7d5f7080f072153a0a3bf9250f6e6444f02b2e73c34aa806d9deedf",
+        "path": "examples/erp_bench/src/rpnh_erp_bench/bridge.py"
+      },
+      {
+        "base_sha256": null,
+        "final_sha256": "de0b6d0705a7b026a68a96b441842e68430b15d65d5b340eb644828070f73394",
+        "path": "examples/erp_bench/src/rpnh_erp_bench/cli.py"
+      },
+      {
+        "base_sha256": null,
+        "final_sha256": "09ea82eee06e1cc0f4408351db2043889f58711268e02ee51fca29e248a93318",
+        "path": "examples/erp_bench/src/rpnh_erp_bench/data/source-pins.json"
+      },
+      {
+        "base_sha256": null,
+        "final_sha256": "628ba50ded6beac960789d0a5db46fd10ab56ae084b3f053ef7edf253c0ce89e",
+        "path": "examples/erp_bench/src/rpnh_erp_bench/data/task-identities.json"
+      },
+      {
+        "base_sha256": null,
+        "final_sha256": "0cff72f96cb71041f2500fba66646b6f3b97ae05bbe8cef9316621ebd4921b58",
+        "path": "examples/erp_bench/src/rpnh_erp_bench/driver.py"
+      },
+      {
+        "base_sha256": null,
+        "final_sha256": "f7f534877e13dc8b529ab0aee677c8330b18535939a8acac8ec40c7d262c580c",
+        "path": "examples/erp_bench/src/rpnh_erp_bench/endpoint.py"
+      },
+      {
+        "base_sha256": null,
+        "final_sha256": "110a02623ab9bd752d0ce00cad31e91767c068319a5d27d9e6f3e9891c3c9727",
+        "path": "examples/erp_bench/src/rpnh_erp_bench/environment.py"
+      },
+      {
+        "base_sha256": null,
+        "final_sha256": "b26342af25213858b19581272987e837bdf470a9e7a2f8fe4aa9ff366782e461",
+        "path": "examples/erp_bench/src/rpnh_erp_bench/evidence.py"
+      },
+      {
+        "base_sha256": null,
+        "final_sha256": "99b20eda16542805c86f56ef61c4ce14df5e59ba28375962184e92d944ec8d58",
+        "path": "examples/erp_bench/src/rpnh_erp_bench/export.py"
+      },
+      {
+        "base_sha256": null,
+        "final_sha256": "3ddb98ea082adac5b7c8eb8cc142a048e02c9fe2eb5d23e4b4ae881e90f23370",
+        "path": "examples/erp_bench/src/rpnh_erp_bench/native.py"
+      },
+      {
+        "base_sha256": null,
+        "final_sha256": "d9c38bb70568e1c05d31175cdbb46692491b490dc5a87a5d1f85164454195200",
+        "path": "examples/erp_bench/src/rpnh_erp_bench/planning.py"
+      },
+      {
+        "base_sha256": null,
+        "final_sha256": "33664264a0cff411efa9445d9c513d647983b5b9ff255a8384eb6f06825e39c0",
+        "path": "examples/erp_bench/src/rpnh_erp_bench/plugin.py"
+      },
+      {
+        "base_sha256": null,
+        "final_sha256": "2230e7edaea3002d43ba1966197e76121626f281ee73e7dea104393a3ce1f65c",
+        "path": "examples/erp_bench/src/rpnh_erp_bench/sandbox.py"
+      },
+      {
+        "base_sha256": null,
+        "final_sha256": "4d555f2d3cf6253ce1bb0c03e8262d1ef237f75eb9a39e5c60c84dcfbd488e5f",
+        "path": "examples/erp_bench/src/rpnh_erp_bench/scoring.py"
+      },
+      {
+        "base_sha256": null,
+        "final_sha256": "55fef9d36b28146515c525da7c0682a3d57a482ed1254b1dc30de80039b53b67",
+        "path": "examples/erp_bench/src/rpnh_erp_bench/source.py"
+      },
+      {
+        "base_sha256": null,
+        "final_sha256": "1754e2bdd65bdafe09fe692ab09ae367b5eb9e5a7e1b1860411649fba31076ca",
+        "path": "examples/erp_bench/tests/fake_provider.py"
+      },
+      {
+        "base_sha256": null,
+        "final_sha256": "631210897d3df61be1a1b76f062e37b7bb3b82a60a44aed4c930bc0722af7124",
+        "path": "examples/erp_bench/tests/test_bridge.py"
+      },
+      {
+        "base_sha256": null,
+        "final_sha256": "379c02213ce990ba78b45150011b374b6d9130e98f2ec762022c42af663065bb",
+        "path": "examples/erp_bench/tests/test_cli.py"
+      },
+      {
+        "base_sha256": null,
+        "final_sha256": "ed86777cd881ede340e5f1d6e55b779bc74e1a56aacc35940fc8f54cb7ee53f8",
+        "path": "examples/erp_bench/tests/test_driver.py"
+      },
+      {
+        "base_sha256": null,
+        "final_sha256": "413a19bd5432f8021d8cdcd4e256da3efffaf84fbf045e14f3df98655b32afb4",
+        "path": "examples/erp_bench/tests/test_endpoint.py"
+      },
+      {
+        "base_sha256": null,
+        "final_sha256": "fd1a2c63b7b7940ec76ef55d111be99319d48781a014357cfd232a613178c62e",
+        "path": "examples/erp_bench/tests/test_environment.py"
+      },
+      {
+        "base_sha256": null,
+        "final_sha256": "5831c557764bfdfa2b92f3efcb3ba5897e32223c23ec4752de26ccfdba85d2be",
+        "path": "examples/erp_bench/tests/test_evidence.py"
+      },
+      {
+        "base_sha256": null,
+        "final_sha256": "374d6a5ba70d38473d86508892b645e75d07156f6dc60c1a2add33b58b3ceed5",
+        "path": "examples/erp_bench/tests/test_native.py"
+      },
+      {
+        "base_sha256": null,
+        "final_sha256": "a4fae027379dd244b499e26e42233b94cc0eda863f990af450bcefbfa2cc7d34",
+        "path": "examples/erp_bench/tests/test_planning.py"
+      },
+      {
+        "base_sha256": null,
+        "final_sha256": "5e3fb306d5a637aa4f1cbb976cbab5db4b6f9c5cc82a769ab3abf2e6bc44b364",
+        "path": "examples/erp_bench/tests/test_plugin.py"
+      },
+      {
+        "base_sha256": null,
+        "final_sha256": "de6cc37ec77fa6ecccbf1677e4d9ea57053123d524a6f54c47a73d340244a48f",
+        "path": "examples/erp_bench/tests/test_scoring.py"
+      },
+      {
+        "base_sha256": null,
+        "final_sha256": "2565d69ded130121ace776d0a850987bb72ebe12320f8db9b6dc6ce70d2da29e",
+        "path": "examples/erp_bench/tests/test_sources.py"
+      }
+    ],
+    "owned_prefixes": [
+      "examples/erp_bench/"
+    ],
+    "repository": "https://github.com/Deng-0119/RPNH",
+    "tested_commit": "8980e1f0552d30f490af08e60d4e8e3724ea638e"
+  },
+  "stages": {
+    "evaluation": {
+      "commands": [],
+      "evidence": [
+        "prelaunch-observation",
+        "original-run17-log"
+      ],
+      "reason": "Prelaunch legacy profile entry rejection: only the transport shim was prepared; no world, owner or model execution was reached. No score.",
+      "status": "blocked"
+    },
+    "mock": {
+      "commands": [],
+      "evidence": [],
+      "reason": "This historical startup condition did not run offline or mock acceptance.",
+      "status": "not_run"
+    },
+    "native": {
+      "commands": [],
+      "evidence": [
+        "prelaunch-observation",
+        "original-run17-log"
+      ],
+      "reason": "Prelaunch legacy profile entry rejection: only the transport shim was prepared; no world, owner or model execution was reached. No score.",
+      "status": "blocked"
+    },
+    "offline": {
+      "commands": [],
+      "evidence": [],
+      "reason": "This historical startup condition did not run offline or mock acceptance.",
+      "status": "not_run"
+    },
+    "provider": {
+      "commands": [],
+      "evidence": [
+        "prelaunch-observation",
+        "original-run17-log"
+      ],
+      "reason": "Prelaunch legacy profile entry rejection: only the transport shim was prepared; no world, owner or model execution was reached. No score.",
+      "status": "blocked"
+    }
+  },
+  "task": {
+    "adaptations": [
+      "Developer prelaunch failed during explicit supported Codex endpoint/profile binding; original task inputs unchanged."
+    ],
+    "input_sha256": "d833e8e8849fe55acfd99573c4ae9c048291e0c292b72a055fca72b57c13feac",
+    "instruction_sha256": "6d98cddc801e977c5a6785c8b9b1d4f2e768da61f0bde3a1accb4b56e3beaf0a",
+    "mode": "upstream_original",
+    "original_semantics": "Unchanged official seeded Odoo task, instruction, limits and original verifier.",
+    "phase": "prelaunch",
+    "task_id": "2000_easy_01_buy_only_baseline",
+    "unavailable_reason": null
+  },
+  "upstream": [
+    {
+      "license": "CC0-1.0",
+      "repository": "https://github.com/agentic-labs/erp-bench",
+      "revision": "ceba3880af555129b5278e056a0c20f2fb5a0ba9",
+      "role": "task_and_scorer"
+    }
+  ]
+}

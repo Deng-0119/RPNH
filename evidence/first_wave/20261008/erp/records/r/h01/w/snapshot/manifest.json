@@ -1,0 +1,26 @@
+{
+  "condition_id": "erp-showcase-2299-a01",
+  "container_id": "725f281a58f9198c21a9f3be56555d41e2b632f0ffb53a7cdc9fb2543580ae8c",
+  "identity": {
+    "sentinel_mtime_ns": 1791442378147556559,
+    "sentinel_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "timezone": [
+      "UTC",
+      "UTC"
+    ],
+    "tz_env": null,
+    "localtime_sha256": "8b85846791ab2c8a5463c83a5be3c043e2570d7448434d41398969ed47e3e6f2",
+    "repair_seed_sha256": "e92fd67645aa61fb2895c8fb7877751be1cc9736eefe55759410b30f7a32cb22"
+  },
+  "files": {
+    "bench.dump": {
+      "sha256": "cb7db47c85898dcc5c10c3a29d4fb2edb99b755485b3152e904bc7cc55e1a5c3",
+      "bytes": 9215612
+    },
+    "files.tar": {
+      "sha256": "862e9851db10b979217648823fb305246b496de535b08db7c89bf04e3e1202f6",
+      "bytes": 2508800
+    }
+  },
+  "scope": "quiescent_solver_original_live_world; no restore performed"
+}

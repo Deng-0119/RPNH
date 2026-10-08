@@ -1,0 +1,69 @@
+{
+  "elapsed_seconds": 6.800582037999902,
+  "forced_termination": false,
+  "max_attempts_per_stage": null,
+  "official_agent_timeout_seconds": 3600,
+  "owner_quiescent": false,
+  "process_exit_code": 1,
+  "process_exit_confirmed": true,
+  "result_evidence": {
+    "actions": [],
+    "actual_model_call_counts": [
+      0,
+      0
+    ],
+    "agent_loop_terminal_observed": false,
+    "benchmark_score": "not_checked",
+    "business_success": "not_checked",
+    "coverage": "complete_at_head",
+    "outer_stop": null,
+    "read_only": true,
+    "run_execution_authority_ref": {
+      "entity_type": "run_execution_authority/v1",
+      "logical_id": "run_execution_authority:43bb29df016854268b3915d256e3f2a9",
+      "version_id": "run_execution_authority_version:01e8aaf3457d52c1b6dc2ff69ec61e87"
+    },
+    "run_terminal_evidence": [],
+    "runtime_execution_status": "running",
+    "runtime_terminal": false,
+    "schema_version": "rpnh/agent_result_evidence/v1",
+    "source": {
+      "head_ordinal": 275,
+      "run_dir": "/home/deng123/RPNH/task-erp-first-wave-20261008/r/s02/r",
+      "task_id": "task:261c908ac8e14dfb8924e58bf3d45f99",
+      "writer_fencing_epoch": 2
+    },
+    "stops": [],
+    "task_model_call_limit": null
+  },
+  "shutdown_error": null,
+  "status": {
+    "kind": "workflow",
+    "log_path": "/home/deng123/RPNH/task-erp-first-wave-20261008/r/s02/control/logs/task-7d75f325f8e7.log",
+    "process_status": "FAILED",
+    "registry": {
+      "actual_model_call_counts": [
+        0,
+        0
+      ],
+      "checkpoint_ref": {
+        "entity_type": "marking_checkpoint/v1",
+        "logical_id": "marking_checkpoint:10db701cba505b8095bdcf8ff5164bea",
+        "version_id": "marking_checkpoint_version:b3a506a59c6754abb753888ae2406414"
+      },
+      "execution_generation": 0,
+      "execution_status": "running",
+      "final_result_index_count": 0,
+      "task_ref": "task:261c908ac8e14dfb8924e58bf3d45f99",
+      "terminal_evidence_count": 0
+    },
+    "return_code": 1,
+    "run_dir": "/home/deng123/RPNH/task-erp-first-wave-20261008/r/s02/r",
+    "socket_ready": false,
+    "task_id": "task-7d75f325f8e7"
+  },
+  "stop_reason": null,
+  "task_id": "task-7d75f325f8e7",
+  "terminal": null,
+  "terminal_read_error": "RuntimeError"
+}

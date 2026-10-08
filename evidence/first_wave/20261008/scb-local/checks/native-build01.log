@@ -1,0 +1,9 @@
+Processing ./task-first-wave-examples-20261008/work/native-site-build01
+  Preparing metadata (pyproject.toml): started
+  Preparing metadata (pyproject.toml): finished with status 'done'
+Building wheels for collected packages: rpnh-slopcodebench
+  Building wheel for rpnh-slopcodebench (pyproject.toml): started
+  Building wheel for rpnh-slopcodebench (pyproject.toml): finished with status 'done'
+  Created wheel for rpnh-slopcodebench: filename=rpnh_slopcodebench-0.1.0-py3-none-any.whl size=21311 sha256=f12286ba92f8a3ae6f172a71880d5b2fc829a663834977f290543683092ca20c
+  Stored in directory: /home/deng123/RPNH/task-first-wave-examples-20261008/work/native-site-cache/wheels/9b/c4/b7/a02cfa5b2589d684379330043fa990887310dedcdd982d2f2f
+Successfully built rpnh-slopcodebench

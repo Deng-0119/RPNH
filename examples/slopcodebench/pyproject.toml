@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "rpnh-slopcodebench"
+version = "0.1.0"
+description = "Optional RPNH managed Session-command development pilot"
+requires-python = ">=3.12"
+dependencies = ["rpnh-harness>=0.1.0rc2"]
+
+[project.entry-points."rpnh.plugins"]
+scb_session = "rpnh_scb.plugin:factory"
+
+[project.scripts]
+rpnh-scb-preflight = "rpnh_scb.preflight:main"
+rpnh-scb-pilot = "rpnh_scb.run:main"
+
+[tool.setuptools]
+packages = ["rpnh_scb"]
+package-dir = {rpnh_scb = "."}
+
+[tool.setuptools.package-data]
+rpnh_scb = ["sources.json", "condition.example.json"]

@@ -1,0 +1,12 @@
+{
+  "commands": [
+    "TaskControl.start/status/result/result_evidence/stop"
+  ],
+  "ended_at": "2026-10-08T05:53:26.453053+00:00",
+  "exit_code": 1,
+  "measurements": {},
+  "reason": "Owner execution did not establish quiescent registered native evidence.",
+  "started_at": "2026-10-08T05:53:19.641977+00:00",
+  "status": "failed",
+  "tested_tree_sha256": "2f8da665038b0b996d301f6c1d050edf8ec8ad2c2c670a24d105924773509432"
+}

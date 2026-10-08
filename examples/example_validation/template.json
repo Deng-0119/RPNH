@@ -1,0 +1,111 @@
+{
+  "schema_version": "rpnh/example-evidence/v1",
+  "record_id": "erp2299-preparation-REPLACE",
+  "example_id": "erp_bench",
+  "source": {
+    "repository": "https://github.com/Deng-0119/RPNH",
+    "base_commit": "ae09445fe1d9b973502bc5d2c961976c1d2c0163",
+    "tested_commit": null,
+    "owned_prefixes": [
+      "examples/erp_bench/"
+    ],
+    "changed_files": []
+  },
+  "upstream": [
+    {
+      "role": "task_and_scorer",
+      "repository": "https://github.com/agentic-labs/erp-bench",
+      "revision": "ceba3880af555129b5278e056a0c20f2fb5a0ba9",
+      "license": "See pinned upstream LICENSE and example THIRD_PARTY_NOTICES.md."
+    }
+  ],
+  "task": {
+    "task_id": "2299_hard_repair_plan_hard",
+    "phase": "initial",
+    "mode": "upstream_original",
+    "original_semantics": "Repair the original manufacturing/procurement plan; the outage is already in the original instruction. Preserve original Odoo state, agent action surface and grader.",
+    "adaptations": [],
+    "instruction_sha256": null,
+    "input_sha256": null,
+    "unavailable_reason": "Original task inputs have not been materialized and hashed for this record."
+  },
+  "condition": {
+    "sha256": null,
+    "artifact_id": null,
+    "unavailable_reason": "A frozen condition has not been produced."
+  },
+  "model": {
+    "kind": "none",
+    "provider": null,
+    "exact_model": null,
+    "configuration_sha256": null,
+    "configuration_artifact_id": null,
+    "unavailable_reason": "No real-model configuration has been authorized or selected."
+  },
+  "stages": {
+    "offline": {
+      "status": "not_run",
+      "commands": [],
+      "evidence": [],
+      "reason": "No execution evidence in this template."
+    },
+    "mock": {
+      "status": "not_run",
+      "commands": [],
+      "evidence": [],
+      "reason": "No execution evidence in this template."
+    },
+    "native": {
+      "status": "not_run",
+      "commands": [],
+      "evidence": [],
+      "reason": "No execution evidence in this template."
+    },
+    "provider": {
+      "status": "not_run",
+      "commands": [],
+      "evidence": [],
+      "reason": "No execution evidence in this template."
+    },
+    "evaluation": {
+      "status": "not_run",
+      "commands": [],
+      "evidence": [],
+      "reason": "No execution evidence in this template."
+    }
+  },
+  "model_calls": {
+    "status": "unknown",
+    "real_provider_calls": null,
+    "fake_provider_calls": null,
+    "evidence": [],
+    "reason": "No measured usage evidence; a template cannot establish zero calls."
+  },
+  "scores": [],
+  "artifacts": [],
+  "registry_refs": [
+    {
+      "purpose": "terminal_result",
+      "status": "unavailable",
+      "task_id": null,
+      "projection_artifact_id": null,
+      "reason": "No RPNH owner run or real Registry projection has been collected.",
+      "ref": null
+    }
+  ],
+  "history": {
+    "policy": "append_only",
+    "previous_record_artifacts": [],
+    "note": "First record. Create a new record for each attempt or revised condition; retain all previous records and original scores."
+  },
+  "findings": [],
+  "privacy": {
+    "review_status": "pending",
+    "reviewed_public_artifacts": [],
+    "raw_provider_transcripts_included": false,
+    "note": "Review every public file and free-text field before distribution. Keep raw transcripts, credentials, private endpoints and absolute paths local."
+  },
+  "public_notes": [
+    "TEMPLATE ONLY. No execution, official score, model usage or harness improvement is established."
+  ]
+}

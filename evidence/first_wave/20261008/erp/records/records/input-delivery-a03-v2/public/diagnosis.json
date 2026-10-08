@@ -1,0 +1,41 @@
+{
+  "classification": "example_actor_capability_binding",
+  "declared_tools": [
+    "complete_interaction",
+    "erp_python",
+    "read_managed_output",
+    "validate_plan",
+    "write_file"
+  ],
+  "inspection": "Read-only registered first request; raw request remains private. No solver resumed.",
+  "instruction_sha256": "6d98cddc801e977c5a6785c8b9b1d4f2e768da61f0bde3a1accb4b56e3beaf0a",
+  "limitation": "Task input was retained by RPNH; this actor did not expose its registered input reader.",
+  "model_calls": [
+    11,
+    0
+  ],
+  "original_instruction_visible_inline": false,
+  "original_reward": 0.0,
+  "read_file_declared": false,
+  "record_id": "erp-smoke-2000-a03-input-delivery-diagnosis",
+  "registered_input_read_file_cue_present": false,
+  "request_resource_ref": {
+    "resource_id": "resource:4768edc61a015af399aa8bdbe5d5018e",
+    "resource_version_id": "resource_version:533971647eae5743bf8b37013946f329"
+  },
+  "source_commit": "2ca5fbceb058e4ffe3d5b761ca3a6834dac8f621",
+  "terminal_report": {
+    "applied_operations": [],
+    "limitation": "The original ERP business instruction and authorized credentials were unavailable, so carrying out or inferring transactions would be unsupported.",
+    "lineage": [],
+    "observed_facts": [
+      "The only located task-request resource had an empty preview and was not available inside the isolated ERP workspace.",
+      "The Odoo XML-RPC database list contained bench.",
+      "No supplied ERP credentials authenticated; no business records were read or changed."
+    ],
+    "proposed_plan": null,
+    "status": "unable_to_execute_business_task",
+    "validation_calculations": null
+  },
+  "turn_sequence": 0
+}

@@ -1,0 +1,19 @@
+{
+  "argv": [
+    "git",
+    "rev-parse",
+    "HEAD"
+  ],
+  "cwd": "/home/deng123/RPNH/task-first-wave-examples-20261008/source",
+  "exit_code": 0,
+  "elapsed_seconds": 0.0013382149991230108,
+  "log": "evidence/source-head.log",
+  "finished_utc": "2026-10-08T07:37:14.823611+00:00",
+  "environment": {
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "TMPDIR": "/home/deng123/RPNH/task-first-wave-examples-20261008/work/tmp",
+    "XDG_CACHE_HOME": "/home/deng123/RPNH/task-first-wave-examples-20261008/work/xdg",
+    "PIP_CACHE_DIR": "/home/deng123/RPNH/task-first-wave-examples-20261008/work/cache",
+    "GIT_OPTIONAL_LOCKS": "0"
+  }
+}

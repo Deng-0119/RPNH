@@ -1,0 +1,852 @@
+{
+  "overall_score": 0.0,
+  "passed": false,
+  "constraint": {
+    "earned": 0,
+    "total": 27
+  },
+  "hygiene": {
+    "earned": 1,
+    "total": 5
+  },
+  "optimality": {
+    "score": 100.0,
+    "total": 100.0
+  },
+  "rules": {
+    "total": 38,
+    "applicable": 32,
+    "passed": 4,
+    "failed": 28,
+    "not_applicable": 6,
+    "by_dimension": {
+      "constraint": [
+        {
+          "dimension": "constraint",
+          "rule": "demand_coverage",
+          "args": [
+            "r674891CF17_c01",
+            "P674891CF17-SPP-001",
+            "4",
+            "gte"
+          ],
+          "expr": "demand_coverage r674891CF17_c01 P674891CF17-SPP-001 4 gte",
+          "status": "FAIL",
+          "passed": false,
+          "applicable": true
+        },
+        {
+          "dimension": "constraint",
+          "rule": "demand_coverage",
+          "args": [
+            "r674891CF17_c02",
+            "P674891CF17-SPP-001",
+            "7",
+            "gte"
+          ],
+          "expr": "demand_coverage r674891CF17_c02 P674891CF17-SPP-001 7 gte",
+          "status": "FAIL",
+          "passed": false,
+          "applicable": true
+        },
+        {
+          "dimension": "constraint",
+          "rule": "demand_coverage",
+          "args": [
+            "r674891CF17_c03",
+            "P674891CF17-SPP-001",
+            "12",
+            "gte"
+          ],
+          "expr": "demand_coverage r674891CF17_c03 P674891CF17-SPP-001 12 gte",
+          "status": "FAIL",
+          "passed": false,
+          "applicable": true
+        },
+        {
+          "dimension": "constraint",
+          "rule": "demand_coverage",
+          "args": [
+            "r674891CF17_c04",
+            "P674891CF17-SPP-001",
+            "9",
+            "gte"
+          ],
+          "expr": "demand_coverage r674891CF17_c04 P674891CF17-SPP-001 9 gte",
+          "status": "FAIL",
+          "passed": false,
+          "applicable": true
+        },
+        {
+          "dimension": "constraint",
+          "rule": "deadline_fulfillment",
+          "args": [
+            "r674891CF17_c01",
+            "P674891CF17-SPP-001",
+            "6"
+          ],
+          "expr": "deadline_fulfillment r674891CF17_c01 P674891CF17-SPP-001 6",
+          "status": "FAIL",
+          "passed": false,
+          "applicable": true
+        },
+        {
+          "dimension": "constraint",
+          "rule": "deadline_fulfillment",
+          "args": [
+            "r674891CF17_c02",
+            "P674891CF17-SPP-001",
+            "7"
+          ],
+          "expr": "deadline_fulfillment r674891CF17_c02 P674891CF17-SPP-001 7",
+          "status": "FAIL",
+          "passed": false,
+          "applicable": true
+        },
+        {
+          "dimension": "constraint",
+          "rule": "deadline_fulfillment",
+          "args": [
+            "r674891CF17_c03",
+            "P674891CF17-SPP-001",
+            "8"
+          ],
+          "expr": "deadline_fulfillment r674891CF17_c03 P674891CF17-SPP-001 8",
+          "status": "FAIL",
+          "passed": false,
+          "applicable": true
+        },
+        {
+          "dimension": "constraint",
+          "rule": "deadline_fulfillment",
+          "args": [
+            "r674891CF17_c04",
+            "P674891CF17-SPP-001",
+            "8"
+          ],
+          "expr": "deadline_fulfillment r674891CF17_c04 P674891CF17-SPP-001 8",
+          "status": "FAIL",
+          "passed": false,
+          "applicable": true
+        },
+        {
+          "dimension": "constraint",
+          "rule": "list_price",
+          "args": [
+            "r674891CF17_c01",
+            "P674891CF17-SPP-001",
+            "442.85"
+          ],
+          "expr": "list_price r674891CF17_c01 P674891CF17-SPP-001 442.85",
+          "status": "FAIL",
+          "passed": false,
+          "applicable": true
+        },
+        {
+          "dimension": "constraint",
+          "rule": "list_price",
+          "args": [
+            "r674891CF17_c02",
+            "P674891CF17-SPP-001",
+            "442.85"
+          ],
+          "expr": "list_price r674891CF17_c02 P674891CF17-SPP-001 442.85",
+          "status": "FAIL",
+          "passed": false,
+          "applicable": true
+        },
+        {
+          "dimension": "constraint",
+          "rule": "list_price",
+          "args": [
+            "r674891CF17_c03",
+            "P674891CF17-SPP-001",
+            "442.85"
+          ],
+          "expr": "list_price r674891CF17_c03 P674891CF17-SPP-001 442.85",
+          "status": "FAIL",
+          "passed": false,
+          "applicable": true
+        },
+        {
+          "dimension": "constraint",
+          "rule": "list_price",
+          "args": [
+            "r674891CF17_c04",
+            "P674891CF17-SPP-001",
+            "442.85"
+          ],
+          "expr": "list_price r674891CF17_c04 P674891CF17-SPP-001 442.85",
+          "status": "FAIL",
+          "passed": false,
+          "applicable": true
+        },
+        {
+          "dimension": "constraint",
+          "rule": "sale_revenue",
+          "args": [
+            "r674891CF17_c01",
+            "P674891CF17-SPP-001",
+            "1771.4"
+          ],
+          "expr": "sale_revenue r674891CF17_c01 P674891CF17-SPP-001 1771.4",
+          "status": "FAIL",
+          "passed": false,
+          "applicable": true
+        },
+        {
+          "dimension": "constraint",
+          "rule": "sale_revenue",
+          "args": [
+            "r674891CF17_c02",
+            "P674891CF17-SPP-001",
+            "3099.95"
+          ],
+          "expr": "sale_revenue r674891CF17_c02 P674891CF17-SPP-001 3099.95",
+          "status": "FAIL",
+          "passed": false,
+          "applicable": true
+        },
+        {
+          "dimension": "constraint",
+          "rule": "sale_revenue",
+          "args": [
+            "r674891CF17_c03",
+            "P674891CF17-SPP-001",
+            "5314.2"
+          ],
+          "expr": "sale_revenue r674891CF17_c03 P674891CF17-SPP-001 5314.2",
+          "status": "FAIL",
+          "passed": false,
+          "applicable": true
+        },
+        {
+          "dimension": "constraint",
+          "rule": "sale_revenue",
+          "args": [
+            "r674891CF17_c04",
+            "P674891CF17-SPP-001",
+            "3985.65"
+          ],
+          "expr": "sale_revenue r674891CF17_c04 P674891CF17-SPP-001 3985.65",
+          "status": "FAIL",
+          "passed": false,
+          "applicable": true
+        },
+        {
+          "dimension": "constraint",
+          "rule": "budget_compliance",
+          "args": [
+            "r674891CF17_c01",
+            "P674891CF17-SPP-001",
+            "1921.97"
+          ],
+          "expr": "budget_compliance r674891CF17_c01 P674891CF17-SPP-001 1921.97",
+          "status": "FAIL",
+          "passed": false,
+          "applicable": true
+        },
+        {
+          "dimension": "constraint",
+          "rule": "budget_compliance",
+          "args": [
+            "r674891CF17_c02",
+            "P674891CF17-SPP-001",
+            "3317.67"
+          ],
+          "expr": "budget_compliance r674891CF17_c02 P674891CF17-SPP-001 3317.67",
+          "status": "FAIL",
+          "passed": false,
+          "applicable": true
+        },
+        {
+          "dimension": "constraint",
+          "rule": "budget_compliance",
+          "args": [
+            "r674891CF17_c03",
+            "P674891CF17-SPP-001",
+            "5424.59"
+          ],
+          "expr": "budget_compliance r674891CF17_c03 P674891CF17-SPP-001 5424.59",
+          "status": "FAIL",
+          "passed": false,
+          "applicable": true
+        },
+        {
+          "dimension": "constraint",
+          "rule": "budget_compliance",
+          "args": [
+            "r674891CF17_c04",
+            "P674891CF17-SPP-001",
+            "4362.92"
+          ],
+          "expr": "budget_compliance r674891CF17_c04 P674891CF17-SPP-001 4362.92",
+          "status": "FAIL",
+          "passed": false,
+          "applicable": true
+        },
+        {
+          "dimension": "constraint",
+          "rule": "new_spend_margin_policy",
+          "args": [
+            "0.287"
+          ],
+          "expr": "new_spend_margin_policy 0.287",
+          "status": "FAIL",
+          "passed": false,
+          "applicable": true
+        },
+        {
+          "dimension": "constraint",
+          "rule": "supply_timing_feasible",
+          "args": [],
+          "expr": "supply_timing_feasible",
+          "status": "FAIL",
+          "passed": false,
+          "applicable": true
+        },
+        {
+          "dimension": "constraint",
+          "rule": "po_delivery_schedule_compliance",
+          "args": [],
+          "expr": "po_delivery_schedule_compliance",
+          "status": "NA",
+          "passed": false,
+          "applicable": false
+        },
+        {
+          "dimension": "constraint",
+          "rule": "po_consolidation_compliance",
+          "args": [],
+          "expr": "po_consolidation_compliance",
+          "status": "NA",
+          "passed": false,
+          "applicable": false
+        },
+        {
+          "dimension": "constraint",
+          "rule": "po_min_qty_compliance",
+          "args": [],
+          "expr": "po_min_qty_compliance",
+          "status": "NA",
+          "passed": false,
+          "applicable": false
+        },
+        {
+          "dimension": "constraint",
+          "rule": "po_price_tier_compliance",
+          "args": [],
+          "expr": "po_price_tier_compliance",
+          "status": "NA",
+          "passed": false,
+          "applicable": false
+        },
+        {
+          "dimension": "constraint",
+          "rule": "finished_stock_capacity_compliance",
+          "args": [],
+          "expr": "finished_stock_capacity_compliance",
+          "status": "FAIL",
+          "passed": false,
+          "applicable": true
+        },
+        {
+          "dimension": "constraint",
+          "rule": "assembly_capacity_compliance",
+          "args": [],
+          "expr": "assembly_capacity_compliance",
+          "status": "NA",
+          "passed": false,
+          "applicable": false
+        },
+        {
+          "dimension": "constraint",
+          "rule": "finished_vendor_max_qty_compliance",
+          "args": [],
+          "expr": "finished_vendor_max_qty_compliance",
+          "status": "PASS",
+          "passed": true,
+          "applicable": true
+        },
+        {
+          "dimension": "constraint",
+          "rule": "component_vendor_max_qty_compliance",
+          "args": [],
+          "expr": "component_vendor_max_qty_compliance",
+          "status": "PASS",
+          "passed": true,
+          "applicable": true
+        },
+        {
+          "dimension": "constraint",
+          "rule": "component_stock_capacity_compliance",
+          "args": [],
+          "expr": "component_stock_capacity_compliance",
+          "status": "PASS",
+          "passed": true,
+          "applicable": true
+        },
+        {
+          "dimension": "constraint",
+          "rule": "supply_coverage",
+          "args": [
+            "P674891CF17-SPP-001",
+            "32",
+            "27.0"
+          ],
+          "expr": "supply_coverage P674891CF17-SPP-001 32 27.0",
+          "status": "FAIL",
+          "passed": false,
+          "applicable": true
+        }
+      ],
+      "hygiene": [
+        {
+          "dimension": "hygiene",
+          "rule": "so_confirmed",
+          "args": [
+            "r674891CF17_c01",
+            "P674891CF17-SPP-001"
+          ],
+          "expr": "so_confirmed r674891CF17_c01 P674891CF17-SPP-001",
+          "status": "FAIL",
+          "passed": false,
+          "applicable": true
+        },
+        {
+          "dimension": "hygiene",
+          "rule": "so_confirmed",
+          "args": [
+            "r674891CF17_c02",
+            "P674891CF17-SPP-001"
+          ],
+          "expr": "so_confirmed r674891CF17_c02 P674891CF17-SPP-001",
+          "status": "FAIL",
+          "passed": false,
+          "applicable": true
+        },
+        {
+          "dimension": "hygiene",
+          "rule": "so_confirmed",
+          "args": [
+            "r674891CF17_c03",
+            "P674891CF17-SPP-001"
+          ],
+          "expr": "so_confirmed r674891CF17_c03 P674891CF17-SPP-001",
+          "status": "FAIL",
+          "passed": false,
+          "applicable": true
+        },
+        {
+          "dimension": "hygiene",
+          "rule": "so_confirmed",
+          "args": [
+            "r674891CF17_c04",
+            "P674891CF17-SPP-001"
+          ],
+          "expr": "so_confirmed r674891CF17_c04 P674891CF17-SPP-001",
+          "status": "FAIL",
+          "passed": false,
+          "applicable": true
+        },
+        {
+          "dimension": "hygiene",
+          "rule": "po_origin_traceability",
+          "args": [
+            "P674891CF17-SPP-001",
+            "finished"
+          ],
+          "expr": "po_origin_traceability P674891CF17-SPP-001 finished",
+          "status": "NA",
+          "passed": false,
+          "applicable": false
+        },
+        {
+          "dimension": "hygiene",
+          "rule": "adjacent_data_untouched",
+          "args": [],
+          "expr": "adjacent_data_untouched",
+          "status": "PASS",
+          "passed": true,
+          "applicable": true
+        }
+      ]
+    },
+    "failed_rules": [
+      {
+        "dimension": "constraint",
+        "rule": "demand_coverage",
+        "args": [
+          "r674891CF17_c01",
+          "P674891CF17-SPP-001",
+          "4",
+          "gte"
+        ],
+        "expr": "demand_coverage r674891CF17_c01 P674891CF17-SPP-001 4 gte",
+        "status": "FAIL",
+        "passed": false,
+        "applicable": true
+      },
+      {
+        "dimension": "constraint",
+        "rule": "demand_coverage",
+        "args": [
+          "r674891CF17_c02",
+          "P674891CF17-SPP-001",
+          "7",
+          "gte"
+        ],
+        "expr": "demand_coverage r674891CF17_c02 P674891CF17-SPP-001 7 gte",
+        "status": "FAIL",
+        "passed": false,
+        "applicable": true
+      },
+      {
+        "dimension": "constraint",
+        "rule": "demand_coverage",
+        "args": [
+          "r674891CF17_c03",
+          "P674891CF17-SPP-001",
+          "12",
+          "gte"
+        ],
+        "expr": "demand_coverage r674891CF17_c03 P674891CF17-SPP-001 12 gte",
+        "status": "FAIL",
+        "passed": false,
+        "applicable": true
+      },
+      {
+        "dimension": "constraint",
+        "rule": "demand_coverage",
+        "args": [
+          "r674891CF17_c04",
+          "P674891CF17-SPP-001",
+          "9",
+          "gte"
+        ],
+        "expr": "demand_coverage r674891CF17_c04 P674891CF17-SPP-001 9 gte",
+        "status": "FAIL",
+        "passed": false,
+        "applicable": true
+      },
+      {
+        "dimension": "constraint",
+        "rule": "deadline_fulfillment",
+        "args": [
+          "r674891CF17_c01",
+          "P674891CF17-SPP-001",
+          "6"
+        ],
+        "expr": "deadline_fulfillment r674891CF17_c01 P674891CF17-SPP-001 6",
+        "status": "FAIL",
+        "passed": false,
+        "applicable": true
+      },
+      {
+        "dimension": "constraint",
+        "rule": "deadline_fulfillment",
+        "args": [
+          "r674891CF17_c02",
+          "P674891CF17-SPP-001",
+          "7"
+        ],
+        "expr": "deadline_fulfillment r674891CF17_c02 P674891CF17-SPP-001 7",
+        "status": "FAIL",
+        "passed": false,
+        "applicable": true
+      },
+      {
+        "dimension": "constraint",
+        "rule": "deadline_fulfillment",
+        "args": [
+          "r674891CF17_c03",
+          "P674891CF17-SPP-001",
+          "8"
+        ],
+        "expr": "deadline_fulfillment r674891CF17_c03 P674891CF17-SPP-001 8",
+        "status": "FAIL",
+        "passed": false,
+        "applicable": true
+      },
+      {
+        "dimension": "constraint",
+        "rule": "deadline_fulfillment",
+        "args": [
+          "r674891CF17_c04",
+          "P674891CF17-SPP-001",
+          "8"
+        ],
+        "expr": "deadline_fulfillment r674891CF17_c04 P674891CF17-SPP-001 8",
+        "status": "FAIL",
+        "passed": false,
+        "applicable": true
+      },
+      {
+        "dimension": "constraint",
+        "rule": "list_price",
+        "args": [
+          "r674891CF17_c01",
+          "P674891CF17-SPP-001",
+          "442.85"
+        ],
+        "expr": "list_price r674891CF17_c01 P674891CF17-SPP-001 442.85",
+        "status": "FAIL",
+        "passed": false,
+        "applicable": true
+      },
+      {
+        "dimension": "constraint",
+        "rule": "list_price",
+        "args": [
+          "r674891CF17_c02",
+          "P674891CF17-SPP-001",
+          "442.85"
+        ],
+        "expr": "list_price r674891CF17_c02 P674891CF17-SPP-001 442.85",
+        "status": "FAIL",
+        "passed": false,
+        "applicable": true
+      },
+      {
+        "dimension": "constraint",
+        "rule": "list_price",
+        "args": [
+          "r674891CF17_c03",
+          "P674891CF17-SPP-001",
+          "442.85"
+        ],
+        "expr": "list_price r674891CF17_c03 P674891CF17-SPP-001 442.85",
+        "status": "FAIL",
+        "passed": false,
+        "applicable": true
+      },
+      {
+        "dimension": "constraint",
+        "rule": "list_price",
+        "args": [
+          "r674891CF17_c04",
+          "P674891CF17-SPP-001",
+          "442.85"
+        ],
+        "expr": "list_price r674891CF17_c04 P674891CF17-SPP-001 442.85",
+        "status": "FAIL",
+        "passed": false,
+        "applicable": true
+      },
+      {
+        "dimension": "constraint",
+        "rule": "sale_revenue",
+        "args": [
+          "r674891CF17_c01",
+          "P674891CF17-SPP-001",
+          "1771.4"
+        ],
+        "expr": "sale_revenue r674891CF17_c01 P674891CF17-SPP-001 1771.4",
+        "status": "FAIL",
+        "passed": false,
+        "applicable": true
+      },
+      {
+        "dimension": "constraint",
+        "rule": "sale_revenue",
+        "args": [
+          "r674891CF17_c02",
+          "P674891CF17-SPP-001",
+          "3099.95"
+        ],
+        "expr": "sale_revenue r674891CF17_c02 P674891CF17-SPP-001 3099.95",
+        "status": "FAIL",
+        "passed": false,
+        "applicable": true
+      },
+      {
+        "dimension": "constraint",
+        "rule": "sale_revenue",
+        "args": [
+          "r674891CF17_c03",
+          "P674891CF17-SPP-001",
+          "5314.2"
+        ],
+        "expr": "sale_revenue r674891CF17_c03 P674891CF17-SPP-001 5314.2",
+        "status": "FAIL",
+        "passed": false,
+        "applicable": true
+      },
+      {
+        "dimension": "constraint",
+        "rule": "sale_revenue",
+        "args": [
+          "r674891CF17_c04",
+          "P674891CF17-SPP-001",
+          "3985.65"
+        ],
+        "expr": "sale_revenue r674891CF17_c04 P674891CF17-SPP-001 3985.65",
+        "status": "FAIL",
+        "passed": false,
+        "applicable": true
+      },
+      {
+        "dimension": "constraint",
+        "rule": "budget_compliance",
+        "args": [
+          "r674891CF17_c01",
+          "P674891CF17-SPP-001",
+          "1921.97"
+        ],
+        "expr": "budget_compliance r674891CF17_c01 P674891CF17-SPP-001 1921.97",
+        "status": "FAIL",
+        "passed": false,
+        "applicable": true
+      },
+      {
+        "dimension": "constraint",
+        "rule": "budget_compliance",
+        "args": [
+          "r674891CF17_c02",
+          "P674891CF17-SPP-001",
+          "3317.67"
+        ],
+        "expr": "budget_compliance r674891CF17_c02 P674891CF17-SPP-001 3317.67",
+        "status": "FAIL",
+        "passed": false,
+        "applicable": true
+      },
+      {
+        "dimension": "constraint",
+        "rule": "budget_compliance",
+        "args": [
+          "r674891CF17_c03",
+          "P674891CF17-SPP-001",
+          "5424.59"
+        ],
+        "expr": "budget_compliance r674891CF17_c03 P674891CF17-SPP-001 5424.59",
+        "status": "FAIL",
+        "passed": false,
+        "applicable": true
+      },
+      {
+        "dimension": "constraint",
+        "rule": "budget_compliance",
+        "args": [
+          "r674891CF17_c04",
+          "P674891CF17-SPP-001",
+          "4362.92"
+        ],
+        "expr": "budget_compliance r674891CF17_c04 P674891CF17-SPP-001 4362.92",
+        "status": "FAIL",
+        "passed": false,
+        "applicable": true
+      },
+      {
+        "dimension": "constraint",
+        "rule": "new_spend_margin_policy",
+        "args": [
+          "0.287"
+        ],
+        "expr": "new_spend_margin_policy 0.287",
+        "status": "FAIL",
+        "passed": false,
+        "applicable": true
+      },
+      {
+        "dimension": "constraint",
+        "rule": "supply_timing_feasible",
+        "args": [],
+        "expr": "supply_timing_feasible",
+        "status": "FAIL",
+        "passed": false,
+        "applicable": true
+      },
+      {
+        "dimension": "constraint",
+        "rule": "finished_stock_capacity_compliance",
+        "args": [],
+        "expr": "finished_stock_capacity_compliance",
+        "status": "FAIL",
+        "passed": false,
+        "applicable": true
+      },
+      {
+        "dimension": "constraint",
+        "rule": "supply_coverage",
+        "args": [
+          "P674891CF17-SPP-001",
+          "32",
+          "27.0"
+        ],
+        "expr": "supply_coverage P674891CF17-SPP-001 32 27.0",
+        "status": "FAIL",
+        "passed": false,
+        "applicable": true
+      },
+      {
+        "dimension": "hygiene",
+        "rule": "so_confirmed",
+        "args": [
+          "r674891CF17_c01",
+          "P674891CF17-SPP-001"
+        ],
+        "expr": "so_confirmed r674891CF17_c01 P674891CF17-SPP-001",
+        "status": "FAIL",
+        "passed": false,
+        "applicable": true
+      },
+      {
+        "dimension": "hygiene",
+        "rule": "so_confirmed",
+        "args": [
+          "r674891CF17_c02",
+          "P674891CF17-SPP-001"
+        ],
+        "expr": "so_confirmed r674891CF17_c02 P674891CF17-SPP-001",
+        "status": "FAIL",
+        "passed": false,
+        "applicable": true
+      },
+      {
+        "dimension": "hygiene",
+        "rule": "so_confirmed",
+        "args": [
+          "r674891CF17_c03",
+          "P674891CF17-SPP-001"
+        ],
+        "expr": "so_confirmed r674891CF17_c03 P674891CF17-SPP-001",
+        "status": "FAIL",
+        "passed": false,
+        "applicable": true
+      },
+      {
+        "dimension": "hygiene",
+        "rule": "so_confirmed",
+        "args": [
+          "r674891CF17_c04",
+          "P674891CF17-SPP-001"
+        ],
+        "expr": "so_confirmed r674891CF17_c04 P674891CF17-SPP-001",
+        "status": "FAIL",
+        "passed": false,
+        "applicable": true
+      }
+    ]
+  },
+  "spend": {
+    "assembly_spend": 0.0,
+    "component_spend": 0.0,
+    "expected_spend": 3065.92,
+    "finished_goods_spend": 0.0,
+    "optimality_score": null,
+    "other_spend": 0.0,
+    "spend_delta": -3065.92,
+    "spend_delta_abs": 3065.92,
+    "spend_score": 0.67,
+    "total_new_spend": 0.0,
+    "verified_spend_complete": true
+  },
+  "optimality_detail": {
+    "objective_kind": "constraint_only",
+    "optimality_score": 100.0,
+    "primary_actual": 0.0,
+    "primary_expected": 0.0,
+    "primary_score": 100.0
+  }
+}

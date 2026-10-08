@@ -1,0 +1,11 @@
+{
+  "argv": [
+    "/home/deng123/RPNH/task-erp-first-wave-20261008/venv/bin/python",
+    "-B",
+    "-c",
+    "from slop_code.execution import Session, Snapshot, EnvironmentSpecType; from slop_code.evaluation import ProblemConfig, PassPolicy, run_checkpoint; from slop_code.agent_runner.runner import get_task_for_checkpoint; print(\"PINNED_UPSTREAM_IMPORTS_READY\")"
+  ],
+  "exit_code": 1,
+  "elapsed_seconds": 0.09948372840881348,
+  "log": "evidence/upstream-import-01.log"
+}

@@ -1,0 +1,18 @@
+{
+  "condition": {
+    "exception_type": "ValueError",
+    "failure_class": "legacy_script_entry_rejected",
+    "original_condition_id": "erp-smoke-2000-a01",
+    "owner_started": false,
+    "phase": "prelaunch",
+    "profile_materialized": false,
+    "retrospective_record": true,
+    "source_reconstruction_commit": "8980e1f0552d30f490af08e60d4e8e3724ea638e",
+    "source_reconstruction_owned_tree_sha256": "b38554c36b37106513245a1b9909d34f28783361af8d3d99e9f5110d141710ae",
+    "world_started": false
+  },
+  "record_id": "erp-smoke-2000-a01-startup",
+  "task_id": "2000_easy_01_buy_only_baseline",
+  "task_input_sha256": "d833e8e8849fe55acfd99573c4ae9c048291e0c292b72a055fca72b57c13feac",
+  "tested_owned_tree_sha256": "b38554c36b37106513245a1b9909d34f28783361af8d3d99e9f5110d141710ae"
+}

@@ -1,0 +1,23 @@
+{
+  "agent_action_ref": {
+    "entity_type": "agent_action/v3",
+    "logical_id": "agent_action:271ef97296e55141a7794064acbafc38",
+    "version_id": "agent_action_version:e40fa861c75e50aa9c216dfab34887eb"
+  },
+  "broker_identity": {
+    "call_id": "native-command",
+    "checkpoint_key": "checkpoint_1",
+    "firing_id": "transition_firing_version:3e057980eaed58aeb10f13affa5548e1",
+    "invocation_id": "invocation_version:dbe369f3064f5dcbbea3cdb778211d67",
+    "operation_id": "scb_session/command"
+  },
+  "registered_return": {
+    "outcome": "outcome_unknown",
+    "result_refs": [],
+    "terminal_receipt_ref": {
+      "resource_id": "resource:cdc461c237db5930bdd06dc7ad545b49",
+      "resource_version_id": "resource_version:f62e6f003824500b9ce803fa6ecc0711"
+    }
+  },
+  "request_status": "no_next_request"
+}

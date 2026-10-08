@@ -1,0 +1,42 @@
+{
+  "verdict": "ACCEPTED_FINITE",
+  "recorded_at_utc": "2026-10-08T06:05:54.952575+00:00",
+  "scope": "Example-local freeze_profile executable/probe/interpreter binding and prepare_codex_endpoint exact --version passthrough. No owner, admission, grader or prior P1 re-review.",
+  "material_product_findings": [],
+  "accepted_behavior": "Known legacy bridge entry uses the installed supported module; argv and probe_argv use the explicit Codex endpoint; the literal venv Python pathname is preserved without symlink resolution. Model arguments, service, budgets, runtime policy, credential references and original private bytes are preserved. Exec closure controls remain unchanged.",
+  "evidence_bounds": {
+    "test28": {
+      "record": "evidence/pinned-interpreter-repair-28.json",
+      "status": "FAILED_RETAINED",
+      "passed": 35,
+      "failed": 1,
+      "cause": "Test compared parent checkout cpn.__file__ to child installed cpn.__file__; product interpreter binding was correct. Original result is not relabeled."
+    },
+    "proof29": {
+      "record": "evidence/existing-installed-bridge-proof-29.json",
+      "status": "PASS_REVIEWED",
+      "scope": "Actual resolved adapter Python child with -I imported cpn inside the task venv, reported rpnh-harness 0.1.0rc2, and the actual provider factory initialized and closed without request_once."
+    },
+    "test31": {
+      "record_label": "fullERP31",
+      "status": "PASS_PARENT_REPORTED",
+      "passed": 182,
+      "subtests_passed": 31,
+      "failed": 0,
+      "skipped": 0,
+      "correction": "Regression now checks the installed venv prefix rather than parent source import path."
+    },
+    "installed32": {
+      "record_label": "installedruntime32",
+      "status": "PASS_PARENT_REPORTED",
+      "runtime_files_byte_identical_to_current_source": 16,
+      "owned_tree_sha256_prefix_as_supplied": "b4684",
+      "scope": "Parent confirms package30 runtime unchanged by the test-assertion correction."
+    }
+  },
+  "acceptance_basis": "Earlier source/import review found no product defect. Parent-reported test31 and installed32 satisfy the outstanding test/freeze gate; no new checks were performed for this addendum.",
+  "historical_separation": "A01 and A02 remain their original failed conditions. A03 is a new fresh-world condition and receives no outcome claim from this artifact.",
+  "prior_four_p1_closures": "unchanged",
+  "native16_scope": "Prior lifecycle acceptance retained; parent documents lifecycle functions unchanged by the final binding-only delta.",
+  "limits": "Finite binding acceptance only. No new experiment, capability capture, native-core audit, provider/model success claim or ERP business-result claim. Source files were not modified."
+}

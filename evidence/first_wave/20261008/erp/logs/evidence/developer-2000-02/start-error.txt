@@ -1,0 +1,7 @@
+Docker compose command failed for environment 2000_easy_01_buy_only_baseline. Command: docker compose --project-name erp-developer-2000-02 --project-directory /home/deng123/RPNH/task-erp-first-wave-20261008/work/upstream/tasks/2000_easy_01_buy_only_baseline/environment -f /home/deng123/RPNH/task-erp-first-wave-20261008/tmp/tmp68x7rdlc/erp-developer-2000-02-docker-compose-resources.json -f /home/deng123/RPNH/task-erp-first-wave-20261008/venv/lib/python3.13/site-packages/harbor/environments/docker/docker-compose-build.yaml -f /home/deng123/RPNH/task-erp-first-wave-20261008/evidence/developer-2000-02/isolation.yaml -f /home/deng123/RPNH/task-erp-first-wave-20261008/tmp/tmpn1ekt4dm/docker-compose-environment.json -f /home/deng123/RPNH/task-erp-first-wave-20261008/tmp/tmphgk8ma06/docker-compose-mounts.json build. Return code: 1. Stdout:  Image erp-developer-2000-02-main Building 
+#1 [internal] load local bake definitions
+#1 reading from stdin 773B done
+#1 DONE 0.0s
+additional privileges requested: pass "--allow=network.host" to grant requested privileges
+
+. Stderr: None. 

@@ -1,0 +1,12 @@
+{
+  "cli_version": "codex-cli 0.160.0",
+  "exec_controls": [
+    "web_search=\"disabled\"",
+    "project_doc_max_bytes=0"
+  ],
+  "existing_rpnh_tool_disable_flags": "preserved",
+  "global_wrapper": "bypassed",
+  "kind": "explicit_official_codex_response_endpoint",
+  "model_service_budgets": "existing_selection_unchanged",
+  "subscription_bridge": "installed_supported_RPNH_module"
+}

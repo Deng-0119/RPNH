@@ -1,0 +1,21 @@
+{
+  "actual_model_call_counts": [
+    3,
+    0
+  ],
+  "execution_generation": 0,
+  "kind": "workflow",
+  "output": "Synthetic subprocess observed: scb-native-e3c5528d39ef4256a3330b16bf250333",
+  "run_outcome": "complete",
+  "task_id": "task-72ebca4efb7a",
+  "terminal_evidence_ref": {
+    "entity_type": "run_terminal_evidence/v1",
+    "logical_id": "terminal_evidence:b780775ae3fd47a0ba4061a711d54c2b",
+    "version_id": "terminal_evidence_version:74b8d9263a3e485cb6e195456fb0d652"
+  },
+  "terminal_result_ref": {
+    "entity_type": "resource_version/v1",
+    "logical_id": "resource:a5df804dd8db56a7a9079b5a8be1c732",
+    "version_id": "resource_version:204f607b77f0566baf8de91f0b6a845c"
+  }
+}

@@ -1,0 +1,54 @@
+agent_loop_execution_block loop=agent_loop:d824e4f18b4449b69eb8caa0c51cc954 kind=framework_repair boundary=llm_execution error_code=AgentLoopMechanicalLifecycleError error_message=provider attempt lacks one exact raw return exact_error_ref=operation_execution_lease_version:4924a68f53ff5441858d8be2858db612
+Traceback (most recent call last):
+  File "/home/deng123/RPNH/task-erp-first-wave-20261008/venv/lib/python3.13/site-packages/cpn/components/agent_loop/service.py", line 941, in _run_from_loop
+    completed = self._llm.request_agent_turn_v1(
+        execution, waiting, self._catalog,
+    ...<2 lines>...
+            f"{waiting.next_turn_sequence}:llm"),
+    )
+  File "/home/deng123/RPNH/task-erp-first-wave-20261008/venv/lib/python3.13/site-packages/cpn/components/agent_loop/service.py", line 641, in request_agent_turn_v1
+    return _execute(
+        self, execution, loop, catalog, idempotency_key=idempotency_key)
+  File "/home/deng123/RPNH/task-erp-first-wave-20261008/venv/lib/python3.13/site-packages/cpn/components/agent_loop/turn_execution.py", line 413, in request_agent_turn_v1
+    self._registry.record_llm_invocation_failure_v1(
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        current_loop, attempt, disposition,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<4 lines>...
+            f"{attempt.attempt_ref.version_id}:"
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+            f"{disposition}")))
+            ^^^^^^^^^^^^^^^^^^
+  File "/home/deng123/RPNH/task-erp-first-wave-20261008/venv/lib/python3.13/site-packages/cpn/rpnh/control_server.py", line 270, in invoke
+    return self.submit(name, *args, **kwargs).result()
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/home/deng123/miniforge3/lib/python3.13/concurrent/futures/_base.py", line 456, in result
+    return self.__get_result()
+           ~~~~~~~~~~~~~~~~~^^
+  File "/home/deng123/miniforge3/lib/python3.13/concurrent/futures/_base.py", line 401, in __get_result
+    raise self._exception
+  File "/home/deng123/RPNH/task-erp-first-wave-20261008/venv/lib/python3.13/site-packages/cpn/rpnh/control_server.py", line 132, in _dispatch_host
+    event.reply.set_result(event.execute())
+                           ~~~~~~~~~~~~~^^
+  File "/home/deng123/RPNH/task-erp-first-wave-20261008/venv/lib/python3.13/site-packages/cpn/rpnh/control_server.py", line 260, in <lambda>
+    return self._loop.submit_host(lambda: context.run(method, *args, **kwargs))
+                                          ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/deng123/RPNH/task-erp-first-wave-20261008/venv/lib/python3.13/site-packages/cpn/components/agent_loop/turn_records.py", line 1321, in record_llm_invocation_failure_v1
+    self.mechanical_lifecycle.raw_return_for_invocation_attempt(
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        attempt.attempt_ref,
+        ^^^^^^^^^^^^^^^^^^^^
+        read_response=lambda ref: self.kernel._read_firing_registered(
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+            self._context(loop), ref)))
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/deng123/RPNH/task-erp-first-wave-20261008/venv/lib/python3.13/site-packages/cpn/components/agent_loop/turn_records.py", line 865, in raw_return_for_invocation_attempt
+    event, response_ref, payload = self.require_raw_return(
+                                   ~~~~~~~~~~~~~~~~~~~~~~~^
+        provider.ref, read_response=read_response)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/deng123/RPNH/task-erp-first-wave-20261008/venv/lib/python3.13/site-packages/cpn/components/agent_loop/turn_records.py", line 786, in require_raw_return
+    raise AgentLoopMechanicalLifecycleError(
+        "provider attempt lacks one exact raw return")
+cpn.components.agent_loop.mechanical_contracts.AgentLoopMechanicalLifecycleError: provider attempt lacks one exact raw return
+{"schema_version": "rpnh/agent_task_result/v1", "kind": "workflow", "run_dir": "/home/deng123/RPNH/task-first-wave-examples-20261008/work/na02/complete/r", "run_ref": {"entity_type": "native_run_identity/v1", "logical_id": "run:de3f875f2e964c7fb492daa27dc78473", "version_id": "run_version:52f34bc5b3644913be56e4c148fc1d72"}, "task_ref": {"entity_type": "task/v1", "logical_id": "task:f20a64017fbd400fa44efab3a7db5338", "version_id": "task_version:0f8deb1efcf647d7a66afb9e286381f7"}, "stop_reason": "blocked_or_waiting", "terminal_evidence_ref": null, "terminal_result_ref": null, "output": null, "actual_model_call_counts": [0, 0]}

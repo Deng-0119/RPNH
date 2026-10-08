@@ -1,0 +1,33 @@
+Traceback (most recent call last):
+  File "/home/deng123/RPNH/task-erp-first-wave-20261008/work/developer_world.py", line 19, in <module>
+    asyncio.run(main())
+    ~~~~~~~~~~~^^^^^^^^
+  File "/home/deng123/miniforge3/lib/python3.13/asyncio/runners.py", line 195, in run
+    return runner.run(main)
+           ~~~~~~~~~~^^^^^^
+  File "/home/deng123/miniforge3/lib/python3.13/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "/home/deng123/miniforge3/lib/python3.13/asyncio/base_events.py", line 725, in run_until_complete
+    return future.result()
+           ~~~~~~~~~~~~~^^
+  File "/home/deng123/RPNH/task-erp-first-wave-20261008/work/developer_world.py", line 8, in main
+    await world.start()
+  File "/home/deng123/RPNH/task-erp-first-wave-20261008/source/examples/erp_bench/src/rpnh_erp_bench/environment.py", line 240, in start
+    await asyncio.wait_for(self.environment.start(force_build=False), timeout=600)
+  File "/home/deng123/miniforge3/lib/python3.13/asyncio/tasks.py", line 507, in wait_for
+    return await fut
+           ^^^^^^^^^
+  File "/home/deng123/RPNH/task-erp-first-wave-20261008/venv/lib/python3.13/site-packages/harbor/environments/docker/docker.py", line 1056, in start
+    await self._run_docker_compose_command(["build"])
+  File "/home/deng123/RPNH/task-erp-first-wave-20261008/venv/lib/python3.13/site-packages/harbor/environments/docker/docker.py", line 756, in _run_docker_compose_command
+    raise RuntimeError(
+    ...<5 lines>...
+    )
+RuntimeError: Docker compose command failed for environment 2000_easy_01_buy_only_baseline. Command: docker compose --project-name erp-developer-2000-01 --project-directory /home/deng123/RPNH/task-erp-first-wave-20261008/work/upstream/tasks/2000_easy_01_buy_only_baseline/environment -f /home/deng123/RPNH/task-erp-first-wave-20261008/tmp/tmpbhkhuu95/erp-developer-2000-01-docker-compose-resources.json -f /home/deng123/RPNH/task-erp-first-wave-20261008/venv/lib/python3.13/site-packages/harbor/environments/docker/docker-compose-build.yaml -f /home/deng123/RPNH/task-erp-first-wave-20261008/evidence/developer-2000-01/isolation.yaml -f /home/deng123/RPNH/task-erp-first-wave-20261008/tmp/tmpvr1_ow97/docker-compose-environment.json -f /home/deng123/RPNH/task-erp-first-wave-20261008/tmp/tmpzw1l8jmi/docker-compose-mounts.json build. Return code: 1. Stdout:  Image erp-developer-2000-01-main Building 
+#1 [internal] load local bake definitions
+#1 reading from stdin 717B done
+#1 DONE 0.0s
+additional privileges requested: pass "--allow=network.host" to grant requested privileges
+
+. Stderr: None. 

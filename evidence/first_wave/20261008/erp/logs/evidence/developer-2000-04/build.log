@@ -1,0 +1,379 @@
+#0 building with "default" instance using docker driver
+
+#1 [internal] load local bake definitions
+#1 reading from stdin 595B done
+#1 DONE 0.0s
+
+#2 [internal] load build definition from Dockerfile
+#2 transferring dockerfile:
+#2 transferring dockerfile: 1.18kB done
+#2 DONE 0.1s
+
+#3 [internal] load metadata for docker.io/library/odoo:19
+#3 DONE 4.6s
+
+#4 [internal] load metadata for ghcr.io/astral-sh/uv:latest
+#4 DONE 5.5s
+
+#5 [internal] load .dockerignore
+#5 transferring context: 2B done
+#5 DONE 0.1s
+
+#6 [internal] load build context
+#6 DONE 0.0s
+
+#7 FROM ghcr.io/astral-sh/uv:latest@sha256:61d393e44e249f2e4b526b6c7ddcecce245946826e608e11c93ad4f5bba55b21
+#7 resolve ghcr.io/astral-sh/uv:latest@sha256:61d393e44e249f2e4b526b6c7ddcecce245946826e608e11c93ad4f5bba55b21 0.1s done
+#7 ...
+
+#6 [internal] load build context
+#6 transferring context: 132.80kB done
+#6 DONE 0.2s
+
+#7 FROM ghcr.io/astral-sh/uv:latest@sha256:61d393e44e249f2e4b526b6c7ddcecce245946826e608e11c93ad4f5bba55b21
+#7 sha256:61d393e44e249f2e4b526b6c7ddcecce245946826e608e11c93ad4f5bba55b21 2.20kB / 2.20kB done
+#7 sha256:dd2385ac82b9aff6489344ec2b22916db986eb135454d030bce3038c7598a689 669B / 669B done
+#7 sha256:2832daefdfaee215fd647b8bc850821ece2a4c4f7703a11895c6d4631ef0858e 1.30kB / 1.30kB done
+#7 ...
+
+#8 [stage-0  1/10] FROM docker.io/library/odoo:19@sha256:dd9013e669caaa23d26765dc55814655eaeecca7cfc2c265dbabae913bce22fd
+#8 resolve docker.io/library/odoo:19@sha256:dd9013e669caaa23d26765dc55814655eaeecca7cfc2c265dbabae913bce22fd 0.1s done
+#8 sha256:dd9013e669caaa23d26765dc55814655eaeecca7cfc2c265dbabae913bce22fd 3.84kB / 3.84kB done
+#8 sha256:22bd89f3d205e59c24dbb716943dcb8cd89ea090ed4d32ce1bfdcf087fafc5df 2.66kB / 2.66kB done
+#8 sha256:0d96a8dd3e197ad4966ca9f1f5f21a126641b8437b994012eaaec198ddffc8b2 8.04kB / 8.04kB done
+#8 sha256:a60ef8ec184edb5ed91f5983f00261359fb2fe20f603e8d488b9477d32fcad70 18.87MB / 29.76MB 4.9s
+#8 sha256:9a7dccb956024f133684efebc0ba10b26687dd4120c3c8b3caa8c5345f35734f 2.10MB / 14.23MB 4.9s
+#8 sha256:fdf3382b3654327889140a1df12fcbfe0ca85dc45762d3834c6b879a64f34ddd 2.10MB / 241.12MB 4.9s
+#8 sha256:a60ef8ec184edb5ed91f5983f00261359fb2fe20f603e8d488b9477d32fcad70 22.02MB / 29.76MB 5.3s
+#8 sha256:9a7dccb956024f133684efebc0ba10b26687dd4120c3c8b3caa8c5345f35734f 3.15MB / 14.23MB 5.5s
+#8 sha256:a60ef8ec184edb5ed91f5983f00261359fb2fe20f603e8d488b9477d32fcad70 24.12MB / 29.76MB 5.7s
+#8 sha256:9a7dccb956024f133684efebc0ba10b26687dd4120c3c8b3caa8c5345f35734f 4.19MB / 14.23MB 5.9s
+#8 sha256:a60ef8ec184edb5ed91f5983f00261359fb2fe20f603e8d488b9477d32fcad70 28.31MB / 29.76MB 6.2s
+#8 sha256:9a7dccb956024f133684efebc0ba10b26687dd4120c3c8b3caa8c5345f35734f 5.24MB / 14.23MB 6.4s
+#8 sha256:9a7dccb956024f133684efebc0ba10b26687dd4120c3c8b3caa8c5345f35734f 6.29MB / 14.23MB 7.0s
+#8 sha256:a60ef8ec184edb5ed91f5983f00261359fb2fe20f603e8d488b9477d32fcad70 29.76MB / 29.76MB 7.0s done
+#8 sha256:133ee383ab304ee5b93b00758f5589fc5717df26a6e187ab20316030f1c774ff 0B / 871.05kB 7.2s
+#8 extracting sha256:a60ef8ec184edb5ed91f5983f00261359fb2fe20f603e8d488b9477d32fcad70 0.1s
+#8 sha256:9a7dccb956024f133684efebc0ba10b26687dd4120c3c8b3caa8c5345f35734f 7.34MB / 14.23MB 7.4s
+#8 sha256:9a7dccb956024f133684efebc0ba10b26687dd4120c3c8b3caa8c5345f35734f 8.39MB / 14.23MB 7.7s
+#8 sha256:9a7dccb956024f133684efebc0ba10b26687dd4120c3c8b3caa8c5345f35734f 9.44MB / 14.23MB 8.1s
+#8 sha256:fdf3382b3654327889140a1df12fcbfe0ca85dc45762d3834c6b879a64f34ddd 14.68MB / 241.12MB 8.1s
+#8 sha256:133ee383ab304ee5b93b00758f5589fc5717df26a6e187ab20316030f1c774ff 871.05kB / 871.05kB 8.1s done
+#8 sha256:3580fef6dc6344834808315c0451b121f7edded97b00c2938e3b4b88d14c7163 0B / 414.45MB 8.2s
+#8 sha256:9a7dccb956024f133684efebc0ba10b26687dd4120c3c8b3caa8c5345f35734f 10.49MB / 14.23MB 8.4s
+#8 sha256:9a7dccb956024f133684efebc0ba10b26687dd4120c3c8b3caa8c5345f35734f 11.53MB / 14.23MB 8.7s
+#8 sha256:9a7dccb956024f133684efebc0ba10b26687dd4120c3c8b3caa8c5345f35734f 12.58MB / 14.23MB 8.9s
+#8 sha256:9a7dccb956024f133684efebc0ba10b26687dd4120c3c8b3caa8c5345f35734f 13.63MB / 14.23MB 11.2s
+#8 extracting sha256:a60ef8ec184edb5ed91f5983f00261359fb2fe20f603e8d488b9477d32fcad70 4.0s done
+#8 sha256:9a7dccb956024f133684efebc0ba10b26687dd4120c3c8b3caa8c5345f35734f 14.23MB / 14.23MB 11.4s done
+#8 sha256:aff943fab8f692461ce1c79f0b4c7885407b07ab8be621b1a2f1d798ff7061cb 0B / 719B 11.4s
+#8 sha256:aff943fab8f692461ce1c79f0b4c7885407b07ab8be621b1a2f1d798ff7061cb 719B / 719B 12.1s done
+#8 sha256:fbd87b53a15b0b956b956a2cd6bf9e5519a1da7bdc2c05e0460b7922d662c10f 0B / 556B 12.1s
+#8 sha256:fdf3382b3654327889140a1df12fcbfe0ca85dc45762d3834c6b879a64f34ddd 27.26MB / 241.12MB 12.4s
+#8 sha256:fbd87b53a15b0b956b956a2cd6bf9e5519a1da7bdc2c05e0460b7922d662c10f 556B / 556B 13.0s done
+#8 sha256:99557586df490c3e0708f5d0fbb83950c21fa4b0e126e8b71311c5ea26175132 0B / 597B 13.1s
+#8 sha256:3580fef6dc6344834808315c0451b121f7edded97b00c2938e3b4b88d14c7163 8.39MB / 414.45MB 13.3s
+#8 sha256:99557586df490c3e0708f5d0fbb83950c21fa4b0e126e8b71311c5ea26175132 597B / 597B 13.7s done
+#8 sha256:f081b5cb50944236c6f0173c5dfa3f993c08b7515174c91dac39edcafcba2aa6 0B / 879B 13.7s
+#8 sha256:f081b5cb50944236c6f0173c5dfa3f993c08b7515174c91dac39edcafcba2aa6 879B / 879B 14.5s done
+#8 sha256:fdf3382b3654327889140a1df12fcbfe0ca85dc45762d3834c6b879a64f34ddd 40.89MB / 241.12MB 15.1s
+#8 sha256:fdf3382b3654327889140a1df12fcbfe0ca85dc45762d3834c6b879a64f34ddd 53.48MB / 241.12MB 17.9s
+#8 sha256:3580fef6dc6344834808315c0451b121f7edded97b00c2938e3b4b88d14c7163 23.07MB / 414.45MB 18.3s
+#8 sha256:fdf3382b3654327889140a1df12fcbfe0ca85dc45762d3834c6b879a64f34ddd 66.06MB / 241.12MB 20.6s
+#8 sha256:3580fef6dc6344834808315c0451b121f7edded97b00c2938e3b4b88d14c7163 45.09MB / 414.45MB 22.7s
+#8 sha256:fdf3382b3654327889140a1df12fcbfe0ca85dc45762d3834c6b879a64f34ddd 79.69MB / 241.12MB 24.5s
+#8 ...
+
+#7 FROM ghcr.io/astral-sh/uv:latest@sha256:61d393e44e249f2e4b526b6c7ddcecce245946826e608e11c93ad4f5bba55b21
+#7 sha256:f3f7502ac07c10bd911c63b27afb9b3f5902b8554ccbe381bde627178ad1915b 13.63MB / 23.67MB 24.7s
+#7 sha256:f3f7502ac07c10bd911c63b27afb9b3f5902b8554ccbe381bde627178ad1915b 15.73MB / 23.67MB 24.9s
+#7 ...
+
+#8 [stage-0  1/10] FROM docker.io/library/odoo:19@sha256:dd9013e669caaa23d26765dc55814655eaeecca7cfc2c265dbabae913bce22fd
+#8 sha256:3580fef6dc6344834808315c0451b121f7edded97b00c2938e3b4b88d14c7163 66.06MB / 414.45MB 27.0s
+#8 sha256:fdf3382b3654327889140a1df12fcbfe0ca85dc45762d3834c6b879a64f34ddd 92.27MB / 241.12MB 28.2s
+#8 ...
+
+#7 FROM ghcr.io/astral-sh/uv:latest@sha256:61d393e44e249f2e4b526b6c7ddcecce245946826e608e11c93ad4f5bba55b21
+#7 sha256:f3f7502ac07c10bd911c63b27afb9b3f5902b8554ccbe381bde627178ad1915b 23.67MB / 23.67MB 27.9s done
+#7 extracting sha256:f3f7502ac07c10bd911c63b27afb9b3f5902b8554ccbe381bde627178ad1915b 0.6s done
+#7 sha256:dcd00f4c468462b2a68c19a552a5b67c3fd23b41967f8622f7f1620cad1d105d 96B / 96B 28.6s done
+#7 extracting sha256:dcd00f4c468462b2a68c19a552a5b67c3fd23b41967f8622f7f1620cad1d105d 0.1s done
+#7 DONE 29.2s
+
+#8 [stage-0  1/10] FROM docker.io/library/odoo:19@sha256:dd9013e669caaa23d26765dc55814655eaeecca7cfc2c265dbabae913bce22fd
+#8 sha256:fdf3382b3654327889140a1df12fcbfe0ca85dc45762d3834c6b879a64f34ddd 104.86MB / 241.12MB 30.5s
+#8 sha256:3580fef6dc6344834808315c0451b121f7edded97b00c2938e3b4b88d14c7163 85.98MB / 414.45MB 32.0s
+#8 sha256:fdf3382b3654327889140a1df12fcbfe0ca85dc45762d3834c6b879a64f34ddd 117.44MB / 241.12MB 33.7s
+#8 sha256:3580fef6dc6344834808315c0451b121f7edded97b00c2938e3b4b88d14c7163 103.81MB / 414.45MB 37.0s
+#8 sha256:fdf3382b3654327889140a1df12fcbfe0ca85dc45762d3834c6b879a64f34ddd 130.02MB / 241.12MB 37.2s
+#8 sha256:fdf3382b3654327889140a1df12fcbfe0ca85dc45762d3834c6b879a64f34ddd 143.65MB / 241.12MB 39.5s
+#8 sha256:3580fef6dc6344834808315c0451b121f7edded97b00c2938e3b4b88d14c7163 124.78MB / 414.45MB 42.2s
+#8 sha256:fdf3382b3654327889140a1df12fcbfe0ca85dc45762d3834c6b879a64f34ddd 156.24MB / 241.12MB 42.5s
+#8 sha256:3580fef6dc6344834808315c0451b121f7edded97b00c2938e3b4b88d14c7163 140.51MB / 414.45MB 47.3s
+#8 sha256:fdf3382b3654327889140a1df12fcbfe0ca85dc45762d3834c6b879a64f34ddd 165.68MB / 241.12MB 47.6s
+#8 sha256:3580fef6dc6344834808315c0451b121f7edded97b00c2938e3b4b88d14c7163 161.48MB / 414.45MB 50.5s
+#8 sha256:fdf3382b3654327889140a1df12fcbfe0ca85dc45762d3834c6b879a64f34ddd 178.26MB / 241.12MB 51.3s
+#8 sha256:3580fef6dc6344834808315c0451b121f7edded97b00c2938e3b4b88d14c7163 182.45MB / 414.45MB 54.2s
+#8 sha256:fdf3382b3654327889140a1df12fcbfe0ca85dc45762d3834c6b879a64f34ddd 190.84MB / 241.12MB 54.7s
+#8 sha256:fdf3382b3654327889140a1df12fcbfe0ca85dc45762d3834c6b879a64f34ddd 203.42MB / 241.12MB 56.9s
+#8 sha256:3580fef6dc6344834808315c0451b121f7edded97b00c2938e3b4b88d14c7163 204.47MB / 414.45MB 59.3s
+#8 sha256:fdf3382b3654327889140a1df12fcbfe0ca85dc45762d3834c6b879a64f34ddd 216.01MB / 241.12MB 59.5s
+#8 sha256:fdf3382b3654327889140a1df12fcbfe0ca85dc45762d3834c6b879a64f34ddd 228.59MB / 241.12MB 62.1s
+#8 sha256:3580fef6dc6344834808315c0451b121f7edded97b00c2938e3b4b88d14c7163 226.49MB / 414.45MB 63.2s
+#8 sha256:fdf3382b3654327889140a1df12fcbfe0ca85dc45762d3834c6b879a64f34ddd 241.12MB / 241.12MB 64.4s done
+#8 extracting sha256:fdf3382b3654327889140a1df12fcbfe0ca85dc45762d3834c6b879a64f34ddd
+#8 sha256:3580fef6dc6344834808315c0451b121f7edded97b00c2938e3b4b88d14c7163 248.51MB / 414.45MB 66.8s
+#8 extracting sha256:fdf3382b3654327889140a1df12fcbfe0ca85dc45762d3834c6b879a64f34ddd 5.0s
+#8 sha256:3580fef6dc6344834808315c0451b121f7edded97b00c2938e3b4b88d14c7163 269.48MB / 414.45MB 70.4s
+#8 extracting sha256:fdf3382b3654327889140a1df12fcbfe0ca85dc45762d3834c6b879a64f34ddd 8.1s done
+#8 extracting sha256:9a7dccb956024f133684efebc0ba10b26687dd4120c3c8b3caa8c5345f35734f
+#8 extracting sha256:9a7dccb956024f133684efebc0ba10b26687dd4120c3c8b3caa8c5345f35734f 1.1s done
+#8 extracting sha256:133ee383ab304ee5b93b00758f5589fc5717df26a6e187ab20316030f1c774ff 0.1s
+#8 extracting sha256:133ee383ab304ee5b93b00758f5589fc5717df26a6e187ab20316030f1c774ff 0.2s done
+#8 sha256:3580fef6dc6344834808315c0451b121f7edded97b00c2938e3b4b88d14c7163 291.50MB / 414.45MB 74.6s
+#8 sha256:3580fef6dc6344834808315c0451b121f7edded97b00c2938e3b4b88d14c7163 306.18MB / 414.45MB 79.8s
+#8 sha256:3580fef6dc6344834808315c0451b121f7edded97b00c2938e3b4b88d14c7163 329.25MB / 414.45MB 83.6s
+#8 sha256:3580fef6dc6344834808315c0451b121f7edded97b00c2938e3b4b88d14c7163 350.22MB / 414.45MB 85.9s
+#8 sha256:3580fef6dc6344834808315c0451b121f7edded97b00c2938e3b4b88d14c7163 373.29MB / 414.45MB 89.2s
+#8 sha256:3580fef6dc6344834808315c0451b121f7edded97b00c2938e3b4b88d14c7163 395.31MB / 414.45MB 94.1s
+#8 sha256:3580fef6dc6344834808315c0451b121f7edded97b00c2938e3b4b88d14c7163 414.45MB / 414.45MB 98.0s done
+#8 extracting sha256:3580fef6dc6344834808315c0451b121f7edded97b00c2938e3b4b88d14c7163
+#8 extracting sha256:3580fef6dc6344834808315c0451b121f7edded97b00c2938e3b4b88d14c7163 5.1s
+#8 extracting sha256:3580fef6dc6344834808315c0451b121f7edded97b00c2938e3b4b88d14c7163 10.1s
+#8 extracting sha256:3580fef6dc6344834808315c0451b121f7edded97b00c2938e3b4b88d14c7163 15.3s
+#8 extracting sha256:3580fef6dc6344834808315c0451b121f7edded97b00c2938e3b4b88d14c7163 20.5s
+#8 extracting sha256:3580fef6dc6344834808315c0451b121f7edded97b00c2938e3b4b88d14c7163 25.6s
+#8 extracting sha256:3580fef6dc6344834808315c0451b121f7edded97b00c2938e3b4b88d14c7163 30.7s
+#8 extracting sha256:3580fef6dc6344834808315c0451b121f7edded97b00c2938e3b4b88d14c7163 35.7s
+#8 extracting sha256:3580fef6dc6344834808315c0451b121f7edded97b00c2938e3b4b88d14c7163 40.8s
+#8 extracting sha256:3580fef6dc6344834808315c0451b121f7edded97b00c2938e3b4b88d14c7163 41.7s done
+#8 extracting sha256:aff943fab8f692461ce1c79f0b4c7885407b07ab8be621b1a2f1d798ff7061cb
+#8 extracting sha256:aff943fab8f692461ce1c79f0b4c7885407b07ab8be621b1a2f1d798ff7061cb 0.1s done
+#8 extracting sha256:fbd87b53a15b0b956b956a2cd6bf9e5519a1da7bdc2c05e0460b7922d662c10f
+#8 extracting sha256:fbd87b53a15b0b956b956a2cd6bf9e5519a1da7bdc2c05e0460b7922d662c10f 0.0s done
+#8 extracting sha256:99557586df490c3e0708f5d0fbb83950c21fa4b0e126e8b71311c5ea26175132 0.1s done
+#8 extracting sha256:f081b5cb50944236c6f0173c5dfa3f993c08b7515174c91dac39edcafcba2aa6 0.1s done
+#8 DONE 141.6s
+
+#9 [stage-0  2/10] COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /usr/local/bin/
+#9 DONE 0.4s
+
+#10 [stage-0  3/10] RUN apt-get update && apt-get install -y --no-install-recommends     ca-certificates     gnupg     curl     && install -d /usr/share/postgresql-common/pgdg     && curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc -o /usr/share/postgresql-common/pgdg/apt.postgresql.org.asc     && echo "deb [signed-by=/usr/share/postgresql-common/pgdg/apt.postgresql.org.asc] https://apt.postgresql.org/pub/repos/apt noble-pgdg main" > /etc/apt/sources.list.d/pgdg.list     && apt-get update     && apt-get install -y --no-install-recommends postgresql-18     && rm -rf /var/lib/apt/lists/*
+#10 0.169 + apt-get update
+#10 0.748 Get:1 http://archive.ubuntu.com/ubuntu noble InRelease [256 kB]
+#10 3.056 Get:2 http://archive.ubuntu.com/ubuntu noble-updates InRelease [126 kB]
+#10 3.656 Get:3 http://archive.ubuntu.com/ubuntu noble-backports InRelease [126 kB]
+#10 5.903 Get:4 http://archive.ubuntu.com/ubuntu noble/universe amd64 Packages [19.3 MB]
+#10 12.25 Get:5 http://archive.ubuntu.com/ubuntu noble/multiverse amd64 Packages [331 kB]
+#10 12.25 Get:6 http://archive.ubuntu.com/ubuntu noble/restricted amd64 Packages [117 kB]
+#10 12.25 Get:7 http://archive.ubuntu.com/ubuntu noble/main amd64 Packages [1808 kB]
+#10 12.25 Get:8 http://archive.ubuntu.com/ubuntu noble-updates/multiverse amd64 Packages [67.4 kB]
+#10 12.25 Get:9 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 Packages [1701 kB]
+#10 12.64 Get:10 http://security.ubuntu.com/ubuntu noble-security InRelease [126 kB]
+#10 12.97 Get:11 http://archive.ubuntu.com/ubuntu noble-updates/restricted amd64 Packages [2177 kB]
+#10 13.53 Get:12 http://archive.ubuntu.com/ubuntu noble-updates/universe amd64 Packages [2165 kB]
+#10 13.70 Get:13 http://security.ubuntu.com/ubuntu noble-security/restricted amd64 Packages [1943 kB]
+#10 13.72 Get:14 http://archive.ubuntu.com/ubuntu noble-backports/multiverse amd64 Packages [671 B]
+#10 13.72 Get:15 http://archive.ubuntu.com/ubuntu noble-backports/universe amd64 Packages [36.0 kB]
+#10 13.72 Get:16 http://archive.ubuntu.com/ubuntu noble-backports/main amd64 Packages [49.0 kB]
+#10 15.89 Get:17 http://security.ubuntu.com/ubuntu noble-security/universe amd64 Packages [1545 kB]
+#10 16.34 Get:18 http://security.ubuntu.com/ubuntu noble-security/main amd64 Packages [1323 kB]
+#10 16.96 Get:19 http://security.ubuntu.com/ubuntu noble-security/multiverse amd64 Packages [50.0 kB]
+#10 17.00 Fetched 33.3 MB in 15s (2235 kB/s)
+#10 17.00 Reading package lists...
+#10 17.66 + apt-get install -y --no-install-recommends ca-certificates gnupg curl
+#10 17.67 Reading package lists...
+#10 18.33 Building dependency tree...
+#10 18.49 Reading state information...
+#10 18.69 ca-certificates is already the newest version (20260601~24.04.1).
+#10 18.69 gnupg is already the newest version (2.4.4-2ubuntu17.6).
+#10 18.69 curl is already the newest version (8.5.0-2ubuntu10.15).
+#10 18.69 0 upgraded, 0 newly installed, 0 to remove and 5 not upgraded.
+#10 18.69 + install -d /usr/share/postgresql-common/pgdg
+#10 18.69 + curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc -o /usr/share/postgresql-common/pgdg/apt.postgresql.org.asc
+#10 19.84 + echo 'deb [signed-by=/usr/share/postgresql-common/pgdg/apt.postgresql.org.asc] https://apt.postgresql.org/pub/repos/apt noble-pgdg main'
+#10 19.84 + apt-get update
+#10 20.46 Hit:1 http://archive.ubuntu.com/ubuntu noble InRelease
+#10 20.73 Hit:2 http://archive.ubuntu.com/ubuntu noble-updates InRelease
+#10 21.01 Hit:3 http://archive.ubuntu.com/ubuntu noble-backports InRelease
+#10 30.34 Hit:4 http://security.ubuntu.com/ubuntu noble-security InRelease
+#10 30.43 Get:5 https://apt.postgresql.org/pub/repos/apt noble-pgdg InRelease [189 kB]
+#10 31.07 Get:6 https://apt.postgresql.org/pub/repos/apt noble-pgdg/main amd64 Packages [1193 kB]
+#10 33.12 Fetched 1382 kB in 13s (104 kB/s)
+#10 33.12 Reading package lists...
+#10 33.89 + apt-get install -y --no-install-recommends postgresql-18
+#10 33.89 Reading package lists...
+#10 34.64 Building dependency tree...
+#10 34.83 Reading state information...
+#10 35.03 The following additional packages will be installed:
+#10 35.03   libjson-perl libnuma1 liburing2 locales postgresql-common ssl-cert ucf
+#10 35.04 Recommended packages:
+#10 35.04   libjson-xs-perl postgresql-18-jit sysstat logrotate
+#10 35.07 The following NEW packages will be installed:
+#10 35.07   libjson-perl libnuma1 liburing2 locales postgresql-18 postgresql-common
+#10 35.07   ssl-cert ucf
+#10 35.65 0 upgraded, 8 newly installed, 0 to remove and 6 not upgraded.
+#10 35.65 Need to get 12.1 MB of archives.
+#10 35.65 After this operation, 54.5 MB of additional disk space will be used.
+#10 35.65 Get:1 http://archive.ubuntu.com/ubuntu noble/main amd64 libjson-perl all 4.10000-1 [81.9 kB]
+#10 36.63 Get:2 http://archive.ubuntu.com/ubuntu noble/main amd64 ssl-cert all 1.1.2ubuntu1 [17.8 kB]
+#10 37.04 Get:3 http://archive.ubuntu.com/ubuntu noble/main amd64 ucf all 3.0043+nmu1 [56.5 kB]
+#10 37.05 Get:4 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 locales all 2.39-0ubuntu8.9 [4232 kB]
+#10 41.65 Get:5 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 libnuma1 amd64 2.0.18-1ubuntu0.24.04.1 [23.4 kB]
+#10 41.65 Get:6 http://archive.ubuntu.com/ubuntu noble/main amd64 liburing2 amd64 2.5-1build1 [21.1 kB]
+#10 47.62 Get:7 https://apt.postgresql.org/pub/repos/apt noble-pgdg/main amd64 postgresql-common all 293.pgdg24.04+1 [113 kB]
+#10 48.20 Get:8 https://apt.postgresql.org/pub/repos/apt noble-pgdg/main amd64 postgresql-18 amd64 18.6-1.pgdg24.04+2 [7577 kB]
+#10 171.7 perl: warning: Setting locale failed.
+#10 171.7 perl: warning: Please check that your locale settings:
+#10 171.7 	LANGUAGE = (unset),
+#10 171.7 	LC_ALL = (unset),
+#10 171.7 	LANG = "en_US.UTF-8"
+#10 171.7     are supported and installed on your system.
+#10 171.7 perl: warning: Falling back to the standard locale ("C").
+#10 171.7 debconf: delaying package configuration, since apt-utils is not installed
+#10 171.8 Fetched 12.1 MB in 2min 8s (94.4 kB/s)
+#10 171.8 Selecting previously unselected package libjson-perl.
+#10 171.8 (Reading database ... (Reading database ... 5%(Reading database ... 10%(Reading database ... 15%(Reading database ... 20%(Reading database ... 25%(Reading database ... 30%(Reading database ... 35%(Reading database ... 40%(Reading database ... 45%(Reading database ... 50%(Reading database ... 55%(Reading database ... 60%(Reading database ... 65%(Reading database ... 70%(Reading database ... 75%(Reading database ... 80%(Reading database ... 85%(Reading database ... 90%(Reading database ... 95%(Reading database ... 100%(Reading database ... 90641 files and directories currently installed.)
+#10 171.9 Preparing to unpack .../0-libjson-perl_4.10000-1_all.deb ...
+#10 171.9 Unpacking libjson-perl (4.10000-1) ...
+#10 172.0 Selecting previously unselected package ssl-cert.
+#10 172.0 Preparing to unpack .../1-ssl-cert_1.1.2ubuntu1_all.deb ...
+#10 172.0 Unpacking ssl-cert (1.1.2ubuntu1) ...
+#10 172.1 Selecting previously unselected package ucf.
+#10 172.1 Preparing to unpack .../2-ucf_3.0043+nmu1_all.deb ...
+#10 172.1 Moving old data out of the way
+#10 172.1 Unpacking ucf (3.0043+nmu1) ...
+#10 172.3 Selecting previously unselected package postgresql-common.
+#10 172.3 Preparing to unpack .../3-postgresql-common_293.pgdg24.04+1_all.deb ...
+#10 172.3 Adding 'diversion of /usr/bin/pg_config to /usr/bin/pg_config.libpq-dev by postgresql-common'
+#10 172.3 Unpacking postgresql-common (293.pgdg24.04+1) ...
+#10 172.5 Selecting previously unselected package locales.
+#10 172.5 Preparing to unpack .../4-locales_2.39-0ubuntu8.9_all.deb ...
+#10 172.5 Unpacking locales (2.39-0ubuntu8.9) ...
+#10 172.7 Selecting previously unselected package libnuma1:amd64.
+#10 172.7 Preparing to unpack .../5-libnuma1_2.0.18-1ubuntu0.24.04.1_amd64.deb ...
+#10 172.8 Unpacking libnuma1:amd64 (2.0.18-1ubuntu0.24.04.1) ...
+#10 172.9 Selecting previously unselected package liburing2:amd64.
+#10 172.9 Preparing to unpack .../6-liburing2_2.5-1build1_amd64.deb ...
+#10 172.9 Unpacking liburing2:amd64 (2.5-1build1) ...
+#10 173.0 Selecting previously unselected package postgresql-18.
+#10 173.0 Preparing to unpack .../7-postgresql-18_18.6-1.pgdg24.04+2_amd64.deb ...
+#10 173.1 Unpacking postgresql-18 (18.6-1.pgdg24.04+2) ...
+#10 173.6 Setting up locales (2.39-0ubuntu8.9) ...
+#10 173.7 debconf: unable to initialize frontend: Dialog
+#10 173.7 debconf: (TERM is not set, so the dialog frontend is not usable.)
+#10 173.7 debconf: falling back to frontend: Readline
+#10 173.7 debconf: unable to initialize frontend: Readline
+#10 173.7 debconf: (This frontend requires a controlling tty.)
+#10 173.7 debconf: falling back to frontend: Teletype
+#10 174.1 Generating locales (this might take a while)...
+#10 174.2 Generation complete.
+#10 174.2 Setting up ssl-cert (1.1.2ubuntu1) ...
+#10 174.3 debconf: unable to initialize frontend: Dialog
+#10 174.3 debconf: (TERM is not set, so the dialog frontend is not usable.)
+#10 174.3 debconf: falling back to frontend: Readline
+#10 174.3 debconf: unable to initialize frontend: Readline
+#10 174.3 debconf: (This frontend requires a controlling tty.)
+#10 174.3 debconf: falling back to frontend: Teletype
+#10 174.7 Setting up ucf (3.0043+nmu1) ...
+#10 174.7 debconf: unable to initialize frontend: Dialog
+#10 174.7 debconf: (TERM is not set, so the dialog frontend is not usable.)
+#10 174.7 debconf: falling back to frontend: Readline
+#10 174.8 debconf: unable to initialize frontend: Readline
+#10 174.8 debconf: (This frontend requires a controlling tty.)
+#10 174.8 debconf: falling back to frontend: Teletype
+#10 174.8 Setting up libnuma1:amd64 (2.0.18-1ubuntu0.24.04.1) ...
+#10 174.8 Setting up libjson-perl (4.10000-1) ...
+#10 174.9 Setting up liburing2:amd64 (2.5-1build1) ...
+#10 174.9 Setting up postgresql-common (293.pgdg24.04+1) ...
+#10 175.1 debconf: unable to initialize frontend: Dialog
+#10 175.1 debconf: (TERM is not set, so the dialog frontend is not usable.)
+#10 175.1 debconf: falling back to frontend: Readline
+#10 175.1 debconf: unable to initialize frontend: Readline
+#10 175.1 debconf: (This frontend requires a controlling tty.)
+#10 175.1 debconf: falling back to frontend: Teletype
+#10 177.3 
+#10 177.3 Creating config file /etc/postgresql-common/createcluster.conf with new version
+#10 177.4 Building PostgreSQL dictionaries from installed myspell/hunspell packages...
+#10 177.4 Removing obsolete dictionary files:
+#10 177.4 invoke-rc.d: could not determine current runlevel
+#10 177.4 invoke-rc.d: policy-rc.d denied execution of start.
+#10 177.6 Setting up postgresql-18 (18.6-1.pgdg24.04+2) ...
+#10 177.6 debconf: unable to initialize frontend: Dialog
+#10 177.6 debconf: (TERM is not set, so the dialog frontend is not usable.)
+#10 177.6 debconf: falling back to frontend: Readline
+#10 177.6 debconf: unable to initialize frontend: Readline
+#10 177.6 debconf: (This frontend requires a controlling tty.)
+#10 177.6 debconf: falling back to frontend: Teletype
+#10 178.0 update-alternatives: updating alternative /usr/share/postgresql/18/man/man1/psql.1.gz because link group psql.1.gz has changed slave links
+#10 178.2 Creating new PostgreSQL cluster 18/main ...
+#10 178.2 /usr/lib/postgresql/18/bin/initdb -D /var/lib/postgresql/18/main --auth-local peer --auth-host scram-sha-256 --no-instructions
+#10 178.2 The files belonging to this database system will be owned by user "postgres".
+#10 178.2 This user must also own the server process.
+#10 178.2 
+#10 178.2 The database cluster will be initialized with locale "C.UTF-8".
+#10 178.2 The default database encoding has accordingly been set to "UTF8".
+#10 178.2 The default text search configuration will be set to "english".
+#10 178.2 
+#10 178.2 Data page checksums are enabled.
+#10 178.2 
+#10 178.2 fixing permissions on existing directory /var/lib/postgresql/18/main ... ok
+#10 178.2 creating subdirectories ... ok
+#10 178.2 selecting dynamic shared memory implementation ... posix
+#10 178.2 selecting default "max_connections" ... 100
+#10 178.2 selecting default "shared_buffers" ... 128MB
+#10 178.2 selecting default time zone ... UTC
+#10 178.2 creating configuration files ... ok
+#10 178.2 running bootstrap script ... ok
+#10 178.3 performing post-bootstrap initialization ... ok
+#10 178.6 syncing data to disk ... ok
+#10 184.8 invoke-rc.d: could not determine current runlevel
+#10 184.8 invoke-rc.d: policy-rc.d denied execution of start.
+#10 184.8 Processing triggers for libc-bin (2.39-0ubuntu8.9) ...
+#10 184.9 + rm -rf /var/lib/apt/lists/apt.postgresql.org_pub_repos_apt_dists_noble-pgdg_InRelease /var/lib/apt/lists/apt.postgresql.org_pub_repos_apt_dists_noble-pgdg_main_binary-amd64_Packages.lz4 /var/lib/apt/lists/archive.ubuntu.com_ubuntu_dists_noble-backports_InRelease /var/lib/apt/lists/archive.ubuntu.com_ubuntu_dists_noble-backports_main_binary-amd64_Packages.lz4 /var/lib/apt/lists/archive.ubuntu.com_ubuntu_dists_noble-backports_multiverse_binary-amd64_Packages.lz4 /var/lib/apt/lists/archive.ubuntu.com_ubuntu_dists_noble-backports_universe_binary-amd64_Packages.lz4 /var/lib/apt/lists/archive.ubuntu.com_ubuntu_dists_noble-updates_InRelease /var/lib/apt/lists/archive.ubuntu.com_ubuntu_dists_noble-updates_main_binary-amd64_Packages.lz4 /var/lib/apt/lists/archive.ubuntu.com_ubuntu_dists_noble-updates_multiverse_binary-amd64_Packages.lz4 /var/lib/apt/lists/archive.ubuntu.com_ubuntu_dists_noble-updates_restricted_binary-amd64_Packages.lz4 /var/lib/apt/lists/archive.ubuntu.com_ubuntu_dists_noble-updates_universe_binary-amd64_Packages.lz4 /var/lib/apt/lists/archive.ubuntu.com_ubuntu_dists_noble_InRelease /var/lib/apt/lists/archive.ubuntu.com_ubuntu_dists_noble_main_binary-amd64_Packages.lz4 /var/lib/apt/lists/archive.ubuntu.com_ubuntu_dists_noble_multiverse_binary-amd64_Packages.lz4 /var/lib/apt/lists/archive.ubuntu.com_ubuntu_dists_noble_restricted_binary-amd64_Packages.lz4 /var/lib/apt/lists/archive.ubuntu.com_ubuntu_dists_noble_universe_binary-amd64_Packages.lz4 /var/lib/apt/lists/auxfiles /var/lib/apt/lists/lock /var/lib/apt/lists/partial /var/lib/apt/lists/security.ubuntu.com_ubuntu_dists_noble-security_InRelease /var/lib/apt/lists/security.ubuntu.com_ubuntu_dists_noble-security_main_binary-amd64_Packages.lz4 /var/lib/apt/lists/security.ubuntu.com_ubuntu_dists_noble-security_multiverse_binary-amd64_Packages.lz4 /var/lib/apt/lists/security.ubuntu.com_ubuntu_dists_noble-security_restricted_binary-amd64_Packages.lz4 /var/lib/apt/lists/security.ubuntu.com_ubuntu_dists_noble-security_universe_binary-amd64_Packages.lz4
+#10 DONE 185.0s
+
+#11 [stage-0  4/10] RUN uv pip install --system --no-cache     "odoo-client-lib==2.0.0"
+#11 0.193 + uv pip install --system --no-cache odoo-client-lib==2.0.0
+#11 0.247 Using Python 3.12.3 environment at: /usr
+#11 0.247 error: The interpreter at `/usr` is externally managed, and indicates the following:
+#11 0.247 
+#11 0.247   To install Python packages system-wide, try apt install
+#11 0.247   python3-xyz, where xyz is the package you are trying to
+#11 0.247   install.
+#11 0.247 
+#11 0.247   If you wish to install a non-Debian-packaged Python package,
+#11 0.247   create a virtual environment using python3 -m venv path/to/venv.
+#11 0.247   Then use path/to/venv/bin/python and path/to/venv/bin/pip. Make
+#11 0.247   sure you have python3-full installed.
+#11 0.247 
+#11 0.247   If you wish to install a non-Debian packaged Python application,
+#11 0.247   it may be easiest to use pipx install xyz, which will manage a
+#11 0.247   virtual environment for you. Make sure you have pipx installed.
+#11 0.247 
+#11 0.247   See /usr/share/doc/python3.12/README.venv for more information.
+#11 0.247 
+#11 0.247 hint: Virtual environments were not considered due to the `--system` flag
+#11 ERROR: process "/bin/bash -xo pipefail -c uv pip install --system --no-cache     \"odoo-client-lib==2.0.0\"" did not complete successfully: exit code: 2
+------
+ > [stage-0  4/10] RUN uv pip install --system --no-cache     "odoo-client-lib==2.0.0":
+0.247   Then use path/to/venv/bin/python and path/to/venv/bin/pip. Make
+0.247   sure you have python3-full installed.
+0.247 
+0.247   If you wish to install a non-Debian packaged Python application,
+0.247   it may be easiest to use pipx install xyz, which will manage a
+0.247   virtual environment for you. Make sure you have pipx installed.
+0.247 
+0.247   See /usr/share/doc/python3.12/README.venv for more information.
+0.247 
+0.247 hint: Virtual environments were not considered due to the `--system` flag
+------
+Dockerfile:18
+--------------------
+  17 |     
+  18 | >>> RUN uv pip install --system --no-cache \
+  19 | >>>     "odoo-client-lib==2.0.0"
+  20 |     COPY odoo.conf /etc/odoo/odoo.conf
+--------------------
+ERROR: failed to solve: process "/bin/bash -xo pipefail -c uv pip install --system --no-cache     \"odoo-client-lib==2.0.0\"" did not complete successfully: exit code: 2

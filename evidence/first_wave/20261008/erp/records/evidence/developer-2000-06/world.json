@@ -1,0 +1,386 @@
+{
+  "condition_id": "erp-developer-2000-06",
+  "condition": "adapted_solver_egress_isolation",
+  "harbor_version": "0.24.0",
+  "adapter_sha256": "926da952ef484542faa177658a34a77fece92920002c183b5db50fb860528848",
+  "build_compatibility": {
+    "condition": "declared_uv_break_system_packages",
+    "original_dockerfile_sha256": "5e91604e9ea71d331423817aa1a26e2df2432c0866abf4b082864efd6e332234",
+    "adapted_dockerfile_sha256": "484e7685785011e69e8e4f5e1940245e450a60998229437a1564d944716e83eb",
+    "exact_diff": "--- official/Dockerfile\n+++ private/Dockerfile.build-compatibility\n@@ -15,7 +15,7 @@\n     && apt-get install -y --no-install-recommends postgresql-18 \\\n     && rm -rf /var/lib/apt/lists/*\n \n-RUN uv pip install --system --no-cache \\\n+RUN uv pip install --system --no-cache --break-system-packages \\\n     \"odoo-client-lib==2.0.0\"\n COPY odoo.conf /etc/odoo/odoo.conf\n \n",
+    "odoo_client_lib_requested": "2.0.0"
+  },
+  "build_adapter": "compose_build_print_to_bake_allow_network_host; up_pull_never",
+  "official_limits": {
+    "agent_timeout_sec": 3600.0,
+    "verifier_timeout_sec": 300.0,
+    "build_timeout_sec": 600.0,
+    "cpus": 3,
+    "memory_mb": 4096,
+    "storage_mb": 2048,
+    "gpus": 0,
+    "allow_internet": true,
+    "mcp_servers": [],
+    "env": {}
+  },
+  "source": {
+    "task_id": "2000_easy_01_buy_only_baseline",
+    "repository": "https://github.com/agentic-labs/erp-bench",
+    "revision": "ceba3880af555129b5278e056a0c20f2fb5a0ba9",
+    "seed": 8014130904848695607,
+    "instruction_sha256": "6d98cddc801e977c5a6785c8b9b1d4f2e768da61f0bde3a1accb4b56e3beaf0a",
+    "task_toml": {
+      "schema_version": "1.1",
+      "artifacts": [],
+      "task": {
+        "name": "agentic-labs/2000_easy_01_buy_only_baseline",
+        "description": "",
+        "authors": [],
+        "keywords": []
+      },
+      "metadata": {
+        "scenario_number": 2000,
+        "name": "Sound Privacy Panels",
+        "difficulty": "easy",
+        "category": "erp",
+        "objective_kind": "constraint_only",
+        "task_pattern": "01_buy_only_baseline",
+        "tags": [
+          "odoo",
+          "erp-bench",
+          "procurement"
+        ],
+        "seed": 8014130904848695607
+      },
+      "verifier": {
+        "timeout_sec": 300.0,
+        "env": {}
+      },
+      "agent": {
+        "timeout_sec": 3600.0
+      },
+      "environment": {
+        "build_timeout_sec": 600.0,
+        "cpus": 3,
+        "memory_mb": 4096,
+        "storage_mb": 2048,
+        "gpus": 0,
+        "allow_internet": true,
+        "mcp_servers": [],
+        "env": {}
+      },
+      "solution": {
+        "env": {}
+      }
+    },
+    "official_limits": {
+      "agent_timeout_sec": 3600.0,
+      "verifier_timeout_sec": 300.0,
+      "build_timeout_sec": 600.0,
+      "cpus": 3,
+      "memory_mb": 4096,
+      "storage_mb": 2048,
+      "gpus": 0,
+      "allow_internet": true,
+      "mcp_servers": [],
+      "env": {}
+    },
+    "files": {
+      "LICENSE": {
+        "sha256": "a2010f343487d3f7618affe54f789f5487602331c0a8d03f49e9a7c547cf0499",
+        "bytes": 7048,
+        "git_blob_sha1": "0e259d42c996742e9e3cba14c677129b2c1b6311",
+        "hash_origin": "provided_source_files"
+      },
+      "agents/pi.py": {
+        "sha256": "8c6c45bdc74a3842b225c168631cb73aaf58e465e53667c8f3c4cf54cfa99739",
+        "bytes": 7756,
+        "git_blob_sha1": "f29130dcbd11bb0905a63a62884d49af3b5d611a",
+        "hash_origin": "provided_source_files"
+      },
+      "pyproject.toml": {
+        "sha256": "e057b5c1365f4b21c8ea7ecaff64089a2f8e651ea8dd3f3e93e7189a73996bf2",
+        "bytes": 1127,
+        "git_blob_sha1": "3b73337736d159c0ea1eb2cd709cb2d91f44118a",
+        "hash_origin": "provided_source_files"
+      },
+      "tasks/2000_easy_01_buy_only_baseline/environment/Dockerfile": {
+        "sha256": "5e91604e9ea71d331423817aa1a26e2df2432c0866abf4b082864efd6e332234",
+        "bytes": 1139,
+        "git_blob_sha1": "157a77cfcac5c9ecb0e688f71b3275cf5564b593",
+        "hash_origin": "pinned_git_checkout"
+      },
+      "tasks/2000_easy_01_buy_only_baseline/environment/entrypoint.sh": {
+        "sha256": "17081066295528704b6c9af5c66864884ea682640bcc9a154b03e862fe8ccbc5",
+        "bytes": 3131,
+        "git_blob_sha1": "365182a6c3388a4ef8f7093afba245d081fb7032",
+        "hash_origin": "pinned_git_checkout"
+      },
+      "tasks/2000_easy_01_buy_only_baseline/environment/odoo.conf": {
+        "sha256": "30a5cd6cdc5f0e10926ad5d3a9f424e0826fe6bcbbb785d4ef0aeedc7628a6c8",
+        "bytes": 137,
+        "git_blob_sha1": "e2bcec3c90cd5bc48e1135b094c3a7ac0a12522d",
+        "hash_origin": "pinned_git_checkout"
+      },
+      "tasks/2000_easy_01_buy_only_baseline/environment/scenario_data.json": {
+        "sha256": "4cc03ddfa9def158f86a80435543e9ec109de30be1443579219fc1b508af6812",
+        "bytes": 64615,
+        "git_blob_sha1": "ce4dbceaa24fdad22cb16ab5348acbe7156f1fc6",
+        "hash_origin": "pinned_git_checkout"
+      },
+      "tasks/2000_easy_01_buy_only_baseline/environment/setup_scenario.py": {
+        "sha256": "1a532a2f1c1cb68fb965e4ca5d072528b4b4a992327685de71ffa0000ac94714",
+        "bytes": 64716,
+        "git_blob_sha1": "2906dec5b4f04da458800b12a243a3d74ddbbc9d",
+        "hash_origin": "pinned_git_checkout"
+      },
+      "tasks/2000_easy_01_buy_only_baseline/instruction.md": {
+        "sha256": "6d98cddc801e977c5a6785c8b9b1d4f2e768da61f0bde3a1accb4b56e3beaf0a",
+        "bytes": 4816,
+        "git_blob_sha1": "ef815401fececbc9157c5c2253b6aaf1fecf9d9e",
+        "hash_origin": "provided_source_files"
+      },
+      "tasks/2000_easy_01_buy_only_baseline/solution/optimal_plan.json": {
+        "sha256": "0d7f820ea011c326d9a51637a5fdde17176a40cc7df6bedd5b5b7f008a4ae468",
+        "bytes": 4111,
+        "git_blob_sha1": "bbc7914abc608b2dda64ef5b07a481337d072760",
+        "hash_origin": "pinned_git_checkout"
+      },
+      "tasks/2000_easy_01_buy_only_baseline/solution/solve.sh": {
+        "sha256": "785703e87380d18ced9b4d776bbd874ab289adf56a24a61d53ad1b72f8e999fa",
+        "bytes": 940,
+        "git_blob_sha1": "bfac892d3cefae1b066bcde1661136e4529877c4",
+        "hash_origin": "pinned_git_checkout"
+      },
+      "tasks/2000_easy_01_buy_only_baseline/solution/solver.py": {
+        "sha256": "52fa4ffa33dd768a12f4a798efc4251907aa9ce23ff5c6b84e8aa6211e016edc",
+        "bytes": 37195,
+        "git_blob_sha1": "1bc70528edfa936e1c37575d03da35c3479d5cd6",
+        "hash_origin": "pinned_git_checkout"
+      },
+      "tasks/2000_easy_01_buy_only_baseline/task.toml": {
+        "sha256": "6578045106cfeeb38a60d52daa0172b22e1d9ab5a4bf08e4a73dbd62dfe4e9bc",
+        "bytes": 637,
+        "git_blob_sha1": "fd0eb97e67f914fa510b3a29220014021bbfc9ce",
+        "hash_origin": "provided_source_files"
+      },
+      "tasks/2000_easy_01_buy_only_baseline/tests/checks.py": {
+        "sha256": "ef24330d612c015a40d0ab0b9c173fef3c8efdcd592248bc50f023784bf5c9d7",
+        "bytes": 101947,
+        "git_blob_sha1": "a815b30d7e8b401b1e46c113c571ade6cc3fb203",
+        "hash_origin": "provided_source_files"
+      },
+      "tasks/2000_easy_01_buy_only_baseline/tests/test.sh": {
+        "sha256": "9f1dbb9ffeaafd52d84a9f9f74a072d1e143c2304ecae3f174f8c809f49a0bec",
+        "bytes": 10938,
+        "git_blob_sha1": "4bb60f5549b2e941fb208325d52f8705afabe7d9",
+        "hash_origin": "provided_source_files"
+      }
+    },
+    "scope": "Pinned source inputs only; seeded world identity is separate."
+  },
+  "stages": {
+    "build_start": {
+      "status": "pass",
+      "at": 1791436842.2602737,
+      "started_at": 1791436838.6200304
+    },
+    "readiness": {
+      "status": "pass",
+      "at": 1791436933.2997704,
+      "started_at": 1791436842.3139503
+    },
+    "isolation": {
+      "status": "failed",
+      "at": 1791436935.8764632,
+      "started_at": 1791436933.4440517,
+      "error": "prepare_sandbox() got an unexpected keyword argument 'allowed_anonymous_volumes'"
+    },
+    "firewall": {
+      "status": "installed_adaptation",
+      "at": 1791436935.7523794,
+      "started_at": 1791436933.5466473,
+      "installation": {
+        "status": "installed",
+        "condition": "adapted_network_none_nonroot_script",
+        "packages": [
+          "iptables_1.8.10-3ubuntu2_amd64.deb",
+          "libip4tc2_1.8.10-3ubuntu2_amd64.deb",
+          "libip6tc2_1.8.10-3ubuntu2_amd64.deb",
+          "libmnl0_1.0.5-2build1_amd64.deb",
+          "libnetfilter-conntrack3_1.0.9-6build1_amd64.deb",
+          "libnfnetlink0_1.0.2-2build1_amd64.deb",
+          "libnftnl11_1.2.6-2build1_amd64.deb",
+          "libxtables12_1.8.10-3ubuntu2_amd64.deb"
+        ]
+      }
+    },
+    "teardown": {
+      "status": "pass",
+      "at": 1791436936.5874166,
+      "started_at": 1791436936.5874166,
+      "owned_running_containers": 0
+    }
+  },
+  "preflight": {
+    "disk_free_bytes": 640988037120,
+    "images": "REPOSITORY                   TAG       DIGEST    IMAGE ID                                                                  CREATED         SIZE\nerp-developer-2000-05-main   latest    <none>    sha256:73df1d21de9491621a0f928dbb2e28634605712db346bb43a276321a869e50b6   8 minutes ago   2.36GB\n",
+    "cache": "TYPE            TOTAL     ACTIVE    SIZE      RECLAIMABLE\nImages          1         0         2.361GB   2.361GB (100%)\nContainers      0         0         0B        0B\nLocal Volumes   0         0         0B        0B\nBuild Cache     23        0         133.7kB   133.7kB\n",
+    "cpu": 20,
+    "memory_bytes": 16767954944,
+    "storage_driver": "overlay2",
+    "architecture": "x86_64"
+  },
+  "resolved_base_images": {
+    "docker.io/library/odoo:19": "sha256:dd9013e669caaa23d26765dc55814655eaeecca7cfc2c265dbabae913bce22fd",
+    "ghcr.io/astral-sh/uv:latest": "sha256:61d393e44e249f2e4b526b6c7ddcecce245946826e608e11c93ad4f5bba55b21"
+  },
+  "container_limits": {
+    "NanoCpus": 3000000000,
+    "Memory": 4294967296,
+    "MemorySwap": 8589934592,
+    "StorageOpt": null,
+    "NetworkMode": "none",
+    "CapAdd": [
+      "CAP_NET_ADMIN"
+    ],
+    "CapDrop": null,
+    "declared_storage_mb": 2048,
+    "storage_quota_enforced": null,
+    "storage_scope": "declaration only; no verified writable-layer quota"
+  },
+  "image": [
+    {
+      "Id": "sha256:2395835e802d240c08c861cd2164c1b5a0ae5c50878b59e8386113f8a3127412",
+      "RepoTags": [
+        "erp-developer-2000-06-main:latest"
+      ],
+      "RepoDigests": [],
+      "Parent": "",
+      "Comment": "buildkit.dockerfile.v0",
+      "Created": "2026-10-08T13:12:24.407596391+08:00",
+      "DockerVersion": "",
+      "Author": "",
+      "Architecture": "amd64",
+      "Os": "linux",
+      "Size": 2360983961,
+      "GraphDriver": {
+        "Data": {
+          "LowerDir": "/home/deng123/RPNH/.e26/d/overlay2/tv6bxw8tz6rfzlukvgc9ixdq8/diff:/home/deng123/RPNH/.e26/d/overlay2/z1stno2fra8tg5bczmlerjset/diff:/home/deng123/RPNH/.e26/d/overlay2/vix60400gtzggfo28kdbfxeto/diff:/home/deng123/RPNH/.e26/d/overlay2/xovylb0ogh99oamphn73adkfz/diff:/home/deng123/RPNH/.e26/d/overlay2/m0xfdly7idc9sqiknugjkfcs8/diff:/home/deng123/RPNH/.e26/d/overlay2/uog4gc6gobjkqj1y8zqr1va4p/diff:/home/deng123/RPNH/.e26/d/overlay2/ydqhlqx6nat6mrg6rj5dy8iyt/diff:/home/deng123/RPNH/.e26/d/overlay2/o3p6ysw0v4ek6gdv4quu0eoy6/diff:/home/deng123/RPNH/.e26/d/overlay2/eb629071830d9b09897def3ecf2390c8a2394b13072bd3de66e0b06a184c3d79/diff:/home/deng123/RPNH/.e26/d/overlay2/97b23eb5e4ce5091f0d743184380539b8e3dcbe155952ec410f350e45bbfd47c/diff:/home/deng123/RPNH/.e26/d/overlay2/feefee4efface3d23ed8892e069a7c33408d8bbf2308b2def6b4f310ba2a4118/diff:/home/deng123/RPNH/.e26/d/overlay2/04bb5c0392fd9cb89a63168f3622c05994ca82b51cbda2732eb06595567d86e5/diff:/home/deng123/RPNH/.e26/d/overlay2/4c6786f6a1a1d5a33015dffbd1a8debd5782749075681918074afa40cdbe0f31/diff:/home/deng123/RPNH/.e26/d/overlay2/b33752c130c88a409129f1a6ffae1a694ff3cc554de579bfbc6462568142f07c/diff:/home/deng123/RPNH/.e26/d/overlay2/cf42fc47ee9164f3eea186760f79d1f96f3f8ff29779a7ef5700628925519443/diff:/home/deng123/RPNH/.e26/d/overlay2/08c6d0a7a16fefa64c26624f174f6fc918405a2294e73e3e80a73ff3993aef98/diff:/home/deng123/RPNH/.e26/d/overlay2/b19fd48ce2304cc82beb0609ca74ae914c92aec46a5a3d3d92fbdaa7fac669f3/diff",
+          "MergedDir": "/home/deng123/RPNH/.e26/d/overlay2/pwl87qx9haof52j45lpgocu20/merged",
+          "UpperDir": "/home/deng123/RPNH/.e26/d/overlay2/pwl87qx9haof52j45lpgocu20/diff",
+          "WorkDir": "/home/deng123/RPNH/.e26/d/overlay2/pwl87qx9haof52j45lpgocu20/work"
+        },
+        "Name": "overlay2"
+      },
+      "RootFS": {
+        "Type": "layers",
+        "Layers": [
+          "sha256:d81fb2a7c6ee3be05fdefaa7fd223be219c1ab172083ec1b994c3ecda33ac0a8",
+          "sha256:c080b0781d14bb6387dda21f101a994ccd266de6743499fd661c9ccd7491560b",
+          "sha256:c12c4e5c0a34a5fd23c1c47eb10867bb1b1851d5f42e4a6dcd053620cd78a410",
+          "sha256:290f27898b933e430446cbb6b8dd7ed01b2683b0d1384fae217d95c65c31fbd3",
+          "sha256:249e6ebbead3567f557c34103707e89e2dbd54d79fde11f689d40046e8d1526b",
+          "sha256:cbb7711272396f40812d227dbd5b89ffe2665b8a3a60fa99254d5fe92b1bd1ca",
+          "sha256:da10efe514e1a2b3a326d9e5581bf3f902f5043c3a698c9075141200e756e422",
+          "sha256:a11b0ac3c2b05fe601a2024ce4d42b874a7031271641dec450da4d4dd19b4c01",
+          "sha256:724786a01698c559a4ee12a4e3b0cde7df659ec4483ad2e7f7c35898c243f5d2",
+          "sha256:5fc0886d4daa499f96ea2879a97a99906f6cc0ee784eac9cb3103298e356126e",
+          "sha256:20b219d33c5bb496828994d2f76f6589254f29f6dc3f123e6f0ba218b792773c",
+          "sha256:b45b89f63b0a95ec1ed48b77a65cdec0afd843c45c1ed98e847ddbe3be8d599c",
+          "sha256:ae767cfe2fa592aac22db9e0c77b637149c65e957325d2b50eea0d173c62370d",
+          "sha256:7dacd4f31552f3a5130e85d1217dee5787dd9f1ee903cc633433b16b4ad84e0e",
+          "sha256:391de650950d5bf2c5d96f8931888bb70be7f1845a2f0079417994ce1661dc27",
+          "sha256:b61ee48ed82018c199c3328ef84842ba9940002fbc22f3b871cc10f7695d5cbe",
+          "sha256:41c6ef97c04098d65bf7a0cc2be6c1c57403ab798105652b5e426f464788c246",
+          "sha256:5f70bf18a086007016e948b04aed3b82103a36bea41755b6cddfaf10ace3c6ef"
+        ]
+      },
+      "Metadata": {
+        "LastTagTime": "2026-10-08T13:20:41.030590319+08:00"
+      },
+      "Config": {
+        "Cmd": null,
+        "Entrypoint": [
+          "/usr/local/bin/harbor-entrypoint.sh"
+        ],
+        "Env": [
+          "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+          "LANG=en_US.UTF-8",
+          "ODOO_VERSION=19.0",
+          "ODOO_RC=/etc/odoo/odoo.conf"
+        ],
+        "ExposedPorts": {
+          "8069/tcp": {},
+          "8071/tcp": {},
+          "8072/tcp": {}
+        },
+        "Labels": {
+          "com.docker.compose.project": "erp-developer-2000-06",
+          "com.docker.compose.service": "main",
+          "com.docker.compose.version": "5.6.0",
+          "maintainer": "Odoo S.A. <info@odoo.com>",
+          "org.opencontainers.image.version": "24.04"
+        },
+        "OnBuild": null,
+        "Shell": [
+          "/bin/bash",
+          "-xo",
+          "pipefail",
+          "-c"
+        ],
+        "User": "root",
+        "Volumes": {
+          "/mnt/extra-addons": {},
+          "/var/lib/odoo": {}
+        },
+        "WorkingDir": "/workspace"
+      }
+    }
+  ],
+  "owned_anonymous_volumes": [
+    {
+      "name": "a37de50d4facd642fff6985f8c8dba9e46ba430a7441f475b97a083228ef27f2",
+      "destination": "/mnt/extra-addons",
+      "new": true,
+      "driver": "local"
+    },
+    {
+      "name": "71f247d03012394fde301f932af3a0432ef1c82798d148f0ef3591d22a6c3bd9",
+      "destination": "/var/lib/odoo",
+      "new": true,
+      "driver": "local"
+    }
+  ],
+  "dependency_versions": {
+    "solver": {
+      "python": "3.12.3",
+      "odoo-client-lib": "2.0.0",
+      "uv": {
+        "exit_code": 0,
+        "version": "uv 0.12.23 (x86_64-unknown-linux-musl)"
+      },
+      "system_packages": {
+        "exit_code": 0,
+        "version": "odoo\t19.0.20260926\npostgresql-18\t18.6-1.pgdg24.04+2"
+      },
+      "iptables": null,
+      "ip6tables": null
+    }
+  },
+  "initial_identity": {
+    "sentinel_mtime_ns": 1791436931217460996,
+    "sentinel_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "timezone": [
+      "UTC",
+      "UTC"
+    ],
+    "tz_env": null,
+    "localtime_sha256": "8b85846791ab2c8a5463c83a5be3c043e2570d7448434d41398969ed47e3e6f2",
+    "repair_seed_sha256": null
+  },
+  "firewall_versions": [
+    "iptables v1.8.10 (nf_tables)",
+    "ip6tables v1.8.10 (nf_tables)"
+  ]
+}

@@ -1,0 +1,73 @@
+{
+  "owned_processes": [
+    {
+      "pid": 90272,
+      "kind": "owner",
+      "status": "absent"
+    },
+    {
+      "pid": 90430,
+      "kind": "owner",
+      "status": "absent"
+    },
+    {
+      "pid": 90632,
+      "kind": "owner",
+      "status": "absent"
+    },
+    {
+      "pid": 91245,
+      "kind": "owner",
+      "status": "absent"
+    },
+    {
+      "pid": 91299,
+      "kind": "owner",
+      "status": "absent"
+    },
+    {
+      "pid": 91420,
+      "kind": "owner",
+      "status": "absent"
+    },
+    {
+      "pid": 91574,
+      "kind": "owner",
+      "status": "absent"
+    },
+    {
+      "pid": 90467,
+      "kind": "fixture",
+      "status": "absent"
+    },
+    {
+      "pid": 90655,
+      "kind": "fixture",
+      "status": "absent"
+    },
+    {
+      "pid": 91268,
+      "kind": "fixture",
+      "status": "absent"
+    },
+    {
+      "pid": 91321,
+      "kind": "fixture",
+      "status": "absent"
+    }
+  ],
+  "containers": [
+    {
+      "id": "80597aee1cfd9647041ac16ace1c0b7e23e3f915575e5ea72b6aab3c2c49dd55",
+      "present": false
+    },
+    {
+      "id": "767781287e554666649d75e198ca8865cb082f6f734bb0ecd27185a0d48f96d2",
+      "present": false
+    }
+  ],
+  "owned_containers_remaining": 0,
+  "owned_fixture_children_remaining": 0,
+  "daemon": "unchanged; parent owned",
+  "scope": "known native acceptance process/container identities only; no test/build/model run"
+}

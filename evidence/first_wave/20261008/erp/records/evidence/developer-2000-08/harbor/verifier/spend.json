@@ -1,0 +1,13 @@
+{
+  "assembly_spend": 0.0,
+  "component_spend": 0.0,
+  "expected_spend": 3065.92,
+  "finished_goods_spend": 0.0,
+  "optimality_score": null,
+  "other_spend": 0.0,
+  "spend_delta": -3065.92,
+  "spend_delta_abs": 3065.92,
+  "spend_score": 0.67,
+  "total_new_spend": 0.0,
+  "verified_spend_complete": true
+}

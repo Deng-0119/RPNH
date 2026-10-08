@@ -1,0 +1,1 @@
+{"finish_reason": "tool_calls", "protocol": "llm_response_envelope/v1", "tool_calls": [{"arguments": "{\"command\": \"python -B /workspace/fixture.py --docker-child stop /workspace scb-native-7e28d651cac14b9488c602b211565e7f\"}", "id": "native-command", "name": "session_command"}]}

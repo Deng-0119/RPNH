@@ -1,0 +1,25 @@
+{
+  "kind": "workflow",
+  "log_path": "/home/deng123/RPNH/task-first-wave-examples-20261008/work/na03/complete/c/logs/task-bbbe67e179b7.log",
+  "process_status": "STOPPED",
+  "registry": {
+    "actual_model_call_counts": [
+      2,
+      0
+    ],
+    "checkpoint_ref": {
+      "entity_type": "marking_checkpoint/v1",
+      "logical_id": "marking_checkpoint:2a45d040a4d05979bf8845f536cc9dd8",
+      "version_id": "marking_checkpoint_version:fb69d2ac1baa5941bd3443d3f84e739e"
+    },
+    "execution_generation": 0,
+    "execution_status": "stopped_by_owner",
+    "final_result_index_count": 0,
+    "task_ref": "task:6c12eb90861b4cde8451c0425c5c346a",
+    "terminal_evidence_count": 0
+  },
+  "return_code": 2,
+  "run_dir": "/home/deng123/RPNH/task-first-wave-examples-20261008/work/na03/complete/r",
+  "socket_ready": false,
+  "task_id": "task-bbbe67e179b7"
+}

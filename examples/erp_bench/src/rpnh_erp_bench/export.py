@@ -10,6 +10,11 @@ from .source import ERP_PREFIX, RPNH_BASE, git, json_bytes, safe_file, safe_rela
 _FORBIDDEN_PARTS = {".git", ".venv", "__pycache__", ".pytest_cache", "node_modules",
                     "raw", "private", "registry", "credentials", "secrets", "cache"}
 
+# These are the independently assigned first-wave integration lanes. Their
+# committed presence does not change ERP ownership or relabel earlier scores.
+_INTEGRATED_PREFIXES = (ERP_PREFIX, "examples/slopcodebench/",
+                        "examples/example_validation/", "evidence/first_wave/")
+
 
 def publication_path(name: str):
     path = safe_relative(name)
@@ -61,8 +66,8 @@ def source_identity(source_root) -> dict:
         # Disable rename detection so both sides of cross-lane moves are checked.
         integrated = git(root, "diff", "--no-renames", "--name-only", "-z",
                          RPNH_BASE, head, "--").decode().split("\0")
-        if any(name and not name.startswith(ERP_PREFIX) for name in integrated):
-            raise ValueError("committed changes outside ERP ownership since assigned base")
+        if any(name and not name.startswith(_INTEGRATED_PREFIXES) for name in integrated):
+            raise ValueError("committed changes outside assigned first-wave integration since assigned base")
     names = set(git(root, "ls-files", "-z", "--cached", "--others", "--exclude-standard",
                     "--", ERP_PREFIX).decode().split("\0")) - {""}
     changed = []
@@ -87,7 +92,7 @@ def source_identity(source_root) -> dict:
             "head_tree": git(root, "rev-parse", "HEAD^{tree}").decode().strip(),
             "tracked_clean": not any(tracked_dirty), "owned_files": owned,
             "owned_tree_sha256": sha256(json_bytes(owned)), "changed_files": changed,
-            "identity_scope": "Git HEAD tree plus complete owned working-file hashes and modes; dirty additions are explicit."}
+            "identity_scope": "Git HEAD tree plus complete ERP-owned working-file hashes and modes; dirty additions are explicit. Committed SCB/shared-validation/evidence first-wave lanes are allowed integration context, not ERP-owned source or a basis to relabel older scores."}
 
 
 def _patch(name, before, after, mode):

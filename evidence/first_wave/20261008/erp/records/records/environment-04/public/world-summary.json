@@ -1,0 +1,51 @@
+{
+  "backend_quiescence": null,
+  "backend_smoke": null,
+  "build_client_exit_code": 1,
+  "build_compatibility": null,
+  "container_limits": null,
+  "dependency_versions": null,
+  "failed_build_step_exit_code": 2,
+  "failure_category": "PEP668_externally_managed_python",
+  "failure_class": "WorldError",
+  "harbor_version": "0.24.0",
+  "images": [],
+  "initial_identity": null,
+  "official_limits": {
+    "agent_timeout_sec": 3600.0,
+    "allow_internet": true,
+    "build_timeout_sec": 600.0,
+    "cpus": 3,
+    "env": {},
+    "gpus": 0,
+    "mcp_servers": [],
+    "memory_mb": 4096,
+    "storage_mb": 2048,
+    "verifier_timeout_sec": 300.0
+  },
+  "original_condition_id": "erp-developer-2000-04",
+  "record_kind": "retrospective_preserved_environment_facts",
+  "resolved_base_images": {
+    "docker.io/library/odoo:19": "sha256:dd9013e669caaa23d26765dc55814655eaeecca7cfc2c265dbabae913bce22fd",
+    "ghcr.io/astral-sh/uv:latest": "sha256:61d393e44e249f2e4b526b6c7ddcecce245946826e608e11c93ad4f5bba55b21"
+  },
+  "scope": "Environment/backend/grader observations only; not native owner, real model, or business acceptance.",
+  "snapshot": null,
+  "stages": {
+    "build_start": {
+      "at": 1791436227.8459277,
+      "recorded_at_utc": "2026-10-08T05:10:27.845928+00:00",
+      "started_at_utc": null,
+      "status": "failed"
+    },
+    "teardown": {
+      "at": 1791436228.110424,
+      "owned_running_containers": 0,
+      "recorded_at_utc": "2026-10-08T05:10:28.110424+00:00",
+      "started_at_utc": null,
+      "status": "pass"
+    }
+  },
+  "timestamp_scope": "Exact retained metadata timestamps; missing starts stay null. Instantaneous start/end values are retained, not reconstructed durations.",
+  "verifier_exit_code": null
+}

@@ -1,0 +1,31 @@
+{
+  "broker_socket": "/home/deng123/RPNH/task-first-wave-examples-20261008/work/tmp/rpnh-scb-9_7ug1sm/command.sock",
+  "fixture_child": {
+    "detached_pid": 14,
+    "marker": "scb-native-7e28d651cac14b9488c602b211565e7f",
+    "mode": "stop",
+    "pgid": 7,
+    "pid": 13
+  },
+  "owner_af_unix_roundtrip": false,
+  "owner_pid": 91574,
+  "owner_socket": "/home/deng123/RPNH/task-first-wave-examples-20261008/work/na06/stop/r/owner.sock",
+  "runtime": {
+    "child_pid_in_container": 13,
+    "container_id": "767781287e554666649d75e198ca8865cb082f6f734bb0ecd27185a0d48f96d2",
+    "detached_pid_in_container": 14,
+    "kind": "official_DockerStreamingRuntime",
+    "mounts": [
+      {
+        "Destination": "/workspace",
+        "Mode": "rw",
+        "Propagation": "rprivate",
+        "RW": true,
+        "Source": "/home/deng123/RPNH/task-first-wave-examples-20261008/work/tmp/tmpjp7nb47f",
+        "Type": "bind"
+      }
+    ],
+    "network": "none"
+  },
+  "snapshot_scope": "not_requested_while_inflight_native_call"
+}

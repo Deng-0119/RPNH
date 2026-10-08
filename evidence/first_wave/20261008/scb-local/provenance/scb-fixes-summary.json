@@ -1,0 +1,70 @@
+{
+  "status": "SCB_SOURCE_FROZEN",
+  "scope": "F2/F3 only; no setup/resume adaptation",
+  "changed_files": [
+    {
+      "path": "examples/slopcodebench/README.md",
+      "kind": "modified",
+      "sha256": "928a3fcca3ef01846fe07fade294fec87c330bc33ed7faaca17550d80d117b9e"
+    },
+    {
+      "path": "examples/slopcodebench/README_ZH.md",
+      "kind": "modified",
+      "sha256": "5d3ddcc14fec4916de8791495ba17784be99a1ecfcad8deec102746c8a21753c"
+    },
+    {
+      "path": "examples/slopcodebench/endpoint.py",
+      "kind": "added",
+      "sha256": "9be06e51a874b6226a7a5b45b8e0ef24833748f77b3ff51d34ef0a66466c4c63"
+    },
+    {
+      "path": "examples/slopcodebench/pilot.py",
+      "kind": "modified",
+      "sha256": "b3e820498d691bfec192cd21f561a89ad5d8960b5c3069c8286b676527b0c4e0"
+    },
+    {
+      "path": "examples/slopcodebench/run.py",
+      "kind": "modified",
+      "sha256": "698f28dc90cab70a93b1e93ba8cccbb7a5dadc3ad174f86ce15ac980b29216f4"
+    },
+    {
+      "path": "examples/slopcodebench/tests/test_endpoint.py",
+      "kind": "added",
+      "sha256": "3bdc6a4a71cc2579f9e4d4805c77c356bae48c4c964fb5664767b0580e35ffbf"
+    },
+    {
+      "path": "examples/slopcodebench/tests/test_session_pilot.py",
+      "kind": "modified",
+      "sha256": "867b30a1c89a2bd0bef5020f6ebcebc58b5f98cb6009926c2986ced0671d08ec"
+    }
+  ],
+  "unit_tests": {
+    "passed": 55,
+    "log": "evidence/scb-fixes-tests-02.log",
+    "command_record": "evidence/scb-fixes-tests-02.json"
+  },
+  "endpoint_capture": {
+    "status": "passed",
+    "proof": "work/scb-endpoint-capture02/public/capability-proof.json",
+    "synthetic_http_requests": 1,
+    "native_tools": [],
+    "web_search_present": false,
+    "inherited_agents_present": false,
+    "external_model_calls": 0,
+    "real_profile_read": false,
+    "real_credentials_read": false,
+    "cli_exit_code": 1,
+    "expected_fixture_rejection": true
+  },
+  "shared_contract_byte_identical": true,
+  "ERP_or_core_edits": false,
+  "commits_or_pushes": false,
+  "installed_native": "pending_Grace",
+  "docker": "not_run_by_this_worker",
+  "apis": {
+    "CheckpointPilot": "new optional codex_binary; mandatory for Codex selection",
+    "CLI": "--codex-binary only; no dependencies-prepared flag",
+    "condition": "endpoint-condition.json",
+    "snapshot": "private profile/selection.json and adapter.json; no optional ERP dependency"
+  }
+}

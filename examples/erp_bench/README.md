@@ -44,12 +44,16 @@ Actual image digests and solver/verifier dependency versions must be recorded:
 the original image tags are mutable, and the image/verifier specify different
 `odoo-client-lib` versions (`2.0.0` versus an attempted `2.0.2`).
 
-Source reporting accepts the exact RPNH base or a descendant whose entire
-base-to-HEAD diff is confined to `examples/erp_bench/`. It rejects unrelated
-core/global/other-example changes. `base_commit` remains fixed; `tested_commit`
-records the actual HEAD, with separate working-file hashes and dirty-state
-identity. Exports still target the original base. A broader integration needs
-an explicit contract update rather than silently treating newer main as this base.
+Source reporting accepts the exact RPNH base or its first-wave integration
+descendant: committed changes may be in `examples/erp_bench/`,
+`examples/slopcodebench/`, `examples/example_validation/` and
+`evidence/first_wave/`. These are the owner's assigned implementation and failure
+evidence lanes. ERP ownership and patch exports remain confined to
+`examples/erp_bench/`; uncommitted tracked edits in another lane, core/global
+changes and unrelated examples are rejected. `base_commit` remains fixed;
+`tested_commit` records the actual full HEAD tree plus ERP working-file hashes
+and dirty state. Previously measured conditions retain their original commit
+and results; integration does not establish a live rerun on the newer source.
 
 ## Offline commands
 

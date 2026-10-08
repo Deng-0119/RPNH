@@ -1,0 +1,15 @@
+{
+  "command": [
+    "/home/deng123/.local/bin/uv",
+    "sync",
+    "--frozen",
+    "--no-dev",
+    "--project",
+    "/home/deng123/RPNH/task-first-wave-examples-20261008/work/upstream-runner",
+    "--python",
+    "/home/deng123/miniforge3/bin/python"
+  ],
+  "exit_code": 0,
+  "elapsed_seconds": 58.77458119392395,
+  "scope": "exact frozen upstream lock, isolated task venv; no model/provider calls; old ERPvenv unchanged"
+}

@@ -1,0 +1,41 @@
+{
+  "recorded_from": "Parent saved independent read-only reviewer inline conclusions; reviewer wrote no files or execution evidence.",
+  "code": {
+    "F1": "CLOSED_SOURCE_REVIEW: assigned committed sibling lanes admitted; ERP ownership/export unchanged; dirty other-lane/core/global changes rejected",
+    "F2": "CLOSED: selected Codex endpoint tools/project docs closed before owner; model/route/budgets preserved; isolated capture02 matched source",
+    "F3": "CLOSED_FINITE: primary exception retained, secondary cleanup notes preserved, bounded cleanup and private failure diagnostics; no snapshot after uncertain cleanup",
+    "final_SCB_tests": 59,
+    "core_changes": false
+  },
+  "ERP_publication": {
+    "payload_files_verified": 595,
+    "payload_bytes": 13091402,
+    "physical_source_or_registered_payload_bytes": 474,
+    "metadata_serializations": 121,
+    "digest_or_size_mismatches": 0,
+    "confirmed_credentials_or_private_provider_endpoints_found": false,
+    "historical_provenance_failures_disclosed": 40,
+    "vendor_wire_full_CLI_events": "NOT_FOUND",
+    "parent_known_secret_rescan": "passed in ERP_PUBLICATION_REVIEW.json"
+  },
+  "native": {
+    "verdict": "ACCEPTED_FINITE_NATIVE_FIXTURES",
+    "installed_runtime_payloads_matching_final_source": 11,
+    "actual_source_identity": "HEAD6f8 plus uncommitted SCB additions; no claim of a newly tested Git commit",
+    "conditions": ["na05 installed native with trusted subprocess", "na06 same native path with pinned original Docker Session fixture"],
+    "fake_submissions_per_condition": {"complete": 3, "stop": 2},
+    "actual_owner_native_plugin_AF_UNIX_and_receipt_correlation_verified": true,
+    "stop_outcome_unknown_and_no_terminal_product_preserved": true,
+    "Docker_container_removal_writer_stability_and_snapshot_order_verified": true,
+    "real_provider_calls": 0,
+    "limits": [
+      "Minimal synthetic image, not official SCB prepared base.",
+      "Native components directly, not full CheckpointPilot.run/CLI orchestration.",
+      "Owner AF_UNIX snapshot demonstrated for complete cases only.",
+      "Docker stop exit -1 is unavailable status; removal separately establishes quiescence.",
+      "No timeout-case, actual code_search, original evaluator or AgentRunner acceptance."
+    ]
+  },
+  "material_findings_remaining_in_reviewed_scope": [],
+  "publication_acceptance_implies_business_success": false
+}

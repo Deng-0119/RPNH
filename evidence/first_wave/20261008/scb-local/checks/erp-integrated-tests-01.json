@@ -1,0 +1,17 @@
+{
+  "argv": [
+    "/home/deng123/RPNH/task-erp-first-wave-20261008/venv/bin/python",
+    "-B",
+    "-m",
+    "pytest",
+    "-q",
+    "-p",
+    "no:cacheprovider",
+    "examples/erp_bench/tests",
+    "--basetemp=/home/deng123/RPNH/task-first-wave-examples-20261008/work/tmp/erp-integrated-tests01"
+  ],
+  "exit_code": 0,
+  "elapsed_seconds": 9.391902208328247,
+  "log": "evidence/erp-integrated-tests-01.log",
+  "scope": "ERP integration guard and callers with byte-identical integrated shared validator; no live trial"
+}

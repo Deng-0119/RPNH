@@ -1,0 +1,23 @@
+{
+  "argv": [
+    "docker",
+    "ps",
+    "-a",
+    "--no-trunc",
+    "--format",
+    "{{.ID}}",
+    "--filter",
+    "id=80597aee1cfd9647041ac16ace1c0b7e23e3f915575e5ea72b6aab3c2c49dd55",
+    "--filter",
+    "id=767781287e554666649d75e198ca8865cb082f6f734bb0ecd27185a0d48f96d2"
+  ],
+  "exit_code": 0,
+  "stdout": "",
+  "stderr": "",
+  "owned_ids": [
+    "80597aee1cfd9647041ac16ace1c0b7e23e3f915575e5ea72b6aab3c2c49dd55",
+    "767781287e554666649d75e198ca8865cb082f6f734bb0ecd27185a0d48f96d2"
+  ],
+  "no_owned_containers": true,
+  "daemon_ownership": "parent; left running"
+}

@@ -1,0 +1,15 @@
+{
+  "business_passed": false,
+  "commands": [
+    "OfficialWorld.grade -> Harbor Verifier.verify -> unchanged original tests/test.sh; developer NOP condition"
+  ],
+  "ended_at": "2026-10-08T05:32:07.118148+00:00",
+  "exit_code": 0,
+  "overall_score": 0.0,
+  "scope": "Actual preserved original verifier completion; NOP score is not model performance or business acceptance.",
+  "source_identity_artifact_id": "partial-code-identity",
+  "started_at": "2026-10-08T05:32:00.872643+00:00",
+  "status": "passed",
+  "tested_commit": null,
+  "tested_tree_sha256": null
+}

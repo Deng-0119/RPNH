@@ -1,0 +1,181 @@
+{
+  "build_compatibility": {
+    "adapted_dockerfile_sha256": "484e7685785011e69e8e4f5e1940245e450a60998229437a1564d944716e83eb",
+    "condition": "declared_uv_break_system_packages",
+    "odoo_client_lib_requested": "2.0.0",
+    "original_dockerfile_sha256": "5e91604e9ea71d331423817aa1a26e2df2432c0866abf4b082864efd6e332234"
+  },
+  "condition_id": "erp-showcase-2299-a01",
+  "container_id": "725f281a58f9198c21a9f3be56555d41e2b632f0ffb53a7cdc9fb2543580ae8c",
+  "container_limits": {
+    "CapAdd": [
+      "CAP_NET_ADMIN"
+    ],
+    "CapDrop": null,
+    "Memory": 4294967296,
+    "MemorySwap": 8589934592,
+    "NanoCpus": 3000000000,
+    "NetworkMode": "none",
+    "StorageOpt": null,
+    "declared_storage_mb": 2048,
+    "storage_quota_enforced": null,
+    "storage_scope": "declaration only; no verified writable-layer quota"
+  },
+  "dependency_versions": {
+    "solver": {
+      "ip6tables": {
+        "exit_code": 0,
+        "version": "ip6tables v1.8.10 (nf_tables)"
+      },
+      "iptables": {
+        "exit_code": 0,
+        "version": "iptables v1.8.10 (nf_tables)"
+      },
+      "odoo-client-lib": "2.0.0",
+      "python": "3.12.3",
+      "system_packages": {
+        "exit_code": 0,
+        "version": "odoo\t19.0.20260926\npostgresql-18\t18.6-1.pgdg24.04+2"
+      },
+      "uv": {
+        "exit_code": 0,
+        "version": "uv 0.12.23 (x86_64-unknown-linux-musl)"
+      }
+    },
+    "verifier": {
+      "ip6tables": {
+        "exit_code": 0,
+        "version": "ip6tables v1.8.10 (nf_tables)"
+      },
+      "iptables": {
+        "exit_code": 0,
+        "version": "iptables v1.8.10 (nf_tables)"
+      },
+      "odoo-client-lib": "2.0.0",
+      "python": "3.12.3",
+      "system_packages": {
+        "exit_code": 0,
+        "version": "odoo\t19.0.20260926\npostgresql-18\t18.6-1.pgdg24.04+2"
+      },
+      "uv": {
+        "exit_code": 0,
+        "version": "uv 0.12.23 (x86_64-unknown-linux-musl)"
+      }
+    }
+  },
+  "firewall_versions": [
+    "iptables v1.8.10 (nf_tables)",
+    "ip6tables v1.8.10 (nf_tables)"
+  ],
+  "harbor_version": "0.24.0",
+  "images": [
+    {
+      "Id": "sha256:735bb50d38c9a2251e40b026b9eb39250cc7ecdd8bb20246377d97592d00a4c4",
+      "RepoDigests": [],
+      "RepoTags": [
+        "erp-showcase-2299-a01-main:latest"
+      ],
+      "Size": 2361022788
+    }
+  ],
+  "initial_identity": {
+    "localtime_sha256": "8b85846791ab2c8a5463c83a5be3c043e2570d7448434d41398969ed47e3e6f2",
+    "repair_seed_sha256": "e92fd67645aa61fb2895c8fb7877751be1cc9736eefe55759410b30f7a32cb22",
+    "sentinel_mtime_ns": 1791442378147556559,
+    "sentinel_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "timezone": [
+      "UTC",
+      "UTC"
+    ],
+    "tz_env": null
+  },
+  "isolation": {
+    "condition": "adapted_network_none_nonroot_script",
+    "probe": {
+      "network": "none",
+      "odoo_loopback": true,
+      "uid": 1001
+    }
+  },
+  "official_limits": {
+    "agent_timeout_sec": 3600.0,
+    "allow_internet": true,
+    "build_timeout_sec": 600.0,
+    "cpus": 3,
+    "env": {},
+    "gpus": 0,
+    "mcp_servers": [],
+    "memory_mb": 4096,
+    "storage_mb": 2048,
+    "verifier_timeout_sec": 300.0
+  },
+  "phase": "stopped",
+  "resolved_base_images": {
+    "docker.io/library/odoo:19": "sha256:dd9013e669caaa23d26765dc55814655eaeecca7cfc2c265dbabae913bce22fd",
+    "ghcr.io/astral-sh/uv:latest": "sha256:61d393e44e249f2e4b526b6c7ddcecce245946826e608e11c93ad4f5bba55b21"
+  },
+  "resources": {
+    "architecture": "x86_64",
+    "cpu": 20,
+    "disk_free_bytes": 640144883712,
+    "memory_bytes": 16767954944,
+    "storage_driver": "overlay2"
+  },
+  "stages": {
+    "build_start": {
+      "at": 1791442266.2372012,
+      "status": "pass"
+    },
+    "firewall": {
+      "at": 1791442383.3755872,
+      "status": "installed_adaptation"
+    },
+    "freeze": {
+      "at": 1791443345.95257,
+      "status": "pass"
+    },
+    "isolation": {
+      "at": 1791442385.9077044,
+      "status": "pass"
+    },
+    "readiness": {
+      "at": 1791442379.6940458,
+      "status": "pass"
+    },
+    "teardown": {
+      "at": 1791443465.8732197,
+      "status": "pass"
+    },
+    "verifier": {
+      "at": 1791443460.5524645,
+      "status": "completed"
+    }
+  },
+  "terminal_snapshot": {
+    "condition_id": "erp-showcase-2299-a01",
+    "container_id": "725f281a58f9198c21a9f3be56555d41e2b632f0ffb53a7cdc9fb2543580ae8c",
+    "files": {
+      "bench.dump": {
+        "bytes": 9215612,
+        "sha256": "cb7db47c85898dcc5c10c3a29d4fb2edb99b755485b3152e904bc7cc55e1a5c3"
+      },
+      "files.tar": {
+        "bytes": 2508800,
+        "sha256": "862e9851db10b979217648823fb305246b496de535b08db7c89bf04e3e1202f6"
+      }
+    },
+    "identity": {
+      "localtime_sha256": "8b85846791ab2c8a5463c83a5be3c043e2570d7448434d41398969ed47e3e6f2",
+      "repair_seed_sha256": "e92fd67645aa61fb2895c8fb7877751be1cc9736eefe55759410b30f7a32cb22",
+      "sentinel_mtime_ns": 1791442378147556559,
+      "sentinel_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "timezone": [
+        "UTC",
+        "UTC"
+      ],
+      "tz_env": null
+    },
+    "scope": "quiescent_solver_original_live_world; no restore performed"
+  },
+  "verifier_exit_code": 0
+}

@@ -1,0 +1,24 @@
+{
+  "verdict": "ACCEPTED_FINITE",
+  "reviewed_at_utc": "2026-10-08T05:50:47.883272+00:00",
+  "scope": "Legacy subscription entry normalization and endpoint guard only; prior four P1 closures unchanged and not repeated.",
+  "against_commit": "8980e1f0552d30f490af08e60d4e8e3724ea638e",
+  "observed_head_commit": "8980e1f0552d30f490af08e60d4e8e3724ea638e",
+  "reviewed_files_sha256": {
+    "examples/erp_bench/src/rpnh_erp_bench/native.py": "bc178da66bc198f6b893682a8932a5f980b38183d0ba392fd3be6dbf43cf1ea2",
+    "examples/erp_bench/src/rpnh_erp_bench/endpoint.py": "e9f30a960e9550d0eecdbeb11898b098756ad22a20fb5b70145ba4b0a5fd52d0"
+  },
+  "material_findings": [],
+  "acceptance": "Known legacy entry becomes the installed supported module; argument tail and all non-argv adapter fields remain equal apart from the explicit Codex executable substitution. Original adapter bytes are retained privately; original user files remain unchanged. Both entry forms are recognized by the prelaunch endpoint guard.",
+  "verified_evidence": [
+    "evidence/legacy-binding-repair-18.json",
+    "evidence/legacy-binding-repair-18.log",
+    "evidence/existing-selection-proof-19.json",
+    "work/actual-selection-proof01/public-proof.json"
+  ],
+  "verified_checks": "54 targeted tests passed; independently compared actual original/frozen selection policy, adapter fields, argument tail, retained bytes and guard recognition. Shim construction and CONTROLS match the earlier captured implementation; only guard/public metadata changed.",
+  "first_failure": "evidence/real-smoke-2000-a01-17.json and its log remain the original exit-1 ValueError record; r/s01 contained only transport/codex, before world or owner launch.",
+  "condition_separation": "A02 is a declared supported-binding repair; A01 is not rewritten or counted as a model result.",
+  "parent_reported_followup": "Full ERP check21: 181 passed; package20 installed. These later records were not independently rerun in this focused review.",
+  "limits": "Source/binding acceptance only. No additional provider, world, capability capture or native-core execution was performed; live ERP outcomes remain separate."
+}

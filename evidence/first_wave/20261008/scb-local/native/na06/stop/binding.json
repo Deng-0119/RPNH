@@ -1,0 +1,32 @@
+{
+  "catalog_digest": "f99b532d60607bed56431460e6567f2fbd4625c84868ecfcf59a8517ce1f4a4c",
+  "managed_bindings": {
+    "solve": {
+      "admitted_effects": [
+        "external_write"
+      ],
+      "tools": {
+        "session_command": {
+          "selector": "scb_session/command"
+        }
+      }
+    }
+  },
+  "max_attempts_per_stage": 8,
+  "plugin_configuration": {
+    "plugins": [
+      {
+        "config": {
+          "checkpoint_key": "checkpoint_1",
+          "endpoint": "/home/deng123/RPNH/task-first-wave-examples-20261008/work/tmp/rpnh-scb-9_7ug1sm/command.sock"
+        },
+        "entry_point": "scb_session",
+        "environment": [],
+        "name": "scb_session",
+        "version": "0.1.0"
+      }
+    ],
+    "schema_version": "rpnh/plugins/v1"
+  },
+  "prompt": "Synthetic native wiring fixture only. Read this full registered request, execute the one provided session command, and publish the observed marker. No benchmark task or grader.\npython -B /workspace/fixture.py --docker-child stop /workspace scb-native-7e28d651cac14b9488c602b211565e7f\n"
+}

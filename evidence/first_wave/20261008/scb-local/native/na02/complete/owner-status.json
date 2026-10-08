@@ -1,0 +1,25 @@
+{
+  "kind": "workflow",
+  "log_path": "/home/deng123/RPNH/task-first-wave-examples-20261008/work/na02/complete/c/logs/task-b7ae4c56e6c1.log",
+  "process_status": "FAILED",
+  "registry": {
+    "actual_model_call_counts": [
+      0,
+      0
+    ],
+    "checkpoint_ref": {
+      "entity_type": "marking_checkpoint/v1",
+      "logical_id": "marking_checkpoint:10db701cba505b8095bdcf8ff5164bea",
+      "version_id": "marking_checkpoint_version:b3a506a59c6754abb753888ae2406414"
+    },
+    "execution_generation": 0,
+    "execution_status": "running",
+    "final_result_index_count": 0,
+    "task_ref": "task:f20a64017fbd400fa44efab3a7db5338",
+    "terminal_evidence_count": 0
+  },
+  "return_code": 2,
+  "run_dir": "/home/deng123/RPNH/task-first-wave-examples-20261008/work/na02/complete/r",
+  "socket_ready": false,
+  "task_id": "task-b7ae4c56e6c1"
+}

@@ -1,0 +1,18 @@
+{
+  "broker_poisoned": false,
+  "broker_quiescent": true,
+  "broker_socket_removed": true,
+  "broker_thread_exited": true,
+  "cleanup_calls": 2,
+  "cleanup_errors": [],
+  "closed": true,
+  "executions": 0,
+  "exit_code": null,
+  "forced_owner_termination": false,
+  "owner_exited": true,
+  "owner_return_code": null,
+  "pid": null,
+  "process_exited": false,
+  "process_group_alive": false,
+  "stream_exited": false
+}

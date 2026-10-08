@@ -1,0 +1,14 @@
+{
+  "first_request": null,
+  "first_request_with_full_instruction": null,
+  "input_read_before_first_managed_business_or_plan_action": false,
+  "inspection": "Read-only immutable registered evidence; no solver resumed.",
+  "instruction_materialized_in_registered_request": false,
+  "instruction_sha256": "6d98cddc801e977c5a6785c8b9b1d4f2e768da61f0bde3a1accb4b56e3beaf0a",
+  "registered_input_reads": [],
+  "requests_observed": 0,
+  "sampled_at_utc": "2026-10-08T06:47:11.405462+00:00",
+  "scope": "Exact instruction inclusion and delivery identity, not business success or semantic understanding.",
+  "semantic_use": "unknown",
+  "task_id": "2000_easy_01_buy_only_baseline"
+}

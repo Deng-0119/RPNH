@@ -1,0 +1,1248 @@
+{
+  "condition_id": "erp-showcase-2299-a01",
+  "condition": "adapted_solver_egress_isolation",
+  "harbor_version": "0.24.0",
+  "adapter_sha256": "110a02623ab9bd752d0ce00cad31e91767c068319a5d27d9e6f3e9891c3c9727",
+  "build_compatibility": {
+    "condition": "declared_uv_break_system_packages",
+    "original_dockerfile_sha256": "5e91604e9ea71d331423817aa1a26e2df2432c0866abf4b082864efd6e332234",
+    "adapted_dockerfile_sha256": "484e7685785011e69e8e4f5e1940245e450a60998229437a1564d944716e83eb",
+    "exact_diff": "--- official/Dockerfile\n+++ private/Dockerfile.build-compatibility\n@@ -15,7 +15,7 @@\n     && apt-get install -y --no-install-recommends postgresql-18 \\\n     && rm -rf /var/lib/apt/lists/*\n \n-RUN uv pip install --system --no-cache \\\n+RUN uv pip install --system --no-cache --break-system-packages \\\n     \"odoo-client-lib==2.0.0\"\n COPY odoo.conf /etc/odoo/odoo.conf\n \n",
+    "odoo_client_lib_requested": "2.0.0"
+  },
+  "host_log_owner": {
+    "uid": 1000,
+    "gid": 1000
+  },
+  "build_adapter": "compose_build_print_to_bake_allow_network_host; up_pull_never",
+  "official_limits": {
+    "agent_timeout_sec": 3600.0,
+    "verifier_timeout_sec": 300.0,
+    "build_timeout_sec": 600.0,
+    "cpus": 3,
+    "memory_mb": 4096,
+    "storage_mb": 2048,
+    "gpus": 0,
+    "allow_internet": true,
+    "mcp_servers": [],
+    "env": {}
+  },
+  "source": {
+    "task_id": "2299_hard_repair_plan_hard",
+    "repository": "https://github.com/agentic-labs/erp-bench",
+    "revision": "ceba3880af555129b5278e056a0c20f2fb5a0ba9",
+    "seed": 7558252979609430294,
+    "instruction_sha256": "c760020d5e9261783458b7d814a910de3e6ebc67b30633d07942796838ecc8e2",
+    "task_toml": {
+      "schema_version": "1.1",
+      "artifacts": [],
+      "task": {
+        "name": "agentic-labs/2299_hard_repair_plan_hard",
+        "description": "",
+        "authors": [],
+        "keywords": []
+      },
+      "metadata": {
+        "scenario_number": 2299,
+        "name": "Carport Solar Canopy Module",
+        "difficulty": "hard",
+        "category": "erp",
+        "objective_kind": "repair_plan",
+        "task_pattern": "repair_plan_hard",
+        "tags": [
+          "odoo",
+          "erp-bench",
+          "procurement"
+        ],
+        "seed": 7558252979609430294
+      },
+      "verifier": {
+        "timeout_sec": 300.0,
+        "env": {}
+      },
+      "agent": {
+        "timeout_sec": 3600.0
+      },
+      "environment": {
+        "build_timeout_sec": 600.0,
+        "cpus": 3,
+        "memory_mb": 4096,
+        "storage_mb": 2048,
+        "gpus": 0,
+        "allow_internet": true,
+        "mcp_servers": [],
+        "env": {}
+      },
+      "solution": {
+        "env": {}
+      }
+    },
+    "official_limits": {
+      "agent_timeout_sec": 3600.0,
+      "verifier_timeout_sec": 300.0,
+      "build_timeout_sec": 600.0,
+      "cpus": 3,
+      "memory_mb": 4096,
+      "storage_mb": 2048,
+      "gpus": 0,
+      "allow_internet": true,
+      "mcp_servers": [],
+      "env": {}
+    },
+    "files": {
+      "LICENSE": {
+        "sha256": "a2010f343487d3f7618affe54f789f5487602331c0a8d03f49e9a7c547cf0499",
+        "bytes": 7048,
+        "git_blob_sha1": "0e259d42c996742e9e3cba14c677129b2c1b6311",
+        "hash_origin": "provided_source_files"
+      },
+      "agents/pi.py": {
+        "sha256": "8c6c45bdc74a3842b225c168631cb73aaf58e465e53667c8f3c4cf54cfa99739",
+        "bytes": 7756,
+        "git_blob_sha1": "f29130dcbd11bb0905a63a62884d49af3b5d611a",
+        "hash_origin": "provided_source_files"
+      },
+      "pyproject.toml": {
+        "sha256": "e057b5c1365f4b21c8ea7ecaff64089a2f8e651ea8dd3f3e93e7189a73996bf2",
+        "bytes": 1127,
+        "git_blob_sha1": "3b73337736d159c0ea1eb2cd709cb2d91f44118a",
+        "hash_origin": "provided_source_files"
+      },
+      "tasks/2299_hard_repair_plan_hard/environment/Dockerfile": {
+        "sha256": "5e91604e9ea71d331423817aa1a26e2df2432c0866abf4b082864efd6e332234",
+        "bytes": 1139,
+        "git_blob_sha1": "157a77cfcac5c9ecb0e688f71b3275cf5564b593",
+        "hash_origin": "provided_source_files"
+      },
+      "tasks/2299_hard_repair_plan_hard/environment/entrypoint.sh": {
+        "sha256": "17081066295528704b6c9af5c66864884ea682640bcc9a154b03e862fe8ccbc5",
+        "bytes": 3131,
+        "git_blob_sha1": "365182a6c3388a4ef8f7093afba245d081fb7032",
+        "hash_origin": "provided_source_files"
+      },
+      "tasks/2299_hard_repair_plan_hard/environment/odoo.conf": {
+        "sha256": "30a5cd6cdc5f0e10926ad5d3a9f424e0826fe6bcbbb785d4ef0aeedc7628a6c8",
+        "bytes": 137,
+        "git_blob_sha1": "e2bcec3c90cd5bc48e1135b094c3a7ac0a12522d",
+        "hash_origin": "pinned_git_checkout"
+      },
+      "tasks/2299_hard_repair_plan_hard/environment/scenario_data.json": {
+        "sha256": "ff63976b23ef7e4e004a61bf3a4cdeec05a52882c71b8c36ffd26412f934209a",
+        "bytes": 103442,
+        "git_blob_sha1": "f1248409405c649ebbad36d62695128d91a1a309",
+        "hash_origin": "pinned_git_checkout"
+      },
+      "tasks/2299_hard_repair_plan_hard/environment/setup_scenario.py": {
+        "sha256": "1a532a2f1c1cb68fb965e4ca5d072528b4b4a992327685de71ffa0000ac94714",
+        "bytes": 64716,
+        "git_blob_sha1": "2906dec5b4f04da458800b12a243a3d74ddbbc9d",
+        "hash_origin": "pinned_git_checkout"
+      },
+      "tasks/2299_hard_repair_plan_hard/instruction.md": {
+        "sha256": "c760020d5e9261783458b7d814a910de3e6ebc67b30633d07942796838ecc8e2",
+        "bytes": 7369,
+        "git_blob_sha1": "a9f4d202e9fdbf7dff145b9f4bfea013f5c98f4c",
+        "hash_origin": "provided_source_files"
+      },
+      "tasks/2299_hard_repair_plan_hard/solution/optimal_plan.json": {
+        "sha256": "caf4d641e7364115e743a0aeddb3496068ed964993e055536e6ae68d705865ef",
+        "bytes": 26724,
+        "git_blob_sha1": "8e85f0607a8120ce5e921003d4d22af34f9e2f3a",
+        "hash_origin": "pinned_git_checkout"
+      },
+      "tasks/2299_hard_repair_plan_hard/solution/solve.sh": {
+        "sha256": "ab52c705b0ad36c229057e15a1160f29f72936af14482339150ca6b3914952e8",
+        "bytes": 961,
+        "git_blob_sha1": "345c63e9a25f13cc6a2e99e06d01b761af312aab",
+        "hash_origin": "pinned_git_checkout"
+      },
+      "tasks/2299_hard_repair_plan_hard/solution/solver.py": {
+        "sha256": "43b8a975556ea2f53ea5d24c5ee328448ebae7bf44bba5d386d4321c268b546d",
+        "bytes": 79774,
+        "git_blob_sha1": "e068846e84ff4967ab6b3feb99a5e8c1b7bd9c83",
+        "hash_origin": "pinned_git_checkout"
+      },
+      "tasks/2299_hard_repair_plan_hard/task.toml": {
+        "sha256": "f697dc552c53d97921cad63e15b5b86908eb0bae742fdded6b60dba20b02789d",
+        "bytes": 632,
+        "git_blob_sha1": "b00c3d16063f49640651342c9c386a1a68c2cfa9",
+        "hash_origin": "provided_source_files"
+      },
+      "tasks/2299_hard_repair_plan_hard/tests/checks.py": {
+        "sha256": "a46d294463cb8718fb1ed6cc0208caca20562873fdf0987c050c99669fae3583",
+        "bytes": 137406,
+        "git_blob_sha1": "731f73fb0b6486e1a86d40eea33036619add8052",
+        "hash_origin": "provided_source_files"
+      },
+      "tasks/2299_hard_repair_plan_hard/tests/test.sh": {
+        "sha256": "197c4b3bfd0376a0a0b7a8244639f74699779ac8d354ff2c1c41bae22a33b608",
+        "bytes": 15941,
+        "git_blob_sha1": "7ed5f6045f1557a6ff047115c44a34d597102d58",
+        "hash_origin": "provided_source_files"
+      }
+    },
+    "scope": "Pinned source inputs only; seeded world identity is separate."
+  },
+  "stages": {
+    "build_start": {
+      "status": "pass",
+      "at": 1791442266.2372012,
+      "started_at": 1791442258.832531
+    },
+    "readiness": {
+      "status": "pass",
+      "at": 1791442379.6940458,
+      "started_at": 1791442266.6512032
+    },
+    "isolation": {
+      "status": "pass",
+      "at": 1791442385.9077044,
+      "started_at": 1791442379.6942668,
+      "container_id": "725f281a58f9198c21a9f3be56555d41e2b632f0ffb53a7cdc9fb2543580ae8c",
+      "probe": {
+        "uid": 1001,
+        "network": "none",
+        "odoo_loopback": true
+      },
+      "condition": "adapted_network_none_nonroot_script"
+    },
+    "firewall": {
+      "status": "installed_adaptation",
+      "at": 1791442383.3755872,
+      "started_at": 1791442379.947666,
+      "installation": {
+        "status": "installed",
+        "condition": "adapted_network_none_nonroot_script",
+        "packages": [
+          "iptables_1.8.10-3ubuntu2_amd64.deb",
+          "libip4tc2_1.8.10-3ubuntu2_amd64.deb",
+          "libip6tc2_1.8.10-3ubuntu2_amd64.deb",
+          "libmnl0_1.0.5-2build1_amd64.deb",
+          "libnetfilter-conntrack3_1.0.9-6build1_amd64.deb",
+          "libnfnetlink0_1.0.2-2build1_amd64.deb",
+          "libnftnl11_1.2.6-2build1_amd64.deb",
+          "libxtables12_1.8.10-3ubuntu2_amd64.deb"
+        ]
+      }
+    },
+    "freeze": {
+      "status": "pass",
+      "at": 1791443345.95257,
+      "started_at": 1791443345.95257,
+      "snapshot": {
+        "condition_id": "erp-showcase-2299-a01",
+        "container_id": "725f281a58f9198c21a9f3be56555d41e2b632f0ffb53a7cdc9fb2543580ae8c",
+        "identity": {
+          "sentinel_mtime_ns": 1791442378147556559,
+          "sentinel_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "timezone": [
+            "UTC",
+            "UTC"
+          ],
+          "tz_env": null,
+          "localtime_sha256": "8b85846791ab2c8a5463c83a5be3c043e2570d7448434d41398969ed47e3e6f2",
+          "repair_seed_sha256": "e92fd67645aa61fb2895c8fb7877751be1cc9736eefe55759410b30f7a32cb22"
+        },
+        "files": {
+          "bench.dump": {
+            "sha256": "cb7db47c85898dcc5c10c3a29d4fb2edb99b755485b3152e904bc7cc55e1a5c3",
+            "bytes": 9215612
+          },
+          "files.tar": {
+            "sha256": "862e9851db10b979217648823fb305246b496de535b08db7c89bf04e3e1202f6",
+            "bytes": 2508800
+          }
+        },
+        "scope": "quiescent_solver_original_live_world; no restore performed"
+      }
+    },
+    "verifier": {
+      "status": "completed",
+      "at": 1791443460.5524645,
+      "started_at": 1791443346.9266596,
+      "rewards": {
+        "overall_score": 21.0
+      },
+      "original": {
+        "schema_version": "rpnh/erp-original-score-projection/v1",
+        "task_id": "2299_hard_repair_plan_hard",
+        "scorer_revision": "ceba3880af555129b5278e056a0c20f2fb5a0ba9",
+        "score_scale": "0-100",
+        "passed_threshold": 99,
+        "original_reports": {
+          "reward.txt": {
+            "sha256": "5cebe19b1997a164c20edeba602c8f3205326ebb2610fb52f2b7a4be747a93fd",
+            "bytes": 6,
+            "hash_scope": "retained_private_bytes"
+          },
+          "reward.json": {
+            "sha256": "ed8a9a71afe58d3ecb0e55323a0a99d3d6cb32c6dfb7f1afe27e7da4bb01f6ae",
+            "bytes": 39291,
+            "hash_scope": "retained_private_bytes"
+          },
+          "rule_results.tsv": {
+            "sha256": "d2cc536e8bc6505c6514bfe21837df6da5cc98a0910595cee23efb1b173af5cc",
+            "bytes": 7126,
+            "hash_scope": "retained_private_bytes"
+          },
+          "optimality.json": {
+            "sha256": "131e55fb3315b949493450507e11d973fb2ee47a98f0d51f051e142fb457b3d6",
+            "bytes": 256,
+            "hash_scope": "retained_private_bytes"
+          },
+          "spend.json": {
+            "sha256": "9702f2b193a3a2a001878a9266f39e75a4e877fb852416a66c2115e6bfd780cc",
+            "bytes": 328,
+            "hash_scope": "retained_private_bytes"
+          }
+        },
+        "verifier_exit_code": 0,
+        "changed_bytes": true,
+        "projection_scope": "Allowlisted emitted metrics and rule statuses; original bytes retained privately.",
+        "omitted_fields": [
+          "rules.args",
+          "rules.expr",
+          "unrecognized report fields"
+        ],
+        "components": {
+          "overall_score": 21.0,
+          "constraint.earned": 63,
+          "constraint.total": 75,
+          "hygiene.earned": 15,
+          "hygiene.total": 20,
+          "optimality.score": 91.66,
+          "optimality.total": 100.0,
+          "rules.total": 95,
+          "rules.applicable": 95,
+          "rules.passed": 86,
+          "rules.failed": 9,
+          "rules.not_applicable": 0,
+          "optimality_detail.optimality_score": 91.66,
+          "optimality_detail.primary_actual": 184.0,
+          "optimality_detail.primary_expected": 184.0,
+          "optimality_detail.primary_score": 100.0,
+          "optimality_detail.secondary_actual_spend": 181383.92,
+          "optimality_detail.secondary_expected_spend": 133394.07,
+          "optimality_detail.secondary_score": 16.55,
+          "spend.assembly_spend": 4104.0,
+          "spend.component_spend": 28561.39,
+          "spend.expected_spend": 133394.07,
+          "spend.finished_goods_spend": 148718.53,
+          "spend.optimality_score": null,
+          "spend.other_spend": 0.0,
+          "spend.spend_delta": 47989.85,
+          "spend.spend_delta_abs": 47989.85,
+          "spend.spend_score": 16.55,
+          "spend.total_new_spend": 181383.92
+        },
+        "reward": {
+          "overall_score": 21.0,
+          "passed": false,
+          "constraint": {
+            "earned": 63,
+            "total": 75
+          },
+          "hygiene": {
+            "earned": 15,
+            "total": 20
+          },
+          "optimality": {
+            "score": 91.66,
+            "total": 100.0
+          },
+          "rules": {
+            "total": 95,
+            "applicable": 95,
+            "passed": 86,
+            "failed": 9,
+            "not_applicable": 0,
+            "rows": [
+              {
+                "dimension": "constraint",
+                "rule": "demand_coverage",
+                "status": "PASS",
+                "passed": true,
+                "applicable": true
+              },
+              {
+                "dimension": "constraint",
+                "rule": "demand_coverage",
+                "status": "PASS",
+                "passed": true,
+                "applicable": true
+              },
+              {
+                "dimension": "constraint",
+                "rule": "demand_coverage",
+                "status": "PASS",
+                "passed": true,
+                "applicable": true
+              },
+              {
+                "dimension": "constraint",
+                "rule": "demand_coverage",
+                "status": "PASS",
+                "passed": true,
+                "applicable": true
+              },
+              {
+                "dimension": "constraint",
+                "rule": "demand_coverage",
+                "status": "PASS",
+                "passed": true,
+                "applicable": true
+              },
+              {
+                "dimension": "constraint",
+                "rule": "demand_coverage",
+                "status": "PASS",
+                "passed": true,
+                "applicable": true
+              },
+              {
+                "dimension": "constraint",
+                "rule": "demand_coverage",
+                "status": "PASS",
+                "passed": true,
+                "applicable": true
+              },
+              {
+                "dimension": "constraint",
+                "rule": "demand_coverage",
+                "status": "PASS",
+                "passed": true,
+                "applicable": true
+              },
+              {
+                "dimension": "constraint",
+                "rule": "demand_coverage",
+                "status": "PASS",
+                "passed": true,
+                "applicable": true
+              },
+              {
+                "dimension": "constraint",
+                "rule": "demand_coverage",
+                "status": "PASS",
+                "passed": true,
+                "applicable": true
+              },
+              {
+                "dimension": "constraint",
+                "rule": "demand_coverage",
+                "status": "PASS",
+                "passed": true,
+                "applicable": true
+              },
+              {
+                "dimension": "constraint",
+                "rule": "demand_coverage",
+                "status": "PASS",
+                "passed": true,
+                "applicable": true
+              },
+              {
+                "dimension": "constraint",
+                "rule": "deadline_fulfillment",
+                "status": "PASS",
+                "passed": true,
+                "applicable": true
+              },
+              {
+                "dimension": "constraint",
+                "rule": "deadline_fulfillment",
+                "status": "PASS",
+                "passed": true,
+                "applicable": true
+              },
+              {
+                "dimension": "constraint",
+                "rule": "deadline_fulfillment",
+                "status": "PASS",
+                "passed": true,
+                "applicable": true
+              },
+              {
+                "dimension": "constraint",
+                "rule": "deadline_fulfillment",
+                "status": "PASS",
+                "passed": true,
+                "applicable": true
+              },
+              {
+                "dimension": "constraint",
+                "rule": "deadline_fulfillment",
+                "status": "PASS",
+                "passed": true,
+                "applicable": true
+              },
+              {
+                "dimension": "constraint",
+                "rule": "deadline_fulfillment",
+                "status": "PASS",
+                "passed": true,
+                "applicable": true
+              },
+              {
+                "dimension": "constraint",
+                "rule": "deadline_fulfillment",
+                "status": "PASS",
+                "passed": true,
+                "applicable": true
+              },
+              {
+                "dimension": "constraint",
+                "rule": "deadline_fulfillment",
+                "status": "PASS",
+                "passed": true,
+                "applicable": true
+              },
+              {
+                "dimension": "constraint",
+                "rule": "deadline_fulfillment",
+                "status": "PASS",
+                "passed": true,
+                "applicable": true
+              },
+              {
+                "dimension": "constraint",
+                "rule": "deadline_fulfillment",
+                "status": "PASS",
+                "passed": true,
+                "applicable": true
+              },
+              {
+                "dimension": "constraint",
+                "rule": "deadline_fulfillment",
+                "status": "PASS",
+                "passed": true,
+                "applicable": true
+              },
+              {
+                "dimension": "constraint",
+                "rule": "deadline_fulfillment",
+                "status": "PASS",
+                "passed": true,
+                "applicable": true
+              },
+              {
+                "dimension": "constraint",
+                "rule": "list_price",
+                "status": "PASS",
+                "passed": true,
+                "applicable": true
+              },
+              {
+                "dimension": "constraint",
+                "rule": "list_price",
+                "status": "PASS",
+                "passed": true,
+                "applicable": true
+              },
+              {
+                "dimension": "constraint",
+                "rule": "list_price",
+                "status": "PASS",
+                "passed": true,
+                "applicable": true
+              },
+              {
+                "dimension": "constraint",
+                "rule": "list_price",
+                "status": "PASS",
+                "passed": true,
+                "applicable": true
+              },
+              {
+                "dimension": "constraint",
+                "rule": "list_price",
+                "status": "PASS",
+                "passed": true,
+                "applicable": true
+              },
+              {
+                "dimension": "constraint",
+                "rule": "list_price",
+                "status": "PASS",
+                "passed": true,
+                "applicable": true
+              },
+              {
+                "dimension": "constraint",
+                "rule": "list_price",
+                "status": "PASS",
+                "passed": true,
+                "applicable": true
+              },
+              {
+                "dimension": "constraint",
+                "rule": "list_price",
+                "status": "PASS",
+                "passed": true,
+                "applicable": true
+              },
+              {
+                "dimension": "constraint",
+                "rule": "list_price",
+                "status": "PASS",
+                "passed": true,
+                "applicable": true
+              },
+              {
+                "dimension": "constraint",
+                "rule": "list_price",
+                "status": "PASS",
+                "passed": true,
+                "applicable": true
+              },
+              {
+                "dimension": "constraint",
+                "rule": "list_price",
+                "status": "PASS",
+                "passed": true,
+                "applicable": true
+              },
+              {
+                "dimension": "constraint",
+                "rule": "list_price",
+                "status": "PASS",
+                "passed": true,
+                "applicable": true
+              },
+              {
+                "dimension": "constraint",
+                "rule": "sale_revenue",
+                "status": "PASS",
+                "passed": true,
+                "applicable": true
+              },
+              {
+                "dimension": "constraint",
+                "rule": "sale_revenue",
+                "status": "PASS",
+                "passed": true,
+                "applicable": true
+              },
+              {
+                "dimension": "constraint",
+                "rule": "sale_revenue",
+                "status": "PASS",
+                "passed": true,
+                "applicable": true
+              },
+              {
+                "dimension": "constraint",
+                "rule": "sale_revenue",
+                "status": "PASS",
+                "passed": true,
+                "applicable": true
+              },
+              {
+                "dimension": "constraint",
+                "rule": "sale_revenue",
+                "status": "PASS",
+                "passed": true,
+                "applicable": true
+              },
+              {
+                "dimension": "constraint",
+                "rule": "sale_revenue",
+                "status": "PASS",
+                "passed": true,
+                "applicable": true
+              },
+              {
+                "dimension": "constraint",
+                "rule": "sale_revenue",
+                "status": "PASS",
+                "passed": true,
+                "applicable": true
+              },
+              {
+                "dimension": "constraint",
+                "rule": "sale_revenue",
+                "status": "PASS",
+                "passed": true,
+                "applicable": true
+              },
+              {
+                "dimension": "constraint",
+                "rule": "sale_revenue",
+                "status": "PASS",
+                "passed": true,
+                "applicable": true
+              },
+              {
+                "dimension": "constraint",
+                "rule": "sale_revenue",
+                "status": "PASS",
+                "passed": true,
+                "applicable": true
+              },
+              {
+                "dimension": "constraint",
+                "rule": "sale_revenue",
+                "status": "PASS",
+                "passed": true,
+                "applicable": true
+              },
+              {
+                "dimension": "constraint",
+                "rule": "sale_revenue",
+                "status": "PASS",
+                "passed": true,
+                "applicable": true
+              },
+              {
+                "dimension": "constraint",
+                "rule": "budget_compliance",
+                "status": "PASS",
+                "passed": true,
+                "applicable": true
+              },
+              {
+                "dimension": "constraint",
+                "rule": "budget_compliance",
+                "status": "PASS",
+                "passed": true,
+                "applicable": true
+              },
+              {
+                "dimension": "constraint",
+                "rule": "budget_compliance",
+                "status": "PASS",
+                "passed": true,
+                "applicable": true
+              },
+              {
+                "dimension": "constraint",
+                "rule": "budget_compliance",
+                "status": "PASS",
+                "passed": true,
+                "applicable": true
+              },
+              {
+                "dimension": "constraint",
+                "rule": "budget_compliance",
+                "status": "PASS",
+                "passed": true,
+                "applicable": true
+              },
+              {
+                "dimension": "constraint",
+                "rule": "budget_compliance",
+                "status": "PASS",
+                "passed": true,
+                "applicable": true
+              },
+              {
+                "dimension": "constraint",
+                "rule": "budget_compliance",
+                "status": "PASS",
+                "passed": true,
+                "applicable": true
+              },
+              {
+                "dimension": "constraint",
+                "rule": "budget_compliance",
+                "status": "PASS",
+                "passed": true,
+                "applicable": true
+              },
+              {
+                "dimension": "constraint",
+                "rule": "budget_compliance",
+                "status": "PASS",
+                "passed": true,
+                "applicable": true
+              },
+              {
+                "dimension": "constraint",
+                "rule": "budget_compliance",
+                "status": "PASS",
+                "passed": true,
+                "applicable": true
+              },
+              {
+                "dimension": "constraint",
+                "rule": "budget_compliance",
+                "status": "PASS",
+                "passed": true,
+                "applicable": true
+              },
+              {
+                "dimension": "constraint",
+                "rule": "budget_compliance",
+                "status": "PASS",
+                "passed": true,
+                "applicable": true
+              },
+              {
+                "dimension": "constraint",
+                "rule": "new_spend_margin_policy",
+                "status": "PASS",
+                "passed": true,
+                "applicable": true
+              },
+              {
+                "dimension": "constraint",
+                "rule": "supply_timing_feasible",
+                "status": "FAIL",
+                "passed": false,
+                "applicable": true
+              },
+              {
+                "dimension": "constraint",
+                "rule": "po_delivery_schedule_compliance",
+                "status": "PASS",
+                "passed": true,
+                "applicable": true
+              },
+              {
+                "dimension": "constraint",
+                "rule": "po_consolidation_compliance",
+                "status": "PASS",
+                "passed": true,
+                "applicable": true
+              },
+              {
+                "dimension": "constraint",
+                "rule": "po_min_qty_compliance",
+                "status": "PASS",
+                "passed": true,
+                "applicable": true
+              },
+              {
+                "dimension": "constraint",
+                "rule": "po_price_tier_compliance",
+                "status": "PASS",
+                "passed": true,
+                "applicable": true
+              },
+              {
+                "dimension": "constraint",
+                "rule": "mo_schedule_compliance",
+                "status": "FAIL",
+                "passed": false,
+                "applicable": true
+              },
+              {
+                "dimension": "constraint",
+                "rule": "finished_stock_capacity_compliance",
+                "status": "PASS",
+                "passed": true,
+                "applicable": true
+              },
+              {
+                "dimension": "constraint",
+                "rule": "assembly_capacity_compliance",
+                "status": "FAIL",
+                "passed": false,
+                "applicable": true
+              },
+              {
+                "dimension": "constraint",
+                "rule": "finished_vendor_max_qty_compliance",
+                "status": "PASS",
+                "passed": true,
+                "applicable": true
+              },
+              {
+                "dimension": "constraint",
+                "rule": "component_vendor_max_qty_compliance",
+                "status": "PASS",
+                "passed": true,
+                "applicable": true
+              },
+              {
+                "dimension": "constraint",
+                "rule": "component_stock_capacity_compliance",
+                "status": "FAIL",
+                "passed": false,
+                "applicable": true
+              },
+              {
+                "dimension": "constraint",
+                "rule": "mo_component_feasibility",
+                "status": "PASS",
+                "passed": true,
+                "applicable": true
+              },
+              {
+                "dimension": "constraint",
+                "rule": "supply_coverage",
+                "status": "PASS",
+                "passed": true,
+                "applicable": true
+              },
+              {
+                "dimension": "constraint",
+                "rule": "repair_state_compliance",
+                "status": "PASS",
+                "passed": true,
+                "applicable": true
+              },
+              {
+                "dimension": "hygiene",
+                "rule": "seeded_order_confirmed",
+                "status": "PASS",
+                "passed": true,
+                "applicable": true
+              },
+              {
+                "dimension": "hygiene",
+                "rule": "seeded_order_confirmed",
+                "status": "PASS",
+                "passed": true,
+                "applicable": true
+              },
+              {
+                "dimension": "hygiene",
+                "rule": "seeded_order_confirmed",
+                "status": "PASS",
+                "passed": true,
+                "applicable": true
+              },
+              {
+                "dimension": "hygiene",
+                "rule": "seeded_order_confirmed",
+                "status": "PASS",
+                "passed": true,
+                "applicable": true
+              },
+              {
+                "dimension": "hygiene",
+                "rule": "seeded_order_confirmed",
+                "status": "PASS",
+                "passed": true,
+                "applicable": true
+              },
+              {
+                "dimension": "hygiene",
+                "rule": "seeded_order_confirmed",
+                "status": "PASS",
+                "passed": true,
+                "applicable": true
+              },
+              {
+                "dimension": "hygiene",
+                "rule": "seeded_order_confirmed",
+                "status": "PASS",
+                "passed": true,
+                "applicable": true
+              },
+              {
+                "dimension": "hygiene",
+                "rule": "seeded_order_confirmed",
+                "status": "PASS",
+                "passed": true,
+                "applicable": true
+              },
+              {
+                "dimension": "hygiene",
+                "rule": "seeded_order_confirmed",
+                "status": "PASS",
+                "passed": true,
+                "applicable": true
+              },
+              {
+                "dimension": "hygiene",
+                "rule": "seeded_order_confirmed",
+                "status": "PASS",
+                "passed": true,
+                "applicable": true
+              },
+              {
+                "dimension": "hygiene",
+                "rule": "seeded_order_confirmed",
+                "status": "PASS",
+                "passed": true,
+                "applicable": true
+              },
+              {
+                "dimension": "hygiene",
+                "rule": "seeded_order_confirmed",
+                "status": "PASS",
+                "passed": true,
+                "applicable": true
+              },
+              {
+                "dimension": "hygiene",
+                "rule": "po_origin_traceability",
+                "status": "PASS",
+                "passed": true,
+                "applicable": true
+              },
+              {
+                "dimension": "hygiene",
+                "rule": "po_origin_traceability",
+                "status": "FAIL",
+                "passed": false,
+                "applicable": true
+              },
+              {
+                "dimension": "hygiene",
+                "rule": "po_origin_traceability",
+                "status": "FAIL",
+                "passed": false,
+                "applicable": true
+              },
+              {
+                "dimension": "hygiene",
+                "rule": "po_origin_traceability",
+                "status": "FAIL",
+                "passed": false,
+                "applicable": true
+              },
+              {
+                "dimension": "hygiene",
+                "rule": "po_origin_traceability",
+                "status": "FAIL",
+                "passed": false,
+                "applicable": true
+              },
+              {
+                "dimension": "hygiene",
+                "rule": "po_origin_traceability",
+                "status": "FAIL",
+                "passed": false,
+                "applicable": true
+              },
+              {
+                "dimension": "hygiene",
+                "rule": "mrp_origin_traceability",
+                "status": "PASS",
+                "passed": true,
+                "applicable": true
+              },
+              {
+                "dimension": "hygiene",
+                "rule": "adjacent_data_untouched",
+                "status": "PASS",
+                "passed": true,
+                "applicable": true
+              }
+            ]
+          },
+          "optimality_detail": {
+            "objective_kind": "repair_plan",
+            "optimality_score": 91.66,
+            "primary_actual": 184.0,
+            "primary_expected": 184.0,
+            "primary_score": 100.0,
+            "secondary_actual_spend": 181383.92,
+            "secondary_expected_spend": 133394.07,
+            "secondary_score": 16.55
+          },
+          "spend": {
+            "assembly_spend": 4104.0,
+            "component_spend": 28561.39,
+            "expected_spend": 133394.07,
+            "finished_goods_spend": 148718.53,
+            "optimality_score": null,
+            "other_spend": 0.0,
+            "spend_delta": 47989.85,
+            "spend_delta_abs": 47989.85,
+            "spend_score": 16.55,
+            "total_new_spend": 181383.92,
+            "verified_spend_complete": true
+          }
+        }
+      }
+    },
+    "teardown": {
+      "status": "pass",
+      "at": 1791443465.8732197,
+      "started_at": 1791443465.8732197,
+      "owned_running_containers": 0
+    }
+  },
+  "preflight": {
+    "disk_free_bytes": 640144883712,
+    "images": "REPOSITORY                   TAG       DIGEST    IMAGE ID                                                                  CREATED       SIZE\nerp-smoke-2000-a02-main      latest    <none>    sha256:a6076798e16fe756ac9b21b36b6fc245933d11a480e2068b522db0108ba87ee5   2 hours ago   2.36GB\nerp-smoke-2000-a03-main      latest    <none>    sha256:b30565c6e8f8a50577decdd084f11e0e4d24d66ca009250f8441ca7674a70001   2 hours ago   2.36GB\nerp-smoke-2000-a04-main      latest    <none>    sha256:9b2aba30b21e879312511f02d548287fe2ce21de96ca757a80d9d52daef01ac4   2 hours ago   2.36GB\nerp-developer-2000-05-main   latest    <none>    sha256:73df1d21de9491621a0f928dbb2e28634605712db346bb43a276321a869e50b6   2 hours ago   2.36GB\nerp-developer-2000-06-main   latest    <none>    sha256:2395835e802d240c08c861cd2164c1b5a0ae5c50878b59e8386113f8a3127412   2 hours ago   2.36GB\nerp-developer-2000-07-main   latest    <none>    sha256:4450256dca918a90f86f929ae18b9d3bb73eb01fb3eeeda672efffed4649c104   2 hours ago   2.36GB\nerp-developer-2000-08-main   latest    <none>    sha256:c1167f4585009f1da950b8edcdedc2a0617b1a6fe0d8ed8671c56f5844cbba12   2 hours ago   2.36GB\n",
+    "cache": "TYPE            TOTAL     ACTIVE    SIZE      RECLAIMABLE\nImages          7         0         2.361GB   2.361GB (100%)\nContainers      0         0         0B        0B\nLocal Volumes   0         0         0B        0B\nBuild Cache     23        0         133.7kB   133.7kB\n",
+    "cpu": 20,
+    "memory_bytes": 16767954944,
+    "storage_driver": "overlay2",
+    "architecture": "x86_64"
+  },
+  "resolved_base_images": {
+    "ghcr.io/astral-sh/uv:latest": "sha256:61d393e44e249f2e4b526b6c7ddcecce245946826e608e11c93ad4f5bba55b21",
+    "docker.io/library/odoo:19": "sha256:dd9013e669caaa23d26765dc55814655eaeecca7cfc2c265dbabae913bce22fd"
+  },
+  "container_limits": {
+    "NanoCpus": 3000000000,
+    "Memory": 4294967296,
+    "MemorySwap": 8589934592,
+    "StorageOpt": null,
+    "NetworkMode": "none",
+    "CapAdd": [
+      "CAP_NET_ADMIN"
+    ],
+    "CapDrop": null,
+    "declared_storage_mb": 2048,
+    "storage_quota_enforced": null,
+    "storage_scope": "declaration only; no verified writable-layer quota"
+  },
+  "image": [
+    {
+      "Id": "sha256:735bb50d38c9a2251e40b026b9eb39250cc7ecdd8bb20246377d97592d00a4c4",
+      "RepoTags": [
+        "erp-showcase-2299-a01-main:latest"
+      ],
+      "RepoDigests": [],
+      "Parent": "",
+      "Comment": "buildkit.dockerfile.v0",
+      "Created": "2026-10-08T14:51:04.145681861+08:00",
+      "DockerVersion": "",
+      "Author": "",
+      "Architecture": "amd64",
+      "Os": "linux",
+      "Size": 2361022788,
+      "GraphDriver": {
+        "Data": {
+          "LowerDir": "/home/deng123/RPNH/.e26/d/overlay2/4md31geati81v31lmzz1jkdbw/diff:/home/deng123/RPNH/.e26/d/overlay2/jce5c1m5op6byqpro1chpyjpj/diff:/home/deng123/RPNH/.e26/d/overlay2/0ofe6sn3la6pie7vbajuq4064/diff:/home/deng123/RPNH/.e26/d/overlay2/xovylb0ogh99oamphn73adkfz/diff:/home/deng123/RPNH/.e26/d/overlay2/m0xfdly7idc9sqiknugjkfcs8/diff:/home/deng123/RPNH/.e26/d/overlay2/uog4gc6gobjkqj1y8zqr1va4p/diff:/home/deng123/RPNH/.e26/d/overlay2/ydqhlqx6nat6mrg6rj5dy8iyt/diff:/home/deng123/RPNH/.e26/d/overlay2/o3p6ysw0v4ek6gdv4quu0eoy6/diff:/home/deng123/RPNH/.e26/d/overlay2/eb629071830d9b09897def3ecf2390c8a2394b13072bd3de66e0b06a184c3d79/diff:/home/deng123/RPNH/.e26/d/overlay2/97b23eb5e4ce5091f0d743184380539b8e3dcbe155952ec410f350e45bbfd47c/diff:/home/deng123/RPNH/.e26/d/overlay2/feefee4efface3d23ed8892e069a7c33408d8bbf2308b2def6b4f310ba2a4118/diff:/home/deng123/RPNH/.e26/d/overlay2/04bb5c0392fd9cb89a63168f3622c05994ca82b51cbda2732eb06595567d86e5/diff:/home/deng123/RPNH/.e26/d/overlay2/4c6786f6a1a1d5a33015dffbd1a8debd5782749075681918074afa40cdbe0f31/diff:/home/deng123/RPNH/.e26/d/overlay2/b33752c130c88a409129f1a6ffae1a694ff3cc554de579bfbc6462568142f07c/diff:/home/deng123/RPNH/.e26/d/overlay2/cf42fc47ee9164f3eea186760f79d1f96f3f8ff29779a7ef5700628925519443/diff:/home/deng123/RPNH/.e26/d/overlay2/08c6d0a7a16fefa64c26624f174f6fc918405a2294e73e3e80a73ff3993aef98/diff:/home/deng123/RPNH/.e26/d/overlay2/b19fd48ce2304cc82beb0609ca74ae914c92aec46a5a3d3d92fbdaa7fac669f3/diff",
+          "MergedDir": "/home/deng123/RPNH/.e26/d/overlay2/bm6daebkots710ehkod5o24m4/merged",
+          "UpperDir": "/home/deng123/RPNH/.e26/d/overlay2/bm6daebkots710ehkod5o24m4/diff",
+          "WorkDir": "/home/deng123/RPNH/.e26/d/overlay2/bm6daebkots710ehkod5o24m4/work"
+        },
+        "Name": "overlay2"
+      },
+      "RootFS": {
+        "Type": "layers",
+        "Layers": [
+          "sha256:d81fb2a7c6ee3be05fdefaa7fd223be219c1ab172083ec1b994c3ecda33ac0a8",
+          "sha256:c080b0781d14bb6387dda21f101a994ccd266de6743499fd661c9ccd7491560b",
+          "sha256:c12c4e5c0a34a5fd23c1c47eb10867bb1b1851d5f42e4a6dcd053620cd78a410",
+          "sha256:290f27898b933e430446cbb6b8dd7ed01b2683b0d1384fae217d95c65c31fbd3",
+          "sha256:249e6ebbead3567f557c34103707e89e2dbd54d79fde11f689d40046e8d1526b",
+          "sha256:cbb7711272396f40812d227dbd5b89ffe2665b8a3a60fa99254d5fe92b1bd1ca",
+          "sha256:da10efe514e1a2b3a326d9e5581bf3f902f5043c3a698c9075141200e756e422",
+          "sha256:a11b0ac3c2b05fe601a2024ce4d42b874a7031271641dec450da4d4dd19b4c01",
+          "sha256:724786a01698c559a4ee12a4e3b0cde7df659ec4483ad2e7f7c35898c243f5d2",
+          "sha256:5fc0886d4daa499f96ea2879a97a99906f6cc0ee784eac9cb3103298e356126e",
+          "sha256:20b219d33c5bb496828994d2f76f6589254f29f6dc3f123e6f0ba218b792773c",
+          "sha256:b45b89f63b0a95ec1ed48b77a65cdec0afd843c45c1ed98e847ddbe3be8d599c",
+          "sha256:ae767cfe2fa592aac22db9e0c77b637149c65e957325d2b50eea0d173c62370d",
+          "sha256:7dacd4f31552f3a5130e85d1217dee5787dd9f1ee903cc633433b16b4ad84e0e",
+          "sha256:4447c19e97f6f3d6537496bbcff74a3ce0e1aa4ac5090669fabdf3f2812b4e5e",
+          "sha256:ab9b6ef0643176d24895a7a1171c5f38801c5567a8296b0aa9aee40b460864e0",
+          "sha256:938735e6161ffe0b4da844a782b597fa8396499c15df58a670b3429da3f56182",
+          "sha256:5f70bf18a086007016e948b04aed3b82103a36bea41755b6cddfaf10ace3c6ef"
+        ]
+      },
+      "Metadata": {
+        "LastTagTime": "2026-10-08T14:51:04.426102101+08:00"
+      },
+      "Config": {
+        "Cmd": null,
+        "Entrypoint": [
+          "/usr/local/bin/harbor-entrypoint.sh"
+        ],
+        "Env": [
+          "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+          "LANG=en_US.UTF-8",
+          "ODOO_VERSION=19.0",
+          "ODOO_RC=/etc/odoo/odoo.conf"
+        ],
+        "ExposedPorts": {
+          "8069/tcp": {},
+          "8071/tcp": {},
+          "8072/tcp": {}
+        },
+        "Labels": {
+          "com.docker.compose.project": "erp-showcase-2299-a01",
+          "com.docker.compose.service": "main",
+          "com.docker.compose.version": "5.6.0",
+          "maintainer": "Odoo S.A. <info@odoo.com>",
+          "org.opencontainers.image.version": "24.04"
+        },
+        "OnBuild": null,
+        "Shell": [
+          "/bin/bash",
+          "-xo",
+          "pipefail",
+          "-c"
+        ],
+        "User": "root",
+        "Volumes": {
+          "/mnt/extra-addons": {},
+          "/var/lib/odoo": {}
+        },
+        "WorkingDir": "/workspace"
+      }
+    }
+  ],
+  "owned_anonymous_volumes": [
+    {
+      "name": "46ed977de590b151af611c8e21603226e41d9c77b0ffbb931ac730af72cc9a7d",
+      "destination": "/var/lib/odoo",
+      "new": true,
+      "driver": "local"
+    },
+    {
+      "name": "f9fc2c5b4dbac01c2173976158217949627ec576ba269ecbc976d3748132fdb3",
+      "destination": "/mnt/extra-addons",
+      "new": true,
+      "driver": "local"
+    }
+  ],
+  "dependency_versions": {
+    "solver": {
+      "python": "3.12.3",
+      "odoo-client-lib": "2.0.0",
+      "uv": {
+        "exit_code": 0,
+        "version": "uv 0.12.23 (x86_64-unknown-linux-musl)"
+      },
+      "system_packages": {
+        "exit_code": 0,
+        "version": "odoo\t19.0.20260926\npostgresql-18\t18.6-1.pgdg24.04+2"
+      },
+      "iptables": {
+        "exit_code": 0,
+        "version": "iptables v1.8.10 (nf_tables)"
+      },
+      "ip6tables": {
+        "exit_code": 0,
+        "version": "ip6tables v1.8.10 (nf_tables)"
+      }
+    },
+    "verifier": {
+      "python": "3.12.3",
+      "odoo-client-lib": "2.0.0",
+      "uv": {
+        "exit_code": 0,
+        "version": "uv 0.12.23 (x86_64-unknown-linux-musl)"
+      },
+      "system_packages": {
+        "exit_code": 0,
+        "version": "odoo\t19.0.20260926\npostgresql-18\t18.6-1.pgdg24.04+2"
+      },
+      "iptables": {
+        "exit_code": 0,
+        "version": "iptables v1.8.10 (nf_tables)"
+      },
+      "ip6tables": {
+        "exit_code": 0,
+        "version": "ip6tables v1.8.10 (nf_tables)"
+      }
+    }
+  },
+  "initial_identity": {
+    "sentinel_mtime_ns": 1791442378147556559,
+    "sentinel_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "timezone": [
+      "UTC",
+      "UTC"
+    ],
+    "tz_env": null,
+    "localtime_sha256": "8b85846791ab2c8a5463c83a5be3c043e2570d7448434d41398969ed47e3e6f2",
+    "repair_seed_sha256": "e92fd67645aa61fb2895c8fb7877751be1cc9736eefe55759410b30f7a32cb22"
+  },
+  "firewall_versions": [
+    "iptables v1.8.10 (nf_tables)",
+    "ip6tables v1.8.10 (nf_tables)"
+  ],
+  "verifier_exit_code": 0
+}

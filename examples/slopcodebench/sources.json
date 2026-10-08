@@ -1,0 +1,58 @@
+{
+  "schema_version": "rpnh/slopcodebench-sources/v1",
+  "rpnh": {
+    "repository": "https://github.com/Deng-0119/RPNH",
+    "revision": "ae09445fe1d9b973502bc5d2c961976c1d2c0163",
+    "license": "MIT"
+  },
+  "runner": {
+    "repository": "https://github.com/SprocketLab/slop-code-bench",
+    "revision": "31ceea3add480edb33431e70475c4c70597e6b31",
+    "license": "MIT",
+    "inspected_files": [
+      {
+        "path": "docs/agents/agent-class.md",
+        "git_blob_sha": "03f55fbe43f3c4ed5c19bc9b78ebb25dc8151c3b"
+      },
+      {
+        "path": "src/slop_code/agent_runner/agent.py",
+        "git_blob_sha": "689105a48767ed5ef543c9e9a9d7918764d92914"
+      },
+      {
+        "path": "src/slop_code/agent_runner/runner.py",
+        "git_blob_sha": "b2a2bae77819e13f0d835fbde65281b5113ba074"
+      },
+      {
+        "path": "src/slop_code/agent_runner/models.py",
+        "git_blob_sha": "5bded693df597d2ad2e7106866d6cdd394ebd6cf"
+      },
+      {
+        "path": "src/slop_code/execution/session.py",
+        "git_blob_sha": "7e66b2030be0461a05c38af122db95db54adaafc"
+      },
+      {
+        "path": "src/slop_code/execution/protocols.py",
+        "git_blob_sha": "ef7f787fb94cfbf8f6c9c33c495176c8f57f0479"
+      },
+      {
+        "path": "src/slop_code/execution/models.py",
+        "git_blob_sha": "206975a3e850c9be10729aaff87dac69146bce14"
+      }
+    ]
+  },
+  "problems": {
+    "repository": "https://github.com/gabeorlanski/scb-problems",
+    "revision": "9cd9ca3a51c3d3e2a99d2488a25baf73a2204451",
+    "license": "Apache-2.0",
+    "task": "code_search",
+    "configuration_git_blob_sha": "a329353763b33a2d57e9186a957e2a3665333c49",
+    "checkpoint_names": [
+      "checkpoint_1",
+      "checkpoint_2",
+      "checkpoint_3",
+      "checkpoint_4",
+      "checkpoint_5"
+    ]
+  },
+  "distribution": "No upstream prompts, tests, solutions, reference code or benchmark dataset files are redistributed."
+}

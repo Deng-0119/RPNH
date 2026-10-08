@@ -1,0 +1,81 @@
+#0 building with "default" instance using docker driver
+
+#1 [internal] load local bake definitions
+#1 reading from stdin 579B done
+#1 DONE 0.0s
+
+#2 [internal] load build definition from Dockerfile.build-compatibility
+#2 transferring dockerfile: 1.22kB done
+#2 DONE 0.0s
+
+#3 [internal] load metadata for docker.io/library/odoo:19
+#3 ...
+
+#4 [internal] load metadata for ghcr.io/astral-sh/uv:latest
+#4 DONE 2.2s
+
+#3 [internal] load metadata for docker.io/library/odoo:19
+#3 DONE 2.2s
+
+#5 [internal] load .dockerignore
+#5 transferring context: 2B done
+#5 DONE 0.0s
+
+#6 FROM ghcr.io/astral-sh/uv:latest@sha256:61d393e44e249f2e4b526b6c7ddcecce245946826e608e11c93ad4f5bba55b21
+#6 DONE 0.0s
+
+#7 [stage-0  1/10] FROM docker.io/library/odoo:19@sha256:dd9013e669caaa23d26765dc55814655eaeecca7cfc2c265dbabae913bce22fd
+#7 DONE 0.0s
+
+#8 [stage-0  2/10] COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /usr/local/bin/
+#8 CACHED
+
+#9 [stage-0  3/10] RUN apt-get update && apt-get install -y --no-install-recommends     ca-certificates     gnupg     curl     && install -d /usr/share/postgresql-common/pgdg     && curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc -o /usr/share/postgresql-common/pgdg/apt.postgresql.org.asc     && echo "deb [signed-by=/usr/share/postgresql-common/pgdg/apt.postgresql.org.asc] https://apt.postgresql.org/pub/repos/apt noble-pgdg main" > /etc/apt/sources.list.d/pgdg.list     && apt-get update     && apt-get install -y --no-install-recommends postgresql-18     && rm -rf /var/lib/apt/lists/*
+#9 CACHED
+
+#10 [internal] load build context
+#10 transferring context: 141B done
+#10 DONE 0.1s
+
+#11 [stage-0  4/10] RUN uv pip install --system --no-cache --break-system-packages     "odoo-client-lib==2.0.0"
+#11 0.157 + uv pip install --system --no-cache --break-system-packages odoo-client-lib==2.0.0
+#11 0.208 Using Python 3.12.3 environment at: /usr
+#11 2.642 Resolved 8 packages in 2.43s
+#11 11.99 Prepared 8 packages in 9.34s
+#11 12.00 Installed 8 packages in 11ms
+#11 12.00  + anyio==4.15.1
+#11 12.00  + certifi==2026.7.22
+#11 12.00  + h11==0.16.0
+#11 12.00  + httpcore==1.0.9
+#11 12.00  + httpx==0.28.1
+#11 12.00  + idna==3.20
+#11 12.00  + odoo-client-lib==2.0.0
+#11 12.00  + typing-extensions==4.16.0
+#11 DONE 12.1s
+
+#12 [stage-0  5/10] COPY odoo.conf /etc/odoo/odoo.conf
+#12 DONE 1.0s
+
+#13 [stage-0  6/10] COPY setup_scenario.py /setup/setup_scenario.py
+#13 DONE 0.5s
+
+#14 [stage-0  7/10] COPY scenario_data.json /setup/scenario_data.json
+#14 DONE 0.4s
+
+#15 [stage-0  8/10] COPY entrypoint.sh /usr/local/bin/harbor-entrypoint.sh
+#15 DONE 0.3s
+
+#16 [stage-0  9/10] RUN chmod +x /usr/local/bin/harbor-entrypoint.sh     && mkdir -p /workspace /logs/verifier /logs/agent /setup
+#16 0.179 + chmod +x /usr/local/bin/harbor-entrypoint.sh
+#16 0.189 + mkdir -p /workspace /logs/verifier /logs/agent /setup
+#16 DONE 0.2s
+
+#17 [stage-0 10/10] WORKDIR /workspace
+#17 DONE 0.1s
+
+#18 exporting to image
+#18 exporting layers
+#18 exporting layers 0.8s done
+#18 writing image sha256:73df1d21de9491621a0f928dbb2e28634605712db346bb43a276321a869e50b6 done
+#18 naming to docker.io/library/erp-developer-2000-05-main 0.0s done
+#18 DONE 0.8s

@@ -1,0 +1,95 @@
+constraint	demand_coverage r1223565D60_c01 P1223565D60-SOL-CSC-007 18 gte	PASS
+constraint	demand_coverage r1223565D60_c02 P1223565D60-SOL-CSC-007 15 gte	PASS
+constraint	demand_coverage r1223565D60_c03 P1223565D60-SOL-CSC-007 19 gte	PASS
+constraint	demand_coverage r1223565D60_c04 P1223565D60-SOL-CSC-007 24 gte	PASS
+constraint	demand_coverage r1223565D60_c05 P1223565D60-SOL-CSC-007 15 gte	PASS
+constraint	demand_coverage r1223565D60_c06 P1223565D60-SOL-CSC-007 15 gte	PASS
+constraint	demand_coverage r1223565D60_c07 P1223565D60-SOL-CSC-007 22 gte	PASS
+constraint	demand_coverage r1223565D60_c08 P1223565D60-SOL-CSC-007 16 gte	PASS
+constraint	demand_coverage r1223565D60_c09 P1223565D60-SOL-CSC-007 27 gte	PASS
+constraint	demand_coverage r1223565D60_c10 P1223565D60-SOL-CSC-007 17 gte	PASS
+constraint	demand_coverage r1223565D60_c11 P1223565D60-SOL-CSC-007 18 gte	PASS
+constraint	demand_coverage r1223565D60_c12 P1223565D60-SOL-CSC-007 22 gte	PASS
+constraint	deadline_fulfillment r1223565D60_c01 P1223565D60-SOL-CSC-007 8	PASS
+constraint	deadline_fulfillment r1223565D60_c02 P1223565D60-SOL-CSC-007 8	PASS
+constraint	deadline_fulfillment r1223565D60_c03 P1223565D60-SOL-CSC-007 9	PASS
+constraint	deadline_fulfillment r1223565D60_c04 P1223565D60-SOL-CSC-007 9	PASS
+constraint	deadline_fulfillment r1223565D60_c05 P1223565D60-SOL-CSC-007 9	PASS
+constraint	deadline_fulfillment r1223565D60_c06 P1223565D60-SOL-CSC-007 10	PASS
+constraint	deadline_fulfillment r1223565D60_c07 P1223565D60-SOL-CSC-007 10	PASS
+constraint	deadline_fulfillment r1223565D60_c08 P1223565D60-SOL-CSC-007 11	PASS
+constraint	deadline_fulfillment r1223565D60_c09 P1223565D60-SOL-CSC-007 11	PASS
+constraint	deadline_fulfillment r1223565D60_c10 P1223565D60-SOL-CSC-007 11	PASS
+constraint	deadline_fulfillment r1223565D60_c11 P1223565D60-SOL-CSC-007 12	PASS
+constraint	deadline_fulfillment r1223565D60_c12 P1223565D60-SOL-CSC-007 12	PASS
+constraint	list_price r1223565D60_c01 P1223565D60-SOL-CSC-007 3875.85	PASS
+constraint	list_price r1223565D60_c02 P1223565D60-SOL-CSC-007 3875.85	PASS
+constraint	list_price r1223565D60_c03 P1223565D60-SOL-CSC-007 3875.85	PASS
+constraint	list_price r1223565D60_c04 P1223565D60-SOL-CSC-007 3875.85	PASS
+constraint	list_price r1223565D60_c05 P1223565D60-SOL-CSC-007 3875.85	PASS
+constraint	list_price r1223565D60_c06 P1223565D60-SOL-CSC-007 3875.85	PASS
+constraint	list_price r1223565D60_c07 P1223565D60-SOL-CSC-007 3875.85	PASS
+constraint	list_price r1223565D60_c08 P1223565D60-SOL-CSC-007 3875.85	PASS
+constraint	list_price r1223565D60_c09 P1223565D60-SOL-CSC-007 3875.85	PASS
+constraint	list_price r1223565D60_c10 P1223565D60-SOL-CSC-007 3875.85	PASS
+constraint	list_price r1223565D60_c11 P1223565D60-SOL-CSC-007 3875.85	PASS
+constraint	list_price r1223565D60_c12 P1223565D60-SOL-CSC-007 3875.85	PASS
+constraint	sale_revenue r1223565D60_c01 P1223565D60-SOL-CSC-007 69765.3	PASS
+constraint	sale_revenue r1223565D60_c02 P1223565D60-SOL-CSC-007 58137.75	PASS
+constraint	sale_revenue r1223565D60_c03 P1223565D60-SOL-CSC-007 73641.15	PASS
+constraint	sale_revenue r1223565D60_c04 P1223565D60-SOL-CSC-007 93020.4	PASS
+constraint	sale_revenue r1223565D60_c05 P1223565D60-SOL-CSC-007 58137.75	PASS
+constraint	sale_revenue r1223565D60_c06 P1223565D60-SOL-CSC-007 58137.75	PASS
+constraint	sale_revenue r1223565D60_c07 P1223565D60-SOL-CSC-007 85268.7	PASS
+constraint	sale_revenue r1223565D60_c08 P1223565D60-SOL-CSC-007 62013.6	PASS
+constraint	sale_revenue r1223565D60_c09 P1223565D60-SOL-CSC-007 104647.95	PASS
+constraint	sale_revenue r1223565D60_c10 P1223565D60-SOL-CSC-007 65889.45	PASS
+constraint	sale_revenue r1223565D60_c11 P1223565D60-SOL-CSC-007 69765.3	PASS
+constraint	sale_revenue r1223565D60_c12 P1223565D60-SOL-CSC-007 85268.7	PASS
+constraint	budget_compliance r1223565D60_c01 P1223565D60-SOL-CSC-007 76067.7	PASS
+constraint	budget_compliance r1223565D60_c02 P1223565D60-SOL-CSC-007 61473.18	PASS
+constraint	budget_compliance r1223565D60_c03 P1223565D60-SOL-CSC-007 77257.53	PASS
+constraint	budget_compliance r1223565D60_c04 P1223565D60-SOL-CSC-007 95059.81	PASS
+constraint	budget_compliance r1223565D60_c05 P1223565D60-SOL-CSC-007 63579.11	PASS
+constraint	budget_compliance r1223565D60_c06 P1223565D60-SOL-CSC-007 63985.64	PASS
+constraint	budget_compliance r1223565D60_c07 P1223565D60-SOL-CSC-007 92957.19	PASS
+constraint	budget_compliance r1223565D60_c08 P1223565D60-SOL-CSC-007 65685.51	PASS
+constraint	budget_compliance r1223565D60_c09 P1223565D60-SOL-CSC-007 111508.31	PASS
+constraint	budget_compliance r1223565D60_c10 P1223565D60-SOL-CSC-007 72147.07	PASS
+constraint	budget_compliance r1223565D60_c11 P1223565D60-SOL-CSC-007 72994.12	PASS
+constraint	budget_compliance r1223565D60_c12 P1223565D60-SOL-CSC-007 90585.74	PASS
+constraint	new_spend_margin_policy 0.26	PASS
+constraint	supply_timing_feasible	FAIL
+constraint	po_delivery_schedule_compliance	PASS
+constraint	po_consolidation_compliance	PASS
+constraint	po_min_qty_compliance	PASS
+constraint	po_price_tier_compliance	PASS
+constraint	mo_schedule_compliance P1223565D60-SOL-CSC-007	FAIL
+constraint	finished_stock_capacity_compliance	PASS
+constraint	assembly_capacity_compliance	FAIL
+constraint	finished_vendor_max_qty_compliance	PASS
+constraint	component_vendor_max_qty_compliance	PASS
+constraint	component_stock_capacity_compliance	FAIL
+constraint	mo_component_feasibility P1223565D60-SOL-CSC-007	PASS
+constraint	supply_coverage P1223565D60-SOL-CSC-007 228 60.0	PASS
+constraint	repair_state_compliance	PASS
+hygiene	seeded_order_confirmed r1223565D60_o01 r1223565D60_c01 P1223565D60-SOL-CSC-007 18	PASS
+hygiene	seeded_order_confirmed r1223565D60_o02 r1223565D60_c02 P1223565D60-SOL-CSC-007 15	PASS
+hygiene	seeded_order_confirmed r1223565D60_o03 r1223565D60_c03 P1223565D60-SOL-CSC-007 19	PASS
+hygiene	seeded_order_confirmed r1223565D60_o04 r1223565D60_c04 P1223565D60-SOL-CSC-007 24	PASS
+hygiene	seeded_order_confirmed r1223565D60_o05 r1223565D60_c05 P1223565D60-SOL-CSC-007 15	PASS
+hygiene	seeded_order_confirmed r1223565D60_o06 r1223565D60_c06 P1223565D60-SOL-CSC-007 15	PASS
+hygiene	seeded_order_confirmed r1223565D60_o07 r1223565D60_c07 P1223565D60-SOL-CSC-007 22	PASS
+hygiene	seeded_order_confirmed r1223565D60_o08 r1223565D60_c08 P1223565D60-SOL-CSC-007 16	PASS
+hygiene	seeded_order_confirmed r1223565D60_o09 r1223565D60_c09 P1223565D60-SOL-CSC-007 27	PASS
+hygiene	seeded_order_confirmed r1223565D60_o10 r1223565D60_c10 P1223565D60-SOL-CSC-007 17	PASS
+hygiene	seeded_order_confirmed r1223565D60_o11 r1223565D60_c11 P1223565D60-SOL-CSC-007 18	PASS
+hygiene	seeded_order_confirmed r1223565D60_o12 r1223565D60_c12 P1223565D60-SOL-CSC-007 22	PASS
+hygiene	po_origin_traceability P1223565D60-SOL-CSC-007 finished	PASS
+hygiene	po_origin_traceability P1223565D60-SOL-MCC-107 component	FAIL
+hygiene	po_origin_traceability P1223565D60-SOL-RHB-111 component	FAIL
+hygiene	po_origin_traceability P1223565D60-SOL-DCB-114 component	FAIL
+hygiene	po_origin_traceability P1223565D60-SOL-ECF-122 component	FAIL
+hygiene	po_origin_traceability P1223565D60-SOL-BCC-127 component	FAIL
+hygiene	mrp_origin_traceability P1223565D60-SOL-CSC-007	PASS
+hygiene	adjacent_data_untouched	PASS

@@ -1,0 +1,12 @@
+{
+  "commands": [
+    "Harbor Verifier.verify with unchanged original tests/test.sh"
+  ],
+  "ended_at": "2026-10-08T06:14:50.042457+00:00",
+  "exit_code": 0,
+  "measurements": {},
+  "reason": "Completed verifier is independent of the emitted business passed threshold.",
+  "started_at": "2026-10-08T06:14:42.128857+00:00",
+  "status": "passed",
+  "tested_tree_sha256": "b4684ae45c2cfa31e9baa81980a066f12a03ac990aa512e49cf8d3058be23698"
+}

@@ -1,0 +1,6 @@
+{
+  "error": "timed out",
+  "fixture_subprocess_entered": true,
+  "traceback": "Traceback (most recent call last):\n  File \"/home/deng123/RPNH/task-first-wave-examples-20261008/work/scb_native_acceptance.py\", line 140, in case_run\n    snapshot = control.snapshot(handle.task_id)\n  File \"/home/deng123/RPNH/task-erp-first-wave-20261008/venv/lib/python3.13/site-packages/cpn/rpnh/task_control.py\", line 587, in snapshot\n    return ControlClient(str(handle.socket_path)).snapshot()\n           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^\n  File \"/home/deng123/RPNH/task-erp-first-wave-20261008/venv/lib/python3.13/site-packages/cpn/rpnh/control_client.py\", line 131, in snapshot\n    reply = self.request(\"snapshot\", {}, command_id=command_id)\n  File \"/home/deng123/RPNH/task-erp-first-wave-20261008/venv/lib/python3.13/site-packages/cpn/rpnh/control_client.py\", line 128, in request\n    return parse_reply(reader.readline(), command_id)\n                       ~~~~~~~~~~~~~~~^^\n  File \"/home/deng123/miniforge3/lib/python3.13/socket.py\", line 719, in readinto\n    return self._sock.recv_into(b)\n           ~~~~~~~~~~~~~~~~~~~~^^^\nTimeoutError: timed out\n",
+  "type": "TimeoutError"
+}

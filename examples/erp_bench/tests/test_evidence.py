@@ -191,10 +191,28 @@ class EvidenceTests(unittest.TestCase):
 
     def test_descendant_with_outside_lane_commits_is_rejected(self):
         self.head = "b" * 40
-        for outside in ("cpn/core.py", "README.md", "examples/slopcodebench/demo.py",
-                        "examples/erp_bench_other/demo.py"):
+        for outside in ("cpn/core.py", "README.md", "examples/slopcodebench_other/demo.py",
+                        "examples/erp_bench_other/demo.py", "evidence/other_campaign/result.json"):
             self.committed_paths = [self.name, outside]
             with self.subTest(path=outside), self.assertRaisesRegex(ValueError, "committed changes outside"):
+                export.source_identity(self.src)
+
+    def test_assigned_committed_first_wave_lanes_preserve_erp_ownership(self):
+        self.head = "b" * 40
+        self.committed_paths = [self.name, "examples/slopcodebench/run.py",
+                                "examples/example_validation/validate.py",
+                                "evidence/first_wave/20261008/failure.log"]
+        identity = export.source_identity(self.src)
+        self.assertEqual(identity["tested_commit"], self.head)
+        self.assertEqual([row["path"] for row in identity["owned_files"]], [self.name])
+        self.assertEqual([row["path"] for row in identity["changed_files"]], [self.name])
+
+    def test_integration_permission_does_not_allow_uncommitted_other_lane_edits(self):
+        self.head = "b" * 40
+        for outside in ("examples/slopcodebench/run.py", "examples/example_validation/validate.py",
+                        "evidence/first_wave/20261008/failure.log"):
+            self.dirty_paths = [outside]
+            with self.subTest(path=outside), self.assertRaisesRegex(ValueError, "tracked changes outside"):
                 export.source_identity(self.src)
 
     def test_descendant_keeps_worktree_ownership_check(self):

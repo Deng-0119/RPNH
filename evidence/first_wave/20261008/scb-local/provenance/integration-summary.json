@@ -1,0 +1,574 @@
+{
+  "schema_version": "first-wave-local-integration/v1",
+  "status": "PASS_OFFLINE_F3_CORRECTION_PENDING_ARGUS",
+  "write_scope": [
+    "examples/slopcodebench/",
+    "examples/example_validation/"
+  ],
+  "interpreter": "/home/deng123/RPNH/task-erp-first-wave-20261008/venv/bin/python",
+  "code_modified_beyond_supplied_additions": false,
+  "commits_or_pushes": false,
+  "runtime": {
+    "native_owner": "not_run",
+    "docker": "not_run",
+    "model_provider": "not_run",
+    "upstream_downloads": "not_run"
+  },
+  "commands": [
+    {
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "/home/deng123/RPNH/task-first-wave-examples-20261008/source",
+      "exit_code": 0,
+      "elapsed_seconds": 0.0013382149991230108,
+      "log": "evidence/source-head.log",
+      "finished_utc": "2026-10-08T07:37:14.823611+00:00",
+      "environment": {
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "TMPDIR": "/home/deng123/RPNH/task-first-wave-examples-20261008/work/tmp",
+        "XDG_CACHE_HOME": "/home/deng123/RPNH/task-first-wave-examples-20261008/work/xdg",
+        "PIP_CACHE_DIR": "/home/deng123/RPNH/task-first-wave-examples-20261008/work/cache",
+        "GIT_OPTIONAL_LOCKS": "0"
+      }
+    },
+    {
+      "argv": [
+        "git",
+        "status",
+        "--short",
+        "--untracked-files=all"
+      ],
+      "cwd": "/home/deng123/RPNH/task-first-wave-examples-20261008/source",
+      "exit_code": 0,
+      "elapsed_seconds": 0.04680222000024514,
+      "log": "evidence/initial-status.log",
+      "finished_utc": "2026-10-08T07:37:14.870531+00:00",
+      "environment": {
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "TMPDIR": "/home/deng123/RPNH/task-first-wave-examples-20261008/work/tmp",
+        "XDG_CACHE_HOME": "/home/deng123/RPNH/task-first-wave-examples-20261008/work/xdg",
+        "PIP_CACHE_DIR": "/home/deng123/RPNH/task-first-wave-examples-20261008/work/cache",
+        "GIT_OPTIONAL_LOCKS": "0"
+      }
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--numstat",
+        "/home/deng123/RPNH/task-first-wave-examples-20261008/input/RPNH_First_Wave_Examples/examples.patch"
+      ],
+      "cwd": "/home/deng123/RPNH/task-first-wave-examples-20261008/source",
+      "exit_code": 0,
+      "elapsed_seconds": 0.00223715999891283,
+      "log": "evidence/patch-numstat.log",
+      "finished_utc": "2026-10-08T07:37:14.878020+00:00",
+      "environment": {
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "TMPDIR": "/home/deng123/RPNH/task-first-wave-examples-20261008/work/tmp",
+        "XDG_CACHE_HOME": "/home/deng123/RPNH/task-first-wave-examples-20261008/work/xdg",
+        "PIP_CACHE_DIR": "/home/deng123/RPNH/task-first-wave-examples-20261008/work/cache",
+        "GIT_OPTIONAL_LOCKS": "0"
+      }
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--check",
+        "/home/deng123/RPNH/task-first-wave-examples-20261008/input/RPNH_First_Wave_Examples/examples.patch"
+      ],
+      "cwd": "/home/deng123/RPNH/task-first-wave-examples-20261008/source",
+      "exit_code": 0,
+      "elapsed_seconds": 0.0019084129999100696,
+      "log": "evidence/patch-check.log",
+      "finished_utc": "2026-10-08T07:37:14.924319+00:00",
+      "environment": {
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "TMPDIR": "/home/deng123/RPNH/task-first-wave-examples-20261008/work/tmp",
+        "XDG_CACHE_HOME": "/home/deng123/RPNH/task-first-wave-examples-20261008/work/xdg",
+        "PIP_CACHE_DIR": "/home/deng123/RPNH/task-first-wave-examples-20261008/work/cache",
+        "GIT_OPTIONAL_LOCKS": "0"
+      }
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "/home/deng123/RPNH/task-first-wave-examples-20261008/input/RPNH_First_Wave_Examples/examples.patch"
+      ],
+      "cwd": "/home/deng123/RPNH/task-first-wave-examples-20261008/source",
+      "exit_code": 0,
+      "elapsed_seconds": 0.0029982659998495365,
+      "log": "evidence/patch-apply.log",
+      "finished_utc": "2026-10-08T07:37:14.927426+00:00",
+      "environment": {
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "TMPDIR": "/home/deng123/RPNH/task-first-wave-examples-20261008/work/tmp",
+        "XDG_CACHE_HOME": "/home/deng123/RPNH/task-first-wave-examples-20261008/work/xdg",
+        "PIP_CACHE_DIR": "/home/deng123/RPNH/task-first-wave-examples-20261008/work/cache",
+        "GIT_OPTIONAL_LOCKS": "0"
+      }
+    },
+    {
+      "argv": [
+        "/home/deng123/RPNH/task-erp-first-wave-20261008/venv/bin/python",
+        "-B",
+        "-m",
+        "pytest",
+        "-p",
+        "no:cacheprovider",
+        "examples/slopcodebench/tests",
+        "examples/example_validation/tests",
+        "-q"
+      ],
+      "cwd": "/home/deng123/RPNH/task-first-wave-examples-20261008/source",
+      "exit_code": 0,
+      "elapsed_seconds": 1.0911989879987232,
+      "log": "evidence/examples-tests.log",
+      "finished_utc": "2026-10-08T07:38:09.012886+00:00",
+      "environment": {
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "TMPDIR": "/home/deng123/RPNH/task-first-wave-examples-20261008/work/tmp",
+        "XDG_CACHE_HOME": "/home/deng123/RPNH/task-first-wave-examples-20261008/work/xdg",
+        "PIP_CACHE_DIR": "/home/deng123/RPNH/task-first-wave-examples-20261008/work/cache",
+        "GIT_OPTIONAL_LOCKS": "0"
+      }
+    },
+    {
+      "argv": [
+        "/home/deng123/RPNH/task-erp-first-wave-20261008/venv/bin/python",
+        "-B",
+        "-m",
+        "pytest",
+        "-p",
+        "no:cacheprovider",
+        "tests/test_managed_plugin_tools.py::test_explicit_allowlist_projects_one_pure_plugin_operation",
+        "tests/test_managed_plugin_tools.py::test_legacy_v1_declaration_is_the_exact_base_shape",
+        "tests/test_managed_plugin_tools.py::test_non_pure_operation_is_not_managed",
+        "tests/test_managed_plugin_tools.py::test_effect_policy_and_provider_descriptor_overrides_are_explicit",
+        "-q"
+      ],
+      "cwd": "/home/deng123/RPNH/task-first-wave-examples-20261008/source",
+      "exit_code": 0,
+      "elapsed_seconds": 0.6100864020008885,
+      "log": "evidence/declarations-tests.log",
+      "finished_utc": "2026-10-08T07:39:10.554969+00:00",
+      "environment": {
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "TMPDIR": "/home/deng123/RPNH/task-first-wave-examples-20261008/work/tmp",
+        "XDG_CACHE_HOME": "/home/deng123/RPNH/task-first-wave-examples-20261008/work/xdg",
+        "PIP_CACHE_DIR": "/home/deng123/RPNH/task-first-wave-examples-20261008/work/cache",
+        "GIT_OPTIONAL_LOCKS": "0"
+      }
+    },
+    {
+      "argv": [
+        "git",
+        "status",
+        "--short",
+        "--untracked-files=all"
+      ],
+      "cwd": "/home/deng123/RPNH/task-first-wave-examples-20261008/source",
+      "exit_code": 0,
+      "elapsed_seconds": 0.0441512600009446,
+      "log": "evidence/final-status.log",
+      "finished_utc": "2026-10-08T07:40:15.854998+00:00",
+      "environment": {
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "TMPDIR": "/home/deng123/RPNH/task-first-wave-examples-20261008/work/tmp",
+        "XDG_CACHE_HOME": "/home/deng123/RPNH/task-first-wave-examples-20261008/work/xdg",
+        "PIP_CACHE_DIR": "/home/deng123/RPNH/task-first-wave-examples-20261008/work/cache",
+        "GIT_OPTIONAL_LOCKS": "0"
+      }
+    }
+  ],
+  "target_commit": "6f8ee2e406f3c70edb73206f861e56a0202b9f15",
+  "initial_status": "",
+  "package_source_base": "ae09445fe1d9b973502bc5d2c961976c1d2c0163",
+  "base_relationship": "Apply unchanged additions to explicitly authorized newer 6f8 target; not an AE runtime claim.",
+  "package_checksums": {
+    "status": "passed",
+    "files": 48
+  },
+  "source_snapshot": {
+    "status": "passed",
+    "files": 26
+  },
+  "patch_paths": [
+    "examples/example_validation/.gitignore",
+    "examples/example_validation/FILE_HASHES.json",
+    "examples/example_validation/README.md",
+    "examples/example_validation/README_ZH.md",
+    "examples/example_validation/result-manifest.schema.json",
+    "examples/example_validation/template.json",
+    "examples/example_validation/tests/test_validation.py",
+    "examples/example_validation/tests/verification.txt",
+    "examples/example_validation/validate.py",
+    "examples/slopcodebench/.gitignore",
+    "examples/slopcodebench/README.md",
+    "examples/slopcodebench/README_ZH.md",
+    "examples/slopcodebench/THIRD_PARTY_NOTICES.md",
+    "examples/slopcodebench/__init__.py",
+    "examples/slopcodebench/broker.py",
+    "examples/slopcodebench/condition.example.json",
+    "examples/slopcodebench/contracts.py",
+    "examples/slopcodebench/pilot.py",
+    "examples/slopcodebench/plugin.py",
+    "examples/slopcodebench/preflight.py",
+    "examples/slopcodebench/pyproject.toml",
+    "examples/slopcodebench/run.py",
+    "examples/slopcodebench/sources.json",
+    "examples/slopcodebench/tests/test_contracts.py",
+    "examples/slopcodebench/tests/test_session_pilot.py",
+    "examples/slopcodebench/wire.py"
+  ],
+  "target_directories": {
+    "examples/slopcodebench/": {
+      "exists": false
+    },
+    "examples/example_validation/": {
+      "exists": false
+    }
+  },
+  "existing_files_before_count": 1422,
+  "files_added": [
+    {
+      "path": "examples/example_validation/.gitignore",
+      "sha256": "a51104264729e7b362ea8c739de0ada29ba6e4f6047580ec3a3fd330ad20fd47"
+    },
+    {
+      "path": "examples/example_validation/FILE_HASHES.json",
+      "sha256": "9b4ed5aec8ca9ca66172cf1ea374b996bc0ebf48508a828d548c3739d730df67"
+    },
+    {
+      "path": "examples/example_validation/README.md",
+      "sha256": "fa2548a028f08c34e660595f57c34469863d8a289829bd5ceae0a60c6ec6a444"
+    },
+    {
+      "path": "examples/example_validation/README_ZH.md",
+      "sha256": "e2f59481bef89aea8ae33e116e7d38e820712c7687f54b859fbfec26c7fd87a9"
+    },
+    {
+      "path": "examples/example_validation/result-manifest.schema.json",
+      "sha256": "73c965d21557a7b63634be7f4a2aafd7c05bd26531a965f6a14bb7d3850d2618"
+    },
+    {
+      "path": "examples/example_validation/template.json",
+      "sha256": "bf5cab050d16cbdeca32921a0da7cefab08f518fe61e0aeaaf69260e1cda6914"
+    },
+    {
+      "path": "examples/example_validation/tests/test_validation.py",
+      "sha256": "6c7d99bfe50d46a9d167823da46949ba389c7582b60ae86b8de13bf9864c8772"
+    },
+    {
+      "path": "examples/example_validation/tests/verification.txt",
+      "sha256": "a65dfd03f242a409c6056f7a7283fc8c3ffac901862a9b0780ff405e66cea544"
+    },
+    {
+      "path": "examples/example_validation/validate.py",
+      "sha256": "d86a76bdeebc227b822d35286b7cafa5d0dd7c8e90edf17aa74af2d12149970c"
+    },
+    {
+      "path": "examples/slopcodebench/.gitignore",
+      "sha256": "f9e5dc7b2698de8a4192cddb3acc187298361fe3020e6823f82a2b25c7501717"
+    },
+    {
+      "path": "examples/slopcodebench/README.md",
+      "sha256": "c6487f55f7af27342261e1b3c4efae8c2162a5cee2a5acd938582214e0b93edc"
+    },
+    {
+      "path": "examples/slopcodebench/README_ZH.md",
+      "sha256": "bbbf8281e0092b21fe0fc4b43f93a1393fb5f8a1a1c4dbf0159f9f99d636750a"
+    },
+    {
+      "path": "examples/slopcodebench/THIRD_PARTY_NOTICES.md",
+      "sha256": "7fb694d32484176dab27b51c5a6b06d58021018ae6148a0e7179d34142db82fd"
+    },
+    {
+      "path": "examples/slopcodebench/__init__.py",
+      "sha256": "d110552daeaaeb407b30ffbddaab57004301e89ec6df3aad7ef81fecdcfe218d"
+    },
+    {
+      "path": "examples/slopcodebench/broker.py",
+      "sha256": "eb408d53fb5a3f47794e7c0d87c3f7da08039e68bbca38669fb5b862b0ab26d5"
+    },
+    {
+      "path": "examples/slopcodebench/condition.example.json",
+      "sha256": "fb40f61bb0015b1ef1dda526bd7bd6fa8b1e140f1c5a2301f7d749002a3e014a"
+    },
+    {
+      "path": "examples/slopcodebench/contracts.py",
+      "sha256": "611f09777a3c6e5d84d9e6878ea81aa8a0032a181070984c636b7c3895f20036"
+    },
+    {
+      "path": "examples/slopcodebench/pilot.py",
+      "sha256": "a86218cac02dcd38cc9698028ad2a7991d80be83cc246e1eab6e49fb400f4c5e"
+    },
+    {
+      "path": "examples/slopcodebench/plugin.py",
+      "sha256": "ed80903120515facf8a052d4226dbbc864e6f37615ea5f222840de20f0ccc569"
+    },
+    {
+      "path": "examples/slopcodebench/preflight.py",
+      "sha256": "97ac509d0ba59f1f8e9e3938f0e4c23a7254b8f527329be7f372870b3933aa12"
+    },
+    {
+      "path": "examples/slopcodebench/pyproject.toml",
+      "sha256": "737ddc7c29e2d17d47721ccdd9a48dac6724c2c90d8337b43997f4adfd802493"
+    },
+    {
+      "path": "examples/slopcodebench/run.py",
+      "sha256": "1c9520ca27114117c94175078f75c4e3a678cd22223629b1b04c80f27e18892e"
+    },
+    {
+      "path": "examples/slopcodebench/sources.json",
+      "sha256": "55c9fb49a5483bd7f93a39e399fc381d690259df0555cdcfb527d8853a838ba9"
+    },
+    {
+      "path": "examples/slopcodebench/tests/test_contracts.py",
+      "sha256": "1bbccec7202fefa8fa2c5abeb433a1bb38c9918c87f10ff3bb5fb86bfc6384ce"
+    },
+    {
+      "path": "examples/slopcodebench/tests/test_session_pilot.py",
+      "sha256": "311bf1cb7a375372a20ba52c0db4bdedd4fa953f6da78f66c3389106c7397e9f"
+    },
+    {
+      "path": "examples/slopcodebench/wire.py",
+      "sha256": "7163db101bbbbaa476f5d5bfffb714eb1d9b9b302d8ab4bfee038ee4061951c7"
+    }
+  ],
+  "shared_contract_comparison": {
+    "frozen_root": "/home/deng123/RPNH/task-erp-first-wave-20261008/input/RPNH_ERP_First_Wave_Local_Taskbook_20261008/shared_contract",
+    "common_files": [
+      {
+        "path": ".gitignore",
+        "byte_identical": true,
+        "integrated_sha256": "a51104264729e7b362ea8c739de0ada29ba6e4f6047580ec3a3fd330ad20fd47",
+        "frozen_sha256": "a51104264729e7b362ea8c739de0ada29ba6e4f6047580ec3a3fd330ad20fd47"
+      },
+      {
+        "path": "FILE_HASHES.json",
+        "byte_identical": true,
+        "integrated_sha256": "9b4ed5aec8ca9ca66172cf1ea374b996bc0ebf48508a828d548c3739d730df67",
+        "frozen_sha256": "9b4ed5aec8ca9ca66172cf1ea374b996bc0ebf48508a828d548c3739d730df67"
+      },
+      {
+        "path": "README.md",
+        "byte_identical": true,
+        "integrated_sha256": "fa2548a028f08c34e660595f57c34469863d8a289829bd5ceae0a60c6ec6a444",
+        "frozen_sha256": "fa2548a028f08c34e660595f57c34469863d8a289829bd5ceae0a60c6ec6a444"
+      },
+      {
+        "path": "README_ZH.md",
+        "byte_identical": true,
+        "integrated_sha256": "e2f59481bef89aea8ae33e116e7d38e820712c7687f54b859fbfec26c7fd87a9",
+        "frozen_sha256": "e2f59481bef89aea8ae33e116e7d38e820712c7687f54b859fbfec26c7fd87a9"
+      },
+      {
+        "path": "result-manifest.schema.json",
+        "byte_identical": true,
+        "integrated_sha256": "73c965d21557a7b63634be7f4a2aafd7c05bd26531a965f6a14bb7d3850d2618",
+        "frozen_sha256": "73c965d21557a7b63634be7f4a2aafd7c05bd26531a965f6a14bb7d3850d2618"
+      },
+      {
+        "path": "template.json",
+        "byte_identical": true,
+        "integrated_sha256": "bf5cab050d16cbdeca32921a0da7cefab08f518fe61e0aeaaf69260e1cda6914",
+        "frozen_sha256": "bf5cab050d16cbdeca32921a0da7cefab08f518fe61e0aeaaf69260e1cda6914"
+      },
+      {
+        "path": "tests/test_validation.py",
+        "byte_identical": true,
+        "integrated_sha256": "6c7d99bfe50d46a9d167823da46949ba389c7582b60ae86b8de13bf9864c8772",
+        "frozen_sha256": "6c7d99bfe50d46a9d167823da46949ba389c7582b60ae86b8de13bf9864c8772"
+      },
+      {
+        "path": "tests/verification.txt",
+        "byte_identical": true,
+        "integrated_sha256": "a65dfd03f242a409c6056f7a7283fc8c3ffac901862a9b0780ff405e66cea544",
+        "frozen_sha256": "a65dfd03f242a409c6056f7a7283fc8c3ffac901862a9b0780ff405e66cea544"
+      },
+      {
+        "path": "validate.py",
+        "byte_identical": true,
+        "integrated_sha256": "d86a76bdeebc227b822d35286b7cafa5d0dd7c8e90edf17aa74af2d12149970c",
+        "frozen_sha256": "d86a76bdeebc227b822d35286b7cafa5d0dd7c8e90edf17aa74af2d12149970c"
+      }
+    ],
+    "frozen_only": [
+      "PROVENANCE.json"
+    ],
+    "integrated_only": [],
+    "validator_byte_identical": true,
+    "schema_byte_identical": true,
+    "frozen_source_modified": false
+  },
+  "shared_inventory_status": "passed",
+  "tests": {
+    "examples": {
+      "status": "passed",
+      "expected_passed": 71,
+      "actual_passed": 71,
+      "log": "evidence/examples-tests.log"
+    },
+    "declarations": {
+      "status": "passed",
+      "expected_passed": 4,
+      "actual_passed": 4,
+      "log": "evidence/declarations-tests.log"
+    }
+  },
+  "preservation": {
+    "existing_files": 1422,
+    "changed_or_missing_existing_files": [
+      "examples/erp_bench/README.md",
+      "examples/erp_bench/README_ZH.md",
+      "examples/erp_bench/tests/test_evidence.py",
+      "examples/erp_bench/src/rpnh_erp_bench/export.py"
+    ],
+    "unchanged_existing_file_count": 1418,
+    "parent_authorized_changes": [
+      "examples/erp_bench/README.md",
+      "examples/erp_bench/README_ZH.md",
+      "examples/erp_bench/tests/test_evidence.py",
+      "examples/erp_bench/src/rpnh_erp_bench/export.py"
+    ],
+    "unexpected_existing_changes": [],
+    "added_files": [
+      "examples/example_validation/.gitignore",
+      "examples/example_validation/FILE_HASHES.json",
+      "examples/example_validation/README.md",
+      "examples/example_validation/README_ZH.md",
+      "examples/example_validation/result-manifest.schema.json",
+      "examples/example_validation/template.json",
+      "examples/example_validation/tests/test_validation.py",
+      "examples/example_validation/tests/verification.txt",
+      "examples/example_validation/validate.py",
+      "examples/slopcodebench/.gitignore",
+      "examples/slopcodebench/README.md",
+      "examples/slopcodebench/README_ZH.md",
+      "examples/slopcodebench/THIRD_PARTY_NOTICES.md",
+      "examples/slopcodebench/__init__.py",
+      "examples/slopcodebench/broker.py",
+      "examples/slopcodebench/condition.example.json",
+      "examples/slopcodebench/contracts.py",
+      "examples/slopcodebench/pilot.py",
+      "examples/slopcodebench/plugin.py",
+      "examples/slopcodebench/preflight.py",
+      "examples/slopcodebench/pyproject.toml",
+      "examples/slopcodebench/run.py",
+      "examples/slopcodebench/sources.json",
+      "examples/slopcodebench/tests/test_contracts.py",
+      "examples/slopcodebench/tests/test_session_pilot.py",
+      "examples/slopcodebench/wire.py"
+    ],
+    "parent_authorized_additions": [],
+    "unexpected_added_files": [],
+    "core_files_changed": [],
+    "integration_patch_modifies_existing_files": false
+  },
+  "final_git_status": " M examples/erp_bench/README.md\n M examples/erp_bench/README_ZH.md\n M examples/erp_bench/src/rpnh_erp_bench/export.py\n M examples/erp_bench/tests/test_evidence.py\n?? examples/example_validation/.gitignore\n?? examples/example_validation/FILE_HASHES.json\n?? examples/example_validation/README.md\n?? examples/example_validation/README_ZH.md\n?? examples/example_validation/result-manifest.schema.json\n?? examples/example_validation/template.json\n?? examples/example_validation/tests/test_validation.py\n?? examples/example_validation/tests/verification.txt\n?? examples/example_validation/validate.py\n?? examples/slopcodebench/.gitignore\n?? examples/slopcodebench/README.md\n?? examples/slopcodebench/README_ZH.md\n?? examples/slopcodebench/THIRD_PARTY_NOTICES.md\n?? examples/slopcodebench/__init__.py\n?? examples/slopcodebench/broker.py\n?? examples/slopcodebench/condition.example.json\n?? examples/slopcodebench/contracts.py\n?? examples/slopcodebench/pilot.py\n?? examples/slopcodebench/plugin.py\n?? examples/slopcodebench/preflight.py\n?? examples/slopcodebench/pyproject.toml\n?? examples/slopcodebench/run.py\n?? examples/slopcodebench/sources.json\n?? examples/slopcodebench/tests/test_contracts.py\n?? examples/slopcodebench/tests/test_session_pilot.py\n?? examples/slopcodebench/wire.py\n",
+  "concurrent_parent_scope_note": "Parent separately owns ERP export.py, bilingual README, tests and evidence/first_wave/20261008. Their observed edits are reported, not overwritten or attributed to this integration.",
+  "original_offline_evidence_note": "Supplied AE manifests retain original source/runtime claims. These 71+4 checks run on the explicitly approved 6f8 product plus unchanged additions; no new runtime claim.",
+  "initial_added_hashes_matched": true,
+  "final_added_hashes_match": false,
+  "final_added_hashes_note": "Expected approved F2/F3 delta after exact 26-file integration; original package and offline manifests retained unchanged.",
+  "followup_scb_fixes": {
+    "status": "SUPERSEDED_BY_F3_PRIMARY_CORRECTION",
+    "scope": "F2/F3 only; no setup/resume adaptation",
+    "changed_files": [
+      {
+        "path": "examples/slopcodebench/README.md",
+        "kind": "modified",
+        "sha256": "928a3fcca3ef01846fe07fade294fec87c330bc33ed7faaca17550d80d117b9e"
+      },
+      {
+        "path": "examples/slopcodebench/README_ZH.md",
+        "kind": "modified",
+        "sha256": "5d3ddcc14fec4916de8791495ba17784be99a1ecfcad8deec102746c8a21753c"
+      },
+      {
+        "path": "examples/slopcodebench/endpoint.py",
+        "kind": "added",
+        "sha256": "9be06e51a874b6226a7a5b45b8e0ef24833748f77b3ff51d34ef0a66466c4c63"
+      },
+      {
+        "path": "examples/slopcodebench/pilot.py",
+        "kind": "modified",
+        "sha256": "b3e820498d691bfec192cd21f561a89ad5d8960b5c3069c8286b676527b0c4e0"
+      },
+      {
+        "path": "examples/slopcodebench/run.py",
+        "kind": "modified",
+        "sha256": "698f28dc90cab70a93b1e93ba8cccbb7a5dadc3ad174f86ce15ac980b29216f4"
+      },
+      {
+        "path": "examples/slopcodebench/tests/test_endpoint.py",
+        "kind": "added",
+        "sha256": "3bdc6a4a71cc2579f9e4d4805c77c356bae48c4c964fb5664767b0580e35ffbf"
+      },
+      {
+        "path": "examples/slopcodebench/tests/test_session_pilot.py",
+        "kind": "modified",
+        "sha256": "867b30a1c89a2bd0bef5020f6ebcebc58b5f98cb6009926c2986ced0671d08ec"
+      }
+    ],
+    "unit_tests": {
+      "passed": 55,
+      "log": "evidence/scb-fixes-tests-02.log",
+      "command_record": "evidence/scb-fixes-tests-02.json"
+    },
+    "endpoint_capture": {
+      "status": "passed",
+      "proof": "work/scb-endpoint-capture02/public/capability-proof.json",
+      "synthetic_http_requests": 1,
+      "native_tools": [],
+      "web_search_present": false,
+      "inherited_agents_present": false,
+      "external_model_calls": 0,
+      "real_profile_read": false,
+      "real_credentials_read": false,
+      "cli_exit_code": 1,
+      "expected_fixture_rejection": true
+    },
+    "shared_contract_byte_identical": true,
+    "ERP_or_core_edits": false,
+    "commits_or_pushes": false,
+    "installed_native": "pending_Grace",
+    "docker": "not_run_by_this_worker",
+    "apis": {
+      "CheckpointPilot": "new optional codex_binary; mandatory for Codex selection",
+      "CLI": "--codex-binary only; no dependencies-prepared flag",
+      "condition": "endpoint-condition.json",
+      "snapshot": "private profile/selection.json and adapter.json; no optional ERP dependency"
+    }
+  },
+  "f3_primary_correction": {
+    "status": "READY_FOR_ARGUS_RECHECK",
+    "product_writes_stopped": true,
+    "argus_closure": "pending_parent_confirmation",
+    "changed_files_sha256": {
+      "examples/slopcodebench/broker.py": "934e5e32e5de6313550f6faab4fd91b1c71530cc3e8e0e7decee2385471f260f",
+      "examples/slopcodebench/pilot.py": "578873f967f31e231e2263fab87a7b4a69a4d25bea6cfa128585ebdbab70a201",
+      "examples/slopcodebench/tests/test_session_pilot.py": "9b716997be62b24fa275ff732b8559ce553a53c30d5ceb43df8f0e2016fed21e"
+    },
+    "unit_tests": {
+      "passed": 59,
+      "log": "evidence/scb-f3-primary-tests.log",
+      "command_record": "evidence/scb-f3-primary-tests.json"
+    },
+    "primary_exception_preserved": true,
+    "secondary_cleanup_diagnostics": "exception notes; private 0600 failure.json",
+    "cleanup_budget": "broker total 30 seconds; existing pilot fallback 15 seconds",
+    "resource_close_attempted_after_cleanup_failure": true,
+    "snapshot_on_cleanup_failure": false,
+    "automatic_replay": false,
+    "endpoint_capture02_unchanged": true,
+    "real_models": 0,
+    "docker_calls": 0
+  }
+}

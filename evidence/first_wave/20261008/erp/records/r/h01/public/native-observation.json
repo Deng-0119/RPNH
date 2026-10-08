@@ -1,0 +1,12 @@
+{
+  "commands": [
+    "TaskControl.start/status/result/result_evidence/stop"
+  ],
+  "ended_at": "2026-10-08T07:09:02.475711+00:00",
+  "exit_code": 0,
+  "measurements": {},
+  "reason": null,
+  "started_at": "2026-10-08T06:53:06.314892+00:00",
+  "status": "passed",
+  "tested_tree_sha256": "298d4e10c86d143f4191ba3e7a2bfe57fab25e50013c2b1b1dcdeb9e3654c749"
+}

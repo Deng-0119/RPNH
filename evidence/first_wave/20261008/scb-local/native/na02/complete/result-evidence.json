@@ -1,0 +1,30 @@
+{
+  "actions": [],
+  "actual_model_call_counts": [
+    0,
+    0
+  ],
+  "agent_loop_terminal_observed": false,
+  "benchmark_score": "not_checked",
+  "business_success": "not_checked",
+  "coverage": "complete_at_head",
+  "outer_stop": null,
+  "read_only": true,
+  "run_execution_authority_ref": {
+    "entity_type": "run_execution_authority/v1",
+    "logical_id": "run_execution_authority:43bb29df016854268b3915d256e3f2a9",
+    "version_id": "run_execution_authority_version:01e8aaf3457d52c1b6dc2ff69ec61e87"
+  },
+  "run_terminal_evidence": [],
+  "runtime_execution_status": "running",
+  "runtime_terminal": false,
+  "schema_version": "rpnh/agent_result_evidence/v1",
+  "source": {
+    "head_ordinal": 357,
+    "run_dir": "/home/deng123/RPNH/task-first-wave-examples-20261008/work/na02/complete/r",
+    "task_id": "task:f20a64017fbd400fa44efab3a7db5338",
+    "writer_fencing_epoch": 2
+  },
+  "stops": [],
+  "task_model_call_limit": 8
+}

@@ -1,0 +1,9 @@
+{
+  "tools": [
+    "complete_interaction",
+    "read_file",
+    "read_managed_output",
+    "session_command",
+    "write_file"
+  ]
+}

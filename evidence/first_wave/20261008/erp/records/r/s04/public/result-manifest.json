@@ -1,0 +1,553 @@
+{
+  "artifacts": [
+    {
+      "bytes": 854,
+      "hash_scope": "distributed_bytes",
+      "id": "model-configuration",
+      "immutable": true,
+      "path": "model-configuration.json",
+      "role": "model_configuration",
+      "sha256": "b8bcee7e52ab6bd1b72f5b92e85201988431d5ec57f6ebf980edebda29b37ba0",
+      "visibility": "public"
+    },
+    {
+      "bytes": 385,
+      "hash_scope": "distributed_bytes",
+      "id": "endpoint-condition",
+      "immutable": true,
+      "path": "endpoint-condition.json",
+      "role": "environment",
+      "sha256": "1707484e54a3765c673c935c39d7064b80457c361c3fd328b83e52ac00997bfc",
+      "visibility": "public"
+    },
+    {
+      "bytes": 197,
+      "hash_scope": "distributed_bytes",
+      "id": "quiescence",
+      "immutable": true,
+      "path": "quiescence.json",
+      "role": "environment",
+      "sha256": "5bff05cdf869d087c8d4b73463b57345454dab990dbe5153b15cf4ba378b3adc",
+      "visibility": "public"
+    },
+    {
+      "bytes": 10160,
+      "hash_scope": "distributed_bytes",
+      "id": "original-score",
+      "immutable": true,
+      "path": "original-score.json",
+      "role": "grader_output",
+      "sha256": "b1a3a8f462983b4dc9af327bca40e4886a61bb44eff1d73a167dcb21f2a907e6",
+      "visibility": "public"
+    },
+    {
+      "bytes": 7,
+      "hash_scope": "retained_private_bytes",
+      "id": "original-score-raw-reward.txt",
+      "immutable": true,
+      "path": null,
+      "role": "grader_output",
+      "sha256": "7a883ea221e02ba0cab09ccd247bd85162e37ddc3ceb9f00eb246d8eec383043",
+      "visibility": "private"
+    },
+    {
+      "bytes": 13792,
+      "hash_scope": "retained_private_bytes",
+      "id": "original-score-raw-reward.json",
+      "immutable": true,
+      "path": null,
+      "role": "grader_output",
+      "sha256": "409c0cd1e70ef5299a16d8fcc863f4f3030ffd23ab4445484e500fd52d61d365",
+      "visibility": "private"
+    },
+    {
+      "bytes": 2394,
+      "hash_scope": "retained_private_bytes",
+      "id": "original-score-raw-rule_results.tsv",
+      "immutable": true,
+      "path": null,
+      "role": "grader_output",
+      "sha256": "eeedd13315c43b8e6db76b64272e81b396784f25207ec261fe51bd2e65f79f24",
+      "visibility": "private"
+    },
+    {
+      "bytes": 148,
+      "hash_scope": "retained_private_bytes",
+      "id": "original-score-raw-optimality.json",
+      "immutable": true,
+      "path": null,
+      "role": "grader_output",
+      "sha256": "d5cc3920bbd889160c94240d57849548e995b0be877df39f253bfcddbc0ae547",
+      "visibility": "private"
+    },
+    {
+      "bytes": 304,
+      "hash_scope": "retained_private_bytes",
+      "id": "original-score-raw-spend.json",
+      "immutable": true,
+      "path": null,
+      "role": "grader_output",
+      "sha256": "52274400a25a5ed2e5eb19faddd84853d39e2ad9e50ce0e56721bb47ac3e8d7e",
+      "visibility": "private"
+    },
+    {
+      "bytes": 10188,
+      "hash_scope": "distributed_bytes",
+      "id": "owner-projection",
+      "immutable": true,
+      "path": "owner-projection.json",
+      "role": "registry_projection",
+      "sha256": "57221c273c1e31bb37ab4fec3976080a6f78267ab8e2e41eabb5cf7d8ef72fce",
+      "visibility": "public"
+    },
+    {
+      "bytes": 5081,
+      "hash_scope": "distributed_bytes",
+      "id": "world-projection",
+      "immutable": true,
+      "path": "world-projection.json",
+      "role": "environment",
+      "sha256": "d869bf6114adf070cb330e87b624301bb029383cdc16a2fc7c2321d66246b948",
+      "visibility": "public"
+    },
+    {
+      "bytes": 220,
+      "hash_scope": "distributed_bytes",
+      "id": "lifecycle",
+      "immutable": true,
+      "path": "lifecycle.json",
+      "role": "test_log",
+      "sha256": "e7e3712f7732ea6ade2cb2e5b7e0ce52a1f54fc311ba832a249c0a15762ae4a9",
+      "visibility": "public"
+    },
+    {
+      "bytes": 357,
+      "hash_scope": "distributed_bytes",
+      "id": "native-observation",
+      "immutable": true,
+      "path": "native-observation.json",
+      "role": "test_log",
+      "sha256": "55227ac99140ca124812b6c569e83f4bfde4dfb232724d071a76d52d6ab8179d",
+      "visibility": "public"
+    },
+    {
+      "bytes": 354,
+      "hash_scope": "distributed_bytes",
+      "id": "provider-observation",
+      "immutable": true,
+      "path": "provider-observation.json",
+      "role": "test_log",
+      "sha256": "ff4acc32ea472cd705c7762adf22a16365c4370f5331bb75b2c205a973613c57",
+      "visibility": "public"
+    },
+    {
+      "bytes": 438,
+      "hash_scope": "distributed_bytes",
+      "id": "evaluation-observation",
+      "immutable": true,
+      "path": "evaluation-observation.json",
+      "role": "test_log",
+      "sha256": "f1704adb2506c9c9d817af64fb82ab9aca53238d3916ab34ea3c325645482d3b",
+      "visibility": "public"
+    },
+    {
+      "bytes": 19377,
+      "hash_scope": "distributed_bytes",
+      "id": "previous-record",
+      "immutable": true,
+      "path": "previous-record.json",
+      "role": "history",
+      "sha256": "25e82a836c3b28ca91b568b54dcc65b696ad117d125473616df1784507466e35",
+      "visibility": "public"
+    },
+    {
+      "bytes": 5820,
+      "hash_scope": "distributed_bytes",
+      "id": "task-identity",
+      "immutable": true,
+      "path": "task-identity.json",
+      "role": "task_identity",
+      "sha256": "d833e8e8849fe55acfd99573c4ae9c048291e0c292b72a055fca72b57c13feac",
+      "visibility": "public"
+    },
+    {
+      "bytes": 14272,
+      "hash_scope": "distributed_bytes",
+      "id": "source-identity",
+      "immutable": true,
+      "path": "source-identity.json",
+      "role": "environment",
+      "sha256": "5c1f97be5fbd36ff43d754680885674378c753f5e854e4eb430f0316cc67272a",
+      "visibility": "public"
+    },
+    {
+      "bytes": 1755,
+      "hash_scope": "distributed_bytes",
+      "id": "condition",
+      "immutable": true,
+      "path": "condition.json",
+      "role": "condition",
+      "sha256": "55854618bab8f92773c612dd9cc39122f43d965b6ecb541ddb68940888c6b250",
+      "visibility": "public"
+    }
+  ],
+  "condition": {
+    "artifact_id": "condition",
+    "sha256": "55854618bab8f92773c612dd9cc39122f43d965b6ecb541ddb68940888c6b250",
+    "unavailable_reason": null
+  },
+  "example_id": "erp_bench",
+  "findings": [],
+  "history": {
+    "note": "Each condition/attempt is retained as a distinct record; previous records are immutable.",
+    "policy": "append_only",
+    "previous_record_artifacts": [
+      "previous-record"
+    ]
+  },
+  "model": {
+    "configuration_artifact_id": "model-configuration",
+    "configuration_sha256": "b8bcee7e52ab6bd1b72f5b92e85201988431d5ec57f6ebf980edebda29b37ba0",
+    "exact_model": "gpt-5.6-terra",
+    "kind": "real",
+    "provider": "local_process",
+    "unavailable_reason": null
+  },
+  "model_calls": {
+    "evidence": [
+      "owner-projection"
+    ],
+    "fake_provider_calls": 0,
+    "real_provider_calls": 9,
+    "reason": null,
+    "status": "verified"
+  },
+  "privacy": {
+    "note": "Public artifacts are allowlisted projections; raw reports and runtime state remain private.",
+    "raw_provider_transcripts_included": false,
+    "review_status": "pending",
+    "reviewed_public_artifacts": []
+  },
+  "public_notes": [
+    "Adapted runtime; no claim of an unadapted upstream network condition.",
+    "Task mode identifies original task inputs; score claim is grader_compatibility for this adapted runtime.",
+    "Evaluation pass means complete original reports; reward.passed is business success.",
+    "Registry counter is total settled calls plus post-limit excess; the second value is not additional calls.",
+    "Static actor definition is supplied; semantic use and numeric reuse are not inferred."
+  ],
+  "record_id": "erp-smoke-2000-a04",
+  "registry_refs": [
+    {
+      "projection_artifact_id": "owner-projection",
+      "purpose": "actual_owner_execution",
+      "reason": null,
+      "ref": {
+        "entity_type": "run_terminal_evidence/v1",
+        "logical_id": "terminal_evidence:36d6d6140ce645e5af05f9862103aacc",
+        "version_id": "terminal_evidence_version:85e64b61a24c4e2dbb67ec80cc648e95"
+      },
+      "status": "available",
+      "task_id": "task-cddc168589ca"
+    }
+  ],
+  "schema_version": "rpnh/example-evidence/v1",
+  "scores": [
+    {
+      "claim": "grader_compatibility",
+      "components": {
+        "constraint.earned": 31,
+        "constraint.total": 31,
+        "hygiene.earned": 6,
+        "hygiene.total": 6,
+        "optimality.score": 100.0,
+        "optimality.total": 100.0,
+        "optimality_detail.optimality_score": 100.0,
+        "optimality_detail.primary_actual": 0.0,
+        "optimality_detail.primary_expected": 0.0,
+        "optimality_detail.primary_score": 100.0,
+        "overall_score": 100.0,
+        "rules.applicable": 37,
+        "rules.failed": 0,
+        "rules.not_applicable": 1,
+        "rules.passed": 37,
+        "rules.total": 38,
+        "spend.assembly_spend": 0.0,
+        "spend.component_spend": 0.0,
+        "spend.expected_spend": 3065.92,
+        "spend.finished_goods_spend": 3065.92,
+        "spend.optimality_score": null,
+        "spend.other_spend": 0.0,
+        "spend.spend_delta": 0.0,
+        "spend.spend_delta_abs": 0.0,
+        "spend.spend_score": 100.0,
+        "spend.total_new_spend": 3065.92
+      },
+      "evidence": [
+        "original-score"
+      ],
+      "scorer_id": "erp-bench/2000_easy_01_buy_only_baseline/tests/test.sh",
+      "scorer_revision": "ceba3880af555129b5278e056a0c20f2fb5a0ba9"
+    }
+  ],
+  "source": {
+    "base_commit": "ae09445fe1d9b973502bc5d2c961976c1d2c0163",
+    "changed_files": [
+      {
+        "base_sha256": null,
+        "final_sha256": "5a1c778de55d6d82b33ffdb934306974d3b8412b1d33a32c2c434e3e746973bc",
+        "path": "examples/erp_bench/README.md"
+      },
+      {
+        "base_sha256": null,
+        "final_sha256": "792d02e5775207dad6bf7ce23665450e9da528484b8e914494f5cf1d61c39473",
+        "path": "examples/erp_bench/README_ZH.md"
+      },
+      {
+        "base_sha256": null,
+        "final_sha256": "71f73eaa86aae2adb2d5d335acb3274d7a333b6018f0ba30999f8851f13cc127",
+        "path": "examples/erp_bench/THIRD_PARTY_NOTICES.md"
+      },
+      {
+        "base_sha256": null,
+        "final_sha256": "a2010f343487d3f7618affe54f789f5487602331c0a8d03f49e9a7c547cf0499",
+        "path": "examples/erp_bench/licenses/ERP_BENCH_CC0_1.0.txt"
+      },
+      {
+        "base_sha256": null,
+        "final_sha256": "d7f0ad666e3545d2af6ad5ce673d11a77ec135d622f9fe3da26b82aeaee0430c",
+        "path": "examples/erp_bench/licenses/RPNH_MIT.txt"
+      },
+      {
+        "base_sha256": null,
+        "final_sha256": "f961e8493843a79b183a3a6873d83ff21f3524ca88ae490e4745c25a867e4e63",
+        "path": "examples/erp_bench/pyproject.toml"
+      },
+      {
+        "base_sha256": null,
+        "final_sha256": "24741d5f1b1c07fa3e0b2edcbbb8d733470257188335a2d2afc255c7bc332224",
+        "path": "examples/erp_bench/scripts/native_acceptance.py"
+      },
+      {
+        "base_sha256": null,
+        "final_sha256": "91447944015cec709e8aa7655f7e9d64e1e4508e7023a57fe3746911c0fc6fed",
+        "path": "examples/erp_bench/src/rpnh_erp_bench/__init__.py"
+      },
+      {
+        "base_sha256": null,
+        "final_sha256": "56eaa724e7d5f7080f072153a0a3bf9250f6e6444f02b2e73c34aa806d9deedf",
+        "path": "examples/erp_bench/src/rpnh_erp_bench/bridge.py"
+      },
+      {
+        "base_sha256": null,
+        "final_sha256": "de0b6d0705a7b026a68a96b441842e68430b15d65d5b340eb644828070f73394",
+        "path": "examples/erp_bench/src/rpnh_erp_bench/cli.py"
+      },
+      {
+        "base_sha256": null,
+        "final_sha256": "09ea82eee06e1cc0f4408351db2043889f58711268e02ee51fca29e248a93318",
+        "path": "examples/erp_bench/src/rpnh_erp_bench/data/source-pins.json"
+      },
+      {
+        "base_sha256": null,
+        "final_sha256": "628ba50ded6beac960789d0a5db46fd10ab56ae084b3f053ef7edf253c0ce89e",
+        "path": "examples/erp_bench/src/rpnh_erp_bench/data/task-identities.json"
+      },
+      {
+        "base_sha256": null,
+        "final_sha256": "034f8d6415a8c22b0ea012ae87ce7ddf72a01fff6438da36f30208494ec10a32",
+        "path": "examples/erp_bench/src/rpnh_erp_bench/driver.py"
+      },
+      {
+        "base_sha256": null,
+        "final_sha256": "472ef38d70ddc348e00d8354794b29de9bbd4d87fc010aeb2ef8e26cc674959e",
+        "path": "examples/erp_bench/src/rpnh_erp_bench/endpoint.py"
+      },
+      {
+        "base_sha256": null,
+        "final_sha256": "110a02623ab9bd752d0ce00cad31e91767c068319a5d27d9e6f3e9891c3c9727",
+        "path": "examples/erp_bench/src/rpnh_erp_bench/environment.py"
+      },
+      {
+        "base_sha256": null,
+        "final_sha256": "b26342af25213858b19581272987e837bdf470a9e7a2f8fe4aa9ff366782e461",
+        "path": "examples/erp_bench/src/rpnh_erp_bench/evidence.py"
+      },
+      {
+        "base_sha256": null,
+        "final_sha256": "99b20eda16542805c86f56ef61c4ce14df5e59ba28375962184e92d944ec8d58",
+        "path": "examples/erp_bench/src/rpnh_erp_bench/export.py"
+      },
+      {
+        "base_sha256": null,
+        "final_sha256": "b87423511b50d8f2a7b865b1dc3f7ec3e1b0e84c760ef67cc0be5280dae7bd46",
+        "path": "examples/erp_bench/src/rpnh_erp_bench/native.py"
+      },
+      {
+        "base_sha256": null,
+        "final_sha256": "d9c38bb70568e1c05d31175cdbb46692491b490dc5a87a5d1f85164454195200",
+        "path": "examples/erp_bench/src/rpnh_erp_bench/planning.py"
+      },
+      {
+        "base_sha256": null,
+        "final_sha256": "33664264a0cff411efa9445d9c513d647983b5b9ff255a8384eb6f06825e39c0",
+        "path": "examples/erp_bench/src/rpnh_erp_bench/plugin.py"
+      },
+      {
+        "base_sha256": null,
+        "final_sha256": "2230e7edaea3002d43ba1966197e76121626f281ee73e7dea104393a3ce1f65c",
+        "path": "examples/erp_bench/src/rpnh_erp_bench/sandbox.py"
+      },
+      {
+        "base_sha256": null,
+        "final_sha256": "4d555f2d3cf6253ce1bb0c03e8262d1ef237f75eb9a39e5c60c84dcfbd488e5f",
+        "path": "examples/erp_bench/src/rpnh_erp_bench/scoring.py"
+      },
+      {
+        "base_sha256": null,
+        "final_sha256": "55fef9d36b28146515c525da7c0682a3d57a482ed1254b1dc30de80039b53b67",
+        "path": "examples/erp_bench/src/rpnh_erp_bench/source.py"
+      },
+      {
+        "base_sha256": null,
+        "final_sha256": "d31102ce8db095cce8fad6efb7e9914d0d28ecd7eceb6ff41f813f87e0254d58",
+        "path": "examples/erp_bench/tests/fake_provider.py"
+      },
+      {
+        "base_sha256": null,
+        "final_sha256": "631210897d3df61be1a1b76f062e37b7bb3b82a60a44aed4c930bc0722af7124",
+        "path": "examples/erp_bench/tests/test_bridge.py"
+      },
+      {
+        "base_sha256": null,
+        "final_sha256": "379c02213ce990ba78b45150011b374b6d9130e98f2ec762022c42af663065bb",
+        "path": "examples/erp_bench/tests/test_cli.py"
+      },
+      {
+        "base_sha256": null,
+        "final_sha256": "ed86777cd881ede340e5f1d6e55b779bc74e1a56aacc35940fc8f54cb7ee53f8",
+        "path": "examples/erp_bench/tests/test_driver.py"
+      },
+      {
+        "base_sha256": null,
+        "final_sha256": "0ed7c7db4b533ada12c0fec0040602d3d78b03ad3c0bec4ff11ff1563f3c0b10",
+        "path": "examples/erp_bench/tests/test_endpoint.py"
+      },
+      {
+        "base_sha256": null,
+        "final_sha256": "fd1a2c63b7b7940ec76ef55d111be99319d48781a014357cfd232a613178c62e",
+        "path": "examples/erp_bench/tests/test_environment.py"
+      },
+      {
+        "base_sha256": null,
+        "final_sha256": "5831c557764bfdfa2b92f3efcb3ba5897e32223c23ec4752de26ccfdba85d2be",
+        "path": "examples/erp_bench/tests/test_evidence.py"
+      },
+      {
+        "base_sha256": null,
+        "final_sha256": "5b27d4446af2d5bc244b11a8022d4e4eb964dff0b2cb3264c1eb1654d96caa5f",
+        "path": "examples/erp_bench/tests/test_native.py"
+      },
+      {
+        "base_sha256": null,
+        "final_sha256": "a4fae027379dd244b499e26e42233b94cc0eda863f990af450bcefbfa2cc7d34",
+        "path": "examples/erp_bench/tests/test_planning.py"
+      },
+      {
+        "base_sha256": null,
+        "final_sha256": "5e3fb306d5a637aa4f1cbb976cbab5db4b6f9c5cc82a769ab3abf2e6bc44b364",
+        "path": "examples/erp_bench/tests/test_plugin.py"
+      },
+      {
+        "base_sha256": null,
+        "final_sha256": "de6cc37ec77fa6ecccbf1677e4d9ea57053123d524a6f54c47a73d340244a48f",
+        "path": "examples/erp_bench/tests/test_scoring.py"
+      },
+      {
+        "base_sha256": null,
+        "final_sha256": "2565d69ded130121ace776d0a850987bb72ebe12320f8db9b6dc6ce70d2da29e",
+        "path": "examples/erp_bench/tests/test_sources.py"
+      }
+    ],
+    "owned_prefixes": [
+      "examples/erp_bench/"
+    ],
+    "repository": "https://github.com/Deng-0119/RPNH",
+    "tested_commit": "6f8ee2e406f3c70edb73206f861e56a0202b9f15"
+  },
+  "stages": {
+    "evaluation": {
+      "commands": [
+        "Harbor Verifier.verify with unchanged original tests/test.sh"
+      ],
+      "evidence": [
+        "lifecycle",
+        "original-score",
+        "evaluation-observation"
+      ],
+      "reason": "Completed verifier is independent of the emitted business passed threshold.",
+      "status": "passed"
+    },
+    "mock": {
+      "commands": [],
+      "evidence": [],
+      "reason": "Separate acceptance record; not measured by this live condition.",
+      "status": "not_run"
+    },
+    "native": {
+      "commands": [
+        "TaskControl.start/status/result/result_evidence/stop"
+      ],
+      "evidence": [
+        "lifecycle",
+        "owner-projection",
+        "native-observation"
+      ],
+      "reason": null,
+      "status": "passed"
+    },
+    "offline": {
+      "commands": [],
+      "evidence": [],
+      "reason": "Separate acceptance record; not measured by this live condition.",
+      "status": "not_run"
+    },
+    "provider": {
+      "commands": [
+        "RPNH existing exact-model local_process execution"
+      ],
+      "evidence": [
+        "lifecycle",
+        "owner-projection",
+        "provider-observation"
+      ],
+      "reason": null,
+      "status": "passed"
+    }
+  },
+  "task": {
+    "adaptations": [
+      "Solver container egress disabled; upstream allow_internet remains unchanged in task.toml.",
+      "Nonroot solver and local PostgreSQL access isolation; trusted setup has NET_ADMIN.",
+      "RPNH managed admission covers each full Python script, not each Odoo transaction.",
+      "Harbor 0.24 Compose build definition uses explicit host-network build entitlement.",
+      "Explicit build compatibility: uv system install permits the disposable container's managed Python.",
+      "Explicit offline firewall dependency installation before solver admission.",
+      "Official Codex binary bypasses global wrapper; native web search and project documents disabled."
+    ],
+    "input_sha256": "d833e8e8849fe55acfd99573c4ae9c048291e0c292b72a055fca72b57c13feac",
+    "instruction_sha256": "6d98cddc801e977c5a6785c8b9b1d4f2e768da61f0bde3a1accb4b56e3beaf0a",
+    "mode": "upstream_original",
+    "original_semantics": "Unchanged official seeded Odoo task, instruction, limits and original verifier.",
+    "phase": "initial",
+    "task_id": "2000_easy_01_buy_only_baseline",
+    "unavailable_reason": null
+  },
+  "upstream": [
+    {
+      "license": "CC0-1.0",
+      "repository": "https://github.com/agentic-labs/erp-bench",
+      "revision": "ceba3880af555129b5278e056a0c20f2fb5a0ba9",
+      "role": "task_and_scorer"
+    }
+  ]
+}

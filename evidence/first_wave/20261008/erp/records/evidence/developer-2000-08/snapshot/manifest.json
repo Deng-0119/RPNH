@@ -1,0 +1,26 @@
+{
+  "condition_id": "erp-developer-2000-08",
+  "container_id": "697ffa50efffb8b10fb34302d473d7872408cf1e99acb307d5cf08aebb6313f4",
+  "identity": {
+    "sentinel_mtime_ns": 1791437512901368531,
+    "sentinel_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "timezone": [
+      "UTC",
+      "UTC"
+    ],
+    "tz_env": null,
+    "localtime_sha256": "8b85846791ab2c8a5463c83a5be3c043e2570d7448434d41398969ed47e3e6f2",
+    "repair_seed_sha256": null
+  },
+  "files": {
+    "bench.dump": {
+      "sha256": "6f13ec568a5f452bbad0db6de39d43de22e1c40ad81d1a348b878f51579c2a01",
+      "bytes": 9189574
+    },
+    "files.tar": {
+      "sha256": "462f4ab77355a44495165c99420b2f80413f3fe1b965e06dc00ccf8495a7365d",
+      "bytes": 2478080
+    }
+  },
+  "scope": "quiescent_solver_original_live_world; no restore performed"
+}

@@ -1,0 +1,15 @@
+{
+  "status": "PARENT_PUBLICATION_CHECK_PASSED",
+  "checked_at": "2026-10-08T08:25:58.327996+00:00",
+  "payload_files_verified": 595,
+  "additional_package_files": 2,
+  "physical_source_or_registered_payload_bytes": 474,
+  "metadata_serializations": 121,
+  "known_secret_atom_count": 5,
+  "known_secret_residual_matches": 0,
+  "digest_or_size_mismatches": 0,
+  "original_manifests_not_relabelled": true,
+  "historical_provenance_failures_preserved": 40,
+  "vendor_wire_not_found_preserved": true,
+  "scope": "Candidate bytes and allowlist only. Independent content review accepted; no new trial or execution authority."
+}

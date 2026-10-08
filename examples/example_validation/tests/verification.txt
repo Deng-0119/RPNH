@@ -1,0 +1,43 @@
+RPNH example evidence contract: focused offline verification
+Date (UTC): 2026-10-08T04:15:26Z
+RPNH base: ae09445fe1d9b973502bc5d2c961976c1d2c0163
+Interpreter: existing validated venv (TEST_PYTHON); source is current wave-1 tree.
+Python: 3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]
+pytest 8.4.2
+jsonschema 4.26.0
+packaging 26.3
+websockets 15.0.1
+
+Command: PYTHONDONTWRITEBYTECODE=1 "$TEST_PYTHON" -m unittest discover -s examples/example_validation/tests -v
+test_added_file_rejects_symlinked_base_parent (test_validation.ValidationTests.test_added_file_rejects_symlinked_base_parent) ... ok
+test_alternate_invented_registry_shape_is_rejected (test_validation.ValidationTests.test_alternate_invented_registry_shape_is_rejected) ... ok
+test_base_mismatch_and_modified_file_mismatch (test_validation.ValidationTests.test_base_mismatch_and_modified_file_mismatch) ... ok
+test_configuration_must_be_excluded_before_model_blame (test_validation.ValidationTests.test_configuration_must_be_excluded_before_model_blame) ... ok
+test_fake_provider_is_never_official_score (test_validation.ValidationTests.test_fake_provider_is_never_official_score) ... ok
+test_harness_attribution_also_requires_configuration_exclusion (test_validation.ValidationTests.test_harness_attribution_also_requires_configuration_exclusion) ... ok
+test_history_reference_must_be_retained_artifact (test_validation.ValidationTests.test_history_reference_must_be_retained_artifact) ... ok
+test_integrator_allowlist_is_independent (test_validation.ValidationTests.test_integrator_allowlist_is_independent) ... ok
+test_measured_stage_requires_evidence (test_validation.ValidationTests.test_measured_stage_requires_evidence) ... ok
+test_paths_and_symlinks_rejected (test_validation.ValidationTests.test_paths_and_symlinks_rejected) ... ok
+test_privacy_review_covers_public_allowlist (test_validation.ValidationTests.test_privacy_review_covers_public_allowlist) ... ok
+test_private_evidence_has_no_exported_path (test_validation.ValidationTests.test_private_evidence_has_no_exported_path) ... ok
+test_public_bytes_verified_and_tamper_rejected (test_validation.ValidationTests.test_public_bytes_verified_and_tamper_rejected) ... ok
+test_registry_reference_must_exist_in_projection (test_validation.ValidationTests.test_registry_reference_must_exist_in_projection) ... ok
+test_repeated_keys_and_nan_rejected (test_validation.ValidationTests.test_repeated_keys_and_nan_rejected) ... ok
+test_result_evidence_source_task_and_resource_ref (test_validation.ValidationTests.test_result_evidence_source_task_and_resource_ref) ... ok
+test_source_prefix_hash_and_safe_addition (test_validation.ValidationTests.test_source_prefix_hash_and_safe_addition) ... ok
+test_template_has_no_runtime_or_zero_call_claim (test_validation.ValidationTests.test_template_has_no_runtime_or_zero_call_claim) ... ok
+test_unavailable_registry_cannot_have_fake_refs (test_validation.ValidationTests.test_unavailable_registry_cannot_have_fake_refs) ... ok
+test_unconfirmed_source_hypothesis_does_not_require_false_certainty (test_validation.ValidationTests.test_unconfirmed_source_hypothesis_does_not_require_false_certainty) ... ok
+test_unknown_fields_and_bool_counts_rejected (test_validation.ValidationTests.test_unknown_fields_and_bool_counts_rejected) ... ok
+test_zero_requires_evidence_and_unknown_remains_null (test_validation.ValidationTests.test_zero_requires_evidence_and_unknown_remains_null) ... ok
+
+----------------------------------------------------------------------
+Ran 22 tests in 0.026s
+
+OK
+
+Schema cross-check: jsonschema.Draft7Validator.check_schema and validate(template.json)
+PASS
+
+Scope: synthetic local fixtures only. No installed RPNH owner, native service, provider or original grader was executed. No benchmark score is established.

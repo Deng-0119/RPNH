@@ -1,0 +1,11 @@
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+    from slop_code.execution import Session, Snapshot, EnvironmentSpecType; from slop_code.evaluation import ProblemConfig, PassPolicy, run_checkpoint; from slop_code.agent_runner.runner import get_task_for_checkpoint; print("PINNED_UPSTREAM_IMPORTS_READY")
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/deng123/RPNH/task-first-wave-examples-20261008/work/upstream-runner/src/slop_code/execution/__init__.py", line 7, in <module>
+    from slop_code.execution.assets import ResolvedStaticAsset
+  File "/home/deng123/RPNH/task-first-wave-examples-20261008/work/upstream-runner/src/slop_code/execution/assets.py", line 12, in <module>
+    from slop_code.logging import get_logger
+  File "/home/deng123/RPNH/task-first-wave-examples-20261008/work/upstream-runner/src/slop_code/logging.py", line 33, in <module>
+    import structlog
+ModuleNotFoundError: No module named 'structlog'

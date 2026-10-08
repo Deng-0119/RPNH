@@ -1,0 +1,47 @@
+{
+  "schema_version": "rpnh/example-file-inventory/v1",
+  "scope": "This shared contract only; FILE_HASHES.json excludes itself. All files are additions under examples/example_validation/.",
+  "rpnh_base_commit": "ae09445fe1d9b973502bc5d2c961976c1d2c0163",
+  "files": [
+    {
+      "path": ".gitignore",
+      "bytes": 28,
+      "sha256": "a51104264729e7b362ea8c739de0ada29ba6e4f6047580ec3a3fd330ad20fd47"
+    },
+    {
+      "path": "README.md",
+      "bytes": 8433,
+      "sha256": "fa2548a028f08c34e660595f57c34469863d8a289829bd5ceae0a60c6ec6a444"
+    },
+    {
+      "path": "README_ZH.md",
+      "bytes": 7494,
+      "sha256": "e2f59481bef89aea8ae33e116e7d38e820712c7687f54b859fbfec26c7fd87a9"
+    },
+    {
+      "path": "result-manifest.schema.json",
+      "bytes": 21055,
+      "sha256": "73c965d21557a7b63634be7f4a2aafd7c05bd26531a965f6a14bb7d3850d2618"
+    },
+    {
+      "path": "template.json",
+      "bytes": 3501,
+      "sha256": "bf5cab050d16cbdeca32921a0da7cefab08f518fe61e0aeaaf69260e1cda6914"
+    },
+    {
+      "path": "tests/test_validation.py",
+      "bytes": 12541,
+      "sha256": "6c7d99bfe50d46a9d167823da46949ba389c7582b60ae86b8de13bf9864c8772"
+    },
+    {
+      "path": "tests/verification.txt",
+      "bytes": 3795,
+      "sha256": "a65dfd03f242a409c6056f7a7283fc8c3ffac901862a9b0780ff405e66cea544"
+    },
+    {
+      "path": "validate.py",
+      "bytes": 16233,
+      "sha256": "d86a76bdeebc227b822d35286b7cafa5d0dd7c8e90edf17aa74af2d12149970c"
+    }
+  ]
+}

@@ -1,0 +1,429 @@
+{
+  "actions": [
+    {
+      "action_state": "ACTION_APPLIED",
+      "agent_action_ref": {
+        "entity_type": "agent_action/v2",
+        "logical_id": "agent_action:771e57f1f3db54c8a6b12d367f1e9c23",
+        "version_id": "agent_action_version:0d40da1d67b7553d8cad692f73681e89"
+      },
+      "agent_loop_ref": {
+        "entity_type": "agent_loop/v1",
+        "logical_id": "agent_loop:d59f44c3722f4d43ada963e4b0924f90",
+        "version_id": "agent_loop_version:70adcd17001059e5ae935cf5a0d18768"
+      },
+      "agent_turn_ref": {
+        "entity_type": "agent_turn/v1",
+        "logical_id": "agent_turn:e3d6291bb2004ba7be537a0fcc036cbd",
+        "version_id": "agent_turn_version:2c7291350ca74442bf4f0aea377a24c5"
+      },
+      "business_readback": "not_checked",
+      "decision_influence": "unknown",
+      "observed_followup_action_refs": [
+        {
+          "entity_type": "agent_action/v3",
+          "logical_id": "agent_action:271ef97296e55141a7794064acbafc38",
+          "version_id": "agent_action_version:e40fa861c75e50aa9c216dfab34887eb"
+        }
+      ],
+      "registered_return": {
+        "outcome": "ACTION_APPLIED",
+        "result_refs": [
+          {
+            "entity_type": "resource_version/v1",
+            "logical_id": "resource:7e23e28190ed531ea4db7da0f16d4d9e",
+            "version_id": "resource_version:f31f80b5f2325319b70cd636f54bd3d9"
+          },
+          {
+            "entity_type": "resource_delivery/v1",
+            "logical_id": "resource_delivery:63e0c9f2f152480b90ff6a8cb13c9845",
+            "version_id": "resource_delivery_version:c6357ba381a9549cb64f2fc66edbf2cd"
+          }
+        ],
+        "terminal_receipt_ref": null
+      },
+      "request_status": "checked",
+      "requests": [
+        {
+          "llm_call_ref": {
+            "entity_type": "llm_call_spec/v2",
+            "logical_id": "llm_call:12354b8283bb4668ad3d00810cdb10ff",
+            "version_id": "llm_call_version:4260f62d16905304895fae234a1ca16c"
+          },
+          "llm_invocation_refs": [
+            {
+              "entity_type": "llm_invocation_spec/v1",
+              "logical_id": "llm_invocation:3a2e6d8f48794c9f94e9f722cc475752",
+              "version_id": "llm_invocation_version:319f7ed7a3db4fa7819e666bda7d5c26"
+            }
+          ],
+          "prior_llm_call_refs": [
+            {
+              "entity_type": "llm_call_spec/v2",
+              "logical_id": "llm_call:419bfaa60dd94d768bf40877d44ae179",
+              "version_id": "llm_call_version:61de5920da20511ba406dae1b6bee783"
+            }
+          ],
+          "prior_turn_refs": [
+            {
+              "entity_type": "agent_turn/v1",
+              "logical_id": "agent_turn:e3d6291bb2004ba7be537a0fcc036cbd",
+              "version_id": "agent_turn_version:2c7291350ca74442bf4f0aea377a24c5"
+            }
+          ],
+          "provider_attempts": [
+            {
+              "ledger_events": [
+                {
+                  "event_id": "event:2a5ace7642944512807a141860361eb5",
+                  "event_type": "provider_attempt_reserved/v1",
+                  "ordinal": 426,
+                  "payload": {
+                    "budget_witness_ref": {
+                      "entity_type": "task_recovery_manifest/v1",
+                      "logical_id": "task:43b493cb4d324499a2458604cd4dc5f8",
+                      "version_id": "resource_version:8eea574154514481a1137fc356332620"
+                    },
+                    "finalization_scope": false,
+                    "invocation_ref": {
+                      "entity_type": "invocation/v1",
+                      "logical_id": "invocation:bb7ddc79757351f1abfdde3b5b5706ef",
+                      "version_id": "invocation_version:dbe369f3064f5dcbbea3cdb778211d67"
+                    },
+                    "llm_call_ref": {
+                      "entity_type": "llm_call_spec/v2",
+                      "logical_id": "llm_call:12354b8283bb4668ad3d00810cdb10ff",
+                      "version_id": "llm_call_version:4260f62d16905304895fae234a1ca16c"
+                    },
+                    "llm_execution_target_ref": {
+                      "resource_id": "resource:9735aaacd2045ab794238994ef025615",
+                      "resource_version_id": "resource_version:859d1746846e5ad5b1dea3ae9cf9511e"
+                    },
+                    "operation_binding_ref": {
+                      "entity_type": "operation_binding/v1",
+                      "logical_id": "operation_binding:c172d420cb0d591cbdc6ed128652dee7",
+                      "version_id": "operation_binding_version:d4099e184bc75de38d18170618f26ec9"
+                    },
+                    "prior_attempt_ref": null,
+                    "provider_attempt_id": "provider_attempt:42b1c914518f54bfb8d1ed9cc9b8fae2",
+                    "provider_attempt_ref": {
+                      "entity_type": "provider_attempt_spec/v1",
+                      "logical_id": "provider_attempt:42b1c914518f54bfb8d1ed9cc9b8fae2",
+                      "version_id": "provider_attempt_version:84a70b06cf5552898d16cd9c0ab29654"
+                    },
+                    "provider_attempt_version_id": "provider_attempt_version:84a70b06cf5552898d16cd9c0ab29654",
+                    "request_resource_ref": {
+                      "resource_id": "resource:aeb8bd27cf7a5d32ad85dde852cea2be",
+                      "resource_version_id": "resource_version:1edb7ef41ee35a03be6865e40a883c6d"
+                    },
+                    "reservation_class": "module",
+                    "terminal_delivery_ref": {
+                      "entity_type": "resource_delivery/v1",
+                      "logical_id": "resource_delivery:4559ef1e633541018330dbc7072147f4",
+                      "version_id": "resource_delivery_version:9066042698ed50f8ae4d1e1c664fa246"
+                    }
+                  }
+                },
+                {
+                  "event_id": "event:5bd9ed24423140bbad023d03683628e9",
+                  "event_type": "provider_attempt_dispatch_started/v2",
+                  "ordinal": 442,
+                  "payload": {
+                    "invocation_ref": {
+                      "entity_type": "invocation/v1",
+                      "logical_id": "invocation:bb7ddc79757351f1abfdde3b5b5706ef",
+                      "version_id": "invocation_version:dbe369f3064f5dcbbea3cdb778211d67"
+                    },
+                    "llm_call_ref": {
+                      "entity_type": "llm_call_spec/v2",
+                      "logical_id": "llm_call:12354b8283bb4668ad3d00810cdb10ff",
+                      "version_id": "llm_call_version:4260f62d16905304895fae234a1ca16c"
+                    },
+                    "llm_execution_target_ref": {
+                      "resource_id": "resource:9735aaacd2045ab794238994ef025615",
+                      "resource_version_id": "resource_version:859d1746846e5ad5b1dea3ae9cf9511e"
+                    },
+                    "operation_binding_ref": {
+                      "entity_type": "operation_binding/v1",
+                      "logical_id": "operation_binding:c172d420cb0d591cbdc6ed128652dee7",
+                      "version_id": "operation_binding_version:d4099e184bc75de38d18170618f26ec9"
+                    },
+                    "provider_attempt_id": "provider_attempt:42b1c914518f54bfb8d1ed9cc9b8fae2",
+                    "provider_attempt_ref": {
+                      "entity_type": "provider_attempt_spec/v1",
+                      "logical_id": "provider_attempt:42b1c914518f54bfb8d1ed9cc9b8fae2",
+                      "version_id": "provider_attempt_version:84a70b06cf5552898d16cd9c0ab29654"
+                    },
+                    "provider_attempt_version_id": "provider_attempt_version:84a70b06cf5552898d16cd9c0ab29654",
+                    "provider_payload_materialization_receipt_ref": {
+                      "entity_type": "provider_payload_materialization_receipt/v1",
+                      "logical_id": "provider_payload_materialization_receipt:7333fc84fb695f06ac617d00c931354e",
+                      "version_id": "provider_payload_materialization_receipt_version:511bd7dfa2f95f6ebc26746900feb5f9"
+                    },
+                    "request_payload_byte_count": 14427,
+                    "request_resource_ref": {
+                      "resource_id": "resource:aeb8bd27cf7a5d32ad85dde852cea2be",
+                      "resource_version_id": "resource_version:1edb7ef41ee35a03be6865e40a883c6d"
+                    },
+                    "response_protocol": "llm_response_envelope/v1",
+                    "terminal_delivery_ref": {
+                      "entity_type": "resource_delivery/v1",
+                      "logical_id": "resource_delivery:4559ef1e633541018330dbc7072147f4",
+                      "version_id": "resource_delivery_version:9066042698ed50f8ae4d1e1c664fa246"
+                    },
+                    "transport_kind": "subprocess"
+                  }
+                },
+                {
+                  "event_id": "event:292aacff0517421f847ca51922071480",
+                  "event_type": "provider_attempt_submission_permitted/v2",
+                  "ordinal": 444,
+                  "payload": {
+                    "dispatch_event_id": "event:5bd9ed24423140bbad023d03683628e9",
+                    "evidence_receipt_id": null,
+                    "invocation_ref": {
+                      "entity_type": "invocation/v1",
+                      "logical_id": "invocation:bb7ddc79757351f1abfdde3b5b5706ef",
+                      "version_id": "invocation_version:dbe369f3064f5dcbbea3cdb778211d67"
+                    },
+                    "lifecycle_observation_event_id": "event:5bd9ed24423140bbad023d03683628e9",
+                    "llm_call_ref": {
+                      "entity_type": "llm_call_spec/v2",
+                      "logical_id": "llm_call:12354b8283bb4668ad3d00810cdb10ff",
+                      "version_id": "llm_call_version:4260f62d16905304895fae234a1ca16c"
+                    },
+                    "operation_execution_lease_ref": {
+                      "entity_type": "operation_execution_lease/v1",
+                      "logical_id": "operation_execution_lease:ef566f0f02285a18aab06657c461d3bf",
+                      "version_id": "operation_execution_lease_version:76e017fcaf845a859cbb65ab35d3011d"
+                    },
+                    "operation_start_event_id": "event:b1f2d860c13b49b8858e3f5e96b10110",
+                    "provider_attempt_id": "provider_attempt:42b1c914518f54bfb8d1ed9cc9b8fae2",
+                    "provider_attempt_ref": {
+                      "entity_type": "provider_attempt_spec/v1",
+                      "logical_id": "provider_attempt:42b1c914518f54bfb8d1ed9cc9b8fae2",
+                      "version_id": "provider_attempt_version:84a70b06cf5552898d16cd9c0ab29654"
+                    },
+                    "provider_attempt_version_id": "provider_attempt_version:84a70b06cf5552898d16cd9c0ab29654",
+                    "request_payload_byte_count": 14427,
+                    "response_protocol": "llm_response_envelope/v1",
+                    "state": "submission_permitted"
+                  }
+                },
+                {
+                  "event_id": "event:bf441fbdb41546e8ac6d0509e3f9711e",
+                  "event_type": "provider_attempt_submission_observed/v1",
+                  "ordinal": 446,
+                  "payload": {
+                    "dispatch_event_id": "event:5bd9ed24423140bbad023d03683628e9",
+                    "external_request_id": null,
+                    "finish_reason": null,
+                    "invocation_ref": {
+                      "entity_type": "invocation/v1",
+                      "logical_id": "invocation:bb7ddc79757351f1abfdde3b5b5706ef",
+                      "version_id": "invocation_version:dbe369f3064f5dcbbea3cdb778211d67"
+                    },
+                    "llm_call_ref": {
+                      "entity_type": "llm_call_spec/v2",
+                      "logical_id": "llm_call:12354b8283bb4668ad3d00810cdb10ff",
+                      "version_id": "llm_call_version:4260f62d16905304895fae234a1ca16c"
+                    },
+                    "provider_attempt_id": "provider_attempt:42b1c914518f54bfb8d1ed9cc9b8fae2",
+                    "provider_attempt_ref": {
+                      "entity_type": "provider_attempt_spec/v1",
+                      "logical_id": "provider_attempt:42b1c914518f54bfb8d1ed9cc9b8fae2",
+                      "version_id": "provider_attempt_version:84a70b06cf5552898d16cd9c0ab29654"
+                    },
+                    "provider_attempt_version_id": "provider_attempt_version:84a70b06cf5552898d16cd9c0ab29654",
+                    "response_resource_ref": {
+                      "resource_id": "resource:8beb03ecd7a35166b65258c48d3de558",
+                      "resource_version_id": "resource_version:9fe3825a259150a191656fe1bd9bd109"
+                    },
+                    "response_size": 449
+                  }
+                },
+                {
+                  "event_id": "event:6067b2c48d2648159217bb00f4515966",
+                  "event_type": "provider_attempt_completed/v1",
+                  "ordinal": 452,
+                  "payload": {
+                    "external_request_id": null,
+                    "finish_reason": null,
+                    "provider_attempt_id": "provider_attempt:42b1c914518f54bfb8d1ed9cc9b8fae2",
+                    "response_observed_event_id": "event:bf441fbdb41546e8ac6d0509e3f9711e",
+                    "response_version_id": "resource_version:9fe3825a259150a191656fe1bd9bd109"
+                  }
+                }
+              ],
+              "materialization_lineage": [
+                {
+                  "byte_count": 14427,
+                  "llm_call_ref": {
+                    "entity_type": "llm_call_spec/v2",
+                    "logical_id": "llm_call:12354b8283bb4668ad3d00810cdb10ff",
+                    "version_id": "llm_call_version:4260f62d16905304895fae234a1ca16c"
+                  },
+                  "provider_attempt_ref": {
+                    "entity_type": "provider_attempt_spec/v1",
+                    "logical_id": "provider_attempt:42b1c914518f54bfb8d1ed9cc9b8fae2",
+                    "version_id": "provider_attempt_version:84a70b06cf5552898d16cd9c0ab29654"
+                  },
+                  "provider_payload_materialization_receipt_ref": {
+                    "entity_type": "provider_payload_materialization_receipt/v1",
+                    "logical_id": "provider_payload_materialization_receipt:7333fc84fb695f06ac617d00c931354e",
+                    "version_id": "provider_payload_materialization_receipt_version:511bd7dfa2f95f6ebc26746900feb5f9"
+                  },
+                  "ref": {
+                    "entity_type": "provider_payload_materialization_receipt/v1",
+                    "logical_id": "provider_payload_materialization_receipt:7333fc84fb695f06ac617d00c931354e",
+                    "version_id": "provider_payload_materialization_receipt_version:511bd7dfa2f95f6ebc26746900feb5f9"
+                  },
+                  "request_recipe_ref": {
+                    "resource_id": "resource:aeb8bd27cf7a5d32ad85dde852cea2be",
+                    "resource_version_id": "resource_version:1edb7ef41ee35a03be6865e40a883c6d"
+                  },
+                  "terminal_delivery_ref": {
+                    "entity_type": "resource_delivery/v1",
+                    "logical_id": "resource_delivery:4559ef1e633541018330dbc7072147f4",
+                    "version_id": "resource_delivery_version:9066042698ed50f8ae4d1e1c664fa246"
+                  }
+                }
+              ],
+              "provider_attempt_ref": {
+                "entity_type": "provider_attempt_spec/v1",
+                "logical_id": "provider_attempt:42b1c914518f54bfb8d1ed9cc9b8fae2",
+                "version_id": "provider_attempt_version:84a70b06cf5552898d16cd9c0ab29654"
+              },
+              "submission_state": "submitted",
+              "wire_payload": "not_checked"
+            }
+          ],
+          "reason": "unrecognized_tool_projection",
+          "request_projection": "unavailable",
+          "request_resource_ref": {
+            "resource_id": "resource:aeb8bd27cf7a5d32ad85dde852cea2be",
+            "resource_version_id": "resource_version:1edb7ef41ee35a03be6865e40a883c6d"
+          },
+          "submitted_request_inclusion": "unavailable"
+        }
+      ],
+      "semantic_use": "unknown",
+      "settlement_events": [
+        {
+          "event_id": "event:a30e96d602e64bcc8ae748a9b2fedecb",
+          "event_type": "agent_action_settled/v1",
+          "ordinal": 389,
+          "payload": {
+            "action_identity_key": "native-read",
+            "action_identity_kind": "tool_call_id",
+            "agent_action_id": "agent_action:771e57f1f3db54c8a6b12d367f1e9c23",
+            "agent_loop_id": "agent_loop:d59f44c3722f4d43ada963e4b0924f90",
+            "agent_turn_id": "agent_turn:e3d6291bb2004ba7be537a0fcc036cbd",
+            "arguments": {
+              "path": "registered_resources/7e23e28190ed531ea4db7da0f16d4d9e/f31f80b5f2325319b70cd636f54bd3d9/content"
+            },
+            "expected_revision": 2,
+            "raw_arguments": "{\"path\": \"registered_resources/7e23e28190ed531ea4db7da0f16d4d9e/f31f80b5f2325319b70cd636f54bd3d9/content\"}",
+            "result_version_ids": [
+              "resource_version:f31f80b5f2325319b70cd636f54bd3d9",
+              "resource_delivery_version:c6357ba381a9549cb64f2fc66edbf2cd"
+            ],
+            "revision": 3,
+            "settlement": "ACTION_APPLIED",
+            "tool_call_id": "native-read",
+            "tool_call_ordinal": 0,
+            "tool_error_version_id": null,
+            "tool_name": "read_file"
+          }
+        }
+      ],
+      "tool_call_id": "native-read"
+    },
+    {
+      "action_state": "ACTION_REJECTED",
+      "agent_action_ref": {
+        "entity_type": "agent_action/v3",
+        "logical_id": "agent_action:271ef97296e55141a7794064acbafc38",
+        "version_id": "agent_action_version:e40fa861c75e50aa9c216dfab34887eb"
+      },
+      "agent_loop_ref": {
+        "entity_type": "agent_loop/v1",
+        "logical_id": "agent_loop:d59f44c3722f4d43ada963e4b0924f90",
+        "version_id": "agent_loop_version:8777dbf050fd55c49cbe6ed5648a6ae6"
+      },
+      "agent_turn_ref": {
+        "entity_type": "agent_turn/v1",
+        "logical_id": "agent_turn:5472d7c8367b44768218392c937d69ec",
+        "version_id": "agent_turn_version:e63432cd723f4cf7b84ceb800166eb81"
+      },
+      "business_readback": "not_checked",
+      "decision_influence": "unknown",
+      "observed_followup_action_refs": [],
+      "registered_return": {
+        "outcome": "outcome_unknown",
+        "result_refs": [],
+        "terminal_receipt_ref": {
+          "resource_id": "resource:cdc461c237db5930bdd06dc7ad545b49",
+          "resource_version_id": "resource_version:f62e6f003824500b9ce803fa6ecc0711"
+        }
+      },
+      "request_status": "no_next_request",
+      "requests": [],
+      "semantic_use": "unknown",
+      "settlement_events": [
+        {
+          "event_id": "event:d8b9b6fdecfe4baa8654cd5dca8675d4",
+          "event_type": "agent_action_settled/v1",
+          "ordinal": 475,
+          "payload": {
+            "action_identity_key": "native-command",
+            "action_identity_kind": "tool_call_id",
+            "agent_action_id": "agent_action:271ef97296e55141a7794064acbafc38",
+            "agent_loop_id": "agent_loop:d59f44c3722f4d43ada963e4b0924f90",
+            "agent_turn_id": "agent_turn:5472d7c8367b44768218392c937d69ec",
+            "arguments": {
+              "command": "/home/deng123/RPNH/task-erp-first-wave-20261008/venv/bin/python -B /home/deng123/RPNH/task-first-wave-examples-20261008/work/scb_subprocess_fixture.py --child stop /home/deng123/RPNH/task-first-wave-examples-20261008/work/na05/stop/fixture scb-native-2c88453200954ae19267912195b6a89d"
+            },
+            "expected_revision": 4,
+            "raw_arguments": "{\"command\": \"/home/deng123/RPNH/task-erp-first-wave-20261008/venv/bin/python -B /home/deng123/RPNH/task-first-wave-examples-20261008/work/scb_subprocess_fixture.py --child stop /home/deng123/RPNH/task-first-wave-examples-20261008/work/na05/stop/fixture scb-native-2c88453200954ae19267912195b6a89d\"}",
+            "result_version_ids": [],
+            "revision": 5,
+            "settlement": "ACTION_REJECTED",
+            "tool_call_id": "native-command",
+            "tool_call_ordinal": 0,
+            "tool_error_version_id": "agent_tool_error_version:c852db1ea7ad5b0f8a00379a289c9ce2",
+            "tool_name": "session_command"
+          }
+        }
+      ],
+      "tool_call_id": "native-command"
+    }
+  ],
+  "actual_model_call_counts": [
+    2,
+    0
+  ],
+  "agent_loop_terminal_observed": false,
+  "benchmark_score": "not_checked",
+  "business_success": "not_checked",
+  "coverage": "complete_at_head",
+  "outer_stop": null,
+  "read_only": true,
+  "run_execution_authority_ref": {
+    "entity_type": "run_execution_authority/v1",
+    "logical_id": "run_execution_authority:43bb29df016854268b3915d256e3f2a9",
+    "version_id": "run_execution_authority_version:9dc3cb1098de4de7b471e9a064122045"
+  },
+  "run_terminal_evidence": [],
+  "runtime_execution_status": "stopped_by_owner",
+  "runtime_terminal": false,
+  "schema_version": "rpnh/agent_result_evidence/v1",
+  "source": {
+    "head_ordinal": 497,
+    "run_dir": "/home/deng123/RPNH/task-first-wave-examples-20261008/work/na05/stop/r",
+    "task_id": "task:43b493cb4d324499a2458604cd4dc5f8",
+    "writer_fencing_epoch": 2
+  },
+  "stops": [],
+  "task_model_call_limit": 8
+}

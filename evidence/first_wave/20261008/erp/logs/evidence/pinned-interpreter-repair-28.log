@@ -1,0 +1,39 @@
+.........................F..........                                     [100%]
+=================================== FAILURES ===================================
+____ test_codex_probe_binds_explicit_executable_without_host_codex_on_path _____
+
+tmp_path = PosixPath('/home/deng123/RPNH/task-erp-first-wave-20261008/tmp/interpreter28/test_codex_probe_binds_explici0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7daf81c5a650>
+
+    def test_codex_probe_binds_explicit_executable_without_host_codex_on_path(tmp_path, monkeypatch):
+        from cpn.llm_adapters import load_llm_execution_selection
+        from cpn.llm_adapters.factory import build_llm_input_port
+        from cpn.llm_adapters import local_process
+        selection, adapter, shim = _codex_profile(tmp_path)
+        document = json.loads(adapter.read_bytes())
+        document["probe_argv"] = ["{codex}", "--version"]
+        adapter.write_text(json.dumps(document))
+        frozen = freeze_profile(selection, tmp_path / "frozen", codex_executable=shim)
+        assert json.loads((frozen.parent / "adapter.json").read_bytes())["probe_argv"] == [str(shim), "--version"]
+        original_which = local_process.shutil.which
+        monkeypatch.setattr(local_process.shutil, "which", lambda name: None if name == "codex" else original_which(name))
+        # Compose the real provider boundary, without invoking request_once or
+        # running the fixture executable. This used to fail before owner startup.
+        port = build_llm_input_port(load_llm_execution_selection(frozen), destination_run_root=tmp_path / "factory")
+        command = port._port._argv
+        assert command[0] == str(Path(sys.executable).absolute())
+        observed = subprocess.run([command[0], "-I", "-c", "import cpn,json,sys; print(json.dumps({'prefix':sys.prefix,'cpn':cpn.__file__}))"],
+            capture_output=True, text=True, timeout=10, check=True)
+        import cpn
+>       assert json.loads(observed.stdout) == {"prefix": sys.prefix, "cpn": cpn.__file__}
+E       AssertionError: assert {'prefix': '/.../__init__.py'} == {'prefix': '/.../__init__.py'}
+E         
+E         Omitting 1 identical items, use -vv to show
+E         Differing items:
+E         {'cpn': '/home/deng123/RPNH/task-erp-first-wave-20261008/venv/lib/python3.13/site-packages/cpn/__init__.py'} != {'cpn': '/home/deng123/RPNH/task-erp-first-wave-20261008/source/cpn/__init__.py'}
+E         Use -v to get more diff
+
+examples/erp_bench/tests/test_native.py:365: AssertionError
+=========================== short test summary info ============================
+FAILED examples/erp_bench/tests/test_native.py::test_codex_probe_binds_explicit_executable_without_host_codex_on_path
+1 failed, 35 passed in 1.15s

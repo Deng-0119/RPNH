@@ -1,0 +1,8 @@
+{
+  "full_owned_tree_sha256": null,
+  "full_tested_commit": null,
+  "observed_environment_adapter_sha256": null,
+  "retained_launch_files": [],
+  "scope": "Only identities observed in retained launch metadata; the complete adapter tree was not measured then. No binding to current product source.",
+  "unavailable_reason": "No adapter SHA or retained launch support files were recorded for environment-04."
+}

@@ -1,0 +1,25 @@
+{
+  "id": "real-smoke-2000-a01-17",
+  "command": [
+    "/home/deng123/RPNH/task-erp-first-wave-20261008/venv/bin/python",
+    "-B",
+    "/home/deng123/RPNH/task-erp-first-wave-20261008/work/run_authorized_trial.py",
+    "--task",
+    "2000_easy_01_buy_only_baseline",
+    "--condition",
+    "erp-smoke-2000-a01",
+    "--run-root",
+    "/home/deng123/RPNH/task-erp-first-wave-20261008/r/s01"
+  ],
+  "cwd": "/home/deng123/RPNH/task-erp-first-wave-20261008",
+  "started_utc": "2026-10-08T05:41:56.291916+00:00",
+  "finished_utc": "2026-10-08T05:41:56.975282+00:00",
+  "duration_seconds": 0.683,
+  "exit_code": 1,
+  "result": "FAIL",
+  "counts": {},
+  "log": "evidence/real-smoke-2000-a01-17.log",
+  "source_base": "8980e1f0552d30f490af08e60d4e8e3724ea638e",
+  "source_identity": "working tree on source_base; final freeze tracked separately",
+  "counts_not_additive_with_other_windows": true
+}

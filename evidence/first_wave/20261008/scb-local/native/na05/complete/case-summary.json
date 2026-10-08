@@ -1,0 +1,63 @@
+{
+  "actual_model_call_counts": [
+    3,
+    0
+  ],
+  "backend": "subprocess",
+  "case": "complete",
+  "fake_model_submissions": 3,
+  "managed_receipt": {
+    "agent_action_ref": {
+      "entity_type": "agent_action/v3",
+      "logical_id": "agent_action:b1bfd8daa37e57b6b8223c0851ae44c2",
+      "version_id": "agent_action_version:32b4875f0e325a638a5ab2698738d22e"
+    },
+    "broker_identity": {
+      "call_id": "native-command",
+      "checkpoint_key": "checkpoint_1",
+      "firing_id": "transition_firing_version:f26c49ae182a50a5b80d92c40c0ca557",
+      "invocation_id": "invocation_version:068c1f17da2a56e895832444a633edfb",
+      "operation_id": "scb_session/command"
+    },
+    "registered_return": {
+      "outcome": "returned",
+      "result_refs": [],
+      "terminal_receipt_ref": {
+        "resource_id": "resource:12531249d60c5e49bd4cdb5c451b3b5d",
+        "resource_version_id": "resource_version:69f7384cae4d5cbca9b1e4484708513e"
+      }
+    },
+    "request_status": "checked"
+  },
+  "owner_af_unix_roundtrip": true,
+  "owner_return_code": 0,
+  "quiescence": {
+    "broker_poisoned": false,
+    "broker_quiescent": true,
+    "broker_socket_removed": true,
+    "broker_thread_exited": true,
+    "cleanup_calls": 2,
+    "cleanup_errors": [],
+    "closed": true,
+    "executions": 1,
+    "exit_code": 0,
+    "forced_owner_termination": false,
+    "owner_exited": true,
+    "owner_return_code": 0,
+    "pid": 91268,
+    "process_exited": true,
+    "process_group_alive": false,
+    "stream_exited": true
+  },
+  "real_provider_call_basis": "explicit local_process adapter only",
+  "real_provider_calls": 0,
+  "snapshot": null,
+  "status": "PASS",
+  "subprocess_executions": 1,
+  "task_id": "task-ce0cd7352e4a",
+  "terminal_evidence_ref": {
+    "entity_type": "run_terminal_evidence/v1",
+    "logical_id": "terminal_evidence:3c0fed5c62b24ac98dee0c9b54166809",
+    "version_id": "terminal_evidence_version:40324e101d114b15b9c7a3cbdbbe28e0"
+  }
+}

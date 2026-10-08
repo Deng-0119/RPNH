@@ -1,0 +1,38 @@
+constraint	demand_coverage r674891CF17_c01 P674891CF17-SPP-001 4 gte	FAIL
+constraint	demand_coverage r674891CF17_c02 P674891CF17-SPP-001 7 gte	FAIL
+constraint	demand_coverage r674891CF17_c03 P674891CF17-SPP-001 12 gte	FAIL
+constraint	demand_coverage r674891CF17_c04 P674891CF17-SPP-001 9 gte	FAIL
+constraint	deadline_fulfillment r674891CF17_c01 P674891CF17-SPP-001 6	FAIL
+constraint	deadline_fulfillment r674891CF17_c02 P674891CF17-SPP-001 7	FAIL
+constraint	deadline_fulfillment r674891CF17_c03 P674891CF17-SPP-001 8	FAIL
+constraint	deadline_fulfillment r674891CF17_c04 P674891CF17-SPP-001 8	FAIL
+constraint	list_price r674891CF17_c01 P674891CF17-SPP-001 442.85	FAIL
+constraint	list_price r674891CF17_c02 P674891CF17-SPP-001 442.85	FAIL
+constraint	list_price r674891CF17_c03 P674891CF17-SPP-001 442.85	FAIL
+constraint	list_price r674891CF17_c04 P674891CF17-SPP-001 442.85	FAIL
+constraint	sale_revenue r674891CF17_c01 P674891CF17-SPP-001 1771.4	FAIL
+constraint	sale_revenue r674891CF17_c02 P674891CF17-SPP-001 3099.95	FAIL
+constraint	sale_revenue r674891CF17_c03 P674891CF17-SPP-001 5314.2	FAIL
+constraint	sale_revenue r674891CF17_c04 P674891CF17-SPP-001 3985.65	FAIL
+constraint	budget_compliance r674891CF17_c01 P674891CF17-SPP-001 1921.97	FAIL
+constraint	budget_compliance r674891CF17_c02 P674891CF17-SPP-001 3317.67	FAIL
+constraint	budget_compliance r674891CF17_c03 P674891CF17-SPP-001 5424.59	FAIL
+constraint	budget_compliance r674891CF17_c04 P674891CF17-SPP-001 4362.92	FAIL
+constraint	new_spend_margin_policy 0.287	FAIL
+constraint	supply_timing_feasible	FAIL
+constraint	po_delivery_schedule_compliance	NA
+constraint	po_consolidation_compliance	NA
+constraint	po_min_qty_compliance	NA
+constraint	po_price_tier_compliance	NA
+constraint	finished_stock_capacity_compliance	FAIL
+constraint	assembly_capacity_compliance	NA
+constraint	finished_vendor_max_qty_compliance	PASS
+constraint	component_vendor_max_qty_compliance	PASS
+constraint	component_stock_capacity_compliance	PASS
+constraint	supply_coverage P674891CF17-SPP-001 32 27.0	FAIL
+hygiene	so_confirmed r674891CF17_c01 P674891CF17-SPP-001	FAIL
+hygiene	so_confirmed r674891CF17_c02 P674891CF17-SPP-001	FAIL
+hygiene	so_confirmed r674891CF17_c03 P674891CF17-SPP-001	FAIL
+hygiene	so_confirmed r674891CF17_c04 P674891CF17-SPP-001	FAIL
+hygiene	po_origin_traceability P674891CF17-SPP-001 finished	NA
+hygiene	adjacent_data_untouched	PASS

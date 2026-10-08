@@ -1,0 +1,12 @@
+{
+  "commands": [
+    "RPNH existing exact-model local_process execution"
+  ],
+  "ended_at": "2026-10-08T06:14:38.187796+00:00",
+  "exit_code": 0,
+  "measurements": {},
+  "reason": null,
+  "started_at": "2026-10-08T06:06:50.281813+00:00",
+  "status": "passed",
+  "tested_tree_sha256": "b4684ae45c2cfa31e9baa81980a066f12a03ac990aa512e49cf8d3058be23698"
+}

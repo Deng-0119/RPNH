@@ -1,0 +1,10 @@
+{
+  "objective_kind": "repair_plan",
+  "optimality_score": 91.66,
+  "primary_actual": 184.0,
+  "primary_expected": 184.0,
+  "primary_score": 100.0,
+  "secondary_actual_spend": 181383.92,
+  "secondary_expected_spend": 133394.07,
+  "secondary_score": 16.55
+}

@@ -1,0 +1,14 @@
+{
+  "status": "ZIP_VERIFIED",
+  "verified_at": "2026-10-08T07:37:18.031562+00:00",
+  "zip_members": 175,
+  "result_manifests_validated": 9,
+  "crc_passed": true,
+  "all_member_bytes_and_checksums_match": true,
+  "privacy_catalog_verified": true,
+  "initial_and_historical_public_records_byte_identical": true,
+  "original_condition_and_measured_source_retained": true,
+  "smoke_score": 100,
+  "showcase_score": 21,
+  "showcase_business_passed": false
+}
