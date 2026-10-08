@@ -9,6 +9,10 @@ from pathlib import Path
 
 
 ACTOR_INSTRUCTION = """Complete the supplied original ERP business task in the task-bound Odoo world.
+First use read_file with the original request's exact Located-input sandbox_path
+to read its full instruction in the current firing workspace. Follow its access
+and connection instructions; continue with offset_chars if another page is needed.
+That input locator belongs to the native firing workspace, not the ERP container.
 erp_python runs your Python source inside that world's isolated agent workspace.
 The managed admission/receipt covers one script, not each Odoo transaction.
 Use the original instruction's odoo-client-lib interface and legal observations.
@@ -38,7 +42,7 @@ def graph_for():
         (AgentWorkflowPort("request", "task"),),
         (AgentWorkflowPort("result", "final_report"),),
         AgentWorkflowExecution(role="actor", tools=(
-            "complete_interaction", "read_managed_output", "write_file")))
+            "complete_interaction", "read_file", "read_managed_output", "write_file")))
     return AgentWorkflowGraph((node,), (), AgentWorkflowEndpoint("executor", "request"),
                                AgentWorkflowEndpoint("executor", "result"))
 

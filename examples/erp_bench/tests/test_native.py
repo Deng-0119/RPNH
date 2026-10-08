@@ -8,7 +8,8 @@ from types import SimpleNamespace
 
 import pytest
 
-from fake_provider import MODEL, TOOLS, plan, response, write_profile
+from fake_provider import (MODEL, TOOLS, ORIGINAL_INPUT, OUTSIDE_INPUTS,
+                           assert_original_input, plan, response, write_profile)
 from rpnh_erp_bench.native import (build_spec, freeze_profile, graph_for,
                                    profile_identity, run_owner, safe_owner_projection)
 
@@ -36,6 +37,22 @@ def test_graph_is_single_actor_with_closed_workspace_inventory():
     assert graph.nodes[0].execution.role == "actor"
     assert set(graph.nodes[0].execution.tools) == TOOLS - {"validate_plan", "erp_python"}
     assert graph.nodes[0].execution.plugin is None
+    assert "read_file" in graph.nodes[0].execution.tools
+    assert "workspace" not in graph.nodes[0].execution.tools
+    assert "Located-input sandbox_path" in graph.nodes[0].instruction
+
+
+def input_fixture_messages():
+    path = "registered_resources/fixture/request/content"
+    initialization = {"role": "system", "content": "Located inputs:\n- " + json.dumps({
+        "summary": "RPNH agent task request", "sandbox_path": path, "head_preview": ""})}
+    returned = [{"role": "tool", "tool_call_id": "synthetic-original-input", "content": json.dumps({
+        "kind": "registered_file_read/v1", "path": path, "content": ORIGINAL_INPUT,
+        "resource_ref": {"resource_id": "synthetic-input"},
+        "use_receipt_ref": {"version_id": "synthetic-delivery"}})}]
+    returned += [{"role": "tool", "tool_call_id": call_id, "content": json.dumps({
+        "detail": "read_file path must be an exact registered input"})} for call_id in OUTSIDE_INPUTS]
+    return initialization, returned
 
 
 def test_spec_preserves_prompt_and_serializes_real_effect_domains(tmp_path, monkeypatch):
@@ -74,14 +91,15 @@ def test_empty_original_prompt_rejected(tmp_path, prompt):
         build_spec(tmp_path / "r", tmp_path / "p", tmp_path / "sock", "trial", prompt)
 
 
-def test_fake_adapter_sequence_is_three_submissions_and_only_synthetic_data(tmp_path):
+def test_fake_adapter_sequence_reads_original_before_planning_in_four_submissions(tmp_path):
     selection = write_profile(tmp_path / "profile")
     adapter = json.loads((selection.parent / "adapter.json").read_text())
     argv = [sys.executable if item == "{python}" else item for item in adapter["argv"]]
+    initialization, returned = input_fixture_messages()
     request = {"protocol": "llm_request_envelope/v1", "model_condition": MODEL,
-               "tools": [{"function": {"name": name}} for name in TOOLS], "messages": []}
+               "tools": [{"function": {"name": name}} for name in TOOLS], "messages": [initialization]}
     names = []
-    for _ in range(3):
+    for index in range(4):
         completed = subprocess.run(argv, input=json.dumps(request), capture_output=True,
                                    text=True, timeout=5)
         assert completed.returncode == 0, completed.stderr
@@ -90,15 +108,45 @@ def test_fake_adapter_sequence_is_three_submissions_and_only_synthetic_data(tmp_
         result = json.loads(completed.stdout)
         names += [call["name"] for call in result["tool_calls"]]
         request["messages"].append({"role": "assistant", "tool_calls": result["tool_calls"]})
-    assert names == ["validate_plan", "erp_python", "write_file", "complete_interaction"]
+        if index == 0:
+            assert [call["name"] for call in result["tool_calls"]] == ["read_file"] * 3
+            request["messages"].extend(returned)
+    assert names == ["read_file", "read_file", "read_file", "validate_plan", "erp_python", "write_file", "complete_interaction"]
     report_arguments = json.loads(result["tool_calls"][0]["arguments"])
     assert json.loads(report_arguments["content"]).startswith("Synthetic local adapter")
     assert plan()["orders"][0]["quantity"] == 4 and plan()["orders"][0]["list_price"] == 10
     request["tools"].append({"function": {"name": "workspace"}})
     with pytest.raises(ValueError, match="capability"):
         response(request)
-    assert len(list((selection.parent / "transcript").glob("request-*.json"))) == 3
+    assert len(list((selection.parent / "transcript").glob("request-*.json"))) == 4
     assert json.loads(selection.read_text())["adapter_kind"] == "local_process"
+
+
+@pytest.mark.parametrize("body", [None, ORIGINAL_INPUT.strip(), "wrong original input"])
+def test_planning_is_blocked_without_full_unchanged_readback(body):
+    initialization, returned = input_fixture_messages()
+    document = json.loads(returned[0]["content"])
+    document["content"] = body
+    returned[0]["content"] = json.dumps(document)
+    request = {"protocol": "llm_request_envelope/v1", "model_condition": MODEL,
+               "tools": [{"function": {"name": name}} for name in TOOLS],
+               "messages": [initialization, {"role": "assistant", "tool_calls": [{"name": "read_file"}]}, *returned]}
+    with pytest.raises(ValueError, match="full unchanged original input"):
+        response(request)
+
+
+@pytest.mark.parametrize("path", ["/home", "../outside.txt", "registered_resources/fixture/request/../../outside"])
+def test_core_read_file_rejects_paths_outside_exact_firing_input(path):
+    # Direct core boundary fixture; the installed helper also requests /home
+    # and ../outside.txt through actual owner-dispatched read_file calls.
+    from cpn.components.agent_loop.optional_execution import OptionalAgentLoopRegistryService
+    service = object.__new__(OptionalAgentLoopRegistryService)
+    service._context = lambda loop: object()
+    service._project_workspace = lambda execution, loop: (SimpleNamespace(
+        sandbox_path="registered_resources/fixture/request/content", resource_ref=object()),)
+    service._decoded_read = lambda *args: pytest.fail("outside path reached a kernel resource read")
+    with pytest.raises(ValueError, match="exact registered input"):
+        service._read_input(object(), object(), {"path": path}, "synthetic-rejected-read")
 
 
 @pytest.mark.parametrize("timeout", [0, -1, 1.5, True])

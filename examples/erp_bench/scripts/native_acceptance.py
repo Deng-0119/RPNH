@@ -135,7 +135,7 @@ def actor_run(output, fixture, *, condition="complete", agent_timeout_seconds=90
     require(len(os.fsencode(endpoint)) <= 107, "choose a shorter --output path for AF_UNIX")
     require(len(os.fsencode(directory / "r" / "owner.sock")) <= 107, "choose a shorter --output path for owner AF_UNIX")
     backend = FakeBackend(block=condition != "complete")
-    prompt = "Synthetic fixture only: validate the supplied ordinary order, run the harmless script, and report wiring evidence."
+    prompt = fixture["ORIGINAL_INPUT"]
     with Bridge(endpoint, "synthetic-" + condition, backend):
         spec = build_spec(directory / "r", profile, endpoint, "synthetic-" + condition, prompt)
         require(spec.prompt == prompt and spec.max_attempts_per_stage is None, "native spec altered fixture limits or prompt")
@@ -158,6 +158,12 @@ def actor_run(output, fixture, *, condition="complete", agent_timeout_seconds=90
     require(not result["forced_termination"] and result["shutdown_error"] is None, "forced or failed shutdown cannot pass")
     require(len(backend.calls) == 1, "expected exactly one synthetic script admission")
     requests = list((directory / "profile" / "transcript").glob("request-*.json"))
+    first_request = json.loads((directory / "profile/transcript/request-1.json").read_text())
+    require(not any(prompt in message.get("content", "") for message in first_request["messages"]),
+            "original input unexpectedly bypassed progressive disclosure")
+    input_readback = fixture["assert_original_input"](json.loads(
+        (directory / "profile/transcript/request-2.json").read_text()))
+    write_json(directory / "input-readback.json", input_readback)
     counts = result["result_evidence"]["actual_model_call_counts"]
     require(counts == [len(requests), 0], "Registry counts differ from fake adapter transcript")
     receipts = managed_receipts(spec.run_dir, spec.plugin_catalog_digest)
@@ -166,7 +172,7 @@ def actor_run(output, fixture, *, condition="complete", agent_timeout_seconds=90
         terminal = result["terminal"]
         require(terminal is not None and terminal["run_outcome"] == "complete", "actor did not reach actual terminal")
         require(terminal["terminal_evidence_ref"] and terminal["terminal_result_ref"], "terminal refs are missing")
-        require(counts == terminal["actual_model_call_counts"] == [3, 0], "expected exactly three fake submissions")
+        require(counts == terminal["actual_model_call_counts"] == [4, 0], "expected exactly four fake submissions")
         require("Synthetic local adapter" in json.dumps(terminal["output"]), "actual terminal report missing")
         returned = [row["receipt"] for row in receipts if row["receipt"]["state"] == "returned"]
         require({row["selector"] for row in returned} == {"erp_bench/validate_plan", "erp_bench/erp_python"}, "managed binding receipts missing")
@@ -192,6 +198,7 @@ def actor_run(output, fixture, *, condition="complete", agent_timeout_seconds=90
                    backend_exited_before_teardown=exited,
                    synthetic_agent_timeout_seconds=agent_timeout_seconds,
                    stop_reason=result["stop_reason"])
+    summary["input_readback"] = input_readback
     summary["managed_receipt_refs"] = [{"ref": item["ref"], "selector": item["receipt"]["selector"],
                                        "state": item["receipt"]["state"]} for item in receipts]
     return summary
