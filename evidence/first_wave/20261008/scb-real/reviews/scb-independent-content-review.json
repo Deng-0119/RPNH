@@ -1,0 +1,30 @@
+{
+  "representation_scope": "parent_record_of_independent_read_only_agent_review",
+  "reviewer_agent": "01a119e2-377d-7830-ade2-65fa6c9290fd",
+  "verdict": "ACCEPTED_FINITE_CONTENT",
+  "blocking_findings": [],
+  "verified": {
+    "payload_records": 475,
+    "payload_bytes": 2967853,
+    "original_byte_copies": 358,
+    "metadata_serializations": 117,
+    "additional_control_files": 3,
+    "digest_or_size_mismatches": 0,
+    "changed_payloads": 0,
+    "settled_calls": [5, 5, 14],
+    "post_limit_excess_calls": [0, 0, 0],
+    "request_recipes": 24,
+    "adapter_returns": 24,
+    "normalized_responses": 24,
+    "broker_commands_correlated_with_arguments_and_outputs": 15,
+    "rejected_actions_with_arguments_and_errors_retained": 2,
+    "checkpoint3_failures_with_original_assertion_context": 7
+  },
+  "privacy": "No actual credential, private provider/proxy endpoint, whole private profile, DB or complete oracle source found in candidate. Full source files are actor submissions.",
+  "limits": [
+    "Finite candidate content review, not external private source or live Registry reread",
+    "30 provenance failures preserved without claiming valid execution authority",
+    "Vendor wire remains unavailable; no fabricated calls or normalized usage",
+    "Parent known-secret scan and Git blob comparison are separate checks"
+  ]
+}

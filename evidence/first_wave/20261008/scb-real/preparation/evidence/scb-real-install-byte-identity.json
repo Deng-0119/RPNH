@@ -1,0 +1,20 @@
+{
+  "status": "PASS",
+  "product_head_at_launch": "74fad32d369876841686d10d33361c016e3d3648",
+  "installed_site": "/home/deng123/RPNH/task-first-wave-examples-20261008/upstream-venv/lib/python3.13/site-packages",
+  "wheels": [
+    {
+      "wheel": "task-erp-first-wave-20261008/work/core-dist/rpnh_harness-0.1.0rc2-py3-none-any.whl",
+      "matched_payloads": 781,
+      "all_payload_bytes_match": true
+    },
+    {
+      "wheel": "task-first-wave-examples-20261008/work/native-site-wheels02/rpnh_slopcodebench-0.1.0-py3-none-any.whl",
+      "matched_payloads": 11,
+      "all_payload_bytes_match": true
+    }
+  ],
+  "SCB_installed_runtime_matches_product": true,
+  "core_wheel_scope": "accepted unchanged core payload; original wheel identity retained",
+  "models_launched": 0
+}

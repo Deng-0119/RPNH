@@ -1,0 +1,141 @@
+{
+  "status": "SELECTED_PREFIX_COMPLETED_WITH_BUSINESS_FAILURE",
+  "mode": "adapted_development_prefix",
+  "task": "code_search",
+  "scope": "first_3_of_5_checkpoints",
+  "selected_pass_policy": "any-case",
+  "official_agent_runner": "not_run",
+  "runner_revision": "31ceea3add480edb33431e70475c4c70597e6b31",
+  "problems_revision": "9cd9ca3a51c3d3e2a99d2488a25baf73a2204451",
+  "runtime_byte_identity_record": "scb-real-install-byte-identity.json",
+  "runtime_matches_product": "74fad32d369876841686d10d33361c016e3d3648",
+  "model": "codex/gpt-5.6-terra",
+  "max_model_calls_per_checkpoint": 48,
+  "owner_wait_seconds_per_checkpoint": 7200,
+  "solver_network": "none",
+  "evaluation_network": "host",
+  "image_build_network": "host",
+  "image_build_adaptation": "same-version download proxy/pipefail/retry; original recipe, failed log and patch retained",
+  "upstream_cost_net_cost_step_limits": [
+    0,
+    0,
+    0
+  ],
+  "checkpoints": [
+    {
+      "checkpoint": "checkpoint_1",
+      "passed_cases": 13,
+      "total_cases": 13,
+      "pass_counts": {
+        "Core": 7,
+        "Functionality": 4,
+        "Regression": 0,
+        "Error": 2
+      },
+      "total_counts": {
+        "Core": 7,
+        "Functionality": 4,
+        "Regression": 0,
+        "Error": 2
+      },
+      "all_original_cases_passed": true,
+      "infrastructure_failure": false,
+      "pytest_exit_code": 0,
+      "settled_model_calls": 5,
+      "post_limit_excess_calls": 0,
+      "commands_started": 3,
+      "commands_finished": 3,
+      "command_exit_codes": [
+        0,
+        0,
+        0
+      ],
+      "owner_run_outcome": "complete",
+      "source_snapshot": ".s26/scb01/checkpoint_1/snapshot"
+    },
+    {
+      "checkpoint": "checkpoint_2",
+      "passed_cases": 25,
+      "total_cases": 25,
+      "pass_counts": {
+        "Core": 5,
+        "Functionality": 5,
+        "Regression": 13,
+        "Error": 2
+      },
+      "total_counts": {
+        "Core": 5,
+        "Functionality": 5,
+        "Regression": 13,
+        "Error": 2
+      },
+      "all_original_cases_passed": true,
+      "infrastructure_failure": false,
+      "pytest_exit_code": 0,
+      "settled_model_calls": 5,
+      "post_limit_excess_calls": 0,
+      "commands_started": 3,
+      "commands_finished": 3,
+      "command_exit_codes": [
+        0,
+        0,
+        0
+      ],
+      "owner_run_outcome": "complete",
+      "source_snapshot": ".s26/scb01/checkpoint_2/snapshot"
+    },
+    {
+      "checkpoint": "checkpoint_3",
+      "passed_cases": 40,
+      "total_cases": 47,
+      "pass_counts": {
+        "Core": 6,
+        "Functionality": 7,
+        "Regression": 25,
+        "Error": 2
+      },
+      "total_counts": {
+        "Core": 8,
+        "Functionality": 12,
+        "Regression": 25,
+        "Error": 2
+      },
+      "all_original_cases_passed": false,
+      "infrastructure_failure": false,
+      "pytest_exit_code": 1,
+      "settled_model_calls": 14,
+      "post_limit_excess_calls": 0,
+      "commands_started": 9,
+      "commands_finished": 9,
+      "command_exit_codes": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "owner_run_outcome": "complete",
+      "source_snapshot": ".s26/scb01/checkpoint_3/snapshot"
+    }
+  ],
+  "settled_real_model_calls": 24,
+  "real_call_classification": "Actual official Codex endpoint/unchanged selected subscription bridge; no fixture provider in this real run. Registry tuple alone does not classify real versus fake.",
+  "post_limit_excess_calls": 0,
+  "source_continuity_checked": true,
+  "grader_feedback_to_solver": false,
+  "automatic_retry_or_resume": false,
+  "normalized_tokens": null,
+  "cost_usd": null,
+  "usage_status": "unavailable",
+  "elapsed_seconds": 998.822568,
+  "raw_original_manifests_rewritten": false,
+  "limitations": [
+    "Partial prefix, not full5 or unmodified official benchmark.",
+    "No quality judge/official AgentRunner or causal harness advantage measurement.",
+    "Per-checkpoint tests include regression cases; case counts must not be added as unique benchmark tasks."
+  ]
+}

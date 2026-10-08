@@ -1,0 +1,133 @@
+{
+  "created_at": "2026-10-08T09:52:02.208755+00:00",
+  "scope": "Additional postrun observations/review/final-helper records; initial 475 payload bytes untouched",
+  "files": {
+    "reproduction-final/build_scb_base.py": {
+      "source_workspace_relative_path": "task-first-wave-examples-20261008/work/build_scb_base.py",
+      "bytes": 4362,
+      "sha256": "4a281848d23b3d4ed81bba686fd47ed8fb4b597414289e08f220693bb0d8e2bb",
+      "changed_bytes": false,
+      "representation_scope": "exact_task_file_bytes; postrun sidecar or final helper, not original model wire"
+    },
+    "reproduction-final/prepare_scb_trial.py": {
+      "source_workspace_relative_path": "task-first-wave-examples-20261008/work/prepare_scb_trial.py",
+      "bytes": 5110,
+      "sha256": "ce5b8527c7ea6a74214311a2de4969ff55dc3f4f0740d622e6e065028ea10670",
+      "changed_bytes": false,
+      "representation_scope": "exact_task_file_bytes; postrun sidecar or final helper, not original model wire"
+    },
+    "reproduction-final/summarize_scb_real.py": {
+      "source_workspace_relative_path": "task-first-wave-examples-20261008/work/summarize_scb_real.py",
+      "bytes": 4546,
+      "sha256": "0a92958c032944fb64348327b5c9c5216db502cec89cb5cbb7078857d84f847d",
+      "changed_bytes": false,
+      "representation_scope": "exact_task_file_bytes; postrun sidecar or final helper, not original model wire"
+    },
+    "reproduction-final/review_scb_candidate.py": {
+      "source_workspace_relative_path": "task-first-wave-examples-20261008/work/review_scb_candidate.py",
+      "bytes": 3545,
+      "sha256": "f7c7a8687e12b9784dbef13ff7869197e4891b288968e9cd8be23de37fd365ec",
+      "changed_bytes": false,
+      "representation_scope": "exact_task_file_bytes; postrun sidecar or final helper, not original model wire"
+    },
+    "reproduction-final/stop_scb_daemon_a03.py": {
+      "source_workspace_relative_path": "task-first-wave-examples-20261008/work/stop_scb_daemon_a03.py",
+      "bytes": 1942,
+      "sha256": "1d7b3d2defa70f5cc349dde9a309f3afd06e831137b2fdfb0dc82dd253fb4275",
+      "changed_bytes": false,
+      "representation_scope": "exact_task_file_bytes; postrun sidecar or final helper, not original model wire"
+    },
+    "reproduction-final/collect.py": {
+      "source_workspace_relative_path": "task-first-wave-examples-20261008/work/scb-publication/collect.py",
+      "bytes": 42222,
+      "sha256": "4020da77bea07af90781492971849737f55e43227cdca83ebce6916dda3f7b55",
+      "changed_bytes": false,
+      "representation_scope": "exact_task_file_bytes; postrun sidecar or final helper, not original model wire"
+    },
+    "collection/selfcheck-01.json": {
+      "source_workspace_relative_path": "task-first-wave-examples-20261008/work/scb-publication/selfcheck-01.json",
+      "bytes": 243,
+      "sha256": "f333d4d4c6b7a00a7f49b82c16d996e008a85be24a86746ed633927297fb447e",
+      "changed_bytes": false,
+      "representation_scope": "exact_task_file_bytes; postrun sidecar or final helper, not original model wire"
+    },
+    "collection/selfcheck-01.log": {
+      "source_workspace_relative_path": "task-first-wave-examples-20261008/work/scb-publication/selfcheck-01.log",
+      "bytes": 1903,
+      "sha256": "b3f9a49edccb7416084a7ae7eb1baa70bacb168a1b1ac83d5a92ad778aba528a",
+      "changed_bytes": false,
+      "representation_scope": "exact_task_file_bytes; postrun sidecar or final helper, not original model wire"
+    },
+    "collection/selfcheck-02.json": {
+      "source_workspace_relative_path": "task-first-wave-examples-20261008/work/scb-publication/selfcheck-02.json",
+      "bytes": 243,
+      "sha256": "92f11b3a31adc3c64907953344e5f40f2a79d5f9683cdea781ad999dcb3fcae5",
+      "changed_bytes": false,
+      "representation_scope": "exact_task_file_bytes; postrun sidecar or final helper, not original model wire"
+    },
+    "collection/selfcheck-02.log": {
+      "source_workspace_relative_path": "task-first-wave-examples-20261008/work/scb-publication/selfcheck-02.log",
+      "bytes": 2029,
+      "sha256": "aabc5ae8f2935eea9e98b348a91843eefb8a9eb4779fbb4ad6d55a9425e0d280",
+      "changed_bytes": false,
+      "representation_scope": "exact_task_file_bytes; postrun sidecar or final helper, not original model wire"
+    },
+    "collection/selfcheck-03-accounting.json": {
+      "source_workspace_relative_path": "task-first-wave-examples-20261008/work/scb-publication/selfcheck-03-accounting.json",
+      "bytes": 241,
+      "sha256": "da47d22d2d635961366e2973488833be1adedb5034f9857495519399ce644d9f",
+      "changed_bytes": false,
+      "representation_scope": "exact_task_file_bytes; postrun sidecar or final helper, not original model wire"
+    },
+    "collection/selfcheck-03-accounting.log": {
+      "source_workspace_relative_path": "task-first-wave-examples-20261008/work/scb-publication/selfcheck-03-accounting.log",
+      "bytes": 257,
+      "sha256": "1f4c2e39ddc128a69ca10a37e0469962c3c535875f357d9a899f3ae1346c9637",
+      "changed_bytes": false,
+      "representation_scope": "exact_task_file_bytes; postrun sidecar or final helper, not original model wire"
+    },
+    "reviews/scb-independent-content-review.json": {
+      "source_workspace_relative_path": "task-first-wave-examples-20261008/evidence/scb-independent-content-review.json",
+      "bytes": 1340,
+      "sha256": "409c0b2608beeac0e73613929b12bfd9ea112c8ec07e27240cdea78522542589",
+      "changed_bytes": false,
+      "representation_scope": "exact_task_file_bytes; postrun sidecar or final helper, not original model wire"
+    },
+    "reviews/scb-parent-byte-secret-review.json": {
+      "source_workspace_relative_path": "task-first-wave-examples-20261008/evidence/scb-parent-byte-secret-review.json",
+      "bytes": 768,
+      "sha256": "7aae9e10b3bf13e4eef8ebb005464fafd7d6dc43f3565a6d4bbcd65647826c61",
+      "changed_bytes": false,
+      "representation_scope": "exact_task_file_bytes; postrun sidecar or final helper, not original model wire"
+    },
+    "preparation/daemon-cleanup-scb-real01.json": {
+      "source_workspace_relative_path": "task-first-wave-examples-20261008/evidence/daemon-cleanup-scb-real01.json",
+      "bytes": 429,
+      "sha256": "0ad381c12d558270ad623ef365112109f718b4147130b6e41f81bcb056529539",
+      "changed_bytes": false,
+      "representation_scope": "exact_task_file_bytes; postrun sidecar or final helper, not original model wire"
+    },
+    "diagnostics/scb-postrun-probe-diagnostic.json": {
+      "source_workspace_relative_path": "task-first-wave-examples-20261008/evidence/scb-postrun-probe-diagnostic.json",
+      "bytes": 666,
+      "sha256": "7dc90dd39d5fde7781fb084da2bfb726e0b366201272a3af5e839829ca9bef30",
+      "changed_bytes": false,
+      "representation_scope": "exact_task_file_bytes; postrun sidecar or final helper, not original model wire"
+    },
+    "diagnostics/scb-rejected-actions.json": {
+      "source_workspace_relative_path": "task-first-wave-examples-20261008/evidence/scb-rejected-actions.json",
+      "bytes": 813,
+      "sha256": "44635083dc8db554d2352c13b5c582dea0b9b6a1068d81aa4a017b4e24a21433",
+      "changed_bytes": false,
+      "representation_scope": "exact_task_file_bytes; postrun sidecar or final helper, not original model wire"
+    },
+    "observations/scb-failure-observations.json": {
+      "source_workspace_relative_path": "task-first-wave-examples-20261008/work/scb-failure-observations.json",
+      "bytes": 24376,
+      "sha256": "4c93aaafd2414f50744e0746a64f5f2a205d01849cfbc3c1986931d481ae7e72",
+      "changed_bytes": false,
+      "representation_scope": "exact_task_file_bytes; postrun sidecar or final helper, not original model wire"
+    }
+  },
+  "current_README": "new parent-authored factual navigation; original candidate README retained separately"
+}

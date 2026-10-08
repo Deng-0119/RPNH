@@ -1,0 +1,9 @@
+{
+  "representation_scope": "parent_serialization_of_observed_tool_command_result_not_original_log_file",
+  "scope": "postrun reporting probe; no model or grader rerun",
+  "status": "PROBE_FAILED",
+  "error_type": "AttributeError",
+  "error_message": "'str' object has no attribute 'get'",
+  "operation": "Parent attempted to count schema_version fields while assuming every valid JSON resource was an object.",
+  "interpretation": "Some retained JSON resources are scalar strings. This diagnostic failure did not alter the trial, original resources or collected candidate. Exact recipe/return counts were subsequently verified by the independent content review."
+}

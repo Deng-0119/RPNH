@@ -1,0 +1,581 @@
+{
+  "schema_version": "rpnh/scb-failure-observations/v1",
+  "status": "READ_ONLY_OBSERVATIONS_COMPLETE",
+  "artifact_role": "New observations sidecar for web analysis; not a rewritten grader result or a repair proposal",
+  "workspace_root": "/home/deng123/RPNH",
+  "run_root": "/home/deng123/RPNH/.s26/scb01",
+  "checkpoint": "checkpoint_3",
+  "scope": {
+    "read_sources": [
+      ".s26/scb01/checkpoint_3/evaluation.json",
+      ".s26/scb01/checkpoint_3/evaluation/stdout.txt",
+      ".s26/scb01/checkpoint_3/evaluation/stderr.txt",
+      ".s26/scb01/checkpoint_3/evaluation/report.json",
+      ".s26/scb01/checkpoint_3/snapshot/code_search.py",
+      ".s26/scb01/checkpoint_3/snapshot/requirements.txt",
+      ".s26/scb01/rendered-checkpoint_3/prompt.txt",
+      "task-first-wave-examples-20261008/evidence/scb-real-summary.json"
+    ],
+    "excluded": [
+      "upstream tests/oracle/solutions",
+      "future prompts",
+      "private provider profiles",
+      "Registry",
+      "solver transcripts/command logs"
+    ],
+    "operations": "Text/JSON reading and static source reasoning only. No source import/execution, test replay, model, Docker, Git, network or delegation.",
+    "sole_output": "/home/deng123/RPNH/task-first-wave-examples-20261008/work/scb-failure-observations.json",
+    "originals": "Read only; not modified or replaced. Original failing stdout remains authoritative and should continue to be published unchanged."
+  },
+  "facts": {
+    "passed_cases": 40,
+    "failed_cases": 7,
+    "total_cases": 47,
+    "pass_counts": {
+      "Core": 6,
+      "Functionality": 7,
+      "Regression": 25,
+      "Error": 2
+    },
+    "total_counts": {
+      "Core": 8,
+      "Functionality": 12,
+      "Regression": 25,
+      "Error": 2
+    },
+    "pytest_exit_code": 1,
+    "infrastructure_failure": false,
+    "all_seven_program_return_codes": 0,
+    "failure_boundary": "JSONL content equality assertion, not process exit assertion",
+    "failed_case_ids": [
+      ".evaluation_tests/test_checkpoint_3.py::test_optional_metavar",
+      ".evaluation_tests/test_checkpoint_3.py::test_multiple_metavars",
+      ".evaluation_tests/test_checkpoint_3.py::test_multiline_python_if_blocks",
+      ".evaluation_tests/test_checkpoint_3.py::test_language_filtering",
+      ".evaluation_tests/test_checkpoint_3.py::test_literal_dollar_sign",
+      ".evaluation_tests/test_checkpoint_3.py::test_multiple_files_sorted",
+      ".evaluation_tests/test_checkpoint_3.py::test_special_chars_in_captures"
+    ],
+    "evidence": [
+      {
+        "path": ".s26/scb01/checkpoint_3/evaluation.json"
+      },
+      {
+        "path": ".s26/scb01/checkpoint_3/evaluation/report.json",
+        "json_pointer": "/summary"
+      },
+      {
+        "path": ".s26/scb01/checkpoint_3/evaluation/stdout.txt",
+        "line_start": 681,
+        "line_end": 689
+      }
+    ],
+    "failed_by_group": {
+      "Core": 2,
+      "Functionality": 5
+    }
+  },
+  "classifications": {
+    "business_failure": {
+      "status": "OBSERVED",
+      "fact_zh": "七个原始 case 的输出对象列表不满足原断言，原评估40/47；两项零匹配、一项可见跨语句 capture，其他具体全量差异被原日志省略。"
+    },
+    "model_self_test_missed_failure": {
+      "status": "NOT_ESTABLISHED_WITH_ALLOWED_EVIDENCE",
+      "context": {
+        "settled_model_calls": 14,
+        "commands_started": 9,
+        "commands_finished": 9,
+        "command_exit_codes": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "owner_run_outcome": "complete"
+      },
+      "fact_zh": "汇总显示14次模型调用、9条命令均返回0且owner完成；许可材料没有命令内容/自测断言，不能把所有命令叫作自测，也不能声称七种情况曾被自测覆盖并漏检。只能说提交过程的这些成功状态未阻止原评估业务失败。",
+      "evidence": [
+        {
+          "path": "task-first-wave-examples-20261008/evidence/scb-real-summary.json",
+          "json_pointer": "/checkpoints/2"
+        }
+      ]
+    },
+    "framework_or_infrastructure": {
+      "status": "ORIGINAL_INFRA_FALSE",
+      "fact_zh": "原 infrastructure_failure=false；47项均完成分类，七项程序返回0后在内容比较处失败。stderr 仅见依赖下载/安装消息。此范围没有支持把七项归为基础设施失败的证据，但这不证明整个框架无缺陷或唯一责任属于模型。",
+      "evidence": [
+        {
+          "path": ".s26/scb01/checkpoint_3/evaluation.json",
+          "json_pointer": "/infrastructure_failure"
+        },
+        {
+          "path": ".s26/scb01/checkpoint_3/evaluation/stderr.txt",
+          "line_start": 1,
+          "line_end": 5
+        }
+      ]
+    }
+  },
+  "implementation_observations": [
+    {
+      "id": "S1_optional_token_boundary",
+      "status": "STATIC_CODE_CONFIRMED",
+      "fact_zh": "lex 的标识符正则不包含 ?；$X? 会被分为 $X 与单独的 ?。pattern_tokens 仅逐 token 判断 META，未合并后缀；rec 的 val.endswith(\"?\") 可选分支因而不处理该相邻后缀形式。",
+      "evidence": [
+        {
+          "path": ".s26/scb01/checkpoint_3/snapshot/code_search.py",
+          "line_start": 8,
+          "line_end": 8
+        },
+        {
+          "path": ".s26/scb01/checkpoint_3/snapshot/code_search.py",
+          "line_start": 33,
+          "line_end": 40
+        },
+        {
+          "path": ".s26/scb01/checkpoint_3/snapshot/code_search.py",
+          "line_start": 92,
+          "line_end": 98
+        },
+        {
+          "path": ".s26/scb01/checkpoint_3/snapshot/code_search.py",
+          "line_start": 111,
+          "line_end": 112
+        },
+        {
+          "path": ".s26/scb01/rendered-checkpoint_3/prompt.txt",
+          "line_start": 33,
+          "line_end": 35
+        }
+      ],
+      "relation": "与可选占位符用例实际零输出相符；这是静态路径观察，未执行或修复代码。"
+    },
+    {
+      "id": "S2_literal_dollar_token_boundary",
+      "status": "STATIC_CODE_CONFIRMED",
+      "fact_zh": "标识符正则允许连续 $，因此 $$price 会作为一个 token；转义分支却要求两个相邻且各自等于 $ 的 token。该分支没有对 $$price 解码为源中的 $price。",
+      "evidence": [
+        {
+          "path": ".s26/scb01/checkpoint_3/snapshot/code_search.py",
+          "line_start": 33,
+          "line_end": 35
+        },
+        {
+          "path": ".s26/scb01/checkpoint_3/snapshot/code_search.py",
+          "line_start": 92,
+          "line_end": 98
+        },
+        {
+          "path": ".s26/scb01/rendered-checkpoint_3/prompt.txt",
+          "line_start": 37,
+          "line_end": 37
+        }
+      ],
+      "relation": "与字面 $ 用例实际零输出相符；不将其外推为全部转义或编码功能均失败。"
+    },
+    {
+      "id": "S3_capture_is_balanced_token_span",
+      "status": "STATIC_CODE_CONFIRMED",
+      "fact_zh": "lex 丢弃全部空白（含换行/缩进）；balanced 只检查 ()[]{}；rec 枚举直到文件 token 末尾的所有平衡区间，并由后续 token 约束匹配。这里没有单个语法元素、Python 缩进块或语句边界判定，尾部 metavariable 可覆盖后续语句。",
+      "evidence": [
+        {
+          "path": ".s26/scb01/checkpoint_3/snapshot/code_search.py",
+          "line_start": 13,
+          "line_end": 18
+        },
+        {
+          "path": ".s26/scb01/checkpoint_3/snapshot/code_search.py",
+          "line_start": 83,
+          "line_end": 90
+        },
+        {
+          "path": ".s26/scb01/checkpoint_3/snapshot/code_search.py",
+          "line_start": 101,
+          "line_end": 124
+        },
+        {
+          "path": ".s26/scb01/rendered-checkpoint_3/prompt.txt",
+          "line_start": 34,
+          "line_end": 35
+        }
+      ],
+      "relation": "多行 Python 日志直接显示跨入下一条 return。对其余省略中段的用例，只能确认该实现允许额外跨语句候选，不能重建本次完整输出或宣称唯一因果。"
+    },
+    {
+      "id": "S4_language_filter_present",
+      "status": "STATIC_CODE_CONFIRMED",
+      "fact_zh": "规则 languages 被保存为集合，执行时明确跳过不在集合中的语言；许可材料不能仅凭 test_language_filtering 的名称认定语言过滤分支失效。",
+      "evidence": [
+        {
+          "path": ".s26/scb01/checkpoint_3/snapshot/code_search.py",
+          "line_start": 57,
+          "line_end": 67
+        },
+        {
+          "path": ".s26/scb01/checkpoint_3/snapshot/code_search.py",
+          "line_start": 143,
+          "line_end": 151
+        }
+      ]
+    },
+    {
+      "id": "S5_output_sort_present",
+      "status": "STATIC_CODE_CONFIRMED",
+      "fact_zh": "结果明确按 file、start 行列、end 行列、rule_id 排序；失败断言又对 actual/expected 分别调用 sorter 后比较，不能仅凭 test_multiple_files_sorted 名称认定排序函数是故障点。",
+      "evidence": [
+        {
+          "path": ".s26/scb01/checkpoint_3/snapshot/code_search.py",
+          "line_start": 156,
+          "line_end": 157
+        },
+        {
+          "path": ".s26/scb01/rendered-checkpoint_3/prompt.txt",
+          "line_start": 75,
+          "line_end": 78
+        },
+        {
+          "path": ".s26/scb01/checkpoint_3/evaluation/stdout.txt",
+          "line_start": 587,
+          "line_end": 602
+        }
+      ]
+    },
+    {
+      "id": "S6_string_tokenization_scope",
+      "status": "STATIC_CODE_CONFIRMED",
+      "fact_zh": "lexer 有单引号/双引号与反斜线跳过分支，但没有对应的 JavaScript backtick 字符串分支。原日志可见的 backtick capture 文本/范围仍与该期望片段一致，因此不能据此断言本次失败就是引号转义、Unicode 列计数或 backtick 文本损坏。",
+      "evidence": [
+        {
+          "path": ".s26/scb01/checkpoint_3/snapshot/code_search.py",
+          "line_start": 25,
+          "line_end": 40
+        },
+        {
+          "path": ".s26/scb01/checkpoint_3/evaluation/stdout.txt",
+          "line_start": 630,
+          "line_end": 657
+        }
+      ],
+      "relation": "跨语句 capture 的 S3 同样适用于该 case；省略的输出限制了进一步定位。"
+    }
+  ],
+  "failed_cases": [
+    {
+      "group": "Core",
+      "expected_match_count": 3,
+      "expected_zh": "items.py 的 []、[value]、[result] 三个匹配；[] 位于第1行 col1→3，后两项分别捕获 $X=value/result。",
+      "actual_zh": "actual_stdout 为空字符串；程序返回 0。",
+      "difference_status": "DIRECT_LOG_DIFFERENCE",
+      "difference_zh": "期望3个匹配，实际0个；不是非零退出码导致的失败。",
+      "source_observations": [
+        "S1_optional_token_boundary"
+      ],
+      "source_relation_zh": "可选后缀的分词/识别不衔接是可直接确认的实现失配。",
+      "case_id": ".evaluation_tests/test_checkpoint_3.py::test_optional_metavar",
+      "original_status": "failed",
+      "observed_program_return_code": 0,
+      "expected_program_return_code": 0,
+      "actual_repr_elided_in_original": false,
+      "full_actual_match_count": 0,
+      "evidence": [
+        {
+          "path": ".s26/scb01/checkpoint_3/evaluation/report.json",
+          "json_pointer": "/tests/29/call/longrepr"
+        },
+        {
+          "path": ".s26/scb01/checkpoint_3/evaluation/stdout.txt",
+          "line_start": 133,
+          "line_end": 136
+        },
+        {
+          "path": ".s26/scb01/checkpoint_3/evaluation/stdout.txt",
+          "line_start": 73,
+          "line_end": 120
+        },
+        {
+          "path": ".s26/scb01/checkpoint_3/evaluation.json",
+          "json_pointer": "/tests/checkpoint_3-Core/failed"
+        }
+      ]
+    },
+    {
+      "group": "Core",
+      "expected_match_count": 2,
+      "expected_zh": "code.js 中两个 function 定义分别捕获 $NAME=hello/test、$ARG=name/x；whole-match end 分别是(1,24)/(2,20)。",
+      "actual_zh": "非空 JSONL；可见首条 whole-match end=(1,24)，尾部 $NAME=test 范围(2,10)→(2,14)。中间已被原日志省略。",
+      "difference_status": "ASSERTED_INEQUALITY_FULL_DIFF_UNAVAILABLE",
+      "difference_zh": "可确认 sorter(actual) != sorter(expected)，但可见首尾片段不足以列出全部差异或实际条数。",
+      "source_observations": [
+        "S3_capture_is_balanced_token_span"
+      ],
+      "source_relation_zh": "实现允许 $NAME 跨过平衡的参数/函数体及下一个 function token，直到后续 (；这说明缺少单个语法元素边界，但不能把省略中段补写成实测多余记录。",
+      "case_id": ".evaluation_tests/test_checkpoint_3.py::test_multiple_metavars",
+      "original_status": "failed",
+      "observed_program_return_code": 0,
+      "expected_program_return_code": 0,
+      "actual_repr_elided_in_original": true,
+      "full_actual_match_count": null,
+      "evidence": [
+        {
+          "path": ".s26/scb01/checkpoint_3/evaluation/report.json",
+          "json_pointer": "/tests/30/call/longrepr"
+        },
+        {
+          "path": ".s26/scb01/checkpoint_3/evaluation/stdout.txt",
+          "line_start": 203,
+          "line_end": 206
+        },
+        {
+          "path": ".s26/scb01/checkpoint_3/evaluation/stdout.txt",
+          "line_start": 164,
+          "line_end": 190
+        },
+        {
+          "path": ".s26/scb01/checkpoint_3/evaluation.json",
+          "json_pointer": "/tests/checkpoint_3-Core/failed"
+        }
+      ]
+    },
+    {
+      "group": "Functionality",
+      "expected_match_count": 2,
+      "expected_zh": "两个 if/return 块。第二个 $VALUE 仅为 next_y，范围(8,16)→(8,22)，whole-match 也在(8,22)结束。",
+      "actual_zh": "可见尾部 $VALUE 为 next_y\\n    return 0，范围(8,16)→(9,13)；完整输出中间已省略。",
+      "difference_status": "DIRECT_VISIBLE_CAPTURE_DIFFERENCE",
+      "difference_zh": "至少一个 capture 包含了预期之外的下一条 return 0，跨越预期语句边界。不能从省略日志确定全部额外行/条数。",
+      "visible_delta": {
+        "field": "captures.$VALUE",
+        "expected": {
+          "text": "next_y",
+          "start": {
+            "line": 8,
+            "col": 16
+          },
+          "end": {
+            "line": 8,
+            "col": 22
+          }
+        },
+        "actual_visible": {
+          "text": "next_y\n    return 0",
+          "start": {
+            "line": 8,
+            "col": 16
+          },
+          "end": {
+            "line": 9,
+            "col": 13
+          }
+        }
+      },
+      "source_observations": [
+        "S3_capture_is_balanced_token_span"
+      ],
+      "source_relation_zh": "丢弃换行/缩进且尾部捕获只要求括号平衡，与已显示的越界捕获一致。",
+      "case_id": ".evaluation_tests/test_checkpoint_3.py::test_multiline_python_if_blocks",
+      "original_status": "failed",
+      "observed_program_return_code": 0,
+      "expected_program_return_code": 0,
+      "actual_repr_elided_in_original": true,
+      "full_actual_match_count": null,
+      "evidence": [
+        {
+          "path": ".s26/scb01/checkpoint_3/evaluation/report.json",
+          "json_pointer": "/tests/34/call/longrepr"
+        },
+        {
+          "path": ".s26/scb01/checkpoint_3/evaluation/stdout.txt",
+          "line_start": 315,
+          "line_end": 318
+        },
+        {
+          "path": ".s26/scb01/checkpoint_3/evaluation/stdout.txt",
+          "line_start": 254,
+          "line_end": 302
+        },
+        {
+          "path": ".s26/scb01/checkpoint_3/evaluation.json",
+          "json_pointer": "/tests/checkpoint_3-Functionality/failed"
+        }
+      ]
+    },
+    {
+      "group": "Functionality",
+      "expected_match_count": 4,
+      "expected_zh": "test.js 中2个 js_only const 匹配（值5、10）；test.py 中2个 py_only return 匹配（值1、value）。",
+      "actual_zh": "非空 JSONL；可见开头为 test.js/javascript/js_only，结尾为 Python $VALUE=value 且范围(5,12)→(5,17)。中间已省略。",
+      "difference_status": "ASSERTED_INEQUALITY_FULL_DIFF_UNAVAILABLE",
+      "difference_zh": "集合断言失败；可见首尾并未显示规则路由到了错误语言，不能断言是语言过滤缺陷。",
+      "source_observations": [
+        "S3_capture_is_balanced_token_span",
+        "S4_language_filter_present"
+      ],
+      "source_relation_zh": "无末尾限定 token 的 $VAL/$VALUE 可继续吸收后续语句；该代码失配可确认，但本次具体额外记录不可由省略日志补全。",
+      "case_id": ".evaluation_tests/test_checkpoint_3.py::test_language_filtering",
+      "original_status": "failed",
+      "observed_program_return_code": 0,
+      "expected_program_return_code": 0,
+      "actual_repr_elided_in_original": true,
+      "full_actual_match_count": null,
+      "evidence": [
+        {
+          "path": ".s26/scb01/checkpoint_3/evaluation/report.json",
+          "json_pointer": "/tests/36/call/longrepr"
+        },
+        {
+          "path": ".s26/scb01/checkpoint_3/evaluation/stdout.txt",
+          "line_start": 427,
+          "line_end": 430
+        },
+        {
+          "path": ".s26/scb01/checkpoint_3/evaluation/stdout.txt",
+          "line_start": 346,
+          "line_end": 414
+        },
+        {
+          "path": ".s26/scb01/checkpoint_3/evaluation.json",
+          "json_pointer": "/tests/checkpoint_3-Functionality/failed"
+        }
+      ]
+    },
+    {
+      "group": "Functionality",
+      "expected_match_count": 1,
+      "expected_zh": "$$price = $VAL 应匹配源中的 $price = 100；$VAL=100 范围(1,10)→(1,13)，whole-match (1,1)→(1,13)。",
+      "actual_zh": "actual_stdout 为空字符串；程序返回 0。",
+      "difference_status": "DIRECT_LOG_DIFFERENCE",
+      "difference_zh": "期望1个匹配，实际0个。",
+      "source_observations": [
+        "S2_literal_dollar_token_boundary"
+      ],
+      "source_relation_zh": "$$price 分词与转义分支条件不衔接，是可直接确认的实现失配。",
+      "case_id": ".evaluation_tests/test_checkpoint_3.py::test_literal_dollar_sign",
+      "original_status": "failed",
+      "observed_program_return_code": 0,
+      "expected_program_return_code": 0,
+      "actual_repr_elided_in_original": false,
+      "full_actual_match_count": 0,
+      "evidence": [
+        {
+          "path": ".s26/scb01/checkpoint_3/evaluation/report.json",
+          "json_pointer": "/tests/37/call/longrepr"
+        },
+        {
+          "path": ".s26/scb01/checkpoint_3/evaluation/stdout.txt",
+          "line_start": 133,
+          "line_end": 136
+        },
+        {
+          "path": ".s26/scb01/checkpoint_3/evaluation/stdout.txt",
+          "line_start": 458,
+          "line_end": 470
+        },
+        {
+          "path": ".s26/scb01/checkpoint_3/evaluation.json",
+          "json_pointer": "/tests/checkpoint_3-Functionality/failed"
+        }
+      ]
+    },
+    {
+      "group": "Functionality",
+      "expected_match_count": 4,
+      "expected_zh": "a.js 中2条，m.js/z.js 各1条 let 声明及对应 $VAR/$VAL captures。",
+      "actual_zh": "非空 JSONL；开头为 a.js 的匹配，尾部可见 $VAR=z 范围(1,5)→(1,6)。中间已省略。",
+      "difference_status": "ASSERTED_INEQUALITY_FULL_DIFF_UNAVAILABLE",
+      "difference_zh": "排序后对象列表不相等；可见材料不能证明文件排序本身错误，也不能给出实际总条数。",
+      "source_observations": [
+        "S3_capture_is_balanced_token_span",
+        "S5_output_sort_present"
+      ],
+      "source_relation_zh": "a.js 的两条 let 语句之间只有可被 capture 跨越的普通 token；末尾分号可在后续语句处满足。这是代码允许的额外候选，不冒充已恢复的实际输出。",
+      "case_id": ".evaluation_tests/test_checkpoint_3.py::test_multiple_files_sorted",
+      "original_status": "failed",
+      "observed_program_return_code": 0,
+      "expected_program_return_code": 0,
+      "actual_repr_elided_in_original": true,
+      "full_actual_match_count": null,
+      "evidence": [
+        {
+          "path": ".s26/scb01/checkpoint_3/evaluation/report.json",
+          "json_pointer": "/tests/38/call/longrepr"
+        },
+        {
+          "path": ".s26/scb01/checkpoint_3/evaluation/stdout.txt",
+          "line_start": 582,
+          "line_end": 585
+        },
+        {
+          "path": ".s26/scb01/checkpoint_3/evaluation/stdout.txt",
+          "line_start": 514,
+          "line_end": 569
+        },
+        {
+          "path": ".s26/scb01/checkpoint_3/evaluation.json",
+          "json_pointer": "/tests/checkpoint_3-Functionality/failed"
+        }
+      ]
+    },
+    {
+      "group": "Functionality",
+      "expected_match_count": 3,
+      "expected_zh": "三个 const str 声明捕获带反斜线 n 的双引号字符串、带转义引号的单引号字符串、以及跨行 backtick 字符串。第三个 capture 范围(3,13)→(4,7)，whole-match 到(4,8)。",
+      "actual_zh": "非空 JSONL；尾部可见 backtick capture 为 `line1\\nline2`，范围(3,13)→(4,7)，与期望该片段一致；其他输出被省略。",
+      "difference_status": "ASSERTED_INEQUALITY_FULL_DIFF_UNAVAILABLE",
+      "difference_zh": "完整对象列表断言失败；不能从这一相同尾部片段断言具体转义字符已损坏。",
+      "source_observations": [
+        "S3_capture_is_balanced_token_span",
+        "S6_string_tokenization_scope"
+      ],
+      "source_relation_zh": "capture 可跨过前面声明的分号直到后续分号；缺少 backtick 字符串专门分支也可静态确认，但两者都不作为本次失败的唯一归因。",
+      "case_id": ".evaluation_tests/test_checkpoint_3.py::test_special_chars_in_captures",
+      "original_status": "failed",
+      "observed_program_return_code": 0,
+      "expected_program_return_code": 0,
+      "actual_repr_elided_in_original": true,
+      "full_actual_match_count": null,
+      "evidence": [
+        {
+          "path": ".s26/scb01/checkpoint_3/evaluation/report.json",
+          "json_pointer": "/tests/44/call/longrepr"
+        },
+        {
+          "path": ".s26/scb01/checkpoint_3/evaluation/stdout.txt",
+          "line_start": 656,
+          "line_end": 659
+        },
+        {
+          "path": ".s26/scb01/checkpoint_3/evaluation/stdout.txt",
+          "line_start": 613,
+          "line_end": 643
+        },
+        {
+          "path": ".s26/scb01/checkpoint_3/evaluation.json",
+          "json_pointer": "/tests/checkpoint_3-Functionality/failed"
+        }
+      ]
+    }
+  ],
+  "limitations_zh": [
+    "五个非空 actual_stdout 在原 stdout/report.longrepr 中已有省略号；完整实际 JSONL 在许可文件中不可得。只报告可见差异，不补全隐藏中段、实际条数或逐项 diff。",
+    "报告中引用的失败断言/期望值来自允许读取的原运行 traceback；未打开 traceback 指向的任何测试源码文件，也未读取 upstream oracle/solutions。",
+    "源码分词与 capture 边界观察可直接由实现确认；关联到具体失败时仍非动态定位或唯一因果证明。未改代码、未做反事实验证。",
+    "模型自测内容与覆盖未知；命令exit0、owner complete、所选any-case流程完成，都不等于全部原case通过。",
+    "仅分析当前 checkpoint_3；回归项计数不与前checkpoint相加为独立任务数，不作完整五checkpoint或框架优劣结论。",
+    "本sidecar只服务事后解释，不反馈给solver；不建议或执行根据grader反馈重跑。"
+  ],
+  "additional_parent_context": {
+    "provenance": "Parent message; associated action/command raw records not inspected in this bounded task",
+    "arguments_invalid_rejections": 2,
+    "arguments_invalid_description": "非单JSON文档",
+    "prefix_broker_commands_exit_zero": 15,
+    "scope_note_zh": "15条是全prefix上下文；本sidecar从已许可汇总读取的checkpoint_3命令数为9，口径不同。",
+    "causal_limit_zh": "两次参数格式拒绝与七个评估内容断言失败是不同层次事件；不认定前者导致后者。命令exit0也不等同业务正确。"
+  }
+}

@@ -1,0 +1,106 @@
+{
+  "schema_version": 1,
+  "problem_name": "code_search",
+  "problem_version": 1,
+  "checkpoint_name": "checkpoint_3",
+  "checkpoint_version": 1,
+  "duration": 7.951189279556274,
+  "entrypoint": "uv run code_search.py",
+  "tests": {
+    "checkpoint_1-Regression": {
+      "passed": [
+        "test_basic",
+        "test_case_insensitive_and_language",
+        "test_encoding_option_reads_non_utf8",
+        "test_ignore_non_py_files",
+        "test_multi_file_ordering",
+        "test_no_matches_outputs_nothing",
+        "test_output_order_and_format",
+        "test_regex_flag_variations",
+        "test_single_match",
+        "test_skip_undecodable_file",
+        "test_spec_example",
+        "test_undecodable_file_before_decodable_still_scans",
+        "test_unicode_and_ties"
+      ],
+      "failed": [],
+      "skipped": []
+    },
+    "checkpoint_2-Regression": {
+      "passed": [
+        "test_all_cpp_header_extensions",
+        "test_all_cpp_source_extensions",
+        "test_all_js_extensions",
+        "test_cpp_only",
+        "test_javascript_only",
+        "test_language_filter_excludes_others",
+        "test_multi_language",
+        "test_multiple_language_array",
+        "test_multiple_languages_no_filter",
+        "test_no_language_filter",
+        "test_python_regex",
+        "test_unsupported_extensions_are_ignored"
+      ],
+      "failed": [],
+      "skipped": []
+    },
+    "checkpoint_3-Core": {
+      "passed": [
+        "test_captures_key_order",
+        "test_mixed_rules",
+        "test_repeated_metavar",
+        "test_simple_pattern_cpp",
+        "test_simple_pattern_javascript",
+        "test_simple_pattern_python"
+      ],
+      "failed": [
+        "test_multiple_metavars",
+        "test_optional_metavar"
+      ],
+      "skipped": []
+    },
+    "checkpoint_3-Functionality": {
+      "passed": [
+        "test_default_languages_include_cpp",
+        "test_multiline_cpp_if_blocks",
+        "test_python_list_comprehension",
+        "test_same_start_ordering",
+        "test_sorting_same_start_different_end",
+        "test_triple_metavar_repetition",
+        "test_unicode_in_captures"
+      ],
+      "failed": [
+        "test_language_filtering",
+        "test_literal_dollar_sign",
+        "test_multiline_python_if_blocks",
+        "test_multiple_files_sorted",
+        "test_special_chars_in_captures"
+      ],
+      "skipped": []
+    },
+    "checkpoint_3-Error": {
+      "passed": [
+        "test_no_matches",
+        "test_repeated_metavar_mismatch_produces_no_match"
+      ],
+      "failed": [],
+      "skipped": []
+    }
+  },
+  "pass_counts": {
+    "Core": 6,
+    "Functionality": 7,
+    "Regression": 25,
+    "Error": 2
+  },
+  "total_counts": {
+    "Core": 8,
+    "Functionality": 12,
+    "Regression": 25,
+    "Error": 2
+  },
+  "pytest_exit_code": 1,
+  "pytest_collected": 47,
+  "test_collection_hash": "39d11b6b8327d3049a7b4e00da441d91640b57e6fe866789c506e43a10634395",
+  "infrastructure_failure": false
+}

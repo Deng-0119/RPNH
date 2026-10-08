@@ -1,0 +1,6 @@
+Using Python 3.13.12 environment at: upstream-venv
+Resolved 2 packages in 12ms
+Prepared 2 packages in 42ms
+Installed 2 packages in 13ms
+ + rpnh-harness==0.1.0rc2 (from file:///home/deng123/RPNH/task-erp-first-wave-20261008/work/core-dist/rpnh_harness-0.1.0rc2-py3-none-any.whl)
+ + rpnh-slopcodebench==0.1.0 (from file:///home/deng123/RPNH/task-first-wave-examples-20261008/work/native-site-wheels02/rpnh_slopcodebench-0.1.0-py3-none-any.whl)

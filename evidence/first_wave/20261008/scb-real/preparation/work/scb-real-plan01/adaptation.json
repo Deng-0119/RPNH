@@ -1,0 +1,18 @@
+{
+  "mode": "adapted_development_prefix",
+  "solver_network": "none",
+  "evaluation_network": "host",
+  "image_build_network": "host",
+  "reason": "task-owned WSL Docker daemon has no container NAT; ordinary dependency setup needs network",
+  "upstream_setup_commands_changed": false,
+  "upstream_tests_changed": false,
+  "upstream_grader_changed": false,
+  "official_agent_runner": "not_run",
+  "model": "codex/gpt-5.6-terra",
+  "prefix": 3,
+  "max_model_calls_per_checkpoint": 48,
+  "owner_wait_seconds_per_checkpoint": 7200,
+  "pass_policy": "any-case",
+  "automatic_replay": false,
+  "authorization": "/home/deng123/RPNH/task-first-wave-examples-20261008/private/MODEL_AUTHORIZATION_SCB.json"
+}

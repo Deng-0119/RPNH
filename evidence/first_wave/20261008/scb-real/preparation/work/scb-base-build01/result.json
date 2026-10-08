@@ -1,0 +1,22 @@
+{
+  "status": "BUILD_FAILED",
+  "exit_code": 1,
+  "command": [
+    "/home/deng123/RPNH/task-erp-first-wave-20261008/work/tools/docker/docker",
+    "buildx",
+    "build",
+    "--network=host",
+    "--allow=network.host",
+    "--load",
+    "--progress=plain",
+    "-t",
+    "slop-code:python3.12",
+    "/home/deng123/RPNH/task-first-wave-examples-20261008/work/scb-base-build01"
+  ],
+  "started_at": "2026-10-08T09:12:43.391792+00:00",
+  "elapsed_seconds": 107.05809229599981,
+  "recipe": "unmodified pinned make_base_image output",
+  "build_network": "host",
+  "models_launched": 0,
+  "image_name": "slop-code:python3.12"
+}

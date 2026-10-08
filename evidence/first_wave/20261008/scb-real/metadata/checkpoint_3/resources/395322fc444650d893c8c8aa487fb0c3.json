@@ -1,0 +1,83 @@
+{
+  "branch_id": "main",
+  "content_schema_authority_ref": {
+    "resource_id": "resource:44dffe81018555b1a01a552c9d491bf6",
+    "resource_version_id": "resource_version:1a91664c15f753c9a25e7702e2977193"
+  },
+  "content_schema_ref": "application/rpnh_agent_text/v1",
+  "descriptors": {},
+  "extensions": {},
+  "lifetime_ref": {
+    "entity_type": "bootstrap_command/v1",
+    "logical_id": "bootstrap_command:daa1ad12d4da4e18bce04047b64b296d",
+    "version_id": "bootstrap_command_version:d149d947ba9146478a3f2e72e2eaadc8"
+  },
+  "media_type": "application/json",
+  "net_ref": null,
+  "origin": {
+    "kind": "private_system",
+    "primary_ref": {
+      "entity_type": "bootstrap_command/v1",
+      "logical_id": "bootstrap_command:daa1ad12d4da4e18bce04047b64b296d",
+      "version_id": "bootstrap_command_version:d149d947ba9146478a3f2e72e2eaadc8"
+    },
+    "secondary_ref": {
+      "entity_type": "bootstrap_command/v1",
+      "logical_id": "bootstrap_command:daa1ad12d4da4e18bce04047b64b296d",
+      "version_id": "bootstrap_command_version:d149d947ba9146478a3f2e72e2eaadc8"
+    }
+  },
+  "origin_kind": "private_system",
+  "producer_ref": {
+    "entity_type": "bootstrap_command/v1",
+    "logical_id": "bootstrap_command:daa1ad12d4da4e18bce04047b64b296d",
+    "version_id": "bootstrap_command_version:d149d947ba9146478a3f2e72e2eaadc8"
+  },
+  "reference_provenance": {
+    "contributor_refs": [],
+    "derived_from_refs": [],
+    "intended_consumer": {
+      "boundary": "not_applicable",
+      "consumer_ref": null
+    },
+    "operation_binding_ref": null,
+    "producer_invocation_ref": null,
+    "publication": {
+      "content_schema_authority_ref": {
+        "resource_id": "resource:44dffe81018555b1a01a552c9d491bf6",
+        "resource_version_id": "resource_version:1a91664c15f753c9a25e7702e2977193"
+      },
+      "content_schema_ref": "application/rpnh_agent_text/v1",
+      "lifetime_ref": {
+        "entity_type": "bootstrap_command/v1",
+        "logical_id": "bootstrap_command:daa1ad12d4da4e18bce04047b64b296d",
+        "version_id": "bootstrap_command_version:d149d947ba9146478a3f2e72e2eaadc8"
+      },
+      "media_type": "application/json",
+      "origin_kind": "private_system",
+      "primary_ref": {
+        "entity_type": "bootstrap_command/v1",
+        "logical_id": "bootstrap_command:daa1ad12d4da4e18bce04047b64b296d",
+        "version_id": "bootstrap_command_version:d149d947ba9146478a3f2e72e2eaadc8"
+      },
+      "secondary_ref": {
+        "entity_type": "bootstrap_command/v1",
+        "logical_id": "bootstrap_command:daa1ad12d4da4e18bce04047b64b296d",
+        "version_id": "bootstrap_command_version:d149d947ba9146478a3f2e72e2eaadc8"
+      },
+      "size": 5639
+    },
+    "schema_version": "resource_reference_provenance/v1",
+    "supersedes_ref": null
+  },
+  "resource_id": "resource:66b4d029503f57e193541d58f65d4986",
+  "resource_version_id": "resource_version:395322fc444650d893c8c8aa487fb0c3",
+  "round_ref": null,
+  "size": 5639,
+  "summary": "RPNH agent task request",
+  "task_ref": {
+    "entity_type": "task/v1",
+    "logical_id": "task:0f49142731754ae1b4ddf66d4527792a",
+    "version_id": "task_version:ef8ad4c2819f4bcdb2379d684a491f26"
+  }
+}

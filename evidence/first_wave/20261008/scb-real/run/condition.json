@@ -1,0 +1,1 @@
+{"checkpoint_timeout_seconds":7200,"condition_id":"scb-session-command-development-v1","cost_limit":0,"max_model_calls":48,"net_cost_limit":0,"solver_network":"none","step_limit":0}

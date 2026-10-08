@@ -1,0 +1,38 @@
+{
+  "status": "APPROVED_FOR_PUBLICATION",
+  "verified_at": "2026-10-08T09:53:33.093343+00:00",
+  "scope": "Initial475 payloads, additional postrun/final-helper records, factual current README and failure observations",
+  "independent_content_review": "ACCEPTED_FINITE_CONTENT",
+  "known_secret_residual_matches": 0,
+  "unresolved_credential_literal_files": 0,
+  "original_byte_payloads_compared_directly": 358,
+  "metadata_serializations": 117,
+  "original_payload_changed_bytes": false,
+  "originals_unchanged": true,
+  "model_calls_real": 24,
+  "post_limit_excess_calls": 0,
+  "original_grades": [
+    "13/13",
+    "25/25",
+    "40/47"
+  ],
+  "business_failures_checkpoint3": 7,
+  "rejected_action_count": 2,
+  "rejected_action_error": "arguments_invalid: arguments are not one JSON document",
+  "reference_provenance_failures": 30,
+  "reference_provenance_scope": "Failed fresh-reader provenance retained; exact payload recovery does not validate provenance or grant execution authority.",
+  "failure_observations": "New postrun static observations with original-path evidence; no source edits, test/model replay or sole-cause claim.",
+  "known_missing_data": "Five nonempty actual_stdout reprs were already elided in original pytest output/report. Missing middle content was not reconstructed. Vendor wire/normalized token/USD unavailable.",
+  "source_identity": "Installed real trial payloads match74fad32; earlier ERP6f8 and native6f8+overlay identities preserved.",
+  "conditions": "Adapted development prefix3 of5, officialAgentRunner not_run, solver network none, build/eval host with disclosed download compatibility.",
+  "private_material_excluded": [
+    "profiles",
+    "credential files",
+    "Registry DB/WAL/SHM",
+    "caches",
+    "archives",
+    "whole upstream tests/oracle/reference solution"
+  ],
+  "new_result_zip": false,
+  "daemon_cleanup": "a03 stopped with0containers; cache preserved"
+}

@@ -1,0 +1,20 @@
+test_actual_version_kinds_include_new_versions_exclude_config (test_collect.CollectorChecks.test_actual_version_kinds_include_new_versions_exclude_config) ... ok
+test_config_reference_does_not_read_payload (test_collect.CollectorChecks.test_config_reference_does_not_read_payload) ... ok
+test_default_path_and_preparation_scope (test_collect.CollectorChecks.test_default_path_and_preparation_scope) ... ok
+test_exact_registered_bytes_not_reserialized (test_collect.CollectorChecks.test_exact_registered_bytes_not_reserialized) ... ok
+test_historical_provenance_failure_remains_explicit (test_collect.CollectorChecks.test_historical_provenance_failure_remains_explicit) ... ok
+test_minimal_secret_spans_and_historical_paths (test_collect.CollectorChecks.test_minimal_secret_spans_and_historical_paths) ... ok
+test_missing_grade_stays_missing_no_zero (test_collect.CollectorChecks.test_missing_grade_stays_missing_no_zero) ... ok
+test_no_terminal_no_live_read (test_collect.CollectorChecks.test_no_terminal_no_live_read) ... ok
+test_original_bytes_metadata_and_errors_are_distinct (test_collect.CollectorChecks.test_original_bytes_metadata_and_errors_are_distinct) ... ok
+test_paths_and_nonoverwrite (test_collect.CollectorChecks.test_paths_and_nonoverwrite) ... ok
+test_profile_only_values_no_follow_refs (test_collect.CollectorChecks.test_profile_only_values_no_follow_refs) ... ok
+test_proxy_atoms_in_memory_and_headers (test_collect.CollectorChecks.test_proxy_atoms_in_memory_and_headers) ... ok
+test_schema_properties_are_not_resource_refs (test_collect.CollectorChecks.test_schema_properties_are_not_resource_refs) ... ok
+test_snapshot_hash_and_agent_created_test_preserved_not_executed (test_collect.CollectorChecks.test_snapshot_hash_and_agent_created_test_preserved_not_executed) ... ok
+test_unknown_literal_is_precise_pending_location (test_collect.CollectorChecks.test_unknown_literal_is_precise_pending_location) ... ok
+
+----------------------------------------------------------------------
+Ran 15 tests in 0.014s
+
+OK

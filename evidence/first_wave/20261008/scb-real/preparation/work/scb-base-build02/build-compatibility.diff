@@ -1,0 +1,15 @@
+--- original-pinned-recipe
++++ download-compatibility-recipe
+@@ -71,10 +71,10 @@
+ ENV NVM_DIR=/usr/local/nvm
+ ENV NODE_VERSION=22.21.1
+ 
+-SHELL ["/bin/bash", "-lc"]
++SHELL ["/bin/bash", "-o", "pipefail", "-lc"]
+ # Install Node via nvm and make it the default
+ RUN mkdir -p "$NVM_DIR" \
+-    && curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
++    && curl -fsSL --retry 3 --retry-all-errors https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+ 
+ RUN . "$NVM_DIR/nvm.sh" \
+     && nvm install "$NODE_VERSION" \

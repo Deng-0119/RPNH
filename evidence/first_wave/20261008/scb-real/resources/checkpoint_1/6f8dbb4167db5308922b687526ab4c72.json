@@ -1,0 +1,1 @@
+"Implemented executable code_search.py and requirements.txt. The searcher scans .py files, supports exact and regex rules with i/m/s flags, emits ordered JSON Lines with 1-based coordinates, and skips undecodable files. Smoke test, virtual environment setup, dependency install, and py_compile succeeded."

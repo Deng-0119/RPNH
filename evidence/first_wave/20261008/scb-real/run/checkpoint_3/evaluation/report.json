@@ -1,0 +1,1680 @@
+{
+  "created": 1791452549.6963074,
+  "duration": 4.787970066070557,
+  "exitcode": 1,
+  "root": "/workspace",
+  "environment": {},
+  "summary": {
+    "passed": 40,
+    "failed": 7,
+    "total": 47,
+    "collected": 47
+  },
+  "collectors": [
+    {
+      "nodeid": "",
+      "outcome": "passed",
+      "result": [
+        {
+          "nodeid": ".evaluation_tests",
+          "type": "Dir"
+        }
+      ]
+    },
+    {
+      "nodeid": ".evaluation_tests/data/checkpoint_1/proj/A",
+      "outcome": "passed",
+      "result": []
+    },
+    {
+      "nodeid": ".evaluation_tests/data/checkpoint_1/proj",
+      "outcome": "passed",
+      "result": [
+        {
+          "nodeid": ".evaluation_tests/data/checkpoint_1/proj/A",
+          "type": "Dir"
+        }
+      ]
+    },
+    {
+      "nodeid": ".evaluation_tests/data/checkpoint_1",
+      "outcome": "passed",
+      "result": [
+        {
+          "nodeid": ".evaluation_tests/data/checkpoint_1/proj",
+          "type": "Dir"
+        }
+      ]
+    },
+    {
+      "nodeid": ".evaluation_tests/data/checkpoint_2/proj/src",
+      "outcome": "passed",
+      "result": []
+    },
+    {
+      "nodeid": ".evaluation_tests/data/checkpoint_2/proj",
+      "outcome": "passed",
+      "result": [
+        {
+          "nodeid": ".evaluation_tests/data/checkpoint_2/proj/src",
+          "type": "Dir"
+        }
+      ]
+    },
+    {
+      "nodeid": ".evaluation_tests/data/checkpoint_2",
+      "outcome": "passed",
+      "result": [
+        {
+          "nodeid": ".evaluation_tests/data/checkpoint_2/proj",
+          "type": "Dir"
+        }
+      ]
+    },
+    {
+      "nodeid": ".evaluation_tests/data",
+      "outcome": "passed",
+      "result": [
+        {
+          "nodeid": ".evaluation_tests/data/checkpoint_1",
+          "type": "Dir"
+        },
+        {
+          "nodeid": ".evaluation_tests/data/checkpoint_2",
+          "type": "Dir"
+        }
+      ]
+    },
+    {
+      "nodeid": ".evaluation_tests/test_checkpoint_1.py",
+      "outcome": "passed",
+      "result": [
+        {
+          "nodeid": ".evaluation_tests/test_checkpoint_1.py::test_basic",
+          "type": "Function",
+          "lineno": 31
+        },
+        {
+          "nodeid": ".evaluation_tests/test_checkpoint_1.py::test_single_match",
+          "type": "Function",
+          "lineno": 61
+        },
+        {
+          "nodeid": ".evaluation_tests/test_checkpoint_1.py::test_spec_example",
+          "type": "Function",
+          "lineno": 88
+        },
+        {
+          "nodeid": ".evaluation_tests/test_checkpoint_1.py::test_output_order_and_format",
+          "type": "Function",
+          "lineno": 124
+        },
+        {
+          "nodeid": ".evaluation_tests/test_checkpoint_1.py::test_no_matches_outputs_nothing",
+          "type": "Function",
+          "lineno": 195
+        },
+        {
+          "nodeid": ".evaluation_tests/test_checkpoint_1.py::test_ignore_non_py_files",
+          "type": "Function",
+          "lineno": 209
+        },
+        {
+          "nodeid": ".evaluation_tests/test_checkpoint_1.py::test_skip_undecodable_file",
+          "type": "Function",
+          "lineno": 237
+        },
+        {
+          "nodeid": ".evaluation_tests/test_checkpoint_1.py::test_undecodable_file_before_decodable_still_scans",
+          "type": "Function",
+          "lineno": 266
+        },
+        {
+          "nodeid": ".evaluation_tests/test_checkpoint_1.py::test_encoding_option_reads_non_utf8",
+          "type": "Function",
+          "lineno": 295
+        },
+        {
+          "nodeid": ".evaluation_tests/test_checkpoint_1.py::test_case_insensitive_and_language",
+          "type": "Function",
+          "lineno": 333
+        },
+        {
+          "nodeid": ".evaluation_tests/test_checkpoint_1.py::test_multi_file_ordering",
+          "type": "Function",
+          "lineno": 350
+        },
+        {
+          "nodeid": ".evaluation_tests/test_checkpoint_1.py::test_regex_flag_variations",
+          "type": "Function",
+          "lineno": 368
+        },
+        {
+          "nodeid": ".evaluation_tests/test_checkpoint_1.py::test_unicode_and_ties",
+          "type": "Function",
+          "lineno": 411
+        }
+      ]
+    },
+    {
+      "nodeid": ".evaluation_tests/test_checkpoint_2.py",
+      "outcome": "passed",
+      "result": [
+        {
+          "nodeid": ".evaluation_tests/test_checkpoint_2.py::test_multi_language",
+          "type": "Function",
+          "lineno": 30
+        },
+        {
+          "nodeid": ".evaluation_tests/test_checkpoint_2.py::test_cpp_only",
+          "type": "Function",
+          "lineno": 51
+        },
+        {
+          "nodeid": ".evaluation_tests/test_checkpoint_2.py::test_javascript_only",
+          "type": "Function",
+          "lineno": 65
+        },
+        {
+          "nodeid": ".evaluation_tests/test_checkpoint_2.py::test_no_language_filter",
+          "type": "Function",
+          "lineno": 79
+        },
+        {
+          "nodeid": ".evaluation_tests/test_checkpoint_2.py::test_python_regex",
+          "type": "Function",
+          "lineno": 91
+        },
+        {
+          "nodeid": ".evaluation_tests/test_checkpoint_2.py::test_all_cpp_header_extensions",
+          "type": "Function",
+          "lineno": 109
+        },
+        {
+          "nodeid": ".evaluation_tests/test_checkpoint_2.py::test_all_cpp_source_extensions",
+          "type": "Function",
+          "lineno": 130
+        },
+        {
+          "nodeid": ".evaluation_tests/test_checkpoint_2.py::test_all_js_extensions",
+          "type": "Function",
+          "lineno": 151
+        },
+        {
+          "nodeid": ".evaluation_tests/test_checkpoint_2.py::test_multiple_languages_no_filter",
+          "type": "Function",
+          "lineno": 172
+        },
+        {
+          "nodeid": ".evaluation_tests/test_checkpoint_2.py::test_language_filter_excludes_others",
+          "type": "Function",
+          "lineno": 193
+        },
+        {
+          "nodeid": ".evaluation_tests/test_checkpoint_2.py::test_unsupported_extensions_are_ignored",
+          "type": "Function",
+          "lineno": 212
+        },
+        {
+          "nodeid": ".evaluation_tests/test_checkpoint_2.py::test_multiple_language_array",
+          "type": "Function",
+          "lineno": 239
+        }
+      ]
+    },
+    {
+      "nodeid": ".evaluation_tests/test_checkpoint_3.py",
+      "outcome": "passed",
+      "result": [
+        {
+          "nodeid": ".evaluation_tests/test_checkpoint_3.py::test_simple_pattern_python",
+          "type": "Function",
+          "lineno": 21
+        },
+        {
+          "nodeid": ".evaluation_tests/test_checkpoint_3.py::test_simple_pattern_javascript",
+          "type": "Function",
+          "lineno": 62
+        },
+        {
+          "nodeid": ".evaluation_tests/test_checkpoint_3.py::test_simple_pattern_cpp",
+          "type": "Function",
+          "lineno": 94
+        },
+        {
+          "nodeid": ".evaluation_tests/test_checkpoint_3.py::test_repeated_metavar",
+          "type": "Function",
+          "lineno": 126
+        },
+        {
+          "nodeid": ".evaluation_tests/test_checkpoint_3.py::test_optional_metavar",
+          "type": "Function",
+          "lineno": 173
+        },
+        {
+          "nodeid": ".evaluation_tests/test_checkpoint_3.py::test_multiple_metavars",
+          "type": "Function",
+          "lineno": 232
+        },
+        {
+          "nodeid": ".evaluation_tests/test_checkpoint_3.py::test_mixed_rules",
+          "type": "Function",
+          "lineno": 269
+        },
+        {
+          "nodeid": ".evaluation_tests/test_checkpoint_3.py::test_repeated_metavar_mismatch_produces_no_match",
+          "type": "Function",
+          "lineno": 303
+        },
+        {
+          "nodeid": ".evaluation_tests/test_checkpoint_3.py::test_no_matches",
+          "type": "Function",
+          "lineno": 316
+        },
+        {
+          "nodeid": ".evaluation_tests/test_checkpoint_3.py::test_multiline_python_if_blocks",
+          "type": "Function",
+          "lineno": 334
+        },
+        {
+          "nodeid": ".evaluation_tests/test_checkpoint_3.py::test_multiline_cpp_if_blocks",
+          "type": "Function",
+          "lineno": 413
+        },
+        {
+          "nodeid": ".evaluation_tests/test_checkpoint_3.py::test_language_filtering",
+          "type": "Function",
+          "lineno": 499
+        },
+        {
+          "nodeid": ".evaluation_tests/test_checkpoint_3.py::test_literal_dollar_sign",
+          "type": "Function",
+          "lineno": 578
+        },
+        {
+          "nodeid": ".evaluation_tests/test_checkpoint_3.py::test_multiple_files_sorted",
+          "type": "Function",
+          "lineno": 601
+        },
+        {
+          "nodeid": ".evaluation_tests/test_checkpoint_3.py::test_same_start_ordering",
+          "type": "Function",
+          "lineno": 667
+        },
+        {
+          "nodeid": ".evaluation_tests/test_checkpoint_3.py::test_captures_key_order",
+          "type": "Function",
+          "lineno": 697
+        },
+        {
+          "nodeid": ".evaluation_tests/test_checkpoint_3.py::test_default_languages_include_cpp",
+          "type": "Function",
+          "lineno": 713
+        },
+        {
+          "nodeid": ".evaluation_tests/test_checkpoint_3.py::test_python_list_comprehension",
+          "type": "Function",
+          "lineno": 754
+        },
+        {
+          "nodeid": ".evaluation_tests/test_checkpoint_3.py::test_sorting_same_start_different_end",
+          "type": "Function",
+          "lineno": 796
+        },
+        {
+          "nodeid": ".evaluation_tests/test_checkpoint_3.py::test_special_chars_in_captures",
+          "type": "Function",
+          "lineno": 827
+        },
+        {
+          "nodeid": ".evaluation_tests/test_checkpoint_3.py::test_triple_metavar_repetition",
+          "type": "Function",
+          "lineno": 868
+        },
+        {
+          "nodeid": ".evaluation_tests/test_checkpoint_3.py::test_unicode_in_captures",
+          "type": "Function",
+          "lineno": 918
+        }
+      ]
+    },
+    {
+      "nodeid": ".evaluation_tests",
+      "outcome": "passed",
+      "result": [
+        {
+          "nodeid": ".evaluation_tests/data",
+          "type": "Dir"
+        },
+        {
+          "nodeid": ".evaluation_tests/test_checkpoint_1.py",
+          "type": "Module"
+        },
+        {
+          "nodeid": ".evaluation_tests/test_checkpoint_2.py",
+          "type": "Module"
+        },
+        {
+          "nodeid": ".evaluation_tests/test_checkpoint_3.py",
+          "type": "Module"
+        }
+      ]
+    }
+  ],
+  "tests": [
+    {
+      "nodeid": ".evaluation_tests/test_checkpoint_1.py::test_basic",
+      "lineno": 31,
+      "outcome": "passed",
+      "keywords": [
+        "test_basic",
+        "core",
+        "pytestmark",
+        "test_checkpoint_1.py",
+        ".evaluation_tests",
+        ""
+      ],
+      "setup": {
+        "duration": 0.0021827719974680804,
+        "outcome": "passed"
+      },
+      "call": {
+        "duration": 0.1881199679992278,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00012818799950764515,
+        "outcome": "passed"
+      }
+    },
+    {
+      "nodeid": ".evaluation_tests/test_checkpoint_1.py::test_single_match",
+      "lineno": 61,
+      "outcome": "passed",
+      "keywords": [
+        "test_single_match",
+        "core",
+        "pytestmark",
+        "test_checkpoint_1.py",
+        ".evaluation_tests",
+        ""
+      ],
+      "setup": {
+        "duration": 0.0006342369997582864,
+        "outcome": "passed"
+      },
+      "call": {
+        "duration": 0.0939639089992852,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.000117401999887079,
+        "outcome": "passed"
+      }
+    },
+    {
+      "nodeid": ".evaluation_tests/test_checkpoint_1.py::test_spec_example",
+      "lineno": 88,
+      "outcome": "passed",
+      "keywords": [
+        "test_spec_example",
+        "core",
+        "pytestmark",
+        "test_checkpoint_1.py",
+        ".evaluation_tests",
+        ""
+      ],
+      "setup": {
+        "duration": 0.0005749330011894926,
+        "outcome": "passed"
+      },
+      "call": {
+        "duration": 0.0948594769979536,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00011694000204443,
+        "outcome": "passed"
+      }
+    },
+    {
+      "nodeid": ".evaluation_tests/test_checkpoint_1.py::test_output_order_and_format",
+      "lineno": 124,
+      "outcome": "passed",
+      "keywords": [
+        "test_output_order_and_format",
+        "test_checkpoint_1.py",
+        ".evaluation_tests",
+        ""
+      ],
+      "setup": {
+        "duration": 0.0006165520026115701,
+        "outcome": "passed"
+      },
+      "call": {
+        "duration": 0.09664656899985857,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.0001078730019798968,
+        "outcome": "passed"
+      }
+    },
+    {
+      "nodeid": ".evaluation_tests/test_checkpoint_1.py::test_no_matches_outputs_nothing",
+      "lineno": 195,
+      "outcome": "passed",
+      "keywords": [
+        "test_no_matches_outputs_nothing",
+        "test_checkpoint_1.py",
+        ".evaluation_tests",
+        ""
+      ],
+      "setup": {
+        "duration": 0.0006307119983830489,
+        "outcome": "passed"
+      },
+      "call": {
+        "duration": 0.09639242500270484,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00011587299741222523,
+        "outcome": "passed"
+      }
+    },
+    {
+      "nodeid": ".evaluation_tests/test_checkpoint_1.py::test_ignore_non_py_files",
+      "lineno": 209,
+      "outcome": "passed",
+      "keywords": [
+        "test_ignore_non_py_files",
+        "test_checkpoint_1.py",
+        ".evaluation_tests",
+        ""
+      ],
+      "setup": {
+        "duration": 0.0006582799978787079,
+        "outcome": "passed"
+      },
+      "call": {
+        "duration": 0.09658290399966063,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00010802600081660785,
+        "outcome": "passed"
+      }
+    },
+    {
+      "nodeid": ".evaluation_tests/test_checkpoint_1.py::test_skip_undecodable_file",
+      "lineno": 237,
+      "outcome": "passed",
+      "keywords": [
+        "test_skip_undecodable_file",
+        "error",
+        "pytestmark",
+        "test_checkpoint_1.py",
+        ".evaluation_tests",
+        ""
+      ],
+      "setup": {
+        "duration": 0.0005737430001317989,
+        "outcome": "passed"
+      },
+      "call": {
+        "duration": 0.09826986299958662,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.0003367489989614114,
+        "outcome": "passed"
+      }
+    },
+    {
+      "nodeid": ".evaluation_tests/test_checkpoint_1.py::test_undecodable_file_before_decodable_still_scans",
+      "lineno": 266,
+      "outcome": "passed",
+      "keywords": [
+        "test_undecodable_file_before_decodable_still_scans",
+        "error",
+        "pytestmark",
+        "test_checkpoint_1.py",
+        ".evaluation_tests",
+        ""
+      ],
+      "setup": {
+        "duration": 0.0007688119985687081,
+        "outcome": "passed"
+      },
+      "call": {
+        "duration": 0.09454546299821232,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.0001294150024477858,
+        "outcome": "passed"
+      }
+    },
+    {
+      "nodeid": ".evaluation_tests/test_checkpoint_1.py::test_encoding_option_reads_non_utf8",
+      "lineno": 295,
+      "outcome": "passed",
+      "keywords": [
+        "test_encoding_option_reads_non_utf8",
+        "test_checkpoint_1.py",
+        ".evaluation_tests",
+        ""
+      ],
+      "setup": {
+        "duration": 0.0006332869998004753,
+        "outcome": "passed"
+      },
+      "call": {
+        "duration": 0.09536045799904969,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.0001084729992726352,
+        "outcome": "passed"
+      }
+    },
+    {
+      "nodeid": ".evaluation_tests/test_checkpoint_1.py::test_case_insensitive_and_language",
+      "lineno": 333,
+      "outcome": "passed",
+      "keywords": [
+        "test_case_insensitive_and_language",
+        "functionality",
+        "pytestmark",
+        "test_checkpoint_1.py",
+        ".evaluation_tests",
+        ""
+      ],
+      "setup": {
+        "duration": 0.0006808309990447015,
+        "outcome": "passed"
+      },
+      "call": {
+        "duration": 0.09559050000098068,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00011141399954794906,
+        "outcome": "passed"
+      }
+    },
+    {
+      "nodeid": ".evaluation_tests/test_checkpoint_1.py::test_multi_file_ordering",
+      "lineno": 350,
+      "outcome": "passed",
+      "keywords": [
+        "test_multi_file_ordering",
+        "functionality",
+        "pytestmark",
+        "test_checkpoint_1.py",
+        ".evaluation_tests",
+        ""
+      ],
+      "setup": {
+        "duration": 0.0006135929979791399,
+        "outcome": "passed"
+      },
+      "call": {
+        "duration": 0.09690110999872559,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.0001323830001638271,
+        "outcome": "passed"
+      }
+    },
+    {
+      "nodeid": ".evaluation_tests/test_checkpoint_1.py::test_regex_flag_variations",
+      "lineno": 368,
+      "outcome": "passed",
+      "keywords": [
+        "test_regex_flag_variations",
+        "functionality",
+        "pytestmark",
+        "test_checkpoint_1.py",
+        ".evaluation_tests",
+        ""
+      ],
+      "setup": {
+        "duration": 0.0005922799973632209,
+        "outcome": "passed"
+      },
+      "call": {
+        "duration": 0.09525930100062396,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00011030899986508302,
+        "outcome": "passed"
+      }
+    },
+    {
+      "nodeid": ".evaluation_tests/test_checkpoint_1.py::test_unicode_and_ties",
+      "lineno": 411,
+      "outcome": "passed",
+      "keywords": [
+        "test_unicode_and_ties",
+        "functionality",
+        "pytestmark",
+        "test_checkpoint_1.py",
+        ".evaluation_tests",
+        ""
+      ],
+      "setup": {
+        "duration": 0.0005927940001129173,
+        "outcome": "passed"
+      },
+      "call": {
+        "duration": 0.09570859900122741,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.000114235001092311,
+        "outcome": "passed"
+      }
+    },
+    {
+      "nodeid": ".evaluation_tests/test_checkpoint_2.py::test_multi_language",
+      "lineno": 30,
+      "outcome": "passed",
+      "keywords": [
+        "test_multi_language",
+        "core",
+        "pytestmark",
+        "test_checkpoint_2.py",
+        ".evaluation_tests",
+        ""
+      ],
+      "setup": {
+        "duration": 0.0005963990006421227,
+        "outcome": "passed"
+      },
+      "call": {
+        "duration": 0.09618665000016335,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00011061999975936487,
+        "outcome": "passed"
+      }
+    },
+    {
+      "nodeid": ".evaluation_tests/test_checkpoint_2.py::test_cpp_only",
+      "lineno": 51,
+      "outcome": "passed",
+      "keywords": [
+        "test_cpp_only",
+        "core",
+        "pytestmark",
+        "test_checkpoint_2.py",
+        ".evaluation_tests",
+        ""
+      ],
+      "setup": {
+        "duration": 0.0006394060001184698,
+        "outcome": "passed"
+      },
+      "call": {
+        "duration": 0.09787931499886326,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 9.077799768419936e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "nodeid": ".evaluation_tests/test_checkpoint_2.py::test_javascript_only",
+      "lineno": 65,
+      "outcome": "passed",
+      "keywords": [
+        "test_javascript_only",
+        "core",
+        "pytestmark",
+        "test_checkpoint_2.py",
+        ".evaluation_tests",
+        ""
+      ],
+      "setup": {
+        "duration": 0.0005718120009987615,
+        "outcome": "passed"
+      },
+      "call": {
+        "duration": 0.0952830569985963,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.0001105840019590687,
+        "outcome": "passed"
+      }
+    },
+    {
+      "nodeid": ".evaluation_tests/test_checkpoint_2.py::test_no_language_filter",
+      "lineno": 79,
+      "outcome": "passed",
+      "keywords": [
+        "test_no_language_filter",
+        "test_checkpoint_2.py",
+        ".evaluation_tests",
+        ""
+      ],
+      "setup": {
+        "duration": 0.0007114330001058988,
+        "outcome": "passed"
+      },
+      "call": {
+        "duration": 0.09927306600002339,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00011186100164195523,
+        "outcome": "passed"
+      }
+    },
+    {
+      "nodeid": ".evaluation_tests/test_checkpoint_2.py::test_python_regex",
+      "lineno": 91,
+      "outcome": "passed",
+      "keywords": [
+        "test_python_regex",
+        "test_checkpoint_2.py",
+        ".evaluation_tests",
+        ""
+      ],
+      "setup": {
+        "duration": 0.000650072001008084,
+        "outcome": "passed"
+      },
+      "call": {
+        "duration": 0.0953882239991799,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00010547100100666285,
+        "outcome": "passed"
+      }
+    },
+    {
+      "nodeid": ".evaluation_tests/test_checkpoint_2.py::test_all_cpp_header_extensions",
+      "lineno": 109,
+      "outcome": "passed",
+      "keywords": [
+        "test_all_cpp_header_extensions",
+        "functionality",
+        "pytestmark",
+        "test_checkpoint_2.py",
+        ".evaluation_tests",
+        ""
+      ],
+      "setup": {
+        "duration": 0.0006424300008802675,
+        "outcome": "passed"
+      },
+      "call": {
+        "duration": 0.09459733900075662,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00011006899876520038,
+        "outcome": "passed"
+      }
+    },
+    {
+      "nodeid": ".evaluation_tests/test_checkpoint_2.py::test_all_cpp_source_extensions",
+      "lineno": 130,
+      "outcome": "passed",
+      "keywords": [
+        "test_all_cpp_source_extensions",
+        "functionality",
+        "pytestmark",
+        "test_checkpoint_2.py",
+        ".evaluation_tests",
+        ""
+      ],
+      "setup": {
+        "duration": 0.0006281429996306542,
+        "outcome": "passed"
+      },
+      "call": {
+        "duration": 0.0960353619993839,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00010628400195855647,
+        "outcome": "passed"
+      }
+    },
+    {
+      "nodeid": ".evaluation_tests/test_checkpoint_2.py::test_all_js_extensions",
+      "lineno": 151,
+      "outcome": "passed",
+      "keywords": [
+        "test_all_js_extensions",
+        "functionality",
+        "pytestmark",
+        "test_checkpoint_2.py",
+        ".evaluation_tests",
+        ""
+      ],
+      "setup": {
+        "duration": 0.000646874999802094,
+        "outcome": "passed"
+      },
+      "call": {
+        "duration": 0.09468755899797543,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00011136899775010534,
+        "outcome": "passed"
+      }
+    },
+    {
+      "nodeid": ".evaluation_tests/test_checkpoint_2.py::test_multiple_languages_no_filter",
+      "lineno": 172,
+      "outcome": "passed",
+      "keywords": [
+        "test_multiple_languages_no_filter",
+        "functionality",
+        "pytestmark",
+        "test_checkpoint_2.py",
+        ".evaluation_tests",
+        ""
+      ],
+      "setup": {
+        "duration": 0.0006741179968230426,
+        "outcome": "passed"
+      },
+      "call": {
+        "duration": 0.1001689750009973,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00010518600174691528,
+        "outcome": "passed"
+      }
+    },
+    {
+      "nodeid": ".evaluation_tests/test_checkpoint_2.py::test_language_filter_excludes_others",
+      "lineno": 193,
+      "outcome": "passed",
+      "keywords": [
+        "test_language_filter_excludes_others",
+        "error",
+        "pytestmark",
+        "test_checkpoint_2.py",
+        ".evaluation_tests",
+        ""
+      ],
+      "setup": {
+        "duration": 0.0006904399997438304,
+        "outcome": "passed"
+      },
+      "call": {
+        "duration": 0.09769629299989901,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00010804500197991729,
+        "outcome": "passed"
+      }
+    },
+    {
+      "nodeid": ".evaluation_tests/test_checkpoint_2.py::test_unsupported_extensions_are_ignored",
+      "lineno": 212,
+      "outcome": "passed",
+      "keywords": [
+        "test_unsupported_extensions_are_ignored",
+        "error",
+        "pytestmark",
+        "test_checkpoint_2.py",
+        ".evaluation_tests",
+        ""
+      ],
+      "setup": {
+        "duration": 0.0006572320016857702,
+        "outcome": "passed"
+      },
+      "call": {
+        "duration": 0.09612433599977521,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00011161200018250383,
+        "outcome": "passed"
+      }
+    },
+    {
+      "nodeid": ".evaluation_tests/test_checkpoint_2.py::test_multiple_language_array",
+      "lineno": 239,
+      "outcome": "passed",
+      "keywords": [
+        "test_multiple_language_array",
+        "functionality",
+        "pytestmark",
+        "test_checkpoint_2.py",
+        ".evaluation_tests",
+        ""
+      ],
+      "setup": {
+        "duration": 0.001112361998821143,
+        "outcome": "passed"
+      },
+      "call": {
+        "duration": 0.09891655999672366,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00013502799993148074,
+        "outcome": "passed"
+      }
+    },
+    {
+      "nodeid": ".evaluation_tests/test_checkpoint_3.py::test_simple_pattern_python",
+      "lineno": 21,
+      "outcome": "passed",
+      "keywords": [
+        "test_simple_pattern_python",
+        "core",
+        "pytestmark",
+        "test_checkpoint_3.py",
+        ".evaluation_tests",
+        ""
+      ],
+      "setup": {
+        "duration": 0.0005962040013400838,
+        "outcome": "passed"
+      },
+      "call": {
+        "duration": 0.09844736400191323,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00011208700016140938,
+        "outcome": "passed"
+      }
+    },
+    {
+      "nodeid": ".evaluation_tests/test_checkpoint_3.py::test_simple_pattern_javascript",
+      "lineno": 62,
+      "outcome": "passed",
+      "keywords": [
+        "test_simple_pattern_javascript",
+        "core",
+        "pytestmark",
+        "test_checkpoint_3.py",
+        ".evaluation_tests",
+        ""
+      ],
+      "setup": {
+        "duration": 0.0010735579999163747,
+        "outcome": "passed"
+      },
+      "call": {
+        "duration": 0.09841187499841908,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00011224400077480823,
+        "outcome": "passed"
+      }
+    },
+    {
+      "nodeid": ".evaluation_tests/test_checkpoint_3.py::test_simple_pattern_cpp",
+      "lineno": 94,
+      "outcome": "passed",
+      "keywords": [
+        "test_simple_pattern_cpp",
+        "core",
+        "pytestmark",
+        "test_checkpoint_3.py",
+        ".evaluation_tests",
+        ""
+      ],
+      "setup": {
+        "duration": 0.0006595020022359677,
+        "outcome": "passed"
+      },
+      "call": {
+        "duration": 0.09632291600064491,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.0001140610002039466,
+        "outcome": "passed"
+      }
+    },
+    {
+      "nodeid": ".evaluation_tests/test_checkpoint_3.py::test_repeated_metavar",
+      "lineno": 126,
+      "outcome": "passed",
+      "keywords": [
+        "test_repeated_metavar",
+        "test_checkpoint_3.py",
+        ".evaluation_tests",
+        ""
+      ],
+      "setup": {
+        "duration": 0.0006093819974921644,
+        "outcome": "passed"
+      },
+      "call": {
+        "duration": 0.10226902299837093,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00011942900164285675,
+        "outcome": "passed"
+      }
+    },
+    {
+      "nodeid": ".evaluation_tests/test_checkpoint_3.py::test_optional_metavar",
+      "lineno": 173,
+      "outcome": "failed",
+      "keywords": [
+        "test_optional_metavar",
+        "test_checkpoint_3.py",
+        ".evaluation_tests",
+        ""
+      ],
+      "setup": {
+        "duration": 0.0006202470030984841,
+        "outcome": "passed"
+      },
+      "call": {
+        "duration": 0.09634653100147261,
+        "outcome": "failed",
+        "crash": {
+          "path": "/workspace/.evaluation_tests/code_search_test_helpers.py",
+          "lineno": 142,
+          "message": "AssertionError"
+        },
+        "traceback": [
+          {
+            "path": ".evaluation_tests/test_checkpoint_3.py",
+            "lineno": 230,
+            "message": ""
+          },
+          {
+            "path": ".evaluation_tests/code_search_test_helpers.py",
+            "lineno": 185,
+            "message": "in assert_matches_with_end"
+          },
+          {
+            "path": ".evaluation_tests/code_search_test_helpers.py",
+            "lineno": 142,
+            "message": "AssertionError"
+          }
+        ],
+        "longrepr": "entrypoint_argv = ['uv', 'run', 'code_search.py']\ntmp_path = PosixPath('/tmp/pytest-of-agent/pytest-0/test_optional_metavar0')\n\n    def test_optional_metavar(entrypoint_argv, tmp_path):\n        \"\"\"Core: Optional metavariables match whether the code element is present.\"\"\"\n        input_files = {\"proj/items.py\": \"[]\\n[value]\\n[result]\"}\n        rules = [{\"id\": \"optional_item\", \"kind\": \"pattern\", \"languages\": [\"python\"], \"pattern\": \"[$X?]\"}]\n        expected = [\n            {\n                \"end\": {\"col\": 3, \"line\": 1},\n                \"file\": \"items.py\",\n                \"language\": \"python\",\n                \"match\": \"[]\",\n                \"rule_id\": \"optional_item\",\n                \"start\": {\"col\": 1, \"line\": 1},\n            },\n            {\n                \"captures\": {\n                    \"$X\": {\n                        \"ranges\": [\n                            {\n                                \"end\": {\"col\": 7, \"line\": 2},\n                                \"start\": {\"col\": 2, \"line\": 2},\n                            }\n                        ],\n                        \"text\": \"value\",\n                    }\n                },\n                \"end\": {\"col\": 8, \"line\": 2},\n                \"file\": \"items.py\",\n                \"language\": \"python\",\n                \"match\": \"[value]\",\n                \"rule_id\": \"optional_item\",\n                \"start\": {\"col\": 1, \"line\": 2},\n            },\n            {\n                \"captures\": {\n                    \"$X\": {\n                        \"ranges\": [\n                            {\n                                \"end\": {\"col\": 8, \"line\": 3},\n                                \"start\": {\"col\": 2, \"line\": 3},\n                            }\n                        ],\n                        \"text\": \"result\",\n                    }\n                },\n                \"end\": {\"col\": 9, \"line\": 3},\n                \"file\": \"items.py\",\n                \"language\": \"python\",\n                \"match\": \"[result]\",\n                \"rule_id\": \"optional_item\",\n                \"start\": {\"col\": 1, \"line\": 3},\n            },\n        ]\n    \n        proj = create_test_files(tmp_path, input_files)\n        rules_file = write_rules(tmp_path, rules)\n        result = run_search(entrypoint_argv, proj, rules_file)\n>       assert_matches(result.stdout, expected, actual_returncode=result.returncode)\n\n.evaluation_tests/test_checkpoint_3.py:230: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n.evaluation_tests/code_search_test_helpers.py:185: in assert_matches_with_end\n    assert_jsonl_matches(\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nactual_stdout = ''\nexpected = [{'end': {'col': 3, 'line': 1}, 'file': 'items.py', 'language': 'python', 'match': '[]', ...}, {'captures': {'$X': {'r....}, 'start': {...}}], 'text': 'result'}}, 'end': {'col': 9, 'line': 3}, 'file': 'items.py', 'language': 'python', ...}]\nsorter = <function sort_matches_with_end at 0x71fbe11f1260>, exit_code = 0\nactual_returncode = 0\n\n    def assert_jsonl_matches(\n        actual_stdout: str,\n        expected: JsonList,\n        *,\n        sorter: Sorter,\n        exit_code: int = 0,\n        actual_returncode: int = 0,\n    ) -> None:\n        \"\"\"Assert that JSONL output equals expected after sorting.\"\"\"\n        assert actual_returncode == exit_code, (\n            f\"Expected exit code {exit_code}, got {actual_returncode}\"\n        )\n        actual = parse_jsonl(actual_stdout)\n>       assert sorter(actual) == sorter(expected)\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nE       AssertionError\n\n.evaluation_tests/code_search_test_helpers.py:142: AssertionError"
+      },
+      "teardown": {
+        "duration": 0.00012647000039578415,
+        "outcome": "passed"
+      }
+    },
+    {
+      "nodeid": ".evaluation_tests/test_checkpoint_3.py::test_multiple_metavars",
+      "lineno": 232,
+      "outcome": "failed",
+      "keywords": [
+        "test_multiple_metavars",
+        "test_checkpoint_3.py",
+        ".evaluation_tests",
+        ""
+      ],
+      "setup": {
+        "duration": 0.0006621590000577271,
+        "outcome": "passed"
+      },
+      "call": {
+        "duration": 0.0989644090004731,
+        "outcome": "failed",
+        "crash": {
+          "path": "/workspace/.evaluation_tests/code_search_test_helpers.py",
+          "lineno": 142,
+          "message": "AssertionError"
+        },
+        "traceback": [
+          {
+            "path": ".evaluation_tests/test_checkpoint_3.py",
+            "lineno": 267,
+            "message": ""
+          },
+          {
+            "path": ".evaluation_tests/code_search_test_helpers.py",
+            "lineno": 185,
+            "message": "in assert_matches_with_end"
+          },
+          {
+            "path": ".evaluation_tests/code_search_test_helpers.py",
+            "lineno": 142,
+            "message": "AssertionError"
+          }
+        ],
+        "longrepr": "entrypoint_argv = ['uv', 'run', 'code_search.py']\ntmp_path = PosixPath('/tmp/pytest-of-agent/pytest-0/test_multiple_metavars0')\n\n    def test_multiple_metavars(entrypoint_argv, tmp_path):\n        \"\"\"Core: Multiple different metavariables in pattern.\"\"\"\n        input_files = {\"proj/code.js\": \"function hello(name) {}\\nfunction test(x) {}\\nconst foo = () => {};\"}\n        rules = [{\"id\": \"func_def\", \"kind\": \"pattern\", \"languages\": [\"javascript\"], \"pattern\": \"function $NAME($ARG) {}\"}]\n        expected = [\n            {\n                \"captures\": {\n                    \"$ARG\": {\"ranges\": [{\"end\": {\"col\": 20, \"line\": 1}, \"start\": {\"col\": 16, \"line\": 1}}], \"text\": \"name\"},\n                    \"$NAME\": {\"ranges\": [{\"end\": {\"col\": 15, \"line\": 1}, \"start\": {\"col\": 10, \"line\": 1}}], \"text\": \"hello\"},\n                },\n                \"end\": {\"col\": 24, \"line\": 1},\n                \"file\": \"code.js\",\n                \"language\": \"javascript\",\n                \"match\": \"function hello(name) {}\",\n                \"rule_id\": \"func_def\",\n                \"start\": {\"col\": 1, \"line\": 1},\n            },\n            {\n                \"captures\": {\n                    \"$ARG\": {\"ranges\": [{\"end\": {\"col\": 16, \"line\": 2}, \"start\": {\"col\": 15, \"line\": 2}}], \"text\": \"x\"},\n                    \"$NAME\": {\"ranges\": [{\"end\": {\"col\": 14, \"line\": 2}, \"start\": {\"col\": 10, \"line\": 2}}], \"text\": \"test\"},\n                },\n                \"end\": {\"col\": 20, \"line\": 2},\n                \"file\": \"code.js\",\n                \"language\": \"javascript\",\n                \"match\": \"function test(x) {}\",\n                \"rule_id\": \"func_def\",\n                \"start\": {\"col\": 1, \"line\": 2},\n            },\n        ]\n    \n        proj = create_test_files(tmp_path, input_files)\n        rules_file = write_rules(tmp_path, rules)\n        result = run_search(entrypoint_argv, proj, rules_file)\n>       assert_matches(result.stdout, expected, actual_returncode=result.returncode)\n\n.evaluation_tests/test_checkpoint_3.py:267: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n.evaluation_tests/code_search_test_helpers.py:185: in assert_matches_with_end\n    assert_jsonl_matches(\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nactual_stdout = '{\"rule_id\":\"func_def\",\"file\":\"code.js\",\"language\":\"javascript\",\"start\":{\"line\":1,\"col\":1},\"end\":{\"line\":1,\"col\":24},\"...:{\"line\":2,\"col\":16}}]},\"$NAME\":{\"text\":\"test\",\"ranges\":[{\"start\":{\"line\":2,\"col\":10},\"end\":{\"line\":2,\"col\":14}}]}}}\\n'\nexpected = [{'captures': {'$ARG': {'ranges': [{'end': {...}, 'start': {...}}], 'text': 'name'}, '$NAME': {'ranges': [{'end': {......, 'start': {...}}], 'text': 'test'}}, 'end': {'col': 20, 'line': 2}, 'file': 'code.js', 'language': 'javascript', ...}]\nsorter = <function sort_matches_with_end at 0x71fbe11f1260>, exit_code = 0\nactual_returncode = 0\n\n    def assert_jsonl_matches(\n        actual_stdout: str,\n        expected: JsonList,\n        *,\n        sorter: Sorter,\n        exit_code: int = 0,\n        actual_returncode: int = 0,\n    ) -> None:\n        \"\"\"Assert that JSONL output equals expected after sorting.\"\"\"\n        assert actual_returncode == exit_code, (\n            f\"Expected exit code {exit_code}, got {actual_returncode}\"\n        )\n        actual = parse_jsonl(actual_stdout)\n>       assert sorter(actual) == sorter(expected)\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nE       AssertionError\n\n.evaluation_tests/code_search_test_helpers.py:142: AssertionError"
+      },
+      "teardown": {
+        "duration": 0.00013268399925436825,
+        "outcome": "passed"
+      }
+    },
+    {
+      "nodeid": ".evaluation_tests/test_checkpoint_3.py::test_mixed_rules",
+      "lineno": 269,
+      "outcome": "passed",
+      "keywords": [
+        "test_mixed_rules",
+        "test_checkpoint_3.py",
+        ".evaluation_tests",
+        ""
+      ],
+      "setup": {
+        "duration": 0.0007647809979971498,
+        "outcome": "passed"
+      },
+      "call": {
+        "duration": 0.09789916500085383,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.0001186500012408942,
+        "outcome": "passed"
+      }
+    },
+    {
+      "nodeid": ".evaluation_tests/test_checkpoint_3.py::test_repeated_metavar_mismatch_produces_no_match",
+      "lineno": 303,
+      "outcome": "passed",
+      "keywords": [
+        "test_repeated_metavar_mismatch_produces_no_match",
+        "error",
+        "pytestmark",
+        "test_checkpoint_3.py",
+        ".evaluation_tests",
+        ""
+      ],
+      "setup": {
+        "duration": 0.0006380430022545625,
+        "outcome": "passed"
+      },
+      "call": {
+        "duration": 0.09635467900079675,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.0001296699992963113,
+        "outcome": "passed"
+      }
+    },
+    {
+      "nodeid": ".evaluation_tests/test_checkpoint_3.py::test_no_matches",
+      "lineno": 316,
+      "outcome": "passed",
+      "keywords": [
+        "test_no_matches",
+        "error",
+        "pytestmark",
+        "test_checkpoint_3.py",
+        ".evaluation_tests",
+        ""
+      ],
+      "setup": {
+        "duration": 0.0006338680032058619,
+        "outcome": "passed"
+      },
+      "call": {
+        "duration": 0.09481925900036003,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00014671499957330525,
+        "outcome": "passed"
+      }
+    },
+    {
+      "nodeid": ".evaluation_tests/test_checkpoint_3.py::test_multiline_python_if_blocks",
+      "lineno": 334,
+      "outcome": "failed",
+      "keywords": [
+        "test_multiline_python_if_blocks",
+        "functionality",
+        "pytestmark",
+        "test_checkpoint_3.py",
+        ".evaluation_tests",
+        ""
+      ],
+      "setup": {
+        "duration": 0.0006786030025978107,
+        "outcome": "passed"
+      },
+      "call": {
+        "duration": 0.09587925400046515,
+        "outcome": "failed",
+        "crash": {
+          "path": "/workspace/.evaluation_tests/code_search_test_helpers.py",
+          "lineno": 142,
+          "message": "AssertionError"
+        },
+        "traceback": [
+          {
+            "path": ".evaluation_tests/test_checkpoint_3.py",
+            "lineno": 411,
+            "message": ""
+          },
+          {
+            "path": ".evaluation_tests/code_search_test_helpers.py",
+            "lineno": 185,
+            "message": "in assert_matches_with_end"
+          },
+          {
+            "path": ".evaluation_tests/code_search_test_helpers.py",
+            "lineno": 142,
+            "message": "AssertionError"
+          }
+        ],
+        "longrepr": "entrypoint_argv = ['uv', 'run', 'code_search.py']\ntmp_path = PosixPath('/tmp/pytest-of-agent/pytest-0/test_multiline_python_if_block0')\n\n    @pytest.mark.functionality\n    def test_multiline_python_if_blocks(entrypoint_argv, tmp_path):\n        \"\"\"Functionality: Valid multiline Python patterns match across lines.\"\"\"\n        input_files = {\n            \"proj/app.py\": (\n                \"def foo(x):\\n\"\n                \"    if x:\\n\"\n                \"        return x\\n\"\n                \"    return None\\n\\n\"\n                \"def bar(y):\\n\"\n                \"    if y:\\n\"\n                \"        return next_y\\n\"\n                \"    return 0\\n\"\n            )\n        }\n        rules = [\n            {\n                \"id\": \"if_return\",\n                \"kind\": \"pattern\",\n                \"languages\": [\"python\"],\n                \"pattern\": \"if $COND:\\n        return $VALUE\",\n            }\n        ]\n        expected = [\n            {\n                \"captures\": {\n                    \"$COND\": {\n                        \"ranges\": [\n                            {\"end\": {\"col\": 9, \"line\": 2}, \"start\": {\"col\": 8, \"line\": 2}}\n                        ],\n                        \"text\": \"x\",\n                    },\n                    \"$VALUE\": {\n                        \"ranges\": [\n                            {\"end\": {\"col\": 17, \"line\": 3}, \"start\": {\"col\": 16, \"line\": 3}}\n                        ],\n                        \"text\": \"x\",\n                    },\n                },\n                \"end\": {\"col\": 17, \"line\": 3},\n                \"file\": \"app.py\",\n                \"language\": \"python\",\n                \"match\": \"if x:\\n        return x\",\n                \"rule_id\": \"if_return\",\n                \"start\": {\"col\": 5, \"line\": 2},\n            },\n            {\n                \"captures\": {\n                    \"$COND\": {\n                        \"ranges\": [\n                            {\"end\": {\"col\": 9, \"line\": 7}, \"start\": {\"col\": 8, \"line\": 7}}\n                        ],\n                        \"text\": \"y\",\n                    },\n                    \"$VALUE\": {\n                        \"ranges\": [\n                            {\n                                \"end\": {\"col\": 22, \"line\": 8},\n                                \"start\": {\"col\": 16, \"line\": 8},\n                            }\n                        ],\n                        \"text\": \"next_y\",\n                    },\n                },\n                \"end\": {\"col\": 22, \"line\": 8},\n                \"file\": \"app.py\",\n                \"language\": \"python\",\n                \"match\": \"if y:\\n        return next_y\",\n                \"rule_id\": \"if_return\",\n                \"start\": {\"col\": 5, \"line\": 7},\n            },\n        ]\n    \n        proj = create_test_files(tmp_path, input_files)\n        rules_file = write_rules(tmp_path, rules)\n        result = run_search(entrypoint_argv, proj, rules_file)\n>       assert_matches(result.stdout, expected, actual_returncode=result.returncode)\n\n.evaluation_tests/test_checkpoint_3.py:411: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n.evaluation_tests/code_search_test_helpers.py:185: in assert_matches_with_end\n    assert_jsonl_matches(\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nactual_stdout = '{\"rule_id\":\"if_return\",\"file\":\"app.py\",\"language\":\"python\",\"start\":{\"line\":2,\"col\":5},\"end\":{\"line\":3,\"col\":17},\"matc...9}}]},\"$VALUE\":{\"text\":\"next_y\\\\n    return 0\",\"ranges\":[{\"start\":{\"line\":8,\"col\":16},\"end\":{\"line\":9,\"col\":13}}]}}}\\n'\nexpected = [{'captures': {'$COND': {'ranges': [{'end': {...}, 'start': {...}}], 'text': 'x'}, '$VALUE': {'ranges': [{'end': {...}.....}, 'start': {...}}], 'text': 'next_y'}}, 'end': {'col': 22, 'line': 8}, 'file': 'app.py', 'language': 'python', ...}]\nsorter = <function sort_matches_with_end at 0x71fbe11f1260>, exit_code = 0\nactual_returncode = 0\n\n    def assert_jsonl_matches(\n        actual_stdout: str,\n        expected: JsonList,\n        *,\n        sorter: Sorter,\n        exit_code: int = 0,\n        actual_returncode: int = 0,\n    ) -> None:\n        \"\"\"Assert that JSONL output equals expected after sorting.\"\"\"\n        assert actual_returncode == exit_code, (\n            f\"Expected exit code {exit_code}, got {actual_returncode}\"\n        )\n        actual = parse_jsonl(actual_stdout)\n>       assert sorter(actual) == sorter(expected)\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nE       AssertionError\n\n.evaluation_tests/code_search_test_helpers.py:142: AssertionError"
+      },
+      "teardown": {
+        "duration": 0.00014706500223837793,
+        "outcome": "passed"
+      }
+    },
+    {
+      "nodeid": ".evaluation_tests/test_checkpoint_3.py::test_multiline_cpp_if_blocks",
+      "lineno": 413,
+      "outcome": "passed",
+      "keywords": [
+        "test_multiline_cpp_if_blocks",
+        "functionality",
+        "pytestmark",
+        "test_checkpoint_3.py",
+        ".evaluation_tests",
+        ""
+      ],
+      "setup": {
+        "duration": 0.000727861999621382,
+        "outcome": "passed"
+      },
+      "call": {
+        "duration": 0.09824042699983693,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00011756500316550955,
+        "outcome": "passed"
+      }
+    },
+    {
+      "nodeid": ".evaluation_tests/test_checkpoint_3.py::test_language_filtering",
+      "lineno": 499,
+      "outcome": "failed",
+      "keywords": [
+        "test_language_filtering",
+        "functionality",
+        "pytestmark",
+        "test_checkpoint_3.py",
+        ".evaluation_tests",
+        ""
+      ],
+      "setup": {
+        "duration": 0.0005888090017833747,
+        "outcome": "passed"
+      },
+      "call": {
+        "duration": 0.09470491599859088,
+        "outcome": "failed",
+        "crash": {
+          "path": "/workspace/.evaluation_tests/code_search_test_helpers.py",
+          "lineno": 142,
+          "message": "AssertionError"
+        },
+        "traceback": [
+          {
+            "path": ".evaluation_tests/test_checkpoint_3.py",
+            "lineno": 576,
+            "message": ""
+          },
+          {
+            "path": ".evaluation_tests/code_search_test_helpers.py",
+            "lineno": 185,
+            "message": "in assert_matches_with_end"
+          },
+          {
+            "path": ".evaluation_tests/code_search_test_helpers.py",
+            "lineno": 142,
+            "message": "AssertionError"
+          }
+        ],
+        "longrepr": "entrypoint_argv = ['uv', 'run', 'code_search.py']\ntmp_path = PosixPath('/tmp/pytest-of-agent/pytest-0/test_language_filtering0')\n\n    @pytest.mark.functionality\n    def test_language_filtering(entrypoint_argv, tmp_path):\n        \"\"\"Functionality: Language-specific pattern rules.\"\"\"\n        input_files = {\n            \"proj/test.js\": \"const x = 5;\\nconst y = 10;\\nreturn z;\",\n            \"proj/test.py\": \"def foo():\\n    return 1\\n\\ndef bar():\\n    return value\",\n        }\n        rules = [\n            {\"id\": \"py_only\", \"kind\": \"pattern\", \"languages\": [\"python\"], \"pattern\": \"return $VALUE\"},\n            {\"id\": \"js_only\", \"kind\": \"pattern\", \"languages\": [\"javascript\"], \"pattern\": \"const $VAR = $VAL\"},\n        ]\n        expected = [\n            {\n                \"captures\": {\n                    \"$VAL\": {\"ranges\": [{\"end\": {\"col\": 12, \"line\": 1}, \"start\": {\"col\": 11, \"line\": 1}}], \"text\": \"5\"},\n                    \"$VAR\": {\"ranges\": [{\"end\": {\"col\": 8, \"line\": 1}, \"start\": {\"col\": 7, \"line\": 1}}], \"text\": \"x\"},\n                },\n                \"end\": {\"col\": 12, \"line\": 1},\n                \"file\": \"test.js\",\n                \"language\": \"javascript\",\n                \"match\": \"const x = 5\",\n                \"rule_id\": \"js_only\",\n                \"start\": {\"col\": 1, \"line\": 1},\n            },\n            {\n                \"captures\": {\n                    \"$VAL\": {\"ranges\": [{\"end\": {\"col\": 13, \"line\": 2}, \"start\": {\"col\": 11, \"line\": 2}}], \"text\": \"10\"},\n                    \"$VAR\": {\"ranges\": [{\"end\": {\"col\": 8, \"line\": 2}, \"start\": {\"col\": 7, \"line\": 2}}], \"text\": \"y\"},\n                },\n                \"end\": {\"col\": 13, \"line\": 2},\n                \"file\": \"test.js\",\n                \"language\": \"javascript\",\n                \"match\": \"const y = 10\",\n                \"rule_id\": \"js_only\",\n                \"start\": {\"col\": 1, \"line\": 2},\n            },\n            {\n                \"captures\": {\n                    \"$VALUE\": {\n                        \"ranges\": [\n                            {\"end\": {\"col\": 13, \"line\": 2}, \"start\": {\"col\": 12, \"line\": 2}}\n                        ],\n                        \"text\": \"1\",\n                    }\n                },\n                \"end\": {\"col\": 13, \"line\": 2},\n                \"file\": \"test.py\",\n                \"language\": \"python\",\n                \"match\": \"return 1\",\n                \"rule_id\": \"py_only\",\n                \"start\": {\"col\": 5, \"line\": 2},\n            },\n            {\n                \"captures\": {\n                    \"$VALUE\": {\n                        \"ranges\": [\n                            {\n                                \"end\": {\"col\": 17, \"line\": 5},\n                                \"start\": {\"col\": 12, \"line\": 5},\n                            }\n                        ],\n                        \"text\": \"value\",\n                    }\n                },\n                \"end\": {\"col\": 17, \"line\": 5},\n                \"file\": \"test.py\",\n                \"language\": \"python\",\n                \"match\": \"return value\",\n                \"rule_id\": \"py_only\",\n                \"start\": {\"col\": 5, \"line\": 5},\n            },\n        ]\n    \n        proj = create_test_files(tmp_path, input_files)\n        rules_file = write_rules(tmp_path, rules)\n        result = run_search(entrypoint_argv, proj, rules_file)\n>       assert_matches(result.stdout, expected, actual_returncode=result.returncode)\n\n.evaluation_tests/test_checkpoint_3.py:576: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n.evaluation_tests/code_search_test_helpers.py:185: in assert_matches_with_end\n    assert_jsonl_matches(\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nactual_stdout = '{\"rule_id\":\"js_only\",\"file\":\"test.js\",\"language\":\"javascript\",\"start\":{\"line\":1,\"col\":1},\"end\":{\"line\":1,\"col\":12},\"m...rn value\",\"captures\":{\"$VALUE\":{\"text\":\"value\",\"ranges\":[{\"start\":{\"line\":5,\"col\":12},\"end\":{\"line\":5,\"col\":17}}]}}}\\n'\nexpected = [{'captures': {'$VAL': {'ranges': [{'end': {...}, 'start': {...}}], 'text': '5'}, '$VAR': {'ranges': [{'end': {...}, '.....}, 'start': {...}}], 'text': 'value'}}, 'end': {'col': 17, 'line': 5}, 'file': 'test.py', 'language': 'python', ...}]\nsorter = <function sort_matches_with_end at 0x71fbe11f1260>, exit_code = 0\nactual_returncode = 0\n\n    def assert_jsonl_matches(\n        actual_stdout: str,\n        expected: JsonList,\n        *,\n        sorter: Sorter,\n        exit_code: int = 0,\n        actual_returncode: int = 0,\n    ) -> None:\n        \"\"\"Assert that JSONL output equals expected after sorting.\"\"\"\n        assert actual_returncode == exit_code, (\n            f\"Expected exit code {exit_code}, got {actual_returncode}\"\n        )\n        actual = parse_jsonl(actual_stdout)\n>       assert sorter(actual) == sorter(expected)\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nE       AssertionError\n\n.evaluation_tests/code_search_test_helpers.py:142: AssertionError"
+      },
+      "teardown": {
+        "duration": 0.0001402849993610289,
+        "outcome": "passed"
+      }
+    },
+    {
+      "nodeid": ".evaluation_tests/test_checkpoint_3.py::test_literal_dollar_sign",
+      "lineno": 578,
+      "outcome": "failed",
+      "keywords": [
+        "test_literal_dollar_sign",
+        "functionality",
+        "pytestmark",
+        "test_checkpoint_3.py",
+        ".evaluation_tests",
+        ""
+      ],
+      "setup": {
+        "duration": 0.0006437510019168258,
+        "outcome": "passed"
+      },
+      "call": {
+        "duration": 0.09664361400064081,
+        "outcome": "failed",
+        "crash": {
+          "path": "/workspace/.evaluation_tests/code_search_test_helpers.py",
+          "lineno": 142,
+          "message": "AssertionError"
+        },
+        "traceback": [
+          {
+            "path": ".evaluation_tests/test_checkpoint_3.py",
+            "lineno": 599,
+            "message": ""
+          },
+          {
+            "path": ".evaluation_tests/code_search_test_helpers.py",
+            "lineno": 185,
+            "message": "in assert_matches_with_end"
+          },
+          {
+            "path": ".evaluation_tests/code_search_test_helpers.py",
+            "lineno": 142,
+            "message": "AssertionError"
+          }
+        ],
+        "longrepr": "entrypoint_argv = ['uv', 'run', 'code_search.py']\ntmp_path = PosixPath('/tmp/pytest-of-agent/pytest-0/test_literal_dollar_sign0')\n\n    @pytest.mark.functionality\n    def test_literal_dollar_sign(entrypoint_argv, tmp_path):\n        \"\"\"Functionality: $$ escapes to match literal $ in source.\"\"\"\n        input_files = {\"proj/test.py\": \"$price = 100\\n$cost = 50\"}\n        rules = [{\"id\": \"dollar_var\", \"kind\": \"pattern\", \"languages\": [\"python\"], \"pattern\": \"$$price = $VAL\"}]\n        expected = [\n            {\n                \"captures\": {\"$VAL\": {\"ranges\": [{\"end\": {\"col\": 13, \"line\": 1}, \"start\": {\"col\": 10, \"line\": 1}}], \"text\": \"100\"}},\n                \"end\": {\"col\": 13, \"line\": 1},\n                \"file\": \"test.py\",\n                \"language\": \"python\",\n                \"match\": \"$price = 100\",\n                \"rule_id\": \"dollar_var\",\n                \"start\": {\"col\": 1, \"line\": 1},\n            }\n        ]\n    \n        proj = create_test_files(tmp_path, input_files)\n        rules_file = write_rules(tmp_path, rules)\n        result = run_search(entrypoint_argv, proj, rules_file)\n>       assert_matches(result.stdout, expected, actual_returncode=result.returncode)\n\n.evaluation_tests/test_checkpoint_3.py:599: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n.evaluation_tests/code_search_test_helpers.py:185: in assert_matches_with_end\n    assert_jsonl_matches(\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nactual_stdout = ''\nexpected = [{'captures': {'$VAL': {'ranges': [{'end': {...}, 'start': {...}}], 'text': '100'}}, 'end': {'col': 13, 'line': 1}, 'file': 'test.py', 'language': 'python', ...}]\nsorter = <function sort_matches_with_end at 0x71fbe11f1260>, exit_code = 0\nactual_returncode = 0\n\n    def assert_jsonl_matches(\n        actual_stdout: str,\n        expected: JsonList,\n        *,\n        sorter: Sorter,\n        exit_code: int = 0,\n        actual_returncode: int = 0,\n    ) -> None:\n        \"\"\"Assert that JSONL output equals expected after sorting.\"\"\"\n        assert actual_returncode == exit_code, (\n            f\"Expected exit code {exit_code}, got {actual_returncode}\"\n        )\n        actual = parse_jsonl(actual_stdout)\n>       assert sorter(actual) == sorter(expected)\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nE       AssertionError\n\n.evaluation_tests/code_search_test_helpers.py:142: AssertionError"
+      },
+      "teardown": {
+        "duration": 0.00026752900157589465,
+        "outcome": "passed"
+      }
+    },
+    {
+      "nodeid": ".evaluation_tests/test_checkpoint_3.py::test_multiple_files_sorted",
+      "lineno": 601,
+      "outcome": "failed",
+      "keywords": [
+        "test_multiple_files_sorted",
+        "functionality",
+        "pytestmark",
+        "test_checkpoint_3.py",
+        ".evaluation_tests",
+        ""
+      ],
+      "setup": {
+        "duration": 0.000617969999439083,
+        "outcome": "passed"
+      },
+      "call": {
+        "duration": 0.0982129129988607,
+        "outcome": "failed",
+        "crash": {
+          "path": "/workspace/.evaluation_tests/code_search_test_helpers.py",
+          "lineno": 142,
+          "message": "AssertionError"
+        },
+        "traceback": [
+          {
+            "path": ".evaluation_tests/test_checkpoint_3.py",
+            "lineno": 665,
+            "message": ""
+          },
+          {
+            "path": ".evaluation_tests/code_search_test_helpers.py",
+            "lineno": 185,
+            "message": "in assert_matches_with_end"
+          },
+          {
+            "path": ".evaluation_tests/code_search_test_helpers.py",
+            "lineno": 142,
+            "message": "AssertionError"
+          }
+        ],
+        "longrepr": "entrypoint_argv = ['uv', 'run', 'code_search.py']\ntmp_path = PosixPath('/tmp/pytest-of-agent/pytest-0/test_multiple_files_sorted0')\n\n    @pytest.mark.functionality\n    def test_multiple_files_sorted(entrypoint_argv, tmp_path):\n        \"\"\"Functionality: Matches across multiple files sorted correctly.\"\"\"\n        input_files = {\n            \"proj/a.js\": \"let a = 1;\\nlet b = 2;\",\n            \"proj/m.js\": \"let m = 5;\",\n            \"proj/z.js\": \"let z = 3;\",\n        }\n        rules = [{\"id\": \"var_decl\", \"kind\": \"pattern\", \"languages\": [\"javascript\"], \"pattern\": \"let $VAR = $VAL;\"}]\n        expected = [\n            {\n                \"captures\": {\n                    \"$VAL\": {\"ranges\": [{\"end\": {\"col\": 10, \"line\": 1}, \"start\": {\"col\": 9, \"line\": 1}}], \"text\": \"1\"},\n                    \"$VAR\": {\"ranges\": [{\"end\": {\"col\": 6, \"line\": 1}, \"start\": {\"col\": 5, \"line\": 1}}], \"text\": \"a\"},\n                },\n                \"end\": {\"col\": 11, \"line\": 1},\n                \"file\": \"a.js\",\n                \"language\": \"javascript\",\n                \"match\": \"let a = 1;\",\n                \"rule_id\": \"var_decl\",\n                \"start\": {\"col\": 1, \"line\": 1},\n            },\n            {\n                \"captures\": {\n                    \"$VAL\": {\"ranges\": [{\"end\": {\"col\": 10, \"line\": 2}, \"start\": {\"col\": 9, \"line\": 2}}], \"text\": \"2\"},\n                    \"$VAR\": {\"ranges\": [{\"end\": {\"col\": 6, \"line\": 2}, \"start\": {\"col\": 5, \"line\": 2}}], \"text\": \"b\"},\n                },\n                \"end\": {\"col\": 11, \"line\": 2},\n                \"file\": \"a.js\",\n                \"language\": \"javascript\",\n                \"match\": \"let b = 2;\",\n                \"rule_id\": \"var_decl\",\n                \"start\": {\"col\": 1, \"line\": 2},\n            },\n            {\n                \"captures\": {\n                    \"$VAL\": {\"ranges\": [{\"end\": {\"col\": 10, \"line\": 1}, \"start\": {\"col\": 9, \"line\": 1}}], \"text\": \"5\"},\n                    \"$VAR\": {\"ranges\": [{\"end\": {\"col\": 6, \"line\": 1}, \"start\": {\"col\": 5, \"line\": 1}}], \"text\": \"m\"},\n                },\n                \"end\": {\"col\": 11, \"line\": 1},\n                \"file\": \"m.js\",\n                \"language\": \"javascript\",\n                \"match\": \"let m = 5;\",\n                \"rule_id\": \"var_decl\",\n                \"start\": {\"col\": 1, \"line\": 1},\n            },\n            {\n                \"captures\": {\n                    \"$VAL\": {\"ranges\": [{\"end\": {\"col\": 10, \"line\": 1}, \"start\": {\"col\": 9, \"line\": 1}}], \"text\": \"3\"},\n                    \"$VAR\": {\"ranges\": [{\"end\": {\"col\": 6, \"line\": 1}, \"start\": {\"col\": 5, \"line\": 1}}], \"text\": \"z\"},\n                },\n                \"end\": {\"col\": 11, \"line\": 1},\n                \"file\": \"z.js\",\n                \"language\": \"javascript\",\n                \"match\": \"let z = 3;\",\n                \"rule_id\": \"var_decl\",\n                \"start\": {\"col\": 1, \"line\": 1},\n            },\n        ]\n    \n        proj = create_test_files(tmp_path, input_files)\n        rules_file = write_rules(tmp_path, rules)\n        result = run_search(entrypoint_argv, proj, rules_file)\n>       assert_matches(result.stdout, expected, actual_returncode=result.returncode)\n\n.evaluation_tests/test_checkpoint_3.py:665: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n.evaluation_tests/code_search_test_helpers.py:185: in assert_matches_with_end\n    assert_jsonl_matches(\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nactual_stdout = '{\"rule_id\":\"var_decl\",\"file\":\"a.js\",\"language\":\"javascript\",\"start\":{\"line\":1,\"col\":1},\"end\":{\"line\":1,\"col\":11},\"mat...,\"end\":{\"line\":1,\"col\":10}}]},\"$VAR\":{\"text\":\"z\",\"ranges\":[{\"start\":{\"line\":1,\"col\":5},\"end\":{\"line\":1,\"col\":6}}]}}}\\n'\nexpected = [{'captures': {'$VAL': {'ranges': [{'end': {...}, 'start': {...}}], 'text': '1'}, '$VAR': {'ranges': [{'end': {...}, '... {...}, 'start': {...}}], 'text': 'z'}}, 'end': {'col': 11, 'line': 1}, 'file': 'z.js', 'language': 'javascript', ...}]\nsorter = <function sort_matches_with_end at 0x71fbe11f1260>, exit_code = 0\nactual_returncode = 0\n\n    def assert_jsonl_matches(\n        actual_stdout: str,\n        expected: JsonList,\n        *,\n        sorter: Sorter,\n        exit_code: int = 0,\n        actual_returncode: int = 0,\n    ) -> None:\n        \"\"\"Assert that JSONL output equals expected after sorting.\"\"\"\n        assert actual_returncode == exit_code, (\n            f\"Expected exit code {exit_code}, got {actual_returncode}\"\n        )\n        actual = parse_jsonl(actual_stdout)\n>       assert sorter(actual) == sorter(expected)\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nE       AssertionError\n\n.evaluation_tests/code_search_test_helpers.py:142: AssertionError"
+      },
+      "teardown": {
+        "duration": 0.00013387299986789003,
+        "outcome": "passed"
+      }
+    },
+    {
+      "nodeid": ".evaluation_tests/test_checkpoint_3.py::test_same_start_ordering",
+      "lineno": 667,
+      "outcome": "passed",
+      "keywords": [
+        "test_same_start_ordering",
+        "functionality",
+        "pytestmark",
+        "test_checkpoint_3.py",
+        ".evaluation_tests",
+        ""
+      ],
+      "setup": {
+        "duration": 0.0008158810014720075,
+        "outcome": "passed"
+      },
+      "call": {
+        "duration": 0.09568161100105499,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00010848599777091295,
+        "outcome": "passed"
+      }
+    },
+    {
+      "nodeid": ".evaluation_tests/test_checkpoint_3.py::test_captures_key_order",
+      "lineno": 697,
+      "outcome": "passed",
+      "keywords": [
+        "test_captures_key_order",
+        "test_checkpoint_3.py",
+        ".evaluation_tests",
+        ""
+      ],
+      "setup": {
+        "duration": 0.0006236570006876718,
+        "outcome": "passed"
+      },
+      "call": {
+        "duration": 0.09567116499965778,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00011261400140938349,
+        "outcome": "passed"
+      }
+    },
+    {
+      "nodeid": ".evaluation_tests/test_checkpoint_3.py::test_default_languages_include_cpp",
+      "lineno": 713,
+      "outcome": "passed",
+      "keywords": [
+        "test_default_languages_include_cpp",
+        "functionality",
+        "pytestmark",
+        "test_checkpoint_3.py",
+        ".evaluation_tests",
+        ""
+      ],
+      "setup": {
+        "duration": 0.0007432210004481021,
+        "outcome": "passed"
+      },
+      "call": {
+        "duration": 0.09546257599868113,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00010823499906109646,
+        "outcome": "passed"
+      }
+    },
+    {
+      "nodeid": ".evaluation_tests/test_checkpoint_3.py::test_python_list_comprehension",
+      "lineno": 754,
+      "outcome": "passed",
+      "keywords": [
+        "test_python_list_comprehension",
+        "functionality",
+        "pytestmark",
+        "test_checkpoint_3.py",
+        ".evaluation_tests",
+        ""
+      ],
+      "setup": {
+        "duration": 0.0007089969985827338,
+        "outcome": "passed"
+      },
+      "call": {
+        "duration": 0.09638102499957313,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00011530800111358985,
+        "outcome": "passed"
+      }
+    },
+    {
+      "nodeid": ".evaluation_tests/test_checkpoint_3.py::test_sorting_same_start_different_end",
+      "lineno": 796,
+      "outcome": "passed",
+      "keywords": [
+        "test_sorting_same_start_different_end",
+        "functionality",
+        "pytestmark",
+        "test_checkpoint_3.py",
+        ".evaluation_tests",
+        ""
+      ],
+      "setup": {
+        "duration": 0.0007020259981800336,
+        "outcome": "passed"
+      },
+      "call": {
+        "duration": 0.0951954649972322,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00010687999747460708,
+        "outcome": "passed"
+      }
+    },
+    {
+      "nodeid": ".evaluation_tests/test_checkpoint_3.py::test_special_chars_in_captures",
+      "lineno": 827,
+      "outcome": "failed",
+      "keywords": [
+        "test_special_chars_in_captures",
+        "functionality",
+        "pytestmark",
+        "test_checkpoint_3.py",
+        ".evaluation_tests",
+        ""
+      ],
+      "setup": {
+        "duration": 0.0006790980005462188,
+        "outcome": "passed"
+      },
+      "call": {
+        "duration": 0.09506598599909921,
+        "outcome": "failed",
+        "crash": {
+          "path": "/workspace/.evaluation_tests/code_search_test_helpers.py",
+          "lineno": 142,
+          "message": "AssertionError"
+        },
+        "traceback": [
+          {
+            "path": ".evaluation_tests/test_checkpoint_3.py",
+            "lineno": 866,
+            "message": ""
+          },
+          {
+            "path": ".evaluation_tests/code_search_test_helpers.py",
+            "lineno": 185,
+            "message": "in assert_matches_with_end"
+          },
+          {
+            "path": ".evaluation_tests/code_search_test_helpers.py",
+            "lineno": 142,
+            "message": "AssertionError"
+          }
+        ],
+        "longrepr": "entrypoint_argv = ['uv', 'run', 'code_search.py']\ntmp_path = PosixPath('/tmp/pytest-of-agent/pytest-0/test_special_chars_in_captures0')\n\n    @pytest.mark.functionality\n    def test_special_chars_in_captures(entrypoint_argv, tmp_path):\n        \"\"\"Functionality: Special characters in captured text.\"\"\"\n        input_files = {\"proj/strings.js\": \"const str = \\\"hello\\\\nworld\\\";\\nconst str = 'it\\\\'s working';\\nconst str = `line1\\nline2`;\"}\n        rules = [{\"id\": \"string_lit\", \"kind\": \"pattern\", \"languages\": [\"javascript\"], \"pattern\": \"const str = $VAL;\"}]\n        expected = [\n            {\n                \"captures\": {\"$VAL\": {\"ranges\": [{\"end\": {\"col\": 27, \"line\": 1}, \"start\": {\"col\": 13, \"line\": 1}}], \"text\": '\"hello\\\\nworld\"'}},\n                \"end\": {\"col\": 28, \"line\": 1},\n                \"file\": \"strings.js\",\n                \"language\": \"javascript\",\n                \"match\": 'const str = \"hello\\\\nworld\";',\n                \"rule_id\": \"string_lit\",\n                \"start\": {\"col\": 1, \"line\": 1},\n            },\n            {\n                \"captures\": {\"$VAL\": {\"ranges\": [{\"end\": {\"col\": 28, \"line\": 2}, \"start\": {\"col\": 13, \"line\": 2}}], \"text\": \"'it\\\\'s working'\"}},\n                \"end\": {\"col\": 29, \"line\": 2},\n                \"file\": \"strings.js\",\n                \"language\": \"javascript\",\n                \"match\": \"const str = 'it\\\\'s working';\",\n                \"rule_id\": \"string_lit\",\n                \"start\": {\"col\": 1, \"line\": 2},\n            },\n            {\n                \"captures\": {\"$VAL\": {\"ranges\": [{\"end\": {\"col\": 7, \"line\": 4}, \"start\": {\"col\": 13, \"line\": 3}}], \"text\": \"`line1\\nline2`\"}},\n                \"end\": {\"col\": 8, \"line\": 4},\n                \"file\": \"strings.js\",\n                \"language\": \"javascript\",\n                \"match\": \"const str = `line1\\nline2`;\",\n                \"rule_id\": \"string_lit\",\n                \"start\": {\"col\": 1, \"line\": 3},\n            },\n        ]\n    \n        proj = create_test_files(tmp_path, input_files)\n        rules_file = write_rules(tmp_path, rules)\n        result = run_search(entrypoint_argv, proj, rules_file)\n>       assert_matches(result.stdout, expected, actual_returncode=result.returncode)\n\n.evaluation_tests/test_checkpoint_3.py:866: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n.evaluation_tests/code_search_test_helpers.py:185: in assert_matches_with_end\n    assert_jsonl_matches(\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nactual_stdout = '{\"rule_id\":\"string_lit\",\"file\":\"strings.js\",\"language\":\"javascript\",\"start\":{\"line\":1,\"col\":1},\"end\":{\"line\":1,\"col\":...;\",\"captures\":{\"$VAL\":{\"text\":\"`line1\\\\nline2`\",\"ranges\":[{\"start\":{\"line\":3,\"col\":13},\"end\":{\"line\":4,\"col\":7}}]}}}\\n'\nexpected = [{'captures': {'$VAL': {'ranges': [{'end': {...}, 'start': {...}}], 'text': '\"hello\\\\nworld\"'}}, 'end': {'col': 28, 'l......}}], 'text': '`line1\\nline2`'}}, 'end': {'col': 8, 'line': 4}, 'file': 'strings.js', 'language': 'javascript', ...}]\nsorter = <function sort_matches_with_end at 0x71fbe11f1260>, exit_code = 0\nactual_returncode = 0\n\n    def assert_jsonl_matches(\n        actual_stdout: str,\n        expected: JsonList,\n        *,\n        sorter: Sorter,\n        exit_code: int = 0,\n        actual_returncode: int = 0,\n    ) -> None:\n        \"\"\"Assert that JSONL output equals expected after sorting.\"\"\"\n        assert actual_returncode == exit_code, (\n            f\"Expected exit code {exit_code}, got {actual_returncode}\"\n        )\n        actual = parse_jsonl(actual_stdout)\n>       assert sorter(actual) == sorter(expected)\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nE       AssertionError\n\n.evaluation_tests/code_search_test_helpers.py:142: AssertionError"
+      },
+      "teardown": {
+        "duration": 0.00013038100223639049,
+        "outcome": "passed"
+      }
+    },
+    {
+      "nodeid": ".evaluation_tests/test_checkpoint_3.py::test_triple_metavar_repetition",
+      "lineno": 868,
+      "outcome": "passed",
+      "keywords": [
+        "test_triple_metavar_repetition",
+        "functionality",
+        "pytestmark",
+        "test_checkpoint_3.py",
+        ".evaluation_tests",
+        ""
+      ],
+      "setup": {
+        "duration": 0.0009026379993883893,
+        "outcome": "passed"
+      },
+      "call": {
+        "duration": 0.09486642499905429,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00011689299935824238,
+        "outcome": "passed"
+      }
+    },
+    {
+      "nodeid": ".evaluation_tests/test_checkpoint_3.py::test_unicode_in_captures",
+      "lineno": 918,
+      "outcome": "passed",
+      "keywords": [
+        "test_unicode_in_captures",
+        "functionality",
+        "pytestmark",
+        "test_checkpoint_3.py",
+        ".evaluation_tests",
+        ""
+      ],
+      "setup": {
+        "duration": 0.0006600479973712936,
+        "outcome": "passed"
+      },
+      "call": {
+        "duration": 0.09331615300106932,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.0001862050012277905,
+        "outcome": "passed"
+      }
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "representation_scope": "parent_record_of_independently_located_original_action_errors",
+  "scope": "checkpoint3 retained candidate; no model/grader replay",
+  "observations": [
+    {"artifact": "objects/checkpoint_3/agent_action_v3/c2fa0d51290355bfa37233b3d38cc24e.json", "error": {"code": "arguments_invalid", "detail": "arguments are not one JSON document"}},
+    {"artifact": "objects/checkpoint_3/agent_action_v3/c3ad3754453e57308f012a864212f0c0.json", "error": {"code": "arguments_invalid", "detail": "arguments are not one JSON document"}}
+  ],
+  "limits": "15 broker commands exited0. This does not mean every agent action was error-free; neither does it establish these two rejected actions caused the seven grader failures. Original arguments/errors remain in the linked registered-object files."
+}

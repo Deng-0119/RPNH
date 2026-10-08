@@ -1,0 +1,122 @@
+FROM ghcr.io/astral-sh/uv:python3.12-trixie-slim
+
+# --- Base setup -------------------------------------------------------------
+ENV DEBIAN_FRONTEND=noninteractive
+ENV HOME=/tmp/agent_home
+
+RUN apt-get update \
+    && apt-get upgrade -y \
+    && apt-get install -y --no-install-recommends build-essential \
+    && apt-get install -y --no-install-recommends \
+        bzip2 \
+        tar \
+        gzip \
+        zip \
+        unzip \
+        curl \
+        ca-certificates \
+        gnupg \
+        default-jre-headless \
+        netcat-openbsd \
+        protobuf-compiler \
+        procps \
+        git \
+        graphviz \
+        rabbitmq-server \
+        redis-server \
+        docker-cli \
+    && apt-get install -y --no-install-recommends \
+        libasound2 \
+        libatk-bridge2.0-0 \
+        libatk1.0-0 \
+        libcairo2 \
+        libcups2 \
+        libdbus-1-3 \
+        libdrm2 \
+        libgbm1 \
+        libglib2.0-0 \
+        libgtk-3-0 \
+        libnspr4 \
+        libnss3 \
+        libpango-1.0-0 \
+        libx11-6 \
+        libx11-xcb1 \
+        libxcb1 \
+        libxcomposite1 \
+        libxdamage1 \
+        libxext6 \
+        libxfixes3 \
+        libxkbcommon0 \
+        libxrandr2 \
+        libxshmfence1 \
+        libxss1 \
+        libxtst6 \
+        fonts-liberation \
+        xdg-utils \
+    && (apt-get install -y --no-install-recommends docker-compose-plugin \
+        || apt-get install -y --no-install-recommends docker-compose-v2 \
+        || apt-get install -y --no-install-recommends docker-compose) \
+    && mkdir -p /usr/local/lib/docker/cli-plugins /usr/lib/docker/cli-plugins \
+    && if [ -x /usr/bin/docker-compose ]; then \
+        ln -sf /usr/bin/docker-compose /usr/local/lib/docker/cli-plugins/docker-compose; \
+        ln -sf /usr/bin/docker-compose /usr/lib/docker/cli-plugins/docker-compose; \
+    fi \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install MinIO server binary (S3-compatible object storage for testing)
+RUN curl -sSL https://dl.min.io/server/minio/release/linux-amd64/minio \
+    -o /usr/local/bin/minio && chmod +x /usr/local/bin/minio
+
+# Install Node via nvm and make it the default
+ENV NVM_DIR=/usr/local/nvm
+ENV NODE_VERSION=22.21.1
+
+SHELL ["/bin/bash", "-o", "pipefail", "-lc"]
+# Install Node via nvm and make it the default
+RUN mkdir -p "$NVM_DIR" \
+    && curl -fsSL --retry 3 --retry-all-errors https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+
+RUN . "$NVM_DIR/nvm.sh" \
+    && nvm install "$NODE_VERSION" \
+    && nvm alias default "$NODE_VERSION" \
+    && nvm use $NODE_VERSION
+
+RUN . "$NVM_DIR/nvm.sh" \
+  && nvm use $NODE_VERSION \
+  && NODE_PATH="$(nvm which node)" \
+  && NODE_BIN_DIR="$(dirname "$NODE_PATH")" \
+  && ln -s "$NODE_BIN_DIR/node" /usr/local/bin/node \
+  && ln -s "$NODE_BIN_DIR/npm" /usr/local/bin/npm \
+  && ln -s "$NODE_BIN_DIR/npx" /usr/local/bin/npx
+
+
+# Install Rust
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+ENV PATH="/tmp/agent_home/.cargo/bin:${PATH}"
+
+
+    ENV UV_CACHE_DIR=/tmp/uv-cache
+
+    ENV PIP_CACHE_DIR=/tmp/pip-cache-dir
+
+    ENV PIP_CONFIG_FILE=/tmp/pip-conf
+
+
+# Create non-root user and workspace.
+#
+# Containers run as the uid:gid of the host process driving them (see
+# resolve_host_user) so that bind-mounted directories stay writable on both
+# sides. That uid is unknown at build time and is usually not `agent`, so
+# everything the container writes to -- $HOME above all -- is left writable by
+# any uid rather than only by the baked-in `agent` user.
+RUN groupadd -g 1000 agent && \
+    useradd -m -u 1000 -g 1000 -d "$HOME" -s /bin/bash agent && \
+    (getent group docker >/dev/null || groupadd docker) && \
+    usermod -aG docker agent && \
+    mkdir -p /workspace && \
+    chown -R agent:agent "$HOME" /workspace && \
+    chmod -R a+rwX "$HOME" /workspace
+ENV CARGO_HOME=$HOME/.cargo
+ENV RUSTUP_HOME=$HOME/.rustup
+
+LABEL io.slop-code.base-image-hash="3818eb2fbb9b"

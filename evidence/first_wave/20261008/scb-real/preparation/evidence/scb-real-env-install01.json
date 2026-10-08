@@ -1,0 +1,15 @@
+{
+  "command": [
+    "/home/deng123/.local/bin/uv",
+    "pip",
+    "install",
+    "--python",
+    "/home/deng123/RPNH/task-first-wave-examples-20261008/upstream-venv/bin/python",
+    "--no-deps",
+    "/home/deng123/RPNH/task-erp-first-wave-20261008/work/core-dist/rpnh_harness-0.1.0rc2-py3-none-any.whl",
+    "/home/deng123/RPNH/task-first-wave-examples-20261008/work/native-site-wheels02/rpnh_slopcodebench-0.1.0-py3-none-any.whl"
+  ],
+  "exit_code": 0,
+  "elapsed_seconds": 0.21508550643920898,
+  "scope": "exactacceptedcorewheel andfinal11SCBruntimepayloads in isolated lockedupstreamenv; no model calls"
+}

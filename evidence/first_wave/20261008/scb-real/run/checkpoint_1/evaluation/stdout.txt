@@ -1,0 +1,31 @@
+
+
+============================= test session starts ==============================
+platform linux -- Python 3.12.15, pytest-9.1.1, pluggy-1.6.0 -- /tmp/uv-cache/archive-v0/69nL5jlJA3aPXC8o/bin/python
+cachedir: .pytest_cache
+metadata: {'Python': '3.12.15', 'Platform': 'Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.41', 'Packages': {'pytest': '9.1.1', 'pluggy': '1.6.0'}, 'Plugins': {'json-report': '1.5.0', 'metadata': '3.1.1', 'json-ctrf': '0.6.1', 'timeout': '2.4.0'}}
+rootdir: /workspace
+configfile: pytest.ini
+plugins: json-report-1.5.0, metadata-3.1.1, json-ctrf-0.6.1, timeout-2.4.0
+timeout: 10.0s
+timeout method: signal
+timeout func_only: False
+collecting ... collected 13 items
+
+.evaluation_tests/test_checkpoint_1.py::test_basic PASSED                [  7%]
+.evaluation_tests/test_checkpoint_1.py::test_single_match PASSED         [ 15%]
+.evaluation_tests/test_checkpoint_1.py::test_spec_example PASSED         [ 23%]
+.evaluation_tests/test_checkpoint_1.py::test_output_order_and_format PASSED [ 30%]
+.evaluation_tests/test_checkpoint_1.py::test_no_matches_outputs_nothing PASSED [ 38%]
+.evaluation_tests/test_checkpoint_1.py::test_ignore_non_py_files PASSED  [ 46%]
+.evaluation_tests/test_checkpoint_1.py::test_skip_undecodable_file PASSED [ 53%]
+.evaluation_tests/test_checkpoint_1.py::test_undecodable_file_before_decodable_still_scans PASSED [ 61%]
+.evaluation_tests/test_checkpoint_1.py::test_encoding_option_reads_non_utf8 PASSED [ 69%]
+.evaluation_tests/test_checkpoint_1.py::test_case_insensitive_and_language PASSED [ 76%]
+.evaluation_tests/test_checkpoint_1.py::test_multi_file_ordering PASSED  [ 84%]
+.evaluation_tests/test_checkpoint_1.py::test_regex_flag_variations PASSED [ 92%]
+.evaluation_tests/test_checkpoint_1.py::test_unicode_and_ties PASSED     [100%]
+
+--------------------------------- JSON report ----------------------------------
+report saved to: .scbench/pytest-report.json
+============================== 13 passed in 1.38s ==============================

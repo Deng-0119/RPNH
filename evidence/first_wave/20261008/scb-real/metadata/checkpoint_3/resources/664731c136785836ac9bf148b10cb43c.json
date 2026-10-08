@@ -1,0 +1,79 @@
+{
+  "branch_id": "main",
+  "content_schema_authority_ref": null,
+  "content_schema_ref": null,
+  "descriptors": {
+    "content_role": "optional_agent_prompt"
+  },
+  "extensions": {},
+  "lifetime_ref": {
+    "entity_type": "bootstrap_command/v1",
+    "logical_id": "bootstrap_command:daa1ad12d4da4e18bce04047b64b296d",
+    "version_id": "bootstrap_command_version:d149d947ba9146478a3f2e72e2eaadc8"
+  },
+  "media_type": "application/json",
+  "net_ref": null,
+  "origin": {
+    "kind": "private_system",
+    "primary_ref": {
+      "entity_type": "bootstrap_command/v1",
+      "logical_id": "bootstrap_command:daa1ad12d4da4e18bce04047b64b296d",
+      "version_id": "bootstrap_command_version:d149d947ba9146478a3f2e72e2eaadc8"
+    },
+    "secondary_ref": {
+      "entity_type": "bootstrap_command/v1",
+      "logical_id": "bootstrap_command:daa1ad12d4da4e18bce04047b64b296d",
+      "version_id": "bootstrap_command_version:d149d947ba9146478a3f2e72e2eaadc8"
+    }
+  },
+  "origin_kind": "private_system",
+  "producer_ref": {
+    "entity_type": "bootstrap_command/v1",
+    "logical_id": "bootstrap_command:daa1ad12d4da4e18bce04047b64b296d",
+    "version_id": "bootstrap_command_version:d149d947ba9146478a3f2e72e2eaadc8"
+  },
+  "reference_provenance": {
+    "contributor_refs": [],
+    "derived_from_refs": [],
+    "intended_consumer": {
+      "boundary": "not_applicable",
+      "consumer_ref": null
+    },
+    "operation_binding_ref": null,
+    "producer_invocation_ref": null,
+    "publication": {
+      "content_schema_authority_ref": null,
+      "content_schema_ref": null,
+      "lifetime_ref": {
+        "entity_type": "bootstrap_command/v1",
+        "logical_id": "bootstrap_command:daa1ad12d4da4e18bce04047b64b296d",
+        "version_id": "bootstrap_command_version:d149d947ba9146478a3f2e72e2eaadc8"
+      },
+      "media_type": "application/json",
+      "origin_kind": "private_system",
+      "primary_ref": {
+        "entity_type": "bootstrap_command/v1",
+        "logical_id": "bootstrap_command:daa1ad12d4da4e18bce04047b64b296d",
+        "version_id": "bootstrap_command_version:d149d947ba9146478a3f2e72e2eaadc8"
+      },
+      "secondary_ref": {
+        "entity_type": "bootstrap_command/v1",
+        "logical_id": "bootstrap_command:daa1ad12d4da4e18bce04047b64b296d",
+        "version_id": "bootstrap_command_version:d149d947ba9146478a3f2e72e2eaadc8"
+      },
+      "size": 1503
+    },
+    "schema_version": "resource_reference_provenance/v1",
+    "supersedes_ref": null
+  },
+  "resource_id": "resource:a769d6da48555f8eb9159314abab78c3",
+  "resource_version_id": "resource_version:664731c136785836ac9bf148b10cb43c",
+  "round_ref": null,
+  "size": 1503,
+  "summary": "Optional agent HOST optional_agent_prompt",
+  "task_ref": {
+    "entity_type": "task/v1",
+    "logical_id": "task:0f49142731754ae1b4ddf66d4527792a",
+    "version_id": "task_version:ef8ad4c2819f4bcdb2379d684a491f26"
+  }
+}

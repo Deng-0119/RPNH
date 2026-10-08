@@ -1,0 +1,1 @@
+{"finish_reason":"tool_calls","protocol":"llm_response_envelope/v1","tool_calls":[{"arguments":"{\"command\":\"pwd && ls -la && find . -maxdepth 2 -type f -print | sed 's#^./##' | head -200\"}","id":"call_02","name":"session_command"}],"usage":{"cache_write_input_tokens":0,"cached_input_tokens":2816,"input_tokens":10607,"output_tokens":123,"reasoning_output_tokens":25}}

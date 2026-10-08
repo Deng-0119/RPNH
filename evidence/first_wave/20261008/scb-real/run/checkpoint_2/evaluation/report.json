@@ -1,0 +1,858 @@
+{
+  "created": 1791451975.056924,
+  "duration": 2.517209053039551,
+  "exitcode": 0,
+  "root": "/workspace",
+  "environment": {},
+  "summary": {
+    "passed": 25,
+    "total": 25,
+    "collected": 25
+  },
+  "collectors": [
+    {
+      "nodeid": "",
+      "outcome": "passed",
+      "result": [
+        {
+          "nodeid": ".evaluation_tests",
+          "type": "Dir"
+        }
+      ]
+    },
+    {
+      "nodeid": ".evaluation_tests/data/checkpoint_1/proj/A",
+      "outcome": "passed",
+      "result": []
+    },
+    {
+      "nodeid": ".evaluation_tests/data/checkpoint_1/proj",
+      "outcome": "passed",
+      "result": [
+        {
+          "nodeid": ".evaluation_tests/data/checkpoint_1/proj/A",
+          "type": "Dir"
+        }
+      ]
+    },
+    {
+      "nodeid": ".evaluation_tests/data/checkpoint_1",
+      "outcome": "passed",
+      "result": [
+        {
+          "nodeid": ".evaluation_tests/data/checkpoint_1/proj",
+          "type": "Dir"
+        }
+      ]
+    },
+    {
+      "nodeid": ".evaluation_tests/data/checkpoint_2/proj/src",
+      "outcome": "passed",
+      "result": []
+    },
+    {
+      "nodeid": ".evaluation_tests/data/checkpoint_2/proj",
+      "outcome": "passed",
+      "result": [
+        {
+          "nodeid": ".evaluation_tests/data/checkpoint_2/proj/src",
+          "type": "Dir"
+        }
+      ]
+    },
+    {
+      "nodeid": ".evaluation_tests/data/checkpoint_2",
+      "outcome": "passed",
+      "result": [
+        {
+          "nodeid": ".evaluation_tests/data/checkpoint_2/proj",
+          "type": "Dir"
+        }
+      ]
+    },
+    {
+      "nodeid": ".evaluation_tests/data",
+      "outcome": "passed",
+      "result": [
+        {
+          "nodeid": ".evaluation_tests/data/checkpoint_1",
+          "type": "Dir"
+        },
+        {
+          "nodeid": ".evaluation_tests/data/checkpoint_2",
+          "type": "Dir"
+        }
+      ]
+    },
+    {
+      "nodeid": ".evaluation_tests/test_checkpoint_1.py",
+      "outcome": "passed",
+      "result": [
+        {
+          "nodeid": ".evaluation_tests/test_checkpoint_1.py::test_basic",
+          "type": "Function",
+          "lineno": 31
+        },
+        {
+          "nodeid": ".evaluation_tests/test_checkpoint_1.py::test_single_match",
+          "type": "Function",
+          "lineno": 61
+        },
+        {
+          "nodeid": ".evaluation_tests/test_checkpoint_1.py::test_spec_example",
+          "type": "Function",
+          "lineno": 88
+        },
+        {
+          "nodeid": ".evaluation_tests/test_checkpoint_1.py::test_output_order_and_format",
+          "type": "Function",
+          "lineno": 124
+        },
+        {
+          "nodeid": ".evaluation_tests/test_checkpoint_1.py::test_no_matches_outputs_nothing",
+          "type": "Function",
+          "lineno": 195
+        },
+        {
+          "nodeid": ".evaluation_tests/test_checkpoint_1.py::test_ignore_non_py_files",
+          "type": "Function",
+          "lineno": 209
+        },
+        {
+          "nodeid": ".evaluation_tests/test_checkpoint_1.py::test_skip_undecodable_file",
+          "type": "Function",
+          "lineno": 237
+        },
+        {
+          "nodeid": ".evaluation_tests/test_checkpoint_1.py::test_undecodable_file_before_decodable_still_scans",
+          "type": "Function",
+          "lineno": 266
+        },
+        {
+          "nodeid": ".evaluation_tests/test_checkpoint_1.py::test_encoding_option_reads_non_utf8",
+          "type": "Function",
+          "lineno": 295
+        },
+        {
+          "nodeid": ".evaluation_tests/test_checkpoint_1.py::test_case_insensitive_and_language",
+          "type": "Function",
+          "lineno": 333
+        },
+        {
+          "nodeid": ".evaluation_tests/test_checkpoint_1.py::test_multi_file_ordering",
+          "type": "Function",
+          "lineno": 350
+        },
+        {
+          "nodeid": ".evaluation_tests/test_checkpoint_1.py::test_regex_flag_variations",
+          "type": "Function",
+          "lineno": 368
+        },
+        {
+          "nodeid": ".evaluation_tests/test_checkpoint_1.py::test_unicode_and_ties",
+          "type": "Function",
+          "lineno": 411
+        }
+      ]
+    },
+    {
+      "nodeid": ".evaluation_tests/test_checkpoint_2.py",
+      "outcome": "passed",
+      "result": [
+        {
+          "nodeid": ".evaluation_tests/test_checkpoint_2.py::test_multi_language",
+          "type": "Function",
+          "lineno": 30
+        },
+        {
+          "nodeid": ".evaluation_tests/test_checkpoint_2.py::test_cpp_only",
+          "type": "Function",
+          "lineno": 51
+        },
+        {
+          "nodeid": ".evaluation_tests/test_checkpoint_2.py::test_javascript_only",
+          "type": "Function",
+          "lineno": 65
+        },
+        {
+          "nodeid": ".evaluation_tests/test_checkpoint_2.py::test_no_language_filter",
+          "type": "Function",
+          "lineno": 79
+        },
+        {
+          "nodeid": ".evaluation_tests/test_checkpoint_2.py::test_python_regex",
+          "type": "Function",
+          "lineno": 91
+        },
+        {
+          "nodeid": ".evaluation_tests/test_checkpoint_2.py::test_all_cpp_header_extensions",
+          "type": "Function",
+          "lineno": 109
+        },
+        {
+          "nodeid": ".evaluation_tests/test_checkpoint_2.py::test_all_cpp_source_extensions",
+          "type": "Function",
+          "lineno": 130
+        },
+        {
+          "nodeid": ".evaluation_tests/test_checkpoint_2.py::test_all_js_extensions",
+          "type": "Function",
+          "lineno": 151
+        },
+        {
+          "nodeid": ".evaluation_tests/test_checkpoint_2.py::test_multiple_languages_no_filter",
+          "type": "Function",
+          "lineno": 172
+        },
+        {
+          "nodeid": ".evaluation_tests/test_checkpoint_2.py::test_language_filter_excludes_others",
+          "type": "Function",
+          "lineno": 193
+        },
+        {
+          "nodeid": ".evaluation_tests/test_checkpoint_2.py::test_unsupported_extensions_are_ignored",
+          "type": "Function",
+          "lineno": 212
+        },
+        {
+          "nodeid": ".evaluation_tests/test_checkpoint_2.py::test_multiple_language_array",
+          "type": "Function",
+          "lineno": 239
+        }
+      ]
+    },
+    {
+      "nodeid": ".evaluation_tests",
+      "outcome": "passed",
+      "result": [
+        {
+          "nodeid": ".evaluation_tests/data",
+          "type": "Dir"
+        },
+        {
+          "nodeid": ".evaluation_tests/test_checkpoint_1.py",
+          "type": "Module"
+        },
+        {
+          "nodeid": ".evaluation_tests/test_checkpoint_2.py",
+          "type": "Module"
+        }
+      ]
+    }
+  ],
+  "tests": [
+    {
+      "nodeid": ".evaluation_tests/test_checkpoint_1.py::test_basic",
+      "lineno": 31,
+      "outcome": "passed",
+      "keywords": [
+        "test_basic",
+        "core",
+        "pytestmark",
+        "test_checkpoint_1.py",
+        ".evaluation_tests",
+        ""
+      ],
+      "setup": {
+        "duration": 0.0025696310003695544,
+        "outcome": "passed"
+      },
+      "call": {
+        "duration": 0.18918160700013686,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00013318499986780807,
+        "outcome": "passed"
+      }
+    },
+    {
+      "nodeid": ".evaluation_tests/test_checkpoint_1.py::test_single_match",
+      "lineno": 61,
+      "outcome": "passed",
+      "keywords": [
+        "test_single_match",
+        "core",
+        "pytestmark",
+        "test_checkpoint_1.py",
+        ".evaluation_tests",
+        ""
+      ],
+      "setup": {
+        "duration": 0.0006111919992690673,
+        "outcome": "passed"
+      },
+      "call": {
+        "duration": 0.09364698799981852,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00013239199870440643,
+        "outcome": "passed"
+      }
+    },
+    {
+      "nodeid": ".evaluation_tests/test_checkpoint_1.py::test_spec_example",
+      "lineno": 88,
+      "outcome": "passed",
+      "keywords": [
+        "test_spec_example",
+        "core",
+        "pytestmark",
+        "test_checkpoint_1.py",
+        ".evaluation_tests",
+        ""
+      ],
+      "setup": {
+        "duration": 0.0005944370004726807,
+        "outcome": "passed"
+      },
+      "call": {
+        "duration": 0.09685537800032762,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00012156599950685631,
+        "outcome": "passed"
+      }
+    },
+    {
+      "nodeid": ".evaluation_tests/test_checkpoint_1.py::test_output_order_and_format",
+      "lineno": 124,
+      "outcome": "passed",
+      "keywords": [
+        "test_output_order_and_format",
+        "test_checkpoint_1.py",
+        ".evaluation_tests",
+        ""
+      ],
+      "setup": {
+        "duration": 0.0006002909995004302,
+        "outcome": "passed"
+      },
+      "call": {
+        "duration": 0.09811718499986455,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00010972799827868585,
+        "outcome": "passed"
+      }
+    },
+    {
+      "nodeid": ".evaluation_tests/test_checkpoint_1.py::test_no_matches_outputs_nothing",
+      "lineno": 195,
+      "outcome": "passed",
+      "keywords": [
+        "test_no_matches_outputs_nothing",
+        "test_checkpoint_1.py",
+        ".evaluation_tests",
+        ""
+      ],
+      "setup": {
+        "duration": 0.0007789480005158111,
+        "outcome": "passed"
+      },
+      "call": {
+        "duration": 0.09653141600028903,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00012013500054308679,
+        "outcome": "passed"
+      }
+    },
+    {
+      "nodeid": ".evaluation_tests/test_checkpoint_1.py::test_ignore_non_py_files",
+      "lineno": 209,
+      "outcome": "passed",
+      "keywords": [
+        "test_ignore_non_py_files",
+        "test_checkpoint_1.py",
+        ".evaluation_tests",
+        ""
+      ],
+      "setup": {
+        "duration": 0.0006176699989737244,
+        "outcome": "passed"
+      },
+      "call": {
+        "duration": 0.09547882399965602,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00011869799891428556,
+        "outcome": "passed"
+      }
+    },
+    {
+      "nodeid": ".evaluation_tests/test_checkpoint_1.py::test_skip_undecodable_file",
+      "lineno": 237,
+      "outcome": "passed",
+      "keywords": [
+        "test_skip_undecodable_file",
+        "error",
+        "pytestmark",
+        "test_checkpoint_1.py",
+        ".evaluation_tests",
+        ""
+      ],
+      "setup": {
+        "duration": 0.000604795999606722,
+        "outcome": "passed"
+      },
+      "call": {
+        "duration": 0.09409692099870881,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00012620500092452858,
+        "outcome": "passed"
+      }
+    },
+    {
+      "nodeid": ".evaluation_tests/test_checkpoint_1.py::test_undecodable_file_before_decodable_still_scans",
+      "lineno": 266,
+      "outcome": "passed",
+      "keywords": [
+        "test_undecodable_file_before_decodable_still_scans",
+        "error",
+        "pytestmark",
+        "test_checkpoint_1.py",
+        ".evaluation_tests",
+        ""
+      ],
+      "setup": {
+        "duration": 0.0006855139999970561,
+        "outcome": "passed"
+      },
+      "call": {
+        "duration": 0.09495231000073545,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00013398699957178906,
+        "outcome": "passed"
+      }
+    },
+    {
+      "nodeid": ".evaluation_tests/test_checkpoint_1.py::test_encoding_option_reads_non_utf8",
+      "lineno": 295,
+      "outcome": "passed",
+      "keywords": [
+        "test_encoding_option_reads_non_utf8",
+        "test_checkpoint_1.py",
+        ".evaluation_tests",
+        ""
+      ],
+      "setup": {
+        "duration": 0.0006622150012844941,
+        "outcome": "passed"
+      },
+      "call": {
+        "duration": 0.09703408800123725,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00011290099973848555,
+        "outcome": "passed"
+      }
+    },
+    {
+      "nodeid": ".evaluation_tests/test_checkpoint_1.py::test_case_insensitive_and_language",
+      "lineno": 333,
+      "outcome": "passed",
+      "keywords": [
+        "test_case_insensitive_and_language",
+        "functionality",
+        "pytestmark",
+        "test_checkpoint_1.py",
+        ".evaluation_tests",
+        ""
+      ],
+      "setup": {
+        "duration": 0.0006775779984309338,
+        "outcome": "passed"
+      },
+      "call": {
+        "duration": 0.09486908199869504,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00010602600013953634,
+        "outcome": "passed"
+      }
+    },
+    {
+      "nodeid": ".evaluation_tests/test_checkpoint_1.py::test_multi_file_ordering",
+      "lineno": 350,
+      "outcome": "passed",
+      "keywords": [
+        "test_multi_file_ordering",
+        "functionality",
+        "pytestmark",
+        "test_checkpoint_1.py",
+        ".evaluation_tests",
+        ""
+      ],
+      "setup": {
+        "duration": 0.0005455209993669996,
+        "outcome": "passed"
+      },
+      "call": {
+        "duration": 0.09584558000096877,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00011469599849078804,
+        "outcome": "passed"
+      }
+    },
+    {
+      "nodeid": ".evaluation_tests/test_checkpoint_1.py::test_regex_flag_variations",
+      "lineno": 368,
+      "outcome": "passed",
+      "keywords": [
+        "test_regex_flag_variations",
+        "functionality",
+        "pytestmark",
+        "test_checkpoint_1.py",
+        ".evaluation_tests",
+        ""
+      ],
+      "setup": {
+        "duration": 0.0006501539992314065,
+        "outcome": "passed"
+      },
+      "call": {
+        "duration": 0.09283313500054646,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00010947100054181647,
+        "outcome": "passed"
+      }
+    },
+    {
+      "nodeid": ".evaluation_tests/test_checkpoint_1.py::test_unicode_and_ties",
+      "lineno": 411,
+      "outcome": "passed",
+      "keywords": [
+        "test_unicode_and_ties",
+        "functionality",
+        "pytestmark",
+        "test_checkpoint_1.py",
+        ".evaluation_tests",
+        ""
+      ],
+      "setup": {
+        "duration": 0.0007347390001086751,
+        "outcome": "passed"
+      },
+      "call": {
+        "duration": 0.09266409199881309,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00011986400022578891,
+        "outcome": "passed"
+      }
+    },
+    {
+      "nodeid": ".evaluation_tests/test_checkpoint_2.py::test_multi_language",
+      "lineno": 30,
+      "outcome": "passed",
+      "keywords": [
+        "test_multi_language",
+        "core",
+        "pytestmark",
+        "test_checkpoint_2.py",
+        ".evaluation_tests",
+        ""
+      ],
+      "setup": {
+        "duration": 0.0006553780003741849,
+        "outcome": "passed"
+      },
+      "call": {
+        "duration": 0.09432181299962394,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00010773699978017248,
+        "outcome": "passed"
+      }
+    },
+    {
+      "nodeid": ".evaluation_tests/test_checkpoint_2.py::test_cpp_only",
+      "lineno": 51,
+      "outcome": "passed",
+      "keywords": [
+        "test_cpp_only",
+        "core",
+        "pytestmark",
+        "test_checkpoint_2.py",
+        ".evaluation_tests",
+        ""
+      ],
+      "setup": {
+        "duration": 0.0006179819993121782,
+        "outcome": "passed"
+      },
+      "call": {
+        "duration": 0.0954748929998459,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00010309899880667217,
+        "outcome": "passed"
+      }
+    },
+    {
+      "nodeid": ".evaluation_tests/test_checkpoint_2.py::test_javascript_only",
+      "lineno": 65,
+      "outcome": "passed",
+      "keywords": [
+        "test_javascript_only",
+        "core",
+        "pytestmark",
+        "test_checkpoint_2.py",
+        ".evaluation_tests",
+        ""
+      ],
+      "setup": {
+        "duration": 0.000675757999488269,
+        "outcome": "passed"
+      },
+      "call": {
+        "duration": 0.09347085700028401,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00011027399887098,
+        "outcome": "passed"
+      }
+    },
+    {
+      "nodeid": ".evaluation_tests/test_checkpoint_2.py::test_no_language_filter",
+      "lineno": 79,
+      "outcome": "passed",
+      "keywords": [
+        "test_no_language_filter",
+        "test_checkpoint_2.py",
+        ".evaluation_tests",
+        ""
+      ],
+      "setup": {
+        "duration": 0.0005742180001107045,
+        "outcome": "passed"
+      },
+      "call": {
+        "duration": 0.09370025499993062,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00012185100058559328,
+        "outcome": "passed"
+      }
+    },
+    {
+      "nodeid": ".evaluation_tests/test_checkpoint_2.py::test_python_regex",
+      "lineno": 91,
+      "outcome": "passed",
+      "keywords": [
+        "test_python_regex",
+        "test_checkpoint_2.py",
+        ".evaluation_tests",
+        ""
+      ],
+      "setup": {
+        "duration": 0.0006295270013652043,
+        "outcome": "passed"
+      },
+      "call": {
+        "duration": 0.09315963500012003,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00010759700126072858,
+        "outcome": "passed"
+      }
+    },
+    {
+      "nodeid": ".evaluation_tests/test_checkpoint_2.py::test_all_cpp_header_extensions",
+      "lineno": 109,
+      "outcome": "passed",
+      "keywords": [
+        "test_all_cpp_header_extensions",
+        "functionality",
+        "pytestmark",
+        "test_checkpoint_2.py",
+        ".evaluation_tests",
+        ""
+      ],
+      "setup": {
+        "duration": 0.0007670479990338208,
+        "outcome": "passed"
+      },
+      "call": {
+        "duration": 0.09733213499930571,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00010359000043536071,
+        "outcome": "passed"
+      }
+    },
+    {
+      "nodeid": ".evaluation_tests/test_checkpoint_2.py::test_all_cpp_source_extensions",
+      "lineno": 130,
+      "outcome": "passed",
+      "keywords": [
+        "test_all_cpp_source_extensions",
+        "functionality",
+        "pytestmark",
+        "test_checkpoint_2.py",
+        ".evaluation_tests",
+        ""
+      ],
+      "setup": {
+        "duration": 0.000697718000083114,
+        "outcome": "passed"
+      },
+      "call": {
+        "duration": 0.09486538700002711,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00010227199891232885,
+        "outcome": "passed"
+      }
+    },
+    {
+      "nodeid": ".evaluation_tests/test_checkpoint_2.py::test_all_js_extensions",
+      "lineno": 151,
+      "outcome": "passed",
+      "keywords": [
+        "test_all_js_extensions",
+        "functionality",
+        "pytestmark",
+        "test_checkpoint_2.py",
+        ".evaluation_tests",
+        ""
+      ],
+      "setup": {
+        "duration": 0.000552538000192726,
+        "outcome": "passed"
+      },
+      "call": {
+        "duration": 0.097313664999092,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00010148799992748536,
+        "outcome": "passed"
+      }
+    },
+    {
+      "nodeid": ".evaluation_tests/test_checkpoint_2.py::test_multiple_languages_no_filter",
+      "lineno": 172,
+      "outcome": "passed",
+      "keywords": [
+        "test_multiple_languages_no_filter",
+        "functionality",
+        "pytestmark",
+        "test_checkpoint_2.py",
+        ".evaluation_tests",
+        ""
+      ],
+      "setup": {
+        "duration": 0.0006032910005160375,
+        "outcome": "passed"
+      },
+      "call": {
+        "duration": 0.09247409300041909,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00010554399887041654,
+        "outcome": "passed"
+      }
+    },
+    {
+      "nodeid": ".evaluation_tests/test_checkpoint_2.py::test_language_filter_excludes_others",
+      "lineno": 193,
+      "outcome": "passed",
+      "keywords": [
+        "test_language_filter_excludes_others",
+        "error",
+        "pytestmark",
+        "test_checkpoint_2.py",
+        ".evaluation_tests",
+        ""
+      ],
+      "setup": {
+        "duration": 0.0007246160002978286,
+        "outcome": "passed"
+      },
+      "call": {
+        "duration": 0.09394963399972767,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 9.903699901769869e-05,
+        "outcome": "passed"
+      }
+    },
+    {
+      "nodeid": ".evaluation_tests/test_checkpoint_2.py::test_unsupported_extensions_are_ignored",
+      "lineno": 212,
+      "outcome": "passed",
+      "keywords": [
+        "test_unsupported_extensions_are_ignored",
+        "error",
+        "pytestmark",
+        "test_checkpoint_2.py",
+        ".evaluation_tests",
+        ""
+      ],
+      "setup": {
+        "duration": 0.0006639749990426935,
+        "outcome": "passed"
+      },
+      "call": {
+        "duration": 0.09400379899852851,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00011463000009825919,
+        "outcome": "passed"
+      }
+    },
+    {
+      "nodeid": ".evaluation_tests/test_checkpoint_2.py::test_multiple_language_array",
+      "lineno": 239,
+      "outcome": "passed",
+      "keywords": [
+        "test_multiple_language_array",
+        "functionality",
+        "pytestmark",
+        "test_checkpoint_2.py",
+        ".evaluation_tests",
+        ""
+      ],
+      "setup": {
+        "duration": 0.0005976390002615517,
+        "outcome": "passed"
+      },
+      "call": {
+        "duration": 0.09494032499969762,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00015310800154111348,
+        "outcome": "passed"
+      }
+    }
+  ]
+}

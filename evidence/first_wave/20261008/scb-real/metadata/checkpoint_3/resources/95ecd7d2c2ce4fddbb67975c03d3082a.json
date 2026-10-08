@@ -1,0 +1,125 @@
+{
+  "branch_id": "main",
+  "content_schema_authority_ref": {
+    "entity_type": "registry_type_catalog/v1",
+    "logical_id": "schema:021137c2c89b4cedbe664e243d7562cb",
+    "version_id": "resource_version:a32881630bce4c34a7d7fa3d6071bbb4"
+  },
+  "content_schema_ref": "runtime/llm_response_envelope/v1",
+  "descriptors": {
+    "content_role": "llm_response_envelope"
+  },
+  "extensions": {
+    "registry.llm_response/v1": {
+      "llm_invocation_attempt_ref": {
+        "entity_type": "llm_invocation_attempt/v1",
+        "logical_id": "llm_invocation_attempt:ed5f05dc0b3f51e5ae9ad6d06f370d7e",
+        "version_id": "llm_invocation_attempt_version:4585e811b4055b04872d853976da8ce2"
+      },
+      "llm_invocation_ref": {
+        "entity_type": "llm_invocation_spec/v1",
+        "logical_id": "llm_invocation:ea2ac12286464e44baae664382d8aa8f",
+        "version_id": "llm_invocation_version:e3d32263a4bb4c91b904e3fcd1c92499"
+      },
+      "model_condition": "gpt-5.6-terra"
+    }
+  },
+  "lifetime_ref": {
+    "entity_type": "operation_execution_lease/v1",
+    "logical_id": "operation_execution_lease:11795a8f33535c4aa7df662bdbc4e1dc",
+    "version_id": "operation_execution_lease_version:2433e0f842685be29e83b20e5b24aabc"
+  },
+  "media_type": "application/json",
+  "net_ref": {
+    "entity_type": "net_instance/v1",
+    "logical_id": "net_instance:ab038e0fb4b25f98991e30af54a124a3",
+    "version_id": "net_instance_version:4b4a2d6544c956edaf68ec8bbe766689"
+  },
+  "origin": {
+    "kind": "llm_response",
+    "primary_ref": {
+      "entity_type": "llm_invocation_attempt/v1",
+      "logical_id": "llm_invocation_attempt:ed5f05dc0b3f51e5ae9ad6d06f370d7e",
+      "version_id": "llm_invocation_attempt_version:4585e811b4055b04872d853976da8ce2"
+    },
+    "secondary_ref": {
+      "entity_type": "llm_invocation_spec/v1",
+      "logical_id": "llm_invocation:ea2ac12286464e44baae664382d8aa8f",
+      "version_id": "llm_invocation_version:e3d32263a4bb4c91b904e3fcd1c92499"
+    }
+  },
+  "origin_kind": "llm_response",
+  "producer_ref": {
+    "entity_type": "invocation/v1",
+    "logical_id": "invocation:2ad7842624e55db68f445363f03e0371",
+    "version_id": "invocation_version:258335f724a95215bb326e6f7ca469db"
+  },
+  "reference_provenance": {
+    "agent_loop_ref": {
+      "entity_type": "agent_loop/v1",
+      "logical_id": "agent_loop:3ef8d3c9b13b48d695ff7e9503291218",
+      "version_id": "agent_loop_version:233c2d1b5d795ff79365abfc543633e7"
+    },
+    "input_resource_refs": [
+      {
+        "entity_type": "resource_version/v1",
+        "logical_id": "resource:b6559a40bbd25842a80ae7c39ad4c2e3",
+        "version_id": "resource_version:97ad0ea742f25a93b591891f2366760f"
+      }
+    ],
+    "intended_consumer": {
+      "boundary": "not_applicable",
+      "consumer_ref": {
+        "entity_type": "agent_loop/v1",
+        "logical_id": "agent_loop:3ef8d3c9b13b48d695ff7e9503291218",
+        "version_id": "agent_loop_version:233c2d1b5d795ff79365abfc543633e7"
+      }
+    },
+    "operation_binding_ref": {
+      "entity_type": "operation_binding/v1",
+      "logical_id": "operation_binding:c172d420cb0d591cbdc6ed128652dee7",
+      "version_id": "operation_binding_version:d4099e184bc75de38d18170618f26ec9"
+    },
+    "publication": {
+      "content_schema_authority_ref": {
+        "entity_type": "registry_type_catalog/v1",
+        "logical_id": "schema:021137c2c89b4cedbe664e243d7562cb",
+        "version_id": "resource_version:a32881630bce4c34a7d7fa3d6071bbb4"
+      },
+      "content_schema_ref": "runtime/llm_response_envelope/v1",
+      "lifetime_ref": {
+        "entity_type": "operation_execution_lease/v1",
+        "logical_id": "operation_execution_lease:11795a8f33535c4aa7df662bdbc4e1dc",
+        "version_id": "operation_execution_lease_version:2433e0f842685be29e83b20e5b24aabc"
+      },
+      "media_type": "application/json",
+      "origin_kind": "llm_response",
+      "primary_ref": {
+        "entity_type": "llm_invocation_attempt/v1",
+        "logical_id": "llm_invocation_attempt:ed5f05dc0b3f51e5ae9ad6d06f370d7e",
+        "version_id": "llm_invocation_attempt_version:4585e811b4055b04872d853976da8ce2"
+      },
+      "secondary_ref": {
+        "entity_type": "llm_invocation_spec/v1",
+        "logical_id": "llm_invocation:ea2ac12286464e44baae664382d8aa8f",
+        "version_id": "llm_invocation_version:e3d32263a4bb4c91b904e3fcd1c92499"
+      },
+      "size": 1028
+    },
+    "schema_version": "resource_reference_provenance/v1"
+  },
+  "resource_id": "resource:61e005f3ad8347919880fb64adb6ad2a",
+  "resource_version_id": "resource_version:95ecd7d2c2ce4fddbb67975c03d3082a",
+  "round_ref": {
+    "entity_type": "task_round/v1",
+    "logical_id": "task_round:6cd0928a85874133881fef0b55a9e0c0",
+    "version_id": "task_round_version:7ca43379b941434ea29d7f2cd185572f"
+  },
+  "size": 1028,
+  "summary": "Optional canonical LLM envelope",
+  "task_ref": {
+    "entity_type": "task/v1",
+    "logical_id": "task:0f49142731754ae1b4ddf66d4527792a",
+    "version_id": "task_version:ef8ad4c2819f4bcdb2379d684a491f26"
+  }
+}

@@ -1,0 +1,79 @@
+{
+  "branch_id": "main",
+  "content_schema_authority_ref": null,
+  "content_schema_ref": null,
+  "descriptors": {
+    "content_role": "optional_agent_tool_catalog"
+  },
+  "extensions": {},
+  "lifetime_ref": {
+    "entity_type": "bootstrap_command/v1",
+    "logical_id": "bootstrap_command:ad331a0b964f4304a31578d8b00f9870",
+    "version_id": "bootstrap_command_version:c551d25e36174d5681e12f427c77337b"
+  },
+  "media_type": "application/json",
+  "net_ref": null,
+  "origin": {
+    "kind": "private_system",
+    "primary_ref": {
+      "entity_type": "bootstrap_command/v1",
+      "logical_id": "bootstrap_command:ad331a0b964f4304a31578d8b00f9870",
+      "version_id": "bootstrap_command_version:c551d25e36174d5681e12f427c77337b"
+    },
+    "secondary_ref": {
+      "entity_type": "bootstrap_command/v1",
+      "logical_id": "bootstrap_command:ad331a0b964f4304a31578d8b00f9870",
+      "version_id": "bootstrap_command_version:c551d25e36174d5681e12f427c77337b"
+    }
+  },
+  "origin_kind": "private_system",
+  "producer_ref": {
+    "entity_type": "bootstrap_command/v1",
+    "logical_id": "bootstrap_command:ad331a0b964f4304a31578d8b00f9870",
+    "version_id": "bootstrap_command_version:c551d25e36174d5681e12f427c77337b"
+  },
+  "reference_provenance": {
+    "contributor_refs": [],
+    "derived_from_refs": [],
+    "intended_consumer": {
+      "boundary": "not_applicable",
+      "consumer_ref": null
+    },
+    "operation_binding_ref": null,
+    "producer_invocation_ref": null,
+    "publication": {
+      "content_schema_authority_ref": null,
+      "content_schema_ref": null,
+      "lifetime_ref": {
+        "entity_type": "bootstrap_command/v1",
+        "logical_id": "bootstrap_command:ad331a0b964f4304a31578d8b00f9870",
+        "version_id": "bootstrap_command_version:c551d25e36174d5681e12f427c77337b"
+      },
+      "media_type": "application/json",
+      "origin_kind": "private_system",
+      "primary_ref": {
+        "entity_type": "bootstrap_command/v1",
+        "logical_id": "bootstrap_command:ad331a0b964f4304a31578d8b00f9870",
+        "version_id": "bootstrap_command_version:c551d25e36174d5681e12f427c77337b"
+      },
+      "secondary_ref": {
+        "entity_type": "bootstrap_command/v1",
+        "logical_id": "bootstrap_command:ad331a0b964f4304a31578d8b00f9870",
+        "version_id": "bootstrap_command_version:c551d25e36174d5681e12f427c77337b"
+      },
+      "size": 4025
+    },
+    "schema_version": "resource_reference_provenance/v1",
+    "supersedes_ref": null
+  },
+  "resource_id": "resource:3df2d98adbed52c4a79d77fc9010eda9",
+  "resource_version_id": "resource_version:8ab632f975e45494b1babfe5bd6da9fe",
+  "round_ref": null,
+  "size": 4025,
+  "summary": "Optional agent HOST optional_agent_tool_catalog",
+  "task_ref": {
+    "entity_type": "task/v1",
+    "logical_id": "task:4f37345b0f6845d9b8067601342741bb",
+    "version_id": "task_version:a59d03f1ad554db5912e3e6b7c35066e"
+  }
+}

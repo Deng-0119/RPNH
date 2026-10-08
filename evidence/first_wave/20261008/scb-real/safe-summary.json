@@ -1,0 +1,15 @@
+{
+  "bytes": 2967853,
+  "collection_errors": 0,
+  "distributed_content_unchanged": 475,
+  "excluded_reason_counts": {},
+  "files": 475,
+  "known_secret_residual_matches": 0,
+  "metadata_serializations": 117,
+  "original_byte_files": 358,
+  "originals_unchanged": true,
+  "privacy_review": "PENDING_PARENT_REVIEW",
+  "redacted_files": 0,
+  "redaction_spans": 0,
+  "status": "COMPLETE"
+}

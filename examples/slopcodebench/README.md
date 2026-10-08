@@ -9,8 +9,19 @@ synthetic tests, an installed owner/native-plugin/AF_UNIX command path, and
 complete/stop fixtures using the pinned original Docker Session and Snapshot.
 Each fixture uses a scripted local provider (3/2 submissions), with no real model
 calls or benchmark solution. The Docker image is a minimal Python fixture, not
-the general-purpose SCB base. **Real `code_search` model and original evaluator
-execution remain unrun.** No score, speedup or harness advantage is claimed.
+the general-purpose SCB base. Those fixtures retain their original finite scope.
+
+An authorized real development prefix on 2026-10-08 used the existing
+`codex/gpt-5.6-terra` route. Original evaluator results were **13/13, 25/25,
+40/47**, with 5, 5 and 14 real model calls. Checkpoint 3 has seven business test
+failures; infrastructure completed for all three. CLI exit 0 under ANY_CASE does
+not mean all tests passed. Each checkpoint had a 48-call cap and 7200-second
+owner wait. There was no replay or grader feedback to the solver. Solver network
+was none; build/evaluation used host networking and a same-version download
+adaptation. This remains an adapted development condition, not an official
+AgentRunner run or a speedup/harness-advantage measurement.
+[Results and original evidence](../../evidence/first_wave/20261008/scb-real/README_ZH.md)
+retain grader failure diagnostics, model/tool records and submitted source.
 Retained original failures and local acceptance evidence are under
 `../../evidence/first_wave/20261008/`; earlier records keep their original source
 identities and are not relabeled as runs on the integrated commit.
