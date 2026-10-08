@@ -124,10 +124,20 @@ def freeze_profile(path, destination, *, codex_executable=None) -> Path:
     if codex_executable is not None:
         argv = adapter_document.get("argv") if isinstance(adapter_document, dict) else None
         bridge_module = "cpn.llm_adapters.codex_subscription_bridge"
-        if (not isinstance(argv, list) or argv.count("{codex}") != 1
-                or argv.count("-m") != 1 or argv.index("-m") + 1 >= len(argv)
-                or argv[argv.index("-m") + 1] != bridge_module):
+        if not isinstance(argv, list) or argv.count("{codex}") != 1:
             raise ValueError("Codex override requires the subscription bridge and exactly one {codex} argv token")
+        module_entry = (argv.count("-m") == 1 and argv.index("-m") + 1 < len(argv)
+                        and argv[argv.index("-m") + 1] == bridge_module)
+        legacy_entry = (len(argv) >= 2 and argv[0] == "{python}"
+            and Path(argv[1]).name == "codex_subscription_bridge_outer_sandbox.py")
+        if not module_entry and not legacy_entry:
+            raise ValueError("Codex override requires a supported subscription bridge entry")
+        if legacy_entry:
+            # The existing local profile's historical script monkeypatches the
+            # bridge to disable its sandbox. Bind its unchanged model arguments
+            # to the installed supported module instead; never execute that
+            # script. Retain the original adapter bytes privately below.
+            argv = [argv[0], "-m", bridge_module, *argv[2:]]
         executable = Path(codex_executable).expanduser().resolve(strict=True)
         if not executable.is_file() or not os.access(executable, os.X_OK):
             raise ValueError("Codex override must be an existing executable file")

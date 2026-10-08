@@ -320,6 +320,27 @@ def test_freeze_codex_default_still_copies_original_bytes_only(tmp_path):
     assert not (frozen.parent / "original-adapter.json").exists()
 
 
+def test_existing_script_profile_binds_supported_module_without_changing_model_policy(tmp_path):
+    from rpnh_erp_bench.endpoint import is_codex_profile
+    selection, adapter, shim = _codex_profile(tmp_path)
+    document = json.loads(adapter.read_bytes())
+    legacy = tmp_path / "codex_subscription_bridge_outer_sandbox.py"
+    legacy.write_text("raise RuntimeError('legacy sandbox wrapper must never execute')\n")
+    tail = document["argv"][4:]
+    document["argv"] = ["{python}", str(legacy), *tail]
+    adapter.write_text(json.dumps(document))
+    original = adapter.read_bytes()
+    identity = profile_identity(selection)
+    assert is_codex_profile(selection)
+    frozen = freeze_profile(selection, tmp_path / "frozen", codex_executable=shim)
+    result = json.loads((frozen.parent / "adapter.json").read_bytes())
+    expected_tail = [str(shim.resolve()) if a == "{codex}" else a for a in tail]
+    assert result["argv"] == ["{python}", "-m", "cpn.llm_adapters.codex_subscription_bridge", *expected_tail]
+    assert {k: v for k, v in result.items() if k != "argv"} == {k: v for k, v in document.items() if k != "argv"}
+    assert profile_identity(frozen) == identity
+    assert adapter.read_bytes() == original == (frozen.parent / "original-adapter.json").read_bytes()
+
+
 @pytest.mark.parametrize("argv", [
     ["{python}", "other.py", "{codex}"],
     ["{python}", "-m", "other.module", "{codex}"],

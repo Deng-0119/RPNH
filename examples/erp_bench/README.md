@@ -129,6 +129,9 @@ preserves RPNH's existing tool-disable arguments, and keeps the model, service,
 request budgets and credential reference unchanged. This runtime adaptation is
 recorded explicitly. A Codex trial without this endpoint is rejected before
 world/model launch. The selection and adapter are frozen privately before build.
+The historical `codex_subscription_bridge_outer_sandbox.py` entry, when present,
+is bound to the installed RPNH bridge module in that snapshot, preserving its
+model arguments and original adapter bytes. The historical script is not run.
 Adapted runs retain original grader values with `grader_compatibility` claims;
 they do not claim an unchanged original benchmark condition.
 

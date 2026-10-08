@@ -17,7 +17,10 @@ def is_codex_profile(selection_path):
     from .source import load_json
     selection = load_llm_execution_selection(Path(selection_path))
     adapter = load_json(selection.adapter_config_path.read_bytes())
-    return "cpn.llm_adapters.codex_subscription_bridge" in adapter.get("argv", [])
+    argv = adapter.get("argv", [])
+    return ("cpn.llm_adapters.codex_subscription_bridge" in argv
+        or (isinstance(argv, list) and len(argv) >= 2
+            and Path(argv[1]).name == "codex_subscription_bridge_outer_sandbox.py"))
 
 
 def prepare_codex_endpoint(binary, directory):
@@ -53,4 +56,5 @@ def prepare_codex_endpoint(binary, directory):
     return endpoint, {"kind": "explicit_official_codex_response_endpoint",
         "cli_version": version, "exec_controls": list(CONTROLS),
         "global_wrapper": "bypassed", "existing_rpnh_tool_disable_flags": "preserved",
+        "subscription_bridge": "installed_supported_RPNH_module",
         "model_service_budgets": "existing_selection_unchanged"}

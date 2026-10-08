@@ -109,7 +109,9 @@ rpnh-erp run --upstream upstream/erp-bench \
 绕开全局包装器。私有端点关闭原生网页搜索与自动项目文档，保留 RPNH 已有工具禁用
 参数，模型、服务、请求预算与凭据引用不变，并明确记录此运行时适配。缺少该端点的
 Codex 试跑会在世界和模型启动前被拒绝。模型选择及 adapter 配置在构建前保存私有
-快照。适配运行保留原始 grader 数值，使用 `grader_compatibility` 声明，不声称是
+快照。若现有配置引用历史 `codex_subscription_bridge_outer_sandbox.py`，仅在该快照
+中改为安装版 RPNH bridge 模块，保留模型参数和原始 adapter 字节，不执行历史脚本。
+适配运行保留原始 grader 数值，使用 `grader_compatibility` 声明，不声称是
 未改变条件的原始 benchmark 成绩。
 
 CLI 通过 `asyncio.run(run_trial(...))` 将参数交给 driver，由 driver 持有环境准备、
