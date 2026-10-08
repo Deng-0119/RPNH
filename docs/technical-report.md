@@ -6,9 +6,9 @@ metadata:
   audience: application-developer-and-researcher
   language: en
   counterpart: technical-report_ZH.md
-  revision: "2026-10-08.4"
+  revision: "2026-10-08.5"
   status: technical-report
-  basis: "Deng-0119/RPNH at dbad00458e9b356fcaf0bb97ceb90258ed9b1de0"
+  basis: "Deng-0119/RPNH at 8dd360e4848912a998dbd83220c3f0ce0a1caa86"
   erp-runtime-supplement: "integrated at e92b05c9afe324ebb675f2d67b73c02efe7b9536"
   tool-pipeline-supplement: "integrated at 80a17c3ce45ec3c7a1b39c170c36bbb922276de1"
 ---
@@ -19,7 +19,7 @@ English | [中文](technical-report_ZH.md) | [Documentation](index.md)
 ## Executable processes for Agent and program systems
 
 **Updated:** 2026-10-08. **Source snapshot:**
-[`dbad004`](https://github.com/Deng-0119/RPNH/tree/dbad00458e9b356fcaf0bb97ceb90258ed9b1de0).
+[`8dd360e`](https://github.com/Deng-0119/RPNH/tree/8dd360e4848912a998dbd83220c3f0ce0a1caa86).
 Experiment source revisions and publication revisions are identified separately
 in [§9](#9-example-results).
 The ERP runtime supplement is integrated at
@@ -106,6 +106,17 @@ observers. Basic, Codex and OpenCode are sequential presentations of one direct
 main-session root; the shared lease prevents competing writable presentations.
 DSH is a registered host integration with its own session surface. Provider,
 Registry, workspace and recovery authority remain in the shared runtime.
+
+`Orchestrator` is the common execution entry used by AgentTask and the atomic-tool
+pipeline. It receives an existing `RunOwner`, event loop, worker submission
+function and dispatcher services, then delegates execution and stop requests to
+the same `Harness`. The host owns the lifetime of those resources and any signal
+handlers. Admission, completion draining and terminal policy remain with the
+existing owner/Harness, using the Registry and Petri net described below. A stop
+request halts new admission while already-admitted work drains; the host can then
+close its resources. This boundary lets an application use the shared runtime
+with its own execution services. See [`Orchestrator`][orchestrator-source] and
+the [pipeline host entry][pipeline-entry-source].
 
 Three runtime hierarchies have distinct roles:
 
@@ -198,6 +209,24 @@ current terminal authority, the exact `run_terminal_evidence` and its selected
 resource, then returns outcome, generation, output and model-call accounting.
 A process exit, plausible filename or last assistant message cannot substitute
 for this chain. See [`task_control.py`][task-control-source].
+
+Result retrieval and Registry-backed status use the same `read_run_execution`
+reader, opening an existing Registry with `create=False, read_only=True`. The
+reader resolves the current execution generation and validates the terminal,
+checkpoint, result index and exact registered resource through Registry's
+identity and publication-closure checks. A historical terminal row cannot select
+the current result.
+
+The read is bound to a `RunReadCut`: the Registry handle and task identity,
+canonical event boundary, physical head, writer epoch and native run pointer.
+Status counts terminal/index evidence through that boundary. Before returning,
+both read paths recheck the same cut after cumulative model-call accounting;
+result retrieval also completes JSON decoding before this final check. An
+observed advance rejects the read so the caller can retry. Registered byte sizes
+bound descriptor/result reads, with explicit caller budgets retained where
+provided. Task status separately observes the process and owner socket; those
+live observations remain distinct from the guarded Registry read. See the
+[Registry run reader][run-reader-source].
 
 The ordinary Agent graph uses symbolic artifact labels over **text-product**
 ports. Label agreement provides routing structure; it does not prove that a
@@ -659,6 +688,32 @@ The [release-validation history](guides/release-validation.md) records other
 version-specific checks. These different tasks, revisions and test windows are
 kept separate from the ERP and SCB results above.
 
+### 9.5 Execution entry and Registry-reader validation
+
+A later focused offline validation exercised the shared execution entry and
+TaskControl's Registry reads together. Its tested source was `715468dab0b1bea07d7e94a7aa0606eaf194365c`
+plus the frozen reader changes recorded in the [source manifest][entry-reader-identity];
+those source bytes and execution records were published at
+`d92ff3704b6002bf5ecbccb3e6a3d1489809a805`. Eight test windows passed **166 unique
+cases in 166 executions**, comprising 154 repository cases and 12 package-supplied
+independent checks. The coverage includes native AF_UNIX owner execution,
+stop/drain and host resource ownership, scripted interruption/resume, exact
+terminal reads and deterministic same-cut fault injection. The count is limited
+to these focused runtime cases, including unit checks. Agent calls used scripted
+implementations; there were no real provider/model calls.
+[Execution records and path clarification][entry-reader-evidence].
+
+The native pipeline run produced `complete`, **2.000 kWh and 1.70 CNY**, ten
+published firings and 12 tool products plus two source resources. After its
+process exited, a separate process read back the persisted Registry. All 11
+stable top-level export fields matched, while live-only transport and stop-reason
+fields were absent from the readback. Before/after Registry snapshots retained
+event ordinal/count 1001, ten dispatch reservations, ten execution starts and
+model counts `[0,0]`. The published exports and snapshots document unchanged
+execution records during readback; the original Registry database remains local.
+[CLI export][entry-reader-cli] · [Readback export][entry-reader-readback] ·
+[Readback audit][entry-reader-audit].
+
 ## 10. Engineering context and source guide
 
 RPNH sits within the broader engineering practice of durable tasks, typed
@@ -706,7 +761,7 @@ are described in the corresponding guides.
 [revision-source]: https://github.com/Deng-0119/RPNH/blob/dbad00458e9b356fcaf0bb97ceb90258ed9b1de0/cpn/rpnh/registry/module_revision.py
 [collaboration-source]: https://github.com/Deng-0119/RPNH/blob/dbad00458e9b356fcaf0bb97ceb90258ed9b1de0/cpn/rpnh/collaboration/__init__.py
 [receiver-source]: https://github.com/Deng-0119/RPNH/blob/dbad00458e9b356fcaf0bb97ceb90258ed9b1de0/cpn/rpnh/collaboration/environment_host.py
-[task-control-source]: https://github.com/Deng-0119/RPNH/blob/dbad00458e9b356fcaf0bb97ceb90258ed9b1de0/cpn/rpnh/task_control.py
+[task-control-source]: https://github.com/Deng-0119/RPNH/blob/d92ff3704b6002bf5ecbccb3e6a3d1489809a805/cpn/rpnh/task_control.py
 [net-tests]: https://github.com/Deng-0119/RPNH/blob/dbad00458e9b356fcaf0bb97ceb90258ed9b1de0/tests/test_native_net_operations.py
 [erp-source]: https://github.com/Deng-0119/RPNH/blob/dbad00458e9b356fcaf0bb97ceb90258ed9b1de0/evidence/first_wave/20261008/erp/records/r/h01/public/source-identity.json
 [erp-model]: https://github.com/Deng-0119/RPNH/blob/dbad00458e9b356fcaf0bb97ceb90258ed9b1de0/evidence/first_wave/20261008/erp/records/r/h01/public/model-configuration.json
@@ -742,3 +797,11 @@ are described in the corresponding guides.
 [tool-pipeline-tests]: https://github.com/Deng-0119/RPNH/blob/80a17c3ce45ec3c7a1b39c170c36bbb922276de1/evidence/first_wave/20261008/tool-pipeline/local/native-test-inventory.json
 [tool-pipeline-evidence]: https://github.com/Deng-0119/RPNH/blob/80a17c3ce45ec3c7a1b39c170c36bbb922276de1/evidence/first_wave/20261008/tool-pipeline/local/native-evidence-audit.json
 [tool-pipeline-readback]: https://github.com/Deng-0119/RPNH/blob/80a17c3ce45ec3c7a1b39c170c36bbb922276de1/evidence/first_wave/20261008/tool-pipeline/local/readback-protocol.json
+[orchestrator-source]: https://github.com/Deng-0119/RPNH/blob/d92ff3704b6002bf5ecbccb3e6a3d1489809a805/cpn/orchestrator/runner.py
+[pipeline-entry-source]: https://github.com/Deng-0119/RPNH/blob/d92ff3704b6002bf5ecbccb3e6a3d1489809a805/examples/tool_pipeline/run.py
+[run-reader-source]: https://github.com/Deng-0119/RPNH/blob/d92ff3704b6002bf5ecbccb3e6a3d1489809a805/cpn/rpnh/registry/run_authority.py
+[entry-reader-identity]: https://github.com/Deng-0119/RPNH/blob/d92ff3704b6002bf5ecbccb3e6a3d1489809a805/evidence/first_wave/20261009/taskcontrol-reader/local/source-before.json
+[entry-reader-evidence]: https://github.com/Deng-0119/RPNH/blob/8dd360e4848912a998dbd83220c3f0ce0a1caa86/evidence/first_wave/20261009/taskcontrol-reader/README_ZH.md
+[entry-reader-cli]: https://github.com/Deng-0119/RPNH/blob/d92ff3704b6002bf5ecbccb3e6a3d1489809a805/evidence/first_wave/20261009/taskcontrol-reader/native/cli/evidence.json
+[entry-reader-readback]: https://github.com/Deng-0119/RPNH/blob/d92ff3704b6002bf5ecbccb3e6a3d1489809a805/evidence/first_wave/20261009/taskcontrol-reader/native/readback/evidence.json
+[entry-reader-audit]: https://github.com/Deng-0119/RPNH/blob/d92ff3704b6002bf5ecbccb3e6a3d1489809a805/evidence/first_wave/20261009/taskcontrol-reader/local/native-cli-readback-audit.json

@@ -4,11 +4,11 @@ description: "RPNH 的架构、流程创作、运行机制、接入方式与已�
 metadata:
   document-kind: technical-report
   audience: application-developer-and-researcher
-  language: zh
+  language: zh-CN
   counterpart: technical-report.md
-  revision: "2026-10-08.4"
+  revision: "2026-10-08.5"
   status: technical-report
-  basis: "Deng-0119/RPNH at dbad00458e9b356fcaf0bb97ceb90258ed9b1de0"
+  basis: "Deng-0119/RPNH at 8dd360e4848912a998dbd83220c3f0ce0a1caa86"
   erp-runtime-supplement: "integrated at e92b05c9afe324ebb675f2d67b73c02efe7b9536"
   tool-pipeline-supplement: "integrated at 80a17c3ce45ec3c7a1b39c170c36bbb922276de1"
 ---
@@ -19,7 +19,7 @@ metadata:
 ## 面向 Agent 与程序系统的可执行流程
 
 **更新日期：**2026-10-08。**源码快照：**
-[`dbad004`](https://github.com/Deng-0119/RPNH/tree/dbad00458e9b356fcaf0bb97ceb90258ed9b1de0)。
+[`8dd360e`](https://github.com/Deng-0119/RPNH/tree/8dd360e4848912a998dbd83220c3f0ce0a1caa86)。
 各次实验的实际测试版本与结果发布版本分别列于[第 9 节](#9-示例验证结果)。
 ERP runtime 补充见集成版本 [`e92b05c`](https://github.com/Deng-0119/RPNH/tree/e92b05c9afe324ebb675f2d67b73c02efe7b9536)。
 原子工具 pipeline 与原生证据见集成版本 [`80a17c3`](https://github.com/Deng-0119/RPNH/tree/80a17c3ce45ec3c7a1b39c170c36bbb922276de1)。
@@ -80,6 +80,13 @@ RPNH 将这些关系显式化。以 `prepare -> (facts || risks) -> join` 为例
 Basic、Codex、OpenCode 是同一直接主会话根的顺序展示入口，共享 lease 防止竞争性可写展示。
 DSH 是具有自身 session surface 的 registered host 集成。
 Provider、Registry、workspace 与恢复权威仍由共享 runtime 持有。
+
+`Orchestrator` 是 AgentTask 与原子工具 pipeline 共用的执行入口。它接收既有 `RunOwner`、
+event loop、worker 提交函数和 dispatcher 服务，再将执行与 stop 请求委托给同一 `Harness`。
+这些资源的生命周期及 signal handler 由 HOST 负责；准入、completion 收束和终态策略仍由
+既有 owner/Harness 按下文的 Registry 与 PetriNet 契约处理。Stop 请求停止新准入，让已准入工作
+完成收束，随后由 HOST 关闭其资源。应用因此可以用自己的执行服务接入共享 runtime。
+参阅 [`Orchestrator`][orchestrator-source] 与 [pipeline HOST 入口][pipeline-entry-source]。
 
 三类运行层次承担不同职责：
 
@@ -149,6 +156,17 @@ stop，以避免重新执行已经完成的语义动作。出现 completion erro
 `TaskControl.result` 读取当前终态权威、准确的 `run_terminal_evidence` 及其选定资源，
 返回 outcome、generation、output 与模型调用计数。进程退出、合理的文件名或最后一条 assistant 消息
 都不能替代这条证据链。参阅 [`task_control.py`][task-control-source]。
+
+结果读取与基于 Registry 的状态读取共用 `read_run_execution`，以 `create=False, read_only=True`
+打开既有 Registry。Reader 解析当前执行代次，并通过 Registry 的身份与发布闭合检查，核对 terminal、
+checkpoint、result index 与准确登记资源之间的关联。历史 terminal 行不能选定当前结果。
+
+每次读取绑定到一个 `RunReadCut`，包含 Registry handle 与 task 身份、规范事件边界、physical head、
+writer epoch 和 native run pointer。状态读取只统计该边界内的 terminal/index 证据。
+两条读取路径都在累计模型调用计数查询后、返回前重新检查同一个 cut；结果读取的 JSON 解码也在最终
+检查之前完成。若观察到 Registry 推进，读取会被拒绝，调用方可重试。登记字节数限定 descriptor/result
+读取的物理范围；调用方显式提供的预算继续适用。任务状态另外观察进程与 owner socket，这些实时观察
+与受保护的 Registry 读取分别表达。参阅 [Registry run reader][run-reader-source]。
 
 普通 Agent graph 使用**文本产物**端口上的符号化 artifact label。标签匹配提供路由结构，
 并不证明文本确实是一份合法采购计划或数值模型。需要更强业务数据契约的 author 应使用登记 schema
@@ -489,6 +507,26 @@ Service 重建沿用同一 owner 和 Registry，不是 OS owner 崩溃恢复。
 较早的 14 个已计分任务没有重跑。[发布验证历史](guides/release-validation_ZH.md)还记录了其他版本的检查。
 这些不同任务、版本与测试窗口，均与上面的 ERP、SCB 结果分别呈现。
 
+### 9.5 执行入口与 Registry reader 验证
+
+后续一次定向离线验证在组合源码上检查共享执行入口与 TaskControl 的 Registry 读取。
+实际测试源码为 `715468dab0b1bea07d7e94a7aa0606eaf194365c` 加冻结的 reader 变更，
+具体身份见[源码清单][entry-reader-identity]；这些源码字节与执行记录随后发布于
+`d92ff3704b6002bf5ecbccb3e6a3d1489809a805`。八个测试窗口共 **166 个唯一用例、166 次执行**通过，
+其中仓库用例 154 个、包附独立检查 12 个。覆盖包括原生 AF_UNIX owner 执行、stop/drain 与 HOST
+资源责任、脚本化中断/恢复、准确终态读取及确定性 same-cut 故障注入。
+这一计数限定于上述 runtime 定向用例，其中包含单元检查。Agent 调用采用脚本化实现，没有真实
+provider/model 调用。
+[执行记录与路径说明][entry-reader-evidence]。
+
+其中原生 pipeline 运行得到 `complete`、**2.000 kWh、1.70 CNY**、10 个已发布 firing，
+以及 12 个工具产物和 2 个原始输入资源。原进程退出后，另一进程从持久化 Registry 回读。
+11 个稳定顶层导出字段全部一致；只适用于实时运行的 transport 与 stop-reason 字段在回读中缺省。
+前后 Registry 快照的 event ordinal/count 均为 1001，dispatch reservation 和 execution start
+均为 10，模型计数均为 `[0,0]`。已发布导出与快照记录了回读期间执行记录不变；原始 Registry
+数据库保留在本地。[CLI 导出][entry-reader-cli] · [回读导出][entry-reader-readback] ·
+[回读审计][entry-reader-audit]。
+
 ## 10. 工程背景与源码导航
 
 RPNH 属于持久任务、类型化接口、事件历史、checkpoint 与插件式 Agent runtime 的工程实践。
@@ -528,7 +566,7 @@ RPNH 围绕版本化流程定义与准确 Registry/PetriNet 执行之间的连�
 [revision-source]: https://github.com/Deng-0119/RPNH/blob/dbad00458e9b356fcaf0bb97ceb90258ed9b1de0/cpn/rpnh/registry/module_revision.py
 [collaboration-source]: https://github.com/Deng-0119/RPNH/blob/dbad00458e9b356fcaf0bb97ceb90258ed9b1de0/cpn/rpnh/collaboration/__init__.py
 [receiver-source]: https://github.com/Deng-0119/RPNH/blob/dbad00458e9b356fcaf0bb97ceb90258ed9b1de0/cpn/rpnh/collaboration/environment_host.py
-[task-control-source]: https://github.com/Deng-0119/RPNH/blob/dbad00458e9b356fcaf0bb97ceb90258ed9b1de0/cpn/rpnh/task_control.py
+[task-control-source]: https://github.com/Deng-0119/RPNH/blob/d92ff3704b6002bf5ecbccb3e6a3d1489809a805/cpn/rpnh/task_control.py
 [net-tests]: https://github.com/Deng-0119/RPNH/blob/dbad00458e9b356fcaf0bb97ceb90258ed9b1de0/tests/test_native_net_operations.py
 [erp-source]: https://github.com/Deng-0119/RPNH/blob/dbad00458e9b356fcaf0bb97ceb90258ed9b1de0/evidence/first_wave/20261008/erp/records/r/h01/public/source-identity.json
 [erp-model]: https://github.com/Deng-0119/RPNH/blob/dbad00458e9b356fcaf0bb97ceb90258ed9b1de0/evidence/first_wave/20261008/erp/records/r/h01/public/model-configuration.json
@@ -564,3 +602,11 @@ RPNH 围绕版本化流程定义与准确 Registry/PetriNet 执行之间的连�
 [tool-pipeline-tests]: https://github.com/Deng-0119/RPNH/blob/80a17c3ce45ec3c7a1b39c170c36bbb922276de1/evidence/first_wave/20261008/tool-pipeline/local/native-test-inventory.json
 [tool-pipeline-evidence]: https://github.com/Deng-0119/RPNH/blob/80a17c3ce45ec3c7a1b39c170c36bbb922276de1/evidence/first_wave/20261008/tool-pipeline/local/native-evidence-audit.json
 [tool-pipeline-readback]: https://github.com/Deng-0119/RPNH/blob/80a17c3ce45ec3c7a1b39c170c36bbb922276de1/evidence/first_wave/20261008/tool-pipeline/local/readback-protocol.json
+[orchestrator-source]: https://github.com/Deng-0119/RPNH/blob/d92ff3704b6002bf5ecbccb3e6a3d1489809a805/cpn/orchestrator/runner.py
+[pipeline-entry-source]: https://github.com/Deng-0119/RPNH/blob/d92ff3704b6002bf5ecbccb3e6a3d1489809a805/examples/tool_pipeline/run.py
+[run-reader-source]: https://github.com/Deng-0119/RPNH/blob/d92ff3704b6002bf5ecbccb3e6a3d1489809a805/cpn/rpnh/registry/run_authority.py
+[entry-reader-identity]: https://github.com/Deng-0119/RPNH/blob/d92ff3704b6002bf5ecbccb3e6a3d1489809a805/evidence/first_wave/20261009/taskcontrol-reader/local/source-before.json
+[entry-reader-evidence]: https://github.com/Deng-0119/RPNH/blob/8dd360e4848912a998dbd83220c3f0ce0a1caa86/evidence/first_wave/20261009/taskcontrol-reader/README_ZH.md
+[entry-reader-cli]: https://github.com/Deng-0119/RPNH/blob/d92ff3704b6002bf5ecbccb3e6a3d1489809a805/evidence/first_wave/20261009/taskcontrol-reader/native/cli/evidence.json
+[entry-reader-readback]: https://github.com/Deng-0119/RPNH/blob/d92ff3704b6002bf5ecbccb3e6a3d1489809a805/evidence/first_wave/20261009/taskcontrol-reader/native/readback/evidence.json
+[entry-reader-audit]: https://github.com/Deng-0119/RPNH/blob/d92ff3704b6002bf5ecbccb3e6a3d1489809a805/evidence/first_wave/20261009/taskcontrol-reader/local/native-cli-readback-audit.json
