@@ -1,0 +1,58 @@
+..................................F.F.                                   [100%]
+=================================== FAILURES ===================================
+______________ test_status_reader_error_shape_and_os_stop_remain _______________
+
+tmp_path = PosixPath('<PYTEST_TEMP_ROOT>/pytest-32/test_status_reader_error_shape0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f3a8fc04e00>
+
+    def test_status_reader_error_shape_and_os_stop_remain(tmp_path, monkeypatch):
+        owner = owner_at(tmp_path / "run"); finish(owner)
+        control = control_at(owner)
+        monkeypatch.setattr(TaskControl, "_read_terminal_status", staticmethod(
+            lambda path: (_ for _ in ()).throw(RuntimeError("native reader failure"))))
+        result = control.status("task-fixture")
+        assert result["registry_error"] == "native reader failure" and "registry" not in result
+        signals = []
+        control.get("task-fixture").process = SimpleNamespace(poll=lambda: None, send_signal=signals.append)
+>       control._channel_ready = lambda path: True
+E       AssertionError: assert 'OWNER_CHANNEL_NOT_READY' == 'STOP_REQUESTED'
+E         
+E         - STOP_REQUESTED
+E         + OWNER_CHANNEL_NOT_READY
+
+tests/test_task_control_registry_reads.py:356: AssertionError
+_____________________ test_missing_registry_is_not_created _____________________
+
+tmp_path = PosixPath('<PYTEST_TEMP_ROOT>/pytest-32/test_missing_registry_is_not_c0')
+
+    
+    def test_missing_registry_is_not_created(tmp_path):
+        control = TaskControl(tmp_path / "control", popen_factory=forbidden,
+                              recover_pending_launches=False)
+        control._tasks["missing"] = SimpleNamespace(task_id="missing", run_dir=tmp_path / "absent", kind="single_agent")
+>       with pytest.raises(RuntimeError, match="Registry is not currently available"):
+            ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_task_control_registry_reads.py:379: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+cpn/rpnh/task_control.py:594: in result
+    handle = self.get(task_id)
+             ^^^^^^^^^^^^^^^^^
+cpn/rpnh/task_control.py:497: in get
+    self._refresh_handle_process(handle)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <cpn.rpnh.task_control.TaskControl object at 0x7f3a900aaa20>
+handle = namespace(run_dir=PosixPath('<PYTEST_TEMP_ROOT>/pytest-32/test_missing_registry_is_not_c0/absent'), kind='single_agent')
+
+    def _refresh_handle_process(self, handle: TaskHandle) -> None:
+>       path = self._manifest_root / f"{handle.task_id}.json"
+                                        ^^^^^^^^^^^^^^
+E       AttributeError: 'types.SimpleNamespace' object has no attribute 'task_id'
+
+cpn/rpnh/task_control.py:222: AttributeError
+- generated xml file: <CLOUD_WORKSPACE>/rpnh-taskcontrol-reader-convergence/focused-second.xml -
+=========================== short test summary info ============================
+FAILED tests/test_task_control_registry_reads.py::test_status_reader_error_shape_and_os_stop_remain
+FAILED tests/test_task_control_registry_reads.py::test_missing_registry_is_not_created
+2 failed, 36 passed in 111.38s (0:01:51)

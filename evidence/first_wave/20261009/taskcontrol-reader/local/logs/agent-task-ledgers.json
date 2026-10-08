@@ -1,0 +1,23 @@
+{
+  "label": "agent-task-ledgers",
+  "command": [
+    "<WORKSPACE>/.p26/v/bin/python",
+    "<WORKSPACE>/task-h2a-validation-20261008/probes/agent_task_ledgers.py"
+  ],
+  "cwd": "<WORKSPACE>/.t26/s",
+  "pid": 9577,
+  "started_at": "2026-10-08T16:53:25.510630+00:00",
+  "finished_at": "2026-10-08T16:53:26.452950+00:00",
+  "elapsed_seconds": 0.942329111001527,
+  "exit_code": 0,
+  "tested_head": "715468dab0b1bea07d7e94a7aa0606eaf194365c",
+  "environment_overrides": {
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONUNBUFFERED": "1",
+    "PYTHONPATH": "<WORKSPACE>/.t26/s",
+    "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1",
+    "TMPDIR": "<WORKSPACE>/.t26/tmp"
+  },
+  "stdout": "<WORKSPACE>/task-h2a-validation-20261008/logs/agent-task-ledgers.stdout.log",
+  "stderr": "<WORKSPACE>/task-h2a-validation-20261008/logs/agent-task-ledgers.stderr.log"
+}

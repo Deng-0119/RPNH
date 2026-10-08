@@ -1,0 +1,1 @@
+PASS: git apply --check, git apply, and all five patched file hashes exactly match tested source.

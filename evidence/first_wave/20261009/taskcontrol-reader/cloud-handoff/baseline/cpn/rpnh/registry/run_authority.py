@@ -166,8 +166,7 @@ def _read_run_descriptor(core, kernel, view, ref, kind, max_bytes):
     prepared = kernel._exact_object_for_view(view, ref, expected_type=kind)
     if max_bytes is not None and prepared.size > max_bytes:
         raise ResourceIntegrityFault("run descriptor exceeds reader byte bound")
-    return readable_descriptor(core.object_store, prepared,
-        max_bytes=prepared.size if max_bytes is None else max_bytes, strict=True)
+    return readable_descriptor(core.object_store, prepared, max_bytes=max_bytes, strict=True)
 
 
 def read_run_execution(

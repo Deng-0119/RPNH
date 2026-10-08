@@ -1,0 +1,32 @@
+{
+  "label": "h2-native-status",
+  "command": [
+    "<WORKSPACE>/.p26/v/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "-p",
+    "no:cacheprovider",
+    "tests/test_task_frontend.py",
+    "-k",
+    "task_control or task_status",
+    "--basetemp=<WORKSPACE>/.t26/n",
+    "--junitxml=<WORKSPACE>/task-h2a-validation-20261008/logs/h2-native-status.xml"
+  ],
+  "cwd": "<WORKSPACE>/.t26/s",
+  "pid": 9480,
+  "started_at": "2026-10-08T16:51:16.972746+00:00",
+  "finished_at": "2026-10-08T16:51:20.142848+00:00",
+  "elapsed_seconds": 3.1701061479998316,
+  "exit_code": 0,
+  "tested_head": "715468dab0b1bea07d7e94a7aa0606eaf194365c",
+  "environment_overrides": {
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONUNBUFFERED": "1",
+    "PYTHONPATH": "<WORKSPACE>/.t26/s",
+    "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1",
+    "TMPDIR": "<WORKSPACE>/.t26/tmp"
+  },
+  "stdout": "<WORKSPACE>/task-h2a-validation-20261008/logs/h2-native-status.stdout.log",
+  "stderr": "<WORKSPACE>/task-h2a-validation-20261008/logs/h2-native-status.stderr.log"
+}

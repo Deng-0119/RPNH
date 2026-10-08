@@ -1,0 +1,102 @@
+{
+  "base_commit": "ec9077e95b830d09e7252c6d5d8ebcdbb9eb4ac4",
+  "patch_sha256": "62f914d41d953e9badd4eb06eec43273f9d52bd5bd9b948ad6e10137d3ed2b24",
+  "source_manifest_sha256": "bf088faa3fe22f9f14fcfa0081484bc1bae9067ea7c20c1162125eab29bf806a",
+  "outcome": "offline_reader_convergence_passed; native_AF_UNIX_validation_blocked",
+  "batches": [
+    {
+      "name": "final_focused_real_registry_consumers",
+      "status": "passed",
+      "junit": "focused-delivery.xml",
+      "tests": 47,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "existing_affected_compatibility",
+      "status": "passed",
+      "junit": "compatibility.xml",
+      "tests": 44,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "existing_shared_reader_consumers",
+      "status": "passed",
+      "junit": "shared-reader.xml",
+      "tests": 15,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "unchanged_baseline_old_red",
+      "status": "expected_regression_failures",
+      "junit": "old-red.xml",
+      "tests": 20,
+      "failures": 20,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "independent_review",
+      "status": "passed",
+      "tests": 11,
+      "log": "independent-review/new-green.log"
+    },
+    {
+      "name": "independent_legal_large_descriptor",
+      "status": "passed",
+      "tests": 1,
+      "log": "independent-review/large-descriptor.log"
+    },
+    {
+      "name": "independent_shared_reader_regressions",
+      "status": "passed",
+      "tests": 24,
+      "log": "independent-review/shared-core-regressions.log"
+    },
+    {
+      "name": "native_taskcontrol_status",
+      "status": "blocked",
+      "blocked_tests": 1,
+      "passed_tests": 6,
+      "reason": "socket.socket(AF_UNIX, SOCK_STREAM): EPERM",
+      "junit": "independent-review/native-taskcontrol-status.xml",
+      "tests": 7,
+      "failures": 1,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "native_owner_resume",
+      "status": "blocked",
+      "blocked_tests": 1,
+      "passed_tests": 0,
+      "reason": "OwnerEventLoop socket.socket(AF_UNIX, SOCK_STREAM): EPERM before provider dispatch; resume assertions not reached",
+      "junit": "independent-review/native-resume.xml",
+      "tests": 1,
+      "failures": 1,
+      "errors": 0,
+      "skipped": 0
+    }
+  ],
+  "counts_overlap": true,
+  "external_model_calls": 0,
+  "github_actions": 0,
+  "remote_writes": 0,
+  "pushes": 0,
+  "accounting_evidence": "Native synthetic imported accounting baseline=2 remains cumulative across generation; separate (13,2) spy tests delegation/shape only.",
+  "limits": "Registered object size is a physical backing-read bound; no fixed consumer size cap. Explicit caller descriptor budgets retain precedence.",
+  "scope_exclusions": [
+    "new CLI/read command",
+    "H1 owner-entry changes",
+    "business task policy/scoring",
+    "viewer/net/help/parser changes",
+    "second Registry/read authority"
+  ],
+  "local_gate": "COMMANDS.md native AF_UNIX taskcontrol/status and owner resume commands",
+  "review": "independent-review/REVIEW.md"
+}

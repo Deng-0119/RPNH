@@ -1,0 +1,33 @@
+{
+  "label": "h2-native-callbacks",
+  "command": [
+    "env",
+    "PYTHONPATH=<WORKSPACE>/.t26/s:<WORKSPACE>/.t26/s/tests",
+    "<WORKSPACE>/.p26/v/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "-p",
+    "no:cacheprovider",
+    "tests/test_transport_completion_faults.py::test_accepted_host_reply_cancellation_is_not_owner_cancellation",
+    "tests/test_transport_completion_faults.py::test_accepted_host_exception_preserves_later_completion",
+    "--basetemp=<WORKSPACE>/.t26/k",
+    "--junitxml=<WORKSPACE>/task-h2a-validation-20261008/logs/h2-native-callbacks.xml"
+  ],
+  "cwd": "<WORKSPACE>/.t26/s",
+  "pid": 9482,
+  "started_at": "2026-10-08T16:51:16.979641+00:00",
+  "finished_at": "2026-10-08T16:51:17.972607+00:00",
+  "elapsed_seconds": 0.9929696780000086,
+  "exit_code": 0,
+  "tested_head": "715468dab0b1bea07d7e94a7aa0606eaf194365c",
+  "environment_overrides": {
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONUNBUFFERED": "1",
+    "PYTHONPATH": "<WORKSPACE>/.t26/s",
+    "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1",
+    "TMPDIR": "<WORKSPACE>/.t26/tmp"
+  },
+  "stdout": "<WORKSPACE>/task-h2a-validation-20261008/logs/h2-native-callbacks.stdout.log",
+  "stderr": "<WORKSPACE>/task-h2a-validation-20261008/logs/h2-native-callbacks.stderr.log"
+}

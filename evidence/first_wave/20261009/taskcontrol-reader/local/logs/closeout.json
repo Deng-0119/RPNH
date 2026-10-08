@@ -1,0 +1,23 @@
+{
+  "label": "closeout",
+  "command": [
+    "<WORKSPACE>/.p26/v/bin/python",
+    "<WORKSPACE>/task-h2a-validation-20261008/closeout.py"
+  ],
+  "cwd": "<WORKSPACE>/.t26/s",
+  "pid": 10056,
+  "started_at": "2026-10-08T17:03:42.594774+00:00",
+  "finished_at": "2026-10-08T17:03:42.649292+00:00",
+  "elapsed_seconds": 0.054519219000212615,
+  "exit_code": 0,
+  "tested_head": "715468dab0b1bea07d7e94a7aa0606eaf194365c",
+  "environment_overrides": {
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONUNBUFFERED": "1",
+    "PYTHONPATH": "<WORKSPACE>/.t26/s",
+    "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1",
+    "TMPDIR": "<WORKSPACE>/.t26/tmp"
+  },
+  "stdout": "<WORKSPACE>/task-h2a-validation-20261008/logs/closeout.stdout.log",
+  "stderr": "<WORKSPACE>/task-h2a-validation-20261008/logs/closeout.stderr.log"
+}

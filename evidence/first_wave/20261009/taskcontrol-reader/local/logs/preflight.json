@@ -1,0 +1,24 @@
+{
+  "label": "preflight",
+  "command": [
+    "<WORKSPACE>/.p26/v/bin/python",
+    "-c",
+    "import json,os,sys,socket,subprocess,importlib.metadata as m,cpn; from pathlib import Path; p=Path(\"<WORKSPACE>/.t26/tmp/preflight.sock\"); assert not p.exists(); s=socket.socket(socket.AF_UNIX,socket.SOCK_STREAM); s.bind(str(p)); s.listen(); a,b=socket.socketpair(); a.close(); b.close(); s.close(); p.unlink(); print(json.dumps({\"python\":sys.version,\"executable\":sys.executable,\"cpn\":str(cpn.__file__),\"dependencies\":{x:m.version(x) for x in [\"pytest\",\"jsonschema\",\"packaging\",\"websockets\",\"numpy\",\"scipy\"]},\"native_unix\":True,\"pytest_env\":{x:os.environ.get(x) for x in [\"PYTEST_ADDOPTS\",\"PYTEST_PLUGINS\"]},\"git\":{x:subprocess.check_output([\"git\"]+args,text=True).strip() for x,args in {\"origin\":[\"remote\",\"get-url\",\"origin\"],\"head\":[\"rev-parse\",\"HEAD\"],\"tree\":[\"rev-parse\",\"HEAD^{tree}\"],\"status\":[\"status\",\"--porcelain=v1\",\"--untracked-files=all\"],\"tracking\":[\"show-ref\",\"--verify\",\"refs/remotes/origin/main\"],\"live_origin\":[\"ls-remote\",\"origin\",\"refs/heads/main\"]}.items()}},indent=2))"
+  ],
+  "cwd": "<WORKSPACE>/.t26/s",
+  "pid": 9347,
+  "started_at": "2026-10-08T16:50:48.498100+00:00",
+  "finished_at": "2026-10-08T16:50:51.805245+00:00",
+  "elapsed_seconds": 3.3071491240007163,
+  "exit_code": 0,
+  "tested_head": "715468dab0b1bea07d7e94a7aa0606eaf194365c",
+  "environment_overrides": {
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONUNBUFFERED": "1",
+    "PYTHONPATH": "<WORKSPACE>/.t26/s",
+    "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1",
+    "TMPDIR": "<WORKSPACE>/.t26/tmp"
+  },
+  "stdout": "<WORKSPACE>/task-h2a-validation-20261008/logs/preflight.stdout.log",
+  "stderr": "<WORKSPACE>/task-h2a-validation-20261008/logs/preflight.stderr.log"
+}

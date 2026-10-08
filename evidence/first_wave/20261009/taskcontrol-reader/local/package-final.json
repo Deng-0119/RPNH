@@ -1,0 +1,14 @@
+{
+  "package_checksums": 63,
+  "junit_parseable": 10,
+  "source_paths": [
+    "cpn/rpnh/task_control.py",
+    "cpn/rpnh/registry/run_authority.py",
+    "tests/test_task_control_registry_reads.py",
+    "docs/ARCHITECTURE.md",
+    "docs/ARCHITECTURE_ZH.md"
+  ],
+  "repo_state": "final",
+  "temporary_apply": "PASS; five final paths match",
+  "product_tests_run": false
+}

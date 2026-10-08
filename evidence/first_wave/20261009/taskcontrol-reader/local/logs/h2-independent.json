@@ -1,0 +1,34 @@
+{
+  "label": "h2-independent",
+  "command": [
+    "env",
+    "PYTHONPATH=<WORKSPACE>/.t26/s:<WORKSPACE>/.t26/s/tests:<WORKSPACE>/.t26/s/examples/harnessaudit_office/tests:<WORKSPACE>/task-h2a-validation-20261008/rpnh-taskcontrol-reader-convergence/independent-review",
+    "<WORKSPACE>/.p26/v/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "-p",
+    "no:cacheprovider",
+    "<WORKSPACE>/task-h2a-validation-20261008/rpnh-taskcontrol-reader-convergence/independent-review/test_taskcontrol_independent.py",
+    "<WORKSPACE>/task-h2a-validation-20261008/rpnh-taskcontrol-reader-convergence/independent-review/test_large_descriptor.py",
+    "--import-mode=importlib",
+    "--basetemp=<WORKSPACE>/.t26/i",
+    "--junitxml=<WORKSPACE>/task-h2a-validation-20261008/logs/h2-independent.xml"
+  ],
+  "cwd": "<WORKSPACE>/.t26/s",
+  "pid": 9416,
+  "started_at": "2026-10-08T16:51:04.102274+00:00",
+  "finished_at": "2026-10-08T16:52:17.433715+00:00",
+  "elapsed_seconds": 73.3314519229989,
+  "exit_code": 0,
+  "tested_head": "715468dab0b1bea07d7e94a7aa0606eaf194365c",
+  "environment_overrides": {
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONUNBUFFERED": "1",
+    "PYTHONPATH": "<WORKSPACE>/.t26/s",
+    "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1",
+    "TMPDIR": "<WORKSPACE>/.t26/tmp"
+  },
+  "stdout": "<WORKSPACE>/task-h2a-validation-20261008/logs/h2-independent.stdout.log",
+  "stderr": "<WORKSPACE>/task-h2a-validation-20261008/logs/h2-independent.stderr.log"
+}

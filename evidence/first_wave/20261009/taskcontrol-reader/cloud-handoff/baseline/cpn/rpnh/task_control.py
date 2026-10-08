@@ -22,6 +22,7 @@ from .inspection import project_registry_net
 from .registry._registry import _RegistryCore
 from .registry.publication import _ref_payload, _version_from_payload
 from .registry.resource_service import _ResourceServiceKernel
+from .registry.resources import ResourceVersionRef
 
 
 @dataclass(slots=True)
@@ -554,28 +555,24 @@ class TaskControl:
     def _read_terminal_status(run_dir: Path) -> dict[str, Any]:
         core = _RegistryCore(
             run_dir, create=False, read_only=True, catalog=agent_task_catalog())
-        from .registry.run_authority import read_run_execution
-        read = read_run_execution(
-            core, _ResourceServiceKernel(core))
         terminal = core.event_store.canonical_object_rows(
-            object_type="run_terminal_evidence/v1",
-            through_ordinal=read.cut.view.through_ordinal)
+            object_type="run_terminal_evidence/v1")
         final = core.event_store.canonical_object_rows(
-            object_type="final_result_index/v1",
-            through_ordinal=read.cut.view.through_ordinal)
-        result = {
+            object_type="final_result_index/v1")
+        from .registry.run_authority import current_run_execution_authority
+        _authority_ref, authority = current_run_execution_authority(
+            core, _ResourceServiceKernel(core))
+        return {
             "task_ref": str(core.task_id),
-            "execution_status": read.status,
-            "checkpoint_ref": _ref_payload(read.checkpoint_ref),
-            "execution_generation": read.execution_generation,
+            "execution_status": authority["status"],
+            "checkpoint_ref": authority["latest_checkpoint_ref"],
+            "execution_generation": authority.get(
+                "execution_generation", 0),
             "terminal_evidence_count": len(terminal),
             "final_result_index_count": len(final),
             "actual_model_call_counts": list(
                 core.event_store.actual_model_call_counts()),
         }
-        # Accounting remains cumulative; reject any advance during its queries.
-        read.cut.assert_unchanged(core)
-        return result
 
     def result_evidence(self, task_id: str) -> Mapping[str, Any]:
         """Inspect existing registered result/request facts without starting an owner."""
@@ -598,29 +595,32 @@ class TaskControl:
         core = _RegistryCore(
             handle.run_dir, create=False, read_only=True,
             catalog=agent_task_catalog())
-        from .registry.run_authority import (
-            read_run_execution, read_run_terminal_bytes,
-        )
-        read = read_run_execution(
+        from .registry.run_authority import current_run_execution_authority
+        _authority_ref, authority = current_run_execution_authority(
             core, _ResourceServiceKernel(core))
-        terminal = read.terminal
-        if terminal is None:
+        evidence_payload = authority.get("terminal_evidence_ref")
+        if (authority.get("status") != "terminal"
+                or evidence_payload is None):
             raise RuntimeError("task has no registered terminal result")
-        raw = read_run_terminal_bytes(
-            core, read, max_bytes=terminal.result.size)
-        result = {
+        evidence_ref = _version_from_payload(evidence_payload)
+        evidence = dict(_ResourceServiceKernel(core)._exact_object(
+            evidence_ref,
+            expected_type="run_terminal_evidence/v1").metadata)
+        result_ref = _version_from_payload(evidence["terminal_result_ref"])
+        raw = _ResourceServiceKernel(core)._read_registered(
+            ResourceVersionRef(result_ref.entity_id, result_ref.version_id))
+        return {
             "task_id": task_id,
             "kind": handle.kind,
-            "terminal_evidence_ref": _ref_payload(terminal.evidence_ref),
-            "terminal_result_ref": _ref_payload(terminal.result_ref),
-            "run_outcome": terminal.run_outcome,
-            "execution_generation": read.execution_generation,
+            "terminal_evidence_ref": evidence["terminal_evidence_ref"],
+            "terminal_result_ref": evidence["terminal_result_ref"],
+            "run_outcome": evidence["run_outcome"],
+            "execution_generation": authority.get(
+                "execution_generation", 0),
             "output": json.loads(raw),
             "actual_model_call_counts": list(
                 core.event_store.actual_model_call_counts()),
         }
-        read.cut.assert_unchanged(core)
-        return result
 
     def message(
             self, task_id: str, body: str, *, target: str | None = None,

@@ -1,0 +1,978 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="38" skipped="0" tests="38" time="0.961" timestamp="2026-10-08T12:11:50.138819-04:00" hostname="&lt;CLOUD_HOST&gt;"><testcase classname="tests.test_task_control_registry_reads" name="test_exact_legacy_result_and_status_shapes[complete-answer]" time="0.002"><failure message="cpn.rpnh.registration.RegistrationError: schema id is not canonical">tmp_path = PosixPath('&lt;PYTEST_TEMP_ROOT&gt;/pytest-30/test_exact_legacy_result_and_s0')
+output = 'answer', outcome = 'complete'
+
+    @pytest.mark.parametrize("output", ["answer", {"key": [1, None, True]}, [1, "two"], None])
+    @pytest.mark.parametrize("outcome", ["complete", "failed"])
+    def test_exact_legacy_result_and_status_shapes(tmp_path, output, outcome):
+&gt;       owner = owner_at(tmp_path / "run", outcome=outcome)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_task_control_registry_reads.py:135: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_task_control_registry_reads.py:50: in owner_at
+    registration.register_schema(PAYLOAD, {
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;cpn.rpnh.registration.Registration object at 0x7f34cd2174a0&gt;
+schema_id = 'application/task-reader-test/v1'
+schema = {'$id': 'application/task-reader-test/v1', '$schema': 'http://json-schema.org/draft-07/schema#'}
+
+    def register_schema(self, schema_id: str, schema: Mapping[str, Any]) -&gt; None:
+        if isinstance(schema_id, str) and schema_id in PROTECTED_SCHEMA_REFS:
+            raise RegistrationError("mechanical Registry/PN schemas are protected")
+        if not isinstance(schema_id, str) or _SCHEMA_ID.fullmatch(schema_id) is None:
+&gt;           raise RegistrationError("schema id is not canonical")
+E           cpn.rpnh.registration.RegistrationError: schema id is not canonical
+
+cpn/rpnh/registration.py:86: RegistrationError</failure></testcase><testcase classname="tests.test_task_control_registry_reads" name="test_exact_legacy_result_and_status_shapes[complete-output1]" time="0.001"><failure message="cpn.rpnh.registration.RegistrationError: schema id is not canonical">tmp_path = PosixPath('&lt;PYTEST_TEMP_ROOT&gt;/pytest-30/test_exact_legacy_result_and_s1')
+output = {'key': [1, None, True]}, outcome = 'complete'
+
+    @pytest.mark.parametrize("output", ["answer", {"key": [1, None, True]}, [1, "two"], None])
+    @pytest.mark.parametrize("outcome", ["complete", "failed"])
+    def test_exact_legacy_result_and_status_shapes(tmp_path, output, outcome):
+&gt;       owner = owner_at(tmp_path / "run", outcome=outcome)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_task_control_registry_reads.py:135: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_task_control_registry_reads.py:50: in owner_at
+    registration.register_schema(PAYLOAD, {
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;cpn.rpnh.registration.Registration object at 0x7f34ccebbad0&gt;
+schema_id = 'application/task-reader-test/v1'
+schema = {'$id': 'application/task-reader-test/v1', '$schema': 'http://json-schema.org/draft-07/schema#'}
+
+    def register_schema(self, schema_id: str, schema: Mapping[str, Any]) -&gt; None:
+        if isinstance(schema_id, str) and schema_id in PROTECTED_SCHEMA_REFS:
+            raise RegistrationError("mechanical Registry/PN schemas are protected")
+        if not isinstance(schema_id, str) or _SCHEMA_ID.fullmatch(schema_id) is None:
+&gt;           raise RegistrationError("schema id is not canonical")
+E           cpn.rpnh.registration.RegistrationError: schema id is not canonical
+
+cpn/rpnh/registration.py:86: RegistrationError</failure></testcase><testcase classname="tests.test_task_control_registry_reads" name="test_exact_legacy_result_and_status_shapes[complete-output2]" time="0.001"><failure message="cpn.rpnh.registration.RegistrationError: schema id is not canonical">tmp_path = PosixPath('&lt;PYTEST_TEMP_ROOT&gt;/pytest-30/test_exact_legacy_result_and_s2')
+output = [1, 'two'], outcome = 'complete'
+
+    @pytest.mark.parametrize("output", ["answer", {"key": [1, None, True]}, [1, "two"], None])
+    @pytest.mark.parametrize("outcome", ["complete", "failed"])
+    def test_exact_legacy_result_and_status_shapes(tmp_path, output, outcome):
+&gt;       owner = owner_at(tmp_path / "run", outcome=outcome)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_task_control_registry_reads.py:135: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_task_control_registry_reads.py:50: in owner_at
+    registration.register_schema(PAYLOAD, {
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;cpn.rpnh.registration.Registration object at 0x7f34cceba000&gt;
+schema_id = 'application/task-reader-test/v1'
+schema = {'$id': 'application/task-reader-test/v1', '$schema': 'http://json-schema.org/draft-07/schema#'}
+
+    def register_schema(self, schema_id: str, schema: Mapping[str, Any]) -&gt; None:
+        if isinstance(schema_id, str) and schema_id in PROTECTED_SCHEMA_REFS:
+            raise RegistrationError("mechanical Registry/PN schemas are protected")
+        if not isinstance(schema_id, str) or _SCHEMA_ID.fullmatch(schema_id) is None:
+&gt;           raise RegistrationError("schema id is not canonical")
+E           cpn.rpnh.registration.RegistrationError: schema id is not canonical
+
+cpn/rpnh/registration.py:86: RegistrationError</failure></testcase><testcase classname="tests.test_task_control_registry_reads" name="test_exact_legacy_result_and_status_shapes[complete-None]" time="0.001"><failure message="cpn.rpnh.registration.RegistrationError: schema id is not canonical">tmp_path = PosixPath('&lt;PYTEST_TEMP_ROOT&gt;/pytest-30/test_exact_legacy_result_and_s3')
+output = None, outcome = 'complete'
+
+    @pytest.mark.parametrize("output", ["answer", {"key": [1, None, True]}, [1, "two"], None])
+    @pytest.mark.parametrize("outcome", ["complete", "failed"])
+    def test_exact_legacy_result_and_status_shapes(tmp_path, output, outcome):
+&gt;       owner = owner_at(tmp_path / "run", outcome=outcome)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_task_control_registry_reads.py:135: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_task_control_registry_reads.py:50: in owner_at
+    registration.register_schema(PAYLOAD, {
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;cpn.rpnh.registration.Registration object at 0x7f34ccebb770&gt;
+schema_id = 'application/task-reader-test/v1'
+schema = {'$id': 'application/task-reader-test/v1', '$schema': 'http://json-schema.org/draft-07/schema#'}
+
+    def register_schema(self, schema_id: str, schema: Mapping[str, Any]) -&gt; None:
+        if isinstance(schema_id, str) and schema_id in PROTECTED_SCHEMA_REFS:
+            raise RegistrationError("mechanical Registry/PN schemas are protected")
+        if not isinstance(schema_id, str) or _SCHEMA_ID.fullmatch(schema_id) is None:
+&gt;           raise RegistrationError("schema id is not canonical")
+E           cpn.rpnh.registration.RegistrationError: schema id is not canonical
+
+cpn/rpnh/registration.py:86: RegistrationError</failure></testcase><testcase classname="tests.test_task_control_registry_reads" name="test_exact_legacy_result_and_status_shapes[failed-answer]" time="0.001"><failure message="cpn.rpnh.registration.RegistrationError: schema id is not canonical">tmp_path = PosixPath('&lt;PYTEST_TEMP_ROOT&gt;/pytest-30/test_exact_legacy_result_and_s4')
+output = 'answer', outcome = 'failed'
+
+    @pytest.mark.parametrize("output", ["answer", {"key": [1, None, True]}, [1, "two"], None])
+    @pytest.mark.parametrize("outcome", ["complete", "failed"])
+    def test_exact_legacy_result_and_status_shapes(tmp_path, output, outcome):
+&gt;       owner = owner_at(tmp_path / "run", outcome=outcome)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_task_control_registry_reads.py:135: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_task_control_registry_reads.py:50: in owner_at
+    registration.register_schema(PAYLOAD, {
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;cpn.rpnh.registration.Registration object at 0x7f34ccf32f30&gt;
+schema_id = 'application/task-reader-test/v1'
+schema = {'$id': 'application/task-reader-test/v1', '$schema': 'http://json-schema.org/draft-07/schema#'}
+
+    def register_schema(self, schema_id: str, schema: Mapping[str, Any]) -&gt; None:
+        if isinstance(schema_id, str) and schema_id in PROTECTED_SCHEMA_REFS:
+            raise RegistrationError("mechanical Registry/PN schemas are protected")
+        if not isinstance(schema_id, str) or _SCHEMA_ID.fullmatch(schema_id) is None:
+&gt;           raise RegistrationError("schema id is not canonical")
+E           cpn.rpnh.registration.RegistrationError: schema id is not canonical
+
+cpn/rpnh/registration.py:86: RegistrationError</failure></testcase><testcase classname="tests.test_task_control_registry_reads" name="test_exact_legacy_result_and_status_shapes[failed-output1]" time="0.001"><failure message="cpn.rpnh.registration.RegistrationError: schema id is not canonical">tmp_path = PosixPath('&lt;PYTEST_TEMP_ROOT&gt;/pytest-30/test_exact_legacy_result_and_s5')
+output = {'key': [1, None, True]}, outcome = 'failed'
+
+    @pytest.mark.parametrize("output", ["answer", {"key": [1, None, True]}, [1, "two"], None])
+    @pytest.mark.parametrize("outcome", ["complete", "failed"])
+    def test_exact_legacy_result_and_status_shapes(tmp_path, output, outcome):
+&gt;       owner = owner_at(tmp_path / "run", outcome=outcome)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_task_control_registry_reads.py:135: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_task_control_registry_reads.py:50: in owner_at
+    registration.register_schema(PAYLOAD, {
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;cpn.rpnh.registration.Registration object at 0x7f34ccf33bf0&gt;
+schema_id = 'application/task-reader-test/v1'
+schema = {'$id': 'application/task-reader-test/v1', '$schema': 'http://json-schema.org/draft-07/schema#'}
+
+    def register_schema(self, schema_id: str, schema: Mapping[str, Any]) -&gt; None:
+        if isinstance(schema_id, str) and schema_id in PROTECTED_SCHEMA_REFS:
+            raise RegistrationError("mechanical Registry/PN schemas are protected")
+        if not isinstance(schema_id, str) or _SCHEMA_ID.fullmatch(schema_id) is None:
+&gt;           raise RegistrationError("schema id is not canonical")
+E           cpn.rpnh.registration.RegistrationError: schema id is not canonical
+
+cpn/rpnh/registration.py:86: RegistrationError</failure></testcase><testcase classname="tests.test_task_control_registry_reads" name="test_exact_legacy_result_and_status_shapes[failed-output2]" time="0.001"><failure message="cpn.rpnh.registration.RegistrationError: schema id is not canonical">tmp_path = PosixPath('&lt;PYTEST_TEMP_ROOT&gt;/pytest-30/test_exact_legacy_result_and_s6')
+output = [1, 'two'], outcome = 'failed'
+
+    @pytest.mark.parametrize("output", ["answer", {"key": [1, None, True]}, [1, "two"], None])
+    @pytest.mark.parametrize("outcome", ["complete", "failed"])
+    def test_exact_legacy_result_and_status_shapes(tmp_path, output, outcome):
+&gt;       owner = owner_at(tmp_path / "run", outcome=outcome)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_task_control_registry_reads.py:135: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_task_control_registry_reads.py:50: in owner_at
+    registration.register_schema(PAYLOAD, {
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;cpn.rpnh.registration.Registration object at 0x7f34ccf31a60&gt;
+schema_id = 'application/task-reader-test/v1'
+schema = {'$id': 'application/task-reader-test/v1', '$schema': 'http://json-schema.org/draft-07/schema#'}
+
+    def register_schema(self, schema_id: str, schema: Mapping[str, Any]) -&gt; None:
+        if isinstance(schema_id, str) and schema_id in PROTECTED_SCHEMA_REFS:
+            raise RegistrationError("mechanical Registry/PN schemas are protected")
+        if not isinstance(schema_id, str) or _SCHEMA_ID.fullmatch(schema_id) is None:
+&gt;           raise RegistrationError("schema id is not canonical")
+E           cpn.rpnh.registration.RegistrationError: schema id is not canonical
+
+cpn/rpnh/registration.py:86: RegistrationError</failure></testcase><testcase classname="tests.test_task_control_registry_reads" name="test_exact_legacy_result_and_status_shapes[failed-None]" time="0.001"><failure message="cpn.rpnh.registration.RegistrationError: schema id is not canonical">tmp_path = PosixPath('&lt;PYTEST_TEMP_ROOT&gt;/pytest-30/test_exact_legacy_result_and_s7')
+output = None, outcome = 'failed'
+
+    @pytest.mark.parametrize("output", ["answer", {"key": [1, None, True]}, [1, "two"], None])
+    @pytest.mark.parametrize("outcome", ["complete", "failed"])
+    def test_exact_legacy_result_and_status_shapes(tmp_path, output, outcome):
+&gt;       owner = owner_at(tmp_path / "run", outcome=outcome)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_task_control_registry_reads.py:135: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_task_control_registry_reads.py:50: in owner_at
+    registration.register_schema(PAYLOAD, {
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;cpn.rpnh.registration.Registration object at 0x7f34ccf329f0&gt;
+schema_id = 'application/task-reader-test/v1'
+schema = {'$id': 'application/task-reader-test/v1', '$schema': 'http://json-schema.org/draft-07/schema#'}
+
+    def register_schema(self, schema_id: str, schema: Mapping[str, Any]) -&gt; None:
+        if isinstance(schema_id, str) and schema_id in PROTECTED_SCHEMA_REFS:
+            raise RegistrationError("mechanical Registry/PN schemas are protected")
+        if not isinstance(schema_id, str) or _SCHEMA_ID.fullmatch(schema_id) is None:
+&gt;           raise RegistrationError("schema id is not canonical")
+E           cpn.rpnh.registration.RegistrationError: schema id is not canonical
+
+cpn/rpnh/registration.py:86: RegistrationError</failure></testcase><testcase classname="tests.test_task_control_registry_reads" name="test_current_generation_never_falls_back_and_counts_remain_historical[running]" time="0.001"><failure message="cpn.rpnh.registration.RegistrationError: schema id is not canonical">tmp_path = PosixPath('&lt;PYTEST_TEMP_ROOT&gt;/pytest-30/test_current_generation_never_0')
+state = 'running'
+
+    @pytest.mark.parametrize("state", ["running", "stopped_by_owner", "terminal"])
+    def test_current_generation_never_falls_back_and_counts_remain_historical(tmp_path, state):
+&gt;       owner = owner_at(tmp_path / "run")
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_task_control_registry_reads.py:156: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_task_control_registry_reads.py:50: in owner_at
+    registration.register_schema(PAYLOAD, {
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;cpn.rpnh.registration.Registration object at 0x7f34ccebba10&gt;
+schema_id = 'application/task-reader-test/v1'
+schema = {'$id': 'application/task-reader-test/v1', '$schema': 'http://json-schema.org/draft-07/schema#'}
+
+    def register_schema(self, schema_id: str, schema: Mapping[str, Any]) -&gt; None:
+        if isinstance(schema_id, str) and schema_id in PROTECTED_SCHEMA_REFS:
+            raise RegistrationError("mechanical Registry/PN schemas are protected")
+        if not isinstance(schema_id, str) or _SCHEMA_ID.fullmatch(schema_id) is None:
+&gt;           raise RegistrationError("schema id is not canonical")
+E           cpn.rpnh.registration.RegistrationError: schema id is not canonical
+
+cpn/rpnh/registration.py:86: RegistrationError</failure></testcase><testcase classname="tests.test_task_control_registry_reads" name="test_current_generation_never_falls_back_and_counts_remain_historical[stopped_by_owner]" time="0.001"><failure message="cpn.rpnh.registration.RegistrationError: schema id is not canonical">tmp_path = PosixPath('&lt;PYTEST_TEMP_ROOT&gt;/pytest-30/test_current_generation_never_1')
+state = 'stopped_by_owner'
+
+    @pytest.mark.parametrize("state", ["running", "stopped_by_owner", "terminal"])
+    def test_current_generation_never_falls_back_and_counts_remain_historical(tmp_path, state):
+&gt;       owner = owner_at(tmp_path / "run")
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_task_control_registry_reads.py:156: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_task_control_registry_reads.py:50: in owner_at
+    registration.register_schema(PAYLOAD, {
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;cpn.rpnh.registration.Registration object at 0x7f34ccf31af0&gt;
+schema_id = 'application/task-reader-test/v1'
+schema = {'$id': 'application/task-reader-test/v1', '$schema': 'http://json-schema.org/draft-07/schema#'}
+
+    def register_schema(self, schema_id: str, schema: Mapping[str, Any]) -&gt; None:
+        if isinstance(schema_id, str) and schema_id in PROTECTED_SCHEMA_REFS:
+            raise RegistrationError("mechanical Registry/PN schemas are protected")
+        if not isinstance(schema_id, str) or _SCHEMA_ID.fullmatch(schema_id) is None:
+&gt;           raise RegistrationError("schema id is not canonical")
+E           cpn.rpnh.registration.RegistrationError: schema id is not canonical
+
+cpn/rpnh/registration.py:86: RegistrationError</failure></testcase><testcase classname="tests.test_task_control_registry_reads" name="test_current_generation_never_falls_back_and_counts_remain_historical[terminal]" time="0.001"><failure message="cpn.rpnh.registration.RegistrationError: schema id is not canonical">tmp_path = PosixPath('&lt;PYTEST_TEMP_ROOT&gt;/pytest-30/test_current_generation_never_2')
+state = 'terminal'
+
+    @pytest.mark.parametrize("state", ["running", "stopped_by_owner", "terminal"])
+    def test_current_generation_never_falls_back_and_counts_remain_historical(tmp_path, state):
+&gt;       owner = owner_at(tmp_path / "run")
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_task_control_registry_reads.py:156: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_task_control_registry_reads.py:50: in owner_at
+    registration.register_schema(PAYLOAD, {
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;cpn.rpnh.registration.Registration object at 0x7f34ccf30a70&gt;
+schema_id = 'application/task-reader-test/v1'
+schema = {'$id': 'application/task-reader-test/v1', '$schema': 'http://json-schema.org/draft-07/schema#'}
+
+    def register_schema(self, schema_id: str, schema: Mapping[str, Any]) -&gt; None:
+        if isinstance(schema_id, str) and schema_id in PROTECTED_SCHEMA_REFS:
+            raise RegistrationError("mechanical Registry/PN schemas are protected")
+        if not isinstance(schema_id, str) or _SCHEMA_ID.fullmatch(schema_id) is None:
+&gt;           raise RegistrationError("schema id is not canonical")
+E           cpn.rpnh.registration.RegistrationError: schema id is not canonical
+
+cpn/rpnh/registration.py:86: RegistrationError</failure></testcase><testcase classname="tests.test_task_control_registry_reads" name="test_consumer_reuses_native_read_and_rechecks_same_cut_after_counts[result]" time="0.001"><failure message="cpn.rpnh.registration.RegistrationError: schema id is not canonical">tmp_path = PosixPath('&lt;PYTEST_TEMP_ROOT&gt;/pytest-30/test_consumer_reuses_native_re0')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7f34ccf0ac60&gt;
+kind = 'result'
+
+    @pytest.mark.parametrize("kind", ["result", "status"])
+    def test_consumer_reuses_native_read_and_rechecks_same_cut_after_counts(tmp_path, monkeypatch, kind):
+&gt;       owner = owner_at(tmp_path / "run"); finish(owner)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_task_control_registry_reads.py:180: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_task_control_registry_reads.py:50: in owner_at
+    registration.register_schema(PAYLOAD, {
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;cpn.rpnh.registration.Registration object at 0x7f34ccf0acf0&gt;
+schema_id = 'application/task-reader-test/v1'
+schema = {'$id': 'application/task-reader-test/v1', '$schema': 'http://json-schema.org/draft-07/schema#'}
+
+    def register_schema(self, schema_id: str, schema: Mapping[str, Any]) -&gt; None:
+        if isinstance(schema_id, str) and schema_id in PROTECTED_SCHEMA_REFS:
+            raise RegistrationError("mechanical Registry/PN schemas are protected")
+        if not isinstance(schema_id, str) or _SCHEMA_ID.fullmatch(schema_id) is None:
+&gt;           raise RegistrationError("schema id is not canonical")
+E           cpn.rpnh.registration.RegistrationError: schema id is not canonical
+
+cpn/rpnh/registration.py:86: RegistrationError</failure></testcase><testcase classname="tests.test_task_control_registry_reads" name="test_consumer_reuses_native_read_and_rechecks_same_cut_after_counts[status]" time="0.001"><failure message="cpn.rpnh.registration.RegistrationError: schema id is not canonical">tmp_path = PosixPath('&lt;PYTEST_TEMP_ROOT&gt;/pytest-30/test_consumer_reuses_native_re1')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7f34ccf0ba70&gt;
+kind = 'status'
+
+    @pytest.mark.parametrize("kind", ["result", "status"])
+    def test_consumer_reuses_native_read_and_rechecks_same_cut_after_counts(tmp_path, monkeypatch, kind):
+&gt;       owner = owner_at(tmp_path / "run"); finish(owner)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_task_control_registry_reads.py:180: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_task_control_registry_reads.py:50: in owner_at
+    registration.register_schema(PAYLOAD, {
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;cpn.rpnh.registration.Registration object at 0x7f34ccf0bbf0&gt;
+schema_id = 'application/task-reader-test/v1'
+schema = {'$id': 'application/task-reader-test/v1', '$schema': 'http://json-schema.org/draft-07/schema#'}
+
+    def register_schema(self, schema_id: str, schema: Mapping[str, Any]) -&gt; None:
+        if isinstance(schema_id, str) and schema_id in PROTECTED_SCHEMA_REFS:
+            raise RegistrationError("mechanical Registry/PN schemas are protected")
+        if not isinstance(schema_id, str) or _SCHEMA_ID.fullmatch(schema_id) is None:
+&gt;           raise RegistrationError("schema id is not canonical")
+E           cpn.rpnh.registration.RegistrationError: schema id is not canonical
+
+cpn/rpnh/registration.py:86: RegistrationError</failure></testcase><testcase classname="tests.test_task_control_registry_reads" name="test_reads_do_not_open_writers_change_head_or_object_bytes[result]" time="0.001"><failure message="cpn.rpnh.registration.RegistrationError: schema id is not canonical">tmp_path = PosixPath('&lt;PYTEST_TEMP_ROOT&gt;/pytest-30/test_reads_do_not_open_writers0')
+kind = 'result'
+
+    @pytest.mark.parametrize("kind", ["result", "status"])
+    def test_reads_do_not_open_writers_change_head_or_object_bytes(tmp_path, kind):
+&gt;       owner = owner_at(tmp_path / "run"); finish(owner)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_task_control_registry_reads.py:214: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_task_control_registry_reads.py:50: in owner_at
+    registration.register_schema(PAYLOAD, {
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;cpn.rpnh.registration.Registration object at 0x7f34ccf09460&gt;
+schema_id = 'application/task-reader-test/v1'
+schema = {'$id': 'application/task-reader-test/v1', '$schema': 'http://json-schema.org/draft-07/schema#'}
+
+    def register_schema(self, schema_id: str, schema: Mapping[str, Any]) -&gt; None:
+        if isinstance(schema_id, str) and schema_id in PROTECTED_SCHEMA_REFS:
+            raise RegistrationError("mechanical Registry/PN schemas are protected")
+        if not isinstance(schema_id, str) or _SCHEMA_ID.fullmatch(schema_id) is None:
+&gt;           raise RegistrationError("schema id is not canonical")
+E           cpn.rpnh.registration.RegistrationError: schema id is not canonical
+
+cpn/rpnh/registration.py:86: RegistrationError</failure></testcase><testcase classname="tests.test_task_control_registry_reads" name="test_reads_do_not_open_writers_change_head_or_object_bytes[status]" time="0.001"><failure message="cpn.rpnh.registration.RegistrationError: schema id is not canonical">tmp_path = PosixPath('&lt;PYTEST_TEMP_ROOT&gt;/pytest-30/test_reads_do_not_open_writers1')
+kind = 'status'
+
+    @pytest.mark.parametrize("kind", ["result", "status"])
+    def test_reads_do_not_open_writers_change_head_or_object_bytes(tmp_path, kind):
+&gt;       owner = owner_at(tmp_path / "run"); finish(owner)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_task_control_registry_reads.py:214: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_task_control_registry_reads.py:50: in owner_at
+    registration.register_schema(PAYLOAD, {
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;cpn.rpnh.registration.Registration object at 0x7f34ccf30b30&gt;
+schema_id = 'application/task-reader-test/v1'
+schema = {'$id': 'application/task-reader-test/v1', '$schema': 'http://json-schema.org/draft-07/schema#'}
+
+    def register_schema(self, schema_id: str, schema: Mapping[str, Any]) -&gt; None:
+        if isinstance(schema_id, str) and schema_id in PROTECTED_SCHEMA_REFS:
+            raise RegistrationError("mechanical Registry/PN schemas are protected")
+        if not isinstance(schema_id, str) or _SCHEMA_ID.fullmatch(schema_id) is None:
+&gt;           raise RegistrationError("schema id is not canonical")
+E           cpn.rpnh.registration.RegistrationError: schema id is not canonical
+
+cpn/rpnh/registration.py:86: RegistrationError</failure></testcase><testcase classname="tests.test_task_control_registry_reads" name="test_counts_race_is_rejected_before_delivery[head-result]" time="0.001"><failure message="cpn.rpnh.registration.RegistrationError: schema id is not canonical">tmp_path = PosixPath('&lt;PYTEST_TEMP_ROOT&gt;/pytest-30/test_counts_race_is_rejected_b0')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7f34ccebb6e0&gt;
+kind = 'result', change = 'head'
+
+    @pytest.mark.parametrize("kind", ["result", "status"])
+    @pytest.mark.parametrize("change", ["head", "epoch", "run_pointer"])
+    def test_counts_race_is_rejected_before_delivery(tmp_path, monkeypatch, kind, change):
+&gt;       owner = owner_at(tmp_path / "run"); finish(owner)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_task_control_registry_reads.py:234: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_task_control_registry_reads.py:50: in owner_at
+    registration.register_schema(PAYLOAD, {
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;cpn.rpnh.registration.Registration object at 0x7f34ccebb830&gt;
+schema_id = 'application/task-reader-test/v1'
+schema = {'$id': 'application/task-reader-test/v1', '$schema': 'http://json-schema.org/draft-07/schema#'}
+
+    def register_schema(self, schema_id: str, schema: Mapping[str, Any]) -&gt; None:
+        if isinstance(schema_id, str) and schema_id in PROTECTED_SCHEMA_REFS:
+            raise RegistrationError("mechanical Registry/PN schemas are protected")
+        if not isinstance(schema_id, str) or _SCHEMA_ID.fullmatch(schema_id) is None:
+&gt;           raise RegistrationError("schema id is not canonical")
+E           cpn.rpnh.registration.RegistrationError: schema id is not canonical
+
+cpn/rpnh/registration.py:86: RegistrationError</failure></testcase><testcase classname="tests.test_task_control_registry_reads" name="test_counts_race_is_rejected_before_delivery[head-status]" time="0.001"><failure message="cpn.rpnh.registration.RegistrationError: schema id is not canonical">tmp_path = PosixPath('&lt;PYTEST_TEMP_ROOT&gt;/pytest-30/test_counts_race_is_rejected_b1')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7f34ccf31cd0&gt;
+kind = 'status', change = 'head'
+
+    @pytest.mark.parametrize("kind", ["result", "status"])
+    @pytest.mark.parametrize("change", ["head", "epoch", "run_pointer"])
+    def test_counts_race_is_rejected_before_delivery(tmp_path, monkeypatch, kind, change):
+&gt;       owner = owner_at(tmp_path / "run"); finish(owner)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_task_control_registry_reads.py:234: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_task_control_registry_reads.py:50: in owner_at
+    registration.register_schema(PAYLOAD, {
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;cpn.rpnh.registration.Registration object at 0x7f34ccf09940&gt;
+schema_id = 'application/task-reader-test/v1'
+schema = {'$id': 'application/task-reader-test/v1', '$schema': 'http://json-schema.org/draft-07/schema#'}
+
+    def register_schema(self, schema_id: str, schema: Mapping[str, Any]) -&gt; None:
+        if isinstance(schema_id, str) and schema_id in PROTECTED_SCHEMA_REFS:
+            raise RegistrationError("mechanical Registry/PN schemas are protected")
+        if not isinstance(schema_id, str) or _SCHEMA_ID.fullmatch(schema_id) is None:
+&gt;           raise RegistrationError("schema id is not canonical")
+E           cpn.rpnh.registration.RegistrationError: schema id is not canonical
+
+cpn/rpnh/registration.py:86: RegistrationError</failure></testcase><testcase classname="tests.test_task_control_registry_reads" name="test_counts_race_is_rejected_before_delivery[epoch-result]" time="0.001"><failure message="cpn.rpnh.registration.RegistrationError: schema id is not canonical">tmp_path = PosixPath('&lt;PYTEST_TEMP_ROOT&gt;/pytest-30/test_counts_race_is_rejected_b2')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7f34ccf0b200&gt;
+kind = 'result', change = 'epoch'
+
+    @pytest.mark.parametrize("kind", ["result", "status"])
+    @pytest.mark.parametrize("change", ["head", "epoch", "run_pointer"])
+    def test_counts_race_is_rejected_before_delivery(tmp_path, monkeypatch, kind, change):
+&gt;       owner = owner_at(tmp_path / "run"); finish(owner)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_task_control_registry_reads.py:234: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_task_control_registry_reads.py:50: in owner_at
+    registration.register_schema(PAYLOAD, {
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;cpn.rpnh.registration.Registration object at 0x7f34ccf0b770&gt;
+schema_id = 'application/task-reader-test/v1'
+schema = {'$id': 'application/task-reader-test/v1', '$schema': 'http://json-schema.org/draft-07/schema#'}
+
+    def register_schema(self, schema_id: str, schema: Mapping[str, Any]) -&gt; None:
+        if isinstance(schema_id, str) and schema_id in PROTECTED_SCHEMA_REFS:
+            raise RegistrationError("mechanical Registry/PN schemas are protected")
+        if not isinstance(schema_id, str) or _SCHEMA_ID.fullmatch(schema_id) is None:
+&gt;           raise RegistrationError("schema id is not canonical")
+E           cpn.rpnh.registration.RegistrationError: schema id is not canonical
+
+cpn/rpnh/registration.py:86: RegistrationError</failure></testcase><testcase classname="tests.test_task_control_registry_reads" name="test_counts_race_is_rejected_before_delivery[epoch-status]" time="0.001"><failure message="cpn.rpnh.registration.RegistrationError: schema id is not canonical">tmp_path = PosixPath('&lt;PYTEST_TEMP_ROOT&gt;/pytest-30/test_counts_race_is_rejected_b3')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7f34ccf20320&gt;
+kind = 'status', change = 'epoch'
+
+    @pytest.mark.parametrize("kind", ["result", "status"])
+    @pytest.mark.parametrize("change", ["head", "epoch", "run_pointer"])
+    def test_counts_race_is_rejected_before_delivery(tmp_path, monkeypatch, kind, change):
+&gt;       owner = owner_at(tmp_path / "run"); finish(owner)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_task_control_registry_reads.py:234: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_task_control_registry_reads.py:50: in owner_at
+    registration.register_schema(PAYLOAD, {
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;cpn.rpnh.registration.Registration object at 0x7f34ccf20410&gt;
+schema_id = 'application/task-reader-test/v1'
+schema = {'$id': 'application/task-reader-test/v1', '$schema': 'http://json-schema.org/draft-07/schema#'}
+
+    def register_schema(self, schema_id: str, schema: Mapping[str, Any]) -&gt; None:
+        if isinstance(schema_id, str) and schema_id in PROTECTED_SCHEMA_REFS:
+            raise RegistrationError("mechanical Registry/PN schemas are protected")
+        if not isinstance(schema_id, str) or _SCHEMA_ID.fullmatch(schema_id) is None:
+&gt;           raise RegistrationError("schema id is not canonical")
+E           cpn.rpnh.registration.RegistrationError: schema id is not canonical
+
+cpn/rpnh/registration.py:86: RegistrationError</failure></testcase><testcase classname="tests.test_task_control_registry_reads" name="test_counts_race_is_rejected_before_delivery[run_pointer-result]" time="0.002"><failure message="cpn.rpnh.registration.RegistrationError: schema id is not canonical">tmp_path = PosixPath('&lt;PYTEST_TEMP_ROOT&gt;/pytest-30/test_counts_race_is_rejected_b4')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7f34ccf237a0&gt;
+kind = 'result', change = 'run_pointer'
+
+    @pytest.mark.parametrize("kind", ["result", "status"])
+    @pytest.mark.parametrize("change", ["head", "epoch", "run_pointer"])
+    def test_counts_race_is_rejected_before_delivery(tmp_path, monkeypatch, kind, change):
+&gt;       owner = owner_at(tmp_path / "run"); finish(owner)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_task_control_registry_reads.py:234: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_task_control_registry_reads.py:50: in owner_at
+    registration.register_schema(PAYLOAD, {
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;cpn.rpnh.registration.Registration object at 0x7f34ccf23aa0&gt;
+schema_id = 'application/task-reader-test/v1'
+schema = {'$id': 'application/task-reader-test/v1', '$schema': 'http://json-schema.org/draft-07/schema#'}
+
+    def register_schema(self, schema_id: str, schema: Mapping[str, Any]) -&gt; None:
+        if isinstance(schema_id, str) and schema_id in PROTECTED_SCHEMA_REFS:
+            raise RegistrationError("mechanical Registry/PN schemas are protected")
+        if not isinstance(schema_id, str) or _SCHEMA_ID.fullmatch(schema_id) is None:
+&gt;           raise RegistrationError("schema id is not canonical")
+E           cpn.rpnh.registration.RegistrationError: schema id is not canonical
+
+cpn/rpnh/registration.py:86: RegistrationError</failure></testcase><testcase classname="tests.test_task_control_registry_reads" name="test_counts_race_is_rejected_before_delivery[run_pointer-status]" time="0.001"><failure message="cpn.rpnh.registration.RegistrationError: schema id is not canonical">tmp_path = PosixPath('&lt;PYTEST_TEMP_ROOT&gt;/pytest-30/test_counts_race_is_rejected_b5')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7f34ccf0a0f0&gt;
+kind = 'status', change = 'run_pointer'
+
+    @pytest.mark.parametrize("kind", ["result", "status"])
+    @pytest.mark.parametrize("change", ["head", "epoch", "run_pointer"])
+    def test_counts_race_is_rejected_before_delivery(tmp_path, monkeypatch, kind, change):
+&gt;       owner = owner_at(tmp_path / "run"); finish(owner)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_task_control_registry_reads.py:234: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_task_control_registry_reads.py:50: in owner_at
+    registration.register_schema(PAYLOAD, {
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;cpn.rpnh.registration.Registration object at 0x7f34ccf0a7b0&gt;
+schema_id = 'application/task-reader-test/v1'
+schema = {'$id': 'application/task-reader-test/v1', '$schema': 'http://json-schema.org/draft-07/schema#'}
+
+    def register_schema(self, schema_id: str, schema: Mapping[str, Any]) -&gt; None:
+        if isinstance(schema_id, str) and schema_id in PROTECTED_SCHEMA_REFS:
+            raise RegistrationError("mechanical Registry/PN schemas are protected")
+        if not isinstance(schema_id, str) or _SCHEMA_ID.fullmatch(schema_id) is None:
+&gt;           raise RegistrationError("schema id is not canonical")
+E           cpn.rpnh.registration.RegistrationError: schema id is not canonical
+
+cpn/rpnh/registration.py:86: RegistrationError</failure></testcase><testcase classname="tests.test_task_control_registry_reads" name="test_payload_decode_race_is_rejected" time="0.001"><failure message="cpn.rpnh.registration.RegistrationError: schema id is not canonical">tmp_path = PosixPath('&lt;PYTEST_TEMP_ROOT&gt;/pytest-30/test_payload_decode_race_is_re0')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7f34ccebaff0&gt;
+
+    def test_payload_decode_race_is_rejected(tmp_path, monkeypatch):
+&gt;       owner = owner_at(tmp_path / "run"); finish(owner, "decode-race-sentinel")
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_task_control_registry_reads.py:259: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_task_control_registry_reads.py:50: in owner_at
+    registration.register_schema(PAYLOAD, {
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;cpn.rpnh.registration.Registration object at 0x7f34ccebb140&gt;
+schema_id = 'application/task-reader-test/v1'
+schema = {'$id': 'application/task-reader-test/v1', '$schema': 'http://json-schema.org/draft-07/schema#'}
+
+    def register_schema(self, schema_id: str, schema: Mapping[str, Any]) -&gt; None:
+        if isinstance(schema_id, str) and schema_id in PROTECTED_SCHEMA_REFS:
+            raise RegistrationError("mechanical Registry/PN schemas are protected")
+        if not isinstance(schema_id, str) or _SCHEMA_ID.fullmatch(schema_id) is None:
+&gt;           raise RegistrationError("schema id is not canonical")
+E           cpn.rpnh.registration.RegistrationError: schema id is not canonical
+
+cpn/rpnh/registration.py:86: RegistrationError</failure></testcase><testcase classname="tests.test_task_control_registry_reads" name="test_wrong_canonical_typed_identity_is_rejected[terminal_evidence_ref-result]" time="0.001"><failure message="cpn.rpnh.registration.RegistrationError: schema id is not canonical">tmp_path = PosixPath('&lt;PYTEST_TEMP_ROOT&gt;/pytest-30/test_wrong_canonical_typed_ide0')
+kind = 'result', field = 'terminal_evidence_ref'
+
+    @pytest.mark.parametrize("kind", ["result", "status"])
+    @pytest.mark.parametrize("field", ["terminal_evidence_ref", "run_ref", "final_checkpoint_ref"])
+    def test_wrong_canonical_typed_identity_is_rejected(tmp_path, kind, field):
+&gt;       owner = owner_at(tmp_path / "run")
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_task_control_registry_reads.py:288: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_task_control_registry_reads.py:50: in owner_at
+    registration.register_schema(PAYLOAD, {
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;cpn.rpnh.registration.Registration object at 0x7f34ccf23770&gt;
+schema_id = 'application/task-reader-test/v1'
+schema = {'$id': 'application/task-reader-test/v1', '$schema': 'http://json-schema.org/draft-07/schema#'}
+
+    def register_schema(self, schema_id: str, schema: Mapping[str, Any]) -&gt; None:
+        if isinstance(schema_id, str) and schema_id in PROTECTED_SCHEMA_REFS:
+            raise RegistrationError("mechanical Registry/PN schemas are protected")
+        if not isinstance(schema_id, str) or _SCHEMA_ID.fullmatch(schema_id) is None:
+&gt;           raise RegistrationError("schema id is not canonical")
+E           cpn.rpnh.registration.RegistrationError: schema id is not canonical
+
+cpn/rpnh/registration.py:86: RegistrationError</failure></testcase><testcase classname="tests.test_task_control_registry_reads" name="test_wrong_canonical_typed_identity_is_rejected[terminal_evidence_ref-status]" time="0.001"><failure message="cpn.rpnh.registration.RegistrationError: schema id is not canonical">tmp_path = PosixPath('&lt;PYTEST_TEMP_ROOT&gt;/pytest-30/test_wrong_canonical_typed_ide1')
+kind = 'status', field = 'terminal_evidence_ref'
+
+    @pytest.mark.parametrize("kind", ["result", "status"])
+    @pytest.mark.parametrize("field", ["terminal_evidence_ref", "run_ref", "final_checkpoint_ref"])
+    def test_wrong_canonical_typed_identity_is_rejected(tmp_path, kind, field):
+&gt;       owner = owner_at(tmp_path / "run")
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_task_control_registry_reads.py:288: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_task_control_registry_reads.py:50: in owner_at
+    registration.register_schema(PAYLOAD, {
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;cpn.rpnh.registration.Registration object at 0x7f34ccf08110&gt;
+schema_id = 'application/task-reader-test/v1'
+schema = {'$id': 'application/task-reader-test/v1', '$schema': 'http://json-schema.org/draft-07/schema#'}
+
+    def register_schema(self, schema_id: str, schema: Mapping[str, Any]) -&gt; None:
+        if isinstance(schema_id, str) and schema_id in PROTECTED_SCHEMA_REFS:
+            raise RegistrationError("mechanical Registry/PN schemas are protected")
+        if not isinstance(schema_id, str) or _SCHEMA_ID.fullmatch(schema_id) is None:
+&gt;           raise RegistrationError("schema id is not canonical")
+E           cpn.rpnh.registration.RegistrationError: schema id is not canonical
+
+cpn/rpnh/registration.py:86: RegistrationError</failure></testcase><testcase classname="tests.test_task_control_registry_reads" name="test_wrong_canonical_typed_identity_is_rejected[run_ref-result]" time="0.001"><failure message="cpn.rpnh.registration.RegistrationError: schema id is not canonical">tmp_path = PosixPath('&lt;PYTEST_TEMP_ROOT&gt;/pytest-30/test_wrong_canonical_typed_ide2')
+kind = 'result', field = 'run_ref'
+
+    @pytest.mark.parametrize("kind", ["result", "status"])
+    @pytest.mark.parametrize("field", ["terminal_evidence_ref", "run_ref", "final_checkpoint_ref"])
+    def test_wrong_canonical_typed_identity_is_rejected(tmp_path, kind, field):
+&gt;       owner = owner_at(tmp_path / "run")
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_task_control_registry_reads.py:288: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_task_control_registry_reads.py:50: in owner_at
+    registration.register_schema(PAYLOAD, {
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;cpn.rpnh.registration.Registration object at 0x7f34ccf20890&gt;
+schema_id = 'application/task-reader-test/v1'
+schema = {'$id': 'application/task-reader-test/v1', '$schema': 'http://json-schema.org/draft-07/schema#'}
+
+    def register_schema(self, schema_id: str, schema: Mapping[str, Any]) -&gt; None:
+        if isinstance(schema_id, str) and schema_id in PROTECTED_SCHEMA_REFS:
+            raise RegistrationError("mechanical Registry/PN schemas are protected")
+        if not isinstance(schema_id, str) or _SCHEMA_ID.fullmatch(schema_id) is None:
+&gt;           raise RegistrationError("schema id is not canonical")
+E           cpn.rpnh.registration.RegistrationError: schema id is not canonical
+
+cpn/rpnh/registration.py:86: RegistrationError</failure></testcase><testcase classname="tests.test_task_control_registry_reads" name="test_wrong_canonical_typed_identity_is_rejected[run_ref-status]" time="0.001"><failure message="cpn.rpnh.registration.RegistrationError: schema id is not canonical">tmp_path = PosixPath('&lt;PYTEST_TEMP_ROOT&gt;/pytest-30/test_wrong_canonical_typed_ide3')
+kind = 'status', field = 'run_ref'
+
+    @pytest.mark.parametrize("kind", ["result", "status"])
+    @pytest.mark.parametrize("field", ["terminal_evidence_ref", "run_ref", "final_checkpoint_ref"])
+    def test_wrong_canonical_typed_identity_is_rejected(tmp_path, kind, field):
+&gt;       owner = owner_at(tmp_path / "run")
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_task_control_registry_reads.py:288: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_task_control_registry_reads.py:50: in owner_at
+    registration.register_schema(PAYLOAD, {
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;cpn.rpnh.registration.Registration object at 0x7f34ccf22ff0&gt;
+schema_id = 'application/task-reader-test/v1'
+schema = {'$id': 'application/task-reader-test/v1', '$schema': 'http://json-schema.org/draft-07/schema#'}
+
+    def register_schema(self, schema_id: str, schema: Mapping[str, Any]) -&gt; None:
+        if isinstance(schema_id, str) and schema_id in PROTECTED_SCHEMA_REFS:
+            raise RegistrationError("mechanical Registry/PN schemas are protected")
+        if not isinstance(schema_id, str) or _SCHEMA_ID.fullmatch(schema_id) is None:
+&gt;           raise RegistrationError("schema id is not canonical")
+E           cpn.rpnh.registration.RegistrationError: schema id is not canonical
+
+cpn/rpnh/registration.py:86: RegistrationError</failure></testcase><testcase classname="tests.test_task_control_registry_reads" name="test_wrong_canonical_typed_identity_is_rejected[final_checkpoint_ref-result]" time="0.001"><failure message="cpn.rpnh.registration.RegistrationError: schema id is not canonical">tmp_path = PosixPath('&lt;PYTEST_TEMP_ROOT&gt;/pytest-30/test_wrong_canonical_typed_ide4')
+kind = 'result', field = 'final_checkpoint_ref'
+
+    @pytest.mark.parametrize("kind", ["result", "status"])
+    @pytest.mark.parametrize("field", ["terminal_evidence_ref", "run_ref", "final_checkpoint_ref"])
+    def test_wrong_canonical_typed_identity_is_rejected(tmp_path, kind, field):
+&gt;       owner = owner_at(tmp_path / "run")
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_task_control_registry_reads.py:288: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_task_control_registry_reads.py:50: in owner_at
+    registration.register_schema(PAYLOAD, {
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;cpn.rpnh.registration.Registration object at 0x7f34ccf33740&gt;
+schema_id = 'application/task-reader-test/v1'
+schema = {'$id': 'application/task-reader-test/v1', '$schema': 'http://json-schema.org/draft-07/schema#'}
+
+    def register_schema(self, schema_id: str, schema: Mapping[str, Any]) -&gt; None:
+        if isinstance(schema_id, str) and schema_id in PROTECTED_SCHEMA_REFS:
+            raise RegistrationError("mechanical Registry/PN schemas are protected")
+        if not isinstance(schema_id, str) or _SCHEMA_ID.fullmatch(schema_id) is None:
+&gt;           raise RegistrationError("schema id is not canonical")
+E           cpn.rpnh.registration.RegistrationError: schema id is not canonical
+
+cpn/rpnh/registration.py:86: RegistrationError</failure></testcase><testcase classname="tests.test_task_control_registry_reads" name="test_wrong_canonical_typed_identity_is_rejected[final_checkpoint_ref-status]" time="0.001"><failure message="cpn.rpnh.registration.RegistrationError: schema id is not canonical">tmp_path = PosixPath('&lt;PYTEST_TEMP_ROOT&gt;/pytest-30/test_wrong_canonical_typed_ide5')
+kind = 'status', field = 'final_checkpoint_ref'
+
+    @pytest.mark.parametrize("kind", ["result", "status"])
+    @pytest.mark.parametrize("field", ["terminal_evidence_ref", "run_ref", "final_checkpoint_ref"])
+    def test_wrong_canonical_typed_identity_is_rejected(tmp_path, kind, field):
+&gt;       owner = owner_at(tmp_path / "run")
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_task_control_registry_reads.py:288: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_task_control_registry_reads.py:50: in owner_at
+    registration.register_schema(PAYLOAD, {
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;cpn.rpnh.registration.Registration object at 0x7f34ccf0a0c0&gt;
+schema_id = 'application/task-reader-test/v1'
+schema = {'$id': 'application/task-reader-test/v1', '$schema': 'http://json-schema.org/draft-07/schema#'}
+
+    def register_schema(self, schema_id: str, schema: Mapping[str, Any]) -&gt; None:
+        if isinstance(schema_id, str) and schema_id in PROTECTED_SCHEMA_REFS:
+            raise RegistrationError("mechanical Registry/PN schemas are protected")
+        if not isinstance(schema_id, str) or _SCHEMA_ID.fullmatch(schema_id) is None:
+&gt;           raise RegistrationError("schema id is not canonical")
+E           cpn.rpnh.registration.RegistrationError: schema id is not canonical
+
+cpn/rpnh/registration.py:86: RegistrationError</failure></testcase><testcase classname="tests.test_task_control_registry_reads" name="test_reader_rejection_never_uses_legacy_fallback[result]" time="0.001"><failure message="cpn.rpnh.registration.RegistrationError: schema id is not canonical">tmp_path = PosixPath('&lt;PYTEST_TEMP_ROOT&gt;/pytest-30/test_reader_rejection_never_us0')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7f34ccf21af0&gt;
+kind = 'result'
+
+    @pytest.mark.parametrize("kind", ["result", "status"])
+    def test_reader_rejection_never_uses_legacy_fallback(tmp_path, monkeypatch, kind):
+&gt;       owner = owner_at(tmp_path / "run"); finish(owner)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_task_control_registry_reads.py:300: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_task_control_registry_reads.py:50: in owner_at
+    registration.register_schema(PAYLOAD, {
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;cpn.rpnh.registration.Registration object at 0x7f34ccf21d60&gt;
+schema_id = 'application/task-reader-test/v1'
+schema = {'$id': 'application/task-reader-test/v1', '$schema': 'http://json-schema.org/draft-07/schema#'}
+
+    def register_schema(self, schema_id: str, schema: Mapping[str, Any]) -&gt; None:
+        if isinstance(schema_id, str) and schema_id in PROTECTED_SCHEMA_REFS:
+            raise RegistrationError("mechanical Registry/PN schemas are protected")
+        if not isinstance(schema_id, str) or _SCHEMA_ID.fullmatch(schema_id) is None:
+&gt;           raise RegistrationError("schema id is not canonical")
+E           cpn.rpnh.registration.RegistrationError: schema id is not canonical
+
+cpn/rpnh/registration.py:86: RegistrationError</failure></testcase><testcase classname="tests.test_task_control_registry_reads" name="test_reader_rejection_never_uses_legacy_fallback[status]" time="0.001"><failure message="cpn.rpnh.registration.RegistrationError: schema id is not canonical">tmp_path = PosixPath('&lt;PYTEST_TEMP_ROOT&gt;/pytest-30/test_reader_rejection_never_us1')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7f34ccf49100&gt;
+kind = 'status'
+
+    @pytest.mark.parametrize("kind", ["result", "status"])
+    def test_reader_rejection_never_uses_legacy_fallback(tmp_path, monkeypatch, kind):
+&gt;       owner = owner_at(tmp_path / "run"); finish(owner)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_task_control_registry_reads.py:300: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_task_control_registry_reads.py:50: in owner_at
+    registration.register_schema(PAYLOAD, {
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;cpn.rpnh.registration.Registration object at 0x7f34ccf48da0&gt;
+schema_id = 'application/task-reader-test/v1'
+schema = {'$id': 'application/task-reader-test/v1', '$schema': 'http://json-schema.org/draft-07/schema#'}
+
+    def register_schema(self, schema_id: str, schema: Mapping[str, Any]) -&gt; None:
+        if isinstance(schema_id, str) and schema_id in PROTECTED_SCHEMA_REFS:
+            raise RegistrationError("mechanical Registry/PN schemas are protected")
+        if not isinstance(schema_id, str) or _SCHEMA_ID.fullmatch(schema_id) is None:
+&gt;           raise RegistrationError("schema id is not canonical")
+E           cpn.rpnh.registration.RegistrationError: schema id is not canonical
+
+cpn/rpnh/registration.py:86: RegistrationError</failure></testcase><testcase classname="tests.test_task_control_registry_reads" name="test_legal_large_terminal_product_remains_available[4194304]" time="0.001"><failure message="cpn.rpnh.registration.RegistrationError: schema id is not canonical">tmp_path = PosixPath('&lt;PYTEST_TEMP_ROOT&gt;/pytest-30/test_legal_large_terminal_prod0')
+size = 4194304
+
+    @pytest.mark.parametrize("size", [4 * 1024 * 1024, 4 * 1024 * 1024 + 1])
+    def test_legal_large_terminal_product_remains_available(tmp_path, size):
+&gt;       owner = owner_at(tmp_path / "run")
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_task_control_registry_reads.py:310: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_task_control_registry_reads.py:50: in owner_at
+    registration.register_schema(PAYLOAD, {
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;cpn.rpnh.registration.Registration object at 0x7f34ccf23950&gt;
+schema_id = 'application/task-reader-test/v1'
+schema = {'$id': 'application/task-reader-test/v1', '$schema': 'http://json-schema.org/draft-07/schema#'}
+
+    def register_schema(self, schema_id: str, schema: Mapping[str, Any]) -&gt; None:
+        if isinstance(schema_id, str) and schema_id in PROTECTED_SCHEMA_REFS:
+            raise RegistrationError("mechanical Registry/PN schemas are protected")
+        if not isinstance(schema_id, str) or _SCHEMA_ID.fullmatch(schema_id) is None:
+&gt;           raise RegistrationError("schema id is not canonical")
+E           cpn.rpnh.registration.RegistrationError: schema id is not canonical
+
+cpn/rpnh/registration.py:86: RegistrationError</failure></testcase><testcase classname="tests.test_task_control_registry_reads" name="test_legal_large_terminal_product_remains_available[4194305]" time="0.002"><failure message="cpn.rpnh.registration.RegistrationError: schema id is not canonical">tmp_path = PosixPath('&lt;PYTEST_TEMP_ROOT&gt;/pytest-30/test_legal_large_terminal_prod1')
+size = 4194305
+
+    @pytest.mark.parametrize("size", [4 * 1024 * 1024, 4 * 1024 * 1024 + 1])
+    def test_legal_large_terminal_product_remains_available(tmp_path, size):
+&gt;       owner = owner_at(tmp_path / "run")
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_task_control_registry_reads.py:310: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_task_control_registry_reads.py:50: in owner_at
+    registration.register_schema(PAYLOAD, {
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;cpn.rpnh.registration.Registration object at 0x7f34ccf4c770&gt;
+schema_id = 'application/task-reader-test/v1'
+schema = {'$id': 'application/task-reader-test/v1', '$schema': 'http://json-schema.org/draft-07/schema#'}
+
+    def register_schema(self, schema_id: str, schema: Mapping[str, Any]) -&gt; None:
+        if isinstance(schema_id, str) and schema_id in PROTECTED_SCHEMA_REFS:
+            raise RegistrationError("mechanical Registry/PN schemas are protected")
+        if not isinstance(schema_id, str) or _SCHEMA_ID.fullmatch(schema_id) is None:
+&gt;           raise RegistrationError("schema id is not canonical")
+E           cpn.rpnh.registration.RegistrationError: schema id is not canonical
+
+cpn/rpnh/registration.py:86: RegistrationError</failure></testcase><testcase classname="tests.test_task_control_registry_reads" name="test_product_backing_growth_is_bounded_and_fails_without_truncation" time="0.001"><failure message="cpn.rpnh.registration.RegistrationError: schema id is not canonical">tmp_path = PosixPath('&lt;PYTEST_TEMP_ROOT&gt;/pytest-30/test_product_backing_growth_is0')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7f34ccf0bb60&gt;
+
+    def test_product_backing_growth_is_bounded_and_fails_without_truncation(tmp_path, monkeypatch):
+&gt;       owner = owner_at(tmp_path / "run"); finish(owner)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_task_control_registry_reads.py:317: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_task_control_registry_reads.py:50: in owner_at
+    registration.register_schema(PAYLOAD, {
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;cpn.rpnh.registration.Registration object at 0x7f34ccf08080&gt;
+schema_id = 'application/task-reader-test/v1'
+schema = {'$id': 'application/task-reader-test/v1', '$schema': 'http://json-schema.org/draft-07/schema#'}
+
+    def register_schema(self, schema_id: str, schema: Mapping[str, Any]) -&gt; None:
+        if isinstance(schema_id, str) and schema_id in PROTECTED_SCHEMA_REFS:
+            raise RegistrationError("mechanical Registry/PN schemas are protected")
+        if not isinstance(schema_id, str) or _SCHEMA_ID.fullmatch(schema_id) is None:
+&gt;           raise RegistrationError("schema id is not canonical")
+E           cpn.rpnh.registration.RegistrationError: schema id is not canonical
+
+cpn/rpnh/registration.py:86: RegistrationError</failure></testcase><testcase classname="tests.test_task_control_registry_reads" name="test_status_keeps_process_and_socket_observations_separate" time="0.001"><failure message="cpn.rpnh.registration.RegistrationError: schema id is not canonical">tmp_path = PosixPath('&lt;PYTEST_TEMP_ROOT&gt;/pytest-30/test_status_keeps_process_and_0')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7f34ccf4fef0&gt;
+
+    def test_status_keeps_process_and_socket_observations_separate(tmp_path, monkeypatch):
+&gt;       owner = owner_at(tmp_path / "run"); finish(owner)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_task_control_registry_reads.py:336: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_task_control_registry_reads.py:50: in owner_at
+    registration.register_schema(PAYLOAD, {
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;cpn.rpnh.registration.Registration object at 0x7f34ccf4fe90&gt;
+schema_id = 'application/task-reader-test/v1'
+schema = {'$id': 'application/task-reader-test/v1', '$schema': 'http://json-schema.org/draft-07/schema#'}
+
+    def register_schema(self, schema_id: str, schema: Mapping[str, Any]) -&gt; None:
+        if isinstance(schema_id, str) and schema_id in PROTECTED_SCHEMA_REFS:
+            raise RegistrationError("mechanical Registry/PN schemas are protected")
+        if not isinstance(schema_id, str) or _SCHEMA_ID.fullmatch(schema_id) is None:
+&gt;           raise RegistrationError("schema id is not canonical")
+E           cpn.rpnh.registration.RegistrationError: schema id is not canonical
+
+cpn/rpnh/registration.py:86: RegistrationError</failure></testcase><testcase classname="tests.test_task_control_registry_reads" name="test_status_reader_error_shape_and_os_stop_remain" time="0.002"><failure message="cpn.rpnh.registration.RegistrationError: schema id is not canonical">tmp_path = PosixPath('&lt;PYTEST_TEMP_ROOT&gt;/pytest-30/test_status_reader_error_shape0')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7f34ccf4e480&gt;
+
+    def test_status_reader_error_shape_and_os_stop_remain(tmp_path, monkeypatch):
+&gt;       owner = owner_at(tmp_path / "run"); finish(owner)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_task_control_registry_reads.py:348: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_task_control_registry_reads.py:50: in owner_at
+    registration.register_schema(PAYLOAD, {
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;cpn.rpnh.registration.Registration object at 0x7f34ccf4e3f0&gt;
+schema_id = 'application/task-reader-test/v1'
+schema = {'$id': 'application/task-reader-test/v1', '$schema': 'http://json-schema.org/draft-07/schema#'}
+
+    def register_schema(self, schema_id: str, schema: Mapping[str, Any]) -&gt; None:
+        if isinstance(schema_id, str) and schema_id in PROTECTED_SCHEMA_REFS:
+            raise RegistrationError("mechanical Registry/PN schemas are protected")
+        if not isinstance(schema_id, str) or _SCHEMA_ID.fullmatch(schema_id) is None:
+&gt;           raise RegistrationError("schema id is not canonical")
+E           cpn.rpnh.registration.RegistrationError: schema id is not canonical
+
+cpn/rpnh/registration.py:86: RegistrationError</failure></testcase><testcase classname="tests.test_task_control_registry_reads" name="test_resume_still_accepts_only_current_owner_stopped_state" time="0.001"><failure message="cpn.rpnh.registration.RegistrationError: schema id is not canonical">tmp_path = PosixPath('&lt;PYTEST_TEMP_ROOT&gt;/pytest-30/test_resume_still_accepts_only0')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7f34ccf21dc0&gt;
+
+    def test_resume_still_accepts_only_current_owner_stopped_state(tmp_path, monkeypatch):
+&gt;       owner = owner_at(tmp_path / "run")
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_task_control_registry_reads.py:361: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_task_control_registry_reads.py:50: in owner_at
+    registration.register_schema(PAYLOAD, {
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;cpn.rpnh.registration.Registration object at 0x7f34ccf231d0&gt;
+schema_id = 'application/task-reader-test/v1'
+schema = {'$id': 'application/task-reader-test/v1', '$schema': 'http://json-schema.org/draft-07/schema#'}
+
+    def register_schema(self, schema_id: str, schema: Mapping[str, Any]) -&gt; None:
+        if isinstance(schema_id, str) and schema_id in PROTECTED_SCHEMA_REFS:
+            raise RegistrationError("mechanical Registry/PN schemas are protected")
+        if not isinstance(schema_id, str) or _SCHEMA_ID.fullmatch(schema_id) is None:
+&gt;           raise RegistrationError("schema id is not canonical")
+E           cpn.rpnh.registration.RegistrationError: schema id is not canonical
+
+cpn/rpnh/registration.py:86: RegistrationError</failure></testcase><testcase classname="tests.test_task_control_registry_reads" name="test_missing_registry_is_not_created" time="0.001"><failure message="AttributeError: 'types.SimpleNamespace' object has no attribute 'task_id'">tmp_path = PosixPath('&lt;PYTEST_TEMP_ROOT&gt;/pytest-30/test_missing_registry_is_not_c0')
+
+    def test_missing_registry_is_not_created(tmp_path):
+        control = TaskControl(tmp_path / "control", popen_factory=forbidden,
+                              recover_pending_launches=False)
+        control._tasks["missing"] = SimpleNamespace(run_dir=tmp_path / "absent", kind="single_agent")
+        with pytest.raises(RuntimeError, match="Registry is not currently available"):
+&gt;           control.result("missing")
+
+tests/test_task_control_registry_reads.py:379: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+cpn/rpnh/task_control.py:594: in result
+    handle = self.get(task_id)
+             ^^^^^^^^^^^^^^^^^
+cpn/rpnh/task_control.py:497: in get
+    self._refresh_handle_process(handle)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;cpn.rpnh.task_control.TaskControl object at 0x7f34ccf484d0&gt;
+handle = namespace(run_dir=PosixPath('&lt;PYTEST_TEMP_ROOT&gt;/pytest-30/test_missing_registry_is_not_c0/absent'), kind='single_agent')
+
+    def _refresh_handle_process(self, handle: TaskHandle) -&gt; None:
+&gt;       path = self._manifest_root / f"{handle.task_id}.json"
+                                        ^^^^^^^^^^^^^^
+E       AttributeError: 'types.SimpleNamespace' object has no attribute 'task_id'
+
+cpn/rpnh/task_control.py:222: AttributeError</failure></testcase><testcase classname="tests.test_task_control_registry_reads" name="test_basic_and_application_result_use_same_consumer" time="0.025"><failure message="cpn.rpnh.registration.RegistrationError: schema id is not canonical">tmp_path = PosixPath('&lt;PYTEST_TEMP_ROOT&gt;/pytest-30/test_basic_and_application_res0')
+capsys = &lt;_pytest.capture.CaptureFixture object at 0x7f34ccf4bce0&gt;
+
+    def test_basic_and_application_result_use_same_consumer(tmp_path, capsys):
+        from cpn.rpnh_cli import _task_command
+        from cpn.rpnh.frontend_application import RegistryFrontendApplication
+&gt;       owner = owner_at(tmp_path / "run"); finish(owner, {"answer": "shared"})
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_task_control_registry_reads.py:388: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_task_control_registry_reads.py:50: in owner_at
+    registration.register_schema(PAYLOAD, {
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;cpn.rpnh.registration.Registration object at 0x7f34ccf08530&gt;
+schema_id = 'application/task-reader-test/v1'
+schema = {'$id': 'application/task-reader-test/v1', '$schema': 'http://json-schema.org/draft-07/schema#'}
+
+    def register_schema(self, schema_id: str, schema: Mapping[str, Any]) -&gt; None:
+        if isinstance(schema_id, str) and schema_id in PROTECTED_SCHEMA_REFS:
+            raise RegistrationError("mechanical Registry/PN schemas are protected")
+        if not isinstance(schema_id, str) or _SCHEMA_ID.fullmatch(schema_id) is None:
+&gt;           raise RegistrationError("schema id is not canonical")
+E           cpn.rpnh.registration.RegistrationError: schema id is not canonical
+
+cpn/rpnh/registration.py:86: RegistrationError</failure></testcase></testsuite></testsuites>

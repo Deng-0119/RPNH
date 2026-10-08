@@ -1,0 +1,28 @@
+FFFF                                                                     [100%]
+=================================== FAILURES ===================================
+_____________ test_same_cut_recheck_after_accounting[head-result] ______________
+../independent-review/test_taskcontrol_independent.py:63: in test_same_cut_recheck_after_accounting
+    with pytest.raises(RuntimeError, match='Registry advanced'):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE <class 'RuntimeError'>
+_____________ test_same_cut_recheck_after_accounting[head-status] ______________
+../independent-review/test_taskcontrol_independent.py:63: in test_same_cut_recheck_after_accounting
+    with pytest.raises(RuntimeError, match='Registry advanced'):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE <class 'RuntimeError'>
+_____________ test_same_cut_recheck_after_accounting[epoch-result] _____________
+../independent-review/test_taskcontrol_independent.py:63: in test_same_cut_recheck_after_accounting
+    with pytest.raises(RuntimeError, match='Registry advanced'):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE <class 'RuntimeError'>
+_____________ test_same_cut_recheck_after_accounting[epoch-status] _____________
+../independent-review/test_taskcontrol_independent.py:63: in test_same_cut_recheck_after_accounting
+    with pytest.raises(RuntimeError, match='Registry advanced'):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE <class 'RuntimeError'>
+=========================== short test summary info ============================
+FAILED ../independent-review/test_taskcontrol_independent.py::test_same_cut_recheck_after_accounting[head-result]
+FAILED ../independent-review/test_taskcontrol_independent.py::test_same_cut_recheck_after_accounting[head-status]
+FAILED ../independent-review/test_taskcontrol_independent.py::test_same_cut_recheck_after_accounting[epoch-result]
+FAILED ../independent-review/test_taskcontrol_independent.py::test_same_cut_recheck_after_accounting[epoch-status]
+4 failed, 4 deselected in 12.54s

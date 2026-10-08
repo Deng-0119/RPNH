@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="2" skipped="0" tests="38" time="111.381" timestamp="2026-10-08T12:12:27.091026-04:00" hostname="&lt;CLOUD_HOST&gt;"><testcase classname="tests.test_task_control_registry_reads" name="test_exact_legacy_result_and_status_shapes[complete-answer]" time="3.223" /><testcase classname="tests.test_task_control_registry_reads" name="test_exact_legacy_result_and_status_shapes[complete-output1]" time="3.019" /><testcase classname="tests.test_task_control_registry_reads" name="test_exact_legacy_result_and_status_shapes[complete-output2]" time="2.967" /><testcase classname="tests.test_task_control_registry_reads" name="test_exact_legacy_result_and_status_shapes[complete-None]" time="2.999" /><testcase classname="tests.test_task_control_registry_reads" name="test_exact_legacy_result_and_status_shapes[failed-answer]" time="3.137" /><testcase classname="tests.test_task_control_registry_reads" name="test_exact_legacy_result_and_status_shapes[failed-output1]" time="3.265" /><testcase classname="tests.test_task_control_registry_reads" name="test_exact_legacy_result_and_status_shapes[failed-output2]" time="3.221" /><testcase classname="tests.test_task_control_registry_reads" name="test_exact_legacy_result_and_status_shapes[failed-None]" time="2.913" /><testcase classname="tests.test_task_control_registry_reads" name="test_current_generation_never_falls_back_and_counts_remain_historical[running]" time="3.746" /><testcase classname="tests.test_task_control_registry_reads" name="test_current_generation_never_falls_back_and_counts_remain_historical[stopped_by_owner]" time="3.710" /><testcase classname="tests.test_task_control_registry_reads" name="test_current_generation_never_falls_back_and_counts_remain_historical[terminal]" time="4.154" /><testcase classname="tests.test_task_control_registry_reads" name="test_consumer_reuses_native_read_and_rechecks_same_cut_after_counts[result]" time="2.787" /><testcase classname="tests.test_task_control_registry_reads" name="test_consumer_reuses_native_read_and_rechecks_same_cut_after_counts[status]" time="3.356" /><testcase classname="tests.test_task_control_registry_reads" name="test_reads_do_not_open_writers_change_head_or_object_bytes[result]" time="3.243" /><testcase classname="tests.test_task_control_registry_reads" name="test_reads_do_not_open_writers_change_head_or_object_bytes[status]" time="3.026" /><testcase classname="tests.test_task_control_registry_reads" name="test_counts_race_is_rejected_before_delivery[head-result]" time="3.138" /><testcase classname="tests.test_task_control_registry_reads" name="test_counts_race_is_rejected_before_delivery[head-status]" time="2.954" /><testcase classname="tests.test_task_control_registry_reads" name="test_counts_race_is_rejected_before_delivery[epoch-result]" time="3.121" /><testcase classname="tests.test_task_control_registry_reads" name="test_counts_race_is_rejected_before_delivery[epoch-status]" time="3.064" /><testcase classname="tests.test_task_control_registry_reads" name="test_counts_race_is_rejected_before_delivery[run_pointer-result]" time="3.183" /><testcase classname="tests.test_task_control_registry_reads" name="test_counts_race_is_rejected_before_delivery[run_pointer-status]" time="3.220" /><testcase classname="tests.test_task_control_registry_reads" name="test_payload_decode_race_is_rejected" time="2.855" /><testcase classname="tests.test_task_control_registry_reads" name="test_wrong_canonical_typed_identity_is_rejected[terminal_evidence_ref-result]" time="2.803" /><testcase classname="tests.test_task_control_registry_reads" name="test_wrong_canonical_typed_identity_is_rejected[terminal_evidence_ref-status]" time="2.812" /><testcase classname="tests.test_task_control_registry_reads" name="test_wrong_canonical_typed_identity_is_rejected[run_ref-result]" time="2.639" /><testcase classname="tests.test_task_control_registry_reads" name="test_wrong_canonical_typed_identity_is_rejected[run_ref-status]" time="2.670" /><testcase classname="tests.test_task_control_registry_reads" name="test_wrong_canonical_typed_identity_is_rejected[final_checkpoint_ref-result]" time="2.725" /><testcase classname="tests.test_task_control_registry_reads" name="test_wrong_canonical_typed_identity_is_rejected[final_checkpoint_ref-status]" time="2.685" /><testcase classname="tests.test_task_control_registry_reads" name="test_reader_rejection_never_uses_legacy_fallback[result]" time="2.884" /><testcase classname="tests.test_task_control_registry_reads" name="test_reader_rejection_never_uses_legacy_fallback[status]" time="3.016" /><testcase classname="tests.test_task_control_registry_reads" name="test_legal_large_terminal_product_remains_available[4194304]" time="2.868" /><testcase classname="tests.test_task_control_registry_reads" name="test_legal_large_terminal_product_remains_available[4194305]" time="3.143" /><testcase classname="tests.test_task_control_registry_reads" name="test_product_backing_growth_is_bounded_and_fails_without_truncation" time="2.996" /><testcase classname="tests.test_task_control_registry_reads" name="test_status_keeps_process_and_socket_observations_separate" time="2.838" /><testcase classname="tests.test_task_control_registry_reads" name="test_status_reader_error_shape_and_os_stop_remain" time="2.555"><failure message="AssertionError: assert 'OWNER_CHANNEL_NOT_READY' == 'STOP_REQUESTED'&#10;  &#10;  - STOP_REQUESTED&#10;  + OWNER_CHANNEL_NOT_READY">tmp_path = PosixPath('&lt;PYTEST_TEMP_ROOT&gt;/pytest-32/test_status_reader_error_shape0')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7f3a8fc04e00&gt;
+
+    def test_status_reader_error_shape_and_os_stop_remain(tmp_path, monkeypatch):
+        owner = owner_at(tmp_path / "run"); finish(owner)
+        control = control_at(owner)
+        monkeypatch.setattr(TaskControl, "_read_terminal_status", staticmethod(
+            lambda path: (_ for _ in ()).throw(RuntimeError("native reader failure"))))
+        result = control.status("task-fixture")
+        assert result["registry_error"] == "native reader failure" and "registry" not in result
+        signals = []
+        control.get("task-fixture").process = SimpleNamespace(poll=lambda: None, send_signal=signals.append)
+&gt;       control._channel_ready = lambda path: True
+E       AssertionError: assert 'OWNER_CHANNEL_NOT_READY' == 'STOP_REQUESTED'
+E         
+E         - STOP_REQUESTED
+E         + OWNER_CHANNEL_NOT_READY
+
+tests/test_task_control_registry_reads.py:356: AssertionError</failure></testcase><testcase classname="tests.test_task_control_registry_reads" name="test_resume_still_accepts_only_current_owner_stopped_state" time="0.752" /><testcase classname="tests.test_task_control_registry_reads" name="test_missing_registry_is_not_created" time="0.001"><failure message="AttributeError: 'types.SimpleNamespace' object has no attribute 'task_id'">tmp_path = PosixPath('&lt;PYTEST_TEMP_ROOT&gt;/pytest-32/test_missing_registry_is_not_c0')
+
+    
+    def test_missing_registry_is_not_created(tmp_path):
+        control = TaskControl(tmp_path / "control", popen_factory=forbidden,
+                              recover_pending_launches=False)
+        control._tasks["missing"] = SimpleNamespace(task_id="missing", run_dir=tmp_path / "absent", kind="single_agent")
+&gt;       with pytest.raises(RuntimeError, match="Registry is not currently available"):
+            ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_task_control_registry_reads.py:379: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+cpn/rpnh/task_control.py:594: in result
+    handle = self.get(task_id)
+             ^^^^^^^^^^^^^^^^^
+cpn/rpnh/task_control.py:497: in get
+    self._refresh_handle_process(handle)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;cpn.rpnh.task_control.TaskControl object at 0x7f3a900aaa20&gt;
+handle = namespace(run_dir=PosixPath('&lt;PYTEST_TEMP_ROOT&gt;/pytest-32/test_missing_registry_is_not_c0/absent'), kind='single_agent')
+
+    def _refresh_handle_process(self, handle: TaskHandle) -&gt; None:
+&gt;       path = self._manifest_root / f"{handle.task_id}.json"
+                                        ^^^^^^^^^^^^^^
+E       AttributeError: 'types.SimpleNamespace' object has no attribute 'task_id'
+
+cpn/rpnh/task_control.py:222: AttributeError</failure></testcase><testcase classname="tests.test_task_control_registry_reads" name="test_basic_and_application_result_use_same_consumer" time="3.185" /></testsuite></testsuites>

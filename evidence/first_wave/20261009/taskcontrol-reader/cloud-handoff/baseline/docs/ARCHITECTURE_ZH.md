@@ -240,18 +240,6 @@ run、task 和 evidence ref，但不提供调用方 net 期待值。environment 
 打开 execution owner、resume run、签发 observer access，也不会以 latest resource
 作为 fallback。这个 current-cut 接口区别于带权限的外部 read session 和显式历史视图。
 
-现有 task result/status consumer 通过 read-only core 使用同一 reader。result
-保留 JSON keys、精确 outcome 与解码后的 output；status 保留 task ID 字符串和
-历史 evidence/index 累计数量。两者仍使用历史累计 model-call 计数，并在解析及
-计数查询全部完成后重检同一个 cut。当前 generation 非终态时不会回退旧终态。
-描述符未提供调用方预算时，以及 task result 正文字节读取时，均以登记对象大小
-作为物理读取上界。合法大对象仍可读取；backing file 多出或缺少字节时明确失败，
-不截断输出。显式传入的描述符预算仍优先生效。这不是固定大小的产品上限，也不是
-外部读取授权。
-
-Task status 还可能独立观察进程和 owner socket；组合返回值不是跨 Registry、进程
-及 socket 的原子快照。既有 owner-stop、resume 授权和进程控制保持不变。
-
 ## 仓库边界
 
 本仓库只包含可复用 harness、schemas、frontend compatibility、provider 配置工具和确定性

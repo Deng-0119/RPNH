@@ -308,21 +308,6 @@ an execution owner, resumes a run, issues observer access, or selects a latest
 resource as a fallback. This current-cut interface is distinct from a
 permission-bearing external read session and from explicit historical views.
 
-Existing task result/status consumers use this same reader over a read-only
-core. Result preserves its JSON keys, exact outcome and decoded output; status
-preserves its task-ID string and historical evidence/index counts. Both retain
-cumulative model-call accounting and recheck the same cut after parsing and
-count queries. A current nonterminal generation never falls back to an older
-terminal. Descriptor reads without a caller budget and task result bytes use
-the registered object size as their physical read bound. Larger valid objects
-remain readable; a backing file with extra or missing bytes fails instead of
-being truncated. An explicit descriptor budget still applies when supplied.
-These bounds are not a fixed-size product cap or an external read grant.
-
-Task status may also observe the process and owner socket independently. That
-combined response is not an atomic Registry/process/socket snapshot. Existing
-owner-stop and resume authorization and process controls are unchanged.
-
 ## Repository boundary
 
 This repository contains the reusable harness, schemas, frontend compatibility,

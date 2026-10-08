@@ -1,0 +1,18 @@
+{
+  "status": "PASS_PACKAGE_INTEGRITY_ONLY",
+  "product_tests_run_during_packaging": false,
+  "original_archive_checksum_verified": true,
+  "original_manifest_entries_verified": 54,
+  "tested_source_entries_verified_against_author_frozen_tree": 1335,
+  "junit_files_parseable_before_and_after": 10,
+  "junit_structure_testcase_identity_and_outcome_counts_preserved": true,
+  "package_only_redaction_files": 22,
+  "redaction_occurrences": 151,
+  "changed_product_paths_verified": 5,
+  "source_and_patch_byte_identical_to_reviewed_original": true,
+  "temporary_patch_check_apply_final_hash_verification": "PASS",
+  "h1_h2a_changed_path_overlap": [],
+  "new_local_gate_commands": "Instructions only; NOT_RUN during packaging",
+  "native_status_remains": "6 passed, 1 blocked by AF_UNIX EPERM",
+  "native_resume_remains": "AF_UNIX EPERM before provider dispatch; resume assertions not reached"
+}

@@ -1,0 +1,14 @@
+{
+  "status": "PASS",
+  "payloads_verified": 154,
+  "received_cloud_files_byte_identical": 64,
+  "received_cloud_checksums_verified": 63,
+  "all_xml_reparsed": 18,
+  "all_json_parsed": true,
+  "recorded_edits_reconstructed": 170,
+  "no_unlisted_payload": true,
+  "no_registry_profile_cache_archive_selected": true,
+  "runtime_validation": "local/LAYERED_MANIFEST.json",
+  "source_whitespace_check": "Five source/doc paths passed git diff --check before adding raw evidence",
+  "raw_evidence_whitespace": "Preserved; original failure trace formatting is not rewritten"
+}

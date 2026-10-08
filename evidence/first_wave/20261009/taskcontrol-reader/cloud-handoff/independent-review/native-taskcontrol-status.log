@@ -1,0 +1,13 @@
+..F....                                                                  [100%]
+=================================== FAILURES ===================================
+_ test_task_control_keeps_owner_socket_in_registry_and_shortens_only_transport _
+tests/test_task_frontend.py:451: in test_task_control_keeps_owner_socket_in_registry_and_shortens_only_transport
+    channel = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/socket.py:233: in __init__
+    _socket.socket.__init__(self, family, type, proto, fileno)
+E   PermissionError: [Errno 1] Operation not permitted
+- generated xml file: <CLOUD_WORKSPACE>/rpnh-taskcontrol-reader-convergence/independent-review/native-taskcontrol-status.xml -
+=========================== short test summary info ============================
+FAILED tests/test_task_frontend.py::test_task_control_keeps_owner_socket_in_registry_and_shortens_only_transport
+1 failed, 6 passed, 33 deselected in 1.11s

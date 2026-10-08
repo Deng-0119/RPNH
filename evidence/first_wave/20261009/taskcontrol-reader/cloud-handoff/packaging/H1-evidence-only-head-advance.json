@@ -1,0 +1,13 @@
+{
+  "source_commit": "674252feb836f631c162979f177d1fe91f22559f",
+  "observed_head": "ec9077e95b830d09e7252c6d5d8ebcdbb9eb4ac4",
+  "changed_paths": [
+    "evidence/first_wave/20261008/shared-harness/README_ZH.md",
+    "evidence/first_wave/20261008/shared-harness/derived-junit/PROVENANCE.json",
+    "evidence/first_wave/20261008/shared-harness/derived-junit/README.md",
+    "evidence/first_wave/20261008/shared-harness/derived-junit/local/logs/A-offline.xml",
+    "evidence/first_wave/20261008/shared-harness/derived-metadata/VALIDATION_SNAPSHOT_ERRATA.json"
+  ],
+  "runtime_tests_docs_unchanged": true,
+  "note": "Connector-verified evidence-only advance; tests remain attributed to the exact 674252f runtime/source bytes plus this patch."
+}

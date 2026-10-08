@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="3.731" timestamp="2026-10-08T12:19:00.429839-04:00" hostname="&lt;CLOUD_HOST&gt;"><testcase classname="tests.test_task_frontend" name="test_resume_uses_persisted_transition_profiles_when_graph_swaps_them" time="3.169"><failure message="PermissionError: [Errno 1] Operation not permitted">tests/test_task_frontend.py:903: in test_resume_uses_persisted_transition_profiles_when_graph_swaps_them
+    stopped = run_agent_task(AgentTaskSpec(
+cpn/rpnh/agent_tasks.py:1149: in run_agent_task
+    return _execute_agent_task(spec, resume=False)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+cpn/rpnh/agent_tasks.py:1054: in _execute_agent_task
+    event_loop = OwnerEventLoop(owner, socket_path)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+cpn/rpnh/control_server.py:68: in __init__
+    self.listener = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/socket.py:233: in __init__
+    _socket.socket.__init__(self, family, type, proto, fileno)
+E   PermissionError: [Errno 1] Operation not permitted</failure></testcase></testsuite></testsuites>

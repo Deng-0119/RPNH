@@ -1,0 +1,32 @@
+{
+  "label": "h2-shared",
+  "command": [
+    "env",
+    "PYTHONPATH=<WORKSPACE>/.t26/s:<WORKSPACE>/.t26/s/examples/harnessaudit_office/tests",
+    "<WORKSPACE>/.p26/v/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "-p",
+    "no:cacheprovider",
+    "examples/harnessaudit_office/tests/test_registry_reader_consumers.py",
+    "--basetemp=<WORKSPACE>/.t26/h",
+    "--junitxml=<WORKSPACE>/task-h2a-validation-20261008/logs/h2-shared.xml"
+  ],
+  "cwd": "<WORKSPACE>/.t26/s",
+  "pid": 9417,
+  "started_at": "2026-10-08T16:51:04.103741+00:00",
+  "finished_at": "2026-10-08T16:52:36.418636+00:00",
+  "elapsed_seconds": 92.31490748600118,
+  "exit_code": 0,
+  "tested_head": "715468dab0b1bea07d7e94a7aa0606eaf194365c",
+  "environment_overrides": {
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONUNBUFFERED": "1",
+    "PYTHONPATH": "<WORKSPACE>/.t26/s",
+    "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1",
+    "TMPDIR": "<WORKSPACE>/.t26/tmp"
+  },
+  "stdout": "<WORKSPACE>/task-h2a-validation-20261008/logs/h2-shared.stdout.log",
+  "stderr": "<WORKSPACE>/task-h2a-validation-20261008/logs/h2-shared.stderr.log"
+}

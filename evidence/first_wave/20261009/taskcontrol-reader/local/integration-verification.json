@@ -1,0 +1,16 @@
+{
+  "status": "PASS",
+  "delivery_parent": "715468dab0b1bea07d7e94a7aa0606eaf194365c",
+  "compared_entries": 3493,
+  "tested_worktree_manifest_sha256": "488ce0b6ffac52b468db3d3d5cdc87a263fcb95aadbcc48d4df1f81d26cb5323",
+  "source_types_bytes_and_executable_bits_match": true,
+  "five_h2a_paths": [
+    "cpn/rpnh/task_control.py",
+    "cpn/rpnh/registry/run_authority.py",
+    "tests/test_task_control_registry_reads.py",
+    "docs/ARCHITECTURE.md",
+    "docs/ARCHITECTURE_ZH.md"
+  ],
+  "main_dirty_after_apply": " M cpn/rpnh/registry/run_authority.py\n M cpn/rpnh/task_control.py\n M docs/ARCHITECTURE.md\n M docs/ARCHITECTURE_ZH.md\n?? tests/test_task_control_registry_reads.py\n",
+  "runtime_note": "Remaining H1 combined tests run on the isolated identical source; commit/push waits for final acceptance."
+}
