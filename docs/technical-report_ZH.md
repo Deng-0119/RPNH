@@ -6,9 +6,10 @@ metadata:
   audience: application-developer-and-researcher
   language: zh
   counterpart: technical-report.md
-  revision: "2026-10-08.2"
+  revision: "2026-10-08.3"
   status: technical-report
   basis: "Deng-0119/RPNH at dbad00458e9b356fcaf0bb97ceb90258ed9b1de0"
+  erp-runtime-supplement: "integrated at e92b05c9afe324ebb675f2d67b73c02efe7b9536"
 ---
 
 [English](technical-report.md) | 中文 | [文档导航](index_ZH.md)
@@ -19,6 +20,7 @@ metadata:
 **更新日期：**2026-10-08。**源码快照：**
 [`dbad004`](https://github.com/Deng-0119/RPNH/tree/dbad00458e9b356fcaf0bb97ceb90258ed9b1de0)。
 各次实验的实际测试版本与结果发布版本分别列于[第 9 节](#9-示例验证结果)。
+ERP runtime 补充见集成版本 [`e92b05c`](https://github.com/Deng-0119/RPNH/tree/e92b05c9afe324ebb675f2d67b73c02efe7b9536)。
 
 ## 摘要
 
@@ -171,6 +173,13 @@ Reopen 是显式的新执行，不是删除中间经历。主会话回退不会�
 显式 owner-selected reopen 可按受支持协议闭合未决尝试，以新身份继续。
 当 operation 可能产生费用或修改外部系统时，这种区分尤其重要。
 参阅[checkpoint 恢复](guides/checkpoint-recovery_ZH.md)。
+
+ERP adapter 对显式 bridge `unknown` 或派发后丢失/无效的回复，生成 managed `outcome_unknown`
+回执。Registry 准入阻断该 operation 中的同一调用及新调用，service 重建后仍有效。
+已知的 `completed`、`failed`、`domain_infeasible` 保持为 returned 结果。
+既有 `interrupted` 分类不变，bridge 的物理安全闸保留；发送前连接失败仍可能保守地归为 unknown。
+这些是 script 粒度的防重放控制，不构成逐笔 ERP 事务的 exactly-once 保证。
+参阅 [ERP managed-operation 契约][erp-unknown-contract]。
 
 ## 5. 流程构造、组合与演进
 
@@ -422,6 +431,23 @@ Grader 反馈未用于修复 solver，也没有自动 retry 或 resume。所选 
 一份已记录的 [ERP 离线测试窗口][erp-test-command]在 `examples/erp_bench/tests` 范围内报告
 190 项测试通过，并另外报告 35 项 subtest。
 
+另一次 ERP runtime 验证使用 `dbad004` 加 ERP adapter 变更和独立 native fixture，随后集成于
+`e92b05c`。[源码记录][erp-unknown-source]分别保留实际测试 overlay 与发布 commit 的身份。
+两组 native 验证均使用合成 backend，installed-owner 路径使用脚本化 provider；
+没有真实 provider 调用、Odoo world 执行或原始 grader 运行。
+
+| 验证范围 | 观察结果 |
+|---|---|
+| [离线回归][erp-unknown-offline] | 65 个唯一 pytest 用例全部通过，另有 4 个 subtest。此前因 AF_UNIX `EPERM` 阻断的 15 项均在本地通过。 |
+| [已安装 TaskControl 生命周期][erp-unknown-owner] | `complete`、公共 stop、wall timeout 三个场景通过真实 worker 与 AF_UNIX 路径。完成场景有 terminal evidence；stop/timeout 静止退出，没有业务 terminal。 |
+| [原生 managed receipt][erp-unknown-native] | 六个直接 owner API 场景通过：显式 unknown、backend 异常、completed 回复丢失、非零退出失败、领域不可行和完成。 |
+
+六场景 fixture 共记录 9 次 worker 派发、9 次 bridge 请求和 9 次合成 backend 调用。
+三个 unknown 场景均产生 `started -> outcome_unknown`；原 service 与重建 service 上的
+18 个探针未增加回执或派发。已知结果保留原输出：缓存 replay 与变参冲突不再执行，合法新 ID 可以执行。
+Service 重建沿用同一 owner 和 Registry，不是 OS owner 崩溃恢复。
+[回执与传输证据][erp-unknown-native] · [原生 fixture][erp-unknown-fixture]。
+
 [2026-10-06 AutomationBench 结果](../examples/automationbench/PUBLIC_RESULTS_20261006.md)
 中，freeze04 first18 为 5 PASS / 9 FAIL / 4 BLOCKED，独立 repair4 条件为 1 PASS / 3 FAIL；
 较早的 14 个已计分任务没有重跑。[发布验证历史](guides/release-validation_ZH.md)还记录了其他版本的检查。
@@ -489,3 +515,9 @@ RPNH 围绕版本化流程定义与准确 Registry/PetriNet 执行之间的连�
 [scb-collection]: https://github.com/Deng-0119/RPNH/blob/dbad00458e9b356fcaf0bb97ceb90258ed9b1de0/evidence/first_wave/20261008/scb-real/README_ZH.md
 [scb-development]: https://github.com/Deng-0119/RPNH/blob/dbad00458e9b356fcaf0bb97ceb90258ed9b1de0/evidence/first_wave/20261008/scb-real/run/development-summary.json
 [scb-adaptation]: https://github.com/Deng-0119/RPNH/blob/dbad00458e9b356fcaf0bb97ceb90258ed9b1de0/evidence/first_wave/20261008/scb-real/preparation/work/scb-real-plan01/adaptation.json
+[erp-unknown-contract]: https://github.com/Deng-0119/RPNH/blob/e92b05c9afe324ebb675f2d67b73c02efe7b9536/examples/erp_bench/README_ZH.md#动作边界与生命周期
+[erp-unknown-source]: https://github.com/Deng-0119/RPNH/blob/e92b05c9afe324ebb675f2d67b73c02efe7b9536/evidence/first_wave/20261008/erp-unknown/INTEGRATION_SOURCE_MATCH.json
+[erp-unknown-offline]: https://github.com/Deng-0119/RPNH/blob/e92b05c9afe324ebb675f2d67b73c02efe7b9536/evidence/first_wave/20261008/erp-unknown/local/offline-deduplicated-results.json
+[erp-unknown-owner]: https://github.com/Deng-0119/RPNH/blob/e92b05c9afe324ebb675f2d67b73c02efe7b9536/evidence/first_wave/20261008/erp-unknown/B/export_safe.json
+[erp-unknown-native]: https://github.com/Deng-0119/RPNH/blob/e92b05c9afe324ebb675f2d67b73c02efe7b9536/evidence/first_wave/20261008/erp-unknown/C/export_safe.json
+[erp-unknown-fixture]: https://github.com/Deng-0119/RPNH/blob/e92b05c9afe324ebb675f2d67b73c02efe7b9536/examples/erp_bench/scripts/unknown_native_acceptance.py

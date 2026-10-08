@@ -6,9 +6,10 @@ metadata:
   audience: application-developer-and-researcher
   language: en
   counterpart: technical-report_ZH.md
-  revision: "2026-10-08.2"
+  revision: "2026-10-08.3"
   status: technical-report
   basis: "Deng-0119/RPNH at dbad00458e9b356fcaf0bb97ceb90258ed9b1de0"
+  erp-runtime-supplement: "integrated at e92b05c9afe324ebb675f2d67b73c02efe7b9536"
 ---
 
 English | [中文](technical-report_ZH.md) | [Documentation](index.md)
@@ -20,6 +21,8 @@ English | [中文](technical-report_ZH.md) | [Documentation](index.md)
 [`dbad004`](https://github.com/Deng-0119/RPNH/tree/dbad00458e9b356fcaf0bb97ceb90258ed9b1de0).
 Experiment source revisions and publication revisions are identified separately
 in [§9](#9-example-results).
+The ERP runtime supplement is integrated at
+[`e92b05c`](https://github.com/Deng-0119/RPNH/tree/e92b05c9afe324ebb675f2d67b73c02efe7b9536).
 
 ## Abstract
 
@@ -228,6 +231,16 @@ remote effect. Explicit owner-selected reopen can close an unresolved attempt
 under the supported protocol and continue with new identities. This precision
 is important when an operation may incur cost or change an external system.
 See [checkpoint recovery](guides/checkpoint-recovery.md).
+
+In the ERP adapter, an explicit bridge `unknown` or a lost/invalid reply after
+dispatch produces a managed `outcome_unknown` receipt. Registry admission blocks
+the same call and new calls in that operation, including after service
+reconstruction. Known `completed`, `failed` and `domain_infeasible` results remain
+returned results. The existing `interrupted` classification is unchanged, and
+the bridge retains its physical safety gate. A pre-send connection failure can
+still be conservatively unknown. These are
+script-level replay controls and do not establish exactly-once ERP transactions.
+See the [ERP managed-operation contract][erp-unknown-contract].
 
 ## 5. Process construction, composition and evolution
 
@@ -565,6 +578,28 @@ binding omission; that historical condition is distinct from the later A04 run.
 A recorded [ERP offline test window][erp-test-command] reports 190 passed tests
 and 35 separately reported subtests for `examples/erp_bench/tests`.
 
+A separate ERP runtime validation used `dbad004` plus the ERP adapter changes
+and native fixture subsequently integrated at `e92b05c`. The
+[source record][erp-unknown-source] distinguishes the tested overlay from its
+publication commit. Both native validations used synthetic backends; the
+installed-owner path used a scripted provider. There were no real provider calls,
+Odoo world executions or original-grader runs.
+
+| Validation | Observed result |
+|---|---|
+| [Offline regression][erp-unknown-offline] | 65 unique pytest cases passed, plus 4 subtests. All 15 cases previously blocked by AF_UNIX `EPERM` passed locally. |
+| [Installed TaskControl lifecycle][erp-unknown-owner] | `complete`, public stop and wall-timeout scenarios passed through real workers and AF_UNIX. Completion has terminal evidence; stop/timeout ended quiescent without a business terminal. |
+| [Native managed receipts][erp-unknown-native] | Six direct-owner scenarios passed: explicit unknown, backend exception, lost completed reply, nonzero failure, domain infeasibility and completion. |
+
+The six-scenario fixture recorded nine worker dispatches, nine bridge requests
+and nine synthetic backend invocations. The three unknown scenarios each produced
+`started -> outcome_unknown`; 18 probes across original and reconstructed
+services added no receipts or dispatches. Known results preserved their original
+outputs: cached replay and changed-body conflicts caused no execution, while
+valid new IDs executed. Service reconstruction used the same owner and Registry;
+this was not OS-owner crash recovery. [Receipt and transport evidence][erp-unknown-native]
+· [Native fixture][erp-unknown-fixture].
+
 The dated [AutomationBench results](../examples/automationbench/PUBLIC_RESULTS_20261006.md)
 record freeze04 first18 as 5 PASS / 9 FAIL / 4 BLOCKED and a separate repair4
 condition as 1 PASS / 3 FAIL. The older 14 scored tasks were not rerun.
@@ -642,3 +677,9 @@ are described in the corresponding guides.
 [scb-collection]: https://github.com/Deng-0119/RPNH/blob/dbad00458e9b356fcaf0bb97ceb90258ed9b1de0/evidence/first_wave/20261008/scb-real/README_ZH.md
 [scb-development]: https://github.com/Deng-0119/RPNH/blob/dbad00458e9b356fcaf0bb97ceb90258ed9b1de0/evidence/first_wave/20261008/scb-real/run/development-summary.json
 [scb-adaptation]: https://github.com/Deng-0119/RPNH/blob/dbad00458e9b356fcaf0bb97ceb90258ed9b1de0/evidence/first_wave/20261008/scb-real/preparation/work/scb-real-plan01/adaptation.json
+[erp-unknown-contract]: https://github.com/Deng-0119/RPNH/blob/e92b05c9afe324ebb675f2d67b73c02efe7b9536/examples/erp_bench/README.md#action-boundary-and-lifecycle
+[erp-unknown-source]: https://github.com/Deng-0119/RPNH/blob/e92b05c9afe324ebb675f2d67b73c02efe7b9536/evidence/first_wave/20261008/erp-unknown/INTEGRATION_SOURCE_MATCH.json
+[erp-unknown-offline]: https://github.com/Deng-0119/RPNH/blob/e92b05c9afe324ebb675f2d67b73c02efe7b9536/evidence/first_wave/20261008/erp-unknown/local/offline-deduplicated-results.json
+[erp-unknown-owner]: https://github.com/Deng-0119/RPNH/blob/e92b05c9afe324ebb675f2d67b73c02efe7b9536/evidence/first_wave/20261008/erp-unknown/B/export_safe.json
+[erp-unknown-native]: https://github.com/Deng-0119/RPNH/blob/e92b05c9afe324ebb675f2d67b73c02efe7b9536/evidence/first_wave/20261008/erp-unknown/C/export_safe.json
+[erp-unknown-fixture]: https://github.com/Deng-0119/RPNH/blob/e92b05c9afe324ebb675f2d67b73c02efe7b9536/examples/erp_bench/scripts/unknown_native_acceptance.py
