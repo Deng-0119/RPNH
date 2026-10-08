@@ -1,64 +1,60 @@
 ---
 name: rpnh-technical-report
-description: "持续更新的 RPNH 工程技术报告：可执行流程资产、Registry/PetriNet runtime、实现与评估。"
+description: "RPNH 的架构、流程创作、运行机制、接入方式与已公开运行结果。"
 metadata:
   document-kind: technical-report
-  audience: operator-developer-and-researcher
+  audience: application-developer-and-researcher
   language: zh
   counterpart: technical-report.md
-  revision: "2026-10-08.1"
-  status: living-report
-  basis: "Deng-0119/RPNH at 74fad32d369876841686d10d33361c016e3d3648"
+  revision: "2026-10-08.2"
+  status: technical-report
+  basis: "Deng-0119/RPNH at dbad00458e9b356fcaf0bb97ceb90258ed9b1de0"
 ---
 
 [English](technical-report.md) | 中文 | [文档导航](index_ZH.md)
 
 # RPNH 技术报告
-## 面向 Agent–程序系统的可执行、可组合、可版本化流程
+## 面向 Agent 与程序系统的可执行流程
 
-**更新日期：**2026-10-08。**实现快照：**
-[`74fad32`](https://github.com/Deng-0119/RPNH/tree/74fad32d369876841686d10d33361c016e3d3648)。
-各次实验实际使用的源码版本另列于[第 9 节](#9-证据与当前结果)。
-本文介绍公开实现、报告已保留的观察，并约定后续优化实验如何持续补充同一份记录。
+**更新日期：**2026-10-08。**源码快照：**
+[`dbad004`](https://github.com/Deng-0119/RPNH/tree/dbad00458e9b356fcaf0bb97ceb90258ed9b1de0)。
+各次实验的实际测试版本与结果发布版本分别列于[第 9 节](#9-示例验证结果)。
 
 ## 摘要
 
 RPNH 是一个用于组合语言模型 Agent、原生程序与可复用工作流的 provider-neutral harness。
-其核心对象是**流程本身**：一种可以被构造、编译、组合、修订，并关联准确执行证据的类型化声明。
-持久化 Registry 记录身份、版本和已提交事实；类型化 PetriNet 决定执行资格、占用、路由与完成条件。
-二者结合，使图成为实际执行结构，而非从对话中还原的展示图片。
+它将流程视为类型化的可执行资产：流程的依赖、输入、输出和完成条件可以被构造、组合与修订，
+实际执行则关联持久化记录。Registry 保存准确身份、资源版本和已提交事实；类型化 PetriNet
+基于这些记录决定哪些工作可以执行，以及产物如何使后续步骤获得执行资格。
 
-实现连接了三类有用能力：异构工作共用执行契约；准确的结果/workspace 血缘与受控继续执行；
-具有 author revision 和接收端本地绑定的可复用流程定义。这使应用开发者有机会把成功的方法沉淀成
-可检查、可修改、可再次使用的资产。模型可以提出流程或修订，可信 HOST 绑定与既有 owner
-则决定什么能够执行。
+同一 runtime 支持对话式主会话、独立任务和多 Agent 工作流。它将流程定义连接到可信 HOST 实现，
+记录 workspace 血缘与 checkpoint，并提供执行的只读视图。Authoring 与 package 接口让开发者
+能够在不同修订和接收环境之间复用流程定义，而不必携带原机器的私有配置。
 
-当前证据支持具体工程机制和有边界的案例结果，尚未建立任务质量、成本或速度方面的对照收益。
-因此，本文区分源码能力、实际运行、业务验收与比较证据。Registry 中已经完成的运行与正确的业务结果，
-有意采用不同的评价口径。
+本文介绍当前架构、operation 生命周期、流程创作与复用，以及受支持的使用入口，随后呈现已公开的
+ERP-Bench 与 SlopCodeBench 运行结果，并分别报告原任务验收和 runtime 完成情况。
+这些是有明确范围的应用结果；现有实验尚未建立相对其他 harness 的质量、速度或成本优势。
 
-## 1. 问题与设计目标
+## 1. 从 Agent 对话到可复用流程
 
-有用的 Agent 系统不止要生成下一条模型回复。它还需要协调工具与人、保留产物、处理中断，并在任务或环境
-变化时调整。对于重复任务，形成的方法可能与最终答案同样重要：哪些步骤相互依赖，哪里适合使用程序而非模型，
-什么算合格产物，以及下一次可以复用什么。
+Agent 应用常常需要组合执行方式不同的工作：模型理解请求，程序执行计算，多个分析独立进行，
+后续步骤再消费它们的产物。应用还需要知道某项输出来自哪些输入、中断后保留了什么，以及接下来执行哪个流程版本。
 
-RPNH 将这些关系显式化。以“分别完成两份分析、执行确定性汇总、综合报告”的流程为例：join 需要等到
-两份分析产物齐备；计算需要准确的输入；最终结果需要声明的完成条件。后续修订应能识别哪项职责和哪些输入
-发生了变化，而不能把同名文件或同名节点直接视作同一对象。
+RPNH 将这些关系显式化。以 `prepare -> (facts || risks) -> join` 为例，两条分支分别产生输出；
+只有两项必需产物齐备，join 才能获得执行资格。节点换成既有业务程序时也遵循同一原则。
+流程定义描述工作，可信注册提供实现，runtime 记录准确执行。
 
-| 设计目标 | 当前机制 | 需要评估的用户收益 |
+| 能力 | 当前机制 | 应用中的用途 |
 |---|---|---|
-| 复用方法与产物 | 数据化 `ModuleDeclaration`、组合、author revision 与受支持的 package 格式 | 下一次修改或复用能节省多少编写和验证工作？ |
-| 协调模型与既有程序 | 已登记组件/executor 契约、类型化端口、PetriNet 准入与结算 | 混合工作能否得到正确业务结果，并保持可理解的职责边界？ |
-| 保持准确执行含义 | 准确引用、唯一 owner 路径、登记产物与终态证据 | 操作者能否区分尝试过的动作、已结算产物和已完成任务？ |
-| 有控制地继续与修订 | Checkpoint、执行代次、workspace revision 与显式采用映射 | 保留了多少有效工作，哪些失败仍需要人工介入？ |
-| 共享结构、本地绑定 | 仅含数据的 package、准确本地 lock、环境计划与独立运行批准 | 接收者能否复用流程，而不复制发送者的机器或私有配置？ |
-| 观察与执行权威分离 | Read session、checkpoint 投影与有界比较 | 审查者能否更可靠地定位实质变化和缺失证据？ |
+| Agent 与程序混合执行 | 已登记组件/executor、类型化端口与声明的 outcome | 在同一流程中连接推理、确定性计算与验证。 |
+| 显式协调 | PetriNet place、arc、token 与资源占用 | 表达依赖、并行分支、join 与资源使用。 |
+| 可追溯产物 | 准确 Registry 引用、登记产物与终态证据 | 读取选定结果及其执行上下文。 |
+| 继续执行与受控变更 | Checkpoint、执行代次、workspace revision 与采用映射 | 继续已停止工作，或带着明确血缘采用修订后的流程。 |
+| 可复用流程定义 | `ModuleDeclaration`、组合、author revision 与 portable package | 保留并调整生成结果的方法。 |
+| 独立观察 | Read session、图/checkpoint 投影与比较 | 检查执行并比较选定来源，而不成为 writer。 |
 
-这些是**组合设计的长处**与实际价值假设。并行工具、多 Agent、流式输出、渐进披露和 provider 选择都是
-通用配套能力，本身并非独特性主张。对于简单的一次性任务，声明、持久化状态与运行管理的额外成本可能并不划算。
-评估计划因此包含此类对照任务，而不只选择有利于该架构的情形。
+这套架构主要适用于需要显式依赖、持久化产物、重复复用流程或受控修订的应用，也会带来声明、验证与状态管理工作。
+短暂的一次性交互可以只使用对话入口，或采用更简单的工具循环。
 
 ## 2. 架构：四类流程资产
 
@@ -139,7 +135,7 @@ stop，以避免重新执行已经完成的语义动作。出现 completion erro
 
 这些契约使身份、依赖、资源使用和结果发布可以被检查。业务正确性仍需要领域 schema、checker、约束或人工验收。
 当前状态/占用检查不证明全局 PetriNet 活性、所有死锁都不存在，或模型内容为真。
-因此[第 9 节](#9-证据与当前结果)将原任务评分与 runtime 闭合分别报告。
+因此[第 9 节](#9-示例验证结果)将原任务评分与 runtime 闭合分别报告。
 
 ## 4. 产物、workspace 历史与恢复
 
@@ -211,8 +207,8 @@ Assembly 固定成员 revision 和 lowering 映射，使审查者能够追问准
 [身份变换](reference/author-identity-transform-contract_ZH.md)与
 [assembly 历史/合并](reference/assembly-full-history-merge_ZH.md)。
 
-Coding Agent 和人都可以作为 author 使用这些接口。重要研究问题是下一次编辑、修复或组合能否更简单、
-更少出错。这种价值不依赖图形编辑器；只读 dashboard 也不是图形编辑器。
+人和 Coding Agent 都可以使用这些 Python 接口创作流程修订。稳定身份与显式映射将每次修订连接到
+其来源结构，也让选定改动能够用于后续组合。
 
 ### 5.4 将 revision 接入执行
 
@@ -258,7 +254,7 @@ author 仍需在共享前审查内容。参阅[可移植 package](guides/portabl
 Workset 记录贡献、交付、接受的准确身份；首次 `WorksetOwner.accept_delivery` 需要真实登记 operation outputs，
 重复的同一交付则可读取先前接受结果。
 
-这些是流程复用与准确贡献登记的有用构件。应用应保留其当前本地/显式绑定范围，而不是把它们描述为完整远程协作服务。
+这些接口通过本地、显式绑定的 author/read host，支持流程复用与准确的贡献登记。
 接口见[normal-child/Workset 契约](reference/normal-child-root-contract_ZH.md)与
 [read session](reference/registry-read-sessions_ZH.md)。
 
@@ -292,12 +288,11 @@ Plugin 声明输入输出 JSON schema、operation 身份、effect、资源与限
 `PluginContext` 提供 execution/invocation 身份与协作式取消，不把 Registry writer 交给 worker。
 
 有界并行调用、准确结果分页、可选隔离 tool program、资源查询与上下文管理为该结构提供配套。
-它们的策略保持显式，不能因添加这些能力而悄悄改变 benchmark 工具权限或预算。
-可信 native-plugin 进程与可选 Linux isolated-program substrate 有不同安全契约。
-Registry 检查不能替代对可信 HOST 代码的审查，也不能替代所需的操作系统隔离。
+HOST 策略决定任务获得哪些工具、effect 与预算。Native plugin 作为可信 HOST 代码运行；
+可选的 Linux isolated-program substrate 提供另一层执行边界。应用根据工具选择合适的信任与隔离策略。
 参阅[自定义](guides/customization_ZH.md)与[受控工具](controlled-managed-tools.zh.md)。
 
-## 8. 复现执行模型
+## 8. 开始使用与示例工作流
 
 源码案例库的确定性 parallel 示例适合端到端检查，其拓扑为 `prepare -> (facts || risks) -> join`。
 预设 local-process 响应经过真实执行路径，但不评价模型推理能力。
@@ -322,7 +317,12 @@ rpnh net --run "$DEMO_ROOT/parallel" --view --no-open
 
 检查两个分支是否都形成登记结果后才进入 join、最终资源是否由 terminal evidence 选定，以及 viewer 是否对应
 准确 run/checkpoint。成功时示例输出 `status: PASS`；最后一条命令启动本地只读服务。
-依赖安装可能联网，默认 fixture 不调用真实模型。这是复现方法，不表示本次报告修订重新执行了示例。
+依赖安装可能联网，默认 fixture 不调用真实模型。
+
+[混合汇总](../examples/hybrid_summary/README_ZH.md)示例展示具体的混合执行：
+`normalize -> demo/summarize -> explain`。两个 Agent 节点之间是执行汇总计算的原生程序。
+确定性模式使用脚本化 Agent 响应，选定 execution profile 后可进入真实模型路径。
+每次交接都使用登记输入与输出，因此同一张图既可从业务节点层面观察，也可从 PetriNet 层面检查。
 
 随后可用[原生 plugin](../examples/native_plugin/README_ZH.md)修改真实程序契约，
 用[混合汇总](../examples/hybrid_summary/README_ZH.md)检查 Agent–程序–Agent 数据流，
@@ -330,189 +330,115 @@ rpnh net --run "$DEMO_ROOT/parallel" --view --no-open
 已安装 export catalog 支持 `adapter_task`、`native_plugin`、`hybrid_summary`、`compose_serial` 和 `package_reuse`。
 其中 `compose_serial` 演示定义组合，执行仍需匹配的可信 Registration。
 
-真实 provider 检查是单独步骤，需要准确模型条件与获准预算。当前源码是 rc2 开发候选；
-较早公开的 rc1 二进制不包含后续源码能力。[安装说明](guides/installation_ZH.md)记录了这种区别。
+使用真实模型时，先按[模型指南](guides/models_ZH.md)配置 provider、准确模型和 execution profile，
+再在任务或示例中选择该 profile。当前源码为 `0.1.0rc2` 开发候选；较早公开的 `v0.1.0rc1`
+二进制对应更早的功能集合。源码与发布包选项见[安装说明](guides/installation_ZH.md)。
 
-## 9. 证据与当前结果
+## 9. 示例验证结果
 
-### 9.1 快照与证据层次
+这些示例将 RPNH 接入两类不同应用：在持久化业务系统上执行 ERP 操作，以及在逐步披露需求下修改代码。
+以下分别列出原始 evaluator 的结果与原生 runtime 的终态。
 
-实现快照是 `74fad32`；最终 ERP smoke/showcase 实际测试于
-`6f8ee2e406f3c70edb73206f861e56a0202b9f15`，记录中的 tracked source 为 clean。
-后续集成提交补充证据与示例，不会将旧记录变成新源码版本的测试。
-两次运行都使用 `gpt-5.6-terra` / `local_process`，ERP-Bench task/scorer 固定为
-`ceba3880af555129b5278e056a0c20f2fb5a0ba9`。未记录的 reasoning/profile 字段保持未知。
-参阅[源码身份][erp-source]与[模型条件][erp-model]。
+### 9.1 ERP-Bench
 
-| 记录 | 保留观察 | 含义 |
-|---|---|---|
-| ERP `2000_easy_01_buy_only_baseline`，A04 / `s04` | 100/100，业务 `passed=true`，37 条适用检查全部通过，9 次真实 provider 调用 | 记录中的修复条件下，一次 smoke 任务通过。可读公开评分/生命周期投影与 raw-file hash；本证据集未包含 A04 raw grader 字节。 |
-| ERP `2299_hard_repair_plan_hard`，A01 / `h01` | 21/100，业务 `passed=false`，95 条适用检查中 86 条通过，13 次真实 provider 调用 | Native/provider/evaluator 路径完成，业务任务失败。本次同时检查了原始 reward、逐条规则、checker log 与投影。 |
-| 历史 ERP smoke A03 | 0/100，11 次真实调用，源码 `2ca5fbc` | 较早的输入能力绑定失败，按原条件保留，不是当前源码的重跑结果。 |
-| ERP 定向测试窗口 | 190 passed，另计 35 subtests | 已记录命令覆盖 `examples/erp_bench/tests`，不是 225 个独立测试或全仓通过；本次报告没有重跑。 |
-| SlopCodeBench `code_search` | Adapter、合成检查与 native/Docker fixture 记录已集成 | 尚无完整 benchmark 求解或原 evaluator 验收结果；fixture 通过不是任务分数。 |
-| 历史 AutomationBench | Freeze04 first18：5 PASS / 9 FAIL / 4 BLOCKED；另一次 repair4：1 PASS / 3 FAIL | 分别属于有日期的条件，较早的 14 项 scored tasks 未重跑，见[公开记录](../examples/automationbench/PUBLIC_RESULTS_20261006.md)。 |
+ERP adapter 通过 managed Python script，将 Agent 连接到本地 Odoo world，并提供确定性计划校验工具。
+Agent 可以检查业务实体、准备计划、应用变更并回读状态；原 ERP-Bench grader 独立评价该状态。
+一个 managed operation 对应一段 script，其中可能包含多个 Odoo 动作。
+参阅 [ERP 示例](../examples/erp_bench/README_ZH.md)。
 
-来源：[A04 评分投影][erp-smoke]、[H01 原始 reward][erp-reward]、[逐条规则][erp-rules]、
-[A03 诊断][erp-a03]、[定向测试命令][erp-test-command]与[日志][erp-test-log]。
-[发布验证历史](guides/release-validation_ZH.md)保留其他版本的离线结果；重叠窗口的测试数不能累加。
+下列运行使用 tracked source 为 clean 的 RPNH
+`6f8ee2e406f3c70edb73206f861e56a0202b9f15`，模型为经 `local_process` 接入的
+`gpt-5.6-terra`，ERP-Bench task/scorer revision 为
+`ceba3880af555129b5278e056a0c20f2fb5a0ba9`。证据于 `74fad32` 集成，发布版本与实际测试版本分别记录。
+适配环境为 Harbor 0.24.0、Odoo 19.0.20260926、Python 3.12.3、PostgreSQL 18.6；
+solver 只能访问本地 Odoo，没有外部网络。
+[源码身份][erp-source] · [模型条件][erp-model] · [业务环境][erp-world]。
 
-ERP 环境明确属于 adapted runtime，记录 Harbor 0.24.0、Odoo 19.0.20260926、Python 3.12.3 与
-PostgreSQL 18.6。Solver 禁止外网，只访问本机 Odoo，不等同于原封不动的上游网络条件。
-受管 action 粒度是完整 Python script，而非每个 Odoo transaction。参阅[world 投影][erp-world]。
-这两个单次运行既不是任务集统计，也不是受控 harness 比较。
+| 任务与运行 | 原始业务结果 | 适用检查 | 真实模型调用 |
+|---|---|---|---|
+| `2000_easy_01_buy_only_baseline`，A04 / `s04` | 100/100，通过 | 37/37 | 9 |
+| `2299_hard_repair_plan_hard`，A01 / `h01` | 21/100，失败 | 86/95 | 13 |
 
-### 9.2 复杂任务失败提供了什么信息
+来源：[A04 评分投影][erp-smoke]、[H01 原始 reward][erp-reward] 与 [H01 规则结果][erp-rules]。
+A04 保留公开评分/生命周期投影及原文件 hash；H01 还包含原始 reward、规则结果与 checker log。
+[收集清单][erp-manifest]说明可用材料及历史 provenance 校验范围。
 
-H01 的价值在于同时呈现执行完成与业务拒绝。21 分**不是** `86/95` 换算的百分比。
-原 scorer 在约束未满时阻止其他维度进入总分：constraint 为 63/75，最终 `25 × 63/75 = 21`。
-Hygiene 为 15/20，optimality 子分数为 91.66，但不能补回门控后的总分。
-[原始计分规则][erp-score-rule]保持不变。
+复杂任务完成了执行路径，但未达到业务验收。九项失败包括四项约束与五项组件采购来源检查。
+原计分规则在约束不完整时阻止其他维度计入总分，由 63/75 constraint 分得到最终 21/100；
+86/95 是检查计数。一项明确差异是工位容量：Agent 回读按每件 45 分钟计量，任务路线规则则使用
+55 分钟，得到 6,270 分钟，超过 5,555 分钟上限。另外三项约束检查记录了 `bool`/`datetime.date`
+异常，仍计入原始结果。
+[计分规则][erp-score-rule] · [实际回读][erp-readback] · [路线规则][erp-route] · [Checker log][erp-checks]。
 
-九条失败包括四条约束与五条组件采购来源检查，需要进一步分层解读：
+此例呈现了职责分工：RPNH 记录执行、产物与血缘；应用提供领域校验，独立 grader 决定业务验收。
+只针对提交 observations 进行校验的计划工具可以通过，而最终业务世界仍未通过原始检查。
+这里的两个不同任务是各自独立的运行，不构成配对比较或任务集成功率估计。
 
-- **容量口径不一致有明确证据。** Actor 报告 5,130 分钟，与回读工单字段中 114 件、每件 45 分钟一致。
-  任务固定 WC02 路线按每件 55 分钟计量，`114 × 55 = 6,270`，超过 5,555 分钟上限。
-  实际存在回读，但回读计量不符合该任务路线语义。见[实际回读][erp-readback]与[scorer 路线规则][erp-route]。
-- **三项失败包含 checker 异常。** 供给时序、MO 排程、组件库存容量均记录 `bool` 与 `datetime.date` 的比较错误。
-  缺失/false 截止日期与上游日期处理交互，是有依据的候选解释，并非已经证实的唯一根因：
-  保留的回读未给出缺失的最终字段值。保留原 FAIL 与 21 分，同时区分计算异常和成功计算后的约束违约。
-  见[checker log][erp-checks]。
-- **局部计划算术窄于世界状态验证。** `validate_plan` 对提供的计划返回无违规、支出 111,938.90；
-  原 grader 按其全局范围得到 181,383.92，expected 为 133,394.07。
-  该 helper 明确只校验提交的 observations，不查询 Odoo、不证明全局世界正确，差额尚未完整归因。
-  五项采购来源失败也仍未解决。见[validator 输入输出][erp-plan]与[实现][erp-planning]。
+### 9.2 SlopCodeBench
 
-H01 在 ERP 动作前已成功读取登记任务输入，不能沿用 A03 的缺失 reader 解释。
-它还保留了针对不存在 workcenter 字段的 schema 试探失败，之后脚本继续。
-这些与 core 调度失败或 provider outage 是不同的问题。
+`code_search` 示例随着新 checkpoint 需求的披露，逐步修改同一代码库。当前接入使用外层 Python controller
+选择 checkpoint 顺序、应用继续执行策略，并通过上游 Session 路径交接源码快照。
+每个 checkpoint 内部由 RPNH 原生任务 runtime 执行 Agent 及 managed command。
+跨 checkpoint 的源码连续性属于 adapter/controller 路径，记录为 `native_workspace_reuse=false`。
+参阅 [SCB 示例](../examples/slopcodebench/README_ZH.md)。
 
-A03 的诊断定位于示例 Actor 能力绑定遗漏。后续修复增加登记输入 reader，并经有限输入交付/生命周期 fixture 检查；
-A04 随后在 fresh world 中通过 smoke。这是可行动的修复证据，但不同源码与不同运行不足以证明
-harness 性能的普遍因果改善。参阅[输入交付检查][erp-input-checks]。
+已公开运行覆盖**五个 checkpoint 中的前三个**，模式为 adapted development prefix。
+Runner revision 为 `31ceea3add480edb33431e70475c4c70597e6b31`，
+problem revision 为 `9cd9ca3a51c3d3e2a99d2488a25baf73a2204451`，
+模型为 `codex/gpt-5.6-terra`。实际安装的 RPNH 字节核对至
+`74fad32d369876841686d10d33361c016e3d3648`；结果与执行证据发布于
+`dbad00458e9b356fcaf0bb97ceb90258ed9b1de0`。
+[运行条件][scb-summary] · [安装源码身份][scb-identity]。
 
-### 9.3 证据覆盖本身也是结果的一部分
+| Checkpoint | 原始 evaluator 用例通过 | Evaluator 退出码 | Runtime outcome | 真实模型调用 |
+|---|---|---|---|---|
+| 1 | 13/13 | 0 | `complete` | 5 |
+| 2 | 25/25 | 0 | `complete` | 5 |
+| 3 | 40/47 | 1 | `complete` | 14 |
 
-ERP [收集清单][erp-manifest]区分原文件、登记 payload 字节、既有投影与序列化元数据。
-它保留了 40 个历史 fresh-reader provenance 失败，涉及缺失 `agent_loop_ref`；
-核对 canonical object 字节并不修复这些 provenance。
-该 `s03`/`h01` 收集范围未找到 vendor HTTP wire 与完整 Codex CLI events；
-`s04` 则保留公开投影和 hash，而非 raw control transcript。
+原始报告：[checkpoint 1][scb-cp1]、[checkpoint 2][scb-cp2]、[checkpoint 3][scb-cp3]。
+第三点有七项业务测试失败，`infrastructure_failure=false`，其中 Core 失败两项、Functionality
+失败五项，25 项 regression 全部通过。各点包含回归用例，不能把计数相加当作独立 benchmark 任务总数。
 
-[发布审查][erp-publication]记录了 595 个 payload 的 digest/size 检查。
-这属于发布完整性结果，不证明所有执行或 provenance 检查通过。
-本报告交叉检查了选定记录，并未独立重算整个集合的 hash。
-保留这些区别，才能让失败服务于工程改进，而不补造缺失证据。
+每个 checkpoint 的模型调用上限为 48 次，owner 等待上限为 7,200 秒。运行共使用 24 次真实调用，
+没有超过调用上限，记录总耗时为 998.82 秒。上游 cost、net-cost、step cap 均为关闭状态（设为零）；
+本次实际使用的有界控制是模型调用上限。任务级规范化 token 总量与 USD 费用未提供；
+逐调用 adapter return 保留了 token usage 字段，这与规范化任务级汇总是不同层次。
+[运行汇总][scb-summary] · [公开证据][scb-collection]。
 
-## 10. 评估与优化方法
+Solver 无网络，每个 checkpoint 使用 fresh container 并继承源码快照。镜像构建与评测使用 host 网络，
+镜像准备包含同版本下载兼容适配。原始 evaluator 已运行，官方 `AgentRunner` 与完整五点 benchmark 未运行。
+Grader 反馈未用于修复 solver，也没有自动 retry 或 resume。所选 `any-case` 继续策略使外层命令
+可以在第三点有失败的情况下正常退出；表中列出的仍是原始测试结果。
+具体条件见 [development summary][scb-development] 与[环境适配][scb-adaptation]。
 
-### 10.1 测量完整用户任务
+这次运行展示了三个连续需求阶段中的源码连续性与原生任务执行：前两点通过全部原始用例，第三点部分通过。
+其范围不构成完整 benchmark 验收，也不支持相对其他 harness 的优势结论。
 
-有用的评估至少区分六个维度：
+### 9.3 其他保留结果
 
-1. **业务结果：**原始 grader、领域约束、验收产物与独立检查。
-2. **执行一致性：**已准入动作、准确产物/终态血缘、过时/重复贡献处理，以及对未知状态的如实记录。
-3. **演进与复用：**改变的定义/成员身份、保留工作、后继 revision 有效性，以及接收端成功情况。
-4. **Author/操作者工作量：**修改量、准备负担、修复时间、介入次数与诊断准确率。
-5. **性能与资源：**总耗时、可获得的模型 attempt/usage、原生工具耗时、owner/Registry 耗时、存储与 workspace 复制开销。
-6. **披露与可移植性：**实际披露、可信依赖、平台要求与明确不支持的情形。
+仓库同时保留早期 ERP smoke A03：源码为 `2ca5fbc`，结果 0/100，11 次真实调用。
+其[诊断][erp-a03]定位了输入 reader 的绑定遗漏；这一历史条件与后续 A04 分别记录。
+一份已记录的 [ERP 离线测试窗口][erp-test-command]在 `examples/erp_bench/tests` 范围内报告
+190 项测试通过，并另外报告 35 项 subtest。
 
-原任务结果使用原 benchmark 任务和 scorer；续接或修改任务单独报告。
-冻结模型/准确配置、指令、工具权限、反馈策略、任务集、seed/reset、checkpoint 披露顺序、环境与预算。
-统计所有尝试，包括失败及未知提交。Usage 或费用无法可靠获得时标为 unavailable，不按调用次数猜测。
+[2026-10-06 AutomationBench 结果](../examples/automationbench/PUBLIC_RESULTS_20261006.md)
+中，freeze04 first18 为 5 PASS / 9 FAIL / 4 BLOCKED，独立 repair4 条件为 1 PASS / 3 FAIL；
+较早的 14 个已计分任务没有重跑。[发布验证历史](guides/release-validation_ZH.md)还记录了其他版本的检查。
+这些不同任务、版本与测试窗口，均与上面的 ERP、SCB 结果分别呈现。
 
-比较对象应是具有普通工具调用、并行、持久化及适用恢复能力的合理基线。
-可做的消融包括固定/修订流程定义、复用流程/重新创作、观察辅助/普通诊断，以及保留 workspace/checkpoint/全新启动。
-每个变体保持相关权限与预算，明确究竟改变了哪个机制。Registry 一致性检查不能代替业务质量指标。
+## 10. 工程背景与源码导航
 
-### 10.2 选择真正检验价值的任务
+RPNH 属于持久任务、类型化接口、事件历史、checkpoint 与插件式 Agent runtime 的工程实践。
+[DeepSeek Harness 架构](https://github.com/deepseek-ai/deepseek-harness/blob/5badb15009ae1756c3afe0ae0cef1faafc290ccc/docs/architecture.md)
+介绍插件职责与 turn 生命周期。OpenAI 的
+[Unrolling the Codex agent loop](https://openai.com/index/unrolling-the-codex-agent-loop/) 与
+[Unlocking the Codex harness](https://openai.com/index/unlocking-the-codex-harness/)
+分别解释 request/tool/context 处理，以及共享内核与客户端展示之间的边界。
+这些资料提供相关架构背景；已公开的 RPNH 运行并非与这些系统的对比实验。
 
-第一批案例提供互补问题：ERP plan repair 检查真实业务状态、硬约束和来源；演进式 code-search 任务检查
-重复需求、功能正确性和 workspace 连续性。后续混合仿真/优化案例可检验原生程序复用与独立数值验证。
-如果主张针对流程资产，每个案例就应包含复用或变更阶段。仅仅执行预先提供的图，不能证明 Agent
-创作或改进了该图。
-
-还应加入低结构的一次性对照任务，暴露额外开销。中断或未知效果测试应事先定义故障窗口，同时测量
-物理调用、真实外部效果与 Registry 记录。Authoring 实验应测量第二次成功修改及保留的组件身份，
-而不只是统计可用 API 数量。
-
-### 10.3 当前改进优先级
-
-下一步应先让已有机制更易使用、更易诊断，再考虑新增调度器或扩大协作服务。
-以下是**提案和验收条件**，不是已实现功能公告：
-
-| 优先方向 | 具体干预 | 验收证据 |
-|---|---|---|
-| 有效任务预检 | 逐 operation 只读展示输入交付、selected/bound/declared/provider-visible 工具、profile、effect 和结果 reader；复用 compiler/catalog 逻辑，不发放新权威。 | 在 dispatch 前区分必要 reader 遗漏、selector 错误或结果 reader 缺失，同时不拒绝合法替代输入路径；与实际登记 request/catalog 对照。 |
-| 分层诊断导出 | 在固定 cut 关联准确 Registry、adapter、业务世界与 grader 记录，分别保留 missing、redacted、provenance-rejected。 | Fresh reader 能识别已完成工作、未知项和失败层次；缺失阶段不变成成功；对相同失败测量诊断正确率/耗时。 |
-| 公共 exact-Module runner | 抽出已有高层 Agent runner 的生命周期/绑定装配，让验证后的组合 Module 直接使用，并提供 author-only 初始化 helper。 | 两个真实 closed member 组合、重开并按所选准确编译闭包执行，profile/tool 身份及停止恢复保持一致，减少重复私有装配。 |
-| 带覆盖率的 usage | 只读投影分别记录 logical returned call、physical attempt、provider token usage 与基于版本化价格的估算。 | 重复引用不重复计数，部分/未知用量保持未知，估价标明价格来源、币种和覆盖；既有调用预算含义不变。 |
-| 类型化 ERP observation | 为实际回读实体、日期、单位、route/workcenter 规则和支出范围建立版本，分别记录计划、已写入与观察状态。 | 离线案例捕获单位/范围/日期差异；fixture 回读对应真实状态；原评分保持独立，原失败不被覆盖。 |
-
-Exact-Module 提案针对具体 SDK 接缝：`start_run` 已支持通用 module，而 `AgentTaskSpec` 接受 stage 或 graph，
-便捷 runner 在装配 managed service 时重新构造 Module。提案复用现有 owner/runtime，不是在补造缺失的核心语义。
-参阅 [`agent_tasks.py`][agent-task-source] 与 [`start_run`][owner-source]。
-
-同样，较早 ERP input-reader 遗漏已经修复；预检旨在防止其他应用再次遗漏。
-类型化 ERP 验证属于领域 adapter，应使用任务合法可得事实，不将隐藏 grader 规则/参考解暴露给求解 Agent。
-独立诊断 fixture 可以调查日期异常，而不修改原结果。
-当前 SCB adapter 通过上游 Session 路径保持 source workspace，明确报告 `native_workspace_reuse=false`，
-因此不主张已经验证 RPNH 原生 workspace 复用。参阅 [SCB 案例](../examples/slopcodebench/README_ZH.md)。
-
-应先建立确定性契约和受支持用户入口的行为，再通过单独获授权的模型实验，检验业务验收或工作量是否改善。
-测量之前，它们是具体工程问题，不是预计收益。
-
-## 11. 持续更新约定
-
-本文是一份持续演进的报告，链接逐次实验证据。每次优化应更新受影响的机制说明，追加具有准确条件的结果行，
-并说明由此形成的工程决定。只有条件可比时，新结果才能取代旧主张；原始失败始终保留。
-
-简洁的实验条目应包含：
-
-| 字段 | 应记录的内容 |
-|---|---|
-| 身份 | 稳定实验 ID、日期、准确代码 SHA 与工作树是否有改动；准确 upstream/task/scorer revision。 |
-| 问题 | 目标机制、预期收益、竞争性解释与验收条件。 |
-| 条件 | 不含秘密的 model/profile 身份、输入 hash、工具、权限、预算、环境与 reset/reveal 规则。 |
-| 干预 | 准确改动的代码/配置/流程 revision，以及保持不变的控制条件。 |
-| 结果 | 尝试数；runtime terminal；原始业务分数与失败检查；产物/血缘验收；耗时及可获得 usage。 |
-| 证据 | 已审查公开 manifest、报告与允许披露投影的链接/hash；覆盖范围或缺失数据。 |
-| 决定 | 接受、拒绝或尚无结论；代价、回归与下一次实验。 |
-
-这是一项报告约定，不是新增 runtime schema。已有案例证据契约时继续沿用。
-只发布经过审查、许可证允许、非敏感的证据；私有原始 run、凭据、本地 profile 与未经审查的 transcript
-不进入报告。
-
-### 报告演进
-
-| 报告版本 | 变化 |
-|---|---|
-| 2026-10-01.1 | 以 `40f1be8` 为基线的源码介绍，解释 runtime、workspace 与网操作。 |
-| 2026-10-08.1 | 在同一报告中扩充流程资产主线，补充当前 authoring/receiver/read 接口，并在 `74fad32` 基线上加入第一批证据、优化问题及逐实验更新约定。 |
-
-本次文档修订检查了源码与保留记录，没有启动模型实验、执行 runtime 套件或修改实现。
-
-## 12. 相关工程工作与源码地图
-
-本文借鉴一手工程材料的表达方法：先说明任务，沿一次完整执行展开，明确状态归属，
-再将机制与证据及代价相连。
-
-- DeepSeek 的 [Harness 架构](https://github.com/deepseek-ai/deepseek-harness/blob/5badb15009ae1756c3afe0ae0cef1faafc290ccc/docs/architecture.md)
-  适合参照插件职责和 turn 生命周期。其链接的 [Cordis 论文](https://arxiv.org/abs/2608.25512)
-  *A Programming Paradigm for Spatiotemporal Composability* 讨论可组合性及成立条件，
-  并非 DSH 全系统任务性能报告。
-- OpenAI [Unrolling the Codex agent loop](https://openai.com/index/unrolling-the-codex-agent-loop/)
-  （2026-01-23）解释完整 request/tool/context 路径。
-- [Unlocking the Codex harness](https://openai.com/index/unlocking-the-codex-harness/)
-  （2026-02-04）解释共享内核与客户端协议边界。
-- [Harness engineering](https://openai.com/index/harness-engineering/)
-  （2026-02-11）将环境、可观察性、约束与反馈相连。
-- [Codex as a platform](https://developers.openai.com/blog/codex-as-a-platform)
-  （2026-08-19）区分应用接入与可复用执行层。
-
-这些材料用于组织报告与交代相关工作，不支持 RPNH 性能结论。
-持久任务、类型化接口、事件历史、checkpoint 和 plugin 系统都有先例。
-比较主张需要同条件实现核查与实验，不能靠功能清单得出。
+RPNH 围绕版本化流程定义与准确 Registry/PetriNet 执行之间的连接组织 runtime，进而连接创作、执行、
+继续运行与观察：方法可以作为结构化产物保留，由 HOST 绑定具体实现，其输出则可追溯到特定执行与流程修订。
 
 | 实现问题 | 固定版本源码 |
 |---|---|
@@ -524,43 +450,42 @@ Exact-Module 提案针对具体 SDK 接缝：`start_run` 已支持通用 module�
 | 返回的定义如何改变执行？ | [`registry/module_revision.py`][revision-source] |
 | 流程 revision 和 assembly 如何公开？ | [`collaboration/__init__.py`][collaboration-source] |
 | 收到的 package 如何运行？ | [`collaboration/environment_host.py`][receiver-source] |
-| 如何读取任务的真实结果？ | [`task_control.py`][task-control-source] |
-| 哪里检查具体执行示例？ | [`test_native_net_operations.py`][net-tests]、[发布验证](guides/release-validation_ZH.md) |
+| 如何读取任务选定的结果？ | [`task_control.py`][task-control-source] |
 
-源码链接固定实现快照，不表示所有私有类都是稳定 SDK。核心命题始终可以检验：
-具有显式可执行含义的流程，可以成为可复用、可检查、可版本化的资产。
-下一阶段实验应说明这种结构在何种实际工作中带来足够收益，值得付出其成本。
+应用接入可从[已安装入口](#7-嵌入扩展与操作接口)和[示例](#8-开始使用与示例工作流)开始，再根据需要阅读对应
+的 authoring 或 HOST 接口参考。源码导航提供实现细节；公开契约和当前平台要求见各节链接的指南。
 
-[module-source]: https://github.com/Deng-0119/RPNH/blob/74fad32d369876841686d10d33361c016e3d3648/cpn/rpnh/module.py
-[petri-source]: https://github.com/Deng-0119/RPNH/blob/74fad32d369876841686d10d33361c016e3d3648/cpn/rpnh/petri_contracts.py
-[registration-source]: https://github.com/Deng-0119/RPNH/blob/74fad32d369876841686d10d33361c016e3d3648/cpn/rpnh/registration.py
-[compiler-source]: https://github.com/Deng-0119/RPNH/blob/74fad32d369876841686d10d33361c016e3d3648/cpn/rpnh/compiler.py
-[harness-source]: https://github.com/Deng-0119/RPNH/blob/74fad32d369876841686d10d33361c016e3d3648/cpn/rpnh/harness.py
-[owner-source]: https://github.com/Deng-0119/RPNH/blob/74fad32d369876841686d10d33361c016e3d3648/cpn/rpnh/run.py
-[commit-source]: https://github.com/Deng-0119/RPNH/blob/74fad32d369876841686d10d33361c016e3d3648/cpn/rpnh/registry/_event_store/commit.py
-[graph-source]: https://github.com/Deng-0119/RPNH/blob/74fad32d369876841686d10d33361c016e3d3648/cpn/rpnh/agent_workflows.py
-[revision-source]: https://github.com/Deng-0119/RPNH/blob/74fad32d369876841686d10d33361c016e3d3648/cpn/rpnh/registry/module_revision.py
-[collaboration-source]: https://github.com/Deng-0119/RPNH/blob/74fad32d369876841686d10d33361c016e3d3648/cpn/rpnh/collaboration/__init__.py
-[receiver-source]: https://github.com/Deng-0119/RPNH/blob/74fad32d369876841686d10d33361c016e3d3648/cpn/rpnh/collaboration/environment_host.py
-[task-control-source]: https://github.com/Deng-0119/RPNH/blob/74fad32d369876841686d10d33361c016e3d3648/cpn/rpnh/task_control.py
-[net-tests]: https://github.com/Deng-0119/RPNH/blob/74fad32d369876841686d10d33361c016e3d3648/tests/test_native_net_operations.py
-
-[agent-task-source]: https://github.com/Deng-0119/RPNH/blob/74fad32d369876841686d10d33361c016e3d3648/cpn/rpnh/agent_tasks.py
-[erp-source]: https://github.com/Deng-0119/RPNH/blob/74fad32d369876841686d10d33361c016e3d3648/evidence/first_wave/20261008/erp/records/r/h01/public/source-identity.json
-[erp-model]: https://github.com/Deng-0119/RPNH/blob/74fad32d369876841686d10d33361c016e3d3648/evidence/first_wave/20261008/erp/records/r/h01/public/model-configuration.json
-[erp-smoke]: https://github.com/Deng-0119/RPNH/blob/74fad32d369876841686d10d33361c016e3d3648/evidence/first_wave/20261008/erp/records/r/s04/public/original-score.json
-[erp-reward]: https://github.com/Deng-0119/RPNH/blob/74fad32d369876841686d10d33361c016e3d3648/evidence/first_wave/20261008/erp/records/r/h01/w/harbor/verifier/reward.json
-[erp-rules]: https://github.com/Deng-0119/RPNH/blob/74fad32d369876841686d10d33361c016e3d3648/evidence/first_wave/20261008/erp/records/r/h01/w/harbor/verifier/rule_results.tsv
-[erp-a03]: https://github.com/Deng-0119/RPNH/blob/74fad32d369876841686d10d33361c016e3d3648/evidence/first_wave/20261008/erp/records/records/input-delivery-a03-v2/public/diagnosis.json
-[erp-test-command]: https://github.com/Deng-0119/RPNH/blob/74fad32d369876841686d10d33361c016e3d3648/evidence/first_wave/20261008/scb-local/checks/erp-integrated-tests-01.json
-[erp-test-log]: https://github.com/Deng-0119/RPNH/blob/74fad32d369876841686d10d33361c016e3d3648/evidence/first_wave/20261008/scb-local/checks/erp-integrated-tests-01.log
-[erp-world]: https://github.com/Deng-0119/RPNH/blob/74fad32d369876841686d10d33361c016e3d3648/evidence/first_wave/20261008/erp/records/r/h01/public/world-projection.json
+[module-source]: https://github.com/Deng-0119/RPNH/blob/dbad00458e9b356fcaf0bb97ceb90258ed9b1de0/cpn/rpnh/module.py
+[petri-source]: https://github.com/Deng-0119/RPNH/blob/dbad00458e9b356fcaf0bb97ceb90258ed9b1de0/cpn/rpnh/petri_contracts.py
+[registration-source]: https://github.com/Deng-0119/RPNH/blob/dbad00458e9b356fcaf0bb97ceb90258ed9b1de0/cpn/rpnh/registration.py
+[compiler-source]: https://github.com/Deng-0119/RPNH/blob/dbad00458e9b356fcaf0bb97ceb90258ed9b1de0/cpn/rpnh/compiler.py
+[harness-source]: https://github.com/Deng-0119/RPNH/blob/dbad00458e9b356fcaf0bb97ceb90258ed9b1de0/cpn/rpnh/harness.py
+[owner-source]: https://github.com/Deng-0119/RPNH/blob/dbad00458e9b356fcaf0bb97ceb90258ed9b1de0/cpn/rpnh/run.py
+[commit-source]: https://github.com/Deng-0119/RPNH/blob/dbad00458e9b356fcaf0bb97ceb90258ed9b1de0/cpn/rpnh/registry/_event_store/commit.py
+[graph-source]: https://github.com/Deng-0119/RPNH/blob/dbad00458e9b356fcaf0bb97ceb90258ed9b1de0/cpn/rpnh/agent_workflows.py
+[revision-source]: https://github.com/Deng-0119/RPNH/blob/dbad00458e9b356fcaf0bb97ceb90258ed9b1de0/cpn/rpnh/registry/module_revision.py
+[collaboration-source]: https://github.com/Deng-0119/RPNH/blob/dbad00458e9b356fcaf0bb97ceb90258ed9b1de0/cpn/rpnh/collaboration/__init__.py
+[receiver-source]: https://github.com/Deng-0119/RPNH/blob/dbad00458e9b356fcaf0bb97ceb90258ed9b1de0/cpn/rpnh/collaboration/environment_host.py
+[task-control-source]: https://github.com/Deng-0119/RPNH/blob/dbad00458e9b356fcaf0bb97ceb90258ed9b1de0/cpn/rpnh/task_control.py
+[net-tests]: https://github.com/Deng-0119/RPNH/blob/dbad00458e9b356fcaf0bb97ceb90258ed9b1de0/tests/test_native_net_operations.py
+[erp-source]: https://github.com/Deng-0119/RPNH/blob/dbad00458e9b356fcaf0bb97ceb90258ed9b1de0/evidence/first_wave/20261008/erp/records/r/h01/public/source-identity.json
+[erp-model]: https://github.com/Deng-0119/RPNH/blob/dbad00458e9b356fcaf0bb97ceb90258ed9b1de0/evidence/first_wave/20261008/erp/records/r/h01/public/model-configuration.json
+[erp-smoke]: https://github.com/Deng-0119/RPNH/blob/dbad00458e9b356fcaf0bb97ceb90258ed9b1de0/evidence/first_wave/20261008/erp/records/r/s04/public/original-score.json
+[erp-reward]: https://github.com/Deng-0119/RPNH/blob/dbad00458e9b356fcaf0bb97ceb90258ed9b1de0/evidence/first_wave/20261008/erp/records/r/h01/w/harbor/verifier/reward.json
+[erp-rules]: https://github.com/Deng-0119/RPNH/blob/dbad00458e9b356fcaf0bb97ceb90258ed9b1de0/evidence/first_wave/20261008/erp/records/r/h01/w/harbor/verifier/rule_results.tsv
+[erp-a03]: https://github.com/Deng-0119/RPNH/blob/dbad00458e9b356fcaf0bb97ceb90258ed9b1de0/evidence/first_wave/20261008/erp/records/records/input-delivery-a03-v2/public/diagnosis.json
+[erp-test-command]: https://github.com/Deng-0119/RPNH/blob/dbad00458e9b356fcaf0bb97ceb90258ed9b1de0/evidence/first_wave/20261008/scb-local/checks/erp-integrated-tests-01.json
+[erp-world]: https://github.com/Deng-0119/RPNH/blob/dbad00458e9b356fcaf0bb97ceb90258ed9b1de0/evidence/first_wave/20261008/erp/records/r/h01/public/world-projection.json
 [erp-score-rule]: https://github.com/agentic-labs/erp-bench/blob/ceba3880af555129b5278e056a0c20f2fb5a0ba9/tasks/2299_hard_repair_plan_hard/tests/test.sh#L351-L362
-[erp-readback]: https://github.com/Deng-0119/RPNH/blob/74fad32d369876841686d10d33361c016e3d3648/evidence/first_wave/20261008/erp/records/registry/h01/agent_action_v3/a33b2d441be95df9b29a5ee5336489fc.json
+[erp-readback]: https://github.com/Deng-0119/RPNH/blob/dbad00458e9b356fcaf0bb97ceb90258ed9b1de0/evidence/first_wave/20261008/erp/records/registry/h01/agent_action_v3/a33b2d441be95df9b29a5ee5336489fc.json
 [erp-route]: https://github.com/agentic-labs/erp-bench/blob/ceba3880af555129b5278e056a0c20f2fb5a0ba9/tasks/2299_hard_repair_plan_hard/tests/checks.py#L305-L313
-[erp-checks]: https://github.com/Deng-0119/RPNH/blob/74fad32d369876841686d10d33361c016e3d3648/evidence/first_wave/20261008/erp/logs/r/h01/w/harbor/verifier/checks.log
-[erp-plan]: https://github.com/Deng-0119/RPNH/blob/74fad32d369876841686d10d33361c016e3d3648/evidence/first_wave/20261008/erp/records/registry/h01/agent_action_v3/b72a1257ec485ed3a8d0c7900d59af2f.json
-[erp-planning]: https://github.com/Deng-0119/RPNH/blob/74fad32d369876841686d10d33361c016e3d3648/examples/erp_bench/src/rpnh_erp_bench/planning.py#L40-L89
-[erp-input-checks]: https://github.com/Deng-0119/RPNH/blob/74fad32d369876841686d10d33361c016e3d3648/evidence/first_wave/20261008/erp/records/work/final-independent-review/input-delivery-closure.json
-[erp-manifest]: https://github.com/Deng-0119/RPNH/blob/74fad32d369876841686d10d33361c016e3d3648/evidence/first_wave/20261008/erp/MANIFEST.json
-[erp-publication]: https://github.com/Deng-0119/RPNH/blob/74fad32d369876841686d10d33361c016e3d3648/evidence/first_wave/20261008/ERP_PUBLICATION_REVIEW.json
+[erp-checks]: https://github.com/Deng-0119/RPNH/blob/dbad00458e9b356fcaf0bb97ceb90258ed9b1de0/evidence/first_wave/20261008/erp/logs/r/h01/w/harbor/verifier/checks.log
+[erp-manifest]: https://github.com/Deng-0119/RPNH/blob/dbad00458e9b356fcaf0bb97ceb90258ed9b1de0/evidence/first_wave/20261008/erp/MANIFEST.json
+[scb-summary]: https://github.com/Deng-0119/RPNH/blob/dbad00458e9b356fcaf0bb97ceb90258ed9b1de0/evidence/first_wave/20261008/scb-real/preparation/evidence/scb-real-summary.json
+[scb-identity]: https://github.com/Deng-0119/RPNH/blob/dbad00458e9b356fcaf0bb97ceb90258ed9b1de0/evidence/first_wave/20261008/scb-real/preparation/evidence/scb-real-install-byte-identity.json
+[scb-cp1]: https://github.com/Deng-0119/RPNH/blob/dbad00458e9b356fcaf0bb97ceb90258ed9b1de0/evidence/first_wave/20261008/scb-real/run/checkpoint_1/evaluation/report.json
+[scb-cp2]: https://github.com/Deng-0119/RPNH/blob/dbad00458e9b356fcaf0bb97ceb90258ed9b1de0/evidence/first_wave/20261008/scb-real/run/checkpoint_2/evaluation/report.json
+[scb-cp3]: https://github.com/Deng-0119/RPNH/blob/dbad00458e9b356fcaf0bb97ceb90258ed9b1de0/evidence/first_wave/20261008/scb-real/run/checkpoint_3/evaluation/report.json
+[scb-collection]: https://github.com/Deng-0119/RPNH/blob/dbad00458e9b356fcaf0bb97ceb90258ed9b1de0/evidence/first_wave/20261008/scb-real/README_ZH.md
+[scb-development]: https://github.com/Deng-0119/RPNH/blob/dbad00458e9b356fcaf0bb97ceb90258ed9b1de0/evidence/first_wave/20261008/scb-real/run/development-summary.json
+[scb-adaptation]: https://github.com/Deng-0119/RPNH/blob/dbad00458e9b356fcaf0bb97ceb90258ed9b1de0/evidence/first_wave/20261008/scb-real/preparation/work/scb-real-plan01/adaptation.json
