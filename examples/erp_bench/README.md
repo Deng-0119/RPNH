@@ -146,6 +146,12 @@ result was returned; read its stages and original report to determine outcome.
 
 ## Action boundary and lifecycle
 
+The actor first reads the original task through native `read_file`, using the
+exact registered input locator supplied by framework initialization. This reader
+is limited to the firing's registered inputs; unregistered host paths are
+rejected. The ERP container has its own workspace for business scripts. The
+original instruction bytes remain unchanged.
+
 The managed `erp_python` tool executes Python through the original
 `odoo-client-lib` interface inside the task world. It is an `external_write`
 operation at **script granularity**: one admitted script and receipt may contain

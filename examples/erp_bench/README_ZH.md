@@ -124,6 +124,10 @@ CLI 通过 `asyncio.run(run_trial(...))` 将参数交给 driver，由 driver 持
 
 ## 动作边界与生命周期
 
+actor 首先使用原生 `read_file`，按框架初始化提供的精确注册输入位置读取原始任务。
+该读取能力限于本次 firing 的注册输入，未注册的宿主路径会被拒绝。ERP 容器使用
+独立工作区执行业务脚本。原始 instruction 字节保持不变。
+
 受管 `erp_python` 工具在任务世界内通过原始 `odoo-client-lib` 接口执行 Python。
 它是以**整个脚本为粒度**的 `external_write` 操作：一次准入与回执可以包含多个
 Odoo 读写，不代表逐事务的 RPNH 准入、回滚或 ERP 恰好一次语义。响应丢失可能意味着
