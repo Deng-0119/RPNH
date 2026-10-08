@@ -1,0 +1,735 @@
+{
+  "schema_version": "rpnh/shared-harness-validation-snapshot-errata/v1",
+  "purpose": "Read-only metadata addendum for the preserved public validation snapshot; not a new execution, replacement snapshot, or JSON Patch.",
+  "source_repository": "Deng-0119/RPNH",
+  "source_commit": "674252feb836f631c162979f177d1fe91f22559f",
+  "snapshot_source": {
+    "path": "evidence/first_wave/20261008/shared-harness/local/RETURN_VALIDATION_SNAPSHOT.json",
+    "commit": "674252feb836f631c162979f177d1fe91f22559f",
+    "git_blob_sha1": "b8494242f7a4baaff0150fea6541380db28fee5e",
+    "sha256": "cd27e5f46863ca47eeebeb21f453ad5e1c11834fda66ea43486ee2116f48c225",
+    "bytes": 85386
+  },
+  "reference_path_convention": "All source paths are repository-relative; JSON Pointers identify fields in snapshot_source.",
+  "summary": {
+    "A_whole_suite_exit_code_corrections": 9,
+    "A_native_command_source_corrections": 1,
+    "B_two_run_aggregate_source_corrections": 2,
+    "mechanical_case_process_exit_interpretation_notes": 5
+  },
+  "interpretation_rules": [
+    "An acceptance case status is distinct from the exit code of the whole recorded process. A case reported PASS can be part of the A suite that exited 1.",
+    "The nine A exit-code corrections apply only to the recorded whole-suite command. They do not change reported individual case status, certify new coverage, or remove the failing test.",
+    "Native evidence must cite its own process receipt. B prompt/recipe cases aggregate separate i1 and j1 native runs and have no single aggregate command or process exit code.",
+    "For combined mechanical checks with command=null, exit_code=0 does not identify a verified process; no missing command is inferred.",
+    "Corrected commands are descriptions of existing receipts only. No commands in this addendum were executed."
+  ],
+  "corrections": [
+    {
+      "json_pointer": "/A/cases/1/exit_code",
+      "case_id": "A_current_authority_and_expected_refs",
+      "original_value": 0,
+      "correct_value": 1,
+      "case_status_unchanged": "PASS",
+      "command_unchanged": "<WORKSPACE>/.p26/v/bin/python -B -m pytest -q examples/harnessaudit_office/tests tests/test_package_result_projection.py tests/test_object_store_streaming.py tests/test_package_result_delivery.py tests/test_run_descriptor_reads.py tests/test_registry_read_session.py tests/test_module_graph_projection.py --disable-warnings --basetemp=<WORKSPACE>/.h26/a --junitxml=<WORKSPACE>/task-shared-harness-validation-20261008/logs/A-offline.xml -p no:cacheprovider",
+      "source": {
+        "path": "evidence/first_wave/20261008/shared-harness/local/logs/A-offline.json",
+        "sha256": "c120c90658c70b0e020ebd2d5d269ecf7603cf1d3cd3113eee9276947da29d8d",
+        "command_argv": [
+          "<WORKSPACE>/.p26/v/bin/python",
+          "-B",
+          "-m",
+          "pytest",
+          "-q",
+          "examples/harnessaudit_office/tests",
+          "tests/test_package_result_projection.py",
+          "tests/test_object_store_streaming.py",
+          "tests/test_package_result_delivery.py",
+          "tests/test_run_descriptor_reads.py",
+          "tests/test_registry_read_session.py",
+          "tests/test_module_graph_projection.py",
+          "--disable-warnings",
+          "--basetemp=<WORKSPACE>/.h26/a",
+          "--junitxml=<WORKSPACE>/task-shared-harness-validation-20261008/logs/A-offline.xml",
+          "-p",
+          "no:cacheprovider"
+        ],
+        "exit_code": 1,
+        "commit": "674252feb836f631c162979f177d1fe91f22559f",
+        "git_blob_sha1": "637ae983e6e9d07efee64d2b0b9bd5c55da05c03",
+        "bytes": 1294
+      },
+      "interpretation": "Individual case verdict remains PASS; recorded whole-suite process exits 1 because a different test fails. This is not a new execution."
+    },
+    {
+      "json_pointer": "/A/cases/2/exit_code",
+      "case_id": "A_historical_generation_and_active_states",
+      "original_value": 0,
+      "correct_value": 1,
+      "case_status_unchanged": "PASS",
+      "command_unchanged": "<WORKSPACE>/.p26/v/bin/python -B -m pytest -q examples/harnessaudit_office/tests tests/test_package_result_projection.py tests/test_object_store_streaming.py tests/test_package_result_delivery.py tests/test_run_descriptor_reads.py tests/test_registry_read_session.py tests/test_module_graph_projection.py --disable-warnings --basetemp=<WORKSPACE>/.h26/a --junitxml=<WORKSPACE>/task-shared-harness-validation-20261008/logs/A-offline.xml -p no:cacheprovider",
+      "source": {
+        "path": "evidence/first_wave/20261008/shared-harness/local/logs/A-offline.json",
+        "sha256": "c120c90658c70b0e020ebd2d5d269ecf7603cf1d3cd3113eee9276947da29d8d",
+        "command_argv": [
+          "<WORKSPACE>/.p26/v/bin/python",
+          "-B",
+          "-m",
+          "pytest",
+          "-q",
+          "examples/harnessaudit_office/tests",
+          "tests/test_package_result_projection.py",
+          "tests/test_object_store_streaming.py",
+          "tests/test_package_result_delivery.py",
+          "tests/test_run_descriptor_reads.py",
+          "tests/test_registry_read_session.py",
+          "tests/test_module_graph_projection.py",
+          "--disable-warnings",
+          "--basetemp=<WORKSPACE>/.h26/a",
+          "--junitxml=<WORKSPACE>/task-shared-harness-validation-20261008/logs/A-offline.xml",
+          "-p",
+          "no:cacheprovider"
+        ],
+        "exit_code": 1,
+        "commit": "674252feb836f631c162979f177d1fe91f22559f",
+        "git_blob_sha1": "637ae983e6e9d07efee64d2b0b9bd5c55da05c03",
+        "bytes": 1294
+      },
+      "interpretation": "Individual case verdict remains PASS; recorded whole-suite process exits 1 because a different test fails. This is not a new execution."
+    },
+    {
+      "json_pointer": "/A/cases/4/exit_code",
+      "case_id": "A_cross_core_wrong_kernel_historical_view_rejected",
+      "original_value": 0,
+      "correct_value": 1,
+      "case_status_unchanged": "PASS",
+      "command_unchanged": "<WORKSPACE>/.p26/v/bin/python -B -m pytest -q examples/harnessaudit_office/tests tests/test_package_result_projection.py tests/test_object_store_streaming.py tests/test_package_result_delivery.py tests/test_run_descriptor_reads.py tests/test_registry_read_session.py tests/test_module_graph_projection.py --disable-warnings --basetemp=<WORKSPACE>/.h26/a --junitxml=<WORKSPACE>/task-shared-harness-validation-20261008/logs/A-offline.xml -p no:cacheprovider",
+      "source": {
+        "path": "evidence/first_wave/20261008/shared-harness/local/logs/A-offline.json",
+        "sha256": "c120c90658c70b0e020ebd2d5d269ecf7603cf1d3cd3113eee9276947da29d8d",
+        "command_argv": [
+          "<WORKSPACE>/.p26/v/bin/python",
+          "-B",
+          "-m",
+          "pytest",
+          "-q",
+          "examples/harnessaudit_office/tests",
+          "tests/test_package_result_projection.py",
+          "tests/test_object_store_streaming.py",
+          "tests/test_package_result_delivery.py",
+          "tests/test_run_descriptor_reads.py",
+          "tests/test_registry_read_session.py",
+          "tests/test_module_graph_projection.py",
+          "--disable-warnings",
+          "--basetemp=<WORKSPACE>/.h26/a",
+          "--junitxml=<WORKSPACE>/task-shared-harness-validation-20261008/logs/A-offline.xml",
+          "-p",
+          "no:cacheprovider"
+        ],
+        "exit_code": 1,
+        "commit": "674252feb836f631c162979f177d1fe91f22559f",
+        "git_blob_sha1": "637ae983e6e9d07efee64d2b0b9bd5c55da05c03",
+        "bytes": 1294
+      },
+      "interpretation": "Individual case verdict remains PASS; recorded whole-suite process exits 1 because a different test fails. This is not a new execution."
+    },
+    {
+      "json_pointer": "/A/cases/5/exit_code",
+      "case_id": "A_fresh_net_and_resumed_no_publication",
+      "original_value": 0,
+      "correct_value": 1,
+      "case_status_unchanged": "PASS",
+      "command_unchanged": "<WORKSPACE>/.p26/v/bin/python -B -m pytest -q examples/harnessaudit_office/tests tests/test_package_result_projection.py tests/test_object_store_streaming.py tests/test_package_result_delivery.py tests/test_run_descriptor_reads.py tests/test_registry_read_session.py tests/test_module_graph_projection.py --disable-warnings --basetemp=<WORKSPACE>/.h26/a --junitxml=<WORKSPACE>/task-shared-harness-validation-20261008/logs/A-offline.xml -p no:cacheprovider",
+      "source": {
+        "path": "evidence/first_wave/20261008/shared-harness/local/logs/A-offline.json",
+        "sha256": "c120c90658c70b0e020ebd2d5d269ecf7603cf1d3cd3113eee9276947da29d8d",
+        "command_argv": [
+          "<WORKSPACE>/.p26/v/bin/python",
+          "-B",
+          "-m",
+          "pytest",
+          "-q",
+          "examples/harnessaudit_office/tests",
+          "tests/test_package_result_projection.py",
+          "tests/test_object_store_streaming.py",
+          "tests/test_package_result_delivery.py",
+          "tests/test_run_descriptor_reads.py",
+          "tests/test_registry_read_session.py",
+          "tests/test_module_graph_projection.py",
+          "--disable-warnings",
+          "--basetemp=<WORKSPACE>/.h26/a",
+          "--junitxml=<WORKSPACE>/task-shared-harness-validation-20261008/logs/A-offline.xml",
+          "-p",
+          "no:cacheprovider"
+        ],
+        "exit_code": 1,
+        "commit": "674252feb836f631c162979f177d1fe91f22559f",
+        "git_blob_sha1": "637ae983e6e9d07efee64d2b0b9bd5c55da05c03",
+        "bytes": 1294
+      },
+      "interpretation": "Individual case verdict remains PASS; recorded whole-suite process exits 1 because a different test fails. This is not a new execution."
+    },
+    {
+      "json_pointer": "/A/cases/6/exit_code",
+      "case_id": "A_environment_none_is_delivery_shortcircuit",
+      "original_value": 0,
+      "correct_value": 1,
+      "case_status_unchanged": "PASS",
+      "command_unchanged": "<WORKSPACE>/.p26/v/bin/python -B -m pytest -q examples/harnessaudit_office/tests tests/test_package_result_projection.py tests/test_object_store_streaming.py tests/test_package_result_delivery.py tests/test_run_descriptor_reads.py tests/test_registry_read_session.py tests/test_module_graph_projection.py --disable-warnings --basetemp=<WORKSPACE>/.h26/a --junitxml=<WORKSPACE>/task-shared-harness-validation-20261008/logs/A-offline.xml -p no:cacheprovider",
+      "source": {
+        "path": "evidence/first_wave/20261008/shared-harness/local/logs/A-offline.json",
+        "sha256": "c120c90658c70b0e020ebd2d5d269ecf7603cf1d3cd3113eee9276947da29d8d",
+        "command_argv": [
+          "<WORKSPACE>/.p26/v/bin/python",
+          "-B",
+          "-m",
+          "pytest",
+          "-q",
+          "examples/harnessaudit_office/tests",
+          "tests/test_package_result_projection.py",
+          "tests/test_object_store_streaming.py",
+          "tests/test_package_result_delivery.py",
+          "tests/test_run_descriptor_reads.py",
+          "tests/test_registry_read_session.py",
+          "tests/test_module_graph_projection.py",
+          "--disable-warnings",
+          "--basetemp=<WORKSPACE>/.h26/a",
+          "--junitxml=<WORKSPACE>/task-shared-harness-validation-20261008/logs/A-offline.xml",
+          "-p",
+          "no:cacheprovider"
+        ],
+        "exit_code": 1,
+        "commit": "674252feb836f631c162979f177d1fe91f22559f",
+        "git_blob_sha1": "637ae983e6e9d07efee64d2b0b9bd5c55da05c03",
+        "bytes": 1294
+      },
+      "interpretation": "Individual case verdict remains PASS; recorded whole-suite process exits 1 because a different test fails. This is not a new execution."
+    },
+    {
+      "json_pointer": "/A/cases/7/exit_code",
+      "case_id": "A_strict_descriptor_and_physical_bounds",
+      "original_value": 0,
+      "correct_value": 1,
+      "case_status_unchanged": "PASS",
+      "command_unchanged": "<WORKSPACE>/.p26/v/bin/python -B -m pytest -q examples/harnessaudit_office/tests tests/test_package_result_projection.py tests/test_object_store_streaming.py tests/test_package_result_delivery.py tests/test_run_descriptor_reads.py tests/test_registry_read_session.py tests/test_module_graph_projection.py --disable-warnings --basetemp=<WORKSPACE>/.h26/a --junitxml=<WORKSPACE>/task-shared-harness-validation-20261008/logs/A-offline.xml -p no:cacheprovider",
+      "source": {
+        "path": "evidence/first_wave/20261008/shared-harness/local/logs/A-offline.json",
+        "sha256": "c120c90658c70b0e020ebd2d5d269ecf7603cf1d3cd3113eee9276947da29d8d",
+        "command_argv": [
+          "<WORKSPACE>/.p26/v/bin/python",
+          "-B",
+          "-m",
+          "pytest",
+          "-q",
+          "examples/harnessaudit_office/tests",
+          "tests/test_package_result_projection.py",
+          "tests/test_object_store_streaming.py",
+          "tests/test_package_result_delivery.py",
+          "tests/test_run_descriptor_reads.py",
+          "tests/test_registry_read_session.py",
+          "tests/test_module_graph_projection.py",
+          "--disable-warnings",
+          "--basetemp=<WORKSPACE>/.h26/a",
+          "--junitxml=<WORKSPACE>/task-shared-harness-validation-20261008/logs/A-offline.xml",
+          "-p",
+          "no:cacheprovider"
+        ],
+        "exit_code": 1,
+        "commit": "674252feb836f631c162979f177d1fe91f22559f",
+        "git_blob_sha1": "637ae983e6e9d07efee64d2b0b9bd5c55da05c03",
+        "bytes": 1294
+      },
+      "interpretation": "Individual case verdict remains PASS; recorded whole-suite process exits 1 because a different test fails. This is not a new execution."
+    },
+    {
+      "json_pointer": "/A/cases/8/exit_code",
+      "case_id": "A_native_resource_provenance",
+      "original_value": 0,
+      "correct_value": 1,
+      "case_status_unchanged": "PASS",
+      "command_unchanged": "<WORKSPACE>/.p26/v/bin/python -B -m pytest -q examples/harnessaudit_office/tests tests/test_package_result_projection.py tests/test_object_store_streaming.py tests/test_package_result_delivery.py tests/test_run_descriptor_reads.py tests/test_registry_read_session.py tests/test_module_graph_projection.py --disable-warnings --basetemp=<WORKSPACE>/.h26/a --junitxml=<WORKSPACE>/task-shared-harness-validation-20261008/logs/A-offline.xml -p no:cacheprovider",
+      "source": {
+        "path": "evidence/first_wave/20261008/shared-harness/local/logs/A-offline.json",
+        "sha256": "c120c90658c70b0e020ebd2d5d269ecf7603cf1d3cd3113eee9276947da29d8d",
+        "command_argv": [
+          "<WORKSPACE>/.p26/v/bin/python",
+          "-B",
+          "-m",
+          "pytest",
+          "-q",
+          "examples/harnessaudit_office/tests",
+          "tests/test_package_result_projection.py",
+          "tests/test_object_store_streaming.py",
+          "tests/test_package_result_delivery.py",
+          "tests/test_run_descriptor_reads.py",
+          "tests/test_registry_read_session.py",
+          "tests/test_module_graph_projection.py",
+          "--disable-warnings",
+          "--basetemp=<WORKSPACE>/.h26/a",
+          "--junitxml=<WORKSPACE>/task-shared-harness-validation-20261008/logs/A-offline.xml",
+          "-p",
+          "no:cacheprovider"
+        ],
+        "exit_code": 1,
+        "commit": "674252feb836f631c162979f177d1fe91f22559f",
+        "git_blob_sha1": "637ae983e6e9d07efee64d2b0b9bd5c55da05c03",
+        "bytes": 1294
+      },
+      "interpretation": "Individual case verdict remains PASS; recorded whole-suite process exits 1 because a different test fails. This is not a new execution."
+    },
+    {
+      "json_pointer": "/A/cases/9/exit_code",
+      "case_id": "A_post_render_cut_recheck_and_atomic_collector",
+      "original_value": 0,
+      "correct_value": 1,
+      "case_status_unchanged": "PASS",
+      "command_unchanged": "<WORKSPACE>/.p26/v/bin/python -B -m pytest -q examples/harnessaudit_office/tests tests/test_package_result_projection.py tests/test_object_store_streaming.py tests/test_package_result_delivery.py tests/test_run_descriptor_reads.py tests/test_registry_read_session.py tests/test_module_graph_projection.py --disable-warnings --basetemp=<WORKSPACE>/.h26/a --junitxml=<WORKSPACE>/task-shared-harness-validation-20261008/logs/A-offline.xml -p no:cacheprovider",
+      "source": {
+        "path": "evidence/first_wave/20261008/shared-harness/local/logs/A-offline.json",
+        "sha256": "c120c90658c70b0e020ebd2d5d269ecf7603cf1d3cd3113eee9276947da29d8d",
+        "command_argv": [
+          "<WORKSPACE>/.p26/v/bin/python",
+          "-B",
+          "-m",
+          "pytest",
+          "-q",
+          "examples/harnessaudit_office/tests",
+          "tests/test_package_result_projection.py",
+          "tests/test_object_store_streaming.py",
+          "tests/test_package_result_delivery.py",
+          "tests/test_run_descriptor_reads.py",
+          "tests/test_registry_read_session.py",
+          "tests/test_module_graph_projection.py",
+          "--disable-warnings",
+          "--basetemp=<WORKSPACE>/.h26/a",
+          "--junitxml=<WORKSPACE>/task-shared-harness-validation-20261008/logs/A-offline.xml",
+          "-p",
+          "no:cacheprovider"
+        ],
+        "exit_code": 1,
+        "commit": "674252feb836f631c162979f177d1fe91f22559f",
+        "git_blob_sha1": "637ae983e6e9d07efee64d2b0b9bd5c55da05c03",
+        "bytes": 1294
+      },
+      "interpretation": "Individual case verdict remains PASS; recorded whole-suite process exits 1 because a different test fails. This is not a new execution."
+    },
+    {
+      "json_pointer": "/A/cases/10/exit_code",
+      "case_id": "A_readonly_fingerprint_and_no_grant_or_dispatch",
+      "original_value": 0,
+      "correct_value": 1,
+      "case_status_unchanged": "PASS",
+      "command_unchanged": "<WORKSPACE>/.p26/v/bin/python -B -m pytest -q examples/harnessaudit_office/tests tests/test_package_result_projection.py tests/test_object_store_streaming.py tests/test_package_result_delivery.py tests/test_run_descriptor_reads.py tests/test_registry_read_session.py tests/test_module_graph_projection.py --disable-warnings --basetemp=<WORKSPACE>/.h26/a --junitxml=<WORKSPACE>/task-shared-harness-validation-20261008/logs/A-offline.xml -p no:cacheprovider",
+      "source": {
+        "path": "evidence/first_wave/20261008/shared-harness/local/logs/A-offline.json",
+        "sha256": "c120c90658c70b0e020ebd2d5d269ecf7603cf1d3cd3113eee9276947da29d8d",
+        "command_argv": [
+          "<WORKSPACE>/.p26/v/bin/python",
+          "-B",
+          "-m",
+          "pytest",
+          "-q",
+          "examples/harnessaudit_office/tests",
+          "tests/test_package_result_projection.py",
+          "tests/test_object_store_streaming.py",
+          "tests/test_package_result_delivery.py",
+          "tests/test_run_descriptor_reads.py",
+          "tests/test_registry_read_session.py",
+          "tests/test_module_graph_projection.py",
+          "--disable-warnings",
+          "--basetemp=<WORKSPACE>/.h26/a",
+          "--junitxml=<WORKSPACE>/task-shared-harness-validation-20261008/logs/A-offline.xml",
+          "-p",
+          "no:cacheprovider"
+        ],
+        "exit_code": 1,
+        "commit": "674252feb836f631c162979f177d1fe91f22559f",
+        "git_blob_sha1": "637ae983e6e9d07efee64d2b0b9bd5c55da05c03",
+        "bytes": 1294
+      },
+      "interpretation": "Individual case verdict remains PASS; recorded whole-suite process exits 1 because a different test fails. This is not a new execution."
+    },
+    {
+      "json_pointer": "/A/cases/3/command",
+      "case_id": "A_same_cut_each_consumer_identity_agreement",
+      "original_value": "<WORKSPACE>/.p26/v/bin/python -B -m pytest -q examples/harnessaudit_office/tests tests/test_package_result_projection.py tests/test_object_store_streaming.py tests/test_package_result_delivery.py tests/test_run_descriptor_reads.py tests/test_registry_read_session.py tests/test_module_graph_projection.py --disable-warnings --basetemp=<WORKSPACE>/.h26/a --junitxml=<WORKSPACE>/task-shared-harness-validation-20261008/logs/A-offline.xml -p no:cacheprovider",
+      "correct_value": "<WORKSPACE>/.p26/v/bin/python -m pytest -q <WORKSPACE>/task-shared-harness-validation-20261008/probes/A/test_native_consumers.py -p no:cacheprovider --basetemp=<WORKSPACE>/.h26/an/consumers --junitxml=<WORKSPACE>/task-shared-harness-validation-20261008/probes/A/consumers.xml",
+      "correct_argv": [
+        "<WORKSPACE>/.p26/v/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "<WORKSPACE>/task-shared-harness-validation-20261008/probes/A/test_native_consumers.py",
+        "-p",
+        "no:cacheprovider",
+        "--basetemp=<WORKSPACE>/.h26/an/consumers",
+        "--junitxml=<WORKSPACE>/task-shared-harness-validation-20261008/probes/A/consumers.xml"
+      ],
+      "case_status_unchanged": "PASS",
+      "exit_code_unchanged": 0,
+      "source": {
+        "path": "evidence/first_wave/20261008/shared-harness/local/probes/A/consumers.command.json",
+        "sha256": "baa00f85b38bdfc695d98be4a664dd44c1e6b6068cdbc36985783dbe77e6b9fe",
+        "command_argv": [
+          "<WORKSPACE>/.p26/v/bin/python",
+          "-m",
+          "pytest",
+          "-q",
+          "<WORKSPACE>/task-shared-harness-validation-20261008/probes/A/test_native_consumers.py",
+          "-p",
+          "no:cacheprovider",
+          "--basetemp=<WORKSPACE>/.h26/an/consumers",
+          "--junitxml=<WORKSPACE>/task-shared-harness-validation-20261008/probes/A/consumers.xml"
+        ],
+        "exit_code": 0,
+        "commit": "674252feb836f631c162979f177d1fe91f22559f",
+        "git_blob_sha1": "a750c420836a6baa0ee163520bc4187f6aeba468",
+        "bytes": 872
+      },
+      "interpretation": "This native dual-consumer evidence was produced by consumers.command.json, not the offline suite.",
+      "supporting_evidence": [
+        {
+          "path": "evidence/first_wave/20261008/shared-harness/local/probes/A/native-observations.json",
+          "commit": "674252feb836f631c162979f177d1fe91f22559f",
+          "git_blob_sha1": "6249054faf73aa7fc5bc93573de54dc5d29ccb52",
+          "sha256": "f4c34ed560a35be47b00535333dfe7c8ba38f73ff95a6a318490c1175c54f073",
+          "bytes": 11260
+        },
+        {
+          "path": "evidence/first_wave/20261008/shared-harness/local/probes/A/read-only-observations.json",
+          "commit": "674252feb836f631c162979f177d1fe91f22559f",
+          "git_blob_sha1": "82002e86af948ec012772c757178602c5a57f97e",
+          "sha256": "97cee822b9c816eb5bb51b89ca59c235b6c242decbe88dd53c745b6dc773010c",
+          "bytes": 994
+        },
+        {
+          "path": "evidence/first_wave/20261008/shared-harness/local/probes/A/consumers.xml",
+          "commit": "674252feb836f631c162979f177d1fe91f22559f",
+          "git_blob_sha1": "7392ca4228d45360dfc526fcddac9383f4822eec",
+          "sha256": "5c5756df8500c3d2d4448c902ea5a4d3bcc495c8e62bb876bafbf87d8e479450",
+          "bytes": 412
+        }
+      ]
+    },
+    {
+      "json_pointer": "/B/cases/8/command",
+      "case_id": "B_actual_prompt_catalog_registry_refs",
+      "original_value": "<WORKSPACE>/.p26/v/bin/python -B -m pytest -q tests/test_optional_output_guidance.py tests/test_workspace_write_atomicity.py tests/test_agent_request_envelope_materialization_stage3.py tests/test_agent_loop_tool_components.py --basetemp=<WORKSPACE>/.h26/b --junitxml=<WORKSPACE>/task-shared-harness-validation-20261008/logs/B-offline.xml -p no:cacheprovider",
+      "correct_value": null,
+      "correct_interpretation": "No single command: aggregate claim is evidenced by two separate native process receipts. Preserve both rather than fabricate a concatenated run.",
+      "runs": [
+        {
+          "path": "evidence/first_wave/20261008/shared-harness/local/probes/B/i1.command.json",
+          "sha256": "2f3603d8661f514b8f86600cb8329000ffb6293ff292e0254a6c6fdac37e424c",
+          "command_argv": [
+            "<WORKSPACE>/.p26/v/bin/python",
+            "-m",
+            "pytest",
+            "-q",
+            "-p",
+            "no:cacheprovider",
+            "<WORKSPACE>/task-shared-harness-validation-20261008/probes/B/test_native_text.py",
+            "--basetemp=<WORKSPACE>/.h26/bn/p1",
+            "--junitxml=<WORKSPACE>/task-shared-harness-validation-20261008/probes/B/i1.xml"
+          ],
+          "exit_code": 0,
+          "commit": "674252feb836f631c162979f177d1fe91f22559f",
+          "git_blob_sha1": "ca4dd11d69cc14dab0760cf7e87d104074db2680",
+          "bytes": 853
+        },
+        {
+          "path": "evidence/first_wave/20261008/shared-harness/local/probes/B/j1.command.json",
+          "sha256": "22fa4d7cb3c5211c127a486891c22b3726d3a18db20651ab61f0ee8152a6c6fa",
+          "command_argv": [
+            "<WORKSPACE>/.p26/v/bin/python",
+            "-m",
+            "pytest",
+            "-q",
+            "-p",
+            "no:cacheprovider",
+            "<WORKSPACE>/task-shared-harness-validation-20261008/probes/B/test_native_structured.py",
+            "--basetemp=<WORKSPACE>/.h26/bn/pj1",
+            "--junitxml=<WORKSPACE>/task-shared-harness-validation-20261008/probes/B/j1.xml"
+          ],
+          "exit_code": 0,
+          "commit": "674252feb836f631c162979f177d1fe91f22559f",
+          "git_blob_sha1": "850b8241346e7b2cb65210d693c9407c2ceaec10",
+          "bytes": 860
+        }
+      ],
+      "case_status_unchanged": "PASS",
+      "original_exit_code": 0,
+      "correct_exit_code_interpretation": "Each of the two native runs exits 0; zero is not the result of a separate aggregate process.",
+      "single_process_exit_code": null,
+      "related_exit_code_json_pointer": "/B/cases/8/exit_code",
+      "supporting_evidence": [
+        {
+          "path": "evidence/first_wave/20261008/shared-harness/local/probes/B/i1/evidence.json",
+          "commit": "674252feb836f631c162979f177d1fe91f22559f",
+          "git_blob_sha1": "456019f3ffbc0fdd998941529093acfd7dd85abc",
+          "sha256": "442c03c706cf12f9b4d613121f76f68b2e44e3d9eb084fdfa30bb8bb1920789d",
+          "bytes": 6217
+        },
+        {
+          "path": "evidence/first_wave/20261008/shared-harness/local/probes/B/j1/evidence.json",
+          "commit": "674252feb836f631c162979f177d1fe91f22559f",
+          "git_blob_sha1": "a22ff7bd6ab8e803418c8571a9abf0b44732d252",
+          "sha256": "dd585e2e925c19ab6e8e24a218f610ca6f8eea62a9a50b77352fae2620eebf2a",
+          "bytes": 6397
+        }
+      ]
+    },
+    {
+      "json_pointer": "/B/cases/9/command",
+      "case_id": "B_canonical_recipe_provider_request_agreement",
+      "original_value": "<WORKSPACE>/.p26/v/bin/python -B -m pytest -q tests/test_optional_output_guidance.py tests/test_workspace_write_atomicity.py tests/test_agent_request_envelope_materialization_stage3.py tests/test_agent_loop_tool_components.py --basetemp=<WORKSPACE>/.h26/b --junitxml=<WORKSPACE>/task-shared-harness-validation-20261008/logs/B-offline.xml -p no:cacheprovider",
+      "correct_value": null,
+      "correct_interpretation": "No single command: aggregate claim is evidenced by two separate native process receipts. Preserve both rather than fabricate a concatenated run.",
+      "runs": [
+        {
+          "path": "evidence/first_wave/20261008/shared-harness/local/probes/B/i1.command.json",
+          "sha256": "2f3603d8661f514b8f86600cb8329000ffb6293ff292e0254a6c6fdac37e424c",
+          "command_argv": [
+            "<WORKSPACE>/.p26/v/bin/python",
+            "-m",
+            "pytest",
+            "-q",
+            "-p",
+            "no:cacheprovider",
+            "<WORKSPACE>/task-shared-harness-validation-20261008/probes/B/test_native_text.py",
+            "--basetemp=<WORKSPACE>/.h26/bn/p1",
+            "--junitxml=<WORKSPACE>/task-shared-harness-validation-20261008/probes/B/i1.xml"
+          ],
+          "exit_code": 0,
+          "commit": "674252feb836f631c162979f177d1fe91f22559f",
+          "git_blob_sha1": "ca4dd11d69cc14dab0760cf7e87d104074db2680",
+          "bytes": 853
+        },
+        {
+          "path": "evidence/first_wave/20261008/shared-harness/local/probes/B/j1.command.json",
+          "sha256": "22fa4d7cb3c5211c127a486891c22b3726d3a18db20651ab61f0ee8152a6c6fa",
+          "command_argv": [
+            "<WORKSPACE>/.p26/v/bin/python",
+            "-m",
+            "pytest",
+            "-q",
+            "-p",
+            "no:cacheprovider",
+            "<WORKSPACE>/task-shared-harness-validation-20261008/probes/B/test_native_structured.py",
+            "--basetemp=<WORKSPACE>/.h26/bn/pj1",
+            "--junitxml=<WORKSPACE>/task-shared-harness-validation-20261008/probes/B/j1.xml"
+          ],
+          "exit_code": 0,
+          "commit": "674252feb836f631c162979f177d1fe91f22559f",
+          "git_blob_sha1": "850b8241346e7b2cb65210d693c9407c2ceaec10",
+          "bytes": 860
+        }
+      ],
+      "case_status_unchanged": "PASS",
+      "original_exit_code": 0,
+      "correct_exit_code_interpretation": "Each of the two native runs exits 0; zero is not the result of a separate aggregate process.",
+      "single_process_exit_code": null,
+      "related_exit_code_json_pointer": "/B/cases/9/exit_code",
+      "supporting_evidence": [
+        {
+          "path": "evidence/first_wave/20261008/shared-harness/local/probes/B/i1/evidence.json",
+          "commit": "674252feb836f631c162979f177d1fe91f22559f",
+          "git_blob_sha1": "456019f3ffbc0fdd998941529093acfd7dd85abc",
+          "sha256": "442c03c706cf12f9b4d613121f76f68b2e44e3d9eb084fdfa30bb8bb1920789d",
+          "bytes": 6217
+        },
+        {
+          "path": "evidence/first_wave/20261008/shared-harness/local/probes/B/j1/evidence.json",
+          "commit": "674252feb836f631c162979f177d1fe91f22559f",
+          "git_blob_sha1": "a22ff7bd6ab8e803418c8571a9abf0b44732d252",
+          "sha256": "dd585e2e925c19ab6e8e24a218f610ca6f8eea62a9a50b77352fae2620eebf2a",
+          "bytes": 6397
+        }
+      ]
+    }
+  ],
+  "interpretation_notes": [
+    {
+      "json_pointer": "/combined/0/exit_code",
+      "case_id": "AB_base_identity",
+      "original_value": 0,
+      "recorded_command": null,
+      "case_status_unchanged": "PASS",
+      "verified_process_exit_code": null,
+      "action": "No replacement process or exit code is invented; interpret PASS as a mechanical evidence-review result only. The historical snapshot remains unchanged.",
+      "supporting_evidence": [
+        {
+          "path": "evidence/first_wave/20261008/shared-harness/local/source-verification.json",
+          "commit": "674252feb836f631c162979f177d1fe91f22559f",
+          "git_blob_sha1": "dcbae3d716947884a6e280fa49244a3923c12ecb",
+          "sha256": "01f9348fca2d8258199a336bf7f42cd51f3f1be692c9a815e56882efb5fd7ed4",
+          "bytes": 1399
+        },
+        {
+          "path": "evidence/first_wave/20261008/shared-harness/local/integration-verification.json",
+          "commit": "674252feb836f631c162979f177d1fe91f22559f",
+          "git_blob_sha1": "b69ea115e45667c8e9ecbefc07ae8324d8157ae3",
+          "sha256": "4665639ce6b3d90183c520a2e7721d47b78e9de0b8c870227de441034442abcc",
+          "bytes": 1040
+        },
+        {
+          "path": "evidence/first_wave/20261008/shared-harness/cloud-handoff/file_manifest.json",
+          "commit": "674252feb836f631c162979f177d1fe91f22559f",
+          "git_blob_sha1": "a392310481a4d129b91a9cdd7827b2c3e365b018",
+          "sha256": "82720037a18539746565ccc6c4d6fe1d1a121c21eb72890bd71266cfac1cc237",
+          "bytes": 8950
+        }
+      ]
+    },
+    {
+      "json_pointer": "/combined/1/exit_code",
+      "case_id": "AB_apply_check",
+      "original_value": 0,
+      "recorded_command": null,
+      "case_status_unchanged": "PASS",
+      "verified_process_exit_code": null,
+      "action": "No replacement process or exit code is invented; interpret PASS as a mechanical evidence-review result only. The historical snapshot remains unchanged.",
+      "supporting_evidence": [
+        {
+          "path": "evidence/first_wave/20261008/shared-harness/local/source-verification.json",
+          "commit": "674252feb836f631c162979f177d1fe91f22559f",
+          "git_blob_sha1": "dcbae3d716947884a6e280fa49244a3923c12ecb",
+          "sha256": "01f9348fca2d8258199a336bf7f42cd51f3f1be692c9a815e56882efb5fd7ed4",
+          "bytes": 1399
+        },
+        {
+          "path": "evidence/first_wave/20261008/shared-harness/local/integration-verification.json",
+          "commit": "674252feb836f631c162979f177d1fe91f22559f",
+          "git_blob_sha1": "b69ea115e45667c8e9ecbefc07ae8324d8157ae3",
+          "sha256": "4665639ce6b3d90183c520a2e7721d47b78e9de0b8c870227de441034442abcc",
+          "bytes": 1040
+        },
+        {
+          "path": "evidence/first_wave/20261008/shared-harness/cloud-handoff/file_manifest.json",
+          "commit": "674252feb836f631c162979f177d1fe91f22559f",
+          "git_blob_sha1": "a392310481a4d129b91a9cdd7827b2c3e365b018",
+          "sha256": "82720037a18539746565ccc6c4d6fe1d1a121c21eb72890bd71266cfac1cc237",
+          "bytes": 8950
+        }
+      ]
+    },
+    {
+      "json_pointer": "/combined/2/exit_code",
+      "case_id": "AB_seventeen_final_hashes",
+      "original_value": 0,
+      "recorded_command": null,
+      "case_status_unchanged": "PASS",
+      "verified_process_exit_code": null,
+      "action": "No replacement process or exit code is invented; interpret PASS as a mechanical evidence-review result only. The historical snapshot remains unchanged.",
+      "supporting_evidence": [
+        {
+          "path": "evidence/first_wave/20261008/shared-harness/local/source-verification.json",
+          "commit": "674252feb836f631c162979f177d1fe91f22559f",
+          "git_blob_sha1": "dcbae3d716947884a6e280fa49244a3923c12ecb",
+          "sha256": "01f9348fca2d8258199a336bf7f42cd51f3f1be692c9a815e56882efb5fd7ed4",
+          "bytes": 1399
+        },
+        {
+          "path": "evidence/first_wave/20261008/shared-harness/local/integration-verification.json",
+          "commit": "674252feb836f631c162979f177d1fe91f22559f",
+          "git_blob_sha1": "b69ea115e45667c8e9ecbefc07ae8324d8157ae3",
+          "sha256": "4665639ce6b3d90183c520a2e7721d47b78e9de0b8c870227de441034442abcc",
+          "bytes": 1040
+        },
+        {
+          "path": "evidence/first_wave/20261008/shared-harness/cloud-handoff/file_manifest.json",
+          "commit": "674252feb836f631c162979f177d1fe91f22559f",
+          "git_blob_sha1": "a392310481a4d129b91a9cdd7827b2c3e365b018",
+          "sha256": "82720037a18539746565ccc6c4d6fe1d1a121c21eb72890bd71266cfac1cc237",
+          "bytes": 8950
+        }
+      ]
+    },
+    {
+      "json_pointer": "/combined/3/exit_code",
+      "case_id": "B_writer_parser_enum_unchanged",
+      "original_value": 0,
+      "recorded_command": null,
+      "case_status_unchanged": "PASS",
+      "verified_process_exit_code": null,
+      "action": "No replacement process or exit code is invented; interpret PASS as a mechanical evidence-review result only. The historical snapshot remains unchanged.",
+      "supporting_evidence": [
+        {
+          "path": "evidence/first_wave/20261008/shared-harness/local/source-verification.json",
+          "commit": "674252feb836f631c162979f177d1fe91f22559f",
+          "git_blob_sha1": "dcbae3d716947884a6e280fa49244a3923c12ecb",
+          "sha256": "01f9348fca2d8258199a336bf7f42cd51f3f1be692c9a815e56882efb5fd7ed4",
+          "bytes": 1399
+        },
+        {
+          "path": "evidence/first_wave/20261008/shared-harness/local/integration-verification.json",
+          "commit": "674252feb836f631c162979f177d1fe91f22559f",
+          "git_blob_sha1": "b69ea115e45667c8e9ecbefc07ae8324d8157ae3",
+          "sha256": "4665639ce6b3d90183c520a2e7721d47b78e9de0b8c870227de441034442abcc",
+          "bytes": 1040
+        },
+        {
+          "path": "evidence/first_wave/20261008/shared-harness/cloud-handoff/file_manifest.json",
+          "commit": "674252feb836f631c162979f177d1fe91f22559f",
+          "git_blob_sha1": "a392310481a4d129b91a9cdd7827b2c3e365b018",
+          "sha256": "82720037a18539746565ccc6c4d6fe1d1a121c21eb72890bd71266cfac1cc237",
+          "bytes": 8950
+        }
+      ]
+    },
+    {
+      "json_pointer": "/combined/4/exit_code",
+      "case_id": "A_shared_reader_two_consumer_scope",
+      "original_value": 0,
+      "recorded_command": null,
+      "case_status_unchanged": "PASS",
+      "verified_process_exit_code": null,
+      "action": "No replacement process or exit code is invented; interpret PASS as a mechanical evidence-review result only. The historical snapshot remains unchanged.",
+      "supporting_evidence": [
+        {
+          "path": "evidence/first_wave/20261008/shared-harness/local/source-verification.json",
+          "commit": "674252feb836f631c162979f177d1fe91f22559f",
+          "git_blob_sha1": "dcbae3d716947884a6e280fa49244a3923c12ecb",
+          "sha256": "01f9348fca2d8258199a336bf7f42cd51f3f1be692c9a815e56882efb5fd7ed4",
+          "bytes": 1399
+        },
+        {
+          "path": "evidence/first_wave/20261008/shared-harness/local/integration-verification.json",
+          "commit": "674252feb836f631c162979f177d1fe91f22559f",
+          "git_blob_sha1": "b69ea115e45667c8e9ecbefc07ae8324d8157ae3",
+          "sha256": "4665639ce6b3d90183c520a2e7721d47b78e9de0b8c870227de441034442abcc",
+          "bytes": 1040
+        },
+        {
+          "path": "evidence/first_wave/20261008/shared-harness/cloud-handoff/file_manifest.json",
+          "commit": "674252feb836f631c162979f177d1fe91f22559f",
+          "git_blob_sha1": "a392310481a4d129b91a9cdd7827b2c3e365b018",
+          "sha256": "82720037a18539746565ccc6c4d6fe1d1a121c21eb72890bd71266cfac1cc237",
+          "bytes": 8950
+        }
+      ]
+    }
+  ],
+  "acceptance_unchanged": {
+    "code_acceptance": "ACCEPTED_FINITE",
+    "local_overall": "PARTIAL_ENV",
+    "A": "BLOCKED_ENV",
+    "B": "PASS",
+    "A_offline_command_exit_code": 1,
+    "A_offline_tests": 242,
+    "A_offline_passed": 241,
+    "A_offline_failed": 1,
+    "A_offline_errors": 0,
+    "A_offline_skipped": 0
+  },
+  "preservation": {
+    "historical_snapshot_modified": false,
+    "historical_manifest_modified": false,
+    "source_logs_or_junit_modified": false,
+    "reported_case_statuses_modified": false,
+    "project_code_changed": false,
+    "new_test_executions": 0,
+    "provider_or_model_calls": 0,
+    "github_actions_run": false
+  }
+}

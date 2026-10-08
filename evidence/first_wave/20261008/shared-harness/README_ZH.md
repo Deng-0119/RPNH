@@ -16,3 +16,9 @@ A 同次导出两个真实 pure plugin managed return 与当前终态；HA/envir
 B 两条 fresh 写入链具有真实 Registry prompt/catalog/recipe refs 与内容摘要，并经实际 materializer 核对 captured envelope。structured 使用现有 trusted HOST 声明入口，object schema 下 product/workspace/snapshot 同为108字节 JSON 文档；高层 AgentTaskSpec 仍为 text-only。原子内容/来源/outcome/port 约束由独立离线窗口验证。
 
 六个原生运行的 scripted logical calls 为4/4/1/1/1/1，超限0，真实 provider/model调用0。历史 reproject/resume及OS并发writer压力未运行；没有 Docker、Actions、业务评分或历史分数改写。数据库、private profiles、完整请求/对话、环境缓存和ZIP留本地。验证快照在授权推送前形成，其中 no_push=true 是时间点事实；交付按用户长期 GitHub 授权执行。
+
+## 公开证据的可解析副本与元数据勘误
+
+原始证据、失败记录、验证快照与旧 MANIFEST 保持不变。全部 21 份 XML 已核对；仅 A-offline 的 9 处脱敏占位符需要 XML 转义，提供 [可解析派生副本与说明](derived-junit/README.md) 及 [独立 provenance](derived-junit/PROVENANCE.json)。仍为 242 tests / 241 passed / 1 failed / exit 1，本地整体仍为 PARTIAL_ENV。
+
+[验证快照的独立元数据勘误](derived-metadata/VALIDATION_SNAPSHOT_ERRATA.json) 精确定位 9 处 A 整体命令退出码及 3 处原生证据命令来源；单项 case 状态与进程退出码分开解释，B 聚合项保留两次独立运行的 receipt。没有改写原快照、制造新运行或扩大通过范围。
