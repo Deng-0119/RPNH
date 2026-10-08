@@ -1,0 +1,24 @@
+{
+  "attempt_id": "install-02",
+  "condition_id": "noneditable-source-dbad-patch",
+  "preceding_attempt_id": null,
+  "started_at": "2026-10-08T10:53:10.169457+00:00",
+  "ended_at": "2026-10-08T10:53:34.489714+00:00",
+  "command": [
+    "<UV>",
+    "--no-config",
+    "pip",
+    "install",
+    "--python",
+    "<VENV>/bin/python",
+    "--default-index",
+    "https://pypi.org/simple",
+    "<SOURCE>",
+    "<SOURCE>/examples/erp_bench[test]"
+  ],
+  "cwd": "<SHORT_TASK>",
+  "elapsed_seconds": 24.320260698998027,
+  "exit_code": 0,
+  "real_provider_calls": 0,
+  "log": "evidence/install-02.log"
+}

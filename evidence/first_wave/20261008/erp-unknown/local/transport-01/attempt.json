@@ -1,0 +1,27 @@
+{
+  "attempt_id": "transport-01",
+  "condition_id": "ERP-unknown-dbad-original-five-file-patch",
+  "preceding_attempt_id": null,
+  "started_at": "2026-10-08T10:56:53.568471+00:00",
+  "ended_at": "2026-10-08T10:57:02.443048+00:00",
+  "elapsed_seconds": 8.874575892001303,
+  "cwd": "<SOURCE>",
+  "command": [
+    "<VENV>/bin/python",
+    "-B",
+    "-m",
+    "pytest",
+    "-p",
+    "no:cacheprovider",
+    "-v",
+    "--junitxml=<TASK>/evidence/transport-01/junit.xml",
+    "examples/erp_bench/tests/test_plugin.py",
+    "examples/erp_bench/tests/test_bridge.py"
+  ],
+  "exit_code": 0,
+  "python": "<VENV>/bin/python",
+  "OS": "Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+  "architecture": "x86_64",
+  "real_provider_model_Docker_calls": 0,
+  "path_adaptation": "task-local short TMPDIR instead of external /tmp; source and semantic test selection unchanged"
+}

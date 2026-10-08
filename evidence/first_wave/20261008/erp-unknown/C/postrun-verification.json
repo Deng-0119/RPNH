@@ -1,0 +1,352 @@
+{
+  "result": "passed",
+  "checks": [
+    "six scenarios",
+    "known receipt output equality to backend originals",
+    "all observed workers and direct API owner exited",
+    "socket and bridge threads closed",
+    "receipt replay unchanged",
+    "projection path/private marker scan",
+    "executed fixture bytes equal current script"
+  ],
+  "cases": [
+    {
+      "case": "explicit_unknown",
+      "status": "passed",
+      "counts": {
+        "backend_effect": 1,
+        "bridge_request": 1,
+        "worker_dispatch": 1
+      },
+      "states": [
+        "started",
+        "outcome_unknown"
+      ],
+      "peer_pids": [
+        112362
+      ],
+      "cleanup_signals": [
+        {
+          "before": {
+            "cmdline": "<VENV>/bin/python -B -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=35, pipe_handle=39) --multiprocessing-fork ",
+            "pid": 112362,
+            "ppid": 112356,
+            "present": true,
+            "state": "R (running)"
+          },
+          "context": "execute_worker finally cleanup",
+          "pid": 112362,
+          "signal": "SIGTERM",
+          "syscall_succeeded": true
+        },
+        {
+          "before": {
+            "pid": 112362,
+            "present": false
+          },
+          "context": "execute_worker finally cleanup",
+          "pid": 112362,
+          "signal": "SIGKILL",
+          "syscall_exception": "ProcessLookupError"
+        }
+      ],
+      "bridge_uncertain": true
+    },
+    {
+      "case": "backend_exception",
+      "status": "passed",
+      "counts": {
+        "backend_effect": 1,
+        "bridge_request": 1,
+        "worker_dispatch": 1
+      },
+      "states": [
+        "started",
+        "outcome_unknown"
+      ],
+      "peer_pids": [
+        112365
+      ],
+      "cleanup_signals": [
+        {
+          "before": {
+            "cmdline": "<VENV>/bin/python -B -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=35, pipe_handle=71) --multiprocessing-fork ",
+            "pid": 112365,
+            "ppid": 112356,
+            "present": true,
+            "state": "R (running)"
+          },
+          "context": "execute_worker finally cleanup",
+          "pid": 112365,
+          "signal": "SIGTERM",
+          "syscall_succeeded": true
+        },
+        {
+          "before": {
+            "pid": 112365,
+            "present": false
+          },
+          "context": "execute_worker finally cleanup",
+          "pid": 112365,
+          "signal": "SIGKILL",
+          "syscall_exception": "ProcessLookupError"
+        }
+      ],
+      "bridge_uncertain": true
+    },
+    {
+      "case": "lost_completed_reply",
+      "status": "passed",
+      "counts": {
+        "backend_effect": 1,
+        "bridge_request": 1,
+        "worker_dispatch": 1
+      },
+      "states": [
+        "started",
+        "outcome_unknown"
+      ],
+      "peer_pids": [
+        112368
+      ],
+      "cleanup_signals": [
+        {
+          "before": {
+            "cmdline": "<VENV>/bin/python -B -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=35, pipe_handle=36) --multiprocessing-fork ",
+            "pid": 112368,
+            "ppid": 112356,
+            "present": true,
+            "state": "R (running)"
+          },
+          "context": "execute_worker finally cleanup",
+          "pid": 112368,
+          "signal": "SIGTERM",
+          "syscall_succeeded": true
+        },
+        {
+          "before": {
+            "pid": 112368,
+            "present": false
+          },
+          "context": "execute_worker finally cleanup",
+          "pid": 112368,
+          "signal": "SIGKILL",
+          "syscall_exception": "ProcessLookupError"
+        }
+      ],
+      "bridge_uncertain": true
+    },
+    {
+      "case": "known_failed_nonzero",
+      "status": "passed",
+      "counts": {
+        "backend_effect": 2,
+        "bridge_request": 2,
+        "worker_dispatch": 2
+      },
+      "states": [
+        "started",
+        "returned",
+        "started",
+        "returned"
+      ],
+      "peer_pids": [
+        112393,
+        112396
+      ],
+      "cleanup_signals": [
+        {
+          "before": {
+            "cmdline": "<VENV>/bin/python -B -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=35, pipe_handle=68) --multiprocessing-fork ",
+            "pid": 112393,
+            "ppid": 112356,
+            "present": true,
+            "state": "R (running)"
+          },
+          "context": "execute_worker finally cleanup",
+          "pid": 112393,
+          "signal": "SIGTERM",
+          "syscall_succeeded": true
+        },
+        {
+          "before": {
+            "pid": 112393,
+            "present": false
+          },
+          "context": "execute_worker finally cleanup",
+          "pid": 112393,
+          "signal": "SIGKILL",
+          "syscall_exception": "ProcessLookupError"
+        },
+        {
+          "before": {
+            "cmdline": "<VENV>/bin/python -B -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=35, pipe_handle=58) --multiprocessing-fork ",
+            "pid": 112396,
+            "ppid": 112356,
+            "present": true,
+            "state": "R (running)"
+          },
+          "context": "execute_worker finally cleanup",
+          "pid": 112396,
+          "signal": "SIGTERM",
+          "syscall_succeeded": true
+        },
+        {
+          "before": {
+            "pid": 112396,
+            "present": false
+          },
+          "context": "execute_worker finally cleanup",
+          "pid": 112396,
+          "signal": "SIGKILL",
+          "syscall_exception": "ProcessLookupError"
+        }
+      ],
+      "bridge_uncertain": false
+    },
+    {
+      "case": "known_domain_infeasible",
+      "status": "passed",
+      "counts": {
+        "backend_effect": 2,
+        "bridge_request": 2,
+        "worker_dispatch": 2
+      },
+      "states": [
+        "started",
+        "returned",
+        "started",
+        "returned"
+      ],
+      "peer_pids": [
+        112405,
+        112408
+      ],
+      "cleanup_signals": [
+        {
+          "before": {
+            "cmdline": "<VENV>/bin/python -B -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=35, pipe_handle=24) --multiprocessing-fork ",
+            "pid": 112405,
+            "ppid": 112356,
+            "present": true,
+            "state": "R (running)"
+          },
+          "context": "execute_worker finally cleanup",
+          "pid": 112405,
+          "signal": "SIGTERM",
+          "syscall_succeeded": true
+        },
+        {
+          "before": {
+            "pid": 112405,
+            "present": false
+          },
+          "context": "execute_worker finally cleanup",
+          "pid": 112405,
+          "signal": "SIGKILL",
+          "syscall_exception": "ProcessLookupError"
+        },
+        {
+          "before": {
+            "cmdline": "<VENV>/bin/python -B -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=35, pipe_handle=24) --multiprocessing-fork ",
+            "pid": 112408,
+            "ppid": 112356,
+            "present": true,
+            "state": "R (running)"
+          },
+          "context": "execute_worker finally cleanup",
+          "pid": 112408,
+          "signal": "SIGTERM",
+          "syscall_succeeded": true
+        },
+        {
+          "before": {
+            "pid": 112408,
+            "present": false
+          },
+          "context": "execute_worker finally cleanup",
+          "pid": 112408,
+          "signal": "SIGKILL",
+          "syscall_exception": "ProcessLookupError"
+        }
+      ],
+      "bridge_uncertain": false
+    },
+    {
+      "case": "known_completed",
+      "status": "passed",
+      "counts": {
+        "backend_effect": 2,
+        "bridge_request": 2,
+        "worker_dispatch": 2
+      },
+      "states": [
+        "started",
+        "returned",
+        "started",
+        "returned"
+      ],
+      "peer_pids": [
+        112412,
+        112415
+      ],
+      "cleanup_signals": [
+        {
+          "before": {
+            "cmdline": "<VENV>/bin/python -B -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=35, pipe_handle=47) --multiprocessing-fork ",
+            "pid": 112412,
+            "ppid": 112356,
+            "present": true,
+            "state": "R (running)"
+          },
+          "context": "execute_worker finally cleanup",
+          "pid": 112412,
+          "signal": "SIGTERM",
+          "syscall_succeeded": true
+        },
+        {
+          "before": {
+            "pid": 112412,
+            "present": false
+          },
+          "context": "execute_worker finally cleanup",
+          "pid": 112412,
+          "signal": "SIGKILL",
+          "syscall_exception": "ProcessLookupError"
+        },
+        {
+          "before": {
+            "cmdline": "<VENV>/bin/python -B -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=35, pipe_handle=47) --multiprocessing-fork ",
+            "pid": 112415,
+            "ppid": 112356,
+            "present": true,
+            "state": "R (running)"
+          },
+          "context": "execute_worker finally cleanup",
+          "pid": 112415,
+          "signal": "SIGTERM",
+          "syscall_succeeded": true
+        },
+        {
+          "before": {
+            "pid": 112415,
+            "present": false
+          },
+          "context": "execute_worker finally cleanup",
+          "pid": 112415,
+          "signal": "SIGKILL",
+          "syscall_exception": "ProcessLookupError"
+        }
+      ],
+      "bridge_uncertain": false
+    }
+  ],
+  "total_counts": {
+    "worker_dispatch": 9,
+    "bridge_request": 9,
+    "backend_effect": 9
+  },
+  "fixture_sha256": "21007f35331686b1efe88e6a253dcc167b238751d3cce0a05dcbb11d36a0e0e3",
+  "fixture_patch_sha256": "5b67129efa7ced36cc45d54f3cf8659ab1bb9e12bf438b7192cc0a7606cc3397",
+  "export_safe_sha256": "f92198e000b96688a46159f361b8b86eec10682f883f205583b75fee42599589"
+}

@@ -5,7 +5,7 @@ import socket
 from pathlib import Path
 from cpn.plugins.api import PluginDefinition, PluginOperation, json_copy, validate
 from .bridge import (IDENTITY_KEYS, MAX_SOURCE, STATUSES, check_arguments,
-                     receive_frame, result, send_frame)
+                     receive_frame, send_frame)
 from .planning import PLAN_INPUT_SCHEMA, validate_plan
 
 INPUT_SCHEMA = {"type": "object", "additionalProperties": False,
@@ -47,11 +47,15 @@ def erp_python_handler(context, arguments):
             answer = validate(OUTPUT_SCHEMA, answer)
             if answer["identity"] != identity:
                 raise ValueError("bridge returned a different effect identity")
-            return answer
     except Exception:
         if not dispatched:
             raise
-        return result("unknown", identity, stderr="bridge response unavailable; do not replay")
+        # An external write may have committed. Let the existing managed worker
+        # failure path publish outcome_unknown and block further Registry calls.
+        raise RuntimeError("ERP execution outcome unknown; do not replay") from None
+    if answer["status"] == "unknown":
+        raise RuntimeError("ERP execution outcome unknown; do not replay")
+    return answer
 
 
 def validate_plan_handler(context, arguments):

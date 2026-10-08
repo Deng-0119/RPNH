@@ -1,0 +1,2 @@
+PASS: patch applies cleanly to verified ERP baseline (whitespace=error-all)
+PASS: applied files match all 5 reviewed output hashes

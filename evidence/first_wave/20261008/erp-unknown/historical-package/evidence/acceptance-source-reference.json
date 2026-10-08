@@ -1,0 +1,42 @@
+{
+  "source_base_commit": "dbad00458e9b356fcaf0bb97ceb90258ed9b1de0",
+  "review_only_not_new_execution": true,
+  "files": [
+    {
+      "path": "examples/erp_bench/scripts/native_acceptance.py",
+      "sha256": "24741d5f1b1c07fa3e0b2edcbbb8d733470257188335a2d2afc255c7bc332224",
+      "git_blob_sha": "56cb8029c8a0f6ccc222ccc71f15034ad57bb84d",
+      "bytes": 15688
+    },
+    {
+      "path": "examples/erp_bench/tests/fake_provider.py",
+      "sha256": "d31102ce8db095cce8fad6efb7e9914d0d28ecd7eceb6ff41f813f87e0254d58",
+      "git_blob_sha": "72ad9fd3a7d1ef3638a870173640608d6bf55d2a",
+      "bytes": 6661
+    },
+    {
+      "path": "examples/erp_bench/tests/test_bridge.py",
+      "sha256": "631210897d3df61be1a1b76f062e37b7bb3b82a60a44aed4c930bc0722af7124",
+      "git_blob_sha": "1aeec47493ecb332a323b0def320dd268a82be96",
+      "bytes": 30578
+    },
+    {
+      "path": "examples/erp_bench/src/rpnh_erp_bench/native.py",
+      "sha256": "b87423511b50d8f2a7b865b1dc3f7ec3e1b0e84c760ef67cc0be5280dae7bd46",
+      "git_blob_sha": "e82084fa7291f203f413fe0fd606d3d6330dfe44",
+      "bytes": 15627
+    },
+    {
+      "path": "examples/erp_bench/src/rpnh_erp_bench/bridge.py",
+      "sha256": "56eaa724e7d5f7080f072153a0a3bf9250f6e6444f02b2e73c34aa806d9deedf",
+      "git_blob_sha": "127c23cfab758099e6161df43a8a0445b1447423",
+      "bytes": 9874
+    },
+    {
+      "path": "cpn/plugins/worker.py",
+      "sha256": "ae35e6c6c92d81c82a3ac0026042c1a29b0412d8ca02ddf50afb48763268faa8",
+      "git_blob_sha": "07cf2216a64a75dbbc3ddc31e0ae22ac050ef329",
+      "bytes": 5898
+    }
+  ]
+}

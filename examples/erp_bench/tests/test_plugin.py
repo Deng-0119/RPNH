@@ -89,8 +89,8 @@ class PluginTests(unittest.TestCase):
         with tempfile.TemporaryDirectory(dir=os.environ["TMPDIR"], prefix="p-") as temporary:
             endpoint = Path(temporary) / "b.sock"
             with Bridge(endpoint, "trial", backend), patch("rpnh_erp_bench.bridge.send_frame", side_effect=drop_first_reply):
-                first = erp_python_handler(context(endpoint), {"source": "mutate()"})
-                self.assertEqual(first["status"], "unknown")
+                with self.assertRaisesRegex(RuntimeError, "ERP execution outcome unknown; do not replay"):
+                    erp_python_handler(context(endpoint), {"source": "mutate()"})
                 following = context(endpoint)
                 following.call_id = "next-call"
                 self.assertEqual(erp_python_handler(following, {"source": "dependent_mutation()"})["status"], "interrupted")

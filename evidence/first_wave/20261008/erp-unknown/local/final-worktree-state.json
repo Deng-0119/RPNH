@@ -1,0 +1,18 @@
+{
+  "tested_commit": "dbad00458e9b356fcaf0bb97ceb90258ed9b1de0",
+  "HEAD_tree": "0ef3d442077c515fe83c2228f404e8b02b41ae44",
+  "workingtree_status": [
+    " M examples/erp_bench/README.md",
+    " M examples/erp_bench/README_ZH.md",
+    " M examples/erp_bench/src/rpnh_erp_bench/plugin.py",
+    " M examples/erp_bench/tests/test_plugin.py",
+    "?? examples/erp_bench/scripts/unknown_native_acceptance.py",
+    "?? examples/erp_bench/tests/test_managed_receipts.py"
+  ],
+  "tracked_git_diff_binary_sha256": "1a84ab6843cb038a95ecd4431fea668d747836838a91294c212e4fe096161418",
+  "untracked_used_files": [
+    "examples/erp_bench/tests/test_managed_receipts.py",
+    "examples/erp_bench/scripts/unknown_native_acceptance.py"
+  ],
+  "core_diff_paths": []
+}

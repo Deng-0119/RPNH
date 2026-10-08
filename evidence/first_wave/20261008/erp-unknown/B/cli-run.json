@@ -1,0 +1,17 @@
+{
+  "argv": [
+    "<VENV>/bin/rpnh",
+    "plugins",
+    "--config",
+    "<B_OUTPUT>/plugins.json",
+    "run",
+    "erp_bench/validate_plan",
+    "--input",
+    "<B_OUTPUT>/plan.json",
+    "--run-dir",
+    "<B_OUTPUT>/pure"
+  ],
+  "returncode": 0,
+  "stderr": "",
+  "stdout": "{\n  \"actual_model_call_counts\": [\n    0,\n    0\n  ],\n  \"catalog_digest\": \"389233a6082d09f5049d132333ea54de49b02fc2164355ed6415b43113eb7332\",\n  \"output\": {\n    \"covered_quantities\": {\n      \"synthetic-order\": \"4\"\n    },\n    \"new_revenue\": \"40\",\n    \"new_spend\": \"24\",\n    \"new_spend_margin\": \"0.4\",\n    \"route_quantities\": {\n      \"synthetic-route\": \"4\"\n    },\n    \"scope\": \"Supplied-observation arithmetic only; not official scoring, current-world validation, or an optimality claim.\",\n    \"status\": \"completed\",\n    \"violations\": []\n  },\n  \"run_dir\": \"<B_OUTPUT>/pure\",\n  \"schema_version\": \"rpnh/native_plugin_task_result/v1\",\n  \"selector\": \"erp_bench/validate_plan\",\n  \"stop_reason\": \"terminal\",\n  \"terminal_evidence_ref\": {\n    \"entity_type\": \"run_terminal_evidence/v1\",\n    \"logical_id\": \"terminal_evidence:167eb9c1a64747c8bcb2a3dda1402d13\",\n    \"version_id\": \"terminal_evidence_version:099c6742724a421fbdc4913acda7d483\"\n  }\n}\n"
+}

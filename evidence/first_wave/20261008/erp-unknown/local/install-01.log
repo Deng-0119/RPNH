@@ -1,0 +1,3 @@
+Using CPython 3.13.12 interpreter at: <HOST_PYTHON_ROOT>/bin/python
+Creating virtual environment at: v
+Activate with: source v/bin/activate

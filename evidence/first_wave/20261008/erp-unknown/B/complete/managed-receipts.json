@@ -1,0 +1,2437 @@
+[
+  {
+    "receipt": {
+      "admitted_at_utc": "2026-10-08T10:58:22.140063Z",
+      "arguments": {
+        "allocations": [
+          {
+            "order_ref": "synthetic-order",
+            "quantity": 4,
+            "route_ref": "synthetic-route"
+          }
+        ],
+        "minimum_margin": 0.4,
+        "orders": [
+          {
+            "budget": 40,
+            "due_days": 5,
+            "list_price": 10,
+            "order_ref": "synthetic-order",
+            "quantity": 4
+          }
+        ],
+        "routes": [
+          {
+            "capacity": 4,
+            "kind": "buy",
+            "lead_days": 3,
+            "minimum_quantity": 2,
+            "route_ref": "synthetic-route",
+            "unit_cost": 6
+          }
+        ]
+      },
+      "binding_digest": "9320745edda8947fe8ae8a68f9c484271f3e2df8f03ea40cc807a3a2b0a92772",
+      "call_id": "synthetic-plan",
+      "caller_execution_ref": {
+        "entity_type": "operation_execution_lease/v1",
+        "logical_id": "operation_execution_lease:6a5b7a9f170a5c53889e34df65ad9de3",
+        "version_id": "operation_execution_lease_version:f86b0042ae235d12a161d3520e036b21"
+      },
+      "caller_firing_ref": {
+        "entity_type": "transition_firing/v1",
+        "logical_id": "transition_firing:c8dacd8426d154208bb2e347a688a6b0",
+        "version_id": "transition_firing_version:5e6543c385c2524f98e45cc87f32eeba"
+      },
+      "plugin_catalog_digest": "06184042199a47e8e47f90155891d88bad128ba1b2559cd31b8b833c9bec6b89",
+      "producer_invocation_ref": {
+        "entity_type": "invocation/v1",
+        "logical_id": "invocation:09676d21551a5bf78ab120ec180b803b",
+        "version_id": "invocation_version:55ac4c40db785f7a98c85d8ec226685d"
+      },
+      "registration": {
+        "contracts": {
+          "effect": "pure",
+          "input_schema": {
+            "additionalProperties": false,
+            "properties": {
+              "allocations": {
+                "items": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "order_ref": {
+                      "maxLength": 256,
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "quantity": {
+                      "exclusiveMinimum": 0,
+                      "type": "number"
+                    },
+                    "route_ref": {
+                      "maxLength": 256,
+                      "minLength": 1,
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "order_ref",
+                    "route_ref",
+                    "quantity"
+                  ],
+                  "type": "object"
+                },
+                "maxItems": 10000,
+                "type": "array"
+              },
+              "minimum_margin": {
+                "maximum": 1,
+                "minimum": 0,
+                "type": "number"
+              },
+              "orders": {
+                "items": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "budget": {
+                      "minimum": 0,
+                      "type": "number"
+                    },
+                    "due_days": {
+                      "minimum": 0,
+                      "type": "number"
+                    },
+                    "list_price": {
+                      "exclusiveMinimum": 0,
+                      "type": "number"
+                    },
+                    "order_ref": {
+                      "maxLength": 256,
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "quantity": {
+                      "exclusiveMinimum": 0,
+                      "type": "number"
+                    }
+                  },
+                  "required": [
+                    "order_ref",
+                    "quantity",
+                    "list_price",
+                    "budget",
+                    "due_days"
+                  ],
+                  "type": "object"
+                },
+                "maxItems": 1000,
+                "minItems": 1,
+                "type": "array"
+              },
+              "routes": {
+                "items": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "capacity": {
+                      "minimum": 0,
+                      "type": "number"
+                    },
+                    "kind": {
+                      "enum": [
+                        "stock",
+                        "buy",
+                        "manufacture"
+                      ]
+                    },
+                    "lead_days": {
+                      "minimum": 0,
+                      "type": "number"
+                    },
+                    "minimum_quantity": {
+                      "minimum": 0,
+                      "type": "number"
+                    },
+                    "route_ref": {
+                      "maxLength": 256,
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "unit_cost": {
+                      "minimum": 0,
+                      "type": "number"
+                    }
+                  },
+                  "required": [
+                    "route_ref",
+                    "kind",
+                    "capacity",
+                    "minimum_quantity",
+                    "unit_cost",
+                    "lead_days"
+                  ],
+                  "type": "object"
+                },
+                "maxItems": 1000,
+                "minItems": 1,
+                "type": "array"
+              }
+            },
+            "required": [
+              "orders",
+              "routes",
+              "allocations",
+              "minimum_margin"
+            ],
+            "type": "object"
+          },
+          "invocation_protocol": "rpnh/managed_native_plugin_tool_invocation/v2",
+          "managed_plugin": {
+            "binding_digest": "9320745edda8947fe8ae8a68f9c484271f3e2df8f03ea40cc807a3a2b0a92772",
+            "capability": {
+              "assets": [],
+              "binding_digest": "9320745edda8947fe8ae8a68f9c484271f3e2df8f03ea40cc807a3a2b0a92772",
+              "config": {
+                "endpoint": "<B_OUTPUT>/complete.sock",
+                "trial_id": "synthetic-complete"
+              },
+              "environment": [],
+              "operation": "validate_plan",
+              "plugin": {
+                "api_version": "rpnh/plugin/v1",
+                "config_schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "endpoint": {
+                      "pattern": "^/",
+                      "type": "string"
+                    },
+                    "trial_id": {
+                      "minLength": 1,
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "endpoint",
+                    "trial_id"
+                  ],
+                  "type": "object"
+                },
+                "name": "erp_bench",
+                "operations": [
+                  {
+                    "description": "Execute one Python script in the trial's isolated ERP container. Admission and evidence cover the script, not each ERP transaction. An unknown result must not be replayed.",
+                    "effect": "external_write",
+                    "implementation": {
+                      "identity": "rpnh_erp_bench.plugin.erp_python_handler",
+                      "module_sha256": "13d9c09b3eb9b30f326f4daf9d9745309844c55f10cc02f832e9c984d63479bf"
+                    },
+                    "input_schema": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "source": {
+                          "maxLength": 262144,
+                          "type": "string"
+                        },
+                        "timeout_seconds": {
+                          "maximum": 3600,
+                          "minimum": 1,
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "source"
+                      ],
+                      "type": "object"
+                    },
+                    "max_result_bytes": 1048576,
+                    "name": "erp_python",
+                    "output_schema": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "admission_granularity": {
+                          "const": "script"
+                        },
+                        "execution_id": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "exit_code": {
+                          "type": [
+                            "integer",
+                            "null"
+                          ]
+                        },
+                        "identity": {
+                          "additionalProperties": false,
+                          "properties": {
+                            "call_id": {
+                              "type": "string"
+                            },
+                            "firing_id": {
+                              "type": "string"
+                            },
+                            "invocation_id": {
+                              "type": "string"
+                            },
+                            "operation_id": {
+                              "type": "string"
+                            },
+                            "trial_id": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "trial_id",
+                            "operation_id",
+                            "invocation_id",
+                            "firing_id",
+                            "call_id"
+                          ],
+                          "type": "object"
+                        },
+                        "status": {
+                          "enum": [
+                            "completed",
+                            "failed",
+                            "domain_infeasible",
+                            "unknown",
+                            "interrupted"
+                          ]
+                        },
+                        "stderr": {
+                          "type": "string"
+                        },
+                        "stdout": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "status",
+                        "stdout",
+                        "stderr",
+                        "exit_code",
+                        "execution_id",
+                        "identity",
+                        "admission_granularity"
+                      ],
+                      "type": "object"
+                    },
+                    "resources": [],
+                    "timeout_seconds": 3600
+                  },
+                  {
+                    "description": "Check arithmetic over supplied visible observations.",
+                    "effect": "pure",
+                    "implementation": {
+                      "identity": "rpnh_erp_bench.plugin.validate_plan_handler",
+                      "module_sha256": "13d9c09b3eb9b30f326f4daf9d9745309844c55f10cc02f832e9c984d63479bf"
+                    },
+                    "input_schema": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "allocations": {
+                          "items": {
+                            "additionalProperties": false,
+                            "properties": {
+                              "order_ref": {
+                                "maxLength": 256,
+                                "minLength": 1,
+                                "type": "string"
+                              },
+                              "quantity": {
+                                "exclusiveMinimum": 0,
+                                "type": "number"
+                              },
+                              "route_ref": {
+                                "maxLength": 256,
+                                "minLength": 1,
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "order_ref",
+                              "route_ref",
+                              "quantity"
+                            ],
+                            "type": "object"
+                          },
+                          "maxItems": 10000,
+                          "type": "array"
+                        },
+                        "minimum_margin": {
+                          "maximum": 1,
+                          "minimum": 0,
+                          "type": "number"
+                        },
+                        "orders": {
+                          "items": {
+                            "additionalProperties": false,
+                            "properties": {
+                              "budget": {
+                                "minimum": 0,
+                                "type": "number"
+                              },
+                              "due_days": {
+                                "minimum": 0,
+                                "type": "number"
+                              },
+                              "list_price": {
+                                "exclusiveMinimum": 0,
+                                "type": "number"
+                              },
+                              "order_ref": {
+                                "maxLength": 256,
+                                "minLength": 1,
+                                "type": "string"
+                              },
+                              "quantity": {
+                                "exclusiveMinimum": 0,
+                                "type": "number"
+                              }
+                            },
+                            "required": [
+                              "order_ref",
+                              "quantity",
+                              "list_price",
+                              "budget",
+                              "due_days"
+                            ],
+                            "type": "object"
+                          },
+                          "maxItems": 1000,
+                          "minItems": 1,
+                          "type": "array"
+                        },
+                        "routes": {
+                          "items": {
+                            "additionalProperties": false,
+                            "properties": {
+                              "capacity": {
+                                "minimum": 0,
+                                "type": "number"
+                              },
+                              "kind": {
+                                "enum": [
+                                  "stock",
+                                  "buy",
+                                  "manufacture"
+                                ]
+                              },
+                              "lead_days": {
+                                "minimum": 0,
+                                "type": "number"
+                              },
+                              "minimum_quantity": {
+                                "minimum": 0,
+                                "type": "number"
+                              },
+                              "route_ref": {
+                                "maxLength": 256,
+                                "minLength": 1,
+                                "type": "string"
+                              },
+                              "unit_cost": {
+                                "minimum": 0,
+                                "type": "number"
+                              }
+                            },
+                            "required": [
+                              "route_ref",
+                              "kind",
+                              "capacity",
+                              "minimum_quantity",
+                              "unit_cost",
+                              "lead_days"
+                            ],
+                            "type": "object"
+                          },
+                          "maxItems": 1000,
+                          "minItems": 1,
+                          "type": "array"
+                        }
+                      },
+                      "required": [
+                        "orders",
+                        "routes",
+                        "allocations",
+                        "minimum_margin"
+                      ],
+                      "type": "object"
+                    },
+                    "max_result_bytes": 1048576,
+                    "name": "validate_plan",
+                    "output_schema": {
+                      "type": "object"
+                    },
+                    "resources": [],
+                    "timeout_seconds": 30
+                  }
+                ],
+                "requires": {},
+                "resources": [],
+                "version": "0.1.0"
+              },
+              "schema_version": "rpnh/plugin_capability/v1"
+            },
+            "operation": {
+              "description": "Check arithmetic over supplied visible observations.",
+              "effect": "pure",
+              "implementation": {
+                "identity": "rpnh_erp_bench.plugin.validate_plan_handler",
+                "module_sha256": "13d9c09b3eb9b30f326f4daf9d9745309844c55f10cc02f832e9c984d63479bf"
+              },
+              "input_schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "allocations": {
+                    "items": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "order_ref": {
+                          "maxLength": 256,
+                          "minLength": 1,
+                          "type": "string"
+                        },
+                        "quantity": {
+                          "exclusiveMinimum": 0,
+                          "type": "number"
+                        },
+                        "route_ref": {
+                          "maxLength": 256,
+                          "minLength": 1,
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "order_ref",
+                        "route_ref",
+                        "quantity"
+                      ],
+                      "type": "object"
+                    },
+                    "maxItems": 10000,
+                    "type": "array"
+                  },
+                  "minimum_margin": {
+                    "maximum": 1,
+                    "minimum": 0,
+                    "type": "number"
+                  },
+                  "orders": {
+                    "items": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "budget": {
+                          "minimum": 0,
+                          "type": "number"
+                        },
+                        "due_days": {
+                          "minimum": 0,
+                          "type": "number"
+                        },
+                        "list_price": {
+                          "exclusiveMinimum": 0,
+                          "type": "number"
+                        },
+                        "order_ref": {
+                          "maxLength": 256,
+                          "minLength": 1,
+                          "type": "string"
+                        },
+                        "quantity": {
+                          "exclusiveMinimum": 0,
+                          "type": "number"
+                        }
+                      },
+                      "required": [
+                        "order_ref",
+                        "quantity",
+                        "list_price",
+                        "budget",
+                        "due_days"
+                      ],
+                      "type": "object"
+                    },
+                    "maxItems": 1000,
+                    "minItems": 1,
+                    "type": "array"
+                  },
+                  "routes": {
+                    "items": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "capacity": {
+                          "minimum": 0,
+                          "type": "number"
+                        },
+                        "kind": {
+                          "enum": [
+                            "stock",
+                            "buy",
+                            "manufacture"
+                          ]
+                        },
+                        "lead_days": {
+                          "minimum": 0,
+                          "type": "number"
+                        },
+                        "minimum_quantity": {
+                          "minimum": 0,
+                          "type": "number"
+                        },
+                        "route_ref": {
+                          "maxLength": 256,
+                          "minLength": 1,
+                          "type": "string"
+                        },
+                        "unit_cost": {
+                          "minimum": 0,
+                          "type": "number"
+                        }
+                      },
+                      "required": [
+                        "route_ref",
+                        "kind",
+                        "capacity",
+                        "minimum_quantity",
+                        "unit_cost",
+                        "lead_days"
+                      ],
+                      "type": "object"
+                    },
+                    "maxItems": 1000,
+                    "minItems": 1,
+                    "type": "array"
+                  }
+                },
+                "required": [
+                  "orders",
+                  "routes",
+                  "allocations",
+                  "minimum_margin"
+                ],
+                "type": "object"
+              },
+              "max_result_bytes": 1048576,
+              "name": "validate_plan",
+              "output_schema": {
+                "type": "object"
+              },
+              "resources": [],
+              "timeout_seconds": 30
+            },
+            "plugin_name": "erp_bench",
+            "plugin_version": "0.1.0",
+            "selector": "erp_bench/validate_plan"
+          },
+          "max_result_bytes": 1048576,
+          "output_schema": {
+            "type": "object"
+          },
+          "plugin_catalog_digest": "06184042199a47e8e47f90155891d88bad128ba1b2559cd31b8b833c9bec6b89",
+          "provider_name": "validate_plan",
+          "selector": "erp_bench/validate_plan"
+        },
+        "identity": {
+          "binding_digest": "9320745edda8947fe8ae8a68f9c484271f3e2df8f03ea40cc807a3a2b0a92772",
+          "effect": "pure",
+          "implementation_id": "rpnh.managed_native_plugin_tool",
+          "plugin_catalog_digest": "06184042199a47e8e47f90155891d88bad128ba1b2559cd31b8b833c9bec6b89",
+          "plugin_version": "0.1.0",
+          "provider_name": "validate_plan",
+          "revision": "v2",
+          "selector": "erp_bench/validate_plan"
+        },
+        "key": "rpnh/plugin/erp_bench/0.1.0/validate_plan/9320745edda8947fe8ae8a68f9c484271f3e2df8f03ea40cc807a3a2b0a92772/managed-tool/v2/validate_plan/610285927a612adbb952526f5fe4af741531828ae2ec9e1bf8d91704e236cb79"
+      },
+      "schema_version": "rpnh/managed_native_plugin_tool_receipt/v2",
+      "selector": "erp_bench/validate_plan",
+      "state": "started"
+    },
+    "ref": {
+      "resource_id": "resource:1c0069722a0754c59f1392e9f8aed1f4",
+      "resource_version_id": "resource_version:f2b4b23f7d1b5bccbbec25500ad5ca45"
+    }
+  },
+  {
+    "receipt": {
+      "admitted_at_utc": "2026-10-08T10:58:22.140063Z",
+      "arguments": {
+        "allocations": [
+          {
+            "order_ref": "synthetic-order",
+            "quantity": 4,
+            "route_ref": "synthetic-route"
+          }
+        ],
+        "minimum_margin": 0.4,
+        "orders": [
+          {
+            "budget": 40,
+            "due_days": 5,
+            "list_price": 10,
+            "order_ref": "synthetic-order",
+            "quantity": 4
+          }
+        ],
+        "routes": [
+          {
+            "capacity": 4,
+            "kind": "buy",
+            "lead_days": 3,
+            "minimum_quantity": 2,
+            "route_ref": "synthetic-route",
+            "unit_cost": 6
+          }
+        ]
+      },
+      "binding_digest": "9320745edda8947fe8ae8a68f9c484271f3e2df8f03ea40cc807a3a2b0a92772",
+      "call_id": "synthetic-plan",
+      "caller_execution_ref": {
+        "entity_type": "operation_execution_lease/v1",
+        "logical_id": "operation_execution_lease:6a5b7a9f170a5c53889e34df65ad9de3",
+        "version_id": "operation_execution_lease_version:f86b0042ae235d12a161d3520e036b21"
+      },
+      "caller_firing_ref": {
+        "entity_type": "transition_firing/v1",
+        "logical_id": "transition_firing:c8dacd8426d154208bb2e347a688a6b0",
+        "version_id": "transition_firing_version:5e6543c385c2524f98e45cc87f32eeba"
+      },
+      "output": {
+        "covered_quantities": {
+          "synthetic-order": "4"
+        },
+        "new_revenue": "40",
+        "new_spend": "24",
+        "new_spend_margin": "0.4",
+        "route_quantities": {
+          "synthetic-route": "4"
+        },
+        "scope": "Supplied-observation arithmetic only; not official scoring, current-world validation, or an optimality claim.",
+        "status": "completed",
+        "violations": []
+      },
+      "plugin_catalog_digest": "06184042199a47e8e47f90155891d88bad128ba1b2559cd31b8b833c9bec6b89",
+      "producer_invocation_ref": {
+        "entity_type": "invocation/v1",
+        "logical_id": "invocation:09676d21551a5bf78ab120ec180b803b",
+        "version_id": "invocation_version:55ac4c40db785f7a98c85d8ec226685d"
+      },
+      "registration": {
+        "contracts": {
+          "effect": "pure",
+          "input_schema": {
+            "additionalProperties": false,
+            "properties": {
+              "allocations": {
+                "items": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "order_ref": {
+                      "maxLength": 256,
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "quantity": {
+                      "exclusiveMinimum": 0,
+                      "type": "number"
+                    },
+                    "route_ref": {
+                      "maxLength": 256,
+                      "minLength": 1,
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "order_ref",
+                    "route_ref",
+                    "quantity"
+                  ],
+                  "type": "object"
+                },
+                "maxItems": 10000,
+                "type": "array"
+              },
+              "minimum_margin": {
+                "maximum": 1,
+                "minimum": 0,
+                "type": "number"
+              },
+              "orders": {
+                "items": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "budget": {
+                      "minimum": 0,
+                      "type": "number"
+                    },
+                    "due_days": {
+                      "minimum": 0,
+                      "type": "number"
+                    },
+                    "list_price": {
+                      "exclusiveMinimum": 0,
+                      "type": "number"
+                    },
+                    "order_ref": {
+                      "maxLength": 256,
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "quantity": {
+                      "exclusiveMinimum": 0,
+                      "type": "number"
+                    }
+                  },
+                  "required": [
+                    "order_ref",
+                    "quantity",
+                    "list_price",
+                    "budget",
+                    "due_days"
+                  ],
+                  "type": "object"
+                },
+                "maxItems": 1000,
+                "minItems": 1,
+                "type": "array"
+              },
+              "routes": {
+                "items": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "capacity": {
+                      "minimum": 0,
+                      "type": "number"
+                    },
+                    "kind": {
+                      "enum": [
+                        "stock",
+                        "buy",
+                        "manufacture"
+                      ]
+                    },
+                    "lead_days": {
+                      "minimum": 0,
+                      "type": "number"
+                    },
+                    "minimum_quantity": {
+                      "minimum": 0,
+                      "type": "number"
+                    },
+                    "route_ref": {
+                      "maxLength": 256,
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "unit_cost": {
+                      "minimum": 0,
+                      "type": "number"
+                    }
+                  },
+                  "required": [
+                    "route_ref",
+                    "kind",
+                    "capacity",
+                    "minimum_quantity",
+                    "unit_cost",
+                    "lead_days"
+                  ],
+                  "type": "object"
+                },
+                "maxItems": 1000,
+                "minItems": 1,
+                "type": "array"
+              }
+            },
+            "required": [
+              "orders",
+              "routes",
+              "allocations",
+              "minimum_margin"
+            ],
+            "type": "object"
+          },
+          "invocation_protocol": "rpnh/managed_native_plugin_tool_invocation/v2",
+          "managed_plugin": {
+            "binding_digest": "9320745edda8947fe8ae8a68f9c484271f3e2df8f03ea40cc807a3a2b0a92772",
+            "capability": {
+              "assets": [],
+              "binding_digest": "9320745edda8947fe8ae8a68f9c484271f3e2df8f03ea40cc807a3a2b0a92772",
+              "config": {
+                "endpoint": "<B_OUTPUT>/complete.sock",
+                "trial_id": "synthetic-complete"
+              },
+              "environment": [],
+              "operation": "validate_plan",
+              "plugin": {
+                "api_version": "rpnh/plugin/v1",
+                "config_schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "endpoint": {
+                      "pattern": "^/",
+                      "type": "string"
+                    },
+                    "trial_id": {
+                      "minLength": 1,
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "endpoint",
+                    "trial_id"
+                  ],
+                  "type": "object"
+                },
+                "name": "erp_bench",
+                "operations": [
+                  {
+                    "description": "Execute one Python script in the trial's isolated ERP container. Admission and evidence cover the script, not each ERP transaction. An unknown result must not be replayed.",
+                    "effect": "external_write",
+                    "implementation": {
+                      "identity": "rpnh_erp_bench.plugin.erp_python_handler",
+                      "module_sha256": "13d9c09b3eb9b30f326f4daf9d9745309844c55f10cc02f832e9c984d63479bf"
+                    },
+                    "input_schema": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "source": {
+                          "maxLength": 262144,
+                          "type": "string"
+                        },
+                        "timeout_seconds": {
+                          "maximum": 3600,
+                          "minimum": 1,
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "source"
+                      ],
+                      "type": "object"
+                    },
+                    "max_result_bytes": 1048576,
+                    "name": "erp_python",
+                    "output_schema": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "admission_granularity": {
+                          "const": "script"
+                        },
+                        "execution_id": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "exit_code": {
+                          "type": [
+                            "integer",
+                            "null"
+                          ]
+                        },
+                        "identity": {
+                          "additionalProperties": false,
+                          "properties": {
+                            "call_id": {
+                              "type": "string"
+                            },
+                            "firing_id": {
+                              "type": "string"
+                            },
+                            "invocation_id": {
+                              "type": "string"
+                            },
+                            "operation_id": {
+                              "type": "string"
+                            },
+                            "trial_id": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "trial_id",
+                            "operation_id",
+                            "invocation_id",
+                            "firing_id",
+                            "call_id"
+                          ],
+                          "type": "object"
+                        },
+                        "status": {
+                          "enum": [
+                            "completed",
+                            "failed",
+                            "domain_infeasible",
+                            "unknown",
+                            "interrupted"
+                          ]
+                        },
+                        "stderr": {
+                          "type": "string"
+                        },
+                        "stdout": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "status",
+                        "stdout",
+                        "stderr",
+                        "exit_code",
+                        "execution_id",
+                        "identity",
+                        "admission_granularity"
+                      ],
+                      "type": "object"
+                    },
+                    "resources": [],
+                    "timeout_seconds": 3600
+                  },
+                  {
+                    "description": "Check arithmetic over supplied visible observations.",
+                    "effect": "pure",
+                    "implementation": {
+                      "identity": "rpnh_erp_bench.plugin.validate_plan_handler",
+                      "module_sha256": "13d9c09b3eb9b30f326f4daf9d9745309844c55f10cc02f832e9c984d63479bf"
+                    },
+                    "input_schema": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "allocations": {
+                          "items": {
+                            "additionalProperties": false,
+                            "properties": {
+                              "order_ref": {
+                                "maxLength": 256,
+                                "minLength": 1,
+                                "type": "string"
+                              },
+                              "quantity": {
+                                "exclusiveMinimum": 0,
+                                "type": "number"
+                              },
+                              "route_ref": {
+                                "maxLength": 256,
+                                "minLength": 1,
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "order_ref",
+                              "route_ref",
+                              "quantity"
+                            ],
+                            "type": "object"
+                          },
+                          "maxItems": 10000,
+                          "type": "array"
+                        },
+                        "minimum_margin": {
+                          "maximum": 1,
+                          "minimum": 0,
+                          "type": "number"
+                        },
+                        "orders": {
+                          "items": {
+                            "additionalProperties": false,
+                            "properties": {
+                              "budget": {
+                                "minimum": 0,
+                                "type": "number"
+                              },
+                              "due_days": {
+                                "minimum": 0,
+                                "type": "number"
+                              },
+                              "list_price": {
+                                "exclusiveMinimum": 0,
+                                "type": "number"
+                              },
+                              "order_ref": {
+                                "maxLength": 256,
+                                "minLength": 1,
+                                "type": "string"
+                              },
+                              "quantity": {
+                                "exclusiveMinimum": 0,
+                                "type": "number"
+                              }
+                            },
+                            "required": [
+                              "order_ref",
+                              "quantity",
+                              "list_price",
+                              "budget",
+                              "due_days"
+                            ],
+                            "type": "object"
+                          },
+                          "maxItems": 1000,
+                          "minItems": 1,
+                          "type": "array"
+                        },
+                        "routes": {
+                          "items": {
+                            "additionalProperties": false,
+                            "properties": {
+                              "capacity": {
+                                "minimum": 0,
+                                "type": "number"
+                              },
+                              "kind": {
+                                "enum": [
+                                  "stock",
+                                  "buy",
+                                  "manufacture"
+                                ]
+                              },
+                              "lead_days": {
+                                "minimum": 0,
+                                "type": "number"
+                              },
+                              "minimum_quantity": {
+                                "minimum": 0,
+                                "type": "number"
+                              },
+                              "route_ref": {
+                                "maxLength": 256,
+                                "minLength": 1,
+                                "type": "string"
+                              },
+                              "unit_cost": {
+                                "minimum": 0,
+                                "type": "number"
+                              }
+                            },
+                            "required": [
+                              "route_ref",
+                              "kind",
+                              "capacity",
+                              "minimum_quantity",
+                              "unit_cost",
+                              "lead_days"
+                            ],
+                            "type": "object"
+                          },
+                          "maxItems": 1000,
+                          "minItems": 1,
+                          "type": "array"
+                        }
+                      },
+                      "required": [
+                        "orders",
+                        "routes",
+                        "allocations",
+                        "minimum_margin"
+                      ],
+                      "type": "object"
+                    },
+                    "max_result_bytes": 1048576,
+                    "name": "validate_plan",
+                    "output_schema": {
+                      "type": "object"
+                    },
+                    "resources": [],
+                    "timeout_seconds": 30
+                  }
+                ],
+                "requires": {},
+                "resources": [],
+                "version": "0.1.0"
+              },
+              "schema_version": "rpnh/plugin_capability/v1"
+            },
+            "operation": {
+              "description": "Check arithmetic over supplied visible observations.",
+              "effect": "pure",
+              "implementation": {
+                "identity": "rpnh_erp_bench.plugin.validate_plan_handler",
+                "module_sha256": "13d9c09b3eb9b30f326f4daf9d9745309844c55f10cc02f832e9c984d63479bf"
+              },
+              "input_schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "allocations": {
+                    "items": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "order_ref": {
+                          "maxLength": 256,
+                          "minLength": 1,
+                          "type": "string"
+                        },
+                        "quantity": {
+                          "exclusiveMinimum": 0,
+                          "type": "number"
+                        },
+                        "route_ref": {
+                          "maxLength": 256,
+                          "minLength": 1,
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "order_ref",
+                        "route_ref",
+                        "quantity"
+                      ],
+                      "type": "object"
+                    },
+                    "maxItems": 10000,
+                    "type": "array"
+                  },
+                  "minimum_margin": {
+                    "maximum": 1,
+                    "minimum": 0,
+                    "type": "number"
+                  },
+                  "orders": {
+                    "items": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "budget": {
+                          "minimum": 0,
+                          "type": "number"
+                        },
+                        "due_days": {
+                          "minimum": 0,
+                          "type": "number"
+                        },
+                        "list_price": {
+                          "exclusiveMinimum": 0,
+                          "type": "number"
+                        },
+                        "order_ref": {
+                          "maxLength": 256,
+                          "minLength": 1,
+                          "type": "string"
+                        },
+                        "quantity": {
+                          "exclusiveMinimum": 0,
+                          "type": "number"
+                        }
+                      },
+                      "required": [
+                        "order_ref",
+                        "quantity",
+                        "list_price",
+                        "budget",
+                        "due_days"
+                      ],
+                      "type": "object"
+                    },
+                    "maxItems": 1000,
+                    "minItems": 1,
+                    "type": "array"
+                  },
+                  "routes": {
+                    "items": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "capacity": {
+                          "minimum": 0,
+                          "type": "number"
+                        },
+                        "kind": {
+                          "enum": [
+                            "stock",
+                            "buy",
+                            "manufacture"
+                          ]
+                        },
+                        "lead_days": {
+                          "minimum": 0,
+                          "type": "number"
+                        },
+                        "minimum_quantity": {
+                          "minimum": 0,
+                          "type": "number"
+                        },
+                        "route_ref": {
+                          "maxLength": 256,
+                          "minLength": 1,
+                          "type": "string"
+                        },
+                        "unit_cost": {
+                          "minimum": 0,
+                          "type": "number"
+                        }
+                      },
+                      "required": [
+                        "route_ref",
+                        "kind",
+                        "capacity",
+                        "minimum_quantity",
+                        "unit_cost",
+                        "lead_days"
+                      ],
+                      "type": "object"
+                    },
+                    "maxItems": 1000,
+                    "minItems": 1,
+                    "type": "array"
+                  }
+                },
+                "required": [
+                  "orders",
+                  "routes",
+                  "allocations",
+                  "minimum_margin"
+                ],
+                "type": "object"
+              },
+              "max_result_bytes": 1048576,
+              "name": "validate_plan",
+              "output_schema": {
+                "type": "object"
+              },
+              "resources": [],
+              "timeout_seconds": 30
+            },
+            "plugin_name": "erp_bench",
+            "plugin_version": "0.1.0",
+            "selector": "erp_bench/validate_plan"
+          },
+          "max_result_bytes": 1048576,
+          "output_schema": {
+            "type": "object"
+          },
+          "plugin_catalog_digest": "06184042199a47e8e47f90155891d88bad128ba1b2559cd31b8b833c9bec6b89",
+          "provider_name": "validate_plan",
+          "selector": "erp_bench/validate_plan"
+        },
+        "identity": {
+          "binding_digest": "9320745edda8947fe8ae8a68f9c484271f3e2df8f03ea40cc807a3a2b0a92772",
+          "effect": "pure",
+          "implementation_id": "rpnh.managed_native_plugin_tool",
+          "plugin_catalog_digest": "06184042199a47e8e47f90155891d88bad128ba1b2559cd31b8b833c9bec6b89",
+          "plugin_version": "0.1.0",
+          "provider_name": "validate_plan",
+          "revision": "v2",
+          "selector": "erp_bench/validate_plan"
+        },
+        "key": "rpnh/plugin/erp_bench/0.1.0/validate_plan/9320745edda8947fe8ae8a68f9c484271f3e2df8f03ea40cc807a3a2b0a92772/managed-tool/v2/validate_plan/610285927a612adbb952526f5fe4af741531828ae2ec9e1bf8d91704e236cb79"
+      },
+      "schema_version": "rpnh/managed_native_plugin_tool_receipt/v2",
+      "selector": "erp_bench/validate_plan",
+      "started_receipt_ref": {
+        "resource_id": "resource:1c0069722a0754c59f1392e9f8aed1f4",
+        "resource_version_id": "resource_version:f2b4b23f7d1b5bccbbec25500ad5ca45"
+      },
+      "state": "returned"
+    },
+    "ref": {
+      "resource_id": "resource:1c0069722a0754c59f1392e9f8aed1f4",
+      "resource_version_id": "resource_version:90f25beb39735af98f1f6f93e0c36470"
+    }
+  },
+  {
+    "receipt": {
+      "admitted_at_utc": "2026-10-08T10:58:34.367370Z",
+      "arguments": {
+        "source": "print(\"synthetic\")",
+        "timeout_seconds": 60
+      },
+      "binding_digest": "9320745edda8947fe8ae8a68f9c484271f3e2df8f03ea40cc807a3a2b0a92772",
+      "call_id": "synthetic-script",
+      "caller_execution_ref": {
+        "entity_type": "operation_execution_lease/v1",
+        "logical_id": "operation_execution_lease:6a5b7a9f170a5c53889e34df65ad9de3",
+        "version_id": "operation_execution_lease_version:f86b0042ae235d12a161d3520e036b21"
+      },
+      "caller_firing_ref": {
+        "entity_type": "transition_firing/v1",
+        "logical_id": "transition_firing:c8dacd8426d154208bb2e347a688a6b0",
+        "version_id": "transition_firing_version:5e6543c385c2524f98e45cc87f32eeba"
+      },
+      "plugin_catalog_digest": "06184042199a47e8e47f90155891d88bad128ba1b2559cd31b8b833c9bec6b89",
+      "producer_invocation_ref": {
+        "entity_type": "invocation/v1",
+        "logical_id": "invocation:09676d21551a5bf78ab120ec180b803b",
+        "version_id": "invocation_version:55ac4c40db785f7a98c85d8ec226685d"
+      },
+      "registration": {
+        "contracts": {
+          "effect": "external_write",
+          "input_schema": {
+            "additionalProperties": false,
+            "properties": {
+              "source": {
+                "maxLength": 262144,
+                "type": "string"
+              },
+              "timeout_seconds": {
+                "maximum": 3600,
+                "minimum": 1,
+                "type": "integer"
+              }
+            },
+            "required": [
+              "source"
+            ],
+            "type": "object"
+          },
+          "invocation_protocol": "rpnh/managed_native_plugin_tool_invocation/v2",
+          "managed_plugin": {
+            "binding_digest": "9320745edda8947fe8ae8a68f9c484271f3e2df8f03ea40cc807a3a2b0a92772",
+            "capability": {
+              "assets": [],
+              "binding_digest": "9320745edda8947fe8ae8a68f9c484271f3e2df8f03ea40cc807a3a2b0a92772",
+              "config": {
+                "endpoint": "<B_OUTPUT>/complete.sock",
+                "trial_id": "synthetic-complete"
+              },
+              "environment": [],
+              "operation": "erp_python",
+              "plugin": {
+                "api_version": "rpnh/plugin/v1",
+                "config_schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "endpoint": {
+                      "pattern": "^/",
+                      "type": "string"
+                    },
+                    "trial_id": {
+                      "minLength": 1,
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "endpoint",
+                    "trial_id"
+                  ],
+                  "type": "object"
+                },
+                "name": "erp_bench",
+                "operations": [
+                  {
+                    "description": "Execute one Python script in the trial's isolated ERP container. Admission and evidence cover the script, not each ERP transaction. An unknown result must not be replayed.",
+                    "effect": "external_write",
+                    "implementation": {
+                      "identity": "rpnh_erp_bench.plugin.erp_python_handler",
+                      "module_sha256": "13d9c09b3eb9b30f326f4daf9d9745309844c55f10cc02f832e9c984d63479bf"
+                    },
+                    "input_schema": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "source": {
+                          "maxLength": 262144,
+                          "type": "string"
+                        },
+                        "timeout_seconds": {
+                          "maximum": 3600,
+                          "minimum": 1,
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "source"
+                      ],
+                      "type": "object"
+                    },
+                    "max_result_bytes": 1048576,
+                    "name": "erp_python",
+                    "output_schema": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "admission_granularity": {
+                          "const": "script"
+                        },
+                        "execution_id": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "exit_code": {
+                          "type": [
+                            "integer",
+                            "null"
+                          ]
+                        },
+                        "identity": {
+                          "additionalProperties": false,
+                          "properties": {
+                            "call_id": {
+                              "type": "string"
+                            },
+                            "firing_id": {
+                              "type": "string"
+                            },
+                            "invocation_id": {
+                              "type": "string"
+                            },
+                            "operation_id": {
+                              "type": "string"
+                            },
+                            "trial_id": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "trial_id",
+                            "operation_id",
+                            "invocation_id",
+                            "firing_id",
+                            "call_id"
+                          ],
+                          "type": "object"
+                        },
+                        "status": {
+                          "enum": [
+                            "completed",
+                            "failed",
+                            "domain_infeasible",
+                            "unknown",
+                            "interrupted"
+                          ]
+                        },
+                        "stderr": {
+                          "type": "string"
+                        },
+                        "stdout": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "status",
+                        "stdout",
+                        "stderr",
+                        "exit_code",
+                        "execution_id",
+                        "identity",
+                        "admission_granularity"
+                      ],
+                      "type": "object"
+                    },
+                    "resources": [],
+                    "timeout_seconds": 3600
+                  },
+                  {
+                    "description": "Check arithmetic over supplied visible observations.",
+                    "effect": "pure",
+                    "implementation": {
+                      "identity": "rpnh_erp_bench.plugin.validate_plan_handler",
+                      "module_sha256": "13d9c09b3eb9b30f326f4daf9d9745309844c55f10cc02f832e9c984d63479bf"
+                    },
+                    "input_schema": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "allocations": {
+                          "items": {
+                            "additionalProperties": false,
+                            "properties": {
+                              "order_ref": {
+                                "maxLength": 256,
+                                "minLength": 1,
+                                "type": "string"
+                              },
+                              "quantity": {
+                                "exclusiveMinimum": 0,
+                                "type": "number"
+                              },
+                              "route_ref": {
+                                "maxLength": 256,
+                                "minLength": 1,
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "order_ref",
+                              "route_ref",
+                              "quantity"
+                            ],
+                            "type": "object"
+                          },
+                          "maxItems": 10000,
+                          "type": "array"
+                        },
+                        "minimum_margin": {
+                          "maximum": 1,
+                          "minimum": 0,
+                          "type": "number"
+                        },
+                        "orders": {
+                          "items": {
+                            "additionalProperties": false,
+                            "properties": {
+                              "budget": {
+                                "minimum": 0,
+                                "type": "number"
+                              },
+                              "due_days": {
+                                "minimum": 0,
+                                "type": "number"
+                              },
+                              "list_price": {
+                                "exclusiveMinimum": 0,
+                                "type": "number"
+                              },
+                              "order_ref": {
+                                "maxLength": 256,
+                                "minLength": 1,
+                                "type": "string"
+                              },
+                              "quantity": {
+                                "exclusiveMinimum": 0,
+                                "type": "number"
+                              }
+                            },
+                            "required": [
+                              "order_ref",
+                              "quantity",
+                              "list_price",
+                              "budget",
+                              "due_days"
+                            ],
+                            "type": "object"
+                          },
+                          "maxItems": 1000,
+                          "minItems": 1,
+                          "type": "array"
+                        },
+                        "routes": {
+                          "items": {
+                            "additionalProperties": false,
+                            "properties": {
+                              "capacity": {
+                                "minimum": 0,
+                                "type": "number"
+                              },
+                              "kind": {
+                                "enum": [
+                                  "stock",
+                                  "buy",
+                                  "manufacture"
+                                ]
+                              },
+                              "lead_days": {
+                                "minimum": 0,
+                                "type": "number"
+                              },
+                              "minimum_quantity": {
+                                "minimum": 0,
+                                "type": "number"
+                              },
+                              "route_ref": {
+                                "maxLength": 256,
+                                "minLength": 1,
+                                "type": "string"
+                              },
+                              "unit_cost": {
+                                "minimum": 0,
+                                "type": "number"
+                              }
+                            },
+                            "required": [
+                              "route_ref",
+                              "kind",
+                              "capacity",
+                              "minimum_quantity",
+                              "unit_cost",
+                              "lead_days"
+                            ],
+                            "type": "object"
+                          },
+                          "maxItems": 1000,
+                          "minItems": 1,
+                          "type": "array"
+                        }
+                      },
+                      "required": [
+                        "orders",
+                        "routes",
+                        "allocations",
+                        "minimum_margin"
+                      ],
+                      "type": "object"
+                    },
+                    "max_result_bytes": 1048576,
+                    "name": "validate_plan",
+                    "output_schema": {
+                      "type": "object"
+                    },
+                    "resources": [],
+                    "timeout_seconds": 30
+                  }
+                ],
+                "requires": {},
+                "resources": [],
+                "version": "0.1.0"
+              },
+              "schema_version": "rpnh/plugin_capability/v1"
+            },
+            "operation": {
+              "description": "Execute one Python script in the trial's isolated ERP container. Admission and evidence cover the script, not each ERP transaction. An unknown result must not be replayed.",
+              "effect": "external_write",
+              "implementation": {
+                "identity": "rpnh_erp_bench.plugin.erp_python_handler",
+                "module_sha256": "13d9c09b3eb9b30f326f4daf9d9745309844c55f10cc02f832e9c984d63479bf"
+              },
+              "input_schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "source": {
+                    "maxLength": 262144,
+                    "type": "string"
+                  },
+                  "timeout_seconds": {
+                    "maximum": 3600,
+                    "minimum": 1,
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "source"
+                ],
+                "type": "object"
+              },
+              "max_result_bytes": 1048576,
+              "name": "erp_python",
+              "output_schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "admission_granularity": {
+                    "const": "script"
+                  },
+                  "execution_id": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "exit_code": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ]
+                  },
+                  "identity": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "call_id": {
+                        "type": "string"
+                      },
+                      "firing_id": {
+                        "type": "string"
+                      },
+                      "invocation_id": {
+                        "type": "string"
+                      },
+                      "operation_id": {
+                        "type": "string"
+                      },
+                      "trial_id": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "trial_id",
+                      "operation_id",
+                      "invocation_id",
+                      "firing_id",
+                      "call_id"
+                    ],
+                    "type": "object"
+                  },
+                  "status": {
+                    "enum": [
+                      "completed",
+                      "failed",
+                      "domain_infeasible",
+                      "unknown",
+                      "interrupted"
+                    ]
+                  },
+                  "stderr": {
+                    "type": "string"
+                  },
+                  "stdout": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "status",
+                  "stdout",
+                  "stderr",
+                  "exit_code",
+                  "execution_id",
+                  "identity",
+                  "admission_granularity"
+                ],
+                "type": "object"
+              },
+              "resources": [],
+              "timeout_seconds": 3600
+            },
+            "plugin_name": "erp_bench",
+            "plugin_version": "0.1.0",
+            "selector": "erp_bench/erp_python"
+          },
+          "max_result_bytes": 1048576,
+          "output_schema": {
+            "additionalProperties": false,
+            "properties": {
+              "admission_granularity": {
+                "const": "script"
+              },
+              "execution_id": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "exit_code": {
+                "type": [
+                  "integer",
+                  "null"
+                ]
+              },
+              "identity": {
+                "additionalProperties": false,
+                "properties": {
+                  "call_id": {
+                    "type": "string"
+                  },
+                  "firing_id": {
+                    "type": "string"
+                  },
+                  "invocation_id": {
+                    "type": "string"
+                  },
+                  "operation_id": {
+                    "type": "string"
+                  },
+                  "trial_id": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "trial_id",
+                  "operation_id",
+                  "invocation_id",
+                  "firing_id",
+                  "call_id"
+                ],
+                "type": "object"
+              },
+              "status": {
+                "enum": [
+                  "completed",
+                  "failed",
+                  "domain_infeasible",
+                  "unknown",
+                  "interrupted"
+                ]
+              },
+              "stderr": {
+                "type": "string"
+              },
+              "stdout": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "status",
+              "stdout",
+              "stderr",
+              "exit_code",
+              "execution_id",
+              "identity",
+              "admission_granularity"
+            ],
+            "type": "object"
+          },
+          "plugin_catalog_digest": "06184042199a47e8e47f90155891d88bad128ba1b2559cd31b8b833c9bec6b89",
+          "provider_name": "erp_python",
+          "selector": "erp_bench/erp_python"
+        },
+        "identity": {
+          "binding_digest": "9320745edda8947fe8ae8a68f9c484271f3e2df8f03ea40cc807a3a2b0a92772",
+          "effect": "external_write",
+          "implementation_id": "rpnh.managed_native_plugin_tool",
+          "plugin_catalog_digest": "06184042199a47e8e47f90155891d88bad128ba1b2559cd31b8b833c9bec6b89",
+          "plugin_version": "0.1.0",
+          "provider_name": "erp_python",
+          "revision": "v2",
+          "selector": "erp_bench/erp_python"
+        },
+        "key": "rpnh/plugin/erp_bench/0.1.0/erp_python/9320745edda8947fe8ae8a68f9c484271f3e2df8f03ea40cc807a3a2b0a92772/managed-tool/v2/erp_python/354245b62be54ecea938a74357cc39bad818942161661704a8ff4513ec0394c3"
+      },
+      "schema_version": "rpnh/managed_native_plugin_tool_receipt/v2",
+      "selector": "erp_bench/erp_python",
+      "state": "started"
+    },
+    "ref": {
+      "resource_id": "resource:59f27ccd6f5351238c538568b6f38420",
+      "resource_version_id": "resource_version:a77b0067996152b0a9ae5477a2b17d97"
+    }
+  },
+  {
+    "receipt": {
+      "admitted_at_utc": "2026-10-08T10:58:34.367370Z",
+      "arguments": {
+        "source": "print(\"synthetic\")",
+        "timeout_seconds": 60
+      },
+      "binding_digest": "9320745edda8947fe8ae8a68f9c484271f3e2df8f03ea40cc807a3a2b0a92772",
+      "call_id": "synthetic-script",
+      "caller_execution_ref": {
+        "entity_type": "operation_execution_lease/v1",
+        "logical_id": "operation_execution_lease:6a5b7a9f170a5c53889e34df65ad9de3",
+        "version_id": "operation_execution_lease_version:f86b0042ae235d12a161d3520e036b21"
+      },
+      "caller_firing_ref": {
+        "entity_type": "transition_firing/v1",
+        "logical_id": "transition_firing:c8dacd8426d154208bb2e347a688a6b0",
+        "version_id": "transition_firing_version:5e6543c385c2524f98e45cc87f32eeba"
+      },
+      "output": {
+        "admission_granularity": "script",
+        "execution_id": "synthetic-70332f64c50049838f1a2b333153eda5",
+        "exit_code": 0,
+        "identity": {
+          "call_id": "synthetic-script",
+          "firing_id": "transition_firing_version:5e6543c385c2524f98e45cc87f32eeba",
+          "invocation_id": "invocation_version:55ac4c40db785f7a98c85d8ec226685d",
+          "operation_id": "erp_bench/erp_python",
+          "trial_id": "synthetic-complete"
+        },
+        "status": "completed",
+        "stderr": "",
+        "stdout": "synthetic\nsynthetic-70332f64c50049838f1a2b333153eda5"
+      },
+      "plugin_catalog_digest": "06184042199a47e8e47f90155891d88bad128ba1b2559cd31b8b833c9bec6b89",
+      "producer_invocation_ref": {
+        "entity_type": "invocation/v1",
+        "logical_id": "invocation:09676d21551a5bf78ab120ec180b803b",
+        "version_id": "invocation_version:55ac4c40db785f7a98c85d8ec226685d"
+      },
+      "registration": {
+        "contracts": {
+          "effect": "external_write",
+          "input_schema": {
+            "additionalProperties": false,
+            "properties": {
+              "source": {
+                "maxLength": 262144,
+                "type": "string"
+              },
+              "timeout_seconds": {
+                "maximum": 3600,
+                "minimum": 1,
+                "type": "integer"
+              }
+            },
+            "required": [
+              "source"
+            ],
+            "type": "object"
+          },
+          "invocation_protocol": "rpnh/managed_native_plugin_tool_invocation/v2",
+          "managed_plugin": {
+            "binding_digest": "9320745edda8947fe8ae8a68f9c484271f3e2df8f03ea40cc807a3a2b0a92772",
+            "capability": {
+              "assets": [],
+              "binding_digest": "9320745edda8947fe8ae8a68f9c484271f3e2df8f03ea40cc807a3a2b0a92772",
+              "config": {
+                "endpoint": "<B_OUTPUT>/complete.sock",
+                "trial_id": "synthetic-complete"
+              },
+              "environment": [],
+              "operation": "erp_python",
+              "plugin": {
+                "api_version": "rpnh/plugin/v1",
+                "config_schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "endpoint": {
+                      "pattern": "^/",
+                      "type": "string"
+                    },
+                    "trial_id": {
+                      "minLength": 1,
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "endpoint",
+                    "trial_id"
+                  ],
+                  "type": "object"
+                },
+                "name": "erp_bench",
+                "operations": [
+                  {
+                    "description": "Execute one Python script in the trial's isolated ERP container. Admission and evidence cover the script, not each ERP transaction. An unknown result must not be replayed.",
+                    "effect": "external_write",
+                    "implementation": {
+                      "identity": "rpnh_erp_bench.plugin.erp_python_handler",
+                      "module_sha256": "13d9c09b3eb9b30f326f4daf9d9745309844c55f10cc02f832e9c984d63479bf"
+                    },
+                    "input_schema": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "source": {
+                          "maxLength": 262144,
+                          "type": "string"
+                        },
+                        "timeout_seconds": {
+                          "maximum": 3600,
+                          "minimum": 1,
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "source"
+                      ],
+                      "type": "object"
+                    },
+                    "max_result_bytes": 1048576,
+                    "name": "erp_python",
+                    "output_schema": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "admission_granularity": {
+                          "const": "script"
+                        },
+                        "execution_id": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "exit_code": {
+                          "type": [
+                            "integer",
+                            "null"
+                          ]
+                        },
+                        "identity": {
+                          "additionalProperties": false,
+                          "properties": {
+                            "call_id": {
+                              "type": "string"
+                            },
+                            "firing_id": {
+                              "type": "string"
+                            },
+                            "invocation_id": {
+                              "type": "string"
+                            },
+                            "operation_id": {
+                              "type": "string"
+                            },
+                            "trial_id": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "trial_id",
+                            "operation_id",
+                            "invocation_id",
+                            "firing_id",
+                            "call_id"
+                          ],
+                          "type": "object"
+                        },
+                        "status": {
+                          "enum": [
+                            "completed",
+                            "failed",
+                            "domain_infeasible",
+                            "unknown",
+                            "interrupted"
+                          ]
+                        },
+                        "stderr": {
+                          "type": "string"
+                        },
+                        "stdout": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "status",
+                        "stdout",
+                        "stderr",
+                        "exit_code",
+                        "execution_id",
+                        "identity",
+                        "admission_granularity"
+                      ],
+                      "type": "object"
+                    },
+                    "resources": [],
+                    "timeout_seconds": 3600
+                  },
+                  {
+                    "description": "Check arithmetic over supplied visible observations.",
+                    "effect": "pure",
+                    "implementation": {
+                      "identity": "rpnh_erp_bench.plugin.validate_plan_handler",
+                      "module_sha256": "13d9c09b3eb9b30f326f4daf9d9745309844c55f10cc02f832e9c984d63479bf"
+                    },
+                    "input_schema": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "allocations": {
+                          "items": {
+                            "additionalProperties": false,
+                            "properties": {
+                              "order_ref": {
+                                "maxLength": 256,
+                                "minLength": 1,
+                                "type": "string"
+                              },
+                              "quantity": {
+                                "exclusiveMinimum": 0,
+                                "type": "number"
+                              },
+                              "route_ref": {
+                                "maxLength": 256,
+                                "minLength": 1,
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "order_ref",
+                              "route_ref",
+                              "quantity"
+                            ],
+                            "type": "object"
+                          },
+                          "maxItems": 10000,
+                          "type": "array"
+                        },
+                        "minimum_margin": {
+                          "maximum": 1,
+                          "minimum": 0,
+                          "type": "number"
+                        },
+                        "orders": {
+                          "items": {
+                            "additionalProperties": false,
+                            "properties": {
+                              "budget": {
+                                "minimum": 0,
+                                "type": "number"
+                              },
+                              "due_days": {
+                                "minimum": 0,
+                                "type": "number"
+                              },
+                              "list_price": {
+                                "exclusiveMinimum": 0,
+                                "type": "number"
+                              },
+                              "order_ref": {
+                                "maxLength": 256,
+                                "minLength": 1,
+                                "type": "string"
+                              },
+                              "quantity": {
+                                "exclusiveMinimum": 0,
+                                "type": "number"
+                              }
+                            },
+                            "required": [
+                              "order_ref",
+                              "quantity",
+                              "list_price",
+                              "budget",
+                              "due_days"
+                            ],
+                            "type": "object"
+                          },
+                          "maxItems": 1000,
+                          "minItems": 1,
+                          "type": "array"
+                        },
+                        "routes": {
+                          "items": {
+                            "additionalProperties": false,
+                            "properties": {
+                              "capacity": {
+                                "minimum": 0,
+                                "type": "number"
+                              },
+                              "kind": {
+                                "enum": [
+                                  "stock",
+                                  "buy",
+                                  "manufacture"
+                                ]
+                              },
+                              "lead_days": {
+                                "minimum": 0,
+                                "type": "number"
+                              },
+                              "minimum_quantity": {
+                                "minimum": 0,
+                                "type": "number"
+                              },
+                              "route_ref": {
+                                "maxLength": 256,
+                                "minLength": 1,
+                                "type": "string"
+                              },
+                              "unit_cost": {
+                                "minimum": 0,
+                                "type": "number"
+                              }
+                            },
+                            "required": [
+                              "route_ref",
+                              "kind",
+                              "capacity",
+                              "minimum_quantity",
+                              "unit_cost",
+                              "lead_days"
+                            ],
+                            "type": "object"
+                          },
+                          "maxItems": 1000,
+                          "minItems": 1,
+                          "type": "array"
+                        }
+                      },
+                      "required": [
+                        "orders",
+                        "routes",
+                        "allocations",
+                        "minimum_margin"
+                      ],
+                      "type": "object"
+                    },
+                    "max_result_bytes": 1048576,
+                    "name": "validate_plan",
+                    "output_schema": {
+                      "type": "object"
+                    },
+                    "resources": [],
+                    "timeout_seconds": 30
+                  }
+                ],
+                "requires": {},
+                "resources": [],
+                "version": "0.1.0"
+              },
+              "schema_version": "rpnh/plugin_capability/v1"
+            },
+            "operation": {
+              "description": "Execute one Python script in the trial's isolated ERP container. Admission and evidence cover the script, not each ERP transaction. An unknown result must not be replayed.",
+              "effect": "external_write",
+              "implementation": {
+                "identity": "rpnh_erp_bench.plugin.erp_python_handler",
+                "module_sha256": "13d9c09b3eb9b30f326f4daf9d9745309844c55f10cc02f832e9c984d63479bf"
+              },
+              "input_schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "source": {
+                    "maxLength": 262144,
+                    "type": "string"
+                  },
+                  "timeout_seconds": {
+                    "maximum": 3600,
+                    "minimum": 1,
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "source"
+                ],
+                "type": "object"
+              },
+              "max_result_bytes": 1048576,
+              "name": "erp_python",
+              "output_schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "admission_granularity": {
+                    "const": "script"
+                  },
+                  "execution_id": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "exit_code": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ]
+                  },
+                  "identity": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "call_id": {
+                        "type": "string"
+                      },
+                      "firing_id": {
+                        "type": "string"
+                      },
+                      "invocation_id": {
+                        "type": "string"
+                      },
+                      "operation_id": {
+                        "type": "string"
+                      },
+                      "trial_id": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "trial_id",
+                      "operation_id",
+                      "invocation_id",
+                      "firing_id",
+                      "call_id"
+                    ],
+                    "type": "object"
+                  },
+                  "status": {
+                    "enum": [
+                      "completed",
+                      "failed",
+                      "domain_infeasible",
+                      "unknown",
+                      "interrupted"
+                    ]
+                  },
+                  "stderr": {
+                    "type": "string"
+                  },
+                  "stdout": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "status",
+                  "stdout",
+                  "stderr",
+                  "exit_code",
+                  "execution_id",
+                  "identity",
+                  "admission_granularity"
+                ],
+                "type": "object"
+              },
+              "resources": [],
+              "timeout_seconds": 3600
+            },
+            "plugin_name": "erp_bench",
+            "plugin_version": "0.1.0",
+            "selector": "erp_bench/erp_python"
+          },
+          "max_result_bytes": 1048576,
+          "output_schema": {
+            "additionalProperties": false,
+            "properties": {
+              "admission_granularity": {
+                "const": "script"
+              },
+              "execution_id": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "exit_code": {
+                "type": [
+                  "integer",
+                  "null"
+                ]
+              },
+              "identity": {
+                "additionalProperties": false,
+                "properties": {
+                  "call_id": {
+                    "type": "string"
+                  },
+                  "firing_id": {
+                    "type": "string"
+                  },
+                  "invocation_id": {
+                    "type": "string"
+                  },
+                  "operation_id": {
+                    "type": "string"
+                  },
+                  "trial_id": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "trial_id",
+                  "operation_id",
+                  "invocation_id",
+                  "firing_id",
+                  "call_id"
+                ],
+                "type": "object"
+              },
+              "status": {
+                "enum": [
+                  "completed",
+                  "failed",
+                  "domain_infeasible",
+                  "unknown",
+                  "interrupted"
+                ]
+              },
+              "stderr": {
+                "type": "string"
+              },
+              "stdout": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "status",
+              "stdout",
+              "stderr",
+              "exit_code",
+              "execution_id",
+              "identity",
+              "admission_granularity"
+            ],
+            "type": "object"
+          },
+          "plugin_catalog_digest": "06184042199a47e8e47f90155891d88bad128ba1b2559cd31b8b833c9bec6b89",
+          "provider_name": "erp_python",
+          "selector": "erp_bench/erp_python"
+        },
+        "identity": {
+          "binding_digest": "9320745edda8947fe8ae8a68f9c484271f3e2df8f03ea40cc807a3a2b0a92772",
+          "effect": "external_write",
+          "implementation_id": "rpnh.managed_native_plugin_tool",
+          "plugin_catalog_digest": "06184042199a47e8e47f90155891d88bad128ba1b2559cd31b8b833c9bec6b89",
+          "plugin_version": "0.1.0",
+          "provider_name": "erp_python",
+          "revision": "v2",
+          "selector": "erp_bench/erp_python"
+        },
+        "key": "rpnh/plugin/erp_bench/0.1.0/erp_python/9320745edda8947fe8ae8a68f9c484271f3e2df8f03ea40cc807a3a2b0a92772/managed-tool/v2/erp_python/354245b62be54ecea938a74357cc39bad818942161661704a8ff4513ec0394c3"
+      },
+      "schema_version": "rpnh/managed_native_plugin_tool_receipt/v2",
+      "selector": "erp_bench/erp_python",
+      "started_receipt_ref": {
+        "resource_id": "resource:59f27ccd6f5351238c538568b6f38420",
+        "resource_version_id": "resource_version:a77b0067996152b0a9ae5477a2b17d97"
+      },
+      "state": "returned"
+    },
+    "ref": {
+      "resource_id": "resource:59f27ccd6f5351238c538568b6f38420",
+      "resource_version_id": "resource_version:fcf56c6849f85449abd3f7963a189f60"
+    }
+  }
+]

@@ -1,0 +1,21 @@
+{
+  "agent_timeout_seconds": 90,
+  "calls": [
+    {
+      "execution_id": "synthetic-6c502a221f1543b5b7e8410f0f88bd11",
+      "identity": {
+        "call_id": "synthetic-script",
+        "firing_id": "transition_firing_version:74e697d0be375ee4a53256156da44047",
+        "invocation_id": "invocation_version:178b7649c2b45ed58d27b2ce259119d7",
+        "operation_id": "erp_bench/erp_python",
+        "trial_id": "synthetic-stop"
+      },
+      "source": "print(\"synthetic\")",
+      "timeout_seconds": 59.99991987100293
+    }
+  ],
+  "cancel_observed": true,
+  "entered": true,
+  "entered_elapsed_seconds": 38.170146938999096,
+  "exited_before_teardown": true
+}

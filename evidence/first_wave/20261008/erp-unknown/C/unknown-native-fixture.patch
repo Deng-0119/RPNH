@@ -1,0 +1,540 @@
+diff --git a/examples/erp_bench/scripts/unknown_native_acceptance.py b/examples/erp_bench/scripts/unknown_native_acceptance.py
+new file mode 100644
+index 0000000..111b2d5
+--- /dev/null
++++ b/examples/erp_bench/scripts/unknown_native_acceptance.py
+@@ -0,0 +1,534 @@
++"""Six installed ERP worker/AF_UNIX/Registry cases, driven by direct owner APIs.
++
++No provider, model, Docker, ERP, eval/exec(source), or OS owner recovery.
++Run outside the checkout with PYTHONPATH unset; --output must be fresh under
++its parent. Output is private, except export_safe.json (a redacted projection).
++The Registration/Module admission shape is copied from test_managed_receipts;
++no test module or TransportFixture is imported or executed.
++"""
++from __future__ import annotations
++
++import argparse
++from contextlib import contextmanager
++from datetime import datetime, timezone
++import hashlib
++import importlib
++import importlib.metadata
++import json
++import os
++from pathlib import Path
++import platform
++import shlex
++import signal
++import socket
++import struct
++import sys
++import time
++import traceback
++from types import SimpleNamespace
++from unittest.mock import patch
++
++from cpn.components.basic import CONFIG_SCHEMA_ID, register_basic_components
++from cpn.components.execution_services import invoke_registered_tool
++from cpn.plugins import (BoundPlugin, ManagedPluginInvocationConflict,
++    ManagedPluginInvocationReconciliationRequired, ManagedPluginInvocationService,
++    ManagedPluginToolAdapter, ManagedPluginToolCatalog, PluginCatalog)
++from cpn.plugins.api import canonical, json_copy
++from cpn.plugins import worker
++from cpn.rpnh.module import ModuleDeclaration
++from cpn.rpnh.registration import Registration
++from cpn.rpnh.registry.module_budgets import ModuleBudgetDeclaration
++from cpn.rpnh.registry.strict_contracts import ref_payload
++from cpn.rpnh.run import OwnerInput, start_run
++from rpnh_erp_bench.bridge import Bridge
++from rpnh_erp_bench.plugin import factory
++
++CASES = ("explicit_unknown", "backend_exception", "lost_completed_reply",
++         "known_failed_nonzero", "known_domain_infeasible", "known_completed")
++PRIVATE_MARKER = "PRIVATE_SYNTHETIC_BACKEND_EXCEPTION_DO_NOT_EXPORT"
++
++
++def require(value, message):
++    if not value:
++        raise AssertionError(message)
++
++
++def now():
++    return datetime.now(timezone.utc).isoformat()
++
++
++def digest(path):
++    return hashlib.sha256(path.read_bytes()).hexdigest()
++
++
++def write_json(path, value, output):
++    require(path.resolve().is_relative_to(output), "write outside output")
++    with path.open("x", encoding="utf-8") as stream:
++        json.dump(value, stream, ensure_ascii=True, allow_nan=False, sort_keys=True, indent=2)
++        stream.write("\n")
++
++
++INPUT = "application/erp_receipt_test_input/v1"
++OUTPUT = "application/erp_receipt_test_output/v1"
++EXECUTOR = "tests/erp-receipt-caller/v1"
++TERMINAL = "tests/erp-receipt-terminal/v1"
++
++
++def unused_executor(**kwargs):
++    raise AssertionError("only the registered managed tool is invoked")
++
++
++def prepared_invocation(tmp_path, endpoint, trial):
++    selected = PluginCatalog((BoundPlugin(factory(), {
++        "endpoint": str(endpoint), "trial_id": trial}),))
++    managed = ManagedPluginToolCatalog(selected, {"erp_python": "erp_bench/erp_python"},
++                                       admitted_effects=("external_write",))
++    declaration = managed.declaration("erp_python")
++    registration = Registration()
++    register_basic_components(registration)
++    for key in (INPUT, OUTPUT):
++        registration.register_schema(key, {"$schema": "http://json-schema.org/draft-07/schema#",
++                                           "$id": key, "type": "object"})
++    registration.register_executor(EXECUTOR, unused_executor,
++        identity={"implementation_id": "tests.erp_receipt_caller", "revision": "v1"},
++        contracts={"transport": "deterministic", "input_ports": None, "output_ports": None})
++    registration.register_tool(TERMINAL, dict,
++        identity={"implementation_id": "tests.erp_receipt_terminal", "revision": "v1"},
++        contracts={"binding_protocol": "rpnh/module_terminal/v1"})
++    ManagedPluginToolAdapter(managed).register(registration)
++    module = ModuleDeclaration.from_dict({
++        "schema_version": "rpnh/module_declaration/v1", "name": "ERPReceiptCaller",
++        "components": [{"name": "caller", "key": "operation", "config_schema": CONFIG_SCHEMA_ID,
++            "config": {}, "ports": [
++                {"name": "request", "direction": "input", "schema": INPUT},
++                {"name": "result", "direction": "output", "schema": OUTPUT}],
++            "operations": [{"name": "run", "executor": EXECUTOR, "inputs": ["request"],
++                "outputs": ["result"], "request_port": None, "tools": [declaration.registration_key],
++                "config": {}, "outcomes": [{"name": "complete", "products": [{"port": "result"}]}],
++                "budget_binding": {"bucket_id": "caller", "budget_scope": "module",
++                                   "finalization_scope": None}}]}],
++        "links": [], "entry": {"request": {"component": "caller", "port": "request"}},
++        "exit": {"result": {"component": "caller", "port": "result"}},
++        "terminal": {"key": TERMINAL, "source": {"component": "caller", "port": "result"},
++                     "operation": "run", "outcome": "complete", "config": {"run_outcome": "complete"}},
++        "required_schemas": [CONFIG_SCHEMA_ID, INPUT, OUTPUT], "budgets": {},
++        "budget_buckets": [{"bucket_id": "caller", "budget_scope": "module",
++                            "finalization_scope": None, "max_attempts": 1}]})
++    request = OwnerInput(INPUT, canonical({}), "ERP managed receipt fixture")
++    owner = start_run(module, registration, run_dir=tmp_path / "run", task_input=request,
++        entry_inputs={"request": request}, budgets=ModuleBudgetDeclaration(
++            tuple(module.to_dict()["budget_buckets"]), ("rpnh/module_declaration/v1",), 1, 0, 1, 0),
++        model_condition="no-model", owner_statement="synthetic direct owner API native acceptance",
++        command_id="test:erp:fresh")
++    admitted = owner.admit("caller.run", logical_tau=0, command_id="test:erp:admit")
++    execution = owner.start(admitted, command_id="test:erp:start")
++    kernel, repository = owner.operation_repository()
++    return SimpleNamespace(owner=owner, execution=execution, kernel=kernel, repository=repository,
++        managed=managed, declaration=declaration,
++        service=ManagedPluginInvocationService(owner, kernel, repository, managed))
++
++
++def invoke(prepared, *, call_id="original-call", source="mutate()", service=None):
++    declaration = prepared.declaration
++    return invoke_registered_tool(prepared.owner, prepared.kernel, prepared.repository,
++        prepared.execution, declaration.registration_key, identity=json_copy(declaration.identity),
++        contracts=json_copy(declaration.contracts), kwargs={
++            "service": service or prepared.service, "execution": prepared.execution,
++            "call_id": call_id, "arguments": {"source": source}})
++
++
++def receipts(prepared):
++    """Read immutable registered bytes and retain their actual refs/provenance."""
++    core = prepared.service.core
++    rows = []
++    for row in core.event_store.object_rows_by_type("resource_version/v1"):
++        if "managed_plugin_call" not in json.loads(row["metadata_json"]).get("descriptors", {}):
++            continue
++        version = core.get_version(row["version_id"])
++        payload = core.object_store.read_registered(version)
++        rows.append({"ref": {"resource_id": str(row["logical_id"]),
++                             "resource_version_id": str(row["version_id"])},
++                     "receipt": json.loads(payload), "metadata": version.metadata,
++                     "registered_bytes_sha256": hashlib.sha256(payload).hexdigest()})
++    return rows
++
++
++def process_observation(pid):
++    try:
++        status = Path(f"/proc/{pid}/status").read_text()
++        fields = dict(line.split(":", 1) for line in status.splitlines() if ":" in line)
++        return {"pid": pid, "present": True, "ppid": int(fields["PPid"]),
++                "state": fields["State"].strip(),
++                "cmdline": Path(f"/proc/{pid}/cmdline").read_bytes().decode().replace("\0", " ")}
++    except FileNotFoundError:
++        return {"pid": pid, "present": False}
++
++
++class SyntheticBackend:
++    """Only records synthetic effects; never interprets or executes source."""
++    def __init__(self, case):
++        self.case = case
++        self.calls = []
++
++    def execute_python(self, source, timeout_seconds, cancellation_requested, identity):
++        require(source in ("mutate()", "dependent_mutation()"), "unexpected fixture source")
++        require(timeout_seconds > 0 and not cancellation_requested(), "backend admission cancelled")
++        status = {"explicit_unknown": "unknown", "known_failed_nonzero": "failed",
++                  "known_domain_infeasible": "domain_infeasible"}.get(self.case, "completed")
++        answer = {"status": status, "stdout": "synthetic stdout\n", "stderr": "synthetic stderr\n",
++                  "exit_code": 7 if status == "failed" else 0 if status == "completed" else None,
++                  "execution_id": f"synthetic-{self.case}-{len(self.calls) + 1}"}
++        record = {"identity": dict(identity), "source": source, "entered_at": now(),
++                  "timeout_seconds": timeout_seconds, "answer": answer}
++        self.calls.append(record)
++        try:
++            if self.case == "backend_exception":
++                record["exception"] = PRIVATE_MARKER
++                record["answer"] = None
++                raise RuntimeError(PRIVATE_MARKER)
++            return answer
++        finally:
++            record["exited_at"] = now()
++
++
++class ObservedBridge(Bridge):
++    """Observes the real socket request, then dispatches it unchanged once."""
++    def __init__(self, *args):
++        super().__init__(*args)
++        self.requests = []
++
++    def _dispatch(self, frame, connection):
++        pid, uid, gid = struct.unpack("3i", connection.getsockopt(socket.SOL_SOCKET, socket.SO_PEERCRED, 12))
++        self.requests.append({"frame": frame, "peer": process_observation(pid), "uid": uid, "gid": gid})
++        return super()._dispatch(frame, connection)
++
++
++@contextmanager
++def observed_transport(bridge, case, trace):
++    """All wrappers delegate exactly once, with identical arguments/results.
++
++    The sole transport injection shuts down the original server socket at its
++    actual sendall call. The original sendall then observes the physical loss.
++    No Registry/worker outcome is supplied or rewritten by this fixture.
++    """
++    execute = worker.execute_worker
++    sendall = socket.socket.sendall
++    killpg = os.killpg
++
++    def observe_worker(handler, packet, **kwargs):
++        record = {"handler": handler.__module__ + "." + handler.__qualname__,
++                  "packet": json_copy(packet), "entered_at": now()}
++        trace["workers"].append(record)
++        try:
++            value = execute(handler, packet, **kwargs)
++            record["return"] = json_copy(value)
++            return value
++        except BaseException as exc:
++            record["exception_type"] = type(exc).__name__
++            record["code"] = getattr(exc, "code", None)
++            record["may_have_executed"] = getattr(exc, "may_have_executed", None)
++            raise
++        finally:
++            record["exited_at"] = now()
++            record["peers_after_execute_worker_finally"] = [
++                process_observation(row["peer"]["pid"]) for row in bridge.requests]
++
++    def observe_sendall(connection, data, *args, **kwargs):
++        if (case == "lost_completed_reply" and not trace["lost_reply_injected"]
++                and connection.getsockname() == bridge.endpoint):
++            require(json.loads(data[4:])["status"] == "completed", "drop must follow completed effect")
++            trace["lost_reply_injected"] = True
++            trace["lost_reply"] = {"at": now(), "fd": connection.fileno(),
++                                   "completed_answer": json.loads(data[4:])}
++            connection.shutdown(socket.SHUT_RDWR)
++        return sendall(connection, data, *args, **kwargs)
++
++    def observe_killpg(pid, sig):
++        record = {"pid": pid, "signal": signal.Signals(sig).name,
++                  "before": process_observation(pid), "context": "execute_worker finally cleanup"}
++        trace["cleanup_signals"].append(record)
++        try:
++            value = killpg(pid, sig)
++            record["syscall_succeeded"] = True
++            return value
++        except BaseException as exc:
++            record["syscall_exception"] = type(exc).__name__
++            raise
++
++    with patch.object(worker, "execute_worker", observe_worker), \
++            patch.object(socket.socket, "sendall", observe_sendall), \
++            patch.object(os, "killpg", observe_killpg):
++        yield
++
++
++def counts(trace, bridge, backend):
++    return {"worker_dispatch": len(trace["workers"]), "bridge_request": len(bridge.requests),
++            "backend_effect": len(backend.calls)}
++
++
++def expect_error(error_type, action):
++    try:
++        action()
++    except error_type as exc:
++        return {"type": type(exc).__name__, "message": str(exc), "evidence": getattr(exc, "evidence", None)}
++    raise AssertionError(f"expected {error_type.__name__}")
++
++
++def verify_provenance(prepared, rows, bridge, backend, trace):
++    execution = prepared.execution
++    context = execution.operation.canonical.context
++    for row in rows:
++        doc, meta = row["receipt"], row["metadata"]
++        require(doc["caller_execution_ref"] == ref_payload(execution.operation_execution_lease_ref), "execution ref")
++        require(doc["caller_firing_ref"] == ref_payload(execution.operation.firing.transition_firing_ref), "firing ref")
++        require(doc["producer_invocation_ref"] == ref_payload(context.invocation_ref), "producer ref")
++        require(doc["plugin_catalog_digest"] == prepared.managed.plugin_catalog_digest, "catalog digest")
++        require(doc["registration"]["identity"] == json_copy(prepared.declaration.identity), "registration identity")
++        require(meta["producer_ref"] == doc["producer_invocation_ref"], "resource producer")
++        require(meta["lifetime_ref"] == doc["caller_execution_ref"], "resource lifetime")
++        if doc["state"] != "started":
++            start = next(x for x in rows if x["receipt"]["state"] == "started"
++                         and x["receipt"]["call_id"] == doc["call_id"])
++            require(doc["started_receipt_ref"] == start["ref"], "terminal/start resource chain")
++        require(PRIVATE_MARKER not in json.dumps(row), "private backend exception entered receipt")
++    for request, effect, dispatch in zip(bridge.requests, backend.calls, trace["workers"], strict=True):
++        identity = effect["identity"]
++        require(request["frame"]["identity"] == identity, "bridge/backend identity")
++        packet = dispatch["packet"]
++        require(identity == {"trial_id": packet["context"]["config"]["trial_id"],
++                             **{key: packet["context"][key] for key in
++                                ("operation_id", "invocation_id", "firing_id", "call_id")}}, "worker/effect identity")
++        require(identity["operation_id"] == prepared.declaration.selector, "operation identity")
++        require(identity["invocation_id"] == str(context.invocation_ref.version_id), "effect producer")
++        require(identity["firing_id"] == str(execution.operation.firing.transition_firing_ref.version_id), "effect firing")
++        require(request["peer"]["present"] and request["peer"]["ppid"] == os.getpid(), "worker direct parent lineage")
++        require(request["peer"]["pid"] != os.getpid() and "spawn_main" in request["peer"]["cmdline"], "actual spawned worker")
++        require(dispatch["handler"] == "rpnh_erp_bench.plugin.erp_python_handler", "installed importable handler")
++        pair = [row for row in rows if row["receipt"]["call_id"] == identity["call_id"]]
++        require(len(pair) == 2, "one actual receipt pair per dispatched effect")
++        require(pair[0]["receipt"]["arguments"] == packet["arguments"] == request["frame"]["arguments"], "call body identity")
++
++
++def run_case(case, directory, output):
++    require(directory.resolve().is_relative_to(output), "case outside output")
++    directory.mkdir(mode=0o700)
++    endpoint = directory / "b.sock"
++    require(len(os.fsencode(endpoint)) <= 107, "AF_UNIX path too long")
++    backend = SyntheticBackend(case)
++    bridge = ObservedBridge(endpoint, "synthetic-" + case, backend)
++    trace = {"case": case, "started_at": now(), "workers": [], "cleanup_signals": [],
++             "lost_reply_injected": False, "probes": [], "status": "failed",
++             "owner_mode": "direct owner API; service reconstruction only, no OS owner recovery",
++             "owner_pid": os.getpid(), "owner_forced_termination": False}
++    prepared = None
++    try:
++        prepared = prepared_invocation(directory, endpoint, bridge.trial_id)
++        with bridge, observed_transport(bridge, case, trace):
++            unknown = case in CASES[:3]
++            if unknown:
++                first = expect_error(ManagedPluginInvocationReconciliationRequired, lambda: invoke(prepared))
++                require(first["evidence"]["outcome"] == "outcome_unknown", "unknown outcome")
++                require(first["evidence"]["error"] == {"code": "handler_failed"}, "closed worker error")
++                require(trace["workers"][0]["code"] == "handler_failed"
++                        and trace["workers"][0]["may_have_executed"] is True, "real worker error protocol")
++            else:
++                first = invoke(prepared)
++                require(first["outcome"] == "returned", "known result not returned")
++            trace["first"] = first
++            original = receipts(prepared)
++            require([x["receipt"]["state"] for x in original] ==
++                    ["started", "outcome_unknown" if unknown else "returned"], "first receipt state chain")
++            baseline = counts(trace, bridge, backend)
++            require(baseline == dict(worker_dispatch=1, bridge_request=1, backend_effect=1), "first dispatch counts")
++            require(bridge._uncertain is unknown, "bridge uncertainty gate")
++            for label in ("original", "reconstructed"):
++                service = prepared.service if label == "original" else ManagedPluginInvocationService(
++                    prepared.owner, prepared.kernel, prepared.repository, prepared.managed)
++                actions = [("same_id", "original-call", "mutate()"),
++                           ("changed_body", "original-call", "different_body()")]
++                if unknown:
++                    actions.append(("new_id", "new-call", "dependent_mutation()"))
++                for probe, call_id, source in actions:
++                    action = lambda: invoke(prepared, service=service, call_id=call_id, source=source)
++                    expected = ManagedPluginInvocationConflict if probe == "changed_body" else (
++                        ManagedPluginInvocationReconciliationRequired if unknown else None)
++                    result = expect_error(expected, action) if expected else action()
++                    if probe == "changed_body":
++                        require("reused" in result["message"], "identity conflict classification")
++                    if probe == "new_id":
++                        require("no new dispatch" in result["message"], "Registry next-write block")
++                    if expected is None:
++                        require(result == first, "cached replay changed result")
++                    after = receipts(prepared)
++                    require(after == original, "replay/conflict changed receipts")
++                    require(counts(trace, bridge, backend) == baseline, "replay/conflict dispatched")
++                    trace["probes"].append({"service": label, "probe": probe, "result": result,
++                        "before_counts": baseline, "after_counts": counts(trace, bridge, backend),
++                        "receipt_refs_before": [x["ref"] for x in original],
++                        "receipt_refs_after": [x["ref"] for x in after],
++                        "registered_bytes_unchanged": True})
++            if not unknown:
++                # Rebuilt service permits a legitimate second ID after a known result.
++                later = invoke(prepared, service=service, call_id="new-call", source="dependent_mutation()")
++                trace["next_write"] = later
++                require(later["outcome"] == "returned", "legitimate next write")
++                require(counts(trace, bridge, backend) == dict(worker_dispatch=2, bridge_request=2, backend_effect=2), "next write counts")
++                for response, effect in zip((first, later), backend.calls, strict=True):
++                    require(response["output"] == {**effect["answer"], "identity": effect["identity"],
++                                                  "admission_granularity": "script"}, "known output pass-through")
++                require([x["receipt"]["state"] for x in receipts(prepared)] ==
++                        ["started", "returned", "started", "returned"], "known receipt chains")
++            require(bridge._uncertain is unknown, "final bridge uncertainty")
++            require(trace["lost_reply_injected"] is (case == "lost_completed_reply"), "lost-reply injection")
++            verify_provenance(prepared, receipts(prepared), bridge, backend, trace)
++            trace["status"] = "passed"
++    except Exception:
++        trace["failure_traceback"] = traceback.format_exc()
++    finally:
++        trace["ended_at"] = now()
++        trace["counts"] = counts(trace, bridge, backend)
++        trace["backend"] = backend.calls
++        trace["bridge_requests"] = bridge.requests
++        trace["bridge_uncertain"] = bridge._uncertain
++        trace["bridge_records"] = bridge._records
++        trace["receipts"] = receipts(prepared) if prepared else []
++        trace["peers_after_case"] = [process_observation(row["peer"]["pid"]) for row in bridge.requests]
++        trace["socket_removed"] = not endpoint.exists()
++        trace["bridge_thread_stopped"] = not getattr(bridge, "_thread", SimpleNamespace(is_alive=lambda: False)).is_alive()
++        trace["process_exit_confirmed"] = all(not row["present"] for row in trace["peers_after_case"])
++        if not (trace["socket_removed"] and trace["bridge_thread_stopped"] and trace["process_exit_confirmed"]):
++            trace["status"] = "failed"
++            trace["cleanup_failure"] = "worker/socket/thread did not become quiescent"
++        write_json(directory / "private_case.json", trace, output)
++    return trace
++
++
++def installed_identity(source):
++    prefix = Path(sys.prefix).resolve()
++    require(sys.prefix != sys.base_prefix, "isolated venv required")
++    require((prefix / "bin/rpnh").is_file(), "installed rpnh entry missing")
++    for name in ("cpn.plugins.worker", "rpnh_erp_bench.plugin", "rpnh_erp_bench.native", "rpnh_erp_bench.bridge"):
++        importlib.import_module(name)
++    modules = {}
++    for name, module in sorted(sys.modules.items()):
++        if name != "cpn" and not name.startswith("cpn.") and name != "rpnh_erp_bench" and not name.startswith("rpnh_erp_bench."):
++            continue
++        if not getattr(module, "__file__", None):
++            continue
++        location = Path(module.__file__).resolve()
++        require(location.is_relative_to(prefix), f"not installed in venv: {name}")
++        parts = name.split(".")
++        relative = Path(*parts)
++        if location.name == "__init__.py":
++            relative /= "__init__.py"
++        else:
++            relative = relative.with_suffix(".py")
++        original = source / (Path("examples/erp_bench/src") / relative if parts[0] == "rpnh_erp_bench" else relative)
++        require(original.is_file() and original.read_bytes() == location.read_bytes(), f"installed/source mismatch: {name}")
++        modules[name] = {"path": str(location), "sha256": digest(location),
++                         "source_relative_path": str(original.relative_to(source))}
++    return {"prefix": str(prefix), "python": sys.version, "os": platform.platform(),
++            "architecture": platform.machine(), "executable": sys.executable,
++            "packages": {name: importlib.metadata.version(name) for name in
++                         ("rpnh-harness", "rpnh-erp-bench", "harbor")},
++            "installed_rpnh": {"path": str(prefix / "bin/rpnh"), "sha256": digest(prefix / "bin/rpnh")},
++            "modules": modules}
++
++
++def patch_identity(source, payload):
++    rows = {}
++    files = sorted(p for p in payload.rglob("*") if p.is_file())
++    require(len(files) == 5, "expected the original five payload files")
++    for original in files:
++        relative = original.relative_to(payload)
++        target = source / relative
++        require(target.read_bytes() == original.read_bytes(), f"five-file payload changed: {relative}")
++        rows[str(relative)] = digest(target)
++    return rows
++
++
++def redact(value, replacements):
++    if isinstance(value, str):
++        for original, replacement in replacements:
++            value = value.replace(original, replacement)
++        return value
++    if isinstance(value, list):
++        return [redact(item, replacements) for item in value]
++    if isinstance(value, tuple):
++        return [redact(item, replacements) for item in value]
++    if isinstance(value, dict):
++        return {key: redact(item, replacements) for key, item in value.items()}
++    return value
++
++
++def main():
++    parser = argparse.ArgumentParser(description=__doc__)
++    parser.add_argument("--output", type=Path, required=True)
++    parser.add_argument("--patch-payload", type=Path, required=True,
++                        help="read-only original five-file payload to check before/after")
++    parser.add_argument("--preceding-attempt-id", default=None)
++    args = parser.parse_args()
++    source = Path(__file__).resolve().parents[3]
++    output = args.output.resolve()
++    require("PYTHONPATH" not in os.environ, "PYTHONPATH must be unset")
++    require(not Path.cwd().resolve().is_relative_to(source), "cwd must be outside checkout")
++    require(output.is_relative_to(source.parent) and not output.is_relative_to(source), "output must be below checkout parent, outside checkout")
++    require(not output.exists(), "output must be fresh; never overwrite a failed attempt")
++    require(Path(os.environ["TMPDIR"]).resolve().is_relative_to(source.parent), "TMPDIR must be inside task")
++    require(all(len(os.fsencode(output / f"{index:02d}" / "b.sock")) <= 107 for index in range(6)), "output too long for AF_UNIX")
++    os.umask(0o077)
++    output.mkdir(mode=0o700)
++    started = now()
++    source_identity = installed_identity(source)
++    original_patch = patch_identity(source, args.patch_payload.resolve())
++    source_files = {row["source_relative_path"]: row["sha256"] for row in source_identity["modules"].values()}
++    for relative in ("examples/erp_bench/scripts/unknown_native_acceptance.py",
++                     "examples/erp_bench/tests/test_managed_receipts.py"):
++        source_files[relative] = digest(source / relative)
++    source_manifest = [{"path": path, "sha256": value} for path, value in sorted(source_files.items())]
++    before = {"condition_id": "installed_direct_owner_synthetic_native_unknown_v1",
++              "attempt_id": output.name, "preceding_attempt_id": args.preceding_attempt_id,
++              "started_at": started, "timezone": "UTC", "cwd": str(Path.cwd()),
++              "command": "env -u PYTHONPATH TMPDIR=" + shlex.quote(os.environ["TMPDIR"]) + " " +
++                         shlex.join([sys.executable, "-B", str(Path(__file__).resolve()), *sys.argv[1:]]),
++              "installation": source_identity, "original_five_payload": original_patch,
++              "source_manifest": source_manifest,
++              "source_manifest_sha256": hashlib.sha256(canonical(source_manifest)).hexdigest(),
++              "manifest_scope": "initially imported installed cpn/ERP Python modules and fixture/reference; not complete repository tree"}
++    write_json(output / "private_attempt_start.json", before, output)
++    cases = []
++    for index, case in enumerate(CASES):
++        result = run_case(case, output / f"{index:02d}", output)
++        cases.append(result)
++        print(json.dumps({"case": case, "status": result["status"], "counts": result["counts"]}), flush=True)
++    final_patch = patch_identity(source, args.patch_payload.resolve())
++    require(original_patch == final_patch, "original patch changed during acceptance")
++    final_installation = installed_identity(source)
++    status = "passed" if all(case["status"] == "passed" for case in cases) else "failed"
++    report = {**before, "ended_at": now(), "status": status, "exit_code": 0 if status == "passed" else 1,
++              "final_installation": final_installation, "original_patch_unchanged": True,
++              "cases": cases, "scenario_count": len(cases),
++              "passed_scenarios": sum(case["status"] == "passed" for case in cases),
++              "provider": "not_run/out_of_scope", "evaluation": "not_run/out_of_scope",
++              "provider_calls": 0, "provider_calls_basis": "no provider/actor invoked; six direct owner API synthetic-backend cases",
++              "fake_submissions": 0, "token_usage": None, "cost": None,
++              "unknown_native_variants_not_run": ["bad_schema", "wrong_identity", "partial_send", "interrupted", "connect_failure"],
++              "scope": "C only; no OS owner crash/recovery, no B stop/timeout claim"}
++    write_json(output / "private_report.json", report, output)
++    # Public artifact is explicitly a projection, with source hashes retained.
++    replacements = sorted([(str(output), "<OUTPUT>"), (str(Path(sys.prefix).resolve()), "<VENV>"),
++                           (str(source), "<SOURCE>"), (str(args.patch_payload.resolve()), "<PATCH_PAYLOAD>"),
++                           (str(source.parent), "<TASK>"), (str(Path.home()), "<HOME>"),
++                           (PRIVATE_MARKER, "<REDACTED_SYNTHETIC_PRIVATE_EXCEPTION>")], key=lambda item: len(item[0]), reverse=True)
++    projection = redact(report, replacements)
++    projection["artifact_kind"] = "safe projection, not raw bytes"
++    projection["redactions"] = [replacement for _, replacement in replacements]
++    projection["private_originals"] = [{"path": str(path.relative_to(output)), "sha256": digest(path)}
++        for path in sorted(output.rglob("private*.json"))]
++    require(str(Path.home()) not in json.dumps(projection) and PRIVATE_MARKER not in json.dumps(projection), "projection redaction failed")
++    write_json(output / "export_safe.json", projection, output)
++    return report["exit_code"]
++
++
++if __name__ == "__main__":
++    raise SystemExit(main())

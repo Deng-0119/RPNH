@@ -162,6 +162,14 @@ operation at **script granularity**: one admitted script and receipt may contain
 multiple Odoo reads/writes. The example does not claim per-transaction RPNH
 admission, rollback or exactly-once ERP effects. A lost response can mean an
 unknown committed effect; read back known identities instead of replaying a write.
+An explicit bridge `unknown` or a lost/invalid reply after dispatch raises through
+the existing managed worker failure path. Registry records `outcome_unknown` and
+blocks the same call and new calls in that operation, including after service
+reconstruction. The bridge's trial-local physical safety gate remains in place;
+it is not a second durable execution authority. Observed `completed`, `failed`
+(including nonzero exit), and `domain_infeasible` results remain known returns.
+The mixed `interrupted` status is unchanged; this boundary does not provide
+precise pre-send failure or interruption classification.
 `validate_plan` is a separate `pure` arithmetic tool.
 
 The solver runs nonroot with network-none policy while retaining task-local Odoo

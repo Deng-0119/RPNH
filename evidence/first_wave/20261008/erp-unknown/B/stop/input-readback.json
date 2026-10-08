@@ -1,0 +1,17 @@
+{
+  "full_original_input_read": true,
+  "outside_input_paths_rejected": [
+    "/home",
+    "../outside.txt"
+  ],
+  "path": "registered_resources/f724fe10e1295119a91f7d10026bb9c6/3290ab57dc5e523ca8ebc78ec9e790f0/content",
+  "resource_ref": {
+    "resource_id": "resource:f724fe10e1295119a91f7d10026bb9c6",
+    "resource_version_id": "resource_version:3290ab57dc5e523ca8ebc78ec9e790f0"
+  },
+  "use_receipt_ref": {
+    "entity_type": "resource_delivery/v1",
+    "logical_id": "resource_delivery:a7e14e8fc8974b88ae1102e3ff8d2185",
+    "version_id": "resource_delivery_version:993d13b8f69d5854a98a48ccb1f88561"
+  }
+}

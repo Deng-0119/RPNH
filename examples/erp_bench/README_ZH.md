@@ -133,8 +133,13 @@ actor 首先使用原生 `read_file`，按框架初始化提供的精确注册�
 受管 `erp_python` 工具在任务世界内通过原始 `odoo-client-lib` 接口执行 Python。
 它是以**整个脚本为粒度**的 `external_write` 操作：一次准入与回执可以包含多个
 Odoo 读写，不代表逐事务的 RPNH 准入、回滚或 ERP 恰好一次语义。响应丢失可能意味着
-已提交影响未知，应按已知对象身份读回，不可直接重放写入。`validate_plan` 是独立的
-`pure` 算术工具。
+已提交影响未知，应按已知对象身份读回，不可直接重放写入。
+bridge 明确返回 `unknown`，或发送后的响应丢失／无效时，插件通过既有受管 worker
+异常路径上报。Registry 记录 `outcome_unknown`，阻止该 operation 内的同一 call 和
+新 call，重建 service 后仍保持阻断。bridge 的 trial 内物理安全闸保留，但不成为
+第二套持久执行 authority。已观察到的 `completed`、`failed`（含非零退出码）和
+`domain_infeasible` 仍是已知返回。混合语义的 `interrupted` 保持不变；此边界不提供
+精确的发送前失败或中断分类。`validate_plan` 是独立的 `pure` 算术工具。
 
 solver 以非 root 身份在 network-none 策略下运行，同时保留任务内 Odoo loopback
 访问。这是明确的 `adapted_network_none_nonroot_script` 条件：原始任务 manifest 的

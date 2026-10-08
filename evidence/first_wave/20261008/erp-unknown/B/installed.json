@@ -1,0 +1,11 @@
+{
+  "harbor_version": "0.24.0",
+  "imports": {
+    "cpn": "<VENV>/lib/python3.13/site-packages/cpn/__init__.py",
+    "rpnh_erp_bench": "<VENV>/lib/python3.13/site-packages/rpnh_erp_bench/__init__.py",
+    "rpnh_erp_bench.plugin": "<VENV>/lib/python3.13/site-packages/rpnh_erp_bench/plugin.py"
+  },
+  "plugin_version": "0.1.0",
+  "prefix": "<VENV>",
+  "rpnh_version": "0.1.0rc2"
+}

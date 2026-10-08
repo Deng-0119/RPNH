@@ -1,0 +1,18 @@
+{
+  "representation_scope": "new_safe_integration_verification_record_not_trial_wire",
+  "tested_base": "dbad00458e9b356fcaf0bb97ceb90258ed9b1de0",
+  "integration_parent": "ac19c575bd18e5e0fbf2bef017e8d74c1b6d6afd",
+  "remote_parent_difference": ["docs/technical-report.md", "docs/technical-report_ZH.md"],
+  "integrated_source_files_match_executed_acceptance_bytes": [
+    "examples/erp_bench/src/rpnh_erp_bench/plugin.py",
+    "examples/erp_bench/tests/test_plugin.py",
+    "examples/erp_bench/tests/test_managed_receipts.py",
+    "examples/erp_bench/README.md",
+    "examples/erp_bench/README_ZH.md",
+    "examples/erp_bench/scripts/unknown_native_acceptance.py"
+  ],
+  "core_changed": false,
+  "original_five_payload_unchanged": true,
+  "tests_reassigned_to_new_HEAD": false,
+  "business_experiments_replayed": false
+}

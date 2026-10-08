@@ -1,0 +1,42 @@
+{
+  "status": "PASS",
+  "python": "<VENV>/bin/python",
+  "python_version": "3.13.12 | packaged by conda-forge | (main, Feb  5 2026, 05:53:46) [GCC 14.3.0]",
+  "versions": {
+    "rpnh-harness": "0.1.0rc2",
+    "rpnh-erp-bench": "0.1.0",
+    "harbor": "0.24.0",
+    "pytest": "9.1.1"
+  },
+  "imports": [
+    {
+      "module": "cpn.plugins.worker",
+      "installed_path": "<VENV>/lib/python3.13/site-packages/cpn/plugins/worker.py",
+      "source_path": "<SOURCE>/cpn/plugins/worker.py",
+      "sha256": "ae35e6c6c92d81c82a3ac0026042c1a29b0412d8ca02ddf50afb48763268faa8",
+      "installed_bytes_match": true
+    },
+    {
+      "module": "rpnh_erp_bench.plugin",
+      "installed_path": "<VENV>/lib/python3.13/site-packages/rpnh_erp_bench/plugin.py",
+      "source_path": "<SOURCE>/examples/erp_bench/src/rpnh_erp_bench/plugin.py",
+      "sha256": "13d9c09b3eb9b30f326f4daf9d9745309844c55f10cc02f832e9c984d63479bf",
+      "installed_bytes_match": true
+    },
+    {
+      "module": "rpnh_erp_bench.native",
+      "installed_path": "<VENV>/lib/python3.13/site-packages/rpnh_erp_bench/native.py",
+      "source_path": "<SOURCE>/examples/erp_bench/src/rpnh_erp_bench/native.py",
+      "sha256": "b87423511b50d8f2a7b865b1dc3f7ec3e1b0e84c760ef67cc0be5280dae7bd46",
+      "installed_bytes_match": true
+    },
+    {
+      "module": "rpnh_erp_bench.bridge",
+      "installed_path": "<VENV>/lib/python3.13/site-packages/rpnh_erp_bench/bridge.py",
+      "source_path": "<SOURCE>/examples/erp_bench/src/rpnh_erp_bench/bridge.py",
+      "sha256": "56eaa724e7d5f7080f072153a0a3bf9250f6e6444f02b2e73c34aa806d9deedf",
+      "installed_bytes_match": true
+    }
+  ],
+  "noneditable_source_install": true
+}
