@@ -5,7 +5,7 @@ from __future__ import annotations
 from collections.abc import Mapping
 from copy import deepcopy
 from contextlib import nullcontext
-from dataclasses import replace
+from dataclasses import dataclass, replace
 import json
 import mimetypes
 import os
@@ -230,6 +230,19 @@ EXECUTION_PROVENANCE_DOCUMENT = {
 }
 
 
+@dataclass(frozen=True)
+class PendingManagedAction:
+    """An owner-only settlement continuation awaiting one scheduled action.
+
+    The gateway advances the iterator; workers only schedule ``call``. Keeping
+    the frame preserves staged builtin results until the single batch commit.
+    """
+
+    call: object
+    continuation: object
+    scope: tuple
+
+
 class ActionExecutionMixin:
     def prepare_agent_turn_actions_v1(self, loop, turn, *, timing_origin_ns=None):
         self._current(loop)
@@ -248,7 +261,36 @@ class ActionExecutionMixin:
     def settle_agent_turn_actions_v1(self, loop, turn, actions, *, permitted_tool_names, idempotency_key,
                                     execution=None, timing_evidence=None, delegated_subtask_results=None,
                                     external_tool_results=None, managed_tool_outcomes=None,
-                                    tool_program_results=None):
+                                    tool_program_results=None, managed_turn_continuation=None):
+        scope = (loop, turn, idempotency_key, execution)
+        pending = managed_turn_continuation
+        if pending is not None:
+            self._execution(execution, loop)
+            if not isinstance(pending, PendingManagedAction) or pending.scope != scope:
+                raise ResourceIntegrityFault("managed continuation crossed its exact turn")
+            iterator = pending.continuation
+            outcome = (managed_tool_outcomes or {}).get(pending.call.ordinal)
+            if outcome is None or outcome.call_id != pending.call.call_id:
+                raise ResourceIntegrityFault("managed continuation lacks its exact outcome")
+        else:
+            iterator = self._settle_agent_turn_actions(
+                loop, turn, actions, permitted_tool_names=permitted_tool_names,
+                idempotency_key=idempotency_key, execution=execution,
+                timing_evidence=timing_evidence,
+                delegated_subtask_results=delegated_subtask_results,
+                external_tool_results=external_tool_results,
+                managed_tool_outcomes=managed_tool_outcomes,
+                tool_program_results=tool_program_results)
+        try:
+            call = next(iterator) if pending is None else iterator.send(outcome)
+        except StopIteration as completed:
+            return completed.value
+        return PendingManagedAction(call, iterator, scope)
+
+    def _settle_agent_turn_actions(self, loop, turn, actions, *, permitted_tool_names, idempotency_key,
+                                   execution=None, timing_evidence=None, delegated_subtask_results=None,
+                                   external_tool_results=None, managed_tool_outcomes=None,
+                                   tool_program_results=None):
         execution = self._execution(execution, loop)
         catalog = self.current_agent_tool_catalog_v1(execution)
         if permitted_tool_names != catalog.tool_names or actions != self.prepare_agent_turn_actions_v1(loop, turn):
@@ -310,6 +352,11 @@ class ActionExecutionMixin:
                 error = (
                     "tool was not dispatched after an external-write outcome "
                     "became uncertain")
+            elif (managed_tool_outcomes is not None
+                    and ordinal not in managed_tool_outcomes
+                    and getattr(self, "managed_plugin_interruption_requested", lambda: False)()):
+                error_code = "permission_denied"
+                error = "tool was not dispatched after owner interruption"
             elif isinstance(validation, AgentToolSyntaxError):
                 error = validation.detail
             elif validation.tool_name not in catalog.tool_names:
@@ -436,8 +483,19 @@ class ActionExecutionMixin:
                 try:
                     managed_service.validate_arguments(
                         validation.tool_name, validation.arguments)
+                    if managed_tool_outcomes is not None:
+                        # Policy rejection has no admission receipt. Close it
+                        # before suspension or durable-result observation.
+                        self.managed_scheduler_policy.validate_declaration(declaration)
                 except PluginError as exc:
                     error = str(exc)
+                if (error is None and managed_tool_outcomes is not None
+                        and ordinal not in managed_tool_outcomes):
+                    from cpn.plugins.managed_scheduler import ManagedToolCall
+                    outcome = yield ManagedToolCall(
+                        ordinal, validation.tool_name, call.action_identity_key,
+                        validation.arguments, declaration.registration_key)
+                    managed_tool_outcomes[ordinal] = outcome
                 if error is None and managed_tool_outcomes is not None:
                     outcome = managed_tool_outcomes.get(ordinal)
                     if outcome is None or outcome.call_id != call.action_identity_key:

@@ -10,6 +10,8 @@ from typing import Any, Mapping
 from jsonschema import Draft7Validator
 from jsonschema.exceptions import SchemaError
 
+from .result_archive import ARCHIVE_ARGUMENT_SCHEMA
+
 
 # Operation specs require lexical, unique, sorted tool ids.  Keep this tuple in
 # that exact order; it is also the one outward agent-tool surface.
@@ -344,6 +346,21 @@ TOOL_ARGUMENT_SCHEMAS["read_tool_program_output"] = {
     "required": ["agent_action_ref", "output_resource_ref"],
 }
 
+# Preserve exact-output argument branches byte-for-byte in the catalog. Archive
+# access is an alternate closed shape on the two already optional readers.
+for _archive_reader in ("read_managed_output", "read_tool_program_output"):
+    TOOL_ARGUMENT_SCHEMAS[_archive_reader] = {
+        "oneOf": [TOOL_ARGUMENT_SCHEMAS[_archive_reader], ARCHIVE_ARGUMENT_SCHEMA],
+    }
+
+ARCHIVE_READER_DESCRIPTION = (
+    " Alternatively list original results with archive_loop_ref (exact agent_loop/v1) "
+    "and exclusive before_turn_sequence from the result_archive locator. Follow next_offset "
+    "using offset (default 0); max_bytes (default 10000) includes the whole archive page, "
+    "at most 16 entries. The fixed loop version/cut never includes later results or read pages. "
+    "An entry's null reader means its body is not available through the selected tools."
+)
+
 
 @dataclass(frozen=True, slots=True)
 class AgentToolCatalog:
@@ -430,12 +447,14 @@ def _canonical_agent_tool_catalog_payload() -> bytes:
                         "Read the registered JSON output of an earlier returned managed "
                         "agent_action/v3 in this loop. Copy its exact action and terminal "
                         "receipt locator, then follow next_offset_chars. max_bytes includes "
-                        "the complete page envelope; this read never executes the handler."),
+                        "the complete page envelope; this read never executes the handler."
+                        + ARCHIVE_READER_DESCRIPTION),
                     "read_tool_program_output": (
                         "Read a bounded page of an earlier closed tool program in this loop "
                         "using its exact parent action and output resource. Follow next_offset_chars; "
                         "max_bytes includes the complete page envelope. source_status preserves returned, "
-                        "failed, cancelled or outcome_unknown. Never rerun the program for display."),
+                        "failed, cancelled or outcome_unknown. Never rerun the program for display."
+                        + ARCHIVE_READER_DESCRIPTION),
                     "run_tool_program": (
                         "Run a bounded isolated Python program with the selected tools broker. "
                         "Run module-level source, use synchronous tools.call with explicit stable logical "
@@ -629,10 +648,12 @@ def model_visible_agent_tool_description(name: str) -> str:
         "read_managed_output": (
             "Read a bounded page of an earlier returned managed result using its exact "
             "agent_action/v3 and terminal receipt refs. Follow next_offset_chars; the "
-            "complete serialized page fits max_bytes. Never replay a tool just to recover output."),
+            "complete serialized page fits max_bytes. Never replay a tool just to recover output."
+            + ARCHIVE_READER_DESCRIPTION),
         "read_tool_program_output": (
             "Read exact registered program results, child outcomes and aggregate provenance "
-            "from an earlier same-loop parent action without running any tool again."),
+            "from an earlier same-loop parent action without running any tool again."
+            + ARCHIVE_READER_DESCRIPTION),
         "run_tool_program": (
             "Use synchronous tools.call/parallel/read_result in isolated Python source and publish result(value). "
             "Use explicit logical call keys, bounded parallel calls and catchable known errors; "

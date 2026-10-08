@@ -511,6 +511,10 @@ class ProgramExecutionMixin:
 
     def _read_tool_program_output(self, execution, loop, turn, arguments, _key):
         self._execution(execution, loop)
+        if isinstance(arguments, Mapping) and "archive_loop_ref" in arguments:
+            from .result_archive import read_result_archive
+            return read_result_archive(
+                self, execution, loop, turn, arguments, reader=PROGRAM_READER)
         if (not isinstance(arguments, Mapping)
                 or not {"agent_action_ref", "output_resource_ref"}.issubset(arguments)
                 or set(arguments) - {"agent_action_ref", "output_resource_ref", "offset_chars", "max_bytes"}):

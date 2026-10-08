@@ -48,7 +48,7 @@ def _decode(content):
         return None
 
 
-def _request_projection(action_ref, action, envelope):
+def _request_projection(action_ref, action, envelope, producing_actions):
     """No string-search of actor text, and no matching by tool name alone."""
     if (not isinstance(envelope, Mapping)
             or (envelope.get("protocol") != "llm_request_envelope/v1"
@@ -62,6 +62,7 @@ def _request_projection(action_ref, action, envelope):
                     or (isinstance(_decode(m.get("content")), Mapping)
                         and _decode(m.get("content")).get("agent_action_ref") == action_ref))]
     states = []
+    ambiguous_producer = False
     for message in matched:
         content = message.get("content")
         body = _decode(content)
@@ -70,6 +71,21 @@ def _request_projection(action_ref, action, envelope):
         if len(matched) > 1 and not exact:
             continue
         if isinstance(body, Mapping):
+            # A v2 reader's registered result can point to a different source
+            # action. Establish the producing identity before inspecting that
+            # locator, which only describes the content being read.
+            if (action_ref["entity_type"] == "agent_action/v2"
+                    and message.get("tool_call_id") == action.get("tool_call_id")
+                    and body == action.get("result_metadata")):
+                producers = [entry for entry in producing_actions
+                             if entry["ref"]["entity_type"] == "agent_action/v2"
+                             and entry["record"].get("tool_call_id") == action.get("tool_call_id")
+                             and entry["record"].get("result_metadata") == body]
+                if len(producers) == 1 or exact:
+                    states.append("full")
+                else:
+                    ambiguous_producer = True
+                continue
             if body.get("agent_action_ref") not in (None, action_ref):
                 continue
             if action_ref["entity_type"] == "agent_action/v3":
@@ -129,7 +145,7 @@ def _request_projection(action_ref, action, envelope):
     if any(isinstance(m, Mapping) and _contains(_decode(m.get("content")), action_ref)
            for m in messages):
         return "reference", "exact_locator_only"
-    if len(matched) > 1:
+    if len(matched) > 1 or ambiguous_producer:
         return "unavailable", "ambiguous_reused_tool_call_id"
     if matched:
         return "unavailable", "unrecognized_tool_projection"
@@ -229,7 +245,11 @@ def project_agent_result_evidence(*, records, events, read_material=None,
                     material_cache[key] = (None if raw is None or len(raw) > max_request_bytes
                                            else _decode(raw))
                 envelope = material_cache[key]
-                projection, reason = ("unavailable", "request_material_unavailable") if envelope is None else _request_projection(ref, action, envelope)
+                producing_actions = [entry for entry in actions
+                                     if _same_loop(entry["record"].get("agent_loop_ref"), data.get("agent_loop_ref"))
+                                     and entry["record"].get("turn_sequence", -1) < data.get("turn_sequence", -1)]
+                projection, reason = (("unavailable", "request_material_unavailable") if envelope is None
+                                      else _request_projection(ref, action, envelope, producing_actions))
                 if projection in {"full", "bounded"} and action.get("agent_turn_ref") not in prior_turns:
                     projection, reason = "unavailable", "prior_turn_link_unavailable"
             submitted = any(a["submission_state"] == "submitted" for a in attempt_views)

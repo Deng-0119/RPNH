@@ -125,6 +125,17 @@
         "semantic_prompt_ref": {"$ref": "#/definitions/resource_ref"},
         "located_inputs": {"type": "array", "items": {"$ref": "#/definitions/located_input"}, "uniqueItems": true},
         "settled_actions": {"type": "array", "maxItems": 0},
+        "result_archive": {
+          "type": "object", "additionalProperties": false,
+          "properties": {
+            "reader": {"enum": ["read_managed_output", "read_tool_program_output"]},
+            "archive_loop_ref": {"$ref": "#/definitions/agent_loop_ref"},
+            "before_turn_sequence": {"type": "integer", "minimum": 0},
+            "offset": {"const": 0},
+            "max_bytes": {"type": "integer", "minimum": 1}
+          },
+          "required": ["reader", "archive_loop_ref", "before_turn_sequence", "offset", "max_bytes"]
+        },
         "current_candidate_ref": {"$ref": "#/definitions/nullable_ref"},
         "adopted_candidate_ref": {"$ref": "#/definitions/nullable_ref"},
         "output_resource_refs": {"type": "array", "items": {"$ref": "#/definitions/resource_ref"}, "uniqueItems": true},

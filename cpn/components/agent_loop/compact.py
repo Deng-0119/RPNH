@@ -13,6 +13,9 @@ from cpn.components.request_protocol import (
     validate_llm_request_message_history,
 )
 
+# Includes the assistant call frame, all result frames, JSON escaping and IDs.
+TOOL_BATCH_BYTE_LIMIT = 40_000
+
 
 CONTEXT_CHECKPOINT_PROMPT = (
     "You are performing a CONTEXT CHECKPOINT COMPACTION for the same current "
@@ -213,6 +216,11 @@ def reduce_tool_messages(
                 elif kind == "tool_program_output_page/v1":
                     from .managed_output import _fit_page, serialized_managed_json
                     message["content"] = serialized_managed_json(_fit_page(value, byte_limit))
+                elif kind == "tool_result_archive_page/v1":
+                    from .result_archive import bound_result_archive_page
+                    from .managed_output import serialized_managed_json
+                    message["content"] = serialized_managed_json(
+                        bound_result_archive_page(value, byte_limit))
                 elif kind in {"managed_native_plugin_result/v1", "tool_program_result/v1"}:
                     if len(content.encode("utf-8")) > byte_limit:
                         raise ValueError(
@@ -222,6 +230,76 @@ def reduce_tool_messages(
                         content, byte_limit=byte_limit)
         reduced.append(message)
     return tuple(reduced)
+
+
+def bound_tool_result_groups(messages, *, byte_limit=TOOL_BATCH_BYTE_LIMIT):
+    """Bound each complete turn, preserving every call/result identity.
+
+    Exact pages may become explicit locators when their previews cannot fit.
+    Already executed calls are never dropped, combined, or dispatched again.
+    """
+    if type(byte_limit) is not int or byte_limit < 1:
+        raise ValueError("tool batch byte limit must be positive")
+
+    def size(value):
+        return len(json.dumps(value, ensure_ascii=True, sort_keys=True,
+                              separators=(",", ":"), allow_nan=False).encode())
+
+    bounded = []
+    for group in _message_groups(messages):
+        if not any(m.get("role") == "tool" for m in group) or size(group) <= byte_limit:
+            bounded.extend(group)
+            continue
+        minimum = deepcopy(list(group))
+        expandable = []
+        for index, message in enumerate(minimum):
+            if message.get("role") != "tool":
+                continue
+            content = message["content"]
+            try:
+                body = json.loads(content)
+            except ValueError:
+                body = None
+            kind = body.get("kind") if isinstance(body, Mapping) else None
+            if kind in {"managed_output_page/v1", "tool_program_output_page/v1", "tool_result_archive_page/v1"}:
+                reference = {"kind": "tool_result_reference/v1", "result_kind": kind,
+                             **{key: value for key, value in body.items()
+                                if key not in {"kind", "content", "truncated", "next_offset_chars", "entries", "next_offset"}}}
+                message["content"] = json.dumps(reference, ensure_ascii=True,
+                    sort_keys=True, separators=(",", ":"), allow_nan=False)
+                expandable.append((index, content))
+            elif kind not in {"managed_native_plugin_result/v1", "tool_program_result/v1"}:
+                # Preserve known error/status metadata intact; only plain text
+                # may use the existing marked head/tail representation.
+                if body is None and len(content.encode()) > 128:
+                    message["content"] = reduce_tool_output(content, byte_limit=128)
+                    expandable.append((index, content))
+        if size(minimum) > byte_limit:
+            raise ValueError("tool batch minimum call/result envelopes exceed the visible budget")
+        # Deterministic original ordinal order. Account for double JSON
+        # escaping in the actual message list, not just the inner page bytes.
+        for index, original in expandable:
+            low, high = 0, len(original.encode())
+            best = minimum[index]["content"]
+            while low <= high:
+                middle = (low + high) // 2
+                try:
+                    candidate = reduce_tool_messages(
+                        [dict(minimum[index], content=original)],
+                        byte_limit=max(128, middle))[0]["content"]
+                except ValueError:
+                    low = middle + 1
+                    continue
+                minimum[index]["content"] = candidate
+                if size(minimum) <= byte_limit:
+                    best = candidate
+                    low = middle + 1
+                else:
+                    high = middle - 1
+            minimum[index]["content"] = best
+        assert size(minimum) <= byte_limit
+        bounded.extend(minimum)
+    return tuple(bounded)
 
 
 def prior_tool_result_reference(
@@ -433,6 +511,7 @@ def build_replacement_history(
         messages: Sequence[Mapping[str, Any]], summary: str, *,
         retained_history_token_limit: int,
         fact_capsule: Mapping[str, Any],
+        pending_tool_call_ids: AbstractSet[str] = frozenset(),
 ) -> tuple[dict[str, Any], ...]:
     """Build the bounded forward-only replacement-history contract."""
     if not isinstance(summary, str) or not summary.strip():
@@ -449,33 +528,44 @@ def build_replacement_history(
             or fact_capsule.get("schema_version")
             != "agent_context_fact_capsule/v1"):
         raise ValueError("context compaction requires one typed fact capsule")
-    retained = retained_recent_history(
-        messages, token_limit=retained_history_token_limit)
-    # Recent-tail retention is a best-effort budget. Managed results are a
-    # delivery obligation, not summary prose: preserve their complete call
-    # groups even if the tail would omit them. Each body/page has already
-    # passed its byte budget; normal context-pressure accounting still sees
-    # these messages. No submission or semantic-use assertion is inferred.
-    retained_start = len(messages) - len(retained)
-    protected = []
+    archive = fact_capsule.get("result_archive")
+    archive_bytes = (len(json.dumps(archive, ensure_ascii=True, sort_keys=True,
+        separators=(",", ":"), allow_nan=False).encode()) if archive else 0)
+    if archive_bytes >= TOOL_BATCH_BYTE_LIMIT:
+        raise ValueError("result archive locator exceeds the active notification budget")
+    groups = list(_message_groups(messages))
+    # Only the latest recorded ordinary turn can still owe a result notice.
+    # Compaction responses do not discharge that obligation. Reused IDs in
+    # older groups do not make old pages permanently protected.
+    pending_index = next((i for i in range(len(groups) - 1, -1, -1)
+        if any(m.get("role") == "tool" and m.get("tool_call_id") in pending_tool_call_ids
+               for m in groups[i])), None)
+    if pending_index is not None:
+        groups[pending_index] = bound_tool_result_groups(
+            groups[pending_index], byte_limit=TOOL_BATCH_BYTE_LIMIT - archive_bytes)
+    messages = tuple(message for group in groups for message in group)
+    recent_budget = retained_history_token_limit - math.ceil(archive_bytes / 4)
+    recent = (retained_recent_history(messages, token_limit=recent_budget)
+              if recent_budget > 0 else ())
+    recent_start = len(messages) - len(recent)
+    retained = []
     consumed = 0
-    for group in _message_groups(messages):
-        if consumed >= retained_start:
-            break
+    for index, group in enumerate(groups):
+        if consumed >= recent_start or index == pending_index:
+            retained.extend(bound_tool_result_groups(group))
+        else:
+            for message in group:
+                if message.get("role") != "tool":
+                    continue
+                try:
+                    value = json.loads(message.get("content", ""))
+                except (TypeError, ValueError):
+                    continue
+                if (isinstance(value, Mapping)
+                        and value.get("kind") == "managed_native_plugin_result/v1"
+                        and value.get("reader") is None):
+                    raise ValueError("cannot retire a managed result without a callable reader")
         consumed += len(group)
-        for message in group:
-            if message.get("role") != "tool":
-                continue
-            try:
-                result = json.loads(message.get("content", ""))
-            except (TypeError, ValueError):
-                continue
-            if isinstance(result, Mapping) and result.get("kind") in {
-                    "managed_native_plugin_result/v1", "managed_output_page/v1",
-                    "tool_program_result/v1", "tool_program_output_page/v1"}:
-                protected.extend(group)
-                break
-    retained = (*protected, *retained)
     return copy_replacement_history((
         deepcopy(dict(fact_capsule)),
         {"kind": "compaction_summary", "content": summary},

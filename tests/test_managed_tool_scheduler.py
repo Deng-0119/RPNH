@@ -653,6 +653,7 @@ def test_joint_registered_agentloop_builtin_mix_keeps_legacy_path(tmp_path,monke
     monkeypatch.setattr('cpn.plugins.worker.execute_worker',lambda *a,**k:8)
     spec,port,threads,settlements=_joint_fixture(tmp_path,monkeypatch,selected,
         {'double_value':'synthetic/double'},ManagedSchedulerPolicy(),_joint_calls(['double_value']),builtin_same_turn=True)
+    spec = replace(spec, managed_tool_policy=None)
     result=run_agent_task(spec)
     assert result['stop_reason']=='terminal' and invoked==[1]
     assert len(port.requests)==1

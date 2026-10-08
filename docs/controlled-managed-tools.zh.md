@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: zh
   counterpart: controlled-managed-tools.md
-  revision: "2026-10-08.1"
+  revision: "2026-10-08.2"
 ---
 
 [English](controlled-managed-tools.md) | [中文](controlled-managed-tools.zh.md)
@@ -41,6 +41,30 @@ metadata:
 “包含于后续实际提交请求”、“可回读”是不同事实。没有可用 reader 时不宣传可调用
 入口；超限结果明确失败，不静默丢失中间内容。failed/unknown managed action
 不会改称 returned。
+
+### 总披露预算与历史恢复
+
+每个完整工具 turn 的模型可见上限为 40,000 字节，计入 assistant 调用信封、
+参数、结果身份和 JSON 转义；单结果页面仍默认 10,000 字节。同批超限时，
+确定性预览可降为显式 `tool_result_reference/v1` locator。最小合法 call/result
+信封仍放不下时，准备请求明确失败；不会丢弃、合并或重跑已经执行的调用。
+reader 不可用时，不能用假恢复入口隐藏超限正文。
+
+压缩按 `retained_history_token_limit` 保留近期完整组，通常为 20,000 个近似
+token。目录入口计入该预算。最新普通 turn 尚待通知的结果组，或小到放不下最小目录
+入口的配置，可超出目标；目录与待通知组共同受 40,000 字节硬上限约束。
+完整 fact capsule、摘要和 system prompt 另受既有上下文压力检查，不包含在近期
+历史的 token 目标中。仅完成压缩不会解除该义务；需要后续普通响应已登记。
+`not_submitted`、`submission_unknown` 不表示结果已交付或被语义使用。
+通过该边界后，旧页面可退出近期历史。
+
+暴露任一结果 reader 时，框架在 fact capsule 中确定性携带 `result_archive`
+入口。调用其中指定的 reader，传入 `archive_loop_ref`、`before_turn_sequence`、
+`offset` 和 `max_bytes`，参数中不包含 `reader` 字段。目录使用已登记的同 loop
+固定历史切面，每页最多 16 条有界元数据；跟随 `next_offset`，直到 null。
+再将选中条目的精确 action/receipt 或 output resource 交给普通正文 reader。
+目录不返回结果正文、不执行 handler，reader 可用性来自当前真实目录。
+它复用 Registry 不可变记录，可在同 loop 重建后恢复，不跨新 loop 授权。
 
 ## 只读证据及独立 read HOST（P2/P4）
 
@@ -138,6 +162,10 @@ owner 准入前先预留容量。prepare/finish 跨同一个 owner gateway；wor
 及 call 身份决定 action/result 消息顺序；完成先后不生成身份。所有逐项 outcome，
 包括已知错误和未启动项，一次整 turn 结算并生成一个 loop 后继。已知单项失败
 不会使整个 batch fail-fast。
+
+已选择的策略也覆盖 builtin/managed 混合 turn 中的 managed 调用。它们与 builtin
+保持原调用顺序逐项执行，并与其他 firing 共用准入；等待容量不会占住 owner
+线程。未选择策略时保持原有串行行为。
 
 stop/cancellation 阻止新启动并收拢已准入观察。unknown outcome 阻止该 operation
 后续准入，保留真实收据并让已运行 sibling 结算。不得自动重试或重执行 unknown；

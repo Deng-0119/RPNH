@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: en
   counterpart: controlled-managed-tools.zh.md
-  revision: "2026-10-08.1"
+  revision: "2026-10-08.2"
 ---
 
 [English](controlled-managed-tools.md) | [中文](controlled-managed-tools.zh.md)
@@ -47,6 +47,37 @@ locator when the reader is exposed. Returned, included in a later submitted
 request and readable are separate facts. An unavailable reader is not advertised
 as callable; an oversized result without that reader fails rather than silently
 losing its middle. Failed or unknown managed actions are not relabelled returned.
+
+### Total disclosure and historical recovery
+
+Each complete tool turn has a 40,000-byte model-visible limit, including the
+assistant call frame, arguments, result identities and JSON escaping. Per-result
+pages still default to 10,000 bytes. When the batch is too large, deterministic
+previews give way to explicit `tool_result_reference/v1` locators. If even the
+minimum legal call/result frames cannot fit, preparation fails explicitly;
+executed calls are not dropped, merged or repeated. An unavailable reader cannot
+be used to justify hiding an oversized body.
+
+Compaction keeps a recent tail within `retained_history_token_limit` (normally
+20,000 approximate tokens), including the archive locator. The latest ordinary
+turn's pending result group, or a target too small for the minimum archive locator,
+may exceed that target. The locator and pending group together have a hard
+40,000-byte limit. The remaining fact capsule, summary and system prompt are
+separate from this retained target and remain subject to context pressure checks.
+Compaction alone does not discharge this notification: a subsequently recorded ordinary response
+is required. `not_submitted` and `submission_unknown` do not assert delivery or
+semantic use. Historical pages are eligible to leave the tail after that boundary.
+
+When either result reader is exposed, the framework carries a `result_archive`
+entry in the fact capsule. Call its named reader with the entry's
+`archive_loop_ref`, `before_turn_sequence`, `offset` and `max_bytes` (omit the
+`reader` field from the arguments). This lists bounded metadata for the fixed
+registered same-loop history cut, up to 16 entries per page. Follow `next_offset`
+until null, then use a selected entry's exact action/receipt or output resource
+with the ordinary output reader. Archive pages contain no result bodies; they
+do not run handlers. Reader availability is taken from the actual current
+catalog. The archive uses existing immutable Registry records and survives
+same-loop reconstruction; it does not grant access across a new loop.
 
 ## Read-only evidence and independent read HOST (P2/P4)
 
@@ -159,6 +190,11 @@ response ordinal and call identity determine action/result message order;
 completion order does not create identities. Every per-item outcome, including
 known errors and not-started items, enters one whole-turn settlement and one loop
 successor. A known failure is not a batch-wide fail-fast.
+
+Selected policy also covers managed calls inside a mixed builtin/managed turn.
+Those calls execute one at a time in their original order with the builtins,
+while sharing admission with other firings. Waiting for capacity never holds
+the owner thread. Policy-free turns retain their existing serial behavior.
 
 Stop/cancellation prevents new starts and drains admitted observations. An
 unknown outcome blocks further admission for that operation and retains actual

@@ -35,7 +35,7 @@ function synthetic(){
     a.rows[100].subject_relation_id='split';
     return value;
 }
-async function mount(t){
+async function mount(t,{pendingLayout=false}={}){
     let deny=false;const requests=[],instances=[],value=synthetic(),lifecycle={apply:0,fit:0,dispose:0,layout:0};
     const app=checkpointApp(async url=>{
         requests.push(url);
@@ -54,16 +54,17 @@ async function mount(t){
     app.window.joint.dia.Element.define=()=>class extends Shape{
         getBBox(){const p=this.get('position'),s=this.get('size');return {center:()=>({x:p.x+s.width/2,y:p.y+s.height/2})};}
     };
-    const elk=new ELK(),layout=elk.layout.bind(elk);elk.layout=graph=>{lifecycle.layout++;return layout(graph);};
+    let release;const gate=new Promise(resolve=>{release=resolve;});
+    const layoutWork=[],elk=new ELK(),layout=elk.layout.bind(elk);elk.layout=graph=>{lifecycle.layout++;const work=(async()=>{if(pendingLayout)await gate;return layout(graph);})();layoutWork.push(work);return work;};
     const panel=app.document.getElementById('comparison-context-panel'),api=app.api.crossComparison;
     const button=label=>panel.querySelectorAll('button').find(b=>b.textContent===label);
     api.setRendering({joint:app.window.joint,elk});api.open();await tick();
     api.state.selection={left:structuredClone(fixture.request.left),right:structuredClone(fixture.request.right)};
     api.refreshLanguage();button('Read comparison').onclick();
-    for(let i=0;i<200&&instances.length!==2&&!api.state.error;i++)await tick();
-    assert.equal(api.state.error,null);assert.equal(instances.length,2);
+    for(let i=0;i<200&&(pendingLayout?lifecycle.layout!==2:instances.length!==2)&&!api.state.error;i++)await tick();
+    assert.equal(api.state.error,null);assert.equal(instances.length,pendingLayout?0:2);assert.equal(lifecycle.layout,2);
     t.after(()=>{api.close();globalThis.ResizeObserver=oldObserver;});
-    return {...app,panel,api,button,value,requests,instances,lifecycle,deny:()=>{deny=true;}};
+    return {...app,panel,api,button,value,requests,instances,lifecycle,deny:()=>{deny=true;},async releaseLayout(){release();await Promise.all(layoutWork);await tick();}};
 }
 function snapshots(app){return app.instances.map(r=>({viewport:r.viewport(),attrs:[...r.graph.cells].map(([id,cell])=>[id,structuredClone(cell.attributes.attrs)])}));}
 function assertVisibleEndpoints(app,relation){
@@ -81,6 +82,62 @@ function assertVisibleEndpoints(app,relation){
         assert.deepEqual(details.map(item=>item.endpoint),relation[side]);
     }
 }
+for(const kind of ['single','split','fusion','edge'])test('pending first layout replays '+kind+' Locate selection, details, ARIA, scope and framing',async t=>{
+    const app=await mount(t,{pendingLayout:true}),{panel,lifecycle}=app;
+    const relation=app.value.mapping.relations.find(r=>kind==='single'?r.relation_kind==='same_exact_subject'&&r.left[0].subject_kind==='node':kind==='edge'?r.left[0].subject_kind==='edge':r.relation_kind===kind);
+    panel.querySelector(`[data-field-relation="${relation.relation_id}"]`).onclick();
+    const details=['left','right'].map(side=>panel.querySelector(`[data-comparison-details="${side}"]`).textContent);
+    const mapping=panel.querySelector('[data-mapping-details]').textContent,calls=app.requests.length;
+    await app.releaseLayout();
+    assert.equal(app.api.state.error,null);assert.equal(app.instances.length,2);assertVisibleEndpoints(app,relation);
+    for(const [i,side] of ['left','right'].entries()){
+        assert.equal(panel.querySelector(`[data-comparison-details="${side}"]`).textContent,details[i]);
+        assert.equal(panel.querySelector(`[data-node-scope="${side}"]`).disabled,relation[side].length!==1||relation[side][0].subject_kind!=='node');
+        for(const ep of relation[side])if(ep.subject_kind==='node')assert.equal(app.instances[i].graph.getCell(nodeKey(ep.subject_id)).attributes.attrs['root/aria-pressed'],'true');
+    }
+    assert.equal(panel.querySelector('[data-mapping-details]').textContent,mapping);
+    const replayed=snapshots(app);
+    panel.querySelector(`[data-field-relation="${relation.relation_id}"]`).onclick();
+    assert.deepEqual(snapshots(app),replayed,'pending Locate must frame exactly like Locate after layout');
+    assert.equal(app.requests.length,calls);assert.deepEqual(lifecycle,{apply:2,fit:2,dispose:0,layout:2});
+});
+test('pending layout replays latest per-side endpoint navigation rather than the earlier relation',async t=>{
+    const app=await mount(t,{pendingLayout:true}),{panel}=app;
+    panel.querySelector('[data-field-relation="split"]').onclick();
+    panel.querySelector('[data-field-relation="fusion"]').onclick();
+    const relation=app.value.mapping.relations.find(r=>r.relation_id==='fusion'),ep=relation.left.at(-1);
+    panel.querySelectorAll('[data-relation-endpoint]').filter(b=>b.dataset.relationEndpoint==='left').at(-1).onclick();
+    const detail=panel.querySelector('[data-comparison-details="left"]').textContent;
+    await app.releaseLayout();
+    const renderer=app.instances[0];
+    for(const node of app.value.left.graph.nodes)assert.equal(renderer.graph.getCell(nodeKey(node.id)).attributes.attrs['root/aria-pressed'],node.id===ep.subject_id?'true':'false');
+    assert.equal(panel.querySelector('[data-comparison-details="left"]').textContent,detail);
+    assert.equal(panel.querySelector('[data-node-scope="left"]').disabled,false);
+    const position=renderer.layout.nodes.get(ep.subject_id),view=renderer.viewport();
+    assert.ok(Math.abs((position.x+position.width/2)*view.scale+view.tx-renderer.element.clientWidth/2)<1e-6);
+    assert.ok(Math.abs((position.y+position.height/2)*view.scale+view.ty-renderer.element.clientHeight/2)<1e-6);
+    const right=relation.right[0];assert.equal(app.instances[1].graph.getCell(nodeKey(right.subject_id)).attributes.attrs['root/aria-pressed'],'true');
+});
+for(const action of ['axes','close','replacement'])test(action+' invalidates pending Locate before layout can replay it',async t=>{
+    const app=await mount(t,{pendingLayout:true}),{panel,api,lifecycle}=app;
+    panel.querySelector('[data-field-relation="split"]').onclick();
+    if(action==='axes'){const axis=panel.querySelector('input');axis.checked=false;axis.onchange();}
+    else if(action==='close')api.close();
+    else{
+        app.button('Read comparison').onclick();
+        for(let i=0;i<200&&lifecycle.layout!==4&&!api.state.error;i++)await tick();
+        assert.equal(lifecycle.layout,4);
+    }
+    await app.releaseLayout();
+    assert.equal(api.state.error,null);
+    assert.equal(app.instances.length,action==='replacement'?2:0);
+    assert.equal(panel.querySelectorAll('[data-relation-endpoint]').length,0);
+    if(action==='replacement')for(const [index,side] of ['left','right'].entries()){
+        assert.equal(panel.querySelector(`[data-comparison-details="${side}"]`).textContent,'');
+        assert.equal(panel.querySelector(`[data-node-scope="${side}"]`).disabled,true);
+        for(const node of app.value[side].graph.nodes)assert.equal(app.instances[index].graph.getCell(nodeKey(node.id)).attributes.attrs['root/aria-pressed'],'false');
+    }
+});
 test('105 fields: row 101, expansion and all classification filters retain both views, selections, scope counts and renderer identity',async t=>{
     const app=await mount(t),{panel,instances,lifecycle,api}=app;
     instances[0].onSelect('node','step.request');instances[1].onSelect('node','step.result');

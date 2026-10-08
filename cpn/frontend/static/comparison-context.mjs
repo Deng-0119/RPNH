@@ -137,36 +137,41 @@ export function installComparisonContextPanel(container,{request,translate=t=>t,
     function fullPair(){if(!state.value)return;const nav=state.value.presentation.full_pair_navigation;if(nav.availability==='unavailable')return;
         if(nav.availability==='available'){state.preference='full_pair';draw();return;}
         invalidate({scope:structuredClone(nav.scope),cuts:structuredClone(nav.source_cuts),preference:'full_pair',visualPairs:[]});load();}
-    function select(side,kind,id){if(!state.value)return;selected[side]={kind,id};const index=side==='left'?0:1;renderers[index]?.decorate({showResources:true,selection:selected[side]});const details=container.querySelector(`[data-comparison-details="${side}"]`);if(details){const graph=state.value[side].graph;const item=graph[kind==='node'?'nodes':'edges'].find(n=>n.id===id);details.textContent=item?JSON.stringify(item,null,2):'';}updateSelectionButtons();}
+    function select(side,kind,id,center=false){if(!state.value)return;selected[side]={kind,id,center};renderSelection(side);const details=container.querySelector(`[data-comparison-details="${side}"]`);if(details){const graph=state.value[side].graph;const item=graph[kind==='node'?'nodes':'edges'].find(n=>n.id===id);details.textContent=item?JSON.stringify(item,null,2):'';}updateSelectionButtons();}
     function updateSelectionButtons(){const pair=container.querySelector('[data-visual-pair]');if(pair)pair.disabled=!selected.left||!selected.right||selected.left.kind==='group'||selected.right.kind==='group';for(const side of ['left','right']){const b=container.querySelector(`[data-node-scope="${side}"]`);if(b)b.disabled=selected[side]?.kind!=='node';}}
     function addVisualPair(){if(!state.value||!selected.left||!selected.right||selected.left.kind==='group'||selected.right.kind==='group')return;const pair={pair_id:'visual-'+(state.visualPairs.length+1)};for(const side of ['left','right'])pair[side]=[{side,target_key:state.value[side].graph.target_key,subject_kind:selected[side].kind,subject_id:selected[side].id,occurrence_path:[]}];invalidate({visualPairs:[...state.visualPairs,pair]});load();}
     // A relation is a group of explicit DTO endpoints, never a guessed pair.
     // Reuse the existing renderer's graph/layout and viewport restore surface;
     // neither navigation nor field-panel updates recreate a renderer.
+    function renderSelection(side){
+        const selection=selected[side],endpoints=selection?.endpoints,renderer=renderers[side==='left'?0:1];
+        if(renderer){
+            renderer.decorate({showResources:true,selection:selection?.kind==='group'?null:selection});
+            if(!endpoints){if(selection?.center)renderer.center(selection.kind,selection.id);return;}
+            const points=[];
+            for(const ep of endpoints){
+                const isNode=ep.subject_kind==='node';
+                const cell=renderer.graph.getCell(isNode?nodeKey(ep.subject_id):edgeKey(ep.subject_id));
+                cell?.attr(isNode?'body/strokeWidth':'line/strokeWidth',3.5);
+                if(isNode)cell?.attr('root/aria-pressed','true');
+                const position=(isNode?renderer.layout.nodes:renderer.layout.edges).get(ep.subject_id);
+                if(isNode&&position)points.push({x:position.x,y:position.y},{x:position.x+position.width,y:position.y+position.height});
+                else for(const section of position?.sections??[])points.push(section.startPoint,...(section.bendPoints??[]),section.endPoint);
+            }
+            if(points.length){
+                const bounds=points.reduce((b,p)=>({left:Math.min(b.left,p.x),top:Math.min(b.top,p.y),right:Math.max(b.right,p.x),bottom:Math.max(b.bottom,p.y)}),{left:Infinity,top:Infinity,right:-Infinity,bottom:-Infinity});
+                const x=bounds.left,y=bounds.top,width=bounds.right-x,height=bounds.bottom-y;
+                const w=renderer.element.clientWidth,h=renderer.element.clientHeight;
+                if(w>0&&h>0){const scale=Math.min(1.3,.92*Math.min(w/Math.max(1,width),h/Math.max(1,height)));renderer.restore({scale,tx:w/2-(x+width/2)*scale,ty:h/2-(y+height/2)*scale});}
+            }
+        }
+    }
     function showRelation(relation){
         if(!state.value)return;
         for(const side of ['left','right']){
-            const endpoints=relation[side],renderer=renderers[side==='left'?0:1];
-            selected[side]=endpoints.length===1?{kind:endpoints[0].subject_kind,id:endpoints[0].subject_id}:{kind:'group',endpoints};
-            if(renderer){
-                renderer.decorate({showResources:true,selection:endpoints.length===1?selected[side]:null});
-                const points=[];
-                for(const ep of endpoints){
-                    const isNode=ep.subject_kind==='node';
-                    const cell=renderer.graph.getCell(isNode?nodeKey(ep.subject_id):edgeKey(ep.subject_id));
-                    cell?.attr(isNode?'body/strokeWidth':'line/strokeWidth',3.5);
-                    if(isNode)cell?.attr('root/aria-pressed','true');
-                    const position=(isNode?renderer.layout.nodes:renderer.layout.edges).get(ep.subject_id);
-                    if(isNode&&position)points.push({x:position.x,y:position.y},{x:position.x+position.width,y:position.y+position.height});
-                    else for(const section of position?.sections??[])points.push(section.startPoint,...(section.bendPoints??[]),section.endPoint);
-                }
-                if(points.length){
-                    const bounds=points.reduce((b,p)=>({left:Math.min(b.left,p.x),top:Math.min(b.top,p.y),right:Math.max(b.right,p.x),bottom:Math.max(b.bottom,p.y)}),{left:Infinity,top:Infinity,right:-Infinity,bottom:-Infinity});
-                    const x=bounds.left,y=bounds.top,width=bounds.right-x,height=bounds.bottom-y;
-                    const w=renderer.element.clientWidth,h=renderer.element.clientHeight;
-                    if(w>0&&h>0){const scale=Math.min(1.3,.92*Math.min(w/Math.max(1,width),h/Math.max(1,height)));renderer.restore({scale,tx:w/2-(x+width/2)*scale,ty:h/2-(y+height/2)*scale});}
-                }
-            }
+            const endpoints=relation[side];
+            selected[side]=endpoints.length===1?{kind:endpoints[0].subject_kind,id:endpoints[0].subject_id,endpoints}:{kind:'group',endpoints};
+            renderSelection(side);
             const details=container.querySelector(`[data-comparison-details="${side}"]`);
             if(details)details.textContent=JSON.stringify(endpoints.map(ep=>({endpoint:ep,subject:state.value[side].graph[ep.subject_kind==='node'?'nodes':'edges'].find(item=>item.id===ep.subject_id)})),null,2);
         }
@@ -177,7 +182,7 @@ export function installComparisonContextPanel(container,{request,translate=t=>t,
             for(const side of ['left','right'])for(const ep of relation[side]){
                 const b=make('button',`${side} · ${ep.subject_kind} · ${ep.subject_id}`);
                 b.dataset.relationEndpoint=side;
-                b.onclick=()=>{select(side,ep.subject_kind,ep.subject_id);renderers[side==='left'?0:1]?.center(ep.subject_kind,ep.subject_id);};
+                b.onclick=()=>select(side,ep.subject_kind,ep.subject_id,true);
                 details.append(b);
             }
             details.parentElement.open=true;
@@ -250,6 +255,9 @@ export function installComparisonContextPanel(container,{request,translate=t=>t,
             const next=panels.map((panel,index)=>new NetRenderer(joint,panel,(kind,id)=>select(index===0?'left':'right',kind,id)));renderers=next;
             next.forEach((renderer,index)=>{renderer.apply(graphs[index],positions[index]);renderer.decorate({showResources:true});});
             for(const p of panels)p.parentElement.style.visibility='visible';next.forEach(renderer=>renderer.fit());
+            // Locate can run while ELK is pending; replay the latest per-side
+            // selection only after the context/epoch checks and initial fit.
+            for(const side of ['left','right'])if(selected[side])renderSelection(side);
         }catch(error){if(state.open&&state.generation===generation&&epoch===renderEpoch){clearRenderers();state.clear();state.error='read_failed';draw();}}
     }
     events?.addEventListener?.('popstate',()=>close(true));events?.addEventListener?.('pagehide',()=>close());events?.addEventListener?.('pageshow',event=>{if(event.persisted||state.value||state.loading)close(true);});

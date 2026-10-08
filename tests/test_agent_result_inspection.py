@@ -300,3 +300,122 @@ def test_office_v2_real_condition_helper_and_public_builder(monkeypatch):
     assert "confirmed subsequent model-input consumption" not in document
     assert "registered model consumption" not in document
     assert "Neither a model-authored claim nor readback proves semantic use" in document
+
+
+def reader_fixture(*, large=True):
+    from cpn.components.agent_loop.managed_output import bounded_managed_output_projection
+    records, events, envelope = fixture()
+    source = records[0]
+    source["record"]["output"] = {"body": "readback-data" * (2000 if large else 1)}
+    reader_ref, reader_turn = ref("agent_action/v2", "7"), ref("agent_turn/v1", "8")
+    page = bounded_managed_output_projection(
+        {"kind": "managed_native_plugin_result/v1", "output": source["record"]["output"],
+         "terminal_receipt_ref": source["record"]["terminal_receipt_ref"]},
+        {"agent_action_ref": source["ref"],
+         "terminal_receipt_ref": source["record"]["terminal_receipt_ref"], "max_bytes": 2000})
+    reader = {"ref": reader_ref, "record": {
+        "agent_loop_ref": source["record"]["agent_loop_ref"], "agent_turn_ref": reader_turn,
+        "turn_sequence": 1, "tool_call_id": "reader-call", "tool_name": "read_managed_output",
+        "state": "ACTION_APPLIED", "result_metadata": page}}
+    records.append(reader)
+    records[1]["record"]["turn_sequence"] = records[2]["record"]["turn_sequence"] = 3
+    records[2]["record"]["prior_turn_refs"].append(reader_turn)
+    envelope["messages"] = [
+        {"role": "assistant", "tool_calls": [{"id": "reader-call", "type": "function",
+         "function": {"name": "read_managed_output", "arguments": json.dumps({
+             "agent_action_ref": source["ref"],
+             "terminal_receipt_ref": source["record"]["terminal_receipt_ref"]})}}]},
+        {"role": "tool", "tool_call_id": "reader-call", "content": canonical_json(page).decode()}]
+    return records, events, envelope
+
+
+@pytest.mark.parametrize("large,source_projection", [(True, "bounded"), (False, "full")])
+@pytest.mark.parametrize("submitted", [True, False])
+def test_registered_reader_page_and_source_have_independent_coverage(large, source_projection, submitted):
+    records, events, envelope = reader_fixture(large=large)
+    result = project(records, events if submitted else [], envelope)
+    reader, source = result["actions"]
+    request = reader["requests"][0]
+    assert request["request_projection"] == "full"
+    assert source["requests"][0]["request_projection"] == source_projection
+    assert request["submitted_request_inclusion"] == ("full" if submitted else "not_established")
+    assert request["provider_attempts"][0]["submission_state"] == ("submitted" if submitted else "unknown")
+    assert reader["agent_loop_ref"] == records[-1]["record"]["agent_loop_ref"]
+    assert reader["agent_turn_ref"] == records[-1]["record"]["agent_turn_ref"]
+    assert reader["tool_call_id"] == "reader-call"
+    assert reader["semantic_use"] == reader["decision_influence"] == "unknown"
+
+
+@pytest.mark.parametrize("mutation", ["content", "receipt", "source", "call_id", "producing_action", "turn", "loop"])
+def test_reader_identity_and_exact_registered_page_are_required(mutation):
+    records, events, envelope = reader_fixture()
+    reader = records[-1]
+    body = json.loads(envelope["messages"][1]["content"])
+    if mutation == "content":
+        body["content"] = "invented"
+    elif mutation == "receipt":
+        body["terminal_receipt_ref"] = resource("9")
+    elif mutation == "source":
+        body["agent_action_ref"] = ref("agent_action/v3", "9")
+    elif mutation == "call_id":
+        envelope["messages"][1]["tool_call_id"] = "wrong-producer"
+    elif mutation == "producing_action":
+        body["agent_action_ref"] = ref("agent_action/v2", "9")
+    elif mutation == "turn":
+        records[2]["record"]["prior_turn_refs"].remove(reader["record"]["agent_turn_ref"])
+    else:
+        reader["record"]["agent_loop_ref"] = ref("agent_loop/v1", "9")
+    envelope["messages"][1]["content"] = canonical_json(body).decode()
+    result = project(records, events, envelope)
+    requests = result["actions"][0]["requests"]
+    if mutation == "loop":
+        assert requests == []
+    else:
+        assert requests[0]["request_projection"] not in {"full", "bounded"}
+    if mutation in {"content", "receipt"}:
+        assert result["actions"][1]["requests"][0]["request_projection"] == "reference"
+
+
+@pytest.mark.parametrize("duplicate_message", [True, False])
+def test_reader_reused_call_id_does_not_borrow_another_turn(duplicate_message):
+    records, events, envelope = reader_fixture()
+    if duplicate_message:
+        envelope["messages"].append(deepcopy(envelope["messages"][1]))
+    else:
+        other_reader = deepcopy(records[-1])
+        other_reader["ref"] = ref("agent_action/v2", "9")
+        other_reader["record"].update(agent_turn_ref=ref("agent_turn/v1", "9"), turn_sequence=2)
+        records[2]["record"]["prior_turn_refs"].append(other_reader["record"]["agent_turn_ref"])
+        records.append(other_reader)
+    result = project(records, events, envelope)
+    readers = [a for a in result["actions"] if a["agent_action_ref"]["entity_type"] == "agent_action/v2"]
+    assert all(a["requests"][0]["request_projection"] == "unavailable" for a in readers)
+    assert all(a["requests"][0]["reason"] == "ambiguous_reused_tool_call_id" for a in readers)
+
+
+def test_reader_reused_call_id_with_distinct_registered_results_is_exact():
+    records, events, envelope = reader_fixture()
+    other_reader = deepcopy(records[-1])
+    other_reader["ref"] = ref("agent_action/v2", "9")
+    other_reader["record"].update(agent_turn_ref=ref("agent_turn/v1", "9"), turn_sequence=2)
+    other_reader["record"]["result_metadata"]["content"] = "different page"
+    records[2]["record"]["prior_turn_refs"].append(other_reader["record"]["agent_turn_ref"])
+    records.append(other_reader)
+    result = project(records, events, envelope)
+    assert result["actions"][0]["requests"][0]["request_projection"] == "full"
+    assert result["actions"][1]["requests"][0]["request_projection"] == "unavailable"
+
+
+@pytest.mark.parametrize("event_type,state", [
+    ("provider_attempt_submission_not_permitted/v1", "not_submitted"),
+    ("provider_attempt_submission_unknown/v1", "submission_unknown"),
+])
+def test_full_reader_page_does_not_establish_submission(event_type, state):
+    records, events, envelope = reader_fixture()
+    events[0]["event_type"] = event_type
+    result = project(records, events, envelope)
+    request = result["actions"][0]["requests"][0]
+    assert request["request_projection"] == "full"
+    assert request["provider_attempts"][0]["submission_state"] == state
+    assert request["submitted_request_inclusion"] == "not_established"
+    assert result["actions"][0]["semantic_use"] == "unknown"

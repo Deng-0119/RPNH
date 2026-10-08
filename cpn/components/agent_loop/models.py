@@ -732,7 +732,9 @@ class AgentActionRecord:
             raise AgentLoopProtocolError(
                 "resource catalog metadata must not deliver resource bodies")
         if (self.tool_name in {"read_action_output", "read_managed_output", "read_tool_program_output"}
-                and self.state != AgentLoopState.ACTION_REJECTED):
+                and self.state != AgentLoopState.ACTION_REJECTED
+                and not (isinstance(self.result_metadata, Mapping)
+                         and self.result_metadata.get("kind") == "tool_result_archive_page/v1")):
             if (self.state != AgentLoopState.ACTION_APPLIED
                     or not isinstance(self.result_metadata, Mapping)):
                 raise AgentLoopProtocolError(
@@ -906,6 +908,34 @@ class AgentActionRecord:
         if not isinstance(value, Mapping):
             raise AgentLoopProtocolError(
                 "successful agent action requires closed result metadata")
+        if (self.tool_name in {"read_managed_output", "read_tool_program_output"}
+                and (value.get("kind") == "tool_result_archive_page/v1"
+                     or "archive_loop_ref" in self.arguments)):
+            from .result_archive import validate_archive_arguments, validate_result_archive_page
+            try:
+                validate_archive_arguments(self.arguments)
+                validate_result_archive_page(value)
+                raw_ref = value["archive_loop_ref"]
+                source_ref = VersionRef(
+                    "agent_loop/v1", TypedId.parse(raw_ref["logical_id"], expected="agent_loop"),
+                    TypedId.parse(raw_ref["version_id"], expected="agent_loop_version"))
+                valid = (
+                    self.state == AgentLoopState.ACTION_APPLIED
+                    and value["reader"] == self.tool_name
+                    and raw_ref["logical_id"] == self.loop_id
+                    and raw_ref == self.arguments["archive_loop_ref"]
+                    and value["before_turn_sequence"] == self.arguments["before_turn_sequence"]
+                    and value["before_turn_sequence"] <= self.turn_sequence
+                    and value["offset"] == self.arguments.get("offset", 0)
+                    and self.result_refs == (source_ref,)
+                    and len(json.dumps(dict(value), ensure_ascii=True, sort_keys=True,
+                                       separators=(",", ":"), allow_nan=False).encode("utf-8"))
+                    <= self.arguments.get("max_bytes", 10000))
+            except (ValueError, TypeError, KeyError) as exc:
+                raise AgentLoopProtocolError("result archive read has invalid closed metadata") from exc
+            if not valid:
+                raise AgentLoopProtocolError("result archive page differs from its requested loop/cut/reader")
+            return
         expected: dict[str, tuple[str, frozenset[str]]] = {
             "query_kb": (
                 "external_kb_query/v2", frozenset({

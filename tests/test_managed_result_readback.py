@@ -92,15 +92,17 @@ def _group(call_id, result):
         {"role": "tool", "tool_call_id": call_id, "content": serialized_managed_json(result)}]
 
 
-def test_replacement_preserves_multiple_managed_groups_beyond_recent_tail():
-    first = render_managed_output(_metadata("new-small-id"), ACTION, reader_available=False, max_bytes=1000)
+def test_replacement_preserves_only_pending_group_beyond_recent_tail():
+    first = render_managed_output(_metadata("new-small-id"), ACTION, reader_available=True, max_bytes=1000)
     second = bounded_managed_output_projection(_metadata("large" * 20000), _args(max_bytes=700))
     history = _group("small", first) + _group("large", second)
     capsule = {"kind": "agent_context_fact_capsule", "schema_version": "agent_context_fact_capsule/v1"}
-    replacement = build_replacement_history(history, "summary omits both results", retained_history_token_limit=1, fact_capsule=capsule)
-    assert [e["message"] for e in replacement[2:]] == history
-    again = build_replacement_history([e["message"] for e in replacement[2:]], "second replacement", retained_history_token_limit=1, fact_capsule=capsule)
-    assert [e["message"] for e in again[2:]] == history
+    replacement = build_replacement_history(history, "summary omits both results", retained_history_token_limit=1, fact_capsule=capsule, pending_tool_call_ids={"large"})
+    assert [e["message"] for e in replacement[2:]] == history[2:]
+    again = build_replacement_history([e["message"] for e in replacement[2:]], "second replacement", retained_history_token_limit=1, fact_capsule=capsule, pending_tool_call_ids={"large"})
+    assert [e["message"] for e in again[2:]] == history[2:]
+    delivered = build_replacement_history([e["message"] for e in again[2:]], "ordinary response recorded", retained_history_token_limit=1, fact_capsule=capsule)
+    assert len(delivered) == 2
 
 
 def _reader(source):
@@ -329,13 +331,14 @@ class RecordingReadbackProvider:
                 if value.get("kind") == "managed_output_page/v1":
                     assert len(message["content"].encode("utf-8")) <= 10000
                     pages[message["tool_call_id"]] = value
-        assert {"small-once", "large-once"}.issubset(pages)
-        assert "FIRST-PRE-REQUEST-UNIQUE-ID" in pages["small-once"]["content"]
-        assert "UNIQUE-LARGE-MIDDLE-ID" not in pages["large-once"]["content"]
-        for name in ("small-once", "large-once"):
-            locator = (pages[name]["agent_action_ref"], pages[name]["terminal_receipt_ref"])
-            assert name not in self.locators or self.locators[name] == locator
-            self.locators[name] = locator
+        if self.normal_count == 1:
+            assert {"small-once", "large-once"}.issubset(pages)
+            assert "FIRST-PRE-REQUEST-UNIQUE-ID" in pages["small-once"]["content"]
+            assert "UNIQUE-LARGE-MIDDLE-ID" not in pages["large-once"]["content"]
+            for name in ("small-once", "large-once"):
+                locator = (pages[name]["agent_action_ref"], pages[name]["terminal_receipt_ref"])
+                assert name not in self.locators or self.locators[name] == locator
+                self.locators[name] = locator
         if envelope["messages"][-1].get("content") == CONTEXT_CHECKPOINT_PROMPT:
             return _response(text="Continue using exact registered output pages.", finish_reason="stop")
         if self.normal_count == 1:
@@ -346,7 +349,8 @@ class RecordingReadbackProvider:
                 "offset_chars": page["next_offset_chars"], "max_bytes": 10000})}], finish_reason="tool_calls")
         self.normal_count += 1
         assert "UNIQUE-LARGE-MIDDLE-ID" in pages["read-middle"]["content"]
-        assert pages["read-middle"]["agent_action_ref"] == pages["large-once"]["agent_action_ref"]
+        assert pages["read-middle"]["agent_action_ref"] == self.locators["large-once"][0]
+        assert "small-once" not in pages and "large-once" not in pages
         return _finish()
 
     def close(self):

@@ -909,6 +909,10 @@ class WorkspaceExecutionMixin:
             bounded_managed_output_projection, validate_managed_locator,
         )
         self._execution(execution, loop)
+        if "archive_loop_ref" in arguments:
+            from .result_archive import read_result_archive
+            return read_result_archive(
+                self, execution, loop, turn, arguments, reader="read_managed_output")
         raw_ref = arguments.get("agent_action_ref")
         validate_managed_locator(raw_ref, arguments.get("terminal_receipt_ref"))
         action_ref = _version_from_payload(raw_ref)

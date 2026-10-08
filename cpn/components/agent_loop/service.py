@@ -1284,7 +1284,7 @@ class AgentLoopService:
         return stored, turn
 
     def _schedule_managed_turn(self, execution, loop, turn, actions):
-        """Wait outside the owner, then pass one complete ordinal result set."""
+        """Schedule a managed-only batch, or select resumable mixed settlement."""
         get_scheduler = getattr(self._registry, "managed_agent_scheduler_v1", None)
         if get_scheduler is None:
             return None
@@ -1298,14 +1298,14 @@ class AgentLoopService:
         for ordinal, action in enumerate(actions):
             call, validation = action.tool_call, action.validation
             if call.action_identity_kind != "tool_call_id":
-                return None
+                return {}
             binding = bindings.get(call.tool_name)
             if isinstance(validation, ValidatedAgentToolAction):
-                # Control/workspace calls retain their existing ordering and
-                # staged-output semantics. This selected policy schedules a
-                # whole managed turn, including its ordinary invalid items.
+                # Mixed turns suspend owner settlement at each managed call.
+                # An empty outcome map selects that path, retaining builtin
+                # ordering without falling back to synchronous invocation.
                 if binding is None or binding["effect"] not in scheduler.policy.admitted_effects:
-                    return None
+                    return {}
                 arguments = validation.arguments
             else:
                 arguments = {}
@@ -1501,17 +1501,36 @@ class AgentLoopService:
             managed_settlement_kwargs = (
                 {"managed_tool_outcomes": managed_outcomes}
                 if managed_outcomes is not None else {})
-            settlement = self._registry.settle_agent_turn_actions_v1(
-                stored, turn, prepared,
-                permitted_tool_names=permitted_tool_names,
-                idempotency_key=f"{idempotency_key}:actions",
-                execution=execution,
-                **delegated_settlement_kwargs,
-                **managed_settlement_kwargs,
-                **({"tool_program_results": tool_program_results}
-                   if tool_program_results else {}),
-                external_tool_results=external_tool_results,
-                **settlement_timing_kwargs)
+            from .action_execution import PendingManagedAction
+            continuation = {}
+            while True:
+                settlement = self._registry.settle_agent_turn_actions_v1(
+                    stored, turn, prepared,
+                    permitted_tool_names=permitted_tool_names,
+                    idempotency_key=f"{idempotency_key}:actions",
+                    execution=execution,
+                    **delegated_settlement_kwargs,
+                    **managed_settlement_kwargs,
+                    **continuation,
+                    **({"tool_program_results": tool_program_results}
+                       if tool_program_results else {}),
+                    external_tool_results=external_tool_results,
+                    **settlement_timing_kwargs)
+                if not isinstance(settlement, PendingManagedAction):
+                    break
+                scheduler, _bindings = self._registry.managed_agent_scheduler_v1(
+                    execution, stored)
+                call = settlement.call
+                batch = scheduler.run(
+                    (call,), operation_key=str(execution.operation_execution_lease_ref.version_id),
+                    prepare=lambda item: self._registry.prepare_managed_agent_call_v1(
+                        execution, stored, turn, item),
+                    finish=lambda item, completion: self._registry.finish_managed_agent_call_v1(
+                        execution, stored, turn, call, item, completion),
+                    cancelled=lambda: self._interruption_requested(execution))
+                managed_settlement_kwargs = {"managed_tool_outcomes": {
+                    item.ordinal: item for item in batch.outcomes}}
+                continuation = {"managed_turn_continuation": settlement}
         if isinstance(settlement, OperationExecutionBlockAuthority):
             raise _LLMExecutionBlock(settlement)
         if (isinstance(settlement, tuple) and len(settlement) == 2

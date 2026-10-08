@@ -282,7 +282,8 @@ from cpn.rpnh.registry.resources import (
 )
 from cpn.rpnh.registry.schema_catalog import TypeDefinition, canonical_json
 
-from .compact import build_replacement_history, reduce_tool_messages, should_compact
+from .compact import (build_replacement_history, reduce_tool_messages,
+                      bound_tool_result_groups, should_compact)
 from .request_envelope_materialization import materialize_agent_request_envelope
 from .models import (
     AgentActionRecord, AgentLoopSnapshot, AgentLoopState, AgentTurnRecord,
@@ -490,6 +491,7 @@ class CompactionExecutionMixin:
             render_tool_result=render_tool_result)
         history = reduce_tool_messages(
             history, byte_limit=reduction_settings.tool_output_byte_limit)
+        history = bound_tool_result_groups(history)
         prompt = json.loads(prompt_payload)
         target = self._target(context)
         envelope = materialize_agent_request_envelope(
@@ -861,11 +863,32 @@ class CompactionExecutionMixin:
                 "workspace_changed_paths": [],
                 "workspace_deleted_paths": [],
             }
+            _catalog_ref, _catalog_prepared, exact_catalog_payload = self._static(
+                context, "optional_agent_tool_catalog")
+            exact_catalog = parse_agent_tool_catalog(exact_catalog_payload)
+            archive_reader = next((name for name in
+                ("read_managed_output", "read_tool_program_output")
+                if name in exact_catalog.tool_names), None)
+            if archive_reader is not None:
+                capsule["result_archive"] = {
+                    "reader": archive_reader,
+                    "archive_loop_ref": _ref_payload(self.mechanical_lifecycle.loop_ref(waiting)),
+                    "before_turn_sequence": waiting.next_turn_sequence,
+                    "offset": 0,
+                    "max_bytes": prepared.reduction_settings.tool_output_byte_limit,
+                }
+            events = self.mechanical_lifecycle.turn_events(prepared.loop)
+            pending_ids = frozenset()
+            if events:
+                latest_turn = self.mechanical_lifecycle.hydrate_turn_event(
+                    prepared.loop, events[-1],
+                    read_response=lambda ref: self.kernel._read_firing_registered(context, ref))
+                pending_ids = frozenset(call.tool_call_id for call in latest_turn.tool_calls)
             replacement = build_replacement_history(
                 retainable_history, observed.text,
                 retained_history_token_limit=(
                     prepared.reduction_settings.retained_history_token_limit),
-                fact_capsule=capsule)
+                fact_capsule=capsule, pending_tool_call_ids=pending_ids)
             document = {
                 "agent_context_compaction_id": prepared.compaction_id,
                 "agent_context_compaction_version_id": str(

@@ -47,8 +47,84 @@
       },
       "required": ["kind", "transition_firing_ref", "transition_id", "invocation_ref", "operation_execution_lease_ref", "operation_binding_ref", "agent_loop_ref", "agent_turn_ref", "agent_action_ref", "resource_use_occurrence_ref", "resource_access_lifecycle_ref", "resource_access_grant_ref", "resource_access_lease_ref", "logical_resource_id", "lock_resource_ref", "resource_ref", "access_mode", "access_checkpoint_ref", "access_net_ref", "access_claim_epoch", "resource_token_ref", "lease_pool_place", "lease_identity_ref", "petri_input_arc_mode", "petri_output_arc_mode", "petri_arc_kind", "return_arc_required", "llm_turns_used", "writer_fencing_epoch", "same_firing_continuation", "available_on_next_turn"]
     },
+    "archive_loop_ref": {
+      "type": "object", "additionalProperties": false,
+      "properties": {
+        "entity_type": {"const": "agent_loop/v1"},
+        "logical_id": {"type": "string", "pattern": "^agent_loop:[a-f0-9]{32}$"},
+        "version_id": {"type": "string", "pattern": "^agent_loop_version:[a-f0-9]{32}$"}
+      },
+      "required": ["entity_type", "logical_id", "version_id"]
+    },
+    "archive_action_ref": {
+      "type": "object", "additionalProperties": false,
+      "properties": {
+        "entity_type": {"enum": ["agent_action/v2", "agent_action/v3"]},
+        "logical_id": {"type": "string", "pattern": "^agent_action:[a-f0-9]{32}$"},
+        "version_id": {"type": "string", "pattern": "^agent_action_version:[a-f0-9]{32}$"}
+      },
+      "required": ["entity_type", "logical_id", "version_id"]
+    },
+    "archive_arguments": {
+      "type": "object", "additionalProperties": false,
+      "properties": {
+        "archive_loop_ref": {"$ref": "#/definitions/archive_loop_ref"},
+        "before_turn_sequence": {"type": "integer", "minimum": 0},
+        "offset": {"type": "integer", "minimum": 0, "default": 0},
+        "max_bytes": {"type": "integer", "minimum": 1, "default": 10000}
+      },
+      "required": ["archive_loop_ref", "before_turn_sequence"]
+    },
+    "archive_managed_entry": {
+      "type": "object", "additionalProperties": false,
+      "properties": {
+        "agent_action_ref": {"allOf": [{"$ref": "#/definitions/archive_action_ref"}, {"properties": {"entity_type": {"const": "agent_action/v3"}}}]},
+        "terminal_receipt_ref": {"oneOf": [{"$ref": "#/definitions/resource_ref"}, {"type": "null"}]},
+        "tool_name": {"type": "string", "minLength": 1},
+        "status": {"enum": ["returned", "failed", "outcome_unknown", "rejected"]},
+        "reader": {"enum": ["read_managed_output", null]},
+        "turn_sequence": {"type": "integer", "minimum": 0},
+        "tool_call_id": {"type": "string", "minLength": 1},
+        "tool_call_ordinal": {"type": "integer", "minimum": 0}
+      },
+      "required": ["agent_action_ref", "terminal_receipt_ref", "tool_name", "status", "reader", "turn_sequence", "tool_call_id", "tool_call_ordinal"],
+      "allOf": [
+        {"if": {"properties": {"status": {"const": "rejected"}}}, "then": {"properties": {"terminal_receipt_ref": {"type": "null"}}}, "else": {"properties": {"terminal_receipt_ref": {"$ref": "#/definitions/resource_ref"}}}},
+        {"if": {"properties": {"status": {"enum": ["failed", "outcome_unknown", "rejected"]}}}, "then": {"properties": {"reader": {"type": "null"}}}}
+      ]
+    },
+    "archive_program_entry": {
+      "type": "object", "additionalProperties": false,
+      "properties": {
+        "agent_action_ref": {"allOf": [{"$ref": "#/definitions/archive_action_ref"}, {"properties": {"entity_type": {"const": "agent_action/v2"}}}]},
+        "output_resource_ref": {"$ref": "#/definitions/resource_ref"},
+        "tool_name": {"const": "run_tool_program"},
+        "status": {"enum": ["returned", "failed", "cancelled", "outcome_unknown"]},
+        "reader": {"enum": ["read_tool_program_output", null]},
+        "turn_sequence": {"type": "integer", "minimum": 0},
+        "tool_call_id": {"type": "string", "minLength": 1},
+        "tool_call_ordinal": {"type": "integer", "minimum": 0}
+      },
+      "required": ["agent_action_ref", "output_resource_ref", "tool_name", "status", "reader", "turn_sequence", "tool_call_id", "tool_call_ordinal"]
+    },
+    "archive_page": {
+      "type": "object", "additionalProperties": false,
+      "properties": {
+        "kind": {"const": "tool_result_archive_page/v1"},
+        "archive_loop_ref": {"$ref": "#/definitions/archive_loop_ref"},
+        "before_turn_sequence": {"type": "integer", "minimum": 0},
+        "reader": {"enum": ["read_managed_output", "read_tool_program_output"]},
+        "offset": {"type": "integer", "minimum": 0},
+        "next_offset": {"type": ["integer", "null"], "minimum": 0},
+        "total_count": {"type": "integer", "minimum": 0},
+        "entries": {"type": "array", "maxItems": 16, "uniqueItems": true, "items": {"oneOf": [{"$ref": "#/definitions/archive_managed_entry"}, {"$ref": "#/definitions/archive_program_entry"}]}}
+      },
+      "required": ["kind", "archive_loop_ref", "before_turn_sequence", "reader", "offset", "next_offset", "total_count", "entries"],
+      "allOf": [{"if": {"properties": {"next_offset": {"type": "integer"}}}, "then": {"properties": {"entries": {"minItems": 1}}}}]
+    },
     "result_metadata": {
       "oneOf": [
+        {"$ref": "#/definitions/archive_page"},
         {
           "type": "object", "additionalProperties": false,
           "properties": {"kind": {"const": "external_kb_query/v2"}, "operation": {"enum": ["search", "read"]}, "result_resource_ref": {"$ref": "#/definitions/resource_ref"}, "body_access_ref": {"$ref": "#/definitions/nullable_body_access_ref"}, "result_count": {"type": "integer", "minimum": 0}},
@@ -400,6 +476,22 @@
     "result_metadata": {"oneOf": [{"$ref": "#/definitions/result_metadata"}, {"type": "null"}]}
   },
   "allOf": [
+    {
+      "if": {"properties": {"result_metadata": {"type": "object", "properties": {"kind": {"const": "tool_result_archive_page/v1"}}, "required": ["kind"]}}, "required": ["result_metadata"]},
+      "then": {
+        "properties": {
+          "tool_name": {"enum": ["read_managed_output", "read_tool_program_output"]},
+          "state": {"const": "ACTION_APPLIED"},
+          "arguments": {"$ref": "#/definitions/archive_arguments"},
+          "result_refs": {"type": "array", "minItems": 1, "maxItems": 1, "items": {"$ref": "#/definitions/archive_loop_ref"}},
+          "tool_error_ref": {"type": "null"}
+        },
+        "allOf": [
+          {"if": {"properties": {"tool_name": {"const": "read_managed_output"}}}, "then": {"properties": {"result_metadata": {"properties": {"reader": {"const": "read_managed_output"}}}}}},
+          {"if": {"properties": {"tool_name": {"const": "read_tool_program_output"}}}, "then": {"properties": {"result_metadata": {"properties": {"reader": {"const": "read_tool_program_output"}}}}}}
+        ]
+      }
+    },
     {
       "if": {
         "properties": {"result_metadata": {"type": "null"}},
