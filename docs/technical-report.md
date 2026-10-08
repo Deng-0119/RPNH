@@ -6,10 +6,11 @@ metadata:
   audience: application-developer-and-researcher
   language: en
   counterpart: technical-report_ZH.md
-  revision: "2026-10-08.3"
+  revision: "2026-10-08.4"
   status: technical-report
   basis: "Deng-0119/RPNH at dbad00458e9b356fcaf0bb97ceb90258ed9b1de0"
   erp-runtime-supplement: "integrated at e92b05c9afe324ebb675f2d67b73c02efe7b9536"
+  tool-pipeline-supplement: "integrated at 80a17c3ce45ec3c7a1b39c170c36bbb922276de1"
 ---
 
 English | [中文](technical-report_ZH.md) | [Documentation](index.md)
@@ -23,6 +24,8 @@ Experiment source revisions and publication revisions are identified separately
 in [§9](#9-example-results).
 The ERP runtime supplement is integrated at
 [`e92b05c`](https://github.com/Deng-0119/RPNH/tree/e92b05c9afe324ebb675f2d67b73c02efe7b9536).
+The atomic-tool pipeline and native evidence are integrated at
+[`80a17c3`](https://github.com/Deng-0119/RPNH/tree/80a17c3ce45ec3c7a1b39c170c36bbb922276de1).
 
 ## Abstract
 
@@ -43,8 +46,9 @@ bundling the original machine's private configuration.
 
 This report explains the current architecture, the lifecycle of an operation,
 process authoring and reuse, and the supported entry points. It then presents
-published ERP-Bench and SlopCodeBench runs, reporting original task acceptance
-separately from runtime completion. These are bounded application results;
+published ERP-Bench and SlopCodeBench runs and an offline atomic-tool process,
+reporting original task acceptance separately from runtime completion. These are
+bounded application results;
 the available experiments do not establish comparative quality, speed or cost
 advantages over other harnesses.
 
@@ -445,6 +449,25 @@ mode the Agent responses are scripted; a selected execution profile enables the
 live-model path. Each handoff still uses registered inputs and outputs, so the
 same graph can be inspected at both the business-node and Petri-net levels.
 
+The [atomic-tool pipeline][tool-pipeline-example] is an offline synthetic
+electricity-bill workflow. Usage and tariff branches each read registered inputs,
+check their contracts and normalize units; an AND-join then enables cost
+calculation, independent amount validation and final publication. Its explicit
+`ModuleDeclaration` compiles to ten transitions and 18 places. Checks,
+transformations and the join are themselves workflow nodes, each with its own
+admitted firing and registered outputs. A missing branch cannot enable the join;
+a candidate without a registered validation product cannot enable publication.
+The validator recomputes amounts from the original integer Wh and fen/kWh,
+independently of the calculator's per-interval `Decimal` rounding.
+
+Each transition explicitly binds one trusted HOST tool to a one-step executor.
+The existing `invoke_registered_tool` checks identity on the owner; the returned
+coroutine is awaited once by an already-admitted Harness worker. Registry and
+Petri-net facts drive eligibility and settlement, while the existing Harness
+supplies concurrency capacity. This example-local ABI executes immutable input
+reads and pure computation. See the [declaration][tool-pipeline-declaration] and
+[HOST binding][tool-pipeline-host].
+
 Next, use the [native plugin](../examples/native_plugin/README.md) to modify a
 real program contract, the [hybrid summary](../examples/hybrid_summary/README.md)
 to inspect Agent–program–Agent data flow, or the
@@ -462,10 +485,11 @@ public `v0.1.0rc1` binaries contain an earlier feature set. See
 
 ## 9. Example results
 
-The examples connect RPNH to two different kinds of application: ERP operations
+The ERP and SCB examples connect RPNH to two kinds of application: ERP operations
 on a persistent business system and code changes under progressively revealed
 requirements. The tables below keep the original evaluator's result separate
 from the native runtime's terminal status.
+The atomic-tool process provides a separate, deterministic execution example.
 
 ### 9.1 ERP-Bench
 
@@ -570,7 +594,35 @@ successive requirements, with complete original-case acceptance at the first
 two checkpoints and partial acceptance at the third. It does not establish
 full-benchmark acceptance or a comparative harness advantage.
 
-### 9.3 Additional retained results
+### 9.3 Atomic-tool pipeline
+
+The tool pipeline was tested at `00f2d29c7deffed44e2ec635a24f390c6e0d9ace`
+with the 16 example files added to the working tree; the core was unchanged.
+Those exact example bytes and the native evidence were subsequently published at
+`80a17c3ce45ec3c7a1b39c170c36bbb922276de1`. The publication commit is not a
+separate clean-checkout rerun. [Tested source identity][tool-pipeline-identity].
+
+Local validation used the real AF_UNIX `OwnerEventLoop`. The 22-case default
+suite, including function-level checks, and ten distinct supplementary cases
+passed: 32 unique pytest IDs, with 33 executions because one join case was
+repeated. The native standard CLI produced
+`complete`, ten firings and 12 registered tool products, including the final
+report, in addition to two source resources. Its result was **2.000 kWh and
+1.70 CNY**. The per-interval rounding fixture produced **0.02 CNY**.
+Controlled tests checked concurrent read workers, both sides of join gating,
+invalid data/candidate rejection, resource lineage and unresolved calls without
+replay. [Test inventory][tool-pipeline-tests] · [Native evidence][tool-pipeline-evidence].
+
+After the original process exited, a new CLI process reconstructed the final
+resource and lineage from the persisted Registry alone. The event ordinal
+remained 1001 and dispatch count remained ten, with no tool re-execution.
+[Readback protocol][tool-pipeline-readback] · [Evidence audit][tool-pipeline-evidence].
+
+This example uses an explicit Module declaration, immutable registered inputs
+and pure HOST tools, with zero model calls. Validation focuses on Petri-net
+admission, dependencies, intermediate products and consistent readback.
+
+### 9.4 Additional retained results
 
 The repository also retains an earlier ERP smoke run, A03, at `2ca5fbc`, with
 0/100 and 11 real calls. Its [diagnosis][erp-a03] identifies an input-reader
@@ -683,3 +735,10 @@ are described in the corresponding guides.
 [erp-unknown-owner]: https://github.com/Deng-0119/RPNH/blob/e92b05c9afe324ebb675f2d67b73c02efe7b9536/evidence/first_wave/20261008/erp-unknown/B/export_safe.json
 [erp-unknown-native]: https://github.com/Deng-0119/RPNH/blob/e92b05c9afe324ebb675f2d67b73c02efe7b9536/evidence/first_wave/20261008/erp-unknown/C/export_safe.json
 [erp-unknown-fixture]: https://github.com/Deng-0119/RPNH/blob/e92b05c9afe324ebb675f2d67b73c02efe7b9536/examples/erp_bench/scripts/unknown_native_acceptance.py
+[tool-pipeline-example]: https://github.com/Deng-0119/RPNH/blob/80a17c3ce45ec3c7a1b39c170c36bbb922276de1/examples/tool_pipeline/README.md
+[tool-pipeline-declaration]: https://github.com/Deng-0119/RPNH/blob/80a17c3ce45ec3c7a1b39c170c36bbb922276de1/examples/tool_pipeline/module.json
+[tool-pipeline-host]: https://github.com/Deng-0119/RPNH/blob/80a17c3ce45ec3c7a1b39c170c36bbb922276de1/examples/tool_pipeline/host.py
+[tool-pipeline-identity]: https://github.com/Deng-0119/RPNH/blob/80a17c3ce45ec3c7a1b39c170c36bbb922276de1/evidence/first_wave/20261008/tool-pipeline/local/tested-source.json
+[tool-pipeline-tests]: https://github.com/Deng-0119/RPNH/blob/80a17c3ce45ec3c7a1b39c170c36bbb922276de1/evidence/first_wave/20261008/tool-pipeline/local/native-test-inventory.json
+[tool-pipeline-evidence]: https://github.com/Deng-0119/RPNH/blob/80a17c3ce45ec3c7a1b39c170c36bbb922276de1/evidence/first_wave/20261008/tool-pipeline/local/native-evidence-audit.json
+[tool-pipeline-readback]: https://github.com/Deng-0119/RPNH/blob/80a17c3ce45ec3c7a1b39c170c36bbb922276de1/evidence/first_wave/20261008/tool-pipeline/local/readback-protocol.json

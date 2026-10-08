@@ -6,10 +6,11 @@ metadata:
   audience: application-developer-and-researcher
   language: zh
   counterpart: technical-report.md
-  revision: "2026-10-08.3"
+  revision: "2026-10-08.4"
   status: technical-report
   basis: "Deng-0119/RPNH at dbad00458e9b356fcaf0bb97ceb90258ed9b1de0"
   erp-runtime-supplement: "integrated at e92b05c9afe324ebb675f2d67b73c02efe7b9536"
+  tool-pipeline-supplement: "integrated at 80a17c3ce45ec3c7a1b39c170c36bbb922276de1"
 ---
 
 [English](technical-report.md) | 中文 | [文档导航](index_ZH.md)
@@ -21,6 +22,7 @@ metadata:
 [`dbad004`](https://github.com/Deng-0119/RPNH/tree/dbad00458e9b356fcaf0bb97ceb90258ed9b1de0)。
 各次实验的实际测试版本与结果发布版本分别列于[第 9 节](#9-示例验证结果)。
 ERP runtime 补充见集成版本 [`e92b05c`](https://github.com/Deng-0119/RPNH/tree/e92b05c9afe324ebb675f2d67b73c02efe7b9536)。
+原子工具 pipeline 与原生证据见集成版本 [`80a17c3`](https://github.com/Deng-0119/RPNH/tree/80a17c3ce45ec3c7a1b39c170c36bbb922276de1)。
 
 ## 摘要
 
@@ -34,7 +36,7 @@ RPNH 是一个用于组合语言模型 Agent、原生程序与可复用工作流
 能够在不同修订和接收环境之间复用流程定义，而不必携带原机器的私有配置。
 
 本文介绍当前架构、operation 生命周期、流程创作与复用，以及受支持的使用入口，随后呈现已公开的
-ERP-Bench 与 SlopCodeBench 运行结果，并分别报告原任务验收和 runtime 完成情况。
+ERP-Bench、SlopCodeBench 运行与离线原子工具流程，并分别报告原任务验收和 runtime 完成情况。
 这些是有明确范围的应用结果；现有实验尚未建立相对其他 harness 的质量、速度或成本优势。
 
 ## 1. 从 Agent 对话到可复用流程
@@ -333,6 +335,18 @@ rpnh net --run "$DEMO_ROOT/parallel" --view --no-open
 确定性模式使用脚本化 Agent 响应，选定 execution profile 后可进入真实模型路径。
 每次交接都使用登记输入与输出，因此同一张图既可从业务节点层面观察，也可从 PetriNet 层面检查。
 
+[原子工具 pipeline][tool-pipeline-example]用离线合成电费计算展示全工具流程。用量与费率两路分别读取
+登记输入、校验契约、转换单位，随后经过 AND-join、金额计算、独立金额验证与最终发布。
+显式 `ModuleDeclaration` 编译为 10 个 transition、18 个 place。校验、转换与 join 本身就是
+工作流节点，各自拥有准入 firing 与登记产物；缺少任一路产物时 join 不可准入，没有独立登记的
+validated 产物时，候选报告也不能触发最终发布。金额验证器从原始整数 Wh 与分/kWh 独立重算，
+不复用计算器逐时段 `Decimal` 舍入的计算函数。
+
+每个 transition 显式绑定一个可信 HOST 工具和一个单步 executor。既有 `invoke_registered_tool`
+在 owner 上检查工具身份，返回的 coroutine 由已准入 Harness worker 执行一次 await。
+Registry 与 PetriNet 事实决定准入和结算，并行容量仍由既有 Harness 控制。这是示例局部的 ABI，
+执行不可变输入读取与纯计算。参阅[流程定义][tool-pipeline-declaration]与 [HOST 绑定][tool-pipeline-host]。
+
 随后可用[原生 plugin](../examples/native_plugin/README_ZH.md)修改真实程序契约，
 用[混合汇总](../examples/hybrid_summary/README_ZH.md)检查 Agent–程序–Agent 数据流，
 或用[package 复用](../examples/package_reuse/README_ZH.md)在接收环境中绑定同一 closed process。
@@ -345,8 +359,9 @@ rpnh net --run "$DEMO_ROOT/parallel" --view --no-open
 
 ## 9. 示例验证结果
 
-这些示例将 RPNH 接入两类不同应用：在持久化业务系统上执行 ERP 操作，以及在逐步披露需求下修改代码。
+ERP 与 SCB 示例将 RPNH 接入两类应用：在持久化业务系统上执行 ERP 操作，以及在逐步披露需求下修改代码。
 以下分别列出原始 evaluator 的结果与原生 runtime 的终态。
+原子工具流程另提供一个确定性的执行示例。
 
 ### 9.1 ERP-Bench
 
@@ -424,7 +439,28 @@ Grader 反馈未用于修复 solver，也没有自动 retry 或 resume。所选 
 这次运行展示了三个连续需求阶段中的源码连续性与原生任务执行：前两点通过全部原始用例，第三点部分通过。
 其范围不构成完整 benchmark 验收，也不支持相对其他 harness 的优势结论。
 
-### 9.3 其他保留结果
+### 9.3 原子工具 pipeline
+
+工具 pipeline 的实际测试版本为 `00f2d29c7deffed44e2ec635a24f390c6e0d9ace`
+加工作树中新增的 16 个示例文件，core 无改动。这些示例的原字节与原生证据随后发布于
+`80a17c3ce45ec3c7a1b39c170c36bbb922276de1`，该发布 commit 不代表另一次 clean checkout 重跑。
+[实际测试源码身份][tool-pipeline-identity]。
+
+本地验证使用真实 AF_UNIX `OwnerEventLoop`。默认 22 项（含函数级检查）与补充 10 个不同用例通过，
+共 32 个唯一 pytest ID；因一个 join 用例重复验证，执行次数为 33。标准原生 CLI 得到 `complete`、10 个 firing、
+12 个登记工具产物（包含最终报告），另有 2 个原始输入资源；结果为 **2.000 kWh、1.70 CNY**。
+逐时段舍入 fixture 得到 **0.02 CNY**。受控测试核对两路 read worker 并发、两侧缺输入时的 join
+阻断、错误数据/候选拒绝、资源血缘以及未决调用不自动重放。
+[测试清单][tool-pipeline-tests] · [原生证据][tool-pipeline-evidence]。
+
+原运行进程退出后，新的 CLI 进程仅从持久化 Registry 重建最终资源与血缘。前后 event ordinal 均为
+1001、dispatch 均为 10，没有重新执行工具。
+[回读协议][tool-pipeline-readback] · [证据审计][tool-pipeline-evidence]。
+
+本例采用显式 Module 声明、不可变已登记输入和纯 HOST 工具，模型调用为 0；
+验证关注 PN 准入、依赖、中间产物与回读一致性。
+
+### 9.4 其他保留结果
 
 仓库同时保留早期 ERP smoke A03：源码为 `2ca5fbc`，结果 0/100，11 次真实调用。
 其[诊断][erp-a03]定位了输入 reader 的绑定遗漏；这一历史条件与后续 A04 分别记录。
@@ -521,3 +557,10 @@ RPNH 围绕版本化流程定义与准确 Registry/PetriNet 执行之间的连�
 [erp-unknown-owner]: https://github.com/Deng-0119/RPNH/blob/e92b05c9afe324ebb675f2d67b73c02efe7b9536/evidence/first_wave/20261008/erp-unknown/B/export_safe.json
 [erp-unknown-native]: https://github.com/Deng-0119/RPNH/blob/e92b05c9afe324ebb675f2d67b73c02efe7b9536/evidence/first_wave/20261008/erp-unknown/C/export_safe.json
 [erp-unknown-fixture]: https://github.com/Deng-0119/RPNH/blob/e92b05c9afe324ebb675f2d67b73c02efe7b9536/examples/erp_bench/scripts/unknown_native_acceptance.py
+[tool-pipeline-example]: https://github.com/Deng-0119/RPNH/blob/80a17c3ce45ec3c7a1b39c170c36bbb922276de1/examples/tool_pipeline/README_ZH.md
+[tool-pipeline-declaration]: https://github.com/Deng-0119/RPNH/blob/80a17c3ce45ec3c7a1b39c170c36bbb922276de1/examples/tool_pipeline/module.json
+[tool-pipeline-host]: https://github.com/Deng-0119/RPNH/blob/80a17c3ce45ec3c7a1b39c170c36bbb922276de1/examples/tool_pipeline/host.py
+[tool-pipeline-identity]: https://github.com/Deng-0119/RPNH/blob/80a17c3ce45ec3c7a1b39c170c36bbb922276de1/evidence/first_wave/20261008/tool-pipeline/local/tested-source.json
+[tool-pipeline-tests]: https://github.com/Deng-0119/RPNH/blob/80a17c3ce45ec3c7a1b39c170c36bbb922276de1/evidence/first_wave/20261008/tool-pipeline/local/native-test-inventory.json
+[tool-pipeline-evidence]: https://github.com/Deng-0119/RPNH/blob/80a17c3ce45ec3c7a1b39c170c36bbb922276de1/evidence/first_wave/20261008/tool-pipeline/local/native-evidence-audit.json
+[tool-pipeline-readback]: https://github.com/Deng-0119/RPNH/blob/80a17c3ce45ec3c7a1b39c170c36bbb922276de1/evidence/first_wave/20261008/tool-pipeline/local/readback-protocol.json
