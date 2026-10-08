@@ -1,0 +1,1965 @@
+{
+  "schema_version": "rpnh/shared-harness-publication/v1",
+  "tested_base": "c545621c30452650202ad0aca2bc023b6956929b",
+  "code_acceptance": "ACCEPTED_FINITE",
+  "local_overall": "PARTIAL_ENV",
+  "A": "BLOCKED_ENV",
+  "B": "PASS",
+  "source_files": 17,
+  "frozen_patch_A_sha256": "61f2f7115306b8c39846d34e77918c31ae4ccf9f62c0a8835a661c7124400137",
+  "frozen_patch_B_sha256": "af1e325ad37099ed1430d282337999c8d1080fa00fae31f8ff2d2c9f59a41a76",
+  "files": [
+    {
+      "path": "cloud-handoff/CHECKSUMS.sha256",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/RPNH_Shared_Harness_Local_Validation_20261008/CHECKSUMS.sha256",
+      "original_sha256": "c42b2fc89c0060fc3c5ebfc1647483b7b00e2a486a645f81f12fdd857f38f370",
+      "included_sha256": "c42b2fc89c0060fc3c5ebfc1647483b7b00e2a486a645f81f12fdd857f38f370",
+      "original_bytes": 9014,
+      "included_bytes": 9014,
+      "redactions": []
+    },
+    {
+      "path": "cloud-handoff/LOCAL_AGENT_TASK.md",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/RPNH_Shared_Harness_Local_Validation_20261008/LOCAL_AGENT_TASK.md",
+      "original_sha256": "84112e494e128214215a9983b6e44677b6eb92371ec2cbc136c392f9aa418cc7",
+      "included_sha256": "84112e494e128214215a9983b6e44677b6eb92371ec2cbc136c392f9aa418cc7",
+      "original_bytes": 13349,
+      "included_bytes": 13349,
+      "redactions": []
+    },
+    {
+      "path": "cloud-handoff/README.md",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/RPNH_Shared_Harness_Local_Validation_20261008/README.md",
+      "original_sha256": "30ac08f849666cd58e7ec2c70d74f954de6fa99b7816776341213b4f3177429d",
+      "included_sha256": "30ac08f849666cd58e7ec2c70d74f954de6fa99b7816776341213b4f3177429d",
+      "original_bytes": 2851,
+      "included_bytes": 2851,
+      "redactions": []
+    },
+    {
+      "path": "cloud-handoff/REVISION_NOTICE.md",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/RPNH_Shared_Harness_Local_Validation_20261008/REVISION_NOTICE.md",
+      "original_sha256": "b56a0ad154fa90789ab332d46d1849cdf61f120f118e12b97c18b31c8daa4b60",
+      "included_sha256": "b56a0ad154fa90789ab332d46d1849cdf61f120f118e12b97c18b31c8daa4b60",
+      "original_bytes": 1762,
+      "included_bytes": 1762,
+      "redactions": []
+    },
+    {
+      "path": "cloud-handoff/baseline_source/cpn/components/agent_loop/optional_host_bindings.py",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/RPNH_Shared_Harness_Local_Validation_20261008/baseline_source/cpn/components/agent_loop/optional_host_bindings.py",
+      "original_sha256": "92b43804ed8e8390c66812264f4dca299659282462e748f6dc23a5e66ca63efd",
+      "included_sha256": "92b43804ed8e8390c66812264f4dca299659282462e748f6dc23a5e66ca63efd",
+      "original_bytes": 26807,
+      "included_bytes": 26807,
+      "redactions": []
+    },
+    {
+      "path": "cloud-handoff/baseline_source/cpn/rpnh/collaboration/environment_host.py",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/RPNH_Shared_Harness_Local_Validation_20261008/baseline_source/cpn/rpnh/collaboration/environment_host.py",
+      "original_sha256": "672c4a5b9bdfbb54f17534d537b1d3ec4f1a9e010b9e135b98199d70c4bb62f9",
+      "included_sha256": "672c4a5b9bdfbb54f17534d537b1d3ec4f1a9e010b9e135b98199d70c4bb62f9",
+      "original_bytes": 41544,
+      "included_bytes": 41544,
+      "redactions": []
+    },
+    {
+      "path": "cloud-handoff/baseline_source/cpn/rpnh/registry/_event_store/collaboration_descriptors.py",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/RPNH_Shared_Harness_Local_Validation_20261008/baseline_source/cpn/rpnh/registry/_event_store/collaboration_descriptors.py",
+      "original_sha256": "73d538afb80904ddce350a89d37ba24018b9705a4331202a504370987dd71161",
+      "included_sha256": "73d538afb80904ddce350a89d37ba24018b9705a4331202a504370987dd71161",
+      "original_bytes": 7301,
+      "included_bytes": 7301,
+      "redactions": []
+    },
+    {
+      "path": "cloud-handoff/baseline_source/cpn/rpnh/registry/object_store.py",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/RPNH_Shared_Harness_Local_Validation_20261008/baseline_source/cpn/rpnh/registry/object_store.py",
+      "original_sha256": "e2c1757276adda55717472a9f254e121eb19521c2db61485ddfb28be109034ca",
+      "included_sha256": "e2c1757276adda55717472a9f254e121eb19521c2db61485ddfb28be109034ca",
+      "original_bytes": 14229,
+      "included_bytes": 14229,
+      "redactions": []
+    },
+    {
+      "path": "cloud-handoff/baseline_source/cpn/rpnh/registry/run_authority.py",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/RPNH_Shared_Harness_Local_Validation_20261008/baseline_source/cpn/rpnh/registry/run_authority.py",
+      "original_sha256": "f557fcf5b603bf3b0a9b3b5f8b83b42dcab61998fe2dc2f34e546db61d10a965",
+      "included_sha256": "f557fcf5b603bf3b0a9b3b5f8b83b42dcab61998fe2dc2f34e546db61d10a965",
+      "original_bytes": 18036,
+      "included_bytes": 18036,
+      "redactions": []
+    },
+    {
+      "path": "cloud-handoff/baseline_source/docs/ARCHITECTURE.md",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/RPNH_Shared_Harness_Local_Validation_20261008/baseline_source/docs/ARCHITECTURE.md",
+      "original_sha256": "03b76274ce37e9c1734434e5ea0fc3b7e9b27195e5b56f1de01ffb3cddc433c7",
+      "included_sha256": "03b76274ce37e9c1734434e5ea0fc3b7e9b27195e5b56f1de01ffb3cddc433c7",
+      "original_bytes": 16684,
+      "included_bytes": 16684,
+      "redactions": []
+    },
+    {
+      "path": "cloud-handoff/baseline_source/docs/ARCHITECTURE_ZH.md",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/RPNH_Shared_Harness_Local_Validation_20261008/baseline_source/docs/ARCHITECTURE_ZH.md",
+      "original_sha256": "263dcd87dd6c0e13ead4a3dd66a8e9e6f810fcbfc815f1383d425718238de942",
+      "included_sha256": "263dcd87dd6c0e13ead4a3dd66a8e9e6f810fcbfc815f1383d425718238de942",
+      "original_bytes": 15483,
+      "included_bytes": 15483,
+      "redactions": []
+    },
+    {
+      "path": "cloud-handoff/baseline_source/examples/harnessaudit_office/README.md",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/RPNH_Shared_Harness_Local_Validation_20261008/baseline_source/examples/harnessaudit_office/README.md",
+      "original_sha256": "2fc8158fe46db2ae23155bb4b89dd4a692c14095cb6613d520e1daac9982795c",
+      "included_sha256": "2fc8158fe46db2ae23155bb4b89dd4a692c14095cb6613d520e1daac9982795c",
+      "original_bytes": 8536,
+      "included_bytes": 8536,
+      "redactions": []
+    },
+    {
+      "path": "cloud-handoff/baseline_source/examples/harnessaudit_office/README_ZH.md",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/RPNH_Shared_Harness_Local_Validation_20261008/baseline_source/examples/harnessaudit_office/README_ZH.md",
+      "original_sha256": "76c7fc985ef0da8b3bc2b1d80d11e7191af935ee32a6d77ffdef4fc6a109e09b",
+      "included_sha256": "76c7fc985ef0da8b3bc2b1d80d11e7191af935ee32a6d77ffdef4fc6a109e09b",
+      "original_bytes": 7756,
+      "included_bytes": 7756,
+      "redactions": []
+    },
+    {
+      "path": "cloud-handoff/baseline_source/examples/harnessaudit_office/src/rpnh_ha/recovery.py",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/RPNH_Shared_Harness_Local_Validation_20261008/baseline_source/examples/harnessaudit_office/src/rpnh_ha/recovery.py",
+      "original_sha256": "4b5020a896ca4a2a65a9e7aa8c8dd81c3332a5e4e14e9844da8ddb53f2a0cf53",
+      "included_sha256": "4b5020a896ca4a2a65a9e7aa8c8dd81c3332a5e4e14e9844da8ddb53f2a0cf53",
+      "original_bytes": 16131,
+      "included_bytes": 16131,
+      "redactions": []
+    },
+    {
+      "path": "cloud-handoff/baseline_source/examples/harnessaudit_office/src/rpnh_ha/registry_export.py",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/RPNH_Shared_Harness_Local_Validation_20261008/baseline_source/examples/harnessaudit_office/src/rpnh_ha/registry_export.py",
+      "original_sha256": "4356f0ecbcf8b3b87026e141d1c871404e3a15ec6b034bf0c697117efc96a65a",
+      "included_sha256": "4356f0ecbcf8b3b87026e141d1c871404e3a15ec6b034bf0c697117efc96a65a",
+      "original_bytes": 28286,
+      "included_bytes": 28286,
+      "redactions": []
+    },
+    {
+      "path": "cloud-handoff/baseline_source/tests/test_package_result_projection.py",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/RPNH_Shared_Harness_Local_Validation_20261008/baseline_source/tests/test_package_result_projection.py",
+      "original_sha256": "ea150363d6166e8538aec7913f5a9ef123c1b1a24d0b3561a613833c28ee248b",
+      "included_sha256": "ea150363d6166e8538aec7913f5a9ef123c1b1a24d0b3561a613833c28ee248b",
+      "original_bytes": 3736,
+      "included_bytes": 3736,
+      "redactions": []
+    },
+    {
+      "path": "cloud-handoff/baseline_source/tests/test_workspace_write_atomicity.py",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/RPNH_Shared_Harness_Local_Validation_20261008/baseline_source/tests/test_workspace_write_atomicity.py",
+      "original_sha256": "0bcef6f0a26138cd59a1eec6bdaac01e71acedf89d53d36dfcf70be37610f6dc",
+      "included_sha256": "0bcef6f0a26138cd59a1eec6bdaac01e71acedf89d53d36dfcf70be37610f6dc",
+      "original_bytes": 13819,
+      "included_bytes": 13819,
+      "redactions": []
+    },
+    {
+      "path": "cloud-handoff/evidence/A_current/consumer-tests.log",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/RPNH_Shared_Harness_Local_Validation_20261008/evidence/A_current/consumer-tests.log",
+      "original_sha256": "2d0d1ab016a4d1aeba5112646454671b6775e6bc02802bf2a82113abda5f6683",
+      "included_sha256": "2d0d1ab016a4d1aeba5112646454671b6775e6bc02802bf2a82113abda5f6683",
+      "original_bytes": 57811,
+      "included_bytes": 57811,
+      "redactions": []
+    },
+    {
+      "path": "cloud-handoff/evidence/A_current/consumer-tests.xml",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/RPNH_Shared_Harness_Local_Validation_20261008/evidence/A_current/consumer-tests.xml",
+      "original_sha256": "ebe8227543662e03f8de2a3bfe91712e6ab24737ef1abc466b4f89c35b4ae0d6",
+      "included_sha256": "ebe8227543662e03f8de2a3bfe91712e6ab24737ef1abc466b4f89c35b4ae0d6",
+      "original_bytes": 86766,
+      "included_bytes": 86766,
+      "redactions": []
+    },
+    {
+      "path": "cloud-handoff/evidence/A_current/core-tests.log",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/RPNH_Shared_Harness_Local_Validation_20261008/evidence/A_current/core-tests.log",
+      "original_sha256": "c635c85ceb5262e3c3328fa0401215416feb7d86ea68cc1b9a5c4e1935125245",
+      "included_sha256": "c635c85ceb5262e3c3328fa0401215416feb7d86ea68cc1b9a5c4e1935125245",
+      "original_bytes": 182,
+      "included_bytes": 182,
+      "redactions": []
+    },
+    {
+      "path": "cloud-handoff/evidence/A_current/core-tests.xml",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/RPNH_Shared_Harness_Local_Validation_20261008/evidence/A_current/core-tests.xml",
+      "original_sha256": "87806741bdcbe4b445c3e2ea2829c730f10f5b1ded852e0d5f56d2dd010703d7",
+      "included_sha256": "87806741bdcbe4b445c3e2ea2829c730f10f5b1ded852e0d5f56d2dd010703d7",
+      "original_bytes": 10065,
+      "included_bytes": 10065,
+      "redactions": []
+    },
+    {
+      "path": "cloud-handoff/evidence/A_current/doc-clarification-test.log",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/RPNH_Shared_Harness_Local_Validation_20261008/evidence/A_current/doc-clarification-test.log",
+      "original_sha256": "e3c1445813d83d2c8f7dc089ebdcd0561a994a7598d3d5740cc3eac8efd24b1d",
+      "included_sha256": "e3c1445813d83d2c8f7dc089ebdcd0561a994a7598d3d5740cc3eac8efd24b1d",
+      "original_bytes": 192,
+      "included_bytes": 192,
+      "redactions": []
+    },
+    {
+      "path": "cloud-handoff/evidence/A_current/doc-clarification-test.xml",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/RPNH_Shared_Harness_Local_Validation_20261008/evidence/A_current/doc-clarification-test.xml",
+      "original_sha256": "b9e18eec30cf12ebc666355700d80b0bed1771e15090ab2b7e91309a29fdd665",
+      "included_sha256": "b9e18eec30cf12ebc666355700d80b0bed1771e15090ab2b7e91309a29fdd665",
+      "original_bytes": 376,
+      "included_bytes": 376,
+      "redactions": []
+    },
+    {
+      "path": "cloud-handoff/evidence/A_current/final-tests.log",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/RPNH_Shared_Harness_Local_Validation_20261008/evidence/A_current/final-tests.log",
+      "original_sha256": "649516d0a6edb569833900ca014d81473d87ceb1671319c2a147fe47fc8e6ed9",
+      "included_sha256": "649516d0a6edb569833900ca014d81473d87ceb1671319c2a147fe47fc8e6ed9",
+      "original_bytes": 435,
+      "included_bytes": 435,
+      "redactions": []
+    },
+    {
+      "path": "cloud-handoff/evidence/A_current/final-tests.xml",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/RPNH_Shared_Harness_Local_Validation_20261008/evidence/A_current/final-tests.xml",
+      "original_sha256": "063cdffbc381f8078e3c7d759f7e5fb8c507dee5e72904592217ed2d220520e9",
+      "included_sha256": "063cdffbc381f8078e3c7d759f7e5fb8c507dee5e72904592217ed2d220520e9",
+      "original_bytes": 38246,
+      "included_bytes": 38246,
+      "redactions": []
+    },
+    {
+      "path": "cloud-handoff/evidence/A_current/first-tests.log",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/RPNH_Shared_Harness_Local_Validation_20261008/evidence/A_current/first-tests.log",
+      "original_sha256": "0250612f866acc214c778e9a6acbca42c96da32725c3834d03c8a2bf35f84c7d",
+      "included_sha256": "0250612f866acc214c778e9a6acbca42c96da32725c3834d03c8a2bf35f84c7d",
+      "original_bytes": 4123,
+      "included_bytes": 4123,
+      "redactions": []
+    },
+    {
+      "path": "cloud-handoff/evidence/A_current/integration-tests.log",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/RPNH_Shared_Harness_Local_Validation_20261008/evidence/A_current/integration-tests.log",
+      "original_sha256": "fe9e69e2b5ec0ba2beb10fde8ae8db31e10a61a2023ab45b59f5c7c18ca17610",
+      "included_sha256": "fe9e69e2b5ec0ba2beb10fde8ae8db31e10a61a2023ab45b59f5c7c18ca17610",
+      "original_bytes": 189,
+      "included_bytes": 189,
+      "redactions": []
+    },
+    {
+      "path": "cloud-handoff/evidence/A_current/integration-tests.xml",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/RPNH_Shared_Harness_Local_Validation_20261008/evidence/A_current/integration-tests.xml",
+      "original_sha256": "d4ffc3ed0112752067ce0ad93af3932531999236425b442347e16aa0626078d8",
+      "included_sha256": "d4ffc3ed0112752067ce0ad93af3932531999236425b442347e16aa0626078d8",
+      "original_bytes": 6926,
+      "included_bytes": 6926,
+      "redactions": []
+    },
+    {
+      "path": "cloud-handoff/evidence/A_current/patch-apply.log",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/RPNH_Shared_Harness_Local_Validation_20261008/evidence/A_current/patch-apply.log",
+      "original_sha256": "78557683cab83df5821aecd8b0428d1d191913f55c7ed72ff7030c224f9651fe",
+      "included_sha256": "78557683cab83df5821aecd8b0428d1d191913f55c7ed72ff7030c224f9651fe",
+      "original_bytes": 672,
+      "included_bytes": 672,
+      "redactions": []
+    },
+    {
+      "path": "cloud-handoff/evidence/A_independent/doc-revision-test.log",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/RPNH_Shared_Harness_Local_Validation_20261008/evidence/A_independent/doc-revision-test.log",
+      "original_sha256": "69194b5b67e6d8bc29119c02f36f1c156a1af873ed3c25412a6ef51696c6b4e6",
+      "included_sha256": "69194b5b67e6d8bc29119c02f36f1c156a1af873ed3c25412a6ef51696c6b4e6",
+      "original_bytes": 212,
+      "included_bytes": 212,
+      "redactions": []
+    },
+    {
+      "path": "cloud-handoff/evidence/A_independent/doc-revision-test.xml",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/RPNH_Shared_Harness_Local_Validation_20261008/evidence/A_independent/doc-revision-test.xml",
+      "original_sha256": "0afd25f04ac0e8e07082cab8316fd17f980c85e0529f1465a18325e587e3efe6",
+      "included_sha256": "0afd25f04ac0e8e07082cab8316fd17f980c85e0529f1465a18325e587e3efe6",
+      "original_bytes": 376,
+      "included_bytes": 376,
+      "redactions": []
+    },
+    {
+      "path": "cloud-handoff/evidence/A_independent/tests.log",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/RPNH_Shared_Harness_Local_Validation_20261008/evidence/A_independent/tests.log",
+      "original_sha256": "3c1e048c388c38d55733a9d5a773f32f434133624193f5140b8bc3f8f82b4f90",
+      "included_sha256": "3c1e048c388c38d55733a9d5a773f32f434133624193f5140b8bc3f8f82b4f90",
+      "original_bytes": 454,
+      "included_bytes": 454,
+      "redactions": []
+    },
+    {
+      "path": "cloud-handoff/evidence/A_independent/tests.xml",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/RPNH_Shared_Harness_Local_Validation_20261008/evidence/A_independent/tests.xml",
+      "original_sha256": "dfc2e4d4b68815c193312a14373609cfd6bca72b887414ac30cacab554643530",
+      "included_sha256": "dfc2e4d4b68815c193312a14373609cfd6bca72b887414ac30cacab554643530",
+      "original_bytes": 38246,
+      "included_bytes": 38246,
+      "redactions": []
+    },
+    {
+      "path": "cloud-handoff/evidence/B/after-prompt.json",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/RPNH_Shared_Harness_Local_Validation_20261008/evidence/B/after-prompt.json",
+      "original_sha256": "d533b89e219d47e86536de63db43c624c45b94fe314f394d609141b674b02d58",
+      "included_sha256": "d533b89e219d47e86536de63db43c624c45b94fe314f394d609141b674b02d58",
+      "original_bytes": 1123,
+      "included_bytes": 1123,
+      "redactions": []
+    },
+    {
+      "path": "cloud-handoff/evidence/B/before-prompt-fix.log",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/RPNH_Shared_Harness_Local_Validation_20261008/evidence/B/before-prompt-fix.log",
+      "original_sha256": "1ab49cbe5f5156ca6b3c320bac051902b55340df616e2c22d8320a8df1a3965e",
+      "included_sha256": "1ab49cbe5f5156ca6b3c320bac051902b55340df616e2c22d8320a8df1a3965e",
+      "original_bytes": 4256,
+      "included_bytes": 4256,
+      "redactions": []
+    },
+    {
+      "path": "cloud-handoff/evidence/B/before-prompt-fix.xml",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/RPNH_Shared_Harness_Local_Validation_20261008/evidence/B/before-prompt-fix.xml",
+      "original_sha256": "54868e0d64de374c0401a6e546a84fe7e60d0bf39238a70190908a3d283d1584",
+      "included_sha256": "54868e0d64de374c0401a6e546a84fe7e60d0bf39238a70190908a3d283d1584",
+      "original_bytes": 9854,
+      "included_bytes": 9854,
+      "redactions": []
+    },
+    {
+      "path": "cloud-handoff/evidence/B/before-prompt.json",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/RPNH_Shared_Harness_Local_Validation_20261008/evidence/B/before-prompt.json",
+      "original_sha256": "095bbb6c32b7962d55d81585abafb9f082f1db294dca29083ca78fa572d2c40f",
+      "included_sha256": "095bbb6c32b7962d55d81585abafb9f082f1db294dca29083ca78fa572d2c40f",
+      "original_bytes": 926,
+      "included_bytes": 926,
+      "redactions": []
+    },
+    {
+      "path": "cloud-handoff/evidence/B/focused-pure.log",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/RPNH_Shared_Harness_Local_Validation_20261008/evidence/B/focused-pure.log",
+      "original_sha256": "b03f34747b2ec0bea61e9ef11683d82026bd6a0a99bbaaf260fb0fa35623a61a",
+      "included_sha256": "b03f34747b2ec0bea61e9ef11683d82026bd6a0a99bbaaf260fb0fa35623a61a",
+      "original_bytes": 192,
+      "included_bytes": 192,
+      "redactions": []
+    },
+    {
+      "path": "cloud-handoff/evidence/B/focused-pure.xml",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/RPNH_Shared_Harness_Local_Validation_20261008/evidence/B/focused-pure.xml",
+      "original_sha256": "7d334d9f8b2bc8e4ed6d1447c429f89f6ca89a3155d0305900265f9578ae6c73",
+      "included_sha256": "7d334d9f8b2bc8e4ed6d1447c429f89f6ca89a3155d0305900265f9578ae6c73",
+      "original_bytes": 6438,
+      "included_bytes": 6438,
+      "redactions": []
+    },
+    {
+      "path": "cloud-handoff/evidence/B/main-session-native.log",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/RPNH_Shared_Harness_Local_Validation_20261008/evidence/B/main-session-native.log",
+      "original_sha256": "bf8a9856de978c67eb3fba4b859afc913e88147fc8c60433535c13f980f8310f",
+      "included_sha256": "bf8a9856de978c67eb3fba4b859afc913e88147fc8c60433535c13f980f8310f",
+      "original_bytes": 3007,
+      "included_bytes": 3007,
+      "redactions": []
+    },
+    {
+      "path": "cloud-handoff/evidence/B/main-session-native.xml",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/RPNH_Shared_Harness_Local_Validation_20261008/evidence/B/main-session-native.xml",
+      "original_sha256": "d6ac25d1214e0cd759cb375e2bb9538a9c49b83ab57d21f24ae2a20923fa02ab",
+      "included_sha256": "d6ac25d1214e0cd759cb375e2bb9538a9c49b83ab57d21f24ae2a20923fa02ab",
+      "original_bytes": 2967,
+      "included_bytes": 2967,
+      "redactions": []
+    },
+    {
+      "path": "cloud-handoff/evidence/B/patch-apply-check.log",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/RPNH_Shared_Harness_Local_Validation_20261008/evidence/B/patch-apply-check.log",
+      "original_sha256": "c5fd6a9d23176233acbf84250900b2e6567a9ad480ec6660448b48650e6cd285",
+      "included_sha256": "c5fd6a9d23176233acbf84250900b2e6567a9ad480ec6660448b48650e6cd285",
+      "original_bytes": 31,
+      "included_bytes": 31,
+      "redactions": []
+    },
+    {
+      "path": "cloud-handoff/evidence/B/test-authoring-initial.log",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/RPNH_Shared_Harness_Local_Validation_20261008/evidence/B/test-authoring-initial.log",
+      "original_sha256": "7c601293e908b4326a8dcb8c1d62495e0abffb466e367f3fa94ff4365695695a",
+      "included_sha256": "7c601293e908b4326a8dcb8c1d62495e0abffb466e367f3fa94ff4365695695a",
+      "original_bytes": 7717,
+      "included_bytes": 7717,
+      "redactions": []
+    },
+    {
+      "path": "cloud-handoff/evidence/B/test-authoring-initial.xml",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/RPNH_Shared_Harness_Local_Validation_20261008/evidence/B/test-authoring-initial.xml",
+      "original_sha256": "8d8250713573688d97434df878e4d42cee826f36816255fce7071329b464a4ed",
+      "included_sha256": "8d8250713573688d97434df878e4d42cee826f36816255fce7071329b464a4ed",
+      "original_bytes": 13263,
+      "included_bytes": 13263,
+      "redactions": []
+    },
+    {
+      "path": "cloud-handoff/evidence/B_independent/focused-tests.log",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/RPNH_Shared_Harness_Local_Validation_20261008/evidence/B_independent/focused-tests.log",
+      "original_sha256": "af027b41b685d610299529011158e25c32efff13e74a6c37c6522f582aa3a05d",
+      "included_sha256": "af027b41b685d610299529011158e25c32efff13e74a6c37c6522f582aa3a05d",
+      "original_bytes": 99,
+      "included_bytes": 99,
+      "redactions": []
+    },
+    {
+      "path": "cloud-handoff/evidence/B_unchanged_writer_boundaries.json",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/RPNH_Shared_Harness_Local_Validation_20261008/evidence/B_unchanged_writer_boundaries.json",
+      "original_sha256": "8fd762bb5c003180c4503031cc9e0f4d86760a878b5fb86566ac2abd8da38565",
+      "included_sha256": "8fd762bb5c003180c4503031cc9e0f4d86760a878b5fb86566ac2abd8da38565",
+      "original_bytes": 1005,
+      "included_bytes": 1005,
+      "redactions": []
+    },
+    {
+      "path": "cloud-handoff/evidence/executed_commands.json",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/RPNH_Shared_Harness_Local_Validation_20261008/evidence/executed_commands.json",
+      "original_sha256": "d9a646da8e9c2ac86d57dedd28ac3a0521d665ec5e331e3238457ea7c908a952",
+      "included_sha256": "d9a646da8e9c2ac86d57dedd28ac3a0521d665ec5e331e3238457ea7c908a952",
+      "original_bytes": 4073,
+      "included_bytes": 4073,
+      "redactions": []
+    },
+    {
+      "path": "cloud-handoff/evidence/live_source_recheck.json",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/RPNH_Shared_Harness_Local_Validation_20261008/evidence/live_source_recheck.json",
+      "original_sha256": "eb582de0c6f006a9b3f0cbf6be9a24a57775532e171a7225b2114fdf0eee6f6a",
+      "included_sha256": "eb582de0c6f006a9b3f0cbf6be9a24a57775532e171a7225b2114fdf0eee6f6a",
+      "original_bytes": 317,
+      "included_bytes": 317,
+      "redactions": []
+    },
+    {
+      "path": "cloud-handoff/evidence/log_provenance_and_redactions.json",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/RPNH_Shared_Harness_Local_Validation_20261008/evidence/log_provenance_and_redactions.json",
+      "original_sha256": "cf4b341fafcc3bbedb39377a8c0fbfd94f864848a7fc6c6ba921ec6cf784aacf",
+      "included_sha256": "cf4b341fafcc3bbedb39377a8c0fbfd94f864848a7fc6c6ba921ec6cf784aacf",
+      "original_bytes": 19366,
+      "included_bytes": 19366,
+      "redactions": []
+    },
+    {
+      "path": "cloud-handoff/evidence/package_mechanical_verification.json",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/RPNH_Shared_Harness_Local_Validation_20261008/evidence/package_mechanical_verification.json",
+      "original_sha256": "0eadf0cfc366cf6be2b980107fbfe3a084c18e423f92cf99c0385163376ebd70",
+      "included_sha256": "0eadf0cfc366cf6be2b980107fbfe3a084c18e423f92cf99c0385163376ebd70",
+      "original_bytes": 1109,
+      "included_bytes": 1109,
+      "redactions": []
+    },
+    {
+      "path": "cloud-handoff/evidence/package_scope_check.json",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/RPNH_Shared_Harness_Local_Validation_20261008/evidence/package_scope_check.json",
+      "original_sha256": "adb8d4405a9c47a6136b1d33655eb6eb17b4c174561b3e785e0d4deff4e780ed",
+      "included_sha256": "adb8d4405a9c47a6136b1d33655eb6eb17b4c174561b3e785e0d4deff4e780ed",
+      "original_bytes": 374,
+      "included_bytes": 374,
+      "redactions": []
+    },
+    {
+      "path": "cloud-handoff/evidence/review_summary.json",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/RPNH_Shared_Harness_Local_Validation_20261008/evidence/review_summary.json",
+      "original_sha256": "b5c777ff99fb33e142870b40dbbcb189976451aa3bd4fd33c2e8f94c91767772",
+      "included_sha256": "b5c777ff99fb33e142870b40dbbcb189976451aa3bd4fd33c2e8f94c91767772",
+      "original_bytes": 3559,
+      "included_bytes": 3559,
+      "redactions": []
+    },
+    {
+      "path": "cloud-handoff/evidence/unchanged_test_fixture_provenance.json",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/RPNH_Shared_Harness_Local_Validation_20261008/evidence/unchanged_test_fixture_provenance.json",
+      "original_sha256": "f3b518570c3932709a5219503e79e06c867202604f641a7cb92079d22fafdd30",
+      "included_sha256": "f3b518570c3932709a5219503e79e06c867202604f641a7cb92079d22fafdd30",
+      "original_bytes": 632,
+      "included_bytes": 632,
+      "redactions": []
+    },
+    {
+      "path": "cloud-handoff/file_manifest.json",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/RPNH_Shared_Harness_Local_Validation_20261008/file_manifest.json",
+      "original_sha256": "82720037a18539746565ccc6c4d6fe1d1a121c21eb72890bd71266cfac1cc237",
+      "included_sha256": "82720037a18539746565ccc6c4d6fe1d1a121c21eb72890bd71266cfac1cc237",
+      "original_bytes": 8950,
+      "included_bytes": 8950,
+      "redactions": []
+    },
+    {
+      "path": "cloud-handoff/history/withdrawn_HA_only_A/STATUS.json",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/RPNH_Shared_Harness_Local_Validation_20261008/history/withdrawn_HA_only_A/STATUS.json",
+      "original_sha256": "e6a5f086c8daebd1c2cf63e0a4d0da31e80241a637f9e9fe0a93d5fc966bc63d",
+      "included_sha256": "e6a5f086c8daebd1c2cf63e0a4d0da31e80241a637f9e9fe0a93d5fc966bc63d",
+      "original_bytes": 520,
+      "included_bytes": 520,
+      "redactions": []
+    },
+    {
+      "path": "cloud-handoff/history/withdrawn_HA_only_A/baseline-red.log",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/RPNH_Shared_Harness_Local_Validation_20261008/history/withdrawn_HA_only_A/baseline-red.log",
+      "original_sha256": "b2b326441ca737590aee619cfc11d9ce8e68883a7063e6ce4030ab00937d5755",
+      "included_sha256": "b2b326441ca737590aee619cfc11d9ce8e68883a7063e6ce4030ab00937d5755",
+      "original_bytes": 22182,
+      "included_bytes": 22182,
+      "redactions": []
+    },
+    {
+      "path": "cloud-handoff/history/withdrawn_HA_only_A/baseline-red.xml",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/RPNH_Shared_Harness_Local_Validation_20261008/history/withdrawn_HA_only_A/baseline-red.xml",
+      "original_sha256": "92217deb9426406bec28598d7236a83eea6b7e620a5af56704a875998e6f6e13",
+      "included_sha256": "92217deb9426406bec28598d7236a83eea6b7e620a5af56704a875998e6f6e13",
+      "original_bytes": 22441,
+      "included_bytes": 22441,
+      "redactions": []
+    },
+    {
+      "path": "cloud-handoff/history/withdrawn_HA_only_A/baseline_red_test_snapshot.py",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/RPNH_Shared_Harness_Local_Validation_20261008/history/withdrawn_HA_only_A/baseline_red_test_snapshot.py",
+      "original_sha256": "f50883fee3b3139984483e6cc08d266fb45aaa726fac9ba60b2b43610f240d4d",
+      "included_sha256": "f50883fee3b3139984483e6cc08d266fb45aaa726fac9ba60b2b43610f240d4d",
+      "original_bytes": 16799,
+      "included_bytes": 16799,
+      "redactions": []
+    },
+    {
+      "path": "cloud-handoff/history/withdrawn_HA_only_A/final-tests.log",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/RPNH_Shared_Harness_Local_Validation_20261008/history/withdrawn_HA_only_A/final-tests.log",
+      "original_sha256": "074158919193461e05ea93ba9fa2fad0886746b5c0fac85513486654f0f6bfed",
+      "included_sha256": "074158919193461e05ea93ba9fa2fad0886746b5c0fac85513486654f0f6bfed",
+      "original_bytes": 270,
+      "included_bytes": 270,
+      "redactions": []
+    },
+    {
+      "path": "cloud-handoff/history/withdrawn_HA_only_A/final-tests.xml",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/RPNH_Shared_Harness_Local_Validation_20261008/history/withdrawn_HA_only_A/final-tests.xml",
+      "original_sha256": "ebd334263d0025f854650002be401598497218e87a132ecf464357fde8357499",
+      "included_sha256": "ebd334263d0025f854650002be401598497218e87a132ecf464357fde8357499",
+      "original_bytes": 15648,
+      "included_bytes": 15648,
+      "redactions": []
+    },
+    {
+      "path": "cloud-handoff/history/withdrawn_HA_only_A/ha-independent-tests.log",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/RPNH_Shared_Harness_Local_Validation_20261008/history/withdrawn_HA_only_A/ha-independent-tests.log",
+      "original_sha256": "99c564056318543f1d3ba44ebc91b95eb2141b4d312df5e990d00c65eca7484f",
+      "included_sha256": "99c564056318543f1d3ba44ebc91b95eb2141b4d312df5e990d00c65eca7484f",
+      "original_bytes": 294,
+      "included_bytes": 294,
+      "redactions": []
+    },
+    {
+      "path": "cloud-handoff/history/withdrawn_HA_only_A/ha-independent-tests.xml",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/RPNH_Shared_Harness_Local_Validation_20261008/history/withdrawn_HA_only_A/ha-independent-tests.xml",
+      "original_sha256": "2a8e8e3aabb69bc55602d7d0131faa4e5eb16c2d5f0622bf5ba71e1b9e4ceaed",
+      "included_sha256": "2a8e8e3aabb69bc55602d7d0131faa4e5eb16c2d5f0622bf5ba71e1b9e4ceaed",
+      "original_bytes": 15648,
+      "included_bytes": 15648,
+      "redactions": []
+    },
+    {
+      "path": "cloud-handoff/patches/A-registry-execution-reader.patch",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/RPNH_Shared_Harness_Local_Validation_20261008/patches/A-registry-execution-reader.patch",
+      "original_sha256": "61f2f7115306b8c39846d34e77918c31ae4ccf9f62c0a8835a661c7124400137",
+      "included_sha256": "61f2f7115306b8c39846d34e77918c31ae4ccf9f62c0a8835a661c7124400137",
+      "original_bytes": 76606,
+      "included_bytes": 76606,
+      "redactions": []
+    },
+    {
+      "path": "cloud-handoff/patches/B-shared-output-guidance.patch",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/RPNH_Shared_Harness_Local_Validation_20261008/patches/B-shared-output-guidance.patch",
+      "original_sha256": "af1e325ad37099ed1430d282337999c8d1080fa00fae31f8ff2d2c9f59a41a76",
+      "included_sha256": "af1e325ad37099ed1430d282337999c8d1080fa00fae31f8ff2d2c9f59a41a76",
+      "original_bytes": 15169,
+      "included_bytes": 15169,
+      "redactions": []
+    },
+    {
+      "path": "cloud-handoff/return_schema.json",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/RPNH_Shared_Harness_Local_Validation_20261008/return_schema.json",
+      "original_sha256": "29530da62962803fb79df502321877c546465488d288260b230549ceb0fdc476",
+      "included_sha256": "29530da62962803fb79df502321877c546465488d288260b230549ceb0fdc476",
+      "original_bytes": 9795,
+      "included_bytes": 9795,
+      "redactions": []
+    },
+    {
+      "path": "cloud-handoff/return_template.json",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/RPNH_Shared_Harness_Local_Validation_20261008/return_template.json",
+      "original_sha256": "5ff071d64d4e6a0bf7ac3fd51bf375fdd06422555ce0d01a5c7fe78314eed3e4",
+      "included_sha256": "5ff071d64d4e6a0bf7ac3fd51bf375fdd06422555ce0d01a5c7fe78314eed3e4",
+      "original_bytes": 10380,
+      "included_bytes": 10380,
+      "redactions": []
+    },
+    {
+      "path": "cloud-handoff/source/cpn/components/agent_loop/optional_host_bindings.py",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/RPNH_Shared_Harness_Local_Validation_20261008/source/cpn/components/agent_loop/optional_host_bindings.py",
+      "original_sha256": "9a6304e7ee54552af102b31f6d4e736b7c50578fdcbafc2c0c01d8fe350c0f3f",
+      "included_sha256": "9a6304e7ee54552af102b31f6d4e736b7c50578fdcbafc2c0c01d8fe350c0f3f",
+      "original_bytes": 27064,
+      "included_bytes": 27064,
+      "redactions": []
+    },
+    {
+      "path": "cloud-handoff/source/cpn/rpnh/collaboration/environment_host.py",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/RPNH_Shared_Harness_Local_Validation_20261008/source/cpn/rpnh/collaboration/environment_host.py",
+      "original_sha256": "6e19881f1a2377fcab79756b984af5426eae3dcce0ed2d6400d442aa92846382",
+      "included_sha256": "6e19881f1a2377fcab79756b984af5426eae3dcce0ed2d6400d442aa92846382",
+      "original_bytes": 39050,
+      "included_bytes": 39050,
+      "redactions": []
+    },
+    {
+      "path": "cloud-handoff/source/cpn/rpnh/registry/_event_store/collaboration_descriptors.py",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/RPNH_Shared_Harness_Local_Validation_20261008/source/cpn/rpnh/registry/_event_store/collaboration_descriptors.py",
+      "original_sha256": "53140faeca4c955df5bbccac6c29bfa59152f258728f79c9a14c9ffeb770ac58",
+      "included_sha256": "53140faeca4c955df5bbccac6c29bfa59152f258728f79c9a14c9ffeb770ac58",
+      "original_bytes": 8023,
+      "included_bytes": 8023,
+      "redactions": []
+    },
+    {
+      "path": "cloud-handoff/source/cpn/rpnh/registry/object_store.py",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/RPNH_Shared_Harness_Local_Validation_20261008/source/cpn/rpnh/registry/object_store.py",
+      "original_sha256": "17c322ea0d357fffd5f77278cdac2104f9f5bbc9196b4880ca7b253c67c10fa8",
+      "included_sha256": "17c322ea0d357fffd5f77278cdac2104f9f5bbc9196b4880ca7b253c67c10fa8",
+      "original_bytes": 14775,
+      "included_bytes": 14775,
+      "redactions": []
+    },
+    {
+      "path": "cloud-handoff/source/cpn/rpnh/registry/run_authority.py",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/RPNH_Shared_Harness_Local_Validation_20261008/source/cpn/rpnh/registry/run_authority.py",
+      "original_sha256": "c934cd1cdab49abfc5953c96c5bcedbad2a21e4e2acb5693e3cf7a0be9e3a311",
+      "included_sha256": "c934cd1cdab49abfc5953c96c5bcedbad2a21e4e2acb5693e3cf7a0be9e3a311",
+      "original_bytes": 28593,
+      "included_bytes": 28593,
+      "redactions": []
+    },
+    {
+      "path": "cloud-handoff/source/docs/ARCHITECTURE.md",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/RPNH_Shared_Harness_Local_Validation_20261008/source/docs/ARCHITECTURE.md",
+      "original_sha256": "730c2438b18fb7968698554f0c323fce2dc1cbcaad342002659fb6e0f411973e",
+      "included_sha256": "730c2438b18fb7968698554f0c323fce2dc1cbcaad342002659fb6e0f411973e",
+      "original_bytes": 18910,
+      "included_bytes": 18910,
+      "redactions": []
+    },
+    {
+      "path": "cloud-handoff/source/docs/ARCHITECTURE_ZH.md",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/RPNH_Shared_Harness_Local_Validation_20261008/source/docs/ARCHITECTURE_ZH.md",
+      "original_sha256": "fc015519dc5130ad97a688c822b3beae9bf5a7159ecb56f061180e58842dbda9",
+      "included_sha256": "fc015519dc5130ad97a688c822b3beae9bf5a7159ecb56f061180e58842dbda9",
+      "original_bytes": 17545,
+      "included_bytes": 17545,
+      "redactions": []
+    },
+    {
+      "path": "cloud-handoff/source/examples/harnessaudit_office/README.md",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/RPNH_Shared_Harness_Local_Validation_20261008/source/examples/harnessaudit_office/README.md",
+      "original_sha256": "080485172fd2e706e496d179d97747d34173f37c6372370ae558d00d8c4fcbf3",
+      "included_sha256": "080485172fd2e706e496d179d97747d34173f37c6372370ae558d00d8c4fcbf3",
+      "original_bytes": 10751,
+      "included_bytes": 10751,
+      "redactions": []
+    },
+    {
+      "path": "cloud-handoff/source/examples/harnessaudit_office/README_ZH.md",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/RPNH_Shared_Harness_Local_Validation_20261008/source/examples/harnessaudit_office/README_ZH.md",
+      "original_sha256": "443b538f0c1df49d3d7a24aa262346b608b69b1f304e519a2e05f03fa5afe2c2",
+      "included_sha256": "443b538f0c1df49d3d7a24aa262346b608b69b1f304e519a2e05f03fa5afe2c2",
+      "original_bytes": 9824,
+      "included_bytes": 9824,
+      "redactions": []
+    },
+    {
+      "path": "cloud-handoff/source/examples/harnessaudit_office/src/rpnh_ha/recovery.py",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/RPNH_Shared_Harness_Local_Validation_20261008/source/examples/harnessaudit_office/src/rpnh_ha/recovery.py",
+      "original_sha256": "b4eadd7281513c0de7398cfa70a0f2cb04c6177bb68080c59fa20e1f813cdec0",
+      "included_sha256": "b4eadd7281513c0de7398cfa70a0f2cb04c6177bb68080c59fa20e1f813cdec0",
+      "original_bytes": 16140,
+      "included_bytes": 16140,
+      "redactions": []
+    },
+    {
+      "path": "cloud-handoff/source/examples/harnessaudit_office/src/rpnh_ha/registry_export.py",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/RPNH_Shared_Harness_Local_Validation_20261008/source/examples/harnessaudit_office/src/rpnh_ha/registry_export.py",
+      "original_sha256": "a8da5819e2e75df9a8def31a5515bf3fb8cf794ea5f59ed42bb1db6bd664982b",
+      "included_sha256": "a8da5819e2e75df9a8def31a5515bf3fb8cf794ea5f59ed42bb1db6bd664982b",
+      "original_bytes": 30390,
+      "included_bytes": 30390,
+      "redactions": []
+    },
+    {
+      "path": "cloud-handoff/source/examples/harnessaudit_office/tests/test_registry_reader_consumers.py",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/RPNH_Shared_Harness_Local_Validation_20261008/source/examples/harnessaudit_office/tests/test_registry_reader_consumers.py",
+      "original_sha256": "05cf17fdbc67f64235e343c8708879724b2d7989cbc1a999ebba2d0c5ee1773f",
+      "included_sha256": "05cf17fdbc67f64235e343c8708879724b2d7989cbc1a999ebba2d0c5ee1773f",
+      "original_bytes": 10427,
+      "included_bytes": 10427,
+      "redactions": []
+    },
+    {
+      "path": "cloud-handoff/source/examples/harnessaudit_office/tests/test_terminal_identity.py",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/RPNH_Shared_Harness_Local_Validation_20261008/source/examples/harnessaudit_office/tests/test_terminal_identity.py",
+      "original_sha256": "44da373728533abbed6898f8aa988afb67ecb370164a55923e8f23030aac77f2",
+      "included_sha256": "44da373728533abbed6898f8aa988afb67ecb370164a55923e8f23030aac77f2",
+      "original_bytes": 18343,
+      "included_bytes": 18343,
+      "redactions": []
+    },
+    {
+      "path": "cloud-handoff/source/tests/test_optional_output_guidance.py",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/RPNH_Shared_Harness_Local_Validation_20261008/source/tests/test_optional_output_guidance.py",
+      "original_sha256": "beadc32423abb3a14bd54ab8af0ffbac31d7508598f82179d99652aeb54be6b6",
+      "included_sha256": "beadc32423abb3a14bd54ab8af0ffbac31d7508598f82179d99652aeb54be6b6",
+      "original_bytes": 4482,
+      "included_bytes": 4482,
+      "redactions": []
+    },
+    {
+      "path": "cloud-handoff/source/tests/test_package_result_projection.py",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/RPNH_Shared_Harness_Local_Validation_20261008/source/tests/test_package_result_projection.py",
+      "original_sha256": "3b10b731035f66095499fdd37a97a988b304147b0ac9441007f67133c4e6699f",
+      "included_sha256": "3b10b731035f66095499fdd37a97a988b304147b0ac9441007f67133c4e6699f",
+      "original_bytes": 3905,
+      "included_bytes": 3905,
+      "redactions": []
+    },
+    {
+      "path": "cloud-handoff/source/tests/test_run_descriptor_reads.py",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/RPNH_Shared_Harness_Local_Validation_20261008/source/tests/test_run_descriptor_reads.py",
+      "original_sha256": "df9dd66ce25d887c22d2bc28d363fbeb225d18125fb31eb323c744bb05823f2b",
+      "included_sha256": "df9dd66ce25d887c22d2bc28d363fbeb225d18125fb31eb323c744bb05823f2b",
+      "original_bytes": 2557,
+      "included_bytes": 2557,
+      "redactions": []
+    },
+    {
+      "path": "cloud-handoff/source/tests/test_workspace_write_atomicity.py",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/RPNH_Shared_Harness_Local_Validation_20261008/source/tests/test_workspace_write_atomicity.py",
+      "original_sha256": "b4e5ce2a5ea2e159fa2b4bad308cd7ea72d1a58af28819cc2b723f6a737f937f",
+      "included_sha256": "b4e5ce2a5ea2e159fa2b4bad308cd7ea72d1a58af28819cc2b723f6a737f937f",
+      "original_bytes": 20727,
+      "included_bytes": 20727,
+      "redactions": []
+    },
+    {
+      "path": "cloud-handoff/validation_summary.md",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/RPNH_Shared_Harness_Local_Validation_20261008/validation_summary.md",
+      "original_sha256": "49551e06f00c6db315ac52eee668ccef2a414b9b63a45ebc9b0bc079cd66d2fe",
+      "included_sha256": "49551e06f00c6db315ac52eee668ccef2a414b9b63a45ebc9b0bc079cd66d2fe",
+      "original_bytes": 5284,
+      "included_bytes": 5284,
+      "redactions": []
+    },
+    {
+      "path": "local/REPORT_ZH.md",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/REPORT_ZH.md",
+      "original_sha256": "7f208537051564f2970f41159a61d2400333132f5c3728a5866356ac293c856a",
+      "included_sha256": "7f208537051564f2970f41159a61d2400333132f5c3728a5866356ac293c856a",
+      "original_bytes": 6569,
+      "included_bytes": 6569,
+      "redactions": []
+    },
+    {
+      "path": "local/RETURN_VALIDATION_SNAPSHOT.json",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/RETURN_VALIDATION_SNAPSHOT.json",
+      "original_sha256": "af574452ae780d0e84198465f4c06822c2b26a3c96dc8545d19e75606efd0a74",
+      "included_sha256": "cd27e5f46863ca47eeebeb21f453ad5e1c11834fda66ea43486ee2116f48c225",
+      "original_bytes": 85897,
+      "included_bytes": 85386,
+      "redactions": [
+        {
+          "rule": "private workspace prefix",
+          "replacement": "<WORKSPACE>",
+          "count": 73
+        }
+      ]
+    },
+    {
+      "path": "local/build_return.py",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/build_return.py",
+      "original_sha256": "760f3a5ca5f8f7f8717db0ca01777fd4762c9844417b95f4348b148b5175e789",
+      "included_sha256": "78976b15af7737c4a5f89a0238cb307ba7d965ea2ecf4c2ee0d015c0e1555139",
+      "original_bytes": 10271,
+      "included_bytes": 10264,
+      "redactions": [
+        {
+          "rule": "private workspace prefix",
+          "replacement": "<WORKSPACE>",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "path": "local/capture_run.py",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/capture_run.py",
+      "original_sha256": "100b99d5502a17647cdf7736f04b4625eb0172473993f0441861cfab6b056b1d",
+      "included_sha256": "e06cc6a95ffd5f4aafe087e5d31c1181d81958ce98b234d5269672ffc4b14f89",
+      "original_bytes": 2121,
+      "included_bytes": 2114,
+      "redactions": [
+        {
+          "rule": "private workspace prefix",
+          "replacement": "<WORKSPACE>",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "path": "local/environment-blocker.json",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/environment-blocker.json",
+      "original_sha256": "35648fdf8094c43a20fc9906f9f7fa866372760e222fd8a67abf97339a152bd4",
+      "included_sha256": "35648fdf8094c43a20fc9906f9f7fa866372760e222fd8a67abf97339a152bd4",
+      "original_bytes": 1176,
+      "included_bytes": 1176,
+      "redactions": []
+    },
+    {
+      "path": "local/historical-reproject-prerequisites.json",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/historical-reproject-prerequisites.json",
+      "original_sha256": "ed1b8eaa49da01f577a8d3446e2e349d176ef14779cc396c09eaa95a96fec833",
+      "included_sha256": "ed1b8eaa49da01f577a8d3446e2e349d176ef14779cc396c09eaa95a96fec833",
+      "original_bytes": 23289,
+      "included_bytes": 23289,
+      "redactions": []
+    },
+    {
+      "path": "local/integration-verification.json",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/integration-verification.json",
+      "original_sha256": "4665639ce6b3d90183c520a2e7721d47b78e9de0b8c870227de441034442abcc",
+      "included_sha256": "4665639ce6b3d90183c520a2e7721d47b78e9de0b8c870227de441034442abcc",
+      "original_bytes": 1040,
+      "included_bytes": 1040,
+      "redactions": []
+    },
+    {
+      "path": "local/local_validation_additions.diff",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/local_validation_additions.diff",
+      "original_sha256": "9dcb8b1a502f108c053b8eb073cf10df125e7371fc67bb14f458ce4339e353fd",
+      "included_sha256": "e6e81da6cd25f6b68a8fe003ffe5722398687b8380ef88e2ad30b0b223d22bb5",
+      "original_bytes": 40985,
+      "included_bytes": 40943,
+      "redactions": [
+        {
+          "rule": "private workspace prefix",
+          "replacement": "<WORKSPACE>",
+          "count": 6
+        }
+      ]
+    },
+    {
+      "path": "local/logs/A-offline.json",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/logs/A-offline.json",
+      "original_sha256": "37fa7f11cb0939176917ef81616e8f89a8a85dab00e0f7e6e8294261544e8002",
+      "included_sha256": "c120c90658c70b0e020ebd2d5d269ecf7603cf1d3cd3113eee9276947da29d8d",
+      "original_bytes": 1350,
+      "included_bytes": 1294,
+      "redactions": [
+        {
+          "rule": "private workspace prefix",
+          "replacement": "<WORKSPACE>",
+          "count": 8
+        }
+      ]
+    },
+    {
+      "path": "local/logs/A-offline.stderr.log",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/logs/A-offline.stderr.log",
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "included_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_bytes": 0,
+      "included_bytes": 0,
+      "redactions": []
+    },
+    {
+      "path": "local/logs/A-offline.stdout.log",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/logs/A-offline.stdout.log",
+      "original_sha256": "7f44111ca82cf58eb21a4f91f1b0c7151a98ff89f811408734f5400e0905235b",
+      "included_sha256": "351da095f49c233fe39d7687c39eea13100a31dd293366a9000329710cf19eb4",
+      "original_bytes": 3775,
+      "included_bytes": 3733,
+      "redactions": [
+        {
+          "rule": "private workspace prefix",
+          "replacement": "<WORKSPACE>",
+          "count": 6
+        }
+      ]
+    },
+    {
+      "path": "local/logs/A-offline.xml",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/logs/A-offline.xml",
+      "original_sha256": "c80910ea007f2ef11e5a532a2902796a730756848c464efd1c17ef8f5edad950",
+      "included_sha256": "0a4645295afb479a5f569e9c9e4f75da3ee6d63e561bef86f311b5ab7790247d",
+      "original_bytes": 42557,
+      "included_bytes": 42494,
+      "redactions": [
+        {
+          "rule": "private workspace prefix",
+          "replacement": "<WORKSPACE>",
+          "count": 9
+        }
+      ]
+    },
+    {
+      "path": "local/logs/A-readhost-native-recheck.json",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/logs/A-readhost-native-recheck.json",
+      "original_sha256": "a731e1c9975e7a1dc29b2524eea37759eb67c8296d4d3753d230af51200e243d",
+      "included_sha256": "d0b02548eab9d6e832d20cdea80aad76c52997f649ea1a1beaa4ab04ba286dfc",
+      "original_bytes": 1501,
+      "included_bytes": 1424,
+      "redactions": [
+        {
+          "rule": "private workspace prefix",
+          "replacement": "<WORKSPACE>",
+          "count": 11
+        }
+      ]
+    },
+    {
+      "path": "local/logs/A-readhost-native-recheck.stderr.log",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/logs/A-readhost-native-recheck.stderr.log",
+      "original_sha256": "c7d1d11701b107f9eb776a75553e80ac6ffd5806cfc161f31bdced02443fdb51",
+      "included_sha256": "c7d1d11701b107f9eb776a75553e80ac6ffd5806cfc161f31bdced02443fdb51",
+      "original_bytes": 63,
+      "included_bytes": 63,
+      "redactions": []
+    },
+    {
+      "path": "local/logs/A-readhost-native-recheck.stdout.log",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/logs/A-readhost-native-recheck.stdout.log",
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "included_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_bytes": 0,
+      "included_bytes": 0,
+      "redactions": []
+    },
+    {
+      "path": "local/logs/B-offline.json",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/logs/B-offline.json",
+      "original_sha256": "35aa99f32fc7e61bda99e4bbba5ab053f085504b90c27693e459340d344e7447",
+      "included_sha256": "6f6cf808e97ff3c5587dc931b47b65de9917e73ca4d8beb411e1b875a229458d",
+      "original_bytes": 1224,
+      "included_bytes": 1168,
+      "redactions": [
+        {
+          "rule": "private workspace prefix",
+          "replacement": "<WORKSPACE>",
+          "count": 8
+        }
+      ]
+    },
+    {
+      "path": "local/logs/B-offline.stderr.log",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/logs/B-offline.stderr.log",
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "included_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_bytes": 0,
+      "included_bytes": 0,
+      "redactions": []
+    },
+    {
+      "path": "local/logs/B-offline.stdout.log",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/logs/B-offline.stdout.log",
+      "original_sha256": "caac3306300e134f2122e49b7bf62e960b034959a964f8867bc8a59a4134f11b",
+      "included_sha256": "ff0487d91b8a7b5bd7db237924fa2d2afc674e4f0b06380bdadaff02f91296e4",
+      "original_bytes": 201,
+      "included_bytes": 194,
+      "redactions": [
+        {
+          "rule": "private workspace prefix",
+          "replacement": "<WORKSPACE>",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "path": "local/logs/B-offline.xml",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/logs/B-offline.xml",
+      "original_sha256": "6a9da5e88e9d976d4a5faa9db895f7bc27edb66c57f91394b6c248abe8a073ba",
+      "included_sha256": "6a9da5e88e9d976d4a5faa9db895f7bc27edb66c57f91394b6c248abe8a073ba",
+      "original_bytes": 6430,
+      "included_bytes": 6430,
+      "redactions": []
+    },
+    {
+      "path": "local/logs/environment.json",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/logs/environment.json",
+      "original_sha256": "564484fd075b1edf8efa256d7f4349365531ce779cf794386a29fdb78d8f9c84",
+      "included_sha256": "c59b2511a812dc6d366adec2177ea1b238f90faa09e374b6e42bcc336e11694a",
+      "original_bytes": 1412,
+      "included_bytes": 1363,
+      "redactions": [
+        {
+          "rule": "private workspace prefix",
+          "replacement": "<WORKSPACE>",
+          "count": 7
+        }
+      ]
+    },
+    {
+      "path": "local/logs/environment.stderr.log",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/logs/environment.stderr.log",
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "included_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_bytes": 0,
+      "included_bytes": 0,
+      "redactions": []
+    },
+    {
+      "path": "local/logs/environment.stdout.log",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/logs/environment.stdout.log",
+      "original_sha256": "784895538c2fff56957d8dc0ef33a37a03982d8046b5476cd47d9bf856101b21",
+      "included_sha256": "0b9832858b89073db840ac84d074bd65d9e32b26460f447825e5e420f34f1f0a",
+      "original_bytes": 495,
+      "included_bytes": 481,
+      "redactions": [
+        {
+          "rule": "private workspace prefix",
+          "replacement": "<WORKSPACE>",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "path": "local/logs/native-user-environment.json",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/logs/native-user-environment.json",
+      "original_sha256": "6b5214c8c4e1450df45d4c4df9c7dfa56c365353b984f055de85b5574552b59a",
+      "included_sha256": "68ee409434dc5175a15b1028bc22e3987e72b8b841a123b3c2a340c8a97b4b9d",
+      "original_bytes": 1317,
+      "included_bytes": 1261,
+      "redactions": [
+        {
+          "rule": "private workspace prefix",
+          "replacement": "<WORKSPACE>",
+          "count": 8
+        }
+      ]
+    },
+    {
+      "path": "local/logs/native-user-environment.stderr.log",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/logs/native-user-environment.stderr.log",
+      "original_sha256": "c7d1d11701b107f9eb776a75553e80ac6ffd5806cfc161f31bdced02443fdb51",
+      "included_sha256": "c7d1d11701b107f9eb776a75553e80ac6ffd5806cfc161f31bdced02443fdb51",
+      "original_bytes": 63,
+      "included_bytes": 63,
+      "redactions": []
+    },
+    {
+      "path": "local/logs/native-user-environment.stdout.log",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/logs/native-user-environment.stdout.log",
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "included_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_bytes": 0,
+      "included_bytes": 0,
+      "redactions": []
+    },
+    {
+      "path": "local/native-inventory.json",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/native-inventory.json",
+      "original_sha256": "931253f3d3fe91aeadf5fd494a42c8f6f1e1a158aa964c9ce1106cbdacf0b139",
+      "included_sha256": "931253f3d3fe91aeadf5fd494a42c8f6f1e1a158aa964c9ce1106cbdacf0b139",
+      "original_bytes": 1829,
+      "included_bytes": 1829,
+      "redactions": []
+    },
+    {
+      "path": "local/offline-test-inventory.json",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/offline-test-inventory.json",
+      "original_sha256": "24f430aa1276daeae254fa7fbe18bb0a890c5c3d64f8ae7f92a7e123329d5da7",
+      "included_sha256": "24f430aa1276daeae254fa7fbe18bb0a890c5c3d64f8ae7f92a7e123329d5da7",
+      "original_bytes": 48942,
+      "included_bytes": 48942,
+      "redactions": []
+    },
+    {
+      "path": "local/package-verification.json",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/package-verification.json",
+      "original_sha256": "6b20f3d29f17be60681529c48a50f09941c7b2bbcff2c0986cf98661b838c329",
+      "included_sha256": "6b20f3d29f17be60681529c48a50f09941c7b2bbcff2c0986cf98661b838c329",
+      "original_bytes": 234,
+      "included_bytes": 234,
+      "redactions": []
+    },
+    {
+      "path": "local/probes/A/RESULT.json",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/probes/A/RESULT.json",
+      "original_sha256": "1edb6c1d85d7ec02fbe6f92c15c90e41f1fae101df1538cd40958b91f8e0eb42",
+      "included_sha256": "2b860c610452c2ed709cafbf27d0ab16fcc81ec85c64ac87f92b134e6ceb5b8e",
+      "original_bytes": 9930,
+      "included_bytes": 9818,
+      "redactions": [
+        {
+          "rule": "private workspace prefix",
+          "replacement": "<WORKSPACE>",
+          "count": 16
+        }
+      ]
+    },
+    {
+      "path": "local/probes/A/SUMMARY_ZH.md",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/probes/A/SUMMARY_ZH.md",
+      "original_sha256": "ce65b14031d79def93eab2be79384677e41a47b37cc9b0a106aed66169d17a92",
+      "included_sha256": "ce65b14031d79def93eab2be79384677e41a47b37cc9b0a106aed66169d17a92",
+      "original_bytes": 3955,
+      "included_bytes": 3955,
+      "redactions": []
+    },
+    {
+      "path": "local/probes/A/boundary-offline-refs.json",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/probes/A/boundary-offline-refs.json",
+      "original_sha256": "d881b78654a756abaa1ea0d42b1b0a9a9efa94fa14d575700125bb7583e007fb",
+      "included_sha256": "4df267e4b3ede56a9c3700613e9488a62508d31b632208c2fe755fa476da9d50",
+      "original_bytes": 3534,
+      "included_bytes": 3527,
+      "redactions": [
+        {
+          "rule": "private workspace prefix",
+          "replacement": "<WORKSPACE>",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "path": "local/probes/A/consumers.command.json",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/probes/A/consumers.command.json",
+      "original_sha256": "49751bb35a220f8f9ebf99d601f0cf034690f5386d29d92edff3e89bd1b160c7",
+      "included_sha256": "baa00f85b38bdfc695d98be4a664dd44c1e6b6068cdbc36985783dbe77e6b9fe",
+      "original_bytes": 942,
+      "included_bytes": 872,
+      "redactions": [
+        {
+          "rule": "private workspace prefix",
+          "replacement": "<WORKSPACE>",
+          "count": 10
+        }
+      ]
+    },
+    {
+      "path": "local/probes/A/consumers.command.sh",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/probes/A/consumers.command.sh",
+      "original_sha256": "4f07de457ec2522072f6f7d6c4a3744fed800d200de00050045d23b4e59e1151",
+      "included_sha256": "784cdfd00d19b65a8cb787d90461eb940bfab0e4c9431a5a1200168686d8d4c9",
+      "original_bytes": 623,
+      "included_bytes": 553,
+      "redactions": [
+        {
+          "rule": "private workspace prefix",
+          "replacement": "<WORKSPACE>",
+          "count": 10
+        }
+      ]
+    },
+    {
+      "path": "local/probes/A/consumers.stderr",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/probes/A/consumers.stderr",
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "included_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_bytes": 0,
+      "included_bytes": 0,
+      "redactions": []
+    },
+    {
+      "path": "local/probes/A/consumers.stdout",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/probes/A/consumers.stdout",
+      "original_sha256": "70c7434c32a77f7e3361068c5e878807757d388ee4e2eba79ed3cec391042758",
+      "included_sha256": "9e1c5a99ef811beb2899b844e57cca8b2e548066c7f66ce78ec723d1ae1c8661",
+      "original_bytes": 205,
+      "included_bytes": 198,
+      "redactions": [
+        {
+          "rule": "private workspace prefix",
+          "replacement": "<WORKSPACE>",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "path": "local/probes/A/consumers.xml",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/probes/A/consumers.xml",
+      "original_sha256": "5c5756df8500c3d2d4448c902ea5a4d3bcc495c8e62bb876bafbf87d8e479450",
+      "included_sha256": "5c5756df8500c3d2d4448c902ea5a4d3bcc495c8e62bb876bafbf87d8e479450",
+      "original_bytes": 412,
+      "included_bytes": 412,
+      "redactions": []
+    },
+    {
+      "path": "local/probes/A/local_additions.json",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/probes/A/local_additions.json",
+      "original_sha256": "bf3aec8456332ade9681498d438613e7de03c4bf2a3f0f98b646b9a2ff78124a",
+      "included_sha256": "bf3aec8456332ade9681498d438613e7de03c4bf2a3f0f98b646b9a2ff78124a",
+      "original_bytes": 556,
+      "included_bytes": 556,
+      "redactions": []
+    },
+    {
+      "path": "local/probes/A/local_validation_additions.patch",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/probes/A/local_validation_additions.patch",
+      "original_sha256": "036a0635531e14128ffefbbb40665b4e41ef5c025d2e5a8ecd991222c00cc954",
+      "included_sha256": "ceeb236078f91eb28dd66f7e6217e33140302658a6ae25668d67a9145b9b93d0",
+      "original_bytes": 13498,
+      "included_bytes": 13484,
+      "redactions": [
+        {
+          "rule": "private workspace prefix",
+          "replacement": "<WORKSPACE>",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "path": "local/probes/A/native-observations.json",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/probes/A/native-observations.json",
+      "original_sha256": "9948b290a9e0e5c9a7368a588769f572350e2f92482a5d0b24d83ae53439ba2f",
+      "included_sha256": "f4c34ed560a35be47b00535333dfe7c8ba38f73ff95a6a318490c1175c54f073",
+      "original_bytes": 11267,
+      "included_bytes": 11260,
+      "redactions": [
+        {
+          "rule": "private workspace prefix",
+          "replacement": "<WORKSPACE>",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "path": "local/probes/A/native-start.command.json",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/probes/A/native-start.command.json",
+      "original_sha256": "87d172af65013676d6bc7db329a4f957f9471832625b632ce3b03e5e33ec1523",
+      "included_sha256": "78fcf9e260c61252fc1b57899aac102f9c2937b88f597c21c232a0bd2039d903",
+      "original_bytes": 886,
+      "included_bytes": 830,
+      "redactions": [
+        {
+          "rule": "private workspace prefix",
+          "replacement": "<WORKSPACE>",
+          "count": 8
+        }
+      ]
+    },
+    {
+      "path": "local/probes/A/native-start.command.sh",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/probes/A/native-start.command.sh",
+      "original_sha256": "5c8e9669c1d98e44ec167cb879f0ccf332188151bb3b7bdabf175beae37067b7",
+      "included_sha256": "c053cff81f9f2223fda35a02e46a64fc001026c5ebbac26ed88a1b16957b2807",
+      "original_bytes": 567,
+      "included_bytes": 511,
+      "redactions": [
+        {
+          "rule": "private workspace prefix",
+          "replacement": "<WORKSPACE>",
+          "count": 8
+        }
+      ]
+    },
+    {
+      "path": "local/probes/A/native-start.stderr",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/probes/A/native-start.stderr",
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "included_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_bytes": 0,
+      "included_bytes": 0,
+      "redactions": []
+    },
+    {
+      "path": "local/probes/A/native-start.stdout",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/probes/A/native-start.stdout",
+      "original_sha256": "c703cfeb4e68583107fabccc85e6f055bec5d680a79a4923461d675c393ce1e7",
+      "included_sha256": "2070c5df62047a8f781bffc303535870385912e825aff22f3938081f83ae499e",
+      "original_bytes": 208,
+      "included_bytes": 201,
+      "redactions": [
+        {
+          "rule": "private workspace prefix",
+          "replacement": "<WORKSPACE>",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "path": "local/probes/A/native-start.xml",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/probes/A/native-start.xml",
+      "original_sha256": "6bb54451006c9908461d79c0392cea09b86be5d2f0fc333f85d03def6f5df9b8",
+      "included_sha256": "6bb54451006c9908461d79c0392cea09b86be5d2f0fc333f85d03def6f5df9b8",
+      "original_bytes": 392,
+      "included_bytes": 392,
+      "redactions": []
+    },
+    {
+      "path": "local/probes/A/read-only-observations.json",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/probes/A/read-only-observations.json",
+      "original_sha256": "97cee822b9c816eb5bb51b89ca59c235b6c242decbe88dd53c745b6dc773010c",
+      "included_sha256": "97cee822b9c816eb5bb51b89ca59c235b6c242decbe88dd53c745b6dc773010c",
+      "original_bytes": 994,
+      "included_bytes": 994,
+      "redactions": []
+    },
+    {
+      "path": "local/probes/A/run_case.py",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/probes/A/run_case.py",
+      "original_sha256": "a307c5cecdd6e0d0750c4746e7a1201261b183dbf205c7da5e9ca8b5f5a2e7a4",
+      "included_sha256": "d34d8be04dd70b654b5931630b1c6e14a855c6d245609e961e4933418b142c70",
+      "original_bytes": 1904,
+      "included_bytes": 1897,
+      "redactions": [
+        {
+          "rule": "private workspace prefix",
+          "replacement": "<WORKSPACE>",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "path": "local/probes/A/source-final.json",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/probes/A/source-final.json",
+      "original_sha256": "c2169694ea3a32ff39bdc35efc8b5f771567e65d22a671f8455f872a67842db4",
+      "included_sha256": "c2169694ea3a32ff39bdc35efc8b5f771567e65d22a671f8455f872a67842db4",
+      "original_bytes": 3940,
+      "included_bytes": 3940,
+      "redactions": []
+    },
+    {
+      "path": "local/probes/A/source-verified.json",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/probes/A/source-verified.json",
+      "original_sha256": "65d6b6006d2cf0615267def846732d12be4ae910627084dc338ff44f6bc3c4a2",
+      "included_sha256": "65d6b6006d2cf0615267def846732d12be4ae910627084dc338ff44f6bc3c4a2",
+      "original_bytes": 3067,
+      "included_bytes": 3067,
+      "redactions": []
+    },
+    {
+      "path": "local/probes/A/test_native_consumers.py",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/probes/A/test_native_consumers.py",
+      "original_sha256": "ac2815212e7d2ec9d3f6b1b7322b0018ee9207cc278dd161630eff5203e9619f",
+      "included_sha256": "b1d9a641434f428b9208c022afd6f1c0e6fcae247a68bce791f1c4f332ed32b9",
+      "original_bytes": 11214,
+      "included_bytes": 11207,
+      "redactions": [
+        {
+          "rule": "private workspace prefix",
+          "replacement": "<WORKSPACE>",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "path": "local/probes/B/RESULT.json",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/probes/B/RESULT.json",
+      "original_sha256": "1220dd154e7d628cd8de683e72da18e04328be080c95827bfd0831dd2bf39bb2",
+      "included_sha256": "529a54362b869103a13a2a70703addaaa6f06763629d5cab479602895908ddcc",
+      "original_bytes": 11508,
+      "included_bytes": 11487,
+      "redactions": [
+        {
+          "rule": "private workspace prefix",
+          "replacement": "<WORKSPACE>",
+          "count": 3
+        }
+      ]
+    },
+    {
+      "path": "local/probes/B/RESULT_FOLLOWUP.json",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/probes/B/RESULT_FOLLOWUP.json",
+      "original_sha256": "bbdc7dd2410f87d5f3531217612dc0a85a5cdd72ca219f906fd5451a1807d504",
+      "included_sha256": "f33ab7ebfc8c211daf467f752a5d12ab0a1c6ff99f508516d12ccdc058d8a3f8",
+      "original_bytes": 11679,
+      "included_bytes": 11658,
+      "redactions": [
+        {
+          "rule": "private workspace prefix",
+          "replacement": "<WORKSPACE>",
+          "count": 3
+        }
+      ]
+    },
+    {
+      "path": "local/probes/B/SUMMARY_FOLLOWUP_ZH.md",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/probes/B/SUMMARY_FOLLOWUP_ZH.md",
+      "original_sha256": "e74b3505bcaf757a844cc6323ccc830b09349eabdc886cded679b8c95c269508",
+      "included_sha256": "e74b3505bcaf757a844cc6323ccc830b09349eabdc886cded679b8c95c269508",
+      "original_bytes": 3700,
+      "included_bytes": 3700,
+      "redactions": []
+    },
+    {
+      "path": "local/probes/B/SUMMARY_ZH.md",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/probes/B/SUMMARY_ZH.md",
+      "original_sha256": "463cc33b0b503cdb9a0485dd3dfacc3a58f656d3b10a4f4caddc882e46455457",
+      "included_sha256": "463cc33b0b503cdb9a0485dd3dfacc3a58f656d3b10a4f4caddc882e46455457",
+      "original_bytes": 3208,
+      "included_bytes": 3208,
+      "redactions": []
+    },
+    {
+      "path": "local/probes/B/artifact-manifest-followup.json",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/probes/B/artifact-manifest-followup.json",
+      "original_sha256": "2fbd4ae47bc54fc0861c9371651f3d02eec2d9446495dbd3cc5820111f1b50b6",
+      "included_sha256": "2fbd4ae47bc54fc0861c9371651f3d02eec2d9446495dbd3cc5820111f1b50b6",
+      "original_bytes": 6735,
+      "included_bytes": 6735,
+      "redactions": []
+    },
+    {
+      "path": "local/probes/B/artifact-manifest.json",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/probes/B/artifact-manifest.json",
+      "original_sha256": "57b18b9e632a5928460554737946d5003490503df4a189e3af41b1c526dd1b4f",
+      "included_sha256": "57b18b9e632a5928460554737946d5003490503df4a189e3af41b1c526dd1b4f",
+      "original_bytes": 3735,
+      "included_bytes": 3735,
+      "redactions": []
+    },
+    {
+      "path": "local/probes/B/environment.json",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/probes/B/environment.json",
+      "original_sha256": "93c314452b8686ff075cdb9d162fef86cb667871847ccfadfe1e25c485c38cf1",
+      "included_sha256": "a080bee517199e95e067e3948b2b92860f239feb48ba64573ee8e3d8c6d53429",
+      "original_bytes": 677,
+      "included_bytes": 663,
+      "redactions": [
+        {
+          "rule": "private workspace prefix",
+          "replacement": "<WORKSPACE>",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "path": "local/probes/B/gate-ledger-evidence.json",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/probes/B/gate-ledger-evidence.json",
+      "original_sha256": "1f1fa2894eb5960d8f627cb891e409a6ddf23821186b958b23c7acfb2912fb34",
+      "included_sha256": "f82481ac9a0bbe8ff28329e90c98cd2b540bfa02bf5673951600d14163120814",
+      "original_bytes": 1413,
+      "included_bytes": 1399,
+      "redactions": [
+        {
+          "rule": "private workspace prefix",
+          "replacement": "<WORKSPACE>",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "path": "local/probes/B/gate.command.json",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/probes/B/gate.command.json",
+      "original_sha256": "b037e8ab1f41fb8cc02cb31e75e0c7ac31681e1a3c3633c251edd0d52d6afba3",
+      "included_sha256": "7d4be5f2a837a5f9e5dffd018d2ff0576ba2d5f51f3b9dc85b63c03f0dc169e7",
+      "original_bytes": 913,
+      "included_bytes": 864,
+      "redactions": [
+        {
+          "rule": "private workspace prefix",
+          "replacement": "<WORKSPACE>",
+          "count": 7
+        }
+      ]
+    },
+    {
+      "path": "local/probes/B/gate.stderr",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/probes/B/gate.stderr",
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "included_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_bytes": 0,
+      "included_bytes": 0,
+      "redactions": []
+    },
+    {
+      "path": "local/probes/B/gate.stdout",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/probes/B/gate.stdout",
+      "original_sha256": "542196df31bf2727b0c12d8fdc772e915b4dd5381013e262c25a2f3090b7c362",
+      "included_sha256": "08d41f26b1a9966687291e474373cc00a7e54d064f0b50d2b08a78bf97aa528d",
+      "original_bytes": 200,
+      "included_bytes": 193,
+      "redactions": [
+        {
+          "rule": "private workspace prefix",
+          "replacement": "<WORKSPACE>",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "path": "local/probes/B/gate.xml",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/probes/B/gate.xml",
+      "original_sha256": "4c4767031296733dffe4fecf39f6491d56e6b9a95da4683851c158fd669aa55e",
+      "included_sha256": "4c4767031296733dffe4fecf39f6491d56e6b9a95da4683851c158fd669aa55e",
+      "original_bytes": 521,
+      "included_bytes": 521,
+      "redactions": []
+    },
+    {
+      "path": "local/probes/B/i1.command.json",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/probes/B/i1.command.json",
+      "original_sha256": "0f0bfa78f1c6a68deb7dab9a6204391a2b096a698a0ae2030abd515699924dda",
+      "included_sha256": "2f3603d8661f514b8f86600cb8329000ffb6293ff292e0254a6c6fdac37e424c",
+      "original_bytes": 909,
+      "included_bytes": 853,
+      "redactions": [
+        {
+          "rule": "private workspace prefix",
+          "replacement": "<WORKSPACE>",
+          "count": 8
+        }
+      ]
+    },
+    {
+      "path": "local/probes/B/i1.fixture.py",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/probes/B/i1.fixture.py",
+      "original_sha256": "81a56b24317d75dd7a837e7020acc1fecb42f34f747727725538a231d3339bb0",
+      "included_sha256": "a4a01136f0fbf04e7f35e487d9672f5090bede2f07f98f76320c9d53e43953fb",
+      "original_bytes": 11198,
+      "included_bytes": 11184,
+      "redactions": [
+        {
+          "rule": "private workspace prefix",
+          "replacement": "<WORKSPACE>",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "path": "local/probes/B/i1.stderr",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/probes/B/i1.stderr",
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "included_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_bytes": 0,
+      "included_bytes": 0,
+      "redactions": []
+    },
+    {
+      "path": "local/probes/B/i1.stdout",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/probes/B/i1.stdout",
+      "original_sha256": "de7129977fc114d76542464a9eb6417e4325e81ba53ff88598c44b33735cbf99",
+      "included_sha256": "cc14f623d3578bc4e59eee8089aab05014cda678b25fbf4cd6553367b2de4e56",
+      "original_bytes": 198,
+      "included_bytes": 191,
+      "redactions": [
+        {
+          "rule": "private workspace prefix",
+          "replacement": "<WORKSPACE>",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "path": "local/probes/B/i1.xml",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/probes/B/i1.xml",
+      "original_sha256": "6c01446552a046d571eb301605f4bb59dd43fe8826beb907a70996a371b67bc2",
+      "included_sha256": "6c01446552a046d571eb301605f4bb59dd43fe8826beb907a70996a371b67bc2",
+      "original_bytes": 388,
+      "included_bytes": 388,
+      "redactions": []
+    },
+    {
+      "path": "local/probes/B/i1/evidence.json",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/probes/B/i1/evidence.json",
+      "original_sha256": "127614aee87f9a16260df9e0102f6f1a34cbe00c3c86ac7ac3d1393f1b99c132",
+      "included_sha256": "442c03c706cf12f9b4d613121f76f68b2e44e3d9eb084fdfa30bb8bb1920789d",
+      "original_bytes": 6231,
+      "included_bytes": 6217,
+      "redactions": [
+        {
+          "rule": "private workspace prefix",
+          "replacement": "<WORKSPACE>",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "path": "local/probes/B/i1/output-schema-authority.json",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/probes/B/i1/output-schema-authority.json",
+      "original_sha256": "13c882337767621bd0ba34acfcbfa83cd7632a05d6a90a92629144ae01ae7ad3",
+      "included_sha256": "13c882337767621bd0ba34acfcbfa83cd7632a05d6a90a92629144ae01ae7ad3",
+      "original_bytes": 108,
+      "included_bytes": 108,
+      "redactions": []
+    },
+    {
+      "path": "local/probes/B/i1/static-prompt.json",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/probes/B/i1/static-prompt.json",
+      "original_sha256": "17151be501522ac32299212cfef6dc66b26b3c85f959254f79fd978ba50a8a00",
+      "included_sha256": "17151be501522ac32299212cfef6dc66b26b3c85f959254f79fd978ba50a8a00",
+      "original_bytes": 1155,
+      "included_bytes": 1155,
+      "redactions": []
+    },
+    {
+      "path": "local/probes/B/i1/tested-files.json",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/probes/B/i1/tested-files.json",
+      "original_sha256": "04bf5c5657bbf4da4606f3c0a0f20e123ae142dc47ada0a3be6175c3c8346873",
+      "included_sha256": "3b7b638ffca8f8c5eb254968602de353dd46525a3a45b9ff8ade012cd81cb64d",
+      "original_bytes": 50235,
+      "included_bytes": 48359,
+      "redactions": [
+        {
+          "rule": "private workspace prefix",
+          "replacement": "<WORKSPACE>",
+          "count": 268
+        }
+      ]
+    },
+    {
+      "path": "local/probes/B/i1/tool-catalog.json",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/probes/B/i1/tool-catalog.json",
+      "original_sha256": "847d8ac5ff946a7f854e53bfd8453eff899b39ec8ae6a32c471dbd853484ecc5",
+      "included_sha256": "847d8ac5ff946a7f854e53bfd8453eff899b39ec8ae6a32c471dbd853484ecc5",
+      "original_bytes": 5644,
+      "included_bytes": 5644,
+      "redactions": []
+    },
+    {
+      "path": "local/probes/B/j1.command.json",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/probes/B/j1.command.json",
+      "original_sha256": "9512708841d7931806ac3e9000122b226da34f8ece8855535a5e08ecc578539b",
+      "included_sha256": "22fa4d7cb3c5211c127a486891c22b3726d3a18db20651ab61f0ee8152a6c6fa",
+      "original_bytes": 916,
+      "included_bytes": 860,
+      "redactions": [
+        {
+          "rule": "private workspace prefix",
+          "replacement": "<WORKSPACE>",
+          "count": 8
+        }
+      ]
+    },
+    {
+      "path": "local/probes/B/j1.fixture.py",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/probes/B/j1.fixture.py",
+      "original_sha256": "7a5a48e45aa4f9d5d588c06c2ae89efcc8c2b55bf96fe247d72539f5d46438d7",
+      "included_sha256": "97e2c55dfb9cc371a14d108d5850ccced7cf1142229e49f82a864da41530148c",
+      "original_bytes": 15604,
+      "included_bytes": 15590,
+      "redactions": [
+        {
+          "rule": "private workspace prefix",
+          "replacement": "<WORKSPACE>",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "path": "local/probes/B/j1.stderr",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/probes/B/j1.stderr",
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "included_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_bytes": 0,
+      "included_bytes": 0,
+      "redactions": []
+    },
+    {
+      "path": "local/probes/B/j1.stdout",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/probes/B/j1.stdout",
+      "original_sha256": "55565224c59fea3bb5b942ae4c8d589082296b416103a26717b1e64309a368d4",
+      "included_sha256": "d6feac1132bcbf7117c07aa0b196fedb80b2c8ce3acafa8d3a44386c7f60cbad",
+      "original_bytes": 198,
+      "included_bytes": 191,
+      "redactions": [
+        {
+          "rule": "private workspace prefix",
+          "replacement": "<WORKSPACE>",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "path": "local/probes/B/j1.xml",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/probes/B/j1.xml",
+      "original_sha256": "024a2bee2a46b6fea8e3f7cdeb9e11a923e3ec63c70f8bc4f417cf9dd705a8df",
+      "included_sha256": "024a2bee2a46b6fea8e3f7cdeb9e11a923e3ec63c70f8bc4f417cf9dd705a8df",
+      "original_bytes": 400,
+      "included_bytes": 400,
+      "redactions": []
+    },
+    {
+      "path": "local/probes/B/j1/authored-module.json",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/probes/B/j1/authored-module.json",
+      "original_sha256": "cd9d82b764042e4a749bdf192ed6d2d8bfdd2467e4f797a0bb81ce8750207577",
+      "included_sha256": "cd9d82b764042e4a749bdf192ed6d2d8bfdd2467e4f797a0bb81ce8750207577",
+      "original_bytes": 4287,
+      "included_bytes": 4287,
+      "redactions": []
+    },
+    {
+      "path": "local/probes/B/j1/declared-output-schema.json",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/probes/B/j1/declared-output-schema.json",
+      "original_sha256": "3a93f4d1247c5eb9ffe0578f1b61dfceea5b023ba6b8c51f227c57e56e8d7039",
+      "included_sha256": "3a93f4d1247c5eb9ffe0578f1b61dfceea5b023ba6b8c51f227c57e56e8d7039",
+      "original_bytes": 438,
+      "included_bytes": 438,
+      "redactions": []
+    },
+    {
+      "path": "local/probes/B/j1/evidence.json",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/probes/B/j1/evidence.json",
+      "original_sha256": "d5e9a48abf227643e2cb818fc098db2a2d31969845dca6fa84acfc57739705f8",
+      "included_sha256": "dd585e2e925c19ab6e8e24a218f610ca6f8eea62a9a50b77352fae2620eebf2a",
+      "original_bytes": 6411,
+      "included_bytes": 6397,
+      "redactions": [
+        {
+          "rule": "private workspace prefix",
+          "replacement": "<WORKSPACE>",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "path": "local/probes/B/j1/output-schema-authority.json",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/probes/B/j1/output-schema-authority.json",
+      "original_sha256": "6b3bbe447ca1b5cb3a81639e7b01ad721d8fdeb65673d19db48509eae39c3040",
+      "included_sha256": "6b3bbe447ca1b5cb3a81639e7b01ad721d8fdeb65673d19db48509eae39c3040",
+      "original_bytes": 309,
+      "included_bytes": 309,
+      "redactions": []
+    },
+    {
+      "path": "local/probes/B/j1/static-prompt.json",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/probes/B/j1/static-prompt.json",
+      "original_sha256": "f6f99795d68e7889e6e1221c9345c612acbf342bd6b135c21a43e752713699e1",
+      "included_sha256": "f6f99795d68e7889e6e1221c9345c612acbf342bd6b135c21a43e752713699e1",
+      "original_bytes": 1178,
+      "included_bytes": 1178,
+      "redactions": []
+    },
+    {
+      "path": "local/probes/B/j1/tested-files.json",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/probes/B/j1/tested-files.json",
+      "original_sha256": "f3cabad1a3179036e7caa9cac3662b921ba419d1430aa6c590fdc458502d8980",
+      "included_sha256": "ef890280a3e0dcd6c6ef540d71e1ed96e2fe746683841f1f2d1f75823b7a3f0c",
+      "original_bytes": 50069,
+      "included_bytes": 48200,
+      "redactions": [
+        {
+          "rule": "private workspace prefix",
+          "replacement": "<WORKSPACE>",
+          "count": 267
+        }
+      ]
+    },
+    {
+      "path": "local/probes/B/j1/tool-catalog.json",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/probes/B/j1/tool-catalog.json",
+      "original_sha256": "847d8ac5ff946a7f854e53bfd8453eff899b39ec8ae6a32c471dbd853484ecc5",
+      "included_sha256": "847d8ac5ff946a7f854e53bfd8453eff899b39ec8ae6a32c471dbd853484ecc5",
+      "original_bytes": 5644,
+      "included_bytes": 5644,
+      "redactions": []
+    },
+    {
+      "path": "local/probes/B/local_validation_additions.diff",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/probes/B/local_validation_additions.diff",
+      "original_sha256": "864277afe735e82a6a8a4047e72603ca4004baa4e0f62303d5cc203686b9994b",
+      "included_sha256": "f334c7a25097acc0fe178b4388004356c251671ecc10cd38da1c9dda708fea81",
+      "original_bytes": 11469,
+      "included_bytes": 11455,
+      "redactions": [
+        {
+          "rule": "private workspace prefix",
+          "replacement": "<WORKSPACE>",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "path": "local/probes/B/local_validation_additions_all.diff",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/probes/B/local_validation_additions_all.diff",
+      "original_sha256": "60b0b5f0dd72d1b69a56648db004e52e048d1a5f98e260c05120777405a821a7",
+      "included_sha256": "ca19b75c4045a0452c538cd9dc4b7c7a71cd780171c1c229b849116c12ac60b4",
+      "original_bytes": 27419,
+      "included_bytes": 27391,
+      "redactions": [
+        {
+          "rule": "private workspace prefix",
+          "replacement": "<WORKSPACE>",
+          "count": 4
+        }
+      ]
+    },
+    {
+      "path": "local/probes/B/local_validation_structured_additions.diff",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/probes/B/local_validation_structured_additions.diff",
+      "original_sha256": "54e8069266292c4186217fa5eaed22c8015c2596eec0e46c414f8c94dc551229",
+      "included_sha256": "76ec863119b5bf77fa771d7d83510cb0204e57cfa95d1fe607105506563e7909",
+      "original_bytes": 15950,
+      "included_bytes": 15936,
+      "redactions": [
+        {
+          "rule": "private workspace prefix",
+          "replacement": "<WORKSPACE>",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "path": "local/probes/B/native-boundary-hashes.json",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/probes/B/native-boundary-hashes.json",
+      "original_sha256": "7b0fb58cffcc34afcaf9843e12328a0b2b02bb4ddb7e8fb6755033a60e6b6d6a",
+      "included_sha256": "7b0fb58cffcc34afcaf9843e12328a0b2b02bb4ddb7e8fb6755033a60e6b6d6a",
+      "original_bytes": 1905,
+      "included_bytes": 1905,
+      "redactions": []
+    },
+    {
+      "path": "local/probes/B/source-final-status.txt",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/probes/B/source-final-status.txt",
+      "original_sha256": "bb2a7ea9b0566a990f14b9a95138b17993058a384f5e256333f6194bdc7d75a2",
+      "included_sha256": "bb2a7ea9b0566a990f14b9a95138b17993058a384f5e256333f6194bdc7d75a2",
+      "original_bytes": 798,
+      "included_bytes": 798,
+      "redactions": []
+    },
+    {
+      "path": "local/probes/B/source-followup-status.txt",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/probes/B/source-followup-status.txt",
+      "original_sha256": "bb2a7ea9b0566a990f14b9a95138b17993058a384f5e256333f6194bdc7d75a2",
+      "included_sha256": "bb2a7ea9b0566a990f14b9a95138b17993058a384f5e256333f6194bdc7d75a2",
+      "original_bytes": 798,
+      "included_bytes": 798,
+      "redactions": []
+    },
+    {
+      "path": "local/probes/B/source_manifest.json",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/probes/B/source_manifest.json",
+      "original_sha256": "00309fe41bf74c58fd03cb7f6bec8fd91da1880db8115c709d026d3940f6171c",
+      "included_sha256": "00309fe41bf74c58fd03cb7f6bec8fd91da1880db8115c709d026d3940f6171c",
+      "original_bytes": 2852,
+      "included_bytes": 2852,
+      "redactions": []
+    },
+    {
+      "path": "local/probes/B/structured_api_inspection.json",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/probes/B/structured_api_inspection.json",
+      "original_sha256": "fcf477b0673170e17bb60a345842bee3026faf980c980965f954076170b5fc3c",
+      "included_sha256": "fcf477b0673170e17bb60a345842bee3026faf980c980965f954076170b5fc3c",
+      "original_bytes": 2129,
+      "included_bytes": 2129,
+      "redactions": []
+    },
+    {
+      "path": "local/probes/B/test_native_structured.py",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/probes/B/test_native_structured.py",
+      "original_sha256": "7a5a48e45aa4f9d5d588c06c2ae89efcc8c2b55bf96fe247d72539f5d46438d7",
+      "included_sha256": "97e2c55dfb9cc371a14d108d5850ccced7cf1142229e49f82a864da41530148c",
+      "original_bytes": 15604,
+      "included_bytes": 15590,
+      "redactions": [
+        {
+          "rule": "private workspace prefix",
+          "replacement": "<WORKSPACE>",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "path": "local/probes/B/test_native_text.py",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/probes/B/test_native_text.py",
+      "original_sha256": "81a56b24317d75dd7a837e7020acc1fecb42f34f747727725538a231d3339bb0",
+      "included_sha256": "a4a01136f0fbf04e7f35e487d9672f5090bede2f07f98f76320c9d53e43953fb",
+      "original_bytes": 11198,
+      "included_bytes": 11184,
+      "redactions": [
+        {
+          "rule": "private workspace prefix",
+          "replacement": "<WORKSPACE>",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "path": "local/publish_evidence.py",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/publish_evidence.py",
+      "original_sha256": "c912f5db5520baf2cb53e911e5e9394472c10ece5caf8bc82268aa7f6fa69c31",
+      "included_sha256": "b288d593f1919b2fef109ecb874327d3b4fcd70635706f919ad7d2705d2ea3cf",
+      "original_bytes": 4593,
+      "included_bytes": 4586,
+      "redactions": [
+        {
+          "rule": "private workspace prefix",
+          "replacement": "<WORKSPACE>",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "path": "local/review/A-native-review.json",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/review/A-native-review.json",
+      "original_sha256": "48b26f3dc64066b6aa3ba0c20da7025466b60913d1c12d9b1db505c6087c0bce",
+      "included_sha256": "48b26f3dc64066b6aa3ba0c20da7025466b60913d1c12d9b1db505c6087c0bce",
+      "original_bytes": 1317,
+      "included_bytes": 1317,
+      "redactions": []
+    },
+    {
+      "path": "local/review/B-native-review.json",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/review/B-native-review.json",
+      "original_sha256": "04375e47627c48b7d7529211d37c7351c6bdd2cf2aa08f297183c5e2ce06cb13",
+      "included_sha256": "04375e47627c48b7d7529211d37c7351c6bdd2cf2aa08f297183c5e2ce06cb13",
+      "original_bytes": 1589,
+      "included_bytes": 1589,
+      "redactions": []
+    },
+    {
+      "path": "local/review/code-review.json",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/review/code-review.json",
+      "original_sha256": "b3db3ff7b0de28b949c69a9adb6c6b668180f8fafabc90ed7f6fee0a9d170b76",
+      "included_sha256": "b3db3ff7b0de28b949c69a9adb6c6b668180f8fafabc90ed7f6fee0a9d170b76",
+      "original_bytes": 923,
+      "included_bytes": 923,
+      "redactions": []
+    },
+    {
+      "path": "local/source-verification.json",
+      "source_path_relative_to_workspace": "task-shared-harness-validation-20261008/source-verification.json",
+      "original_sha256": "017fb182ca1274f068d7182f6962d59b2c20eb16435188d5336093a4315d1609",
+      "included_sha256": "01f9348fca2d8258199a336bf7f42cd51f3f1be692c9a815e56882efb5fd7ed4",
+      "original_bytes": 1406,
+      "included_bytes": 1399,
+      "redactions": [
+        {
+          "rule": "private workspace prefix",
+          "replacement": "<WORKSPACE>",
+          "count": 1
+        }
+      ]
+    }
+  ],
+  "payload_count": 182,
+  "validation_snapshot_timing": "RETURN_VALIDATION_SNAPSHOT.json was captured before owner-authorized GitHub delivery; no_push=true refers to that capture. Final receipt kept separately.",
+  "original_hash_fields": "Nested probe/source hashes identify actual original tested bytes; included hashes/redactions here identify public copies.",
+  "excluded": [
+    "Registry/Bank databases and WAL/SHM",
+    "provider profiles",
+    "full requests/raw conversations",
+    "venvs/caches",
+    "ZIPs",
+    "unrelated experiments"
+  ],
+  "originals": "Supplied packet and complete original local runs/logs remain local; no transformation of originals.",
+  "control_artifacts": [
+    {
+      "path": "PUBLICATION_REVIEW.json",
+      "original_sha256": "012fc817efe82287b59cf1465f56976d2e562a72ca29711c394ac0b240706361",
+      "included_sha256": "012fc817efe82287b59cf1465f56976d2e562a72ca29711c394ac0b240706361",
+      "redactions": []
+    },
+    {
+      "path": "PUBLICATION_CHECKS.json",
+      "original_sha256": "623262eb6b98911a3cff3f60939ff1ad03baeead61d3607ca57579af8d7f4ed5",
+      "included_sha256": "623262eb6b98911a3cff3f60939ff1ad03baeead61d3607ca57579af8d7f4ed5",
+      "redactions": []
+    }
+  ]
+}

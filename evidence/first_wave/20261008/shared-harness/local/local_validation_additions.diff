@@ -1,0 +1,707 @@
+--- /dev/null
++++ local_validation_additions/probes/A/test_native_consumers.py
+@@ -0,0 +1,210 @@
++"""Local-only native execution and two-consumer acceptance; no product edits."""
++from contextlib import ExitStack
++from dataclasses import asdict
++from pathlib import Path
++from unittest.mock import patch
++import hashlib
++import json
++import os
++
++from cpn.plugins import BoundPlugin, PluginCatalog, PluginDefinition, PluginOperation
++from cpn.rpnh import agent_tasks
++from cpn.rpnh.agent_workflows import (
++    AgentWorkflowArc as A, AgentWorkflowEndpoint as E,
++    AgentWorkflowGraph, AgentWorkflowNode as N, AgentWorkflowPort as P,
++)
++from cpn.rpnh.registry import run_authority
++from cpn.rpnh.registry._registry import _RegistryCore
++from cpn.rpnh.registry.publication import _ref_payload, _version_from_payload
++from cpn.rpnh.collaboration import environment_host
++from rpnh_ha.registry_export import export_registry
++from rpnh_ha.projection import ObservationCollector
++from test_main_session_registry import _write_execution_profile, _response
++
++OUT = Path(__file__).resolve().parent
++INPUT = {'type': 'object', 'additionalProperties': False,
++         'properties': {'value': {'type': 'integer'}}, 'required': ['value']}
++
++
++def local_echo(context, arguments):
++    """One local request per native worker, with a real local witness ordinal.
++
++    This is deliberately a local fixture service, not an HA Bank/backend.
++    """
++    context.check_cancelled()
++    return {'value': arguments['value'], 'witness_request_sequence': 1,
++            'witness_scope': 'one_local_request_in_this_worker',
++            'worker_pid': os.getpid(), 'fixture_run_id': context.config['run_id']}
++
++
++class ScriptedPort:
++    def __init__(self):
++        self.calls = 0
++
++    def request_once(self, attempt):
++        self.calls += 1
++        request = json.loads(attempt.canonical_request_bytes)
++        text = '\n'.join(m['content'] for m in request['messages']
++                         if isinstance(m.get('content'), str))
++        first = 'First local node.' in text
++        node = 'first' if first else 'finalize'
++        if not any(m.get('role') == 'tool' for m in request['messages']):
++            return _response([{'id': 'managed-' + node, 'name': 'shared',
++                               'arguments': json.dumps({'value': 7})}])
++        return _response([
++            {'id': 'write-' + node, 'name': 'write_file',
++             'arguments': json.dumps({'path': 'out/' + node + '.txt',
++                                     'description': 'Local fixture product',
++                                     'content': node,
++                                     'output_port_id': 'team.output__first__handoff' if first else 'team.result',
++                                     'outcome_id': 'complete'})},
++            {'id': 'complete-' + node, 'name': 'complete_interaction', 'arguments': '{}'},
++        ])
++
++    def close(self):
++        pass
++
++
++def save(path, value):
++    path = Path(path)
++    assert path.resolve().is_relative_to(OUT) or path.resolve().is_relative_to(Path('<WORKSPACE>/.h26/an'))
++    path.write_text(json.dumps(value, ensure_ascii=False, indent=2) + '\n')
++
++
++def fingerprint(owner):
++    core = owner._core
++    objects = {str(p.relative_to(core.object_store.root)): hashlib.sha256(p.read_bytes()).hexdigest()
++               for p in sorted(core.object_store.root.rglob('*')) if p.is_file()}
++    return {'head_ordinal': core.event_store.max_ordinal(),
++            'writer_epoch': core.event_store.writer_epoch,
++            'object_count': len(objects),
++            'object_bytes_sha256': hashlib.sha256(json.dumps(objects, sort_keys=True).encode()).hexdigest(),
++            'objects': objects}
++
++
++def test_native_managed_export_and_two_read_only_consumers(tmp_path, monkeypatch):
++    owners, ports = [], []
++    original_start = agent_tasks.start_run
++
++    def retain_initial_owner(*args, **kwargs):
++        owner = original_start(*args, **kwargs)
++        owners.append(owner)
++        return owner
++
++    def port_factory(*args, **kwargs):
++        port = ScriptedPort()
++        ports.append(port)
++        return port
++
++    definition = PluginDefinition('localprobe', '1', (
++        PluginOperation('echo', 'One pure local echo', INPUT, {}, local_echo),
++    ), config_schema={'type': 'object', 'additionalProperties': False,
++                      'properties': {'run_id': {'type': 'string'}}, 'required': ['run_id']})
++    catalog = PluginCatalog((BoundPlugin(definition, {'run_id': 'local-A-native-consumers'}),))
++    graph = AgentWorkflowGraph((
++        N('first', 'First local node.', (P('request', 'task'),), (P('handoff', 'handoff'),)),
++        N('finalize', 'Finalize local node.', (P('handoff', 'handoff'),), (P('result', 'result'),)),
++    ), (A('handoff', E('first', 'handoff'), E('finalize', 'handoff')),),
++        E('first', 'request'), E('finalize', 'result'))
++    monkeypatch.setattr(agent_tasks, 'start_run', retain_initial_owner)
++    monkeypatch.setattr(agent_tasks, 'build_llm_input_port', port_factory)
++    monkeypatch.setattr('cpn.plugins.catalog.load_catalog', lambda _doc: catalog)
++    spec = agent_tasks.AgentTaskSpec(
++        tmp_path / 'run', 'Run two local pure managed echoes.', (),
++        _write_execution_profile(tmp_path), workflow_graph=graph,
++        max_parallel_nodes=1, plugin_configuration={}, plugin_catalog_digest=catalog.digest,
++        managed_bindings={node: {'tools': {'shared': {'selector': 'localprobe/echo'}}}
++                          for node in ('first', 'finalize')})
++    result = agent_tasks.run_agent_task(spec)
++    save(tmp_path / 'driver-result.json', result)
++    assert len(owners) == 1
++    owner = owners[0]
++    assert result['stop_reason'] == 'terminal'
++    assert result['actual_model_call_counts'] == [4, 0]
++    assert sum(p.calls for p in ports) == 4
++    assert not (tmp_path / 'run/owner.sock').exists()
++    rows = owner._core.event_store.object_rows()
++    actions = [json.loads(row['metadata_json']) for row in rows if row['object_type'] == 'agent_action/v3']
++    assert len(actions) == 2
++    assert all(a['outcome'] == 'returned' and a['output']['worker_pid'] != os.getpid() for a in actions)
++    assert len({a['output']['worker_pid'] for a in actions}) == 2
++    assert all(a['non_delivery_reason'] == 'provider_delivery_not_recorded' for a in actions)
++    assert sum(r['object_type'] == 'agent_action/v2' for r in rows) == 4
++    monkeypatch.undo()
++
++    # READ phase: retain the actual original owner; no second execution owner.
++    snapshots = {'before': fingerprint(owner)}
++    reads, core_opens, forbidden_calls = [], [], []
++    real_read = run_authority.read_run_execution
++    real_init = _RegistryCore.__init__
++
++    def observe_read(core, kernel, **kwargs):
++        value = real_read(core, kernel, **kwargs)
++        assert value.cut._core is core
++        reads.append((core, value))
++        return value
++
++    def observe_core_open(self, *args, **kwargs):
++        core_opens.append({'create': kwargs.get('create'), 'read_only': kwargs.get('read_only')})
++        assert kwargs.get('create') is False and kwargs.get('read_only') is True
++        real_init(self, *args, **kwargs)
++
++    def forbid(*args, **kwargs):
++        forbidden_calls.append('writer_or_execution_entry')
++        raise AssertionError('READ phase attempted writer/execution')
++
++    collector = ObservationCollector(roles={'local_worker', 'local_finalizer'}, tools={'shared'})
++    try:
++        with ExitStack() as stack:
++            stack.enter_context(patch.object(run_authority, 'read_run_execution', observe_read))
++            stack.enter_context(patch.object(_RegistryCore, '__init__', observe_core_open))
++            stack.enter_context(patch.object(_RegistryCore, 'begin', forbid))
++            for name in ('start_run', 'resume_run'):
++                stack.enter_context(patch('cpn.rpnh.run.' + name, forbid))
++            stack.enter_context(patch('cpn.rpnh.agent_tasks.run_agent_task', forbid))
++            ha = export_registry(tmp_path / 'run', {'first': 'local_worker', 'finalize': 'local_finalizer'},
++                                 collector, terminal_evidence_ref=result['terminal_evidence_ref'], stop_reason='terminal')
++            snapshots['after_ha'] = fingerprint(owner)
++            env = environment_host._terminal_result(owner, _version_from_payload(result['terminal_evidence_ref']), 'terminal')
++            snapshots['after_environment'] = fingerprint(owner)
++    finally:
++        snapshots['final'] = fingerprint(owner)
++        save(tmp_path / 'read-fingerprints-full.json', snapshots)
++        save(OUT / 'read-only-observations.json', {
++            'snapshots': {key: {k: v for k, v in value.items() if k != 'objects'} for key, value in snapshots.items()},
++            'core_opens': core_opens, 'forbidden_calls': forbidden_calls,
++            'real_provider_calls': 0, 'scripted_logical_calls': sum(p.calls for p in ports)})
++    assert all(s == snapshots['before'] for s in snapshots.values())
++    assert len(reads) == 2 and reads[0][0] is not reads[1][0]
++    assert reads[0][1].cut is not reads[1][1].cut
++    assert reads[0][0].read_only is True and reads[1][0] is owner._core
++    identity = ha.capture_diagnostics['terminal_identity']
++    for key in ('terminal_evidence_ref', 'terminal_result_ref', 'run_execution_authority_ref'):
++        assert identity[key] == env[key]
++    assert _ref_payload(reads[0][1].terminal.evidence_ref) == _ref_payload(reads[1][1].terminal.evidence_ref)
++    assert _ref_payload(reads[0][1].terminal.result_ref) == _ref_payload(reads[1][1].terminal.result_ref)
++    assert reads[0][1].execution_generation == reads[1][1].execution_generation == 0
++    assert env['status'] == 'available' and env['output'] == 'finalize'
++    assert ha.actual_model_calls == 4 and len(ha.registry_records) == 4
++    assert len(collector) == 3
++    observations = collector._observations
++    assert [o.surface for o in observations].count('tool_call') == 2
++    terminal_observation = [o for o in observations if o.surface == 'communication'][0]
++    assert terminal_observation.data['target_agent'] == 'user'
++    assert terminal_observation.raw_event['handoff_context_raw']['terminal_evidence_ref'] == env['terminal_evidence_ref']
++    assert terminal_observation.data['content'] == env['output']
++    collector.save(tmp_path / 'ha-observations-full.json')
++    save(tmp_path / 'ha-export-full.json', asdict(ha))
++    save(OUT / 'native-observations.json', {
++        'status': 'PASS', 'driver_result': result, 'environment_result': env,
++        'ha_terminal_identity': identity, 'managed_actions': [
++            {k: a[k] for k in ('agent_action_ref', 'started_receipt_ref', 'terminal_receipt_ref',
++                              'selector', 'effect', 'outcome', 'non_delivery_reason', 'model_visible_result_ref')}
++            for a in actions],
++        'registry_records': ha.registry_records, 'capture_diagnostics': ha.capture_diagnostics,
++        'observation_counts': {'managed_tool_call': 2, 'terminal_communication': 1},
++        'cut_handles_distinct_and_bound': True, 'initial_owners': len(owners), 'read_phase_new_owners': 0,
++        'worker_pids': [a['output']['worker_pid'] for a in actions], 'fixture_pid': os.getpid(),
++        'real_provider_calls': 0, 'scripted_logical_calls': 4,
++        'witness_scope': 'local plugin request ordinal, no HA Bank/business score/delivery claim',
++    })
+--- /dev/null
++++ local_validation_additions/probes/A/run_case.py
+@@ -0,0 +1,40 @@
++"""Capture exact native pytest commands and originals in the owned A scope."""
++from pathlib import Path
++import datetime
++import json
++import os
++import subprocess
++import sys
++import time
++
++root = Path('<WORKSPACE>').resolve()
++out = Path(__file__).resolve().parent
++runtime = root / '.h26/an'
++source = root / '.h26/s'
++assert out.is_relative_to(root) and runtime.resolve().is_relative_to(root)
++name = sys.argv[1]
++assert name.isidentifier()
++assert not (runtime / name).exists()
++env = os.environ.copy()
++env.update(PYTHONDONTWRITEBYTECODE='1', PYTEST_DISABLE_PLUGIN_AUTOLOAD='1',
++           TMPDIR=str(root / '.h26/tmp'),
++           PYTHONPATH=':'.join(map(str, (source, source / 'tests', source / 'examples/harnessaudit_office/src', out))))
++command = [str(root / '.p26/v/bin/python'), '-m', 'pytest', '-q', *sys.argv[2:],
++           '-p', 'no:cacheprovider', '--basetemp=' + str(runtime / name),
++           '--junitxml=' + str(out / (name + '.xml'))]
++record = {'command': command, 'cwd': str(source),
++          'environment': {k: env[k] for k in ('PYTHONDONTWRITEBYTECODE', 'PYTEST_DISABLE_PLUGIN_AUTOLOAD', 'TMPDIR', 'PYTHONPATH')},
++          'started_utc': datetime.datetime.now(datetime.timezone.utc).isoformat()}
++receipt = out / (name + '.command.json')
++assert not receipt.exists()
++receipt.write_text(json.dumps(record, indent=2))
++start = time.monotonic()
++with (out / (name + '.stdout')).open('wb') as so, (out / (name + '.stderr')).open('wb') as se:
++    result = subprocess.run(command, cwd=source, env=env, stdout=so, stderr=se)
++record.update(exit_code=result.returncode, elapsed_seconds=time.monotonic() - start,
++              ended_utc=datetime.datetime.now(datetime.timezone.utc).isoformat())
++receipt.write_text(json.dumps(record, indent=2))
++print(json.dumps(record, indent=2))
++print((out / (name + '.stdout')).read_text())
++print((out / (name + '.stderr')).read_text())
++sys.exit(result.returncode)
+--- /dev/null
++++ local_validation_additions/probes/B/test_native_text.py
+@@ -0,0 +1,188 @@
++"""Independent local B proof; only input port injection, real native services."""
++import hashlib
++import json
++import os
++from pathlib import Path
++import sys
++
++from jsonschema import Draft7Validator
++from cpn.rpnh.agent_tasks import AgentStage, AgentTaskSpec, run_agent_task
++from cpn.rpnh.registry._registry import _RegistryCore
++from cpn.rpnh.registry.identities import TypedId
++from cpn.rpnh.registry.schema_catalog import canonical_json
++from cpn.components.agent_loop.request_envelope_materialization import materialize_agent_request_envelope
++from cpn.components.agent_loop.tool_catalog import parse_agent_tool_catalog
++from test_main_session_registry import _response, _write_execution_profile
++
++SOURCE = Path('<WORKSPACE>/.h26/s')
++BASE = Path('<WORKSPACE>/.h26/bn')
++PUBLIC = Path(__file__).resolve().parent
++TEXT = '原生文本验收：αβ 🌱\n第二行：保留换行与引号 "hello"\n'
++
++def sha(data):
++    return hashlib.sha256(data).hexdigest()
++
++def dump(path, data):
++    assert path.resolve().is_relative_to(BASE) or path.resolve().is_relative_to(PUBLIC)
++    path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + '\n')
++
++def exact(row):
++    return dict(entity_type=row['object_type'], logical_id=row['logical_id'], version_id=row['version_id'])
++
++def normalize(ref):
++    if 'resource_id' in ref:
++        return dict(entity_type='resource_version/v1', logical_id=ref['resource_id'], version_id=ref['resource_version_id'])
++    return ref
++
++class ScriptedTextPort:
++    def __init__(self, directory):
++        self.directory = directory
++        self.requests = []
++
++    def request_once(self, attempt):
++        self.requests.append(attempt.canonical_request_bytes)
++        (self.directory / f'request-{len(self.requests)}.json').write_bytes(attempt.canonical_request_bytes)
++        assert len(self.requests) == 1, 'unexpected additional logical call'
++        return _response([
++            {'id': 'b-text-write', 'name': 'write_file', 'arguments': json.dumps({
++                'path': 'outputs/native.txt', 'description': 'Synthetic Unicode multiline acceptance.',
++                'content': TEXT, 'output_port_id': 'main.result', 'outcome_id': 'complete'})},
++            {'id': 'b-text-complete', 'name': 'complete_interaction', 'arguments': '{}'},
++        ])
++
++    def close(self):
++        pass
++
++
++def test_fresh_native_text_recipe_write(monkeypatch):
++    iteration = os.environ['B_ITERATION']
++    raw = BASE / iteration
++    raw.mkdir()
++    out = PUBLIC / iteration
++    out.mkdir()
++    port = ScriptedTextPort(raw)
++    monkeypatch.setattr('cpn.rpnh.agent_tasks.build_llm_input_port', lambda *_a, **_k: port)
++    spec = AgentTaskSpec(raw / 'r', 'Write the synthetic Unicode multiline text.',
++                         (AgentStage('main', 'Return the exact synthetic text.'),),
++                         _write_execution_profile(raw), max_attempts_per_stage=1)
++    result = run_agent_task(spec)
++    dump(raw / 'agent-result.json', result)
++    assert result['stop_reason'] == 'terminal'
++    assert result['output'] == TEXT
++    assert result['actual_model_call_counts'] == [1, 0]
++    core = _RegistryCore(spec.run_dir, create=False, read_only=True)
++    before = (core.event_store.max_ordinal(), core.event_store.writer_epoch)
++    rows = [dict(row) for row in core.event_store.object_rows()]
++    by_version = {row['version_id']: row for row in rows}
++    def read(ref):
++        ref = normalize(ref)
++        row = by_version[ref['version_id']]
++        assert exact(row) == ref
++        obj = core.get_version(TypedId.parse(ref['version_id']))
++        payload = core.object_store.read_registered(obj)
++        assert len(payload) == row['size']
++        return payload, obj.metadata
++    def evidence(ref):
++        data, meta = read(ref)
++        return {'ref': normalize(ref), 'payload_sha256': sha(data), 'size': len(data)}
++    recipes = [r for r in rows if json.loads(r['metadata_json']).get('content_schema_ref') == 'registry_v1/logical_provider_request_recipe/v1']
++    assert len(recipes) == len(port.requests) == 1
++    recipe_ref = exact(recipes[0])
++    recipe_bytes, recipe_meta = read(recipe_ref)
++    recipe = json.loads(recipe_bytes)
++    assert canonical_json(recipe) == recipe_bytes
++    prompt_ref, catalog_ref = recipe['source_prompt_ref'], recipe['tool_catalog_ref']
++    prompt_bytes, prompt_meta = read(prompt_ref)
++    catalog_bytes, catalog_meta = read(catalog_ref)
++    assert prompt_meta['descriptors']['content_role'] == 'optional_agent_prompt'
++    assert catalog_meta['descriptors']['content_role'] == 'optional_agent_tool_catalog'
++    (out / 'static-prompt.json').write_bytes(prompt_bytes)
++    (out / 'tool-catalog.json').write_bytes(catalog_bytes)
++    prompt = json.loads(prompt_bytes)
++    descriptors = parse_agent_tool_catalog(catalog_bytes).tool_descriptors
++    assert recipe['messages'][1:] == prompt['messages']  # fresh first turn, no history/reentry
++    rebuilt = materialize_agent_request_envelope(
++        model_condition=recipe['model'], max_output_tokens=recipe['max_tokens'],
++        system_content=recipe['messages'][0]['content'], prompt_messages=prompt['messages'],
++        history_messages=(), tool_descriptors=descriptors,
++        source_prompt_ref=prompt_ref, tool_catalog_ref=catalog_ref)
++    envelope = json.loads(port.requests[0])
++    assert rebuilt == envelope
++    assert canonical_json(rebuilt) == port.requests[0]
++    assert recipe['messages'] == envelope['messages']
++    assert recipe['tools'] == envelope['tools']
++    assert recipe_bytes != port.requests[0]
++    source_refs = recipe_meta['reference_provenance']['input_resource_refs']
++    assert normalize(prompt_ref) in source_refs and normalize(catalog_ref) in source_refs
++    source_evidence = [evidence(ref) for ref in source_refs]
++    write = next(t['function'] for t in envelope['tools'] if t['function']['name'] == 'write_file')
++    instruction = '\n'.join(m['content'] for m in prompt['messages'])
++    for guidance in ('content is direct text', 'content is one JSON document'):
++        assert guidance in instruction and guidance in write['description']
++    assert 'source_resource_ref' in instruction and 'source_resource_ref' in write['description']
++    assert 'never both' in instruction and 'workspace bytes are never an implicit write source' in instruction
++    assert 'complete=main.result' in instruction and 'never substitute internal port_' in instruction
++    actions = [(exact(r), json.loads(r['metadata_json'])) for r in rows if r['object_type'] == 'agent_action/v2']
++    wr_ref, wr = next((ref, d) for ref, d in actions if d['tool_name'] == 'write_file')
++    co_ref, co = next((ref, d) for ref, d in actions if d['tool_name'] == 'complete_interaction')
++    Draft7Validator(write['parameters']).validate(wr['arguments'])
++    assert wr['state'] == 'ACTION_APPLIED' and co['state'] == 'COMPLETED'
++    assert wr['arguments']['output_port_id'] == 'main.result'
++    assert wr['arguments']['outcome_id'] == co['result_metadata']['selected_outcome_id'] == 'complete'
++    product_ref = wr['result_refs'][0]
++    product_bytes, product_meta = read(product_ref)
++    assert product_meta['content_schema_ref'] == 'application/rpnh_agent_text/v1'
++    assert product_bytes == canonical_json(TEXT)
++    assert product_meta['size'] == len(product_bytes)
++    assert product_meta['descriptors']['output_outcome_id'] == 'complete'
++    assert product_meta['descriptors']['output_port_id'] == wr['result_metadata']['output_port_id']
++    schema_ref = product_meta['content_schema_authority_ref']
++    schema_bytes, _ = read(schema_ref)
++    (out / 'output-schema-authority.json').write_bytes(schema_bytes)
++    files = list(spec.run_dir.rglob('outputs/native.txt'))
++    assert len(files) == 1
++    workspace = files[0].read_bytes()
++    assert workspace == TEXT.encode('utf-8')
++    snapshots = [r for r in rows if json.loads(r['metadata_json']).get('descriptors', {}).get('workspace_path') == 'outputs/native.txt']
++    assert len(snapshots) == 1
++    snapshot_ref = exact(snapshots[0])
++    snapshot_bytes, snapshot_meta = read(snapshot_ref)
++    assert snapshot_bytes == workspace and snapshot_meta['size'] == len(workspace)
++    term_bytes, terminal = read(result['terminal_evidence_ref'])
++    assert terminal['run_outcome'] == 'complete'
++    assert terminal['terminal_result_ref'] == result['terminal_result_ref'] == product_ref
++    operations = [r for r in rows if r['object_type'] == 'operation_result/v1']
++    assert len(operations) == 1
++    op_ref = exact(operations[0]); _, operation = read(op_ref)
++    assert operation['business_outcome'] == 'completed'
++    assert product_ref in operation['output_resource_refs']
++    assert terminal['terminal_occurrence_ref'] == operation['transition_firing_ref']
++    after = (core.event_store.max_ordinal(), core.event_store.writer_epoch)
++    assert before == after
++    assert read(prompt_ref)[0] == prompt_bytes and read(catalog_ref)[0] == catalog_bytes
++    report = {
++        'status': 'PASS', 'case': 'fresh_native_text', 'real_provider_calls': 0,
++        'scripted_port_requests': len(port.requests), 'logical_call_ledger': result['actual_model_call_counts'],
++        'ledger_tuple_meaning': ['settled_calls', 'post_limit_excess'],
++        'static_prompt': evidence(prompt_ref), 'optional_agent_tool_catalog': evidence(catalog_ref),
++        'recipe': {**evidence(recipe_ref), 'canonical_sha256': sha(canonical_json(recipe)), 'source_refs': source_evidence},
++        'provider_envelope': {'bytes_sha256': sha(port.requests[0]), 'size': len(port.requests[0]),
++                              'rematerialized_sha256': sha(canonical_json(rebuilt)), 'messages_and_tools_equal': True,
++                              'recipe_bytes_equal_envelope': False},
++        'write': {'action_ref': wr_ref, 'completion_action_ref': co_ref,
++                  'output_schema': product_meta['content_schema_ref'], 'schema_authority': evidence(schema_ref),
++                  'declared_output_port': 'main.result', 'internal_port': wr['result_metadata']['output_port_id'],
++                  'outcome': 'complete', 'product': evidence(product_ref), 'workspace_snapshot': evidence(snapshot_ref),
++                  'workspace': {'sha256': sha(workspace), 'size': len(workspace)},
++                  'representation': 'Product is canonical JSON string; workspace/snapshot are UTF-8 direct text.'},
++        'operation_result': evidence(op_ref), 'terminal': evidence(result['terminal_evidence_ref']),
++        'run_ref': result['run_ref'], 'task_ref': result['task_ref'], 'terminal_result_ref': product_ref,
++        'run_outcome': terminal['run_outcome'], 'read_only_head_before_after': [before, after],
++        'fresh_prompt_unchanged_on_readback': True, 'historical_resume': 'NOT_RUN',
++        'local_runtime': str(raw), 'local_request': str(raw / 'request-1.json'),
++    }
++    dump(out / 'evidence.json', report)
++    loaded = sorted({Path(m.__file__).resolve() for m in tuple(sys.modules.values())
++                     if getattr(m, '__file__', None) and Path(m.__file__).resolve().is_relative_to(SOURCE)})
++    loaded.append(Path(__file__).resolve())
++    dump(out / 'tested-files.json', [{'path': str(p), 'sha256': sha(p.read_bytes()), 'size': p.stat().st_size} for p in loaded if p.is_file()])
+--- /dev/null
++++ local_validation_additions/probes/B/test_native_structured.py
+@@ -0,0 +1,257 @@
++"""Independent trusted HOST structured-schema proof; real owner/Harness/ABI."""
++import hashlib
++import json
++import os
++from pathlib import Path
++import sys
++
++from jsonschema import Draft7Validator
++from concurrent.futures import ThreadPoolExecutor
++from cpn.rpnh.agent_tasks import (AgentStage, build_agent_task_module,
++    agent_task_registration, agent_task_catalog, _execution_route, _terminal_output)
++from cpn.rpnh.agent_workflows import TEXT_SCHEMA
++from cpn.rpnh.module import ModuleDeclaration
++from cpn.rpnh.run import OwnerInput, start_run
++from cpn.rpnh.registry.module_budgets import ModuleBudgetDeclaration
++from cpn.rpnh.registry.strict_contracts import ref_payload
++from cpn.rpnh.control_server import OwnerEventLoop
++from cpn.orchestrator.runner import Orchestrator
++from cpn.components.execution_services import ExecutionServices
++from cpn.components.agent_loop.optional_host_bindings import make_optional_agent_host_bindings
++from cpn.llm_adapters import load_llm_execution_selection
++from cpn.rpnh.registry._registry import _RegistryCore
++from cpn.rpnh.registry.identities import TypedId
++from cpn.rpnh.registry.schema_catalog import canonical_json
++from cpn.components.agent_loop.request_envelope_materialization import materialize_agent_request_envelope
++from cpn.components.agent_loop.tool_catalog import parse_agent_tool_catalog
++from test_main_session_registry import _response, _write_execution_profile
++
++SOURCE = Path('<WORKSPACE>/.h26/s')
++BASE = Path('<WORKSPACE>/.h26/bn')
++PUBLIC = Path(__file__).resolve().parent
++OUTPUT_SCHEMA = 'application/local_b_structured/v1'
++SCHEMA = {'$id': OUTPUT_SCHEMA, '$schema': 'http://json-schema.org/draft-07/schema#',
++          'type': 'object', 'additionalProperties': False,
++          'properties': {'message': {'type': 'string'},
++                         'values': {'type': 'array', 'items': {'type': 'integer'}},
++                         'verified': {'type': 'boolean'}},
++          'required': ['message', 'values', 'verified']}
++VALUE = {'message': '结构化原生结果 🌱\n第二行', 'values': [2, 7], 'verified': True}
++CONTENT = json.dumps(VALUE, ensure_ascii=False, indent=2)
++
++
++def sha(data):
++    return hashlib.sha256(data).hexdigest()
++
++def dump(path, data):
++    assert path.resolve().is_relative_to(BASE) or path.resolve().is_relative_to(PUBLIC)
++    path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + '\n')
++
++def exact(row):
++    return dict(entity_type=row['object_type'], logical_id=row['logical_id'], version_id=row['version_id'])
++
++def normalize(ref):
++    if 'resource_id' in ref:
++        return dict(entity_type='resource_version/v1', logical_id=ref['resource_id'], version_id=ref['resource_version_id'])
++    return ref
++
++class ScriptedStructuredPort:
++    def __init__(self, directory):
++        self.directory = directory
++        self.requests = []
++
++    def request_once(self, attempt):
++        self.requests.append(attempt.canonical_request_bytes)
++        (self.directory / f'request-{len(self.requests)}.json').write_bytes(attempt.canonical_request_bytes)
++        assert len(self.requests) == 1, 'unexpected additional logical call'
++        return _response([
++            {'id': 'b-structured-write', 'name': 'write_file', 'arguments': json.dumps({
++                'path': 'outputs/structured.json', 'description': 'Synthetic declared-object JSON acceptance.',
++                'content': CONTENT, 'output_port_id': 'main.result', 'outcome_id': 'complete'})},
++            {'id': 'b-structured-complete', 'name': 'complete_interaction', 'arguments': '{}'},
++        ])
++
++    def close(self):
++        pass
++
++
++def test_fresh_native_structured_recipe_write():
++    iteration = os.environ['B_ITERATION']
++    raw = BASE / iteration
++    raw.mkdir()
++    out = PUBLIC / iteration
++    out.mkdir()
++    port = ScriptedStructuredPort(raw)
++    run_dir = raw / 'r'
++    # Local authored declaration only. No replacement of a production factory.
++    module_data = build_agent_task_module(
++        (AgentStage('main', 'Return the exact object under the declared JSON schema.'),),
++        max_attempts_per_stage=1).to_dict()
++    module_data['name'] = 'LocalBStructuredAcceptance'
++    output_port = next(p for p in module_data['components'][0]['ports'] if p['name'] == 'result')
++    output_port['schema'] = OUTPUT_SCHEMA
++    module_data['required_schemas'].append(OUTPUT_SCHEMA)
++    module = ModuleDeclaration.from_dict(module_data)
++    registration = agent_task_registration()
++    registration.register_schema(OUTPUT_SCHEMA, SCHEMA)
++    catalog = agent_task_catalog()
++    catalog.register_schema(OUTPUT_SCHEMA, SCHEMA)
++    selection = load_llm_execution_selection(_write_execution_profile(raw))
++    bindings = make_optional_agent_host_bindings(
++        selection.input_target, workspace_policy=selection.runtime_policy.workspace,
++        provider_backend_config=_execution_route(selection),
++        transport_contract={'interaction_protocol_ref': 'llm_request_envelope/v1',
++                            'response_adapter_ref': 'llm_response_envelope/v1'})
++    request = OwnerInput(TEXT_SCHEMA, canonical_json('Write the synthetic declared JSON object.'),
++                         'Local B structured task input')
++    dump(out / 'authored-module.json', module_data)
++    dump(out / 'declared-output-schema.json', SCHEMA)
++    owner = start_run(module, registration, run_dir=run_dir, task_input=request,
++                      entry_inputs={'request': request},
++                      budgets=ModuleBudgetDeclaration(tuple(module_data['budget_buckets']),
++                          ('rpnh/module_declaration/v1',), 1, 0, 1, 0),
++                      model_condition=selection.input_target.model_condition,
++                      owner_statement='Authorized offline local B structured native acceptance',
++                      command_id='local-b-structured:fresh', catalog=catalog,
++                      host_execution_bindings=bindings)
++    event_loop = OwnerEventLoop(owner, run_dir / 'owner.sock')
++    try:
++        services = ExecutionServices(owner=owner, event_loop=event_loop, llm_input_port=port)
++        with ThreadPoolExecutor(max_workers=1) as workers:
++            native = Orchestrator(owner=owner, event_loop=event_loop,
++                prepare_dispatcher=services.prepare_dispatcher, submit_operation=workers.submit,
++                max_in_flight=1).run()
++        result_ref, output = _terminal_output(owner, native.terminal_evidence_ref)
++        result = {'stop_reason': native.stop_reason, 'output': output,
++                  'run_ref': ref_payload(owner.identity.run_ref),
++                  'task_ref': ref_payload(owner.identity.task_ref),
++                  'terminal_evidence_ref': ref_payload(native.terminal_evidence_ref),
++                  'terminal_result_ref': result_ref,
++                  'actual_model_call_counts': list(owner._core.event_store.actual_model_call_counts())}
++    finally:
++        port.close()
++        event_loop.close()
++    dump(raw / 'agent-result.json', result)
++    assert result['stop_reason'] == 'terminal'
++    assert result['output'] == VALUE
++    assert result['actual_model_call_counts'] == [1, 0]
++    core = _RegistryCore(run_dir, create=False, read_only=True)
++    before = (core.event_store.max_ordinal(), core.event_store.writer_epoch)
++    rows = [dict(row) for row in core.event_store.object_rows()]
++    by_version = {row['version_id']: row for row in rows}
++    def read(ref):
++        ref = normalize(ref)
++        row = by_version[ref['version_id']]
++        assert exact(row) == ref
++        obj = core.get_version(TypedId.parse(ref['version_id']))
++        payload = core.object_store.read_registered(obj)
++        assert len(payload) == row['size']
++        return payload, obj.metadata
++    def evidence(ref):
++        data, meta = read(ref)
++        return {'ref': normalize(ref), 'payload_sha256': sha(data), 'size': len(data)}
++    recipes = [r for r in rows if json.loads(r['metadata_json']).get('content_schema_ref') == 'registry_v1/logical_provider_request_recipe/v1']
++    assert len(recipes) == len(port.requests) == 1
++    recipe_ref = exact(recipes[0])
++    recipe_bytes, recipe_meta = read(recipe_ref)
++    recipe = json.loads(recipe_bytes)
++    assert canonical_json(recipe) == recipe_bytes
++    prompt_ref, catalog_ref = recipe['source_prompt_ref'], recipe['tool_catalog_ref']
++    prompt_bytes, prompt_meta = read(prompt_ref)
++    catalog_bytes, catalog_meta = read(catalog_ref)
++    assert prompt_meta['descriptors']['content_role'] == 'optional_agent_prompt'
++    assert catalog_meta['descriptors']['content_role'] == 'optional_agent_tool_catalog'
++    (out / 'static-prompt.json').write_bytes(prompt_bytes)
++    (out / 'tool-catalog.json').write_bytes(catalog_bytes)
++    prompt = json.loads(prompt_bytes)
++    descriptors = parse_agent_tool_catalog(catalog_bytes).tool_descriptors
++    assert recipe['messages'][1:] == prompt['messages']  # fresh first turn, no history/reentry
++    rebuilt = materialize_agent_request_envelope(
++        model_condition=recipe['model'], max_output_tokens=recipe['max_tokens'],
++        system_content=recipe['messages'][0]['content'], prompt_messages=prompt['messages'],
++        history_messages=(), tool_descriptors=descriptors,
++        source_prompt_ref=prompt_ref, tool_catalog_ref=catalog_ref)
++    envelope = json.loads(port.requests[0])
++    assert rebuilt == envelope
++    assert canonical_json(rebuilt) == port.requests[0]
++    assert recipe['messages'] == envelope['messages']
++    assert recipe['tools'] == envelope['tools']
++    assert recipe_bytes != port.requests[0]
++    source_refs = recipe_meta['reference_provenance']['input_resource_refs']
++    assert normalize(prompt_ref) in source_refs and normalize(catalog_ref) in source_refs
++    source_evidence = [evidence(ref) for ref in source_refs]
++    write = next(t['function'] for t in envelope['tools'] if t['function']['name'] == 'write_file')
++    instruction = '\n'.join(m['content'] for m in prompt['messages'])
++    for guidance in ('content is direct text', 'content is one JSON document'):
++        assert guidance in instruction and guidance in write['description']
++    assert 'source_resource_ref' in instruction and 'source_resource_ref' in write['description']
++    assert 'never both' in instruction and 'workspace bytes are never an implicit write source' in instruction
++    assert 'complete=main.result' in instruction and 'never substitute internal port_' in instruction
++    actions = [(exact(r), json.loads(r['metadata_json'])) for r in rows if r['object_type'] == 'agent_action/v2']
++    wr_ref, wr = next((ref, d) for ref, d in actions if d['tool_name'] == 'write_file')
++    co_ref, co = next((ref, d) for ref, d in actions if d['tool_name'] == 'complete_interaction')
++    Draft7Validator(write['parameters']).validate(wr['arguments'])
++    assert wr['state'] == 'ACTION_APPLIED' and co['state'] == 'COMPLETED'
++    assert wr['arguments']['output_port_id'] == 'main.result'
++    assert wr['arguments']['outcome_id'] == co['result_metadata']['selected_outcome_id'] == 'complete'
++    product_ref = wr['result_refs'][0]
++    product_bytes, product_meta = read(product_ref)
++    assert product_meta['content_schema_ref'] == OUTPUT_SCHEMA != TEXT_SCHEMA
++    assert product_bytes == CONTENT.encode('utf-8')
++    assert json.loads(product_bytes) == VALUE
++    Draft7Validator(SCHEMA).validate(json.loads(product_bytes))
++    assert product_meta['size'] == len(product_bytes)
++    assert product_meta['descriptors']['output_outcome_id'] == 'complete'
++    assert product_meta['descriptors']['output_port_id'] == wr['result_metadata']['output_port_id']
++    schema_ref = product_meta['content_schema_authority_ref']
++    schema_bytes, _ = read(schema_ref)
++    (out / 'output-schema-authority.json').write_bytes(schema_bytes)
++    assert json.loads(schema_bytes) == SCHEMA
++    assert json.loads(schema_bytes)['type'] == 'object'
++    files = list(run_dir.rglob('outputs/structured.json'))
++    assert len(files) == 1
++    workspace = files[0].read_bytes()
++    assert workspace == CONTENT.encode('utf-8') == product_bytes
++    snapshots = [r for r in rows if json.loads(r['metadata_json']).get('descriptors', {}).get('workspace_path') == 'outputs/structured.json']
++    assert len(snapshots) == 1
++    snapshot_ref = exact(snapshots[0])
++    snapshot_bytes, snapshot_meta = read(snapshot_ref)
++    assert snapshot_bytes == workspace and snapshot_meta['size'] == len(workspace)
++    term_bytes, terminal = read(result['terminal_evidence_ref'])
++    assert terminal['run_outcome'] == 'complete'
++    assert terminal['terminal_result_ref'] == result['terminal_result_ref'] == product_ref
++    operations = [r for r in rows if r['object_type'] == 'operation_result/v1']
++    assert len(operations) == 1
++    op_ref = exact(operations[0]); _, operation = read(op_ref)
++    assert operation['business_outcome'] == 'completed'
++    assert product_ref in operation['output_resource_refs']
++    assert terminal['terminal_occurrence_ref'] == operation['transition_firing_ref']
++    after = (core.event_store.max_ordinal(), core.event_store.writer_epoch)
++    assert before == after
++    assert read(prompt_ref)[0] == prompt_bytes and read(catalog_ref)[0] == catalog_bytes
++    report = {
++        'status': 'PASS', 'case': 'fresh_native_structured', 'entry': 'trusted HOST ModuleDeclaration/Registration/start_run -> OwnerEventLoop/Orchestrator(Harness)/ExecutionServices optional AgentLoop', 'real_provider_calls': 0,
++        'scripted_port_requests': len(port.requests), 'logical_call_ledger': result['actual_model_call_counts'],
++        'ledger_tuple_meaning': ['settled_calls', 'post_limit_excess'],
++        'static_prompt': evidence(prompt_ref), 'optional_agent_tool_catalog': evidence(catalog_ref),
++        'recipe': {**evidence(recipe_ref), 'canonical_sha256': sha(canonical_json(recipe)), 'source_refs': source_evidence},
++        'provider_envelope': {'bytes_sha256': sha(port.requests[0]), 'size': len(port.requests[0]),
++                              'rematerialized_sha256': sha(canonical_json(rebuilt)), 'messages_and_tools_equal': True,
++                              'recipe_bytes_equal_envelope': False},
++        'write': {'action_ref': wr_ref, 'completion_action_ref': co_ref,
++                  'output_schema': product_meta['content_schema_ref'], 'schema_authority': evidence(schema_ref),
++                  'declared_output_port': 'main.result', 'internal_port': wr['result_metadata']['output_port_id'],
++                  'outcome': 'complete', 'product': evidence(product_ref), 'workspace_snapshot': evidence(snapshot_ref),
++                  'workspace': {'sha256': sha(workspace), 'size': len(workspace)},
++                  'representation': 'Non-text object schema. Product/workspace/snapshot preserve identical supplied JSON-document bytes.'},
++        'operation_result': evidence(op_ref), 'terminal': evidence(result['terminal_evidence_ref']),
++        'run_ref': result['run_ref'], 'task_ref': result['task_ref'], 'terminal_result_ref': product_ref,
++        'run_outcome': terminal['run_outcome'], 'read_only_head_before_after': [before, after],
++        'fresh_prompt_unchanged_on_readback': True, 'historical_resume': 'NOT_RUN',
++        'local_runtime': str(raw), 'local_request': str(raw / 'request-1.json'),
++    }
++    dump(out / 'evidence.json', report)
++    loaded = sorted({Path(m.__file__).resolve() for m in tuple(sys.modules.values())
++                     if getattr(m, '__file__', None) and Path(m.__file__).resolve().is_relative_to(SOURCE)})
++    loaded.append(Path(__file__).resolve())
++    dump(out / 'tested-files.json', [{'path': str(p), 'sha256': sha(p.read_bytes()), 'size': p.stat().st_size} for p in loaded if p.is_file()])

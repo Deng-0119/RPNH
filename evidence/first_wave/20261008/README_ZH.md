@@ -2,6 +2,8 @@
 
 本目录按用户要求保留失败的原始内容，供网页端结合环境、版本、配置、输入交付、模型／工具行为及验收语义分析。不要只从最终分数推断单一原因。
 
+**共享 harness A/B 补验（2026-10-08）**：[shared-harness/](shared-harness/README_ZH.md) 接入共享 Registry reader 与 write_file 提示对齐，17文件保持冻结补丁字节。独立代码/原生复核 ACCEPTED_FINITE，整体 PARTIAL_ENV：A241通过/1项未改所有权检查的环境阻断，B36通过；六项原生 managed-action/双消费者/main-session/text/真正structured检查均通过，逻辑调用12、真实provider0。保留原始失败与WSL启动阻断，不改写旧实验分数或把未运行历史reproject当通过。
+
 **工具 Pipeline 原生补验（2026-10-08）**：[tool-pipeline/](tool-pipeline/README_ZH.md) 保留完整云端历史阻断/部分完成记录及本地原生验收。默认22项和补充10个不同测试通过（32个不同IDs，镜像重复窗口不另计覆盖）；标准1.70、逐行舍入0.02 CNY，独立进程Registry回读无新增事件或dispatch。16文件示例保持包内字节、core无改动，模型计数[0,0]；原始数据库/环境留本地，安全文本导出及转换清单公开。未改变下文ERP/SCB实验身份或分数。
 
 **ERP unknown 本地补验（2026-10-08）**：`erp-unknown/` 保留原云端EPERM失败和本轮分层证据。A为65个不同pytest node IDs全部通过（原15socket阻断项已补齐），另4subtests；B安装态complete/stop/timeout三场景通过，fake submissions为4/3/3；C六个真实worker/AF_UNIX/Registry场景通过，unknown阻断在Registry层核对，known输出与合法后续调用保留。真实模型/provider、Odoo/Docker/world/grader均未运行，不改变下文历史业务分数。原五文件补丁与新增fixture独立保存；私有路径脱敏记录及source/export hashes见该目录MANIFEST，raw Registry/profile/transcripts只留本地。

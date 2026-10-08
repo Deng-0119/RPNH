@@ -1,0 +1,62 @@
+{
+  "status": "PASS_FINITE_NATIVE",
+  "windows": [
+    {
+      "path": "probes/A/native-start.xml",
+      "tests": 1,
+      "time_seconds": 57.342,
+      "test_ids": [
+        "tests.test_optional_managed_plugin_actions::test_node_scoped_managed_calls_persist_v3_alongside_builtin_v2"
+      ]
+    },
+    {
+      "path": "probes/A/consumers.xml",
+      "tests": 1,
+      "time_seconds": 52.18,
+      "test_ids": [
+        "task-shared-harness-validation-20261008.probes.A.test_native_consumers::test_native_managed_export_and_two_read_only_consumers"
+      ]
+    },
+    {
+      "path": "probes/B/gate.xml",
+      "tests": 2,
+      "time_seconds": 42.423,
+      "test_ids": [
+        "tests.test_main_session_registry::test_main_turn_accepts_direct_text_write_without_double_json_quoting",
+        "tests.test_main_session_registry::test_real_terminal_child_registry_is_receipt_authority"
+      ]
+    },
+    {
+      "path": "probes/B/i1.xml",
+      "tests": 1,
+      "time_seconds": 18.664,
+      "test_ids": [
+        "task-shared-harness-validation-20261008.probes.B.test_native_text::test_fresh_native_text_recipe_write"
+      ]
+    },
+    {
+      "path": "probes/B/j1.xml",
+      "tests": 1,
+      "time_seconds": 17.459,
+      "test_ids": [
+        "task-shared-harness-validation-20261008.probes.B.test_native_structured::test_fresh_native_structured_recipe_write"
+      ]
+    }
+  ],
+  "native_unique_test_count": 6,
+  "native_scripted_logical_calls_by_run": [
+    4,
+    4,
+    1,
+    1,
+    1,
+    1
+  ],
+  "native_logical_calls_total": 12,
+  "native_real_provider_calls": 0,
+  "residual_sockets": [],
+  "all17_main_equal_frozen": true,
+  "A_offline_separate": "241passed/1failed classifiedBLOCKED_ENV; full originalJUnit retained",
+  "B_offline_separate": "36passed",
+  "do_not_sum_windows_as_whole_repo_coverage": true
+}

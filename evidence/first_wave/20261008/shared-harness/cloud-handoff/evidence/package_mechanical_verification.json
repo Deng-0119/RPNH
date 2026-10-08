@@ -1,0 +1,47 @@
+{
+  "status": "PASS_MECHANICAL_ONLY",
+  "source_count": 17,
+  "baseline_count": 13,
+  "checks": [
+    {
+      "form": "two_original_patches",
+      "command": "git apply --check",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "form": "two_original_patches",
+      "command": "git apply",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "form": "two_original_patches",
+      "operation": "all 17 applied-file hashes match",
+      "status": "PASS"
+    },
+    {
+      "form": "concatenated_original_bytes",
+      "command": "git apply --check",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "form": "concatenated_original_bytes",
+      "command": "git apply",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "form": "concatenated_original_bytes",
+      "operation": "all 17 applied-file hashes match",
+      "status": "PASS"
+    }
+  ],
+  "tests_executed_during_packaging": false,
+  "concatenated_patch_sha256": "b6252931e2e0b31efeac50319496a15ae4f5c6464a66c371aea920dd04924bc1"
+}

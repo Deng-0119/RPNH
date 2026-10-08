@@ -1,0 +1,25 @@
+{
+  "status": "PASS_EXACT_BYTES",
+  "base": "c545621c30452650202ad0aca2bc023b6956929b",
+  "all17_equal_tested_worktree": true,
+  "patches_unchanged": true,
+  "scope": [
+    "cpn/rpnh/collaboration/environment_host.py",
+    "cpn/rpnh/registry/_event_store/collaboration_descriptors.py",
+    "cpn/rpnh/registry/object_store.py",
+    "cpn/rpnh/registry/run_authority.py",
+    "docs/ARCHITECTURE.md",
+    "docs/ARCHITECTURE_ZH.md",
+    "examples/harnessaudit_office/README.md",
+    "examples/harnessaudit_office/README_ZH.md",
+    "examples/harnessaudit_office/src/rpnh_ha/recovery.py",
+    "examples/harnessaudit_office/src/rpnh_ha/registry_export.py",
+    "examples/harnessaudit_office/tests/test_registry_reader_consumers.py",
+    "examples/harnessaudit_office/tests/test_terminal_identity.py",
+    "tests/test_package_result_projection.py",
+    "tests/test_run_descriptor_reads.py",
+    "cpn/components/agent_loop/optional_host_bindings.py",
+    "tests/test_optional_output_guidance.py",
+    "tests/test_workspace_write_atomicity.py"
+  ]
+}

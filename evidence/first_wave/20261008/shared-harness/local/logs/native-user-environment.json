@@ -1,0 +1,33 @@
+{
+  "label": "native-user-environment",
+  "command": [
+    "wsl.exe",
+    "--distribution",
+    "Ubuntu",
+    "--user",
+    "deng123",
+    "--cd",
+    "<WORKSPACE>/.h26/s",
+    "--exec",
+    "<WORKSPACE>/.p26/v/bin/python",
+    "-B",
+    "-c",
+    "import os,json,sys;from pathlib import Path; print(json.dumps({\"euid\":os.geteuid(),\"python\":sys.executable,\"paths\":[{\"path\":str(p),\"uid\":p.stat().st_uid,\"mode\":oct(p.stat().st_mode&511)} for p in [Path(\"/\"),Path(\"/home\"),Path(\"/home/deng123\"),Path(\"<WORKSPACE>/.h26\")]]},indent=2))"
+  ],
+  "cwd": "<WORKSPACE>/.h26/s",
+  "pid": 3,
+  "started_at": "2026-10-08T15:14:29.695938+00:00",
+  "finished_at": "2026-10-08T15:14:29.703873+00:00",
+  "elapsed_seconds": 0.007939856000120926,
+  "exit_code": 1,
+  "tested_head": "c545621c30452650202ad0aca2bc023b6956929b",
+  "environment_overrides": {
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONUNBUFFERED": "1",
+    "PYTHONPATH": "<WORKSPACE>/.h26/s",
+    "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1",
+    "TMPDIR": "<WORKSPACE>/.h26/tmp"
+  },
+  "stdout": "<WORKSPACE>/task-shared-harness-validation-20261008/logs/native-user-environment.stdout.log",
+  "stderr": "<WORKSPACE>/task-shared-harness-validation-20261008/logs/native-user-environment.stderr.log"
+}

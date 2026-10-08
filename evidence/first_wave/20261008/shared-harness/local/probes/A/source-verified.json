@@ -1,0 +1,83 @@
+{
+  "base": "c545621c30452650202ad0aca2bc023b6956929b",
+  "files": [
+    {
+      "path": "cpn/rpnh/collaboration/environment_host.py",
+      "sha256": "6e19881f1a2377fcab79756b984af5426eae3dcce0ed2d6400d442aa92846382"
+    },
+    {
+      "path": "cpn/rpnh/registry/_event_store/collaboration_descriptors.py",
+      "sha256": "53140faeca4c955df5bbccac6c29bfa59152f258728f79c9a14c9ffeb770ac58"
+    },
+    {
+      "path": "cpn/rpnh/registry/object_store.py",
+      "sha256": "17c322ea0d357fffd5f77278cdac2104f9f5bbc9196b4880ca7b253c67c10fa8"
+    },
+    {
+      "path": "cpn/rpnh/registry/run_authority.py",
+      "sha256": "c934cd1cdab49abfc5953c96c5bcedbad2a21e4e2acb5693e3cf7a0be9e3a311"
+    },
+    {
+      "path": "docs/ARCHITECTURE.md",
+      "sha256": "730c2438b18fb7968698554f0c323fce2dc1cbcaad342002659fb6e0f411973e"
+    },
+    {
+      "path": "docs/ARCHITECTURE_ZH.md",
+      "sha256": "fc015519dc5130ad97a688c822b3beae9bf5a7159ecb56f061180e58842dbda9"
+    },
+    {
+      "path": "examples/harnessaudit_office/README.md",
+      "sha256": "080485172fd2e706e496d179d97747d34173f37c6372370ae558d00d8c4fcbf3"
+    },
+    {
+      "path": "examples/harnessaudit_office/README_ZH.md",
+      "sha256": "443b538f0c1df49d3d7a24aa262346b608b69b1f304e519a2e05f03fa5afe2c2"
+    },
+    {
+      "path": "examples/harnessaudit_office/src/rpnh_ha/recovery.py",
+      "sha256": "b4eadd7281513c0de7398cfa70a0f2cb04c6177bb68080c59fa20e1f813cdec0"
+    },
+    {
+      "path": "examples/harnessaudit_office/src/rpnh_ha/registry_export.py",
+      "sha256": "a8da5819e2e75df9a8def31a5515bf3fb8cf794ea5f59ed42bb1db6bd664982b"
+    },
+    {
+      "path": "examples/harnessaudit_office/tests/test_registry_reader_consumers.py",
+      "sha256": "05cf17fdbc67f64235e343c8708879724b2d7989cbc1a999ebba2d0c5ee1773f"
+    },
+    {
+      "path": "examples/harnessaudit_office/tests/test_terminal_identity.py",
+      "sha256": "44da373728533abbed6898f8aa988afb67ecb370164a55923e8f23030aac77f2"
+    },
+    {
+      "path": "tests/test_package_result_projection.py",
+      "sha256": "3b10b731035f66095499fdd37a97a988b304147b0ac9441007f67133c4e6699f"
+    },
+    {
+      "path": "tests/test_run_descriptor_reads.py",
+      "sha256": "df9dd66ce25d887c22d2bc28d363fbeb225d18125fb31eb323c744bb05823f2b"
+    },
+    {
+      "path": "cpn/components/agent_loop/optional_host_bindings.py",
+      "sha256": "9a6304e7ee54552af102b31f6d4e736b7c50578fdcbafc2c0c01d8fe350c0f3f"
+    },
+    {
+      "path": "tests/test_optional_output_guidance.py",
+      "sha256": "beadc32423abb3a14bd54ab8af0ffbac31d7508598f82179d99652aeb54be6b6"
+    },
+    {
+      "path": "tests/test_workspace_write_atomicity.py",
+      "sha256": "b4e5ce2a5ea2e159fa2b4bad308cd7ea72d1a58af28819cc2b723f6a737f937f"
+    }
+  ],
+  "patches": [
+    {
+      "path": "patches/A-registry-execution-reader.patch",
+      "sha256": "61f2f7115306b8c39846d34e77918c31ae4ccf9f62c0a8835a661c7124400137"
+    },
+    {
+      "path": "patches/B-shared-output-guidance.patch",
+      "sha256": "af1e325ad37099ed1430d282337999c8d1080fa00fae31f8ff2d2c9f59a41a76"
+    }
+  ]
+}

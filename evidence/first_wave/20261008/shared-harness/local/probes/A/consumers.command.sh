@@ -1,0 +1,2 @@
+cd <WORKSPACE>/.h26/s
+PYTHONDONTWRITEBYTECODE=1 PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 TMPDIR=<WORKSPACE>/.h26/tmp PYTHONPATH=<WORKSPACE>/.h26/s:<WORKSPACE>/.h26/s/tests:<WORKSPACE>/.h26/s/examples/harnessaudit_office/src:<WORKSPACE>/task-shared-harness-validation-20261008/probes/A <WORKSPACE>/.p26/v/bin/python -m pytest -q <WORKSPACE>/task-shared-harness-validation-20261008/probes/A/test_native_consumers.py -p no:cacheprovider --basetemp=<WORKSPACE>/.h26/an/consumers --junitxml=<WORKSPACE>/task-shared-harness-validation-20261008/probes/A/consumers.xml

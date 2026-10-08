@@ -1,0 +1,175 @@
+{
+  "status": "PASS",
+  "case": "fresh_native_structured",
+  "entry": "trusted HOST ModuleDeclaration/Registration/start_run -> OwnerEventLoop/Orchestrator(Harness)/ExecutionServices optional AgentLoop",
+  "real_provider_calls": 0,
+  "scripted_port_requests": 1,
+  "logical_call_ledger": [
+    1,
+    0
+  ],
+  "ledger_tuple_meaning": [
+    "settled_calls",
+    "post_limit_excess"
+  ],
+  "static_prompt": {
+    "ref": {
+      "entity_type": "resource_version/v1",
+      "logical_id": "resource:0cf0c001ccf855d8ae8c3254b79f999f",
+      "version_id": "resource_version:f1d091f670fa5a1b8d1f0ae5c6d86c69"
+    },
+    "payload_sha256": "f6f99795d68e7889e6e1221c9345c612acbf342bd6b135c21a43e752713699e1",
+    "size": 1178
+  },
+  "optional_agent_tool_catalog": {
+    "ref": {
+      "entity_type": "resource_version/v1",
+      "logical_id": "resource:bc3e19198d995b0b98a1abde7c36fcf5",
+      "version_id": "resource_version:f217cf853afd5ae394129122c41d4e06"
+    },
+    "payload_sha256": "847d8ac5ff946a7f854e53bfd8453eff899b39ec8ae6a32c471dbd853484ecc5",
+    "size": 5644
+  },
+  "recipe": {
+    "ref": {
+      "entity_type": "resource_version/v1",
+      "logical_id": "resource:39a770fac43b5c52b6d0d6fd61c6f990",
+      "version_id": "resource_version:14d98a4fd5ea5b2a8909d035d9d85d3c"
+    },
+    "payload_sha256": "ff1bfcf1873228a2d139850d641fd03d826344286c4f2cb6402dc4839de519f8",
+    "size": 16758,
+    "canonical_sha256": "ff1bfcf1873228a2d139850d641fd03d826344286c4f2cb6402dc4839de519f8",
+    "source_refs": [
+      {
+        "ref": {
+          "entity_type": "resource_version/v1",
+          "logical_id": "resource:0cf0c001ccf855d8ae8c3254b79f999f",
+          "version_id": "resource_version:f1d091f670fa5a1b8d1f0ae5c6d86c69"
+        },
+        "payload_sha256": "f6f99795d68e7889e6e1221c9345c612acbf342bd6b135c21a43e752713699e1",
+        "size": 1178
+      },
+      {
+        "ref": {
+          "entity_type": "resource_version/v1",
+          "logical_id": "resource:92ee1a49e1e45fc6bbdec17f7dbbd841",
+          "version_id": "resource_version:699e3a41aa2a54bd9b509de798ceff25"
+        },
+        "payload_sha256": "b7c6778f8f27d988b35470194399753000dc2cf8be4356ad71f203c74e9dd67f",
+        "size": 43
+      },
+      {
+        "ref": {
+          "entity_type": "resource_version/v1",
+          "logical_id": "resource:bc3e19198d995b0b98a1abde7c36fcf5",
+          "version_id": "resource_version:f217cf853afd5ae394129122c41d4e06"
+        },
+        "payload_sha256": "847d8ac5ff946a7f854e53bfd8453eff899b39ec8ae6a32c471dbd853484ecc5",
+        "size": 5644
+      }
+    ]
+  },
+  "provider_envelope": {
+    "bytes_sha256": "b8d6c1c4d9da165f545f2ee90860d66528afa193854b4cdc78107ee48fcb8fdf",
+    "size": 16758,
+    "rematerialized_sha256": "b8d6c1c4d9da165f545f2ee90860d66528afa193854b4cdc78107ee48fcb8fdf",
+    "messages_and_tools_equal": true,
+    "recipe_bytes_equal_envelope": false
+  },
+  "write": {
+    "action_ref": {
+      "entity_type": "agent_action/v2",
+      "logical_id": "agent_action:773f56b796eb5f32b081ef632874695e",
+      "version_id": "agent_action_version:a51faf1ffbbf5bbb88a3efff13db9cd1"
+    },
+    "completion_action_ref": {
+      "entity_type": "agent_action/v2",
+      "logical_id": "agent_action:453797af28b15da29ff218c2ef6532af",
+      "version_id": "agent_action_version:df9b9a733e8f512e86bdc81d98994588"
+    },
+    "output_schema": "application/local_b_structured/v1",
+    "schema_authority": {
+      "ref": {
+        "entity_type": "resource_version/v1",
+        "logical_id": "resource:0bb53ad5d4265b03a2b4e8c1bbbc8faf",
+        "version_id": "resource_version:9590d099df2e5d238c08d638037e347e"
+      },
+      "payload_sha256": "6b3bbe447ca1b5cb3a81639e7b01ad721d8fdeb65673d19db48509eae39c3040",
+      "size": 309
+    },
+    "declared_output_port": "main.result",
+    "internal_port": "port_2",
+    "outcome": "complete",
+    "product": {
+      "ref": {
+        "entity_type": "resource_version/v1",
+        "logical_id": "resource:1ccdca1b087b520d80209d64df9d33ed",
+        "version_id": "resource_version:a68ebed058e05f668025c7200ebd6a1c"
+      },
+      "payload_sha256": "9a787067d88985cc070c0a4fd87e207263988fb8dc7d799c99cd1f14ac6b7d94",
+      "size": 108
+    },
+    "workspace_snapshot": {
+      "ref": {
+        "entity_type": "resource_version/v1",
+        "logical_id": "resource:538810f2f799588485e6098907dc0beb",
+        "version_id": "resource_version:408753fde61e5a0b8440f59e2ab4e0e0"
+      },
+      "payload_sha256": "9a787067d88985cc070c0a4fd87e207263988fb8dc7d799c99cd1f14ac6b7d94",
+      "size": 108
+    },
+    "workspace": {
+      "sha256": "9a787067d88985cc070c0a4fd87e207263988fb8dc7d799c99cd1f14ac6b7d94",
+      "size": 108
+    },
+    "representation": "Non-text object schema. Product/workspace/snapshot preserve identical supplied JSON-document bytes."
+  },
+  "operation_result": {
+    "ref": {
+      "entity_type": "operation_result/v1",
+      "logical_id": "operation_result:36eb7cf15b8752929626290eef320759",
+      "version_id": "operation_result_version:2697f6a09c465dc785fc1ed0f24a34a0"
+    },
+    "payload_sha256": "61c9041514a81ec19a9c07e0e36225670b3617f8e2701419dfeff7fa463f0475",
+    "size": 862
+  },
+  "terminal": {
+    "ref": {
+      "entity_type": "run_terminal_evidence/v1",
+      "logical_id": "terminal_evidence:f73a374d2f8847eca20c18861100feed",
+      "version_id": "terminal_evidence_version:9b79b1a0a450423da91e947dcc68fd2b"
+    },
+    "payload_sha256": "082feda4b60baccc81bab69a28631d3ffbeff9b005f7ed66d73bd10d7f3b9421",
+    "size": 1234
+  },
+  "run_ref": {
+    "entity_type": "native_run_identity/v1",
+    "logical_id": "run:83ed5c650f4e46889d2b6ccd715a3b39",
+    "version_id": "run_version:de7042e3f590411896dfce94173a2f78"
+  },
+  "task_ref": {
+    "entity_type": "task/v1",
+    "logical_id": "task:383ed727e89a4b1ea0166e6a0e21c555",
+    "version_id": "task_version:482eaecba5104e6397dd2933b5d7e3c3"
+  },
+  "terminal_result_ref": {
+    "entity_type": "resource_version/v1",
+    "logical_id": "resource:1ccdca1b087b520d80209d64df9d33ed",
+    "version_id": "resource_version:a68ebed058e05f668025c7200ebd6a1c"
+  },
+  "run_outcome": "complete",
+  "read_only_head_before_after": [
+    [
+      456,
+      2
+    ],
+    [
+      456,
+      2
+    ]
+  ],
+  "fresh_prompt_unchanged_on_readback": true,
+  "historical_resume": "NOT_RUN",
+  "local_runtime": "<WORKSPACE>/.h26/bn/j1",
+  "local_request": "<WORKSPACE>/.h26/bn/j1/request-1.json"
+}

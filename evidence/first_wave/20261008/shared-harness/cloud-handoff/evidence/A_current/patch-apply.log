@@ -1,0 +1,14 @@
+cpn/rpnh/collaboration/environment_host.py: OK
+cpn/rpnh/registry/_event_store/collaboration_descriptors.py: OK
+cpn/rpnh/registry/object_store.py: OK
+cpn/rpnh/registry/run_authority.py: OK
+docs/ARCHITECTURE.md: OK
+docs/ARCHITECTURE_ZH.md: OK
+examples/harnessaudit_office/README.md: OK
+examples/harnessaudit_office/README_ZH.md: OK
+examples/harnessaudit_office/src/rpnh_ha/recovery.py: OK
+examples/harnessaudit_office/src/rpnh_ha/registry_export.py: OK
+examples/harnessaudit_office/tests/test_registry_reader_consumers.py: OK
+examples/harnessaudit_office/tests/test_terminal_identity.py: OK
+tests/test_package_result_projection.py: OK
+tests/test_run_descriptor_reads.py: OK

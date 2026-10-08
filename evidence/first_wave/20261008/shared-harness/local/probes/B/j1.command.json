@@ -1,0 +1,26 @@
+{
+  "command": [
+    "<WORKSPACE>/.p26/v/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "-p",
+    "no:cacheprovider",
+    "<WORKSPACE>/task-shared-harness-validation-20261008/probes/B/test_native_structured.py",
+    "--basetemp=<WORKSPACE>/.h26/bn/pj1",
+    "--junitxml=<WORKSPACE>/task-shared-harness-validation-20261008/probes/B/j1.xml"
+  ],
+  "cwd": "<WORKSPACE>/.h26/s",
+  "environment": {
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONPATH": "<WORKSPACE>/.h26/s:<WORKSPACE>/.h26/s/tests",
+    "TMPDIR": "<WORKSPACE>/.h26/tmp",
+    "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1",
+    "B_ITERATION": "j1"
+  },
+  "started_utc": "2026-10-08T15:20:14.724471+00:00",
+  "fixture_sha256": "7a5a48e45aa4f9d5d588c06c2ae89efcc8c2b55bf96fe247d72539f5d46438d7",
+  "exit_code": 0,
+  "elapsed_seconds": 17.821440687000177,
+  "ended_utc": "2026-10-08T15:20:34.705078+00:00"
+}

@@ -1,0 +1,284 @@
+{
+  "status": "PASS",
+  "driver_result": {
+    "schema_version": "rpnh/agent_task_result/v1",
+    "kind": "workflow",
+    "run_dir": "<WORKSPACE>/.h26/an/consumers/test_native_managed_export_and0/run",
+    "run_ref": {
+      "entity_type": "native_run_identity/v1",
+      "logical_id": "run:f92230c3fc24492fbd91bcebfd90f111",
+      "version_id": "run_version:3c2771243ee64e7699ffd838db76030b"
+    },
+    "task_ref": {
+      "entity_type": "task/v1",
+      "logical_id": "task:e0f69bb286c945c0b044fe4882c34f54",
+      "version_id": "task_version:dd74c082a26f4c5da8fb0182afa2c2db"
+    },
+    "stop_reason": "terminal",
+    "terminal_evidence_ref": {
+      "entity_type": "run_terminal_evidence/v1",
+      "logical_id": "terminal_evidence:d2d34d47c6cc486cb33f53407668ac22",
+      "version_id": "terminal_evidence_version:bc17aa1d1ced458ab5e6b8cf73b28a8d"
+    },
+    "terminal_result_ref": {
+      "entity_type": "resource_version/v1",
+      "logical_id": "resource:0b70e2b7d6c7577380ba56a6fbb5ebad",
+      "version_id": "resource_version:4baf0b09fbcb5c529dae6cfd8aa5daff"
+    },
+    "output": "finalize",
+    "actual_model_call_counts": [
+      4,
+      0
+    ]
+  },
+  "environment_result": {
+    "terminal_result_ref": {
+      "entity_type": "resource_version/v1",
+      "logical_id": "resource:0b70e2b7d6c7577380ba56a6fbb5ebad",
+      "version_id": "resource_version:4baf0b09fbcb5c529dae6cfd8aa5daff"
+    },
+    "terminal_evidence_ref": {
+      "entity_type": "run_terminal_evidence/v1",
+      "logical_id": "terminal_evidence:d2d34d47c6cc486cb33f53407668ac22",
+      "version_id": "terminal_evidence_version:bc17aa1d1ced458ab5e6b8cf73b28a8d"
+    },
+    "run_execution_authority_ref": {
+      "entity_type": "run_execution_authority/v1",
+      "logical_id": "run_execution_authority:43bb29df016854268b3915d256e3f2a9",
+      "version_id": "run_execution_authority_version:83f1c1af644e459d9b8497d817d31bb6"
+    },
+    "final_checkpoint_ref": {
+      "entity_type": "marking_checkpoint/v1",
+      "logical_id": "marking_checkpoint:593e7453c6a653dc93bc703b4b912cca",
+      "version_id": "marking_checkpoint_version:c5c32aa68a3c534395342c3775ba111e"
+    },
+    "run_outcome": "complete",
+    "media_type": "application/json",
+    "byte_count": 10,
+    "status": "available",
+    "content_sha256": "3693559e72ab76a4a0985c480b5d726723a4cb5768e832cc918eb76d45edabaa",
+    "output": "finalize"
+  },
+  "ha_terminal_identity": {
+    "schema_version": "rpnh-ha/current-terminal-identity/v1",
+    "run_execution_authority_ref": {
+      "entity_type": "run_execution_authority/v1",
+      "logical_id": "run_execution_authority:43bb29df016854268b3915d256e3f2a9",
+      "version_id": "run_execution_authority_version:83f1c1af644e459d9b8497d817d31bb6"
+    },
+    "execution_status": "terminal",
+    "execution_generation": 0,
+    "terminal_evidence_ref": {
+      "entity_type": "run_terminal_evidence/v1",
+      "logical_id": "terminal_evidence:d2d34d47c6cc486cb33f53407668ac22",
+      "version_id": "terminal_evidence_version:bc17aa1d1ced458ab5e6b8cf73b28a8d"
+    },
+    "terminal_result_ref": {
+      "entity_type": "resource_version/v1",
+      "logical_id": "resource:0b70e2b7d6c7577380ba56a6fbb5ebad",
+      "version_id": "resource_version:4baf0b09fbcb5c529dae6cfd8aa5daff"
+    },
+    "run_outcome": "complete",
+    "head_ordinal": 893,
+    "writer_fencing_epoch": 2
+  },
+  "managed_actions": [
+    {
+      "agent_action_ref": {
+        "entity_type": "agent_action/v3",
+        "logical_id": "agent_action:8ebf9efaae4656ccbed0448d8f642026",
+        "version_id": "agent_action_version:20cdc4ccb24d50839faabdfe43af5322"
+      },
+      "started_receipt_ref": {
+        "resource_id": "resource:9e3ea8d327e05b2e84ea4f6b3b10ed2b",
+        "resource_version_id": "resource_version:1e827e02235c523da22278f245065a60"
+      },
+      "terminal_receipt_ref": {
+        "resource_id": "resource:9e3ea8d327e05b2e84ea4f6b3b10ed2b",
+        "resource_version_id": "resource_version:0aa96c2a23d55884ad5d6d53df419eb8"
+      },
+      "selector": "localprobe/echo",
+      "effect": "pure",
+      "outcome": "returned",
+      "non_delivery_reason": "provider_delivery_not_recorded",
+      "model_visible_result_ref": null
+    },
+    {
+      "agent_action_ref": {
+        "entity_type": "agent_action/v3",
+        "logical_id": "agent_action:a79c8af6fd005ab6bb381ab383c943f6",
+        "version_id": "agent_action_version:2d83dc28a7de5eaca37db5f1a78c3438"
+      },
+      "started_receipt_ref": {
+        "resource_id": "resource:d95cedcf3d0e506e954877e1ed3b61b4",
+        "resource_version_id": "resource_version:c664924816d65742bc3356233e3b6e9d"
+      },
+      "terminal_receipt_ref": {
+        "resource_id": "resource:d95cedcf3d0e506e954877e1ed3b61b4",
+        "resource_version_id": "resource_version:878c0a77722f59f288d7c24540ec26d0"
+      },
+      "selector": "localprobe/echo",
+      "effect": "pure",
+      "outcome": "returned",
+      "non_delivery_reason": "provider_delivery_not_recorded",
+      "model_visible_result_ref": null
+    }
+  ],
+  "registry_records": [
+    {
+      "run_id": "local-A-native-consumers",
+      "operation_id": "localprobe/echo",
+      "invocation_id": "invocation_version:225c4294fc5057c68177687ef6d3f95c",
+      "firing_id": "transition_firing_version:e4fd3b63c8875df699a33a80baa8492e",
+      "call_id": "managed-first",
+      "tool_name": "shared",
+      "witness_request_sequence": 1,
+      "phase": "admitted",
+      "registry_ref": {
+        "resource_id": "resource:9e3ea8d327e05b2e84ea4f6b3b10ed2b",
+        "resource_version_id": "resource_version:1e827e02235c523da22278f245065a60"
+      }
+    },
+    {
+      "run_id": "local-A-native-consumers",
+      "operation_id": "localprobe/echo",
+      "invocation_id": "invocation_version:225c4294fc5057c68177687ef6d3f95c",
+      "firing_id": "transition_firing_version:e4fd3b63c8875df699a33a80baa8492e",
+      "call_id": "managed-first",
+      "tool_name": "shared",
+      "witness_request_sequence": 1,
+      "phase": "settled",
+      "registry_ref": {
+        "resource_id": "resource:9e3ea8d327e05b2e84ea4f6b3b10ed2b",
+        "resource_version_id": "resource_version:0aa96c2a23d55884ad5d6d53df419eb8"
+      }
+    },
+    {
+      "run_id": "local-A-native-consumers",
+      "operation_id": "localprobe/echo",
+      "invocation_id": "invocation_version:e97718769a9a523b9c3b954839b640b6",
+      "firing_id": "transition_firing_version:4ed463b714b150dbb71d40e80200789b",
+      "call_id": "managed-finalize",
+      "tool_name": "shared",
+      "witness_request_sequence": 1,
+      "phase": "admitted",
+      "registry_ref": {
+        "resource_id": "resource:d95cedcf3d0e506e954877e1ed3b61b4",
+        "resource_version_id": "resource_version:c664924816d65742bc3356233e3b6e9d"
+      }
+    },
+    {
+      "run_id": "local-A-native-consumers",
+      "operation_id": "localprobe/echo",
+      "invocation_id": "invocation_version:e97718769a9a523b9c3b954839b640b6",
+      "firing_id": "transition_firing_version:4ed463b714b150dbb71d40e80200789b",
+      "call_id": "managed-finalize",
+      "tool_name": "shared",
+      "witness_request_sequence": 1,
+      "phase": "settled",
+      "registry_ref": {
+        "resource_id": "resource:d95cedcf3d0e506e954877e1ed3b61b4",
+        "resource_version_id": "resource_version:878c0a77722f59f288d7c24540ec26d0"
+      }
+    }
+  ],
+  "capture_diagnostics": {
+    "schema_version": "rpnh-ha/capture-diagnostics/v4",
+    "projection_revision": "execution-return-registry-reader-v3",
+    "terminal_identity": {
+      "schema_version": "rpnh-ha/current-terminal-identity/v1",
+      "run_execution_authority_ref": {
+        "entity_type": "run_execution_authority/v1",
+        "logical_id": "run_execution_authority:43bb29df016854268b3915d256e3f2a9",
+        "version_id": "run_execution_authority_version:83f1c1af644e459d9b8497d817d31bb6"
+      },
+      "execution_status": "terminal",
+      "execution_generation": 0,
+      "terminal_evidence_ref": {
+        "entity_type": "run_terminal_evidence/v1",
+        "logical_id": "terminal_evidence:d2d34d47c6cc486cb33f53407668ac22",
+        "version_id": "terminal_evidence_version:bc17aa1d1ced458ab5e6b8cf73b28a8d"
+      },
+      "terminal_result_ref": {
+        "entity_type": "resource_version/v1",
+        "logical_id": "resource:0b70e2b7d6c7577380ba56a6fbb5ebad",
+        "version_id": "resource_version:4baf0b09fbcb5c529dae6cfd8aa5daff"
+      },
+      "run_outcome": "complete",
+      "head_ordinal": 893,
+      "writer_fencing_epoch": 2
+    },
+    "scope": "registered_tool_execution_proven_read_handoffs_terminal_output",
+    "tool_execution_capture_complete": true,
+    "managed_result_model_input_complete": false,
+    "registered_return_without_model_input_proof": [
+      {
+        "agent_action_ref": {
+          "entity_type": "agent_action/v3",
+          "logical_id": "agent_action:8ebf9efaae4656ccbed0448d8f642026",
+          "version_id": "agent_action_version:20cdc4ccb24d50839faabdfe43af5322"
+        },
+        "tool_name": "shared",
+        "owning_node": "first",
+        "model_input_visibility": "unproven",
+        "execution_evidence": {
+          "kind": "verified_registered_managed_return/v1",
+          "started_receipt_ref": {
+            "resource_id": "resource:9e3ea8d327e05b2e84ea4f6b3b10ed2b",
+            "resource_version_id": "resource_version:1e827e02235c523da22278f245065a60"
+          },
+          "terminal_receipt_ref": {
+            "resource_id": "resource:9e3ea8d327e05b2e84ea4f6b3b10ed2b",
+            "resource_version_id": "resource_version:0aa96c2a23d55884ad5d6d53df419eb8"
+          },
+          "proves_model_input": false
+        }
+      },
+      {
+        "agent_action_ref": {
+          "entity_type": "agent_action/v3",
+          "logical_id": "agent_action:a79c8af6fd005ab6bb381ab383c943f6",
+          "version_id": "agent_action_version:2d83dc28a7de5eaca37db5f1a78c3438"
+        },
+        "tool_name": "shared",
+        "owning_node": "finalize",
+        "model_input_visibility": "unproven",
+        "execution_evidence": {
+          "kind": "verified_registered_managed_return/v1",
+          "started_receipt_ref": {
+            "resource_id": "resource:d95cedcf3d0e506e954877e1ed3b61b4",
+            "resource_version_id": "resource_version:c664924816d65742bc3356233e3b6e9d"
+          },
+          "terminal_receipt_ref": {
+            "resource_id": "resource:d95cedcf3d0e506e954877e1ed3b61b4",
+            "resource_version_id": "resource_version:878c0a77722f59f288d7c24540ec26d0"
+          },
+          "proves_model_input": false
+        }
+      }
+    ],
+    "all_possible_context_surfaces_audited": false,
+    "arbitrary_provider_transport_rewriting_audited": false,
+    "unmatched_product_reads": 0,
+    "unproven_visible_reads": 0,
+    "unproven_managed_results": 2,
+    "request_index_issues": [],
+    "reads": [],
+    "complete_within_declared_scope": true
+  },
+  "observation_counts": {
+    "managed_tool_call": 2,
+    "terminal_communication": 1
+  },
+  "cut_handles_distinct_and_bound": true,
+  "initial_owners": 1,
+  "read_phase_new_owners": 0,
+  "worker_pids": [
+    12,
+    13
+  ],
+  "fixture_pid": 8,
+  "real_provider_calls": 0,
+  "scripted_logical_calls": 4,
+  "witness_scope": "local plugin request ordinal, no HA Bank/business score/delivery claim"
+}

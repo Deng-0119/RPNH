@@ -1,0 +1,479 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:rpnh:shared-harness-local-validation-return:20261008",
+  "title": "RPNH Shared Harness Local Validation Return",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "package_name",
+    "validated_at_utc",
+    "source",
+    "environment",
+    "A",
+    "B",
+    "combined",
+    "native_evidence",
+    "local_additions",
+    "artifacts",
+    "safety",
+    "remaining_blockers"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "rpnh/shared-harness-local-validation-return/v1"
+    },
+    "package_name": {
+      "const": "RPNH_Shared_Harness_Local_Validation_20261008"
+    },
+    "validated_at_utc": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "source": {
+      "type": "object",
+      "required": [
+        "tested_base_commit",
+        "initial_head",
+        "initial_dirty_status",
+        "final_dirty_status",
+        "file_manifest_path",
+        "baseline_matches",
+        "patched_hashes_match"
+      ],
+      "properties": {
+        "tested_base_commit": {
+          "const": "c545621c30452650202ad0aca2bc023b6956929b"
+        },
+        "initial_head": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "initial_dirty_status": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "final_dirty_status": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "file_manifest_path": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "baseline_matches": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "patched_hashes_match": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "current_head_compatibility": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "environment": {
+      "type": "object",
+      "required": [
+        "os",
+        "python",
+        "pytest",
+        "native_socket_supported"
+      ],
+      "properties": {
+        "os": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "python": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "pytest": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "native_socket_supported": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "checkout_local_label": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "dependencies": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "A": {
+      "$ref": "#/$defs/package"
+    },
+    "B": {
+      "$ref": "#/$defs/package"
+    },
+    "combined": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/case"
+      }
+    },
+    "native_evidence": {
+      "type": "object",
+      "required": [
+        "real_provider_requests",
+        "scripted_logical_calls",
+        "text_chain",
+        "structured_chain",
+        "recipe_request_agreement",
+        "managed_action_export",
+        "saved_live_reprojection",
+        "read_only_fingerprints"
+      ],
+      "properties": {
+        "real_provider_requests": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "scripted_logical_calls": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "text_chain": {
+          "type": "object"
+        },
+        "structured_chain": {
+          "type": "object"
+        },
+        "recipe_request_agreement": {
+          "type": "object"
+        },
+        "managed_action_export": {
+          "type": "object"
+        },
+        "saved_live_reprojection": {
+          "type": "object"
+        },
+        "read_only_fingerprints": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "local_additions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "path",
+          "sha256",
+          "diff_path",
+          "reason",
+          "executed_command"
+        ],
+        "properties": {
+          "path": {
+            "type": "string"
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "diff_path": {
+            "type": "string"
+          },
+          "reason": {
+            "type": "string"
+          },
+          "executed_command": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "artifacts": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/evidence"
+      }
+    },
+    "safety": {
+      "type": "object",
+      "required": [
+        "no_push",
+        "no_actions",
+        "no_real_models",
+        "dirty_preserved",
+        "historical_scores_unchanged",
+        "historical_prompts_unchanged",
+        "no_private_db_or_credentials_uploaded"
+      ],
+      "properties": {
+        "no_push": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "no_actions": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "no_real_models": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "dirty_preserved": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "historical_scores_unchanged": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "historical_prompts_unchanged": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "no_private_db_or_credentials_uploaded": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "remaining_blockers": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "$defs": {
+    "case": {
+      "type": "object",
+      "required": [
+        "id",
+        "status",
+        "summary",
+        "evidence_paths",
+        "command",
+        "exit_code"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "NOT_RUN",
+            "PASS",
+            "FAIL",
+            "BLOCKED_ENV",
+            "BLOCKED_SOURCE",
+            "BLOCKED_AUTH",
+            "NOT_APPLICABLE"
+          ]
+        },
+        "summary": {
+          "type": "string"
+        },
+        "evidence_paths": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "command": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "exit_code": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "passed": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "failed": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "skipped": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "details": {
+          "type": "object"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "PASS"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "evidence_paths": {
+                "minItems": 1
+              }
+            }
+          }
+        }
+      ],
+      "additionalProperties": false
+    },
+    "package": {
+      "type": "object",
+      "required": [
+        "status",
+        "patch_sha256",
+        "cases",
+        "findings"
+      ],
+      "properties": {
+        "status": {
+          "enum": [
+            "NOT_RUN",
+            "PASS",
+            "FAIL",
+            "BLOCKED_ENV",
+            "BLOCKED_SOURCE",
+            "BLOCKED_AUTH",
+            "NOT_APPLICABLE"
+          ]
+        },
+        "patch_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "cases": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/case"
+          }
+        },
+        "findings": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "evidence": {
+      "type": "object",
+      "required": [
+        "path",
+        "sha256",
+        "kind"
+      ],
+      "properties": {
+        "path": {
+          "type": "string"
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "kind": {
+          "type": "string"
+        },
+        "original_sha256": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "redactions": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

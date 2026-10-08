@@ -1,0 +1,1342 @@
+[
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/__init__.py",
+    "sha256": "de056c00c1ed0e6d43aeb97347cb798d20dc1b45c411fc960a7106e77f882227",
+    "size": 69
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/components/agent_loop/__init__.py",
+    "sha256": "1b1f8a1721d498bb87ac32000b0de85d932914ae2a408c2f6f717b8b2e56cab8",
+    "size": 1673
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/components/agent_loop/action_execution.py",
+    "sha256": "7a8db75209f797b7b11e9b83677b2e61874189677620a120d49c0cf3e41433f5",
+    "size": 46712
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/components/agent_loop/action_records.py",
+    "sha256": "c4b9c60ea5ef62b55afd1bbc1f33e05959adee83a655bd36a3440461f360de95",
+    "size": 36575
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/components/agent_loop/compact.py",
+    "sha256": "78c6b54de8ec11ca5fcd4ea9b197c23f6813035bb2a6790fdf91fc6fe286dc62",
+    "size": 32565
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/components/agent_loop/compaction.py",
+    "sha256": "a3423ce9c32d790338529f75ea2cde596d78ff01fac69c9ac251c6c8c261bfb3",
+    "size": 61178
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/components/agent_loop/context.py",
+    "sha256": "f88819e5846042e7d5c1fde2f374736648aa8695c70b09ae656ac972ef451e0c",
+    "size": 59803
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/components/agent_loop/delegated_history.py",
+    "sha256": "0604bb250890c9507ce140b83b4ec32aec3044f22f0e3b72803d189dfeafffb0",
+    "size": 1551
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/components/agent_loop/delegation.py",
+    "sha256": "223bbe0ce2d2aecfe5b4569e3eda670c30f7a15d8db1ca2c89c4aca5993f1b3e",
+    "size": 53472
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/components/agent_loop/loop_state.py",
+    "sha256": "a7c87c184fd631937e7950f3174c8fb48517254345efcdb926e6f9982c56b24e",
+    "size": 36010
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/components/agent_loop/managed_execution.py",
+    "sha256": "4f2a2130ab64824cdbaa9c0c4dfc300af34d2d9bfed6525d2b6bcd238ab4b5f1",
+    "size": 4894
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/components/agent_loop/managed_output.py",
+    "sha256": "feb3099a85c10b4818b1443082adf82081db6e292636c76089dcb424a501cbe5",
+    "size": 6731
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/components/agent_loop/mechanical_contracts.py",
+    "sha256": "262de6a8727992a61a7dd76a2fa59bfeef85b483f3e7e8a148d88a92260550bc",
+    "size": 1046
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/components/agent_loop/mechanical_lifecycle.py",
+    "sha256": "1d0e561e9465638c77d72c77cd405e6830a1f8de7b51a698a45f1b7ceecaa21a",
+    "size": 2750
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/components/agent_loop/models.py",
+    "sha256": "497b68e99042be35bcdfe95f349f0c87278d0c847ad4bb665af197b0333242d8",
+    "size": 97451
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/components/agent_loop/optional_execution.py",
+    "sha256": "21a619a234b4ff92e30a976a8ad12013e46fbff09e6fee0877727db48d90be50",
+    "size": 5406
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/components/agent_loop/optional_host_bindings.py",
+    "sha256": "9a6304e7ee54552af102b31f6d4e736b7c50578fdcbafc2c0c01d8fe350c0f3f",
+    "size": 27064
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/components/agent_loop/ports.py",
+    "sha256": "f643862424735ed703b74a1e2d5120c992e6b4aaf8761fe48e2bf45b7a8633a7",
+    "size": 8847
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/components/agent_loop/program_execution.py",
+    "sha256": "167f563c5548027922a501c9327fa4fe158c0bf0b11186e9c09a8bf7f38a3dd9",
+    "size": 37276
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/components/agent_loop/request_envelope_materialization.py",
+    "sha256": "8da9aa08ece58d1e1cef0a2ae3036b3205bee6125cc32557e1d23458897b5809",
+    "size": 2188
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/components/agent_loop/resource_wait.py",
+    "sha256": "7dad078888135cd7b9bb748946d14cf26968c705bf923b22179628d50b2a9266",
+    "size": 19847
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/components/agent_loop/result_archive.py",
+    "sha256": "34107eea2fd43b2567e571d109055c0419310433700c7f3b53193bbbb17d0cea",
+    "size": 14355
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/components/agent_loop/service.py",
+    "sha256": "2b9cf3226fcea34ca0232544b126865ed43ce9b54ca88cf9c3455c379a910392",
+    "size": 84262
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/components/agent_loop/timing.py",
+    "sha256": "098d96a33f42fc279f28c8b1d3bab58bfe0120c6cd3961518766423ffcf8f53a",
+    "size": 3112
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/components/agent_loop/tool_catalog.py",
+    "sha256": "1f581b384a748df155a2a466485f4a579508ff50cff6cb190217fee97be8ff31",
+    "size": 33438
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/components/agent_loop/tool_projection.py",
+    "sha256": "8b25af6178cfb3df9a856a1d3839cde43ec71e4ee1798e4f0dd510dcd77dacc4",
+    "size": 6920
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/components/agent_loop/tool_validation.py",
+    "sha256": "ebe7332e9fa3ec30d6fdd7c62437d0de8f915df7a973a8c43a4c8ebef63515cf",
+    "size": 6143
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/components/agent_loop/tools.py",
+    "sha256": "de279ddb924f270257a3190e190232b0995225e9cd4e630af60e752ceba148b0",
+    "size": 2231
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/components/agent_loop/turn_execution.py",
+    "sha256": "3fcf80c045c45d97a0aeccbc30231194386c2104ab39601c3c896b7359a70780",
+    "size": 24275
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/components/agent_loop/turn_records.py",
+    "sha256": "8411e2c3fe74403bef0ef73968241632d88f5dfc7d5ebf5b485608166a5e6914",
+    "size": 70293
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/components/agent_loop/workspace.py",
+    "sha256": "4121d6c417a4bb23b58bc407cf8d50be3272586009c57642a3b07989328c6b57",
+    "size": 61240
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/components/basic.py",
+    "sha256": "f0796b62e4f942c0e5fe2c046951ed26f130fd44bd46a0f76e429935b0765d85",
+    "size": 3691
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/components/default_agent_executor.py",
+    "sha256": "26a250915cb8cffa9ba080f50d221f516d789fc451d82de19be6b86715fe0892",
+    "size": 27399
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/components/execution_services.py",
+    "sha256": "02b188dac39f54944744105788f9c7354447add517fef40d8d9b8eb054a5240e",
+    "size": 19817
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/components/executors.py",
+    "sha256": "de6fb4778791499e328227120acf48642ef82c49b70cbbc88ab21e164e7f7011",
+    "size": 876
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/components/external_kb.py",
+    "sha256": "304ae3ed0e8a01847da51327b5d91e4b450f8a546fcbe67b325976e071254216",
+    "size": 26219
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/components/harness_adapter.py",
+    "sha256": "9af636123e72ace1f0419551a34d9b26ccc307638cee111d72e026e9e3b61107",
+    "size": 1734
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/components/operation_gateway.py",
+    "sha256": "f61dda8075ec41d259ac1d9e343ba3a8db5ddf706590da8bf5285fede13b59cd",
+    "size": 5829
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/components/registered_host_llm.py",
+    "sha256": "cef717b7bd119b40ecd8bab2f1c9579922689f11435e2aee8f90236b47981350",
+    "size": 78749
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/components/registered_operation_dispatcher.py",
+    "sha256": "2bb9cd7f5eae3c4059f6c5ec47a6c315348f7223e5b2a81569ee7b053f6eb95d",
+    "size": 35824
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/components/request_protocol.py",
+    "sha256": "7257254f3b6c37dd499398010cd487db76d8c92b96b8a263565252fba49907d5",
+    "size": 7196
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/components/tool_executors.py",
+    "sha256": "b247e1b5f3a0c021c18b441b1a4feaf88358a57a7651bdce42089cd8462f90b6",
+    "size": 52408
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/llm_adapters/__init__.py",
+    "sha256": "a5d4753d737cbbcc990c802a1bda4c87aa945737b0364d1559331e3ba099ac9c",
+    "size": 520
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/llm_adapters/_common.py",
+    "sha256": "19e0398950ea728166346054da7253433e43c9235d1e5e3e8117f01960bd75af",
+    "size": 5736
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/llm_adapters/_external_provider_recovery.py",
+    "sha256": "c9185adce5799aac710621b539d4796eb550c7311bb26c6603677801e80b3a11",
+    "size": 2775
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/llm_adapters/config.py",
+    "sha256": "b29f0cbe0e3acabce35d64bc5dbb45406b62347fba5e05a7f7e16809abe1e79a",
+    "size": 16286
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/llm_adapters/factory.py",
+    "sha256": "7b799ef9800569befa9f7710651205419c4d1ed6314e3e43bc1fa36dcec6b419",
+    "size": 4894
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/orchestrator/__init__.py",
+    "sha256": "9fa08797be20ccd1bc36bf71935abe2ffbbc21e9668c642be6c8956ad5ee8a28",
+    "size": 286
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/orchestrator/runner.py",
+    "sha256": "b2ca4aa17c4b960b732ca0b814f8dc96c885babb9a1fbd095b47da953fe4ba03",
+    "size": 1613
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/plugins/__init__.py",
+    "sha256": "05977569960f4b4095da04ae56342489a0e20d89f4366ab07246a57bc8b4a5f9",
+    "size": 1161
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/plugins/api.py",
+    "sha256": "d00d12ed0124076be086c060ec6882799ee91033e4c6c91eaef553951daafbf8",
+    "size": 11857
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/plugins/catalog.py",
+    "sha256": "c581cd55fabbd494b3a96dc8763121e88e5947978745b4ab492b96413c894cd6",
+    "size": 14237
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/plugins/controlled_script.py",
+    "sha256": "f7d7d86a8559b219131bd22337c722a71ab2bc904fbc2b7f3b19e6e1a796ca6e",
+    "size": 37850
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/plugins/host.py",
+    "sha256": "21a33afd0ceac31ac30d160a474fdf50fc2801d8a1a6d504004843760a09c3ad",
+    "size": 21611
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/plugins/managed_tools.py",
+    "sha256": "f07362a8c49cad1d6709e33173942bee304538b728741d97563765a7bdf2ae0a",
+    "size": 55190
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/plugins/runtime.py",
+    "sha256": "b876ed9f06f804d7f1b0b3a12f3c40349594ef969564f080438dfa1c59457bd6",
+    "size": 5887
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/__init__.py",
+    "sha256": "5a11caf8b402d5ce4502ea5f4b051c51212634f8666b988bff2732f144526285",
+    "size": 3489
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/_marking/__init__.py",
+    "sha256": "38e019255c4a99461261896b768663ff1ee5347ffdab388dfa2e7e5cdd5a64a0",
+    "size": 371
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/_marking/checkpoints.py",
+    "sha256": "23ab47f9d6a3a5e3d6a676da073b2e2ccd5d740cb1d7cfcbab1a985ba0e4dcbf",
+    "size": 51979
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/_marking/claims.py",
+    "sha256": "b7bd0f059621c953a5e6667d520defbda9f8904c7aa9606da740a7ef170034a3",
+    "size": 40833
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/_marking/delta.py",
+    "sha256": "5f09412e432a7e3953acb995565ea32759124cec9bed718877eba0d0fd7cc645",
+    "size": 8271
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/_marking/outputs.py",
+    "sha256": "31f60ba2554a0dc6c04ff2766bd27974c001652db2384afdd1ada76ccf9b2a48",
+    "size": 26778
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/_marking/selection.py",
+    "sha256": "f73828613c0f1850605419caa5cd98bc973f091efc6373b7e5b1a39b41a09282",
+    "size": 20184
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/_marking/token_state.py",
+    "sha256": "49a4841a6907ec29d3128df97fa2cdc996d3a8adc35601b655d9bce47f9f25e6",
+    "size": 16532
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/_schema_validation.py",
+    "sha256": "046c7637ba476508864114aca720ef10298dfefa2fa8b9655d81ff49a579c0f9",
+    "size": 1869
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/agent_tasks.py",
+    "sha256": "1e26404c15ec14e75959a889a2e978b782413222e3cb993cd45e8bea40be178f",
+    "size": 56140
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/agent_workflows.py",
+    "sha256": "8996642808621d22cdbf44deda876790858fc4cc460ce9486e1b08b90457d37c",
+    "size": 48106
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/budgets.py",
+    "sha256": "27beef6ae7dab73ff3da892fc9c68ff6f899e40e361d1b0e03701c45c955fef5",
+    "size": 4123
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/checks.py",
+    "sha256": "96976d805ab30d29aaed8dbc97d581ab84a922629ab5508ad0d435fda1c355f8",
+    "size": 11028
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/collaboration/__init__.py",
+    "sha256": "196dda81d54eca24d896fbc8f9489ba6d6927b7f6240172675392413d5e2a592",
+    "size": 12959
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/collaboration/_assembly_lowering.py",
+    "sha256": "619da7715722b066ff12c1f16c9a9642cbbfe16a0a8e2901ec15358c462c18db",
+    "size": 17963
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/collaboration/_assembly_merge_support.py",
+    "sha256": "1e84cc9d214b0372d59037663c514a481f4b06167280db35e3735a01f3b3483e",
+    "size": 9462
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/collaboration/_graph_merge_model.py",
+    "sha256": "121ad74f8402a29b89e54144d8e3ee01173bc7cd6ffa891fee6a08f58b7c185e",
+    "size": 15513
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/collaboration/_open_region_closure.py",
+    "sha256": "0edf6add4668065c4e97b3d550933653cd52c3924c1915d906778f87b0317c5d",
+    "size": 14475
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/collaboration/_open_region_inventory.py",
+    "sha256": "949e168b2b5e721ce9296b614b449f6650c8273928a461bc76a9fa44b201d816",
+    "size": 12194
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/collaboration/_plain_merge_model.py",
+    "sha256": "63a1ea97bc78237c742c9bb54da0e33499b0b56b6cacd9f0eb98d6f342492db5",
+    "size": 13068
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/collaboration/_plain_merge_resolution.py",
+    "sha256": "e082753105d3b3f44ba11ca47f25fd51c1f2f7c61380e096252121a02e9493c3",
+    "size": 12062
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/collaboration/_plain_transplant_resolution.py",
+    "sha256": "d26b76505284ec91a6493eb8ea4ed1b3455463f5d4f959f001dd3d527429890a",
+    "size": 9750
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/collaboration/assemblies.py",
+    "sha256": "d1f4065ed34f0d9e6226e90ae53fbb009512351b1047c42e48a09cd7505a9261",
+    "size": 28411
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/collaboration/assembly_merge.py",
+    "sha256": "364591f7d017f1e647f7323e6b0505d0161ebeb631dd5acb9df91cf4a3c6d534",
+    "size": 24526
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/collaboration/assembly_v2.py",
+    "sha256": "5c9e9848765fa52579e7622ac22bddf92ae2575289a828fc4b20b483943be91f",
+    "size": 31223
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/collaboration/assembly_v3.py",
+    "sha256": "a2cfb27b36cecab7b57509b836eb0dc9dabb4a0714d083a888a3d1fa197d29ca",
+    "size": 34259
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/collaboration/assembly_v4.py",
+    "sha256": "275393e2c575d902af12891d5d3d23b685a03a19b4ab3e8e41d348ab8193fe96",
+    "size": 32293
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/collaboration/assembly_v5.py",
+    "sha256": "e5d41056c4178ee621587075cb9aef104465a3ea55cb221e3c7cb1e15929f693",
+    "size": 32471
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/collaboration/assembly_v6.py",
+    "sha256": "535a921ce3f7f0db087b00210905abeb15ff0545e643934308eba75c450cb74c",
+    "size": 28031
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/collaboration/assembly_v7.py",
+    "sha256": "43532a4f75f4c8703a6c55790b6736889701527d2c6e3da01398548742d6b09e",
+    "size": 32529
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/collaboration/assembly_v8.py",
+    "sha256": "838528754823192ae2ecb7cff24b4c8ed876e67864e59647eaa87dafce7ab685",
+    "size": 38772
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/collaboration/assembly_v9.py",
+    "sha256": "c0f027b95bf377c71f3273d61ab3bb5252b6bcdb2fc7a4da785bb19d84a3f8ff",
+    "size": 34184
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/collaboration/authoring.py",
+    "sha256": "bc6cd77efcaa16290a3d354c61348e58ecda63937872e472883c3e2b19b61155",
+    "size": 10441
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/collaboration/branches.py",
+    "sha256": "9ee864b6998ef8c8cca44db0595676de4429a617912f4f94fe5a5fa5f19ad2b0",
+    "size": 13007
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/collaboration/graph_authoring.py",
+    "sha256": "ea405753b3619367bba60842a862453fd83341728354462d7c9f2fb0e4af36ba",
+    "size": 18860
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/collaboration/graph_merge.py",
+    "sha256": "48eb600bf5b295dfe6ee107c4b6a179cf413059d7eac1b3e2c0d1d50eaded766",
+    "size": 23029
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/collaboration/graph_merge_author.py",
+    "sha256": "a68c744412f66dd800a1266aad27bc0c84f47eb08af7aa36ec91c833be29cdde",
+    "size": 19199
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/collaboration/graph_source.py",
+    "sha256": "995fae7e42a0a5b61e5d261cadeaa5277f6871d87db2230f645951aaa2859ae3",
+    "size": 7521
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/collaboration/materials.py",
+    "sha256": "a77edbe8768a8a4afad7bfba0e812cd25fbee923658add3f0ad4bd5709cce1b7",
+    "size": 40584
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/collaboration/open_region.py",
+    "sha256": "bee47bcb3b2eb4cd740cf2079b9e891c2794fa6942b8efe98aaf028c8147152c",
+    "size": 21757
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/collaboration/open_region_closure.py",
+    "sha256": "b0e72c1aa85b61cc86fde1fe92a2de7d9f55cc79509389a782290de805407d95",
+    "size": 12580
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/collaboration/open_region_derived.py",
+    "sha256": "a20b71180c55ec67233e21e8a0c79ab1baa8d4051d72d10d945ac6b2ee097da6",
+    "size": 12843
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/collaboration/plain_merge.py",
+    "sha256": "56503c8a85e28dfdb7dbaa7cb40c000b365203101499409c0366855fcbbc401a",
+    "size": 15062
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/collaboration/plain_merge_result.py",
+    "sha256": "cd99c89deef9b4a476bae00461dfa105239269fbf9b76e8a97c95b19875564e9",
+    "size": 19638
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/collaboration/plain_transform.py",
+    "sha256": "e6afee06c056e8e634d3870a1f30c713a6cdff385b278d41ff36fe10db3ffdf5",
+    "size": 23446
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/collaboration/plain_transplant.py",
+    "sha256": "29ea8d091a8279856c840d6fe2789f19b09d557ebf6c2923afc8ee1a529ee845",
+    "size": 9996
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/collaboration/plain_transplant_derived.py",
+    "sha256": "a1c23b9b6b51def4e952308ab7de0f084e7b3d3540b1effc8898fa33e0ec072b",
+    "size": 12905
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/collaboration/plain_transplant_result.py",
+    "sha256": "dfa48fc15b62bb8429995604f47a41d8d2ec34dbd14782982bc690cf9e4afdab",
+    "size": 18273
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/collaboration/references.py",
+    "sha256": "71a485603ffa1bb4d6e72977660e04da1647aa6247d8824866e47ce70ffc5b60",
+    "size": 4333
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/collaboration/root_terminals.py",
+    "sha256": "56f72bcb69f00b023a6cd1f7e5a838467325e04faccc6419996e856fc7d898f8",
+    "size": 41032
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/collaboration/schema_catalog.py",
+    "sha256": "ebfb11aeba67e096d0af96cde2dde225ddb47c757e0bf35e88361ba9964d4af1",
+    "size": 38306
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/collaboration/source_observations.py",
+    "sha256": "d97fb7c2825cc2e0b58fb5704d8a1d5bd76161172e410a6d9d7d55ad3bc62aaa",
+    "size": 10452
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/collaboration/source_query.py",
+    "sha256": "fcf0a2c8eb6369844807528b984f425ac502e06e12f03e9b18123477e58ef974",
+    "size": 30641
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/collaboration/source_sets.py",
+    "sha256": "4c896751a8f1b8b0b70878917d8cc60e8cc3ab52df59f1ca83a9f989802b9a71",
+    "size": 9142
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/collaboration/sources.py",
+    "sha256": "831495ca94052f80eb1ad3f824bbd34bc34586b9c906adbc01adf3cf817aeecf",
+    "size": 3617
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/collaboration/worksets.py",
+    "sha256": "07b304bd1882dec9d472e00ebff3477f9b2502ede397395b3ac2e83314ff85e9",
+    "size": 26610
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/compiler.py",
+    "sha256": "010a4b31979e6ad736c575ce30a187d6882ed98ca2a1bef9029888cf9d1a3191",
+    "size": 3946
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/composition.py",
+    "sha256": "33c625a7cf8ef67b3bdc466db635e9a51e9019fcb348c0d2177884132ac2a6ec",
+    "size": 10161
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/control_calls.py",
+    "sha256": "0b13048567c739d01847cde129d10e9d84d422855c4d43b292cc240e0b3018f6",
+    "size": 3217
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/control_client.py",
+    "sha256": "cdb6d9f588a918440d04c9d1d0075fd36ae406f08ca8ebf2c4eb728dd9b4a86c",
+    "size": 7940
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/control_eval.py",
+    "sha256": "119d1ab6bc520ad03ebd3d43931c4c89612f04db040b1be04444a7055ca1f8c6",
+    "size": 15887
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/control_ir.py",
+    "sha256": "36e8b5f01cde4c86ef23a38e9eaebb206c2d3d1699a9ee030dd04e1c7bb57493",
+    "size": 18567
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/control_server.py",
+    "sha256": "558efc223f50f98dde2b22b1bf8642e4224087d3a68ea337a3fcb3a865b1d595",
+    "size": 12354
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/control_types.py",
+    "sha256": "bc460c02acbb57c0d089961bb05525929ca1a045a4021b1ab3c0f00d0d717903",
+    "size": 7709
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/effects.py",
+    "sha256": "46b687db7e0da61229051a040204794e05e676b9335f238ddd27003e63069211",
+    "size": 3374
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/executable_net.py",
+    "sha256": "6d0ebee2688ca2743490fbc7f7761e4955477c66fe57c39540bdde8d2b0d71ec",
+    "size": 21539
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/file_execution_net.py",
+    "sha256": "60254f53f7fb1506c7d4b207287853375286dacd07f19c7ca0d0686f11def7c4",
+    "size": 12598
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/firing_preflight.py",
+    "sha256": "d13a5f6d3216be9306b3e91e2ed29151a4a5b69e3b01afade9aa5db31871b208",
+    "size": 20838
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/firing_resource_access.py",
+    "sha256": "0cae819567fce20e7423705a2dba21c3c25da423a26549efc18cce150fb694f1",
+    "size": 11332
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/harness.py",
+    "sha256": "4246c354b66c11af07bdb65956f72c9927527dbb19a3801ad9f3ce4a3eb8d887",
+    "size": 24171
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/inspection.py",
+    "sha256": "cbb5bebeadd1c3ea5915f300732d8078bc3ed5a6c8caef027e96b60d9cd68f74",
+    "size": 29469
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/llm_contracts.py",
+    "sha256": "d4f9ce44ccbbbc3c1c1daedbeb3b4b41e4977051e2fdc4883ca34013e8abfddb",
+    "size": 9066
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/main_session.py",
+    "sha256": "70ae305716192c784b5b5075794d4e4b22d65fc8e17ea898370dda34d98e6c37",
+    "size": 61192
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/marking.py",
+    "sha256": "1cd59cc0f8d0e9d2184aa6d1d6ed12c26b88ad457ada604dbe9d86be0dec075e",
+    "size": 63605
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/module.py",
+    "sha256": "3ea848c987de714b7ccb34b7f483e281b1aa0abc5b437e0c62087e4d7740b25f",
+    "size": 12142
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/net_operations/__init__.py",
+    "sha256": "9525169f074efcf069145465bf58ded0af88bd29aa13bb91d13cda1f1fc19c77",
+    "size": 1291
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/net_operations/definitions.py",
+    "sha256": "c0b9c007426b672ae9db3dc341728d10c537645475f160daeff27217e4926533",
+    "size": 16754
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/net_operations/runtime.py",
+    "sha256": "83aa29dc4480ad45002c00f52a5dd50a5b6a36fe7135c39ac8b9b0a90d821994",
+    "size": 8759
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/owner_commands.py",
+    "sha256": "61e303b630a666bfdfa7cdf0aebadce5027ff7871861ceb939aafaec0ff63a98",
+    "size": 13944
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/owner_edits.py",
+    "sha256": "14d4d862d18089e812084b7628f023bdfd2da74aa5d704b7710b28b57230a2c1",
+    "size": 20002
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/path_refs.py",
+    "sha256": "225a8f0318c8e15d2d8d4ed022d97602075c1db1d78fdaaaba62b7e1b1978df9",
+    "size": 1956
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/petri_contracts.py",
+    "sha256": "567060a304c40c7d0db3b9ed8452bce1a56b1426abf88e63aaa7a1cdeff3dc49",
+    "size": 54172
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/petri_primitives.py",
+    "sha256": "68fc103eabaccfae9f9437724c5fa7876c334a3304bf2ba7e6ea261b69e84f2a",
+    "size": 12976
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/petri_runtime_interfaces.py",
+    "sha256": "d0aa9b757e5fd8f8a0e3e2a290772cea0874b8fca4d78267cf2fa76ea357e6d6",
+    "size": 6708
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/provider_catalog.py",
+    "sha256": "d48d7379bf7f1591df3ded37d7345b4ecc1b94a8736ad31ed1f0a6c6e0a95f20",
+    "size": 6471
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/registration.py",
+    "sha256": "c10e5712307d0ce7b01d3f81efc2a72c83cccda408a3799fe35786df9dbab84f",
+    "size": 9200
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/registry/__init__.py",
+    "sha256": "91665a8b77173ad241ca58cbe5be2107ec15e96c05139050a7b5e8541cc6355f",
+    "size": 745
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/registry/_candidate_read_context.py",
+    "sha256": "daeb054b791adb79d255270e0993f4f68dc9896361f599cf63914f4495ecc7a0",
+    "size": 3057
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/registry/_event_store/__init__.py",
+    "sha256": "34ccb1e1fa2c2fc4cf9ad8b7dd9a0a27284078b36a4dece67e624f0ca2f00b1c",
+    "size": 379
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/registry/_event_store/accounting.py",
+    "sha256": "c23228c6be1662a553baab9c3727d863a300bd8ad2f4dd9d0199fedc7fdd11a3",
+    "size": 44559
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/registry/_event_store/backend.py",
+    "sha256": "2d4178d60c290f4f3206d7a4ecbe970465ecf3c6b54cf836b458ff2b040a5fb3",
+    "size": 22911
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/registry/_event_store/branch_publication.py",
+    "sha256": "784fcd7181437da01bfd983cfb0b723a903d971491f6240980ccf14deb95ff9f",
+    "size": 17519
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/registry/_event_store/collaboration_descriptors.py",
+    "sha256": "53140faeca4c955df5bbccac6c29bfa59152f258728f79c9a14c9ffeb770ac58",
+    "size": 8023
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/registry/_event_store/commit.py",
+    "sha256": "a43b0e923525ea625d74f0214cdf9bd7bd1181dc3bdd751f07f85b8a4e8e05d9",
+    "size": 94561
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/registry/_event_store/net_lineage.py",
+    "sha256": "5ba67b922469d5701baaab75afb537a4f3cc7be13c67037512e064977812f416",
+    "size": 45424
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/registry/_event_store/preserved_plan_commit.py",
+    "sha256": "c6ed6a0658cc57b6dc3299c33c5eae4d99b1fa0de02254f1a6643af7fad5525b",
+    "size": 8292
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/registry/_event_store/proposal.py",
+    "sha256": "c4f3ce8655f4e986111def1f5782920589d8d5b8d4d7f30203c4df1f63050295",
+    "size": 26571
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/registry/_event_store/provenance.py",
+    "sha256": "af21a09310a29efe19dc3cd3734ddcde7ae091ee09bacef23cd2feb1d06eb73c",
+    "size": 53940
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/registry/_event_store/queries.py",
+    "sha256": "c23079c7666c1b659744fe82fe8af2c2eceadf3e38bfae2073dd91573d4f7583",
+    "size": 49664
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/registry/_event_store/source_identity.py",
+    "sha256": "1670600ec66f2638a7a6762c1c9667e09cb51c812603526e90c67a2952672549",
+    "size": 17134
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/registry/_event_store/source_observations.py",
+    "sha256": "e2bc92a55e6e596ed3aa6da5c5943c5bed43b9bfdd575b6695dd9ff3918519f3",
+    "size": 13432
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/registry/_event_store/source_sets.py",
+    "sha256": "93262a6b1f38de37b0ec453646e2db917fa612aab4bb6786b12e9262415a6182",
+    "size": 7853
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/registry/_event_store/validation/__init__.py",
+    "sha256": "e60442d189a936adbb6acb7e113c9ea5e80e5e3d1b0cad0e5aa06ec7d1ddd3d9",
+    "size": 1157
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/registry/_event_store/validation/agent_loop.py",
+    "sha256": "f5ba89eccc28b0c9151411f5331febcb33839d9cac3db6d044c2b2b65cf45f81",
+    "size": 107437
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/registry/_event_store/validation/firing.py",
+    "sha256": "6b31c9f705e166af9fecc1e150335905cb42fb4202165d348ae760c9080f4916",
+    "size": 99325
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/registry/_event_store/validation/native_resume.py",
+    "sha256": "9ddf5e125a2814a765f856fb6dff3ca0105ac29653e0fc75266e53708eb6af1d",
+    "size": 23368
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/registry/_event_store/validation/operation.py",
+    "sha256": "98e6371a86d635399b3eec3fc3b27b3186e61f8ae193adb3abe547b978835cd8",
+    "size": 103752
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/registry/_event_store/validation/provider.py",
+    "sha256": "f5e46ebb905c4afaaacf32553c44c0f205ede9589967955cccdb34e2e2df1a0f",
+    "size": 135760
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/registry/_event_store/validation/resources.py",
+    "sha256": "b61afded707aa5551934650ffcf17d6a687de1430ca94f34e09d6aa0eabbced4",
+    "size": 104152
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/registry/_event_store/validation/structural.py",
+    "sha256": "fcc6f5960e798af23e5193b12557f6d6cff454e0013af0b8b876cce04554ed74",
+    "size": 23393
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/registry/_event_store/views.py",
+    "sha256": "c36af46ade1d4ba599731bceb2ba5a8ae8c5d877de76b40c84aaeb4c82e9f79c",
+    "size": 59439
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/registry/_event_store/workset_publication.py",
+    "sha256": "9eb91b1c11ce19f1b2eea88c39da8eb7fec0e7f93d26710f03f28effdbed0142",
+    "size": 35430
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/registry/_invocation/__init__.py",
+    "sha256": "42b973c53956db9e61a91a28eead8bf2a521cd73c14e4d4e794a06458bf7cb96",
+    "size": 60
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/registry/_invocation/admission.py",
+    "sha256": "5fc6b09ec5a1776b394d491b36923c8d98d1c3e16b1c18ae89446d7dd239c17a",
+    "size": 32419
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/registry/_invocation/context.py",
+    "sha256": "1039a8965bcd22e031f60b842bd7f3d5496583aa05c53788ec67183505013746",
+    "size": 21461
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/registry/_invocation/execution.py",
+    "sha256": "cb87304c1189170b7e4e59b4a496e2f07c79d7e697d2744a4a9fab9d04464dec",
+    "size": 11902
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/registry/_invocation/terminal.py",
+    "sha256": "eff8f2e4bc44fe0de2c96a7a02e8990c81d4a1bf6a795225c1ff2a35ff31e289",
+    "size": 43810
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/registry/_invocation/terminal_evidence.py",
+    "sha256": "564e6b535552d4acf8023f7c5e3a26a5941ca99b4c001ee1b356f1c4f61dcbbd",
+    "size": 117200
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/registry/_module_graph.py",
+    "sha256": "1e1e3036964ce9a949eab5a7aa6be2692e978488a3dfd99ed8f9579b9082c716",
+    "size": 13887
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/registry/_module_resource_projection.py",
+    "sha256": "9d7ff574ca08777471904795abd50e2cb188e8151f100e321d6e86499cf4dab1",
+    "size": 14363
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/registry/_operation/__init__.py",
+    "sha256": "3f740885b1082e7b156a98cb2ee178490b8d8984d485170f2837b8aa2ed3ed06",
+    "size": 58
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/registry/_operation/declaration.py",
+    "sha256": "f6be257b684e16de461fea5c9b40d7a957f2fd6def27d34ed0879ebee5118684",
+    "size": 21053
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/registry/_operation/inputs.py",
+    "sha256": "52799027ac2da8fb304710cca5b91e472028be8738fd23b96ccfecfb5f85289a",
+    "size": 14073
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/registry/_operation/outputs.py",
+    "sha256": "503e01ddf4f8d04d9e05f785573af52a03d9e894f930283575589c5fa07a3c11",
+    "size": 3674
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/registry/_operation/registration.py",
+    "sha256": "db74e96d5bcd550debe6271f53092cb0c8d54f37bfaab1e6c85f68ef47ccf49f",
+    "size": 11384
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/registry/_provider_calls/__init__.py",
+    "sha256": "10b846e6a97e2112863dce7ec54e37b0f05f6cf2e7fbf97b7a5eeafa1006f61a",
+    "size": 60
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/registry/_provider_calls/attempts.py",
+    "sha256": "c01da53296d9372c80f1e8a025975ee038086587ac94a159fe83a95025afb04c",
+    "size": 83037
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/registry/_provider_calls/calls.py",
+    "sha256": "f36fbfff7fb39f826749a86a5c52a0a9d8b2ab3e3df62984f9d5521e9e98a1c3",
+    "size": 27924
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/registry/_registry.py",
+    "sha256": "f2d5f021c69732d292b2a96f2f19e9d05059dda15d3d36e5b94f55eb9fc25f0a",
+    "size": 31015
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/registry/_resource_service/__init__.py",
+    "sha256": "ffb9b0ae81e38ff221ff237e0dab96048efa3fca31d6224a0f7927012bfce6fd",
+    "size": 72
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/registry/_resource_service/addresses.py",
+    "sha256": "2571d035c84311a4761d56f2afb6dc7ddc28411e73f8eff238318fb5614bb577",
+    "size": 19298
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/registry/_resource_service/common.py",
+    "sha256": "727a7b5a1c51ae5788f4ea8a78af3bcaa5c26dd2e0e4e231b4b32c5335f2bc91",
+    "size": 7140
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/registry/_resource_service/delivery.py",
+    "sha256": "94a9aef18d723781b6dc9176eec051dd65cf57a5abe3bf13aa139a2a97bc2b62",
+    "size": 42812
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/registry/_resource_service/publication.py",
+    "sha256": "e18066d75ec588d3327b726578337d64b48dc16bdc317f52b3e5c40dd32fc422",
+    "size": 32237
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/registry/_resource_service/queries.py",
+    "sha256": "e456305ad422d39e54d1d12f3aab072af075107de9e692b1dd4694178c573d0d",
+    "size": 33807
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/registry/_resource_service/references.py",
+    "sha256": "0bba300dcfde95dd820b2351d03adebff20ca0c3d1f35028b7164ba55b60ba6d",
+    "size": 76845
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/registry/admission_publication.py",
+    "sha256": "06e4eb0aca56193e401db61e76ef81ea4cccec02ffa026d9400f1de8afb1c6b9",
+    "size": 3375
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/registry/agent_resource_broker.py",
+    "sha256": "6fb5a127814e4d8c438abceb5a0587a73cf25b4e4d1da32c0b290e93fbc8d162",
+    "size": 42242
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/registry/allocations.py",
+    "sha256": "2a0a1de787b42fca2693228cfcdc1ee76efe4166152f8aeccaf18c5227e8c8df",
+    "size": 15078
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/registry/bootstrap.py",
+    "sha256": "928e5513a5f139e4ebc83f6e5506f15c113c167d9a45a2a85916759e70720a9d",
+    "size": 7094
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/registry/capabilities.py",
+    "sha256": "d63e8861dc607c3012077783023f3b0039c3f1fd423662179dcfa57b0082a14a",
+    "size": 9168
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/registry/checkpoints.py",
+    "sha256": "aa66d12612a82767bf74a45a1219562d232bfa4d9c4a2384087e13d338450776",
+    "size": 4847
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/registry/content_schemas.py",
+    "sha256": "18212f6e7446bce1c85072474cfa5475d542a9640be2960101056681a5848031",
+    "size": 10810
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/registry/declared_effect_validation.py",
+    "sha256": "b9ceb7a27f0599a391f6b4e21dd13d83d40d09885439601de7a0e6a9d9bddcde",
+    "size": 35630
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/registry/errors.py",
+    "sha256": "2a99f22071c0b4f7b5e979e588d959a5231b8a394c66e591b6837bae0991d36e",
+    "size": 2008
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/registry/event_store.py",
+    "sha256": "d92301edc90a236f0da6b1332fc990dee275481d4213cc10815571d6db15d72c",
+    "size": 114021
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/registry/execution_child_closure.py",
+    "sha256": "464974a53431c50bcfcd8753016653c5d92b4e047f4c577b9992a27f0ddba77e",
+    "size": 38500
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/registry/execution_net.py",
+    "sha256": "f2ffa1a4f2195b6706d78e38d9a1bb2d576e62bbab2a7bf98bee2ea0e6a4f448",
+    "size": 10587
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/registry/execution_runtime.py",
+    "sha256": "c0b721145b25780717b83bf6f7262a077e71d826681be618b5e043f53ef32ddf",
+    "size": 39891
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/registry/firing_authority.py",
+    "sha256": "28ba8d2ba32b7b8cbff4e75ae8601f5649f81bf220f3f855780f2893d5351186",
+    "size": 7965
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/registry/firing_recovery.py",
+    "sha256": "cb8195469c01b5a46db761b2f6e667182a6efa046a744af9b4eb9cd882354e41",
+    "size": 42436
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/registry/firing_resource_access.py",
+    "sha256": "9bec7a47d09f78a0bf82472bfd0b8a9642998f367433304c65d0d4d95c4b35b1",
+    "size": 8661
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/registry/firing_success.py",
+    "sha256": "ef38a8c198b4767965f6ea7a6c2aa6524f79e35259e0b066e57794ec87dd5b55",
+    "size": 19680
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/registry/firing_transition.py",
+    "sha256": "c95aa105e98a4bff4119f4e4367e56019f79e855289e09d03c90a2ebf679cc63",
+    "size": 7988
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/registry/identities.py",
+    "sha256": "6b0615141b84e0e2f8c4588248b4253e3c0402b7eec941f430031049bb08d882",
+    "size": 8931
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/registry/invocations.py",
+    "sha256": "4279f3cf8de21b5fdd6401eaaa47c721b2b3d0b8732c006f73e93f4e9d512192",
+    "size": 23586
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/registry/main_thread.py",
+    "sha256": "5e6dea642dec8e52c14cfb9c6decc6f3ab47cb7e9634935b862a5653268b31ff",
+    "size": 62643
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/registry/models.py",
+    "sha256": "752f983ded54e34ec5c4f1eda7342c43f2aebc57cea648940dac710ce5b7de3f",
+    "size": 13343
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/registry/module_activation.py",
+    "sha256": "165c2a4ffc513850e0b464b9c02380360607688113c7f9e987f5dc63e2a682dd",
+    "size": 10548
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/registry/module_binding_authority.py",
+    "sha256": "8f81f52c4cc95c553bf5980f3cf6ee675b54f3fa44bd4281d264bac451c61475",
+    "size": 6612
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/registry/module_budgets.py",
+    "sha256": "ebe4177151bba0883f4baba04da68e9dd524ddd7cb60d44a84d3325469f7e8f7",
+    "size": 5239
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/registry/module_configuration.py",
+    "sha256": "b2ea4dd306548ae8b4389b1091423ccbd2627d4dfeee91a94dbeca9749421b4a",
+    "size": 5934
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/registry/module_effects.py",
+    "sha256": "9f8b525d8627e28bd4d09e22530bec11d0d831e0f437e74a953bd3563e67ad40",
+    "size": 24810
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/registry/module_execution.py",
+    "sha256": "82114d588212bcddeeb0c6982f88782be8f4efc4aec65df7362fa12897657536",
+    "size": 12012
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/registry/module_gateway.py",
+    "sha256": "b9173010034af1a9c5d7a937691907ddbee14e9abba26bb903f60be5346a17fd",
+    "size": 4072
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/registry/module_host_bindings.py",
+    "sha256": "9406b7943aeaf355370abf85533a9a840097f7807d196a43d2db4f72aa1ae262",
+    "size": 20537
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/registry/module_marking.py",
+    "sha256": "42a7f61cc19018bb746f17901e00c09bf74505f7cef3de4350d9e350bcaeb8e1",
+    "size": 12182
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/registry/module_nets.py",
+    "sha256": "26c18947bfad824d768325677d6f684c0e14440a1bc0fd1f9874853eecdb9437",
+    "size": 20368
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/registry/module_operations.py",
+    "sha256": "c4f6909ada32fadf6d78b3cc30b7547bb0c510ce734b787af390512088362150",
+    "size": 6990
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/registry/module_resources.py",
+    "sha256": "32cf8d98bca07482ee4dbc525445aa05a3a59cdf40ead9d9b12d28f3ea5820cf",
+    "size": 13938
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/registry/module_revision.py",
+    "sha256": "dedc2add2df681469cecfffcbf13a14dfe3c5c0074e74e2585f40b9fced8f8a4",
+    "size": 50383
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/registry/module_runtime.py",
+    "sha256": "33db42eff2c030b5a8284badbf3e4518cbfdd539bcf2ea8157244726be5cf101",
+    "size": 8369
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/registry/module_terminal.py",
+    "sha256": "64c6393e7e33df965389eb871dbe1a68e4b7b581d6a684be58cb7bfaccd199fe",
+    "size": 31107
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/registry/normal_root_token_allocation.py",
+    "sha256": "3e97070767ee78e6580e904723236e61a8a94057dc37ef3c5e09d951cd871c20",
+    "size": 27756
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/registry/object_store.py",
+    "sha256": "17c322ea0d357fffd5f77278cdac2104f9f5bbc9196b4880ca7b253c67c10fa8",
+    "size": 14775
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/registry/observer_access.py",
+    "sha256": "0043230e0d6e8da4ad3c78c57a190a19fa182973c0c5c6c7c4ce3916cacb0878",
+    "size": 23875
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/registry/operation_execution.py",
+    "sha256": "81f60672de80e49cc8c817310a0931ca59565983d5c4571c67a7398bd2dbb45b",
+    "size": 11915
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/registry/operation_output_contract.py",
+    "sha256": "327978eb8a539616ff972d2d76fc461739ab36950a94726fe5ddb8e7818dfce2",
+    "size": 2523
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/registry/operation_repository.py",
+    "sha256": "0964d8c0339a39436aa3a90a4c6b02858d8d3d8f97944e70a19ebbcff54a007d",
+    "size": 77248
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/registry/operations.py",
+    "sha256": "c7a85308bffd73ad41e8674b1cdf64d1f7f7c81449452fabf592112e0f1ee045",
+    "size": 95242
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/registry/owner_adoption.py",
+    "sha256": "0c54f1c778f922e11dc4ff916ed79349d0044906e8f3d7a6a37f5ec81b41ce80",
+    "size": 45065
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/registry/owner_mapping.py",
+    "sha256": "37d5d273b071592ed20ad6ff9277570bdfd0306a701b0574d95d2a5852204c39",
+    "size": 19143
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/registry/preserved_binding_contracts.py",
+    "sha256": "9ca0b4a139362a302ca2e604a7dc21dd73c868b2c16032396ac19e6e7d1c2f79",
+    "size": 6793
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/registry/provider_calls.py",
+    "sha256": "e5b668fba3690eca68ed21c3ed2fc151465952b931d29f02a26db9de94651c0d",
+    "size": 34060
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/registry/provider_execution.py",
+    "sha256": "a7bda53670eccd79be005d9a404770263ac3911e402498cf7b4bd8e9e6995d1b",
+    "size": 2320
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/registry/publication.py",
+    "sha256": "b061e8703de8f9cd4b040370b01556b4d50e5031ac7b86a62c2f44aa33daf3aa",
+    "size": 23503
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/registry/registration_gateway.py",
+    "sha256": "74c80a2e9804701a031f2951c9ecdb9bf0f61c0ea38cc68780e4f80c5a15b2a7",
+    "size": 9569
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/registry/relations.py",
+    "sha256": "61c5f438ab1c5d169699d20d4c42e01636f74533e2b919a233adb65e8fdf3a59",
+    "size": 1583
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/registry/resource_service.py",
+    "sha256": "2825f08c40c53f53f53328f59fb6415f68eaf6cb979f5fa3c2402c2d6b65de72",
+    "size": 21770
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/registry/resource_verification.py",
+    "sha256": "18ae3cb51a656fcc6cf38291287fc13281ed707df882bc5ddd2e81fad1254515",
+    "size": 12465
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/registry/resources.py",
+    "sha256": "cce3e81d219322d66651d2ce53712bb511f7d6c0303de7fb14677dd5328d41a0",
+    "size": 96595
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/registry/run_authority.py",
+    "sha256": "c934cd1cdab49abfc5953c96c5bcedbad2a21e4e2acb5693e3cf7a0be9e3a311",
+    "size": 28593
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/registry/runtime_binding_contracts.py",
+    "sha256": "7cd5a3f9dbf55b8cf37961fc7ca4f6e08c3bb4a1462b044fdca715e54c566723",
+    "size": 5912
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/registry/schema_catalog.py",
+    "sha256": "dac00f898cf019f38a486a0c99e42a7f6e217f8b4f709f010adb8256f26eaa3a",
+    "size": 23656
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/registry/settlement_material.py",
+    "sha256": "0156e21a93e069c781c08433f68fa2e34b642d52cbd66b90db755e49dec30fa9",
+    "size": 4573
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/registry/strict_contracts.py",
+    "sha256": "58572e92db724155bd8302b3bba404149a5421172312ce2d894567e8e15de59a",
+    "size": 54630
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/registry/success_projection.py",
+    "sha256": "0eaf3ad878182c628673000e902c587b1829afadfd48737464fdff1f6a651fa1",
+    "size": 12364
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/registry/success_publication.py",
+    "sha256": "8ec426a1db62943d5566e83ea278c3b150b708490c31df3d09eef85f399c8a2f",
+    "size": 33754
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/registry/task_ledger.py",
+    "sha256": "3884b46d00ceb233e4f995e3f70dd09ba7735e92c3ac73b4c84c6f6f071e2e17",
+    "size": 6530
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/registry/transaction.py",
+    "sha256": "d1217153e08d144d9a5f713ae818f5b3e76f9e3595edb0dd94ad375d87608b58",
+    "size": 20881
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/resource_access.py",
+    "sha256": "2f26d93c752c0eb266849862d77a0f042d3d7bac04860b83415bf2112122de02",
+    "size": 7290
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/response_protocol.py",
+    "sha256": "4dd041100f5ef7e7f9a6653b9ece34d3a8a2c9af249993348028db30714d7ec7",
+    "size": 12970
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/run.py",
+    "sha256": "e715047ae545f5bde57e08d4273677d1e94d060028b3ee4374f419b458f155c3",
+    "size": 46771
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/runtime_net.py",
+    "sha256": "02e380721364bacdf36b31aa3cfb20d3f7fb638a2a5d687ce39cb4668689bb87",
+    "size": 18973
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/runtime_policy.py",
+    "sha256": "cc5812273ec4459b8e85ca017bae42569291e589aef18efb624b5d481c7ad787",
+    "size": 4416
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/session_access.py",
+    "sha256": "26d077a023330e240c7b6773c8555e74399eb814e06a0bcdf6754c115c280825",
+    "size": 6670
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/task_control.py",
+    "sha256": "d4c7dbee54dcf9775b5fd978345e3b6187f472ba2a79649596cb3f0dec26dadc",
+    "size": 40141
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/unix_transport.py",
+    "sha256": "58f7c2f877fe8ea0eab6501a98d1791cd384e70f9d23049cb861265f91231b94",
+    "size": 1381
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/user_config.py",
+    "sha256": "5bfa2ae76230fedcbd66e3ca606ad96c193c54d6a968a2b936f6750073ce72ce",
+    "size": 19979
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/cpn/rpnh/workspace_settlement.py",
+    "sha256": "42b33ba49281ddb2fc20374203d0e2f4ab3de34126c7dfdd4753ba40bce33bbf",
+    "size": 40701
+  },
+  {
+    "path": "<WORKSPACE>/.h26/s/tests/test_main_session_registry.py",
+    "sha256": "918d251bfc175dfa91af9a18b869b1173816530b2ddf08ea7e948f8d929a2c17",
+    "size": 55836
+  },
+  {
+    "path": "<WORKSPACE>/task-shared-harness-validation-20261008/probes/B/test_native_text.py",
+    "sha256": "81a56b24317d75dd7a837e7020acc1fecb42f34f747727725538a231d3339bb0",
+    "size": 11198
+  }
+]

@@ -1,0 +1,36 @@
+{
+  "status": "ACCEPTED_FINITE",
+  "source": "reviewer-v1 Hypatia inline follow-up; recorded by parent because profile is read-only",
+  "findings": [],
+  "real_managed_execution": {
+    "worker_pids": [
+      12,
+      13
+    ],
+    "fixture_pid": 8,
+    "receipts": "started/returned persisted",
+    "process_implementation": "cpn/plugins/worker.py:66 multiprocessing spawn"
+  },
+  "single_export": {
+    "managed_tool_observations": 2,
+    "terminal_communications": 1,
+    "source": "probes/A/test_native_consumers.py:188",
+    "same_terminal_transaction": true
+  },
+  "reader_identity_agreement": "Distinct correctly core-bound cuts; authority/evidence/result exact refs match;test_native_consumers.py:178",
+  "read_phase": "Only one extra read_only core; original owner retained; no forbidden calls;test_native_consumers.py:147",
+  "fingerprint": {
+    "head": 893,
+    "epoch": 2,
+    "object_count": 268,
+    "before_after_bytes_equal": true
+  },
+  "test_result": "1passed;exit0;command/JUnit/stdout agree",
+  "source_frozen17": true,
+  "delivery": "UNPROVEN;provider_delivery_not_recorded/null visible-result refs/proves_model_input=false",
+  "remaining_scope": [
+    "unchanged readhost ownership environment gate open",
+    "B structured pending at this review"
+  ],
+  "reviewer_runtime_or_writes": false
+}

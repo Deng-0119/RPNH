@@ -1,0 +1,751 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="26" skipped="0" tests="169" time="116.901" timestamp="2026-10-08T10:34:47.294951-04:00" hostname="54cb1abdc64d"><testcase classname="examples.harnessaudit_office.tests.test_comparison_documentation" name="test_public_results_are_the_reference_not_a_pending_local_run" time="0.000" /><testcase classname="examples.harnessaudit_office.tests.test_comparison_documentation" name="test_public_table_preserves_ten_distinct_configurations" time="0.000" /><testcase classname="examples.harnessaudit_office.tests.test_comparison_documentation" name="test_transcribed_selected_reference_values" time="0.000" /><testcase classname="examples.harnessaudit_office.tests.test_comparison_documentation" name="test_historical_groups_are_separate_and_unchanged_in_scope" time="0.000" /><testcase classname="examples.harnessaudit_office.tests.test_comparison_documentation" name="test_retired_plan_cannot_be_read_as_execution_instructions" time="0.000" /><testcase classname="examples.harnessaudit_office.tests.test_comparison_documentation" name="test_comparison_pages_have_working_local_links" time="0.001" /><testcase classname="examples.harnessaudit_office.tests.test_comparison_documentation" name="test_no_claim_of_matched_superiority_or_invented_l3" time="0.000" /><testcase classname="examples.harnessaudit_office.tests.test_comparison_documentation" name="test_sources_preserve_paper_version_and_prior_code_provenance" time="0.000" /><testcase classname="examples.harnessaudit_office.tests.test_configuration_condition" name="test_baseline_default_is_identity_and_original_inventory" time="0.001" /><testcase classname="examples.harnessaudit_office.tests.test_configuration_condition" name="test_explicit_condition_has_public_versions_and_no_hidden_fields" time="0.001" /><testcase classname="examples.harnessaudit_office.tests.test_configuration_condition" name="test_condition_cannot_silently_select_baseline[bad0]" time="0.000" /><testcase classname="examples.harnessaudit_office.tests.test_configuration_condition" name="test_condition_cannot_silently_select_baseline[bad1]" time="0.000" /><testcase classname="examples.harnessaudit_office.tests.test_configuration_condition" name="test_condition_cannot_silently_select_baseline[bad2]" time="0.000" /><testcase classname="examples.harnessaudit_office.tests.test_configuration_condition" name="test_generic_discovery_uses_topic_and_reachable_article_metadata" time="0.001" /><testcase classname="examples.harnessaudit_office.tests.test_configuration_condition" name="test_discovery_distractor_pagination_and_no_match" time="0.001" /><testcase classname="examples.harnessaudit_office.tests.test_configuration_condition" name="test_discovery_rejects_undeclared_empty_or_invalid_queries[arguments0]" time="0.000" /><testcase classname="examples.harnessaudit_office.tests.test_configuration_condition" name="test_discovery_rejects_undeclared_empty_or_invalid_queries[arguments1]" time="0.000" /><testcase classname="examples.harnessaudit_office.tests.test_configuration_condition" name="test_discovery_rejects_undeclared_empty_or_invalid_queries[arguments2]" time="0.000" /><testcase classname="examples.harnessaudit_office.tests.test_configuration_condition" name="test_discovery_rejects_undeclared_empty_or_invalid_queries[arguments3]" time="0.000" /><testcase classname="examples.harnessaudit_office.tests.test_configuration_condition" name="test_discovery_rejects_undeclared_empty_or_invalid_queries[arguments4]" time="0.000" /><testcase classname="examples.harnessaudit_office.tests.test_configuration_condition" name="test_missing_or_unavailable_policy_blocks_before_write[None]" time="0.000" /><testcase classname="examples.harnessaudit_office.tests.test_configuration_condition" name="test_missing_or_unavailable_policy_blocks_before_write[]" time="0.000" /><testcase classname="examples.harnessaudit_office.tests.test_configuration_condition" name="test_missing_or_unavailable_policy_blocks_before_write[{}]" time="0.000" /><testcase classname="examples.harnessaudit_office.tests.test_configuration_condition" name="test_missing_or_unavailable_policy_blocks_before_write[not-json]" time="0.000" /><testcase classname="examples.harnessaudit_office.tests.test_configuration_condition" name="test_missing_or_unavailable_policy_blocks_before_write[[]]" time="0.000" /><testcase classname="examples.harnessaudit_office.tests.test_configuration_condition" name="test_missing_or_unavailable_policy_blocks_before_write[{&quot;status&quot;: &quot;unavailable&quot;, &quot;reason&quot;: &quot;Apply the retrieved public synthetic policy.&quot;, &quot;references&quot;: [{&quot;query_key&quot;: &quot;opaque-alpha&quot;, &quot;article_id&quot;: &quot;KB-A&quot;}]}]" time="0.000" /><testcase classname="examples.harnessaudit_office.tests.test_configuration_condition" name="test_missing_or_unavailable_policy_blocks_before_write[{&quot;status&quot;: &quot;ready&quot;, &quot;reason&quot;: &quot;Apply the retrieved public synthetic policy.&quot;, &quot;references&quot;: []}]" time="0.000" /><testcase classname="examples.harnessaudit_office.tests.test_configuration_condition" name="test_readiness_needs_actual_policy_return_in_this_run" time="0.000" /><testcase classname="examples.harnessaudit_office.tests.test_configuration_condition" name="test_post_dispatch_failure_is_not_misreported_as_pre_dispatch_block" time="0.000" /><testcase classname="examples.harnessaudit_office.tests.test_configuration_condition" name="test_graph_requires_evidence_coordination_execution_then_readback[1]" time="0.003" /><testcase classname="examples.harnessaudit_office.tests.test_configuration_condition" name="test_graph_requires_evidence_coordination_execution_then_readback[2]" time="0.001" /><testcase classname="examples.harnessaudit_office.tests.test_configuration_condition" name="test_graph_requires_evidence_coordination_execution_then_readback[3]" time="0.001" /><testcase classname="examples.harnessaudit_office.tests.test_configuration_condition" name="test_phase_permissions_and_manifest_expose_budget_changes" time="0.006" /><testcase classname="examples.harnessaudit_office.tests.test_configuration_condition" name="test_plugin_catalog_is_explicitly_separate_without_loading_workers" time="0.017" /><testcase classname="examples.harnessaudit_office.tests.test_configuration_condition" name="test_saved_launch_rejects_wrong_or_missing_binding_hash[0000000000000000000000000000000000000000000000000000000000000000]" time="0.012" /><testcase classname="examples.harnessaudit_office.tests.test_configuration_condition" name="test_saved_launch_rejects_wrong_or_missing_binding_hash[None]" time="0.011" /><testcase classname="examples.harnessaudit_office.tests.test_configuration_condition" name="test_saved_launch_rejects_wrong_or_missing_binding_hash[missing]" time="0.012" /><testcase classname="examples.harnessaudit_office.tests.test_configuration_condition" name="test_saved_prelaunch_keeps_null_binding_without_launch" time="0.008" /><testcase classname="examples.harnessaudit_office.tests.test_configuration_condition" name="test_state_result_and_consumption_are_independent" time="0.000" /><testcase classname="examples.harnessaudit_office.tests.test_configuration_condition" name="test_plan_and_saved_identity_hashes_roundtrip_and_reject_mismatch" time="0.014" /><testcase classname="examples.harnessaudit_office.tests.test_configuration_condition" name="test_default_config_bytes_and_comparison_opt_in" time="0.004" /><testcase classname="examples.harnessaudit_office.tests.test_configuration_condition" name="test_evidence_sidecar_does_not_promote_snapshot_or_readback_to_completion" time="0.000" /><testcase classname="examples.harnessaudit_office.tests.test_configuration_condition" name="test_shared_scope_boundary_rejects_preextended_unsupported_task" time="0.001" /><testcase classname="examples.harnessaudit_office.tests.test_configuration_condition" name="test_comparison_readiness_is_not_historical_runtime_acceptance" time="0.002" /><testcase classname="examples.harnessaudit_office.tests.test_configuration_condition" name="test_discovery_observations_and_crosswalk_are_retained_with_original_role" time="0.001" /><testcase classname="examples.harnessaudit_office.tests.test_configuration_condition" name="test_condition_docs_have_local_links_and_honest_unrun_boundaries" time="0.000" /><testcase classname="examples.harnessaudit_office.tests.test_example_packaging" name="test_fifteen_scores_keep_two_conditions_and_projection_identity" time="0.000" /><testcase classname="examples.harnessaudit_office.tests.test_example_packaging" name="test_grouping_never_pools_original_and_supplement" time="0.000" /><testcase classname="examples.harnessaudit_office.tests.test_example_packaging" name="test_twenty_attempts_retain_unscored_truncations" time="0.000" /><testcase classname="examples.harnessaudit_office.tests.test_example_packaging" name="test_configuration_does_not_authorize_or_invent_quotas" time="0.002" /><testcase classname="examples.harnessaudit_office.tests.test_example_packaging" name="test_explicit_authorization_still_only_writes_configuration" time="0.001" /><testcase classname="examples.harnessaudit_office.tests.test_example_packaging" name="test_configuration_does_not_overwrite_prior_files" time="0.001" /><testcase classname="examples.harnessaudit_office.tests.test_example_packaging" name="test_offline_entry_works_with_isolated_python[command0]" time="0.034" /><testcase classname="examples.harnessaudit_office.tests.test_example_packaging" name="test_offline_entry_works_with_isolated_python[command1]" time="0.036" /><testcase classname="examples.harnessaudit_office.tests.test_example_packaging" name="test_offline_entry_works_with_isolated_python[command2]" time="0.029" /><testcase classname="examples.harnessaudit_office.tests.test_example_packaging" name="test_documented_source_pin_matches_constants" time="0.001" /><testcase classname="examples.harnessaudit_office.tests.test_example_packaging" name="test_distribution_contains_no_kernel_or_private_runtime" time="0.001" /><testcase classname="examples.harnessaudit_office.tests.test_example_packaging" name="test_original_grader_references_remain_external" time="0.000" /><testcase classname="examples.harnessaudit_office.tests.test_managed_readback_condition_office" name="test_new_graph_reader_and_prompt_have_explicit_distinct_identity" time="0.014" /><testcase classname="examples.harnessaudit_office.tests.test_managed_readback_condition_office" name="test_archived_v1_identity_is_retained_for_readonly_saved_inspection" time="0.010" /><testcase classname="examples.harnessaudit_office.tests.test_managed_readback_condition_office" name="test_old_or_new_binding_digest_is_never_accepted_without_reconstruction" time="0.009" /><testcase classname="examples.harnessaudit_office.tests.test_managed_readback_condition_office" name="test_v2_sidecar_keeps_projection_submission_and_semantic_use_separate" time="0.000" /><testcase classname="examples.harnessaudit_office.tests.test_projection_boundary" name="test_return_boundary_does_not_claim_model_consumption" time="0.000" /><testcase classname="examples.harnessaudit_office.tests.test_projection_boundary" name="test_no_backend_only_or_unknown_result_is_promoted[outcome_unknown]" time="0.000" /><testcase classname="examples.harnessaudit_office.tests.test_projection_boundary" name="test_no_backend_only_or_unknown_result_is_promoted[failed]" time="0.000" /><testcase classname="examples.harnessaudit_office.tests.test_projection_boundary" name="test_no_backend_only_or_unknown_result_is_promoted[rejected]" time="0.000" /><testcase classname="examples.harnessaudit_office.tests.test_projection_boundary" name="test_changed_terminal_material_is_rejected[call_id]" time="0.000" /><testcase classname="examples.harnessaudit_office.tests.test_projection_boundary" name="test_changed_terminal_material_is_rejected[selector]" time="0.000" /><testcase classname="examples.harnessaudit_office.tests.test_projection_boundary" name="test_changed_terminal_material_is_rejected[arguments]" time="0.000" /><testcase classname="examples.harnessaudit_office.tests.test_projection_boundary" name="test_changed_terminal_material_is_rejected[registration]" time="0.000" /><testcase classname="examples.harnessaudit_office.tests.test_projection_boundary" name="test_changed_terminal_material_is_rejected[producer_invocation_ref]" time="0.000" /><testcase classname="examples.harnessaudit_office.tests.test_projection_boundary" name="test_changed_terminal_material_is_rejected[caller_firing_ref]" time="0.000" /><testcase classname="examples.harnessaudit_office.tests.test_projection_boundary" name="test_mismatched_output_rejected" time="0.000" /><testcase classname="examples.harnessaudit_office.tests.test_projection_boundary" name="test_missing_terminal_and_missing_start_rejected" time="0.000" /><testcase classname="examples.harnessaudit_office.tests.test_projection_boundary" name="test_wrong_invocation_rejected" time="0.000" /><testcase classname="examples.harnessaudit_office.tests.test_projection_boundary" name="test_execution_completeness_separate_from_model_visibility" time="0.000" /><testcase classname="examples.harnessaudit_office.tests.test_projection_boundary" name="test_other_evidence_gates_remain_closed[exported_managed-4]" time="0.000" /><testcase classname="examples.harnessaudit_office.tests.test_projection_boundary" name="test_other_evidence_gates_remain_closed[handoff_communication_count-5]" time="0.000" /><testcase classname="examples.harnessaudit_office.tests.test_projection_boundary" name="test_other_evidence_gates_remain_closed[unmatched_product_reads-1]" time="0.000" /><testcase classname="examples.harnessaudit_office.tests.test_projection_boundary" name="test_other_evidence_gates_remain_closed[unproven_visible_reads-1]" time="0.000" /><testcase classname="examples.harnessaudit_office.tests.test_projection_boundary" name="test_other_evidence_gates_remain_closed[terminal_rows_count-0]" time="0.000" /><testcase classname="examples.harnessaudit_office.tests.test_projection_boundary" name="test_no_raw_event_or_receipt_override_of_business_semantics" time="0.000" /><testcase classname="examples.harnessaudit_office.tests.test_registry_reader_consumers" name="test_two_consumers_share_exact_identity_payload_and_read_only_source" time="3.630" /><testcase classname="examples.harnessaudit_office.tests.test_registry_reader_consumers" name="test_two_consumers_reject_superseded_terminal_generation" time="4.328"><failure message="AttributeError: 'NoneType' object has no attribute 'net_ref'">tmp_path = PosixPath('/tmp/pytest-of-agent/pytest-16/test_two_consumers_reject_supe0')
+
+    def test_two_consumers_reject_superseded_terminal_generation(tmp_path):
+        owner = owner_at(tmp_path / "run")
+        old = finish(owner)
+        owner = reenter(owner)
+        current = _ref_payload(owner.terminal())
+        before = fingerprint(owner)
+        with pytest.raises(RuntimeError, match="expected terminal evidence"):
+            export(owner, old)
+        with pytest.raises(EnvironmentContractError, match="expected terminal evidence"):
+&gt;           environment_host._terminal_result(owner, _version_from_payload(old), "terminal")
+
+rpnh-registry-reader-fix/source/examples/harnessaudit_office/tests/test_registry_reader_consumers.py:65: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+owner = &lt;cpn.rpnh.run.RunOwner object at 0x7f0102ff74d0&gt;
+evidence_ref = VersionRef(entity_type='run_terminal_evidence/v1', entity_id=TypedId(kind='terminal_evidence', value='5c409c12e5e0495497de44b32ffea317'), version_id=TypedId(kind='terminal_evidence_version', value='2007e01f2fe445c3b004a994c9f5cd0d'))
+stop_reason = 'terminal'
+
+    def _terminal_result(owner, evidence_ref, stop_reason):
+        """Render the shared Registry reader's current terminal for local delivery."""
+        from ..registry.run_authority import read_run_execution
+        from ..registry.strict_contracts import ref_payload
+        if evidence_ref is None:
+            return {"status": "not_terminal"}
+        if stop_reason != "terminal":
+            raise EnvironmentContractError("ENVIRONMENT_RESULT_INTEGRITY_ERROR", "terminal delivery requires terminal stop")
+        core = owner._core
+        kernel, _ = owner.operation_repository()
+        try:
+            read = read_run_execution(core, kernel,
+                expected_terminal_evidence_ref=evidence_ref,
+                expected_run_ref=owner.identity.run_ref,
+                expected_task_ref=owner.identity.task_ref,
+&gt;               expected_net_ref=owner.publication.net_ref,
+                                 ^^^^^^^^^^^^^^^^^^^^^^^^^
+                max_descriptor_bytes=MAX_REQUEST)
+E               AttributeError: 'NoneType' object has no attribute 'net_ref'
+
+rpnh-registry-reader-fix/source/cpn/rpnh/collaboration/environment_host.py:291: AttributeError</failure></testcase><testcase classname="examples.harnessaudit_office.tests.test_registry_reader_consumers" name="test_reader_expected_owner_context_never_selects_identity[run]" time="2.874" /><testcase classname="examples.harnessaudit_office.tests.test_registry_reader_consumers" name="test_reader_expected_owner_context_never_selects_identity[task]" time="2.988" /><testcase classname="examples.harnessaudit_office.tests.test_registry_reader_consumers" name="test_reader_expected_owner_context_never_selects_identity[net]" time="2.787" /><testcase classname="examples.harnessaudit_office.tests.test_registry_reader_consumers" name="test_current_cut_rejects_historical_view_substitution" time="3.970" /><testcase classname="examples.harnessaudit_office.tests.test_registry_reader_consumers" name="test_authority_selection_respects_supplied_canonical_view" time="4.107" /><testcase classname="examples.harnessaudit_office.tests.test_registry_reader_consumers" name="test_environment_renderer_rechecks_same_cut_before_delivery[head]" time="2.991" /><testcase classname="examples.harnessaudit_office.tests.test_registry_reader_consumers" name="test_environment_renderer_rechecks_same_cut_before_delivery[epoch]" time="3.202" /><testcase classname="examples.harnessaudit_office.tests.test_registry_reader_consumers" name="test_result_provenance_is_native_reader_requirement" time="3.285" /><testcase classname="examples.harnessaudit_office.tests.test_registry_reader_consumers" name="test_descriptor_bound_and_product_physical_bound_are_enforced" time="3.039" /><testcase classname="examples.harnessaudit_office.tests.test_registry_reader_consumers" name="test_environment_rejects_descriptor_byte_corruption" time="3.049" /><testcase classname="examples.harnessaudit_office.tests.test_terminal_identity" name="test_matching_terminal_uses_exact_registry_identity" time="3.114" /><testcase classname="examples.harnessaudit_office.tests.test_terminal_identity" name="test_missing_expected_ref_still_reads_current_terminal" time="3.035" /><testcase classname="examples.harnessaudit_office.tests.test_terminal_identity" name="test_wrong_ref_never_pairs_real_payload_with_caller_identity[entity_type-final_result_index/v1]" time="2.785" /><testcase classname="examples.harnessaudit_office.tests.test_terminal_identity" name="test_wrong_ref_never_pairs_real_payload_with_caller_identity[logical_id-terminal_evidence:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa]" time="2.725" /><testcase classname="examples.harnessaudit_office.tests.test_terminal_identity" name="test_wrong_ref_never_pairs_real_payload_with_caller_identity[version_id-terminal_evidence_version:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb]" time="2.880" /><testcase classname="examples.harnessaudit_office.tests.test_terminal_identity" name="test_wrong_ref_never_pairs_real_payload_with_caller_identity[unexpected-extra]" time="2.917" /><testcase classname="examples.harnessaudit_office.tests.test_terminal_identity" name="test_cross_run_ref_is_rejected" time="6.004" /><testcase classname="examples.harnessaudit_office.tests.test_terminal_identity" name="test_nonterminal_with_no_expected_ref_stays_nonterminal[running]" time="0.674" /><testcase classname="examples.harnessaudit_office.tests.test_terminal_identity" name="test_nonterminal_with_no_expected_ref_stays_nonterminal[active]" time="1.686" /><testcase classname="examples.harnessaudit_office.tests.test_terminal_identity" name="test_nonterminal_with_no_expected_ref_stays_nonterminal[stopped]" time="0.792" /><testcase classname="examples.harnessaudit_office.tests.test_terminal_identity" name="test_historical_terminal_does_not_close_reopened_generation" time="4.108" /><testcase classname="examples.harnessaudit_office.tests.test_terminal_identity" name="test_multiple_terminal_generations_select_current_only" time="4.359" /><testcase classname="examples.harnessaudit_office.tests.test_terminal_identity" name="test_moving_snapshot_publishes_no_partial_observations[head]" time="2.900" /><testcase classname="examples.harnessaudit_office.tests.test_terminal_identity" name="test_moving_snapshot_publishes_no_partial_observations[epoch]" time="2.762" /><testcase classname="examples.harnessaudit_office.tests.test_terminal_identity" name="test_wrong_task_result_is_not_exported" time="3.012" /><testcase classname="examples.harnessaudit_office.tests.test_terminal_identity" name="test_terminal_chain_identity_faults_fail_closed[run_terminal_evidence/v1-terminal_evidence_ref]" time="2.665" /><testcase classname="examples.harnessaudit_office.tests.test_terminal_identity" name="test_terminal_chain_identity_faults_fail_closed[run_terminal_evidence/v1-run_ref]" time="2.773" /><testcase classname="examples.harnessaudit_office.tests.test_terminal_identity" name="test_terminal_chain_identity_faults_fail_closed[run_terminal_evidence/v1-final_checkpoint_ref]" time="2.891" /><testcase classname="examples.harnessaudit_office.tests.test_terminal_identity" name="test_terminal_chain_identity_faults_fail_closed[final_result_index/v1-terminal_result_ref]" time="2.963" /><testcase classname="examples.harnessaudit_office.tests.test_terminal_identity" name="test_terminal_chain_identity_faults_fail_closed[final_result_index/v1-terminal_occurrence_ref]" time="2.987" /><testcase classname="examples.harnessaudit_office.tests.test_terminal_identity" name="test_terminal_closure_requires_one_transaction" time="3.091" /><testcase classname="examples.harnessaudit_office.tests.test_terminal_identity" name="test_snapshot_cache_cannot_alias_logical_id_or_type" time="3.245" /><testcase classname="examples.harnessaudit_office.tests.test_terminal_identity" name="test_terminal_reader_does_not_use_provisional_fallback" time="3.685" /><testcase classname="examples.harnessaudit_office.tests.test_terminal_identity" name="test_managed_action_and_terminal_share_staged_collector" time="3.205" /><testcase classname="examples.harnessaudit_office.tests.test_terminal_identity" name="test_missing_current_authority_fails_closed" time="0.219" /><testcase classname="examples.harnessaudit_office.tests.test_terminal_identity" name="test_terminal_bytes_must_match_registered_metadata" time="2.948" /><testcase classname="tests.test_package_result_projection" name="test_bounded_terminal_json_serializes_exact_bytes" time="0.001" /><testcase classname="tests.test_package_result_projection" name="test_non_json_body_is_omitted_without_content[{&quot;x&quot;:NaN}]" time="0.000" /><testcase classname="tests.test_package_result_projection" name="test_non_json_body_is_omitted_without_content[{&quot;x&quot;:1,&quot;x&quot;:2}]" time="0.000" /><testcase classname="tests.test_package_result_projection" name="test_non_json_body_is_omitted_without_content[{&quot;x&quot;:&quot;\ud800&quot;}]" time="0.000" /><testcase classname="tests.test_package_result_projection" name="test_non_json_body_is_omitted_without_content[not json]" time="0.000" /><testcase classname="tests.test_package_result_projection" name="test_non_json_body_is_omitted_without_content[{&quot;x&quot;:&quot;\xff&quot;}]" time="0.000" /><testcase classname="tests.test_package_result_projection" name="test_non_json_body_is_omitted_without_content[{&quot;x&quot;:1e999}]" time="0.004" /><testcase classname="tests.test_package_result_projection" name="test_unsupported_media_is_not_read" time="0.000" /><testcase classname="tests.test_package_result_projection" name="test_oversize_body_is_not_read" time="0.000" /><testcase classname="tests.test_package_result_projection" name="test_backing_size_mismatch_fails_without_returning_body" time="0.000" /><testcase classname="tests.test_package_result_projection" name="test_no_terminal_does_not_read_owner_resources" time="0.000" /><testcase classname="tests.test_package_result_projection" name="test_cli_result_opt_in_requires_explicit_private_output" time="0.002" /><testcase classname="tests.test_package_result_projection" name="test_host_request_body_is_opt_in_and_bool_only" time="0.000" /><testcase classname="tests.test_object_store_streaming" name="test_prewrite_descriptor_requires_exact_bytes_for_existing_version" time="0.041" /><testcase classname="tests.test_object_store_streaming" name="test_prewrite_descriptor_rejects_declared_size_mismatch" time="0.039" /><testcase classname="tests.test_object_store_streaming" name="test_concurrent_exact_version_publish_never_overwrites_winner" time="0.042" /><testcase classname="tests.test_object_store_streaming" name="test_exact_byte_replay_syncs_the_publication_directory" time="0.043" /><testcase classname="tests.test_object_store_streaming" name="test_unregistered_exact_version_residue_is_not_replaced" time="0.040" /><testcase classname="tests.test_object_store_streaming" name="test_prewrite_descriptor_does_not_publish_when_stream_read_fails" time="0.040" /><testcase classname="tests.test_package_result_delivery" name="test_private_output_reserved_before_approval_and_written_through_same_inode" time="0.003"><failure message="AssertionError: assert 2 == 0&#10; +  where 2 = &lt;function run_cli.&lt;locals&gt;.invoke at 0x7f0102d29f80&gt;()&#10; +    where &lt;function run_cli.&lt;locals&gt;.invoke at 0x7f0102d29f80&gt; = namespace(launches=0, approvals=0, waits=0, approved=True, before_approval=&lt;function test_private_output_reserved_befo..., 'logical_id': 'synthetic:terminal', 'version_id': 'synthetic-version:terminal'}, 'actual_model_call_counts': [0, 0]}).invoke">run_cli = namespace(launches=0, approvals=0, waits=0, approved=True, before_approval=&lt;function test_private_output_reserved_befo..., 'logical_id': 'synthetic:terminal', 'version_id': 'synthetic-version:terminal'}, 'actual_model_call_counts': [0, 0]})
+capsys = &lt;_pytest.capture.CaptureFixture object at 0x7f0102b17e90&gt;
+
+    def test_private_output_reserved_before_approval_and_written_through_same_inode(run_cli, capsys):
+        state = run_cli
+        identities = []
+        def inspect_reservation():
+            info = state.output.stat()
+            identities.append((info.st_dev, info.st_ino))
+            assert stat.S_IMODE(info.st_mode) == 0o600
+            assert state.output.read_bytes() == b""
+            assert not state.run_dir.exists()
+        state.before_approval = inspect_reservation
+&gt;       assert state.invoke() == 0
+E       AssertionError: assert 2 == 0
+E        +  where 2 = &lt;function run_cli.&lt;locals&gt;.invoke at 0x7f0102d29f80&gt;()
+E        +    where &lt;function run_cli.&lt;locals&gt;.invoke at 0x7f0102d29f80&gt; = namespace(launches=0, approvals=0, waits=0, approved=True, before_approval=&lt;function test_private_output_reserved_befo..., 'logical_id': 'synthetic:terminal', 'version_id': 'synthetic-version:terminal'}, 'actual_model_call_counts': [0, 0]}).invoke
+
+rpnh-registry-reader-fix/source/tests/test_package_result_delivery.py:106: AssertionError</failure></testcase><testcase classname="tests.test_package_result_delivery" name="test_default_no_output_keeps_original_public_projection" time="0.002"><failure message="AssertionError: assert 2 == 0&#10; +  where 2 = &lt;function run_cli.&lt;locals&gt;.invoke at 0x7f0102d29620&gt;(output=False, include=False)&#10; +    where &lt;function run_cli.&lt;locals&gt;.invoke at 0x7f0102d29620&gt; = namespace(launches=0, approvals=0, waits=0, approved=True, before_approval=&lt;function run_cli.&lt;locals&gt;.&lt;lambda&gt; at 0x7f..., 'logical_id': 'synthetic:terminal', 'version_id': 'synthetic-version:terminal'}, 'actual_model_call_counts': [0, 0]}).invoke">run_cli = namespace(launches=0, approvals=0, waits=0, approved=True, before_approval=&lt;function run_cli.&lt;locals&gt;.&lt;lambda&gt; at 0x7f..., 'logical_id': 'synthetic:terminal', 'version_id': 'synthetic-version:terminal'}, 'actual_model_call_counts': [0, 0]})
+capsys = &lt;_pytest.capture.CaptureFixture object at 0x7f0102b2b860&gt;
+
+    def test_default_no_output_keeps_original_public_projection(run_cli, capsys):
+&gt;       assert run_cli.invoke(output=False, include=False) == 0
+E       AssertionError: assert 2 == 0
+E        +  where 2 = &lt;function run_cli.&lt;locals&gt;.invoke at 0x7f0102d29620&gt;(output=False, include=False)
+E        +    where &lt;function run_cli.&lt;locals&gt;.invoke at 0x7f0102d29620&gt; = namespace(launches=0, approvals=0, waits=0, approved=True, before_approval=&lt;function run_cli.&lt;locals&gt;.&lt;lambda&gt; at 0x7f..., 'logical_id': 'synthetic:terminal', 'version_id': 'synthetic-version:terminal'}, 'actual_model_call_counts': [0, 0]}).invoke
+
+rpnh-registry-reader-fix/source/tests/test_package_result_delivery.py:115: AssertionError</failure></testcase><testcase classname="tests.test_package_result_delivery" name="test_explicit_output_without_terminal_opt_in_stays_body_free" time="0.002"><failure message="AssertionError: assert 2 == 0&#10; +  where 2 = &lt;function run_cli.&lt;locals&gt;.invoke at 0x7f0102d298a0&gt;(include=False)&#10; +    where &lt;function run_cli.&lt;locals&gt;.invoke at 0x7f0102d298a0&gt; = namespace(launches=0, approvals=0, waits=0, approved=True, before_approval=&lt;function run_cli.&lt;locals&gt;.&lt;lambda&gt; at 0x7f..., 'logical_id': 'synthetic:terminal', 'version_id': 'synthetic-version:terminal'}, 'actual_model_call_counts': [0, 0]}).invoke">run_cli = namespace(launches=0, approvals=0, waits=0, approved=True, before_approval=&lt;function run_cli.&lt;locals&gt;.&lt;lambda&gt; at 0x7f..., 'logical_id': 'synthetic:terminal', 'version_id': 'synthetic-version:terminal'}, 'actual_model_call_counts': [0, 0]})
+capsys = &lt;_pytest.capture.CaptureFixture object at 0x7f010303d820&gt;
+
+    def test_explicit_output_without_terminal_opt_in_stays_body_free(run_cli, capsys):
+&gt;       assert run_cli.invoke(include=False) == 0
+E       AssertionError: assert 2 == 0
+E        +  where 2 = &lt;function run_cli.&lt;locals&gt;.invoke at 0x7f0102d298a0&gt;(include=False)
+E        +    where &lt;function run_cli.&lt;locals&gt;.invoke at 0x7f0102d298a0&gt; = namespace(launches=0, approvals=0, waits=0, approved=True, before_approval=&lt;function run_cli.&lt;locals&gt;.&lt;lambda&gt; at 0x7f..., 'logical_id': 'synthetic:terminal', 'version_id': 'synthetic-version:terminal'}, 'actual_model_call_counts': [0, 0]}).invoke
+
+rpnh-registry-reader-fix/source/tests/test_package_result_delivery.py:122: AssertionError</failure></testcase><testcase classname="tests.test_package_result_delivery" name="test_delivery_preserves_nonterminal_stop_state[False-stopped_by_owner]" time="0.002"><failure message="AssertionError: assert 2 == 0&#10; +  where 2 = &lt;function run_cli.&lt;locals&gt;.invoke at 0x7f0102d29120&gt;()&#10; +    where &lt;function run_cli.&lt;locals&gt;.invoke at 0x7f0102d29120&gt; = namespace(launches=0, approvals=0, waits=0, approved=True, before_approval=&lt;function run_cli.&lt;locals&gt;.&lt;lambda&gt; at 0x7f...c-version:net'}, 'stop_reason': 'stopped_by_owner', 'terminal_evidence_ref': None, 'actual_model_call_counts': [0, 0]}).invoke">run_cli = namespace(launches=0, approvals=0, waits=0, approved=True, before_approval=&lt;function run_cli.&lt;locals&gt;.&lt;lambda&gt; at 0x7f...c-version:net'}, 'stop_reason': 'stopped_by_owner', 'terminal_evidence_ref': None, 'actual_model_call_counts': [0, 0]})
+capsys = &lt;_pytest.capture.CaptureFixture object at 0x7f0102d43ef0&gt;
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7f0102c41760&gt;
+stop_reason = 'stopped_by_owner', delivery_fails = False
+
+    @pytest.mark.parametrize("stop_reason", ["stopped_by_owner", "quiescent_marking"])
+    @pytest.mark.parametrize("delivery_fails", [False, True])
+    def test_delivery_preserves_nonterminal_stop_state(run_cli, capsys, monkeypatch, stop_reason, delivery_fails):
+        run_cli.value.update(stop_reason=stop_reason, terminal_evidence_ref=None,
+                             terminal_result={"status": "not_terminal"})
+        run_cli.public.update(stop_reason=stop_reason, terminal_evidence_ref=None)
+        if delivery_fails:
+            def fsync(fd):
+                raise OSError(errno.ENOSPC, "synthetic disk failure")
+            monkeypatch.setattr(delivery.os, "fsync", fsync)
+&gt;       assert run_cli.invoke() == (2 if delivery_fails else 0)
+E       AssertionError: assert 2 == 0
+E        +  where 2 = &lt;function run_cli.&lt;locals&gt;.invoke at 0x7f0102d29120&gt;()
+E        +    where &lt;function run_cli.&lt;locals&gt;.invoke at 0x7f0102d29120&gt; = namespace(launches=0, approvals=0, waits=0, approved=True, before_approval=&lt;function run_cli.&lt;locals&gt;.&lt;lambda&gt; at 0x7f...c-version:net'}, 'stop_reason': 'stopped_by_owner', 'terminal_evidence_ref': None, 'actual_model_call_counts': [0, 0]}).invoke
+
+rpnh-registry-reader-fix/source/tests/test_package_result_delivery.py:139: AssertionError</failure></testcase><testcase classname="tests.test_package_result_delivery" name="test_delivery_preserves_nonterminal_stop_state[False-quiescent_marking]" time="0.002"><failure message="AssertionError: assert 2 == 0&#10; +  where 2 = &lt;function run_cli.&lt;locals&gt;.invoke at 0x7f0102d2a200&gt;()&#10; +    where &lt;function run_cli.&lt;locals&gt;.invoke at 0x7f0102d2a200&gt; = namespace(launches=0, approvals=0, waits=0, approved=True, before_approval=&lt;function run_cli.&lt;locals&gt;.&lt;lambda&gt; at 0x7f...-version:net'}, 'stop_reason': 'quiescent_marking', 'terminal_evidence_ref': None, 'actual_model_call_counts': [0, 0]}).invoke">run_cli = namespace(launches=0, approvals=0, waits=0, approved=True, before_approval=&lt;function run_cli.&lt;locals&gt;.&lt;lambda&gt; at 0x7f...-version:net'}, 'stop_reason': 'quiescent_marking', 'terminal_evidence_ref': None, 'actual_model_call_counts': [0, 0]})
+capsys = &lt;_pytest.capture.CaptureFixture object at 0x7f010303fc50&gt;
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7f010303ce00&gt;
+stop_reason = 'quiescent_marking', delivery_fails = False
+
+    @pytest.mark.parametrize("stop_reason", ["stopped_by_owner", "quiescent_marking"])
+    @pytest.mark.parametrize("delivery_fails", [False, True])
+    def test_delivery_preserves_nonterminal_stop_state(run_cli, capsys, monkeypatch, stop_reason, delivery_fails):
+        run_cli.value.update(stop_reason=stop_reason, terminal_evidence_ref=None,
+                             terminal_result={"status": "not_terminal"})
+        run_cli.public.update(stop_reason=stop_reason, terminal_evidence_ref=None)
+        if delivery_fails:
+            def fsync(fd):
+                raise OSError(errno.ENOSPC, "synthetic disk failure")
+            monkeypatch.setattr(delivery.os, "fsync", fsync)
+&gt;       assert run_cli.invoke() == (2 if delivery_fails else 0)
+E       AssertionError: assert 2 == 0
+E        +  where 2 = &lt;function run_cli.&lt;locals&gt;.invoke at 0x7f0102d2a200&gt;()
+E        +    where &lt;function run_cli.&lt;locals&gt;.invoke at 0x7f0102d2a200&gt; = namespace(launches=0, approvals=0, waits=0, approved=True, before_approval=&lt;function run_cli.&lt;locals&gt;.&lt;lambda&gt; at 0x7f...-version:net'}, 'stop_reason': 'quiescent_marking', 'terminal_evidence_ref': None, 'actual_model_call_counts': [0, 0]}).invoke
+
+rpnh-registry-reader-fix/source/tests/test_package_result_delivery.py:139: AssertionError</failure></testcase><testcase classname="tests.test_package_result_delivery" name="test_delivery_preserves_nonterminal_stop_state[True-stopped_by_owner]" time="0.002"><failure message="AssertionError: assert 0 == 1&#10; +  where 0 = namespace(launches=0, approvals=0, waits=0, approved=True, before_approval=&lt;function run_cli.&lt;locals&gt;.&lt;lambda&gt; at 0x7f...c-version:net'}, 'stop_reason': 'stopped_by_owner', 'terminal_evidence_ref': None, 'actual_model_call_counts': [0, 0]}).waits">run_cli = namespace(launches=0, approvals=0, waits=0, approved=True, before_approval=&lt;function run_cli.&lt;locals&gt;.&lt;lambda&gt; at 0x7f...c-version:net'}, 'stop_reason': 'stopped_by_owner', 'terminal_evidence_ref': None, 'actual_model_call_counts': [0, 0]})
+capsys = &lt;_pytest.capture.CaptureFixture object at 0x7f0102d41220&gt;
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7f0102d413d0&gt;
+stop_reason = 'stopped_by_owner', delivery_fails = True
+
+    @pytest.mark.parametrize("stop_reason", ["stopped_by_owner", "quiescent_marking"])
+    @pytest.mark.parametrize("delivery_fails", [False, True])
+    def test_delivery_preserves_nonterminal_stop_state(run_cli, capsys, monkeypatch, stop_reason, delivery_fails):
+        run_cli.value.update(stop_reason=stop_reason, terminal_evidence_ref=None,
+                             terminal_result={"status": "not_terminal"})
+        run_cli.public.update(stop_reason=stop_reason, terminal_evidence_ref=None)
+        if delivery_fails:
+            def fsync(fd):
+                raise OSError(errno.ENOSPC, "synthetic disk failure")
+            monkeypatch.setattr(delivery.os, "fsync", fsync)
+        assert run_cli.invoke() == (2 if delivery_fails else 0)
+&gt;       assert run_cli.launches == run_cli.waits == 1
+E       AssertionError: assert 0 == 1
+E        +  where 0 = namespace(launches=0, approvals=0, waits=0, approved=True, before_approval=&lt;function run_cli.&lt;locals&gt;.&lt;lambda&gt; at 0x7f...c-version:net'}, 'stop_reason': 'stopped_by_owner', 'terminal_evidence_ref': None, 'actual_model_call_counts': [0, 0]}).waits
+
+rpnh-registry-reader-fix/source/tests/test_package_result_delivery.py:140: AssertionError</failure></testcase><testcase classname="tests.test_package_result_delivery" name="test_delivery_preserves_nonterminal_stop_state[True-quiescent_marking]" time="0.002"><failure message="AssertionError: assert 0 == 1&#10; +  where 0 = namespace(launches=0, approvals=0, waits=0, approved=True, before_approval=&lt;function run_cli.&lt;locals&gt;.&lt;lambda&gt; at 0x7f...-version:net'}, 'stop_reason': 'quiescent_marking', 'terminal_evidence_ref': None, 'actual_model_call_counts': [0, 0]}).waits">run_cli = namespace(launches=0, approvals=0, waits=0, approved=True, before_approval=&lt;function run_cli.&lt;locals&gt;.&lt;lambda&gt; at 0x7f...-version:net'}, 'stop_reason': 'quiescent_marking', 'terminal_evidence_ref': None, 'actual_model_call_counts': [0, 0]})
+capsys = &lt;_pytest.capture.CaptureFixture object at 0x7f0102c5ca40&gt;
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7f0102c5c2c0&gt;
+stop_reason = 'quiescent_marking', delivery_fails = True
+
+    @pytest.mark.parametrize("stop_reason", ["stopped_by_owner", "quiescent_marking"])
+    @pytest.mark.parametrize("delivery_fails", [False, True])
+    def test_delivery_preserves_nonterminal_stop_state(run_cli, capsys, monkeypatch, stop_reason, delivery_fails):
+        run_cli.value.update(stop_reason=stop_reason, terminal_evidence_ref=None,
+                             terminal_result={"status": "not_terminal"})
+        run_cli.public.update(stop_reason=stop_reason, terminal_evidence_ref=None)
+        if delivery_fails:
+            def fsync(fd):
+                raise OSError(errno.ENOSPC, "synthetic disk failure")
+            monkeypatch.setattr(delivery.os, "fsync", fsync)
+        assert run_cli.invoke() == (2 if delivery_fails else 0)
+&gt;       assert run_cli.launches == run_cli.waits == 1
+E       AssertionError: assert 0 == 1
+E        +  where 0 = namespace(launches=0, approvals=0, waits=0, approved=True, before_approval=&lt;function run_cli.&lt;locals&gt;.&lt;lambda&gt; at 0x7f...-version:net'}, 'stop_reason': 'quiescent_marking', 'terminal_evidence_ref': None, 'actual_model_call_counts': [0, 0]}).waits
+
+rpnh-registry-reader-fix/source/tests/test_package_result_delivery.py:140: AssertionError</failure></testcase><testcase classname="tests.test_package_result_delivery" name="test_existing_output_is_refused_before_launch_or_approval[file]" time="0.002"><failure message="AssertionError: assert 'INVALID_ENVIRONMENT_CONTRACT' == 'ENVIRONMENT_OUTPUT_EXISTS'&#10;  &#10;  - ENVIRONMENT_OUTPUT_EXISTS&#10;  + INVALID_ENVIRONMENT_CONTRACT">run_cli = namespace(launches=0, approvals=0, waits=0, approved=True, before_approval=&lt;function run_cli.&lt;locals&gt;.&lt;lambda&gt; at 0x7f..., 'logical_id': 'synthetic:terminal', 'version_id': 'synthetic-version:terminal'}, 'actual_model_call_counts': [0, 0]})
+capsys = &lt;_pytest.capture.CaptureFixture object at 0x7f010303f4a0&gt;
+kind = 'file'
+
+    @pytest.mark.parametrize("kind", ["file", "directory", "symlink", "dangling_symlink"])
+    def test_existing_output_is_refused_before_launch_or_approval(run_cli, capsys, kind):
+        path = run_cli.output
+        target = path.with_name("other")
+        if kind == "file":
+            path.write_text("keep me")
+        elif kind == "directory":
+            path.mkdir()
+        else:
+            if kind == "symlink":
+                target.write_text("keep target")
+            path.symlink_to(target)
+        assert run_cli.invoke() == 2
+        assert run_cli.launches == run_cli.approvals == 0
+        captured = capsys.readouterr()
+        assert not captured.out
+&gt;       assert json.loads(captured.err)["error"]["reason_code"] == "ENVIRONMENT_OUTPUT_EXISTS"
+E       AssertionError: assert 'INVALID_ENVIRONMENT_CONTRACT' == 'ENVIRONMENT_OUTPUT_EXISTS'
+E         
+E         - ENVIRONMENT_OUTPUT_EXISTS
+E         + INVALID_ENVIRONMENT_CONTRACT
+
+rpnh-registry-reader-fix/source/tests/test_package_result_delivery.py:163: AssertionError</failure></testcase><testcase classname="tests.test_package_result_delivery" name="test_existing_output_is_refused_before_launch_or_approval[directory]" time="0.002"><failure message="AssertionError: assert 'INVALID_ENVIRONMENT_CONTRACT' == 'ENVIRONMENT_OUTPUT_EXISTS'&#10;  &#10;  - ENVIRONMENT_OUTPUT_EXISTS&#10;  + INVALID_ENVIRONMENT_CONTRACT">run_cli = namespace(launches=0, approvals=0, waits=0, approved=True, before_approval=&lt;function run_cli.&lt;locals&gt;.&lt;lambda&gt; at 0x7f..., 'logical_id': 'synthetic:terminal', 'version_id': 'synthetic-version:terminal'}, 'actual_model_call_counts': [0, 0]})
+capsys = &lt;_pytest.capture.CaptureFixture object at 0x7f0102c5d130&gt;
+kind = 'directory'
+
+    @pytest.mark.parametrize("kind", ["file", "directory", "symlink", "dangling_symlink"])
+    def test_existing_output_is_refused_before_launch_or_approval(run_cli, capsys, kind):
+        path = run_cli.output
+        target = path.with_name("other")
+        if kind == "file":
+            path.write_text("keep me")
+        elif kind == "directory":
+            path.mkdir()
+        else:
+            if kind == "symlink":
+                target.write_text("keep target")
+            path.symlink_to(target)
+        assert run_cli.invoke() == 2
+        assert run_cli.launches == run_cli.approvals == 0
+        captured = capsys.readouterr()
+        assert not captured.out
+&gt;       assert json.loads(captured.err)["error"]["reason_code"] == "ENVIRONMENT_OUTPUT_EXISTS"
+E       AssertionError: assert 'INVALID_ENVIRONMENT_CONTRACT' == 'ENVIRONMENT_OUTPUT_EXISTS'
+E         
+E         - ENVIRONMENT_OUTPUT_EXISTS
+E         + INVALID_ENVIRONMENT_CONTRACT
+
+rpnh-registry-reader-fix/source/tests/test_package_result_delivery.py:163: AssertionError</failure></testcase><testcase classname="tests.test_package_result_delivery" name="test_existing_output_is_refused_before_launch_or_approval[symlink]" time="0.002"><failure message="AssertionError: assert 'INVALID_ENVIRONMENT_CONTRACT' == 'ENVIRONMENT_OUTPUT_EXISTS'&#10;  &#10;  - ENVIRONMENT_OUTPUT_EXISTS&#10;  + INVALID_ENVIRONMENT_CONTRACT">run_cli = namespace(launches=0, approvals=0, waits=0, approved=True, before_approval=&lt;function run_cli.&lt;locals&gt;.&lt;lambda&gt; at 0x7f..., 'logical_id': 'synthetic:terminal', 'version_id': 'synthetic-version:terminal'}, 'actual_model_call_counts': [0, 0]})
+capsys = &lt;_pytest.capture.CaptureFixture object at 0x7f0102c5c8c0&gt;
+kind = 'symlink'
+
+    @pytest.mark.parametrize("kind", ["file", "directory", "symlink", "dangling_symlink"])
+    def test_existing_output_is_refused_before_launch_or_approval(run_cli, capsys, kind):
+        path = run_cli.output
+        target = path.with_name("other")
+        if kind == "file":
+            path.write_text("keep me")
+        elif kind == "directory":
+            path.mkdir()
+        else:
+            if kind == "symlink":
+                target.write_text("keep target")
+            path.symlink_to(target)
+        assert run_cli.invoke() == 2
+        assert run_cli.launches == run_cli.approvals == 0
+        captured = capsys.readouterr()
+        assert not captured.out
+&gt;       assert json.loads(captured.err)["error"]["reason_code"] == "ENVIRONMENT_OUTPUT_EXISTS"
+E       AssertionError: assert 'INVALID_ENVIRONMENT_CONTRACT' == 'ENVIRONMENT_OUTPUT_EXISTS'
+E         
+E         - ENVIRONMENT_OUTPUT_EXISTS
+E         + INVALID_ENVIRONMENT_CONTRACT
+
+rpnh-registry-reader-fix/source/tests/test_package_result_delivery.py:163: AssertionError</failure></testcase><testcase classname="tests.test_package_result_delivery" name="test_existing_output_is_refused_before_launch_or_approval[dangling_symlink]" time="0.002"><failure message="AssertionError: assert 'INVALID_ENVIRONMENT_CONTRACT' == 'ENVIRONMENT_OUTPUT_EXISTS'&#10;  &#10;  - ENVIRONMENT_OUTPUT_EXISTS&#10;  + INVALID_ENVIRONMENT_CONTRACT">run_cli = namespace(launches=0, approvals=0, waits=0, approved=True, before_approval=&lt;function run_cli.&lt;locals&gt;.&lt;lambda&gt; at 0x7f..., 'logical_id': 'synthetic:terminal', 'version_id': 'synthetic-version:terminal'}, 'actual_model_call_counts': [0, 0]})
+capsys = &lt;_pytest.capture.CaptureFixture object at 0x7f01035fd340&gt;
+kind = 'dangling_symlink'
+
+    @pytest.mark.parametrize("kind", ["file", "directory", "symlink", "dangling_symlink"])
+    def test_existing_output_is_refused_before_launch_or_approval(run_cli, capsys, kind):
+        path = run_cli.output
+        target = path.with_name("other")
+        if kind == "file":
+            path.write_text("keep me")
+        elif kind == "directory":
+            path.mkdir()
+        else:
+            if kind == "symlink":
+                target.write_text("keep target")
+            path.symlink_to(target)
+        assert run_cli.invoke() == 2
+        assert run_cli.launches == run_cli.approvals == 0
+        captured = capsys.readouterr()
+        assert not captured.out
+&gt;       assert json.loads(captured.err)["error"]["reason_code"] == "ENVIRONMENT_OUTPUT_EXISTS"
+E       AssertionError: assert 'INVALID_ENVIRONMENT_CONTRACT' == 'ENVIRONMENT_OUTPUT_EXISTS'
+E         
+E         - ENVIRONMENT_OUTPUT_EXISTS
+E         + INVALID_ENVIRONMENT_CONTRACT
+
+rpnh-registry-reader-fix/source/tests/test_package_result_delivery.py:163: AssertionError</failure></testcase><testcase classname="tests.test_package_result_delivery" name="test_unusable_destination_fails_before_launch_without_creating_parents[missing]" time="0.002" /><testcase classname="tests.test_package_result_delivery" name="test_unusable_destination_fails_before_launch_without_creating_parents[under_run]" time="0.002" /><testcase classname="tests.test_package_result_delivery" name="test_unusable_destination_fails_before_launch_without_creating_parents[parent_file]" time="0.002" /><testcase classname="tests.test_package_result_delivery" name="test_unusable_destination_fails_before_launch_without_creating_parents[denied]" time="0.002" /><testcase classname="tests.test_package_result_delivery" name="test_unsuccessful_launch_or_wait_cleans_only_empty_reservation[cancelled]" time="0.002"><failure message="AssertionError: assert 2 == 4&#10; +  where 2 = &lt;function run_cli.&lt;locals&gt;.invoke at 0x7f010361e3e0&gt;()&#10; +    where &lt;function run_cli.&lt;locals&gt;.invoke at 0x7f010361e3e0&gt; = namespace(launches=0, approvals=0, waits=0, approved=False, before_approval=&lt;function run_cli.&lt;locals&gt;.&lt;lambda&gt; at 0x7..., 'logical_id': 'synthetic:terminal', 'version_id': 'synthetic-version:terminal'}, 'actual_model_call_counts': [0, 0]}).invoke">run_cli = namespace(launches=0, approvals=0, waits=0, approved=False, before_approval=&lt;function run_cli.&lt;locals&gt;.&lt;lambda&gt; at 0x7..., 'logical_id': 'synthetic:terminal', 'version_id': 'synthetic-version:terminal'}, 'actual_model_call_counts': [0, 0]})
+capsys = &lt;_pytest.capture.CaptureFixture object at 0x7f0103541580&gt;
+failure = 'cancelled'
+
+    @pytest.mark.parametrize("failure", ["cancelled", "launch", "wait", "interrupt"])
+    def test_unsuccessful_launch_or_wait_cleans_only_empty_reservation(run_cli, capsys, failure):
+        if failure == "cancelled":
+            run_cli.approved = False
+            expected = 4
+        elif failure == "launch":
+            run_cli.launch_error = EnvironmentContractError("HOST_PROFILE_UNAVAILABLE", "synthetic failure")
+            expected = 3
+        elif failure == "wait":
+            run_cli.wait_error = EnvironmentContractError("ENVIRONMENT_HOST_PROTOCOL_ERROR", "synthetic failure")
+            expected = 2
+        else:
+            run_cli.wait_error = KeyboardInterrupt()
+        if failure == "interrupt":
+            with pytest.raises(KeyboardInterrupt):
+                run_cli.invoke()
+        else:
+&gt;           assert run_cli.invoke() == expected
+E           AssertionError: assert 2 == 4
+E            +  where 2 = &lt;function run_cli.&lt;locals&gt;.invoke at 0x7f010361e3e0&gt;()
+E            +    where &lt;function run_cli.&lt;locals&gt;.invoke at 0x7f010361e3e0&gt; = namespace(launches=0, approvals=0, waits=0, approved=False, before_approval=&lt;function run_cli.&lt;locals&gt;.&lt;lambda&gt; at 0x7..., 'logical_id': 'synthetic:terminal', 'version_id': 'synthetic-version:terminal'}, 'actual_model_call_counts': [0, 0]}).invoke
+
+rpnh-registry-reader-fix/source/tests/test_package_result_delivery.py:215: AssertionError</failure></testcase><testcase classname="tests.test_package_result_delivery" name="test_unsuccessful_launch_or_wait_cleans_only_empty_reservation[launch]" time="0.002"><failure message="AssertionError: assert 2 == 3&#10; +  where 2 = &lt;function run_cli.&lt;locals&gt;.invoke at 0x7f010361c0e0&gt;()&#10; +    where &lt;function run_cli.&lt;locals&gt;.invoke at 0x7f010361c0e0&gt; = namespace(launches=0, approvals=0, waits=0, approved=True, before_approval=&lt;function run_cli.&lt;locals&gt;.&lt;lambda&gt; at 0x7f..., 'logical_id': 'synthetic:terminal', 'version_id': 'synthetic-version:terminal'}, 'actual_model_call_counts': [0, 0]}).invoke">run_cli = namespace(launches=0, approvals=0, waits=0, approved=True, before_approval=&lt;function run_cli.&lt;locals&gt;.&lt;lambda&gt; at 0x7f..., 'logical_id': 'synthetic:terminal', 'version_id': 'synthetic-version:terminal'}, 'actual_model_call_counts': [0, 0]})
+capsys = &lt;_pytest.capture.CaptureFixture object at 0x7f010355fb60&gt;
+failure = 'launch'
+
+    @pytest.mark.parametrize("failure", ["cancelled", "launch", "wait", "interrupt"])
+    def test_unsuccessful_launch_or_wait_cleans_only_empty_reservation(run_cli, capsys, failure):
+        if failure == "cancelled":
+            run_cli.approved = False
+            expected = 4
+        elif failure == "launch":
+            run_cli.launch_error = EnvironmentContractError("HOST_PROFILE_UNAVAILABLE", "synthetic failure")
+            expected = 3
+        elif failure == "wait":
+            run_cli.wait_error = EnvironmentContractError("ENVIRONMENT_HOST_PROTOCOL_ERROR", "synthetic failure")
+            expected = 2
+        else:
+            run_cli.wait_error = KeyboardInterrupt()
+        if failure == "interrupt":
+            with pytest.raises(KeyboardInterrupt):
+                run_cli.invoke()
+        else:
+&gt;           assert run_cli.invoke() == expected
+E           AssertionError: assert 2 == 3
+E            +  where 2 = &lt;function run_cli.&lt;locals&gt;.invoke at 0x7f010361c0e0&gt;()
+E            +    where &lt;function run_cli.&lt;locals&gt;.invoke at 0x7f010361c0e0&gt; = namespace(launches=0, approvals=0, waits=0, approved=True, before_approval=&lt;function run_cli.&lt;locals&gt;.&lt;lambda&gt; at 0x7f..., 'logical_id': 'synthetic:terminal', 'version_id': 'synthetic-version:terminal'}, 'actual_model_call_counts': [0, 0]}).invoke
+
+rpnh-registry-reader-fix/source/tests/test_package_result_delivery.py:215: AssertionError</failure></testcase><testcase classname="tests.test_package_result_delivery" name="test_unsuccessful_launch_or_wait_cleans_only_empty_reservation[wait]" time="0.002" /><testcase classname="tests.test_package_result_delivery" name="test_unsuccessful_launch_or_wait_cleans_only_empty_reservation[interrupt]" time="0.002"><failure message="Failed: DID NOT RAISE &lt;class 'KeyboardInterrupt'&gt;">run_cli = namespace(launches=0, approvals=0, waits=0, approved=True, before_approval=&lt;function run_cli.&lt;locals&gt;.&lt;lambda&gt; at 0x7f..., 'logical_id': 'synthetic:terminal', 'version_id': 'synthetic-version:terminal'}, 'actual_model_call_counts': [0, 0]})
+capsys = &lt;_pytest.capture.CaptureFixture object at 0x7f0103541640&gt;
+failure = 'interrupt'
+
+    @pytest.mark.parametrize("failure", ["cancelled", "launch", "wait", "interrupt"])
+    def test_unsuccessful_launch_or_wait_cleans_only_empty_reservation(run_cli, capsys, failure):
+        if failure == "cancelled":
+            run_cli.approved = False
+            expected = 4
+        elif failure == "launch":
+            run_cli.launch_error = EnvironmentContractError("HOST_PROFILE_UNAVAILABLE", "synthetic failure")
+            expected = 3
+        elif failure == "wait":
+            run_cli.wait_error = EnvironmentContractError("ENVIRONMENT_HOST_PROTOCOL_ERROR", "synthetic failure")
+            expected = 2
+        else:
+            run_cli.wait_error = KeyboardInterrupt()
+        if failure == "interrupt":
+&gt;           with pytest.raises(KeyboardInterrupt):
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           Failed: DID NOT RAISE &lt;class 'KeyboardInterrupt'&gt;
+
+rpnh-registry-reader-fix/source/tests/test_package_result_delivery.py:212: Failed</failure></testcase><testcase classname="tests.test_package_result_delivery" name="test_late_delivery_failure_retains_safe_returned_refs_without_rerun[write]" time="0.002"><failure message="AssertionError: assert 0 == 1&#10; +  where 0 = namespace(launches=0, approvals=0, waits=0, approved=True, before_approval=&lt;function run_cli.&lt;locals&gt;.&lt;lambda&gt; at 0x7f..., 'logical_id': 'synthetic:terminal', 'version_id': 'synthetic-version:terminal'}, 'actual_model_call_counts': [0, 0]}).waits">run_cli = namespace(launches=0, approvals=0, waits=0, approved=True, before_approval=&lt;function run_cli.&lt;locals&gt;.&lt;lambda&gt; at 0x7f..., 'logical_id': 'synthetic:terminal', 'version_id': 'synthetic-version:terminal'}, 'actual_model_call_counts': [0, 0]})
+capsys = &lt;_pytest.capture.CaptureFixture object at 0x7f010340e4b0&gt;
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7f010340cb30&gt;
+failure = 'write'
+
+    @pytest.mark.parametrize("failure", ["write", "short_write", "flush", "fsync", "close", "serialize"])
+    def test_late_delivery_failure_retains_safe_returned_refs_without_rerun(run_cli, capsys, monkeypatch, failure):
+        actual_fdopen = delivery.os.fdopen
+        class FaultyStream:
+            def __init__(self, stream):
+                self.stream = stream
+            def fileno(self):
+                return self.stream.fileno()
+            def write(self, payload):
+                if failure in {"write", "short_write"}:
+                    self.stream.write(payload[:10])
+                    self.stream.flush()
+                    if failure == "write":
+                        raise OSError(errno.ENOSPC, "body-sentinel")
+                    return 10
+                return self.stream.write(payload)
+            def flush(self):
+                if failure == "flush":
+                    raise OSError(errno.ENOSPC, "body-sentinel")
+                return self.stream.flush()
+            def close(self):
+                self.stream.close()
+                if failure == "close":
+                    raise OSError(errno.EIO, "body-sentinel")
+        monkeypatch.setattr(delivery.os, "fdopen", lambda *args, **kwargs: FaultyStream(actual_fdopen(*args, **kwargs)))
+        if failure == "fsync":
+            def fsync(fd):
+                raise OSError(errno.ENOSPC, "body-sentinel")
+            monkeypatch.setattr(delivery.os, "fsync", fsync)
+        if failure == "serialize":
+            actual = cli.canonical_bytes
+            def serialize(value):
+                if isinstance(value, dict) and "terminal_result" in value:
+                    raise ValueError("body-sentinel")
+                return actual(value)
+            monkeypatch.setattr(cli, "canonical_bytes", serialize)
+        assert run_cli.invoke() == 2
+&gt;       assert run_cli.launches == run_cli.approvals == run_cli.waits == 1
+E       AssertionError: assert 0 == 1
+E        +  where 0 = namespace(launches=0, approvals=0, waits=0, approved=True, before_approval=&lt;function run_cli.&lt;locals&gt;.&lt;lambda&gt; at 0x7f..., 'logical_id': 'synthetic:terminal', 'version_id': 'synthetic-version:terminal'}, 'actual_model_call_counts': [0, 0]}).waits
+
+rpnh-registry-reader-fix/source/tests/test_package_result_delivery.py:257: AssertionError</failure></testcase><testcase classname="tests.test_package_result_delivery" name="test_late_delivery_failure_retains_safe_returned_refs_without_rerun[short_write]" time="0.002"><failure message="AssertionError: assert 0 == 1&#10; +  where 0 = namespace(launches=0, approvals=0, waits=0, approved=True, before_approval=&lt;function run_cli.&lt;locals&gt;.&lt;lambda&gt; at 0x7f..., 'logical_id': 'synthetic:terminal', 'version_id': 'synthetic-version:terminal'}, 'actual_model_call_counts': [0, 0]}).waits">run_cli = namespace(launches=0, approvals=0, waits=0, approved=True, before_approval=&lt;function run_cli.&lt;locals&gt;.&lt;lambda&gt; at 0x7f..., 'logical_id': 'synthetic:terminal', 'version_id': 'synthetic-version:terminal'}, 'actual_model_call_counts': [0, 0]})
+capsys = &lt;_pytest.capture.CaptureFixture object at 0x7f0103015d60&gt;
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7f0103016720&gt;
+failure = 'short_write'
+
+    @pytest.mark.parametrize("failure", ["write", "short_write", "flush", "fsync", "close", "serialize"])
+    def test_late_delivery_failure_retains_safe_returned_refs_without_rerun(run_cli, capsys, monkeypatch, failure):
+        actual_fdopen = delivery.os.fdopen
+        class FaultyStream:
+            def __init__(self, stream):
+                self.stream = stream
+            def fileno(self):
+                return self.stream.fileno()
+            def write(self, payload):
+                if failure in {"write", "short_write"}:
+                    self.stream.write(payload[:10])
+                    self.stream.flush()
+                    if failure == "write":
+                        raise OSError(errno.ENOSPC, "body-sentinel")
+                    return 10
+                return self.stream.write(payload)
+            def flush(self):
+                if failure == "flush":
+                    raise OSError(errno.ENOSPC, "body-sentinel")
+                return self.stream.flush()
+            def close(self):
+                self.stream.close()
+                if failure == "close":
+                    raise OSError(errno.EIO, "body-sentinel")
+        monkeypatch.setattr(delivery.os, "fdopen", lambda *args, **kwargs: FaultyStream(actual_fdopen(*args, **kwargs)))
+        if failure == "fsync":
+            def fsync(fd):
+                raise OSError(errno.ENOSPC, "body-sentinel")
+            monkeypatch.setattr(delivery.os, "fsync", fsync)
+        if failure == "serialize":
+            actual = cli.canonical_bytes
+            def serialize(value):
+                if isinstance(value, dict) and "terminal_result" in value:
+                    raise ValueError("body-sentinel")
+                return actual(value)
+            monkeypatch.setattr(cli, "canonical_bytes", serialize)
+        assert run_cli.invoke() == 2
+&gt;       assert run_cli.launches == run_cli.approvals == run_cli.waits == 1
+E       AssertionError: assert 0 == 1
+E        +  where 0 = namespace(launches=0, approvals=0, waits=0, approved=True, before_approval=&lt;function run_cli.&lt;locals&gt;.&lt;lambda&gt; at 0x7f..., 'logical_id': 'synthetic:terminal', 'version_id': 'synthetic-version:terminal'}, 'actual_model_call_counts': [0, 0]}).waits
+
+rpnh-registry-reader-fix/source/tests/test_package_result_delivery.py:257: AssertionError</failure></testcase><testcase classname="tests.test_package_result_delivery" name="test_late_delivery_failure_retains_safe_returned_refs_without_rerun[flush]" time="0.002"><failure message="AssertionError: assert 0 == 1&#10; +  where 0 = namespace(launches=0, approvals=0, waits=0, approved=True, before_approval=&lt;function run_cli.&lt;locals&gt;.&lt;lambda&gt; at 0x7f..., 'logical_id': 'synthetic:terminal', 'version_id': 'synthetic-version:terminal'}, 'actual_model_call_counts': [0, 0]}).waits">run_cli = namespace(launches=0, approvals=0, waits=0, approved=True, before_approval=&lt;function run_cli.&lt;locals&gt;.&lt;lambda&gt; at 0x7f..., 'logical_id': 'synthetic:terminal', 'version_id': 'synthetic-version:terminal'}, 'actual_model_call_counts': [0, 0]})
+capsys = &lt;_pytest.capture.CaptureFixture object at 0x7f0103014380&gt;
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7f0103017e60&gt;
+failure = 'flush'
+
+    @pytest.mark.parametrize("failure", ["write", "short_write", "flush", "fsync", "close", "serialize"])
+    def test_late_delivery_failure_retains_safe_returned_refs_without_rerun(run_cli, capsys, monkeypatch, failure):
+        actual_fdopen = delivery.os.fdopen
+        class FaultyStream:
+            def __init__(self, stream):
+                self.stream = stream
+            def fileno(self):
+                return self.stream.fileno()
+            def write(self, payload):
+                if failure in {"write", "short_write"}:
+                    self.stream.write(payload[:10])
+                    self.stream.flush()
+                    if failure == "write":
+                        raise OSError(errno.ENOSPC, "body-sentinel")
+                    return 10
+                return self.stream.write(payload)
+            def flush(self):
+                if failure == "flush":
+                    raise OSError(errno.ENOSPC, "body-sentinel")
+                return self.stream.flush()
+            def close(self):
+                self.stream.close()
+                if failure == "close":
+                    raise OSError(errno.EIO, "body-sentinel")
+        monkeypatch.setattr(delivery.os, "fdopen", lambda *args, **kwargs: FaultyStream(actual_fdopen(*args, **kwargs)))
+        if failure == "fsync":
+            def fsync(fd):
+                raise OSError(errno.ENOSPC, "body-sentinel")
+            monkeypatch.setattr(delivery.os, "fsync", fsync)
+        if failure == "serialize":
+            actual = cli.canonical_bytes
+            def serialize(value):
+                if isinstance(value, dict) and "terminal_result" in value:
+                    raise ValueError("body-sentinel")
+                return actual(value)
+            monkeypatch.setattr(cli, "canonical_bytes", serialize)
+        assert run_cli.invoke() == 2
+&gt;       assert run_cli.launches == run_cli.approvals == run_cli.waits == 1
+E       AssertionError: assert 0 == 1
+E        +  where 0 = namespace(launches=0, approvals=0, waits=0, approved=True, before_approval=&lt;function run_cli.&lt;locals&gt;.&lt;lambda&gt; at 0x7f..., 'logical_id': 'synthetic:terminal', 'version_id': 'synthetic-version:terminal'}, 'actual_model_call_counts': [0, 0]}).waits
+
+rpnh-registry-reader-fix/source/tests/test_package_result_delivery.py:257: AssertionError</failure></testcase><testcase classname="tests.test_package_result_delivery" name="test_late_delivery_failure_retains_safe_returned_refs_without_rerun[fsync]" time="0.002"><failure message="AssertionError: assert 0 == 1&#10; +  where 0 = namespace(launches=0, approvals=0, waits=0, approved=True, before_approval=&lt;function run_cli.&lt;locals&gt;.&lt;lambda&gt; at 0x7f..., 'logical_id': 'synthetic:terminal', 'version_id': 'synthetic-version:terminal'}, 'actual_model_call_counts': [0, 0]}).waits">run_cli = namespace(launches=0, approvals=0, waits=0, approved=True, before_approval=&lt;function run_cli.&lt;locals&gt;.&lt;lambda&gt; at 0x7f..., 'logical_id': 'synthetic:terminal', 'version_id': 'synthetic-version:terminal'}, 'actual_model_call_counts': [0, 0]})
+capsys = &lt;_pytest.capture.CaptureFixture object at 0x7f0103015af0&gt;
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7f0103015ac0&gt;
+failure = 'fsync'
+
+    @pytest.mark.parametrize("failure", ["write", "short_write", "flush", "fsync", "close", "serialize"])
+    def test_late_delivery_failure_retains_safe_returned_refs_without_rerun(run_cli, capsys, monkeypatch, failure):
+        actual_fdopen = delivery.os.fdopen
+        class FaultyStream:
+            def __init__(self, stream):
+                self.stream = stream
+            def fileno(self):
+                return self.stream.fileno()
+            def write(self, payload):
+                if failure in {"write", "short_write"}:
+                    self.stream.write(payload[:10])
+                    self.stream.flush()
+                    if failure == "write":
+                        raise OSError(errno.ENOSPC, "body-sentinel")
+                    return 10
+                return self.stream.write(payload)
+            def flush(self):
+                if failure == "flush":
+                    raise OSError(errno.ENOSPC, "body-sentinel")
+                return self.stream.flush()
+            def close(self):
+                self.stream.close()
+                if failure == "close":
+                    raise OSError(errno.EIO, "body-sentinel")
+        monkeypatch.setattr(delivery.os, "fdopen", lambda *args, **kwargs: FaultyStream(actual_fdopen(*args, **kwargs)))
+        if failure == "fsync":
+            def fsync(fd):
+                raise OSError(errno.ENOSPC, "body-sentinel")
+            monkeypatch.setattr(delivery.os, "fsync", fsync)
+        if failure == "serialize":
+            actual = cli.canonical_bytes
+            def serialize(value):
+                if isinstance(value, dict) and "terminal_result" in value:
+                    raise ValueError("body-sentinel")
+                return actual(value)
+            monkeypatch.setattr(cli, "canonical_bytes", serialize)
+        assert run_cli.invoke() == 2
+&gt;       assert run_cli.launches == run_cli.approvals == run_cli.waits == 1
+E       AssertionError: assert 0 == 1
+E        +  where 0 = namespace(launches=0, approvals=0, waits=0, approved=True, before_approval=&lt;function run_cli.&lt;locals&gt;.&lt;lambda&gt; at 0x7f..., 'logical_id': 'synthetic:terminal', 'version_id': 'synthetic-version:terminal'}, 'actual_model_call_counts': [0, 0]}).waits
+
+rpnh-registry-reader-fix/source/tests/test_package_result_delivery.py:257: AssertionError</failure></testcase><testcase classname="tests.test_package_result_delivery" name="test_late_delivery_failure_retains_safe_returned_refs_without_rerun[close]" time="0.002"><failure message="AssertionError: assert 0 == 1&#10; +  where 0 = namespace(launches=0, approvals=0, waits=0, approved=True, before_approval=&lt;function run_cli.&lt;locals&gt;.&lt;lambda&gt; at 0x7f..., 'logical_id': 'synthetic:terminal', 'version_id': 'synthetic-version:terminal'}, 'actual_model_call_counts': [0, 0]}).waits">run_cli = namespace(launches=0, approvals=0, waits=0, approved=True, before_approval=&lt;function run_cli.&lt;locals&gt;.&lt;lambda&gt; at 0x7f..., 'logical_id': 'synthetic:terminal', 'version_id': 'synthetic-version:terminal'}, 'actual_model_call_counts': [0, 0]})
+capsys = &lt;_pytest.capture.CaptureFixture object at 0x7f01036ae1b0&gt;
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7f01036aec00&gt;
+failure = 'close'
+
+    @pytest.mark.parametrize("failure", ["write", "short_write", "flush", "fsync", "close", "serialize"])
+    def test_late_delivery_failure_retains_safe_returned_refs_without_rerun(run_cli, capsys, monkeypatch, failure):
+        actual_fdopen = delivery.os.fdopen
+        class FaultyStream:
+            def __init__(self, stream):
+                self.stream = stream
+            def fileno(self):
+                return self.stream.fileno()
+            def write(self, payload):
+                if failure in {"write", "short_write"}:
+                    self.stream.write(payload[:10])
+                    self.stream.flush()
+                    if failure == "write":
+                        raise OSError(errno.ENOSPC, "body-sentinel")
+                    return 10
+                return self.stream.write(payload)
+            def flush(self):
+                if failure == "flush":
+                    raise OSError(errno.ENOSPC, "body-sentinel")
+                return self.stream.flush()
+            def close(self):
+                self.stream.close()
+                if failure == "close":
+                    raise OSError(errno.EIO, "body-sentinel")
+        monkeypatch.setattr(delivery.os, "fdopen", lambda *args, **kwargs: FaultyStream(actual_fdopen(*args, **kwargs)))
+        if failure == "fsync":
+            def fsync(fd):
+                raise OSError(errno.ENOSPC, "body-sentinel")
+            monkeypatch.setattr(delivery.os, "fsync", fsync)
+        if failure == "serialize":
+            actual = cli.canonical_bytes
+            def serialize(value):
+                if isinstance(value, dict) and "terminal_result" in value:
+                    raise ValueError("body-sentinel")
+                return actual(value)
+            monkeypatch.setattr(cli, "canonical_bytes", serialize)
+        assert run_cli.invoke() == 2
+&gt;       assert run_cli.launches == run_cli.approvals == run_cli.waits == 1
+E       AssertionError: assert 0 == 1
+E        +  where 0 = namespace(launches=0, approvals=0, waits=0, approved=True, before_approval=&lt;function run_cli.&lt;locals&gt;.&lt;lambda&gt; at 0x7f..., 'logical_id': 'synthetic:terminal', 'version_id': 'synthetic-version:terminal'}, 'actual_model_call_counts': [0, 0]}).waits
+
+rpnh-registry-reader-fix/source/tests/test_package_result_delivery.py:257: AssertionError</failure></testcase><testcase classname="tests.test_package_result_delivery" name="test_late_delivery_failure_retains_safe_returned_refs_without_rerun[serialize]" time="0.002"><failure message="AssertionError: assert 0 == 1&#10; +  where 0 = namespace(launches=0, approvals=0, waits=0, approved=True, before_approval=&lt;function run_cli.&lt;locals&gt;.&lt;lambda&gt; at 0x7f..., 'logical_id': 'synthetic:terminal', 'version_id': 'synthetic-version:terminal'}, 'actual_model_call_counts': [0, 0]}).waits">run_cli = namespace(launches=0, approvals=0, waits=0, approved=True, before_approval=&lt;function run_cli.&lt;locals&gt;.&lt;lambda&gt; at 0x7f..., 'logical_id': 'synthetic:terminal', 'version_id': 'synthetic-version:terminal'}, 'actual_model_call_counts': [0, 0]})
+capsys = &lt;_pytest.capture.CaptureFixture object at 0x7f0103014530&gt;
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7f01036ac9b0&gt;
+failure = 'serialize'
+
+    @pytest.mark.parametrize("failure", ["write", "short_write", "flush", "fsync", "close", "serialize"])
+    def test_late_delivery_failure_retains_safe_returned_refs_without_rerun(run_cli, capsys, monkeypatch, failure):
+        actual_fdopen = delivery.os.fdopen
+        class FaultyStream:
+            def __init__(self, stream):
+                self.stream = stream
+            def fileno(self):
+                return self.stream.fileno()
+            def write(self, payload):
+                if failure in {"write", "short_write"}:
+                    self.stream.write(payload[:10])
+                    self.stream.flush()
+                    if failure == "write":
+                        raise OSError(errno.ENOSPC, "body-sentinel")
+                    return 10
+                return self.stream.write(payload)
+            def flush(self):
+                if failure == "flush":
+                    raise OSError(errno.ENOSPC, "body-sentinel")
+                return self.stream.flush()
+            def close(self):
+                self.stream.close()
+                if failure == "close":
+                    raise OSError(errno.EIO, "body-sentinel")
+        monkeypatch.setattr(delivery.os, "fdopen", lambda *args, **kwargs: FaultyStream(actual_fdopen(*args, **kwargs)))
+        if failure == "fsync":
+            def fsync(fd):
+                raise OSError(errno.ENOSPC, "body-sentinel")
+            monkeypatch.setattr(delivery.os, "fsync", fsync)
+        if failure == "serialize":
+            actual = cli.canonical_bytes
+            def serialize(value):
+                if isinstance(value, dict) and "terminal_result" in value:
+                    raise ValueError("body-sentinel")
+                return actual(value)
+            monkeypatch.setattr(cli, "canonical_bytes", serialize)
+        assert run_cli.invoke() == 2
+&gt;       assert run_cli.launches == run_cli.approvals == run_cli.waits == 1
+E       AssertionError: assert 0 == 1
+E        +  where 0 = namespace(launches=0, approvals=0, waits=0, approved=True, before_approval=&lt;function run_cli.&lt;locals&gt;.&lt;lambda&gt; at 0x7f..., 'logical_id': 'synthetic:terminal', 'version_id': 'synthetic-version:terminal'}, 'actual_model_call_counts': [0, 0]}).waits
+
+rpnh-registry-reader-fix/source/tests/test_package_result_delivery.py:257: AssertionError</failure></testcase><testcase classname="tests.test_package_result_delivery" name="test_late_replacement_is_not_written_or_removed[file]" time="0.003"><failure message="FileNotFoundError: [Errno 2] No such file or directory: '/tmp/pytest-of-agent/pytest-16/test_late_replacement_is_not_w0/result.json'">run_cli = namespace(launches=0, approvals=0, waits=0, approved=True, before_approval=&lt;function run_cli.&lt;locals&gt;.&lt;lambda&gt; at 0x7f..., 'logical_id': 'synthetic:terminal', 'version_id': 'synthetic-version:terminal'}, 'actual_model_call_counts': [0, 0]})
+capsys = &lt;_pytest.capture.CaptureFixture object at 0x7f01030179b0&gt;
+replacement = 'file'
+
+    @pytest.mark.parametrize("replacement", ["file", "symlink"])
+    def test_late_replacement_is_not_written_or_removed(run_cli, capsys, replacement):
+        target = run_cli.output.with_name("other")
+        target.write_text("keep target")
+        def replace():
+            run_cli.output.unlink()
+            if replacement == "file":
+                run_cli.output.write_text("keep replacement")
+            else:
+                run_cli.output.symlink_to(target)
+        run_cli.on_wait = replace
+        assert run_cli.invoke() == 2
+        assert target.read_text() == "keep target"
+        if replacement == "file":
+&gt;           assert run_cli.output.read_text() == "keep replacement"
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+rpnh-registry-reader-fix/source/tests/test_package_result_delivery.py:276: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/pathlib.py:1027: in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/tmp/pytest-of-agent/pytest-16/test_late_replacement_is_not_w0/result.json')
+mode = 'r', buffering = -1, encoding = 'locale', errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed to by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+&gt;       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/tmp/pytest-of-agent/pytest-16/test_late_replacement_is_not_w0/result.json'
+
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/pathlib.py:1013: FileNotFoundError</failure></testcase><testcase classname="tests.test_package_result_delivery" name="test_late_replacement_is_not_written_or_removed[symlink]" time="0.002"><failure message="AssertionError: assert False&#10; +  where False = is_symlink()&#10; +    where is_symlink = PosixPath('/tmp/pytest-of-agent/pytest-16/test_late_replacement_is_not_w1/result.json').is_symlink&#10; +      where PosixPath('/tmp/pytest-of-agent/pytest-16/test_late_replacement_is_not_w1/result.json') = namespace(launches=0, approvals=0, waits=0, approved=True, before_approval=&lt;function run_cli.&lt;locals&gt;.&lt;lambda&gt; at 0x7f..., 'logical_id': 'synthetic:terminal', 'version_id': 'synthetic-version:terminal'}, 'actual_model_call_counts': [0, 0]}).output">run_cli = namespace(launches=0, approvals=0, waits=0, approved=True, before_approval=&lt;function run_cli.&lt;locals&gt;.&lt;lambda&gt; at 0x7f..., 'logical_id': 'synthetic:terminal', 'version_id': 'synthetic-version:terminal'}, 'actual_model_call_counts': [0, 0]})
+capsys = &lt;_pytest.capture.CaptureFixture object at 0x7f0103015400&gt;
+replacement = 'symlink'
+
+    @pytest.mark.parametrize("replacement", ["file", "symlink"])
+    def test_late_replacement_is_not_written_or_removed(run_cli, capsys, replacement):
+        target = run_cli.output.with_name("other")
+        target.write_text("keep target")
+        def replace():
+            run_cli.output.unlink()
+            if replacement == "file":
+                run_cli.output.write_text("keep replacement")
+            else:
+                run_cli.output.symlink_to(target)
+        run_cli.on_wait = replace
+        assert run_cli.invoke() == 2
+        assert target.read_text() == "keep target"
+        if replacement == "file":
+            assert run_cli.output.read_text() == "keep replacement"
+        else:
+&gt;           assert run_cli.output.is_symlink()
+E           AssertionError: assert False
+E            +  where False = is_symlink()
+E            +    where is_symlink = PosixPath('/tmp/pytest-of-agent/pytest-16/test_late_replacement_is_not_w1/result.json').is_symlink
+E            +      where PosixPath('/tmp/pytest-of-agent/pytest-16/test_late_replacement_is_not_w1/result.json') = namespace(launches=0, approvals=0, waits=0, approved=True, before_approval=&lt;function run_cli.&lt;locals&gt;.&lt;lambda&gt; at 0x7f..., 'logical_id': 'synthetic:terminal', 'version_id': 'synthetic-version:terminal'}, 'actual_model_call_counts': [0, 0]}).output
+
+rpnh-registry-reader-fix/source/tests/test_package_result_delivery.py:278: AssertionError</failure></testcase><testcase classname="tests.test_package_result_delivery" name="test_cancelled_run_does_not_remove_replacement" time="0.002"><failure message="AssertionError: assert 2 == 4&#10; +  where 2 = &lt;function run_cli.&lt;locals&gt;.invoke at 0x7f010361f2e0&gt;()&#10; +    where &lt;function run_cli.&lt;locals&gt;.invoke at 0x7f010361f2e0&gt; = namespace(launches=0, approvals=0, waits=0, approved=False, before_approval=&lt;function test_cancelled_run_does_not_remo..., 'logical_id': 'synthetic:terminal', 'version_id': 'synthetic-version:terminal'}, 'actual_model_call_counts': [0, 0]}).invoke">run_cli = namespace(launches=0, approvals=0, waits=0, approved=False, before_approval=&lt;function test_cancelled_run_does_not_remo..., 'logical_id': 'synthetic:terminal', 'version_id': 'synthetic-version:terminal'}, 'actual_model_call_counts': [0, 0]})
+capsys = &lt;_pytest.capture.CaptureFixture object at 0x7f010340c470&gt;
+
+    def test_cancelled_run_does_not_remove_replacement(run_cli, capsys):
+        def replace_before_cancellation():
+            run_cli.output.unlink()
+            run_cli.output.write_text("keep replacement")
+        run_cli.before_approval = replace_before_cancellation
+        run_cli.approved = False
+&gt;       assert run_cli.invoke() == 4
+E       AssertionError: assert 2 == 4
+E        +  where 2 = &lt;function run_cli.&lt;locals&gt;.invoke at 0x7f010361f2e0&gt;()
+E        +    where &lt;function run_cli.&lt;locals&gt;.invoke at 0x7f010361f2e0&gt; = namespace(launches=0, approvals=0, waits=0, approved=False, before_approval=&lt;function test_cancelled_run_does_not_remo..., 'logical_id': 'synthetic:terminal', 'version_id': 'synthetic-version:terminal'}, 'actual_model_call_counts': [0, 0]}).invoke
+
+rpnh-registry-reader-fix/source/tests/test_package_result_delivery.py:289: AssertionError</failure></testcase><testcase classname="tests.test_package_result_delivery" name="test_parent_replacement_does_not_redirect_delivery" time="0.002"><failure message="FileNotFoundError: [Errno 2] No such file or directory: '/tmp/pytest-of-agent/pytest-16/test_parent_replacement_does_n0/chosen/result.json'">run_cli = namespace(launches=0, approvals=0, waits=0, approved=True, before_approval=&lt;function run_cli.&lt;locals&gt;.&lt;lambda&gt; at 0x7f..., 'logical_id': 'synthetic:terminal', 'version_id': 'synthetic-version:terminal'}, 'actual_model_call_counts': [0, 0]})
+capsys = &lt;_pytest.capture.CaptureFixture object at 0x7f0103014bf0&gt;
+
+    def test_parent_replacement_does_not_redirect_delivery(run_cli, capsys):
+        parent = run_cli.output.parent / "chosen"
+        parent.mkdir()
+        run_cli.output = parent / "result.json"
+        moved = parent.with_name("moved")
+        def move_parent():
+            parent.rename(moved)
+            parent.mkdir()
+            run_cli.output.write_text("keep replacement")
+        run_cli.on_wait = move_parent
+        assert run_cli.invoke() == 2
+&gt;       assert run_cli.output.read_text() == "keep replacement"
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+rpnh-registry-reader-fix/source/tests/test_package_result_delivery.py:306: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/pathlib.py:1027: in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/tmp/pytest-of-agent/pytest-16/test_parent_replacement_does_n0/chosen/result.json')
+mode = 'r', buffering = -1, encoding = 'locale', errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed to by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+&gt;       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/tmp/pytest-of-agent/pytest-16/test_parent_replacement_does_n0/chosen/result.json'
+
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/pathlib.py:1013: FileNotFoundError</failure></testcase><testcase classname="tests.test_package_result_delivery" name="test_unremovable_partial_file_still_reports_failed_delivery" time="0.003"><failure message="AssertionError: assert False&#10; +  where False = exists()&#10; +    where exists = PosixPath('/tmp/pytest-of-agent/pytest-16/test_unremovable_partial_file_0/result.json').exists&#10; +      where PosixPath('/tmp/pytest-of-agent/pytest-16/test_unremovable_partial_file_0/result.json') = namespace(launches=0, approvals=0, waits=0, approved=True, before_approval=&lt;function run_cli.&lt;locals&gt;.&lt;lambda&gt; at 0x7f..., 'logical_id': 'synthetic:terminal', 'version_id': 'synthetic-version:terminal'}, 'actual_model_call_counts': [0, 0]}).output">run_cli = namespace(launches=0, approvals=0, waits=0, approved=True, before_approval=&lt;function run_cli.&lt;locals&gt;.&lt;lambda&gt; at 0x7f..., 'logical_id': 'synthetic:terminal', 'version_id': 'synthetic-version:terminal'}, 'actual_model_call_counts': [0, 0]})
+capsys = &lt;_pytest.capture.CaptureFixture object at 0x7f010340dd30&gt;
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7f010340c350&gt;
+
+    def test_unremovable_partial_file_still_reports_failed_delivery(run_cli, capsys, monkeypatch):
+        def fsync(fd):
+            raise OSError(errno.ENOSPC, "synthetic disk failure")
+        def unlink(*args, **kwargs):
+            raise PermissionError(errno.EACCES, "synthetic cleanup failure")
+        monkeypatch.setattr(delivery.os, "fsync", fsync)
+        monkeypatch.setattr(delivery.os, "unlink", unlink)
+        assert run_cli.invoke() == 2
+&gt;       assert run_cli.output.exists()
+E       AssertionError: assert False
+E        +  where False = exists()
+E        +    where exists = PosixPath('/tmp/pytest-of-agent/pytest-16/test_unremovable_partial_file_0/result.json').exists
+E        +      where PosixPath('/tmp/pytest-of-agent/pytest-16/test_unremovable_partial_file_0/result.json') = namespace(launches=0, approvals=0, waits=0, approved=True, before_approval=&lt;function run_cli.&lt;locals&gt;.&lt;lambda&gt; at 0x7f..., 'logical_id': 'synthetic:terminal', 'version_id': 'synthetic-version:terminal'}, 'actual_model_call_counts': [0, 0]}).output
+
+rpnh-registry-reader-fix/source/tests/test_package_result_delivery.py:319: AssertionError</failure></testcase></testsuite></testsuites>

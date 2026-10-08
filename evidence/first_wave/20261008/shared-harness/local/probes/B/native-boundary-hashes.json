@@ -1,0 +1,62 @@
+[
+  {
+    "path": "tests/test_main_session_registry.py",
+    "sha256": "918d251bfc175dfa91af9a18b869b1173816530b2ddf08ea7e948f8d929a2c17",
+    "size": 55836,
+    "baseline_equal": true
+  },
+  {
+    "path": "cpn/rpnh/agent_tasks.py",
+    "sha256": "1e26404c15ec14e75959a889a2e978b782413222e3cb993cd45e8bea40be178f",
+    "size": 56140,
+    "baseline_equal": true
+  },
+  {
+    "path": "cpn/rpnh/agent_workflows.py",
+    "sha256": "8996642808621d22cdbf44deda876790858fc4cc460ce9486e1b08b90457d37c",
+    "size": 48106,
+    "baseline_equal": true
+  },
+  {
+    "path": "cpn/components/agent_loop/workspace.py",
+    "sha256": "4121d6c417a4bb23b58bc407cf8d50be3272586009c57642a3b07989328c6b57",
+    "size": 61240,
+    "baseline_equal": true
+  },
+  {
+    "path": "cpn/components/agent_loop/tool_catalog.py",
+    "sha256": "1f581b384a748df155a2a466485f4a579508ff50cff6cb190217fee97be8ff31",
+    "size": 33438,
+    "baseline_equal": true
+  },
+  {
+    "path": "cpn/components/agent_loop/tool_validation.py",
+    "sha256": "ebe7332e9fa3ec30d6fdd7c62437d0de8f915df7a973a8c43a4c8ebef63515cf",
+    "size": 6143,
+    "baseline_equal": true
+  },
+  {
+    "path": "cpn/components/agent_loop/context.py",
+    "sha256": "f88819e5846042e7d5c1fde2f374736648aa8695c70b09ae656ac972ef451e0c",
+    "size": 59803,
+    "baseline_equal": true
+  },
+  {
+    "path": "cpn/components/agent_loop/turn_execution.py",
+    "sha256": "3fcf80c045c45d97a0aeccbc30231194386c2104ab39601c3c896b7359a70780",
+    "size": 24275,
+    "baseline_equal": true
+  },
+  {
+    "path": "cpn/components/agent_loop/request_envelope_materialization.py",
+    "sha256": "8da9aa08ece58d1e1cef0a2ae3036b3205bee6125cc32557e1d23458897b5809",
+    "size": 2188,
+    "baseline_equal": true
+  },
+  {
+    "path": "cpn/rpnh/control_server.py",
+    "sha256": "558efc223f50f98dde2b22b1bf8642e4224087d3a68ea337a3fcb3a865b1d595",
+    "size": 12354,
+    "baseline_equal": true
+  }
+]

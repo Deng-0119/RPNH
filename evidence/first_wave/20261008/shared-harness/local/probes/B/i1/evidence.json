@@ -1,0 +1,174 @@
+{
+  "status": "PASS",
+  "case": "fresh_native_text",
+  "real_provider_calls": 0,
+  "scripted_port_requests": 1,
+  "logical_call_ledger": [
+    1,
+    0
+  ],
+  "ledger_tuple_meaning": [
+    "settled_calls",
+    "post_limit_excess"
+  ],
+  "static_prompt": {
+    "ref": {
+      "entity_type": "resource_version/v1",
+      "logical_id": "resource:12f7e0f73f535e9dad0c4745c4f2a2cf",
+      "version_id": "resource_version:5bba781080385b819c1185d31bfb47f8"
+    },
+    "payload_sha256": "17151be501522ac32299212cfef6dc66b26b3c85f959254f79fd978ba50a8a00",
+    "size": 1155
+  },
+  "optional_agent_tool_catalog": {
+    "ref": {
+      "entity_type": "resource_version/v1",
+      "logical_id": "resource:e3e50fb925d65d97bc347b36d043b3e1",
+      "version_id": "resource_version:da089d2761da5ef391d68701ecb630bc"
+    },
+    "payload_sha256": "847d8ac5ff946a7f854e53bfd8453eff899b39ec8ae6a32c471dbd853484ecc5",
+    "size": 5644
+  },
+  "recipe": {
+    "ref": {
+      "entity_type": "resource_version/v1",
+      "logical_id": "resource:c0fc5e63a5225e1e895ce00eda1ce12e",
+      "version_id": "resource_version:0226665faadf5700b3d011f22b94594a"
+    },
+    "payload_sha256": "86a87442042b7ecf4356e6d2c6f0f172f5d5e8d23ebeef3e0383f968636e036c",
+    "size": 16729,
+    "canonical_sha256": "86a87442042b7ecf4356e6d2c6f0f172f5d5e8d23ebeef3e0383f968636e036c",
+    "source_refs": [
+      {
+        "ref": {
+          "entity_type": "resource_version/v1",
+          "logical_id": "resource:12f7e0f73f535e9dad0c4745c4f2a2cf",
+          "version_id": "resource_version:5bba781080385b819c1185d31bfb47f8"
+        },
+        "payload_sha256": "17151be501522ac32299212cfef6dc66b26b3c85f959254f79fd978ba50a8a00",
+        "size": 1155
+      },
+      {
+        "ref": {
+          "entity_type": "resource_version/v1",
+          "logical_id": "resource:3638a5d74c4e5b548063dbc55b9502b7",
+          "version_id": "resource_version:df052d6bf77c5c3482d0a3fbdb6ef824"
+        },
+        "payload_sha256": "f58bb32faefcdb553ed704393f7bfc11057ae0568f300a841a37f078dabdfefb",
+        "size": 45
+      },
+      {
+        "ref": {
+          "entity_type": "resource_version/v1",
+          "logical_id": "resource:e3e50fb925d65d97bc347b36d043b3e1",
+          "version_id": "resource_version:da089d2761da5ef391d68701ecb630bc"
+        },
+        "payload_sha256": "847d8ac5ff946a7f854e53bfd8453eff899b39ec8ae6a32c471dbd853484ecc5",
+        "size": 5644
+      }
+    ]
+  },
+  "provider_envelope": {
+    "bytes_sha256": "266bb9a3ca09375bdf495f6ed292001e8f3f0656de05243efdd4660035311d13",
+    "size": 16729,
+    "rematerialized_sha256": "266bb9a3ca09375bdf495f6ed292001e8f3f0656de05243efdd4660035311d13",
+    "messages_and_tools_equal": true,
+    "recipe_bytes_equal_envelope": false
+  },
+  "write": {
+    "action_ref": {
+      "entity_type": "agent_action/v2",
+      "logical_id": "agent_action:703ccfb8244953be9f6020181022ebe1",
+      "version_id": "agent_action_version:b93906ba62c65aca8fb6d91cb156cf2d"
+    },
+    "completion_action_ref": {
+      "entity_type": "agent_action/v2",
+      "logical_id": "agent_action:cbd6a80ec1a25b9ea2fa40974e3acb06",
+      "version_id": "agent_action_version:28cb6eff6ba158db861b2d4c19563f27"
+    },
+    "output_schema": "application/rpnh_agent_text/v1",
+    "schema_authority": {
+      "ref": {
+        "entity_type": "resource_version/v1",
+        "logical_id": "resource:64122ec2168756f981892ff81cc00abb",
+        "version_id": "resource_version:e5ba895af6cf55d1b18eb662fda4119f"
+      },
+      "payload_sha256": "13c882337767621bd0ba34acfcbfa83cd7632a05d6a90a92629144ae01ae7ad3",
+      "size": 108
+    },
+    "declared_output_port": "main.result",
+    "internal_port": "port_2",
+    "outcome": "complete",
+    "product": {
+      "ref": {
+        "entity_type": "resource_version/v1",
+        "logical_id": "resource:b3a8c7a2633e5ae081f3279f944db47f",
+        "version_id": "resource_version:1f2a2da9d1ad5569a294908b46aaccd3"
+      },
+      "payload_sha256": "507d6a5a1b88f0aa467798fb470231a44f39084c8ea7e6a1091b2e3c9253d5d2",
+      "size": 149
+    },
+    "workspace_snapshot": {
+      "ref": {
+        "entity_type": "resource_version/v1",
+        "logical_id": "resource:08e4ee504b3d524893665826e8c65872",
+        "version_id": "resource_version:804ac8cfe4ba5dd3b139b0f13a5b6d27"
+      },
+      "payload_sha256": "dffc4bb62cfb4d0e005ed4b6d0d07525266015477ada0c8a72aa9353444af847",
+      "size": 73
+    },
+    "workspace": {
+      "sha256": "dffc4bb62cfb4d0e005ed4b6d0d07525266015477ada0c8a72aa9353444af847",
+      "size": 73
+    },
+    "representation": "Product is canonical JSON string; workspace/snapshot are UTF-8 direct text."
+  },
+  "operation_result": {
+    "ref": {
+      "entity_type": "operation_result/v1",
+      "logical_id": "operation_result:5e0239d755a4560b88fc1c7a9dd70a34",
+      "version_id": "operation_result_version:edaf12a330405e9eb07d1a4bce3653f3"
+    },
+    "payload_sha256": "a730b944d17a173560d4988039f6ec0f4ea72f4753742fd45dd2e79a14826fa2",
+    "size": 862
+  },
+  "terminal": {
+    "ref": {
+      "entity_type": "run_terminal_evidence/v1",
+      "logical_id": "terminal_evidence:a4858944370f452eaa792e5a9c157d0c",
+      "version_id": "terminal_evidence_version:e192e22b72a14afe94bf5ee43a048332"
+    },
+    "payload_sha256": "39784d7f79bf806f7d4730b116d5c0a3916ed418b34b9eb9c20d72a46086f8b3",
+    "size": 1234
+  },
+  "run_ref": {
+    "entity_type": "native_run_identity/v1",
+    "logical_id": "run:02d32b1448df4f3f9f5f3ad3a4606e00",
+    "version_id": "run_version:0dabcfd7e9284992b5529efd38713085"
+  },
+  "task_ref": {
+    "entity_type": "task/v1",
+    "logical_id": "task:37cfdcffff654771bbc549da9c01ae38",
+    "version_id": "task_version:608c229f441844babe45a462883770a4"
+  },
+  "terminal_result_ref": {
+    "entity_type": "resource_version/v1",
+    "logical_id": "resource:b3a8c7a2633e5ae081f3279f944db47f",
+    "version_id": "resource_version:1f2a2da9d1ad5569a294908b46aaccd3"
+  },
+  "run_outcome": "complete",
+  "read_only_head_before_after": [
+    [
+      452,
+      2
+    ],
+    [
+      452,
+      2
+    ]
+  ],
+  "fresh_prompt_unchanged_on_readback": true,
+  "historical_resume": "NOT_RUN",
+  "local_runtime": "<WORKSPACE>/.h26/bn/i1",
+  "local_request": "<WORKSPACE>/.h26/bn/i1/request-1.json"
+}

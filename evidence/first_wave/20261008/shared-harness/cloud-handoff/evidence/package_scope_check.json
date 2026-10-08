@@ -1,0 +1,11 @@
+{
+  "current_source_whitelist": 17,
+  "baseline_source_whitelist": 13,
+  "current_patches": 2,
+  "old_HA_only_patch_included": false,
+  "historical_A_evidence_separated": true,
+  "private_database_or_credentials_included": false,
+  "raw_internal_reviews_included": false,
+  "new_repository_tests_run_during_packaging": false,
+  "return_schema_template_validation": "PASS"
+}

@@ -1,0 +1,481 @@
+{
+  "policy": "Retain historical stages and failures, normalize absolute cloud workspace roots only. No raw internal reviews, databases, secrets, profiles or transcripts are included.",
+  "artifacts": [
+    {
+      "artifact": "evidence/A_current/consumer-tests.log",
+      "source_label": "New Registry-reader A author original stage log",
+      "original_filename": "consumer-tests.log",
+      "original_sha256": "f713528b8fb4eea0bd5cd1cfbc4fc95b9a23ad5d36804c68c4597e950c1e4380",
+      "included_sha256": "2d0d1ab016a4d1aeba5112646454671b6775e6bc02802bf2a82113abda5f6683",
+      "original_bytes": 57825,
+      "included_bytes": 57811,
+      "redactions": [
+        {
+          "kind": "absolute_cloud_workspace_root",
+          "replacement": "<CLOUD_WORKSPACE>",
+          "count": 1,
+          "line_numbers": [
+            875
+          ]
+        }
+      ]
+    },
+    {
+      "artifact": "evidence/A_current/consumer-tests.xml",
+      "source_label": "New Registry-reader A author original stage log",
+      "original_filename": "consumer-tests.xml",
+      "original_sha256": "ebe8227543662e03f8de2a3bfe91712e6ab24737ef1abc466b4f89c35b4ae0d6",
+      "included_sha256": "ebe8227543662e03f8de2a3bfe91712e6ab24737ef1abc466b4f89c35b4ae0d6",
+      "original_bytes": 86766,
+      "included_bytes": 86766,
+      "redactions": []
+    },
+    {
+      "artifact": "evidence/A_current/core-tests.log",
+      "source_label": "New Registry-reader A author original stage log",
+      "original_filename": "core-tests.log",
+      "original_sha256": "d85e2cb2b03b7d1e1d5a4c05a9c8abe952a1c47976616ddb3de4ab6adff9730e",
+      "included_sha256": "c635c85ceb5262e3c3328fa0401215416feb7d86ea68cc1b9a5c4e1935125245",
+      "original_bytes": 196,
+      "included_bytes": 182,
+      "redactions": [
+        {
+          "kind": "absolute_cloud_workspace_root",
+          "replacement": "<CLOUD_WORKSPACE>",
+          "count": 1,
+          "line_numbers": [
+            2
+          ]
+        }
+      ]
+    },
+    {
+      "artifact": "evidence/A_current/core-tests.xml",
+      "source_label": "New Registry-reader A author original stage log",
+      "original_filename": "core-tests.xml",
+      "original_sha256": "87806741bdcbe4b445c3e2ea2829c730f10f5b1ded852e0d5f56d2dd010703d7",
+      "included_sha256": "87806741bdcbe4b445c3e2ea2829c730f10f5b1ded852e0d5f56d2dd010703d7",
+      "original_bytes": 10065,
+      "included_bytes": 10065,
+      "redactions": []
+    },
+    {
+      "artifact": "evidence/A_current/doc-clarification-test.log",
+      "source_label": "New Registry-reader A author original stage log",
+      "original_filename": "doc-clarification-test.log",
+      "original_sha256": "61e719565305eb6b77a11f8bd9664b4538c6fc82d833b33040e32ce8c7be58d5",
+      "included_sha256": "e3c1445813d83d2c8f7dc089ebdcd0561a994a7598d3d5740cc3eac8efd24b1d",
+      "original_bytes": 206,
+      "included_bytes": 192,
+      "redactions": [
+        {
+          "kind": "absolute_cloud_workspace_root",
+          "replacement": "<CLOUD_WORKSPACE>",
+          "count": 1,
+          "line_numbers": [
+            2
+          ]
+        }
+      ]
+    },
+    {
+      "artifact": "evidence/A_current/doc-clarification-test.xml",
+      "source_label": "New Registry-reader A author original stage log",
+      "original_filename": "doc-clarification-test.xml",
+      "original_sha256": "b9e18eec30cf12ebc666355700d80b0bed1771e15090ab2b7e91309a29fdd665",
+      "included_sha256": "b9e18eec30cf12ebc666355700d80b0bed1771e15090ab2b7e91309a29fdd665",
+      "original_bytes": 376,
+      "included_bytes": 376,
+      "redactions": []
+    },
+    {
+      "artifact": "evidence/A_current/final-tests.log",
+      "source_label": "New Registry-reader A author original stage log",
+      "original_filename": "final-tests.log",
+      "original_sha256": "59798b268d648660145db5b1c209149d56727517ae413081b8dc6a2a843f3259",
+      "included_sha256": "649516d0a6edb569833900ca014d81473d87ceb1671319c2a147fe47fc8e6ed9",
+      "original_bytes": 449,
+      "included_bytes": 435,
+      "redactions": [
+        {
+          "kind": "absolute_cloud_workspace_root",
+          "replacement": "<CLOUD_WORKSPACE>",
+          "count": 1,
+          "line_numbers": [
+            5
+          ]
+        }
+      ]
+    },
+    {
+      "artifact": "evidence/A_current/final-tests.xml",
+      "source_label": "New Registry-reader A author original stage log",
+      "original_filename": "final-tests.xml",
+      "original_sha256": "063cdffbc381f8078e3c7d759f7e5fb8c507dee5e72904592217ed2d220520e9",
+      "included_sha256": "063cdffbc381f8078e3c7d759f7e5fb8c507dee5e72904592217ed2d220520e9",
+      "original_bytes": 38246,
+      "included_bytes": 38246,
+      "redactions": []
+    },
+    {
+      "artifact": "evidence/A_current/first-tests.log",
+      "source_label": "New Registry-reader A author original stage log",
+      "original_filename": "first-tests.log",
+      "original_sha256": "0250612f866acc214c778e9a6acbca42c96da32725c3834d03c8a2bf35f84c7d",
+      "included_sha256": "0250612f866acc214c778e9a6acbca42c96da32725c3834d03c8a2bf35f84c7d",
+      "original_bytes": 4123,
+      "included_bytes": 4123,
+      "redactions": []
+    },
+    {
+      "artifact": "evidence/A_current/integration-tests.log",
+      "source_label": "New Registry-reader A author original stage log",
+      "original_filename": "integration-tests.log",
+      "original_sha256": "04825dfb00c110f4e8db72bae09811f584f86452b4a91f523cceb15ce93535cb",
+      "included_sha256": "fe9e69e2b5ec0ba2beb10fde8ae8db31e10a61a2023ab45b59f5c7c18ca17610",
+      "original_bytes": 203,
+      "included_bytes": 189,
+      "redactions": [
+        {
+          "kind": "absolute_cloud_workspace_root",
+          "replacement": "<CLOUD_WORKSPACE>",
+          "count": 1,
+          "line_numbers": [
+            2
+          ]
+        }
+      ]
+    },
+    {
+      "artifact": "evidence/A_current/integration-tests.xml",
+      "source_label": "New Registry-reader A author original stage log",
+      "original_filename": "integration-tests.xml",
+      "original_sha256": "d4ffc3ed0112752067ce0ad93af3932531999236425b442347e16aa0626078d8",
+      "included_sha256": "d4ffc3ed0112752067ce0ad93af3932531999236425b442347e16aa0626078d8",
+      "original_bytes": 6926,
+      "included_bytes": 6926,
+      "redactions": []
+    },
+    {
+      "artifact": "evidence/A_current/patch-apply.log",
+      "source_label": "New Registry-reader A author original stage log",
+      "original_filename": "patch-apply.log",
+      "original_sha256": "78557683cab83df5821aecd8b0428d1d191913f55c7ed72ff7030c224f9651fe",
+      "included_sha256": "78557683cab83df5821aecd8b0428d1d191913f55c7ed72ff7030c224f9651fe",
+      "original_bytes": 672,
+      "included_bytes": 672,
+      "redactions": []
+    },
+    {
+      "artifact": "evidence/B/before-prompt-fix.log",
+      "source_label": "Unchanged B author original stage log",
+      "original_filename": "before-prompt-fix.log",
+      "original_sha256": "ba4c638ab1b6164e4337ee43fd7714ef1f8fa72234bb699fc833d9f6934f6867",
+      "included_sha256": "1ab49cbe5f5156ca6b3c320bac051902b55340df616e2c22d8320a8df1a3965e",
+      "original_bytes": 4270,
+      "included_bytes": 4256,
+      "redactions": [
+        {
+          "kind": "absolute_cloud_workspace_root",
+          "replacement": "<CLOUD_WORKSPACE>",
+          "count": 1,
+          "line_numbers": [
+            65
+          ]
+        }
+      ]
+    },
+    {
+      "artifact": "evidence/B/before-prompt-fix.xml",
+      "source_label": "Unchanged B author original stage log",
+      "original_filename": "before-prompt-fix.xml",
+      "original_sha256": "54868e0d64de374c0401a6e546a84fe7e60d0bf39238a70190908a3d283d1584",
+      "included_sha256": "54868e0d64de374c0401a6e546a84fe7e60d0bf39238a70190908a3d283d1584",
+      "original_bytes": 9854,
+      "included_bytes": 9854,
+      "redactions": []
+    },
+    {
+      "artifact": "evidence/B/focused-pure.log",
+      "source_label": "Unchanged B author original stage log",
+      "original_filename": "focused-pure.log",
+      "original_sha256": "47fee1bf0408d9bd1d53ad8fba77b2933f98f4663f2c2cdea92381796bbb96f3",
+      "included_sha256": "b03f34747b2ec0bea61e9ef11683d82026bd6a0a99bbaaf260fb0fa35623a61a",
+      "original_bytes": 206,
+      "included_bytes": 192,
+      "redactions": [
+        {
+          "kind": "absolute_cloud_workspace_root",
+          "replacement": "<CLOUD_WORKSPACE>",
+          "count": 1,
+          "line_numbers": [
+            2
+          ]
+        }
+      ]
+    },
+    {
+      "artifact": "evidence/B/focused-pure.xml",
+      "source_label": "Unchanged B author original stage log",
+      "original_filename": "focused-pure.xml",
+      "original_sha256": "7d334d9f8b2bc8e4ed6d1447c429f89f6ca89a3155d0305900265f9578ae6c73",
+      "included_sha256": "7d334d9f8b2bc8e4ed6d1447c429f89f6ca89a3155d0305900265f9578ae6c73",
+      "original_bytes": 6438,
+      "included_bytes": 6438,
+      "redactions": []
+    },
+    {
+      "artifact": "evidence/B/main-session-native.log",
+      "source_label": "Unchanged B author original stage log",
+      "original_filename": "main-session-native.log",
+      "original_sha256": "7e268a2693cd7a696ac74713c1007faff881b16acf78caa5c68b66947269b96b",
+      "included_sha256": "bf8a9856de978c67eb3fba4b859afc913e88147fc8c60433535c13f980f8310f",
+      "original_bytes": 3021,
+      "included_bytes": 3007,
+      "redactions": [
+        {
+          "kind": "absolute_cloud_workspace_root",
+          "replacement": "<CLOUD_WORKSPACE>",
+          "count": 1,
+          "line_numbers": [
+            56
+          ]
+        }
+      ]
+    },
+    {
+      "artifact": "evidence/B/main-session-native.xml",
+      "source_label": "Unchanged B author original stage log",
+      "original_filename": "main-session-native.xml",
+      "original_sha256": "d6ac25d1214e0cd759cb375e2bb9538a9c49b83ab57d21f24ae2a20923fa02ab",
+      "included_sha256": "d6ac25d1214e0cd759cb375e2bb9538a9c49b83ab57d21f24ae2a20923fa02ab",
+      "original_bytes": 2967,
+      "included_bytes": 2967,
+      "redactions": []
+    },
+    {
+      "artifact": "evidence/B/patch-apply-check.log",
+      "source_label": "Unchanged B author original stage log",
+      "original_filename": "patch-apply-check.log",
+      "original_sha256": "c5fd6a9d23176233acbf84250900b2e6567a9ad480ec6660448b48650e6cd285",
+      "included_sha256": "c5fd6a9d23176233acbf84250900b2e6567a9ad480ec6660448b48650e6cd285",
+      "original_bytes": 31,
+      "included_bytes": 31,
+      "redactions": []
+    },
+    {
+      "artifact": "evidence/B/test-authoring-initial.log",
+      "source_label": "Unchanged B author original stage log",
+      "original_filename": "test-authoring-initial.log",
+      "original_sha256": "f7dc8c7b554093e5f388066b0f12807c021568ccd2aa1a61cf857e2b788d47e3",
+      "included_sha256": "7c601293e908b4326a8dcb8c1d62495e0abffb466e367f3fa94ff4365695695a",
+      "original_bytes": 7731,
+      "included_bytes": 7717,
+      "redactions": [
+        {
+          "kind": "absolute_cloud_workspace_root",
+          "replacement": "<CLOUD_WORKSPACE>",
+          "count": 1,
+          "line_numbers": [
+            137
+          ]
+        }
+      ]
+    },
+    {
+      "artifact": "evidence/B/test-authoring-initial.xml",
+      "source_label": "Unchanged B author original stage log",
+      "original_filename": "test-authoring-initial.xml",
+      "original_sha256": "8d8250713573688d97434df878e4d42cee826f36816255fce7071329b464a4ed",
+      "included_sha256": "8d8250713573688d97434df878e4d42cee826f36816255fce7071329b464a4ed",
+      "original_bytes": 13263,
+      "included_bytes": 13263,
+      "redactions": []
+    },
+    {
+      "artifact": "evidence/B/before-prompt.json",
+      "source_label": "B synthetic prompt example, not Registry receipt",
+      "original_filename": "before-prompt.json",
+      "original_sha256": "095bbb6c32b7962d55d81585abafb9f082f1db294dca29083ca78fa572d2c40f",
+      "included_sha256": "095bbb6c32b7962d55d81585abafb9f082f1db294dca29083ca78fa572d2c40f",
+      "original_bytes": 926,
+      "included_bytes": 926,
+      "redactions": []
+    },
+    {
+      "artifact": "evidence/B/after-prompt.json",
+      "source_label": "B synthetic prompt example, not Registry receipt",
+      "original_filename": "after-prompt.json",
+      "original_sha256": "d533b89e219d47e86536de63db43c624c45b94fe314f394d609141b674b02d58",
+      "included_sha256": "d533b89e219d47e86536de63db43c624c45b94fe314f394d609141b674b02d58",
+      "original_bytes": 1123,
+      "included_bytes": 1123,
+      "redactions": []
+    },
+    {
+      "artifact": "evidence/A_independent/tests.log",
+      "source_label": "New A independent final review test output",
+      "original_filename": "tests.log",
+      "original_sha256": "5488cb8d9baae701d6f393e944976a0b71eab8005c941cf28044c7ff76e3b77e",
+      "included_sha256": "3c1e048c388c38d55733a9d5a773f32f434133624193f5140b8bc3f8f82b4f90",
+      "original_bytes": 468,
+      "included_bytes": 454,
+      "redactions": [
+        {
+          "kind": "absolute_cloud_workspace_root",
+          "replacement": "<CLOUD_WORKSPACE>",
+          "count": 1,
+          "line_numbers": [
+            5
+          ]
+        }
+      ]
+    },
+    {
+      "artifact": "evidence/A_independent/tests.xml",
+      "source_label": "New A independent final review test output",
+      "original_filename": "tests.xml",
+      "original_sha256": "dfc2e4d4b68815c193312a14373609cfd6bca72b887414ac30cacab554643530",
+      "included_sha256": "dfc2e4d4b68815c193312a14373609cfd6bca72b887414ac30cacab554643530",
+      "original_bytes": 38246,
+      "included_bytes": 38246,
+      "redactions": []
+    },
+    {
+      "artifact": "evidence/A_independent/doc-revision-test.log",
+      "source_label": "New A independent final review test output",
+      "original_filename": "doc-revision-test.log",
+      "original_sha256": "19aba102bad4fc14207d8beb3c36d11baead64da6f565194b4d3e40b95ed9d10",
+      "included_sha256": "69194b5b67e6d8bc29119c02f36f1c156a1af873ed3c25412a6ef51696c6b4e6",
+      "original_bytes": 226,
+      "included_bytes": 212,
+      "redactions": [
+        {
+          "kind": "absolute_cloud_workspace_root",
+          "replacement": "<CLOUD_WORKSPACE>",
+          "count": 1,
+          "line_numbers": [
+            2
+          ]
+        }
+      ]
+    },
+    {
+      "artifact": "evidence/A_independent/doc-revision-test.xml",
+      "source_label": "New A independent final review test output",
+      "original_filename": "doc-revision-test.xml",
+      "original_sha256": "0afd25f04ac0e8e07082cab8316fd17f980c85e0529f1465a18325e587e3efe6",
+      "included_sha256": "0afd25f04ac0e8e07082cab8316fd17f980c85e0529f1465a18325e587e3efe6",
+      "original_bytes": 376,
+      "included_bytes": 376,
+      "redactions": []
+    },
+    {
+      "artifact": "evidence/B_independent/focused-tests.log",
+      "source_label": "Unchanged B independent 36-case review output",
+      "original_filename": "output-guidance-independent-tests.log",
+      "original_sha256": "af027b41b685d610299529011158e25c32efff13e74a6c37c6522f582aa3a05d",
+      "included_sha256": "af027b41b685d610299529011158e25c32efff13e74a6c37c6522f582aa3a05d",
+      "original_bytes": 99,
+      "included_bytes": 99,
+      "redactions": []
+    },
+    {
+      "artifact": "history/withdrawn_HA_only_A/baseline-red.log",
+      "source_label": "Superseded unissued HA-only candidate; historical only, not evidence for shared reader",
+      "original_filename": "baseline-red.log",
+      "original_sha256": "c2dd68bc20b38ab73920c1bd315694ae3dbb72d7208161a37557e089af167601",
+      "included_sha256": "b2b326441ca737590aee619cfc11d9ce8e68883a7063e6ce4030ab00937d5755",
+      "original_bytes": 22196,
+      "included_bytes": 22182,
+      "redactions": [
+        {
+          "kind": "absolute_cloud_workspace_root",
+          "replacement": "<CLOUD_WORKSPACE>",
+          "count": 1,
+          "line_numbers": [
+            394
+          ]
+        }
+      ]
+    },
+    {
+      "artifact": "history/withdrawn_HA_only_A/baseline-red.xml",
+      "source_label": "Superseded unissued HA-only candidate; historical only, not evidence for shared reader",
+      "original_filename": "baseline-red.xml",
+      "original_sha256": "92217deb9426406bec28598d7236a83eea6b7e620a5af56704a875998e6f6e13",
+      "included_sha256": "92217deb9426406bec28598d7236a83eea6b7e620a5af56704a875998e6f6e13",
+      "original_bytes": 22441,
+      "included_bytes": 22441,
+      "redactions": []
+    },
+    {
+      "artifact": "history/withdrawn_HA_only_A/final-tests.log",
+      "source_label": "Superseded unissued HA-only candidate; historical only, not evidence for shared reader",
+      "original_filename": "final-tests.log",
+      "original_sha256": "8e8b75def65abd769bb76f4ad6cf867bf60b6a4ffaf1ec5a0ac23b580daba6f5",
+      "included_sha256": "074158919193461e05ea93ba9fa2fad0886746b5c0fac85513486654f0f6bfed",
+      "original_bytes": 284,
+      "included_bytes": 270,
+      "redactions": [
+        {
+          "kind": "absolute_cloud_workspace_root",
+          "replacement": "<CLOUD_WORKSPACE>",
+          "count": 1,
+          "line_numbers": [
+            3
+          ]
+        }
+      ]
+    },
+    {
+      "artifact": "history/withdrawn_HA_only_A/final-tests.xml",
+      "source_label": "Superseded unissued HA-only candidate; historical only, not evidence for shared reader",
+      "original_filename": "final-tests.xml",
+      "original_sha256": "ebd334263d0025f854650002be401598497218e87a132ecf464357fde8357499",
+      "included_sha256": "ebd334263d0025f854650002be401598497218e87a132ecf464357fde8357499",
+      "original_bytes": 15648,
+      "included_bytes": 15648,
+      "redactions": []
+    },
+    {
+      "artifact": "history/withdrawn_HA_only_A/ha-independent-tests.log",
+      "source_label": "Superseded HA-only independent result; not new A",
+      "original_filename": "ha-independent-tests.log",
+      "original_sha256": "e24d7ed39960fe39721b8d3ad332fb534100622df575f6d513d963c0d58bc5c5",
+      "included_sha256": "99c564056318543f1d3ba44ebc91b95eb2141b4d312df5e990d00c65eca7484f",
+      "original_bytes": 308,
+      "included_bytes": 294,
+      "redactions": [
+        {
+          "kind": "absolute_cloud_workspace_root",
+          "replacement": "<CLOUD_WORKSPACE>",
+          "count": 1,
+          "line_numbers": [
+            3
+          ]
+        }
+      ]
+    },
+    {
+      "artifact": "history/withdrawn_HA_only_A/ha-independent-tests.xml",
+      "source_label": "Superseded HA-only independent result; not new A",
+      "original_filename": "ha-independent-tests.xml",
+      "original_sha256": "2a8e8e3aabb69bc55602d7d0131faa4e5eb16c2d5f0622bf5ba71e1b9e4ceaed",
+      "included_sha256": "2a8e8e3aabb69bc55602d7d0131faa4e5eb16c2d5f0622bf5ba71e1b9e4ceaed",
+      "original_bytes": 15648,
+      "included_bytes": 15648,
+      "redactions": []
+    },
+    {
+      "artifact": "history/withdrawn_HA_only_A/baseline_red_test_snapshot.py",
+      "source_label": "Frozen older regression snapshot for historical 8-fail/1-pass counterexample only",
+      "original_filename": "test_terminal_identity.py",
+      "original_sha256": "f50883fee3b3139984483e6cc08d266fb45aaa726fac9ba60b2b43610f240d4d",
+      "included_sha256": "f50883fee3b3139984483e6cc08d266fb45aaa726fac9ba60b2b43610f240d4d",
+      "original_bytes": 16799,
+      "included_bytes": 16799,
+      "redactions": []
+    }
+  ]
+}

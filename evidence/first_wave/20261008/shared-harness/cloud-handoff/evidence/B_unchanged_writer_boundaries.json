@@ -1,0 +1,24 @@
+{
+  "baseline": "c545621c30452650202ad0aca2bc023b6956929b",
+  "checks": [
+    {
+      "path": "cpn/components/agent_loop/workspace.py",
+      "sha256": "4121d6c417a4bb23b58bc407cf8d50be3272586009c57642a3b07989328c6b57",
+      "git_blob": "7d5fb8afb3f7dbf30c5007b0e32acc3808bc2d7b",
+      "unchanged_by_B": true
+    },
+    {
+      "path": "cpn/components/agent_loop/action_execution.py",
+      "sha256": "7a8db75209f797b7b11e9b83677b2e61874189677620a120d49c0cf3e41433f5",
+      "git_blob": "f31a4414bacbe774cb781d6ee852eae92d604ade",
+      "unchanged_by_B": true
+    },
+    {
+      "path": "cpn/components/agent_loop/request_envelope_materialization.py",
+      "sha256": "8da9aa08ece58d1e1cef0a2ae3036b3205bee6125cc32557e1d23458897b5809",
+      "git_blob": "27628a52e6f1e94857efac9dae9e4e34755a4367",
+      "unchanged_by_B": true
+    }
+  ],
+  "note": "A intentionally changes shared Registry readers and its two consumers. This B-only statement does not assert all combined runtime files are unchanged."
+}

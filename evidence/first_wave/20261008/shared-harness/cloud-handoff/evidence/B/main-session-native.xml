@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="3.561" timestamp="2026-10-08T10:03:02.322604-04:00" hostname="54cb1abdc64d"><testcase classname="tests.test_main_session_registry" name="test_main_turn_accepts_direct_text_write_without_double_json_quoting" time="2.979"><failure message="PermissionError: [Errno 1] Operation not permitted">tmp_path = PosixPath('/tmp/pytest-of-agent/pytest-9/test_main_turn_accepts_direct_0')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7fed13fa36e0&gt;
+
+    def test_main_turn_accepts_direct_text_write_without_double_json_quoting(
+            tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+    ) -&gt; None:
+        execution = _write_execution_profile(tmp_path)
+        session = MainSession(tmp_path / "session", execution)
+        spec = session.prepare_turn("answer using direct text")
+        output = {"reply": "direct text accepted", "task": None}
+        monkeypatch.setattr(
+            "cpn.rpnh.agent_tasks.build_llm_input_port",
+            lambda _selection, *, destination_run_root: (
+                _DirectTextTerminalPort(output)))
+    
+&gt;       result = run_agent_task(spec)
+                 ^^^^^^^^^^^^^^^^^^^^
+
+tests/test_main_session_registry.py:1082: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+cpn/rpnh/agent_tasks.py:1149: in run_agent_task
+    return _execute_agent_task(spec, resume=False)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+cpn/rpnh/agent_tasks.py:1054: in _execute_agent_task
+    event_loop = OwnerEventLoop(owner, socket_path)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+cpn/rpnh/control_server.py:68: in __init__
+    self.listener = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;socket.socket fd=-1, family=0, type=0, proto=0&gt;
+family = &lt;AddressFamily.AF_UNIX: 1&gt;, type = &lt;SocketKind.SOCK_STREAM: 1&gt;
+proto = 0, fileno = None
+
+    def __init__(self, family=-1, type=-1, proto=-1, fileno=None):
+        # For user code address family and type values are IntEnum members, but
+        # for the underlying _socket.socket they're just integers. The
+        # constructor of _socket.socket converts the given argument to an
+        # integer automatically.
+        if fileno is None:
+            if family == -1:
+                family = AF_INET
+            if type == -1:
+                type = SOCK_STREAM
+            if proto == -1:
+                proto = 0
+&gt;       _socket.socket.__init__(self, family, type, proto, fileno)
+E       PermissionError: [Errno 1] Operation not permitted
+
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/socket.py:233: PermissionError</failure></testcase></testsuite></testsuites>

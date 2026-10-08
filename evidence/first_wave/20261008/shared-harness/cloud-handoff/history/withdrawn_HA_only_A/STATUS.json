@@ -1,0 +1,8 @@
+{
+  "status": "SUPERSEDED_NOT_AN_APPLY_OPTION",
+  "old_patch_sha256": "4df2d4f5aa02c25f87f49a8dfe3091d21d3917490e1e7e1e5c82a0e220cddc7b",
+  "old_author_result": "108 passed in 77.58s",
+  "old_independent_result": "108 passed in 80.02s",
+  "old_baseline_counterexample": "8 failed, 1 passed, 15 deselected",
+  "meaning": "These results cover the prior adapter-only candidate and cannot validate the new shared Registry reader or environment_host migration. Only patches/A-registry-execution-reader.patch is current A."
+}

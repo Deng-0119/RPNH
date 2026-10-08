@@ -1,0 +1,25 @@
+{
+  "command": [
+    "<WORKSPACE>/.p26/v/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "-p",
+    "no:cacheprovider",
+    "tests/test_main_session_registry.py::test_main_turn_accepts_direct_text_write_without_double_json_quoting",
+    "tests/test_main_session_registry.py::test_real_terminal_child_registry_is_receipt_authority",
+    "--basetemp=<WORKSPACE>/.h26/bn/g",
+    "--junitxml=<WORKSPACE>/task-shared-harness-validation-20261008/probes/B/gate.xml"
+  ],
+  "cwd": "<WORKSPACE>/.h26/s",
+  "environment": {
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONPATH": "<WORKSPACE>/.h26/s:<WORKSPACE>/.h26/s/tests",
+    "TMPDIR": "<WORKSPACE>/.h26/tmp",
+    "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1"
+  },
+  "started_utc": "2026-10-08T15:11:13.730093+00:00",
+  "exit_code": 0,
+  "elapsed_seconds": 42.83772496199981,
+  "ended_utc": "2026-10-08T15:11:59.057775+00:00"
+}
