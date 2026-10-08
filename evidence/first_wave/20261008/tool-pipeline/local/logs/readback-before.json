@@ -1,0 +1,25 @@
+{
+  "label": "readback-before",
+  "command": [
+    "<WORKSPACE>/.p26/v/bin/python",
+    "-B",
+    "<WORKSPACE>/task-tool-pipeline-validation-20261008/probes/registry_snapshot.py",
+    "<WORKSPACE>/.p26/b/run"
+  ],
+  "cwd": "<WORKSPACE>/RPNH-main",
+  "pid": 3,
+  "started_at": "2026-10-08T13:17:30.555537+00:00",
+  "finished_at": "2026-10-08T13:17:31.108350+00:00",
+  "elapsed_seconds": 0.5528146799999831,
+  "exit_code": 0,
+  "tested_head": "00f2d29c7deffed44e2ec635a24f390c6e0d9ace",
+  "environment_overrides": {
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONUNBUFFERED": "1",
+    "PYTHONPATH": "<WORKSPACE>/RPNH-main",
+    "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1",
+    "TMPDIR": "<WORKSPACE>/.p26/tmp"
+  },
+  "stdout": "<WORKSPACE>/task-tool-pipeline-validation-20261008/logs/readback-before.stdout.log",
+  "stderr": "<WORKSPACE>/task-tool-pipeline-validation-20261008/logs/readback-before.stderr.log"
+}

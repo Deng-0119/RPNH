@@ -1,0 +1,27 @@
+RPNH 工具 Pipeline 验证摘要
+
+结论
+可交付本地原生补验。L2 语义验证通过；L3 原生 OwnerEventLoop / AF_UNIX 尚未通过验收。云端原生 CLI 实际返回 PermissionError errno=1、退出2，没有自动 fallback。实现与22项测试均已具备；代码未push。
+
+实现范围
+仅新增 examples/tool_pipeline 的16个文件，基线00f2d29c7deffed44e2ec635a24f390c6e0d9ace。722个cpn文件及3个根文件按对应Git blob校验无差异；此结论覆盖取样范围，不宣称已复制或重测整个仓库。
+
+标准流程
+两支 read/check/normalize → AND-join → Decimal compute → 独立整数validator → publish。共10 transitions、18 places，12个中间/最终资源和2个原始输入资源。标准结果2.000 kWh、1.70 CNY；逐行半分舍入例得到0.02 CNY。Registry记录的actual_model_call_counts=[0,0]。
+
+最终证据
+- 完整22项通过：444.670秒，0失败/错误/跳过；对应cleanup前manifest。
+- 随后仅修测试helper在断言失败时的cleanup，产品代码及其余13项不变；相关9项对最终源码重跑通过，105.186秒。唯一覆盖为22项，不累加成31。
+- 最终HOST独立边界复验：伪造parents在发布前被拒，未claimed的同Registry输入读取被拒，fresh Harness对未决工具不重放，调用次数仍1，返回reconciliation_required且无terminal。
+- 独立审核22项运行的原始controlled证据：两read函数体在不同worker均进入，ordinal389时同时active；usage normalize于530 settled，542已可读，tariff read至556才settled，join在698才admitted，最大active为2。
+- 精确input claims、derived_from、producer/output binding/schema authority与业务parents匹配；错误输入和schema-valid错误候选不能到达publish。
+- 原生transport小探针及CLI实际阻断。已通过部分使用明确标注的test-only OS pipe，仅替换wake transport，继承真实owner dispatch；Registry、Harness、准入、Start、输出、Success与terminal没有mock。
+
+历史结果如何使用
+早期17项及first-semantic输出只供追溯，不支持最终源码整体验收。独立探索长probe在parents guard修正前已import HOST；它复现过旧缺陷，最终HOST边界复验已确认修复。14个已完成场景从原Registry只读重建，最后自写barrier因调试timeout/cleanup问题取消，退出130；整段探索没有整体PASS。其原始日志为空，机器摘要明确标注重建来源和取消状态；不伪造缺失的原始traceback，也不据此断言产品失败。
+
+不能扩大结论
+这是受信HOST注册callable的example-local coroutine ABI，由同一已admitted worker await。不是core通用async API、managed-plugin/action receipt、任意Python自动转PN或run_tool_program自动lower。read只消费已经交付的artifact，没有外部I/O，不能报告I/O加速。未验证任意中断恢复、外部write outcome_unknown或通用重放对抗矩阵；存储截短检测不代表同长度恶意篡改检测。
+
+下一步
+严格按LOCAL_VALIDATION_TASK.txt，在允许AF_UNIX的本地环境运行默认22项tests、标准/舍入CLI及独立进程Registry回读。不要传pipe选项。保留全部原始成功/失败记录、确切版本和环境；零真实模型、Docker、Actions或外部业务操作，不自动push。

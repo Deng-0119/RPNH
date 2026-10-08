@@ -1,0 +1,183 @@
+{
+  "status": "PASS",
+  "cases": [
+    {
+      "case": "negative",
+      "status": "PASS",
+      "rejections": [
+        {
+          "ref": {
+            "resource_id": "resource:a47db4bb49955e1fa109a8d37f52dc47",
+            "resource_version_id": "resource_version:f6c21b58aa4e58f7bc3761a278ffed37"
+          },
+          "data": {
+            "reason": "input schema: '-1' does not match '^(0|[1-9][0-9]{0,9})$'",
+            "step": "check_usage_input"
+          }
+        }
+      ],
+      "unresolved": [],
+      "terminal": null,
+      "publish_report_admitted": false,
+      "actual_model_call_counts": [
+        0,
+        0
+      ]
+    },
+    {
+      "case": "float",
+      "status": "PASS",
+      "rejections": [
+        {
+          "ref": {
+            "resource_id": "resource:3fbd2ec917cc53079f7afcff756a6046",
+            "resource_version_id": "resource_version:96b08ada4b445c5aad3d8e98c582a400"
+          },
+          "data": {
+            "reason": "input schema: 1.5 is not of type 'string'",
+            "step": "check_usage_input"
+          }
+        }
+      ],
+      "unresolved": [],
+      "terminal": null,
+      "publish_report_admitted": false,
+      "actual_model_call_counts": [
+        0,
+        0
+      ]
+    },
+    {
+      "case": "nan",
+      "status": "PASS",
+      "rejections": [
+        {
+          "ref": {
+            "resource_id": "resource:a27c692a4c8b54ebb28f9900e8b94e94",
+            "resource_version_id": "resource_version:a539c5d0a6d759f1b90f95824745e367"
+          },
+          "data": {
+            "reason": "input schema: 'NaN' does not match '^(0|[1-9][0-9]{0,9})$'",
+            "step": "check_usage_input"
+          }
+        }
+      ],
+      "unresolved": [],
+      "terminal": null,
+      "publish_report_admitted": false,
+      "actual_model_call_counts": [
+        0,
+        0
+      ]
+    },
+    {
+      "case": "duplicate",
+      "status": "PASS",
+      "rejections": [
+        {
+          "ref": {
+            "resource_id": "resource:2d7eea5a12f259ac8420f074170e016f",
+            "resource_version_id": "resource_version:cd6a8b18dad258968b85b9c68f2e031d"
+          },
+          "data": {
+            "reason": "duplicate interval ID",
+            "step": "check_usage_input"
+          }
+        }
+      ],
+      "unresolved": [],
+      "terminal": null,
+      "publish_report_admitted": false,
+      "actual_model_call_counts": [
+        0,
+        0
+      ]
+    },
+    {
+      "case": "overlap",
+      "status": "PASS",
+      "rejections": [
+        {
+          "ref": {
+            "resource_id": "resource:a9da175c70d350b49c180706656a90ec",
+            "resource_version_id": "resource_version:7395391744c25051b6854f0c5a8f3134"
+          },
+          "data": {
+            "reason": "overlapping intervals",
+            "step": "check_usage_input"
+          }
+        }
+      ],
+      "unresolved": [],
+      "terminal": null,
+      "publish_report_admitted": false,
+      "actual_model_call_counts": [
+        0,
+        0
+      ]
+    },
+    {
+      "case": "too_large",
+      "status": "PASS",
+      "rejections": [
+        {
+          "ref": {
+            "resource_id": "resource:ce5c23d96ebc59acb4b1e32f1297ba75",
+            "resource_version_id": "resource_version:ec3870c1a9255ae986538b903d8a434c"
+          },
+          "data": {
+            "reason": "input integer exceeds frozen bound",
+            "step": "check_usage_input"
+          }
+        }
+      ],
+      "unresolved": [],
+      "terminal": null,
+      "publish_report_admitted": false,
+      "actual_model_call_counts": [
+        0,
+        0
+      ]
+    },
+    {
+      "case": "source",
+      "status": "PASS",
+      "rejections": [
+        {
+          "ref": {
+            "resource_id": "resource:ab3c335a865859e09ab89d8c77a7560d",
+            "resource_version_id": "resource_version:9a383efd058a5bb5a8657db9187eede5"
+          },
+          "data": {
+            "reason": "candidate source versions or policy differ",
+            "step": "validate_report"
+          }
+        }
+      ],
+      "unresolved": [],
+      "terminal": null,
+      "publish_report_admitted": false,
+      "actual_model_call_counts": [
+        0,
+        0
+      ]
+    },
+    {
+      "case": "parents",
+      "status": "PASS",
+      "rejections": [],
+      "unresolved": [
+        {
+          "transition": "read_usage.run",
+          "state": "PROVISIONAL"
+        }
+      ],
+      "terminal": null,
+      "publish_report_admitted": false,
+      "actual_model_call_counts": [
+        0,
+        0
+      ]
+    }
+  ]
+}

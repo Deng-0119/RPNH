@@ -1,0 +1,92 @@
+{
+  "head": "00f2d29c7deffed44e2ec635a24f390c6e0d9ace",
+  "origin_main_local_ref": "00f2d29c7deffed44e2ec635a24f390c6e0d9ace",
+  "dirty_before": "?? examples/tool_pipeline/",
+  "source_set_sha256": "a547de500345f51c102fb197dfabedafc2aa48c251dc19d9e10733cbe2553618",
+  "files": [
+    {
+      "path": "examples/tool_pipeline/README.md",
+      "sha256": "f544ef304ac13f353af2bb207afab18e8a86a69391b407a7adafaa81674c7032",
+      "size_bytes": 10492
+    },
+    {
+      "path": "examples/tool_pipeline/README_ZH.md",
+      "sha256": "5449c8ef872ee8139c780b878adc394fbe112f25888099d15f5863db9674dbc7",
+      "size_bytes": 8898
+    },
+    {
+      "path": "examples/tool_pipeline/__init__.py",
+      "sha256": "bdb0e7dc3564cc7d6254dedb6dac52c64001b52d1c60b30da9ccccf1bd4646f8",
+      "size_bytes": 67
+    },
+    {
+      "path": "examples/tool_pipeline/contracts.py",
+      "sha256": "80343a6929294ddf5aaa663595a3c2508a4550a85e93de71bd68b948df294534",
+      "size_bytes": 4324
+    },
+    {
+      "path": "examples/tool_pipeline/fixtures/expected-report.json",
+      "sha256": "d369c18417ae7b8ccb88d9ef8f4fce6844f637df81b3e17e5ced51414e5b68d5",
+      "size_bytes": 563
+    },
+    {
+      "path": "examples/tool_pipeline/fixtures/tariff-rounding.json",
+      "sha256": "b842b97864781615e18fa2f8b367228833760fb42c7e014ec28b039f29cc2df0",
+      "size_bytes": 310
+    },
+    {
+      "path": "examples/tool_pipeline/fixtures/tariff.json",
+      "sha256": "a5fec5935e2698908b1dbd54c375191ea70c17a2983a32d0dc6fcec729cc5cab",
+      "size_bytes": 309
+    },
+    {
+      "path": "examples/tool_pipeline/fixtures/usage-rounding.json",
+      "sha256": "9aa5d52da06da6412d578b08203d83da986f89b2655aa98f0bc9a9bcef9c4590",
+      "size_bytes": 265
+    },
+    {
+      "path": "examples/tool_pipeline/fixtures/usage.json",
+      "sha256": "ee40f4a6d10cead79a1c2323d91214c1b45e05aee27640413520bf449f12eddf",
+      "size_bytes": 270
+    },
+    {
+      "path": "examples/tool_pipeline/host.py",
+      "sha256": "0cb8ae2074f726a29785c7b8995d56ddff93ae27e7471a1112e4ae198c0fe9fc",
+      "size_bytes": 8293
+    },
+    {
+      "path": "examples/tool_pipeline/module.json",
+      "sha256": "fd8483bbc7974386531383d4988fe42f3deb350b78c1a06837473710a171d577",
+      "size_bytes": 19316
+    },
+    {
+      "path": "examples/tool_pipeline/run.py",
+      "sha256": "71bf5b015d8a4ca7e2a0888ff47df8586dd26982576a92fc62725db0ac8c5ad9",
+      "size_bytes": 9136
+    },
+    {
+      "path": "examples/tool_pipeline/tests/conftest.py",
+      "sha256": "2ab95b8eb43bbf8b2b2385713dd6a49880f990cb9e1196173832771eab6287e9",
+      "size_bytes": 565
+    },
+    {
+      "path": "examples/tool_pipeline/tests/pipe_transport.py",
+      "sha256": "bf5beda6088f19959752655512d8fbba1ea4b1abab1d999d31502c8428af46c9",
+      "size_bytes": 1432
+    },
+    {
+      "path": "examples/tool_pipeline/tests/test_pipeline.py",
+      "sha256": "387e64049bdd70d2305a09ff40610a61f2347e5f34690dcfcb4a6814378afbfb",
+      "size_bytes": 19319
+    },
+    {
+      "path": "examples/tool_pipeline/tools.py",
+      "sha256": "4505285f2a3d801f2ac31adc63cbc73aa3d5a271a5f6a88b44fac6bc05d7fca9",
+      "size_bytes": 10202
+    }
+  ],
+  "python": "3.13.12",
+  "os": "Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+  "transport": "cpn.rpnh.control_server.OwnerEventLoop (native default)",
+  "probe_sha256": "88916bf8784b1dd13b88175376fc1a8c71d56312ae1579fb7991720e08e290d2"
+}

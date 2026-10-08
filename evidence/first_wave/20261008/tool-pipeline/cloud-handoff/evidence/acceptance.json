@@ -1,0 +1,159 @@
+{
+  "schema_version": "tool_pipeline/acceptance/v1",
+  "base_commit": "00f2d29c7deffed44e2ec635a24f390c6e0d9ace",
+  "source_set_sha256": "a547de500345f51c102fb197dfabedafc2aa48c251dc19d9e10733cbe2553618",
+  "new_files": 16,
+  "modified_core_files": 0,
+  "unique_tests": 22,
+  "suite": {
+    "status": "PASS",
+    "tests": 22,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "elapsed_seconds": "444.670",
+    "junit": "evidence/final-author-junit.xml",
+    "source_manifest": "provenance/tested-source-manifest-before-cleanup.json"
+  },
+  "focused_final_source_recheck": {
+    "status": "PASS",
+    "tests": 9,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "elapsed_seconds": "105.186",
+    "junit": "evidence/final-cleanup-recheck-junit.xml",
+    "source_manifest": "provenance/tested-source-manifest.json",
+    "note": "Only assertion-failure cleanup in controlled-run test helper changed. Product code and 13 other tests unchanged. Nine rechecked tests overlap the full 22; do not sum."
+  },
+  "native_transport": {
+    "status": "BLOCKED",
+    "error": "PermissionError: [Errno 1] Operation not permitted",
+    "log": "evidence/native-attempt.log",
+    "fallback": false
+  },
+  "semantic_transport": {
+    "status": "PASS",
+    "kind": "Explicit test-only OS pipe wake transport; actual inherited owner dispatch, Harness and Registry unchanged"
+  },
+  "normal_report": {
+    "currency": "CNY",
+    "intervals": [
+      {
+        "amount_cny": "1.20",
+        "cny_per_kwh": "0.80",
+        "end": "2026-01-01T01:00:00Z",
+        "interval_id": "A",
+        "kwh": "1.500",
+        "start": "2026-01-01T00:00:00Z"
+      },
+      {
+        "amount_cny": "0.50",
+        "cny_per_kwh": "1.00",
+        "end": "2026-01-01T02:00:00Z",
+        "interval_id": "B",
+        "kwh": "0.500",
+        "start": "2026-01-01T01:00:00Z"
+      }
+    ],
+    "round_each_interval": true,
+    "rounding": "ROUND_HALF_UP",
+    "total_cny": "1.70",
+    "total_kwh": "2.000",
+    "usage_unit": "kWh"
+  },
+  "terminal_result_ref": {
+    "entity_type": "resource_version/v1",
+    "logical_id": "resource:5814414022195cbba5cb32cd97af6cde",
+    "version_id": "resource_version:2541a6aad4d5503eb3bde4112af723e1"
+  },
+  "source_resources": 2,
+  "intermediate_and_final_resources": 12,
+  "firings": 10,
+  "actual_model_call_counts": [
+    0,
+    0
+  ],
+  "controlled_overlap": {
+    "observations": [
+      {
+        "branch": "tariff",
+        "phase": "entered",
+        "thread": 140197107128000
+      },
+      {
+        "branch": "usage",
+        "phase": "entered",
+        "thread": 140197097686720
+      },
+      {
+        "branch": "usage",
+        "phase": "returned"
+      },
+      {
+        "branch": "tariff",
+        "phase": "returned"
+      }
+    ],
+    "snapshots": {
+      "both_read_tools_entered": {
+        "enabled": [],
+        "active": [
+          {
+            "transition": "read_usage.run",
+            "firing_ref": "transition_firing_version:5ce89ce9b24653f0848de32d254f679f"
+          },
+          {
+            "transition": "read_tariff.run",
+            "firing_ref": "transition_firing_version:ef8fad7436945c8a846b6832b233dfe9"
+          }
+        ],
+        "ordinal": 389
+      },
+      "usage_normalized_while_tariff_reading": {
+        "enabled": [],
+        "active": [
+          {
+            "transition": "read_tariff.run",
+            "firing_ref": "transition_firing_version:ef8fad7436945c8a846b6832b233dfe9"
+          }
+        ],
+        "ordinal": 542
+      },
+      "normalized_resource_ref": {
+        "resource_id": "resource:8da02899ae925d888033ac5439f2d73b",
+        "resource_version_id": "resource_version:203dc316b3e655e89b5432b480836677"
+      },
+      "unclaimed_sibling_read": "UnauthorizedResourceDelivery"
+    }
+  },
+  "evidence_sources": {
+    "normal": "evidence/final-cleanup-recheck/tool-pipeline-controlled0/rebuilt-export/evidence.json",
+    "negative_runs": "evidence/final-author-tests/",
+    "readback_cli": "evidence/cli-readback.log",
+    "net_cli": "evidence/rpnh-net-cli.log",
+    "independent_review": "review/"
+  },
+  "out_of_scope_or_remaining": [
+    {
+      "status": "NOT RUN",
+      "case": "Native AF_UNIX CLI and default transport test suite on an allowed local host"
+    },
+    {
+      "status": "NOT IMPLEMENTED",
+      "case": "Arbitrary Python AST lowering or one-parent-tool nested typed execution-net bridge"
+    },
+    {
+      "status": "NOT RUN",
+      "case": "External-write outcome_unknown, payments, models, Docker, Actions"
+    },
+    {
+      "status": "LIMITED",
+      "case": "Cross-run forged ref / same-key changed payload general adversarial matrix not implemented. Current tests prove exact Registry-derived lineage, unauthorized same-Registry sibling read, wrong registered tool identity and terminal replay without dispatch."
+    },
+    {
+      "status": "LIMITED",
+      "case": "Truncated payload readback fails; same-length disk tampering cryptographic detection is not supplied by current core."
+    }
+  ]
+}

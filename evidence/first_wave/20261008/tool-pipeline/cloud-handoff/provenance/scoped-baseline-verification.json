@@ -1,0 +1,27 @@
+{
+  "source_main": "00f2d29c7deffed44e2ec635a24f390c6e0d9ace",
+  "verified_cpn_tree": "27aef45c5ff39e543ce3a683a5a5654921cda3d4",
+  "root_files": [
+    {
+      "path": "AGENTS.md",
+      "expected": "8aef173f3f1307830fccfd2da8b3187547ff8934",
+      "actual": "8aef173f3f1307830fccfd2da8b3187547ff8934",
+      "same": true
+    },
+    {
+      "path": "pyproject.toml",
+      "expected": "71a198f33a94cbff3fb83e5d71ad16c80ba27040",
+      "actual": "71a198f33a94cbff3fb83e5d71ad16c80ba27040",
+      "same": true
+    },
+    {
+      "path": "CONTRIBUTING.md",
+      "expected": "4ab43e52edbeacef5222bccb62fb4112473fd70a",
+      "actual": "4ab43e52edbeacef5222bccb62fb4112473fd70a",
+      "same": true
+    }
+  ],
+  "tool_pipeline_absent_on_main": true,
+  "truncated": false,
+  "scope": "722 cpn blobs, three named root files, and exact absent new example path; not a full repository checkout"
+}

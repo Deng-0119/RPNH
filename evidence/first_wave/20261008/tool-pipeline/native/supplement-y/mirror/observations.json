@@ -1,0 +1,32 @@
+{
+  "observations": [
+    {
+      "branch": "usage",
+      "phase": "entered",
+      "thread": 130490830063296
+    },
+    {
+      "branch": "usage",
+      "phase": "returned",
+      "thread": 130490830063296
+    }
+  ],
+  "snapshots": {
+    "enabled": [],
+    "active": [
+      {
+        "transition": "read_usage.run",
+        "firing_version_id": "transition_firing_version:99acf18254cc5f01b0b60a75b1f63d4a"
+      }
+    ],
+    "tariff_normalized_refs": [
+      {
+        "resource_id": "resource:5c46bb138e975b1bba309cb061622acb",
+        "resource_version_id": "resource_version:f72eebc60af552ad9f7bb31059ff5c7d"
+      }
+    ],
+    "ordinal_before_admit": 542,
+    "ordinal_after_admit": 542,
+    "join_admitted": false
+  }
+}

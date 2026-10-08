@@ -1,0 +1,760 @@
+{
+  "status": "COMPLETED_SCENARIOS_REBUILT_READ_ONLY",
+  "note": "Exploratory process imported HOST before parents guard fix. All algorithms and graph are unchanged; final fixed guard independently verified in final-boundary-results.json. This is not an aggregate pass for the cancelled exploratory script.",
+  "completed_scenarios": [
+    {
+      "case": "bad_usage_unit",
+      "status": "PASS_REJECTED_WITHOUT_PUBLICATION",
+      "run_dir": "review/probe-runs/bad_usage_unit",
+      "transport": "explicit_test_transport",
+      "firings": [
+        "read_tariff.run",
+        "read_usage.run",
+        "check_tariff_input.run",
+        "check_usage_input.run",
+        "normalize_tariff.run"
+      ],
+      "terminal_count": 0,
+      "report": null,
+      "rejections": [
+        {
+          "reason": "input schema: 'Wh' was expected",
+          "step": "check_usage_input"
+        }
+      ],
+      "actual_model_call_counts": [
+        0,
+        0
+      ],
+      "resources": 7
+    },
+    {
+      "case": "bool_usage_value",
+      "status": "PASS_REJECTED_WITHOUT_PUBLICATION",
+      "run_dir": "review/probe-runs/bool_usage_value",
+      "transport": "explicit_test_transport",
+      "firings": [
+        "read_tariff.run",
+        "read_usage.run",
+        "check_tariff_input.run",
+        "check_usage_input.run",
+        "normalize_tariff.run"
+      ],
+      "terminal_count": 0,
+      "report": null,
+      "rejections": [
+        {
+          "reason": "input schema: True is not of type 'string'",
+          "step": "check_usage_input"
+        }
+      ],
+      "actual_model_call_counts": [
+        0,
+        0
+      ],
+      "resources": 7
+    },
+    {
+      "case": "candidate_forged_parent",
+      "status": "PRE_FIX_DEFECT_REPRODUCED_FIXED_BY_FINAL_BOUNDARY_PROBE",
+      "run_dir": "review/probe-runs/candidate_forged_parent",
+      "transport": "explicit_test_transport",
+      "firings": [
+        "read_tariff.run",
+        "read_usage.run",
+        "check_tariff_input.run",
+        "check_usage_input.run",
+        "normalize_tariff.run",
+        "normalize_usage.run",
+        "join_intervals.run",
+        "compute_cost.run",
+        "validate_report.run",
+        "publish_report.run"
+      ],
+      "terminal_count": 1,
+      "report": {
+        "currency": "CNY",
+        "intervals": [
+          {
+            "amount_cny": "1.20",
+            "cny_per_kwh": "0.80",
+            "end": "2026-01-01T01:00:00Z",
+            "interval_id": "A",
+            "kwh": "1.500",
+            "start": "2026-01-01T00:00:00Z"
+          },
+          {
+            "amount_cny": "0.50",
+            "cny_per_kwh": "1.00",
+            "end": "2026-01-01T02:00:00Z",
+            "interval_id": "B",
+            "kwh": "0.500",
+            "start": "2026-01-01T01:00:00Z"
+          }
+        ],
+        "round_each_interval": true,
+        "rounding": "ROUND_HALF_UP",
+        "total_cny": "1.70",
+        "total_kwh": "2.000",
+        "usage_unit": "kWh"
+      },
+      "rejections": [],
+      "actual_model_call_counts": [
+        0,
+        0
+      ],
+      "resources": 12
+    },
+    {
+      "case": "candidate_wrong_interval",
+      "status": "PASS_REJECTED_WITHOUT_PUBLICATION",
+      "run_dir": "review/probe-runs/candidate_wrong_interval",
+      "transport": "explicit_test_transport",
+      "firings": [
+        "read_tariff.run",
+        "read_usage.run",
+        "check_tariff_input.run",
+        "check_usage_input.run",
+        "normalize_tariff.run",
+        "normalize_usage.run",
+        "join_intervals.run",
+        "compute_cost.run",
+        "validate_report.run"
+      ],
+      "terminal_count": 0,
+      "report": null,
+      "rejections": [
+        {
+          "reason": "candidate differs from independent integer oracle",
+          "step": "validate_report"
+        }
+      ],
+      "actual_model_call_counts": [
+        0,
+        0
+      ],
+      "resources": 11
+    },
+    {
+      "case": "candidate_wrong_row",
+      "status": "PASS_REJECTED_WITHOUT_PUBLICATION",
+      "run_dir": "review/probe-runs/candidate_wrong_row",
+      "transport": "explicit_test_transport",
+      "firings": [
+        "read_tariff.run",
+        "read_usage.run",
+        "check_tariff_input.run",
+        "check_usage_input.run",
+        "normalize_tariff.run",
+        "normalize_usage.run",
+        "join_intervals.run",
+        "compute_cost.run",
+        "validate_report.run"
+      ],
+      "terminal_count": 0,
+      "report": null,
+      "rejections": [
+        {
+          "reason": "candidate differs from independent integer oracle",
+          "step": "validate_report"
+        }
+      ],
+      "actual_model_call_counts": [
+        0,
+        0
+      ],
+      "resources": 11
+    },
+    {
+      "case": "candidate_wrong_source",
+      "status": "PASS_REJECTED_WITHOUT_PUBLICATION",
+      "run_dir": "review/probe-runs/candidate_wrong_source",
+      "transport": "explicit_test_transport",
+      "firings": [
+        "read_tariff.run",
+        "read_usage.run",
+        "check_tariff_input.run",
+        "check_usage_input.run",
+        "normalize_tariff.run",
+        "normalize_usage.run",
+        "join_intervals.run",
+        "compute_cost.run",
+        "validate_report.run"
+      ],
+      "terminal_count": 0,
+      "report": null,
+      "rejections": [
+        {
+          "reason": "candidate source versions or policy differ",
+          "step": "validate_report"
+        }
+      ],
+      "actual_model_call_counts": [
+        0,
+        0
+      ],
+      "resources": 11
+    },
+    {
+      "case": "candidate_wrong_total",
+      "status": "PASS_REJECTED_WITHOUT_PUBLICATION",
+      "run_dir": "review/probe-runs/candidate_wrong_total",
+      "transport": "explicit_test_transport",
+      "firings": [
+        "read_tariff.run",
+        "read_usage.run",
+        "check_tariff_input.run",
+        "check_usage_input.run",
+        "normalize_tariff.run",
+        "normalize_usage.run",
+        "join_intervals.run",
+        "compute_cost.run",
+        "validate_report.run"
+      ],
+      "terminal_count": 0,
+      "report": null,
+      "rejections": [
+        {
+          "reason": "candidate differs from independent integer oracle",
+          "step": "validate_report"
+        }
+      ],
+      "actual_model_call_counts": [
+        0,
+        0
+      ],
+      "resources": 11
+    },
+    {
+      "case": "dual_bad_units",
+      "status": "PASS_REJECTED_WITHOUT_PUBLICATION",
+      "run_dir": "review/probe-runs/dual_bad_units",
+      "transport": "explicit_test_transport",
+      "firings": [
+        "read_tariff.run",
+        "read_usage.run",
+        "check_tariff_input.run",
+        "check_usage_input.run"
+      ],
+      "terminal_count": 0,
+      "report": null,
+      "rejections": [
+        {
+          "reason": "input schema: 'fen/kWh' was expected",
+          "step": "check_tariff_input"
+        },
+        {
+          "reason": "input schema: 'Wh' was expected",
+          "step": "check_usage_input"
+        }
+      ],
+      "actual_model_call_counts": [
+        0,
+        0
+      ],
+      "resources": 6
+    },
+    {
+      "case": "duplicate_usage_interval",
+      "status": "PASS_REJECTED_WITHOUT_PUBLICATION",
+      "run_dir": "review/probe-runs/duplicate_usage_interval",
+      "transport": "explicit_test_transport",
+      "firings": [
+        "read_tariff.run",
+        "read_usage.run",
+        "check_tariff_input.run",
+        "check_usage_input.run",
+        "normalize_tariff.run"
+      ],
+      "terminal_count": 0,
+      "report": null,
+      "rejections": [
+        {
+          "reason": "duplicate interval ID",
+          "step": "check_usage_input"
+        }
+      ],
+      "actual_model_call_counts": [
+        0,
+        0
+      ],
+      "resources": 7
+    },
+    {
+      "case": "interval_boundary_mismatch",
+      "status": "PASS_REJECTED_WITHOUT_PUBLICATION",
+      "run_dir": "review/probe-runs/interval_boundary_mismatch",
+      "transport": "explicit_test_transport",
+      "firings": [
+        "read_tariff.run",
+        "read_usage.run",
+        "check_tariff_input.run",
+        "check_usage_input.run",
+        "normalize_tariff.run",
+        "normalize_usage.run",
+        "join_intervals.run"
+      ],
+      "terminal_count": 0,
+      "report": null,
+      "rejections": [
+        {
+          "reason": "interval boundaries differ",
+          "step": "join_intervals"
+        }
+      ],
+      "actual_model_call_counts": [
+        0,
+        0
+      ],
+      "resources": 9
+    },
+    {
+      "case": "nominal",
+      "status": "PASS",
+      "run_dir": "review/probe-runs/nominal",
+      "transport": "explicit_test_transport",
+      "firings": [
+        "read_tariff.run",
+        "read_usage.run",
+        "check_tariff_input.run",
+        "check_usage_input.run",
+        "normalize_tariff.run",
+        "normalize_usage.run",
+        "join_intervals.run",
+        "compute_cost.run",
+        "validate_report.run",
+        "publish_report.run"
+      ],
+      "terminal_count": 1,
+      "report": {
+        "currency": "CNY",
+        "intervals": [
+          {
+            "amount_cny": "1.20",
+            "cny_per_kwh": "0.80",
+            "end": "2026-01-01T01:00:00Z",
+            "interval_id": "A",
+            "kwh": "1.500",
+            "start": "2026-01-01T00:00:00Z"
+          },
+          {
+            "amount_cny": "0.50",
+            "cny_per_kwh": "1.00",
+            "end": "2026-01-01T02:00:00Z",
+            "interval_id": "B",
+            "kwh": "0.500",
+            "start": "2026-01-01T01:00:00Z"
+          }
+        ],
+        "round_each_interval": true,
+        "rounding": "ROUND_HALF_UP",
+        "total_cny": "1.70",
+        "total_kwh": "2.000",
+        "usage_unit": "kWh"
+      },
+      "rejections": [],
+      "actual_model_call_counts": [
+        0,
+        0
+      ],
+      "resources": 12,
+      "exact_registry_lineage": [
+        {
+          "stage": "tariff_raw",
+          "resource_ref": {
+            "resource_id": "resource:43e789b6e47a53e58c8c6e1d7e925692",
+            "resource_version_id": "resource_version:4bfc297fae9052539fcdeb0dae157fa1"
+          },
+          "actual_claimed_parents": [
+            {
+              "resource_id": "resource:0f48552de40753399f2b6463e1631203",
+              "resource_version_id": "resource_version:67bd249b7cf05a5990073d0b635cbcce"
+            }
+          ],
+          "producer_invocation_ref": {
+            "entity_type": "invocation/v1",
+            "logical_id": "invocation:ad7bd05d91815463a95192fed34dd244",
+            "version_id": "invocation_version:0f57bb755c025dd5b0adcc83f70d49ca"
+          },
+          "operation_result_ref": {
+            "entity_type": "operation_result/v1",
+            "logical_id": "operation_result:1095ed5c1cac5a91b42facd4f82b15ac",
+            "version_id": "operation_result_version:4ea0d14434fe5f5e87d86851f03d6d4d"
+          }
+        },
+        {
+          "stage": "usage_raw",
+          "resource_ref": {
+            "resource_id": "resource:c106de814d48531f90932d28459639d7",
+            "resource_version_id": "resource_version:56a629406ccb57648167d682470bba91"
+          },
+          "actual_claimed_parents": [
+            {
+              "resource_id": "resource:d6c36eac3575559ab8079b2b789795ae",
+              "resource_version_id": "resource_version:ddea87c4d81259d5b353230eeaac99b3"
+            }
+          ],
+          "producer_invocation_ref": {
+            "entity_type": "invocation/v1",
+            "logical_id": "invocation:033521a2a2be5df3a351943c898a9032",
+            "version_id": "invocation_version:c88520bbcdbe563387ec914e819d67b6"
+          },
+          "operation_result_ref": {
+            "entity_type": "operation_result/v1",
+            "logical_id": "operation_result:f427ed0cea7e5b52858b254ed0343581",
+            "version_id": "operation_result_version:a4bb85bab21b529c892360595af444e8"
+          }
+        },
+        {
+          "stage": "tariff_validation_source",
+          "resource_ref": {
+            "resource_id": "resource:cf7695aa8f02599483bebeaffb3e69be",
+            "resource_version_id": "resource_version:01e71f9a05825d129e78e3ce87be637a"
+          },
+          "actual_claimed_parents": [
+            {
+              "resource_id": "resource:0f48552de40753399f2b6463e1631203",
+              "resource_version_id": "resource_version:67bd249b7cf05a5990073d0b635cbcce"
+            }
+          ],
+          "producer_invocation_ref": {
+            "entity_type": "invocation/v1",
+            "logical_id": "invocation:ad7bd05d91815463a95192fed34dd244",
+            "version_id": "invocation_version:0f57bb755c025dd5b0adcc83f70d49ca"
+          },
+          "operation_result_ref": {
+            "entity_type": "operation_result/v1",
+            "logical_id": "operation_result:1095ed5c1cac5a91b42facd4f82b15ac",
+            "version_id": "operation_result_version:4ea0d14434fe5f5e87d86851f03d6d4d"
+          }
+        },
+        {
+          "stage": "usage_validation_source",
+          "resource_ref": {
+            "resource_id": "resource:ffe6aa065a7e5025ba4840fb12924b54",
+            "resource_version_id": "resource_version:560a3403caef5946b0aee8a6a30aab51"
+          },
+          "actual_claimed_parents": [
+            {
+              "resource_id": "resource:d6c36eac3575559ab8079b2b789795ae",
+              "resource_version_id": "resource_version:ddea87c4d81259d5b353230eeaac99b3"
+            }
+          ],
+          "producer_invocation_ref": {
+            "entity_type": "invocation/v1",
+            "logical_id": "invocation:033521a2a2be5df3a351943c898a9032",
+            "version_id": "invocation_version:c88520bbcdbe563387ec914e819d67b6"
+          },
+          "operation_result_ref": {
+            "entity_type": "operation_result/v1",
+            "logical_id": "operation_result:f427ed0cea7e5b52858b254ed0343581",
+            "version_id": "operation_result_version:a4bb85bab21b529c892360595af444e8"
+          }
+        },
+        {
+          "stage": "tariff_checked",
+          "resource_ref": {
+            "resource_id": "resource:141c29bfeaf05ae39edc70070fea41b7",
+            "resource_version_id": "resource_version:bd079371125456e181c2e372a6d18301"
+          },
+          "actual_claimed_parents": [
+            {
+              "resource_id": "resource:43e789b6e47a53e58c8c6e1d7e925692",
+              "resource_version_id": "resource_version:4bfc297fae9052539fcdeb0dae157fa1"
+            }
+          ],
+          "producer_invocation_ref": {
+            "entity_type": "invocation/v1",
+            "logical_id": "invocation:9abaad5347145180b910f83205689d64",
+            "version_id": "invocation_version:8c3fbfc5875c59ca83e870161ed05941"
+          },
+          "operation_result_ref": {
+            "entity_type": "operation_result/v1",
+            "logical_id": "operation_result:3553cd1d378b57c9a01bf478f94c553b",
+            "version_id": "operation_result_version:a744e3a981db5c938546d28c66c99f8c"
+          }
+        },
+        {
+          "stage": "usage_checked",
+          "resource_ref": {
+            "resource_id": "resource:96e4379216805effaa8ffbdf69d1b332",
+            "resource_version_id": "resource_version:9add4d738e615e6c8aedab94e807d660"
+          },
+          "actual_claimed_parents": [
+            {
+              "resource_id": "resource:c106de814d48531f90932d28459639d7",
+              "resource_version_id": "resource_version:56a629406ccb57648167d682470bba91"
+            }
+          ],
+          "producer_invocation_ref": {
+            "entity_type": "invocation/v1",
+            "logical_id": "invocation:7a13a2091dab54c29f11caacc7500f48",
+            "version_id": "invocation_version:2ecab10e1b9f5dedb8873aa10be1553e"
+          },
+          "operation_result_ref": {
+            "entity_type": "operation_result/v1",
+            "logical_id": "operation_result:19bb84ee94cb53d982afdf111fa5bf5e",
+            "version_id": "operation_result_version:b82d3ae4d06654c0a4a611ce583d7343"
+          }
+        },
+        {
+          "stage": "tariff_normalized",
+          "resource_ref": {
+            "resource_id": "resource:e97a5845d5eb5fc38490765a56af58d8",
+            "resource_version_id": "resource_version:93cc37e82f6f5786bbf6574535ab54de"
+          },
+          "actual_claimed_parents": [
+            {
+              "resource_id": "resource:141c29bfeaf05ae39edc70070fea41b7",
+              "resource_version_id": "resource_version:bd079371125456e181c2e372a6d18301"
+            }
+          ],
+          "producer_invocation_ref": {
+            "entity_type": "invocation/v1",
+            "logical_id": "invocation:3f4ea9a2e1615e10ac989503a5053f0d",
+            "version_id": "invocation_version:87b1f03451b65f1bb4209f9016683606"
+          },
+          "operation_result_ref": {
+            "entity_type": "operation_result/v1",
+            "logical_id": "operation_result:5d6d5b30964e5d0d95778031360dd0f8",
+            "version_id": "operation_result_version:8bc98b02178254c498e27022dc965e48"
+          }
+        },
+        {
+          "stage": "usage_normalized",
+          "resource_ref": {
+            "resource_id": "resource:74212601ecf65a8c9cea594e1d18f737",
+            "resource_version_id": "resource_version:d7d296efda4a5670bf7161f65cea624f"
+          },
+          "actual_claimed_parents": [
+            {
+              "resource_id": "resource:96e4379216805effaa8ffbdf69d1b332",
+              "resource_version_id": "resource_version:9add4d738e615e6c8aedab94e807d660"
+            }
+          ],
+          "producer_invocation_ref": {
+            "entity_type": "invocation/v1",
+            "logical_id": "invocation:bda06b61bb9a5372bb60e66ea01fbd27",
+            "version_id": "invocation_version:db6efca1703f5c868d49a595bfd86870"
+          },
+          "operation_result_ref": {
+            "entity_type": "operation_result/v1",
+            "logical_id": "operation_result:fcf9ffa8ec3d5d28b5b03e7ec0e9a6d1",
+            "version_id": "operation_result_version:d5320898931a56c2b1f1c43e936ef011"
+          }
+        },
+        {
+          "stage": "joined",
+          "resource_ref": {
+            "resource_id": "resource:9a706225b4af5f3c97a379bad552f8e4",
+            "resource_version_id": "resource_version:b03365d5a586535eb0d541d5760fe87b"
+          },
+          "actual_claimed_parents": [
+            {
+              "resource_id": "resource:e97a5845d5eb5fc38490765a56af58d8",
+              "resource_version_id": "resource_version:93cc37e82f6f5786bbf6574535ab54de"
+            },
+            {
+              "resource_id": "resource:74212601ecf65a8c9cea594e1d18f737",
+              "resource_version_id": "resource_version:d7d296efda4a5670bf7161f65cea624f"
+            }
+          ],
+          "producer_invocation_ref": {
+            "entity_type": "invocation/v1",
+            "logical_id": "invocation:85d86673ce8d51788ba4be2494be8af7",
+            "version_id": "invocation_version:d813c0523812531fac6bf0625a6e1481"
+          },
+          "operation_result_ref": {
+            "entity_type": "operation_result/v1",
+            "logical_id": "operation_result:8ff20a8cdea5570cb8a2cfa4e6fdc2d4",
+            "version_id": "operation_result_version:893ef0d507aa5502b2e001196c0f9122"
+          }
+        },
+        {
+          "stage": "candidate",
+          "resource_ref": {
+            "resource_id": "resource:f0582599178f5de289b9eb593a1edcb2",
+            "resource_version_id": "resource_version:c1bf945ca2f95ab38bcadad9240f5efc"
+          },
+          "actual_claimed_parents": [
+            {
+              "resource_id": "resource:9a706225b4af5f3c97a379bad552f8e4",
+              "resource_version_id": "resource_version:b03365d5a586535eb0d541d5760fe87b"
+            }
+          ],
+          "producer_invocation_ref": {
+            "entity_type": "invocation/v1",
+            "logical_id": "invocation:be6953185c9b5c0197a118b490163da0",
+            "version_id": "invocation_version:54121c4ca9ec54718f987a7853630402"
+          },
+          "operation_result_ref": {
+            "entity_type": "operation_result/v1",
+            "logical_id": "operation_result:6774793e23b45bd79fdd7cdf7113d880",
+            "version_id": "operation_result_version:9e7a918e96d050ef93954c60359d25e6"
+          }
+        },
+        {
+          "stage": "validated",
+          "resource_ref": {
+            "resource_id": "resource:fbf864d7aa32526e964b38f09bb7556c",
+            "resource_version_id": "resource_version:28dfbc65dbdf529ca370a910c9102854"
+          },
+          "actual_claimed_parents": [
+            {
+              "resource_id": "resource:cf7695aa8f02599483bebeaffb3e69be",
+              "resource_version_id": "resource_version:01e71f9a05825d129e78e3ce87be637a"
+            },
+            {
+              "resource_id": "resource:f0582599178f5de289b9eb593a1edcb2",
+              "resource_version_id": "resource_version:c1bf945ca2f95ab38bcadad9240f5efc"
+            },
+            {
+              "resource_id": "resource:ffe6aa065a7e5025ba4840fb12924b54",
+              "resource_version_id": "resource_version:560a3403caef5946b0aee8a6a30aab51"
+            }
+          ],
+          "producer_invocation_ref": {
+            "entity_type": "invocation/v1",
+            "logical_id": "invocation:4304e3715a6752b480d208bca528bc6d",
+            "version_id": "invocation_version:5a561a0aee8c5fea8a0f91b74e546217"
+          },
+          "operation_result_ref": {
+            "entity_type": "operation_result/v1",
+            "logical_id": "operation_result:bae9b937f5d35d07af5d79272a61bbe7",
+            "version_id": "operation_result_version:27156ec61688541495be6f0997e5fe8c"
+          }
+        },
+        {
+          "stage": "final",
+          "resource_ref": {
+            "resource_id": "resource:0389d3d93b9a53d2b39761e0252c9c58",
+            "resource_version_id": "resource_version:287dd78daa30503e80ce34cc6d5cae69"
+          },
+          "actual_claimed_parents": [
+            {
+              "resource_id": "resource:fbf864d7aa32526e964b38f09bb7556c",
+              "resource_version_id": "resource_version:28dfbc65dbdf529ca370a910c9102854"
+            }
+          ],
+          "producer_invocation_ref": {
+            "entity_type": "invocation/v1",
+            "logical_id": "invocation:032d4631202d5128ae61141c215c57ad",
+            "version_id": "invocation_version:3e82f0e799a651e5a878e4d9e371bb82"
+          },
+          "operation_result_ref": {
+            "entity_type": "operation_result/v1",
+            "logical_id": "operation_result:24a7757ae87c5fea9935f1bb6469a43c",
+            "version_id": "operation_result_version:67903fa97e0f580c91b6ad88c7c4d738"
+          }
+        }
+      ]
+    },
+    {
+      "case": "numeric_float_value",
+      "status": "PASS_REJECTED_WITHOUT_PUBLICATION",
+      "run_dir": "review/probe-runs/numeric_float_value",
+      "transport": "explicit_test_transport",
+      "firings": [
+        "read_tariff.run",
+        "read_usage.run",
+        "check_tariff_input.run",
+        "check_usage_input.run",
+        "normalize_tariff.run"
+      ],
+      "terminal_count": 0,
+      "report": null,
+      "rejections": [
+        {
+          "reason": "input schema: 1500.0 is not of type 'string'",
+          "step": "check_usage_input"
+        }
+      ],
+      "actual_model_call_counts": [
+        0,
+        0
+      ],
+      "resources": 7
+    },
+    {
+      "case": "overlapping_usage_intervals",
+      "status": "PASS_REJECTED_WITHOUT_PUBLICATION",
+      "run_dir": "review/probe-runs/overlapping_usage_intervals",
+      "transport": "explicit_test_transport",
+      "firings": [
+        "read_tariff.run",
+        "read_usage.run",
+        "check_tariff_input.run",
+        "check_usage_input.run",
+        "normalize_tariff.run"
+      ],
+      "terminal_count": 0,
+      "report": null,
+      "rejections": [
+        {
+          "reason": "overlapping intervals",
+          "step": "check_usage_input"
+        }
+      ],
+      "actual_model_call_counts": [
+        0,
+        0
+      ],
+      "resources": 7
+    },
+    {
+      "case": "two_half_fen_rounding",
+      "status": "PASS",
+      "run_dir": "review/probe-runs/two_half_fen_rounding",
+      "transport": "explicit_test_transport",
+      "firings": [
+        "read_tariff.run",
+        "read_usage.run",
+        "check_tariff_input.run",
+        "check_usage_input.run",
+        "normalize_tariff.run",
+        "normalize_usage.run",
+        "join_intervals.run",
+        "compute_cost.run",
+        "validate_report.run",
+        "publish_report.run"
+      ],
+      "terminal_count": 1,
+      "report": {
+        "currency": "CNY",
+        "intervals": [
+          {
+            "amount_cny": "0.01",
+            "cny_per_kwh": "0.01",
+            "end": "2026-01-01T01:00:00Z",
+            "interval_id": "A",
+            "kwh": "0.500",
+            "start": "2026-01-01T00:00:00Z"
+          },
+          {
+            "amount_cny": "0.01",
+            "cny_per_kwh": "0.01",
+            "end": "2026-01-01T02:00:00Z",
+            "interval_id": "B",
+            "kwh": "0.500",
+            "start": "2026-01-01T01:00:00Z"
+          }
+        ],
+        "round_each_interval": true,
+        "rounding": "ROUND_HALF_UP",
+        "total_cny": "0.02",
+        "total_kwh": "1.000",
+        "usage_unit": "kWh"
+      },
+      "rejections": [],
+      "actual_model_call_counts": [
+        0,
+        0
+      ],
+      "resources": 12
+    }
+  ],
+  "excluded_exploratory_barrier": {
+    "status": "INCONCLUSIVE_CANCELLED",
+    "reason": "Reviewer used a 30-second debug bound and unsafe assertion cleanup; run cancelled with exit 130. No product failure asserted. Final parallel behavior independently cross-checked in final-parallel-evidence-audit.json."
+  }
+}

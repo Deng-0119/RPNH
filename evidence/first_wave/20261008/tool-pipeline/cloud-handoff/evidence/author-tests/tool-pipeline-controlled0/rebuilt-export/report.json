@@ -1,0 +1,57 @@
+{
+  "data": {
+    "candidate_ref": {
+      "resource_id": "resource:4eb32b8f4efb5b68a69faca4ab4214ee",
+      "resource_version_id": "resource_version:f76bff2b91da550fbb572c8d7af0d3b1"
+    },
+    "oracle": "integer-fen-half-up/v1",
+    "report": {
+      "currency": "CNY",
+      "intervals": [
+        {
+          "amount_cny": "1.20",
+          "cny_per_kwh": "0.80",
+          "end": "2026-01-01T01:00:00Z",
+          "interval_id": "A",
+          "kwh": "1.500",
+          "start": "2026-01-01T00:00:00Z"
+        },
+        {
+          "amount_cny": "0.50",
+          "cny_per_kwh": "1.00",
+          "end": "2026-01-01T02:00:00Z",
+          "interval_id": "B",
+          "kwh": "0.500",
+          "start": "2026-01-01T01:00:00Z"
+        }
+      ],
+      "round_each_interval": true,
+      "rounding": "ROUND_HALF_UP",
+      "total_cny": "1.70",
+      "total_kwh": "2.000",
+      "usage_unit": "kWh"
+    },
+    "validation_ref": {
+      "resource_id": "resource:5840cf772b255748871b515191716737",
+      "resource_version_id": "resource_version:fd2602f2210d5952b8c0b6af4cf255cb"
+    }
+  },
+  "parents": [
+    {
+      "resource_id": "resource:5840cf772b255748871b515191716737",
+      "resource_version_id": "resource_version:fd2602f2210d5952b8c0b6af4cf255cb"
+    }
+  ],
+  "rules_id": "synthetic-electricity/v1",
+  "source_refs": {
+    "tariff": {
+      "resource_id": "resource:a08e1548534d5cacb8ad5642a673be9c",
+      "resource_version_id": "resource_version:a19fbc9b13a458fa95d5ad31907856dd"
+    },
+    "usage": {
+      "resource_id": "resource:2d49556c25e25698b702a4d576e59e8d",
+      "resource_version_id": "resource_version:cca2edaf85e85b399dd0710b6e723e04"
+    }
+  },
+  "stage": "final"
+}

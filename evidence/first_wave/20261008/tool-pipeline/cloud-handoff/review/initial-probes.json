@@ -1,0 +1,13 @@
+{
+  "date": "2026-10-08",
+  "purpose": "Independent transport capability probe only; not pipeline runtime evidence",
+  "af_unix_socketpair": "blocked",
+  "error_type": "PermissionError",
+  "errno": 1,
+  "error": "[Errno 1] Operation not permitted",
+  "core_byte_comparison": {
+    "base_files": 722,
+    "changed": [],
+    "missing": []
+  }
+}

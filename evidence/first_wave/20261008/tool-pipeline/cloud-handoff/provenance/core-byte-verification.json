@@ -1,0 +1,4339 @@
+{
+  "main": "00f2d29c7deffed44e2ec635a24f390c6e0d9ace",
+  "tree_sha": "27aef45c5ff39e543ce3a683a5a5654921cda3d4",
+  "truncated": false,
+  "files": [
+    {
+      "path": "cpn/__init__.py",
+      "expected": "731b8cc5f78a5d03815e78ec13af9e996c5995ce",
+      "actual": "731b8cc5f78a5d03815e78ec13af9e996c5995ce",
+      "same": true
+    },
+    {
+      "path": "cpn/__main__.py",
+      "expected": "6889be4479d6369bccf1368656ed9045370da644",
+      "actual": "6889be4479d6369bccf1368656ed9045370da644",
+      "same": true
+    },
+    {
+      "path": "cpn/cli.py",
+      "expected": "a2a8c7fbe4812d6ac1674416a1e8037ed01cf613",
+      "actual": "a2a8c7fbe4812d6ac1674416a1e8037ed01cf613",
+      "same": true
+    },
+    {
+      "path": "cpn/components/agent_loop/__init__.py",
+      "expected": "25af754ef30aaa20a5e611eeaf0090d9bff7e7e5",
+      "actual": "25af754ef30aaa20a5e611eeaf0090d9bff7e7e5",
+      "same": true
+    },
+    {
+      "path": "cpn/components/agent_loop/action_execution.py",
+      "expected": "f31a4414bacbe774cb781d6ee852eae92d604ade",
+      "actual": "f31a4414bacbe774cb781d6ee852eae92d604ade",
+      "same": true
+    },
+    {
+      "path": "cpn/components/agent_loop/action_records.py",
+      "expected": "7b8a4ebd4ccbdc87be804104391afca258f50b82",
+      "actual": "7b8a4ebd4ccbdc87be804104391afca258f50b82",
+      "same": true
+    },
+    {
+      "path": "cpn/components/agent_loop/compact.py",
+      "expected": "c1723a7b6411deed44a101b33a6faad722670e29",
+      "actual": "c1723a7b6411deed44a101b33a6faad722670e29",
+      "same": true
+    },
+    {
+      "path": "cpn/components/agent_loop/compaction.py",
+      "expected": "541caa7808992504feb6c3bc5ab062f71b0207cf",
+      "actual": "541caa7808992504feb6c3bc5ab062f71b0207cf",
+      "same": true
+    },
+    {
+      "path": "cpn/components/agent_loop/context.py",
+      "expected": "ab16d0324bcd45582766f6e46d4dbce1c40ed47d",
+      "actual": "ab16d0324bcd45582766f6e46d4dbce1c40ed47d",
+      "same": true
+    },
+    {
+      "path": "cpn/components/agent_loop/delegated_history.py",
+      "expected": "a6ab53832c26be08eb37f0c6f314d36b02bd4109",
+      "actual": "a6ab53832c26be08eb37f0c6f314d36b02bd4109",
+      "same": true
+    },
+    {
+      "path": "cpn/components/agent_loop/delegation.py",
+      "expected": "fbe5bb64e10ce0eac6c248f1f5cd8c86193b7ab3",
+      "actual": "fbe5bb64e10ce0eac6c248f1f5cd8c86193b7ab3",
+      "same": true
+    },
+    {
+      "path": "cpn/components/agent_loop/loop_state.py",
+      "expected": "3ab3ae72f123f184e9f3ddf1985f56efa0bfd739",
+      "actual": "3ab3ae72f123f184e9f3ddf1985f56efa0bfd739",
+      "same": true
+    },
+    {
+      "path": "cpn/components/agent_loop/managed_execution.py",
+      "expected": "6efc907c5c0cbdc87ce5c7d9c212c955f253077b",
+      "actual": "6efc907c5c0cbdc87ce5c7d9c212c955f253077b",
+      "same": true
+    },
+    {
+      "path": "cpn/components/agent_loop/managed_output.py",
+      "expected": "5cfd56064dddf726f012de4ef368130597ac9139",
+      "actual": "5cfd56064dddf726f012de4ef368130597ac9139",
+      "same": true
+    },
+    {
+      "path": "cpn/components/agent_loop/mechanical_contracts.py",
+      "expected": "50db4d850c51bcbdca9e504579254d7f56a4dde3",
+      "actual": "50db4d850c51bcbdca9e504579254d7f56a4dde3",
+      "same": true
+    },
+    {
+      "path": "cpn/components/agent_loop/mechanical_lifecycle.py",
+      "expected": "5d47c8b21ddd54e2fe84f05cc7040a24d750486c",
+      "actual": "5d47c8b21ddd54e2fe84f05cc7040a24d750486c",
+      "same": true
+    },
+    {
+      "path": "cpn/components/agent_loop/models.py",
+      "expected": "c421f07614a8dc25c8a53ffed0bdf7a8bdf6fcc7",
+      "actual": "c421f07614a8dc25c8a53ffed0bdf7a8bdf6fcc7",
+      "same": true
+    },
+    {
+      "path": "cpn/components/agent_loop/optional_execution.py",
+      "expected": "4168265d222a00b63106b3b84ac90642cad7185f",
+      "actual": "4168265d222a00b63106b3b84ac90642cad7185f",
+      "same": true
+    },
+    {
+      "path": "cpn/components/agent_loop/optional_host_bindings.py",
+      "expected": "764af21adbed5015bd08c62171de8bf84e274e1e",
+      "actual": "764af21adbed5015bd08c62171de8bf84e274e1e",
+      "same": true
+    },
+    {
+      "path": "cpn/components/agent_loop/output_contracts.py",
+      "expected": "b4ca50b7c8132136911a655396337a544b747b11",
+      "actual": "b4ca50b7c8132136911a655396337a544b747b11",
+      "same": true
+    },
+    {
+      "path": "cpn/components/agent_loop/ports.py",
+      "expected": "b823e6b5bb50ed94fec5656bc97e2ed09622629d",
+      "actual": "b823e6b5bb50ed94fec5656bc97e2ed09622629d",
+      "same": true
+    },
+    {
+      "path": "cpn/components/agent_loop/program_execution.py",
+      "expected": "f559313bb44d3ccb717040f619431ecc5245f855",
+      "actual": "f559313bb44d3ccb717040f619431ecc5245f855",
+      "same": true
+    },
+    {
+      "path": "cpn/components/agent_loop/program_runner.py",
+      "expected": "71ddc197eb9427908ee328568632105ab9c2a85a",
+      "actual": "71ddc197eb9427908ee328568632105ab9c2a85a",
+      "same": true
+    },
+    {
+      "path": "cpn/components/agent_loop/recovery.py",
+      "expected": "a65ccb2d71d355188537b2e1fb4922f6bc5ff09a",
+      "actual": "a65ccb2d71d355188537b2e1fb4922f6bc5ff09a",
+      "same": true
+    },
+    {
+      "path": "cpn/components/agent_loop/request_envelope_materialization.py",
+      "expected": "27628a52e6f1e94857efac9dae9e4e34755a4367",
+      "actual": "27628a52e6f1e94857efac9dae9e4e34755a4367",
+      "same": true
+    },
+    {
+      "path": "cpn/components/agent_loop/resource_wait.py",
+      "expected": "04fa4d61180c145977e9e46e300d6d36cd132731",
+      "actual": "04fa4d61180c145977e9e46e300d6d36cd132731",
+      "same": true
+    },
+    {
+      "path": "cpn/components/agent_loop/result_archive.py",
+      "expected": "44eab92e37109cce6140d6844991c73537f06e48",
+      "actual": "44eab92e37109cce6140d6844991c73537f06e48",
+      "same": true
+    },
+    {
+      "path": "cpn/components/agent_loop/service.py",
+      "expected": "1ea2c6ea997f88e2089e751ae8d19b246cbcbf65",
+      "actual": "1ea2c6ea997f88e2089e751ae8d19b246cbcbf65",
+      "same": true
+    },
+    {
+      "path": "cpn/components/agent_loop/timing.py",
+      "expected": "3efe617a5b3a9aed542dafb24cedde652047fc1b",
+      "actual": "3efe617a5b3a9aed542dafb24cedde652047fc1b",
+      "same": true
+    },
+    {
+      "path": "cpn/components/agent_loop/tool_catalog.py",
+      "expected": "bcaafae8f66085b2077144557c242ce5277f9140",
+      "actual": "bcaafae8f66085b2077144557c242ce5277f9140",
+      "same": true
+    },
+    {
+      "path": "cpn/components/agent_loop/tool_projection.py",
+      "expected": "82dc82eeeb151c7782b0d315a26be8dd737ab529",
+      "actual": "82dc82eeeb151c7782b0d315a26be8dd737ab529",
+      "same": true
+    },
+    {
+      "path": "cpn/components/agent_loop/tool_validation.py",
+      "expected": "0820564bc62861e2f9da87dd673d89df82213d49",
+      "actual": "0820564bc62861e2f9da87dd673d89df82213d49",
+      "same": true
+    },
+    {
+      "path": "cpn/components/agent_loop/tools.py",
+      "expected": "b2b8cc7a3ae936e8a0c5d4841e6e4f7363ead227",
+      "actual": "b2b8cc7a3ae936e8a0c5d4841e6e4f7363ead227",
+      "same": true
+    },
+    {
+      "path": "cpn/components/agent_loop/turn_execution.py",
+      "expected": "9a29990612b86de92df2622c0f4a7110d878b978",
+      "actual": "9a29990612b86de92df2622c0f4a7110d878b978",
+      "same": true
+    },
+    {
+      "path": "cpn/components/agent_loop/turn_records.py",
+      "expected": "d7d9db366cea2da96b89781ff373b50d644a7df8",
+      "actual": "d7d9db366cea2da96b89781ff373b50d644a7df8",
+      "same": true
+    },
+    {
+      "path": "cpn/components/agent_loop/workspace.py",
+      "expected": "7d5fb8afb3f7dbf30c5007b0e32acc3808bc2d7b",
+      "actual": "7d5fb8afb3f7dbf30c5007b0e32acc3808bc2d7b",
+      "same": true
+    },
+    {
+      "path": "cpn/components/basic.py",
+      "expected": "8004e8722de37ee53b611e33e9beee33a387a980",
+      "actual": "8004e8722de37ee53b611e33e9beee33a387a980",
+      "same": true
+    },
+    {
+      "path": "cpn/components/default_agent_executor.py",
+      "expected": "a3dacbba8e5233e445a51c65d3e7e1ad11a50c9a",
+      "actual": "a3dacbba8e5233e445a51c65d3e7e1ad11a50c9a",
+      "same": true
+    },
+    {
+      "path": "cpn/components/diagnostics.py",
+      "expected": "0d99998577071d1b89512953ff2fa3b9cd97a6cc",
+      "actual": "0d99998577071d1b89512953ff2fa3b9cd97a6cc",
+      "same": true
+    },
+    {
+      "path": "cpn/components/execution_services.py",
+      "expected": "de4d40a5955d44419701f1d7ab6849e01a77b0b6",
+      "actual": "de4d40a5955d44419701f1d7ab6849e01a77b0b6",
+      "same": true
+    },
+    {
+      "path": "cpn/components/executors.py",
+      "expected": "9815ee2af06c418e49dad946b65eb192a567bde7",
+      "actual": "9815ee2af06c418e49dad946b65eb192a567bde7",
+      "same": true
+    },
+    {
+      "path": "cpn/components/external_kb.py",
+      "expected": "14d9655d5c71582f7231b912ab14fee31083ee33",
+      "actual": "14d9655d5c71582f7231b912ab14fee31083ee33",
+      "same": true
+    },
+    {
+      "path": "cpn/components/generic_a2c.py",
+      "expected": "773d0264b98bb1809cd236b916c746eff44825c8",
+      "actual": "773d0264b98bb1809cd236b916c746eff44825c8",
+      "same": true
+    },
+    {
+      "path": "cpn/components/generic_critic.py",
+      "expected": "6921f2f49eb5dbf92557f2dcdff1b1d5331ea776",
+      "actual": "6921f2f49eb5dbf92557f2dcdff1b1d5331ea776",
+      "same": true
+    },
+    {
+      "path": "cpn/components/harness_adapter.py",
+      "expected": "d543c9d70766006e024fc5ab158c3f7ebdf19de8",
+      "actual": "d543c9d70766006e024fc5ab158c3f7ebdf19de8",
+      "same": true
+    },
+    {
+      "path": "cpn/components/llm_invocations.py",
+      "expected": "bff685b6012cc8643b4653897c3f9e42d042dda8",
+      "actual": "bff685b6012cc8643b4653897c3f9e42d042dda8",
+      "same": true
+    },
+    {
+      "path": "cpn/components/net_operations.py",
+      "expected": "98d95c0ec0766148e2644e744f05bda1d2435ee0",
+      "actual": "98d95c0ec0766148e2644e744f05bda1d2435ee0",
+      "same": true
+    },
+    {
+      "path": "cpn/components/operation_gateway.py",
+      "expected": "c4352bb5ca163ce6864eddfca887984205abfcc3",
+      "actual": "c4352bb5ca163ce6864eddfca887984205abfcc3",
+      "same": true
+    },
+    {
+      "path": "cpn/components/registered_host_llm.py",
+      "expected": "e71bf5a0eb129492e8f09c0639ad15da722be726",
+      "actual": "e71bf5a0eb129492e8f09c0639ad15da722be726",
+      "same": true
+    },
+    {
+      "path": "cpn/components/registered_operation_dispatcher.py",
+      "expected": "a34db6bfad03243cdab7f42ef3fdb61f8ab9ca12",
+      "actual": "a34db6bfad03243cdab7f42ef3fdb61f8ab9ca12",
+      "same": true
+    },
+    {
+      "path": "cpn/components/request_protocol.py",
+      "expected": "331b42a978264324194449b1bfc7e1df284f9b9f",
+      "actual": "331b42a978264324194449b1bfc7e1df284f9b9f",
+      "same": true
+    },
+    {
+      "path": "cpn/components/resource_budget.py",
+      "expected": "3aba680d5642a31b269d905e24a9a79c2cc7b050",
+      "actual": "3aba680d5642a31b269d905e24a9a79c2cc7b050",
+      "same": true
+    },
+    {
+      "path": "cpn/components/schema_catalog.py",
+      "expected": "30b01ecfcaa0fecf04f268dfc0842e629c3bb2b9",
+      "actual": "30b01ecfcaa0fecf04f268dfc0842e629c3bb2b9",
+      "same": true
+    },
+    {
+      "path": "cpn/components/tool_executors.py",
+      "expected": "83fe89181ef6446a11502dc5f58cdb75b62023c1",
+      "actual": "83fe89181ef6446a11502dc5f58cdb75b62023c1",
+      "same": true
+    },
+    {
+      "path": "cpn/config/provider_models.json",
+      "expected": "e0a3a15a48d3148b354e273995ca9b33157b369d",
+      "actual": "e0a3a15a48d3148b354e273995ca9b33157b369d",
+      "same": true
+    },
+    {
+      "path": "cpn/dsh/__init__.py",
+      "expected": "a7a39a40e8b27b750121d25cba89ebb5f18ae42d",
+      "actual": "a7a39a40e8b27b750121d25cba89ebb5f18ae42d",
+      "same": true
+    },
+    {
+      "path": "cpn/dsh/backend.py",
+      "expected": "654df047d5100769aaad88a49f17ab6d2b1d5ec0",
+      "actual": "654df047d5100769aaad88a49f17ab6d2b1d5ec0",
+      "same": true
+    },
+    {
+      "path": "cpn/dsh/launcher.py",
+      "expected": "c8bab78d3c5520e4726983f7a11edc4ae5f33345",
+      "actual": "c8bab78d3c5520e4726983f7a11edc4ae5f33345",
+      "same": true
+    },
+    {
+      "path": "cpn/dsh/server.py",
+      "expected": "1bd394552a4e9849d43b060cad4be9c915fc2fb7",
+      "actual": "1bd394552a4e9849d43b060cad4be9c915fc2fb7",
+      "same": true
+    },
+    {
+      "path": "cpn/examples/__init__.py",
+      "expected": "e001e48340b5b46316fcdf0324d33b68a5b6dff9",
+      "actual": "e001e48340b5b46316fcdf0324d33b68a5b6dff9",
+      "same": true
+    },
+    {
+      "path": "cpn/examples/adapter_task/README.md",
+      "expected": "7c34e0652b2572e42e0b424980f13ee3369bbc22",
+      "actual": "7c34e0652b2572e42e0b424980f13ee3369bbc22",
+      "same": true
+    },
+    {
+      "path": "cpn/examples/adapter_task/README_ZH.md",
+      "expected": "7dd1705cf152806f225539b4d4fd2b3f786a8d7f",
+      "actual": "7dd1705cf152806f225539b4d4fd2b3f786a8d7f",
+      "same": true
+    },
+    {
+      "path": "cpn/examples/adapter_task/assets/basic-petrinet.png",
+      "expected": "f05acb1b4541ab6a8d6e58ec346d8fbac729b088",
+      "actual": "f05acb1b4541ab6a8d6e58ec346d8fbac729b088",
+      "same": true
+    },
+    {
+      "path": "cpn/examples/adapter_task/assets/codex-petrinet.png",
+      "expected": "f05acb1b4541ab6a8d6e58ec346d8fbac729b088",
+      "actual": "f05acb1b4541ab6a8d6e58ec346d8fbac729b088",
+      "same": true
+    },
+    {
+      "path": "cpn/examples/adapter_task/assets/dsh-petrinet.png",
+      "expected": "5706103dd2879b924d01644d39a1759996e2d6ce",
+      "actual": "5706103dd2879b924d01644d39a1759996e2d6ce",
+      "same": true
+    },
+    {
+      "path": "cpn/examples/adapter_task/assets/opencode-petrinet.png",
+      "expected": "f05acb1b4541ab6a8d6e58ec346d8fbac729b088",
+      "actual": "f05acb1b4541ab6a8d6e58ec346d8fbac729b088",
+      "same": true
+    },
+    {
+      "path": "cpn/examples/adapter_task/basic/README.md",
+      "expected": "1a548eac9f215d62c36b85d3b0da8a275f1e4162",
+      "actual": "1a548eac9f215d62c36b85d3b0da8a275f1e4162",
+      "same": true
+    },
+    {
+      "path": "cpn/examples/adapter_task/basic/README_ZH.md",
+      "expected": "52752f71a49ef63982b9c8da72bc07ec5c9e5731",
+      "actual": "52752f71a49ef63982b9c8da72bc07ec5c9e5731",
+      "same": true
+    },
+    {
+      "path": "cpn/examples/adapter_task/basic/evidence.json",
+      "expected": "59a73c74f476e7432f0a7cb0288afd888408106a",
+      "actual": "59a73c74f476e7432f0a7cb0288afd888408106a",
+      "same": true
+    },
+    {
+      "path": "cpn/examples/adapter_task/codex/README.md",
+      "expected": "780427cbe4f0c18793566b04954b7f5c444420e3",
+      "actual": "780427cbe4f0c18793566b04954b7f5c444420e3",
+      "same": true
+    },
+    {
+      "path": "cpn/examples/adapter_task/codex/README_ZH.md",
+      "expected": "f6effbc8efb1075305069a5c1e0714daef6e7a63",
+      "actual": "f6effbc8efb1075305069a5c1e0714daef6e7a63",
+      "same": true
+    },
+    {
+      "path": "cpn/examples/adapter_task/codex/evidence.json",
+      "expected": "663de9c9d8df8667e60b7f47a734a252e7182fb1",
+      "actual": "663de9c9d8df8667e60b7f47a734a252e7182fb1",
+      "same": true
+    },
+    {
+      "path": "cpn/examples/adapter_task/dsh/README.md",
+      "expected": "f93ea6595cdb0f6116bfd0c235d34fadf048e2f9",
+      "actual": "f93ea6595cdb0f6116bfd0c235d34fadf048e2f9",
+      "same": true
+    },
+    {
+      "path": "cpn/examples/adapter_task/dsh/README_ZH.md",
+      "expected": "121546c34abd8216a401c3460befeec2808d4a62",
+      "actual": "121546c34abd8216a401c3460befeec2808d4a62",
+      "same": true
+    },
+    {
+      "path": "cpn/examples/adapter_task/dsh/evidence.json",
+      "expected": "2ba07c9ace0fd2ec35cd01be9087271ba743c0f9",
+      "actual": "2ba07c9ace0fd2ec35cd01be9087271ba743c0f9",
+      "same": true
+    },
+    {
+      "path": "cpn/examples/adapter_task/expected.json",
+      "expected": "5b0620bcd22d778d5bca9836a3b236ffab252918",
+      "actual": "5b0620bcd22d778d5bca9836a3b236ffab252918",
+      "same": true
+    },
+    {
+      "path": "cpn/examples/adapter_task/manifest.json",
+      "expected": "630861c38d29eff8c295e0fd4b184979bf1ce172",
+      "actual": "630861c38d29eff8c295e0fd4b184979bf1ce172",
+      "same": true
+    },
+    {
+      "path": "cpn/examples/adapter_task/opencode/README.md",
+      "expected": "7c35590f7888dca34c0e24b9c9482a7bd026134c",
+      "actual": "7c35590f7888dca34c0e24b9c9482a7bd026134c",
+      "same": true
+    },
+    {
+      "path": "cpn/examples/adapter_task/opencode/README_ZH.md",
+      "expected": "83ce949660ba62855bebd6de27311acd1db31e31",
+      "actual": "83ce949660ba62855bebd6de27311acd1db31e31",
+      "same": true
+    },
+    {
+      "path": "cpn/examples/adapter_task/opencode/evidence.json",
+      "expected": "7def7ea6186653be4b41565aef38c6c03880f2f1",
+      "actual": "7def7ea6186653be4b41565aef38c6c03880f2f1",
+      "same": true
+    },
+    {
+      "path": "cpn/examples/adapter_task/task.txt",
+      "expected": "a2b955cd06c7a5b280f2ae645a9692e26a474984",
+      "actual": "a2b955cd06c7a5b280f2ae645a9692e26a474984",
+      "same": true
+    },
+    {
+      "path": "cpn/examples/catalog.json",
+      "expected": "9b54a7a7982905889483d007c94346edd07ab85b",
+      "actual": "9b54a7a7982905889483d007c94346edd07ab85b",
+      "same": true
+    },
+    {
+      "path": "cpn/examples/cli.py",
+      "expected": "7d2de6e08d62f94b1f6a1e31304ea212cca73470",
+      "actual": "7d2de6e08d62f94b1f6a1e31304ea212cca73470",
+      "same": true
+    },
+    {
+      "path": "cpn/examples/gallery.py",
+      "expected": "9bf9f33d0b584e542d220157a40505c6a3699e64",
+      "actual": "9bf9f33d0b584e542d220157a40505c6a3699e64",
+      "same": true
+    },
+    {
+      "path": "cpn/examples/portable_packages/minimal/declarations/main.json",
+      "expected": "a389ba21f5f9b255d34aabe6b6c841150764390e",
+      "actual": "a389ba21f5f9b255d34aabe6b6c841150764390e",
+      "same": true
+    },
+    {
+      "path": "cpn/examples/portable_packages/minimal/licenses/LICENSE.txt",
+      "expected": "4c9ce9c11adaa9de7b20931410db5c26e1c83d16",
+      "actual": "4c9ce9c11adaa9de7b20931410db5c26e1c83d16",
+      "same": true
+    },
+    {
+      "path": "cpn/examples/portable_packages/minimal/manifest.json",
+      "expected": "9124fdaff208fcd186f2338e1808072e94d76ed5",
+      "actual": "9124fdaff208fcd186f2338e1808072e94d76ed5",
+      "same": true
+    },
+    {
+      "path": "cpn/examples/portable_packages/minimal/schemas/config.json",
+      "expected": "be92fec51fa739fed09822a402d2c5371103b96f",
+      "actual": "be92fec51fa739fed09822a402d2c5371103b96f",
+      "same": true
+    },
+    {
+      "path": "cpn/examples/portable_packages/minimal/schemas/text.json",
+      "expected": "43b0332402f406ef6e2bf846afc5a1cd7b1fdbc6",
+      "actual": "43b0332402f406ef6e2bf846afc5a1cd7b1fdbc6",
+      "same": true
+    },
+    {
+      "path": "cpn/frontend/__init__.py",
+      "expected": "4abdb6541e17bfe72139b638ac4f04262ca1151e",
+      "actual": "4abdb6541e17bfe72139b638ac4f04262ca1151e",
+      "same": true
+    },
+    {
+      "path": "cpn/frontend/checkpoint_view.py",
+      "expected": "f7b5c234c078e922d6f60b1fa6a2a964c05efea0",
+      "actual": "f7b5c234c078e922d6f60b1fa6a2a964c05efea0",
+      "same": true
+    },
+    {
+      "path": "cpn/frontend/codex_app_server.py",
+      "expected": "62b14609aff161a4a031b70f659251880b03e60c",
+      "actual": "62b14609aff161a4a031b70f659251880b03e60c",
+      "same": true
+    },
+    {
+      "path": "cpn/frontend/codex_compatibility.v1.json",
+      "expected": "0da35b44981c2462790a733aa64cfb43c35ab799",
+      "actual": "0da35b44981c2462790a733aa64cfb43c35ab799",
+      "same": true
+    },
+    {
+      "path": "cpn/frontend/comparison_context.py",
+      "expected": "b6b255db5a763d016000daa68ad4f22e4a4a20bc",
+      "actual": "b6b255db5a763d016000daa68ad4f22e4a4a20bc",
+      "same": true
+    },
+    {
+      "path": "cpn/frontend/comparison_view.py",
+      "expected": "432a848b3ee6d3b3257ed0b713184f45e70b857a",
+      "actual": "432a848b3ee6d3b3257ed0b713184f45e70b857a",
+      "same": true
+    },
+    {
+      "path": "cpn/frontend/dashboard.py",
+      "expected": "7fb04d85afcc8a72ff2292e9eec028ddc4b30f96",
+      "actual": "7fb04d85afcc8a72ff2292e9eec028ddc4b30f96",
+      "same": true
+    },
+    {
+      "path": "cpn/frontend/firing_activity.py",
+      "expected": "b3acc6ba55dc1840e7b9f792b9373b3e1581d0a0",
+      "actual": "b3acc6ba55dc1840e7b9f792b9373b3e1581d0a0",
+      "same": true
+    },
+    {
+      "path": "cpn/frontend/net_view_adapters/__init__.py",
+      "expected": "ed700422c111a3a4d5dfb69f991616b4d0636393",
+      "actual": "ed700422c111a3a4d5dfb69f991616b4d0636393",
+      "same": true
+    },
+    {
+      "path": "cpn/frontend/net_view_adapters/_cli.py",
+      "expected": "1c397a40fb4d701df04c7508ddd56b3b82bfe531",
+      "actual": "1c397a40fb4d701df04c7508ddd56b3b82bfe531",
+      "same": true
+    },
+    {
+      "path": "cpn/frontend/net_view_adapters/_registry.py",
+      "expected": "ca6f5905013f8cd58a9dc5f47eb4a32c71fb80ce",
+      "actual": "ca6f5905013f8cd58a9dc5f47eb4a32c71fb80ce",
+      "same": true
+    },
+    {
+      "path": "cpn/frontend/net_view_adapters/codex.py",
+      "expected": "a370e1174d4a579d929ad9e8de688aa723f90948",
+      "actual": "a370e1174d4a579d929ad9e8de688aa723f90948",
+      "same": true
+    },
+    {
+      "path": "cpn/frontend/net_view_adapters/dsh.py",
+      "expected": "faaae5903982f9cabeb8b065f61773d872014657",
+      "actual": "faaae5903982f9cabeb8b065f61773d872014657",
+      "same": true
+    },
+    {
+      "path": "cpn/frontend/opencode_compatibility.v1.json",
+      "expected": "2939817399fcafdf3a5f864658ebe3a7d1b17d59",
+      "actual": "2939817399fcafdf3a5f864658ebe3a7d1b17d59",
+      "same": true
+    },
+    {
+      "path": "cpn/frontend/opencode_http.py",
+      "expected": "99b59e8a34f60845134edda512aca01244975046",
+      "actual": "99b59e8a34f60845134edda512aca01244975046",
+      "same": true
+    },
+    {
+      "path": "cpn/frontend/opencode_launcher.py",
+      "expected": "fb278b6daf2331eecac814fd6cf9d2a971571fc4",
+      "actual": "fb278b6daf2331eecac814fd6cf9d2a971571fc4",
+      "same": true
+    },
+    {
+      "path": "cpn/frontend/opencode_protocol.py",
+      "expected": "3ce4bae49ceefd91e2b6ad17e65f4bc7993cbdd9",
+      "actual": "3ce4bae49ceefd91e2b6ad17e65f4bc7993cbdd9",
+      "same": true
+    },
+    {
+      "path": "cpn/frontend/server.py",
+      "expected": "73f5c503cbc3815e335d351b69fe9c87d1f2ec4e",
+      "actual": "73f5c503cbc3815e335d351b69fe9c87d1f2ec4e",
+      "same": true
+    },
+    {
+      "path": "cpn/frontend/source_observation.py",
+      "expected": "988f425de3bc1c7259af0bfa9142d7ef1ad9064e",
+      "actual": "988f425de3bc1c7259af0bfa9142d7ef1ad9064e",
+      "same": true
+    },
+    {
+      "path": "cpn/frontend/static/agent-members.mjs",
+      "expected": "43f378fea2358370be81181d119f136d7ee1308b",
+      "actual": "43f378fea2358370be81181d119f136d7ee1308b",
+      "same": true
+    },
+    {
+      "path": "cpn/frontend/static/app.js",
+      "expected": "e4dd745d901ba43de304785f8a736ed563017b03",
+      "actual": "e4dd745d901ba43de304785f8a736ed563017b03",
+      "same": true
+    },
+    {
+      "path": "cpn/frontend/static/assets/elk-LICENSE.txt",
+      "expected": "91dd37eefbe62d3d9fb7a1e7e2c7a9a1e2cdcbcc",
+      "actual": "91dd37eefbe62d3d9fb7a1e7e2c7a9a1e2cdcbcc",
+      "same": true
+    },
+    {
+      "path": "cpn/frontend/static/assets/elk-api.js",
+      "expected": "10c39e35fe7a5dc8d77810bf7c77c087f87c0d53",
+      "actual": "10c39e35fe7a5dc8d77810bf7c77c087f87c0d53",
+      "same": true
+    },
+    {
+      "path": "cpn/frontend/static/assets/elk-worker.js",
+      "expected": "222acf852bd29216c1fe6cbd29968c3d7ec3bdeb",
+      "actual": "222acf852bd29216c1fe6cbd29968c3d7ec3bdeb",
+      "same": true
+    },
+    {
+      "path": "cpn/frontend/static/assets/joint-LICENSE.txt",
+      "expected": "04980886c3f10a3f8f428370c80aba93ed889431",
+      "actual": "04980886c3f10a3f8f428370c80aba93ed889431",
+      "same": true
+    },
+    {
+      "path": "cpn/frontend/static/assets/joint.js",
+      "expected": "4858c9b2b9903e14debba92b4caac81797f8e1f7",
+      "actual": "4858c9b2b9903e14debba92b4caac81797f8e1f7",
+      "same": true
+    },
+    {
+      "path": "cpn/frontend/static/assets/manifest.json",
+      "expected": "b644f6ff9e170c9ea84b4f96ebb10ec514c6ca0e",
+      "actual": "b644f6ff9e170c9ea84b4f96ebb10ec514c6ca0e",
+      "same": true
+    },
+    {
+      "path": "cpn/frontend/static/canvas-text.mjs",
+      "expected": "40a082952786b6ecf39213db7659b4f4ec7ce725",
+      "actual": "40a082952786b6ecf39213db7659b4f4ec7ce725",
+      "same": true
+    },
+    {
+      "path": "cpn/frontend/static/checkpoint-view.mjs",
+      "expected": "9896bf835c8fdb6ef42c919ce8513b33879573f6",
+      "actual": "9896bf835c8fdb6ef42c919ce8513b33879573f6",
+      "same": true
+    },
+    {
+      "path": "cpn/frontend/static/comparison-context.mjs",
+      "expected": "57decd62897e846df2abf8f3a5d88ed23af4f86d",
+      "actual": "57decd62897e846df2abf8f3a5d88ed23af4f86d",
+      "same": true
+    },
+    {
+      "path": "cpn/frontend/static/comparison-view.mjs",
+      "expected": "4391cf3915ae43ff728cd3036eaee6358e99ecae",
+      "actual": "4391cf3915ae43ff728cd3036eaee6358e99ecae",
+      "same": true
+    },
+    {
+      "path": "cpn/frontend/static/dashboard-model.mjs",
+      "expected": "d9694f6ba3ecbd3a7d5842e397024fa3827109d3",
+      "actual": "d9694f6ba3ecbd3a7d5842e397024fa3827109d3",
+      "same": true
+    },
+    {
+      "path": "cpn/frontend/static/firing-activity.mjs",
+      "expected": "3a7f0457eb060f75ea371b43d50d30d23db6373b",
+      "actual": "3a7f0457eb060f75ea371b43d50d30d23db6373b",
+      "same": true
+    },
+    {
+      "path": "cpn/frontend/static/i18n.mjs",
+      "expected": "a22a26752408d9f46b96a916878d09adf581153e",
+      "actual": "a22a26752408d9f46b96a916878d09adf581153e",
+      "same": true
+    },
+    {
+      "path": "cpn/frontend/static/index.html",
+      "expected": "ce4a5c493017292960034ede16638c94494bfc73",
+      "actual": "ce4a5c493017292960034ede16638c94494bfc73",
+      "same": true
+    },
+    {
+      "path": "cpn/frontend/static/layout.mjs",
+      "expected": "38b37f6c7542c67fbb8ef90065fdad81e77aa38f",
+      "actual": "38b37f6c7542c67fbb8ef90065fdad81e77aa38f",
+      "same": true
+    },
+    {
+      "path": "cpn/frontend/static/messages.mjs",
+      "expected": "a10949e3741279987cbde4fc5821c9c0fee45fde",
+      "actual": "a10949e3741279987cbde4fc5821c9c0fee45fde",
+      "same": true
+    },
+    {
+      "path": "cpn/frontend/static/model.mjs",
+      "expected": "1d9b889d07c35bf8f0ab8d9a69e147d52ac16fc8",
+      "actual": "1d9b889d07c35bf8f0ab8d9a69e147d52ac16fc8",
+      "same": true
+    },
+    {
+      "path": "cpn/frontend/static/observation-panel.mjs",
+      "expected": "28b20f23652e85c7a511b2aa886f137d09a20ef8",
+      "actual": "28b20f23652e85c7a511b2aa886f137d09a20ef8",
+      "same": true
+    },
+    {
+      "path": "cpn/frontend/static/overview.mjs",
+      "expected": "e3ecb072582bf7dff03cdb60a1ff023a1e21aeed",
+      "actual": "e3ecb072582bf7dff03cdb60a1ff023a1e21aeed",
+      "same": true
+    },
+    {
+      "path": "cpn/frontend/static/panels.mjs",
+      "expected": "338e29e7fe90eab930bb37091f48874de114dab5",
+      "actual": "338e29e7fe90eab930bb37091f48874de114dab5",
+      "same": true
+    },
+    {
+      "path": "cpn/frontend/static/renderer.mjs",
+      "expected": "b719595c338516ed05b7dc4e77a370bdd182054e",
+      "actual": "b719595c338516ed05b7dc4e77a370bdd182054e",
+      "same": true
+    },
+    {
+      "path": "cpn/frontend/static/source-observation.mjs",
+      "expected": "aa17ad3de1f43ce2a0403d34ac5408bde4d63b08",
+      "actual": "aa17ad3de1f43ce2a0403d34ac5408bde4d63b08",
+      "same": true
+    },
+    {
+      "path": "cpn/frontend/static/style.css",
+      "expected": "ef46700a4eef162e3cb65277ae157d584d32d23c",
+      "actual": "ef46700a4eef162e3cb65277ae157d584d32d23c",
+      "same": true
+    },
+    {
+      "path": "cpn/frontend/static/wire-geometry.mjs",
+      "expected": "44537a85fcfb84d24b98fb63bf19b29f952ca132",
+      "actual": "44537a85fcfb84d24b98fb63bf19b29f952ca132",
+      "same": true
+    },
+    {
+      "path": "cpn/frontend/static/worksets.mjs",
+      "expected": "edea558d7063f5df2ca306aa5cbda0d6aa9f6791",
+      "actual": "edea558d7063f5df2ca306aa5cbda0d6aa9f6791",
+      "same": true
+    },
+    {
+      "path": "cpn/frontend/worksets.py",
+      "expected": "f93940f17f202de34e2cb4da458ac0475edf2ba8",
+      "actual": "f93940f17f202de34e2cb4da458ac0475edf2ba8",
+      "same": true
+    },
+    {
+      "path": "cpn/llm_adapters/__init__.py",
+      "expected": "bddfc8e5b025f57944db58fb6d01dccb3005872b",
+      "actual": "bddfc8e5b025f57944db58fb6d01dccb3005872b",
+      "same": true
+    },
+    {
+      "path": "cpn/llm_adapters/_audit.py",
+      "expected": "4d108dd02df722d7882985392accf4ff9de9a9f7",
+      "actual": "4d108dd02df722d7882985392accf4ff9de9a9f7",
+      "same": true
+    },
+    {
+      "path": "cpn/llm_adapters/_common.py",
+      "expected": "357f3d8de151a6c728b612a57353cf87090b46cb",
+      "actual": "357f3d8de151a6c728b612a57353cf87090b46cb",
+      "same": true
+    },
+    {
+      "path": "cpn/llm_adapters/_external_provider_credentials.py",
+      "expected": "297e537056246a3eec3538c10933322e33a647f3",
+      "actual": "297e537056246a3eec3538c10933322e33a647f3",
+      "same": true
+    },
+    {
+      "path": "cpn/llm_adapters/_external_provider_protocol.py",
+      "expected": "405a9db81957b54afa623c4c512f145f4bc23ee2",
+      "actual": "405a9db81957b54afa623c4c512f145f4bc23ee2",
+      "same": true
+    },
+    {
+      "path": "cpn/llm_adapters/_external_provider_recovery.py",
+      "expected": "02839173c3db8cf4ba8ef95710d1fc160a40ab54",
+      "actual": "02839173c3db8cf4ba8ef95710d1fc160a40ab54",
+      "same": true
+    },
+    {
+      "path": "cpn/llm_adapters/codex_subscription_bridge.py",
+      "expected": "33f354e016d4147cafdc9049c18f628c977441d1",
+      "actual": "33f354e016d4147cafdc9049c18f628c977441d1",
+      "same": true
+    },
+    {
+      "path": "cpn/llm_adapters/codex_subscription_response_format.v1.schema.json",
+      "expected": "21e7881158f8dad2cb236bdb4ab3211cc8e46b06",
+      "actual": "21e7881158f8dad2cb236bdb4ab3211cc8e46b06",
+      "same": true
+    },
+    {
+      "path": "cpn/llm_adapters/config.py",
+      "expected": "2e63ae321af343929adc15eae60c623ee1fdc34f",
+      "actual": "2e63ae321af343929adc15eae60c623ee1fdc34f",
+      "same": true
+    },
+    {
+      "path": "cpn/llm_adapters/external_provider.py",
+      "expected": "56886a971f9907bd0f6d7b9d06a35f48a1a63dff",
+      "actual": "56886a971f9907bd0f6d7b9d06a35f48a1a63dff",
+      "same": true
+    },
+    {
+      "path": "cpn/llm_adapters/factory.py",
+      "expected": "9a5426fe9cee24fa32746d357da95d690ed2cb10",
+      "actual": "9a5426fe9cee24fa32746d357da95d690ed2cb10",
+      "same": true
+    },
+    {
+      "path": "cpn/llm_adapters/local_process.py",
+      "expected": "28505cd7c6a9ac975d5a4cb189a5bc0bc7ed213f",
+      "actual": "28505cd7c6a9ac975d5a4cb189a5bc0bc7ed213f",
+      "same": true
+    },
+    {
+      "path": "cpn/orchestrator/__init__.py",
+      "expected": "b7ea38d9c6a45c244740dd3f2d5c3627cebca4be",
+      "actual": "b7ea38d9c6a45c244740dd3f2d5c3627cebca4be",
+      "same": true
+    },
+    {
+      "path": "cpn/orchestrator/runner.py",
+      "expected": "bac48e3ac57f84531282ed2d034fae22676f444e",
+      "actual": "bac48e3ac57f84531282ed2d034fae22676f444e",
+      "same": true
+    },
+    {
+      "path": "cpn/plugins/__init__.py",
+      "expected": "9ad67f071a13038fe2c5668793a6b31cafe1db9d",
+      "actual": "9ad67f071a13038fe2c5668793a6b31cafe1db9d",
+      "same": true
+    },
+    {
+      "path": "cpn/plugins/api.py",
+      "expected": "886643c8b9357791764ce98ed236c15ecd77408d",
+      "actual": "886643c8b9357791764ce98ed236c15ecd77408d",
+      "same": true
+    },
+    {
+      "path": "cpn/plugins/catalog.py",
+      "expected": "4be6732584c317b677dcf7b92ea4c62c2357d63c",
+      "actual": "4be6732584c317b677dcf7b92ea4c62c2357d63c",
+      "same": true
+    },
+    {
+      "path": "cpn/plugins/cli.py",
+      "expected": "433409935e726fb633018b0a005addbb7ffb0f7d",
+      "actual": "433409935e726fb633018b0a005addbb7ffb0f7d",
+      "same": true
+    },
+    {
+      "path": "cpn/plugins/controlled_script.py",
+      "expected": "c09512f9597ba8ceb98565acc9276d5ab1c2eecf",
+      "actual": "c09512f9597ba8ceb98565acc9276d5ab1c2eecf",
+      "same": true
+    },
+    {
+      "path": "cpn/plugins/host.py",
+      "expected": "70d45ef95c097d64d73f53f7a99dda53c635b536",
+      "actual": "70d45ef95c097d64d73f53f7a99dda53c635b536",
+      "same": true
+    },
+    {
+      "path": "cpn/plugins/managed_scheduler.py",
+      "expected": "b426e20cdbecc82b4e1a794c1dd3f0e81fff13ce",
+      "actual": "b426e20cdbecc82b4e1a794c1dd3f0e81fff13ce",
+      "same": true
+    },
+    {
+      "path": "cpn/plugins/managed_tools.py",
+      "expected": "1595b5004617a2d130b48802bb518f155ecf8843",
+      "actual": "1595b5004617a2d130b48802bb518f155ecf8843",
+      "same": true
+    },
+    {
+      "path": "cpn/plugins/runtime.py",
+      "expected": "8a3090c9206c6a03898287568c76971c76dec8a8",
+      "actual": "8a3090c9206c6a03898287568c76971c76dec8a8",
+      "same": true
+    },
+    {
+      "path": "cpn/plugins/worker.py",
+      "expected": "07cf2216a64a75dbbc3ddc31e0ae22ac050ef329",
+      "actual": "07cf2216a64a75dbbc3ddc31e0ae22ac050ef329",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/__init__.py",
+      "expected": "da563404f5d53ea52d242224cd46fa07b76b8db4",
+      "actual": "da563404f5d53ea52d242224cd46fa07b76b8db4",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/_marking/__init__.py",
+      "expected": "2d7bf161958710f29d3fb4ea77ef51e5e9e0d839",
+      "actual": "2d7bf161958710f29d3fb4ea77ef51e5e9e0d839",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/_marking/checkpoints.py",
+      "expected": "8dc42186d7b6f8688da4f3a56763a4db3aece39c",
+      "actual": "8dc42186d7b6f8688da4f3a56763a4db3aece39c",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/_marking/claims.py",
+      "expected": "68e1315fccc93ed25a2bbee649e13a7c6beea531",
+      "actual": "68e1315fccc93ed25a2bbee649e13a7c6beea531",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/_marking/delta.py",
+      "expected": "52a52cf54b2863230be1620c0e4b901791d7b5eb",
+      "actual": "52a52cf54b2863230be1620c0e4b901791d7b5eb",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/_marking/legacy_timed.py",
+      "expected": "3d06207639897a35f367e73ceaacbf4a83f94eb6",
+      "actual": "3d06207639897a35f367e73ceaacbf4a83f94eb6",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/_marking/outputs.py",
+      "expected": "882cddeca791f019309b2f4fe81a8c2eae7a263a",
+      "actual": "882cddeca791f019309b2f4fe81a8c2eae7a263a",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/_marking/revisions.py",
+      "expected": "92d81fabc561712e497b02a9f398ea4c3d28d35b",
+      "actual": "92d81fabc561712e497b02a9f398ea4c3d28d35b",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/_marking/selection.py",
+      "expected": "5653128ca3d722ed89207bf7beeaed1cd8348b1e",
+      "actual": "5653128ca3d722ed89207bf7beeaed1cd8348b1e",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/_marking/token_state.py",
+      "expected": "9df41d1a77c09a10f639f4dbead5a6a0b579e9cf",
+      "actual": "9df41d1a77c09a10f639f4dbead5a6a0b579e9cf",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/_schema_validation.py",
+      "expected": "d980e9e4516c93474b1f170532d321ead86bef9b",
+      "actual": "d980e9e4516c93474b1f170532d321ead86bef9b",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/agent_result_inspection.py",
+      "expected": "97a48d4c4e4d58fea46c7e3219a86cad642c4765",
+      "actual": "97a48d4c4e4d58fea46c7e3219a86cad642c4765",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/agent_tasks.py",
+      "expected": "d45c6f01d5c2da437ae106b4525fc11558227ce3",
+      "actual": "d45c6f01d5c2da437ae106b4525fc11558227ce3",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/agent_workflows.py",
+      "expected": "0ca9bdb7250c5c11a807e25a65b48bdb75b92bb3",
+      "actual": "0ca9bdb7250c5c11a807e25a65b48bdb75b92bb3",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/budgets.py",
+      "expected": "f1988d45c808022737ad2c4f7a8db6d4fd457c49",
+      "actual": "f1988d45c808022737ad2c4f7a8db6d4fd457c49",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/checks.py",
+      "expected": "0c419af57f69bb4662776963cc5d067ff533ff8b",
+      "actual": "0c419af57f69bb4662776963cc5d067ff533ff8b",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/collaboration/__init__.py",
+      "expected": "93160a7aa5c25f2278462eeff011d152a4803fed",
+      "actual": "93160a7aa5c25f2278462eeff011d152a4803fed",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/collaboration/_assembly_lowering.py",
+      "expected": "b40b620626b0c3cd629eb5318ede42103f8e1fb7",
+      "actual": "b40b620626b0c3cd629eb5318ede42103f8e1fb7",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/collaboration/_assembly_merge_support.py",
+      "expected": "2666e636fa568b64b1c8191595aa85cb5b6ccf50",
+      "actual": "2666e636fa568b64b1c8191595aa85cb5b6ccf50",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/collaboration/_assembly_v2_lowering.py",
+      "expected": "1c7188c04a2ecae358e032fc8fb1b4fda5b67fe0",
+      "actual": "1c7188c04a2ecae358e032fc8fb1b4fda5b67fe0",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/collaboration/_assembly_v3_lowering.py",
+      "expected": "2518675521009006c6318d10212a330ecbdf80ad",
+      "actual": "2518675521009006c6318d10212a330ecbdf80ad",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/collaboration/_assembly_v3_origins.py",
+      "expected": "6d42e09f392865faea1d2e61db4ca1c2f8836c03",
+      "actual": "6d42e09f392865faea1d2e61db4ca1c2f8836c03",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/collaboration/_assembly_v4_lowering.py",
+      "expected": "c816137cb92b79a0b0bc869b2076006555413c18",
+      "actual": "c816137cb92b79a0b0bc869b2076006555413c18",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/collaboration/_assembly_v5_lowering.py",
+      "expected": "648c06ea1dccfdd68a07ab018c2ac0d849205666",
+      "actual": "648c06ea1dccfdd68a07ab018c2ac0d849205666",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/collaboration/_assembly_v7_lowering.py",
+      "expected": "8b9c162e4138c308ac3a72066b7680d2c08d9221",
+      "actual": "8b9c162e4138c308ac3a72066b7680d2c08d9221",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/collaboration/_assembly_v8_lowering.py",
+      "expected": "1e4624b696d4672e3ae2e8fdb6985b4b28720d56",
+      "actual": "1e4624b696d4672e3ae2e8fdb6985b4b28720d56",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/collaboration/_assembly_v9_lowering.py",
+      "expected": "99f4df6700b2df11ee6f4f74e0fdff4fba29b5e2",
+      "actual": "99f4df6700b2df11ee6f4f74e0fdff4fba29b5e2",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/collaboration/_graph_assembly_origins.py",
+      "expected": "c049e914a1251e5f47628e283481969493b2d887",
+      "actual": "c049e914a1251e5f47628e283481969493b2d887",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/collaboration/_graph_assembly_origins_v3.py",
+      "expected": "6d6be9f6a1826f95382d564d84f9186993ef45dd",
+      "actual": "6d6be9f6a1826f95382d564d84f9186993ef45dd",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/collaboration/_graph_merge_model.py",
+      "expected": "f2a8d85d72d10f14a80dd9f912d0d61067a48271",
+      "actual": "f2a8d85d72d10f14a80dd9f912d0d61067a48271",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/collaboration/_open_region_closure.py",
+      "expected": "9ab8a366a94dd61c4c485ab8810638e3f57e7253",
+      "actual": "9ab8a366a94dd61c4c485ab8810638e3f57e7253",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/collaboration/_open_region_inventory.py",
+      "expected": "f959b49fcda56ed7ef8c45cde2c9d7904b6612ce",
+      "actual": "f959b49fcda56ed7ef8c45cde2c9d7904b6612ce",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/collaboration/_plain_merge_model.py",
+      "expected": "340f4cf0c1bbdad232cb5e6226401a2c4671fc02",
+      "actual": "340f4cf0c1bbdad232cb5e6226401a2c4671fc02",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/collaboration/_plain_merge_resolution.py",
+      "expected": "9d5e5c8fbf6a28cdfe61b25a0b8f49314297aa74",
+      "actual": "9d5e5c8fbf6a28cdfe61b25a0b8f49314297aa74",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/collaboration/_plain_transplant_resolution.py",
+      "expected": "f6ecec7a87e391792c2055b670fc0f77d9c58a51",
+      "actual": "f6ecec7a87e391792c2055b670fc0f77d9c58a51",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/collaboration/assemblies.py",
+      "expected": "9a4b93c3a96c274e9eed1b896c3c232ef9f8266f",
+      "actual": "9a4b93c3a96c274e9eed1b896c3c232ef9f8266f",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/collaboration/assembly_merge.py",
+      "expected": "efbe6fbde823184f45a9442da81dac25a754f635",
+      "actual": "efbe6fbde823184f45a9442da81dac25a754f635",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/collaboration/assembly_v2.py",
+      "expected": "6717b191692a8f58649a6f5fe04c587a7606009f",
+      "actual": "6717b191692a8f58649a6f5fe04c587a7606009f",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/collaboration/assembly_v3.py",
+      "expected": "08c1dd67759fa85df744bc9dae3eeef9595c5377",
+      "actual": "08c1dd67759fa85df744bc9dae3eeef9595c5377",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/collaboration/assembly_v4.py",
+      "expected": "459534844ba5650e1ddcab212a244f112f69b41e",
+      "actual": "459534844ba5650e1ddcab212a244f112f69b41e",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/collaboration/assembly_v5.py",
+      "expected": "b9ff2d2c52b2349b5ca32570f889a307c84a382c",
+      "actual": "b9ff2d2c52b2349b5ca32570f889a307c84a382c",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/collaboration/assembly_v6.py",
+      "expected": "c76c0c674b1d6b166fb94b6b82c178b13331304e",
+      "actual": "c76c0c674b1d6b166fb94b6b82c178b13331304e",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/collaboration/assembly_v7.py",
+      "expected": "fbfd81919951c85bfd68afd60baf64da7f2f89b8",
+      "actual": "fbfd81919951c85bfd68afd60baf64da7f2f89b8",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/collaboration/assembly_v8.py",
+      "expected": "9aa093ad802cb91fcebc8221fbfc2adf2666bb38",
+      "actual": "9aa093ad802cb91fcebc8221fbfc2adf2666bb38",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/collaboration/assembly_v9.py",
+      "expected": "bd7aa24de6993a7155355ff20365b622b62d1d53",
+      "actual": "bd7aa24de6993a7155355ff20365b622b62d1d53",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/collaboration/authoring.py",
+      "expected": "1e2a8f2e8ae7ba1e4a3e724ee10d322e0ee70981",
+      "actual": "1e2a8f2e8ae7ba1e4a3e724ee10d322e0ee70981",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/collaboration/branches.py",
+      "expected": "a73200cbad4e6697d256c3d8b2eaddce8f139ab7",
+      "actual": "a73200cbad4e6697d256c3d8b2eaddce8f139ab7",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/collaboration/candidate_plans.py",
+      "expected": "0c576e7356af75025aea3d1d2ffcffb5bf235558",
+      "actual": "0c576e7356af75025aea3d1d2ffcffb5bf235558",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/collaboration/delivery_evidence.py",
+      "expected": "e0c38737b74a7440e66e950b199132d3cc21ce50",
+      "actual": "e0c38737b74a7440e66e950b199132d3cc21ce50",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/collaboration/environment_check.py",
+      "expected": "fb396808527d78a3dd8a57804274512f983cca30",
+      "actual": "fb396808527d78a3dd8a57804274512f983cca30",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/collaboration/environment_cli.py",
+      "expected": "77d2218e118f3c346bc34918241bf79aed7a5a29",
+      "actual": "77d2218e118f3c346bc34918241bf79aed7a5a29",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/collaboration/environment_contracts.py",
+      "expected": "f2c1bde444b4ee9b995304d639870562d36c0344",
+      "actual": "f2c1bde444b4ee9b995304d639870562d36c0344",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/collaboration/environment_evidence.py",
+      "expected": "ecc39ea09967d25e6e6bd8470fdf93ba4c289e93",
+      "actual": "ecc39ea09967d25e6e6bd8470fdf93ba4c289e93",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/collaboration/environment_host.py",
+      "expected": "310ba86098b3bdbf9b926ecabfc3b1b6148ddfcd",
+      "actual": "310ba86098b3bdbf9b926ecabfc3b1b6148ddfcd",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/collaboration/environment_local_contracts.py",
+      "expected": "26e4814505399024c9af911ede3b1fceb9cf8a2e",
+      "actual": "26e4814505399024c9af911ede3b1fceb9cf8a2e",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/collaboration/environment_output.py",
+      "expected": "255a2f8ced8e98e5f4d2b6e8fe56c767f10d2c48",
+      "actual": "255a2f8ced8e98e5f4d2b6e8fe56c767f10d2c48",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/collaboration/environment_plan.py",
+      "expected": "ef253b385fac2e4331352a44bafbf721e0779a1c",
+      "actual": "ef253b385fac2e4331352a44bafbf721e0779a1c",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/collaboration/environment_prepare.py",
+      "expected": "368156101f1aa6f90c3f9cb1ab593a7e2b5c23f8",
+      "actual": "368156101f1aa6f90c3f9cb1ab593a7e2b5c23f8",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/collaboration/environment_requirements.py",
+      "expected": "95d29be7a5059ddbdfb9ee53f1d47b465b8e44c7",
+      "actual": "95d29be7a5059ddbdfb9ee53f1d47b465b8e44c7",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/collaboration/environment_setup.py",
+      "expected": "050a5f6791f6802b0042bfaab3de9700ee32a324",
+      "actual": "050a5f6791f6802b0042bfaab3de9700ee32a324",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/collaboration/graph_authoring.py",
+      "expected": "2e4973bd8c61bb7e7715b777d6a6f625e817815e",
+      "actual": "2e4973bd8c61bb7e7715b777d6a6f625e817815e",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/collaboration/graph_merge.py",
+      "expected": "97689c6bce934a5f220f8027f4d85e19d8315844",
+      "actual": "97689c6bce934a5f220f8027f4d85e19d8315844",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/collaboration/graph_merge_author.py",
+      "expected": "7a6093fa101e6ec6fd61e7de2eff43b925f13168",
+      "actual": "7a6093fa101e6ec6fd61e7de2eff43b925f13168",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/collaboration/graph_source.py",
+      "expected": "778f40153a626f847f9cd396f71611be69055e6e",
+      "actual": "778f40153a626f847f9cd396f71611be69055e6e",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/collaboration/host_readiness.py",
+      "expected": "d1db5893c23d8dd6fe239f6e21ddaecf91ce955b",
+      "actual": "d1db5893c23d8dd6fe239f6e21ddaecf91ce955b",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/collaboration/materials.py",
+      "expected": "dd4b04691d84dc06b7c28a25e4be701f8ef0eabd",
+      "actual": "dd4b04691d84dc06b7c28a25e4be701f8ef0eabd",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/collaboration/open_region.py",
+      "expected": "f206f8c785261ded59edea862d53583360d6f315",
+      "actual": "f206f8c785261ded59edea862d53583360d6f315",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/collaboration/open_region_closure.py",
+      "expected": "62e7c697c509a4a47d5f8d1c50337d7a3647bf45",
+      "actual": "62e7c697c509a4a47d5f8d1c50337d7a3647bf45",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/collaboration/open_region_derived.py",
+      "expected": "d0e1cf72deca4e4eb8b8ce08cdccd22726653ec5",
+      "actual": "d0e1cf72deca4e4eb8b8ce08cdccd22726653ec5",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/collaboration/package_cli.py",
+      "expected": "68ea43fa9ee795abb9f34cab0d48f8c9be988b3a",
+      "actual": "68ea43fa9ee795abb9f34cab0d48f8c9be988b3a",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/collaboration/package_preview.py",
+      "expected": "97cf5bd99ba9cd61bd8def5330171d2c931d9628",
+      "actual": "97cf5bd99ba9cd61bd8def5330171d2c931d9628",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/collaboration/package_resolution.py",
+      "expected": "017f189c14f3bf1fde926f25f0708eee0db30df4",
+      "actual": "017f189c14f3bf1fde926f25f0708eee0db30df4",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/collaboration/plain_merge.py",
+      "expected": "a2f64826363c0d475c50ca297f4dbb686e7ec83a",
+      "actual": "a2f64826363c0d475c50ca297f4dbb686e7ec83a",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/collaboration/plain_merge_result.py",
+      "expected": "d789abe469f379a9230a576605c93c929db89902",
+      "actual": "d789abe469f379a9230a576605c93c929db89902",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/collaboration/plain_transform.py",
+      "expected": "3569d5ac0a6aa1f7c9ddae318ea4d309a32c462e",
+      "actual": "3569d5ac0a6aa1f7c9ddae318ea4d309a32c462e",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/collaboration/plain_transplant.py",
+      "expected": "90c7d0831db29c9aa102069168c556cad0f10d73",
+      "actual": "90c7d0831db29c9aa102069168c556cad0f10d73",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/collaboration/plain_transplant_derived.py",
+      "expected": "8d68c569204d6e98fb9c55e1c52563d0afe1c4b2",
+      "actual": "8d68c569204d6e98fb9c55e1c52563d0afe1c4b2",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/collaboration/plain_transplant_result.py",
+      "expected": "efbce26b853ed39b99ade041e71014ba282f79b1",
+      "actual": "efbce26b853ed39b99ade041e71014ba282f79b1",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/collaboration/preserved_candidate_plans.py",
+      "expected": "fb036303136bb1736a8736e853f5dc5af1a38f14",
+      "actual": "fb036303136bb1736a8736e853f5dc5af1a38f14",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/collaboration/preserved_candidate_publisher.py",
+      "expected": "fa1402f5cf40f683c050d54fe3d6f04f707587c5",
+      "actual": "fa1402f5cf40f683c050d54fe3d6f04f707587c5",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/collaboration/public_projections.py",
+      "expected": "72f1926ee9ec7940c299905d4c2c86c609392c90",
+      "actual": "72f1926ee9ec7940c299905d4c2c86c609392c90",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/collaboration/read_host_config.py",
+      "expected": "82cb777d611382678b478d40258618bc65879f8c",
+      "actual": "82cb777d611382678b478d40258618bc65879f8c",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/collaboration/reader_preflight.py",
+      "expected": "ff4fbeeb87a5c8bec1ec939f8484de11fb59eb61",
+      "actual": "ff4fbeeb87a5c8bec1ec939f8484de11fb59eb61",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/collaboration/references.py",
+      "expected": "a9564c14ed0fbe0f58d8c3144d70a7ded8ade6d7",
+      "actual": "a9564c14ed0fbe0f58d8c3144d70a7ded8ade6d7",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/collaboration/registry_read_contracts.py",
+      "expected": "584afa4eaab70c53132f3978064a64d2783738f1",
+      "actual": "584afa4eaab70c53132f3978064a64d2783738f1",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/collaboration/registry_read_session.py",
+      "expected": "477b0b3472574a422c46047efeaf2f11fff52cb3",
+      "actual": "477b0b3472574a422c46047efeaf2f11fff52cb3",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/collaboration/registry_typed_readers.py",
+      "expected": "d2d1a29a08e4c4967176ecda10b39638596b7a8c",
+      "actual": "d2d1a29a08e4c4967176ecda10b39638596b7a8c",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/collaboration/root_terminals.py",
+      "expected": "82062fdac8e2dbe96a3f3d3114c4c67ca73a545f",
+      "actual": "82062fdac8e2dbe96a3f3d3114c4c67ca73a545f",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/collaboration/schema_catalog.py",
+      "expected": "e71ed82fa3eb484d8f4b041f4ed46a7bc54c5b69",
+      "actual": "e71ed82fa3eb484d8f4b041f4ed46a7bc54c5b69",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/collaboration/share_packages.py",
+      "expected": "7744d76fe6085c0d13549882863068c8a08d3942",
+      "actual": "7744d76fe6085c0d13549882863068c8a08d3942",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/collaboration/source_observations.py",
+      "expected": "1ac58d4bf3a1cd974803bc0475c443b00b1a1fb3",
+      "actual": "1ac58d4bf3a1cd974803bc0475c443b00b1a1fb3",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/collaboration/source_query.py",
+      "expected": "679681483440c56211ce3ac2d35f4b3e218aa715",
+      "actual": "679681483440c56211ce3ac2d35f4b3e218aa715",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/collaboration/source_sets.py",
+      "expected": "9ff8875cb12cb9c39a9cf7ca9414f7903efd6c52",
+      "actual": "9ff8875cb12cb9c39a9cf7ca9414f7903efd6c52",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/collaboration/sources.py",
+      "expected": "82d5cdcaadb8dc3258be946d12cbcf2b290a9725",
+      "actual": "82d5cdcaadb8dc3258be946d12cbcf2b290a9725",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/collaboration/subnet_exchange.py",
+      "expected": "b31c2413d5a28f02d428755a79ab529de71eae9c",
+      "actual": "b31c2413d5a28f02d428755a79ab529de71eae9c",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/collaboration/worksets.py",
+      "expected": "62dac0221bba711ed8cc19a2b3ceeec568c4fded",
+      "actual": "62dac0221bba711ed8cc19a2b3ceeec568c4fded",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/compiler.py",
+      "expected": "90e7835422d70f07ba45360d7d7805af7a05075a",
+      "actual": "90e7835422d70f07ba45360d7d7805af7a05075a",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/composition.py",
+      "expected": "95c85dfcf21fddd053d362c3aba9b61ec33a0068",
+      "actual": "95c85dfcf21fddd053d362c3aba9b61ec33a0068",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/control_calls.py",
+      "expected": "92e50309982a3bd671c824b6b66d241fd5486ae8",
+      "actual": "92e50309982a3bd671c824b6b66d241fd5486ae8",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/control_client.py",
+      "expected": "beb296b15eed07f6a9c53f77b404b2de24362a2d",
+      "actual": "beb296b15eed07f6a9c53f77b404b2de24362a2d",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/control_eval.py",
+      "expected": "9fba1f13e7afd04a4a8c75fb3159a54630367458",
+      "actual": "9fba1f13e7afd04a4a8c75fb3159a54630367458",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/control_ir.py",
+      "expected": "b75ed643c064e2965bb641c7c6112c26ad894fb2",
+      "actual": "b75ed643c064e2965bb641c7c6112c26ad894fb2",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/control_server.py",
+      "expected": "7e41721bae38107d11a2cf91a22897ca1983393c",
+      "actual": "7e41721bae38107d11a2cf91a22897ca1983393c",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/control_types.py",
+      "expected": "ebac56f0084046d33848e5d6b8eb0eb6bf33d87e",
+      "actual": "ebac56f0084046d33848e5d6b8eb0eb6bf33d87e",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/diagnostics.py",
+      "expected": "03e853ab6829adc4d0c7b1c6fb0a7a275fc79769",
+      "actual": "03e853ab6829adc4d0c7b1c6fb0a7a275fc79769",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/effects.py",
+      "expected": "4c28b5925c8b6cf7f2f8e7a53c6e7ee9bd492f08",
+      "actual": "4c28b5925c8b6cf7f2f8e7a53c6e7ee9bd492f08",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/executable_net.py",
+      "expected": "146981420197cace292b0f9558371f2330356231",
+      "actual": "146981420197cace292b0f9558371f2330356231",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/file_execution_net.py",
+      "expected": "1b4004596a0f6d6c7a2311073d3259030c635a6b",
+      "actual": "1b4004596a0f6d6c7a2311073d3259030c635a6b",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/firing_preflight.py",
+      "expected": "f17492c8fd1c3dddd70b153f56339a66de159988",
+      "actual": "f17492c8fd1c3dddd70b153f56339a66de159988",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/firing_resource_access.py",
+      "expected": "c3f3ca0410f4b1e7fdff1b27044ed2331936351a",
+      "actual": "c3f3ca0410f4b1e7fdff1b27044ed2331936351a",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/frontend_application.py",
+      "expected": "2ea7ad14cd92f3a8535d8bc84c0e667acf58fa88",
+      "actual": "2ea7ad14cd92f3a8535d8bc84c0e667acf58fa88",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/harness.py",
+      "expected": "e92f804366707e679299768fa2c347c130184fcf",
+      "actual": "e92f804366707e679299768fa2c347c130184fcf",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/inspection.py",
+      "expected": "b18471e2f1d242427d7a3a48ff1b8421c9eb8fde",
+      "actual": "b18471e2f1d242427d7a3a48ff1b8421c9eb8fde",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/llm_contracts.py",
+      "expected": "7f73d460e8f8d7ab5314f474af8987ac44795868",
+      "actual": "7f73d460e8f8d7ab5314f474af8987ac44795868",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/main_session.py",
+      "expected": "3bcef40eeaadf406f5f5d2662a0ecd745cd0ff08",
+      "actual": "3bcef40eeaadf406f5f5d2662a0ecd745cd0ff08",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/marking.py",
+      "expected": "5d53ac4e29e2489cb32cf353f1b4734df3bd5459",
+      "actual": "5d53ac4e29e2489cb32cf353f1b4734df3bd5459",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/module.py",
+      "expected": "9f81e5b172d96706d3f74b6859ac2a28150787a7",
+      "actual": "9f81e5b172d96706d3f74b6859ac2a28150787a7",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/net_operations/__init__.py",
+      "expected": "3d2343b7849cb70ae38d56f494ec731f1c0aaef1",
+      "actual": "3d2343b7849cb70ae38d56f494ec731f1c0aaef1",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/net_operations/definitions.py",
+      "expected": "ef2ab4b49a7f511dba61a9d292694beac6f7b572",
+      "actual": "ef2ab4b49a7f511dba61a9d292694beac6f7b572",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/net_operations/runtime.py",
+      "expected": "16ccda8640397a5f4aa64dd5eb71d21950b6afd2",
+      "actual": "16ccda8640397a5f4aa64dd5eb71d21950b6afd2",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/onboarding.py",
+      "expected": "1ef006a6c0477ced7596218cebe922beb938376f",
+      "actual": "1ef006a6c0477ced7596218cebe922beb938376f",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/output_protocol.py",
+      "expected": "f4008218eeca1b76fb409915a4d865770fcb8f73",
+      "actual": "f4008218eeca1b76fb409915a4d865770fcb8f73",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/owner_commands.py",
+      "expected": "763b70e900aa79ea95509c3ea7ac5175a2e81942",
+      "actual": "763b70e900aa79ea95509c3ea7ac5175a2e81942",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/owner_edits.py",
+      "expected": "c3d356dad10ac20458e851b7798abe2f18296565",
+      "actual": "c3d356dad10ac20458e851b7798abe2f18296565",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/path_refs.py",
+      "expected": "70f728d26c2a4ed01007114add45c1685a0f810f",
+      "actual": "70f728d26c2a4ed01007114add45c1685a0f810f",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/petri_contracts.py",
+      "expected": "1d5587f775a7b15e1fa1c61d9b8cd8e572981cec",
+      "actual": "1d5587f775a7b15e1fa1c61d9b8cd8e572981cec",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/petri_primitives.py",
+      "expected": "aa47b73733439e6c85907cdc5b7293712fd3725f",
+      "actual": "aa47b73733439e6c85907cdc5b7293712fd3725f",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/petri_runtime_interfaces.py",
+      "expected": "93f3daea80bba617cebe1eff3325f06e59068a83",
+      "actual": "93f3daea80bba617cebe1eff3325f06e59068a83",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/provider_catalog.py",
+      "expected": "53122b345d250d28d4e0250eb87cf8ad50e863ac",
+      "actual": "53122b345d250d28d4e0250eb87cf8ad50e863ac",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/provider_setup.py",
+      "expected": "4853649d28be4017cc19a5720a1913cf4756c822",
+      "actual": "4853649d28be4017cc19a5720a1913cf4756c822",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registration.py",
+      "expected": "08003154cc406137420942fafc0b85bea6999c69",
+      "actual": "08003154cc406137420942fafc0b85bea6999c69",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/__init__.py",
+      "expected": "0d797d7bb8e8da219c37a8c8057ffa8a799fa640",
+      "actual": "0d797d7bb8e8da219c37a8c8057ffa8a799fa640",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/_candidate_plan_reads.py",
+      "expected": "8978035a6d9274d9ec0a7063030c3c8edfeb3224",
+      "actual": "8978035a6d9274d9ec0a7063030c3c8edfeb3224",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/_candidate_read_context.py",
+      "expected": "d9c6c2e3440a01b01af729ab1a232961f3b0403d",
+      "actual": "d9c6c2e3440a01b01af729ab1a232961f3b0403d",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/_event_store/__init__.py",
+      "expected": "95f81aaa4e82a2cd1ad04cd69108153410ff6e74",
+      "actual": "95f81aaa4e82a2cd1ad04cd69108153410ff6e74",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/_event_store/accounting.py",
+      "expected": "657a66bec5d0bafc53b10755f0eec0a7ff3814c2",
+      "actual": "657a66bec5d0bafc53b10755f0eec0a7ff3814c2",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/_event_store/adoption_reads.py",
+      "expected": "f03fdaca7dfc1971ead453a4bc1385c7a26670e4",
+      "actual": "f03fdaca7dfc1971ead453a4bc1385c7a26670e4",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/_event_store/backend.py",
+      "expected": "a57b75c0f9a08fa6dba0d314c4044c259c7d3ed5",
+      "actual": "a57b75c0f9a08fa6dba0d314c4044c259c7d3ed5",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/_event_store/branch_publication.py",
+      "expected": "b8d8325f66338e2a8d700296cfb948f6a7cdf3e2",
+      "actual": "b8d8325f66338e2a8d700296cfb948f6a7cdf3e2",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/_event_store/collaboration_descriptors.py",
+      "expected": "ed40daf3917e620562540ad5cd9fa2a98e48e493",
+      "actual": "ed40daf3917e620562540ad5cd9fa2a98e48e493",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/_event_store/commit.py",
+      "expected": "b1e83df5afcdcb6fd43a06584168d35a4d6d72fc",
+      "actual": "b1e83df5afcdcb6fd43a06584168d35a4d6d72fc",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/_event_store/net_lineage.py",
+      "expected": "76b9501a81b437f1975289fd930dbde3068fe080",
+      "actual": "76b9501a81b437f1975289fd930dbde3068fe080",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/_event_store/preserved_plan_commit.py",
+      "expected": "bbc9b364a56c160d298b20dd832f5fc91491441e",
+      "actual": "bbc9b364a56c160d298b20dd832f5fc91491441e",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/_event_store/proposal.py",
+      "expected": "f576b2741bc40defa84edcb2d36d4640e7cb2eda",
+      "actual": "f576b2741bc40defa84edcb2d36d4640e7cb2eda",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/_event_store/provenance.py",
+      "expected": "b5200c64497db19900bc5055eb416ca6c45e34eb",
+      "actual": "b5200c64497db19900bc5055eb416ca6c45e34eb",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/_event_store/queries.py",
+      "expected": "adcd7363864a6d9eb068af5d537b62861644fa95",
+      "actual": "adcd7363864a6d9eb068af5d537b62861644fa95",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/_event_store/source_identity.py",
+      "expected": "955a0d6b1a638c7b83235ba071e60dacbfea0c93",
+      "actual": "955a0d6b1a638c7b83235ba071e60dacbfea0c93",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/_event_store/source_observations.py",
+      "expected": "0088da21b1fb0f67ee8e96dee525389354e284bc",
+      "actual": "0088da21b1fb0f67ee8e96dee525389354e284bc",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/_event_store/source_sets.py",
+      "expected": "5e5f302dec111b53c63d3fedb955ba80b7b73053",
+      "actual": "5e5f302dec111b53c63d3fedb955ba80b7b73053",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/_event_store/validation/__init__.py",
+      "expected": "a10bdea9e983f2583ddd3471bdf0bb8e8a872f1b",
+      "actual": "a10bdea9e983f2583ddd3471bdf0bb8e8a872f1b",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/_event_store/validation/agent_loop.py",
+      "expected": "99e7aaa4a199fd14e61224b6803fdee2c05b9e54",
+      "actual": "99e7aaa4a199fd14e61224b6803fdee2c05b9e54",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/_event_store/validation/firing.py",
+      "expected": "975ef1319c844eb2b89900918b5abc9ba38dabbd",
+      "actual": "975ef1319c844eb2b89900918b5abc9ba38dabbd",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/_event_store/validation/historical.py",
+      "expected": "129a87539ca537567745a5420801f21bd53ade64",
+      "actual": "129a87539ca537567745a5420801f21bd53ade64",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/_event_store/validation/native_resume.py",
+      "expected": "9b6d805949cc0fae7c8157a81a38fffdf3018e97",
+      "actual": "9b6d805949cc0fae7c8157a81a38fffdf3018e97",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/_event_store/validation/operation.py",
+      "expected": "76e46136646a6c48d0d6d414be85ce22145f14ae",
+      "actual": "76e46136646a6c48d0d6d414be85ce22145f14ae",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/_event_store/validation/provider.py",
+      "expected": "53e3de687ef5e4fb0b3b5bb8785a992b078426ea",
+      "actual": "53e3de687ef5e4fb0b3b5bb8785a992b078426ea",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/_event_store/validation/resources.py",
+      "expected": "41b3bc11f3f707480c204faf5d5dfd18e691c680",
+      "actual": "41b3bc11f3f707480c204faf5d5dfd18e691c680",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/_event_store/validation/structural.py",
+      "expected": "357cf049701cd73345ae1e4f195df5dc3ac5a5f5",
+      "actual": "357cf049701cd73345ae1e4f195df5dc3ac5a5f5",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/_event_store/views.py",
+      "expected": "0211436d8cea3bb61c0600e2fb398eb327b2e115",
+      "actual": "0211436d8cea3bb61c0600e2fb398eb327b2e115",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/_event_store/workset_publication.py",
+      "expected": "0077eef326bd0aadf3c16350d8bc3edb43322e2a",
+      "actual": "0077eef326bd0aadf3c16350d8bc3edb43322e2a",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/_invocation/__init__.py",
+      "expected": "58f96d934f5f0bbf17c31c15c9e0c56472fe366c",
+      "actual": "58f96d934f5f0bbf17c31c15c9e0c56472fe366c",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/_invocation/admission.py",
+      "expected": "87c90aedcb5951db6bbac9fa77b15e35fc288a15",
+      "actual": "87c90aedcb5951db6bbac9fa77b15e35fc288a15",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/_invocation/context.py",
+      "expected": "a2d74e57cc2c729e6b32ffce8cb633ce8be3b40e",
+      "actual": "a2d74e57cc2c729e6b32ffce8cb633ce8be3b40e",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/_invocation/execution.py",
+      "expected": "94b90768553fee35345c37c0aa1592f6f828ada5",
+      "actual": "94b90768553fee35345c37c0aa1592f6f828ada5",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/_invocation/recovery.py",
+      "expected": "1ac00e147b95cdcca76ed7c62c16aa510c75ee42",
+      "actual": "1ac00e147b95cdcca76ed7c62c16aa510c75ee42",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/_invocation/terminal.py",
+      "expected": "c235c5c3ea5cb368ae7c6a3dc48e96c835ea66c1",
+      "actual": "c235c5c3ea5cb368ae7c6a3dc48e96c835ea66c1",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/_invocation/terminal_evidence.py",
+      "expected": "132fdf3b027c9369bfe7c671f77d687dd74b1c07",
+      "actual": "132fdf3b027c9369bfe7c671f77d687dd74b1c07",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/_module_graph.py",
+      "expected": "8517e544e6fe7f501378590a3632ec0add65a982",
+      "actual": "8517e544e6fe7f501378590a3632ec0add65a982",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/_module_resource_projection.py",
+      "expected": "4c0235de1de6d18016860e09be1f5f7692109073",
+      "actual": "4c0235de1de6d18016860e09be1f5f7692109073",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/_operation/__init__.py",
+      "expected": "e36fb04cf46295716e8129f5a99819d0d0183b6c",
+      "actual": "e36fb04cf46295716e8129f5a99819d0d0183b6c",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/_operation/declaration.py",
+      "expected": "4572b706157875391b953c711b22efb1e1401c1a",
+      "actual": "4572b706157875391b953c711b22efb1e1401c1a",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/_operation/inputs.py",
+      "expected": "8213815694c53f0cfdf2fbab651d548a5f4563b7",
+      "actual": "8213815694c53f0cfdf2fbab651d548a5f4563b7",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/_operation/legacy_faults.py",
+      "expected": "a2323e5db83c1a21443f4132fd8d833b159c1ae7",
+      "actual": "a2323e5db83c1a21443f4132fd8d833b159c1ae7",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/_operation/outputs.py",
+      "expected": "d52ccc6b81e34a3ae064ef0ac9d2b38369e8f150",
+      "actual": "d52ccc6b81e34a3ae064ef0ac9d2b38369e8f150",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/_operation/registration.py",
+      "expected": "c1347999f6697b74d7413cadea6763372a2f5a57",
+      "actual": "c1347999f6697b74d7413cadea6763372a2f5a57",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/_preserved_basis_reads.py",
+      "expected": "05c27a6a57bf934eb74c815401318b59c9581b79",
+      "actual": "05c27a6a57bf934eb74c815401318b59c9581b79",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/_preserved_resource_reads.py",
+      "expected": "b2ca7844fea5c32821a8b7c686791238e7a58cb5",
+      "actual": "b2ca7844fea5c32821a8b7c686791238e7a58cb5",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/_preserved_slot_selection.py",
+      "expected": "c3b4e1612cd9056cded821d92aca97e53c399cf8",
+      "actual": "c3b4e1612cd9056cded821d92aca97e53c399cf8",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/_provider_calls/__init__.py",
+      "expected": "143175cc247b84b1a144ceedfff070da691156bf",
+      "actual": "143175cc247b84b1a144ceedfff070da691156bf",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/_provider_calls/attempts.py",
+      "expected": "78b3145a4367600ab31c8afe161423cf72965a9e",
+      "actual": "78b3145a4367600ab31c8afe161423cf72965a9e",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/_provider_calls/calls.py",
+      "expected": "89d28d9a05e4121b80e3bccc2695fea62597c798",
+      "actual": "89d28d9a05e4121b80e3bccc2695fea62597c798",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/_provider_calls/legacy.py",
+      "expected": "1ff8806c5a68fcd18daa31b1edb273eb9c96a148",
+      "actual": "1ff8806c5a68fcd18daa31b1edb273eb9c96a148",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/_provider_calls/recovery.py",
+      "expected": "6a919bfcb3aaa7c46dce7f7da89087a0729ecf37",
+      "actual": "6a919bfcb3aaa7c46dce7f7da89087a0729ecf37",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/_registry.py",
+      "expected": "9ab732e046a59d3d8642413d38222ab85d3303ba",
+      "actual": "9ab732e046a59d3d8642413d38222ab85d3303ba",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/_resource_service/__init__.py",
+      "expected": "ff104eb4a370386a1e7df54f90984bf0c46c6bfc",
+      "actual": "ff104eb4a370386a1e7df54f90984bf0c46c6bfc",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/_resource_service/addresses.py",
+      "expected": "de32b0f12183a7e19294ac5e4dc965ff429d685d",
+      "actual": "de32b0f12183a7e19294ac5e4dc965ff429d685d",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/_resource_service/common.py",
+      "expected": "d137c50fa94e6227700085c58568598cab2349e2",
+      "actual": "d137c50fa94e6227700085c58568598cab2349e2",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/_resource_service/delivery.py",
+      "expected": "c73ca509a5069929f1d3ef7a8cccbce696843a97",
+      "actual": "c73ca509a5069929f1d3ef7a8cccbce696843a97",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/_resource_service/publication.py",
+      "expected": "9c2103f77f62f3fbcb2e67a866c690350dd9f164",
+      "actual": "9c2103f77f62f3fbcb2e67a866c690350dd9f164",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/_resource_service/queries.py",
+      "expected": "cc31d5dbaf7f745e1fff52d220d4d9bff4536fec",
+      "actual": "cc31d5dbaf7f745e1fff52d220d4d9bff4536fec",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/_resource_service/references.py",
+      "expected": "c21b30c5628d35cf108b7c4662e234a325945c36",
+      "actual": "c21b30c5628d35cf108b7c4662e234a325945c36",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/admission_publication.py",
+      "expected": "f47620933c8ced3541141a9672da523272fa7eec",
+      "actual": "f47620933c8ced3541141a9672da523272fa7eec",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/agent_resource_broker.py",
+      "expected": "1b5490717536ddc056c31065bbdbb6033655a468",
+      "actual": "1b5490717536ddc056c31065bbdbb6033655a468",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/allocations.py",
+      "expected": "3ab3fe741b89c9523c5066d778f969b7540f15b5",
+      "actual": "3ab3fe741b89c9523c5066d778f969b7540f15b5",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/bootstrap.py",
+      "expected": "4f0c17d0854f8b1e53b88ca9d68541bc1a899de5",
+      "actual": "4f0c17d0854f8b1e53b88ca9d68541bc1a899de5",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/capabilities.py",
+      "expected": "3fa91c8aed1e8332b8ddce823298b8ca074086aa",
+      "actual": "3fa91c8aed1e8332b8ddce823298b8ca074086aa",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/checkpoint_reentry.py",
+      "expected": "a0bd34efa6d4db7e27d4af346bfe18e650926ba0",
+      "actual": "a0bd34efa6d4db7e27d4af346bfe18e650926ba0",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/checkpoints.py",
+      "expected": "6ef476d3571739b556f2acea63d76d8b0830c79c",
+      "actual": "6ef476d3571739b556f2acea63d76d8b0830c79c",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/content_schemas.py",
+      "expected": "1f93be4c76e0b22cf9ff9fb77591bb9221a51909",
+      "actual": "1f93be4c76e0b22cf9ff9fb77591bb9221a51909",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/credentials.py",
+      "expected": "f99cfe5a4135b96f6ec91857bd31c710dcee0288",
+      "actual": "f99cfe5a4135b96f6ec91857bd31c710dcee0288",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/declared_effect_validation.py",
+      "expected": "f763b96e2fb834aede1a9a791a50ca350e5e3662",
+      "actual": "f763b96e2fb834aede1a9a791a50ca350e5e3662",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/errors.py",
+      "expected": "da165e8454a89ce37988ca072ae2b43ed18dcfe6",
+      "actual": "da165e8454a89ce37988ca072ae2b43ed18dcfe6",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/event_store.py",
+      "expected": "94074fd4b419f8d8f8969d98931a905b3d8f9c2a",
+      "actual": "94074fd4b419f8d8f8969d98931a905b3d8f9c2a",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/execution_child_closure.py",
+      "expected": "9d7198364c0559f3164483a0b346ee7754a155ab",
+      "actual": "9d7198364c0559f3164483a0b346ee7754a155ab",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/execution_net.py",
+      "expected": "757a7cf704a5984fc2f8ac2df5f6e8a32c7e1203",
+      "actual": "757a7cf704a5984fc2f8ac2df5f6e8a32c7e1203",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/execution_runtime.py",
+      "expected": "d009c4ad690292c6be93633f591aac8fca0a0493",
+      "actual": "d009c4ad690292c6be93633f591aac8fca0a0493",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/firing_authority.py",
+      "expected": "4824c4c8d05ce4ac8612d9f5204d08375372f76a",
+      "actual": "4824c4c8d05ce4ac8612d9f5204d08375372f76a",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/firing_recovery.py",
+      "expected": "ac46686238a8ab048919aefe0484f156a6d5cdc0",
+      "actual": "ac46686238a8ab048919aefe0484f156a6d5cdc0",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/firing_resource_access.py",
+      "expected": "b3e4605de6551d91f907c2f60b6135bd01489522",
+      "actual": "b3e4605de6551d91f907c2f60b6135bd01489522",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/firing_success.py",
+      "expected": "61fd3937ee29c7bfa0b0d3c397e64ecfc099e7dc",
+      "actual": "61fd3937ee29c7bfa0b0d3c397e64ecfc099e7dc",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/firing_transition.py",
+      "expected": "d0e88ccfaa5ad57ee8680f5c0e8c567b75f07a28",
+      "actual": "d0e88ccfaa5ad57ee8680f5c0e8c567b75f07a28",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/identities.py",
+      "expected": "8a2c1fa1089c0464b8ae75c2e18f83d851e1254d",
+      "actual": "8a2c1fa1089c0464b8ae75c2e18f83d851e1254d",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/invocations.py",
+      "expected": "238a768f4248b9aa9062b35390fe428bed20c117",
+      "actual": "238a768f4248b9aa9062b35390fe428bed20c117",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/main_thread.py",
+      "expected": "70810435ea74adeb6dedde551e831bd28117b589",
+      "actual": "70810435ea74adeb6dedde551e831bd28117b589",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/models.py",
+      "expected": "e4d7587cd098d89ece4544954550db23fc6a616f",
+      "actual": "e4d7587cd098d89ece4544954550db23fc6a616f",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/module_activation.py",
+      "expected": "dfe7a66689bc7ce7e8e3b9929e0d2a3a4c3463d6",
+      "actual": "dfe7a66689bc7ce7e8e3b9929e0d2a3a4c3463d6",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/module_binding_authority.py",
+      "expected": "9efa1fcf18e10e23d2336fc965d4ef44b3470093",
+      "actual": "9efa1fcf18e10e23d2336fc965d4ef44b3470093",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/module_budgets.py",
+      "expected": "8143991f428c269a72a87d74cab3dd9dea4a4d83",
+      "actual": "8143991f428c269a72a87d74cab3dd9dea4a4d83",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/module_configuration.py",
+      "expected": "e112ba2e84199967f3db4b53be4598c1d77df0dc",
+      "actual": "e112ba2e84199967f3db4b53be4598c1d77df0dc",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/module_effects.py",
+      "expected": "c3cda8b98a0275fde7a63098c9a84de4660373b0",
+      "actual": "c3cda8b98a0275fde7a63098c9a84de4660373b0",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/module_execution.py",
+      "expected": "6e8c53a56e38329e274df1e906532779ef6d26a5",
+      "actual": "6e8c53a56e38329e274df1e906532779ef6d26a5",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/module_gateway.py",
+      "expected": "65e36f3ce5058783fd1d1e353ad008828332aea2",
+      "actual": "65e36f3ce5058783fd1d1e353ad008828332aea2",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/module_host_bindings.py",
+      "expected": "01657070f93daa0911d90cb152ecfab946f12a98",
+      "actual": "01657070f93daa0911d90cb152ecfab946f12a98",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/module_marking.py",
+      "expected": "dd0bc43c6384b7389c465d19decccaf6f0682b97",
+      "actual": "dd0bc43c6384b7389c465d19decccaf6f0682b97",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/module_nets.py",
+      "expected": "70124ab3a4f5bed24ab4bdb2e855b88fa81e3d34",
+      "actual": "70124ab3a4f5bed24ab4bdb2e855b88fa81e3d34",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/module_operations.py",
+      "expected": "5bdb5f0de3521e42b8135ce184c8080be1f1dd81",
+      "actual": "5bdb5f0de3521e42b8135ce184c8080be1f1dd81",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/module_resources.py",
+      "expected": "035c9a3e7812150460d4369a3c156a509f0fa959",
+      "actual": "035c9a3e7812150460d4369a3c156a509f0fa959",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/module_revision.py",
+      "expected": "8c3976e2494dbe1b9504cad042f5fae7d46d49f5",
+      "actual": "8c3976e2494dbe1b9504cad042f5fae7d46d49f5",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/module_runtime.py",
+      "expected": "7de6d6d6e4fc26f5a4b301835ed726a3089b5618",
+      "actual": "7de6d6d6e4fc26f5a4b301835ed726a3089b5618",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/module_terminal.py",
+      "expected": "322fd8e4a72e2f078b9d0a25cd88e3cb09426a25",
+      "actual": "322fd8e4a72e2f078b9d0a25cd88e3cb09426a25",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/normal_root_token_allocation.py",
+      "expected": "4d283b7607db31b635fde4f395ef7aa69db527e5",
+      "actual": "4d283b7607db31b635fde4f395ef7aa69db527e5",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/object_store.py",
+      "expected": "b78c50f5d5d8263577276c69362cd4f7ec5d94a7",
+      "actual": "b78c50f5d5d8263577276c69362cd4f7ec5d94a7",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/observer_access.py",
+      "expected": "c2ac3cf98704a522c96969b84e6040db6e8d7349",
+      "actual": "c2ac3cf98704a522c96969b84e6040db6e8d7349",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/operation_execution.py",
+      "expected": "1df6c7b4bd05f9ed86c56c53fdf1bafda81b5b69",
+      "actual": "1df6c7b4bd05f9ed86c56c53fdf1bafda81b5b69",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/operation_output_contract.py",
+      "expected": "0e3715c451195176955c165dca7a795909aea70d",
+      "actual": "0e3715c451195176955c165dca7a795909aea70d",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/operation_outputs.py",
+      "expected": "8ef89e190d1bff06f900eb64bcad010d8e278dfc",
+      "actual": "8ef89e190d1bff06f900eb64bcad010d8e278dfc",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/operation_repository.py",
+      "expected": "bcec50d348f9ba26e6118f3548364abe569bba44",
+      "actual": "bcec50d348f9ba26e6118f3548364abe569bba44",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/operations.py",
+      "expected": "60a8df29bcd7bbccbb6e9c99c1abe7d9ca108cc8",
+      "actual": "60a8df29bcd7bbccbb6e9c99c1abe7d9ca108cc8",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/owner_adoption.py",
+      "expected": "24acd06e896e168fdd6f7abd4413d398599382bf",
+      "actual": "24acd06e896e168fdd6f7abd4413d398599382bf",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/owner_mapping.py",
+      "expected": "6af370784ac18aed190428f8f683787517edb58d",
+      "actual": "6af370784ac18aed190428f8f683787517edb58d",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/preserved_binding_contracts.py",
+      "expected": "82a347c1194d0ecddd810abe3ea5d926f3568153",
+      "actual": "82a347c1194d0ecddd810abe3ea5d926f3568153",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/provider_calls.py",
+      "expected": "18dcf60b0ed334af93110db9b38bad4d89d195da",
+      "actual": "18dcf60b0ed334af93110db9b38bad4d89d195da",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/provider_execution.py",
+      "expected": "8fc5a24d9a620c34db89db2caf3a104b26df499a",
+      "actual": "8fc5a24d9a620c34db89db2caf3a104b26df499a",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/publication.py",
+      "expected": "4894e467555f2746df55d5cc1d15de10f5414b77",
+      "actual": "4894e467555f2746df55d5cc1d15de10f5414b77",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/registration_gateway.py",
+      "expected": "b2797d0d311ecabd2cb7bb79e2d29f523d384563",
+      "actual": "b2797d0d311ecabd2cb7bb79e2d29f523d384563",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/relations.py",
+      "expected": "2fc37d863006ec7c0e55cc1a1fd4b2678b99c2f1",
+      "actual": "2fc37d863006ec7c0e55cc1a1fd4b2678b99c2f1",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/resource_service.py",
+      "expected": "c1a3f4c30564f562d4133a636e9b80d2b672ae78",
+      "actual": "c1a3f4c30564f562d4133a636e9b80d2b672ae78",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/resource_verification.py",
+      "expected": "611b94f1db28c1f82fb48224c39ccecc7db702fd",
+      "actual": "611b94f1db28c1f82fb48224c39ccecc7db702fd",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/resource_wait_snapshot.py",
+      "expected": "b2c5275e01718ecda9cabf1b237833a4145781d3",
+      "actual": "b2c5275e01718ecda9cabf1b237833a4145781d3",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/resources.py",
+      "expected": "cd688cd584428abb76b4f9fcc559aedc5387f91d",
+      "actual": "cd688cd584428abb76b4f9fcc559aedc5387f91d",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/run_authority.py",
+      "expected": "70ab3582ba4c83168bca3886b77e66a994736be3",
+      "actual": "70ab3582ba4c83168bca3886b77e66a994736be3",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/runtime_binding_contracts.py",
+      "expected": "e6e71fa3d1bd5ff89bb47d1c30f752b816ee7263",
+      "actual": "e6e71fa3d1bd5ff89bb47d1c30f752b816ee7263",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/schema_catalog.py",
+      "expected": "95be777c2f570490f6fc16f50b68ea0a0d6d1726",
+      "actual": "95be777c2f570490f6fc16f50b68ea0a0d6d1726",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/selection.py",
+      "expected": "351de23b6e9cc0e319dd99454d979de2e8dcf0e8",
+      "actual": "351de23b6e9cc0e319dd99454d979de2e8dcf0e8",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/settlement_material.py",
+      "expected": "a060ecc0a4b03e5a4fc215c6083f48693b24bf35",
+      "actual": "a060ecc0a4b03e5a4fc215c6083f48693b24bf35",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/strict_contracts.py",
+      "expected": "d9bbeb79a20dcb3dc0cede7e9963a82ad1547b99",
+      "actual": "d9bbeb79a20dcb3dc0cede7e9963a82ad1547b99",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/success_projection.py",
+      "expected": "676d6162e2eeb1c3457e2caffe90c910cdb99dea",
+      "actual": "676d6162e2eeb1c3457e2caffe90c910cdb99dea",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/success_publication.py",
+      "expected": "663de1ab814ebfd6a71c555b8e8678cc29c2f42b",
+      "actual": "663de1ab814ebfd6a71c555b8e8678cc29c2f42b",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/task_ledger.py",
+      "expected": "c83b10459d62fc5f1006cf943e9e8fd9df471bdf",
+      "actual": "c83b10459d62fc5f1006cf943e9e8fd9df471bdf",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/registry/transaction.py",
+      "expected": "7f1cd96ba793069694651c7c55ea70023e712351",
+      "actual": "7f1cd96ba793069694651c7c55ea70023e712351",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/resource_access.py",
+      "expected": "bf4090ceeb95bb6dc488581c060096061183e71b",
+      "actual": "bf4090ceeb95bb6dc488581c060096061183e71b",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/response_protocol.py",
+      "expected": "4991bc38713c6d91f426024a221bdbea8e40737f",
+      "actual": "4991bc38713c6d91f426024a221bdbea8e40737f",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/run.py",
+      "expected": "2bfba683418ba14adc1795ab5fb49fe2b3848be6",
+      "actual": "2bfba683418ba14adc1795ab5fb49fe2b3848be6",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/runtime_net.py",
+      "expected": "6207e8e50c21c6a8328770ae36aade77860b8634",
+      "actual": "6207e8e50c21c6a8328770ae36aade77860b8634",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/runtime_policy.py",
+      "expected": "e34b4888b334c174d8cc17c3116341fa87629709",
+      "actual": "e34b4888b334c174d8cc17c3116341fa87629709",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/session_access.py",
+      "expected": "ac0b6f47ea7bc00ec8d3689e848e3cae3e4840a5",
+      "actual": "ac0b6f47ea7bc00ec8d3689e848e3cae3e4840a5",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/task_control.py",
+      "expected": "7732a186a9229d418b9e5c378352a9cfd94ee0aa",
+      "actual": "7732a186a9229d418b9e5c378352a9cfd94ee0aa",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/task_worker.py",
+      "expected": "fb52dad810b6ec6780749f5d005fbb47674c9bf1",
+      "actual": "fb52dad810b6ec6780749f5d005fbb47674c9bf1",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/terminal.py",
+      "expected": "e5e3b7a5c05726235f50ad5f3256dabb850b87d3",
+      "actual": "e5e3b7a5c05726235f50ad5f3256dabb850b87d3",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/unix_transport.py",
+      "expected": "ad23ee0ec17dae899537e57d35cff44019317ce2",
+      "actual": "ad23ee0ec17dae899537e57d35cff44019317ce2",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/user_config.py",
+      "expected": "b26c968e2fadfe6abb3bf4e5a0172fa7777f5713",
+      "actual": "b26c968e2fadfe6abb3bf4e5a0172fa7777f5713",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh/workspace_settlement.py",
+      "expected": "2b8b2e2d61d66f1df0c9ccd0c89eddb10977e244",
+      "actual": "2b8b2e2d61d66f1df0c9ccd0c89eddb10977e244",
+      "same": true
+    },
+    {
+      "path": "cpn/rpnh_cli.py",
+      "expected": "0c5bc755a8c7da6cec448226ff47c5d2dd8d21e5",
+      "actual": "0c5bc755a8c7da6cec448226ff47c5d2dd8d21e5",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/INDEX.json",
+      "expected": "8c6710dfe9a727594c7aabfd75c24080adb929f1",
+      "actual": "8c6710dfe9a727594c7aabfd75c24080adb929f1",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/agent.v1.schema.json",
+      "expected": "32ac324bc15a72c3cea4f30cf7882afa59568557",
+      "actual": "32ac324bc15a72c3cea4f30cf7882afa59568557",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/agent_action.v2.schema.json",
+      "expected": "251c99557763a8bbb2956d5763ce28d3082e88a8",
+      "actual": "251c99557763a8bbb2956d5763ce28d3082e88a8",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/agent_action.v3.schema.json",
+      "expected": "9606cda70ddef2012b6b67c82d84772856a0c921",
+      "actual": "9606cda70ddef2012b6b67c82d84772856a0c921",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/agent_action_settled.v1.schema.json",
+      "expected": "775e40c6a9aeedb85b92be0c95e833aa226b9947",
+      "actual": "775e40c6a9aeedb85b92be0c95e833aa226b9947",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/agent_context_compaction.v3.schema.json",
+      "expected": "2792c0b450f4a91f838fb86a9c773c21d9540882",
+      "actual": "2792c0b450f4a91f838fb86a9c773c21d9540882",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/agent_document.v2.schema.json",
+      "expected": "363a0ca769a03c16515e386ab91dd07362be47ee",
+      "actual": "363a0ca769a03c16515e386ab91dd07362be47ee",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/agent_loop.v1.schema.json",
+      "expected": "0c5e9aaaddab47bac4ac71113867a6ffb6b05b7f",
+      "actual": "0c5e9aaaddab47bac4ac71113867a6ffb6b05b7f",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/agent_loop_resource_grant_authority.v1.schema.json",
+      "expected": "1510a3b96499fa2c54a80df32b61b73aa47854ae",
+      "actual": "1510a3b96499fa2c54a80df32b61b73aa47854ae",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/agent_loop_started.v1.schema.json",
+      "expected": "2bd8441d1b745db18109300db711e598647191a0",
+      "actual": "2bd8441d1b745db18109300db711e598647191a0",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/agent_loop_terminal.v1.schema.json",
+      "expected": "3a7d1bab389c4f2381856b88f687d458048851fa",
+      "actual": "3a7d1bab389c4f2381856b88f687d458048851fa",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/agent_tool_catalog.v1.schema.json",
+      "expected": "d3f724ba5d3dd0e9f421031fa5c6e1f8cf81e282",
+      "actual": "d3f724ba5d3dd0e9f421031fa5c6e1f8cf81e282",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/agent_tool_error.v1.schema.json",
+      "expected": "3fc261c0eda7fff54c92f9e7d1f0b56e8b9eeab9",
+      "actual": "3fc261c0eda7fff54c92f9e7d1f0b56e8b9eeab9",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/agent_tool_program_call.v1.schema.json",
+      "expected": "359fbb47c2d8c84a2fa80ceb3f48bb2f210104e0",
+      "actual": "359fbb47c2d8c84a2fa80ceb3f48bb2f210104e0",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/agent_tool_program_invocation.v1.schema.json",
+      "expected": "bf75bbc28d48b485a0d83068397512295ca98406",
+      "actual": "bf75bbc28d48b485a0d83068397512295ca98406",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/agent_tool_readiness.v1.schema.json",
+      "expected": "9400f1694d22b7f6a9404c8557091c3be0eaffcb",
+      "actual": "9400f1694d22b7f6a9404c8557091c3be0eaffcb",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/agent_turn_recorded.v2.schema.json",
+      "expected": "8cd4bfa2d0ca6316d2a67af3f9d0da23deb86fb3",
+      "actual": "8cd4bfa2d0ca6316d2a67af3f9d0da23deb86fb3",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/binding_readiness.v1.schema.json",
+      "expected": "33c29de0c6ccbc0b4f6cca1bb729c572fff72675",
+      "actual": "33c29de0c6ccbc0b4f6cca1bb729c572fff72675",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/binding_readiness.v2.schema.json",
+      "expected": "83b14b67db85d30086ab8acc169699dc8898a0d2",
+      "actual": "83b14b67db85d30086ab8acc169699dc8898a0d2",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/bootstrap_command.v1.schema.json",
+      "expected": "d646987c5f19d22dddcda42524a1a028379fe058",
+      "actual": "d646987c5f19d22dddcda42524a1a028379fe058",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/capability_activated.v1.schema.json",
+      "expected": "6f17561182fa5ef27e246299a2af5595c71b7ab0",
+      "actual": "6f17561182fa5ef27e246299a2af5595c71b7ab0",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/capability_allowed.v1.schema.json",
+      "expected": "c9544d46ca49c9487ae1f9c8c50ae617ee6ac938",
+      "actual": "c9544d46ca49c9487ae1f9c8c50ae617ee6ac938",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/capability_denied.v1.schema.json",
+      "expected": "5a1aa63143b1ac2becd0f2e2a4bd64993a3be109",
+      "actual": "5a1aa63143b1ac2becd0f2e2a4bd64993a3be109",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/capability_grant.v1.schema.json",
+      "expected": "56d4f8d9dddd2b65ca3785dd0e30e9d2aa2e6f24",
+      "actual": "56d4f8d9dddd2b65ca3785dd0e30e9d2aa2e6f24",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/capability_issued.v1.schema.json",
+      "expected": "5c80eba1f33876807d79701eb424c291bd150d80",
+      "actual": "5c80eba1f33876807d79701eb424c291bd150d80",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/capability_revoked.v1.schema.json",
+      "expected": "87e1cc12a674298927f8d404a3949a37ae657a8d",
+      "actual": "87e1cc12a674298927f8d404a3949a37ae657a8d",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/checkpoint_repair.v1.schema.json",
+      "expected": "b92822ae634b8c05bfd72a075e0a6855e9dbed4f",
+      "actual": "b92822ae634b8c05bfd72a075e0a6855e9dbed4f",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/checkpoint_repair_committed.v1.schema.json",
+      "expected": "6244bb73f44b2b51eae253d6ac150fd2d2d4dd4d",
+      "actual": "6244bb73f44b2b51eae253d6ac150fd2d2d4dd4d",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/collaboration_acceptance.v1.schema.json",
+      "expected": "35abd0a166d0b2afcc2d25aa5e878270bb124c8a",
+      "actual": "35abd0a166d0b2afcc2d25aa5e878270bb124c8a",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/collaboration_assembly_revision.v1.schema.json",
+      "expected": "7bffef5bfa2a21fec124e6b9265da26de07d991a",
+      "actual": "7bffef5bfa2a21fec124e6b9265da26de07d991a",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/collaboration_assembly_revision.v2.schema.json",
+      "expected": "5e1c66f0b0896a52de0a085caef56858e7d4b483",
+      "actual": "5e1c66f0b0896a52de0a085caef56858e7d4b483",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/collaboration_assembly_revision.v3.schema.json",
+      "expected": "17a7416a954e3410ab914ed4fa20aa10716c9c8d",
+      "actual": "17a7416a954e3410ab914ed4fa20aa10716c9c8d",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/collaboration_assembly_revision.v4.schema.json",
+      "expected": "77a3379b0af41aab8a8bf9f19cc7c8f770debfd9",
+      "actual": "77a3379b0af41aab8a8bf9f19cc7c8f770debfd9",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/collaboration_assembly_revision.v5.schema.json",
+      "expected": "9fd98b40692db58b60dc9c48ec4e4dfed593848b",
+      "actual": "9fd98b40692db58b60dc9c48ec4e4dfed593848b",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/collaboration_assembly_revision.v6.schema.json",
+      "expected": "506156c812a44f29b07474f10e7715ee4c2c8e19",
+      "actual": "506156c812a44f29b07474f10e7715ee4c2c8e19",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/collaboration_assembly_revision.v7.schema.json",
+      "expected": "585985a441894881c6eea0e9119e3fab60b3da9e",
+      "actual": "585985a441894881c6eea0e9119e3fab60b3da9e",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/collaboration_assembly_revision.v8.schema.json",
+      "expected": "1443556d0c072b9355466dc6ac81faf9b34f1704",
+      "actual": "1443556d0c072b9355466dc6ac81faf9b34f1704",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/collaboration_assembly_revision.v9.schema.json",
+      "expected": "3dae4804262fd10d3a11bb03391282cf3975653f",
+      "actual": "3dae4804262fd10d3a11bb03391282cf3975653f",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/collaboration_branch.v1.schema.json",
+      "expected": "6080f25b04d5daa2e7738734d1beb1d061d04870",
+      "actual": "6080f25b04d5daa2e7738734d1beb1d061d04870",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/collaboration_branch.v2.schema.json",
+      "expected": "d015b611eda5fda57a44633d673a1d9121370bb7",
+      "actual": "d015b611eda5fda57a44633d673a1d9121370bb7",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/collaboration_branch.v3.schema.json",
+      "expected": "282ba34c95c92c5b3e632abdb31e821af4383520",
+      "actual": "282ba34c95c92c5b3e632abdb31e821af4383520",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/collaboration_candidate_plan.v1.schema.json",
+      "expected": "c14c78cc8404b33d48d2b783451e01f2dcc416e8",
+      "actual": "c14c78cc8404b33d48d2b783451e01f2dcc416e8",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/collaboration_candidate_plan.v2.schema.json",
+      "expected": "21a158ac9599b241864df9dd0f25987b06af0d73",
+      "actual": "21a158ac9599b241864df9dd0f25987b06af0d73",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/collaboration_contribution.v1.schema.json",
+      "expected": "555db10e775a9952038563a4dc11c66ab2ff1198",
+      "actual": "555db10e775a9952038563a4dc11c66ab2ff1198",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/collaboration_delivery_reconciliation.v1.schema.json",
+      "expected": "ad55efdece74bb1ecee280142beefe85762bfc4e",
+      "actual": "ad55efdece74bb1ecee280142beefe85762bfc4e",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/collaboration_logical_delivery.v1.schema.json",
+      "expected": "a96ba9e15220b19b7eacbc4ea95f21490562ec3c",
+      "actual": "a96ba9e15220b19b7eacbc4ea95f21490562ec3c",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/collaboration_net_revision.v1.schema.json",
+      "expected": "0bf6999c2291a8a48a9e9382495663e7054e1f2a",
+      "actual": "0bf6999c2291a8a48a9e9382495663e7054e1f2a",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/collaboration_net_revision.v2.schema.json",
+      "expected": "afb88a4d267d7fd892036bb6b6dcb12e506fc2e9",
+      "actual": "afb88a4d267d7fd892036bb6b6dcb12e506fc2e9",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/collaboration_net_revision.v3.schema.json",
+      "expected": "3c0b010af8c2a12cf98b2de2ac62ea787844151d",
+      "actual": "3c0b010af8c2a12cf98b2de2ac62ea787844151d",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/collaboration_request.v1.schema.json",
+      "expected": "e3c5729cdff20044cea24f018f925aea053c7d56",
+      "actual": "e3c5729cdff20044cea24f018f925aea053c7d56",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/collaboration_result_export.v1.schema.json",
+      "expected": "f708809f7fced783c78e16e8b8c8573018c3e9b6",
+      "actual": "f708809f7fced783c78e16e8b8c8573018c3e9b6",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/collaboration_root_terminal.v1.schema.json",
+      "expected": "5d3a9daa2f2b1942a32a8373776979a098953fe4",
+      "actual": "5d3a9daa2f2b1942a32a8373776979a098953fe4",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/collaboration_root_terminal.v2.schema.json",
+      "expected": "77f218b5ab77c08a3aa594aca254d5cee09d4357",
+      "actual": "77f218b5ab77c08a3aa594aca254d5cee09d4357",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/collaboration_source_binding.v1.schema.json",
+      "expected": "bd23b4370edbc464c36638d4a0ee5402b4527ea7",
+      "actual": "bd23b4370edbc464c36638d4a0ee5402b4527ea7",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/collaboration_source_observation.v1.schema.json",
+      "expected": "22c4777887393711db3d6ace6b18850c712f3f0a",
+      "actual": "22c4777887393711db3d6ace6b18850c712f3f0a",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/collaboration_source_set.v1.schema.json",
+      "expected": "7f4502fc8ebffc7164b7d95c8f92f753d7318c00",
+      "actual": "7f4502fc8ebffc7164b7d95c8f92f753d7318c00",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/collaboration_workset.v1.schema.json",
+      "expected": "d044991e2dce93ffebfbd46693e01fa6aa8d7476",
+      "actual": "d044991e2dce93ffebfbd46693e01fa6aa8d7476",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/delivery_boundary_receipt.v1.schema.json",
+      "expected": "b544f8af72c08a95d3582cee2042e5bd07063778",
+      "actual": "b544f8af72c08a95d3582cee2042e5bd07063778",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/executable_transition_binding.v1.schema.json",
+      "expected": "ef050167f75a3a4eb07d82ebc53313b7d389ba2f",
+      "actual": "ef050167f75a3a4eb07d82ebc53313b7d389ba2f",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/execution_checkpoint.v1.schema.json",
+      "expected": "0b94e65c32911605319e83a2c7a2c7fdc8231978",
+      "actual": "0b94e65c32911605319e83a2c7a2c7fdc8231978",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/execution_child_seal.v1.schema.json",
+      "expected": "0cad2c7ac630db2b21e485981811b20e962d7993",
+      "actual": "0cad2c7ac630db2b21e485981811b20e962d7993",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/execution_children_sealed.v1.schema.json",
+      "expected": "57fe88ad78ce92e24bc03c784643664ac164a054",
+      "actual": "57fe88ad78ce92e24bc03c784643664ac164a054",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/execution_environment_identity.v1.schema.json",
+      "expected": "1df55a4ec71c52e5d93b3ceb0b79e00d8e1d7415",
+      "actual": "1df55a4ec71c52e5d93b3ceb0b79e00d8e1d7415",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/execution_evidence.v1.schema.json",
+      "expected": "b9c6ea5959d7a1fd77939f7b8076353e37573935",
+      "actual": "b9c6ea5959d7a1fd77939f7b8076353e37573935",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/execution_instance.v1.schema.json",
+      "expected": "69e556df2c095ba17a6f91cce3f0da54965851ff",
+      "actual": "69e556df2c095ba17a6f91cce3f0da54965851ff",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/execution_instance_attached.v1.schema.json",
+      "expected": "fb046a5faff094d3bec7e868b4c77bef15ce5f96",
+      "actual": "fb046a5faff094d3bec7e868b4c77bef15ce5f96",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/execution_net_definition.v1.schema.json",
+      "expected": "69a1156fa427ed894fffbd8e212c33d57edf29a5",
+      "actual": "69a1156fa427ed894fffbd8e212c33d57edf29a5",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/execution_terminal_mapping.v1.schema.json",
+      "expected": "6e8736a949ba27f672730c54094c908638be0559",
+      "actual": "6e8736a949ba27f672730c54094c908638be0559",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/execution_token.v1.schema.json",
+      "expected": "be418702fa67a9a580c74fbd6a1843d4f03c2e13",
+      "actual": "be418702fa67a9a580c74fbd6a1843d4f03c2e13",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/execution_transition_firing.v1.schema.json",
+      "expected": "8fda246f5abc07793b9467d09646c8669f6da253",
+      "actual": "8fda246f5abc07793b9467d09646c8669f6da253",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/external_kb_package.v1.schema.json",
+      "expected": "f8391472fc83a620ab43ce0da492c4f1f64b7883",
+      "actual": "f8391472fc83a620ab43ce0da492c4f1f64b7883",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/external_resource_index.v1.schema.json",
+      "expected": "20e3f29d1c1740889616473cbde8f278adbd9e70",
+      "actual": "20e3f29d1c1740889616473cbde8f278adbd9e70",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/fact_event_envelope.v1.schema.json",
+      "expected": "c0c7a90121cd0de8da65e80c60bcb7e3afed2697",
+      "actual": "c0c7a90121cd0de8da65e80c60bcb7e3afed2697",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/final_result_index.v1.schema.json",
+      "expected": "6f61b91a0c47b7d7bf6f8dfe6f63c94ed81c0663",
+      "actual": "6f61b91a0c47b7d7bf6f8dfe6f63c94ed81c0663",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/firing_admission.v1.schema.json",
+      "expected": "b56661975961ef5ed98bc0d47954b58296611a5f",
+      "actual": "b56661975961ef5ed98bc0d47954b58296611a5f",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/firing_admitted.v1.schema.json",
+      "expected": "6bb56ada6513f714d178a4bca055acd4c21b3bb9",
+      "actual": "6bb56ada6513f714d178a4bca055acd4c21b3bb9",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/firing_allocation.v1.schema.json",
+      "expected": "53b54f4a9107ebfe22090c3d899e82135bfb5454",
+      "actual": "53b54f4a9107ebfe22090c3d899e82135bfb5454",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/firing_completion.v2.schema.json",
+      "expected": "d437e00905d6f224bdcdad6fda8cf6d94b34f16f",
+      "actual": "d437e00905d6f224bdcdad6fda8cf6d94b34f16f",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/firing_external_kb_read.v2.schema.json",
+      "expected": "a225e88717db2976481e87e9c7e6812164266db3",
+      "actual": "a225e88717db2976481e87e9c7e6812164266db3",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/firing_external_kb_read_recorded.v2.schema.json",
+      "expected": "11e23f23bb1d2583e9a3ad217a4c478c19a3d6af",
+      "actual": "11e23f23bb1d2583e9a3ad217a4c478c19a3d6af",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/firing_resource_transaction_committed.v1.schema.json",
+      "expected": "93eaaae3d27e4c4f16a1e5b1e99acc12b6f29496",
+      "actual": "93eaaae3d27e4c4f16a1e5b1e99acc12b6f29496",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/firing_timing.v1.schema.json",
+      "expected": "914c0d6f2573cbc30910c04e1ea83fa1aa28d90f",
+      "actual": "914c0d6f2573cbc30910c04e1ea83fa1aa28d90f",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/generic_critic_prompt.v1.schema.json",
+      "expected": "cb837e43f45738f42cc2c5a78cd919bc8330af0f",
+      "actual": "cb837e43f45738f42cc2c5a78cd919bc8330af0f",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/generic_critic_prompt_template.v1.schema.json",
+      "expected": "7904b3273386d03f9cb24fdf54e0763840296c0e",
+      "actual": "7904b3273386d03f9cb24fdf54e0763840296c0e",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/invocation.v1.schema.json",
+      "expected": "82621b6654278c670f1e41c89c61cdc4e94d3203",
+      "actual": "82621b6654278c670f1e41c89c61cdc4e94d3203",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/invocation_started.v1.schema.json",
+      "expected": "f7003e121300707094df02926eb407e449af9eba",
+      "actual": "f7003e121300707094df02926eb407e449af9eba",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/live_firing_resource_extension.v1.schema.json",
+      "expected": "1194e122cdce4874537e963e5fbb8abcc3941974",
+      "actual": "1194e122cdce4874537e963e5fbb8abcc3941974",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/llm_call_owner_interrupted.v1.schema.json",
+      "expected": "e2af168e2edccd35786bf964261591d042870c05",
+      "actual": "e2af168e2edccd35786bf964261591d042870c05",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/llm_call_registered_host_closed.v1.schema.json",
+      "expected": "41afbe7913c945cb65e105a45fdbe841c7030ccb",
+      "actual": "41afbe7913c945cb65e105a45fdbe841c7030ccb",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/llm_call_spec.v2.schema.json",
+      "expected": "8db04f6ed56006e7e3035c4088953df2841db935",
+      "actual": "8db04f6ed56006e7e3035c4088953df2841db935",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/llm_call_spec.v3.schema.json",
+      "expected": "e611e09d90d2d281e4a94db910bdb4f8acf3a5c3",
+      "actual": "e611e09d90d2d281e4a94db910bdb4f8acf3a5c3",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/llm_input_target.v1.schema.json",
+      "expected": "e8b0886bc7c6a5d9001b62bdc4004c267884d4be",
+      "actual": "e8b0886bc7c6a5d9001b62bdc4004c267884d4be",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/llm_invocation_attempt.v1.schema.json",
+      "expected": "84207a56ce22674639de8272bbeadc911740d90f",
+      "actual": "84207a56ce22674639de8272bbeadc911740d90f",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/llm_invocation_attempt_reserved.v1.schema.json",
+      "expected": "a1a29fb344ab83af890393a13d952ae9b6730210",
+      "actual": "a1a29fb344ab83af890393a13d952ae9b6730210",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/llm_invocation_failed.v1.schema.json",
+      "expected": "1392ccbe3205919d0c35f055edd861e59af16cb4",
+      "actual": "1392ccbe3205919d0c35f055edd861e59af16cb4",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/llm_invocation_interrupted.v1.schema.json",
+      "expected": "bdc6d8f74887b177c07b7d3c1377d4e48327e2db",
+      "actual": "bdc6d8f74887b177c07b7d3c1377d4e48327e2db",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/llm_invocation_owner_interrupted.v1.schema.json",
+      "expected": "2100b9b4400a4a675a6d7f3201d48748398e6f32",
+      "actual": "2100b9b4400a4a675a6d7f3201d48748398e6f32",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/llm_invocation_spec.v1.schema.json",
+      "expected": "16a560ff54bac917ebfbb9c9d7c397f1030b6043",
+      "actual": "16a560ff54bac917ebfbb9c9d7c397f1030b6043",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/llm_invocation_succeeded.v1.schema.json",
+      "expected": "be3b2a9c45cde0d700999a9f018cc2f5c6726838",
+      "actual": "be3b2a9c45cde0d700999a9f018cc2f5c6726838",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/llm_invocation_succeeded.v2.schema.json",
+      "expected": "de71bc2aa13de1395a1ebd5d78b1dc962ce14bbc",
+      "actual": "de71bc2aa13de1395a1ebd5d78b1dc962ce14bbc",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/llm_response_registered.v1.schema.json",
+      "expected": "6ef3590f73256094a6670afbe39e3d00b3c40e0e",
+      "actual": "6ef3590f73256094a6670afbe39e3d00b3c40e0e",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/llm_response_registered.v2.schema.json",
+      "expected": "27fbd902f1d8e7ad6201a5cf336290cca03ac19d",
+      "actual": "27fbd902f1d8e7ad6201a5cf336290cca03ac19d",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/logical_artifact_slot.v1.schema.json",
+      "expected": "8984b5e762407610ec541e599f91762e281907a3",
+      "actual": "8984b5e762407610ec541e599f91762e281907a3",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/logical_provider_request_recipe.v1.schema.json",
+      "expected": "fc6b1cf6c4efc8f7e79ad9d320d4a8517defd53c",
+      "actual": "fc6b1cf6c4efc8f7e79ad9d320d4a8517defd53c",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/main_child_registry_link.v1.schema.json",
+      "expected": "127dc3a48909af3b3d589effe28de2c6ae65c61d",
+      "actual": "127dc3a48909af3b3d589effe28de2c6ae65c61d",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/main_thread.v1.schema.json",
+      "expected": "7d73b7c53baccf7e4376dfa727f7c6c2b19aa78e",
+      "actual": "7d73b7c53baccf7e4376dfa727f7c6c2b19aa78e",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/main_turn.v1.schema.json",
+      "expected": "c8ce2750be3cbce979c2b1ac253ea822f2e6c451",
+      "actual": "c8ce2750be3cbce979c2b1ac253ea822f2e6c451",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/main_turn_execution_receipt.v1.schema.json",
+      "expected": "4ae6439341884ba6c6d6a40391bffb44619e7928",
+      "actual": "4ae6439341884ba6c6d6a40391bffb44619e7928",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/marking_checkpoint.v1.schema.json",
+      "expected": "305968dfc6203f4a9c723c9d75d6e2c9eef6f720",
+      "actual": "305968dfc6203f4a9c723c9d75d6e2c9eef6f720",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/marking_checkpoint_committed.v1.schema.json",
+      "expected": "86b8ed895b38c37333e351efa9f0299a9972ffd8",
+      "actual": "86b8ed895b38c37333e351efa9f0299a9972ffd8",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/marking_delta.v1.schema.json",
+      "expected": "e13b601c2db0f06af5a38fca704232550973c024",
+      "actual": "e13b601c2db0f06af5a38fca704232550973c024",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/mechanical_transition_receipt.v1.schema.json",
+      "expected": "ca594d3a79df571a34e38f58ce0f06a8afca91f8",
+      "actual": "ca594d3a79df571a34e38f58ce0f06a8afca91f8",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/module_assembly_recorded.v1.schema.json",
+      "expected": "1d046c6e3616a70eaab39bc6e7dddea7910d8316",
+      "actual": "1d046c6e3616a70eaab39bc6e7dddea7910d8316",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/native_genesis_manifest.v1.schema.json",
+      "expected": "7ae9859f52754279985ae9791df512d304cdd99e",
+      "actual": "7ae9859f52754279985ae9791df512d304cdd99e",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/native_run_identity.v1.schema.json",
+      "expected": "efe85a4251d496218a7f87559f5afd14d35ba39b",
+      "actual": "efe85a4251d496218a7f87559f5afd14d35ba39b",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/net_adopted.v1.schema.json",
+      "expected": "26bf5dfc55b2435324fe698b019bbb0230b72adc",
+      "actual": "26bf5dfc55b2435324fe698b019bbb0230b72adc",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/net_instance.v1.schema.json",
+      "expected": "06bf5bfee6ecf518ed9d5effeb1ceeb668cb86ef",
+      "actual": "06bf5bfee6ecf518ed9d5effeb1ceeb668cb86ef",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/node_declaration.v1.schema.json",
+      "expected": "be226a2734566a4531636ef57ef58726c2560484",
+      "actual": "be226a2734566a4531636ef57ef58726c2560484",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/numerical_tool_profile.v1.schema.json",
+      "expected": "1b76243ada063afb00d1982b8b556bba7995bf38",
+      "actual": "1b76243ada063afb00d1982b8b556bba7995bf38",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/object_envelope.v1.schema.json",
+      "expected": "01ba9258f72ec6bdb537b1e88a018ba9461fdde3",
+      "actual": "01ba9258f72ec6bdb537b1e88a018ba9461fdde3",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/object_version_published.v1.schema.json",
+      "expected": "2c68bda1af9d9039e0cfa5d906d11997b7a75d39",
+      "actual": "2c68bda1af9d9039e0cfa5d906d11997b7a75d39",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/observed_read.v1.schema.json",
+      "expected": "21d38358a3d9b5101c7bde0ec62d7ed7d07f9b08",
+      "actual": "21d38358a3d9b5101c7bde0ec62d7ed7d07f9b08",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/operation_binding.v1.schema.json",
+      "expected": "e41c858a9a9faa35320b0c676499f066a3d0a016",
+      "actual": "e41c858a9a9faa35320b0c676499f066a3d0a016",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/operation_dispatch_reserved.v1.schema.json",
+      "expected": "59580e32aa121a8d9da4d87ed434b7951437a722",
+      "actual": "59580e32aa121a8d9da4d87ed434b7951437a722",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/operation_execution_lease.v1.schema.json",
+      "expected": "9978a6555ffc9ec8fceb6f58088e64106b6080c2",
+      "actual": "9978a6555ffc9ec8fceb6f58088e64106b6080c2",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/operation_execution_started.v1.schema.json",
+      "expected": "d2da69695304ec26d4d6be7a8eeeaff80c6bdd30",
+      "actual": "d2da69695304ec26d4d6be7a8eeeaff80c6bdd30",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/operation_result.v1.schema.json",
+      "expected": "61aec697c89321894b319b9f3f93c3d92a6e560e",
+      "actual": "61aec697c89321894b319b9f3f93c3d92a6e560e",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/operation_spec.v1.schema.json",
+      "expected": "883b6db4a1f722b37e60144367af5fefaad719a7",
+      "actual": "883b6db4a1f722b37e60144367af5fefaad719a7",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/operation_terminal_ready.v1.schema.json",
+      "expected": "5dd8ab5c8b1c35f49a605b93f718c588a41e5744",
+      "actual": "5dd8ab5c8b1c35f49a605b93f718c588a41e5744",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/output_binding.v1.schema.json",
+      "expected": "cdcf20579dfde8c9d941a7ea2303bcb2212d321d",
+      "actual": "cdcf20579dfde8c9d941a7ea2303bcb2212d321d",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/petri_firing_resource_accessed.v1.schema.json",
+      "expected": "77be2122751ae0e58347e59a90972bc863eda89d",
+      "actual": "77be2122751ae0e58347e59a90972bc863eda89d",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/petri_token.v1.schema.json",
+      "expected": "4c88223c75a196c2a44fc5a1211337519e342d19",
+      "actual": "4c88223c75a196c2a44fc5a1211337519e342d19",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/plan_version.v1.schema.json",
+      "expected": "8824d40825c7a0a6569b908ad26763c83ee0e26f",
+      "actual": "8824d40825c7a0a6569b908ad26763c83ee0e26f",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/principal.v1.schema.json",
+      "expected": "d38893554dc44225a57177facfe770a75ad84428",
+      "actual": "d38893554dc44225a57177facfe770a75ad84428",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/provider_attempt_completed.v1.schema.json",
+      "expected": "2e89aeadd02e7b8c15b38d626dbcd2395709a1f1",
+      "actual": "2e89aeadd02e7b8c15b38d626dbcd2395709a1f1",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/provider_attempt_dispatch_started.v2.schema.json",
+      "expected": "f29574f7b53a099775fd6a3a551de1dbbfbfd805",
+      "actual": "f29574f7b53a099775fd6a3a551de1dbbfbfd805",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/provider_attempt_host_closed.v1.schema.json",
+      "expected": "60ef709c95f7e3fb9ef11867803e11e151f87c44",
+      "actual": "60ef709c95f7e3fb9ef11867803e11e151f87c44",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/provider_attempt_owner_interrupted.v1.schema.json",
+      "expected": "274d9ca36fe0a2e21930833f8d47e4c29f81f875",
+      "actual": "274d9ca36fe0a2e21930833f8d47e4c29f81f875",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/provider_attempt_reserved.v1.schema.json",
+      "expected": "87c00b8457ee60e7accec0f519e81f5eac78c402",
+      "actual": "87c00b8457ee60e7accec0f519e81f5eac78c402",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/provider_attempt_spec.v1.schema.json",
+      "expected": "31ac7128b79641d8b04842eff3671059e6cb78e6",
+      "actual": "31ac7128b79641d8b04842eff3671059e6cb78e6",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/provider_attempt_submission_observed.v1.schema.json",
+      "expected": "19797cfe56fba1ff8ae64706a1b275566a026569",
+      "actual": "19797cfe56fba1ff8ae64706a1b275566a026569",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/provider_attempt_submission_permitted.v2.schema.json",
+      "expected": "4390b0db0dab43051bdd634d687f701ddb224b31",
+      "actual": "4390b0db0dab43051bdd634d687f701ddb224b31",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/provider_payload_materialization_receipt.v1.schema.json",
+      "expected": "ee8f3561dbf6ed4ee8c56b42894ca3952973eec1",
+      "actual": "ee8f3561dbf6ed4ee8c56b42894ca3952973eec1",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/provider_payload_materialization_recorded.v1.schema.json",
+      "expected": "9a642a92d561b1aff9d660369a78c59d6d130810",
+      "actual": "9a642a92d561b1aff9d660369a78c59d6d130810",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/registered_host_llm_attempt.v1.schema.json",
+      "expected": "080ae58d3e5376225264c484453b95a419b4aa91",
+      "actual": "080ae58d3e5376225264c484453b95a419b4aa91",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/registered_host_llm_attempt_closed.v1.schema.json",
+      "expected": "b4d67833db3edb14e25d61e282a49cc6bd84fe30",
+      "actual": "b4d67833db3edb14e25d61e282a49cc6bd84fe30",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/registered_host_llm_attempt_reserved.v1.schema.json",
+      "expected": "02e7aa34d3ed529e5117a8f229f821eab527a5dd",
+      "actual": "02e7aa34d3ed529e5117a8f229f821eab527a5dd",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/registered_operation_completion_recorded.v1.schema.json",
+      "expected": "bc86db70c298f2175883a32ab049f4c4f75cad83",
+      "actual": "bc86db70c298f2175883a32ab049f4c4f75cad83",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/registered_operation_resource_wait.v1.schema.json",
+      "expected": "43b80d88d010a75cad952f6ef8f6959dfdd45983",
+      "actual": "43b80d88d010a75cad952f6ef8f6959dfdd45983",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/registered_run_inputs.v1.schema.json",
+      "expected": "002974354f47629bba52738e0a07141824dfbe9a",
+      "actual": "002974354f47629bba52738e0a07141824dfbe9a",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/registry_observer_grant.v2.schema.json",
+      "expected": "c6b218eb03fd81d641edf4e8a01a8216d95a194c",
+      "actual": "c6b218eb03fd81d641edf4e8a01a8216d95a194c",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/registry_observer_profile.v2.schema.json",
+      "expected": "e3495d401390cd9a459b12a19841e76f3408b39c",
+      "actual": "e3495d401390cd9a459b12a19841e76f3408b39c",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/registry_observer_revocation.v1.schema.json",
+      "expected": "fed7e8d7f900dabee37266ea12e88caf66bba5d6",
+      "actual": "fed7e8d7f900dabee37266ea12e88caf66bba5d6",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/registry_type_catalog.v1.schema.json",
+      "expected": "ab977f708a72ae10652630b2f44ae48213e74239",
+      "actual": "ab977f708a72ae10652630b2f44ae48213e74239",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/relation_published.v1.schema.json",
+      "expected": "abdb6265092d767563e88ee5b66dbf87d8224d4b",
+      "actual": "abdb6265092d767563e88ee5b66dbf87d8224d4b",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/resource_access_lifecycle.v1.schema.json",
+      "expected": "1e7dd2a8bc7a12ee1fc87dd8ea4811b834a20d4f",
+      "actual": "1e7dd2a8bc7a12ee1fc87dd8ea4811b834a20d4f",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/resource_address_binding.v1.schema.json",
+      "expected": "a1765dc81861069c387287fa8bd584d30396cfab",
+      "actual": "a1765dc81861069c387287fa8bd584d30396cfab",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/resource_address_bound.v1.schema.json",
+      "expected": "5ba8215d0677a71d02877ac0556e40447a712946",
+      "actual": "5ba8215d0677a71d02877ac0556e40447a712946",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/resource_address_unbound.v1.schema.json",
+      "expected": "017e1f1a7b37fae7720395a2f2e788acb299581d",
+      "actual": "017e1f1a7b37fae7720395a2f2e788acb299581d",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/resource_cycle_evidence.v1.schema.json",
+      "expected": "3be2979b75abbe9acbcd23d6608d99494588da56",
+      "actual": "3be2979b75abbe9acbcd23d6608d99494588da56",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/resource_delivery.v1.schema.json",
+      "expected": "0802981dda01b165158c9fca2b390dbd2df9dc58",
+      "actual": "0802981dda01b165158c9fca2b390dbd2df9dc58",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/resource_delivery_acknowledged.v1.schema.json",
+      "expected": "2f3542a3e6b95107d5b49e5177b2471475a0a58b",
+      "actual": "2f3542a3e6b95107d5b49e5177b2471475a0a58b",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/resource_delivery_failed.v1.schema.json",
+      "expected": "600472be3983d3c6e713ef9fa2d52f8a21c72e61",
+      "actual": "600472be3983d3c6e713ef9fa2d52f8a21c72e61",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/resource_delivery_prepared.v1.schema.json",
+      "expected": "3f40b2aae5e47c2d8c04849e08d1aafa1398f641",
+      "actual": "3f40b2aae5e47c2d8c04849e08d1aafa1398f641",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/resource_delivery_unknown.v1.schema.json",
+      "expected": "dc7143300dc850796d5a4e01a636e1b7f2eb959e",
+      "actual": "dc7143300dc850796d5a4e01a636e1b7f2eb959e",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/resource_release_authorized.v1.schema.json",
+      "expected": "07c2fcf3d31f061892dda76f8d18f9d803854755",
+      "actual": "07c2fcf3d31f061892dda76f8d18f9d803854755",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/resource_release_witness.v1.schema.json",
+      "expected": "f544c6300bf6205273a7b422d09cd61936b6e240",
+      "actual": "f544c6300bf6205273a7b422d09cd61936b6e240",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/resource_version.v1.schema.json",
+      "expected": "1addc1fd2ff4b0629921b38643539ac3588a8c92",
+      "actual": "1addc1fd2ff4b0629921b38643539ac3588a8c92",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/resource_wait_policy.v1.schema.json",
+      "expected": "cb5bd791dee7d448d2b0e7a35b50e840abf8de25",
+      "actual": "cb5bd791dee7d448d2b0e7a35b50e840abf8de25",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/route_deposit.v1.schema.json",
+      "expected": "5dba23b230094dd93612363063665293108c5b9a",
+      "actual": "5dba23b230094dd93612363063665293108c5b9a",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/run_execution_authority.v1.schema.json",
+      "expected": "78f4eda26877489065fcd81835ecfe6e15a7091f",
+      "actual": "78f4eda26877489065fcd81835ecfe6e15a7091f",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/run_reopen_authorization.v1.schema.json",
+      "expected": "62f7f646d889cd781430ddfbb79a65dfb8e760d2",
+      "actual": "62f7f646d889cd781430ddfbb79a65dfb8e760d2",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/run_reopened.v1.schema.json",
+      "expected": "bdde6f032ed24c80ebaa94a50d03b7bff51a8939",
+      "actual": "bdde6f032ed24c80ebaa94a50d03b7bff51a8939",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/run_terminal_evidence.v1.schema.json",
+      "expected": "2613687b66394f315432f9fec9b81295893f281a",
+      "actual": "2613687b66394f315432f9fec9b81295893f281a",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/runtime_binding_manifest.v1.schema.json",
+      "expected": "e160538da8c183e2dea06d765b54eccebd7b9fc3",
+      "actual": "e160538da8c183e2dea06d765b54eccebd7b9fc3",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/runtime_binding_manifest.v2.schema.json",
+      "expected": "e9916c0ab8b805d8b9723166a8dbacdf899d3a4b",
+      "actual": "e9916c0ab8b805d8b9723166a8dbacdf899d3a4b",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/semantic_prompt_authority.v1.schema.json",
+      "expected": "08bf49b5dee7aeb8078d67e1b2f7a9a06f359fe3",
+      "actual": "08bf49b5dee7aeb8078d67e1b2f7a9a06f359fe3",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/structural_growth_adopted.v1.schema.json",
+      "expected": "7ff3c729a6fa04b0b6356abd82d82a83880bfe75",
+      "actual": "7ff3c729a6fa04b0b6356abd82d82a83880bfe75",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/task.v1.schema.json",
+      "expected": "bd37ed9fea5836ac7722e83046150be8d1e5076f",
+      "actual": "bd37ed9fea5836ac7722e83046150be8d1e5076f",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/task_branch.v1.schema.json",
+      "expected": "a0fc3dfa4412d0c6f3abdf343b0079c31a5d7957",
+      "actual": "a0fc3dfa4412d0c6f3abdf343b0079c31a5d7957",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/task_recovery_manifest.v1.schema.json",
+      "expected": "eb1029bd38556306f5066ca164080dff5dc4d793",
+      "actual": "eb1029bd38556306f5066ca164080dff5dc4d793",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/task_round.v1.schema.json",
+      "expected": "64728e8f37f6c8d71c969273f1e0a7c234625021",
+      "actual": "64728e8f37f6c8d71c969273f1e0a7c234625021",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/team_design_root.v1.schema.json",
+      "expected": "d8d2599ae30275479ec509ec76b16c7d7e16bd95",
+      "actual": "d8d2599ae30275479ec509ec76b16c7d7e16bd95",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/transaction_aborted.v1.schema.json",
+      "expected": "c82fc86d649cb67913ee95431d0660d6007e339f",
+      "actual": "c82fc86d649cb67913ee95431d0660d6007e339f",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/transaction_committed.v1.schema.json",
+      "expected": "ddd72213ae9bcba188c47fbe85256063bc59e0b4",
+      "actual": "ddd72213ae9bcba188c47fbe85256063bc59e0b4",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/transition_firing.v1.schema.json",
+      "expected": "cdbcdcee21bef6d9f488d781b550fae62d4e0ecc",
+      "actual": "cdbcdcee21bef6d9f488d781b550fae62d4e0ecc",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/transition_firing.v2.schema.json",
+      "expected": "10701997fa732515455588348f2a626b785df28c",
+      "actual": "10701997fa732515455588348f2a626b785df28c",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/transition_firing_settled.v1.schema.json",
+      "expected": "5ca70545778a3a8e2d78a53e2c3216039874e5ca",
+      "actual": "5ca70545778a3a8e2d78a53e2c3216039874e5ca",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/transition_firing_started.v1.schema.json",
+      "expected": "709af0aa4b53c3bd2274a23ce45c552fdc4bcfd1",
+      "actual": "709af0aa4b53c3bd2274a23ce45c552fdc4bcfd1",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/typed_relation.v1.schema.json",
+      "expected": "72abd00497d384e96c59c7ea7df17bac8c3abbeb",
+      "actual": "72abd00497d384e96c59c7ea7df17bac8c3abbeb",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/user_authority_decision.v1.schema.json",
+      "expected": "562fe317790c82c56a793c9c029594309a0657bc",
+      "actual": "562fe317790c82c56a793c9c029594309a0657bc",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/workspace_access_set.v1.schema.json",
+      "expected": "12fc8e89a8e4567e23a1dca5c7c9def2593bc825",
+      "actual": "12fc8e89a8e4567e23a1dca5c7c9def2593bc825",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/workspace_binding.v1.schema.json",
+      "expected": "0d6f618b37d2da2706d12f6e7224ae888dd3a8c7",
+      "actual": "0d6f618b37d2da2706d12f6e7224ae888dd3a8c7",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/workspace_revision.v1.schema.json",
+      "expected": "b8abbf7600719523663cc01ce54af1cf7e2132c5",
+      "actual": "b8abbf7600719523663cc01ce54af1cf7e2132c5",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/workspace_revision_candidate.v1.schema.json",
+      "expected": "2027b84415a0a744e770338eeb83358e055f4774",
+      "actual": "2027b84415a0a744e770338eeb83358e055f4774",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/registry_v1/workspace_write_intent.v1.schema.json",
+      "expected": "be62e92f8a321f1238f2f98833ad0ee172fe4470",
+      "actual": "be62e92f8a321f1238f2f98833ad0ee172fe4470",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/rpnh/collaboration/assembly_author_command.v4.schema.json",
+      "expected": "ba23812b751831d88fc732a0baf98de36a5b3883",
+      "actual": "ba23812b751831d88fc732a0baf98de36a5b3883",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/rpnh/collaboration/assembly_author_command.v5.schema.json",
+      "expected": "e92e11f533225aa8dcbdea66d0b9e17c40d29503",
+      "actual": "e92e11f533225aa8dcbdea66d0b9e17c40d29503",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/rpnh/collaboration/assembly_author_command.v7.schema.json",
+      "expected": "56ca2bdb190a652b4241aee16037ed9822cdc96b",
+      "actual": "56ca2bdb190a652b4241aee16037ed9822cdc96b",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/rpnh/collaboration/assembly_author_command.v9.schema.json",
+      "expected": "c8ee38e4faef2f3c92ac573f833aa291d54f4f0e",
+      "actual": "c8ee38e4faef2f3c92ac573f833aa291d54f4f0e",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/rpnh/collaboration/assembly_lowering_map.v1.schema.json",
+      "expected": "991bcf1843ee6383d8084a67f1656778a7434f73",
+      "actual": "991bcf1843ee6383d8084a67f1656778a7434f73",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/rpnh/collaboration/assembly_lowering_map.v2.schema.json",
+      "expected": "2cfd60c5e5b2850363119e4667d3eb2ae03f8b83",
+      "actual": "2cfd60c5e5b2850363119e4667d3eb2ae03f8b83",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/rpnh/collaboration/assembly_lowering_map.v3.schema.json",
+      "expected": "cbbd68673394e53df94c8f31575ea2c82f7d1019",
+      "actual": "cbbd68673394e53df94c8f31575ea2c82f7d1019",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/rpnh/collaboration/assembly_lowering_map.v4.schema.json",
+      "expected": "a9fd0c7edc19d59464f64c6b38279a5a7ac01953",
+      "actual": "a9fd0c7edc19d59464f64c6b38279a5a7ac01953",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/rpnh/collaboration/assembly_lowering_map.v5.schema.json",
+      "expected": "fba833c44dc83915b4965eba6f67f9f70a74e4ad",
+      "actual": "fba833c44dc83915b4965eba6f67f9f70a74e4ad",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/rpnh/collaboration/assembly_lowering_map.v6.schema.json",
+      "expected": "28d341a473e0a4135aa2560e0b9bbd19f52252bb",
+      "actual": "28d341a473e0a4135aa2560e0b9bbd19f52252bb",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/rpnh/collaboration/assembly_lowering_map.v7.schema.json",
+      "expected": "6dc4011f3c95494409ba0b53481a5fa2d9eb96e8",
+      "actual": "6dc4011f3c95494409ba0b53481a5fa2d9eb96e8",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/rpnh/collaboration/assembly_lowering_map.v8.schema.json",
+      "expected": "41c381b4e196d0a16ea2e761448cc0ee0dbf3ae3",
+      "actual": "41c381b4e196d0a16ea2e761448cc0ee0dbf3ae3",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/rpnh/collaboration/assembly_lowering_map.v9.schema.json",
+      "expected": "efbf4f4de2867dcb391ada6e990078b80576f273",
+      "actual": "efbf4f4de2867dcb391ada6e990078b80576f273",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/rpnh/collaboration/assembly_merge_analysis.v1.schema.json",
+      "expected": "36113de605c9b17639a9a0947bed4fa9837263e7",
+      "actual": "36113de605c9b17639a9a0947bed4fa9837263e7",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/rpnh/collaboration/assembly_merge_analysis_command.v1.schema.json",
+      "expected": "663c9344140631531f3208ca7de12b82c77c9701",
+      "actual": "663c9344140631531f3208ca7de12b82c77c9701",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/rpnh/collaboration/assembly_plan.v1.schema.json",
+      "expected": "4ba49d866d8cd813efc3350fe32881fec9fc62d0",
+      "actual": "4ba49d866d8cd813efc3350fe32881fec9fc62d0",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/rpnh/collaboration/assembly_plan.v2.schema.json",
+      "expected": "d1fc0779c72e9a708f604552b1d45ff4e6d3ae3b",
+      "actual": "d1fc0779c72e9a708f604552b1d45ff4e6d3ae3b",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/rpnh/collaboration/assembly_plan.v3.schema.json",
+      "expected": "599c7fab07a1d5fdaabba5b7ef020434cfcdf146",
+      "actual": "599c7fab07a1d5fdaabba5b7ef020434cfcdf146",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/rpnh/collaboration/assembly_plan.v4.schema.json",
+      "expected": "6c186f43fec9322f891fed7dad2cdff1bb76807b",
+      "actual": "6c186f43fec9322f891fed7dad2cdff1bb76807b",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/rpnh/collaboration/assembly_plan.v5.schema.json",
+      "expected": "314df42c80bbb1ed64c64806c3fb7bb97ac9295d",
+      "actual": "314df42c80bbb1ed64c64806c3fb7bb97ac9295d",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/rpnh/collaboration/assembly_plan.v6.schema.json",
+      "expected": "e9290dfbbee702c2b6d1a07c0974faa533a1d39e",
+      "actual": "e9290dfbbee702c2b6d1a07c0974faa533a1d39e",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/rpnh/collaboration/assembly_plan.v7.schema.json",
+      "expected": "60bbd71ed3d69326b0503db11541393cf1135376",
+      "actual": "60bbd71ed3d69326b0503db11541393cf1135376",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/rpnh/collaboration/assembly_plan.v8.schema.json",
+      "expected": "5d4e24ce586934b58a28941926c3dd35f22e85fa",
+      "actual": "5d4e24ce586934b58a28941926c3dd35f22e85fa",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/rpnh/collaboration/assembly_plan.v9.schema.json",
+      "expected": "3122755a8908ba11acd1f7069579e7888f0a4c3f",
+      "actual": "3122755a8908ba11acd1f7069579e7888f0a4c3f",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/rpnh/collaboration/author_boundary_map.v1.schema.json",
+      "expected": "b30449959d11b169804d392c148656217eb0b19c",
+      "actual": "b30449959d11b169804d392c148656217eb0b19c",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/rpnh/collaboration/author_element_map.v1.schema.json",
+      "expected": "7e15bfb131bbe7f086db5ffe815025b65d30118a",
+      "actual": "7e15bfb131bbe7f086db5ffe815025b65d30118a",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/rpnh/collaboration/author_host_requirements.v1.schema.json",
+      "expected": "3f4ab170133f18a6f4b308908ef5f3cbb5748aa5",
+      "actual": "3f4ab170133f18a6f4b308908ef5f3cbb5748aa5",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/rpnh/collaboration/graph_author_source.v1.schema.json",
+      "expected": "47f424d05b4f0634ad368204db8bee03c0426fc4",
+      "actual": "47f424d05b4f0634ad368204db8bee03c0426fc4",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/rpnh/collaboration/graph_build_recipe.v1.schema.json",
+      "expected": "d7f0e2b49ec1714fbeda41eeae72cd531085cbec",
+      "actual": "d7f0e2b49ec1714fbeda41eeae72cd531085cbec",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/rpnh/collaboration/graph_merge_analysis.v1.schema.json",
+      "expected": "515e2df0975c997902e014938bc985a1bef1cfa7",
+      "actual": "515e2df0975c997902e014938bc985a1bef1cfa7",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/rpnh/collaboration/graph_merge_analysis_command.v1.schema.json",
+      "expected": "8ffca4ab435bce2d0c0bf1062e0fe0c60dad6d1a",
+      "actual": "8ffca4ab435bce2d0c0bf1062e0fe0c60dad6d1a",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/rpnh/collaboration/graph_merge_author_command.v1.schema.json",
+      "expected": "1fd2da2dd03459ec209815fdc7d459b3eb1c3171",
+      "actual": "1fd2da2dd03459ec209815fdc7d459b3eb1c3171",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/rpnh/collaboration/graph_merge_resolution.v1.schema.json",
+      "expected": "a3290d1a805f23b6ddfcc7c2b61d9ce15205e83a",
+      "actual": "a3290d1a805f23b6ddfcc7c2b61d9ce15205e83a",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/rpnh/collaboration/graph_source_map.v1.schema.json",
+      "expected": "bb7c7fac8fba58c5a74c261a9f200499b7c41a40",
+      "actual": "bb7c7fac8fba58c5a74c261a9f200499b7c41a40",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/rpnh/collaboration/open_region_author_command.v1.schema.json",
+      "expected": "172d812d26f44bdf11aba2a8903925cea6634e98",
+      "actual": "172d812d26f44bdf11aba2a8903925cea6634e98",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/rpnh/collaboration/open_region_boundary_adaptation.v1.schema.json",
+      "expected": "676b1cc1296cd31d2d37b8813bd8415b09c6e8c7",
+      "actual": "676b1cc1296cd31d2d37b8813bd8415b09c6e8c7",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/rpnh/collaboration/open_region_boundary_inventory.v1.schema.json",
+      "expected": "b454175815b8292edef23fb4a94a7a72e8e87f5b",
+      "actual": "b454175815b8292edef23fb4a94a7a72e8e87f5b",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/rpnh/collaboration/open_region_closure_author_command.v1.schema.json",
+      "expected": "4da5d167189a2989647b225f119a8c1f9c76116a",
+      "actual": "4da5d167189a2989647b225f119a8c1f9c76116a",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/rpnh/collaboration/open_region_contract.v1.schema.json",
+      "expected": "a80635778b3b490a8861ac607e507ed2bbd8b367",
+      "actual": "a80635778b3b490a8861ac607e507ed2bbd8b367",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/rpnh/collaboration/open_region_definition.v1.schema.json",
+      "expected": "97c1a302acc2038e9df51c36e6db00569bc5f2b4",
+      "actual": "97c1a302acc2038e9df51c36e6db00569bc5f2b4",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/rpnh/collaboration/open_region_derived_author_command.v1.schema.json",
+      "expected": "a4836be180f22e4d1dfba09f199eab82b744a39b",
+      "actual": "a4836be180f22e4d1dfba09f199eab82b744a39b",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/rpnh/collaboration/open_region_element_map.v1.schema.json",
+      "expected": "b336a0076a2468186bfc53b23c86812694e127e3",
+      "actual": "b336a0076a2468186bfc53b23c86812694e127e3",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/rpnh/collaboration/open_region_extraction_provenance.v1.schema.json",
+      "expected": "6fb03d118675cdc98e259c2a15201ff3f3606942",
+      "actual": "6fb03d118675cdc98e259c2a15201ff3f3606942",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/rpnh/collaboration/open_region_historical_origins.v1.schema.json",
+      "expected": "5127fb1ceed9fc20b47df0b24e190a45bfab653f",
+      "actual": "5127fb1ceed9fc20b47df0b24e190a45bfab653f",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/rpnh/collaboration/open_region_host_requirements.v1.schema.json",
+      "expected": "1340da3332a7511d0a466ea4e400e4b859ae72cc",
+      "actual": "1340da3332a7511d0a466ea4e400e4b859ae72cc",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/rpnh/collaboration/open_region_origin_map.v1.schema.json",
+      "expected": "d831db00ebbb4839244b0ff38c8c776244b767a2",
+      "actual": "d831db00ebbb4839244b0ff38c8c776244b767a2",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/rpnh/collaboration/plain_author_transform_command.v1.schema.json",
+      "expected": "58a49553fa00fc824d29401d08010097ca7b8c66",
+      "actual": "58a49553fa00fc824d29401d08010097ca7b8c66",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/rpnh/collaboration/plain_author_transform_map.v1.schema.json",
+      "expected": "772f424ecffb7dc1fd9973e0f6f9f0fe7d327369",
+      "actual": "772f424ecffb7dc1fd9973e0f6f9f0fe7d327369",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/rpnh/collaboration/plain_merge_analysis.v1.schema.json",
+      "expected": "1e956ffc34f638acc9cdebe4052b9dca85c8f9ff",
+      "actual": "1e956ffc34f638acc9cdebe4052b9dca85c8f9ff",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/rpnh/collaboration/plain_merge_analysis_command.v1.schema.json",
+      "expected": "6d23154b5f20d0d6e89aea4dfb3840105874b04e",
+      "actual": "6d23154b5f20d0d6e89aea4dfb3840105874b04e",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/rpnh/collaboration/plain_merge_author_command.v1.schema.json",
+      "expected": "e8b6a710e1d22d004d20928098a15178e1a511b8",
+      "actual": "e8b6a710e1d22d004d20928098a15178e1a511b8",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/rpnh/collaboration/plain_merge_resolution.v1.schema.json",
+      "expected": "0dbfb44fef84779edeb59b9291967d1e6926d37c",
+      "actual": "0dbfb44fef84779edeb59b9291967d1e6926d37c",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/rpnh/collaboration/plain_selected_change.v1.schema.json",
+      "expected": "0a2de63e8156b48fef88d6a0c79326720b7299f5",
+      "actual": "0a2de63e8156b48fef88d6a0c79326720b7299f5",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/rpnh/collaboration/plain_transplant_analysis.v1.schema.json",
+      "expected": "8aa9c6dcba7c1ce88874eae4fe2ba0cce9d3c52c",
+      "actual": "8aa9c6dcba7c1ce88874eae4fe2ba0cce9d3c52c",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/rpnh/collaboration/plain_transplant_analysis_command.v1.schema.json",
+      "expected": "f8f722be695fede4010dde2418e8e98c212826da",
+      "actual": "f8f722be695fede4010dde2418e8e98c212826da",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/rpnh/collaboration/plain_transplant_author_command.v1.schema.json",
+      "expected": "0843615af5ab50e0a957614e2b9736aaa6058931",
+      "actual": "0843615af5ab50e0a957614e2b9736aaa6058931",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/rpnh/collaboration/plain_transplant_derived_author_command.v1.schema.json",
+      "expected": "61405a92f1b4e3b75d2ecf88409256e51d125186",
+      "actual": "61405a92f1b4e3b75d2ecf88409256e51d125186",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/rpnh/collaboration/plain_transplant_historical_origins.v1.schema.json",
+      "expected": "4afa7c22b707527581e63fecc95f18f815b5e227",
+      "actual": "4afa7c22b707527581e63fecc95f18f815b5e227",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/rpnh/collaboration/plain_transplant_resolution.v1.schema.json",
+      "expected": "4a92892a600cba7b78f01838601ec948bbb4d715",
+      "actual": "4a92892a600cba7b78f01838601ec948bbb4d715",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/rpnh/collaboration/prospective_member_intent.v1.schema.json",
+      "expected": "c9c71a6df2966788201ed28b0bb9e364980af414",
+      "actual": "c9c71a6df2966788201ed28b0bb9e364980af414",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/rpnh/collaboration/source_resource_ref.v1.schema.json",
+      "expected": "5c9f1dcd700dd2e9656d347bb86c30690aa1d820",
+      "actual": "5c9f1dcd700dd2e9656d347bb86c30690aa1d820",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/rpnh/collaboration/source_version_ref.v1.schema.json",
+      "expected": "983bb9d3e6838d4d78a439e0d5bd30861ae32838",
+      "actual": "983bb9d3e6838d4d78a439e0d5bd30861ae32838",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/rpnh/environment_check.v1.schema.json",
+      "expected": "18478170063f8934fb2b0d480c8beb8177219653",
+      "actual": "18478170063f8934fb2b0d480c8beb8177219653",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/rpnh/environment_preparation_evidence.v1.schema.json",
+      "expected": "7980fc20d484dca672e40d66cf3c0df38cad4a1d",
+      "actual": "7980fc20d484dca672e40d66cf3c0df38cad4a1d",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/rpnh/environment_preparation_plan.v1.schema.json",
+      "expected": "a6bd07e680370b174ff242eb96fbd310f4959449",
+      "actual": "a6bd07e680370b174ff242eb96fbd310f4959449",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/rpnh/environment_preparation_receipt.v1.schema.json",
+      "expected": "12510f059dd3d01c4aaae36e3a5c3506566e5bc1",
+      "actual": "12510f059dd3d01c4aaae36e3a5c3506566e5bc1",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/rpnh/environment_requirements.v1.schema.json",
+      "expected": "1f2736d81cbe4b57f5886781549bc813802b2ca6",
+      "actual": "1f2736d81cbe4b57f5886781549bc813802b2ca6",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/rpnh/environment_resolution_lock.v1.schema.json",
+      "expected": "9855d720933189c0326429f2995e2bd8127a855e",
+      "actual": "9855d720933189c0326429f2995e2bd8127a855e",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/rpnh/environment_selection.v1.schema.json",
+      "expected": "a191c29d3fc3802b07b8977a59348b27e5613d8a",
+      "actual": "a191c29d3fc3802b07b8977a59348b27e5613d8a",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/rpnh/executable_net.v1.schema.json",
+      "expected": "758a38d8f8218325e6cb239ec2cad4c70fb6e4ca",
+      "actual": "758a38d8f8218325e6cb239ec2cad4c70fb6e4ca",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/rpnh/local_environment_binding.v1.schema.json",
+      "expected": "04fc1d507f678026bd36bb6088f264d4629c3213",
+      "actual": "04fc1d507f678026bd36bb6088f264d4629c3213",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/rpnh/module_declaration.v1.schema.json",
+      "expected": "c3c65d15100af67e09879c57df786ce9ae88ae22",
+      "actual": "c3c65d15100af67e09879c57df786ce9ae88ae22",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/rpnh/owner_control.v1.schema.json",
+      "expected": "5429fd805e166ce4f22afe005c88f60aa6268c95",
+      "actual": "5429fd805e166ce4f22afe005c88f60aa6268c95",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/rpnh/package_preview.v2.schema.json",
+      "expected": "9484b924bfce463226e368c32772088357f8987d",
+      "actual": "9484b924bfce463226e368c32772088357f8987d",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/rpnh/package_resolution_lock.v2.schema.json",
+      "expected": "7df52534971ce6bcee28aec53615372da3ccbc0d",
+      "actual": "7df52534971ce6bcee28aec53615372da3ccbc0d",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/rpnh/package_target.v1.schema.json",
+      "expected": "5ed700f13712a6d73fd0728f1a4c0617e5087a1a",
+      "actual": "5ed700f13712a6d73fd0728f1a4c0617e5087a1a",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/rpnh/registry_index_query.v1.schema.json",
+      "expected": "d338d60ac928f0f4dc9fb02387a5fe47775cdf0b",
+      "actual": "d338d60ac928f0f4dc9fb02387a5fe47775cdf0b",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/rpnh/registry_read_session_request.v1.schema.json",
+      "expected": "8630235afbe53d7e6f1185523302ba839e6194a6",
+      "actual": "8630235afbe53d7e6f1185523302ba839e6194a6",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/rpnh/registry_source_cut.v1.schema.json",
+      "expected": "2f463215e86e54b20a6f8f50b6798abc5b76169a",
+      "actual": "2f463215e86e54b20a6f8f50b6798abc5b76169a",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/rpnh/resource_access_contract.v1.schema.json",
+      "expected": "cbae281e7ed8b6a2bf928beea5fc097331a48fca",
+      "actual": "cbae281e7ed8b6a2bf928beea5fc097331a48fca",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/rpnh/share_package.v2.schema.json",
+      "expected": "1c5a4d62ad0d7afc92b77400c20358ac53b6bbb1",
+      "actual": "1c5a4d62ad0d7afc92b77400c20358ac53b6bbb1",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/rpnh/typed_call.v1.schema.json",
+      "expected": "39529ae94d6835791d145c3d94f5e6c1bcc19984",
+      "actual": "39529ae94d6835791d145c3d94f5e6c1bcc19984",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/runtime/external_provider_adapter_config.v2.schema.json",
+      "expected": "b74e67cce791167498eabaa20b7d925148598981",
+      "actual": "b74e67cce791167498eabaa20b7d925148598981",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/runtime/external_provider_adapter_config.v3.schema.json",
+      "expected": "7c2a82e73d9e4055fead2d462d9abdd1de1653ba",
+      "actual": "7c2a82e73d9e4055fead2d462d9abdd1de1653ba",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/runtime/llm_execution_selection.v1.schema.json",
+      "expected": "be8572579932984c52c324dded0bc7f644af18e9",
+      "actual": "be8572579932984c52c324dded0bc7f644af18e9",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/runtime/llm_execution_selection.v2.schema.json",
+      "expected": "d9d500cdb2326d8729b15e7e573512aca099513e",
+      "actual": "d9d500cdb2326d8729b15e7e573512aca099513e",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/runtime/llm_request_envelope.v1.schema.json",
+      "expected": "97ddeffd557ad0423647e8e9b75c8a4c0bb5530d",
+      "actual": "97ddeffd557ad0423647e8e9b75c8a4c0bb5530d",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/runtime/llm_response_envelope.v1.schema.json",
+      "expected": "efbeb1ce1c341d8eeb5808b890330b0d979973bc",
+      "actual": "efbeb1ce1c341d8eeb5808b890330b0d979973bc",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/runtime/local_process_adapter_config.v1.schema.json",
+      "expected": "7bac20c16bd63bd40505fe3793c44ebc32ffcdd4",
+      "actual": "7bac20c16bd63bd40505fe3793c44ebc32ffcdd4",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/runtime/local_process_adapter_config.v2.schema.json",
+      "expected": "293614caa8e1630e7be9633e86b3dbb6d6c69522",
+      "actual": "293614caa8e1630e7be9633e86b3dbb6d6c69522",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/runtime/provider_model_catalog.v2.schema.json",
+      "expected": "0d50edf9d94040aacc9f77b4e9d1c6c77ed4943f",
+      "actual": "0d50edf9d94040aacc9f77b4e9d1c6c77ed4943f",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/runtime/provider_model_catalog.v3.schema.json",
+      "expected": "edda17467db7db4ade75cea9ac28a6ff0101deec",
+      "actual": "edda17467db7db4ade75cea9ac28a6ff0101deec",
+      "same": true
+    },
+    {
+      "path": "cpn/schemas/runtime/provider_profiles.v3.schema.json",
+      "expected": "101b996985001f931ae14326a9df80f9fc5a7ca5",
+      "actual": "101b996985001f931ae14326a9df80f9fc5a7ca5",
+      "same": true
+    }
+  ]
+}

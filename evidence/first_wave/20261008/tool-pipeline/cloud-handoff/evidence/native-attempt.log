@@ -1,0 +1,1 @@
+{"status": "BLOCKED", "error": "PermissionError: [Errno 1] Operation not permitted", "note": "No transport fallback was used. Retain this run for diagnosis."}

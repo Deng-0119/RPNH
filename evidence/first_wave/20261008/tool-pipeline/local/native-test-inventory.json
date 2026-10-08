@@ -1,0 +1,105 @@
+{
+  "status": "PASS",
+  "unique_test_ids": [
+    "default::test_complete_report_and_independent_validation",
+    "default::test_exact_lineage_and_partial_order",
+    "default::test_independent_validator_rejects_other_schema_valid_candidates[line_amount]",
+    "default::test_independent_validator_rejects_other_schema_valid_candidates[missing_line]",
+    "default::test_independent_validator_rejects_other_schema_valid_candidates[source_version]",
+    "default::test_independent_validator_rejects_other_schema_valid_candidates[total_usage]",
+    "default::test_input_middleware_rejects_invalid_values[duplicate]",
+    "default::test_input_middleware_rejects_invalid_values[float]",
+    "default::test_input_middleware_rejects_invalid_values[nan]",
+    "default::test_input_middleware_rejects_invalid_values[negative]",
+    "default::test_input_middleware_rejects_invalid_values[overlap]",
+    "default::test_input_middleware_rejects_invalid_values[timezone]",
+    "default::test_input_middleware_rejects_invalid_values[too_large]",
+    "default::test_invalid_data_cannot_reach_final[both_invalid]",
+    "default::test_invalid_data_cannot_reach_final[candidate]",
+    "default::test_invalid_data_cannot_reach_final[time]",
+    "default::test_invalid_data_cannot_reach_final[unit]",
+    "default::test_readback_needs_no_exports_or_process_cache",
+    "default::test_real_overlap_capacity_and_branch_progress",
+    "default::test_round_each_interval_half_up",
+    "default::test_truncated_final_payload_fails_readback",
+    "default::test_worker_exception_keeps_unresolved_firing",
+    "extra::test_forged_parents_native",
+    "extra::test_single_worker_native",
+    "extra::test_source_version_native",
+    "extra::test_usage_mutations_native[duplicate]",
+    "extra::test_usage_mutations_native[float]",
+    "extra::test_usage_mutations_native[nan]",
+    "extra::test_usage_mutations_native[negative]",
+    "extra::test_usage_mutations_native[overlap]",
+    "extra::test_usage_mutations_native[too_large]",
+    "mirror::test_missing_usage_join_native"
+  ],
+  "unique_count": 32,
+  "executed_count": 33,
+  "windows": [
+    {
+      "path": "logs/native-tests.junit.xml",
+      "tests": 22,
+      "time_seconds": 351.32,
+      "test_ids": [
+        "default::test_complete_report_and_independent_validation",
+        "default::test_real_overlap_capacity_and_branch_progress",
+        "default::test_exact_lineage_and_partial_order",
+        "default::test_readback_needs_no_exports_or_process_cache",
+        "default::test_round_each_interval_half_up",
+        "default::test_invalid_data_cannot_reach_final[unit]",
+        "default::test_invalid_data_cannot_reach_final[time]",
+        "default::test_invalid_data_cannot_reach_final[both_invalid]",
+        "default::test_invalid_data_cannot_reach_final[candidate]",
+        "default::test_input_middleware_rejects_invalid_values[negative]",
+        "default::test_input_middleware_rejects_invalid_values[float]",
+        "default::test_input_middleware_rejects_invalid_values[duplicate]",
+        "default::test_input_middleware_rejects_invalid_values[nan]",
+        "default::test_input_middleware_rejects_invalid_values[timezone]",
+        "default::test_input_middleware_rejects_invalid_values[overlap]",
+        "default::test_input_middleware_rejects_invalid_values[too_large]",
+        "default::test_worker_exception_keeps_unresolved_firing",
+        "default::test_truncated_final_payload_fails_readback",
+        "default::test_independent_validator_rejects_other_schema_valid_candidates[source_version]",
+        "default::test_independent_validator_rejects_other_schema_valid_candidates[line_amount]",
+        "default::test_independent_validator_rejects_other_schema_valid_candidates[total_usage]",
+        "default::test_independent_validator_rejects_other_schema_valid_candidates[missing_line]"
+      ]
+    },
+    {
+      "path": "probes/extra-native.junit.xml",
+      "tests": 9,
+      "time_seconds": 358.304,
+      "test_ids": [
+        "extra::test_usage_mutations_native[negative]",
+        "extra::test_usage_mutations_native[float]",
+        "extra::test_usage_mutations_native[nan]",
+        "extra::test_usage_mutations_native[duplicate]",
+        "extra::test_usage_mutations_native[overlap]",
+        "extra::test_usage_mutations_native[too_large]",
+        "extra::test_source_version_native",
+        "extra::test_forged_parents_native",
+        "extra::test_single_worker_native"
+      ]
+    },
+    {
+      "path": "probes/mirror-native.junit.xml",
+      "tests": 1,
+      "time_seconds": 77.376,
+      "test_ids": [
+        "mirror::test_missing_usage_join_native"
+      ]
+    },
+    {
+      "path": "probes/mirror-native-y.junit.xml",
+      "tests": 1,
+      "time_seconds": 75.583,
+      "test_ids": [
+        "mirror::test_missing_usage_join_native"
+      ]
+    }
+  ],
+  "supplement_loaded_original9_sha256": "88916bf8784b1dd13b88175376fc1a8c71d56312ae1579fb7991720e08e290d2",
+  "single_worker_max_active": 1,
+  "residual_native_sockets": []
+}

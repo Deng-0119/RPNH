@@ -1,0 +1,17 @@
+============================= test session starts ==============================
+platform linux -- Python 3.13.12, pytest-8.4.2, pluggy-1.6.0 -- <WORKSPACE>/.p26/v/bin/python
+rootdir: <WORKSPACE>
+collecting ... collected 9 items
+
+../task-tool-pipeline-validation-20261008/probes/test_native_boundaries.py::test_usage_mutations_native[negative] PASSED [ 11%]
+../task-tool-pipeline-validation-20261008/probes/test_native_boundaries.py::test_usage_mutations_native[float] PASSED [ 22%]
+../task-tool-pipeline-validation-20261008/probes/test_native_boundaries.py::test_usage_mutations_native[nan] PASSED [ 33%]
+../task-tool-pipeline-validation-20261008/probes/test_native_boundaries.py::test_usage_mutations_native[duplicate] PASSED [ 44%]
+../task-tool-pipeline-validation-20261008/probes/test_native_boundaries.py::test_usage_mutations_native[overlap] PASSED [ 55%]
+../task-tool-pipeline-validation-20261008/probes/test_native_boundaries.py::test_usage_mutations_native[too_large] PASSED [ 66%]
+../task-tool-pipeline-validation-20261008/probes/test_native_boundaries.py::test_source_version_native PASSED [ 77%]
+../task-tool-pipeline-validation-20261008/probes/test_native_boundaries.py::test_forged_parents_native PASSED [ 88%]
+../task-tool-pipeline-validation-20261008/probes/test_native_boundaries.py::test_single_worker_native PASSED [100%]
+
+- generated xml file: <WORKSPACE>/task-tool-pipeline-validation-20261008/probes/extra-native.junit.xml -
+======================== 9 passed in 358.30s (0:05:58) =========================

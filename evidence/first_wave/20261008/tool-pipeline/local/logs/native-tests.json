@@ -1,0 +1,32 @@
+{
+  "label": "native-tests",
+  "command": [
+    "<WORKSPACE>/.p26/v/bin/python",
+    "-B",
+    "-m",
+    "pytest",
+    "-q",
+    "examples/tool_pipeline/tests",
+    "-ra",
+    "--basetemp=<WORKSPACE>/.p26/a",
+    "--junitxml=<WORKSPACE>/task-tool-pipeline-validation-20261008/logs/native-tests.junit.xml",
+    "-o",
+    "cache_dir=<WORKSPACE>/.p26/pytest-cache"
+  ],
+  "cwd": "<WORKSPACE>/RPNH-main",
+  "pid": 3,
+  "started_at": "2026-10-08T13:14:27.528290+00:00",
+  "finished_at": "2026-10-08T13:20:45.970122+00:00",
+  "elapsed_seconds": 351.94971225500007,
+  "exit_code": 0,
+  "tested_head": "00f2d29c7deffed44e2ec635a24f390c6e0d9ace",
+  "environment_overrides": {
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONUNBUFFERED": "1",
+    "PYTHONPATH": "<WORKSPACE>/RPNH-main",
+    "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1",
+    "TMPDIR": "<WORKSPACE>/.p26/tmp"
+  },
+  "stdout": "<WORKSPACE>/task-tool-pipeline-validation-20261008/logs/native-tests.stdout.log",
+  "stderr": "<WORKSPACE>/task-tool-pipeline-validation-20261008/logs/native-tests.stderr.log"
+}

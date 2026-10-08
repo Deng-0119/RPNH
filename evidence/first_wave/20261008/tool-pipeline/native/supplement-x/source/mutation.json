@@ -1,0 +1,25 @@
+[
+  {
+    "before": {
+      "tariff": {
+        "resource_id": "resource:5cd4c9a789b5538f88510b8299792d61",
+        "resource_version_id": "resource_version:c2e99cd0c4b7535bb3b3f130bc6c1464"
+      },
+      "usage": {
+        "resource_id": "resource:b2dff596b83f507d9c4e3e110b19a26f",
+        "resource_version_id": "resource_version:38e7d2795e21593bbe1e312eb77b390e"
+      }
+    },
+    "after": {
+      "tariff": {
+        "resource_id": "resource:5cd4c9a789b5538f88510b8299792d61",
+        "resource_version_id": "resource_version:c2e99cd0c4b7535bb3b3f130bc6c1464"
+      },
+      "usage": {
+        "resource_id": "resource:b2dff596b83f507d9c4e3e110b19a26f",
+        "resource_version_id": "resource_version:d7f720bcd3f45b9b978d8d92b6014859"
+      }
+    },
+    "schema_valid": true
+  }
+]

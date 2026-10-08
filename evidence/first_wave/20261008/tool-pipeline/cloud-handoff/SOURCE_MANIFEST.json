@@ -1,0 +1,94 @@
+{
+  "schema_version": "tool_pipeline/source_manifest/v1",
+  "base_commit": "00f2d29c7deffed44e2ec635a24f390c6e0d9ace",
+  "source_set_sha256": "a547de500345f51c102fb197dfabedafc2aa48c251dc19d9e10733cbe2553618",
+  "source_set_algorithm": "Sort by POSIX repository-relative path; concatenate path + U+0000 + lowercase file SHA-256 hex + LF for each file, encode UTF-8, then SHA-256. Exclude __pycache__ directories.",
+  "files": [
+    {
+      "path": "examples/tool_pipeline/README.md",
+      "size_bytes": 10492,
+      "sha256": "f544ef304ac13f353af2bb207afab18e8a86a69391b407a7adafaa81674c7032"
+    },
+    {
+      "path": "examples/tool_pipeline/README_ZH.md",
+      "size_bytes": 8898,
+      "sha256": "5449c8ef872ee8139c780b878adc394fbe112f25888099d15f5863db9674dbc7"
+    },
+    {
+      "path": "examples/tool_pipeline/__init__.py",
+      "size_bytes": 67,
+      "sha256": "bdb0e7dc3564cc7d6254dedb6dac52c64001b52d1c60b30da9ccccf1bd4646f8"
+    },
+    {
+      "path": "examples/tool_pipeline/contracts.py",
+      "size_bytes": 4324,
+      "sha256": "80343a6929294ddf5aaa663595a3c2508a4550a85e93de71bd68b948df294534"
+    },
+    {
+      "path": "examples/tool_pipeline/fixtures/expected-report.json",
+      "size_bytes": 563,
+      "sha256": "d369c18417ae7b8ccb88d9ef8f4fce6844f637df81b3e17e5ced51414e5b68d5"
+    },
+    {
+      "path": "examples/tool_pipeline/fixtures/tariff-rounding.json",
+      "size_bytes": 310,
+      "sha256": "b842b97864781615e18fa2f8b367228833760fb42c7e014ec28b039f29cc2df0"
+    },
+    {
+      "path": "examples/tool_pipeline/fixtures/tariff.json",
+      "size_bytes": 309,
+      "sha256": "a5fec5935e2698908b1dbd54c375191ea70c17a2983a32d0dc6fcec729cc5cab"
+    },
+    {
+      "path": "examples/tool_pipeline/fixtures/usage-rounding.json",
+      "size_bytes": 265,
+      "sha256": "9aa5d52da06da6412d578b08203d83da986f89b2655aa98f0bc9a9bcef9c4590"
+    },
+    {
+      "path": "examples/tool_pipeline/fixtures/usage.json",
+      "size_bytes": 270,
+      "sha256": "ee40f4a6d10cead79a1c2323d91214c1b45e05aee27640413520bf449f12eddf"
+    },
+    {
+      "path": "examples/tool_pipeline/host.py",
+      "size_bytes": 8293,
+      "sha256": "0cb8ae2074f726a29785c7b8995d56ddff93ae27e7471a1112e4ae198c0fe9fc"
+    },
+    {
+      "path": "examples/tool_pipeline/module.json",
+      "size_bytes": 19316,
+      "sha256": "fd8483bbc7974386531383d4988fe42f3deb350b78c1a06837473710a171d577"
+    },
+    {
+      "path": "examples/tool_pipeline/run.py",
+      "size_bytes": 9136,
+      "sha256": "71bf5b015d8a4ca7e2a0888ff47df8586dd26982576a92fc62725db0ac8c5ad9"
+    },
+    {
+      "path": "examples/tool_pipeline/tests/conftest.py",
+      "size_bytes": 565,
+      "sha256": "2ab95b8eb43bbf8b2b2385713dd6a49880f990cb9e1196173832771eab6287e9"
+    },
+    {
+      "path": "examples/tool_pipeline/tests/pipe_transport.py",
+      "size_bytes": 1432,
+      "sha256": "bf5beda6088f19959752655512d8fbba1ea4b1abab1d999d31502c8428af46c9"
+    },
+    {
+      "path": "examples/tool_pipeline/tests/test_pipeline.py",
+      "size_bytes": 19319,
+      "sha256": "387e64049bdd70d2305a09ff40610a61f2347e5f34690dcfcb4a6814378afbfb"
+    },
+    {
+      "path": "examples/tool_pipeline/tools.py",
+      "size_bytes": 10202,
+      "sha256": "4505285f2a3d801f2ac31adc63cbc73aa3d5a271a5f6a88b44fac6bc05d7fca9"
+    }
+  ],
+  "verification_note": "The 22-case full suite loaded the before-cleanup test file. Product files are unchanged; final-cleanup-recheck reruns all 9 cases using the changed controlled-run test helper. Do not sum overlapping test counts.",
+  "file_count": 16,
+  "source_set_hash_algorithm": "SHA256(UTF8(concat(sorted(path + U+0000 + lowercase_file_sha256 + LF))))",
+  "git_tree_sha1": "eb8b5603e1f60791357907b36ce54934d52a74e0",
+  "git_tree_scope": "examples/tool_pipeline only; all files mode 100644",
+  "commit_tree_sha1": "c951267ed6ce5f563f69aafd5f695e30625cff40"
+}

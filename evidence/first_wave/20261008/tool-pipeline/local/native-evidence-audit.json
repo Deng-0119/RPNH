@@ -1,0 +1,883 @@
+{
+  "standard": {
+    "status": "PASS",
+    "max_active": 2,
+    "terminal_result_ref": [
+      "resource:d5751439213054aeb1f0eff12345df59",
+      "resource_version:4a8b084fdbe95e84ab60f8cf5898c5db"
+    ],
+    "firings": {
+      "read_tariff.run": {
+        "firing_version_id": "transition_firing_version:cc124d80598e5f5ebd5833735c05d863",
+        "admitted": 312,
+        "started": 313,
+        "execution_started": 348,
+        "output_registered": [
+          390,
+          398
+        ],
+        "success_recorded": 406,
+        "settled": 413,
+        "claimed_resources": [
+          {
+            "resource_id": "resource:5c6182db9d45562e919fe30843260a71",
+            "resource_version_id": "resource_version:8afb4294d3555b73add65d58f37261f1"
+          }
+        ],
+        "output_refs": [
+          {
+            "resource_id": "resource:20715d0ad89f574cad04f32dcd733a55",
+            "resource_version_id": "resource_version:a1238da613bf5a17bbc908a2ff40562c"
+          },
+          {
+            "resource_id": "resource:6f4c1ac0e21352528fad6eceee7d63b9",
+            "resource_version_id": "resource_version:91a88364a7205d36a1f9866c6e60dc4e"
+          }
+        ]
+      },
+      "read_usage.run": {
+        "firing_version_id": "transition_firing_version:630ec1028d0257fd994d3d97c34caef4",
+        "admitted": 352,
+        "started": 353,
+        "execution_started": 388,
+        "output_registered": [
+          394,
+          402
+        ],
+        "success_recorded": 408,
+        "settled": 432,
+        "claimed_resources": [
+          {
+            "resource_id": "resource:fedcc65baf1c51e49caeaa0db5dc8760",
+            "resource_version_id": "resource_version:12cf0efc1c74524d927efe19b2db11cb"
+          }
+        ],
+        "output_refs": [
+          {
+            "resource_id": "resource:572720e6676858df94dc595970441dbd",
+            "resource_version_id": "resource_version:f34a667a9cfb5d3ba963dddc85727f7a"
+          },
+          {
+            "resource_id": "resource:6515c986afc757dd8921688b6c74a934",
+            "resource_version_id": "resource_version:7059c20cfaa354e1bfa529122efac8bd"
+          }
+        ]
+      },
+      "check_tariff_input.run": {
+        "firing_version_id": "transition_firing_version:09e7fe7239dd59bb94477a7b5655080c",
+        "admitted": 450,
+        "started": 451,
+        "execution_started": 486,
+        "output_registered": [
+          528
+        ],
+        "success_recorded": 536,
+        "settled": 543,
+        "claimed_resources": [
+          {
+            "resource_id": "resource:20715d0ad89f574cad04f32dcd733a55",
+            "resource_version_id": "resource_version:a1238da613bf5a17bbc908a2ff40562c"
+          }
+        ],
+        "output_refs": [
+          {
+            "resource_id": "resource:f5328db4041a535caa33c40b8ac6f5eb",
+            "resource_version_id": "resource_version:4fcf5b69f2065eae8a70194a089f19b6"
+          }
+        ]
+      },
+      "check_usage_input.run": {
+        "firing_version_id": "transition_firing_version:afccd541ca195f788bad4e8932ec6cc7",
+        "admitted": 490,
+        "started": 491,
+        "execution_started": 526,
+        "output_registered": [
+          532
+        ],
+        "success_recorded": 538,
+        "settled": 559,
+        "claimed_resources": [
+          {
+            "resource_id": "resource:572720e6676858df94dc595970441dbd",
+            "resource_version_id": "resource_version:f34a667a9cfb5d3ba963dddc85727f7a"
+          }
+        ],
+        "output_refs": [
+          {
+            "resource_id": "resource:36b207b8b89c58b0869c05bee07d70f3",
+            "resource_version_id": "resource_version:96271e6468f95b03980ecd4844ca9504"
+          }
+        ]
+      },
+      "normalize_tariff.run": {
+        "firing_version_id": "transition_firing_version:dc50ba5ccf885ab5814b895c84f56541",
+        "admitted": 574,
+        "started": 575,
+        "execution_started": 610,
+        "output_registered": [
+          652
+        ],
+        "success_recorded": 660,
+        "settled": 667,
+        "claimed_resources": [
+          {
+            "resource_id": "resource:f5328db4041a535caa33c40b8ac6f5eb",
+            "resource_version_id": "resource_version:4fcf5b69f2065eae8a70194a089f19b6"
+          }
+        ],
+        "output_refs": [
+          {
+            "resource_id": "resource:545c3f5132635397994ca5d70bbc739d",
+            "resource_version_id": "resource_version:dd0164fad57e5bf790eb58027da273dc"
+          }
+        ]
+      },
+      "normalize_usage.run": {
+        "firing_version_id": "transition_firing_version:cbd88015cb5857078aa0eadb4833c60b",
+        "admitted": 614,
+        "started": 615,
+        "execution_started": 650,
+        "output_registered": [
+          656
+        ],
+        "success_recorded": 662,
+        "settled": 683,
+        "claimed_resources": [
+          {
+            "resource_id": "resource:36b207b8b89c58b0869c05bee07d70f3",
+            "resource_version_id": "resource_version:96271e6468f95b03980ecd4844ca9504"
+          }
+        ],
+        "output_refs": [
+          {
+            "resource_id": "resource:8599d84654b55253938573f2d462617b",
+            "resource_version_id": "resource_version:27113a2e7a765d168c2a284386259197"
+          }
+        ]
+      },
+      "join_intervals.run": {
+        "firing_version_id": "transition_firing_version:135cb331d88556f593fe77f6552a6322",
+        "admitted": 698,
+        "started": 699,
+        "execution_started": 748,
+        "output_registered": [
+          750
+        ],
+        "success_recorded": 755,
+        "settled": 760,
+        "claimed_resources": [
+          {
+            "resource_id": "resource:545c3f5132635397994ca5d70bbc739d",
+            "resource_version_id": "resource_version:dd0164fad57e5bf790eb58027da273dc"
+          },
+          {
+            "resource_id": "resource:8599d84654b55253938573f2d462617b",
+            "resource_version_id": "resource_version:27113a2e7a765d168c2a284386259197"
+          }
+        ],
+        "output_refs": [
+          {
+            "resource_id": "resource:97b5850095875158a1455bd89ecbfdc2",
+            "resource_version_id": "resource_version:501bc7de0d62598794d710b59d2bc91c"
+          }
+        ]
+      },
+      "compute_cost.run": {
+        "firing_version_id": "transition_firing_version:fb0eef69be2459f585be1b0c96ddc5f4",
+        "admitted": 775,
+        "started": 776,
+        "execution_started": 811,
+        "output_registered": [
+          813
+        ],
+        "success_recorded": 817,
+        "settled": 822,
+        "claimed_resources": [
+          {
+            "resource_id": "resource:97b5850095875158a1455bd89ecbfdc2",
+            "resource_version_id": "resource_version:501bc7de0d62598794d710b59d2bc91c"
+          }
+        ],
+        "output_refs": [
+          {
+            "resource_id": "resource:905a45c5609355a9a5a3bfa31e3f73b4",
+            "resource_version_id": "resource_version:e7283b396cc25c538efd9288c14fb523"
+          }
+        ]
+      },
+      "validate_report.run": {
+        "firing_version_id": "transition_firing_version:bcdc5f7ed6515211a51e4bc2f52599f2",
+        "admitted": 837,
+        "started": 838,
+        "execution_started": 901,
+        "output_registered": [
+          903
+        ],
+        "success_recorded": 909,
+        "settled": 914,
+        "claimed_resources": [
+          {
+            "resource_id": "resource:6f4c1ac0e21352528fad6eceee7d63b9",
+            "resource_version_id": "resource_version:91a88364a7205d36a1f9866c6e60dc4e"
+          },
+          {
+            "resource_id": "resource:905a45c5609355a9a5a3bfa31e3f73b4",
+            "resource_version_id": "resource_version:e7283b396cc25c538efd9288c14fb523"
+          },
+          {
+            "resource_id": "resource:6515c986afc757dd8921688b6c74a934",
+            "resource_version_id": "resource_version:7059c20cfaa354e1bfa529122efac8bd"
+          }
+        ],
+        "output_refs": [
+          {
+            "resource_id": "resource:eadeac1e746257c582300a4901ddae45",
+            "resource_version_id": "resource_version:32f57831396c5525b73ec4a6be8d8cc7"
+          }
+        ]
+      },
+      "publish_report.run": {
+        "firing_version_id": "transition_firing_version:0e6808af4b9059e298b7420d7232489f",
+        "admitted": 929,
+        "started": 930,
+        "execution_started": 965,
+        "output_registered": [
+          967
+        ],
+        "success_recorded": 971,
+        "settled": 976,
+        "claimed_resources": [
+          {
+            "resource_id": "resource:eadeac1e746257c582300a4901ddae45",
+            "resource_version_id": "resource_version:32f57831396c5525b73ec4a6be8d8cc7"
+          }
+        ],
+        "output_refs": [
+          {
+            "resource_id": "resource:d5751439213054aeb1f0eff12345df59",
+            "resource_version_id": "resource_version:4a8b084fdbe95e84ab60f8cf5898c5db"
+          }
+        ]
+      }
+    },
+    "lineage_outputs_checked": 12,
+    "max_ordinal": 1001
+  },
+  "rounding": {
+    "status": "PASS",
+    "max_active": 2,
+    "terminal_result_ref": [
+      "resource:8b14fc770c68540380539578bc4b8be0",
+      "resource_version:3685eba9787258be8fd2da38f98614a0"
+    ],
+    "firings": {
+      "read_tariff.run": {
+        "firing_version_id": "transition_firing_version:a8a3c004446557fe8670dcda62b9f542",
+        "admitted": 312,
+        "started": 313,
+        "execution_started": 348,
+        "output_registered": [
+          390,
+          398
+        ],
+        "success_recorded": 406,
+        "settled": 413,
+        "claimed_resources": [
+          {
+            "resource_id": "resource:39c9f9d38cd35273bac11db3879676dd",
+            "resource_version_id": "resource_version:e937cf1fbd9259edafe880cab0cc0dfb"
+          }
+        ],
+        "output_refs": [
+          {
+            "resource_id": "resource:97782982e4d858e19fde3ccba587bcbc",
+            "resource_version_id": "resource_version:2a083f1c1849571ca1fe671874317eb1"
+          },
+          {
+            "resource_id": "resource:7b0da2aa8fc45925bed2c45b07b8fbe9",
+            "resource_version_id": "resource_version:3640441842ae5a54ba4dd2bd03c64869"
+          }
+        ]
+      },
+      "read_usage.run": {
+        "firing_version_id": "transition_firing_version:7b0fbebacb1b5393914347d971db067d",
+        "admitted": 352,
+        "started": 353,
+        "execution_started": 388,
+        "output_registered": [
+          394,
+          402
+        ],
+        "success_recorded": 408,
+        "settled": 432,
+        "claimed_resources": [
+          {
+            "resource_id": "resource:f361eff8a16a5ef993dc75a173f8f40a",
+            "resource_version_id": "resource_version:021d583935b95cae84d320c7b702966f"
+          }
+        ],
+        "output_refs": [
+          {
+            "resource_id": "resource:e6e2135120065b9abd581b580d0067f4",
+            "resource_version_id": "resource_version:59e8ff5709b65cf2ae327874bd5bb962"
+          },
+          {
+            "resource_id": "resource:dcace1683fd0598bb8928befd0aaab79",
+            "resource_version_id": "resource_version:9b32a5ab64df566b987d96e9813bf77c"
+          }
+        ]
+      },
+      "check_tariff_input.run": {
+        "firing_version_id": "transition_firing_version:133424db21595c5aa7941d69fd767008",
+        "admitted": 450,
+        "started": 451,
+        "execution_started": 486,
+        "output_registered": [
+          528
+        ],
+        "success_recorded": 536,
+        "settled": 543,
+        "claimed_resources": [
+          {
+            "resource_id": "resource:97782982e4d858e19fde3ccba587bcbc",
+            "resource_version_id": "resource_version:2a083f1c1849571ca1fe671874317eb1"
+          }
+        ],
+        "output_refs": [
+          {
+            "resource_id": "resource:680b0fce60305a4a9465921ea345a746",
+            "resource_version_id": "resource_version:9b37f90164ea5de0ba1e38e536e5800f"
+          }
+        ]
+      },
+      "check_usage_input.run": {
+        "firing_version_id": "transition_firing_version:6adce45217955205899304532b1eb151",
+        "admitted": 490,
+        "started": 491,
+        "execution_started": 526,
+        "output_registered": [
+          532
+        ],
+        "success_recorded": 538,
+        "settled": 559,
+        "claimed_resources": [
+          {
+            "resource_id": "resource:e6e2135120065b9abd581b580d0067f4",
+            "resource_version_id": "resource_version:59e8ff5709b65cf2ae327874bd5bb962"
+          }
+        ],
+        "output_refs": [
+          {
+            "resource_id": "resource:72d967799a925e418cb684fdcfe09dcc",
+            "resource_version_id": "resource_version:cecb0894d10b501db215aa67bab66845"
+          }
+        ]
+      },
+      "normalize_tariff.run": {
+        "firing_version_id": "transition_firing_version:23d30506117953f5952b4eac4a583377",
+        "admitted": 574,
+        "started": 575,
+        "execution_started": 610,
+        "output_registered": [
+          652
+        ],
+        "success_recorded": 660,
+        "settled": 667,
+        "claimed_resources": [
+          {
+            "resource_id": "resource:680b0fce60305a4a9465921ea345a746",
+            "resource_version_id": "resource_version:9b37f90164ea5de0ba1e38e536e5800f"
+          }
+        ],
+        "output_refs": [
+          {
+            "resource_id": "resource:f36e29c1b56152db8f4955d8fbaf5936",
+            "resource_version_id": "resource_version:2d8be6c8ab8f5d19aa7aeb386494a1dd"
+          }
+        ]
+      },
+      "normalize_usage.run": {
+        "firing_version_id": "transition_firing_version:de7f3a11a5585cdea273e3e94743f824",
+        "admitted": 614,
+        "started": 615,
+        "execution_started": 650,
+        "output_registered": [
+          656
+        ],
+        "success_recorded": 662,
+        "settled": 683,
+        "claimed_resources": [
+          {
+            "resource_id": "resource:72d967799a925e418cb684fdcfe09dcc",
+            "resource_version_id": "resource_version:cecb0894d10b501db215aa67bab66845"
+          }
+        ],
+        "output_refs": [
+          {
+            "resource_id": "resource:d09433ed872f546f8de59194be22cf46",
+            "resource_version_id": "resource_version:370fecadf2fe5b0a9575bf26bbcc7946"
+          }
+        ]
+      },
+      "join_intervals.run": {
+        "firing_version_id": "transition_firing_version:5a809f3e8c2a5993b1d77fb8039e3fae",
+        "admitted": 698,
+        "started": 699,
+        "execution_started": 748,
+        "output_registered": [
+          750
+        ],
+        "success_recorded": 755,
+        "settled": 760,
+        "claimed_resources": [
+          {
+            "resource_id": "resource:f36e29c1b56152db8f4955d8fbaf5936",
+            "resource_version_id": "resource_version:2d8be6c8ab8f5d19aa7aeb386494a1dd"
+          },
+          {
+            "resource_id": "resource:d09433ed872f546f8de59194be22cf46",
+            "resource_version_id": "resource_version:370fecadf2fe5b0a9575bf26bbcc7946"
+          }
+        ],
+        "output_refs": [
+          {
+            "resource_id": "resource:ea3cc9921af55c5fbb3ffa38abc7dde6",
+            "resource_version_id": "resource_version:2678f9383516594d9f89e310ca988685"
+          }
+        ]
+      },
+      "compute_cost.run": {
+        "firing_version_id": "transition_firing_version:3db2d948bcf05cfdb51e52603fabdeb5",
+        "admitted": 775,
+        "started": 776,
+        "execution_started": 811,
+        "output_registered": [
+          813
+        ],
+        "success_recorded": 817,
+        "settled": 822,
+        "claimed_resources": [
+          {
+            "resource_id": "resource:ea3cc9921af55c5fbb3ffa38abc7dde6",
+            "resource_version_id": "resource_version:2678f9383516594d9f89e310ca988685"
+          }
+        ],
+        "output_refs": [
+          {
+            "resource_id": "resource:8489865524ca5f93a4ddc0b6a7576ccf",
+            "resource_version_id": "resource_version:f43a632df0e5550e9a9a2956fa965780"
+          }
+        ]
+      },
+      "validate_report.run": {
+        "firing_version_id": "transition_firing_version:3620d516936154d381bb5fc1718fa122",
+        "admitted": 837,
+        "started": 838,
+        "execution_started": 901,
+        "output_registered": [
+          903
+        ],
+        "success_recorded": 909,
+        "settled": 914,
+        "claimed_resources": [
+          {
+            "resource_id": "resource:7b0da2aa8fc45925bed2c45b07b8fbe9",
+            "resource_version_id": "resource_version:3640441842ae5a54ba4dd2bd03c64869"
+          },
+          {
+            "resource_id": "resource:8489865524ca5f93a4ddc0b6a7576ccf",
+            "resource_version_id": "resource_version:f43a632df0e5550e9a9a2956fa965780"
+          },
+          {
+            "resource_id": "resource:dcace1683fd0598bb8928befd0aaab79",
+            "resource_version_id": "resource_version:9b32a5ab64df566b987d96e9813bf77c"
+          }
+        ],
+        "output_refs": [
+          {
+            "resource_id": "resource:492f886480e05ea5a900079a9524ebd4",
+            "resource_version_id": "resource_version:0077c850d50b57c6aa6e2a8839e89163"
+          }
+        ]
+      },
+      "publish_report.run": {
+        "firing_version_id": "transition_firing_version:a5a8988eca015813adfd61b43ca1e9b4",
+        "admitted": 929,
+        "started": 930,
+        "execution_started": 965,
+        "output_registered": [
+          967
+        ],
+        "success_recorded": 971,
+        "settled": 976,
+        "claimed_resources": [
+          {
+            "resource_id": "resource:492f886480e05ea5a900079a9524ebd4",
+            "resource_version_id": "resource_version:0077c850d50b57c6aa6e2a8839e89163"
+          }
+        ],
+        "output_refs": [
+          {
+            "resource_id": "resource:8b14fc770c68540380539578bc4b8be0",
+            "resource_version_id": "resource_version:3685eba9787258be8fd2da38f98614a0"
+          }
+        ]
+      }
+    },
+    "lineage_outputs_checked": 12,
+    "max_ordinal": 1001
+  },
+  "controlled": {
+    "status": "PASS",
+    "max_active": 2,
+    "terminal_result_ref": [
+      "resource:f19f082e359a51a6ab3f2c951780f3d2",
+      "resource_version:6fc37050b2c45cf3a279d7b1a7e676ff"
+    ],
+    "firings": {
+      "read_tariff.run": {
+        "firing_version_id": "transition_firing_version:bda2d85bc57a5510bdaba7bba85faf54",
+        "admitted": 312,
+        "started": 313,
+        "execution_started": 348,
+        "output_registered": [
+          543,
+          547
+        ],
+        "success_recorded": 551,
+        "settled": 556,
+        "claimed_resources": [
+          {
+            "resource_id": "resource:b33cb2995db35527a9b1f3a1f9d5723a",
+            "resource_version_id": "resource_version:c854f260d6c0502fa817bf48533a5c9a"
+          }
+        ],
+        "output_refs": [
+          {
+            "resource_id": "resource:8e094d5bad2d5932981e83a98018ce0a",
+            "resource_version_id": "resource_version:e5b5c73c9e6d51ebba1ef4018933d78c"
+          },
+          {
+            "resource_id": "resource:144a7da13798515e9b5bb3840f10ad9e",
+            "resource_version_id": "resource_version:240a50a6217350d296caf8a18c2e792e"
+          }
+        ]
+      },
+      "read_usage.run": {
+        "firing_version_id": "transition_firing_version:7c01686a20975411aa513943b5717d2e",
+        "admitted": 352,
+        "started": 353,
+        "execution_started": 388,
+        "output_registered": [
+          390,
+          394
+        ],
+        "success_recorded": 398,
+        "settled": 403,
+        "claimed_resources": [
+          {
+            "resource_id": "resource:654c0992f2ee5f6cb71857316619083b",
+            "resource_version_id": "resource_version:d9a233ffa96458e6bf79119e233f6bec"
+          }
+        ],
+        "output_refs": [
+          {
+            "resource_id": "resource:c2033b848f3a5e77bffeabc7ad2036f7",
+            "resource_version_id": "resource_version:0f8a27e0951458088e8526283fffa18a"
+          },
+          {
+            "resource_id": "resource:716ec821b407545c86b9ac6777f1e028",
+            "resource_version_id": "resource_version:e94de1ba3adc581e8cd1fae645f4fc43"
+          }
+        ]
+      },
+      "check_usage_input.run": {
+        "firing_version_id": "transition_firing_version:e89b71c0bca45eff87ec6668750a1a3e",
+        "admitted": 421,
+        "started": 422,
+        "execution_started": 457,
+        "output_registered": [
+          459
+        ],
+        "success_recorded": 463,
+        "settled": 468,
+        "claimed_resources": [
+          {
+            "resource_id": "resource:c2033b848f3a5e77bffeabc7ad2036f7",
+            "resource_version_id": "resource_version:0f8a27e0951458088e8526283fffa18a"
+          }
+        ],
+        "output_refs": [
+          {
+            "resource_id": "resource:27efb240c2365cac842127c63c33f548",
+            "resource_version_id": "resource_version:098293c138db56018234ff9b0f291bda"
+          }
+        ]
+      },
+      "normalize_usage.run": {
+        "firing_version_id": "transition_firing_version:12cc43e231c25886898389a046058b2a",
+        "admitted": 483,
+        "started": 484,
+        "execution_started": 519,
+        "output_registered": [
+          521
+        ],
+        "success_recorded": 525,
+        "settled": 530,
+        "claimed_resources": [
+          {
+            "resource_id": "resource:27efb240c2365cac842127c63c33f548",
+            "resource_version_id": "resource_version:098293c138db56018234ff9b0f291bda"
+          }
+        ],
+        "output_refs": [
+          {
+            "resource_id": "resource:a7a6d70c1db75e9ebc0c05c2d3cfb157",
+            "resource_version_id": "resource_version:7a424a6d658f558384c1753d5df82eb8"
+          }
+        ]
+      },
+      "check_tariff_input.run": {
+        "firing_version_id": "transition_firing_version:a0279d8f7acc5db8b532b0861cc1516a",
+        "admitted": 574,
+        "started": 575,
+        "execution_started": 610,
+        "output_registered": [
+          612
+        ],
+        "success_recorded": 616,
+        "settled": 621,
+        "claimed_resources": [
+          {
+            "resource_id": "resource:8e094d5bad2d5932981e83a98018ce0a",
+            "resource_version_id": "resource_version:e5b5c73c9e6d51ebba1ef4018933d78c"
+          }
+        ],
+        "output_refs": [
+          {
+            "resource_id": "resource:4256e48d388f52ce8674d6d56845af33",
+            "resource_version_id": "resource_version:0f1e739ff4df566984f7fea0517174ab"
+          }
+        ]
+      },
+      "normalize_tariff.run": {
+        "firing_version_id": "transition_firing_version:0964cb73dde35a03922f797f119bceef",
+        "admitted": 636,
+        "started": 637,
+        "execution_started": 672,
+        "output_registered": [
+          674
+        ],
+        "success_recorded": 678,
+        "settled": 683,
+        "claimed_resources": [
+          {
+            "resource_id": "resource:4256e48d388f52ce8674d6d56845af33",
+            "resource_version_id": "resource_version:0f1e739ff4df566984f7fea0517174ab"
+          }
+        ],
+        "output_refs": [
+          {
+            "resource_id": "resource:2329f530fc025039b8dc26c2ca23642c",
+            "resource_version_id": "resource_version:4bc03bae35d357a0a953e5473dbec145"
+          }
+        ]
+      },
+      "join_intervals.run": {
+        "firing_version_id": "transition_firing_version:399c20cbd620595d8fa5bd23eaae59d5",
+        "admitted": 698,
+        "started": 699,
+        "execution_started": 748,
+        "output_registered": [
+          750
+        ],
+        "success_recorded": 755,
+        "settled": 760,
+        "claimed_resources": [
+          {
+            "resource_id": "resource:2329f530fc025039b8dc26c2ca23642c",
+            "resource_version_id": "resource_version:4bc03bae35d357a0a953e5473dbec145"
+          },
+          {
+            "resource_id": "resource:a7a6d70c1db75e9ebc0c05c2d3cfb157",
+            "resource_version_id": "resource_version:7a424a6d658f558384c1753d5df82eb8"
+          }
+        ],
+        "output_refs": [
+          {
+            "resource_id": "resource:f6ed57ca2c84569296d296ea79de10d6",
+            "resource_version_id": "resource_version:a9da1b1e8ebc5b71a02dd0df6c0e3b73"
+          }
+        ]
+      },
+      "compute_cost.run": {
+        "firing_version_id": "transition_firing_version:6b6ceffa38df556690bc52f1896b3ea2",
+        "admitted": 775,
+        "started": 776,
+        "execution_started": 811,
+        "output_registered": [
+          813
+        ],
+        "success_recorded": 817,
+        "settled": 822,
+        "claimed_resources": [
+          {
+            "resource_id": "resource:f6ed57ca2c84569296d296ea79de10d6",
+            "resource_version_id": "resource_version:a9da1b1e8ebc5b71a02dd0df6c0e3b73"
+          }
+        ],
+        "output_refs": [
+          {
+            "resource_id": "resource:c9ecf5d493a65ca0ba3ad0f820884bb4",
+            "resource_version_id": "resource_version:d9ec34d5bb955dcf8f59b95907835e9f"
+          }
+        ]
+      },
+      "validate_report.run": {
+        "firing_version_id": "transition_firing_version:d53e5d1d556c5304bdf8ee8b3cd149d7",
+        "admitted": 837,
+        "started": 838,
+        "execution_started": 901,
+        "output_registered": [
+          903
+        ],
+        "success_recorded": 909,
+        "settled": 914,
+        "claimed_resources": [
+          {
+            "resource_id": "resource:716ec821b407545c86b9ac6777f1e028",
+            "resource_version_id": "resource_version:e94de1ba3adc581e8cd1fae645f4fc43"
+          },
+          {
+            "resource_id": "resource:c9ecf5d493a65ca0ba3ad0f820884bb4",
+            "resource_version_id": "resource_version:d9ec34d5bb955dcf8f59b95907835e9f"
+          },
+          {
+            "resource_id": "resource:144a7da13798515e9b5bb3840f10ad9e",
+            "resource_version_id": "resource_version:240a50a6217350d296caf8a18c2e792e"
+          }
+        ],
+        "output_refs": [
+          {
+            "resource_id": "resource:026acb7ced9e59b0b05472119c66b70c",
+            "resource_version_id": "resource_version:90b6bb9b25ce5faa8ee7eba66f29dc46"
+          }
+        ]
+      },
+      "publish_report.run": {
+        "firing_version_id": "transition_firing_version:4f846e6270975c74b8a93c7a9195ddd2",
+        "admitted": 929,
+        "started": 930,
+        "execution_started": 965,
+        "output_registered": [
+          967
+        ],
+        "success_recorded": 971,
+        "settled": 976,
+        "claimed_resources": [
+          {
+            "resource_id": "resource:026acb7ced9e59b0b05472119c66b70c",
+            "resource_version_id": "resource_version:90b6bb9b25ce5faa8ee7eba66f29dc46"
+          }
+        ],
+        "output_refs": [
+          {
+            "resource_id": "resource:f19f082e359a51a6ab3f2c951780f3d2",
+            "resource_version_id": "resource_version:6fc37050b2c45cf3a279d7b1a7e676ff"
+          }
+        ]
+      }
+    },
+    "lineage_outputs_checked": 12,
+    "max_ordinal": 1001
+  },
+  "process_readback": {
+    "status": "PASS",
+    "all_stable_fields_equal": true,
+    "live_only_fields": [
+      "stop_reason",
+      "transport"
+    ],
+    "before": {
+      "max_ordinal": 1001,
+      "event_count": 1001,
+      "dispatch_reservations": 10,
+      "execution_starts": 10,
+      "actual_model_call_counts": [
+        0,
+        0
+      ]
+    },
+    "after": {
+      "max_ordinal": 1001,
+      "event_count": 1001,
+      "dispatch_reservations": 10,
+      "execution_starts": 10,
+      "actual_model_call_counts": [
+        0,
+        0
+      ]
+    }
+  },
+  "controlled_barriers": {
+    "status": "PASS",
+    "observations": {
+      "observations": [
+        {
+          "branch": "tariff",
+          "phase": "entered",
+          "thread": 124896582563520
+        },
+        {
+          "branch": "usage",
+          "phase": "entered",
+          "thread": 124896573122240
+        },
+        {
+          "branch": "usage",
+          "phase": "returned"
+        },
+        {
+          "branch": "tariff",
+          "phase": "returned"
+        }
+      ],
+      "snapshots": {
+        "both_read_tools_entered": {
+          "enabled": [],
+          "active": [
+            {
+              "transition": "read_usage.run",
+              "firing_ref": "transition_firing_version:7c01686a20975411aa513943b5717d2e"
+            },
+            {
+              "transition": "read_tariff.run",
+              "firing_ref": "transition_firing_version:bda2d85bc57a5510bdaba7bba85faf54"
+            }
+          ],
+          "ordinal": 389
+        },
+        "usage_normalized_while_tariff_reading": {
+          "enabled": [],
+          "active": [
+            {
+              "transition": "read_tariff.run",
+              "firing_ref": "transition_firing_version:bda2d85bc57a5510bdaba7bba85faf54"
+            }
+          ],
+          "ordinal": 542
+        },
+        "normalized_resource_ref": {
+          "resource_id": "resource:a7a6d70c1db75e9ebc0c05c2d3cfb157",
+          "resource_version_id": "resource_version:7a424a6d658f558384c1753d5df82eb8"
+        },
+        "unclaimed_sibling_read": "UnauthorizedResourceDelivery"
+      }
+    },
+    "active_firings_matched_to_events": [
+      "transition_firing_version:7c01686a20975411aa513943b5717d2e",
+      "transition_firing_version:bda2d85bc57a5510bdaba7bba85faf54"
+    ]
+  },
+  "status": "PASS"
+}

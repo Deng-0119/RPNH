@@ -1,0 +1,129 @@
+{
+  "schema_version": "tool_pipeline/handoff_evidence_manifest/v1",
+  "base_commit": "00f2d29c7deffed44e2ec635a24f390c6e0d9ace",
+  "final_source_set_sha256": "a547de500345f51c102fb197dfabedafc2aa48c251dc19d9e10733cbe2553618",
+  "verdict": "L2_PASS_NATIVE_L3_PENDING",
+  "unique_test_coverage": 22,
+  "source_version_relation": {
+    "before_cleanup": "6c0bc426cb074de96b9317a955dfee620d5b406430a96f5e39f4d173f558dc20",
+    "final": "a547de500345f51c102fb197dfabedafc2aa48c251dc19d9e10733cbe2553618",
+    "changed_files": [
+      "examples/tool_pipeline/tests/test_pipeline.py"
+    ],
+    "change_scope": "Only test-helper assertion-failure cleanup; product files and the 13 other tests unchanged."
+  },
+  "layers": [
+    {
+      "id": "static_baseline",
+      "status": "PASS",
+      "evidence": [
+        "provenance/core-byte-verification.json",
+        "provenance/scoped-baseline-verification.json"
+      ],
+      "scope": "722 cpn blobs and 3 named root files; new example path absent in baseline; not a full repository checkout or full suite"
+    },
+    {
+      "id": "author_full_22",
+      "status": "PASS",
+      "source_manifest": "provenance/tested-source-manifest-before-cleanup.json",
+      "transport": "explicit_test_only_pipe",
+      "raw_log": "evidence/final-author-tests.log",
+      "junit": "evidence/final-author-junit.xml",
+      "runtime_evidence_root": "evidence/final-author-tests/",
+      "tests": 22
+    },
+    {
+      "id": "author_final_cleanup_recheck",
+      "status": "PASS",
+      "source_manifest": "SOURCE_MANIFEST.json",
+      "transport": "explicit_test_only_pipe",
+      "raw_log": "evidence/final-cleanup-recheck.log",
+      "junit": "evidence/final-cleanup-recheck-junit.xml",
+      "runtime_evidence_root": "evidence/final-cleanup-recheck/",
+      "tests": 9,
+      "overlaps_full_22": true
+    },
+    {
+      "id": "independent_final_host_boundaries",
+      "status": "PASS",
+      "transport": "explicit_test_only_pipe",
+      "evidence": [
+        "review/final-boundary-results.json",
+        "review/final-boundary-probes.log"
+      ],
+      "source_identity": "Exact final host/tools/contracts/module SHA256 recorded in result"
+    },
+    {
+      "id": "independent_parallel_audit",
+      "status": "PASS",
+      "evidence": [
+        "review/final-parallel-evidence-audit.json"
+      ],
+      "scope": "Independent read-only audit of 22-case author controlled evidence; audit file records exact evidence and observation original hashes. Not an independent new runtime; not the later cleanup recheck."
+    },
+    {
+      "id": "native_cli",
+      "status": "BLOCKED",
+      "exit_code": 2,
+      "error": "PermissionError errno=1",
+      "fallback_used": false,
+      "raw_log": "evidence/native-attempt.log",
+      "independent_capability_probe": "review/initial-probes.json"
+    },
+    {
+      "id": "local_native_default_suite",
+      "status": "NOT_RUN",
+      "required": "Run 22 default-native tests and native CLI on AF_UNIX-capable local host; no pipe shim."
+    },
+    {
+      "id": "real_models_external_io_docker_actions",
+      "status": "NOT_RUN",
+      "scope": "Intentionally out of scope; observed synthetic runtime model counts are [0,0]."
+    }
+  ],
+  "historical": [
+    {
+      "id": "author_first_17",
+      "status": "PASS_HISTORICAL_ONLY",
+      "log": "evidence/author-tests.log",
+      "junit": "evidence/author-junit.xml",
+      "current_acceptance": false
+    },
+    {
+      "id": "first_smoke_and_readback",
+      "status": "HISTORICAL_ONLY",
+      "roots": [
+        "evidence/first-export/",
+        "evidence/cli-readback/"
+      ],
+      "logs": [
+        "evidence/cli-readback.log",
+        "evidence/rpnh-net-cli.log"
+      ],
+      "qualification": "Pre-guard smoke; later readback does not turn the earlier execution into a final-source run."
+    },
+    {
+      "id": "independent_exploratory_long_probe",
+      "status": "PARTIAL_INCONCLUSIVE",
+      "summary": "review/independent-results.json",
+      "raw_log": "review/independent-probes.log",
+      "raw_log_size_bytes": 0,
+      "completed_scenarios": 14,
+      "expected_rejection_cases": 11,
+      "nominal_and_rounding_cases": 2,
+      "historical_parent_defect_cases": 1,
+      "loaded_host_identity": "Imported before parents guard fix; exact imported source-set hash was not captured. Later on-disk hashes are not substituted for runtime identity.",
+      "last_barrier_status": "INCONCLUSIVE_CANCELLED",
+      "exit_code": 130,
+      "current_acceptance": false,
+      "resolved_defect_evidence": "review/final-boundary-results.json",
+      "qualification": "Completed scenarios rebuilt read-only from original Registry. Empty raw log preserved; no original traceback invented. Old probe scripts and Registry stores omitted."
+    }
+  ],
+  "final_readonly_review": [
+    "review/validation-summary.md",
+    "review/review-verdict.json"
+  ],
+  "evidence_path_policy": "Cloud filesystem paths are replaced in delivery copies; PATH_REDACTIONS.json retains original/delivered hashes and exact substitution counts. Audit hashes refer to original records; delivered hashes are in SHA256SUMS.txt.",
+  "local_return_requirements": "See LOCAL_VALIDATION_TASK.txt; preserve all local raw success/failure/blocked logs, tested version, hashes, environment, no push."
+}

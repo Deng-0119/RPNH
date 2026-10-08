@@ -1,0 +1,32 @@
+{
+  "command": [
+    "<WORKSPACE>/.p26/v/bin/python",
+    "-m",
+    "pytest",
+    "-vv",
+    "--tb=long",
+    "<WORKSPACE>/task-tool-pipeline-validation-20261008/probes/test_native_boundaries.py::test_missing_usage_join_native",
+    "--basetemp",
+    "<WORKSPACE>/.p26/y",
+    "--junitxml",
+    "<WORKSPACE>/task-tool-pipeline-validation-20261008/probes/mirror-native-y.junit.xml",
+    "-p",
+    "no:cacheprovider",
+    "-x"
+  ],
+  "cwd": "<WORKSPACE>/RPNH-main",
+  "started_at": "2026-10-08T13:20:05.601041+00:00",
+  "finished_at": "2026-10-08T13:21:26.446005+00:00",
+  "elapsed_seconds": 75.94756059899998,
+  "exit_code": 0,
+  "pid": 8,
+  "status": "PASS",
+  "probe_sha256": "27ba623bd1d8226a0e34ff6928f1507bb2b0ac0d505f6356bcea6e865f22edef",
+  "environment_overrides": {
+    "PYTHONPATH": "<WORKSPACE>/RPNH-main",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "TMPDIR": "<WORKSPACE>/.p26/tmp",
+    "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1",
+    "PYTHONUNBUFFERED": "1"
+  }
+}

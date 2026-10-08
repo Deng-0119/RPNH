@@ -1,0 +1,38 @@
+{
+  "verdict": "PASS_WITHIN_L2_NATIVE_L3_PENDING",
+  "source_set_sha256": "a547de500345f51c102fb197dfabedafc2aa48c251dc19d9e10733cbe2553618",
+  "source_manifest_independently_verified": true,
+  "reviewed_files": 16,
+  "core_files_compared": 722,
+  "modified_core_files": [],
+  "junit_readback": {
+    "final-author-junit.xml": {
+      "name": "pytest",
+      "errors": "0",
+      "failures": "0",
+      "skipped": "0",
+      "tests": "22",
+      "time": "444.670",
+      "timestamp": "2026-10-08T08:28:08.914548-04:00",
+      "hostname": "54cb1abdc64d"
+    },
+    "final-cleanup-recheck-junit.xml": {
+      "name": "pytest",
+      "errors": "0",
+      "failures": "0",
+      "skipped": "0",
+      "tests": "9",
+      "time": "105.186",
+      "timestamp": "2026-10-08T08:32:43.267552-04:00",
+      "hostname": "54cb1abdc64d"
+    }
+  },
+  "native_af_unix": "BLOCKED_EPERM",
+  "pending_gate": "Run 22 default-native tests and native CLI on AF_UNIX-capable Linux/WSL2; zero model calls",
+  "artifacts": [
+    "review/validation-summary.md",
+    "review/final-boundary-results.json",
+    "review/final-parallel-evidence-audit.json",
+    "review/independent-results.json"
+  ]
+}

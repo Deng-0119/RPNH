@@ -1,0 +1,36 @@
+RPNH 工具 Pipeline 本地原生补验交接包
+
+当前结论
+离线工具 Pipeline 已实现，并完成显式 test-only pipe 下的 Registry/Harness 语义验收。云端原生 AF_UNIX 调用实际被环境拒绝，仍须在本地补验原生 OwnerEventLoop。代码未 push。
+
+先看这三份材料
+1. VALIDATION_SUMMARY.txt：已通过的范围、版本分层与剩余缺口。
+2. LOCAL_VALIDATION_TASK.txt：本地接续任务、真实命令、验收与返回要求。
+3. SOURCE_MANIFEST.json：16 个新增文件的 SHA-256、内容集合 hash 和 Git tree hash。
+
+代码导入
+source/examples/tool_pipeline/ 是完整新增目录，本包不含 core 仓库副本。先在 Deng-0119/RPNH 权威 checkout 中阅读 AGENTS.md，确认当前 HEAD 和用户已有变更，再导入。changes/tool_pipeline.new-files.patch 提供同一批字节的新增文件 patch；先 git apply --check，再在无冲突且范围正确时应用，或核对后复制目录。目录已经存在时不要覆盖。
+
+核验基线
+00f2d29c7deffed44e2ec635a24f390c6e0d9ace
+源码内容集合 SHA-256
+a547de500345f51c102fb197dfabedafc2aa48c251dc19d9e10733cbe2553618
+该基线仅代表本次实际取样；本地开始时需再次查看主线。最终16文件只增加示例，已核对722个cpn文件与基线字节一致。
+
+证据位置
+- evidence/：分轮日志、JUnit、完整导出与作者验收摘要。
+- review/：独立边界结果、分层摘要及final边界probe源码（使用pipe，仅作已执行检查的可审查补充；本地验收仍须默认原生路径）。
+- provenance/：精确基线、core字节核对、环境和实际命令、cleanup前的源码manifest。
+- EVIDENCE_MANIFEST.json：各轮属于哪一版本及哪些结论可用。
+
+重要的阅读顺序
+最终正常输出优先 evidence/final-cleanup-recheck/tool-pipeline-controlled0/rebuilt-export/。
+完整22项及反例证据在 final-author-tests；后续9项为相同覆盖的cleanup修正复验，唯一测试覆盖仍为22，不能累加为31。
+first-export、first-semantic对应导出、早期17项、较早独立long probes都保留为历史证据；具体限制见manifest，不能混用其运行身份。
+
+证据完整性与隐私
+执行记录中只替换了云端绝对/相对环境路径；PATH_REDACTIONS.json保存原件hash、交付hash和逐项替换计数，其他字节保留。作者原始文件未改。Registry数据库、缓存、环境、内部计划和私人笔记均未入包。
+SHA256SUMS.txt覆盖包内其余全部文件，可从本包根目录执行 sha256sum -c SHA256SUMS.txt。所有源码文件保持冻结字节。
+
+停止边界
+本任务不运行真实模型、不启动Docker或Actions、不访问外部业务、不自动push。完成本地原生补验并返回证据后，再由主任务核对并整合。

@@ -1,0 +1,29 @@
+{
+  "label": "native-standard",
+  "command": [
+    "<WORKSPACE>/.p26/v/bin/python",
+    "-B",
+    "-m",
+    "examples.tool_pipeline.run",
+    "--run-dir",
+    "<WORKSPACE>/.p26/b/run",
+    "--output-dir",
+    "<WORKSPACE>/.p26/b/export"
+  ],
+  "cwd": "<WORKSPACE>/RPNH-main",
+  "pid": 3,
+  "started_at": "2026-10-08T13:14:27.528233+00:00",
+  "finished_at": "2026-10-08T13:15:41.973303+00:00",
+  "elapsed_seconds": 69.30919933899997,
+  "exit_code": 0,
+  "tested_head": "00f2d29c7deffed44e2ec635a24f390c6e0d9ace",
+  "environment_overrides": {
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONUNBUFFERED": "1",
+    "PYTHONPATH": "<WORKSPACE>/RPNH-main",
+    "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1",
+    "TMPDIR": "<WORKSPACE>/.p26/tmp"
+  },
+  "stdout": "<WORKSPACE>/task-tool-pipeline-validation-20261008/logs/native-standard.stdout.log",
+  "stderr": "<WORKSPACE>/task-tool-pipeline-validation-20261008/logs/native-standard.stderr.log"
+}

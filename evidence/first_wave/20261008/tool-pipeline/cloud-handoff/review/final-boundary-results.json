@@ -1,0 +1,44 @@
+{
+  "transport": "explicit_test_transport",
+  "source_sha256": {
+    "host.py": "0cb8ae2074f726a29785c7b8995d56ddff93ae27e7471a1112e4ae198c0fe9fc",
+    "tools.py": "4505285f2a3d801f2ac31adc63cbc73aa3d5a271a5f6a88b44fac6bc05d7fca9",
+    "contracts.py": "80343a6929294ddf5aaa663595a3c2508a4550a85e93de71bd68b948df294534",
+    "module.json": "fd8483bbc7974386531383d4988fe42f3deb350b78c1a06837473710a171d577"
+  },
+  "same_registry_unauthorized_read": {
+    "error_type": "UnauthorizedResourceDelivery",
+    "error": "exact resource is outside the registered binding/capability scope"
+  },
+  "forged_parent_ref_rejected": {
+    "error_type": "ValueError",
+    "error": "tool output provenance differs from exact delivered inputs or policy"
+  },
+  "fresh_harness_no_unresolved_replay": {
+    "stop_reason": "reconciliation_required",
+    "tool_calls": 1
+  },
+  "actual_model_call_counts": [
+    0,
+    0
+  ],
+  "terminal_count": 0,
+  "firings": [
+    {
+      "transition": "read_tariff.run",
+      "state": "PUBLISHED"
+    },
+    {
+      "transition": "read_usage.run",
+      "state": "PROVISIONAL"
+    },
+    {
+      "transition": "check_tariff_input.run",
+      "state": "PUBLISHED"
+    },
+    {
+      "transition": "normalize_tariff.run",
+      "state": "PUBLISHED"
+    }
+  ]
+}
