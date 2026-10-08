@@ -1,0 +1,36 @@
+{
+  "status": "ACCEPTED",
+  "reviewer": "inspector-v1 Lens inline readonlypublicationreview; parentrecordsresponse",
+  "findings": [],
+  "manifest_payloads": 143,
+  "all_original_included_hashes_and_sizes_match": true,
+  "private_prefix_substitutions": 105,
+  "prefix_transformed_files": 37,
+  "XML_payloads_transformed": 0,
+  "cloud_original_files": 63,
+  "cloud_checksums_verified": 62,
+  "product_final7_match": true,
+  "native_JUnit": {
+    "focused": 36,
+    "classic": 3,
+    "unique_IDs": 39,
+    "failures_errors_skips_duplicates": 0,
+    "frozen_inventory_match": true
+  },
+  "scope_qualification": "Not39socketintegrations;H1only;oldA PARTIAL_ENV retained",
+  "cli_readback": {
+    "total_kwh": "2.000",
+    "total_cny": "1.70",
+    "stable_fields_equal": 11,
+    "ordinal": 1001,
+    "dispatch_and_execution_counts": 10
+  },
+  "classic_scripted_ledgers": [
+    2,
+    3,
+    3
+  ],
+  "real_provider_requests": 0,
+  "excluded_artifact_or_credential_hits": [],
+  "reviewer_network_runtime_Git_writes": false
+}

@@ -1,0 +1,33 @@
+{
+  "label": "native-agent-task",
+  "command": [
+    "<WORKSPACE>/.p26/v/bin/python",
+    "-B",
+    "-m",
+    "pytest",
+    "-q",
+    "tests/test_task_frontend.py::test_interrupted_firing_does_not_publish_workspace_files",
+    "tests/test_task_frontend.py::test_resume_uses_persisted_transition_profiles_when_graph_swaps_them",
+    "tests/test_task_frontend.py::test_interruption_checkpoints_prior_workspace_action_and_discards_current",
+    "--basetemp=<WORKSPACE>/.o26/a",
+    "--junitxml=<WORKSPACE>/task-owner-entry-validation-20261008/logs/native-agent-task.xml",
+    "-p",
+    "no:cacheprovider"
+  ],
+  "cwd": "<WORKSPACE>/.o26/s",
+  "pid": 7758,
+  "started_at": "2026-10-08T16:25:15.059145+00:00",
+  "finished_at": "2026-10-08T16:27:39.776930+00:00",
+  "elapsed_seconds": 139.20668144699994,
+  "exit_code": 0,
+  "tested_head": "674252feb836f631c162979f177d1fe91f22559f",
+  "environment_overrides": {
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONUNBUFFERED": "1",
+    "PYTHONPATH": "<WORKSPACE>/.o26/s",
+    "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1",
+    "TMPDIR": "<WORKSPACE>/.o26/tmp"
+  },
+  "stdout": "<WORKSPACE>/task-owner-entry-validation-20261008/logs/native-agent-task.stdout.log",
+  "stderr": "<WORKSPACE>/task-owner-entry-validation-20261008/logs/native-agent-task.stderr.log"
+}

@@ -1,0 +1,94 @@
+{
+  "schema_version": "rpnh/owner_entry_boundary_provenance/v1",
+  "source_base_commit": "674252feb836f631c162979f177d1fe91f22559f",
+  "observed_evidence_only_head": "ec9077e95b830d09e7252c6d5d8ebcdbb9eb4ac4",
+  "patch_sha256": "71261d059d205b375334450aef281702a1c573562c6e905a08d411b907749a6c",
+  "changed_files": [
+    {
+      "path": "cpn/orchestrator/runner.py",
+      "baseline_git_blob": "bac48e3ac57f84531282ed2d034fae22676f444e",
+      "baseline_sha256": "b2ca4aa17c4b960b732ca0b814f8dc96c885babb9a1fbd095b47da953fe4ba03",
+      "final_git_blob": "3e6fcebe1a59a2a193572d6bc963f1949a8067f4",
+      "final_sha256": "6ae5153b2925ca3a0237383889014f1197f6bfa98e0f1f8523ef003db72949f3"
+    },
+    {
+      "path": "cpn/rpnh/agent_tasks.py",
+      "baseline_git_blob": "d45c6f01d5c2da437ae106b4525fc11558227ce3",
+      "baseline_sha256": "1e26404c15ec14e75959a889a2e978b782413222e3cb993cd45e8bea40be178f",
+      "final_git_blob": "e2283345a354124ae2861881dce0cfcafa47db67",
+      "final_sha256": "247c1ec9b9d5eb380071b0bfbf8e1bc45d20038f9dd5c0aaa8c292be62927c11"
+    },
+    {
+      "path": "examples/tool_pipeline/README.md",
+      "baseline_git_blob": "a078bdb696d2c30128442eb06d2658bd694a83c5",
+      "baseline_sha256": "f544ef304ac13f353af2bb207afab18e8a86a69391b407a7adafaa81674c7032",
+      "final_git_blob": "3be8ed3dbedacc613b11131732694c26b4a9c2ac",
+      "final_sha256": "3a5fa5078bf3b20d150ea461bc708037a26b41256244da4d63b6769c3d90eba3"
+    },
+    {
+      "path": "examples/tool_pipeline/README_ZH.md",
+      "baseline_git_blob": "ff672b5667a10524be7e4039c6e5efb08147b8db",
+      "baseline_sha256": "5449c8ef872ee8139c780b878adc394fbe112f25888099d15f5863db9674dbc7",
+      "final_git_blob": "cec5760583b6cd5b693c6c37ca2771db5e560edd",
+      "final_sha256": "96da52bfd074c2ee0f8c21408048767115ea1bc0ee7c2a1794b52a8743e106e4"
+    },
+    {
+      "path": "examples/tool_pipeline/run.py",
+      "baseline_git_blob": "1f9378d6a0aa005a3d18fefc5bf4739cee86d7b7",
+      "baseline_sha256": "71bf5b015d8a4ca7e2a0888ff47df8586dd26982576a92fc62725db0ac8c5ad9",
+      "final_git_blob": "b50a7ebc373817ed10f936d399e6a0934a10dbf8",
+      "final_sha256": "ad0df2b9d2e018d3b17dc49350a051f8620e3a3c31cfb96840afb6bbbb694dc4"
+    },
+    {
+      "path": "examples/tool_pipeline/tests/test_pipeline.py",
+      "baseline_git_blob": "33d85e416f014afa440eb2c73a11dab11c3e6afd",
+      "baseline_sha256": "387e64049bdd70d2305a09ff40610a61f2347e5f34690dcfcb4a6814378afbfb",
+      "final_git_blob": "1633a100241f847150b9aeefddbd8bb841a3f103",
+      "final_sha256": "9ce908bd82781b426387e9fa5ccf4b7145bc75926f3fcaba91933db32be813f7"
+    },
+    {
+      "path": "tests/test_orchestrator_boundary.py",
+      "baseline_git_blob": null,
+      "baseline_sha256": null,
+      "final_git_blob": "35abfa84da0a30fd9810b42627e0693074fca2e7",
+      "final_sha256": "6545ed83ea5a1986337d75512a50cc82036e0733a7097ec32a6f1d0f06ad49d1"
+    }
+  ],
+  "unchanged_critical_files": {
+    "cpn/rpnh/harness.py": {
+      "same_as_baseline": true,
+      "sha256": "4246c354b66c11af07bdb65956f72c9927527dbb19a3801ad9f3ce4a3eb8d887"
+    },
+    "cpn/rpnh/control_server.py": {
+      "same_as_baseline": true,
+      "sha256": "558efc223f50f98dde2b22b1bf8642e4224087d3a68ea337a3fcb3a865b1d595"
+    },
+    "cpn/rpnh/run.py": {
+      "same_as_baseline": true,
+      "sha256": "e715047ae545f5bde57e08d4273677d1e94d060028b3ee4374f419b458f155c3"
+    },
+    "cpn/components/execution_services.py": {
+      "same_as_baseline": true,
+      "sha256": "02b188dac39f54944744105788f9c7354447add517fef40d8d9b8eb054a5240e"
+    },
+    "examples/tool_pipeline/module.json": {
+      "same_as_baseline": true,
+      "sha256": "fd8483bbc7974386531383d4988fe42f3deb350b78c1a06837473710a171d577"
+    },
+    "examples/tool_pipeline/host.py": {
+      "same_as_baseline": true,
+      "sha256": "0cb8ae2074f726a29785c7b8995d56ddff93ae27e7471a1112e4ae198c0fe9fc"
+    },
+    "examples/tool_pipeline/tools.py": {
+      "same_as_baseline": true,
+      "sha256": "4505285f2a3d801f2ac31adc63cbc73aa3d5a271a5f6a88b44fac6bc05d7fca9"
+    },
+    "examples/tool_pipeline/tests/pipe_transport.py": {
+      "same_as_baseline": true,
+      "sha256": "bf5beda6088f19959752655512d8fbba1ea4b1abab1d999d31502c8428af46c9"
+    }
+  },
+  "review_source_sha256": "70191c3a6b53c4da6b70692a07a559efa4de33a36ee23c6d42e40762e2a9c7fc",
+  "review_conclusion_source_sha256": "8fe86ced91ab48aa7185e1cd825d4f4ae67bdb033ccf71b2318a918ff2d3fa29",
+  "description": "Technical provenance extracted from the final independent review; narrative review notes are not included."
+}

@@ -1,0 +1,857 @@
+{
+  "source_base_commit": "674252feb836f631c162979f177d1fe91f22559f",
+  "verdict": "PASS_FOCUSED_PIPE_SEMANTICS_NATIVE_BLOCKED",
+  "distinct_testcases": 39,
+  "passed_distinct_testcases": 39,
+  "batch_testcase_executions": 50,
+  "deduplication_key": [
+    "classname",
+    "name"
+  ],
+  "batches": [
+    {
+      "xml": "focused-tests.xml",
+      "tests": 32,
+      "passed": 32,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0,
+      "suite_attributes": [
+        {
+          "name": "pytest",
+          "errors": "0",
+          "failures": "0",
+          "skipped": "0",
+          "tests": "32",
+          "time": "908.821",
+          "timestamp": "2026-10-08T11:54:57.907453-04:00",
+          "hostname": "54cb1abdc64d"
+        }
+      ],
+      "cases": [
+        {
+          "classname": "tests.test_orchestrator_boundary",
+          "name": "test_entry_forwards_boundaries_without_owning_resources[False]",
+          "outcome": "passed"
+        },
+        {
+          "classname": "tests.test_orchestrator_boundary",
+          "name": "test_entry_forwards_boundaries_without_owning_resources[True]",
+          "outcome": "passed"
+        },
+        {
+          "classname": "tests.test_harness_quiescence",
+          "name": "test_finite_harness_returns_quiescent_marking_without_spinning",
+          "outcome": "passed"
+        },
+        {
+          "classname": "tests.test_harness_quiescence",
+          "name": "test_waiting_harness_returns_blocked_result_without_dispatch_spin",
+          "outcome": "passed"
+        },
+        {
+          "classname": "tests.test_harness_quiescence",
+          "name": "test_owner_stop_wins_over_a_racing_worker_product",
+          "outcome": "passed"
+        },
+        {
+          "classname": "tests.test_harness_quiescence",
+          "name": "test_untracked_registry_firing_reports_reconciliation_required",
+          "outcome": "passed"
+        },
+        {
+          "classname": "examples.tool_pipeline.tests.test_pipeline",
+          "name": "test_complete_report_and_independent_validation",
+          "outcome": "passed"
+        },
+        {
+          "classname": "examples.tool_pipeline.tests.test_pipeline",
+          "name": "test_real_overlap_capacity_and_branch_progress",
+          "outcome": "passed"
+        },
+        {
+          "classname": "examples.tool_pipeline.tests.test_pipeline",
+          "name": "test_exact_lineage_and_partial_order",
+          "outcome": "passed"
+        },
+        {
+          "classname": "examples.tool_pipeline.tests.test_pipeline",
+          "name": "test_readback_needs_no_exports_or_process_cache",
+          "outcome": "passed"
+        },
+        {
+          "classname": "examples.tool_pipeline.tests.test_pipeline",
+          "name": "test_round_each_interval_half_up",
+          "outcome": "passed"
+        },
+        {
+          "classname": "examples.tool_pipeline.tests.test_pipeline",
+          "name": "test_invalid_data_cannot_reach_final[unit]",
+          "outcome": "passed"
+        },
+        {
+          "classname": "examples.tool_pipeline.tests.test_pipeline",
+          "name": "test_invalid_data_cannot_reach_final[time]",
+          "outcome": "passed"
+        },
+        {
+          "classname": "examples.tool_pipeline.tests.test_pipeline",
+          "name": "test_invalid_data_cannot_reach_final[both_invalid]",
+          "outcome": "passed"
+        },
+        {
+          "classname": "examples.tool_pipeline.tests.test_pipeline",
+          "name": "test_invalid_data_cannot_reach_final[candidate]",
+          "outcome": "passed"
+        },
+        {
+          "classname": "examples.tool_pipeline.tests.test_pipeline",
+          "name": "test_input_middleware_rejects_invalid_values[negative]",
+          "outcome": "passed"
+        },
+        {
+          "classname": "examples.tool_pipeline.tests.test_pipeline",
+          "name": "test_input_middleware_rejects_invalid_values[float]",
+          "outcome": "passed"
+        },
+        {
+          "classname": "examples.tool_pipeline.tests.test_pipeline",
+          "name": "test_input_middleware_rejects_invalid_values[duplicate]",
+          "outcome": "passed"
+        },
+        {
+          "classname": "examples.tool_pipeline.tests.test_pipeline",
+          "name": "test_input_middleware_rejects_invalid_values[nan]",
+          "outcome": "passed"
+        },
+        {
+          "classname": "examples.tool_pipeline.tests.test_pipeline",
+          "name": "test_input_middleware_rejects_invalid_values[timezone]",
+          "outcome": "passed"
+        },
+        {
+          "classname": "examples.tool_pipeline.tests.test_pipeline",
+          "name": "test_input_middleware_rejects_invalid_values[overlap]",
+          "outcome": "passed"
+        },
+        {
+          "classname": "examples.tool_pipeline.tests.test_pipeline",
+          "name": "test_input_middleware_rejects_invalid_values[too_large]",
+          "outcome": "passed"
+        },
+        {
+          "classname": "examples.tool_pipeline.tests.test_pipeline",
+          "name": "test_worker_exception_keeps_unresolved_firing",
+          "outcome": "passed"
+        },
+        {
+          "classname": "examples.tool_pipeline.tests.test_pipeline",
+          "name": "test_truncated_final_payload_fails_readback",
+          "outcome": "passed"
+        },
+        {
+          "classname": "examples.tool_pipeline.tests.test_pipeline",
+          "name": "test_independent_validator_rejects_other_schema_valid_candidates[source_version]",
+          "outcome": "passed"
+        },
+        {
+          "classname": "examples.tool_pipeline.tests.test_pipeline",
+          "name": "test_independent_validator_rejects_other_schema_valid_candidates[line_amount]",
+          "outcome": "passed"
+        },
+        {
+          "classname": "examples.tool_pipeline.tests.test_pipeline",
+          "name": "test_independent_validator_rejects_other_schema_valid_candidates[total_usage]",
+          "outcome": "passed"
+        },
+        {
+          "classname": "examples.tool_pipeline.tests.test_pipeline",
+          "name": "test_independent_validator_rejects_other_schema_valid_candidates[missing_line]",
+          "outcome": "passed"
+        },
+        {
+          "classname": "examples.tool_pipeline.tests.test_pipeline",
+          "name": "test_existing_entry_matches_direct_harness[1]",
+          "outcome": "passed"
+        },
+        {
+          "classname": "examples.tool_pipeline.tests.test_pipeline",
+          "name": "test_existing_entry_matches_direct_harness[2]",
+          "outcome": "passed"
+        },
+        {
+          "classname": "examples.tool_pipeline.tests.test_pipeline",
+          "name": "test_entry_stop_drains_admitted_siblings_without_new_work",
+          "outcome": "passed"
+        },
+        {
+          "classname": "examples.tool_pipeline.tests.test_pipeline",
+          "name": "test_launcher_closes_each_owned_resource_once",
+          "outcome": "passed"
+        }
+      ]
+    },
+    {
+      "xml": "agent-task-tests.xml",
+      "tests": 3,
+      "passed": 3,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0,
+      "suite_attributes": [
+        {
+          "name": "pytest",
+          "errors": "0",
+          "failures": "0",
+          "skipped": "0",
+          "tests": "3",
+          "time": "172.702",
+          "timestamp": "2026-10-08T11:56:30.375507-04:00",
+          "hostname": "54cb1abdc64d"
+        }
+      ],
+      "cases": [
+        {
+          "classname": "tests.test_task_frontend",
+          "name": "test_interrupted_firing_does_not_publish_workspace_files",
+          "outcome": "passed"
+        },
+        {
+          "classname": "tests.test_task_frontend",
+          "name": "test_resume_uses_persisted_transition_profiles_when_graph_swaps_them",
+          "outcome": "passed"
+        },
+        {
+          "classname": "tests.test_task_frontend",
+          "name": "test_interruption_checkpoints_prior_workspace_action_and_discards_current",
+          "outcome": "passed"
+        }
+      ]
+    },
+    {
+      "xml": "boundary-final-tests.xml",
+      "tests": 5,
+      "passed": 5,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0,
+      "suite_attributes": [
+        {
+          "name": "pytest",
+          "errors": "0",
+          "failures": "0",
+          "skipped": "0",
+          "tests": "5",
+          "time": "0.196",
+          "timestamp": "2026-10-08T12:00:08.775450-04:00",
+          "hostname": "54cb1abdc64d"
+        }
+      ],
+      "cases": [
+        {
+          "classname": "tests.test_orchestrator_boundary",
+          "name": "test_entry_forwards_boundaries_without_owning_resources[False]",
+          "outcome": "passed"
+        },
+        {
+          "classname": "tests.test_orchestrator_boundary",
+          "name": "test_entry_forwards_boundaries_without_owning_resources[True]",
+          "outcome": "passed"
+        },
+        {
+          "classname": "tests.test_harness_resource_continuation",
+          "name": "test_adapter_retains_exact_dispatcher_for_resource_resume",
+          "outcome": "passed"
+        },
+        {
+          "classname": "tests.test_harness_resource_continuation",
+          "name": "test_harness_resumes_all_currently_grantable_resource_waiters",
+          "outcome": "passed"
+        },
+        {
+          "classname": "examples.tool_pipeline.tests.test_pipeline",
+          "name": "test_legacy_factory_returns_shared_entry_harness",
+          "outcome": "passed"
+        }
+      ]
+    },
+    {
+      "xml": "stop-final-tests.xml",
+      "tests": 2,
+      "passed": 2,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0,
+      "suite_attributes": [
+        {
+          "name": "pytest",
+          "errors": "0",
+          "failures": "0",
+          "skipped": "0",
+          "tests": "2",
+          "time": "21.332",
+          "timestamp": "2026-10-08T12:00:27.587430-04:00",
+          "hostname": "54cb1abdc64d"
+        }
+      ],
+      "cases": [
+        {
+          "classname": "examples.tool_pipeline.tests.test_pipeline",
+          "name": "test_agent_task_preconstruction_stop_keeps_host_ownership",
+          "outcome": "passed"
+        },
+        {
+          "classname": "examples.tool_pipeline.tests.test_pipeline",
+          "name": "test_entry_stop_drains_admitted_siblings_without_new_work",
+          "outcome": "passed"
+        }
+      ]
+    },
+    {
+      "xml": "review/independent-focused.xml",
+      "tests": 5,
+      "passed": 5,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0,
+      "suite_attributes": [
+        {
+          "name": "pytest",
+          "errors": "0",
+          "failures": "0",
+          "skipped": "0",
+          "tests": "5",
+          "time": "104.688",
+          "timestamp": "2026-10-08T12:00:50.040546-04:00",
+          "hostname": "54cb1abdc64d"
+        }
+      ],
+      "cases": [
+        {
+          "classname": "tests.test_orchestrator_boundary",
+          "name": "test_entry_forwards_boundaries_without_owning_resources[False]",
+          "outcome": "passed"
+        },
+        {
+          "classname": "tests.test_orchestrator_boundary",
+          "name": "test_entry_forwards_boundaries_without_owning_resources[True]",
+          "outcome": "passed"
+        },
+        {
+          "classname": "examples.tool_pipeline.tests.test_pipeline",
+          "name": "test_real_overlap_capacity_and_branch_progress",
+          "outcome": "passed"
+        },
+        {
+          "classname": "examples.tool_pipeline.tests.test_pipeline",
+          "name": "test_exact_lineage_and_partial_order",
+          "outcome": "passed"
+        },
+        {
+          "classname": "examples.tool_pipeline.tests.test_pipeline",
+          "name": "test_readback_needs_no_exports_or_process_cache",
+          "outcome": "passed"
+        }
+      ]
+    },
+    {
+      "xml": "review/independent-stop-compat.xml",
+      "tests": 3,
+      "passed": 3,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0,
+      "suite_attributes": [
+        {
+          "name": "pytest",
+          "errors": "0",
+          "failures": "0",
+          "skipped": "0",
+          "tests": "3",
+          "time": "21.360",
+          "timestamp": "2026-10-08T12:03:48.049533-04:00",
+          "hostname": "54cb1abdc64d"
+        }
+      ],
+      "cases": [
+        {
+          "classname": "examples.tool_pipeline.tests.test_pipeline",
+          "name": "test_legacy_factory_returns_shared_entry_harness",
+          "outcome": "passed"
+        },
+        {
+          "classname": "examples.tool_pipeline.tests.test_pipeline",
+          "name": "test_agent_task_preconstruction_stop_keeps_host_ownership",
+          "outcome": "passed"
+        },
+        {
+          "classname": "examples.tool_pipeline.tests.test_pipeline",
+          "name": "test_entry_stop_drains_admitted_siblings_without_new_work",
+          "outcome": "passed"
+        }
+      ]
+    }
+  ],
+  "cases": [
+    {
+      "classname": "examples.tool_pipeline.tests.test_pipeline",
+      "name": "test_agent_task_preconstruction_stop_keeps_host_ownership",
+      "runs": [
+        {
+          "batch": "stop-final-tests.xml",
+          "outcome": "passed"
+        },
+        {
+          "batch": "review/independent-stop-compat.xml",
+          "outcome": "passed"
+        }
+      ]
+    },
+    {
+      "classname": "examples.tool_pipeline.tests.test_pipeline",
+      "name": "test_complete_report_and_independent_validation",
+      "runs": [
+        {
+          "batch": "focused-tests.xml",
+          "outcome": "passed"
+        }
+      ]
+    },
+    {
+      "classname": "examples.tool_pipeline.tests.test_pipeline",
+      "name": "test_entry_stop_drains_admitted_siblings_without_new_work",
+      "runs": [
+        {
+          "batch": "focused-tests.xml",
+          "outcome": "passed"
+        },
+        {
+          "batch": "stop-final-tests.xml",
+          "outcome": "passed"
+        },
+        {
+          "batch": "review/independent-stop-compat.xml",
+          "outcome": "passed"
+        }
+      ]
+    },
+    {
+      "classname": "examples.tool_pipeline.tests.test_pipeline",
+      "name": "test_exact_lineage_and_partial_order",
+      "runs": [
+        {
+          "batch": "focused-tests.xml",
+          "outcome": "passed"
+        },
+        {
+          "batch": "review/independent-focused.xml",
+          "outcome": "passed"
+        }
+      ]
+    },
+    {
+      "classname": "examples.tool_pipeline.tests.test_pipeline",
+      "name": "test_existing_entry_matches_direct_harness[1]",
+      "runs": [
+        {
+          "batch": "focused-tests.xml",
+          "outcome": "passed"
+        }
+      ]
+    },
+    {
+      "classname": "examples.tool_pipeline.tests.test_pipeline",
+      "name": "test_existing_entry_matches_direct_harness[2]",
+      "runs": [
+        {
+          "batch": "focused-tests.xml",
+          "outcome": "passed"
+        }
+      ]
+    },
+    {
+      "classname": "examples.tool_pipeline.tests.test_pipeline",
+      "name": "test_independent_validator_rejects_other_schema_valid_candidates[line_amount]",
+      "runs": [
+        {
+          "batch": "focused-tests.xml",
+          "outcome": "passed"
+        }
+      ]
+    },
+    {
+      "classname": "examples.tool_pipeline.tests.test_pipeline",
+      "name": "test_independent_validator_rejects_other_schema_valid_candidates[missing_line]",
+      "runs": [
+        {
+          "batch": "focused-tests.xml",
+          "outcome": "passed"
+        }
+      ]
+    },
+    {
+      "classname": "examples.tool_pipeline.tests.test_pipeline",
+      "name": "test_independent_validator_rejects_other_schema_valid_candidates[source_version]",
+      "runs": [
+        {
+          "batch": "focused-tests.xml",
+          "outcome": "passed"
+        }
+      ]
+    },
+    {
+      "classname": "examples.tool_pipeline.tests.test_pipeline",
+      "name": "test_independent_validator_rejects_other_schema_valid_candidates[total_usage]",
+      "runs": [
+        {
+          "batch": "focused-tests.xml",
+          "outcome": "passed"
+        }
+      ]
+    },
+    {
+      "classname": "examples.tool_pipeline.tests.test_pipeline",
+      "name": "test_input_middleware_rejects_invalid_values[duplicate]",
+      "runs": [
+        {
+          "batch": "focused-tests.xml",
+          "outcome": "passed"
+        }
+      ]
+    },
+    {
+      "classname": "examples.tool_pipeline.tests.test_pipeline",
+      "name": "test_input_middleware_rejects_invalid_values[float]",
+      "runs": [
+        {
+          "batch": "focused-tests.xml",
+          "outcome": "passed"
+        }
+      ]
+    },
+    {
+      "classname": "examples.tool_pipeline.tests.test_pipeline",
+      "name": "test_input_middleware_rejects_invalid_values[nan]",
+      "runs": [
+        {
+          "batch": "focused-tests.xml",
+          "outcome": "passed"
+        }
+      ]
+    },
+    {
+      "classname": "examples.tool_pipeline.tests.test_pipeline",
+      "name": "test_input_middleware_rejects_invalid_values[negative]",
+      "runs": [
+        {
+          "batch": "focused-tests.xml",
+          "outcome": "passed"
+        }
+      ]
+    },
+    {
+      "classname": "examples.tool_pipeline.tests.test_pipeline",
+      "name": "test_input_middleware_rejects_invalid_values[overlap]",
+      "runs": [
+        {
+          "batch": "focused-tests.xml",
+          "outcome": "passed"
+        }
+      ]
+    },
+    {
+      "classname": "examples.tool_pipeline.tests.test_pipeline",
+      "name": "test_input_middleware_rejects_invalid_values[timezone]",
+      "runs": [
+        {
+          "batch": "focused-tests.xml",
+          "outcome": "passed"
+        }
+      ]
+    },
+    {
+      "classname": "examples.tool_pipeline.tests.test_pipeline",
+      "name": "test_input_middleware_rejects_invalid_values[too_large]",
+      "runs": [
+        {
+          "batch": "focused-tests.xml",
+          "outcome": "passed"
+        }
+      ]
+    },
+    {
+      "classname": "examples.tool_pipeline.tests.test_pipeline",
+      "name": "test_invalid_data_cannot_reach_final[both_invalid]",
+      "runs": [
+        {
+          "batch": "focused-tests.xml",
+          "outcome": "passed"
+        }
+      ]
+    },
+    {
+      "classname": "examples.tool_pipeline.tests.test_pipeline",
+      "name": "test_invalid_data_cannot_reach_final[candidate]",
+      "runs": [
+        {
+          "batch": "focused-tests.xml",
+          "outcome": "passed"
+        }
+      ]
+    },
+    {
+      "classname": "examples.tool_pipeline.tests.test_pipeline",
+      "name": "test_invalid_data_cannot_reach_final[time]",
+      "runs": [
+        {
+          "batch": "focused-tests.xml",
+          "outcome": "passed"
+        }
+      ]
+    },
+    {
+      "classname": "examples.tool_pipeline.tests.test_pipeline",
+      "name": "test_invalid_data_cannot_reach_final[unit]",
+      "runs": [
+        {
+          "batch": "focused-tests.xml",
+          "outcome": "passed"
+        }
+      ]
+    },
+    {
+      "classname": "examples.tool_pipeline.tests.test_pipeline",
+      "name": "test_launcher_closes_each_owned_resource_once",
+      "runs": [
+        {
+          "batch": "focused-tests.xml",
+          "outcome": "passed"
+        }
+      ]
+    },
+    {
+      "classname": "examples.tool_pipeline.tests.test_pipeline",
+      "name": "test_legacy_factory_returns_shared_entry_harness",
+      "runs": [
+        {
+          "batch": "boundary-final-tests.xml",
+          "outcome": "passed"
+        },
+        {
+          "batch": "review/independent-stop-compat.xml",
+          "outcome": "passed"
+        }
+      ]
+    },
+    {
+      "classname": "examples.tool_pipeline.tests.test_pipeline",
+      "name": "test_readback_needs_no_exports_or_process_cache",
+      "runs": [
+        {
+          "batch": "focused-tests.xml",
+          "outcome": "passed"
+        },
+        {
+          "batch": "review/independent-focused.xml",
+          "outcome": "passed"
+        }
+      ]
+    },
+    {
+      "classname": "examples.tool_pipeline.tests.test_pipeline",
+      "name": "test_real_overlap_capacity_and_branch_progress",
+      "runs": [
+        {
+          "batch": "focused-tests.xml",
+          "outcome": "passed"
+        },
+        {
+          "batch": "review/independent-focused.xml",
+          "outcome": "passed"
+        }
+      ]
+    },
+    {
+      "classname": "examples.tool_pipeline.tests.test_pipeline",
+      "name": "test_round_each_interval_half_up",
+      "runs": [
+        {
+          "batch": "focused-tests.xml",
+          "outcome": "passed"
+        }
+      ]
+    },
+    {
+      "classname": "examples.tool_pipeline.tests.test_pipeline",
+      "name": "test_truncated_final_payload_fails_readback",
+      "runs": [
+        {
+          "batch": "focused-tests.xml",
+          "outcome": "passed"
+        }
+      ]
+    },
+    {
+      "classname": "examples.tool_pipeline.tests.test_pipeline",
+      "name": "test_worker_exception_keeps_unresolved_firing",
+      "runs": [
+        {
+          "batch": "focused-tests.xml",
+          "outcome": "passed"
+        }
+      ]
+    },
+    {
+      "classname": "tests.test_harness_quiescence",
+      "name": "test_finite_harness_returns_quiescent_marking_without_spinning",
+      "runs": [
+        {
+          "batch": "focused-tests.xml",
+          "outcome": "passed"
+        }
+      ]
+    },
+    {
+      "classname": "tests.test_harness_quiescence",
+      "name": "test_owner_stop_wins_over_a_racing_worker_product",
+      "runs": [
+        {
+          "batch": "focused-tests.xml",
+          "outcome": "passed"
+        }
+      ]
+    },
+    {
+      "classname": "tests.test_harness_quiescence",
+      "name": "test_untracked_registry_firing_reports_reconciliation_required",
+      "runs": [
+        {
+          "batch": "focused-tests.xml",
+          "outcome": "passed"
+        }
+      ]
+    },
+    {
+      "classname": "tests.test_harness_quiescence",
+      "name": "test_waiting_harness_returns_blocked_result_without_dispatch_spin",
+      "runs": [
+        {
+          "batch": "focused-tests.xml",
+          "outcome": "passed"
+        }
+      ]
+    },
+    {
+      "classname": "tests.test_harness_resource_continuation",
+      "name": "test_adapter_retains_exact_dispatcher_for_resource_resume",
+      "runs": [
+        {
+          "batch": "boundary-final-tests.xml",
+          "outcome": "passed"
+        }
+      ]
+    },
+    {
+      "classname": "tests.test_harness_resource_continuation",
+      "name": "test_harness_resumes_all_currently_grantable_resource_waiters",
+      "runs": [
+        {
+          "batch": "boundary-final-tests.xml",
+          "outcome": "passed"
+        }
+      ]
+    },
+    {
+      "classname": "tests.test_orchestrator_boundary",
+      "name": "test_entry_forwards_boundaries_without_owning_resources[False]",
+      "runs": [
+        {
+          "batch": "focused-tests.xml",
+          "outcome": "passed"
+        },
+        {
+          "batch": "boundary-final-tests.xml",
+          "outcome": "passed"
+        },
+        {
+          "batch": "review/independent-focused.xml",
+          "outcome": "passed"
+        }
+      ]
+    },
+    {
+      "classname": "tests.test_orchestrator_boundary",
+      "name": "test_entry_forwards_boundaries_without_owning_resources[True]",
+      "runs": [
+        {
+          "batch": "focused-tests.xml",
+          "outcome": "passed"
+        },
+        {
+          "batch": "boundary-final-tests.xml",
+          "outcome": "passed"
+        },
+        {
+          "batch": "review/independent-focused.xml",
+          "outcome": "passed"
+        }
+      ]
+    },
+    {
+      "classname": "tests.test_task_frontend",
+      "name": "test_interrupted_firing_does_not_publish_workspace_files",
+      "runs": [
+        {
+          "batch": "agent-task-tests.xml",
+          "outcome": "passed"
+        }
+      ]
+    },
+    {
+      "classname": "tests.test_task_frontend",
+      "name": "test_interruption_checkpoints_prior_workspace_action_and_discards_current",
+      "runs": [
+        {
+          "batch": "agent-task-tests.xml",
+          "outcome": "passed"
+        }
+      ]
+    },
+    {
+      "classname": "tests.test_task_frontend",
+      "name": "test_resume_uses_persisted_transition_profiles_when_graph_swaps_them",
+      "runs": [
+        {
+          "batch": "agent-task-tests.xml",
+          "outcome": "passed"
+        }
+      ]
+    }
+  ],
+  "collection_timing": "Main focused batch collected 32 tests before final early-stop/factory additions. Final supplements and independent runs cover the final added or revised tests; all 39 final collected identities are covered.",
+  "native_transport": {
+    "status": "BLOCKED_ENV",
+    "log": "native-attempt.log",
+    "failure": "AF_UNIX socket creation PermissionError: [Errno 1] Operation not permitted"
+  },
+  "preserved_nonfinal_errors": [
+    {
+      "log": "agent-task-plugin-setup-error.log",
+      "stage": "plugin setup before tests"
+    },
+    {
+      "xml": "stop-test-collection-error.xml",
+      "stage": "collection before tests"
+    },
+    {
+      "xml": "stop-fixture-error.xml",
+      "tests": 2,
+      "passed": 1,
+      "failed": 1,
+      "reason": "The test double was unhashable; fixed to HostPort and both tests rerun."
+    }
+  ],
+  "real_provider_model_calls": 0,
+  "full_repository_suite_run": false,
+  "docker_actions_push_merge": false
+}

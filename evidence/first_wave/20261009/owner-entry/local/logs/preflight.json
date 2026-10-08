@@ -1,0 +1,25 @@
+{
+  "label": "preflight",
+  "command": [
+    "<WORKSPACE>/.p26/v/bin/python",
+    "-B",
+    "<WORKSPACE>/task-owner-entry-validation-20261008/RPNH_Owner_Entry_Local_Validation_20261008/verify_patch.py",
+    "<WORKSPACE>/.o26/s"
+  ],
+  "cwd": "<WORKSPACE>/.o26/s",
+  "pid": 7716,
+  "started_at": "2026-10-08T16:24:39.175252+00:00",
+  "finished_at": "2026-10-08T16:24:39.211571+00:00",
+  "elapsed_seconds": 0.03632258000106958,
+  "exit_code": 0,
+  "tested_head": "674252feb836f631c162979f177d1fe91f22559f",
+  "environment_overrides": {
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONUNBUFFERED": "1",
+    "PYTHONPATH": "<WORKSPACE>/.o26/s",
+    "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1",
+    "TMPDIR": "<WORKSPACE>/.o26/tmp"
+  },
+  "stdout": "<WORKSPACE>/task-owner-entry-validation-20261008/logs/preflight.stdout.log",
+  "stderr": "<WORKSPACE>/task-owner-entry-validation-20261008/logs/preflight.stderr.log"
+}

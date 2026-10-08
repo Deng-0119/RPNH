@@ -1,0 +1,6 @@
+ERROR: not found: /workspace/scratch/18c810e6dd59/rpnh-owner-execution-convergence/source/examples/tool_pipeline/tests/test_pipeline.py::test_agent_task_preconstruction_stop_keeps_host_ownership
+(no match in any of [<Module test_pipeline.py>])
+
+
+- generated xml file: /workspace/scratch/18c810e6dd59/rpnh-owner-execution-convergence/stop-final-tests.xml -
+no tests ran in 0.13s

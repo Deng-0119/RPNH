@@ -1,0 +1,24 @@
+{
+  "label": "agent-task-ledgers",
+  "command": [
+    "<WORKSPACE>/.p26/v/bin/python",
+    "-B",
+    "<WORKSPACE>/task-owner-entry-validation-20261008/probes/agent_task_ledgers.py"
+  ],
+  "cwd": "<WORKSPACE>/.o26/s",
+  "pid": 8469,
+  "started_at": "2026-10-08T16:30:06.913703+00:00",
+  "finished_at": "2026-10-08T16:30:07.802346+00:00",
+  "elapsed_seconds": 0.8886351740002283,
+  "exit_code": 0,
+  "tested_head": "674252feb836f631c162979f177d1fe91f22559f",
+  "environment_overrides": {
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONUNBUFFERED": "1",
+    "PYTHONPATH": "<WORKSPACE>/.o26/s",
+    "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1",
+    "TMPDIR": "<WORKSPACE>/.o26/tmp"
+  },
+  "stdout": "<WORKSPACE>/task-owner-entry-validation-20261008/logs/agent-task-ledgers.stdout.log",
+  "stderr": "<WORKSPACE>/task-owner-entry-validation-20261008/logs/agent-task-ledgers.stderr.log"
+}

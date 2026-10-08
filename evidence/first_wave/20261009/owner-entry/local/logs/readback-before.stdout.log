@@ -1,0 +1,10 @@
+{
+  "max_ordinal": 1001,
+  "event_count": 1001,
+  "dispatch_reservations": 10,
+  "execution_starts": 10,
+  "actual_model_call_counts": [
+    0,
+    0
+  ]
+}

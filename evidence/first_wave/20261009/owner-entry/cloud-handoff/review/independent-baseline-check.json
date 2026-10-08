@@ -1,0 +1,11 @@
+{
+  "baseline_commit": "674252feb836f631c162979f177d1fe91f22559f",
+  "source_tree_sha256": "629b2912e6198e427dcc5b2385e2832a9a36438a8d7bde68a1b7a97809b4baeb",
+  "verified_prefixes": [
+    "cpn/",
+    "tests/",
+    "examples/tool_pipeline/"
+  ],
+  "checked_blob_count": 948,
+  "mismatches": []
+}

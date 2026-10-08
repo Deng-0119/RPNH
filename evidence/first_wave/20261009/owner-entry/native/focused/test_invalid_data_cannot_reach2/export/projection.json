@@ -1,0 +1,1981 @@
+{
+  "schema_version": "rpnh/net_view/v1",
+  "source": {
+    "mode": "registry_current",
+    "run_dir": "<WORKSPACE>/.o26/f/test_invalid_data_cannot_reach2/run",
+    "net_ref": {
+      "entity_type": "net_instance/v1",
+      "entity_id": {
+        "kind": "net_instance",
+        "value": "2a87565cce5f55c9a00bbcd116ce6c62"
+      },
+      "version_id": {
+        "kind": "net_instance_version",
+        "value": "9a11bd913d5650d8a6b2a97d43beec63"
+      }
+    },
+    "verified_head_ordinal": 571,
+    "writer_fencing_epoch": 2
+  },
+  "summary": {
+    "node_count": 28,
+    "transition_count": 10,
+    "place_count": 18,
+    "resource_place_count": 0,
+    "edge_count": 29,
+    "resource_edge_count": 0
+  },
+  "nodes": [
+    {
+      "id": "check_tariff_input.checked",
+      "label": "check_tariff_input.checked",
+      "kind": "place",
+      "category": "place",
+      "hidden_by_default": false,
+      "classification": "place",
+      "schema": "application/tool_pipeline_tariff_checked/v1",
+      "schema_variants": [],
+      "channel": "data",
+      "capacity": null,
+      "token_kind": "data",
+      "colours": [],
+      "initial_tokens": [],
+      "reusable": false,
+      "resource_pools": [],
+      "logical_slots": [],
+      "active_token_count": 0,
+      "tokens": []
+    },
+    {
+      "id": "check_tariff_input.raw",
+      "label": "check_tariff_input.raw",
+      "kind": "place",
+      "category": "place",
+      "hidden_by_default": false,
+      "classification": "place",
+      "schema": "application/tool_pipeline_tariff_raw/v1",
+      "schema_variants": [],
+      "channel": "data",
+      "capacity": null,
+      "token_kind": "data",
+      "colours": [],
+      "initial_tokens": [],
+      "reusable": false,
+      "resource_pools": [],
+      "logical_slots": [],
+      "active_token_count": 0,
+      "tokens": []
+    },
+    {
+      "id": "check_tariff_input.rejection",
+      "label": "check_tariff_input.rejection",
+      "kind": "place",
+      "category": "place",
+      "hidden_by_default": false,
+      "classification": "place",
+      "schema": "application/tool_pipeline_rejection/v1",
+      "schema_variants": [],
+      "channel": "data",
+      "capacity": null,
+      "token_kind": "data",
+      "colours": [],
+      "initial_tokens": [],
+      "reusable": false,
+      "resource_pools": [],
+      "logical_slots": [],
+      "active_token_count": 1,
+      "tokens": [
+        {
+          "token_ref": {
+            "entity_type": "petri_token/v1",
+            "logical_id": "petri_token:3c55ec3618dd5904807d49a5df504af8",
+            "version_id": "petri_token_version:a1d21dae38e45ea3a4f43a2e933fe662"
+          },
+          "resource_ref": {
+            "resource_id": "resource:dc8c29e71123521bb6cfe7f497515370",
+            "resource_version_id": "resource_version:7220d1466f5b51c79935c65c7db741df"
+          },
+          "active_in_checkpoint": true,
+          "claimed_by": []
+        }
+      ]
+    },
+    {
+      "id": "check_tariff_input.run",
+      "label": "check_tariff_input.run",
+      "kind": "transition",
+      "category": "execution",
+      "hidden_by_default": false,
+      "operation": "check_tariff_input.run",
+      "operation_id": "op_0",
+      "executor": "example/tool_pipeline/execute_check_tariff_input/v1",
+      "executor_declaration": {
+        "contracts": {
+          "config_schema": "application/operation_component_config/v1",
+          "input_ports": null,
+          "output_ports": null,
+          "transport": "deterministic"
+        },
+        "identity": {
+          "implementation_id": "tool_pipeline.atomic_executor",
+          "revision": "v1",
+          "source_sha256": "0cb8ae2074f726a29785c7b8995d56ddff93ae27e7471a1112e4ae198c0fe9fc",
+          "step": "check_tariff_input"
+        },
+        "key": "example/tool_pipeline/execute_check_tariff_input/v1",
+        "kind": "executor"
+      },
+      "inputs": [
+        "check_tariff_input.raw"
+      ],
+      "outputs": [
+        "check_tariff_input.checked",
+        "check_tariff_input.rejection"
+      ],
+      "outcomes": [
+        {
+          "name": "complete",
+          "products": [
+            {
+              "port": "check_tariff_input.checked",
+              "minimum": 1,
+              "maximum": 1
+            }
+          ],
+          "effects": []
+        },
+        {
+          "name": "rejected",
+          "products": [
+            {
+              "port": "check_tariff_input.rejection",
+              "minimum": 1,
+              "maximum": 1
+            }
+          ],
+          "effects": []
+        }
+      ],
+      "tools": [
+        "example/tool_pipeline/check_tariff_input/v1"
+      ],
+      "config": {},
+      "request_port": null,
+      "budget_binding": {
+        "bucket_id": "pipeline",
+        "budget_scope": "module",
+        "finalization_scope": null
+      },
+      "count_guards": [],
+      "input_verdicts": [],
+      "runtime": {
+        "status": "settled",
+        "firing_count": 1,
+        "firings": [
+          {
+            "firing_ref": {
+              "entity_type": "transition_firing/v1",
+              "logical_id": "transition_firing:4c9758d6705859099eec1cced50b49e3",
+              "version_id": "transition_firing_version:76dfcda43dac51d882bc8fd72f217c81"
+            },
+            "invocation_ref": {
+              "entity_type": "invocation/v1",
+              "logical_id": "invocation:83715d66c5c75da5820c0d5fe5069a66",
+              "version_id": "invocation_version:3fb927324f4155b8bd52ea400323af89"
+            },
+            "execution_ref": {
+              "entity_type": "operation_execution_lease/v1",
+              "logical_id": "operation_execution_lease:06d170e20390540b8b029a2f363e1ead",
+              "version_id": "operation_execution_lease_version:f3a10115527f559084396a449c0666aa"
+            },
+            "publication_state": "PUBLISHED",
+            "admission_event_id": "event:e555dc8af0934d97bb82ff259e9e25d9",
+            "admission_ordinal": 450,
+            "start_event_id": "event:8ff27f4778cf46288d78e2710f20968b",
+            "start_ordinal": 486,
+            "inputs": [
+              {
+                "place": "check_tariff_input.raw",
+                "token_ref": {
+                  "entity_type": "petri_token/v1",
+                  "logical_id": "petri_token:4f8262d599c8573e9d3b59a3d736fb5e",
+                  "version_id": "petri_token_version:0e592a6716df5094b88e42d4b391a845"
+                },
+                "resource_ref": {
+                  "resource_id": "resource:cefeaf60094a5dd69f22a85792579ecb",
+                  "resource_version_id": "resource_version:89f52238f7b8511ca6f3d096cfcfa248"
+                }
+              }
+            ],
+            "receipts": [],
+            "result_ref": {
+              "entity_type": "operation_result/v1",
+              "logical_id": "operation_result:c185197aa6725053a16582b3dd3cee95",
+              "version_id": "operation_result_version:136c844f3b265405a71a8095aa7a6eba"
+            },
+            "output_resource_refs": [
+              {
+                "entity_type": "resource_version/v1",
+                "logical_id": "resource:dc8c29e71123521bb6cfe7f497515370",
+                "version_id": "resource_version:7220d1466f5b51c79935c65c7db741df"
+              }
+            ],
+            "settlement_event_id": "event:dbc4e7d974214bc89105f37ea90ed38d",
+            "successor_checkpoint_ref": {
+              "entity_type": "marking_checkpoint/v1",
+              "logical_id": "marking_checkpoint:e1617afc6b145fb99dba7526eb25f57d",
+              "version_id": "marking_checkpoint_version:3f8a607f28115ec38770650c7abcda65"
+            },
+            "status": "settled",
+            "business_outcome": "completed",
+            "settlement_ordinal": 543
+          }
+        ]
+      }
+    },
+    {
+      "id": "check_usage_input.checked",
+      "label": "check_usage_input.checked",
+      "kind": "place",
+      "category": "place",
+      "hidden_by_default": false,
+      "classification": "place",
+      "schema": "application/tool_pipeline_usage_checked/v1",
+      "schema_variants": [],
+      "channel": "data",
+      "capacity": null,
+      "token_kind": "data",
+      "colours": [],
+      "initial_tokens": [],
+      "reusable": false,
+      "resource_pools": [],
+      "logical_slots": [],
+      "active_token_count": 0,
+      "tokens": []
+    },
+    {
+      "id": "check_usage_input.raw",
+      "label": "check_usage_input.raw",
+      "kind": "place",
+      "category": "place",
+      "hidden_by_default": false,
+      "classification": "place",
+      "schema": "application/tool_pipeline_usage_raw/v1",
+      "schema_variants": [],
+      "channel": "data",
+      "capacity": null,
+      "token_kind": "data",
+      "colours": [],
+      "initial_tokens": [],
+      "reusable": false,
+      "resource_pools": [],
+      "logical_slots": [],
+      "active_token_count": 0,
+      "tokens": []
+    },
+    {
+      "id": "check_usage_input.rejection",
+      "label": "check_usage_input.rejection",
+      "kind": "place",
+      "category": "place",
+      "hidden_by_default": false,
+      "classification": "place",
+      "schema": "application/tool_pipeline_rejection/v1",
+      "schema_variants": [],
+      "channel": "data",
+      "capacity": null,
+      "token_kind": "data",
+      "colours": [],
+      "initial_tokens": [],
+      "reusable": false,
+      "resource_pools": [],
+      "logical_slots": [],
+      "active_token_count": 1,
+      "tokens": [
+        {
+          "token_ref": {
+            "entity_type": "petri_token/v1",
+            "logical_id": "petri_token:e6a162e189725d14b2adf8a2540fa920",
+            "version_id": "petri_token_version:81fc58386a6458b8bf9c9b6132d6a929"
+          },
+          "resource_ref": {
+            "resource_id": "resource:e43e16b4e2bb531dba885f78c87c729f",
+            "resource_version_id": "resource_version:e0275d0b34735045af41c83636c3d816"
+          },
+          "active_in_checkpoint": true,
+          "claimed_by": []
+        }
+      ]
+    },
+    {
+      "id": "check_usage_input.run",
+      "label": "check_usage_input.run",
+      "kind": "transition",
+      "category": "execution",
+      "hidden_by_default": false,
+      "operation": "check_usage_input.run",
+      "operation_id": "op_1",
+      "executor": "example/tool_pipeline/execute_check_usage_input/v1",
+      "executor_declaration": {
+        "contracts": {
+          "config_schema": "application/operation_component_config/v1",
+          "input_ports": null,
+          "output_ports": null,
+          "transport": "deterministic"
+        },
+        "identity": {
+          "implementation_id": "tool_pipeline.atomic_executor",
+          "revision": "v1",
+          "source_sha256": "0cb8ae2074f726a29785c7b8995d56ddff93ae27e7471a1112e4ae198c0fe9fc",
+          "step": "check_usage_input"
+        },
+        "key": "example/tool_pipeline/execute_check_usage_input/v1",
+        "kind": "executor"
+      },
+      "inputs": [
+        "check_usage_input.raw"
+      ],
+      "outputs": [
+        "check_usage_input.checked",
+        "check_usage_input.rejection"
+      ],
+      "outcomes": [
+        {
+          "name": "complete",
+          "products": [
+            {
+              "port": "check_usage_input.checked",
+              "minimum": 1,
+              "maximum": 1
+            }
+          ],
+          "effects": []
+        },
+        {
+          "name": "rejected",
+          "products": [
+            {
+              "port": "check_usage_input.rejection",
+              "minimum": 1,
+              "maximum": 1
+            }
+          ],
+          "effects": []
+        }
+      ],
+      "tools": [
+        "example/tool_pipeline/check_usage_input/v1"
+      ],
+      "config": {},
+      "request_port": null,
+      "budget_binding": {
+        "bucket_id": "pipeline",
+        "budget_scope": "module",
+        "finalization_scope": null
+      },
+      "count_guards": [],
+      "input_verdicts": [],
+      "runtime": {
+        "status": "settled",
+        "firing_count": 1,
+        "firings": [
+          {
+            "firing_ref": {
+              "entity_type": "transition_firing/v1",
+              "logical_id": "transition_firing:459d016ba592524aabca90e54fdac1c3",
+              "version_id": "transition_firing_version:fe9a09be7b37573db3367d6596a50d35"
+            },
+            "invocation_ref": {
+              "entity_type": "invocation/v1",
+              "logical_id": "invocation:a98646abe3db51c6b484322eb2547e0f",
+              "version_id": "invocation_version:df114ffa9e2e5920b9910e8ba88606d6"
+            },
+            "execution_ref": {
+              "entity_type": "operation_execution_lease/v1",
+              "logical_id": "operation_execution_lease:c568f1e8957c5bf3ba736b78f629158c",
+              "version_id": "operation_execution_lease_version:424f8c3f25435c4ebfbd217ce6c12121"
+            },
+            "publication_state": "PUBLISHED",
+            "admission_event_id": "event:7cdcfec35f7d44e68bf97bc34600d193",
+            "admission_ordinal": 490,
+            "start_event_id": "event:164c093fb35b4fd2bbd1e445834d25e1",
+            "start_ordinal": 526,
+            "inputs": [
+              {
+                "place": "check_usage_input.raw",
+                "token_ref": {
+                  "entity_type": "petri_token/v1",
+                  "logical_id": "petri_token:0e0d1e7622e656d58f46fd07555665e4",
+                  "version_id": "petri_token_version:9700e46f6a5258a2bad970deffd78022"
+                },
+                "resource_ref": {
+                  "resource_id": "resource:4992514413c25e0595198c7caeee7098",
+                  "resource_version_id": "resource_version:82562e2479ec5ef8a959b7b0f4f7d1d1"
+                }
+              }
+            ],
+            "receipts": [],
+            "result_ref": {
+              "entity_type": "operation_result/v1",
+              "logical_id": "operation_result:0d0b475225315c41bd9be10649b29bc7",
+              "version_id": "operation_result_version:70d0683650125af1969c1a2b950f10be"
+            },
+            "output_resource_refs": [
+              {
+                "entity_type": "resource_version/v1",
+                "logical_id": "resource:e43e16b4e2bb531dba885f78c87c729f",
+                "version_id": "resource_version:e0275d0b34735045af41c83636c3d816"
+              }
+            ],
+            "settlement_event_id": "event:9e22424ba25240baa560fb698b14e452",
+            "successor_checkpoint_ref": {
+              "entity_type": "marking_checkpoint/v1",
+              "logical_id": "marking_checkpoint:8c341216903b5342a6d7d343d6fa059e",
+              "version_id": "marking_checkpoint_version:48d88e304ae4535db1acbd36351421ba"
+            },
+            "status": "settled",
+            "business_outcome": "completed",
+            "settlement_ordinal": 559
+          }
+        ]
+      }
+    },
+    {
+      "id": "compute_cost.candidate",
+      "label": "compute_cost.candidate",
+      "kind": "place",
+      "category": "place",
+      "hidden_by_default": false,
+      "classification": "place",
+      "schema": "application/tool_pipeline_candidate/v1",
+      "schema_variants": [],
+      "channel": "data",
+      "capacity": null,
+      "token_kind": "data",
+      "colours": [],
+      "initial_tokens": [],
+      "reusable": false,
+      "resource_pools": [],
+      "logical_slots": [],
+      "active_token_count": 0,
+      "tokens": []
+    },
+    {
+      "id": "compute_cost.joined",
+      "label": "compute_cost.joined",
+      "kind": "place",
+      "category": "place",
+      "hidden_by_default": false,
+      "classification": "place",
+      "schema": "application/tool_pipeline_joined/v1",
+      "schema_variants": [],
+      "channel": "data",
+      "capacity": null,
+      "token_kind": "data",
+      "colours": [],
+      "initial_tokens": [],
+      "reusable": false,
+      "resource_pools": [],
+      "logical_slots": [],
+      "active_token_count": 0,
+      "tokens": []
+    },
+    {
+      "id": "compute_cost.run",
+      "label": "compute_cost.run",
+      "kind": "transition",
+      "category": "execution",
+      "hidden_by_default": false,
+      "operation": "compute_cost.run",
+      "operation_id": "op_2",
+      "executor": "example/tool_pipeline/execute_compute_cost/v1",
+      "executor_declaration": {
+        "contracts": {
+          "config_schema": "application/operation_component_config/v1",
+          "input_ports": null,
+          "output_ports": null,
+          "transport": "deterministic"
+        },
+        "identity": {
+          "implementation_id": "tool_pipeline.atomic_executor",
+          "revision": "v1",
+          "source_sha256": "0cb8ae2074f726a29785c7b8995d56ddff93ae27e7471a1112e4ae198c0fe9fc",
+          "step": "compute_cost"
+        },
+        "key": "example/tool_pipeline/execute_compute_cost/v1",
+        "kind": "executor"
+      },
+      "inputs": [
+        "compute_cost.joined"
+      ],
+      "outputs": [
+        "compute_cost.candidate"
+      ],
+      "outcomes": [
+        {
+          "name": "complete",
+          "products": [
+            {
+              "port": "compute_cost.candidate",
+              "minimum": 1,
+              "maximum": 1
+            }
+          ],
+          "effects": []
+        }
+      ],
+      "tools": [
+        "example/tool_pipeline/compute_cost/v1"
+      ],
+      "config": {},
+      "request_port": null,
+      "budget_binding": {
+        "bucket_id": "pipeline",
+        "budget_scope": "module",
+        "finalization_scope": null
+      },
+      "count_guards": [],
+      "input_verdicts": [],
+      "runtime": {
+        "status": "not_invoked",
+        "firing_count": 0,
+        "firings": []
+      }
+    },
+    {
+      "id": "join_intervals.rejection",
+      "label": "join_intervals.rejection",
+      "kind": "place",
+      "category": "place",
+      "hidden_by_default": false,
+      "classification": "place",
+      "schema": "application/tool_pipeline_rejection/v1",
+      "schema_variants": [],
+      "channel": "data",
+      "capacity": null,
+      "token_kind": "data",
+      "colours": [],
+      "initial_tokens": [],
+      "reusable": false,
+      "resource_pools": [],
+      "logical_slots": [],
+      "active_token_count": 0,
+      "tokens": []
+    },
+    {
+      "id": "join_intervals.run",
+      "label": "join_intervals.run",
+      "kind": "transition",
+      "category": "execution",
+      "hidden_by_default": false,
+      "operation": "join_intervals.run",
+      "operation_id": "op_3",
+      "executor": "example/tool_pipeline/execute_join_intervals/v1",
+      "executor_declaration": {
+        "contracts": {
+          "config_schema": "application/operation_component_config/v1",
+          "input_ports": null,
+          "output_ports": null,
+          "transport": "deterministic"
+        },
+        "identity": {
+          "implementation_id": "tool_pipeline.atomic_executor",
+          "revision": "v1",
+          "source_sha256": "0cb8ae2074f726a29785c7b8995d56ddff93ae27e7471a1112e4ae198c0fe9fc",
+          "step": "join_intervals"
+        },
+        "key": "example/tool_pipeline/execute_join_intervals/v1",
+        "kind": "executor"
+      },
+      "inputs": [
+        "join_intervals.usage",
+        "join_intervals.tariff"
+      ],
+      "outputs": [
+        "join_intervals.joined",
+        "join_intervals.rejection"
+      ],
+      "outcomes": [
+        {
+          "name": "complete",
+          "products": [
+            {
+              "port": "join_intervals.joined",
+              "minimum": 1,
+              "maximum": 1
+            }
+          ],
+          "effects": []
+        },
+        {
+          "name": "rejected",
+          "products": [
+            {
+              "port": "join_intervals.rejection",
+              "minimum": 1,
+              "maximum": 1
+            }
+          ],
+          "effects": []
+        }
+      ],
+      "tools": [
+        "example/tool_pipeline/join_intervals/v1"
+      ],
+      "config": {},
+      "request_port": null,
+      "budget_binding": {
+        "bucket_id": "pipeline",
+        "budget_scope": "module",
+        "finalization_scope": null
+      },
+      "count_guards": [],
+      "input_verdicts": [],
+      "runtime": {
+        "status": "not_invoked",
+        "firing_count": 0,
+        "firings": []
+      }
+    },
+    {
+      "id": "join_intervals.tariff",
+      "label": "join_intervals.tariff",
+      "kind": "place",
+      "category": "place",
+      "hidden_by_default": false,
+      "classification": "place",
+      "schema": "application/tool_pipeline_tariff_normalized/v1",
+      "schema_variants": [],
+      "channel": "data",
+      "capacity": null,
+      "token_kind": "data",
+      "colours": [],
+      "initial_tokens": [],
+      "reusable": false,
+      "resource_pools": [],
+      "logical_slots": [],
+      "active_token_count": 0,
+      "tokens": []
+    },
+    {
+      "id": "join_intervals.usage",
+      "label": "join_intervals.usage",
+      "kind": "place",
+      "category": "place",
+      "hidden_by_default": false,
+      "classification": "place",
+      "schema": "application/tool_pipeline_usage_normalized/v1",
+      "schema_variants": [],
+      "channel": "data",
+      "capacity": null,
+      "token_kind": "data",
+      "colours": [],
+      "initial_tokens": [],
+      "reusable": false,
+      "resource_pools": [],
+      "logical_slots": [],
+      "active_token_count": 0,
+      "tokens": []
+    },
+    {
+      "id": "normalize_tariff.run",
+      "label": "normalize_tariff.run",
+      "kind": "transition",
+      "category": "execution",
+      "hidden_by_default": false,
+      "operation": "normalize_tariff.run",
+      "operation_id": "op_4",
+      "executor": "example/tool_pipeline/execute_normalize_tariff/v1",
+      "executor_declaration": {
+        "contracts": {
+          "config_schema": "application/operation_component_config/v1",
+          "input_ports": null,
+          "output_ports": null,
+          "transport": "deterministic"
+        },
+        "identity": {
+          "implementation_id": "tool_pipeline.atomic_executor",
+          "revision": "v1",
+          "source_sha256": "0cb8ae2074f726a29785c7b8995d56ddff93ae27e7471a1112e4ae198c0fe9fc",
+          "step": "normalize_tariff"
+        },
+        "key": "example/tool_pipeline/execute_normalize_tariff/v1",
+        "kind": "executor"
+      },
+      "inputs": [
+        "normalize_tariff.checked"
+      ],
+      "outputs": [
+        "normalize_tariff.normalized"
+      ],
+      "outcomes": [
+        {
+          "name": "complete",
+          "products": [
+            {
+              "port": "normalize_tariff.normalized",
+              "minimum": 1,
+              "maximum": 1
+            }
+          ],
+          "effects": []
+        }
+      ],
+      "tools": [
+        "example/tool_pipeline/normalize_tariff/v1"
+      ],
+      "config": {},
+      "request_port": null,
+      "budget_binding": {
+        "bucket_id": "pipeline",
+        "budget_scope": "module",
+        "finalization_scope": null
+      },
+      "count_guards": [],
+      "input_verdicts": [],
+      "runtime": {
+        "status": "not_invoked",
+        "firing_count": 0,
+        "firings": []
+      }
+    },
+    {
+      "id": "normalize_usage.run",
+      "label": "normalize_usage.run",
+      "kind": "transition",
+      "category": "execution",
+      "hidden_by_default": false,
+      "operation": "normalize_usage.run",
+      "operation_id": "op_5",
+      "executor": "example/tool_pipeline/execute_normalize_usage/v1",
+      "executor_declaration": {
+        "contracts": {
+          "config_schema": "application/operation_component_config/v1",
+          "input_ports": null,
+          "output_ports": null,
+          "transport": "deterministic"
+        },
+        "identity": {
+          "implementation_id": "tool_pipeline.atomic_executor",
+          "revision": "v1",
+          "source_sha256": "0cb8ae2074f726a29785c7b8995d56ddff93ae27e7471a1112e4ae198c0fe9fc",
+          "step": "normalize_usage"
+        },
+        "key": "example/tool_pipeline/execute_normalize_usage/v1",
+        "kind": "executor"
+      },
+      "inputs": [
+        "normalize_usage.checked"
+      ],
+      "outputs": [
+        "normalize_usage.normalized"
+      ],
+      "outcomes": [
+        {
+          "name": "complete",
+          "products": [
+            {
+              "port": "normalize_usage.normalized",
+              "minimum": 1,
+              "maximum": 1
+            }
+          ],
+          "effects": []
+        }
+      ],
+      "tools": [
+        "example/tool_pipeline/normalize_usage/v1"
+      ],
+      "config": {},
+      "request_port": null,
+      "budget_binding": {
+        "bucket_id": "pipeline",
+        "budget_scope": "module",
+        "finalization_scope": null
+      },
+      "count_guards": [],
+      "input_verdicts": [],
+      "runtime": {
+        "status": "not_invoked",
+        "firing_count": 0,
+        "firings": []
+      }
+    },
+    {
+      "id": "publish_report.final",
+      "label": "publish_report.final",
+      "kind": "place",
+      "category": "place",
+      "hidden_by_default": false,
+      "classification": "place",
+      "schema": "application/tool_pipeline_final/v1",
+      "schema_variants": [],
+      "channel": "data",
+      "capacity": null,
+      "token_kind": "data",
+      "colours": [],
+      "initial_tokens": [],
+      "reusable": false,
+      "resource_pools": [],
+      "logical_slots": [],
+      "active_token_count": 0,
+      "tokens": []
+    },
+    {
+      "id": "publish_report.run",
+      "label": "publish_report.run",
+      "kind": "transition",
+      "category": "execution",
+      "hidden_by_default": false,
+      "operation": "publish_report.run",
+      "operation_id": "op_6",
+      "executor": "example/tool_pipeline/execute_publish_report/v1",
+      "executor_declaration": {
+        "contracts": {
+          "config_schema": "application/operation_component_config/v1",
+          "input_ports": null,
+          "output_ports": null,
+          "transport": "deterministic"
+        },
+        "identity": {
+          "implementation_id": "tool_pipeline.atomic_executor",
+          "revision": "v1",
+          "source_sha256": "0cb8ae2074f726a29785c7b8995d56ddff93ae27e7471a1112e4ae198c0fe9fc",
+          "step": "publish_report"
+        },
+        "key": "example/tool_pipeline/execute_publish_report/v1",
+        "kind": "executor"
+      },
+      "inputs": [
+        "publish_report.validated"
+      ],
+      "outputs": [
+        "publish_report.final"
+      ],
+      "outcomes": [
+        {
+          "name": "complete",
+          "products": [
+            {
+              "port": "publish_report.final",
+              "minimum": 1,
+              "maximum": 1
+            }
+          ],
+          "effects": []
+        }
+      ],
+      "tools": [
+        "example/tool_pipeline/publish_report/v1"
+      ],
+      "config": {},
+      "request_port": null,
+      "budget_binding": {
+        "bucket_id": "pipeline",
+        "budget_scope": "module",
+        "finalization_scope": null
+      },
+      "count_guards": [],
+      "input_verdicts": [],
+      "runtime": {
+        "status": "not_invoked",
+        "firing_count": 0,
+        "firings": []
+      }
+    },
+    {
+      "id": "publish_report.validated",
+      "label": "publish_report.validated",
+      "kind": "place",
+      "category": "place",
+      "hidden_by_default": false,
+      "classification": "place",
+      "schema": "application/tool_pipeline_validated/v1",
+      "schema_variants": [],
+      "channel": "data",
+      "capacity": null,
+      "token_kind": "data",
+      "colours": [],
+      "initial_tokens": [],
+      "reusable": false,
+      "resource_pools": [],
+      "logical_slots": [],
+      "active_token_count": 0,
+      "tokens": []
+    },
+    {
+      "id": "read_tariff.run",
+      "label": "read_tariff.run",
+      "kind": "transition",
+      "category": "execution",
+      "hidden_by_default": false,
+      "operation": "read_tariff.run",
+      "operation_id": "op_7",
+      "executor": "example/tool_pipeline/execute_read_tariff/v1",
+      "executor_declaration": {
+        "contracts": {
+          "config_schema": "application/operation_component_config/v1",
+          "input_ports": null,
+          "output_ports": null,
+          "transport": "deterministic"
+        },
+        "identity": {
+          "implementation_id": "tool_pipeline.atomic_executor",
+          "revision": "v1",
+          "source_sha256": "0cb8ae2074f726a29785c7b8995d56ddff93ae27e7471a1112e4ae198c0fe9fc",
+          "step": "read_tariff"
+        },
+        "key": "example/tool_pipeline/execute_read_tariff/v1",
+        "kind": "executor"
+      },
+      "inputs": [
+        "read_tariff.source"
+      ],
+      "outputs": [
+        "read_tariff.raw",
+        "read_tariff.validation_source"
+      ],
+      "outcomes": [
+        {
+          "name": "complete",
+          "products": [
+            {
+              "port": "read_tariff.raw",
+              "minimum": 1,
+              "maximum": 1
+            },
+            {
+              "port": "read_tariff.validation_source",
+              "minimum": 1,
+              "maximum": 1
+            }
+          ],
+          "effects": []
+        }
+      ],
+      "tools": [
+        "example/tool_pipeline/read_tariff/v1"
+      ],
+      "config": {},
+      "request_port": null,
+      "budget_binding": {
+        "bucket_id": "pipeline",
+        "budget_scope": "module",
+        "finalization_scope": null
+      },
+      "count_guards": [],
+      "input_verdicts": [],
+      "runtime": {
+        "status": "settled",
+        "firing_count": 1,
+        "firings": [
+          {
+            "firing_ref": {
+              "entity_type": "transition_firing/v1",
+              "logical_id": "transition_firing:5f7adfffa1cc567bb80f0b86b3afe75b",
+              "version_id": "transition_firing_version:2ccd4f0c9b085012ae636f4914858a83"
+            },
+            "invocation_ref": {
+              "entity_type": "invocation/v1",
+              "logical_id": "invocation:0ff8c29a6f3f58ebae05061f3ab8aeeb",
+              "version_id": "invocation_version:8c4cb9201b5a5817affeb4cf3ed6014f"
+            },
+            "execution_ref": {
+              "entity_type": "operation_execution_lease/v1",
+              "logical_id": "operation_execution_lease:307bb6ff8a575e68a2f820c019a0c227",
+              "version_id": "operation_execution_lease_version:ce9c8725e262526aa74d0f2246619aa0"
+            },
+            "publication_state": "PUBLISHED",
+            "admission_event_id": "event:d2be960dfa7b433ca8515a2e1e0130f3",
+            "admission_ordinal": 312,
+            "start_event_id": "event:5e770c184b75467393d530699bb631ba",
+            "start_ordinal": 348,
+            "inputs": [
+              {
+                "place": "read_tariff.source",
+                "token_ref": {
+                  "entity_type": "petri_token/v1",
+                  "logical_id": "petri_token:9e994d4e0fc85d16b047fd56644f2793",
+                  "version_id": "petri_token_version:d72ac76e430b5a7c8ccc8cb10616813e"
+                },
+                "resource_ref": {
+                  "resource_id": "resource:a2decb6ebc895a32a81b78a388e5083e",
+                  "resource_version_id": "resource_version:9292f63b1e725166ac86aae76ce2ac62"
+                }
+              }
+            ],
+            "receipts": [],
+            "result_ref": {
+              "entity_type": "operation_result/v1",
+              "logical_id": "operation_result:acafc0d4370859dfb3d7d38930549151",
+              "version_id": "operation_result_version:97510011aaee5e7195d3b51c7b2a8af5"
+            },
+            "output_resource_refs": [
+              {
+                "entity_type": "resource_version/v1",
+                "logical_id": "resource:5be0c49a71da52a59cbac46b9457ffcc",
+                "version_id": "resource_version:bf31954918e35f3080c67752421f1dc6"
+              },
+              {
+                "entity_type": "resource_version/v1",
+                "logical_id": "resource:cefeaf60094a5dd69f22a85792579ecb",
+                "version_id": "resource_version:89f52238f7b8511ca6f3d096cfcfa248"
+              }
+            ],
+            "settlement_event_id": "event:6b8059c1ab6f46c2b237d9e0bc00258a",
+            "successor_checkpoint_ref": {
+              "entity_type": "marking_checkpoint/v1",
+              "logical_id": "marking_checkpoint:ba3da02be1f05c1bab02f2aaea6943eb",
+              "version_id": "marking_checkpoint_version:91c855bfe9f55697ac00fb06f6c0a1f6"
+            },
+            "status": "settled",
+            "business_outcome": "completed",
+            "settlement_ordinal": 413
+          }
+        ]
+      }
+    },
+    {
+      "id": "read_tariff.source",
+      "label": "read_tariff.source",
+      "kind": "place",
+      "category": "place",
+      "hidden_by_default": false,
+      "classification": "place",
+      "schema": "application/tool_pipeline_source_tariff/v1",
+      "schema_variants": [],
+      "channel": "data",
+      "capacity": null,
+      "token_kind": "data",
+      "colours": [],
+      "initial_tokens": [],
+      "reusable": false,
+      "resource_pools": [],
+      "logical_slots": [],
+      "active_token_count": 0,
+      "tokens": []
+    },
+    {
+      "id": "read_tariff.validation_source",
+      "label": "read_tariff.validation_source",
+      "kind": "place",
+      "category": "place",
+      "hidden_by_default": false,
+      "classification": "place",
+      "schema": "application/tool_pipeline_tariff_validation_source/v1",
+      "schema_variants": [],
+      "channel": "data",
+      "capacity": null,
+      "token_kind": "data",
+      "colours": [],
+      "initial_tokens": [],
+      "reusable": false,
+      "resource_pools": [],
+      "logical_slots": [],
+      "active_token_count": 1,
+      "tokens": [
+        {
+          "token_ref": {
+            "entity_type": "petri_token/v1",
+            "logical_id": "petri_token:52589dc2831557be8a19a9d4439296f9",
+            "version_id": "petri_token_version:d288931e32e556aea782c2944e2509e8"
+          },
+          "resource_ref": {
+            "resource_id": "resource:5be0c49a71da52a59cbac46b9457ffcc",
+            "resource_version_id": "resource_version:bf31954918e35f3080c67752421f1dc6"
+          },
+          "active_in_checkpoint": true,
+          "claimed_by": []
+        }
+      ]
+    },
+    {
+      "id": "read_usage.run",
+      "label": "read_usage.run",
+      "kind": "transition",
+      "category": "execution",
+      "hidden_by_default": false,
+      "operation": "read_usage.run",
+      "operation_id": "op_8",
+      "executor": "example/tool_pipeline/execute_read_usage/v1",
+      "executor_declaration": {
+        "contracts": {
+          "config_schema": "application/operation_component_config/v1",
+          "input_ports": null,
+          "output_ports": null,
+          "transport": "deterministic"
+        },
+        "identity": {
+          "implementation_id": "tool_pipeline.atomic_executor",
+          "revision": "v1",
+          "source_sha256": "0cb8ae2074f726a29785c7b8995d56ddff93ae27e7471a1112e4ae198c0fe9fc",
+          "step": "read_usage"
+        },
+        "key": "example/tool_pipeline/execute_read_usage/v1",
+        "kind": "executor"
+      },
+      "inputs": [
+        "read_usage.source"
+      ],
+      "outputs": [
+        "read_usage.raw",
+        "read_usage.validation_source"
+      ],
+      "outcomes": [
+        {
+          "name": "complete",
+          "products": [
+            {
+              "port": "read_usage.raw",
+              "minimum": 1,
+              "maximum": 1
+            },
+            {
+              "port": "read_usage.validation_source",
+              "minimum": 1,
+              "maximum": 1
+            }
+          ],
+          "effects": []
+        }
+      ],
+      "tools": [
+        "example/tool_pipeline/read_usage/v1"
+      ],
+      "config": {},
+      "request_port": null,
+      "budget_binding": {
+        "bucket_id": "pipeline",
+        "budget_scope": "module",
+        "finalization_scope": null
+      },
+      "count_guards": [],
+      "input_verdicts": [],
+      "runtime": {
+        "status": "settled",
+        "firing_count": 1,
+        "firings": [
+          {
+            "firing_ref": {
+              "entity_type": "transition_firing/v1",
+              "logical_id": "transition_firing:eb811bbafde85be9bfe162f37b55880e",
+              "version_id": "transition_firing_version:75e2f2e75f11553ab933a79e025d73dd"
+            },
+            "invocation_ref": {
+              "entity_type": "invocation/v1",
+              "logical_id": "invocation:15ffd49de38a524aa5c7f4af561f8290",
+              "version_id": "invocation_version:dc4dccbab015566a98b37d9517984212"
+            },
+            "execution_ref": {
+              "entity_type": "operation_execution_lease/v1",
+              "logical_id": "operation_execution_lease:03e59b5514275fe882d64682c643e260",
+              "version_id": "operation_execution_lease_version:b1639b720f8a58b1834d45ee1b143306"
+            },
+            "publication_state": "PUBLISHED",
+            "admission_event_id": "event:3db3b4d2ebef42ebb72bb02d4fefe16b",
+            "admission_ordinal": 352,
+            "start_event_id": "event:1804f5386e834713a034b1137e5897a4",
+            "start_ordinal": 388,
+            "inputs": [
+              {
+                "place": "read_usage.source",
+                "token_ref": {
+                  "entity_type": "petri_token/v1",
+                  "logical_id": "petri_token:dfaed6e328a7541789310dae52d64202",
+                  "version_id": "petri_token_version:415a386004d4563d8fda63d4af981326"
+                },
+                "resource_ref": {
+                  "resource_id": "resource:3d8fa374ee1559e5ba94a3230642ae28",
+                  "resource_version_id": "resource_version:0026473308e75438a3bdf2ea0ded1541"
+                }
+              }
+            ],
+            "receipts": [],
+            "result_ref": {
+              "entity_type": "operation_result/v1",
+              "logical_id": "operation_result:60639c7b5a865fcfade0e754d03d0d2d",
+              "version_id": "operation_result_version:e321006bf22c564e8b950c47f999967b"
+            },
+            "output_resource_refs": [
+              {
+                "entity_type": "resource_version/v1",
+                "logical_id": "resource:4992514413c25e0595198c7caeee7098",
+                "version_id": "resource_version:82562e2479ec5ef8a959b7b0f4f7d1d1"
+              },
+              {
+                "entity_type": "resource_version/v1",
+                "logical_id": "resource:c2da93d7b41f5b1cba5f94ea6abb58b4",
+                "version_id": "resource_version:f9a22da9db8955e1899974e58a2e8287"
+              }
+            ],
+            "settlement_event_id": "event:a2f48aa3926b4a5aa069686b4ae644af",
+            "successor_checkpoint_ref": {
+              "entity_type": "marking_checkpoint/v1",
+              "logical_id": "marking_checkpoint:44d9f981e48e58cdaa9ce8e6687b50c6",
+              "version_id": "marking_checkpoint_version:9a4270f73d3b534dae8b65b688360a0f"
+            },
+            "status": "settled",
+            "business_outcome": "completed",
+            "settlement_ordinal": 432
+          }
+        ]
+      }
+    },
+    {
+      "id": "read_usage.source",
+      "label": "read_usage.source",
+      "kind": "place",
+      "category": "place",
+      "hidden_by_default": false,
+      "classification": "place",
+      "schema": "application/tool_pipeline_source_usage/v1",
+      "schema_variants": [],
+      "channel": "data",
+      "capacity": null,
+      "token_kind": "data",
+      "colours": [],
+      "initial_tokens": [],
+      "reusable": false,
+      "resource_pools": [],
+      "logical_slots": [],
+      "active_token_count": 0,
+      "tokens": []
+    },
+    {
+      "id": "read_usage.validation_source",
+      "label": "read_usage.validation_source",
+      "kind": "place",
+      "category": "place",
+      "hidden_by_default": false,
+      "classification": "place",
+      "schema": "application/tool_pipeline_usage_validation_source/v1",
+      "schema_variants": [],
+      "channel": "data",
+      "capacity": null,
+      "token_kind": "data",
+      "colours": [],
+      "initial_tokens": [],
+      "reusable": false,
+      "resource_pools": [],
+      "logical_slots": [],
+      "active_token_count": 1,
+      "tokens": [
+        {
+          "token_ref": {
+            "entity_type": "petri_token/v1",
+            "logical_id": "petri_token:bf44745f5ddd5cd8bd541b9cc27546f8",
+            "version_id": "petri_token_version:648a0c991a975c0fadd6af78ff573427"
+          },
+          "resource_ref": {
+            "resource_id": "resource:c2da93d7b41f5b1cba5f94ea6abb58b4",
+            "resource_version_id": "resource_version:f9a22da9db8955e1899974e58a2e8287"
+          },
+          "active_in_checkpoint": true,
+          "claimed_by": []
+        }
+      ]
+    },
+    {
+      "id": "validate_report.rejection",
+      "label": "validate_report.rejection",
+      "kind": "place",
+      "category": "place",
+      "hidden_by_default": false,
+      "classification": "place",
+      "schema": "application/tool_pipeline_rejection/v1",
+      "schema_variants": [],
+      "channel": "data",
+      "capacity": null,
+      "token_kind": "data",
+      "colours": [],
+      "initial_tokens": [],
+      "reusable": false,
+      "resource_pools": [],
+      "logical_slots": [],
+      "active_token_count": 0,
+      "tokens": []
+    },
+    {
+      "id": "validate_report.run",
+      "label": "validate_report.run",
+      "kind": "transition",
+      "category": "execution",
+      "hidden_by_default": false,
+      "operation": "validate_report.run",
+      "operation_id": "op_9",
+      "executor": "example/tool_pipeline/execute_validate_report/v1",
+      "executor_declaration": {
+        "contracts": {
+          "config_schema": "application/operation_component_config/v1",
+          "input_ports": null,
+          "output_ports": null,
+          "transport": "deterministic"
+        },
+        "identity": {
+          "implementation_id": "tool_pipeline.atomic_executor",
+          "revision": "v1",
+          "source_sha256": "0cb8ae2074f726a29785c7b8995d56ddff93ae27e7471a1112e4ae198c0fe9fc",
+          "step": "validate_report"
+        },
+        "key": "example/tool_pipeline/execute_validate_report/v1",
+        "kind": "executor"
+      },
+      "inputs": [
+        "validate_report.candidate",
+        "validate_report.usage_source",
+        "validate_report.tariff_source"
+      ],
+      "outputs": [
+        "validate_report.validated",
+        "validate_report.rejection"
+      ],
+      "outcomes": [
+        {
+          "name": "complete",
+          "products": [
+            {
+              "port": "validate_report.validated",
+              "minimum": 1,
+              "maximum": 1
+            }
+          ],
+          "effects": []
+        },
+        {
+          "name": "rejected",
+          "products": [
+            {
+              "port": "validate_report.rejection",
+              "minimum": 1,
+              "maximum": 1
+            }
+          ],
+          "effects": []
+        }
+      ],
+      "tools": [
+        "example/tool_pipeline/validate_report/v1"
+      ],
+      "config": {},
+      "request_port": null,
+      "budget_binding": {
+        "bucket_id": "pipeline",
+        "budget_scope": "module",
+        "finalization_scope": null
+      },
+      "count_guards": [],
+      "input_verdicts": [],
+      "runtime": {
+        "status": "not_invoked",
+        "firing_count": 0,
+        "firings": []
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "edge:arc:check_tariff_input.checked:normalize_tariff.run:consume:-:1",
+      "source": "check_tariff_input.checked",
+      "target": "normalize_tariff.run",
+      "kind": "arc",
+      "mode": "consume",
+      "weight": 1,
+      "outcome": null,
+      "hidden_by_default": false,
+      "resource": false,
+      "direction": "input",
+      "emit": "produced",
+      "forward_source": null,
+      "colour_expression": null,
+      "output_predicates": [],
+      "lease_claims": [],
+      "lease_claim_exclusions": [],
+      "lease_claim_set": null,
+      "effect_selector": null
+    },
+    {
+      "id": "edge:arc:check_tariff_input.raw:check_tariff_input.run:consume:-:1",
+      "source": "check_tariff_input.raw",
+      "target": "check_tariff_input.run",
+      "kind": "arc",
+      "mode": "consume",
+      "weight": 1,
+      "outcome": null,
+      "hidden_by_default": false,
+      "resource": false,
+      "direction": "input",
+      "emit": "produced",
+      "forward_source": null,
+      "colour_expression": null,
+      "output_predicates": [],
+      "lease_claims": [],
+      "lease_claim_exclusions": [],
+      "lease_claim_set": null,
+      "effect_selector": null
+    },
+    {
+      "id": "edge:arc:check_tariff_input.run:check_tariff_input.checked:produce:complete:1",
+      "source": "check_tariff_input.run",
+      "target": "check_tariff_input.checked",
+      "kind": "arc",
+      "mode": "produce",
+      "weight": 1,
+      "outcome": "complete",
+      "hidden_by_default": false,
+      "resource": false,
+      "direction": "output",
+      "emit": "produced",
+      "forward_source": null,
+      "colour_expression": null,
+      "output_predicates": [],
+      "lease_claims": [],
+      "lease_claim_exclusions": [],
+      "lease_claim_set": null,
+      "effect_selector": null
+    },
+    {
+      "id": "edge:arc:check_tariff_input.run:check_tariff_input.rejection:produce:rejected:1",
+      "source": "check_tariff_input.run",
+      "target": "check_tariff_input.rejection",
+      "kind": "arc",
+      "mode": "produce",
+      "weight": 1,
+      "outcome": "rejected",
+      "hidden_by_default": false,
+      "resource": false,
+      "direction": "output",
+      "emit": "produced",
+      "forward_source": null,
+      "colour_expression": null,
+      "output_predicates": [],
+      "lease_claims": [],
+      "lease_claim_exclusions": [],
+      "lease_claim_set": null,
+      "effect_selector": null
+    },
+    {
+      "id": "edge:arc:check_usage_input.checked:normalize_usage.run:consume:-:1",
+      "source": "check_usage_input.checked",
+      "target": "normalize_usage.run",
+      "kind": "arc",
+      "mode": "consume",
+      "weight": 1,
+      "outcome": null,
+      "hidden_by_default": false,
+      "resource": false,
+      "direction": "input",
+      "emit": "produced",
+      "forward_source": null,
+      "colour_expression": null,
+      "output_predicates": [],
+      "lease_claims": [],
+      "lease_claim_exclusions": [],
+      "lease_claim_set": null,
+      "effect_selector": null
+    },
+    {
+      "id": "edge:arc:check_usage_input.raw:check_usage_input.run:consume:-:1",
+      "source": "check_usage_input.raw",
+      "target": "check_usage_input.run",
+      "kind": "arc",
+      "mode": "consume",
+      "weight": 1,
+      "outcome": null,
+      "hidden_by_default": false,
+      "resource": false,
+      "direction": "input",
+      "emit": "produced",
+      "forward_source": null,
+      "colour_expression": null,
+      "output_predicates": [],
+      "lease_claims": [],
+      "lease_claim_exclusions": [],
+      "lease_claim_set": null,
+      "effect_selector": null
+    },
+    {
+      "id": "edge:arc:check_usage_input.run:check_usage_input.checked:produce:complete:1",
+      "source": "check_usage_input.run",
+      "target": "check_usage_input.checked",
+      "kind": "arc",
+      "mode": "produce",
+      "weight": 1,
+      "outcome": "complete",
+      "hidden_by_default": false,
+      "resource": false,
+      "direction": "output",
+      "emit": "produced",
+      "forward_source": null,
+      "colour_expression": null,
+      "output_predicates": [],
+      "lease_claims": [],
+      "lease_claim_exclusions": [],
+      "lease_claim_set": null,
+      "effect_selector": null
+    },
+    {
+      "id": "edge:arc:check_usage_input.run:check_usage_input.rejection:produce:rejected:1",
+      "source": "check_usage_input.run",
+      "target": "check_usage_input.rejection",
+      "kind": "arc",
+      "mode": "produce",
+      "weight": 1,
+      "outcome": "rejected",
+      "hidden_by_default": false,
+      "resource": false,
+      "direction": "output",
+      "emit": "produced",
+      "forward_source": null,
+      "colour_expression": null,
+      "output_predicates": [],
+      "lease_claims": [],
+      "lease_claim_exclusions": [],
+      "lease_claim_set": null,
+      "effect_selector": null
+    },
+    {
+      "id": "edge:arc:compute_cost.candidate:validate_report.run:consume:-:1",
+      "source": "compute_cost.candidate",
+      "target": "validate_report.run",
+      "kind": "arc",
+      "mode": "consume",
+      "weight": 1,
+      "outcome": null,
+      "hidden_by_default": false,
+      "resource": false,
+      "direction": "input",
+      "emit": "produced",
+      "forward_source": null,
+      "colour_expression": null,
+      "output_predicates": [],
+      "lease_claims": [],
+      "lease_claim_exclusions": [],
+      "lease_claim_set": null,
+      "effect_selector": null
+    },
+    {
+      "id": "edge:arc:compute_cost.joined:compute_cost.run:consume:-:1",
+      "source": "compute_cost.joined",
+      "target": "compute_cost.run",
+      "kind": "arc",
+      "mode": "consume",
+      "weight": 1,
+      "outcome": null,
+      "hidden_by_default": false,
+      "resource": false,
+      "direction": "input",
+      "emit": "produced",
+      "forward_source": null,
+      "colour_expression": null,
+      "output_predicates": [],
+      "lease_claims": [],
+      "lease_claim_exclusions": [],
+      "lease_claim_set": null,
+      "effect_selector": null
+    },
+    {
+      "id": "edge:arc:compute_cost.run:compute_cost.candidate:produce:complete:1",
+      "source": "compute_cost.run",
+      "target": "compute_cost.candidate",
+      "kind": "arc",
+      "mode": "produce",
+      "weight": 1,
+      "outcome": "complete",
+      "hidden_by_default": false,
+      "resource": false,
+      "direction": "output",
+      "emit": "produced",
+      "forward_source": null,
+      "colour_expression": null,
+      "output_predicates": [],
+      "lease_claims": [],
+      "lease_claim_exclusions": [],
+      "lease_claim_set": null,
+      "effect_selector": null
+    },
+    {
+      "id": "edge:arc:join_intervals.run:compute_cost.joined:produce:complete:1",
+      "source": "join_intervals.run",
+      "target": "compute_cost.joined",
+      "kind": "arc",
+      "mode": "produce",
+      "weight": 1,
+      "outcome": "complete",
+      "hidden_by_default": false,
+      "resource": false,
+      "direction": "output",
+      "emit": "produced",
+      "forward_source": null,
+      "colour_expression": null,
+      "output_predicates": [],
+      "lease_claims": [],
+      "lease_claim_exclusions": [],
+      "lease_claim_set": null,
+      "effect_selector": null
+    },
+    {
+      "id": "edge:arc:join_intervals.run:join_intervals.rejection:produce:rejected:1",
+      "source": "join_intervals.run",
+      "target": "join_intervals.rejection",
+      "kind": "arc",
+      "mode": "produce",
+      "weight": 1,
+      "outcome": "rejected",
+      "hidden_by_default": false,
+      "resource": false,
+      "direction": "output",
+      "emit": "produced",
+      "forward_source": null,
+      "colour_expression": null,
+      "output_predicates": [],
+      "lease_claims": [],
+      "lease_claim_exclusions": [],
+      "lease_claim_set": null,
+      "effect_selector": null
+    },
+    {
+      "id": "edge:arc:join_intervals.tariff:join_intervals.run:consume:-:1",
+      "source": "join_intervals.tariff",
+      "target": "join_intervals.run",
+      "kind": "arc",
+      "mode": "consume",
+      "weight": 1,
+      "outcome": null,
+      "hidden_by_default": false,
+      "resource": false,
+      "direction": "input",
+      "emit": "produced",
+      "forward_source": null,
+      "colour_expression": null,
+      "output_predicates": [],
+      "lease_claims": [],
+      "lease_claim_exclusions": [],
+      "lease_claim_set": null,
+      "effect_selector": null
+    },
+    {
+      "id": "edge:arc:join_intervals.usage:join_intervals.run:consume:-:1",
+      "source": "join_intervals.usage",
+      "target": "join_intervals.run",
+      "kind": "arc",
+      "mode": "consume",
+      "weight": 1,
+      "outcome": null,
+      "hidden_by_default": false,
+      "resource": false,
+      "direction": "input",
+      "emit": "produced",
+      "forward_source": null,
+      "colour_expression": null,
+      "output_predicates": [],
+      "lease_claims": [],
+      "lease_claim_exclusions": [],
+      "lease_claim_set": null,
+      "effect_selector": null
+    },
+    {
+      "id": "edge:arc:normalize_tariff.run:join_intervals.tariff:produce:complete:1",
+      "source": "normalize_tariff.run",
+      "target": "join_intervals.tariff",
+      "kind": "arc",
+      "mode": "produce",
+      "weight": 1,
+      "outcome": "complete",
+      "hidden_by_default": false,
+      "resource": false,
+      "direction": "output",
+      "emit": "produced",
+      "forward_source": null,
+      "colour_expression": null,
+      "output_predicates": [],
+      "lease_claims": [],
+      "lease_claim_exclusions": [],
+      "lease_claim_set": null,
+      "effect_selector": null
+    },
+    {
+      "id": "edge:arc:normalize_usage.run:join_intervals.usage:produce:complete:1",
+      "source": "normalize_usage.run",
+      "target": "join_intervals.usage",
+      "kind": "arc",
+      "mode": "produce",
+      "weight": 1,
+      "outcome": "complete",
+      "hidden_by_default": false,
+      "resource": false,
+      "direction": "output",
+      "emit": "produced",
+      "forward_source": null,
+      "colour_expression": null,
+      "output_predicates": [],
+      "lease_claims": [],
+      "lease_claim_exclusions": [],
+      "lease_claim_set": null,
+      "effect_selector": null
+    },
+    {
+      "id": "edge:arc:publish_report.run:publish_report.final:produce:complete:1",
+      "source": "publish_report.run",
+      "target": "publish_report.final",
+      "kind": "arc",
+      "mode": "produce",
+      "weight": 1,
+      "outcome": "complete",
+      "hidden_by_default": false,
+      "resource": false,
+      "direction": "output",
+      "emit": "produced",
+      "forward_source": null,
+      "colour_expression": null,
+      "output_predicates": [],
+      "lease_claims": [],
+      "lease_claim_exclusions": [],
+      "lease_claim_set": null,
+      "effect_selector": null
+    },
+    {
+      "id": "edge:arc:publish_report.validated:publish_report.run:consume:-:1",
+      "source": "publish_report.validated",
+      "target": "publish_report.run",
+      "kind": "arc",
+      "mode": "consume",
+      "weight": 1,
+      "outcome": null,
+      "hidden_by_default": false,
+      "resource": false,
+      "direction": "input",
+      "emit": "produced",
+      "forward_source": null,
+      "colour_expression": null,
+      "output_predicates": [],
+      "lease_claims": [],
+      "lease_claim_exclusions": [],
+      "lease_claim_set": null,
+      "effect_selector": null
+    },
+    {
+      "id": "edge:arc:read_tariff.run:check_tariff_input.raw:produce:complete:1",
+      "source": "read_tariff.run",
+      "target": "check_tariff_input.raw",
+      "kind": "arc",
+      "mode": "produce",
+      "weight": 1,
+      "outcome": "complete",
+      "hidden_by_default": false,
+      "resource": false,
+      "direction": "output",
+      "emit": "produced",
+      "forward_source": null,
+      "colour_expression": null,
+      "output_predicates": [],
+      "lease_claims": [],
+      "lease_claim_exclusions": [],
+      "lease_claim_set": null,
+      "effect_selector": null
+    },
+    {
+      "id": "edge:arc:read_tariff.run:read_tariff.validation_source:produce:complete:1",
+      "source": "read_tariff.run",
+      "target": "read_tariff.validation_source",
+      "kind": "arc",
+      "mode": "produce",
+      "weight": 1,
+      "outcome": "complete",
+      "hidden_by_default": false,
+      "resource": false,
+      "direction": "output",
+      "emit": "produced",
+      "forward_source": null,
+      "colour_expression": null,
+      "output_predicates": [],
+      "lease_claims": [],
+      "lease_claim_exclusions": [],
+      "lease_claim_set": null,
+      "effect_selector": null
+    },
+    {
+      "id": "edge:arc:read_tariff.source:read_tariff.run:consume:-:1",
+      "source": "read_tariff.source",
+      "target": "read_tariff.run",
+      "kind": "arc",
+      "mode": "consume",
+      "weight": 1,
+      "outcome": null,
+      "hidden_by_default": false,
+      "resource": false,
+      "direction": "input",
+      "emit": "produced",
+      "forward_source": null,
+      "colour_expression": null,
+      "output_predicates": [],
+      "lease_claims": [],
+      "lease_claim_exclusions": [],
+      "lease_claim_set": null,
+      "effect_selector": null
+    },
+    {
+      "id": "edge:arc:read_tariff.validation_source:validate_report.run:consume:-:1",
+      "source": "read_tariff.validation_source",
+      "target": "validate_report.run",
+      "kind": "arc",
+      "mode": "consume",
+      "weight": 1,
+      "outcome": null,
+      "hidden_by_default": false,
+      "resource": false,
+      "direction": "input",
+      "emit": "produced",
+      "forward_source": null,
+      "colour_expression": null,
+      "output_predicates": [],
+      "lease_claims": [],
+      "lease_claim_exclusions": [],
+      "lease_claim_set": null,
+      "effect_selector": null
+    },
+    {
+      "id": "edge:arc:read_usage.run:check_usage_input.raw:produce:complete:1",
+      "source": "read_usage.run",
+      "target": "check_usage_input.raw",
+      "kind": "arc",
+      "mode": "produce",
+      "weight": 1,
+      "outcome": "complete",
+      "hidden_by_default": false,
+      "resource": false,
+      "direction": "output",
+      "emit": "produced",
+      "forward_source": null,
+      "colour_expression": null,
+      "output_predicates": [],
+      "lease_claims": [],
+      "lease_claim_exclusions": [],
+      "lease_claim_set": null,
+      "effect_selector": null
+    },
+    {
+      "id": "edge:arc:read_usage.run:read_usage.validation_source:produce:complete:1",
+      "source": "read_usage.run",
+      "target": "read_usage.validation_source",
+      "kind": "arc",
+      "mode": "produce",
+      "weight": 1,
+      "outcome": "complete",
+      "hidden_by_default": false,
+      "resource": false,
+      "direction": "output",
+      "emit": "produced",
+      "forward_source": null,
+      "colour_expression": null,
+      "output_predicates": [],
+      "lease_claims": [],
+      "lease_claim_exclusions": [],
+      "lease_claim_set": null,
+      "effect_selector": null
+    },
+    {
+      "id": "edge:arc:read_usage.source:read_usage.run:consume:-:1",
+      "source": "read_usage.source",
+      "target": "read_usage.run",
+      "kind": "arc",
+      "mode": "consume",
+      "weight": 1,
+      "outcome": null,
+      "hidden_by_default": false,
+      "resource": false,
+      "direction": "input",
+      "emit": "produced",
+      "forward_source": null,
+      "colour_expression": null,
+      "output_predicates": [],
+      "lease_claims": [],
+      "lease_claim_exclusions": [],
+      "lease_claim_set": null,
+      "effect_selector": null
+    },
+    {
+      "id": "edge:arc:read_usage.validation_source:validate_report.run:consume:-:1",
+      "source": "read_usage.validation_source",
+      "target": "validate_report.run",
+      "kind": "arc",
+      "mode": "consume",
+      "weight": 1,
+      "outcome": null,
+      "hidden_by_default": false,
+      "resource": false,
+      "direction": "input",
+      "emit": "produced",
+      "forward_source": null,
+      "colour_expression": null,
+      "output_predicates": [],
+      "lease_claims": [],
+      "lease_claim_exclusions": [],
+      "lease_claim_set": null,
+      "effect_selector": null
+    },
+    {
+      "id": "edge:arc:validate_report.run:publish_report.validated:produce:complete:1",
+      "source": "validate_report.run",
+      "target": "publish_report.validated",
+      "kind": "arc",
+      "mode": "produce",
+      "weight": 1,
+      "outcome": "complete",
+      "hidden_by_default": false,
+      "resource": false,
+      "direction": "output",
+      "emit": "produced",
+      "forward_source": null,
+      "colour_expression": null,
+      "output_predicates": [],
+      "lease_claims": [],
+      "lease_claim_exclusions": [],
+      "lease_claim_set": null,
+      "effect_selector": null
+    },
+    {
+      "id": "edge:arc:validate_report.run:validate_report.rejection:produce:rejected:1",
+      "source": "validate_report.run",
+      "target": "validate_report.rejection",
+      "kind": "arc",
+      "mode": "produce",
+      "weight": 1,
+      "outcome": "rejected",
+      "hidden_by_default": false,
+      "resource": false,
+      "direction": "output",
+      "emit": "produced",
+      "forward_source": null,
+      "colour_expression": null,
+      "output_predicates": [],
+      "lease_claims": [],
+      "lease_claim_exclusions": [],
+      "lease_claim_set": null,
+      "effect_selector": null
+    }
+  ],
+  "marking": {
+    "checkpoint_ref": {
+      "entity_type": "marking_checkpoint/v1",
+      "entity_id": {
+        "kind": "marking_checkpoint",
+        "value": "8c341216903b5342a6d7d343d6fa059e"
+      },
+      "version_id": {
+        "kind": "marking_checkpoint_version",
+        "value": "48d88e304ae4535db1acbd36351421ba"
+      }
+    },
+    "epoch": 0,
+    "token_count": 4,
+    "active_token_count": 4
+  },
+  "execution": {
+    "schema_version": "rpnh/net_execution_view/v1",
+    "read_only": true,
+    "scope": "current_adopted_net",
+    "status_source": "Registry facts, not process liveness",
+    "firing_count": 4,
+    "head_ordinal": 571
+  }
+}
