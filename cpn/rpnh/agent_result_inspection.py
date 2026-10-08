@@ -48,7 +48,55 @@ def _decode(content):
         return None
 
 
-def _request_projection(action_ref, action, envelope, producing_actions):
+def _registered_v2_projection(body, metadata):
+    """Match a result or the reducer's closed projection of a managed page."""
+    if not isinstance(body, Mapping) or not isinstance(metadata, Mapping):
+        return None
+    if metadata.get("kind") != "managed_output_page/v1":
+        return "full" if body == metadata else None
+    from cpn.components.agent_loop.managed_output import validate_managed_output_page
+    try:
+        validate_managed_output_page(metadata)
+        if body.get("kind") == "managed_output_page/v1":
+            validate_managed_output_page(body)
+            identity = {"kind", "agent_action_ref", "terminal_receipt_ref",
+                        "reader", "offset_chars", "total_chars"}
+            if (all(body[key] == metadata[key] for key in identity)
+                    and metadata["content"].startswith(body["content"])):
+                return "full" if body == metadata else "bounded"
+        elif body.get("kind") == "tool_result_reference/v1":
+            reference = {"kind": "tool_result_reference/v1",
+                         "result_kind": "managed_output_page/v1",
+                         **{key: value for key, value in metadata.items()
+                            if key not in {"kind", "content", "truncated", "next_offset_chars"}}}
+            # Serialized equality also rejects bools substituted for integers.
+            if canonical_json(body) == canonical_json(reference):
+                return "reference"
+    except ValueError:
+        pass
+    return None
+
+
+def _matches_result_producer(body, entry):
+    action = entry["record"]
+    if entry["ref"]["entity_type"] == "agent_action/v2":
+        return _registered_v2_projection(body, action.get("result_metadata")) is not None
+    if (action.get("outcome") != "returned" or not isinstance(body, Mapping)
+            or body.get("agent_action_ref") != entry["ref"]
+            or body.get("terminal_receipt_ref") != action.get("terminal_receipt_ref")):
+        return False
+    # A source's immediate managed page also starts at zero. If it reused the
+    # reader's call ID, its page/reference cannot identify the reader alone.
+    content = canonical_json(action.get("output")).decode("utf-8")
+    page = {"kind": "managed_output_page/v1", "agent_action_ref": entry["ref"],
+            "terminal_receipt_ref": action.get("terminal_receipt_ref"),
+            "reader": "read_managed_output", "content": content,
+            "offset_chars": 0, "next_offset_chars": None,
+            "total_chars": len(content), "truncated": False}
+    return _registered_v2_projection(body, page) is not None
+
+
+def _request_projection(action_ref, action, envelope, producing_actions, prior_turns):
     """No string-search of actor text, and no matching by tool name alone."""
     if (not isinstance(envelope, Mapping)
             or (envelope.get("protocol") != "llm_request_envelope/v1"
@@ -67,25 +115,32 @@ def _request_projection(action_ref, action, envelope, producing_actions):
         content = message.get("content")
         body = _decode(content)
         exact = isinstance(body, Mapping) and body.get("agent_action_ref") == action_ref
-        # Reused provider call IDs across turns are legal: do not guess which.
-        if len(matched) > 1 and not exact:
-            continue
-        if isinstance(body, Mapping):
-            # A v2 reader's registered result can point to a different source
-            # action. Establish the producing identity before inspecting that
-            # locator, which only describes the content being read.
-            if (action_ref["entity_type"] == "agent_action/v2"
-                    and message.get("tool_call_id") == action.get("tool_call_id")
-                    and body == action.get("result_metadata")):
+        # A reader page's locator describes its source, not its producing v2
+        # action. Resolve that producer before rejecting reused IDs or checking
+        # the source locator. Distinct pages across turns can be unambiguous.
+        if (action_ref["entity_type"] == "agent_action/v2"
+                and message.get("tool_call_id") == action.get("tool_call_id")):
+            projection = _registered_v2_projection(body, action.get("result_metadata"))
+            if projection is not None:
+                if action.get("agent_turn_ref") not in prior_turns:
+                    return "unavailable", "prior_turn_link_unavailable"
                 producers = [entry for entry in producing_actions
-                             if entry["ref"]["entity_type"] == "agent_action/v2"
-                             and entry["record"].get("tool_call_id") == action.get("tool_call_id")
-                             and entry["record"].get("result_metadata") == body]
-                if len(producers) == 1 or exact:
-                    states.append("full")
+                             if entry["record"].get("tool_call_id") == action.get("tool_call_id")
+                             and entry["record"].get("agent_turn_ref") in prior_turns
+                             and _matches_result_producer(body, entry)]
+                result_messages = [m for m in matched
+                                   if m.get("tool_call_id") == action.get("tool_call_id")
+                                   and _registered_v2_projection(_decode(m.get("content")), action.get("result_metadata")) is not None]
+                if (len(producers) == 1 and len(result_messages) == 1) or exact:
+                    states.append(projection)
                 else:
                     ambiguous_producer = True
                 continue
+        # Reused provider call IDs without a unique registered match remain
+        # ambiguous. An exact action locator is independent reference evidence.
+        if len(matched) > 1 and not exact:
+            continue
+        if isinstance(body, Mapping):
             if body.get("agent_action_ref") not in (None, action_ref):
                 continue
             if action_ref["entity_type"] == "agent_action/v3":
@@ -249,7 +304,7 @@ def project_agent_result_evidence(*, records, events, read_material=None,
                                      if _same_loop(entry["record"].get("agent_loop_ref"), data.get("agent_loop_ref"))
                                      and entry["record"].get("turn_sequence", -1) < data.get("turn_sequence", -1)]
                 projection, reason = (("unavailable", "request_material_unavailable") if envelope is None
-                                      else _request_projection(ref, action, envelope, producing_actions))
+                                      else _request_projection(ref, action, envelope, producing_actions, prior_turns))
                 if projection in {"full", "bounded"} and action.get("agent_turn_ref") not in prior_turns:
                     projection, reason = "unavailable", "prior_turn_link_unavailable"
             submitted = any(a["submission_state"] == "submitted" for a in attempt_views)

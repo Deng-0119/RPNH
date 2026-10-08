@@ -419,3 +419,217 @@ def test_full_reader_page_does_not_establish_submission(event_type, state):
     assert request["provider_attempts"][0]["submission_state"] == state
     assert request["submitted_request_inclusion"] == "not_established"
     assert result["actions"][0]["semantic_use"] == "unknown"
+
+
+@pytest.mark.parametrize("recipe", [False, True])
+def test_distinct_reader_pages_with_reused_ids_in_valid_history(recipe):
+    from cpn.components.agent_loop.managed_output import bounded_managed_output_projection
+    from cpn.components.request_protocol import validate_llm_request_message_history
+    records, events, envelope = reader_fixture()
+    source = records[0]
+    other = deepcopy(records[-1])
+    other["ref"] = ref("agent_action/v2", "9")
+    other["record"].update(agent_turn_ref=ref("agent_turn/v1", "9"), turn_sequence=2)
+    arguments = {"agent_action_ref": source["ref"],
+                 "terminal_receipt_ref": source["record"]["terminal_receipt_ref"],
+                 "offset_chars": 2000, "max_bytes": 2000}
+    other["record"]["result_metadata"] = bounded_managed_output_projection(
+        {"kind": "managed_native_plugin_result/v1", "output": source["record"]["output"],
+         "terminal_receipt_ref": source["record"]["terminal_receipt_ref"]}, arguments)
+    records[2]["record"]["prior_turn_refs"].append(other["record"]["agent_turn_ref"])
+    records.append(other)
+    assistant = deepcopy(envelope["messages"][0])
+    assistant["tool_calls"][0]["function"]["arguments"] = json.dumps(arguments)
+    envelope["messages"].extend([assistant, {"role": "tool", "tool_call_id": "reader-call",
+        "content": canonical_json(other["record"]["result_metadata"]).decode()}])
+    if recipe:
+        del envelope["protocol"]
+        envelope["schema_version"] = "logical_provider_request_recipe/v1"
+    validate_llm_request_message_history(envelope["messages"])
+    result = project(records, events, envelope)
+    assert [a["requests"][0]["request_projection"] for a in result["actions"]] == ["full", "full", "bounded"]
+    assert all(a["semantic_use"] == a["decision_influence"] == "unknown" for a in result["actions"])
+
+
+@pytest.mark.parametrize("submitted", [False, True])
+def test_default_batch_bound_preserves_reader_and_source_evidence(submitted):
+    from cpn.components.agent_loop.compact import bound_tool_result_groups
+    from cpn.components.agent_loop.managed_output import bounded_managed_output_projection
+    from cpn.components.request_protocol import validate_llm_request_message_history
+    records, events, envelope = reader_fixture()
+    source, template = records[0], records.pop()
+    assistant = {"role": "assistant", "tool_calls": []}
+    messages = []
+    for index, digit in enumerate("789ab"):
+        reader = deepcopy(template)
+        reader["ref"] = ref("agent_action/v2", digit)
+        call_id = f"reader-{index}"
+        arguments = {"agent_action_ref": source["ref"],
+                     "terminal_receipt_ref": source["record"]["terminal_receipt_ref"],
+                     "offset_chars": index * 1000, "max_bytes": 10000}
+        reader["record"].update(tool_call_id=call_id, tool_call_ordinal=index, arguments=arguments)
+        reader["record"]["result_metadata"] = bounded_managed_output_projection(
+            {"kind": "managed_native_plugin_result/v1", "output": source["record"]["output"],
+             "terminal_receipt_ref": source["record"]["terminal_receipt_ref"]}, arguments)
+        records.append(reader)
+        assistant["tool_calls"].append({"id": call_id, "type": "function", "function": {
+            "name": "read_managed_output", "arguments": json.dumps(arguments)}})
+        messages.append({"role": "tool", "tool_call_id": call_id,
+                         "content": canonical_json(reader["record"]["result_metadata"]).decode()})
+    envelope["messages"] = [assistant, *messages]
+    assert [a["requests"][0]["request_projection"] for a in project(records, events, envelope)["actions"]] == ["full"] * 5 + ["bounded"]
+    envelope["messages"] = list(bound_tool_result_groups(envelope["messages"]))
+    validate_llm_request_message_history(envelope["messages"])
+    assert len(canonical_json(envelope["messages"])) <= 40000
+    original = deepcopy((records, events, envelope))
+    result = project(records, events if submitted else [], envelope)
+    projections = ["full", "full", "full", "bounded", "reference", "bounded"]
+    assert [a["requests"][0]["request_projection"] for a in result["actions"]] == projections
+    assert [a["requests"][0]["submitted_request_inclusion"] for a in result["actions"]] == (
+        projections if submitted else ["not_established"] * 6)
+    assert all(a["semantic_use"] == a["decision_influence"] == "unknown" for a in result["actions"])
+    assert (records, events, envelope) == original
+
+
+def reduced_reader_fixture(projection):
+    from cpn.components.agent_loop.compact import bound_tool_result_groups
+    from cpn.components.agent_loop.managed_output import bound_managed_output_page
+    records, events, envelope = reader_fixture()
+    page = records[-1]["record"]["result_metadata"]
+    if projection == "bounded":
+        body = bound_managed_output_page(page, 1000)
+    else:
+        body = {"kind": "tool_result_reference/v1", "result_kind": "managed_output_page/v1",
+                **{key: value for key, value in page.items()
+                   if key not in {"kind", "content", "truncated", "next_offset_chars"}}}
+        minimum = deepcopy(envelope["messages"])
+        minimum[1]["content"] = canonical_json(body).decode()
+        reduced = bound_tool_result_groups(envelope["messages"], byte_limit=len(canonical_json(minimum)))
+        assert json.loads(reduced[1]["content"]) == body
+    envelope["messages"][1]["content"] = canonical_json(body).decode()
+    return records, events, envelope
+
+
+@pytest.mark.parametrize("projection", ["bounded", "reference"])
+@pytest.mark.parametrize("mutation", ["receipt", "source", "reader", "offset", "total", "field", "call_id", "turn", "loop"])
+def test_reduced_reader_requires_exact_metadata_and_producer_link(projection, mutation):
+    records, events, envelope = reduced_reader_fixture(projection)
+    assert project(records, events, envelope)["actions"][0]["requests"][0]["request_projection"] == projection
+    body = json.loads(envelope["messages"][1]["content"])
+    if mutation == "receipt":
+        body["terminal_receipt_ref"] = resource("9")
+    elif mutation == "source":
+        body["agent_action_ref"] = ref("agent_action/v3", "9")
+    elif mutation == "reader":
+        body["reader"] = "read_action_output"
+    elif mutation == "offset":
+        body["offset_chars"] = False
+    elif mutation == "total":
+        body["total_chars"] += 1
+    elif mutation == "field":
+        body["unregistered"] = True
+    elif mutation == "call_id":
+        envelope["messages"][1]["tool_call_id"] = "wrong-producer"
+    elif mutation == "turn":
+        records[2]["record"]["prior_turn_refs"].remove(records[-1]["record"]["agent_turn_ref"])
+    else:
+        records[-1]["record"]["agent_loop_ref"] = ref("agent_loop/v1", "9")
+    envelope["messages"][1]["content"] = canonical_json(body).decode()
+    requests = project(records, events, envelope)["actions"][0]["requests"]
+    if mutation == "loop":
+        assert requests == []
+    elif mutation == "call_id":
+        assert requests[0]["request_projection"] == "absent"
+    else:
+        assert requests[0]["request_projection"] == "unavailable"
+        if mutation == "turn":
+            assert requests[0]["reason"] == "prior_turn_link_unavailable"
+
+
+@pytest.mark.parametrize("mutation", ["content", "next_offset", "truncated", "shifted", "extended"])
+def test_reduced_reader_page_must_be_a_valid_prefix_of_registered_page(mutation):
+    records, events, envelope = reduced_reader_fixture("bounded")
+    body = json.loads(envelope["messages"][1]["content"])
+    if mutation == "content":
+        body["content"] = "?" + body["content"][1:]
+    elif mutation == "next_offset":
+        body["next_offset_chars"] += 1
+    elif mutation == "truncated":
+        body["truncated"] = False
+    elif mutation == "shifted":
+        body["content"] = body["content"][1:]
+        body["offset_chars"] += 1
+    else:
+        from cpn.components.agent_loop.managed_output import bounded_managed_output_projection
+        source = records[0]
+        body = bounded_managed_output_projection(
+            {"kind": "managed_native_plugin_result/v1", "output": source["record"]["output"],
+             "terminal_receipt_ref": source["record"]["terminal_receipt_ref"]},
+            {"agent_action_ref": source["ref"], "terminal_receipt_ref": source["record"]["terminal_receipt_ref"],
+             "max_bytes": 3000})
+    envelope["messages"][1]["content"] = canonical_json(body).decode()
+    assert project(records, events, envelope)["actions"][0]["requests"][0]["request_projection"] == "unavailable"
+
+
+@pytest.mark.parametrize("projection", ["bounded", "reference"])
+@pytest.mark.parametrize("collision", ["message", "reader", "source"])
+def test_reduced_reader_producer_collisions_stay_ambiguous(projection, collision):
+    records, events, envelope = reduced_reader_fixture(projection)
+    if collision == "message":
+        envelope["messages"].extend(deepcopy(envelope["messages"]))
+    elif collision == "reader":
+        other = deepcopy(records[-1])
+        other["ref"] = ref("agent_action/v2", "9")
+        other["record"].update(agent_turn_ref=ref("agent_turn/v1", "9"), turn_sequence=2)
+        # Distinct original lengths still collide if the retained prefix or
+        # reference cannot distinguish the two registered pages.
+        page = other["record"]["result_metadata"]
+        page["content"] = page["content"][:-1]
+        page["next_offset_chars"] -= 1
+        records[2]["record"]["prior_turn_refs"].append(other["record"]["agent_turn_ref"])
+        records.append(other)
+    else:
+        records[0]["record"]["tool_call_id"] = "reader-call"
+    view = project(records, events, envelope)["actions"][0]["requests"][0]
+    assert view["request_projection"] == "unavailable"
+    assert view["reason"] == "ambiguous_reused_tool_call_id"
+
+
+@pytest.mark.parametrize("projection", ["bounded", "reference"])
+@pytest.mark.parametrize("other_producer", ["unlinked_turn", "other_loop", "later_turn", "nonzero_offset", "different_source"])
+def test_unrelated_producers_do_not_make_reader_projection_ambiguous(projection, other_producer):
+    from cpn.components.agent_loop.managed_output import bounded_managed_output_projection
+    records, events, envelope = reduced_reader_fixture(projection)
+    source, reader = records[0], records[-1]
+    if other_producer in {"unlinked_turn", "other_loop", "later_turn"}:
+        other = deepcopy(reader)
+        other["ref"] = ref("agent_action/v2", "9")
+        other["record"]["agent_turn_ref"] = ref("agent_turn/v1", "9")
+        if other_producer == "other_loop":
+            other["record"]["agent_loop_ref"] = ref("agent_loop/v1", "9")
+        elif other_producer == "later_turn":
+            other["record"]["turn_sequence"] = records[1]["record"]["turn_sequence"]
+        if other_producer != "unlinked_turn":
+            records[2]["record"]["prior_turn_refs"].append(other["record"]["agent_turn_ref"])
+        records.append(other)
+    elif other_producer == "different_source":
+        other = deepcopy(source)
+        other["ref"] = ref("agent_action/v3", "9")
+        other["record"]["tool_call_id"] = reader["record"]["tool_call_id"]
+        records.append(other)
+    else:
+        source["record"]["tool_call_id"] = reader["record"]["tool_call_id"]
+        page = bounded_managed_output_projection(
+            {"kind": "managed_native_plugin_result/v1", "output": source["record"]["output"],
+             "terminal_receipt_ref": source["record"]["terminal_receipt_ref"]},
+            {"agent_action_ref": source["ref"], "terminal_receipt_ref": source["record"]["terminal_receipt_ref"],
+             "offset_chars": 2000, "max_bytes": 2000})
+        reader["record"]["result_metadata"] = page
+        body = json.loads(envelope["messages"][1]["content"])
+        body["offset_chars"] = 2000
+        if projection == "bounded":
+            body["content"] = page["content"][:len(body["content"])]
+            body["next_offset_chars"] = 2000 + len(body["content"])
+        envelope["messages"][1]["content"] = canonical_json(body).decode()
+    view = project(records, events, envelope)["actions"][0]["requests"][0]
+    assert view["request_projection"] == projection

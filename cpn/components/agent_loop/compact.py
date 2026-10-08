@@ -10,7 +10,7 @@ import math
 from typing import AbstractSet, Any, Mapping, Sequence
 
 from cpn.components.request_protocol import (
-    validate_llm_request_message_history,
+    _canonical_json, validate_llm_request_message_history,
 )
 
 # Includes the assistant call frame, all result frames, JSON escaping and IDs.
@@ -507,6 +507,13 @@ def retained_recent_history(
     return tuple(message for group in kept for message in group)
 
 
+def _fact_capsule_message(fact_capsule: Mapping[str, Any]) -> dict[str, str]:
+    """Share the exact capsule projection with the stored context overlay."""
+    return {"role": "user", "content": json.dumps(
+        dict(fact_capsule), ensure_ascii=True, sort_keys=True,
+        separators=(",", ":"), allow_nan=False)}
+
+
 def build_replacement_history(
         messages: Sequence[Mapping[str, Any]], summary: str, *,
         retained_history_token_limit: int,
@@ -528,9 +535,16 @@ def build_replacement_history(
             or fact_capsule.get("schema_version")
             != "agent_context_fact_capsule/v1"):
         raise ValueError("context compaction requires one typed fact capsule")
-    archive = fact_capsule.get("result_archive")
-    archive_bytes = (len(json.dumps(archive, ensure_ascii=True, sort_keys=True,
-        separators=(",", ":"), allow_nan=False).encode()) if archive else 0)
+    archive_bytes = 0
+    if "result_archive" in fact_capsule:
+        without_archive = dict(fact_capsule)
+        del without_archive["result_archive"]
+        # The capsule is JSON inside a message content string. Reserve the
+        # field's actual contribution, including its key and nested escaping,
+        # while excluding the rest of the capsule and shared message framing.
+        archive_bytes = (
+            len(_canonical_json(_fact_capsule_message(fact_capsule)))
+            - len(_canonical_json(_fact_capsule_message(without_archive))))
     if archive_bytes >= TOOL_BATCH_BYTE_LIMIT:
         raise ValueError("result archive locator exceeds the active notification budget")
     groups = list(_message_groups(messages))

@@ -1897,12 +1897,12 @@ class AgentContextOverlay:
     def model_visible_messages(self) -> tuple[Mapping[str, Any], ...]:
         """Project the one stored replacement history into chat messages."""
 
+        from .compact import _fact_capsule_message
+
         return tuple(
             dict(entry["message"])
             if entry["kind"] == "retained_model_visible_message"
-            else {"role": "user", "content": json.dumps(
-                entry, ensure_ascii=True, sort_keys=True,
-                separators=(",", ":"))}
+            else _fact_capsule_message(entry)
             if entry["kind"] == "agent_context_fact_capsule"
             else {"role": "user", "content": entry["content"]}
             for entry in self.replacement_history)

@@ -1,5 +1,6 @@
 """Finite total result disclosure and retirement of historical pages."""
 import json
+from types import MappingProxyType
 
 import pytest
 
@@ -8,6 +9,9 @@ from cpn.components.agent_loop.compact import (
     build_replacement_history,
 )
 from cpn.components.agent_loop.managed_output import render_managed_output
+from cpn.components.agent_loop.models import AgentContextOverlay
+from cpn.rpnh.registry.identities import TypedId
+from cpn.rpnh.registry.models import VersionRef
 
 
 def group(number, *, payload=None, call_id=None):
@@ -30,6 +34,40 @@ def raw(value):
 
 
 CAPSULE = {"kind": "agent_context_fact_capsule", "schema_version": "agent_context_fact_capsule/v1"}
+ARCHIVE = {"reader": "read_managed_output", "archive_loop_ref": {
+    "entity_type": "agent_loop/v1", "logical_id": "agent_loop:" + "a" * 32,
+    "version_id": "agent_loop_version:" + "b" * 32},
+    "before_turn_sequence": 64, "offset": 0, "max_bytes": 10000}
+
+
+def projected_messages(replacement):
+    """Use the real overlay projection, independently of budget calculation."""
+    def ref(kind, entity_type=None):
+        return VersionRef(entity_type or kind + "/v1", TypedId(kind, "a" * 32),
+                          TypedId(kind + "_version", "b" * 32))
+
+    compaction_ref = ref("agent_context_compaction")
+    overlay = AgentContextOverlay(
+        compaction_ref=VersionRef("agent_context_compaction/v3",
+            compaction_ref.entity_id, compaction_ref.version_id),
+        loop_id="agent_loop:" + "a" * 32,
+        source_context_session_ordinal=0, context_session_ordinal=1,
+        trigger_reason="context_pressure", first_turn_sequence=0,
+        last_turn_sequence=-1, covered_turn_refs=(),
+        replacement_history=(dict(replacement[0],
+            source_context_session_ordinal=0, context_session_ordinal=1),
+            *replacement[1:]),
+        llm_invocation_ref=ref("llm_invocation", "llm_invocation_spec/v1"),
+        llm_invocation_attempt_ref=ref("llm_invocation_attempt"))
+    return overlay.model_visible_messages
+
+
+def archive_message_delta(replacement):
+    capsule_without_archive = dict(replacement[0])
+    capsule_without_archive.pop("result_archive", None)
+    without_archive = (capsule_without_archive, *replacement[1:])
+    return (len(raw(projected_messages(replacement)))
+            - len(raw(projected_messages(without_archive))))
 
 
 def archived_output(context, arguments):
@@ -93,19 +131,93 @@ def test_retiring_result_without_reader_fails_but_pending_notification_still_fit
 
 
 def test_archive_locator_counts_toward_tail_and_pending_hard_limit():
-    archive = {"reader": "read_managed_output", "archive_loop_ref": {
-        "entity_type": "agent_loop/v1", "logical_id": "agent_loop:" + "a" * 32,
-        "version_id": "agent_loop_version:" + "b" * 32},
-        "before_turn_sequence": 64, "offset": 0, "max_bytes": 10000}
-    capsule = dict(CAPSULE, result_archive=archive)
+    capsule = dict(CAPSULE, result_archive=ARCHIVE)
     history = [m for n in range(64) for m in group(n)]
     for budget, pending in [(20000, set()), (1, {"63"})]:
         result = build_replacement_history(history, "Continue with exact archive.",
             retained_history_token_limit=budget, fact_capsule=capsule,
             pending_tool_call_ids=pending)
         retained = [entry["message"] for entry in result[2:]]
-        used = len(raw(archive)) + len(raw(retained))
+        used = archive_message_delta(result) + len(raw(retained))
         assert used <= (40000 if pending else budget * 4)
+
+
+@pytest.mark.parametrize("payload", ["x" * 20000, "中😀" * 5000, '\\"\n\t' * 10000],
+                         ids=["ascii", "unicode", "escaping"])
+def test_pending_archive_exact_message_budget_survives_repeated_compaction(payload):
+    individual = [group(n, payload=payload) for n in range(32)]
+    assistant = dict(individual[0][0], tool_calls=[g[0]["tool_calls"][0] for g in individual])
+    messages = [assistant, *(g[1] for g in individual)]
+    capsule = dict(CAPSULE, result_archive=ARCHIVE,
+                   workspace_changed_paths=['中😀\\"\n' * 1000])
+    for _ in range(3):
+        result = build_replacement_history(messages, "Still awaiting the first notification.",
+            retained_history_token_limit=1, fact_capsule=capsule,
+            pending_tool_call_ids={str(n) for n in range(32)})
+        messages = [entry["message"] for entry in result[2:]]
+        assert messages[0] == assistant
+        assert [m["tool_call_id"] for m in messages[1:]] == [str(n) for n in range(32)]
+        assert archive_message_delta(result) == 308
+        used = len(raw(messages)) + archive_message_delta(result)
+        assert TOOL_BATCH_BYTE_LIMIT - 32 <= used <= TOOL_BATCH_BYTE_LIMIT
+    retired = build_replacement_history(messages, "The notification has been consumed.",
+        retained_history_token_limit=1, fact_capsule=capsule)
+    assert len(retired) == 2
+
+
+@pytest.mark.parametrize("archive", [
+    *(dict(ARCHIVE, before_turn_sequence=value) for value in (1, 12, 123, 1234)),
+    {}, {"locator": '中😀\\"\n'},
+], ids=["modulo_3", "modulo_0", "modulo_1", "modulo_2", "empty", "unicode_escaping"])
+def test_archive_message_delta_reserves_tight_tail_budget(archive):
+    capsule = dict(CAPSULE, result_archive=archive)
+    messages = group(1, payload="one delivered result")
+    projection = (capsule, {"kind": "compaction_summary", "content": "Continue."})
+    archive_bytes = archive_message_delta(projection)
+    # One token below the real minimum must retire the complete delivered group.
+    too_small = approximate_tokens(raw(messages)) + (archive_bytes + 3) // 4 - 1
+    for _ in range(3):
+        result = build_replacement_history(messages, "Continue.",
+            retained_history_token_limit=too_small, fact_capsule=capsule)
+        assert len(result) == 2
+        assert archive_message_delta(result) == archive_bytes
+    fitting = build_replacement_history(messages, "Continue.",
+        retained_history_token_limit=too_small + 1, fact_capsule=capsule)
+    assert [entry["message"] for entry in fitting[2:]] == messages
+    assert len(raw(messages)) + archive_message_delta(fitting) <= (too_small + 1) * 4
+
+
+@pytest.mark.parametrize("padding", [39962, 39963, 39964])
+def test_archive_exact_message_reservation_rejects_exhausted_pending_budget(padding):
+    # The inner object fits, but its field and nested-message escaping do not.
+    archive = {"locator": "x" * padding}
+    capsule = dict(CAPSULE, result_archive=archive)
+    projection = (capsule, {"kind": "compaction_summary", "content": "Continue."})
+    assert len(raw(archive)) < TOOL_BATCH_BYTE_LIMIT
+    assert archive_message_delta(projection) >= TOOL_BATCH_BYTE_LIMIT
+    with pytest.raises(ValueError, match="archive locator exceeds"):
+        build_replacement_history(group(1), "Preserve the first notification.",
+            retained_history_token_limit=1, fact_capsule=capsule,
+            pending_tool_call_ids={"1"})
+
+
+def test_archive_accounting_accepts_mapping_capsule_without_changing_projection():
+    capsule = dict(CAPSULE, result_archive=ARCHIVE,
+                   workspace_changed_paths=['中😀\\"\n'])
+    replacement = build_replacement_history(group(1), "Continue.",
+        retained_history_token_limit=20000, fact_capsule=MappingProxyType(capsule))
+    expected = dict(capsule, source_context_session_ordinal=0, context_session_ordinal=1)
+    assert projected_messages(replacement)[0] == {
+        "role": "user", "content": raw(expected).decode()}
+
+
+@pytest.mark.parametrize("value", [float("nan"), float("inf"), -float("inf")],
+                         ids=["nan", "positive_infinity", "negative_infinity"])
+def test_archive_accounting_rejects_nonfinite_json(value):
+    capsule = dict(CAPSULE, result_archive=dict(ARCHIVE, max_bytes=value))
+    with pytest.raises(ValueError, match="Out of range float values"):
+        build_replacement_history(group(1), "Continue.",
+            retained_history_token_limit=20000, fact_capsule=capsule)
 
 
 def test_retired_group_does_not_need_to_fit_the_active_archive_reservation():
