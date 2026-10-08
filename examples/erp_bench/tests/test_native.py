@@ -305,6 +305,7 @@ def test_freeze_codex_override_retains_original_and_changes_only_one_token(tmp_p
     assert retained.read_bytes() == original_bytes
     assert frozen.adapter_config_path.read_bytes() != original_bytes
     expected = json.loads(original_bytes)
+    expected["argv"][0] = str(Path(sys.executable).absolute())
     expected["argv"][expected["argv"].index("{codex}")] = str(shim.resolve())
     assert json.loads(frozen.adapter_config_path.read_bytes()) == expected
     assert {p.name for p in frozen_path.parent.iterdir()} == {"selection.json", "adapter.json", "original-adapter.json"}
@@ -335,10 +336,35 @@ def test_existing_script_profile_binds_supported_module_without_changing_model_p
     frozen = freeze_profile(selection, tmp_path / "frozen", codex_executable=shim)
     result = json.loads((frozen.parent / "adapter.json").read_bytes())
     expected_tail = [str(shim.resolve()) if a == "{codex}" else a for a in tail]
-    assert result["argv"] == ["{python}", "-m", "cpn.llm_adapters.codex_subscription_bridge", *expected_tail]
+    assert result["argv"] == [str(Path(sys.executable).absolute()), "-m", "cpn.llm_adapters.codex_subscription_bridge", *expected_tail]
     assert {k: v for k, v in result.items() if k != "argv"} == {k: v for k, v in document.items() if k != "argv"}
     assert profile_identity(frozen) == identity
     assert adapter.read_bytes() == original == (frozen.parent / "original-adapter.json").read_bytes()
+
+
+def test_codex_probe_binds_explicit_executable_without_host_codex_on_path(tmp_path, monkeypatch):
+    from cpn.llm_adapters import load_llm_execution_selection
+    from cpn.llm_adapters.factory import build_llm_input_port
+    from cpn.llm_adapters import local_process
+    selection, adapter, shim = _codex_profile(tmp_path)
+    document = json.loads(adapter.read_bytes())
+    document["probe_argv"] = ["{codex}", "--version"]
+    adapter.write_text(json.dumps(document))
+    frozen = freeze_profile(selection, tmp_path / "frozen", codex_executable=shim)
+    assert json.loads((frozen.parent / "adapter.json").read_bytes())["probe_argv"] == [str(shim), "--version"]
+    original_which = local_process.shutil.which
+    monkeypatch.setattr(local_process.shutil, "which", lambda name: None if name == "codex" else original_which(name))
+    # Compose the real provider boundary, without invoking request_once or
+    # running the fixture executable. This used to fail before owner startup.
+    port = build_llm_input_port(load_llm_execution_selection(frozen), destination_run_root=tmp_path / "factory")
+    command = port._port._argv
+    assert command[0] == str(Path(sys.executable).absolute())
+    observed = subprocess.run([command[0], "-I", "-c", "import cpn,json,sys; print(json.dumps({'prefix':sys.prefix,'cpn':cpn.__file__}))"],
+        capture_output=True, text=True, timeout=10, check=True)
+    imported = json.loads(observed.stdout)
+    assert imported["prefix"] == sys.prefix
+    assert Path(imported["cpn"]).is_relative_to(Path(sys.prefix))
+    port.close()
 
 
 @pytest.mark.parametrize("argv", [

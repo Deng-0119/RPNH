@@ -99,8 +99,9 @@ def freeze_profile(path, destination, *, codex_executable=None) -> Path:
     run directory, not to the relocated adapter JSON. Inherited environment
     bindings keep their existing worker-time semantics.
 
-    With codex_executable, only the codex_subscription_bridge argv's unique
-    {codex} token is replaced. Original adapter bytes are retained separately in
+    With codex_executable, Codex program tokens in argv and probe_argv are bound
+    to that executable; the known historical script becomes the installed bridge
+    module without changing its model arguments. Original bytes are retained in
     original-adapter.json (0600); adapter.json is explicitly adapted in this mode.
     The shim is supplied by the caller and is never executed here.
     """
@@ -138,11 +139,21 @@ def freeze_profile(path, destination, *, codex_executable=None) -> Path:
             # to the installed supported module instead; never execute that
             # script. Retain the original adapter bytes privately below.
             argv = [argv[0], "-m", bridge_module, *argv[2:]]
+        if argv[0] == "{python}":
+            # Resolving the venv interpreter symlink loses pyvenv.cfg and can
+            # import a different installed core. Keep the active venv pathname.
+            import sys
+            argv = [str(Path(sys.executable).absolute()), *argv[1:]]
         executable = Path(codex_executable).expanduser().resolve(strict=True)
         if not executable.is_file() or not os.access(executable, os.X_OK):
             raise ValueError("Codex override must be an existing executable file")
         original_adapter_bytes = adapter_bytes
         adapter_document["argv"] = [str(executable) if token == "{codex}" else token for token in argv]
+        # The existing profile also uses {codex} for its --version readiness
+        # probe. Bind that executable too; workers need not have Codex on PATH.
+        probe = adapter_document.get("probe_argv")
+        if isinstance(probe, list):
+            adapter_document["probe_argv"] = [str(executable) if token == "{codex}" else token for token in probe]
         adapter_bytes = json_bytes(adapter_document)
     destination = Path(destination).absolute()
     destination = new_path(destination.parent, destination.name)

@@ -111,6 +111,9 @@ rpnh-erp run --upstream upstream/erp-bench \
 Codex 试跑会在世界和模型启动前被拒绝。模型选择及 adapter 配置在构建前保存私有
 快照。若现有配置引用历史 `codex_subscription_bridge_outer_sandbox.py`，仅在该快照
 中改为安装版 RPNH bridge 模块，保留模型参数和原始 adapter 字节，不执行历史脚本。
+版本探测也绑定到该程序，不再依赖宿主 PATH 中存在 Codex。
+bridge 固定使用当前安装环境的 Python 路径，保留 venv 及锁定的 RPNH 模块，避免解析
+到基础解释器后混用其他安装版本。
 适配运行保留原始 grader 数值，使用 `grader_compatibility` 声明，不声称是
 未改变条件的原始 benchmark 成绩。
 

@@ -132,6 +132,9 @@ world/model launch. The selection and adapter are frozen privately before build.
 The historical `codex_subscription_bridge_outer_sandbox.py` entry, when present,
 is bound to the installed RPNH bridge module in that snapshot, preserving its
 model arguments and original adapter bytes. The historical script is not run.
+The private version-probe executable is bound too, so Codex need not be on PATH.
+The bridge keeps the active installed Python pathname, preserving its venv and
+the pinned RPNH module instead of resolving to a base interpreter.
 Adapted runs retain original grader values with `grader_compatibility` claims;
 they do not claim an unchanged original benchmark condition.
 

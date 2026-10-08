@@ -21,5 +21,7 @@ def test_private_endpoint_injects_only_controls_inside_exec(tmp_path):
     assert condition['global_wrapper'] == 'bypassed'
     assert (endpoint.parent.stat().st_mode & 0o777) == 0o700
     assert (endpoint.stat().st_mode & 0o777) == 0o700
+    probe = subprocess.run([endpoint, '--version'], capture_output=True, text=True, timeout=5)
+    assert probe.returncode == 0 and probe.stdout.strip() == 'codex-cli synthetic'
     rejected = subprocess.run([endpoint, 'app-server'], capture_output=True, timeout=5)
     assert rejected.returncode != 0
