@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "rpnh-erp-bench"
+version = "0.1.0"
+description = "RPNH-owned agent execution for two pinned ERP-Bench tasks"
+requires-python = ">=3.12"
+license = "MIT"
+dependencies = ["rpnh-harness>=0.1.0rc2", "harbor==0.24.0"]
+
+[project.optional-dependencies]
+test = ["pytest>=8,<10"]
+
+[project.scripts]
+rpnh-erp = "rpnh_erp_bench.cli:main"
+
+[project.entry-points."rpnh.plugins"]
+erp_bench = "rpnh_erp_bench.plugin:factory"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+rpnh_erp_bench = ["data/*.json"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

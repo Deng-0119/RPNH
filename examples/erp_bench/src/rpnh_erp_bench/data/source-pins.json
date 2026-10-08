@@ -1,0 +1,47 @@
+{
+  "schema_version": "rpnh/erp-handoff-pins/v1",
+  "rpnh": {
+    "repository": "https://github.com/Deng-0119/RPNH",
+    "revision": "ae09445fe1d9b973502bc5d2c961976c1d2c0163",
+    "license": "MIT"
+  },
+  "erp_bench": {
+    "repository": "https://github.com/agentic-labs/erp-bench",
+    "revision": "ceba3880af555129b5278e056a0c20f2fb5a0ba9",
+    "license": "CC0-1.0"
+  },
+  "tasks": [
+    {
+      "id": "2000_easy_01_buy_only_baseline",
+      "purpose": "smoke",
+      "seed": 8014130904848695607
+    },
+    {
+      "id": "2299_hard_repair_plan_hard",
+      "purpose": "showcase",
+      "seed": 7558252979609430294
+    }
+  ],
+  "official_limits": {
+    "agent_timeout_sec": 3600,
+    "verifier_timeout_sec": 300,
+    "build_timeout_sec": 600,
+    "cpus": 3,
+    "memory_mb": 4096,
+    "storage_mb": 2048,
+    "gpus": 0,
+    "allow_internet": true
+  },
+  "transitive_unpinned_inputs": [
+    "Harbor version/source",
+    "odoo:19 resolved digest",
+    "ghcr.io/astral-sh/uv:latest resolved digest",
+    "PostgreSQL 18 package resolution",
+    "OS dependencies"
+  ],
+  "known_library_versions": {
+    "task_image": "odoo-client-lib==2.0.0",
+    "verifier_attempts": "odoo-client-lib==2.0.2"
+  },
+  "measured_model_or_benchmark_results": false
+}
