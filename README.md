@@ -262,7 +262,7 @@ all cases.
 | Install and run | [Installation](docs/guides/installation.md), [examples](docs/guides/examples.md), [usage](docs/guides/usage.md) |
 | Configure the runtime | [Configuration](docs/guides/configuration.md), [models](docs/guides/models.md), [usage and recovery](docs/guides/usage.md) |
 | Build an application | [Customization and plugins](docs/guides/customization.md), [native Petri-net operations](docs/guides/net-operations.md), [declarations](docs/reference/declarations.md) |
-| Understand execution | [Dashboard](docs/guides/viewer.md), [architecture](docs/architecture/design.md), [Registry/runtime](docs/reference/runtime-registry.md), [sessions and Agents](docs/reference/agents.md) |
+| Understand execution | [Dashboard](docs/guides/viewer.md), [architecture](docs/architecture/design.md), [Registry/runtime](docs/reference/runtime-registry.md), [finite PN validation](docs/reference/pn-validation.md), [sessions and Agents](docs/reference/agents.md) |
 | Integrate a host | [Frontend and host adapters](docs/guides/adapters.md), [extension and observation interfaces](docs/reference/extensions-observation.md) |
 | Operate or contribute | [Troubleshooting](docs/guides/troubleshooting.md), [development](docs/guides/development.md), [contributing](CONTRIBUTING.md), [security](SECURITY.md), [changelog](CHANGELOG.md), [release validation](docs/guides/release-validation.md) |
 

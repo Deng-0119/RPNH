@@ -515,7 +515,7 @@ def start_run(module: ModuleDeclaration, registration: Registration, *,
               resource_inputs: Mapping[str, OwnerInput] | None = None,
               inventory_input: OwnerInput | None = None,
               catalog=None, host_execution_bindings=None,
-              configuration_sources=None) -> RunOwner:
+              configuration_sources=None, pn_validation=None) -> RunOwner:
     """Create one fresh writer lineage from the shared human/AI declaration.
 
     HOST implementations are explicitly trusted Registration callables; JSON
@@ -654,6 +654,8 @@ def start_run(module: ModuleDeclaration, registration: Registration, *,
         immutable_input_ref=immutable_config, mutable_stage_ref=mutable_config,
         recovery_manifest_ref=manifest, model_condition=model_condition,
         idempotency_key=f"{command_id}:configuration")
+    from .pn_validation.runtime_gate import initialize_validation
+    initialize_validation(owner, pn_validation, command_id=command_id)
     return owner
 
 
@@ -891,6 +893,8 @@ def resume_run(
         raise ResourceIntegrityFault(
             "run resume has no recoverable current execution state")
     owner.current_input_ref = owner.control.current_input()
+    from .pn_validation.runtime_gate import restore_validation
+    restore_validation(owner)
     return owner
 
 

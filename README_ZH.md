@@ -226,7 +226,7 @@ session surface 的 registered host 集成。所有情况下，模型选择与�
 | 安装与运行 | [安装](docs/guides/installation_ZH.md)、[案例](docs/guides/examples_ZH.md)、[使用](docs/guides/usage_ZH.md) |
 | 配置 runtime | [配置](docs/guides/configuration_ZH.md)、[模型](docs/guides/models_ZH.md)、[使用与恢复](docs/guides/usage_ZH.md) |
 | 构建应用 | [自定义与插件](docs/guides/customization_ZH.md)、[原生 PetriNet 操作](docs/guides/net-operations_ZH.md)、[声明](docs/reference/declarations_ZH.md) |
-| 理解执行 | [看板](docs/guides/viewer_ZH.md)、[架构](docs/architecture/design_ZH.md)、[Registry/runtime](docs/reference/runtime-registry_ZH.md)、[会话与 Agent](docs/reference/agents_ZH.md) |
+| 理解执行 | [看板](docs/guides/viewer_ZH.md)、[架构](docs/architecture/design_ZH.md)、[Registry/runtime](docs/reference/runtime-registry_ZH.md)、[有限 PN 验证](docs/reference/pn-validation_ZH.md)、[会话与 Agent](docs/reference/agents_ZH.md) |
 | 接入宿主 | [前端与宿主适配](docs/guides/adapters_ZH.md)、[扩展与观察接口](docs/reference/extensions-observation_ZH.md) |
 | 使用维护或参与开发 | [排障](docs/guides/troubleshooting_ZH.md)、[开发](docs/guides/development_ZH.md)、[参与贡献](CONTRIBUTING_ZH.md)、[安全报告](SECURITY_ZH.md)、[变更记录](CHANGELOG_ZH.md)、[发布验证](docs/guides/release-validation_ZH.md) |
 

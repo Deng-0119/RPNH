@@ -1,6 +1,6 @@
 {
   "schema": "rpnh/finite_product_validation/v1",
-  "condition": "Local Linux/WSL, Python3.13.12; existingdependencies only, pytest8.4.2 for combined gates. No real provider/model/business call. Registry fake-port counters are synthetic.",
+  "condition": "Local Linux/WSL, Python 3.13.12; existing dependencies only, pytest 8.4.2 for combined gates. No real provider/model/business call. Registry fake-port counters are synthetic.",
   "source_identity": {
     "full_materialized_files": 5843,
     "full_materialized_sha256": "1bbb557793dd548ff692fac966cd9d73f944be731a1ccf291320b26ba22c0c71",
@@ -125,8 +125,9 @@
     "Codex native fixture fulltreebinding BLOCKED",
     "fullH7 nativeissuer/peer/workercompletion UNIMPLEMENTED",
     "Node24 stockDSH notavailable",
-    "Codex0.162/productorigin futurequeue unimplemented"
+    "Codex 0.162 compatibility and complete native product-source binding are not implemented in this validated scope"
   ],
   "historical_business_scores_recomputed": false,
-  "no_single_clean_combined_or_fullR5_run_claim": true
+  "no_single_clean_combined_or_fullR5_run_claim": true,
+  "validation_scope": "Historical 2026-10-09 source snapshot; no validation of subsequent documentation or code revisions is implied."
 }

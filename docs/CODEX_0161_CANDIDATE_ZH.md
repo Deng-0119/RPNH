@@ -6,7 +6,7 @@ metadata:
   audience: developer
   language: zh-CN
   counterpart: CODEX_0161_CANDIDATE.md
-  revision: "2026-10-09.1"
+  revision: "2026-10-09.2"
   status: maintained
 ---
 
@@ -24,6 +24,16 @@ metadata:
 
 0.161 history entry 明确返回 `startedAtMs: null`、`completedAtMs: null`；resume 明确返回 `collaborationMode: null`、`disabledPluginIds: []`。它们表示未记录时间、default-only模式和空插件范围，不编造历史事实，不宣称恢复 Plan mode 或插件状态。0.155 wire 输出保持原样。live 通知既有必需整数时间戳不变，不能按历史 optional 规则省略。
 
-原生交接独立进行：用已经安装、分别核验的 0.155/0.161 binary，顺序打开同 canonical 合成 cold/pending roots。缺版记 BLOCKED，不自动安装。0.161 TUI 初始 item 页可能随 viewport 缩小，metadata 补页 limit 动态；验 ID/cut/continuation 全覆盖，不要求 item 每页100或 metadata 每页5。stock history 通常仍发 opaque string；额外 object RPC probe 必须单列，不能冒充 stock TUI 请求。
+使用已经安装且精确报告 `codex-cli 0.161.0` 的 binary，并传入
+`compatibility_profile="candidate-0.161.0"`；默认 profile 则要求精确
+`codex-cli 0.155.0`。binary 路径依次从显式参数、`RPNH_CODEX_BIN`、
+PATH 中的 `codex` 选择。缺失或版本不符会抛出兼容错误。选择 profile
+只选择适配器协议，安装的 binary 必须独立匹配。一般前端配置见
+[适配器指南](guides/adapters_ZH.md)。
 
-纯 JSON/Registry 测试与官方 Rust/TS 源码审核不等于原生客户端认证、Rust 编译、真实 provider 验证或完整 API 覆盖。精确组合 base 与测试/补丁 hashes 另见交接包。
+[2026-10-09 有限验证](results/product-validation-20261009/README_ZH.md)
+记录了源码/协议检查，stock 客户端为 NOT_RUN，完整 native fixture 绑定为 BLOCKED；
+这些结果不认证已安装的 0.161 客户端。纯 JSON/Registry 测试与源码审核不等于
+Rust 编译、真实 provider 验证或完整 API 覆盖。确定性协议用例位于
+`tests/test_codex_0161_candidate.py`；object-cursor RPC fixture 不能证明 stock TUI
+实际发送过该请求。

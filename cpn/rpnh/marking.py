@@ -986,12 +986,13 @@ class TeamNetMarking:
         from ._marking import checkpoints as _checkpoints
         return _checkpoints.typed_snapshot(self, executable, registry)
 
-    def pure_typed_snapshot(self, executable: 'ExecutableNetAuthority', *,
+    def pure_typed_snapshot(self, executable: 'ExecutableNetAuthority' = None, *,
+            proposed_net_ref: VersionRef | None = None,
             ordinary_token_ref_scheme: str | None = None,
             allocation_firing_ref: VersionRef | None = None) -> 'TypedMarkingSnapshot':
         from ._marking import checkpoints as _checkpoints
         return _checkpoints.pure_typed_snapshot(self, executable,
-            ordinary_token_ref_scheme=ordinary_token_ref_scheme,
+            proposed_net_ref=proposed_net_ref, ordinary_token_ref_scheme=ordinary_token_ref_scheme,
             allocation_firing_ref=allocation_firing_ref)
 
     def _typed_snapshot_with_active_timed_claims(self, executable: ExecutableNetAuthority, registry: RegistryTokenAllocator) -> TypedMarkingSnapshot:

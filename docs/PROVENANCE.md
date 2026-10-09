@@ -1,12 +1,12 @@
 ---
 name: rpnh-source-provenance
-description: "Record the reviewed source tips and fresh-root exclusion boundary."
+description: "Record the initial source export and current public distribution boundary."
 metadata:
   document-kind: provenance
   audience: operator-and-developer
   language: en
   counterpart: PROVENANCE_ZH.md
-  revision: "2026-09-29.3"
+  revision: "2026-10-09.2"
   status: source-reviewed-v0.1.0rc1
 ---
 
@@ -14,11 +14,15 @@ metadata:
 
 [中文](PROVENANCE_ZH.md)
 
-This public prerelease is maintained in the canonical repository as a
-fresh-root export. It does not carry private
-development history, deleted evidence, local Registry data or obsolete remote
-branches. Its initial unified source was reviewed from these exact predecessor
-tips; current development continues only on the canonical `main` history:
+The initial public prerelease was created as a fresh-root export of reviewed
+product sources. That describes the initial export, not the contents of every
+later Git commit: internal material has appeared in subsequent public history.
+The current public tree distributes reviewed product materials separately from
+the private development and evidence repository. Historical commits are not
+rewritten by this documentation correction.
+
+The initial unified source was reviewed from these exact predecessor tips;
+product development continues on the canonical `main` history:
 
 - core main: `201e2e91709e4e4cceb3930d3b73eda920f73146`;
 - Codex/native plugin line: `6f3558390b44d970e54539f6d5ffaa19fbb8cd3c`;
@@ -30,7 +34,9 @@ orchestration, Codex and OpenCode presentation compatibility, native plugins,
 the optional DSH host, PetriNet projection/viewer, portable profiles and
 deterministic tests.
 
-Excluded: paper/project workflows and results, historical handoffs, branch
-transport tooling, private runtime data, credentials, caches, local Registry
-databases and raw live-provider evidence. Historical predecessor branches are
-provenance only; they are not installation overlays or active development roots.
+The current distribution boundary excludes internal handoffs and backlogs,
+private runtime data, credentials, caches, local Registry databases and raw
+live-provider evidence. Reviewed public result summaries and runnable examples
+remain product materials. This boundary does not assert that earlier Git history
+never contained excluded material. Historical predecessor branches are provenance
+only; they are not installation overlays or active development roots.

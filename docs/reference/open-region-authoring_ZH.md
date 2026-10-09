@@ -6,8 +6,8 @@ metadata:
   audience: trusted-host-integrator
   language: zh-CN
   counterpart: open-region-authoring.md
-  revision: "2026-10-05.1"
-  status: implementation-candidate
+  revision: "2026-10-09.2"
+  status: implemented-bounded-author-contract
 ---
 
 [English](open-region-authoring.md) | [中文](open-region-authoring_ZH.md)
@@ -17,9 +17,9 @@ metadata:
 这些接口由可信 HOST 显式选择启用。保存开放选择使用
 `open_region_schema_data()`；强闭合使用 `open_region_closure_schema_data()`；
 直接 Assembly/v4 消费使用 `open_region_assembly_schema_data()`。
-既有 catalog 函数与版本化 recipe 不变。本实现候选遵循冻结的
-[创作合同](open-region-authoring-contract_ZH.md)；冻结验收矩阵是设计检查单，
-不是执行通过证据。
+既有 catalog 函数与版本化 recipe 不变。本页说明已实现的结构接口及其限制。
+[普通派生接口](open-region-descendants_ZH.md)另行说明显式 edit/copy 与 Assembly/v5。
+历史验证范围见[有限验证](../guides/release-validation_ZH.md)；接口存在不等于运行时认证。
 
 ## 保存非终结选择
 
@@ -80,8 +80,9 @@ lowering/origins，以及严格配对的普通 generated revision。
 
 generated 普通 revision 保留自己的独立 closed-v1 权威。单独读取它只证明普通定义；
 adaptation/composition 证明需要显式 Assembly/v4 ref。旧 Assembly/merge 消费入口及
-D 的旧式普通后继均拒绝不能承载的新声明。正向 derived edit/copy/merge 家族、
-graph/node adapters、嵌套 adapted occurrence 和更丰富边界/completion 协议仍是后续能力。
+D 的旧式普通后继均拒绝不能承载的新声明。显式普通 edit/copy 后继使用独立的
+[派生创作接口](open-region-descendants_ZH.md)。Merge-v2、graph/node adapters、
+嵌套 adapted occurrence 和更丰富边界/completion 协议不在本支持范围内。
 
 以上均为结构性创作证据，不创建 run、runtime adoption、输入可用性、lease、capacity、
 permission 或 provider execution。

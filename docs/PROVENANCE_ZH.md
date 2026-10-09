@@ -1,12 +1,12 @@
 ---
 name: rpnh-source-provenance
-description: "记录已核对的源码 tip 与 fresh-root 排除边界。"
+description: "记录初始源码导出与当前公开分发边界。"
 metadata:
   document-kind: provenance
   audience: operator-and-developer
   language: zh-CN
   counterpart: PROVENANCE.md
-  revision: "2026-09-29.3"
+  revision: "2026-10-09.2"
   status: source-reviewed-v0.1.0rc1
 ---
 
@@ -14,9 +14,12 @@ metadata:
 
 [English](PROVENANCE.md)
 
-本公开预发布版在 canonical 仓库中以 fresh-root export 维护，不携带私有开发
-历史、已删除证据、本地 Registry 数据或废弃远端分支。最初统一源码按以下精确前序 tip
-核对；当前开发只沿 canonical `main` 历史继续：
+最初的公开预发布版由已审阅产品源码作 fresh-root export 建立。这是初始导出的
+历史描述，不是对所有后续 Git 提交的声明：后续公开历史中曾出现内部材料。
+当前公开树分发已审阅的产品材料，与私有开发和证据仓库分离。
+本次文档更正不重写历史提交。
+
+最初统一源码按以下精确前序 tip 核对；产品开发沿 canonical `main` 历史继续：
 
 - core main：`201e2e91709e4e4cceb3930d3b73eda920f73146`；
 - Codex/native plugin：`6f3558390b44d970e54539f6d5ffaa19fbb8cd3c`；
@@ -27,6 +30,7 @@ metadata:
 OpenCode 展示兼容、原生插件、可选 DSH 宿主、PetriNet projection/viewer、可移植 profiles
 和确定性测试。
 
-不包含：论文／项目 workflow 与结果、历史 handoff、分支搬运工具、私有 runtime data、
-凭据、cache、本地 Registry database 和原始真实 provider 证据。历史前序分支只用于来源
-记录，不是安装 overlay 或活跃开发根。
+当前分发边界排除内部交接和待办、私有 runtime data、凭据、cache、本地 Registry
+数据库及原始真实 provider 证据。已审阅公开结果摘要和可运行示例仍属产品材料。
+该边界不表示早期 Git 历史从未包含这些排除项。历史前序分支只用于来源记录，
+不是安装 overlay 或活跃开发根。

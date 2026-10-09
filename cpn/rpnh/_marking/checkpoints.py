@@ -563,15 +563,27 @@ def typed_snapshot(self, executable: ExecutableNetAuthority, registry: RegistryT
         validate_typed_marking_state(self._net, epoch=snapshot.epoch, next_token_id=snapshot.next_token_id, attempts=snapshot.attempts, tokens=snapshot.tokens, require_token_refs=True)
         return snapshot
 
-def pure_typed_snapshot(self, executable: 'ExecutableNetAuthority', *,
+def pure_typed_snapshot(self, executable: 'ExecutableNetAuthority' = None, *,
+        proposed_net_ref: VersionRef | None = None,
         ordinary_token_ref_scheme: str | None = None,
         allocation_firing_ref: VersionRef | None = None) -> 'TypedMarkingSnapshot':
-    """Build a typed snapshot without Registry calls or mutable clocks."""
+    """Build a typed snapshot without Registry calls or mutable clocks.
+
+    proposed_net_ref names an analytical allocation scope only. Returned future
+    token addresses remain unregistered and confer no execution authority.
+    """
     from cpn.rpnh.registry.resources import AttemptCounterAuthority, ExecutableNetAuthority, PetriContinuation, PetriLeaseClaim, PetriOverrideWarning, PetriTokenState, TypedMarkingSnapshot
-    if not isinstance(executable, ExecutableNetAuthority):
-        raise MarkingStateError('pure_typed_snapshot requires an ExecutableNetAuthority')
-    if not isinstance(self._net.registry_net_ref, VersionRef) or self._net.registry_net_ref != executable.net_ref:
-        raise MarkingStateError('pure typed snapshot differs from its executable Registry closure')
+    if proposed_net_ref is None:
+        if not isinstance(executable, ExecutableNetAuthority):
+            raise MarkingStateError('pure_typed_snapshot requires an ExecutableNetAuthority')
+        net_ref = executable.net_ref
+    else:
+        if (executable is not None or not isinstance(proposed_net_ref, VersionRef)
+                or proposed_net_ref.entity_type != 'net_instance/v1'):
+            raise MarkingStateError('analytical allocation requires only an explicit proposed net ref')
+        net_ref = proposed_net_ref
+    if not isinstance(self._net.registry_net_ref, VersionRef) or self._net.registry_net_ref != net_ref:
+        raise MarkingStateError('pure typed snapshot differs from its exact net scope')
     from cpn.rpnh.registry.normal_root_token_allocation import (
         NORMAL_ROOT_TOKEN_SCHEME, normal_root_token_ref,
     )
@@ -585,8 +597,8 @@ def pure_typed_snapshot(self, executable: 'ExecutableNetAuthority', *,
 
     def token_ref(token_id: int) -> VersionRef:
         if ordinary_token_ref_scheme is not None:
-            return normal_root_token_ref(executable.net_ref, allocation_firing_ref, token_id)
-        material = str(executable.net_ref.version_id)
+            return normal_root_token_ref(net_ref, allocation_firing_ref, token_id)
+        material = str(net_ref.version_id)
         logical = TypedId('petri_token', uuid.uuid5(uuid.NAMESPACE_URL, f'd1-c:petri_token:{material}:{token_id}').hex)
         version = TypedId('petri_token_version', uuid.uuid5(uuid.NAMESPACE_URL, f'd1-c:petri_token_version:{material}:{token_id}').hex)
         return VersionRef('petri_token/v1', logical, version)

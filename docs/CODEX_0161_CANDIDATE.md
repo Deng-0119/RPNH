@@ -6,7 +6,7 @@ metadata:
   audience: developer
   language: en
   counterpart: CODEX_0161_CANDIDATE_ZH.md
-  revision: "2026-10-09.1"
+  revision: "2026-10-09.2"
   status: maintained
 ---
 
@@ -51,15 +51,18 @@ plugin scope; they are not fabricated historical facts or claims of Plan-mode
 or plugin-state restoration. Existing 0.155 wire output remains unchanged.
 Required live-notification integer timestamps are unchanged and cannot be omitted.
 
-The native handoff is separate. Use already installed, individually verified
-0.155 and 0.161 binaries against the same canonical synthetic cold/pending roots,
-sequentially. Missing versions are BLOCKED, never automatically installed.
-The 0.161 TUI may use viewport-sized initial item pages and dynamic metadata
-limits; check complete ID/cut/continuation coverage instead of requiring every
-item page to contain 100 or every metadata page to request 5. Stock history
-normally uses opaque strings; the additional object RPC probe must be labeled
-separately and never represented as a stock TUI request.
+Use an already installed binary reporting exactly `codex-cli 0.161.0` with
+`compatibility_profile="candidate-0.161.0"`; the default profile requires exactly
+`codex-cli 0.155.0`. The binary path comes from the explicit argument,
+`RPNH_CODEX_BIN`, or `codex` on PATH, in that order. A missing or mismatched
+binary raises a compatibility error. Selecting a profile only selects the
+adapter protocol; the installed binary must independently match it. General
+frontend setup is described in the [adapter guide](guides/adapters.md).
 
-Pure JSON/Registry tests and official Rust/TS source audits are not native-client
-certification, a Rust build, real-provider validation, or complete API coverage.
-The deterministic protocol cases are available in `tests/test_codex_0161_candidate.py`; native client certification remains separate.
+The [2026-10-09 finite validation](results/product-validation-20261009/README.md)
+records source/protocol checks, stock clients as NOT_RUN and complete native
+fixture binding as BLOCKED. It does not certify an installed 0.161 client.
+Pure JSON/Registry tests and source audits establish neither a Rust build,
+real-provider validation nor complete API coverage. The deterministic protocol
+cases are in `tests/test_codex_0161_candidate.py`; an object-cursor RPC fixture
+is not evidence that a stock TUI sent that request.

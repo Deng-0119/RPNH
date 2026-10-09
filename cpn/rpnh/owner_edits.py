@@ -269,7 +269,7 @@ class OwnerEdits:
             return self.result(edit, "DRAINING", reason="active firings must settle normally; no interruption",
                 active_firings=snapshot["active_firings"])
         _executable, _structure, marking = hydrate_module_runtime(owner._core)
-        from .registry.owner_mapping import plan_owner_mapping, allocate_owner_mapping
+        from .registry.owner_mapping import plan_owner_mapping, preview_owner_mapping, allocate_owner_mapping
         decision = plan_owner_mapping(owner._core, edit.old_compiled, edit.compiled, marking,
             edit.marking_mapping, edit.retire_token_refs, edit.owner_inputs)
         if decision.status != "READY":
@@ -277,8 +277,12 @@ class OwnerEdits:
             # continue while the owner supplies an explicit corrected command.
             owner.admission_paused = False
             return self.result(edit, "NEEDS_MARKING_DECISION", needs=decision.needs)
+        preview = preview_owner_mapping(owner._core, edit.publication, marking, decision)
+        from .pn_validation.runtime_gate import analyze_owner_preview
+        pn_evidence = analyze_owner_preview(owner, preview)
+        tx = owner._core.begin(idempotency_key=edit.command_id)
         allocated = allocate_owner_mapping(owner._core, edit.publication, marking, decision,
-            command_id=edit.command_id)
+            command_id=edit.command_id, preview=preview, transaction=tx)
         checkpoint_body = owner._core.get_version(marking.checkpoint_ref.version_id).metadata
         workspaces = tuple(_version_from_payload(ref) for ref in checkpoint_body.get("workspace_revision_refs", []))
         request = replace(edit.request, predecessor_checkpoint_ref=marking.checkpoint_ref,
@@ -287,13 +291,14 @@ class OwnerEdits:
             token_mappings=allocated.token_mappings, ordinary_retirements=allocated.ordinary_retirements)
         if allocated.owner_input_mappings:
             request = replace(request, owner_input_mappings=allocated.owner_input_mappings)
+        if pn_evidence is not None:
+            request = replace(request, pn_validation_json=canonical_json(pn_evidence).decode())
         document = owner_result_document(request)
         result = PublishResource(origin=PrivateSystemOrigin(owner.bootstrap_ref),
             payload=canonical_json(document), media_type="application/json", content_schema_ref="rpnh/owner_control/v1",
             summary="Adopted owner graph edit", lifetime_ref=owner.bootstrap_ref,
             descriptors={"owner_control_kind": "result", "command_id": edit.command_id},
             derived_from=(request.owner_command_ref, request.candidate_ref), idempotency_key=edit.command_id)
-        tx = owner._core.begin(idempotency_key=edit.command_id)
         staged = stage_owner_adoption(owner._core, tx, request, result=result)
         tx.commit()
         self.queue.pop(0)

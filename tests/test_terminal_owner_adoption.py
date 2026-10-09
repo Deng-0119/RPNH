@@ -913,6 +913,15 @@ def test_mapping_prewrite_without_adoption_cannot_select_orphan_carrier(tmp_path
     def crash_before_adoption(*args, **kwargs):
         raise RuntimeError("injected crash after mapping, before adoption")
     monkeypatch.setattr(owner_edits, "stage_owner_adoption", crash_before_adoption)
+    # Exercise the retained standalone allocator explicitly. Normal OwnerEdits
+    # now stages mapping in the adoption transaction and leaves no registered
+    # orphan tokens on this failure; that path has its own integration check.
+    from cpn.rpnh.registry import owner_mapping
+    standalone_allocate = owner_mapping.allocate_owner_mapping
+    def legacy_mapping(*args, **kwargs):
+        kwargs["transaction"] = None
+        return standalone_allocate(*args, **kwargs)
+    monkeypatch.setattr(owner_mapping, "allocate_owner_mapping", legacy_mapping)
     with pytest.raises(RuntimeError, match="injected crash after mapping"):
         adopt(owner, "B")
     assert len(owner._core.event_store.object_rows_by_type("petri_token/v1")) > old_token_count

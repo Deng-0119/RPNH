@@ -44,6 +44,16 @@ class OwnerMappingAllocation:
     next_token_id: int
 
 
+@dataclass(frozen=True, slots=True)
+class OwnerMappingPreview:
+    source_marking: TypedMarkingAuthority
+    decision: OwnerMappingDecision
+    structure: RuntimeNet
+    tokens: tuple[PetriTokenState, ...]
+    allocation: OwnerMappingAllocation
+    prepared: tuple
+
+
 def token_state(ref, token):
     """The current exact token object -> shared marking DTO conversion."""
     resource = lambda v: None if v is None else _resource_from_payload(v)
@@ -218,11 +228,11 @@ def plan_owner_mapping(core, old_compiled, candidate_compiled, latest_marking,
         latest_marking.checkpoint_ref, candidate_compiled, tuple(destinations), tuple(retired), tuple(inputs))
 
 
-def allocate_owner_mapping(core, candidate_publication, latest_marking, decision, command_id):
-    """Validate the complete candidate marking before any ordinary token write.
+def preview_owner_mapping(core, candidate_publication, latest_marking, decision, *, _token_refs=None):
+    """Validate and propose exact candidate token IDs without registering them.
 
-    Returned tokens are normally registered in one transaction with exact
-    derived_from oldToken/inputResource/source relations. Adoption is separate.
+    Proposed addresses have no Registry authority. Allocation uses these same
+    immutable states, so analysis never substitutes a count-only mapping.
     """
     _latest(core, latest_marking)
     if decision.status != "READY" or decision.checkpoint_ref != latest_marking.checkpoint_ref:
@@ -242,9 +252,15 @@ def allocate_owner_mapping(core, candidate_publication, latest_marking, decision
     states = {a.token_ref: a.state for a in latest_marking.tokens}
     tokens, mappings, input_mappings, publications = [], [], [], []
     next_id = latest_marking.next_token_id
+    if _token_refs is not None and (len(_token_refs) != len(decision.destinations) + len(decision.owner_inputs)
+            or len(set(_token_refs)) != len(_token_refs)
+            or any(not isinstance(ref, VersionRef) or ref.entity_type != "petri_token/v1" for ref in _token_refs)):
+        raise RegistryConflict("owner preview requires unique exact proposed token addresses")
+    proposed_refs = iter(_token_refs) if _token_refs is not None else None
     def add(state, parents):
         nonlocal next_id
-        ref = VersionRef("petri_token/v1", new_id("petri_token"), new_id("petri_token_version"))
+        ref = (next(proposed_refs) if proposed_refs is not None else
+            VersionRef("petri_token/v1", new_id("petri_token"), new_id("petri_token_version")))
         target = replace(state, token_ref=ref, token_id=next_id, epoch=latest_marking.epoch,
             producer=None, consumer=transfer_consumer(structure, state.place), consumed_by=None)
         next_id += 1
@@ -282,18 +298,51 @@ def allocate_owner_mapping(core, candidate_publication, latest_marking, decision
             consumer=state.consumer, consumed_by=None)
         core.catalog.validate_instance("petri_token/v1", category="object", instance=token)
         prepared.append((ref, token, parents))
-    tx = core.begin(idempotency_key=command_id + ":owner-mapping")
-    for ref, token, parents in prepared:
+    allocation = OwnerMappingAllocation(tuple(t.token_ref for t in tokens), tuple(mappings),
+        tuple(OrdinaryRetirement(r) for r in decision.retire_token_refs), tuple(input_mappings),
+        tuple({"transition_id": a.transition_id, "highest_issued": a.highest_issued} for a in attempts), next_id)
+    return OwnerMappingPreview(latest_marking, decision, structure, tuple(tokens),
+        allocation, tuple((ref, canonical_json(token), parents) for ref, token, parents in prepared))
+
+
+def allocate_owner_mapping(core, candidate_publication, latest_marking, decision, command_id,
+                           *, preview=None, transaction=None):
+    """Register a reviewed preview, optionally in the adoption transaction.
+
+    A failed adoption leaves no registered candidate tokens when its transaction
+    is supplied. Existing standalone callers retain their ordinary commit path.
+    """
+    _latest(core, latest_marking)
+    if preview is None:
+        preview = preview_owner_mapping(core, candidate_publication, latest_marking, decision)
+    if (not isinstance(preview, OwnerMappingPreview) or preview.source_marking != latest_marking
+            or preview.decision != decision or decision.status != "READY"
+            or preview.structure.registry_net_ref != candidate_publication.net_ref):
+        raise RegistryConflict("owner mapping preview is stale or belongs to different inputs")
+    verified = preview_owner_mapping(core, candidate_publication, latest_marking, decision,
+        _token_refs=preview.allocation.token_refs)
+    if (verified.tokens != preview.tokens or verified.allocation != preview.allocation
+            or verified.prepared != preview.prepared
+            or verified.structure.compiled != preview.structure.compiled
+            or verified.structure._resource_plan != preview.structure._resource_plan):
+        raise RegistryConflict("owner preview differs from the exact current transformation")
+    tx = transaction or core.begin(idempotency_key=command_id + ":owner-mapping")
+    if (tx.event_store is not core.event_store or tx.task_id != core.task_id
+            or tx.net_instance_id is not None or tx.task_round_id is not None
+            or tx.idempotency_key != (command_id if transaction is not None else command_id + ":owner-mapping")):
+        raise TypeError("owner mapping transaction belongs to another Registry or command")
+    for ref, payload, parents in preview.prepared:
+        token = json.loads(payload)
         tx.prewrite(object_type="petri_token/v1", logical_id=ref.entity_id, version_id=ref.version_id,
-            payload=canonical_json(token), metadata=token, media_type="application/json",
+            payload=payload, metadata=token, media_type="application/json",
             schema_ref="registry_v1/petri_token/v1")
         for parent in parents:
             tx.relate(TypedRelation(new_id("relation"), "derived_from", ref, parent,
                 metadata={"owner_mapping": True}, system_owned=True))
-    tx.commit()
-    return OwnerMappingAllocation(tuple(t.token_ref for t in tokens), tuple(mappings),
-        tuple(OrdinaryRetirement(r) for r in decision.retire_token_refs), tuple(input_mappings),
-        tuple({"transition_id": a.transition_id, "highest_issued": a.highest_issued} for a in attempts), next_id)
+    if transaction is None:
+        tx.commit()
+    return preview.allocation
 
 
-__all__ = ("OwnerMappingDecision", "OwnerMappingAllocation", "plan_owner_mapping", "allocate_owner_mapping")
+__all__ = ("OwnerMappingDecision", "OwnerMappingAllocation", "OwnerMappingPreview",
+           "plan_owner_mapping", "preview_owner_mapping", "allocate_owner_mapping")

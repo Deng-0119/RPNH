@@ -6,8 +6,8 @@ metadata:
   audience: trusted-host-integrator
   language: en
   counterpart: open-region-authoring_ZH.md
-  revision: "2026-10-05.1"
-  status: implementation-candidate
+  revision: "2026-10-09.2"
+  status: implemented-bounded-author-contract
 ---
 
 [English](open-region-authoring.md) | [中文](open-region-authoring_ZH.md)
@@ -18,9 +18,10 @@ These are opt-in trusted HOST interfaces. Compose `open_region_schema_data()`
 for saved open selections, `open_region_closure_schema_data()` for strong
 closure, or `open_region_assembly_schema_data()` for direct Assembly/v4
 consumption. Earlier catalog functions and versioned recipes remain unchanged.
-This implementation candidate follows the frozen
-[authoring contract](open-region-authoring-contract.md); the frozen acceptance
-matrix is a design checklist, not execution evidence.
+This page describes the implemented structural interfaces and their limits.
+[Ordinary descendants](open-region-descendants.md) covers the separate explicit
+edit/copy and Assembly/v5 interfaces. See [finite validation](../guides/release-validation.md)
+for historical verification scope; interface availability is not runtime certification.
 
 ## Save a nonterminal selection
 
@@ -93,9 +94,11 @@ contract. This is not a global member-count limit.
 The generated ordinary revision keeps its independent closed-v1 authority.
 Reading it alone proves that ordinary definition; adaptation/composition proof
 requires the explicit Assembly/v4 ref. Legacy Assembly/merge consumers and
-legacy ordinary descendants of D reject the unsupported claim. Positive derived
-edit/copy/merge families, graph/node adapters, nested adapted occurrences and
-richer boundary/completion protocols remain later capabilities.
+legacy ordinary descendants of D reject the unsupported claim. Explicit ordinary
+edit/copy descendants use the separate
+[derived author interfaces](open-region-descendants.md). Merge-v2, graph/node
+adapters, nested adapted occurrences and richer boundary/completion protocols
+are outside this supported slice.
 
 All results here are structural authoring evidence. They create no run, runtime
 adoption, input availability, lease, capacity, permission or provider execution.

@@ -59,6 +59,7 @@ class OwnerAdoptionRequest:
     token_mappings: tuple[OwnerTokenMapping, ...]
     ordinary_retirements: tuple[OrdinaryRetirement, ...]
     owner_input_mappings: tuple[OwnerInputMapping, ...] = ()
+    pn_validation_json: str | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -132,6 +133,8 @@ def owner_result_document(request: OwnerAdoptionRequest) -> dict[str, Any]:
         "ordinary_retirements": [{"old_token_ref": _ref_payload(r.old_token_ref),
                                   "source_checkpoint_ref": _ref_payload(request.predecessor_checkpoint_ref)}
                                  for r in request.ordinary_retirements]}
+    if request.pn_validation_json is not None:
+        data["pn_validation"] = json.loads(request.pn_validation_json)
     return {**command, "kind": "result", "data": data,
         "lineage": [_ref_payload(request.owner_command_ref.as_version_ref()),
                     _ref_payload(request.candidate_ref.as_version_ref())]}
@@ -342,6 +345,9 @@ def validate_owner_adoption(store, catalog, db, *, task_id, transaction_id,
             "predecessor_checkpoint_ref": p["owner_predecessor_checkpoint_ref"],
             "checkpoint_ref": p["owner_candidate_checkpoint_ref"], "token_mappings": p["token_mappings"],
             "ordinary_retirements": p["ordinary_retirements"], "owner_input_mappings": p["owner_input_mappings"]}
+        actual_result = document(result_ref)
+        if "pn_validation" in actual_result["data"]:
+            result_data["pn_validation"] = actual_result["data"]["pn_validation"]
         expected_result = {**command, "kind": "result", "data": result_data,
             "lineage": [p["owner_command_ref"], p["candidate_ref"]]}
         for metadata, kind in ((command_meta, "command"), (result_meta, "result")):
@@ -372,7 +378,12 @@ def validate_owner_adoption(store, catalog, db, *, task_id, transaction_id,
             raise RegistryConflict("owner adoption cannot discard workspace authority")
         for value in checkpoint["workspace_revision_refs"]:
             exact(value, "workspace_revision/v1")
-        _validate_tokens(store, catalog, db, checkpoint, old, old_net, net, root, p, exact, document)
+        _validate_tokens(store, catalog, db, checkpoint, old, old_net, net, root, p, exact, document,
+            _staged_relations=relations)
+        from .pn_validation import validate_pn_owner_adoption
+        validate_pn_owner_adoption(store, catalog, db, pending=pending, objects=objects,
+            checkpoint=checkpoint, old=old, old_net=old_net, net=net, root=root, exact=exact,
+            pn_evidence=actual_result["data"].get("pn_validation"))
         authorities = [o for o in objects if o.object_type == "run_execution_authority/v1"]
         if (len(authorities) != 1
                 or authorities[0].metadata["latest_checkpoint_ref"] != p["owner_candidate_checkpoint_ref"]):
@@ -708,8 +719,12 @@ def _verified_terminal_owner_adoption(store, catalog, db, event, reads):
             tuple(OwnerInputMapping(ResourceVersionRef(_version_from_payload(value["owner_resource_ref"]).entity_id,
                     _version_from_payload(value["owner_resource_ref"]).version_id), _version_from_payload(value["source_ref"]),
                     value["place"], _version_from_payload(value["new_token_ref"])) for value in p["owner_input_mappings"]))
+        actual_result = reads.document(result_ref)
+        if "pn_validation" in actual_result["data"]:
+            from dataclasses import replace
+            request = replace(request, pn_validation_json=canonical_json(actual_result["data"]["pn_validation"]).decode())
         command, result = owner_command_document(request), owner_result_document(request)
-        require(same(reads.document(command_ref), command) and same(reads.document(result_ref), result),
+        require(same(reads.document(command_ref), command) and same(actual_result, result),
             "owner command/result complete bytes differ from exact adoption")
         for field in ("token_mappings", "ordinary_retirements", "owner_input_mappings"):
             require(same(result["data"][field], p[field]), "owner adoption full mapping/retirement/input request differs")
@@ -728,6 +743,7 @@ def _verified_terminal_owner_adoption(store, catalog, db, event, reads):
                 "owner source occurrence has multiple committed outgoing mappings")
         require(checkpoint["next_token_id"] == old["next_token_id"] + len(transfer_rows),
             "owner mapping next-token counter differs from original allocator")
+        mapping_transactions = set()
         for offset, (target, parents) in enumerate(transfer_rows):
             _, target_body = exact(target, "petri_token/v1")
             require(target_body["token_id"] == old["next_token_id"] + offset,
@@ -736,11 +752,14 @@ def _verified_terminal_owner_adoption(store, catalog, db, event, reads):
             publication = reads.publication(_version_from_payload(target), ordinary=True)
             mapping_transaction = publication["transaction_id"]
             mapping_batch = db.execute("SELECT * FROM transactions WHERE transaction_id=?", (mapping_transaction,)).fetchone()
-            require(mapping_batch is not None and mapping_batch["idempotency_key"] == event.command_id + ":owner-mapping",
+            mapping_transactions.add(mapping_transaction)
+            expected_key = event.command_id if mapping_transaction == transaction else event.command_id + ":owner-mapping"
+            require(mapping_batch is not None and mapping_batch["idempotency_key"] == expected_key
+                and publication["command_id"] == expected_key,
                 "owner mapping transaction has a foreign command key")
-            require(mapping_transaction != transaction and publication["command_id"] == event.command_id + ":owner-mapping"
-                and reads.transaction(mapping_transaction)["ordinal"] < batch[0]["ordinal"],
-                "owner mapping token is not the original pre-adoption command transaction")
+            require(mapping_transaction == transaction
+                or reads.transaction(mapping_transaction)["ordinal"] < batch[0]["ordinal"],
+                "owner mapping token is neither atomic nor a prior original command transaction")
             relations = db.execute("SELECT r.* FROM relations r JOIN events e ON e.event_id=r.published_event_id "
                 "WHERE r.relation_type='derived_from' AND json_extract(r.source_json,'$.version_id')=? AND "
                 + _CANONICAL_EVENT_SQL, (target["version_id"],)).fetchall()
@@ -756,6 +775,7 @@ def _verified_terminal_owner_adoption(store, catalog, db, event, reads):
                     matches.append(canonical_json(relation_ref(body["target"])))
             require(len(matches) == len(parents) and sorted(matches) == sorted(map(canonical_json, parents)),
                 "owner mapping lacks unique exact allocator lineage relations")
+        require(len(mapping_transactions) <= 1, "owner mapping mixes token publication transactions")
         _validate_tokens(store, catalog, db, checkpoint, old, old_net, net, root, p, exact, reads.document,
             _terminal_reads=reads)
         authorities = [item for item in objects if item["object_type"] == "run_execution_authority/v1"]
@@ -802,7 +822,8 @@ def _verified_terminal_owner_adoption(store, catalog, db, event, reads):
         raise RegistryCorruptError("owner terminal witness violates the original adoption gate") from exc
 
 
-def _validate_tokens(store, catalog, db, checkpoint, old, old_net, net, root, p, exact, document, *, _terminal_reads=None):
+def _validate_tokens(store, catalog, db, checkpoint, old, old_net, net, root, p, exact, document, *,
+                     _terminal_reads=None, _staged_relations=()):
     from .event_store import RegistryConflict
     from ..executable_net import load_compiled_net
     from ..petri_primitives import (
@@ -823,7 +844,20 @@ def _validate_tokens(store, catalog, db, checkpoint, old, old_net, net, root, p,
         def relation_ref(value):
             value = json.loads(value)
             return {"entity_type": value["entity_type"], "logical_id": value["entity_id"], "version_id": value["version_id"]}
-        if not any(relation_ref(r["source_json"]) == source and relation_ref(r["target_json"]) == target for r in rows):
+        proposed = [r for r in _staged_relations if _ref_payload(r.source) == source]
+        staged = False
+        if proposed:
+            parents = [[m["old_token_ref"]] for m in p["token_mappings"] if m["new_token_ref"] == source]
+            parents += [[m["owner_resource_ref"], m["source_ref"]]
+                for m in p["owner_input_mappings"] if m["new_token_ref"] == source]
+            expected = parents[0] if len(parents) == 1 else []
+            if (len(proposed) != len(expected)
+                    or any(r.relation_type != "derived_from" or r.strength != "strong"
+                        or not r.system_owned or r.metadata != {"owner_mapping": True} for r in proposed)
+                    or sorted((canonical_json(_ref_payload(r.target)) for r in proposed)) != sorted(map(canonical_json, expected))):
+                raise RegistryConflict("owner transfer lacks complete unique SAMEtransaction lineage")
+            staged = target in expected
+        if not staged and not any(relation_ref(r["source_json"]) == source and relation_ref(r["target_json"]) == target for r in rows):
             raise RegistryConflict("owner transfer lacks exact ordinary registered derived_from lineage")
     # Resource-plan hydration needs a Core reader only; it publishes nothing.
     from ._registry import _RegistryCore
@@ -859,7 +893,7 @@ def _validate_tokens(store, catalog, db, checkpoint, old, old_net, net, root, p,
     places = {place.name: place for place in compiled.symbolic.places}
     for mapping in p["token_mappings"]:
         _, source = exact(mapping["old_token_ref"], "petri_token/v1")
-        _, target = exact(mapping["new_token_ref"], "petri_token/v1")
+        _, target = exact(mapping["new_token_ref"], "petri_token/v1", staged=True)
         a, b = canonical_json(mapping["old_token_ref"]), canonical_json(mapping["new_token_ref"])
         if (source["petri_token_ref"] != mapping["old_token_ref"]
                 or a not in old_refs or b not in new_refs or a in mapped_old or b in mapped_new
@@ -912,7 +946,7 @@ def _validate_tokens(store, catalog, db, checkpoint, old, old_net, net, root, p,
         ref = ResourceVersionRef(resource_ref.entity_id, resource_ref.version_id)
         exact(mapping["owner_resource_ref"], "resource_version/v1")
         exact(mapping["source_ref"], "bootstrap_command/v1")
-        _, token = exact(mapping["new_token_ref"], "petri_token/v1")
+        _, token = exact(mapping["new_token_ref"], "petri_token/v1", staged=True)
         b = canonical_json(mapping["new_token_ref"])
         if (b not in new_refs or b in mapped_new or b in input_new or mapping["place"] not in places
                 or mapping["place"] in candidate_terminals or places[mapping["place"]].token_kind != "data"
@@ -936,7 +970,7 @@ def _validate_tokens(store, catalog, db, checkpoint, old, old_net, net, root, p,
     _require_mapped_new_tokens(set(new_refs), mapped_new | input_new)
     states = []
     for value in checkpoint["token_refs"]:
-        ref, token = exact(value, "petri_token/v1")
+        ref, token = exact(value, "petri_token/v1", staged=True)
         catalog.validate_instance("petri_token/v1", category="object", instance=token)
         if (token["petri_token_ref"] != value or token["net_instance_ref"] != p["net_instance_ref"]
                 or token["epoch"] != checkpoint["epoch"] or token["consumed_by"] is not None
