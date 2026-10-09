@@ -1,0 +1,36 @@
+{
+  "schema_version": "rpnh/iteration_profile/v1",
+  "template": "propose_evaluate_select/v1",
+  "name": "BoundedIteration",
+  "rounds": 2,
+  "schemas": {
+    "state": "application/iteration_state/v1",
+    "candidate": "application/iteration_candidate/v1",
+    "evaluation_request": "application/iteration_evaluation_request/v1",
+    "evaluation": "application/iteration_evaluation/v1"
+  },
+  "roles": {
+    "proposer": {
+      "executor_key": "example/iteration_proposer/v1",
+      "model_profile_ref": null
+    },
+    "evaluator": {
+      "executor_key": "example/iteration_evaluator/v1",
+      "model_profile_ref": null
+    },
+    "selector": {
+      "executor_key": "example/iteration_selector/v1",
+      "model_profile_ref": null
+    }
+  },
+  "terminal_key": "example/iteration_terminal/v1",
+  "native_model_call_budget": {
+    "unit": "registered_model_call",
+    "maximum": 1
+  },
+  "terminal_outcomes": {
+    "stop": "complete",
+    "final_select": "complete",
+    "final_retain": "complete"
+  }
+}

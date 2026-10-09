@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: opencode.md
-  revision: "2026-09-29.2"
+  revision: "2026-10-08.1"
   status: locally-validated-integration-candidate
   upstream-version: "1.18.32"
 ---
@@ -92,6 +92,53 @@ usage、cost 和 context 指标**不可用**。固定 DTO 必填数值使用零�
 启动器解析本机客户端，在临时 HOME/XDG/config/display 目录中检查版本，然后创建带临时认证的 `127.0.0.1` 服务。Basic-auth 临时口令不是模型凭据。客户端不继承 provider keys、全局 OpenCode 配置、插件加载参数、代理和 Python/Node 注入变量；RPNH 既有执行路径保留自己的原始环境。这不是针对恶意客户端二进制的操作系统沙箱。
 
 服务限制为 32 个连接、8 个 SSE 连接、256 KiB 请求体、128 个排队应用请求和 4 MiB 响应/快照。慢客户端合并接收当前投影，不累积无限 delta 队列。大历史可能超出 v1 展示上限并明确报错。诊断只记录有界 route 形状和状态，不保存问题正文、请求头或任意 URL。未知结果、profile 漂移、缺失 owner 和不支持的请求都不能被解释为执行成功。
+
+## 显式候选认证（仅测试）
+
+生产仍固定 **1.18.32**。同一 manifest 另登记 **1.18.35**
+（`53d1eabb61e21162157817bf677da0a4ad3332e3`）为 `certification-only`，
+production 禁用，native G2/G3 为 `not-run`。没有产品 CLI、环境变量或配置候选开关。
+测试显式把同一 immutable profile 传给 binary probe 和 protocol；只参数化所声明的
+版本 metadata，DTO、执行、Registry、provider/model 权威和 Petri-net 投影保持不变。
+
+无需客户端、socket、PTY 或 provider 的 G1 检查：
+
+```bash
+python -m pytest -q tests/test_opencode_candidate_profiles.py
+```
+
+包内 schema 仍为人工核对的 1.18.32 source-extracted 子集，两 profile 共享 DTO 验证。
+其中 health response 含旧版本 const；候选测试独立断言候选精确版本，只将此版本 metadata
+绑定后做结构验证。不把它说成通过未变的旧 health const、官方 SDK 编译或 stock client 验收。
+
+仅在另行授权 native 执行、已有可信且未修改的 Linux binary 和预置测试依赖之后：
+
+```bash
+python -m pytest -q tests/test_opencode_candidate_native.py \
+  --opencode-certify-version=1.18.35 \
+  --opencode-certify-binary=/absolute/path/to/opencode \
+  --opencode-certify-lane=contract
+# 合成已提交 Registry 的只读 smoke 单独运行：
+python -m pytest -q tests/test_opencode_candidate_native.py \
+  --opencode-certify-version=1.18.35 \
+  --opencode-certify-binary=/absolute/path/to/opencode \
+  --opencode-certify-lane=registry-read
+```
+
+这些是有限 smoke 场景，不是完整 G2/G3 认证。未显式选择时不运行候选 native 测试。
+缺参数、未知版本/平台、缺 binary/依赖、probe 不符或请求 lane 被过滤掉都会失败，不能 skip
+后默默全绿。入口不安装、不登录、不调用真实模型，也不接受用户 Registry 路径。
+本地 hash 与 version stdout 不足以证明官方发行物，须另记录 binary 来源。1.18.32 对照可将同一测试命令改为
+`--opencode-certify-version=1.18.32` 并提供对应 stock binary。两个精确版本均只在
+专用测试中选择，不改变既有 pinned PTY 测试、生产入口或默认 PATH/pin。
+
+G2 使用原 HTTP/SSE protocol 和 `ApplicationDouble`。G3 准备阶段用既有 deterministic
+fake port 产生两个 committed turn，再对原 `FrontendGateway`/`RegistryFrontendApplication`
+读取路径测量零新增 fake-port/model/submit/spawn effects，准备调用单列。保留正常 gateway
+tick 和独占 owner lease 获取/释放。只读网核对用 `/rpnh-net` 和原 projection/filter；
+`/rpnh-tasks` 可能 reconcile links，不作为严格只读测点。Picker、强制 SSE 重连、长历史
+页边界尚未由这组 smoke 覆盖。Linux 与 WSL2 分别实测，不增加原生 Windows/macOS 支持。
+测试证据不自动更新 manifest 认证状态，也不提升默认 pin。
 
 ## 验证与代码定位
 

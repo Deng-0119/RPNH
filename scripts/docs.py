@@ -27,6 +27,22 @@ ROOT_PROJECT_DOCUMENTS = (
     'CONTRIBUTING.md', 'CONTRIBUTING_ZH.md',
     'SECURITY.md', 'SECURITY_ZH.md',
 )
+# Public source references and input fixtures linked by the maintained guides.
+# Keep this explicit: internal files are not admitted by directory or suffix.
+PUBLIC_DOWNLOADS = {
+    'cpn/rpnh/agent_tasks.py',
+    'cpn/components/agent_loop/tool_catalog.py',
+    'cpn/plugins/managed_scheduler.py',
+    'cpn/components/agent_loop/program_execution.py',
+    'cpn/plugins/controlled_script.py',
+    'examples/slopcodebench/sources.json',
+    'examples/tool_pipeline/fixtures/usage.json',
+    'examples/tool_pipeline/fixtures/tariff.json',
+    'examples/tool_pipeline/module.json',
+    'examples/tool_pipeline/host.py',
+    'examples/tool_pipeline/tools.py',
+    'examples/tool_pipeline/tests/pipe_transport.py',
+}
 PNG_SIGNATURE = b'\x89PNG\r\n\x1a\n'
 
 
@@ -45,6 +61,8 @@ def pages_in(root: Path) -> list[Path]:
     paths.extend(sorted((root / 'docs').glob('*.md')))
     for folder in ('guides', 'architecture', 'reference'):
         paths.extend(sorted((root / 'docs' / folder).glob('*.md')))
+    paths.extend(sorted((root / 'docs' / 'results').glob('README*.md')))
+    paths.extend(sorted((root / 'docs' / 'results').glob('*/README*.md')))
     paths.extend(sorted((root / 'examples').glob('**/README*.md')))
     return paths
 
@@ -84,7 +102,11 @@ def parse_page(path: Path, *, maintained: bool = True) -> Page:
                 raise ValueError(f'{path}: missing metadata {key}')
         meta = {**meta, 'name': info['name']}
     elif path.name in {'README.md', 'README_ZH.md'}:
-        if 'examples' in path.parts:
+        if path.parent.name == 'results' and path.parent.parent.name == 'docs':
+            name, revision = 'rpnh-results', 'result-index-v1'
+        elif path.parent.parent.name == 'results' and path.parent.parent.parent.name == 'docs':
+            name, revision = 'rpnh-result-' + path.parent.name, 'source-result-v1'
+        elif 'examples' in path.parts:
             index = path.parts.index('examples')
             suffix = '-'.join(path.parts[index + 1:-1]) or 'catalog'
             name, revision = 'rpnh-example-' + suffix, 'source-example-v1'
@@ -240,6 +262,7 @@ def supporting_documents(root: Path, pages: dict[Path, Page]):
                         and dest.suffix == '.md')
             json_document = dest.suffix == '.json' and (
                 (len(parts) == 4 and parts[0] == 'examples' and parts[2] == 'results')
+                or (len(parts) == 4 and parts[:2] == ('docs', 'results'))
                 or (len(parts) == 3 and parts[:2] == ('docs', 'reference'))
                 or parts[:2] == ('cpn', 'schemas'))
             csv_document = (dest.suffix == '.csv' and len(parts) == 4
@@ -248,11 +271,13 @@ def supporting_documents(root: Path, pages: dict[Path, Page]):
             python_source = (dest.suffix == '.py' and len(parts) >= 4
                              and parts[0] == 'examples' and parts[2] == 'src')
             legal = dest.name in STATIC_DOCUMENTS
-            if not (markdown or json_document or csv_document or python_source or legal):
+            public_download = relative.as_posix() in PUBLIC_DOWNLOADS
+            if not (markdown or json_document or csv_document or python_source
+                    or legal or public_download):
                 continue  # The link checker reports unsupported destinations.
             if not dest.is_file():
                 raise ValueError(f'{page.path}: undocumented or missing link {dest}')
-            if legal or json_document or csv_document or python_source:
+            if legal or json_document or csv_document or python_source or public_download:
                 downloads.add(dest)
             else:
                 support[dest] = parse_page(dest, maintained=False)
@@ -401,14 +426,16 @@ def navigation_group(path: Path, root: Path, language: str) -> tuple[int, str]:
     labels = ({
         'start': 'Start', 'build': 'Build', 'observe': 'Observe',
         'integrations': 'Integrations', 'reference': 'Reference',
-        'project': 'Project', 'examples': 'Source examples',
+        'project': 'Project', 'results': 'Results', 'examples': 'Source examples',
     } if language == 'en' else {
         'start': '入门', 'build': '构建', 'observe': '查看运行',
         'integrations': '宿主集成', 'reference': '参考',
-        'project': '项目状态', 'examples': '源码案例',
+        'project': '项目状态', 'results': '结果', 'examples': '源码案例',
     })
-    if relative.startswith('examples/'):
-        key, order = 'examples', 6
+    if relative.startswith('docs/results/'):
+        key, order = 'results', 6
+    elif relative.startswith('examples/'):
+        key, order = 'examples', 7
     elif relative.startswith('docs/reference/') or relative in {
             'docs/ARCHITECTURE.md', 'docs/ARCHITECTURE_ZH.md',
             'docs/PROVIDER_MODEL_CONFIGURATION.md',
@@ -426,7 +453,7 @@ def navigation_group(path: Path, root: Path, language: str) -> tuple[int, str]:
         key, order = 'integrations', 3
     elif any(name in relative for name in (
             'development', 'release-validation', 'examples-validation',
-            'PROVENANCE', 'DEFERRED_ENGINEERING_WORK', 'CHANGELOG',
+            'PROVENANCE', 'CHANGELOG',
             'CONTRIBUTING', 'SECURITY')):
         key, order = 'project', 5
     else:

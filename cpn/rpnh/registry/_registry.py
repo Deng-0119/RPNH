@@ -39,6 +39,9 @@ class _RegistryCore:
         self.run_dir = Path(run_dir)
         self.root = self.run_dir / ".registry_v1"
         database_path = self.root / "registry.sqlite3"
+        if not self.read_only:
+            from .parent_bound import preflight_bound_writer
+            preflight_bound_writer(database_path)
         if create:
             if database_path.exists():
                 raise RuntimeError("native registry already exists")

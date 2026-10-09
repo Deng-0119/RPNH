@@ -1,9 +1,0 @@
-============================= test session starts ==============================
-platform linux -- Python 3.13.12, pytest-8.4.2, pluggy-1.6.0 -- <WORKSPACE>/.p26/v/bin/python
-rootdir: <WORKSPACE>
-collecting ... collected 1 item
-
-../task-tool-pipeline-validation-20261008/probes/test_native_boundaries.py::test_missing_usage_join_native PASSED [100%]
-
-- generated xml file: <WORKSPACE>/task-tool-pipeline-validation-20261008/probes/mirror-native.junit.xml -
-========================= 1 passed in 77.37s (0:01:17) =========================

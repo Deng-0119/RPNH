@@ -1,7 +1,0 @@
-{
-  "status": "failed_startup_socket_removed",
-  "failed_pid_absent": true,
-  "connection_refused": true,
-  "only_owned_workspace_socket_removed": true,
-  "original_daemon_error_log_retained": true
-}

@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: index.md
-  revision: "2026-10-07.1"
+  revision: "2026-10-09.1"
   status: source-candidate-not-published
   basis: "core; adapter differences explicitly labelled"
 ---
@@ -54,7 +54,6 @@ metadata:
 | 查看 provider catalog 详细格式 | [Provider/model 配置](PROVIDER_MODEL_CONFIGURATION_ZH.md) |
 | 核对 viewer 证据边界 | [展示观察](DISPLAY_OBSERVATION_ZH.md) |
 | 审计源码整合与排除项 | [源码来源](PROVENANCE_ZH.md) |
-| 查看已解决观察与重新开启条件 | [工程后续记录](DEFERRED_ENGINEERING_WORK_ZH.md) |
 | 编写适配区域的普通后继与独立复制 | [开放区域普通后继](reference/open-region-descendants_ZH.md) |
 | 查询声明与编译契约 | [声明参考](reference/declarations_ZH.md) |
 | 理解 runtime/owner/原子记录 | [运行与 Registry](reference/runtime-registry_ZH.md) |
@@ -66,6 +65,7 @@ metadata:
 | 查看带日期的 focused／真实案例证据 | [案例验证](guides/examples-validation_ZH.md) |
 | 显式引入所选普通作者变化 | [普通作者选择性移植](reference/plain-transplant_ZH.md) |
 | 编写选择性移植的普通后继与独立复制 | [移植普通后继](reference/plain-transplant-descendants_ZH.md) |
+| 核对历史评分、源码与未运行范围 | [精选结果](results/README_ZH.md) |
 
 ## 如何阅读参考
 明确区分声明契约、高级可信宿主接口与私有模块。各页源码路径是仓库内定位信息，不是独立安装说明。可选 API 按能力标注，必须与所选源码/产物核对；自动生成页面不授予 SDK 稳定性承诺。
@@ -98,3 +98,10 @@ route 可用。原始真实 API 证据保存在源码树之外并需要单独授
 | 嵌套Assembly merge | [plain-merge-nested-assembly](reference/plain-merge-nested-assembly_ZH.md) |
 | 开放区域作者接口 | [open-region-authoring](reference/open-region-authoring_ZH.md) |
 | Normal-child root闭合 | [normal-child-root-contract](reference/normal-child-root-contract_ZH.md) |
+
+## 精确读取与前端协议
+
+- [资源 lease 读取](guides/static-lease-reads_ZH.md)
+- [主线程固定截面历史](reference/main-thread-history_ZH.md)
+- [Codex 历史投影](reference/codex-history_ZH.md)
+- [Codex 0.161 显式协议候选](CODEX_0161_CANDIDATE_ZH.md)

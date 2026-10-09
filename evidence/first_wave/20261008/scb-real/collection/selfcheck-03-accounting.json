@@ -1,8 +1,0 @@
-{
-  "tests_run": 1,
-  "passed": true,
-  "uid": 1000,
-  "python": "/home/deng123/RPNH/task-first-wave-examples-20261008/upstream-venv/bin/python",
-  "scope": "settled/post-limit-excess labels; no real/fake inference",
-  "live_reads": false
-}

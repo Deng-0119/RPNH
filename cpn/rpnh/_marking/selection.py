@@ -93,7 +93,9 @@ def _claim_input_arcs(self, t_id: str) -> tuple[tuple[str, str, int], ...]:
         A Registry-bound born-D1 net carries its declared file inputs as
         separately registered ``petri_token/v1`` records.  Those source-place
         tokens are therefore genuine, auditable Petri inputs: enabling and
-        consume-on-fire must include ``registry_read_arcs``.  The legacy
+        consume-on-fire includes ordinary ``registry_read_arcs``. Static
+        resource-lease reads instead use the existing exact reference claim.
+        The legacy
         process-local ignition token is excluded in that mode because it has no
         counterpart in the Registry firing admission.
 
@@ -106,10 +108,11 @@ def _claim_input_arcs(self, t_id: str) -> tuple[tuple[str, str, int], ...]:
         return tuple((arc for arc in net.token_input_arcs if arc[1] == t_id))
     ignition = set(net.synthetic_ignition_arcs)
     arcs = [arc for arc in net.token_input_arcs if arc[1] == t_id and arc not in ignition]
-    arcs.extend((arc for arc in net.registry_read_arcs if arc[1] == t_id))
+    references = set(getattr(net, 'lease_reference_arcs', ()))
+    arcs.extend((arc for arc in net.registry_read_arcs if arc[1] == t_id and arc not in references))
     return tuple(arcs)
 
-def _is_enabled_locked(self, t_id: str, timed_wait_guard_states: Sequence[TimedWaitGuardState]=(), *, _timed_wait_guard_state_map: Optional[Mapping[str, TimedWaitGuardState]]=None) -> bool:
+def _is_enabled_locked(self, t_id: str, timed_wait_guard_states: Sequence[TimedWaitGuardState]=(), *, _timed_wait_guard_state_map: Optional[Mapping[str, TimedWaitGuardState]]=None, allowed_token_ids: Optional[set[int]]=None) -> bool:
     net = self._net
     timed_wait_guard_state_map = self._timed_wait_guard_state_map(timed_wait_guard_states) if _timed_wait_guard_state_map is None else _timed_wait_guard_state_map
     if net.registered_fault_transition(t_id) is not None:
@@ -130,10 +133,14 @@ def _is_enabled_locked(self, t_id: str, timed_wait_guard_states: Sequence[TimedW
         state = timed_wait_guard_state_map.get(t_id)
         if state is None or not state.expired:
             return False
-    structurally_enabled = bool(claim_arcs) or net.is_guard_only_transition(t_id)
+    structurally_enabled = (bool(claim_arcs)
+        or any(arc[1] == t_id for arc in getattr(net, 'lease_reference_arcs', ()))
+        or net.is_guard_only_transition(t_id))
     if not structurally_enabled:
         return False
-    return self._try_reserve(t_id, set()) is not None
+    if allowed_token_ids is None:
+        return self._try_reserve(t_id, set()) is not None
+    return self._try_reserve(t_id, set(), allowed_token_ids=allowed_token_ids) is not None
 
 def _version_ref_from_exact(value: object) -> VersionRef:
     try:

@@ -1,6 +1,0 @@
-#0 building with "default" instance using docker driver
-
-#1 [internal] load local bake definitions
-#1 reading from stdin 848B done
-#1 DONE 0.0s
-ERROR: failed to parse -: parsing yaml: failed to parse : yaml: line 30: did not find expected <document start>, parsing hcl: -.hcl:1,1-2: Argument or block definition required; An argument or block definition is required here.

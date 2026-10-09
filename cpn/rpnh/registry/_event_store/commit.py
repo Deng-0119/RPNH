@@ -491,6 +491,21 @@ def publish_batch(event_store: "EventStore", *, task_id: TypedId, branch_id: str
             command_material=command_material, existing=existing,
             extra_commands=bool(snapshot_predecessors or dependency_root_predecessor
                 or publication_commands or workspace_head_commands))
+        from ..parent_child import validate_parent_child_commit
+        validate_parent_child_commit(event_store, db,
+            task_id=task_id, branch_id=branch_id, task_round_id=task_round_id,
+            net_instance_id=net_instance_id, transaction_id=transaction_id,
+            idempotency_key=idempotency_key, writer_epoch=writer_epoch,
+            objects=objects, events=events, relations=relations, existing=existing,
+            extra_commands=bool(snapshot_predecessors or dependency_root_predecessor
+                or publication_commands or workspace_head_commands))
+        from ..public_materials import validate_public_material_commit
+        validate_public_material_commit(event_store, db, task_id=task_id, branch_id=branch_id,
+            objects=objects, events=events, relations=relations, existing=existing,
+            idempotency_key=idempotency_key, transaction_id=transaction_id,
+            task_round_id=task_round_id, net_instance_id=net_instance_id,
+            extra_commands=bool(snapshot_predecessors or dependency_root_predecessor
+                or publication_commands or workspace_head_commands))
         if existing is not None:
             if existing["status"] not in {"committed", "aborted"}:
                 db.rollback()

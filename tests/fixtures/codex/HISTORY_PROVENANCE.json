@@ -1,0 +1,102 @@
+[
+  {
+    "version": "0.155.0",
+    "name": "ThreadTurnsListParams",
+    "encoding": "utf-8",
+    "sha": "924b8a9a8104ec7e579093ab983ca14f623a865b",
+    "display_url": "https://github.com/openai/codex/blob/rust-v0.155.0/codex-rs/app-server-protocol/schema/json/v2/ThreadTurnsListParams.json",
+    "display_title": "ThreadTurnsListParams.json",
+    "sha256": "2a8b93d7d4437cc25e16a1dde16d8db3c338d39e16c5eece2a56e943a21577d7",
+    "bytes": 1889
+  },
+  {
+    "version": "0.155.0",
+    "name": "ThreadTurnsListResponse",
+    "encoding": "utf-8",
+    "sha": "c8d1dd03548cad35ad9abbca850c87198615e621",
+    "display_url": "https://github.com/openai/codex/blob/rust-v0.155.0/codex-rs/app-server-protocol/schema/json/v2/ThreadTurnsListResponse.json",
+    "display_title": "ThreadTurnsListResponse.json",
+    "sha256": "45bffd91efc358859a1a54b8165c0a8b1c21ebc2a312da9f25d05ff27af798ee",
+    "bytes": 55347
+  },
+  {
+    "version": "0.155.0",
+    "name": "ThreadItemsListParams",
+    "encoding": "utf-8",
+    "sha": "4a21804479326cf86aed00a818d4907d63ee60df",
+    "display_url": "https://github.com/openai/codex/blob/rust-v0.155.0/codex-rs/app-server-protocol/schema/json/v2/ThreadItemsListParams.json",
+    "display_title": "ThreadItemsListParams.json",
+    "sha256": "ff56040c327ecdd30ef02affac9bc71fab64031e8980f2b4fea9fd8a888160b4",
+    "bytes": 1138
+  },
+  {
+    "version": "0.155.0",
+    "name": "ThreadItemsListResponse",
+    "encoding": "utf-8",
+    "sha": "d11f47942a69fb8ca4c447ea8cf961123e5dfa8c",
+    "display_url": "https://github.com/openai/codex/blob/rust-v0.155.0/codex-rs/app-server-protocol/schema/json/v2/ThreadItemsListResponse.json",
+    "display_title": "ThreadItemsListResponse.json",
+    "sha256": "886369490fec07067597460301b3d5c1dc9aedc41ea42522cae397d8babe6156",
+    "bytes": 46506
+  },
+  {
+    "version": "0.155.0",
+    "name": "ThreadResumeResponse",
+    "encoding": "utf-8",
+    "sha": "efdcfc5d9b3556d7df59c7288b21f0e7e1580f29",
+    "display_url": "https://github.com/openai/codex/blob/rust-v0.155.0/codex-rs/app-server-protocol/schema/json/v2/ThreadResumeResponse.json",
+    "display_title": "ThreadResumeResponse.json",
+    "sha256": "fb1fac1fc4f7657736c1ab1a85efe7d71c8dde8fb5be7bf2b823d07367dab9b5",
+    "bytes": 76852
+  },
+  {
+    "version": "0.161.0",
+    "name": "ThreadTurnsListParams",
+    "encoding": "utf-8",
+    "sha": "924b8a9a8104ec7e579093ab983ca14f623a865b",
+    "display_url": "https://github.com/openai/codex/blob/rust-v0.161.0/codex-rs/app-server-protocol/schema/json/v2/ThreadTurnsListParams.json",
+    "display_title": "ThreadTurnsListParams.json",
+    "sha256": "2a8b93d7d4437cc25e16a1dde16d8db3c338d39e16c5eece2a56e943a21577d7",
+    "bytes": 1889
+  },
+  {
+    "version": "0.161.0",
+    "name": "ThreadItemsListParams",
+    "encoding": "utf-8",
+    "sha": "6fb586ee02fba319e8a4f1d283648d87144e26ca",
+    "display_url": "https://github.com/openai/codex/blob/rust-v0.161.0/codex-rs/app-server-protocol/schema/json/v2/ThreadItemsListParams.json",
+    "display_title": "ThreadItemsListParams.json",
+    "sha256": "d5cf9784413f1d1abba756e04e48b273a9d12ab2c5675442e91b6a4ee55e19f0",
+    "bytes": 2291
+  },
+  {
+    "version": "0.161.0",
+    "name": "ThreadItemsListResponse",
+    "encoding": "utf-8",
+    "sha": "69549fe455f3253c43b65aa2284cfe3bbad56516",
+    "display_url": "https://github.com/openai/codex/blob/rust-v0.161.0/codex-rs/app-server-protocol/schema/json/v2/ThreadItemsListResponse.json",
+    "display_title": "ThreadItemsListResponse.json",
+    "sha256": "bc8a8dcb9a48d9ca38b0a5faa89b80ec2fd57398cd3a8dcc15097776153f6c74",
+    "bytes": 49071
+  },
+  {
+    "version": "0.161.0",
+    "name": "ThreadResumeResponse",
+    "encoding": "utf-8",
+    "sha": "90f142dce6c7c2fab22edba9e5d93b06fc3f5c2e",
+    "display_url": "https://github.com/openai/codex/blob/rust-v0.161.0/codex-rs/app-server-protocol/schema/json/v2/ThreadResumeResponse.json",
+    "display_title": "ThreadResumeResponse.json",
+    "sha256": "65aa8b6aad04174627278345826321b1fa2a5d2befac529638980f4b10a90e18",
+    "bytes": 80680
+  },
+  {
+    "version": "0.161.0",
+    "name": "ThreadTurnsListResponse",
+    "encoding": "utf-8",
+    "sha": "4db744c11a620d96c1c330b63a6518f694ca8ab0",
+    "display_url": "https://github.com/openai/codex/blob/rust-v0.161.0/codex-rs/app-server-protocol/schema/json/v2/ThreadTurnsListResponse.json",
+    "display_title": "ThreadTurnsListResponse.json",
+    "sha256": "db925b182c59b718e7164cf8a4297167a338fa0e6a0e8d62e3b839160ac74aea",
+    "bytes": 57570
+  }
+]

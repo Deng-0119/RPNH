@@ -1,9 +1,0 @@
-{
-  "standard_process_finished": "2026-10-08T13:15:41.973303+00:00",
-  "standard_exit_code": 0,
-  "old_export": "<WORKSPACE>/.p26/b/export",
-  "preserved_export": "<WORKSPACE>/.p26/b/preserved-export",
-  "original_export_absent_before_reopen": true,
-  "moved_at": "2026-10-08T13:17:31.236889+00:00",
-  "protocol": "New CLI process receives only persisted run directory and fresh output path; old exports preserved and never passed to readback."
-}

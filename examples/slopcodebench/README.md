@@ -20,11 +20,7 @@ owner wait. There was no replay or grader feedback to the solver. Solver network
 was none; build/evaluation used host networking and a same-version download
 adaptation. This remains an adapted development condition, not an official
 AgentRunner run or a speedup/harness-advantage measurement.
-[Results and original evidence](../../evidence/first_wave/20261008/scb-real/README_ZH.md)
-retain grader failure diagnostics, model/tool records and submitted source.
-Retained original failures and local acceptance evidence are under
-`../../evidence/first_wave/20261008/`; earlier records keep their original source
-identities and are not relabeled as runs on the integrated commit.
+[Curated results](../../docs/results/scb-prefix3-20261008/README.md) retain every case outcome, score category, source identity and execution condition. Historical records are not relabelled as runs on a newer integrated version. Checkpoints 4 and 5 were not run.
 
 The default scope is the original **1 → 2 → 3 partial prefix**. The pinned task
 has five checkpoints. These public tasks were inspected during development and
@@ -101,18 +97,16 @@ another benchmark configuration:
   to the next model task. The chosen native PassPolicy is explicit; infrastructure
   failure stops the pilot. Optional code-quality judging is not run.
 
-The original `AgentRunner` shim remains blocked: its `UsageTracker` stores numeric
+The development integration did not execute the original `AgentRunner`: its `UsageTracker` stores numeric
 usage defaults, while RPNH's public task result exports actual call counts but no
 normalized token/cost summary or per-call USD admission hook. The pilot reports
 unknown tokens/cost as `null`/`unavailable`; it does not publish zero as observed
-billing. The original runner also snapshots in a `finally` block, so its integration
-would need to ensure an unquiesced snapshot cannot become accepted evidence.
+billing.
 
 The actual harness mechanism is Registry-governed agent execution and managed
 native tool admission, with upstream-owned workspace continuity. This does not
 claim native workspace revision reuse, same-Registry resume, topology mutation,
-or automatic process redesign. An optional future reuse showcase needs a separate
-condition and result namespace. No core files were changed.
+or automatic process redesign. This historical integration changed no core files.
 
 ## Offline checks available now
 
@@ -146,9 +140,7 @@ image, an existing exact RPNH provider profile, and a working POSIX owner socket
 Use the RPNH source baseline `ae09445fe1d9b973502bc5d2c961976c1d2c0163`
 with this example applied. An older published wheel (including rc1) is not the
 tested API baseline; the package dependency alone does not verify the commit.
-Follow the pinned upstream installation/build instructions. Already-authorized
-ordinary setup and offline acceptance can proceed without per-step questions.
-Obtain the required authorization for real provider calls, new paid services,
+Follow the pinned upstream installation/build instructions. Obtain the required authorization for real provider calls, new paid services,
 permission expansion, and other restricted actions under the applicable local
 policy. This does not automatically authorize unrecognized software or
 security-sensitive changes.
@@ -203,25 +195,6 @@ Automatic resume/retry is unsupported. Stop and diagnose uncertain effects;
 never replay a command just to recover output. Source changes after a grade
 require a new grade under the new source identity.
 
-## Publication and design feedback
+## Publishing results
 
-Keep original evaluator results, supplementary checks, mock outcomes and missing
-stages separate. `contracts.py`'s raw-workspace helper is only a bounded observation
-utility; the pilot uses the native snapshot selection instead. No ledger is a
-sandbox or an authority to advance the benchmark.
-
-Publication uses `rpnh/example-evidence/v1` from `../example_validation/` with
-checkpoint lineage as a hashed artifact. Copy actual Registry refs unchanged;
-never fabricate them from hashes. Keep profiles, credentials, Registry databases
-and unreviewed outputs private. The owner requested original failure content for
-web analysis: publish reviewed nonsecret logs, retained request/response material
-and grader details under `evidence/first_wave/`, preserving their bytes when safe.
-If actual secrets occur, change only the necessary fields, document each change
-and retain full originals locally. Distinguish request recipes/canonical adapter
-returns from vendor wire that was never retained; do not infer a single cause
-from a score alone.
-
-Current design feedback: normal command integration is possible with existing
-managed-plugin APIs; no workspace seed/export core change is needed for this
-route. Portable settled-workspace export and public usage/budget observation
-remain separate potential usability gaps, not demonstrated invariant failures.
+Public results retain all original scores, failures and unrun scope together with tested source, upstream scorer and adaptation conditions. Raw provider/tool transcripts, profiles, credentials, Registry databases and unreviewed outputs remain private; publish only reviewed result projections. Distinguish request recipes, adapter returns and vendor wire that was never retained. A score alone does not establish a single cause.

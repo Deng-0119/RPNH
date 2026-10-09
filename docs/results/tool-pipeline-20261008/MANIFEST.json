@@ -1,0 +1,27 @@
+{
+  "representation": "new curated distribution bytes, not original raw bytes",
+  "study": "tool-pipeline-20261008",
+  "source_document_tree": "1af8f456bbef1a00d7f4764ffa2545559ad70dec",
+  "files": [
+    {
+      "path": "README.md",
+      "bytes": 3087,
+      "sha256": "f5d58f2b0934adad0b4f09276eddf8588f665bbc6ad1ba048344712f081cdd8c",
+      "git_blob_sha1": "cdf8459fc5fa267bcd7b77757c0a9231a8681f97"
+    },
+    {
+      "path": "README_ZH.md",
+      "bytes": 2740,
+      "sha256": "61d083e932fea9baa74d00e8ed56a4a9ec7458d24806235d18ad9a3b84d7fa3c",
+      "git_blob_sha1": "db60ff49ffed5c80391aadbe29fdca904ba3ae4a"
+    },
+    {
+      "path": "results.json",
+      "bytes": 12013,
+      "sha256": "de9be453ee849d1afbb5ba9539fc189b8eba7b3a96436d38f830ee22461456b1",
+      "git_blob_sha1": "6fb8b4e679473e8bda5619688dad3708596ae6f2"
+    }
+  ],
+  "transformation": "Allowlisted score/status/source/input projection and rewritten bilingual prose; omitted transcripts, diagnostics, private profiles, databases and private storage paths.",
+  "acceptance": "bounded static documentation review only; parent export/package/link/language gates required"
+}

@@ -786,6 +786,9 @@ class ContextExecutionMixin:
                 found.append((resource, prepared, self.kernel._read_firing_registered(context, resource)))
         if len(found) != 1:
             raise OptionalAgentCapabilityUnavailable("optional HOST requires one exact " + role)
+        if role == 'optional_agent_backend':
+            from cpn.rpnh.public_material_contracts import decode, validate_public_backend
+            validate_public_backend(decode(found[0][2]))
         return found[0]
 
     def current_agent_tool_catalog_v1(self, execution=None):

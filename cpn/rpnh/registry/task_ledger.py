@@ -96,6 +96,8 @@ class TaskControlLedger:
             "output_binding_refs": closure["output_binding_refs"],
             "supersedes_net_ref": _exact_ref_payload(supersedes_net_ref),
         }
+        from .parent_bound import assert_bound_adoption
+        assert_bound_adoption(self.service, net_instance_ref, idempotency_key)
         existing = self.service.event_store.list_events_by_idempotency_key(
             idempotency_key)
         if existing:

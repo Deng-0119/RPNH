@@ -77,7 +77,10 @@ def _install_exact_registered_claim_locked(self, transition_id: str, expected_re
         selected = tuple((token for token in selected if token is not None))
         selected_ids = {token.token_id for token in selected}
         if verify_enabled:
-            if not self._is_enabled_locked(transition_id):
+            # Exact authorization checks the supplied occurrence, not the
+            # scheduler's unrelated first/default carrier. Guards are shared;
+            # ordinary scheduling still uses its unchanged unrestricted path.
+            if not self._is_enabled_locked(transition_id, allowed_token_ids=selected_ids):
                 raise MarkingStateError('exact registered firing is not currently enabled')
             matched = self._try_reserve(transition_id, set(), allowed_token_ids=selected_ids)
             matched_ids = set((*matched.token_ids, *matched.reference_token_ids)) if matched is not None else set()
@@ -89,6 +92,7 @@ def _install_exact_registered_claim_locked(self, transition_id: str, expected_re
         else:
             variable = self._net.variable_resource_arc_for(transition_id)
             reference_ids: set[int] = set()
+            variable_ids: set[int] = set()
             lease_accesses: tuple[tuple[VersionRef, str], ...] = ()
             if variable is not None:
                 claim_tokens = [token for token in selected if token.place == variable.claim_token_place]
@@ -96,14 +100,39 @@ def _install_exact_registered_claim_locked(self, transition_id: str, expected_re
                     raise MarkingStateError('registered firing claim lacks its variable lease token')
                 lease_accesses = tuple(((claim['lease_identity_ref'], claim['access_mode']) for claim in claim_tokens[0].lease_claims))
                 pool_tokens = [token for token in selected if token.place == variable.lease_pool_place]
-                if len(pool_tokens) != len(lease_accesses):
-                    raise MarkingStateError('registered firing claim lacks its exact lease colours')
                 for claim in claim_tokens[0].lease_claims:
                     matches = [token for token in pool_tokens if token.lease_identity_ref == claim['lease_identity_ref'] and (claim['expected_resource_ref'] is None or token.resource_ref == claim['expected_resource_ref']) and (claim['access_mode'] == 'produce' or token.resource_ref is not None)]
                     if len(matches) != 1:
                         raise MarkingStateError('registered firing claim has a mismatched lease colour')
+                    variable_ids.add(matches[0].token_id)
                     if claim['access_mode'] == 'read':
                         reference_ids.add(matches[0].token_id)
+            # Static lease reads use the existing reference union. In a shared
+            # pool a variable read may satisfy the same static arc occurrence.
+            static_places: set[str] = set()
+            variable_references = set(reference_ids)
+            for place, target, weight in getattr(self._net, 'lease_reference_arcs', ()):
+                if target != transition_id:
+                    continue
+                static_places.add(place)
+                candidates = sorted((token for token in selected if token.place == place
+                    and token.token_id not in variable_ids - variable_references),
+                    key=lambda token: (token.token_id not in variable_references, token.token_id))
+                if len(candidates) < weight:
+                    raise MarkingStateError('registered firing claim lacks its exact static lease read')
+                static_only = {token.token_id for token in candidates if token.token_id not in variable_ids}
+                if len(static_only) > weight:
+                    raise MarkingStateError('registered firing claim exceeds its static lease read weight')
+                # Every additional selected ref must be accounted for by this
+                # arc, but overlap with variable reads need not be maximal.
+                reference_ids.update(static_only)
+            if variable is not None and any(token.token_id not in variable_ids | reference_ids for token in pool_tokens):
+                raise MarkingStateError('registered firing claim lacks its exact lease colours')
+            lease_accesses = tuple(sorted(set(lease_accesses) | {
+                (token.lease_identity_ref, 'read') for token in selected
+                if token.token_id in reference_ids and token.place in static_places
+                and token.lease_identity_ref is not None},
+                key=lambda item: (_version_ref_key(item[0]), item[1])))
             consumed_ids = tuple((token.token_id for token in selected if token.token_id not in reference_ids))
             expected_places = sorted((place for place, _target, weight in self._claim_input_arcs(transition_id) for _ in range(weight)))
             ordinary_places = sorted((token.place for token in selected if token.token_id not in reference_ids and (variable is None or token.place != variable.lease_pool_place)))
@@ -158,7 +187,8 @@ def claim_firing_set(self, max_count: Optional[int]=None, allowed: Optional['set
         queue is randomized before greedy allocation.  Declaration position and
         transition id therefore have no rivalry priority.  Distinct bindings of
         one transition may be selected together when their exact token occurrences
-        do not overlap.  Every selected token is consumed before a body launches.
+        do not overlap. Consuming inputs are reserved before a body launches;
+        exact read references remain in the shared marking.
 
         ``max_count`` caps the set size (the executor passes the remaining F1
         budget, so a pass never commits more firings than the budget allows).
@@ -201,13 +231,15 @@ def claim_firing_set(self, max_count: Optional[int]=None, allowed: Optional['set
                 local_reserved.update(candidate.token_ids)
         random.SystemRandom().shuffle(candidates)
         reserved: set[int] = set()
+        referenced: set[int] = set()
         selected_lease_accesses: list[tuple[VersionRef, str]] = []
         firing_set: list[str] = []
         claims: list[tuple[int, str, _PendingClaim]] = []
         for tid, claim in candidates:
             if max_count is not None and len(firing_set) >= max_count:
                 break
-            if reserved.intersection(claim.token_ids):
+            if ((reserved | referenced).intersection(claim.token_ids)
+                    or reserved.intersection(claim.reference_token_ids)):
                 continue
             if not self._lease_accesses_compatible(claim.lease_accesses, selected_lease_accesses):
                 continue
@@ -215,6 +247,7 @@ def claim_firing_set(self, max_count: Optional[int]=None, allowed: Optional['set
             claim_id = self._next_claim_id + len(claims)
             claims.append((claim_id, tid, claim))
             reserved.update(claim.token_ids)
+            referenced.update(claim.reference_token_ids)
             selected_lease_accesses.extend(claim.lease_accesses)
         by_id = {tok.token_id: tok for tok in self._tokens}
         claimed_token_refs: dict[int, tuple[VersionRef, ...]] = {}
@@ -407,11 +440,13 @@ def _try_reserve(self, t_id: str, reserved: set[int], *, allowed_token_ids: Opti
     if registered_fault is not None:
         raise MarkingStateError('retired registered fault transition cannot reserve tokens')
     guard_colors = dict(self._net.verdict_guards_of(t_id))
+    active_references = {token_id for active in self._active_claims.values()
+                         for token_id in active.reference_token_ids}
     picked: list[int] = []
     consumed_place_counts: dict[str, int] = {}
     for p, _t, w in self._claim_input_arcs(t_id):
         consumed_place_counts[p] = consumed_place_counts.get(p, 0) + w
-        avail = [tok for tok in self._fresh_on(p, t_id) if tok.token_id not in reserved and tok.token_id not in picked and (allowed_token_ids is None or tok.token_id in allowed_token_ids)]
+        avail = [tok for tok in self._fresh_on(p, t_id) if tok.token_id not in reserved and tok.token_id not in active_references and tok.token_id not in picked and (allowed_token_ids is None or tok.token_id in allowed_token_ids)]
         if p in guard_colors:
             avail = [tok for tok in avail if _verdict_color_matches(tok.verdict, guard_colors[p])]
         if len(avail) < w:
@@ -433,7 +468,29 @@ def _try_reserve(self, t_id: str, reserved: set[int], *, allowed_token_ids: Opti
         if variable_ids:
             consumed_place_counts[variable_binding.lease_pool_place] = consumed_place_counts.get(variable_binding.lease_pool_place, 0) + len(variable_ids)
     picked.extend(variable_ids)
-    if picked:
+    if active_references.intersection(variable_ids):
+        return None
+    for place, target, weight in getattr(self._net, 'lease_reference_arcs', ()):
+        if target != t_id:
+            continue
+        available = sorted((token for token in self._fresh_on(place, t_id)
+            if token.token_id not in reserved and token.token_id not in picked
+            and (allowed_token_ids is None or token.token_id in allowed_token_ids)
+            and (place not in guard_colors or _verdict_color_matches(token.verdict, guard_colors[place]))),
+            key=lambda token: ((token.token_id in reference_ids) if allowed_token_ids is not None
+                               else (token.token_id not in reference_ids), token.token_id))
+        if len(available) < weight:
+            return None
+        for token in available[:weight]:
+            if token.token_id not in reference_ids:
+                reference_ids.append(token.token_id)
+            if token.lease_identity_ref is not None:
+                lease_accesses = tuple(set(lease_accesses) | {(token.lease_identity_ref, 'read')})
+    active_accesses = tuple(access for active in self._active_claims.values() for access in active.lease_accesses)
+    if not self._lease_accesses_compatible(lease_accesses, active_accesses):
+        return None
+    lease_accesses = tuple(sorted(lease_accesses, key=lambda item: (_version_ref_key(item[0]), item[1])))
+    if picked or reference_ids:
         return _PendingClaim(token_ids=tuple(picked), consumed_place_counts=consumed_place_counts, reference_token_ids=tuple(reference_ids), lease_accesses=lease_accesses)
     if self._net.is_guard_only_transition(t_id):
         return _PendingClaim(token_ids=(), consumed_place_counts={})

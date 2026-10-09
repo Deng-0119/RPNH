@@ -1,0 +1,27 @@
+{
+  "representation": "new curated distribution bytes, not original raw bytes",
+  "study": "scb-prefix3-20261008",
+  "source_document_tree": "1af8f456bbef1a00d7f4764ffa2545559ad70dec",
+  "files": [
+    {
+      "path": "README.md",
+      "bytes": 6522,
+      "sha256": "c3e6f17c3a18befc7d6f908091b4d3e8ec3a0f80f900b5d4e8d435cb28694ead",
+      "git_blob_sha1": "3e74e4c9c9818e17d8f4b02398f640a6754eb062"
+    },
+    {
+      "path": "README_ZH.md",
+      "bytes": 5855,
+      "sha256": "52166cb4c67a1a2a0c1251111c2efc943598efd4e6c228ad45262e9fd8334f43",
+      "git_blob_sha1": "899dbd4572d01e98470e7eeb388605f250453678"
+    },
+    {
+      "path": "results.json",
+      "bytes": 36567,
+      "sha256": "9efa5fe7e44910b4e3d2e30e7bfaa2f3cd4243ced87ec050cc68ef8df991497a",
+      "git_blob_sha1": "cf9a8422242cbdfb8d3e87cad35f87522c8ed575"
+    }
+  ],
+  "transformation": "Allowlisted score/status/source/input projection and rewritten bilingual prose; omitted transcripts, diagnostics, private profiles, databases and private storage paths.",
+  "acceptance": "bounded static documentation review only; parent export/package/link/language gates required"
+}

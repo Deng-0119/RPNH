@@ -1,2 +1,0 @@
-cd <WORKSPACE>/.h26/s
-PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=<WORKSPACE>/.h26/s:<WORKSPACE>/.h26/s/tests:<WORKSPACE>/.h26/s/examples/harnessaudit_office/src TMPDIR=<WORKSPACE>/.h26/tmp PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 <WORKSPACE>/.p26/v/bin/python -m pytest -q tests/test_optional_managed_plugin_actions.py::test_node_scoped_managed_calls_persist_v3_alongside_builtin_v2 -p no:cacheprovider --basetemp=<WORKSPACE>/.h26/an/g --junitxml=<WORKSPACE>/task-shared-harness-validation-20261008/probes/A/native-start.xml

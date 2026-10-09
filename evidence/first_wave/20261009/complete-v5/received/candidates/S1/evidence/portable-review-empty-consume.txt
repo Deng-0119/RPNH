@@ -1,2 +1,0 @@
-1 REJECTED RegistryConflict static lease claim differs from adopted PN/marking: consume index differs from declared Module input modes
-2 REJECTED RegistryConflict static lease claim differs from adopted PN/marking: consume index differs from declared Module input modes

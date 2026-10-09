@@ -1,5 +1,0 @@
-{
-  "status": "blocked_before_writes",
-  "exit_code": 2,
-  "reason": "Public content lexical checks rejected a descriptive authorization field and two slash-separated Chinese phrases. No credential exposure or trial rerun. Fixed publication projection key and authored wording; original push receipt unchanged."
-}

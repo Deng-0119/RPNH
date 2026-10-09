@@ -1,9 +1,0 @@
-{
-  "condition_id": "scb-session-command-development-v1",
-  "cost_limit": 0,
-  "net_cost_limit": 0,
-  "step_limit": 0,
-  "max_model_calls": 48,
-  "checkpoint_timeout_seconds": 7200,
-  "solver_network": "none"
-}

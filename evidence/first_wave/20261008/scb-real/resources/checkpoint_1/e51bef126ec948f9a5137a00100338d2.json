@@ -1,1 +1,0 @@
-{"finish_reason":"tool_calls","protocol":"llm_response_envelope/v1","tool_calls":[{"arguments":"{\"path\":\"registered_resources/fc688de126a353eb81cfc4d68ce17bf4/9d70cd246de15e619ca9c427b30f645d/content\"}","id":"call_01","name":"read_file"}],"usage":{"cache_write_input_tokens":0,"cached_input_tokens":0,"input_tokens":7980,"output_tokens":128,"reasoning_output_tokens":21}}

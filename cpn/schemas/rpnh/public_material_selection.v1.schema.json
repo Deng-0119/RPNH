@@ -1,0 +1,108 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "rpnh/public_material_selection/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "rpnh/public_material_selection/v1"
+    },
+    "child_kind": {
+      "enum": [
+        "module",
+        "agent_task"
+      ]
+    },
+    "selected_registrations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "enum": [
+              "schema",
+              "component",
+              "executor",
+              "tool",
+              "analyzer"
+            ]
+          },
+          "key": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "kind",
+          "key"
+        ]
+      },
+      "maxItems": 4096
+    },
+    "selected_public_slots": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "slot_id": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_.:-]{0,127}(?![\\s\\S])"
+          },
+          "node_id": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_.:-]{0,127}(?![\\s\\S])"
+          }
+        },
+        "required": [
+          "slot_id",
+          "node_id"
+        ]
+      }
+    },
+    "execution_profiles": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "profile_id": {
+            "const": "default"
+          },
+          "policy_node_id": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_.:-]{0,127}(?![\\s\\S])"
+          },
+          "target_node_id": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_.:-]{0,127}(?![\\s\\S])"
+          },
+          "backend_node_id": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_.:-]{0,127}(?![\\s\\S])"
+          },
+          "transport_node_id": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_.:-]{0,127}(?![\\s\\S])"
+          }
+        },
+        "required": [
+          "profile_id",
+          "policy_node_id",
+          "target_node_id",
+          "backend_node_id",
+          "transport_node_id"
+        ]
+      },
+      "maxItems": 1
+    }
+  },
+  "required": [
+    "schema_version",
+    "child_kind",
+    "selected_registrations",
+    "selected_public_slots",
+    "execution_profiles"
+  ]
+}

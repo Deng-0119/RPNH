@@ -1,0 +1,27 @@
+{
+  "representation": "new curated distribution bytes, not original raw bytes",
+  "study": "entry-reader-20261009",
+  "source_document_tree": "1af8f456bbef1a00d7f4764ffa2545559ad70dec",
+  "files": [
+    {
+      "path": "README.md",
+      "bytes": 4480,
+      "sha256": "ba5d70a9c44ea8634671fe3e3d200a44b52752f233cadf25936fb63c9e96ec6e",
+      "git_blob_sha1": "1beb28fa8210504dea987811023df2ca404a0acd"
+    },
+    {
+      "path": "README_ZH.md",
+      "bytes": 3996,
+      "sha256": "1224065258695d2f6fe1a01a3bbbcc93fda2f41229ed80a22f6fc1610b6f4691",
+      "git_blob_sha1": "a8da25fbcd9ce90062ba25fd509387fe65c743db"
+    },
+    {
+      "path": "results.json",
+      "bytes": 38726,
+      "sha256": "4f92d94c1e03a4208402daec54b35945a7867155edfdddcfce13ab67f4447202",
+      "git_blob_sha1": "2bfb9b1e2e8dd7ac4561ebe9b882224bf77f6f86"
+    }
+  ],
+  "transformation": "Allowlisted score/status/source/input projection and rewritten bilingual prose; omitted transcripts, diagnostics, private profiles, databases and private storage paths.",
+  "acceptance": "bounded static documentation review only; parent export/package/link/language gates required"
+}

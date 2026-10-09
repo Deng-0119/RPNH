@@ -38,13 +38,7 @@ python3.12 -m venv .erp-venv
 必须记录实际镜像摘要及 solver/verifier 依赖版本：原始镜像标签可变，镜像与
 verifier 指定的 `odoo-client-lib` 版本也不同，分别为 `2.0.0` 与尝试安装 `2.0.2`。
 
-源码报告接受精确 RPNH 基点，或用户分配的首波集成后继提交。已提交的差异可位于
-`examples/erp_bench/`、`examples/slopcodebench/`、`examples/example_validation/`
-及 `evidence/first_wave/`，分别用于首波实现和原始失败证据。ERP 自有文件和导出
-patch 仍只限于 `examples/erp_bench/`；其他工作线未提交的跟踪文件修改，以及核心、
-全局或无关示例变更仍被拒绝。`base_commit` 保持固定，`tested_commit` 记录实际完整
-HEAD 树，另存 ERP 工作文件摘要及脏状态。旧实测保留原提交和原成绩，集成不构成
-新源码上的真实实验复验。
+源码报告的 `base_commit` 保持上述历史基点，`tested_commit` 与 ERP 自有工作文件身份记录实际受测版本。旧实测保留原提交和原成绩；后续集成不是新的真实实验复验。精选历史评分见[ERP 结果](../../docs/results/erp-first-wave-20261008/README_ZH.md)，合成原生生命周期验证见[ERP runtime 结果](../../docs/results/erp-runtime-20261008/README_ZH.md)。
 
 ## 离线命令
 

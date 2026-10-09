@@ -1,8 +1,0 @@
-{
-  "status": "COMMANDS_FINISHED_REQUIRES_ACCEPTANCE",
-  "utc": "2026-10-09T04:07:34.693972+00:00",
-  "resources_after": {
-    "host_D_available_bytes": 54021922816,
-    "task_runtime_bytes": 4178501632
-  }
-}

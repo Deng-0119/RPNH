@@ -236,7 +236,8 @@ def prepare_module_effects(
         firing.transition_id, tuple((tokens[r].place, tokens[r].verdict) for r in firing.claimed_input_refs))
     places = {p.name: p for p in compiled.symbolic.places}
     consumed_places = {a.place for a in view._arcs if a.transition == firing.transition_id
-                       and a.direction == "input" and a.mode in {"consume", "borrow", "read"}}
+                       and a.direction == "input" and a.mode in {"consume", "borrow", "read"}
+                       and not (a.mode == "read" and a.place in view.resource_lease_places())}
     consumed = {r for r in firing.claimed_input_refs if tokens[r].place in consumed_places}
     routes, resets, selected_outputs, witnesses, revisions = [], set(), [], [], []
     for effect_index, effect in enumerate(selected.effects):

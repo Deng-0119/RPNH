@@ -158,7 +158,7 @@ def compose_fragments(source, fragments):
                     counts[arc.place] = counts.get(arc.place, 0) + arc.weight
             if any(capacities[k] is not None and count > capacities[k] for k, count in counts.items()):
                 raise DeclarationError("Outcome quantity exceeds place capacity")
-    return SymbolicNet(
+    symbolic = SymbolicNet(
         name=source.name, places=tuple(places[k] for k in sorted(places) if root(k) == k),
         transitions=tuple(transitions), arcs=tuple(arcs), operations=tuple(operations),
         port_places={k: root(v) for k, v in port_places.items()}, entry=entry, exit=exit,
@@ -168,4 +168,6 @@ def compose_fragments(source, fragments):
         variable_resource_arcs=tuple(variable), logical_slots=tuple(slots),
         terminal_alternatives=source.terminal_alternatives, budget_buckets=source.budget_buckets,
         reset_arcs=tuple(reset_arcs),
-    ), {k: root(k) for k in places}
+    )
+    from .bound_child_lowering import compose_bound_origin
+    return compose_bound_origin(source, symbolic, {k: root(k) for k in places})

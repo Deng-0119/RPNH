@@ -5,106 +5,227 @@
   "type": "object",
   "additionalProperties": false,
   "properties": {
-    "envelope_version": {"const": "v1"},
-    "event_id": {"type": "string", "pattern": "^event:[a-f0-9]{32}$"},
-    "event_type": {"enum": [
-      "agent_action_settled/v1",
-      "agent_loop_started/v1",
-      "agent_loop_terminal/v1",
-      "agent_turn_recorded/v2",
-      "capability_activated/v1",
-      "capability_allowed/v1",
-      "capability_denied/v1",
-      "capability_issued/v1",
-      "capability_revoked/v1",
-      "checkpoint_repair_committed/v1",
-      "execution_children_sealed/v1",
-      "execution_instance_attached/v1",
-      "firing_admitted/v1",
-      "firing_external_kb_read_recorded/v2",
-      "firing_resource_transaction_committed/v1",
-      "invocation_started/v1",
-      "llm_call_owner_interrupted/v1",
-      "llm_invocation_attempt_reserved/v1",
-      "llm_invocation_failed/v1",
-      "llm_invocation_interrupted/v1",
-      "llm_invocation_owner_interrupted/v1",
-      "llm_invocation_succeeded/v1",
-      "llm_invocation_succeeded/v2",
-      "llm_call_registered_host_closed/v1",
-      "llm_response_registered/v1",
-      "llm_response_registered/v2",
-      "live_firing_resource_extension/v1",
-      "marking_checkpoint_committed/v1",
-      "net_adopted/v1",
-      "object_version_published/v1",
-      "observed_read/v1",
-      "operation_dispatch_reserved/v1",
-      "operation_execution_started/v1",
-      "operation_terminal_ready/v1",
-      "petri_firing_resource_accessed/v1",
-      "module_assembly_recorded/v1",
-      "provider_attempt_completed/v1",
-      "provider_attempt_host_closed/v1",
-      "provider_attempt_reserved/v1",
-      "provider_attempt_dispatch_started/v2",
-      "provider_attempt_owner_interrupted/v1",
-      "provider_attempt_submission_permitted/v2",
-      "provider_attempt_submission_observed/v1",
-      "provider_payload_materialization_recorded/v1",
-      "relation_published/v1",
-      "registered_operation_completion_recorded/v1",
-      "registered_host_llm_attempt_closed/v1",
-      "registered_host_llm_attempt_reserved/v1",
-      "resource_address_bound/v1",
-      "resource_address_unbound/v1",
-      "resource_delivery_acknowledged/v1",
-      "resource_delivery_failed/v1",
-      "resource_delivery_prepared/v1",
-      "resource_delivery_unknown/v1",
-      "resource_release_authorized/v1",
-      "run_reopened/v1",
-      "structural_growth_adopted/v1",
-      "transaction_aborted/v1",
-      "transaction_committed/v1",
-      "transition_firing_settled/v1",
-      "transition_firing_started/v1"
-    ]},
-    "event_schema_version": {"enum": ["v1", "v2"]},
-    "criticality": {"const": "authoritative"},
-    "task_id": {"type": "string", "pattern": "^task:[a-f0-9]{32}$"},
-    "branch_id": {"type": "string", "minLength": 1},
-    "task_round_id": {"type": ["string", "null"], "pattern": "^task_round:[a-f0-9]{32}$"},
-    "net_instance_id": {"type": ["string", "null"], "pattern": "^net_instance:[a-f0-9]{32}$"},
-    "stream_id": {"type": "string", "minLength": 1},
-    "aggregate_id": {"type": "string", "minLength": 1},
-    "aggregate_type": {"type": "string", "minLength": 1},
-    "stream_sequence": {"type": "integer", "minimum": 1},
-    "aggregate_version": {"type": "integer", "minimum": 1},
-    "task_control_sequence": {"type": ["integer", "null"], "minimum": 1},
-    "idempotency_key": {"type": "string", "minLength": 1},
-    "command_id": {"type": "string", "minLength": 1},
-    "correlation_id": {"type": "string", "minLength": 1},
-    "causation_event_id": {"type": ["string", "null"], "pattern": "^event:[a-f0-9]{32}$"},
-    "parent_event_ids": {"type": "array", "uniqueItems": true, "items": {"type": "string", "pattern": "^event:[a-f0-9]{32}$"}},
-    "producer_principal": {"type": "string", "minLength": 1},
-    "producer_invocation_id": {"type": ["string", "null"], "pattern": "^invocation:[a-f0-9]{32}$"},
-    "transaction_id": {"type": "string", "pattern": "^transaction:[a-f0-9]{32}$"},
-    "occurred_at": {"type": "string", "format": "date-time"},
-    "recorded_at": {"type": "string", "format": "date-time"},
-    "payload_schema_ref": {"type": "string", "pattern": "^registry_v1/.+/v[1-9][0-9]*$"},
-    "payload": {"type": "object"},
-    "writer_fencing_epoch": {"type": "integer", "minimum": 1}
+    "envelope_version": {
+      "const": "v1"
+    },
+    "event_id": {
+      "type": "string",
+      "pattern": "^event:[a-f0-9]{32}$"
+    },
+    "event_type": {
+      "enum": [
+        "agent_action_settled/v1",
+        "agent_loop_started/v1",
+        "agent_loop_terminal/v1",
+        "agent_turn_recorded/v2",
+        "capability_activated/v1",
+        "capability_allowed/v1",
+        "capability_denied/v1",
+        "capability_issued/v1",
+        "capability_revoked/v1",
+        "checkpoint_repair_committed/v1",
+        "execution_children_sealed/v1",
+        "execution_instance_attached/v1",
+        "firing_admitted/v1",
+        "firing_external_kb_read_recorded/v2",
+        "firing_resource_transaction_committed/v1",
+        "invocation_started/v1",
+        "llm_call_owner_interrupted/v1",
+        "llm_invocation_attempt_reserved/v1",
+        "llm_invocation_failed/v1",
+        "llm_invocation_interrupted/v1",
+        "llm_invocation_owner_interrupted/v1",
+        "llm_invocation_succeeded/v1",
+        "llm_invocation_succeeded/v2",
+        "llm_call_registered_host_closed/v1",
+        "llm_response_registered/v1",
+        "llm_response_registered/v2",
+        "live_firing_resource_extension/v1",
+        "marking_checkpoint_committed/v1",
+        "net_adopted/v1",
+        "object_version_published/v1",
+        "observed_read/v1",
+        "operation_dispatch_reserved/v1",
+        "operation_execution_started/v1",
+        "operation_terminal_ready/v1",
+        "petri_firing_resource_accessed/v1",
+        "module_assembly_recorded/v1",
+        "provider_attempt_completed/v1",
+        "provider_attempt_host_closed/v1",
+        "provider_attempt_reserved/v1",
+        "provider_attempt_dispatch_started/v2",
+        "provider_attempt_owner_interrupted/v1",
+        "provider_attempt_submission_permitted/v2",
+        "provider_attempt_submission_observed/v1",
+        "provider_payload_materialization_recorded/v1",
+        "relation_published/v1",
+        "registered_operation_completion_recorded/v1",
+        "registered_host_llm_attempt_closed/v1",
+        "registered_host_llm_attempt_reserved/v1",
+        "resource_address_bound/v1",
+        "resource_address_unbound/v1",
+        "resource_delivery_acknowledged/v1",
+        "resource_delivery_failed/v1",
+        "resource_delivery_prepared/v1",
+        "resource_delivery_unknown/v1",
+        "resource_release_authorized/v1",
+        "run_reopened/v1",
+        "structural_growth_adopted/v1",
+        "transaction_aborted/v1",
+        "transaction_committed/v1",
+        "transition_firing_settled/v1",
+        "transition_firing_started/v1",
+        "parent_child_recorded/v1"
+      ]
+    },
+    "event_schema_version": {
+      "enum": [
+        "v1",
+        "v2"
+      ]
+    },
+    "criticality": {
+      "const": "authoritative"
+    },
+    "task_id": {
+      "type": "string",
+      "pattern": "^task:[a-f0-9]{32}$"
+    },
+    "branch_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "task_round_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^task_round:[a-f0-9]{32}$"
+    },
+    "net_instance_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^net_instance:[a-f0-9]{32}$"
+    },
+    "stream_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "aggregate_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "aggregate_type": {
+      "type": "string",
+      "minLength": 1
+    },
+    "stream_sequence": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "aggregate_version": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "task_control_sequence": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 1
+    },
+    "idempotency_key": {
+      "type": "string",
+      "minLength": 1
+    },
+    "command_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "correlation_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "causation_event_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^event:[a-f0-9]{32}$"
+    },
+    "parent_event_ids": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^event:[a-f0-9]{32}$"
+      }
+    },
+    "producer_principal": {
+      "type": "string",
+      "minLength": 1
+    },
+    "producer_invocation_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^invocation:[a-f0-9]{32}$"
+    },
+    "transaction_id": {
+      "type": "string",
+      "pattern": "^transaction:[a-f0-9]{32}$"
+    },
+    "occurred_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "recorded_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "payload_schema_ref": {
+      "type": "string",
+      "pattern": "^registry_v1/.+/v[1-9][0-9]*$"
+    },
+    "payload": {
+      "type": "object"
+    },
+    "writer_fencing_epoch": {
+      "type": "integer",
+      "minimum": 1
+    }
   },
   "required": [
-    "envelope_version", "event_id", "event_type", "event_schema_version",
-    "criticality", "task_id", "branch_id", "task_round_id",
-    "net_instance_id", "stream_id", "aggregate_id", "aggregate_type",
-    "stream_sequence", "aggregate_version", "task_control_sequence",
-    "idempotency_key", "command_id", "correlation_id",
-    "causation_event_id", "parent_event_ids", "producer_principal",
-    "producer_invocation_id", "transaction_id", "occurred_at",
-    "recorded_at", "payload_schema_ref", "payload",
+    "envelope_version",
+    "event_id",
+    "event_type",
+    "event_schema_version",
+    "criticality",
+    "task_id",
+    "branch_id",
+    "task_round_id",
+    "net_instance_id",
+    "stream_id",
+    "aggregate_id",
+    "aggregate_type",
+    "stream_sequence",
+    "aggregate_version",
+    "task_control_sequence",
+    "idempotency_key",
+    "command_id",
+    "correlation_id",
+    "causation_event_id",
+    "parent_event_ids",
+    "producer_principal",
+    "producer_invocation_id",
+    "transaction_id",
+    "occurred_at",
+    "recorded_at",
+    "payload_schema_ref",
+    "payload",
     "writer_fencing_epoch"
   ]
 }

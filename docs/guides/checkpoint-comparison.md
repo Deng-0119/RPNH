@@ -6,8 +6,8 @@ metadata:
   audience: operator-and-developer
   language: en
   counterpart: checkpoint-comparison_ZH.md
-  revision: "2026-10-06.2"
-  status: initial-slice-browser-validation-pending
+  revision: "2026-10-09.1"
+  status: reference-with-historical-validation-limits
 ---
 
 [English](checkpoint-comparison.md) | [中文](checkpoint-comparison_ZH.md)
@@ -138,7 +138,7 @@ versions, unexpected nested fields and contradictory coverage are rejected.
 All display text and JSON are rendered with `textContent`; data is never HTML,
 script, a network image, a capability, or a tool instruction.
 
-## Verification and remaining gate
+## Validation scope and historical limits
 
 Focused checks:
 
@@ -166,7 +166,11 @@ visual layout and accessibility, and the local-socket multi-checkpoint cases nee
 verification in an environment that supports them. In the 2026-10-06 cloud check,
 the original two multi-checkpoint tests stopped at `AF_UNIX` creation with
 `PermissionError` before assertions. The supported cloud browser could not open
-the standard local viewer (`ERR_BLOCKED_BY_CLIENT`). Both checks remain blocked;
+the standard local viewer (`ERR_BLOCKED_BY_CLIENT`). Both checks were blocked in that historical window;
 passing socket-free reads and synthetic lifecycle tests do not replace them. No real model API call is
 required for any comparison test. This slice adds no team execution, cross-source
 comparison, score ranking, Registry schema, or mutable viewer endpoint.
+
+This guide retains the original 2026-10-06 validation limits. It does not certify
+later source revisions, actual browser cache admission, or the combined product.
+See [release validation boundaries](release-validation.md) for separate source windows.

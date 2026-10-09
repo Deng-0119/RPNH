@@ -1,5 +1,0 @@
-missing_index COMMIT REJECTED RegistryConflict firing claim delta exceeds its exact inputs
-missing_reference_index COMMIT REJECTED RegistryConflict static lease claim differs from adopted PN/marking: claim ref/index identity differs
-foreign_index COMMIT REJECTED RegistryConflict firing claim delta exceeds its exact inputs
-duplicate_index COMMIT REJECTED SchemaGovernanceError instance violates current schema 'registry_v1/transition_firing/v1': claimed_input_version_ids: ['petri_token_version:009a22079c305ba2bf3adabe750f03a5', 'petri_token_version:7e3900358cd552bc90f4bd6d77773721', 'petri_token_version:009a22079c305ba2bf3adabe750f03a5', 'petri_token_version:7e3900358cd552bc90f4bd6d77773721'] has non-unique elements
-wrong_logical COMMIT REJECTED RegistryConflict static lease claim differs from adopted PN/marking: exact registered firing ref is absent from the projector

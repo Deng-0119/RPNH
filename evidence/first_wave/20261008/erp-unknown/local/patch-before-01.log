@@ -1,6 +1,0 @@
-PASS examples/erp_bench/src/rpnh_erp_bench/plugin.py
-PASS examples/erp_bench/tests/test_plugin.py
-PASS examples/erp_bench/tests/test_managed_receipts.py
-PASS examples/erp_bench/README.md
-PASS examples/erp_bench/README_ZH.md
-Verified all five paths in before state. No files were changed.

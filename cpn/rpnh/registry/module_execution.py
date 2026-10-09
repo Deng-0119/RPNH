@@ -136,6 +136,8 @@ def admit_module_firing(core: _RegistryCore, *, transition_id: str,
             or authority.get("terminal_evidence_ref") is not None):
         raise ValueError(
             "Module admission requires the current running execution authority")
+    from .parent_bound import assert_bound_integrity
+    assert_bound_integrity(core, for_execution=True)
     executable, structure, marking = hydrate_module_runtime(core)
     if transition_id not in structure.transitions:
         raise ValueError("Module admission names an undeclared symbolic transition")

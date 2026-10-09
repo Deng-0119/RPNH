@@ -5,34 +5,25 @@ import type { SessionHeader, SessionEvent } from '@deepseek-ai/dsh-session'
 import { SessionPersistence, SessionPersistenceNotFoundError, SessionAlreadyOwnedError,
   SessionHandleClosedError, SessionReadOnlyError, SessionPersistenceRevision } from '@deepseek-ai/dsh-session-persistence'
 import type { SessionHandle, SessionAccess } from '@deepseek-ai/dsh-session-persistence'
-import type { JsonRecord } from './bridge.ts'
+import { REVISION, type JsonRecord } from './bridge.ts'
+import { projectHistory, projectTurnEvents } from './history-codec.ts'
 
 /** Only fully settled main-thread turns become the DSH conversation surface. */
 export function appendTurn(session: Session, record: JsonRecord): void {
-  const turn = record.ordinal; const output = record.answer
-  session.append('turn/start', { turn })
-  for (const message of record.user_input.messages) session.append('user/message', message, { surfaceOp: 'append' })
-  let step = 0; let open = false
-  for (const call of output.calls ?? []) {
-    if (call.ticket.kind === 'model') {
-      if (open) session.append('step/end', { turn, step })
-      step++; open = true
-      session.append('step/start', { turn, step })
-      session.append('assistant/message', { turn, step, message: call.observation.message, stream: [] }, { surfaceOp: 'append' })
-    } else {
-      const tool = call.arguments.call
-      session.append('tool/call', { turn, step, callId: tool.id, name: tool.name,
-        arguments: typeof tool.raw_arguments === 'string' ? tool.raw_arguments : JSON.stringify(tool.arguments) })
-      session.append('tool/result', { turn, step, message: call.observation.message }, { surfaceOp: 'append' })
-    }
+  // Fully validate this detached turn before touching the live Session.
+  for (const event of projectTurnEvents(record, REVISION)) {
+    session.append(event.type as any, event.data as any,
+      event.surfaceOp === 'append' ? { surfaceOp: 'append' } : undefined)
   }
-  if (open) session.append('step/end', { turn, step })
-  session.append('turn/end', { turn, reason: { kind: output.status === 'completed' ? 'completed' : 'blocked' } })
 }
 export function project(history: JsonRecord, header: SessionHeader): SessionEvent[] {
-  const detached = Session.create(header.id, undefined, header)
-  for (const record of history.committed_history) appendTurn(detached, record)
-  return detached.snapshotEvents().map((e, seq) => ({ ...e, time: header.createdAt + seq }))
+  const view = projectHistory(history, REVISION, { header, revision: REVISION })
+  const detached = Session.create(header.id, undefined, view.header as SessionHeader)
+  for (const event of view.events) {
+    detached.append(event.type as any, event.data as any,
+      event.surfaceOp === 'append' ? { surfaceOp: 'append' } : undefined)
+  }
+  return detached.snapshotEvents().map((e, seq) => ({ ...e, time: view.header.createdAt + seq }))
 }
 
 export class RegistryProjectionPersistence extends SessionPersistence {

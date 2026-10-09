@@ -11,6 +11,7 @@ from dataclasses import dataclass
 import errno
 import fcntl
 import os
+import stat
 from pathlib import Path
 from uuid import NAMESPACE_URL, uuid5
 
@@ -106,7 +107,26 @@ class MainSessionOwnerLease:
                 raise
         except Exception:
             raise
+        try:
+            self._root_identity = _path_identity(self.root, directory=True)
+        except Exception:
+            os.close(fd)
+            raise
         self._fd = fd
+
+    def assert_held(self) -> None:
+        """Recheck this existing lease without acquiring or changing a lock."""
+        try:
+            if self._fd is None:
+                raise ValueError("closed")
+            actual = os.fstat(self._fd)
+            if (not stat.S_ISREG(actual.st_mode)
+                    or _path_identity(self.path, directory=False)
+                    != (actual.st_dev, actual.st_ino)
+                    or _path_identity(self.root, directory=True) != self._root_identity):
+                raise ValueError("changed")
+        except (OSError, ValueError) as exc:
+            raise ValueError("main session owner binding is unavailable") from exc
 
     @classmethod
     def acquire(cls, root: MainSessionRoot | Path) -> "MainSessionOwnerLease":
@@ -168,9 +188,78 @@ def stable_frontend_session_id(root: MainSessionRoot | Path) -> str:
     ).hex
 
 
+def _path_identity(path: Path, *, directory: bool) -> tuple[int, int]:
+    value = path.lstat()
+    if (stat.S_ISLNK(value.st_mode)
+            or not (stat.S_ISDIR(value.st_mode) if directory else stat.S_ISREG(value.st_mode))):
+        raise ValueError("main session source path is unavailable")
+    return value.st_dev, value.st_ino
+
+
+@dataclass(frozen=True, slots=True)
+class MainSessionSourceBinding:
+    """Fingerprint of an already admitted owner session, never a new grant.
+
+    Pre/post checks reject persistent path replacement. They do not claim to
+    defend against malicious same-OS-owner ABA races in an immutable store.
+    Profiles may legitimately change and are deliberately not fingerprinted.
+    """
+
+    session: MainSession
+    core: object
+    reader: object
+    root: Path
+    paths: tuple[tuple[Path, bool, tuple[int, int]], ...]
+    task_id: str
+    branch_id: str
+    thread_id: object
+
+    @classmethod
+    def capture(cls, session: MainSession) -> "MainSessionSourceBinding":
+        core = session._registry_core
+        root = session.root
+        registry = root / MainSession.REGISTRY_DIR
+        internal = registry / ".registry_v1"
+        paths = ((root, True), (registry, True), (internal, True),
+                 (internal / "objects", True), (internal / "registry.sqlite3", False))
+        reader = session.history_registry
+        result = cls(session, core, reader, root,
+                     tuple((path, directory, _path_identity(path, directory=directory))
+                           for path, directory in paths),
+                     str(core.task_id), core.branch_id, session._thread_ref.entity_id)
+        result.assert_matches(session)
+        return result
+
+    def assert_matches(self, session: MainSession) -> None:
+        try:
+            core = self.core
+            read_core = self.reader.core
+            if (session is not self.session or session._registry_core is not core
+                    or session._main_thread.core is not core or session.root != self.root
+                    or session.history_registry is not self.reader or not read_core.read_only
+                    or not read_core.event_store.read_only or not read_core.object_store.read_only
+                    or core.run_dir != self.root / MainSession.REGISTRY_DIR
+                    or core.event_store.path != self.root / MainSession.REGISTRY_DIR / ".registry_v1" / "registry.sqlite3"
+                    or core.object_store.root != self.root / MainSession.REGISTRY_DIR / ".registry_v1" / "objects"
+                    or read_core.run_dir != core.run_dir
+                    or read_core.event_store.path != core.event_store.path
+                    or read_core.object_store.root != core.object_store.root
+                    or session._thread_ref.entity_id != self.thread_id
+                    or str(core.task_id) != self.task_id or core.branch_id != self.branch_id
+                    or str(read_core.task_id) != self.task_id or read_core.branch_id != self.branch_id
+                    or read_core.event_store.get_meta("task_id") != self.task_id
+                    or read_core.event_store.get_meta("branch_id") != self.branch_id
+                    or any(_path_identity(path, directory=directory) != identity
+                           for path, directory, identity in self.paths)):
+                raise ValueError("changed")
+        except Exception as exc:
+            raise ValueError("main session source binding is unavailable") from exc
+
+
 __all__ = (
     "MainSessionOwnerLease",
     "MainSessionRoot",
+    "MainSessionSourceBinding",
     "inspect_main_session_root",
     "stable_frontend_session_id",
 )

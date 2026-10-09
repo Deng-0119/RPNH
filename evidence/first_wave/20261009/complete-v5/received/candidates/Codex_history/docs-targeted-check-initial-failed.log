@@ -1,7 +1,0 @@
-Traceback (most recent call last):
-  File "/workspace/scratch/18c810e6dd59/rpnh-codex-history-projection/audit-tools/check_docs.py", line 7, in <module>
-    page=module.parse_page(root/'source/docs/reference'/name);other=module.parse_page(page.path.parent/page.metadata['counterpart']);assert page.metadata['name']==other.metadata['name'] and page.metadata['revision']==other.metadata['revision'];assert page.metadata['language']!=other.metadata['language'];assert other.metadata['counterpart']==name
-                                                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/workspace/scratch/18c810e6dd59/rpnh-codex-history-projection/audit-tools/docs.py", line 101, in parse_page
-    raise ValueError(f'{path}: unknown language')
-ValueError: /workspace/scratch/18c810e6dd59/rpnh-codex-history-projection/source/docs/reference/codex-history_ZH.md: unknown language

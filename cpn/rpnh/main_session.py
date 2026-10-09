@@ -20,6 +20,7 @@ from .agent_workflows import AgentWorkflowGraph
 from .registry._registry import _RegistryCore
 from .registry.identities import TypedId
 from .registry.main_thread import MainThreadRegistry
+from .registry.main_thread_history import MainThreadReadCut
 from .registry.models import VersionRef
 from .task_control import TaskControl, TaskHandle, owner_socket_path
 from .user_config import profile_for_path
@@ -86,6 +87,16 @@ def render_main_decision(
     if child is not None:
         output += f"\n\n[launched {child.task_id}: {child.kind}]"
     return output
+
+
+@dataclass(frozen=True, slots=True)
+class MainDisplayTurn:
+    """Safe owner-facing text from one committed turn at a native cut."""
+
+    turn_ref: VersionRef
+    ordinal: int
+    user_text: str
+    assistant_text: str
 
 
 def parse_main_decision(
@@ -281,6 +292,7 @@ class MainSession:
                 MainThreadRegistry.REGISTRY_ROOT_PATH_BASE
                 if not resume else None),
         )
+        self._history_reader: MainThreadRegistry | None = None
         if not resume:
             self._main_thread.create_thread(
                 idempotency_key="main-session-thread")
@@ -1089,6 +1101,51 @@ class MainSession:
                 ("assistant", render_main_decision(decision, child)),
             ))
         return history
+
+    def display_history_at(
+            self, cut: MainThreadReadCut, turn_refs: tuple[VersionRef, ...], *,
+            max_object_bytes: int | None = None,
+    ) -> tuple[MainDisplayTurn, ...]:
+        """Pure safe projection under the existing bound local-owner session.
+
+        The caller rechecks its existing owner/source binding before read and
+        delivery. A cut/ref never grants access. No TaskControl, profile,
+        refresh, child read, persistence, activation, or reconciliation occurs.
+        """
+        projection, documents = self.history_registry._committed_turn_documents_at(
+            cut, turn_refs, max_object_bytes=max_object_bytes)
+        result = []
+        for ref, document in zip(turn_refs, documents, strict=True):
+            user_text, _required = self._turn_input(document["user_input"])
+            decision = self._decision_from_document(document["answer"])
+            text = render_main_decision(decision, None)
+            links = [link for link in projection.child_links
+                     if link.origin_turn_ref == ref]
+            if len(links) > 1:
+                raise RuntimeError("multiple child links match one committed turn")
+            if links:
+                link = links[0]
+                if (decision.task is None or decision.task.kind != link.task_kind
+                        or link.state not in {"launch_registered", "registry_attached"}):
+                    raise RuntimeError("history launch fact differs from its decision")
+                text += f"\n\n[launched {link.task_control_id}: {link.task_kind}]"
+            result.append(MainDisplayTurn(
+                ref, int(document["ordinal"]), user_text, text))
+        return tuple(result)
+
+    @property
+    def history_registry(self) -> MainThreadRegistry:
+        """A native read-only handle to this same Registry, never a second store.
+
+        Owner live execution retains its writer. History uses mode=ro/query_only
+        connections so SELECT-only requests cannot checkpoint its WAL on close.
+        This handle creates neither a Registry nor an authority/grant/epoch.
+        """
+        if self._history_reader is None:
+            core = _RegistryCore(self._registry_core.run_dir, create=False,
+                                 read_only=True, catalog=self._registry_core.catalog)
+            self._history_reader = MainThreadRegistry(core, session_root=self.root)
+        return self._history_reader
 
     def prepare_turn(
             self, user_text: str, *,

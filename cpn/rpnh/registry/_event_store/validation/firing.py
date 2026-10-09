@@ -269,6 +269,8 @@ def validate_firing_event(context, pending):
                 or not requested.issubset(present)):
             raise RegistryConflict(
                 "firing admission does not claim the current live marking")
+        from ...static_lease_claims import validate_static_lease_claim
+        validate_static_lease_claim(context, firing, checkpoint_metadata)
         settled_rows = db.execute(
             "SELECT o.metadata_json,e.payload_json FROM objects o JOIN events e "
             "ON e.aggregate_id=o.logical_id "

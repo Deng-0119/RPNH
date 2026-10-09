@@ -7,6 +7,7 @@ metadata:
   language: en
   counterpart: controlled-managed-tools.zh.md
   revision: "2026-10-08.2"
+  status: reference
 ---
 
 [English](controlled-managed-tools.md) | [中文](controlled-managed-tools.zh.md)

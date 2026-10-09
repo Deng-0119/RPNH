@@ -105,51 +105,9 @@ def _private_document(db, core, qualified, binding, *, media_type="application/j
     """Narrow bootstrap-origin resource reader, using the shared exact closure."""
     if not isinstance(qualified, SourceQualifiedResourceRef) or qualified.source_id != binding["source_id"]:
         raise RegistryConflict("author material must be one exact local-source resource")
-    ref = qualified.ref
-    prepared = exact_prepared(db, core.object_store, core.task_id, {
-        "entity_type": "resource_version/v1", "logical_id": str(ref.resource_id), "version_id": str(ref.resource_version_id)})
-    body = prepared.metadata
-    task, bootstrap = (_version_from_payload(binding[key]) for key in ("task_ref", "bootstrap_command_ref"))
-    for authority in (binding["task_ref"], binding["bootstrap_command_ref"]):
-        exact_descriptor(db, core.object_store, core.task_id, authority)
-    expected = _fresh_bootstrap_reference_resource_metadata(core, ref=ref, task_ref=task,
-        bootstrap_ref=bootstrap, lifetime_ref=bootstrap, payload_size=prepared.size,
-        media_type=media_type, content_schema_ref=body["content_schema_ref"],
-        content_schema_authority_ref=body["content_schema_authority_ref"], summary=body["summary"],
-        descriptors=body["descriptors"], extensions=body["extensions"], derived_from=())
-    if not _same_json(body, expected) or prepared.producer_invocation_id is not None:
-        raise RegistryConflict("author material bootstrap identity/provenance differs")
-    # The writer already records the strong producer relation. Verify its
-    # canonical fact as well, without opening another read cut.
-    rows = db.execute("SELECT r.*,e.event_type,e.transaction_id AS event_transaction,e.payload_json "
-        " ,e.criticality AS event_criticality,e.task_id AS event_task,e.payload_schema_ref AS event_schema, "
-        "e.stream_id AS event_stream,e.aggregate_id AS event_aggregate,e.aggregate_type AS event_aggregate_type, "
-        "e.producer_invocation_id AS event_invocation,e.producer_principal AS event_principal "
-        "FROM relations r JOIN events e ON e.event_id=r.published_event_id "
-        "WHERE json_extract(r.source_json,'$.version_id')=?", (str(ref.resource_version_id),)).fetchall()
-    if len(rows) != 1:
-        raise RegistryConflict("author material requires its one exact producer relation")
-    relation = rows[0]
-    endpoint = lambda value: {"entity_type": value.entity_type, "entity_id": str(value.entity_id), "version_id": str(value.version_id)}
-    object_tx = db.execute("SELECT transaction_id FROM objects WHERE version_id=?", (str(ref.resource_version_id),)).fetchone()[0]
-    if (relation["relation_type"] != "produced_by" or relation["strength"] != "strong"
-            or relation["transaction_id"] != object_tx or relation["event_criticality"] != "authoritative"
-            or relation["event_stream"] != f"relation:{relation['relation_id']}"
-            or relation["event_aggregate"] != relation["relation_id"]
-            or relation["event_aggregate_type"] != "typed_relation/v1" or relation["event_invocation"] is not None
-            or relation["event_principal"] != "framework"
-            or relation["event_task"] != str(core.task_id) or relation["event_schema"] != "registry_v1/relation_published/v1"
-            or not _same_json(json.loads(relation["source_json"]), endpoint(ref.as_version_ref()))
-            or not _same_json(json.loads(relation["target_json"]), endpoint(bootstrap))
-            or relation["event_type"] != "relation_published/v1" or relation["event_transaction"] != relation["transaction_id"]
-            or not _same_json(json.loads(relation["payload_json"]), {"relation_id": relation["relation_id"], "relation_type": "produced_by",
-                "source": endpoint(ref.as_version_ref()), "target": endpoint(bootstrap), "strength": "strong",
-                "metadata": json.loads(relation["metadata_json"])})
-            or not _canonical_closure(db, core.task_id, transaction_id=relation["transaction_id"],
-                members=(("relation", relation["relation_id"]), ("event", relation["published_event_id"])))):
-        raise RegistryConflict("author material producer relation lacks exact canonical authority")
+    from ..registry.bootstrap_materials import read_bootstrap_material
+    payload, body = read_bootstrap_material(db, core, qualified.ref, binding, media_type=media_type)
     try:
-        payload = readable_payload(core.object_store, prepared, media_type=media_type)
         document = json.loads(payload)
     except (ValueError, UnicodeError) as exc:
         raise RegistryConflict("author material payload must be JSON") from exc

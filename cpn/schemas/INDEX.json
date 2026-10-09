@@ -49,12 +49,28 @@
       "path": "registry_v1/agent_tool_error.v1.schema.json"
     },
     {
+      "schema_id": "registry_v1/agent_tool_program_call/v1",
+      "path": "registry_v1/agent_tool_program_call.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/agent_tool_program_invocation/v1",
+      "path": "registry_v1/agent_tool_program_invocation.v1.schema.json"
+    },
+    {
       "schema_id": "registry_v1/agent_tool_readiness/v1",
       "path": "registry_v1/agent_tool_readiness.v1.schema.json"
     },
     {
       "schema_id": "registry_v1/agent_turn_recorded/v2",
       "path": "registry_v1/agent_turn_recorded.v2.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/binding_readiness/v1",
+      "path": "registry_v1/binding_readiness.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/binding_readiness/v2",
+      "path": "registry_v1/binding_readiness.v2.schema.json"
     },
     {
       "schema_id": "registry_v1/bootstrap_command/v1",
@@ -93,20 +109,120 @@
       "path": "registry_v1/checkpoint_repair_committed.v1.schema.json"
     },
     {
+      "schema_id": "registry_v1/collaboration_acceptance/v1",
+      "path": "registry_v1/collaboration_acceptance.v1.schema.json"
+    },
+    {
       "schema_id": "registry_v1/collaboration_assembly_revision/v1",
       "path": "registry_v1/collaboration_assembly_revision.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/collaboration_assembly_revision/v2",
+      "path": "registry_v1/collaboration_assembly_revision.v2.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/collaboration_assembly_revision/v3",
+      "path": "registry_v1/collaboration_assembly_revision.v3.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/collaboration_assembly_revision/v4",
+      "path": "registry_v1/collaboration_assembly_revision.v4.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/collaboration_assembly_revision/v5",
+      "path": "registry_v1/collaboration_assembly_revision.v5.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/collaboration_assembly_revision/v6",
+      "path": "registry_v1/collaboration_assembly_revision.v6.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/collaboration_assembly_revision/v7",
+      "path": "registry_v1/collaboration_assembly_revision.v7.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/collaboration_assembly_revision/v8",
+      "path": "registry_v1/collaboration_assembly_revision.v8.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/collaboration_assembly_revision/v9",
+      "path": "registry_v1/collaboration_assembly_revision.v9.schema.json"
     },
     {
       "schema_id": "registry_v1/collaboration_branch/v1",
       "path": "registry_v1/collaboration_branch.v1.schema.json"
     },
     {
+      "schema_id": "registry_v1/collaboration_branch/v2",
+      "path": "registry_v1/collaboration_branch.v2.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/collaboration_branch/v3",
+      "path": "registry_v1/collaboration_branch.v3.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/collaboration_candidate_plan/v1",
+      "path": "registry_v1/collaboration_candidate_plan.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/collaboration_candidate_plan/v2",
+      "path": "registry_v1/collaboration_candidate_plan.v2.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/collaboration_contribution/v1",
+      "path": "registry_v1/collaboration_contribution.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/collaboration_delivery_reconciliation/v1",
+      "path": "registry_v1/collaboration_delivery_reconciliation.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/collaboration_logical_delivery/v1",
+      "path": "registry_v1/collaboration_logical_delivery.v1.schema.json"
+    },
+    {
       "schema_id": "registry_v1/collaboration_net_revision/v1",
       "path": "registry_v1/collaboration_net_revision.v1.schema.json"
     },
     {
+      "schema_id": "registry_v1/collaboration_net_revision/v2",
+      "path": "registry_v1/collaboration_net_revision.v2.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/collaboration_net_revision/v3",
+      "path": "registry_v1/collaboration_net_revision.v3.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/collaboration_request/v1",
+      "path": "registry_v1/collaboration_request.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/collaboration_result_export/v1",
+      "path": "registry_v1/collaboration_result_export.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/collaboration_root_terminal/v1",
+      "path": "registry_v1/collaboration_root_terminal.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/collaboration_root_terminal/v2",
+      "path": "registry_v1/collaboration_root_terminal.v2.schema.json"
+    },
+    {
       "schema_id": "registry_v1/collaboration_source_binding/v1",
       "path": "registry_v1/collaboration_source_binding.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/collaboration_source_observation/v1",
+      "path": "registry_v1/collaboration_source_observation.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/collaboration_source_set/v1",
+      "path": "registry_v1/collaboration_source_set.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/collaboration_workset/v1",
+      "path": "registry_v1/collaboration_workset.v1.schema.json"
     },
     {
       "schema_id": "registry_v1/delivery_boundary_receipt/v1",
@@ -119,6 +235,10 @@
     {
       "schema_id": "registry_v1/execution_checkpoint/v1",
       "path": "registry_v1/execution_checkpoint.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/execution_child_seal/v1",
+      "path": "registry_v1/execution_child_seal.v1.schema.json"
     },
     {
       "schema_id": "registry_v1/execution_children_sealed/v1",
@@ -397,6 +517,38 @@
       "path": "registry_v1/output_binding.v1.schema.json"
     },
     {
+      "schema_id": "registry_v1/parent_bound_bootstrap/v1",
+      "path": "registry_v1/parent_bound_bootstrap.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/parent_bound_origin/v1",
+      "path": "registry_v1/parent_bound_origin.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/parent_child_acceptance/v1",
+      "path": "registry_v1/parent_child_acceptance.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/parent_child_dispatch/v1",
+      "path": "registry_v1/parent_child_dispatch.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/parent_child_intent/v1",
+      "path": "registry_v1/parent_child_intent.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/parent_child_intent/v2",
+      "path": "registry_v1/parent_child_intent.v2.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/parent_child_recorded/v1",
+      "path": "registry_v1/parent_child_recorded.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/parent_child_worker/v1",
+      "path": "registry_v1/parent_child_worker.v1.schema.json"
+    },
+    {
       "schema_id": "registry_v1/petri_firing_resource_accessed/v1",
       "path": "registry_v1/petri_firing_resource_accessed.v1.schema.json"
     },
@@ -475,6 +627,18 @@
     {
       "schema_id": "registry_v1/registered_run_inputs/v1",
       "path": "registry_v1/registered_run_inputs.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/registry_observer_grant/v2",
+      "path": "registry_v1/registry_observer_grant.v2.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/registry_observer_profile/v2",
+      "path": "registry_v1/registry_observer_profile.v2.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/registry_observer_revocation/v1",
+      "path": "registry_v1/registry_observer_revocation.v1.schema.json"
     },
     {
       "schema_id": "registry_v1/registry_type_catalog/v1",
@@ -561,6 +725,14 @@
       "path": "registry_v1/run_terminal_evidence.v1.schema.json"
     },
     {
+      "schema_id": "registry_v1/runtime_binding_manifest/v1",
+      "path": "registry_v1/runtime_binding_manifest.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/runtime_binding_manifest/v2",
+      "path": "registry_v1/runtime_binding_manifest.v2.schema.json"
+    },
+    {
       "schema_id": "registry_v1/semantic_prompt_authority/v1",
       "path": "registry_v1/semantic_prompt_authority.v1.schema.json"
     },
@@ -641,12 +813,104 @@
       "path": "registry_v1/workspace_write_intent.v1.schema.json"
     },
     {
+      "schema_id": "rpnh/agent_task_spec/v13",
+      "path": "rpnh/agent_task_spec.v13.schema.json"
+    },
+    {
+      "schema_id": "rpnh/collaboration/assembly_author_command/v4",
+      "path": "rpnh/collaboration/assembly_author_command.v4.schema.json"
+    },
+    {
+      "schema_id": "rpnh/collaboration/assembly_author_command/v5",
+      "path": "rpnh/collaboration/assembly_author_command.v5.schema.json"
+    },
+    {
+      "schema_id": "rpnh/collaboration/assembly_author_command/v7",
+      "path": "rpnh/collaboration/assembly_author_command.v7.schema.json"
+    },
+    {
+      "schema_id": "rpnh/collaboration/assembly_author_command/v9",
+      "path": "rpnh/collaboration/assembly_author_command.v9.schema.json"
+    },
+    {
       "schema_id": "rpnh/collaboration/assembly_lowering_map/v1",
       "path": "rpnh/collaboration/assembly_lowering_map.v1.schema.json"
     },
     {
+      "schema_id": "rpnh/collaboration/assembly_lowering_map/v2",
+      "path": "rpnh/collaboration/assembly_lowering_map.v2.schema.json"
+    },
+    {
+      "schema_id": "rpnh/collaboration/assembly_lowering_map/v3",
+      "path": "rpnh/collaboration/assembly_lowering_map.v3.schema.json"
+    },
+    {
+      "schema_id": "rpnh/collaboration/assembly_lowering_map/v4",
+      "path": "rpnh/collaboration/assembly_lowering_map.v4.schema.json"
+    },
+    {
+      "schema_id": "rpnh/collaboration/assembly_lowering_map/v5",
+      "path": "rpnh/collaboration/assembly_lowering_map.v5.schema.json"
+    },
+    {
+      "schema_id": "rpnh/collaboration/assembly_lowering_map/v6",
+      "path": "rpnh/collaboration/assembly_lowering_map.v6.schema.json"
+    },
+    {
+      "schema_id": "rpnh/collaboration/assembly_lowering_map/v7",
+      "path": "rpnh/collaboration/assembly_lowering_map.v7.schema.json"
+    },
+    {
+      "schema_id": "rpnh/collaboration/assembly_lowering_map/v8",
+      "path": "rpnh/collaboration/assembly_lowering_map.v8.schema.json"
+    },
+    {
+      "schema_id": "rpnh/collaboration/assembly_lowering_map/v9",
+      "path": "rpnh/collaboration/assembly_lowering_map.v9.schema.json"
+    },
+    {
+      "schema_id": "rpnh/collaboration/assembly_merge_analysis/v1",
+      "path": "rpnh/collaboration/assembly_merge_analysis.v1.schema.json"
+    },
+    {
+      "schema_id": "rpnh/collaboration/assembly_merge_analysis_command/v1",
+      "path": "rpnh/collaboration/assembly_merge_analysis_command.v1.schema.json"
+    },
+    {
       "schema_id": "rpnh/collaboration/assembly_plan/v1",
       "path": "rpnh/collaboration/assembly_plan.v1.schema.json"
+    },
+    {
+      "schema_id": "rpnh/collaboration/assembly_plan/v2",
+      "path": "rpnh/collaboration/assembly_plan.v2.schema.json"
+    },
+    {
+      "schema_id": "rpnh/collaboration/assembly_plan/v3",
+      "path": "rpnh/collaboration/assembly_plan.v3.schema.json"
+    },
+    {
+      "schema_id": "rpnh/collaboration/assembly_plan/v4",
+      "path": "rpnh/collaboration/assembly_plan.v4.schema.json"
+    },
+    {
+      "schema_id": "rpnh/collaboration/assembly_plan/v5",
+      "path": "rpnh/collaboration/assembly_plan.v5.schema.json"
+    },
+    {
+      "schema_id": "rpnh/collaboration/assembly_plan/v6",
+      "path": "rpnh/collaboration/assembly_plan.v6.schema.json"
+    },
+    {
+      "schema_id": "rpnh/collaboration/assembly_plan/v7",
+      "path": "rpnh/collaboration/assembly_plan.v7.schema.json"
+    },
+    {
+      "schema_id": "rpnh/collaboration/assembly_plan/v8",
+      "path": "rpnh/collaboration/assembly_plan.v8.schema.json"
+    },
+    {
+      "schema_id": "rpnh/collaboration/assembly_plan/v9",
+      "path": "rpnh/collaboration/assembly_plan.v9.schema.json"
     },
     {
       "schema_id": "rpnh/collaboration/author_boundary_map/v1",
@@ -661,6 +925,138 @@
       "path": "rpnh/collaboration/author_host_requirements.v1.schema.json"
     },
     {
+      "schema_id": "rpnh/collaboration/graph_author_source/v1",
+      "path": "rpnh/collaboration/graph_author_source.v1.schema.json"
+    },
+    {
+      "schema_id": "rpnh/collaboration/graph_build_recipe/v1",
+      "path": "rpnh/collaboration/graph_build_recipe.v1.schema.json"
+    },
+    {
+      "schema_id": "rpnh/collaboration/graph_merge_analysis/v1",
+      "path": "rpnh/collaboration/graph_merge_analysis.v1.schema.json"
+    },
+    {
+      "schema_id": "rpnh/collaboration/graph_merge_analysis_command/v1",
+      "path": "rpnh/collaboration/graph_merge_analysis_command.v1.schema.json"
+    },
+    {
+      "schema_id": "rpnh/collaboration/graph_merge_author_command/v1",
+      "path": "rpnh/collaboration/graph_merge_author_command.v1.schema.json"
+    },
+    {
+      "schema_id": "rpnh/collaboration/graph_merge_resolution/v1",
+      "path": "rpnh/collaboration/graph_merge_resolution.v1.schema.json"
+    },
+    {
+      "schema_id": "rpnh/collaboration/graph_source_map/v1",
+      "path": "rpnh/collaboration/graph_source_map.v1.schema.json"
+    },
+    {
+      "schema_id": "rpnh/collaboration/open_region_author_command/v1",
+      "path": "rpnh/collaboration/open_region_author_command.v1.schema.json"
+    },
+    {
+      "schema_id": "rpnh/collaboration/open_region_boundary_adaptation/v1",
+      "path": "rpnh/collaboration/open_region_boundary_adaptation.v1.schema.json"
+    },
+    {
+      "schema_id": "rpnh/collaboration/open_region_boundary_inventory/v1",
+      "path": "rpnh/collaboration/open_region_boundary_inventory.v1.schema.json"
+    },
+    {
+      "schema_id": "rpnh/collaboration/open_region_closure_author_command/v1",
+      "path": "rpnh/collaboration/open_region_closure_author_command.v1.schema.json"
+    },
+    {
+      "schema_id": "rpnh/collaboration/open_region_contract/v1",
+      "path": "rpnh/collaboration/open_region_contract.v1.schema.json"
+    },
+    {
+      "schema_id": "rpnh/collaboration/open_region_definition/v1",
+      "path": "rpnh/collaboration/open_region_definition.v1.schema.json"
+    },
+    {
+      "schema_id": "rpnh/collaboration/open_region_derived_author_command/v1",
+      "path": "rpnh/collaboration/open_region_derived_author_command.v1.schema.json"
+    },
+    {
+      "schema_id": "rpnh/collaboration/open_region_element_map/v1",
+      "path": "rpnh/collaboration/open_region_element_map.v1.schema.json"
+    },
+    {
+      "schema_id": "rpnh/collaboration/open_region_extraction_provenance/v1",
+      "path": "rpnh/collaboration/open_region_extraction_provenance.v1.schema.json"
+    },
+    {
+      "schema_id": "rpnh/collaboration/open_region_historical_origins/v1",
+      "path": "rpnh/collaboration/open_region_historical_origins.v1.schema.json"
+    },
+    {
+      "schema_id": "rpnh/collaboration/open_region_host_requirements/v1",
+      "path": "rpnh/collaboration/open_region_host_requirements.v1.schema.json"
+    },
+    {
+      "schema_id": "rpnh/collaboration/open_region_origin_map/v1",
+      "path": "rpnh/collaboration/open_region_origin_map.v1.schema.json"
+    },
+    {
+      "schema_id": "rpnh/collaboration/plain_author_transform_command/v1",
+      "path": "rpnh/collaboration/plain_author_transform_command.v1.schema.json"
+    },
+    {
+      "schema_id": "rpnh/collaboration/plain_author_transform_map/v1",
+      "path": "rpnh/collaboration/plain_author_transform_map.v1.schema.json"
+    },
+    {
+      "schema_id": "rpnh/collaboration/plain_merge_analysis/v1",
+      "path": "rpnh/collaboration/plain_merge_analysis.v1.schema.json"
+    },
+    {
+      "schema_id": "rpnh/collaboration/plain_merge_analysis_command/v1",
+      "path": "rpnh/collaboration/plain_merge_analysis_command.v1.schema.json"
+    },
+    {
+      "schema_id": "rpnh/collaboration/plain_merge_author_command/v1",
+      "path": "rpnh/collaboration/plain_merge_author_command.v1.schema.json"
+    },
+    {
+      "schema_id": "rpnh/collaboration/plain_merge_resolution/v1",
+      "path": "rpnh/collaboration/plain_merge_resolution.v1.schema.json"
+    },
+    {
+      "schema_id": "rpnh/collaboration/plain_selected_change/v1",
+      "path": "rpnh/collaboration/plain_selected_change.v1.schema.json"
+    },
+    {
+      "schema_id": "rpnh/collaboration/plain_transplant_analysis/v1",
+      "path": "rpnh/collaboration/plain_transplant_analysis.v1.schema.json"
+    },
+    {
+      "schema_id": "rpnh/collaboration/plain_transplant_analysis_command/v1",
+      "path": "rpnh/collaboration/plain_transplant_analysis_command.v1.schema.json"
+    },
+    {
+      "schema_id": "rpnh/collaboration/plain_transplant_author_command/v1",
+      "path": "rpnh/collaboration/plain_transplant_author_command.v1.schema.json"
+    },
+    {
+      "schema_id": "rpnh/collaboration/plain_transplant_derived_author_command/v1",
+      "path": "rpnh/collaboration/plain_transplant_derived_author_command.v1.schema.json"
+    },
+    {
+      "schema_id": "rpnh/collaboration/plain_transplant_historical_origins/v1",
+      "path": "rpnh/collaboration/plain_transplant_historical_origins.v1.schema.json"
+    },
+    {
+      "schema_id": "rpnh/collaboration/plain_transplant_resolution/v1",
+      "path": "rpnh/collaboration/plain_transplant_resolution.v1.schema.json"
+    },
+    {
+      "schema_id": "rpnh/collaboration/prospective_member_intent/v1",
+      "path": "rpnh/collaboration/prospective_member_intent.v1.schema.json"
+    },
+    {
       "schema_id": "rpnh/collaboration/source_resource_ref/v1",
       "path": "rpnh/collaboration/source_resource_ref.v1.schema.json"
     },
@@ -669,8 +1065,44 @@
       "path": "rpnh/collaboration/source_version_ref.v1.schema.json"
     },
     {
+      "schema_id": "rpnh/environment_check/v1",
+      "path": "rpnh/environment_check.v1.schema.json"
+    },
+    {
+      "schema_id": "rpnh/environment_preparation_evidence/v1",
+      "path": "rpnh/environment_preparation_evidence.v1.schema.json"
+    },
+    {
+      "schema_id": "rpnh/environment_preparation_plan/v1",
+      "path": "rpnh/environment_preparation_plan.v1.schema.json"
+    },
+    {
+      "schema_id": "rpnh/environment_preparation_receipt/v1",
+      "path": "rpnh/environment_preparation_receipt.v1.schema.json"
+    },
+    {
+      "schema_id": "rpnh/environment_requirements/v1",
+      "path": "rpnh/environment_requirements.v1.schema.json"
+    },
+    {
+      "schema_id": "rpnh/environment_resolution_lock/v1",
+      "path": "rpnh/environment_resolution_lock.v1.schema.json"
+    },
+    {
+      "schema_id": "rpnh/environment_selection/v1",
+      "path": "rpnh/environment_selection.v1.schema.json"
+    },
+    {
       "schema_id": "rpnh/executable_net/v1",
       "path": "rpnh/executable_net.v1.schema.json"
+    },
+    {
+      "schema_id": "rpnh/installed_public_material_contract/v1",
+      "path": "rpnh/installed_public_material_contract.v1.schema.json"
+    },
+    {
+      "schema_id": "rpnh/local_environment_binding/v1",
+      "path": "rpnh/local_environment_binding.v1.schema.json"
     },
     {
       "schema_id": "rpnh/module_declaration/v1",
@@ -681,12 +1113,80 @@
       "path": "rpnh/owner_control.v1.schema.json"
     },
     {
+      "schema_id": "rpnh/package_preview/v2",
+      "path": "rpnh/package_preview.v2.schema.json"
+    },
+    {
+      "schema_id": "rpnh/package_resolution_lock/v2",
+      "path": "rpnh/package_resolution_lock.v2.schema.json"
+    },
+    {
+      "schema_id": "rpnh/package_target/v1",
+      "path": "rpnh/package_target.v1.schema.json"
+    },
+    {
+      "schema_id": "rpnh/parent_child_request/v1",
+      "path": "rpnh/parent_child_request.v1.schema.json"
+    },
+    {
+      "schema_id": "rpnh/parent_origin_capability/v1",
+      "path": "rpnh/parent_origin_capability.v1.schema.json"
+    },
+    {
+      "schema_id": "rpnh/public_execution_policy/v1",
+      "path": "rpnh/public_execution_policy.v1.schema.json"
+    },
+    {
+      "schema_id": "rpnh/public_implementation_observation/v1",
+      "path": "rpnh/public_implementation_observation.v1.schema.json"
+    },
+    {
+      "schema_id": "rpnh/public_material_selection/v1",
+      "path": "rpnh/public_material_selection.v1.schema.json"
+    },
+    {
+      "schema_id": "rpnh/registered_public_material_inventory/v1",
+      "path": "rpnh/registered_public_material_inventory.v1.schema.json"
+    },
+    {
+      "schema_id": "rpnh/registry_index_query/v1",
+      "path": "rpnh/registry_index_query.v1.schema.json"
+    },
+    {
+      "schema_id": "rpnh/registry_read_session_request/v1",
+      "path": "rpnh/registry_read_session_request.v1.schema.json"
+    },
+    {
+      "schema_id": "rpnh/registry_source_cut/v1",
+      "path": "rpnh/registry_source_cut.v1.schema.json"
+    },
+    {
       "schema_id": "rpnh/resource_access_contract/v1",
       "path": "rpnh/resource_access_contract.v1.schema.json"
     },
     {
+      "schema_id": "rpnh/share_package/v2",
+      "path": "rpnh/share_package.v2.schema.json"
+    },
+    {
       "schema_id": "rpnh/typed_call/v1",
       "path": "rpnh/typed_call.v1.schema.json"
+    },
+    {
+      "schema_id": "runtime/external_provider_adapter_config/v2",
+      "path": "runtime/external_provider_adapter_config.v2.schema.json"
+    },
+    {
+      "schema_id": "runtime/external_provider_adapter_config/v3",
+      "path": "runtime/external_provider_adapter_config.v3.schema.json"
+    },
+    {
+      "schema_id": "runtime/llm_execution_selection/v1",
+      "path": "runtime/llm_execution_selection.v1.schema.json"
+    },
+    {
+      "schema_id": "runtime/llm_execution_selection/v2",
+      "path": "runtime/llm_execution_selection.v2.schema.json"
     },
     {
       "schema_id": "runtime/llm_request_envelope/v1",
@@ -695,6 +1195,26 @@
     {
       "schema_id": "runtime/llm_response_envelope/v1",
       "path": "runtime/llm_response_envelope.v1.schema.json"
+    },
+    {
+      "schema_id": "runtime/local_process_adapter_config/v1",
+      "path": "runtime/local_process_adapter_config.v1.schema.json"
+    },
+    {
+      "schema_id": "runtime/local_process_adapter_config/v2",
+      "path": "runtime/local_process_adapter_config.v2.schema.json"
+    },
+    {
+      "schema_id": "runtime/provider_model_catalog/v2",
+      "path": "runtime/provider_model_catalog.v2.schema.json"
+    },
+    {
+      "schema_id": "runtime/provider_model_catalog/v3",
+      "path": "runtime/provider_model_catalog.v3.schema.json"
+    },
+    {
+      "schema_id": "runtime/provider_profiles/v3",
+      "path": "runtime/provider_profiles.v3.schema.json"
     }
   ]
 }

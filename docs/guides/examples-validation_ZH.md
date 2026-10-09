@@ -6,14 +6,17 @@ metadata:
   audience: user-and-maintainer
   language: zh-CN
   counterpart: examples-validation.md
-  revision: "2026-09-29.3"
-  status: dated-focused-and-live-evidence
-  basis: "cumulative dated evidence; current main compatibility recorded separately"
+  revision: "2026-10-09.1"
+  status: historical-focused-and-live-record
+  basis: "dated historical evidence; not certification of later source revisions"
 ---
 
 [English](examples-validation.md) | [中文](examples-validation_ZH.md)
 
 # 用户案例验证记录
+
+下文全部 PASS 与计数均属于原始历史窗口，不是组合产品的新验证。复现命令需要
+相应源码与已安装宿主依赖；本次文档改写没有执行示例或调用模型。
 
 这是一份累计、带日期的验证记录。最早的案例基线是 `main@6c675cb`，后续章节分别标明
 2026-09-26 或 2026-09-28 的证据，不是当前完整套件认证。验证环境为 Linux、Python 3.13，
@@ -55,7 +58,7 @@ replacement run 均保存在仓库外。首个 OpenCode run 的成功响应计�
 行为；当前 main 已明确改变该边界：重开 canonical MainSession 只做观察，必须由用户显式
 执行前端 resume 命令后，才提交 terminal evidence。
 
-本记录是候选版本的 focused 证据，不是完整发布套件。宿主路径 PASS 表示 transport、
+本记录是历史版本的 focused 证据，不是完整发布套件。宿主路径 PASS 表示 transport、
 Registry 结算和前端投影完成，并不把 OpenCode 的模型内容警告改写为精确遵循提示。
 生成的 Registry、原始 adapter audit、凭据和私有路线细节均未提交。
 
@@ -137,9 +140,9 @@ footer。本轮文档截图没有产生新的 provider／模型调用。图片�
 execution selection，并由主 agent 自行设计 workflow；两个包都不嵌入 provider/model 或
 历史图。
 
-| 真实 workflow | 当前终态证据 | 独立业务检查 | PetriNet |
+| 真实 workflow | 历史终态证据 | 独立业务检查 | PetriNet |
 |---|---|---|---|
-| [JB steering packet](../../examples/jb_steering_packet/README_ZH.md) | 当前 Registry authority 引用已登记 terminal result | PLOS 官方来源；确定性基线、生存与 778 人参考计算 | 7 个 transition、17 个 place、49 条 edge |
+| [JB steering packet](../../examples/jb_steering_packet/README_ZH.md) | 当时观察到的 Registry authority 引用已登记 terminal result | PLOS 官方来源；确定性基线、生存与 778 人参考计算 | 7 个 transition、17 个 place、49 条 edge |
 | [3-DOF 动力下降](../../examples/three_dof_powered_descent/README_ZH.md) | 2026-09-29 观察的另一条后续 Registry，其当前 authority 引用已登记 terminal result | stdlib verifier 按动力学和全部声明限制接受观察轨迹 | 5 个 transition、15 个 place、52 条 edge |
 
 两个图的默认投影与 `--show-resources` 相同，`--resources-only` 为空，因为都没有声明
@@ -150,6 +153,8 @@ JB 准备脚本把来源文件下载到用户自有目录，不提交参与者�
 verifier，不发布生成轨迹或 solver。原始 Registry、身份、transcript、凭据和私有路线细节
 均留在仓库外。捕获这两张图片和验证离线参考程序没有产生新的 provider／模型调用。
 
-当前命令适用于当前 `main`。用户自己的 route 和新生成的业务结果仍必须由自己的 Registry
+请在兼容的源码版本和宿主安装环境使用这些命令。用户自己的 route 和新生成的业务结果仍必须由自己的 Registry
 和语义验收证明；公开截图只是观察辅助，不是 replay fixture。
 3-DOF 案例来自另一条后续 Registry，不会改写或取代 2026-09-28 的带日期归档记录。
+
+不同日期的 native 与 benchmark 窗口见[精选结果](../results/README_ZH.md)，其评分与限制不加到上文计数中。

@@ -1,0 +1,135 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "rpnh/public_implementation_observation/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "rpnh/public_implementation_observation/v1"
+    },
+    "contract_id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_.:-]{0,127}(?![\\s\\S])"
+    },
+    "contract_revision": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_.:-]{0,127}(?![\\s\\S])"
+    },
+    "installed_contract_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}(?![\\s\\S])"
+    },
+    "unit_id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_.:-]{0,127}(?![\\s\\S])"
+    },
+    "distribution": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "version": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "name",
+        "version"
+      ]
+    },
+    "installation_id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_.:-]{0,127}(?![\\s\\S])"
+    },
+    "runtime": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "implementation": {
+          "type": "string",
+          "minLength": 1
+        },
+        "version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "abi_tag": {
+          "type": "string",
+          "minLength": 1
+        },
+        "platform_tag": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "implementation",
+        "version",
+        "abi_tag",
+        "platform_tag"
+      ]
+    },
+    "mode": {
+      "enum": [
+        "inline_public_bytes",
+        "installed_digest_identity"
+      ]
+    },
+    "assets": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "asset_id": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_.:-]{0,127}(?![\\s\\S])"
+          },
+          "size": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}(?![\\s\\S])"
+          },
+          "inline_node_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[a-z][a-z0-9_.:-]{0,127}(?![\\s\\S])"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "asset_id",
+          "size",
+          "sha256",
+          "inline_node_id"
+        ]
+      },
+      "minItems": 1,
+      "maxItems": 16384
+    }
+  },
+  "required": [
+    "schema_version",
+    "contract_id",
+    "contract_revision",
+    "installed_contract_sha256",
+    "unit_id",
+    "distribution",
+    "installation_id",
+    "runtime",
+    "mode",
+    "assets"
+  ]
+}

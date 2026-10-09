@@ -1,5 +1,0 @@
-Traceback (most recent call last):
-  File "/workspace/scratch/18c810e6dd59/rpnh-rsi-runtime-validation/source/../h2a_readback.py", line 41, in <module>
-    assert before_files == files(run_dir)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-AssertionError

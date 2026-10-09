@@ -48,6 +48,7 @@ class HostProfile:
     configuration_sources: Callable | None = None
     catalog: object | None = None
     before_dispatch: Callable | None = None
+    public_material_contract: object | None = None
     def __post_init__(self):
         if not self.profile_id or not callable(self.registration_factory) or not callable(self.probe_policy_factory):
             raise TypeError("HOST profile requires explicit trusted factories")
@@ -153,7 +154,35 @@ def native_profile(local):
     return HostProfile(NATIVE_PROFILE, registration, policy)
 
 
-def load_host_profile(profile_id, local, *, expected_digest=None):
+def load_host_profile(profile_id, local, *, expected_digest=None, public_selection=None):
+    if public_selection is not None:
+        from dataclasses import replace
+        from ..public_module_materials import PublicHostSelection, read_installed_contract
+        from ..registry.parent_child import ParentChildUnsupported
+        if type(public_selection) is not PublicHostSelection or public_selection.profile_id != profile_id or local is not None:
+            raise TypeError("public selection must be path-less and cannot carry legacy local configuration")
+        matches = [ep for ep in metadata.entry_points(group=PROFILE_GROUP) if ep.name == profile_id]
+        if len(matches) != 1:
+            raise ParentChildUnsupported("PUBLIC_MATERIAL_PROFILE_AMBIGUOUS_OR_MISSING")
+        document = json.loads(public_selection.payload_bytes)
+        pairs = {('schema',sid) for sid in document['required_schemas']}
+        pairs.add(('tool',document['terminal']['key']))
+        for component in document['components']:
+            pairs.add(('component',component['key']))
+            for operation in component['operations']:
+                pairs.add(('executor',operation['executor']))
+                pairs.update(('tool',key) for key in operation['tools'])
+        installed = read_installed_contract(matches[0], 'module', pairs)
+        selected = replace(public_selection, contract_bytes=installed.contract_bytes)
+        profile = matches[0].load()(selected)
+        if (type(profile) is not HostProfile or profile.profile_id != profile_id
+                or profile.public_material_contract != selected.contract_bytes
+                or any(getattr(profile, field) is not None for field in ('execution_services_factory', 'host_execution_bindings', 'configuration_sources', 'before_dispatch'))):
+            raise ParentChildUnsupported("PUBLIC_MATERIAL_UNDECLARED_HOST_CALLBACK")
+        if read_installed_contract(matches[0], 'module', pairs) != installed:
+            raise ParentChildUnsupported('PUBLIC_MATERIAL_CHANGED_DURING_FACTORY')
+        return replace(profile, public_material_contract=installed)
+
     before = profile_fingerprints((profile_id,)).get(profile_id)
     if before is None:
         raise EnvironmentContractError("HOST_PROFILE_UNAVAILABLE", "selected installed HOST profile unavailable")

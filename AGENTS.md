@@ -1,38 +1,28 @@
-# Repository working agreement
+# Public contribution policy
 
-## Authoritative project
+This repository contains the reusable RPNH product, its installation and usage
+documentation, runnable examples, licenses and reviewed public result summaries.
+Use [CONTRIBUTING.md](CONTRIBUTING.md) for contribution guidance.
 
-This repository, `Deng-0119/RPNH`, and its `main` branch are the authoritative
-RPNH product line. By default, perform future inspection, implementation,
-testing, documentation, and release work here. Verify the live `origin/main`
-before work that depends on the latest state because this project is actively
-updated.
+Preserve the installed `rpnh` entry point, independent task/workflow Registries,
+user-owned provider and exact-model configuration, checkpoint recovery semantics,
+and read-only PetriNet views. Core execution and optional host adapters share
+Registry, workspace, permission and recovery authority.
 
-Do not use `Deng-0119/rpnh-harness`, its historical feature branches, or local
-worktrees derived from that repository as implementation or audit sources
-unless the user explicitly names them. If the current worktree is not this
-repository, stop and select the authoritative RPNH worktree before proceeding.
+Keep changes focused and preserve unrelated work. Select deterministic offline
+checks by the changed boundary. Real provider/model calls require explicit
+authorization and are not part of automatic tests. Keep English and Chinese
+documentation aligned, including counterpart metadata and local links.
 
-This repository contains the reusable RPNH harness. Keep it independent of
-paper-specific workflows, private experiments, credentials, provider account
-details, local absolute paths, and historical development-branch handoffs.
+Commit only reviewed public product content. Do not commit credentials, provider
+account details, private endpoints or profiles, Registry databases, raw experiment
+logs or transcripts, internal notes or backlogs, local absolute paths, run
+directories, caches, environments or build dependencies. Preserve required
+public example fixtures, schemas, licenses and packaged static assets.
 
-The product has one main line. Core Registry/PetriNet execution, the read-only
-net viewer, and optional host adapters must coexist without duplicating provider,
-workspace, permission, recovery, or Registry authority.
-
-The supported user entry is the installed `rpnh` command. Preserve the basic
-main session, independent task/workflow Registries, user-owned provider/exact-
-model configuration, interruption/checkpoint semantics, and resource-aware
-read-only PetriNet views.
-
-Keep English and Chinese user documentation aligned. Select tests by the changed
-boundary: run focused deterministic offline tests for a local repair, and run a
-broader or complete offline suite only when a release-wide change can actually
-affect those additional modules. Do not run unrelated tests merely because a
-change is about to be committed. Real provider calls always require separate
-explicit authorization and are never part of the automated test suite.
-
-Do not add GitHub Actions `push` triggers. Do not commit generated provider
-profiles, Registry databases, run directories, raw provider transcripts, build
-environments, package caches, or viewer build dependencies.
+Public results must identify the tested source, inputs, execution conditions and
+scorer. Retain failures, blocked and unrun scope and original score denominators.
+Distinguish source candidates from released binaries and historical validation
+from checks of the current revision. Review distributed bytes before publication;
+a manifest or reviewer statement alone does not establish safety or execution.
+Do not add automatic GitHub Actions push triggers.

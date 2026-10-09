@@ -25,6 +25,14 @@
 | 独立 child run 驱动的 RRSI 两轮 Policy 演化 | [RRSI v0.6 application](rrsi_v06/README_ZH.md) | 查看用户生成 child Registry 的命令；未归档截图 | 用户自有精确真实 profile |
 | 已保留业务 workflow benchmark 与宿主扩展 | [AutomationBench](automationbench/README_ZH.md) | 历史逐题成绩，以及 native/DSH acceptance 与冻结 cohort 工具 | 离线查看保留结果；新的实时运行需要已授权 profile |
 
+
+其他源码案例与验证工具：
+
+- [单 Registry 合成迭代](rsi_workflows/README_ZH.md)：确定性的 pure HOST 夹具；
+  原生传输验收是独立范围，不证明模型改进或完整迭代框架验收。
+- [示例证据约定](example_validation/README_ZH.md)：只读 manifest、文件与源码检查；
+  模板不代表已执行结果。
+
 每个可运行 workflow 都会创建真实 Registry，可用
 `rpnh net --run RUN_DIR --view --no-open` 打开。脚本替身经过相同协议与结算边界，但不代表
 模型推理能力。每张链接图片都来自对应类型的 run；公开副本移除了精确 checkpoint 身份和

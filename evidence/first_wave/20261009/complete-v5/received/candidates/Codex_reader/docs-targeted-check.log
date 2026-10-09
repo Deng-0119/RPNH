@@ -1,2 +1,0 @@
-PASS: 4 changed pages parsed, bilingual identity/revision pairs and new-page links checked.
-Full-site check/build not run: isolated code baseline omits existing site files; no installation.

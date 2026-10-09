@@ -15,9 +15,7 @@ Docker Session 和 Snapshot 的 complete／stop 夹具。每个夹具使用本�
 每点调用上限48、owner等待7200秒，未重跑或传回 grader 反馈。solver network=none；
 构建和独立评分使用 host 网络，镜像另有同版本下载适配，因此仍是 adapted development
 条件，官方 AgentRunner 未运行，不声称提速或 harness 优势。
-[真实结果与原始记录](../../evidence/first_wave/20261008/scb-real/README_ZH.md)保留7个失败的
-完整 grader 诊断、模型/工具轨迹与提交源码。原始失败及本地验收证据位于
-`../../evidence/first_wave/20261008/`；旧记录保留原源码身份，不重标为集成提交上的实测。
+[精选结果](../../docs/results/scb-prefix3-20261008/README_ZH.md)保留全部用例状态、评分分类、源码与执行条件。旧记录不重标为新集成版本的实测；第四、第五点未运行。
 
 默认范围是原始 **1 → 2 → 3 部分前缀**；固定任务有五个 checkpoint。这些公开题目
 已用于开发检查，不是保留评测集。源码 revision 和许可见 `sources.json`、
@@ -74,14 +72,13 @@ result。下一个 checkpoint 会核验输入摘要等于前一个 settled 输�
   环境调用原始 checkpoint 判分器。结果不回灌下一轮模型。PassPolicy 显式选择；
   判分基础设施失败时停止。没有运行额外的代码质量模型评审。
 
-官方 AgentRunner shim 仍被阻塞：其 UsageTracker 使用数值型默认值，而 RPNH
+本次开发接入未执行官方 AgentRunner：其 UsageTracker 使用数值型默认值，而 RPNH
 公共 task result 导出的是实际调用次数，没有规范化 token／费用摘要或逐调用 USD
-准入 hook。试验把未知 token／费用写成 null／unavailable，绝不冒充实测 0。原始
-runner 还在 finally 中快照，正式接入须防止未静止的快照成为有效判分证据。
+准入 hook。试验把未知 token／费用写成 null／unavailable，绝不冒充实测 0。
 
 本例实际使用的是 Registry 管理的 agent 执行与原生命令准入，以及上游拥有的
 工作区连续性；不声称原生 workspace revision 复用、同 Registry 恢复、拓扑修改或
-自动流程重构。将来的流程复用展示必须另立条件和结果。没有改动 core。
+自动流程重构。本历史接入没有改动 core。
 
 ## 现在可运行的离线检查
 
@@ -109,7 +106,7 @@ python -m examples.slopcodebench.preflight --runner-source /path/to/slop-code-be
 
 下面是执行说明，**不是已执行证据**。先准备 Python 3.12+、固定上游文档要求的
 依赖／Docker 基础镜像、已有的准确 RPNH 模型 profile，以及可用的 POSIX owner
-socket。已获授权的常规环境准备和离线验收可以继续，无需逐步询问。真实 provider
+socket。真实 provider
 调用、新增付费服务、权限扩张，以及适用本地策略限制的其他操作，须取得相应授权；
 这不代表自动允许来源不明的软件或安全敏感配置变更。
 必须使用 RPNH 源码基线 `ae09445fe1d9b973502bc5d2c961976c1d2c0163` 并应用本例。
@@ -159,19 +156,6 @@ CLI/Python 参数。run 只接受下一个 checkpoint 的当前 prompt；真实�
 failed 指 checkpoint 尝试失败，不代表没有副作用；可能仍有部分源码改动，不能
 把它当作从未执行而重放。
 
-## 发布与设计反馈
+## 结果发布
 
-原始评分、额外检查、mock 和未运行阶段必须分开。contracts.py 的 raw-workspace
-函数只是有界观测辅助；pilot 使用原始 Snapshot 选择。ledger 不提供 sandbox，
-也不授权 benchmark 继续。
-
-发布遵循 `../example_validation/` 的 rpnh/example-evidence/v1；lineage 作为带
-hash 的 artifact。真实 Registry 引用原样复制，不能由 hash 构造。profile、凭证、
-数据库和未审查输出留在本地。用户要求原始失败内容供网页端分析：将审查后不含秘密的
-日志、保留的请求／响应材料和判分明细发布到 `evidence/first_wave/`，安全时保留原字节。
-如确有凭据，只替换必要字段、逐项注明变更，完整原件继续留在本地。请求 recipe、
-adapter 返回与未保留的 vendor wire 应明确区分，不能仅凭分数归结为单一原因。
-
-当前设计反馈：现有 managed-plugin API 可以完成正常命令接入，本路线不需要新增
-workspace seed/export core 功能。可移植的 settled-workspace 导出和公共用量／预算
-观测是另外的潜在易用性缺口，不是本例已证明的核心不变量错误。
+公开结果保留全部原始评分、失败与未运行范围，注明实际源码、上游 scorer 和适配条件。原始 provider/tool 文本、profile、凭证、Registry 数据库和未审查输出保留在私有区域；只公开经过审阅的结果投影。请求 recipe、adapter 返回与未保留的 vendor wire 分别记录，不能仅凭分数归结为单一原因。

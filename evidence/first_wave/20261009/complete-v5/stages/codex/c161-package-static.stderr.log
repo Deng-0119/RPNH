@@ -1,8 +1,0 @@
-Traceback (most recent call last):
-  File "<WORKSPACE>/task-complete-v5-20261009/stages/codex/package4/verify_package.py", line 44, in <module>
-    main()
-    ~~~~^^
-  File "<WORKSPACE>/task-complete-v5-20261009/stages/codex/package4/verify_package.py", line 37, in main
-    assert digest(check / row['path']) == row['sha256']
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-AssertionError

@@ -13,7 +13,10 @@ from typing import Mapping
 
 from cpn.rpnh.frontend_application import FrontendGateway, RegistryFrontendApplication
 from .opencode_http import OpenCodeHTTPServer
-from .opencode_protocol import OPENCODE_VERSION, OpenCodeProtocol
+from .opencode_protocol import (
+    DEFAULT_PROFILE, OPENCODE_VERSION, OpenCodeCompatibilityProfile,
+    OpenCodeProtocol, require_opencode_profile,
+)
 
 
 def isolated_environment(root: Path, inherited: Mapping[str, str]) -> dict[str, str]:
@@ -38,7 +41,9 @@ def isolated_environment(root: Path, inherited: Mapping[str, str]) -> dict[str, 
     return env
 
 
-def check_version(binary: str, env: Mapping[str, str], cwd: Path) -> None:
+def check_version(binary: str, env: Mapping[str, str], cwd: Path, *,
+                  profile: OpenCodeCompatibilityProfile = DEFAULT_PROFILE) -> None:
+    require_opencode_profile(profile)
     try:
         result = subprocess.run([binary, "--version"], env=dict(env), cwd=cwd,
                                 stdin=subprocess.DEVNULL, capture_output=True, text=True,
@@ -46,8 +51,8 @@ def check_version(binary: str, env: Mapping[str, str], cwd: Path) -> None:
     except subprocess.TimeoutExpired:
         raise RuntimeError("OpenCode version probe timed out") from None
     value = result.stdout.strip()
-    if result.returncode != 0 or not re.fullmatch(r"(?:opencode\s+)?" + re.escape(OPENCODE_VERSION), value):
-        raise RuntimeError(f"RPNH requires exactly OpenCode {OPENCODE_VERSION}; version probe was rejected")
+    if result.returncode != 0 or not re.fullmatch(r"(?:opencode[ \t]+)?" + re.escape(profile.version), value):
+        raise RuntimeError(f"RPNH requires exactly OpenCode {profile.version}; version probe was rejected")
 
 
 def run_opencode_frontend(root: Path, execution: Path, *, resume: bool = False) -> int:
@@ -61,13 +66,15 @@ def run_opencode_frontend(root: Path, execution: Path, *, resume: bool = False) 
         scratch = Path(name)
         env = isolated_environment(scratch, os.environ)
         display = scratch / "display"
-        check_version(binary, env, display)  # Fail before constructing any RPNH owner.
+        # Production never resolves a certification candidate from CLI or env.
+        profile = DEFAULT_PROFILE
+        check_version(binary, env, display, profile=profile)  # Before any owner.
         holder: list[OpenCodeProtocol] = []
         gateway = FrontendGateway(lambda: RegistryFrontendApplication(root, execution, resume=resume),
                                   on_change=lambda: holder[0].notify() if holder else None)
         server = None
         try:
-            protocol = OpenCodeProtocol(gateway, str(display))
+            protocol = OpenCodeProtocol(gateway, str(display), profile=profile)
             holder.append(protocol)
             server = OpenCodeHTTPServer(protocol)
             server.start()

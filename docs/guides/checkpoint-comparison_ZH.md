@@ -6,8 +6,8 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: checkpoint-comparison.md
-  revision: "2026-10-06.2"
-  status: initial-slice-browser-validation-pending
+  revision: "2026-10-09.1"
+  status: reference-with-historical-validation-limits
 ---
 
 [English](checkpoint-comparison.md) | [中文](checkpoint-comparison_ZH.md)
@@ -110,7 +110,7 @@ Registry 推进后可能需要重试同一个明确选择的 pair；重试不会
 未知版本、额外嵌套字段、相互矛盾的 coverage 被拒绝。所有文字和 JSON 用
 `textContent` 展示，不当作 HTML、脚本、网络图片、capability 或工具指令。
 
-## 验证与剩余门槛
+## 验证范围与历史限制
 
 定向检查：
 
@@ -135,7 +135,10 @@ python -m pytest -q tests/test_checkpoint_comparison.py \
 交互、视觉和无障碍，以及本地 socket 多检查点用例，需在支持它们的环境中验证。
 2026-10-06 云端检查中，原有两个多检查点测试在创建 `AF_UNIX` 时遇到
 `PermissionError`，尚未进入断言；受支持的云端浏览器无法打开标准本地 Viewer
-（`ERR_BLOCKED_BY_CLIENT`）。两项仍为 blocked；无 socket 读取和模拟生命周期
+（`ERR_BLOCKED_BY_CLIENT`）。两项在该历史窗口均为 blocked；无 socket 读取和模拟生命周期
 测试通过不能替代它们。
 所有比较测试都不需要真实模型 API。本片不新增团队执行、跨来源比较、评分排名、
 Registry schema 或可变 Viewer 端点。
+
+本指南保留原 2026-10-06 验证限制，不认证后续源码版本、真实浏览器缓存准入
+或组合产品。不同源码窗口见[发布验证边界](release-validation_ZH.md)。

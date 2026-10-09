@@ -27,6 +27,15 @@ Choose an example by the behavior you want to see:
 | Two-round RRSI Policy evolution with independent child runs | [RRSI v0.6 application](rrsi_v06/README.md) | Viewer command for user-generated child Registries; no archived screenshot | User-owned exact live profile |
 | Retained business-workflow benchmark and host extensions | [AutomationBench](automationbench/README.md) | Historical task scores plus native/DSH acceptance and frozen-cohort tooling | Read retained results offline; new live runs require an authorized profile |
 
+
+Additional source examples and validation utilities:
+
+- [Single-Registry synthetic iteration](rsi_workflows/README.md): deterministic
+  pure HOST fixtures; native transport acceptance is a separate scope, and no
+  model improvement or full iteration-framework acceptance is established.
+- [Example evidence contract](example_validation/README.md): read-only manifest,
+  artifact and source checks; its template is not an executed result.
+
 Each runnable workflow creates a real Registry that can be opened with
 `rpnh net --run RUN_DIR --view --no-open`. Scripted fixtures exercise the same
 protocol and settlement boundaries but are not claims about model reasoning.

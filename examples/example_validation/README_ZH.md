@@ -2,7 +2,7 @@
 
 [English](README.md)
 
-这是首批并行示例的小型只读发布封装，沿用
+这是示例验证记录的小型只读发布封装，沿用
 [AutomationBench 证据规则](../automationbench/docs/EVIDENCE_ZH.md)中的精确字节哈希、
 私有原始证据与分发副本区分、追加式历史以及独立评分边界。它不替代既有示例的
 schema，不启动任务、调用模型、写 Registry、应用补丁或评分。Registry 和原始
@@ -17,7 +17,7 @@ schema，不启动任务、调用模型、写 Registry、应用补丁或评分�
   `rpnh/example-merge-summary/v1` JSON。
 - `tests/test_validation.py`：仅含离线合成测试。
 
-各工作线在白名单公开文件旁回传一个**新的** `result-manifest.json`，使用唯一记录
+每次验证在白名单公开文件旁生成一个**新的** `result-manifest.json`，使用唯一记录
 ID。逻辑 condition 必须固定任务范围、检查点揭示与反馈规则、seed/reset、允许的
 操作面、评分器和预算语义。按精确文件字节计算哈希，不对 JSON 重排后再计算。
 任务指令和输入清单也必须有精确哈希，输入清单继续列出不可变输入文件的哈希。
@@ -27,14 +27,12 @@ ID、参数和预算；不能拿私有启动配置的哈希冒充公开配置。
 
 `source` 记录共同 RPNH 基线和实际受测提交；未提交 overlay 的 `tested_commit`
 为 `null`，由逐文件最终哈希识别，不虚构提交。列出所有自有范围内的变更文件，
-记录基线哈希（仅新增文件为 `null`）、最终哈希和相对路径。首版不支持删除。
+记录基线哈希（仅新增文件为 `null`）、最终哈希和相对路径。本版约定不支持删除。
 先固定不可变源快照再计算哈希。辅助程序只核验列出的文件，集成者还需检查完整
 diff/清单、拒绝漏报变更，并保留无关文件。
 
-本轮独占范围：云端 `examples/slopcodebench/`，用户本地 `examples/erp_bench/`，
-集成者 `examples/example_validation/`。WNTR/Chama 备用方案启用后须另分配路径。
-不得另建别名、编辑另一工作线、修改核心或全局目录，也不得覆盖脏工作树。
-合并前在新 checkout 核对相同的约定基线。
+为每个验证包明确指定源码路径白名单。在约定的干净基线上检查完整 diff，
+保留无关文件。
 
 ## 各阶段的含义
 
@@ -87,17 +85,18 @@ Registry。领域 lineage/reuse 仍放在示例自己的证据文件中；区分
 
 ## 检查、审查与合并
 
-在仓库根目录，提供回传包和干净基线：
+在仓库根目录提供验证包、最终源码快照和干净基线。`EXPECTED_BASE` 是该验证包
+约定的精确基线提交；下面的白名单示例选择 ERP 文件：
 
 ```sh
 python examples/example_validation/validate.py RETURN/result-manifest.json \
   --artifacts-root RETURN --source-root FINAL --base-root BASE \
-  --expected-base ae09445fe1d9b973502bc5d2c961976c1d2c0163 \
+  --expected-base "$EXPECTED_BASE" \
   --allow-prefix examples/erp_bench/ > merge-summary.json
 python -m unittest discover -s examples/example_validation/tests -v
 ```
 
-云端工作线使用 `examples/slopcodebench/`。省略的核验选项会明确标为未验证。
+验证该示例时使用 `examples/slopcodebench/`。省略的核验选项会明确标为未验证。
 模板可通过结构检查，但所有运行阶段仍未执行。`merge_review_ready` 仅表示已提供
 要求的基线/路径/哈希检查、声明的公开文件审查和离线通过结果，**不等于合并批准、
 真实运行验收或发布授权**。还需独立核对实际 Git 基线及完整 diff。privacy 设为

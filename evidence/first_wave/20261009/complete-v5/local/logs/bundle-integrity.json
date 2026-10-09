@@ -1,9 +1,0 @@
-{
-  "record_kind": "preserved_verifier_evidence_index_not_a_new_execution",
-  "exit_code": 0,
-  "status": "PASS_STATIC_BUNDLE_ONLY",
-  "stdout": "logs/bundle-integrity.stdout.log",
-  "stderr": "logs/bundle-integrity.stderr.log",
-  "original_exitcode_file": "logs/bundle-integrity.exitcode",
-  "reason": "Complete the final manifest reference using retained original command evidence; no verifier or tests rerun"
-}

@@ -12,6 +12,7 @@ from ._common import AdapterConfigError
 from .config import (
     LLMExecutionConfigError,
     LLMExecutionSelection,
+    RegisteredLLMExecutionSelection,
     load_llm_execution_selection,
 )
 
@@ -19,16 +20,41 @@ from .config import (
 class BoundLLMInputPort:
     """Neutral port paired with the exact non-secret policy that built it."""
 
-    __slots__ = ("_port", "_policy_bytes")
+    __slots__ = ("_port", "_policy_bytes", "_public_identity_bytes")
 
     def __init__(self, port: LLMInputPort, policy: Mapping[str, object]) -> None:
         if not isinstance(policy, Mapping):
             raise TypeError("bound input port requires an execution policy")
-        self._port = port
+        from cpn.rpnh.public_material_contracts import POLICY, canonical, validate_policy
+        if policy.get('schema_version') == POLICY:
+            from .external_provider import ExternalProviderInputPort
+            if type(port) is not ExternalProviderInputPort:
+                raise TypeError('public binding requires original provider implementation')
+            policy = validate_policy(dict(policy))
+            identity = port.public_identity
+            if canonical(identity['policy']) != canonical(policy):
+                raise ValueError('public wrapper/provider policy differs')
+            self._public_identity_bytes = canonical(identity)
         self._policy_bytes = json.dumps(
             dict(policy), ensure_ascii=True, allow_nan=False,
             sort_keys=True, separators=(",", ":"),
         ).encode("utf-8")
+        self._port = port
+
+    def __setattr__(self, name, value):
+        if hasattr(self, '_port') and hasattr(self, '_public_identity_bytes'):
+            raise AttributeError('registered bound input port is immutable')
+        object.__setattr__(self, name, value)
+
+    @property
+    def public_identity(self):
+        from cpn.rpnh.public_material_contracts import canonical, decode
+        if not hasattr(self, '_public_identity_bytes'):
+            raise ValueError('legacy wrapper has no public identity')
+        identity = self._port.public_identity
+        if canonical(identity) != self._public_identity_bytes:
+            raise ValueError('registered wrapper/provider association differs')
+        return decode(self._public_identity_bytes, canonical_required=True)
 
     @property
     def execution_policy(self) -> dict[str, object]:
@@ -74,8 +100,16 @@ def _private_kind(path: Path) -> str:
 
 
 def build_llm_input_port(
-        selection: LLMExecutionSelection, *, destination_run_root: Path,
+        selection: LLMExecutionSelection | RegisteredLLMExecutionSelection, *, destination_run_root: Path,
+        resolver=None, renderer=None,
 ) -> LLMInputPort:
+    if type(selection) is RegisteredLLMExecutionSelection:
+        from .external_provider import ExternalProviderInputPort
+        port = ExternalProviderInputPort.from_public(selection,
+            destination_run_root=destination_run_root, resolver=resolver, renderer=renderer)
+        return BoundLLMInputPort(port, selection.as_registry_policy())
+    if resolver is not None or renderer is not None:
+        raise TypeError('opaque capabilities require registered public selection')
     if not isinstance(selection, LLMExecutionSelection):
         raise TypeError("adapter factory requires LLMExecutionSelection")
     if not isinstance(destination_run_root, Path):

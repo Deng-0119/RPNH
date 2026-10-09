@@ -32,6 +32,11 @@ class RegistryRegistrationGateway:
         self._bootstrap_ref = bootstrap_ref
         self._refs: dict[tuple[str, str], ResourceVersionRef] = {}
 
+    def publish_public_material_inventory(self, draft, *, command_id):
+        """Publish exact installer-declared public materials, never a grant."""
+        from .public_materials import publish_inventory
+        return publish_inventory(self, draft, command_id=command_id)
+
     def publish_source_set(self, *, members, command_id, expected=None, expected_sequence=0):
         """Publish an opt-in expected source manifest; never grant source access."""
         from ..collaboration.source_sets import _publish_source_set

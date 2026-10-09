@@ -25,7 +25,7 @@ READINESS_SCHEMA = "registry_v1/" + READINESS_TYPE
 MANIFEST_FAMILY = "runtime_binding_manifest/"
 
 
-def freeze_candidate_document(document):
+def copy_candidate_document(document):
     """Encode a detached standard-JSON object, without default=str coercions.
 
     Fixed API fields must first explicitly serialize their typed refs/tuples.
@@ -62,10 +62,12 @@ def freeze_candidate_document(document):
                 return [checked_copy(child) for child in value]
         finally:
             active.remove(identity)
-    detached = checked_copy(document)
-    # Every encoded value belongs to our checked builtin tree. A concurrent
-    # mutation of the caller's tree cannot insert an unchecked value between
-    # validation and encoding. This is not an atomic snapshot of the caller.
+    return checked_copy(document)
+
+
+def freeze_candidate_document(document):
+    """Original serializer over the shared exact-builtin copying boundary."""
+    detached = copy_candidate_document(document)
     return json.dumps(detached, ensure_ascii=True, sort_keys=True,
         separators=(",", ":"), allow_nan=False)
 

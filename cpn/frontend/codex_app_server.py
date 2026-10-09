@@ -1,4 +1,4 @@
-"""Codex CLI 0.155.0 TUI compatibility surface backed only by RPNH.
+"""Exact-profile Codex TUI compatibility surface backed only by RPNH.
 
 The stock Codex TUI is a remote JSON-RPC client.  This module implements the
 small current protocol slice required by that client over WebSocket frames on
@@ -16,7 +16,8 @@ import shutil
 import subprocess
 import tempfile
 import time
-from typing import Any, Mapping
+from types import MappingProxyType
+from typing import Any, Callable, Mapping
 from uuid import NAMESPACE_URL, uuid5
 
 from cpn.llm_adapters import load_llm_execution_selection
@@ -30,11 +31,16 @@ from cpn.rpnh.main_session import (
 from cpn.rpnh.provider_catalog import provider_manifest_path
 from cpn.rpnh.session_access import (
     MainSessionOwnerLease,
+    MainSessionSourceBinding,
     inspect_main_session_root,
     stable_frontend_session_id,
 )
 from cpn.rpnh.task_control import TaskControl, TaskHandle
 from cpn.rpnh.unix_transport import unix_socket_address
+from cpn.frontend.codex_history import (
+    HistoryCursor, INITIAL_VIEW, codex_thread_id, entry_anchor, page_limit, public_id,
+    object_item_anchor, object_item_cursor_id,
+)
 from cpn.rpnh.user_config import (
     ExecutionProfile,
     config_path,
@@ -44,14 +50,51 @@ from cpn.rpnh.user_config import (
 )
 
 
-CODEX_FRONTEND_VERSION = "0.155.0"
-CODEX_CLI_VERSION_TEXT = f"codex-cli {CODEX_FRONTEND_VERSION}"
 CODEX_DISABLED_FEATURES = ("goals", "personality", "plugins")
 CODEX_CONFIG_OVERRIDES = ("check_for_update_on_startup=false",)
 
 
 class CodexCompatibilityError(RuntimeError):
     """The pinned frontend or protocol contract cannot be satisfied."""
+
+
+@dataclass(frozen=True, slots=True)
+class _CodexCompatibilityProfile:
+    name: str
+    version: str
+    reported_cli_version: str
+    object_item_cursor: bool
+    explicit_history_defaults: bool
+    status: str
+
+
+def _load_compatibility_profiles():
+    manifest = json.loads(Path(__file__).with_name(
+        "codex_compatibility.v1.json").read_text(encoding="utf-8"))
+    table = manifest["compatibility_profiles"]
+    profiles = MappingProxyType({
+        name: _CodexCompatibilityProfile(name=name, **fields)
+        for name, fields in table["profiles"].items()
+    })
+    default = profiles[table["default"]]
+    if (default.version != manifest["frontend"]["version"]
+            or default.reported_cli_version != manifest["frontend"]["reported_cli_version"]):
+        raise CodexCompatibilityError("Codex default profile and frontend pin differ")
+    return profiles, default
+
+
+_CODEX_PROFILES, _DEFAULT_CODEX_PROFILE = _load_compatibility_profiles()
+# Preserve the published default and existing caller constants.
+CODEX_FRONTEND_VERSION = _DEFAULT_CODEX_PROFILE.version
+CODEX_CLI_VERSION_TEXT = _DEFAULT_CODEX_PROFILE.reported_cli_version
+
+
+def _compatibility_profile(name: str | None = None) -> _CodexCompatibilityProfile:
+    if name is None:
+        return _DEFAULT_CODEX_PROFILE
+    if not isinstance(name, str) or name not in _CODEX_PROFILES:
+        raise CodexCompatibilityError("unknown Codex compatibility profile")
+    return _CODEX_PROFILES[name]
 
 
 @dataclass(slots=True)
@@ -81,6 +124,7 @@ class ThreadState:
     # Preserve old UI sidecar metadata on resume; never advertise it as input.
     attachments: list[dict[str, Any]] = field(default_factory=list)
     active: ActiveTurn | None = None
+    history_binding: MainSessionSourceBinding | None = None
 
 
 def _now_seconds() -> int:
@@ -147,7 +191,16 @@ class CodexAppServer:
     def __init__(
             self, root: Path, execution_config_path: Path, *,
             profile_name: str | None = None,
+            compatibility_profile: str | None = None,
+            history_object_max_bytes: int | None = None,
+            history_response_max_bytes: int | None = None,
     ) -> None:
+        self._compatibility_profile = _compatibility_profile(compatibility_profile)
+        for budget in (history_object_max_bytes, history_response_max_bytes):
+            if budget is not None and (type(budget) is not int or budget < 0):
+                raise ValueError("history byte budget must be a nonnegative integer")
+        self.history_object_max_bytes = history_object_max_bytes
+        self.history_response_max_bytes = history_response_max_bytes
         self.root = root.resolve()
         self.execution_config_path = execution_config_path.resolve()
         selection = load_llm_execution_selection(self.execution_config_path)
@@ -213,6 +266,11 @@ class CodexAppServer:
         except Exception:
             self.close()
             raise
+
+    @property
+    def compatibility_profile(self) -> _CodexCompatibilityProfile:
+        """Fixed at construction; client input cannot upgrade this profile."""
+        return self._compatibility_profile
 
     @staticmethod
     def _thread_state_path(root: Path) -> Path:
@@ -370,7 +428,7 @@ class CodexAppServer:
                 recover_pending_launches=False,
             )
             state = ThreadState(
-                thread_id=stable_frontend_session_id(record),
+                thread_id=codex_thread_id(stable_frontend_session_id(record)),
                 session=session,
                 main_turn_control=TaskControl(
                     session.child_path_root / "main-turn-control",
@@ -383,6 +441,7 @@ class CodexAppServer:
                 name=name,
                 attachments=attachments,
             )
+            state.history_binding = MainSessionSourceBinding.capture(session)
             state.turns = self._committed_turns(state)
             snapshot = session.active_turn_snapshot()
             if snapshot is not None:
@@ -436,6 +495,32 @@ class CodexAppServer:
             })
         return attachments
 
+    @staticmethod
+    def _has_unconfigured_effort(profile: ExecutionProfile) -> bool:
+        """Identify absence of canonical configuration, not the string "none"."""
+        return (
+            profile.reasoning_effort is None
+            and profile.default_reasoning_effort is None
+            and not profile.supported_reasoning_efforts)
+
+    @classmethod
+    def _effort_to_wire(
+            cls, profile: ExecutionProfile, effort: str | None,
+    ) -> str | None:
+        """Codex's None enum is a display token scoped to one selection.
+
+        Never write it into an execution profile or provider request. A model
+        configured with the literal effort "none" retains that exact value.
+        """
+        if effort is None and cls._has_unconfigured_effort(profile):
+            return "none"
+        return effort
+
+    def _selected_effort_to_wire(
+            self, model_id: str, effort: str | None,
+    ) -> str | None:
+        return self._effort_to_wire(self._profiles_by_model_id[model_id], effort)
+
     def _profile_for_selection(
             self, model_id: str, effort: object = None,
     ) -> ExecutionProfile:
@@ -445,6 +530,10 @@ class CodexAppServer:
         if logical is None:
             raise ValueError(
                 f"unknown RPNH provider/model selection: {model_id}")
+        # Decode only after resolving the selection. "none" is also a real
+        # configured effort and must not be normalized globally.
+        if effort == "none" and self._has_unconfigured_effort(logical):
+            effort = None
         selected_effort = (
             logical.default_reasoning_effort if effort is None else effort)
         if selected_effort is not None and not isinstance(
@@ -510,7 +599,8 @@ class CodexAppServer:
                 f"{readiness}"),
             "hidden": False,
             "isDefault": profile.selection_id == self.default_model_id,
-            "defaultReasoningEffort": profile.default_reasoning_effort,
+            "defaultReasoningEffort": self._effort_to_wire(
+                profile, profile.default_reasoning_effort),
             "supportedReasoningEfforts": [{
                 "reasoningEffort": effort,
                 "description": (
@@ -539,20 +629,30 @@ class CodexAppServer:
             "updatedAt": now,
             "recencyAt": now,
             "cwd": str(state.cwd),
-            "cliVersion": CODEX_FRONTEND_VERSION,
+            "cliVersion": self.compatibility_profile.version,
             "source": "appServer",
             "status": status,
-            "turns": list(state.turns),
+            # Persisted history is hydrated through native fixed-cut pages.
+            # state.turns is only the existing live reconciliation cache.
+            "turns": [],
             "projectId": None,
             "historyMode": "paginated",
         }
 
-    async def _send(self, websocket: Any, value: Mapping[str, Any]) -> None:
+    async def _send(
+            self, websocket: Any, value: Mapping[str, Any], *,
+            recheck: Callable[[], None] | None = None,
+            max_bytes: int | None = None,
+    ) -> None:
         key = id(websocket)
         lock = self._send_locks.setdefault(key, asyncio.Lock())
         async with lock:
-            await websocket.send(json.dumps(
-                value, ensure_ascii=False, separators=(",", ":")))
+            if recheck is not None:
+                recheck()
+            encoded = json.dumps(value, ensure_ascii=False, separators=(",", ":"))
+            if max_bytes is not None and len(encoded.encode("utf-8")) > max_bytes:
+                raise ValueError("history response exceeds configured byte budget")
+            await websocket.send(encoded)
 
     async def _result(self, websocket: Any, request_id: object, value: object) -> None:
         await self._send(websocket, {"id": request_id, "result": value})
@@ -575,6 +675,161 @@ class CodexAppServer:
         if not isinstance(thread_id, str) or thread_id not in self._threads:
             raise ValueError("unknown RPNH thread")
         return self._threads[thread_id]
+
+    def _history_state(self, websocket: Any, thread_id: object) -> ThreadState:
+        """Recheck the existing local-owner binding; a cursor grants nothing."""
+        try:
+            state = self._thread(thread_id)
+            if (id(websocket) not in self._initialized_connections
+                    or self._lease is None or self._lease.root != self.root
+                    or state.session.root != self.root or state.history_binding is None):
+                raise ValueError("unbound")
+            self._lease.assert_held()
+            state.history_binding.assert_matches(state.session)
+            return state
+        except Exception as exc:
+            raise ValueError("history owner/source binding is unavailable") from exc
+
+    async def _history_result(self, websocket, request_id, state, value):
+        def recheck():
+            if self._history_state(websocket, state.thread_id) is not state:
+                raise ValueError("history owner/source binding is unavailable")
+        await self._send(websocket, {"id": request_id, "result": value},
+                         recheck=recheck, max_bytes=self.history_response_max_bytes)
+
+    def _history_cut(self, state):
+        return state.session.history_registry.capture_read_cut(
+            max_object_bytes=self.history_object_max_bytes)
+
+    @staticmethod
+    def _history_items(thread_id, display):
+        return [{"type": "userMessage", "id": public_id(thread_id, display.ordinal, "user"),
+                 "content": [{"type": "text", "text": display.user_text}]},
+                {"type": "agentMessage", "id": public_id(thread_id, display.ordinal, "agent"),
+                 "text": display.assistant_text}]
+
+    def _history_page(self, state, params, query):
+        allowed = {"threadId", "cursor", "limit", "sortDirection",
+                   "itemsView" if query == "turns" else "turnId"}
+        if set(params) - allowed:
+            raise ValueError("history query contains unsupported fields")
+        order = params.get("sortDirection")
+        if order is None:
+            order = "desc" if query == "turns" else "asc"
+        if order not in ("asc", "desc"):
+            raise ValueError("history sortDirection must be asc or desc")
+        view = params.get("itemsView") if query == "turns" else None
+        if query == "turns" and view is None:
+            view = "summary"
+        if query == "turns" and view not in ("notLoaded", "summary", "full"):
+            raise ValueError("history itemsView is invalid")
+        limit = page_limit(params.get("limit"))
+        token = params.get("cursor")
+        requested_turn = params.get("turnId") if query == "items" else None
+        item_id = None
+        if isinstance(token, dict):
+            if query != "items" or not self.compatibility_profile.object_item_cursor:
+                raise ValueError("invalid history cursor")
+            item_id = object_item_cursor_id(token, requested_turn)
+        cursor = None if token is None or item_id is not None else HistoryCursor.decode(token)
+        if cursor is not None:
+            cursor.bind(thread_id=state.thread_id, query=query, order=order, items_view=view)
+        cut = self._history_cut(state) if cursor is None else cursor.cut
+        native = state.session.history_registry
+        turn_filter = None
+        # Ordinary pages are validated by the native page/hydration seams.
+        # Only filter resolution or a special initial edge needs an extra
+        # refs projection; do not eagerly replay all lineages one more time.
+        projection = None
+        if requested_turn is not None or cursor is not None and (
+                cursor.items_view == INITIAL_VIEW or cursor.anchor is None):
+            projection = native.project_thread_at(
+                cut, max_object_bytes=self.history_object_max_bytes)
+        if requested_turn is not None:
+            if not isinstance(requested_turn, str) or not requested_turn:
+                raise ValueError("history turnId must identify a committed turn")
+            matches = [turn for turn in projection.turns
+                       if public_id(state.thread_id, turn.ordinal, "turn") == requested_turn]
+            if len(matches) != 1:
+                raise ValueError("history turnId is not present at this cut")
+            turn_filter = matches[0].turn_ref
+            if item_id is not None:
+                # Object anchors are fresh queries. Capture above exactly once,
+                # then normalize into the existing native/string-cursor seam.
+                cursor = HistoryCursor(state.thread_id, cut, query, order, view, turn_filter,
+                    object_item_anchor(cut, matches[0], state.thread_id, item_id, order=order))
+        if cursor is not None and cursor.turn_filter != turn_filter:
+            raise ValueError("history cursor filter differs")
+        if cursor is not None and cursor.items_view == INITIAL_VIEW:
+            expected = (None if not projection.turns else entry_anchor(
+                cut, projection.turns[-1], query="turns", order="desc", inclusive=True))
+            if cursor.anchor != expected:
+                raise ValueError("history initial cursor is not the cut boundary")
+        if cursor is not None and cursor.anchor is None and projection.turns:
+            raise ValueError("history empty boundary is not empty")
+        kwargs = {"limit": limit, "order": order,
+                  "anchor": None if cursor is None else cursor.anchor,
+                  "max_object_bytes": self.history_object_max_bytes}
+        page = (native.page_turns_at(cut, **kwargs) if query == "turns" else
+                native.page_items_at(cut, turn_filter=turn_filter, **kwargs))
+        refs = tuple(dict.fromkeys(entry.turn_ref for entry in page.entries))
+        displays = {} if view == "notLoaded" else {
+            display.turn_ref: display for display in state.session.display_history_at(
+                cut, refs, max_object_bytes=self.history_object_max_bytes)}
+        data = []
+        for entry in page.entries:
+            ordinal = entry.ordinal if query == "turns" else entry.turn_ordinal
+            turn_id = public_id(state.thread_id, ordinal, "turn")
+            if query == "turns":
+                data.append({"id": turn_id, "items": [] if view == "notLoaded" else
+                             self._history_items(state.thread_id, displays[entry.turn_ref]),
+                             "itemsView": view, "status": "completed", "error": None,
+                             "startedAt": None, "completedAt": None, "durationMs": None})
+            else:
+                item = self._history_items(state.thread_id, displays[entry.turn_ref])[entry.item_index]
+                data.append({"turnId": turn_id, "item": item,
+                             **({"startedAtMs": None, "completedAtMs": None}
+                                if self.compatibility_profile.explicit_history_defaults else {})})
+        next_cursor = None if page.next_anchor is None else HistoryCursor(
+            state.thread_id, cut, query, order, view, turn_filter, page.next_anchor).encode()
+        reverse_order = "asc" if order == "desc" else "desc"
+        backwards = None if not page.entries else HistoryCursor(
+            state.thread_id, cut, query, reverse_order, view, turn_filter,
+            entry_anchor(cut, page.entries[0], query=query, order=reverse_order,
+                         turn_filter=turn_filter, inclusive=True)).encode()
+        return {"data": data, "nextCursor": next_cursor, "backwardsCursor": backwards}
+
+    def _resume_history(self, state):
+        cut = self._history_cut(state)
+        projection = state.session.history_registry.project_thread_at(
+            cut, max_object_bytes=self.history_object_max_bytes)
+        turn_anchor = item_anchor = None
+        if projection.turns:
+            last = projection.turns[-1]
+            turn_anchor = entry_anchor(cut, last, query="turns", order="desc", inclusive=True)
+            item_anchor = entry_anchor(cut, last.items[-1], query="items", order="desc", inclusive=True)
+        cursors = {
+            "turnsBackwardsCursor": HistoryCursor(
+                state.thread_id, cut, "turns", "desc", INITIAL_VIEW, None, turn_anchor).encode(),
+            "itemsBackwardsCursor": HistoryCursor(
+                state.thread_id, cut, "items", "desc", None, None, item_anchor).encode(),
+        }
+        return cursors, projection
+
+    def _read_history_thread(self, state, include_turns):
+        document = self._thread_document(state)
+        if include_turns:
+            params = {"threadId": state.thread_id, "sortDirection": "asc",
+                      "itemsView": "full", "limit": 100}
+            turns = []
+            while True:
+                page = self._history_page(state, params, "turns")
+                turns.extend(page["data"])
+                if page["nextCursor"] is None:
+                    break
+                params["cursor"] = page["nextCursor"]
+            document["turns"] = turns
+        return document
 
     @staticmethod
     def _require_ready_profile(profile: ExecutionProfile) -> None:
@@ -628,7 +883,7 @@ class CodexAppServer:
             session = MainSession(
                 self.root, profile.path, owner_root_reserved=True)
             record = inspect_main_session_root(self.root)
-            thread_id = stable_frontend_session_id(record)
+            thread_id = codex_thread_id(stable_frontend_session_id(record))
             state = ThreadState(
                 thread_id=thread_id,
                 session=session,
@@ -639,6 +894,7 @@ class CodexAppServer:
                 cwd=cwd,
                 created_at=_now_seconds(),
             )
+            state.history_binding = MainSessionSourceBinding.capture(session)
             self._threads[thread_id] = state
             self._persist_thread(state)
         except Exception:
@@ -655,7 +911,8 @@ class CodexAppServer:
             "approvalPolicy": "never",
             "approvalsReviewer": "user",
             "sandbox": {"type": "dangerFullAccess"},
-            "reasoningEffort": state.reasoning_effort,
+            "reasoningEffort": self._selected_effort_to_wire(
+                state.model_id, state.reasoning_effort),
             "serviceTier": None,
             "instructionSources": [],
         })
@@ -1113,12 +1370,12 @@ class CodexAppServer:
             client = params.get("clientInfo")
             if (not isinstance(client, Mapping)
                     or client.get("name") != "codex-tui"
-                    or client.get("version") != CODEX_FRONTEND_VERSION):
+                    or client.get("version") != self.compatibility_profile.version):
                 raise ValueError(
                     "RPNH requires codex-tui "
-                    f"{CODEX_FRONTEND_VERSION} exactly")
+                    f"{self.compatibility_profile.version} exactly")
             await self._result(websocket, request_id, {
-                "userAgent": f"rpnh/codex-compat-{CODEX_FRONTEND_VERSION}",
+                "userAgent": f"rpnh/codex-compat-{self.compatibility_profile.version}",
                 "codexHome": str(self.root),
                 "platformFamily": "unix",
                 "platformOs": "linux",
@@ -1154,7 +1411,8 @@ class CodexAppServer:
             await self._result(websocket, request_id, {
                 "config": {
                     "model": self.default_model_id,
-                    "model_reasoning_effort": self.default_reasoning_effort,
+                    "model_reasoning_effort": self._selected_effort_to_wire(
+                        self.default_model_id, self.default_reasoning_effort),
                     "model_provider": "rpnh",
                     "default_permissions": ":danger-full-access",
                     "approval_policy": "never",
@@ -1198,18 +1456,28 @@ class CodexAppServer:
         elif method == "thread/start":
             await self._start_thread(websocket, request_id, params)
         elif method == "thread/resume":
-            state = self._thread(params.get("threadId"))
+            state = self._history_state(websocket, params.get("threadId"))
             # Codex presentation reopen is not semantic paused-turn resume.
+            # Preserve existing live reconnect tracking separately from the
+            # pure fixed-cut history path below. Tracking may later reconcile.
             await self._observe_active_turn(websocket, state)
-            await self._result(websocket, request_id, {
-                "thread": self._thread_document(state),
+            cursors, projection = self._resume_history(state)
+            document = self._thread_document(state)
+            document["status"] = ({"type": "active", "activeFlags": []}
+                                  if projection.active_turn_ref is not None else {"type": "idle"})
+            await self._history_result(websocket, request_id, state, {
+                "thread": document,
+                **cursors,
+                **({"collaborationMode": None, "disabledPluginIds": []}
+                   if self.compatibility_profile.explicit_history_defaults else {}),
                 "model": state.model_id,
                 "modelProvider": "rpnh",
                 "cwd": str(state.cwd),
                 "approvalPolicy": "never",
                 "approvalsReviewer": "user",
                 "sandbox": {"type": "dangerFullAccess"},
-                "reasoningEffort": state.reasoning_effort,
+                "reasoningEffort": self._selected_effort_to_wire(
+                    state.model_id, state.reasoning_effort),
                 "serviceTier": None,
                 "instructionSources": [],
             })
@@ -1217,18 +1485,32 @@ class CodexAppServer:
             await self._result(websocket, request_id, {
                 "data": list(self._threads), "nextCursor": None})
         elif method == "thread/list":
-            await self._result(websocket, request_id, {
+            states = self._listed_threads(params)
+            for state in states:
+                self._history_state(websocket, state.thread_id)
+            def recheck_list():
+                for state in states:
+                    if self._history_state(websocket, state.thread_id) is not state:
+                        raise ValueError("history owner/source binding is unavailable")
+            await self._send(websocket, {"id": request_id, "result": {
                 "data": [
                     self._thread_document(state)
-                    for state in self._listed_threads(params)
+                    for state in states
                 ],
                 "nextCursor": None,
                 "backwardsCursor": None,
-            })
+            }}, recheck=recheck_list, max_bytes=self.history_response_max_bytes)
         elif method == "thread/read":
-            state = self._thread(params.get("threadId"))
-            await self._result(websocket, request_id, {
-                "thread": self._thread_document(state)})
+            state = self._history_state(websocket, params.get("threadId"))
+            include_turns = params.get("includeTurns", False)
+            if type(include_turns) is not bool:
+                raise ValueError("history includeTurns must be boolean")
+            await self._history_result(websocket, request_id, state, {
+                "thread": self._read_history_thread(state, include_turns)})
+        elif method in {"thread/turns/list", "thread/items/list"}:
+            state = self._history_state(websocket, params.get("threadId"))
+            page = self._history_page(state, params, "turns" if method == "thread/turns/list" else "items")
+            await self._history_result(websocket, request_id, state, page)
         elif method == "thread/name/set":
             state = self._thread(params.get("threadId"))
             name = params.get("name")
@@ -1286,7 +1568,10 @@ class CodexAppServer:
                     except (json.JSONDecodeError, OSError, RuntimeError,
                             TypeError, ValueError) as exc:
                         if request_id is not None:
-                            await self._error(websocket, request_id, str(exc))
+                            message = ("history request rejected" if method in {
+                                "thread/resume", "thread/read", "thread/list",
+                                "thread/turns/list", "thread/items/list"} else str(exc))
+                            await self._error(websocket, request_id, message)
             except Exception as exc:
                 if (not exc.__class__.__module__.startswith("websockets.")
                         or not exc.__class__.__name__.startswith(
@@ -1318,13 +1603,16 @@ class CodexAppServer:
             await self._refresh_active_turn(None, state)
 
 
-def resolve_codex_binary(value: str | None = None) -> str:
+def resolve_codex_binary(
+        value: str | None = None, *, compatibility_profile: str | None = None,
+) -> str:
+    profile = _compatibility_profile(compatibility_profile)
     selected = value or os.environ.get("RPNH_CODEX_BIN") or "codex"
     resolved = shutil.which(selected)
     if resolved is None:
         raise CodexCompatibilityError(
             "Codex frontend is not installed; install "
-            f"@openai/codex@{CODEX_FRONTEND_VERSION}")
+            f"@openai/codex@{profile.version}")
     try:
         completed = subprocess.run(
             [resolved, "--version"], check=False, text=True,
@@ -1332,9 +1620,9 @@ def resolve_codex_binary(value: str | None = None) -> str:
     except subprocess.TimeoutExpired as exc:
         raise CodexCompatibilityError("Codex version check timed out") from exc
     reported = completed.stdout.strip()
-    if completed.returncode != 0 or reported != CODEX_CLI_VERSION_TEXT:
+    if completed.returncode != 0 or reported != profile.reported_cli_version:
         raise CodexCompatibilityError(
-            f"RPNH requires {CODEX_CLI_VERSION_TEXT}; got "
+            f"RPNH requires {profile.reported_cli_version}; got "
             f"{reported or completed.stderr.strip() or 'unknown'}")
     return resolved
 
@@ -1356,19 +1644,22 @@ def codex_frontend_argv(
 async def _run_codex_frontend_async(
         root: Path, execution_config_path: Path, *,
         codex_binary: str | None = None, resume: bool = False,
+        compatibility_profile: str | None = None,
 ) -> int:
     try:
         import websockets
     except ImportError as exc:
         raise CodexCompatibilityError(
             "Codex frontend requires the Python `websockets` package") from exc
-    binary = resolve_codex_binary(codex_binary)
+    profile = _compatibility_profile(compatibility_profile)
+    binary = (resolve_codex_binary(codex_binary) if compatibility_profile is None else
+              resolve_codex_binary(codex_binary, compatibility_profile=profile.name))
     root = root.resolve()
     if resume and not root.is_dir():
         raise CodexCompatibilityError(
             "RPNH Codex resume requires an existing session directory")
     try:
-        server = CodexAppServer(root, execution_config_path)
+        server = CodexAppServer(root, execution_config_path, compatibility_profile=profile.name)
     except (OSError, RuntimeError, TypeError, ValueError) as exc:
         raise CodexCompatibilityError(str(exc)) from exc
     if resume and not server._threads:
@@ -1396,10 +1687,11 @@ async def _run_codex_frontend_async(
 def run_codex_frontend(
         root: Path, execution_config_path: Path, *,
         codex_binary: str | None = None, resume: bool = False,
+        compatibility_profile: str | None = None,
 ) -> int:
     return asyncio.run(_run_codex_frontend_async(
         root, execution_config_path, codex_binary=codex_binary,
-        resume=resume))
+        resume=resume, compatibility_profile=compatibility_profile))
 
 
 __all__ = (

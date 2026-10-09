@@ -1,8 +1,0 @@
-2026-10-08 16:18:14 [debug    ] Starting to consume events with timeout timeout=60
-2026-10-08 16:18:15 [debug    ] Received finished event
-2026-10-08 16:18:15 [debug    ] Setup stdout                   setup_stderr= setup_stdout=
-2026-10-08 16:18:50 [debug    ] Starting to consume events with timeout timeout=60
-2026-10-08 16:18:53 [debug    ] Received finished event
-2026-10-08 16:19:05 [warning  ] Process exit code unavailable after stream end; reporting -1 wait_seconds=10.0
-2026-10-08 16:19:05 [debug    ] Setup stdout                   setup_stderr= setup_stdout=
-{"condition": "na06", "status": "PASS", "cases": ["complete", "stop"], "error": null}

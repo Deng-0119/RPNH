@@ -1,4 +1,0 @@
-source /workspace/scratch/18c810e6dd59/rpnh-static-lease-read-fix/source/cpn/__init__.py
-correct ADMITTED VersionRef(entity_type='transition_firing/v1', entity_id=TypedId(kind='transition_firing', value='018ff2bef8b85564b8829958186baa6e'), version_id=TypedId(kind='transition_firing_version', value='8e2ff1c350d3532182b0be9a26d472a6'))
-missing_lease REJECTED RegistryConflict static lease claim differs from adopted PN/marking: exact registered firing is not currently enabled
-consume_lease REJECTED RegistryConflict static lease claim differs from adopted PN/marking: read reference was declared consumed

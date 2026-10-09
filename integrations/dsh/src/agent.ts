@@ -9,6 +9,7 @@ import type { Scope } from '@deepseek-ai/dsh-scope'
 import { ReactLoopInbox } from '../packages/core/agent-loop/src/inbox.ts'
 import { REVISION, type OwnerClient, type JsonRecord } from './bridge.ts'
 import { appendTurn } from './projection.ts'
+import { assertExecutionRevision } from './history-codec.ts'
 import './capabilities.ts'
 
 /** DSH lifecycle and queues above the existing RPNH execution scheduler. */
@@ -31,10 +32,11 @@ export class RegistryAgent implements AgentMachine {
   constructor(loopCtx: Context, readonly id: SessionId, readonly options: AgentOptions, readonly session: Session) {
     const selected = loopCtx.rpnhBridge.model
     if (options.provider !== selected.provider || options.model !== selected.model || options.reasoningEffort !== undefined || options.maxTokens !== undefined) throw new Error('select the exact launcher-managed profile; no implicit model fallback or per-turn route override')
-    this.scope = createScope(loopCtx, this); this.ctx = this.scope.ctx
-    this.inbox = new ReactLoopInbox(loopCtx.sessionProjections, session, agentEvents(loopCtx, this))
     this.client = loopCtx.rpnhBridge.client(id, false)
     if (!this.client.historySnapshot) throw new Error('Registry history must be read before driver construction')
+    assertExecutionRevision(this.client.historySnapshot, REVISION)
+    this.scope = createScope(loopCtx, this); this.ctx = this.scope.ctx
+    this.inbox = new ReactLoopInbox(loopCtx.sessionProjections, session, agentEvents(loopCtx, this))
     this.halted = this.client.historySnapshot.active !== null
     this.client.host = loopCtx.rpnhCapabilities.forAgent(this)
     this.projected = session.snapshotEvents().filter(e => e.type === 'turn/end' && ['completed','blocked'].includes(e.data.reason.kind)).length

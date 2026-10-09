@@ -1,9 +1,0 @@
-{
-  "base_commit": "ec9077e95b830d09e7252c6d5d8ebcdbb9eb4ac4",
-  "manifest_files": 5,
-  "baseline_git_blobs_verified": 4,
-  "tested_source_entries_verified": 1335,
-  "patch_sha256": "62f914d41d953e9badd4eb06eec43273f9d52bd5bd9b948ad6e10137d3ed2b24",
-  "tested_source_list_sha256": "bf088faa3fe22f9f14fcfa0081484bc1bae9067ea7c20c1162125eab29bf806a",
-  "independent_patch_apply": "pass, 5 final paths byte-identical"
-}

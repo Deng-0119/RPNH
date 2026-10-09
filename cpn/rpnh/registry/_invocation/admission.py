@@ -267,6 +267,12 @@ def _active_claim_inputs(
 
 def admit_firing(lifecycle, claim: FiringClaim, *, idempotency_key: str) -> FiringAdmission:
     """Atomically claim and start one independently-settled real firing."""
+    from ..parent_bound import assert_bound_integrity
+    assert_bound_integrity(lifecycle.service, for_execution=True, claim={
+        'net_instance_ref': _ref_payload(claim.net_instance_ref),
+        'claimed_input_refs': [_ref_payload(ref) for ref in claim.claimed_input_refs],
+        'consumed_input_refs': [_ref_payload(ref) for ref in (
+            claim.claimed_input_refs if claim.consumed_input_refs is None else claim.consumed_input_refs)]})
     caller_idempotency_key = idempotency_key
     idempotency_key = lifecycle._scoped_firing_idempotency_key(
         caller_idempotency_key)

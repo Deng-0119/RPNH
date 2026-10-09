@@ -379,6 +379,8 @@ def _publish_fresh_bootstrap_reference(
                 or dict(prepared.metadata) != expected):
             raise ResourceIdempotencyConflict(
                 "fresh bootstrap replay differs from exact publication refs")
+        from ..public_materials import validate_resource_replay
+        validate_resource_replay(self._ResourceServiceKernel__core, ref)
         return ref
     for ancestor in command.derived_from:
         self._prepared_reference(ancestor)

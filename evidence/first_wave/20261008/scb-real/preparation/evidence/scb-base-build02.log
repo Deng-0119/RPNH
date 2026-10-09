@@ -1,121 +1,0 @@
-#0 building with "default" instance using docker driver
-
-#1 [internal] load build definition from Dockerfile
-#1 transferring dockerfile: 3.98kB done
-#1 DONE 0.1s
-
-#2 [internal] load metadata for ghcr.io/astral-sh/uv:python3.12-trixie-slim
-#2 DONE 2.0s
-
-#3 [internal] load .dockerignore
-#3 transferring context: 2B done
-#3 DONE 0.1s
-
-#4 [1/8] FROM ghcr.io/astral-sh/uv:python3.12-trixie-slim@sha256:28d570c06d150303b39adfa731ada20956c63fc86b1277d7ff2ad63185974092
-#4 DONE 0.0s
-
-#5 [2/8] RUN apt-get update     && apt-get upgrade -y     && apt-get install -y --no-install-recommends build-essential     && apt-get install -y --no-install-recommends         bzip2         tar         gzip         zip         unzip         curl         ca-certificates         gnupg         default-jre-headless         netcat-openbsd         protobuf-compiler         procps         git         graphviz         rabbitmq-server         redis-server         docker-cli     && apt-get install -y --no-install-recommends         libasound2         libatk-bridge2.0-0         libatk1.0-0         libcairo2         libcups2         libdbus-1-3         libdrm2         libgbm1         libglib2.0-0         libgtk-3-0         libnspr4         libnss3         libpango-1.0-0         libx11-6         libx11-xcb1         libxcb1         libxcomposite1         libxdamage1         libxext6         libxfixes3         libxkbcommon0         libxrandr2         libxshmfence1         libxss1         libxtst6         fonts-liberation         xdg-utils     && (apt-get install -y --no-install-recommends docker-compose-plugin         || apt-get install -y --no-install-recommends docker-compose-v2         || apt-get install -y --no-install-recommends docker-compose)     && mkdir -p /usr/local/lib/docker/cli-plugins /usr/lib/docker/cli-plugins     && if [ -x /usr/bin/docker-compose ]; then         ln -sf /usr/bin/docker-compose /usr/local/lib/docker/cli-plugins/docker-compose;         ln -sf /usr/bin/docker-compose /usr/lib/docker/cli-plugins/docker-compose;     fi     && rm -rf /var/lib/apt/lists/*
-#5 CACHED
-
-#6 [3/8] RUN curl -sSL https://dl.min.io/server/minio/release/linux-amd64/minio     -o /usr/local/bin/minio && chmod +x /usr/local/bin/minio
-#6 CACHED
-
-#7 [4/8] RUN mkdir -p "/usr/local/nvm"     && curl -fsSL --retry 3 --retry-all-errors https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
-#7 1.088 => Downloading nvm from git to '/usr/local/nvm'
-#7 1.088 => Cloning into '/usr/local/nvm'...
-#7 5.959 * (HEAD detached at FETCH_HEAD)
-#7 5.959   master
-#7 5.961 => Compressing and cleaning up git repository
-#7 5.964 
-#7 5.968 => Profile not found. Tried ~/.bashrc, ~/.bash_profile, ~/.zprofile, ~/.zshrc, and ~/.profile.
-#7 5.968 => Create one of them and run this script again
-#7 5.968    OR
-#7 5.968 => Append the following lines to the correct file yourself:
-#7 5.968 
-#7 5.968 export NVM_DIR="/usr/local/nvm"
-#7 5.968 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-#7 5.968 
-#7 5.983 => Installing Node.js version 22.21.1
-#7 10.53 Downloading and installing node v22.21.1...
-#7 11.46 Downloading https://nodejs.org/dist/v22.21.1/node-v22.21.1-linux-x64.tar.xz...
-#7 12.07 #=#=#                                                                          ##O#-#                                                                                                                                                    0.1%                                                                           0.2%                                                                           0.3%                                                                           0.4%                                                                           0.6%                                                                           0.9%#                                                                          1.4%#                                                                          2.1%##                                                                         3.1%###                                                                        4.7%#####                                                                      7.0%#######                                                                   10.3%##########                                                                14.2%############                                                              18.0%###############                                                           21.8%##################                                                        25.7%#####################                                                     29.5%#######################                                                   33.3%##########################                                                37.1%#############################                                             41.0%################################                                          44.8%##################################                                        48.6%#####################################                                     52.5%########################################                                  56.3%###########################################                               60.1%##############################################                            64.0%################################################                          67.7%###################################################                       71.6%######################################################                    75.4%#########################################################                 79.3%###########################################################               83.1%##############################################################            86.9%#################################################################         90.8%####################################################################      94.6%######################################################################    98.4%######################################################################## 100.0%
-#7 15.99 Computing checksum with sha256sum
-#7 16.01 Checksums matched!
-#7 17.41 Now using node v22.21.1 (npm v10.9.4)
-#7 17.48 Creating default alias: default -> 22.21.1 (-> v22.21.1 *)
-#7 17.51 => Node.js version 22.21.1 has been successfully installed
-#7 17.51 => Close and reopen your terminal to start using nvm or run the following to use it now:
-#7 17.51 
-#7 17.51 export NVM_DIR="/usr/local/nvm"
-#7 17.51 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-#7 DONE 17.7s
-
-#8 [5/8] RUN . "/usr/local/nvm/nvm.sh"     && nvm install "22.21.1"     && nvm alias default "22.21.1"     && nvm use 22.21.1
-#8 2.146 v22.21.1 is already installed.
-#8 2.243 Now using node v22.21.1 (npm v10.9.4)
-#8 2.294 default -> 22.21.1 (-> v22.21.1 *)
-#8 2.394 Now using node v22.21.1 (npm v10.9.4)
-#8 DONE 2.4s
-
-#9 [6/8] RUN . "/usr/local/nvm/nvm.sh"   && nvm use 22.21.1   && NODE_PATH="$(nvm which node)"   && NODE_BIN_DIR="$(dirname "$NODE_PATH")"   && ln -s "$NODE_BIN_DIR/node" /usr/local/bin/node   && ln -s "$NODE_BIN_DIR/npm" /usr/local/bin/npm   && ln -s "$NODE_BIN_DIR/npx" /usr/local/bin/npx
-#9 0.370 Now using node v22.21.1 (npm v10.9.4)
-#9 DONE 0.5s
-
-#10 [7/8] RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-#10 1.256 info: downloading installer
-#10 4.746 error: $HOME differs from euid-obtained home directory: you may be using sudo
-#10 4.746 error: $HOME directory: /tmp/agent_home
-#10 4.746 error: euid-obtained home directory: /root
-#10 4.773 info: profile set to default
-#10 4.773 info: default host tuple is x86_64-unknown-linux-gnu
-#10 4.774 info: syncing channel updates for stable-x86_64-unknown-linux-gnu
-#10 7.611 info: latest update on 2026-10-01 for version 1.99.0 (b940084d7 2026-09-28)
-#10 7.611 info: downloading 6 components
-#10 42.18 info: default toolchain set to stable-x86_64-unknown-linux-gnu
-#10 42.18 
-#10 42.18   stable-x86_64-unknown-linux-gnu installed - rustc 1.99.0 (b940084d7 2026-09-28)
-#10 42.18 
-#10 42.18 
-#10 42.18 Rust is installed now. Great!
-#10 42.18 
-#10 42.18 To get started you may need to restart your current shell.
-#10 42.18 This would reload your PATH environment variable to include
-#10 42.18 Cargo's bin directory ($HOME/.cargo/bin).
-#10 42.18 
-#10 42.18 To configure your current shell, you need to source the
-#10 42.18 corresponding env file under $HOME/.cargo.
-#10 42.18 
-#10 42.18 Consider running the right command for your shell (note the leading DOT):
-#10 42.18 . "$HOME/.cargo/env" # For sh/ash/dash/pdksh
-#10 42.18 cargo:rerun-if-env-changed=CC_x86_64-unknown-linux-gnu
-#10 42.18 CC_x86_64-unknown-linux-gnu = None
-#10 42.18 cargo:rerun-if-env-changed=CC_x86_64_unknown_linux_gnu
-#10 42.18 CC_x86_64_unknown_linux_gnu = None
-#10 42.18 cargo:rerun-if-env-changed=HOST_CC
-#10 42.18 HOST_CC = None
-#10 42.18 cargo:rerun-if-env-changed=CC
-#10 42.18 CC = None
-#10 42.19 cargo:rerun-if-env-changed=CC_ENABLE_DEBUG_OUTPUT
-#10 42.21 cargo:rerun-if-env-changed=CRATE_CC_NO_DEFAULTS
-#10 42.21 CRATE_CC_NO_DEFAULTS = None
-#10 42.21 cargo:rerun-if-env-changed=CFLAGS
-#10 42.21 CFLAGS = None
-#10 42.21 cargo:rerun-if-env-changed=HOST_CFLAGS
-#10 42.21 HOST_CFLAGS = None
-#10 42.21 cargo:rerun-if-env-changed=CFLAGS_x86_64_unknown_linux_gnu
-#10 42.21 CFLAGS_x86_64_unknown_linux_gnu = None
-#10 42.21 cargo:rerun-if-env-changed=CFLAGS_x86_64-unknown-linux-gnu
-#10 42.21 CFLAGS_x86_64-unknown-linux-gnu = None
-#10 DONE 42.6s
-
-#11 [8/8] RUN groupadd -g 1000 agent &&     useradd -m -u 1000 -g 1000 -d "/tmp/agent_home" -s /bin/bash agent &&     (getent group docker >/dev/null || groupadd docker) &&     usermod -aG docker agent &&     mkdir -p /workspace &&     chown -R agent:agent "/tmp/agent_home" /workspace &&     chmod -R a+rwX "/tmp/agent_home" /workspace
-#11 0.314 useradd: warning: the home directory /tmp/agent_home already exists.
-#11 0.314 useradd: Not copying any file from skel directory into it.
-#11 DONE 487.5s
-
-#12 exporting to image
-#12 exporting layers
-#12 exporting layers 6.4s done
-#12 writing image sha256:cb677f5f576ea04bdf0e7bde14538ab28a5898c2ea0ab1f6fb8c646eaaa5ded7 done
-#12 naming to docker.io/library/slop-code:python3.12 0.0s done
-#12 DONE 6.5s

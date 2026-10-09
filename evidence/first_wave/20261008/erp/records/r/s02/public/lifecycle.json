@@ -1,8 +1,0 @@
-{
-  "business_passed": null,
-  "failed_phase": "quiescence",
-  "failure_class": "RuntimeError",
-  "original_verifier_completed": false,
-  "owner_started": true,
-  "scope": "Fresh isolated condition; no restore, retry or resumed solver."
-}

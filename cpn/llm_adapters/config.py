@@ -350,3 +350,51 @@ __all__ = [
     "LLMExecutionSelection", "SCHEMA_VERSION",
     "load_llm_execution_selection",
 ]
+
+
+@dataclass(frozen=True, slots=True, init=False)
+class RegisteredLLMExecutionSelection:
+    """Path-less public selection. Identity is consistency data, never a grant.
+
+    The owner must connect it to fresh registered material at every submission.
+    No private path, environment lookup, port, audit, or resolver is used here.
+    """
+    _identity_bytes: bytes
+
+    def __init__(self, *, contract, policy, bindings, observations):
+        from cpn.rpnh.public_material_contracts import canonical, verified_policy_identity
+        object.__setattr__(self, '_identity_bytes', canonical(
+            verified_policy_identity(contract, policy, bindings, observations)))
+
+    @property
+    def public_identity(self):
+        from cpn.rpnh.public_material_contracts import decode
+        return decode(self._identity_bytes, canonical_required=True)
+
+    def as_registry_policy(self): return self.public_identity['policy']
+
+    @property
+    def input_target(self):
+        policy = self.as_registry_policy()
+        return LLMInputTarget(**{key: policy[key] for key in (
+            'model_condition', 'max_output_tokens', 'max_response_bytes',
+            'context_window_tokens', 'context_compaction_retained_tokens')})
+
+    @property
+    def runtime_policy(self):
+        return runtime_policy_from_document(self.as_registry_policy()['runtime'])
+
+    @property
+    def adapter_kind(self): return 'external_provider'
+    @property
+    def timeout_seconds(self): return self.as_registry_policy()['timeout_seconds']
+    @property
+    def reasoning_effort(self): return self.as_registry_policy()['reasoning_effort']
+    @property
+    def supported_reasoning_efforts(self): return tuple(self.as_registry_policy()['supported_reasoning_efforts'])
+    @property
+    def default_reasoning_effort(self): return self.as_registry_policy()['default_reasoning_effort']
+    @property
+    def physical_profile(self): return self.as_registry_policy()['physical_profile_id']
+    @property
+    def logical_selection_id(self): return self.as_registry_policy()['selection_id']

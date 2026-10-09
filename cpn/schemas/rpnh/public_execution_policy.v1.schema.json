@@ -1,0 +1,337 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "rpnh/public_execution_policy/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "rpnh/public_execution_policy/v1"
+    },
+    "selection_id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_.:-]{0,127}(?![\\s\\S])"
+    },
+    "adapter_kind": {
+      "const": "external_provider"
+    },
+    "implementation_unit_id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_.:-]{0,127}(?![\\s\\S])"
+    },
+    "implementation_digest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}(?![\\s\\S])"
+    },
+    "model_condition": {
+      "type": "string",
+      "minLength": 1
+    },
+    "timeout_seconds": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "max_output_tokens": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "max_response_bytes": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "context_window_tokens": {
+      "anyOf": [
+        {
+          "type": "integer",
+          "minimum": 1
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "context_compaction_retained_tokens": {
+      "anyOf": [
+        {
+          "type": "integer",
+          "minimum": 1
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "reasoning_effort": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "default_reasoning_effort": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "supported_reasoning_efforts": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true
+    },
+    "physical_profile_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_.:-]{0,127}(?![\\s\\S])"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "runtime": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "max_turns_per_node": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "max_parallel_nodes": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "main_history_message_limit": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "context_pressure_trigger_ratio": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "exclusiveMaximum": 1
+        },
+        "context_tool_output_byte_limit": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "workspace": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "timeout_seconds": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "memory_bytes": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "process_limit": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "source_size_bytes": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "input_size_bytes": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "required": [
+            "timeout_seconds",
+            "memory_bytes",
+            "process_limit",
+            "source_size_bytes",
+            "input_size_bytes"
+          ]
+        }
+      },
+      "required": [
+        "max_turns_per_node",
+        "max_parallel_nodes",
+        "main_history_message_limit",
+        "context_pressure_trigger_ratio",
+        "context_tool_output_byte_limit",
+        "workspace"
+      ]
+    },
+    "route_provenance": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "route_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "provider": {
+            "type": "string",
+            "minLength": 1
+          },
+          "backend": {
+            "type": "string",
+            "minLength": 1
+          },
+          "endpoint": {
+            "type": "string",
+            "minLength": 1
+          },
+          "outbound_model": {
+            "type": "string",
+            "minLength": 1
+          },
+          "protocol": {
+            "const": "openai_chat_completions/v1"
+          },
+          "transport": {
+            "enum": [
+              "http",
+              "https"
+            ]
+          },
+          "service_id": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_.:-]{0,127}(?![\\s\\S])"
+          },
+          "account_binding_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[a-z][a-z0-9_.:-]{0,127}(?![\\s\\S])"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "secret_binding_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[a-z][a-z0-9_.:-]{0,127}(?![\\s\\S])"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "credential_renderer_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[a-z][a-z0-9_.:-]{0,127}(?![\\s\\S])"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "route_id",
+          "provider",
+          "backend",
+          "endpoint",
+          "outbound_model",
+          "protocol",
+          "transport",
+          "service_id",
+          "account_binding_id",
+          "secret_binding_id",
+          "credential_renderer_id"
+        ]
+      },
+      "minItems": 1,
+      "maxItems": 1
+    },
+    "adapter_profile": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "config_schema_version": {
+          "const": "rpnh/public_external_provider_config/v1"
+        },
+        "route_count": {
+          "const": 1,
+          "type": "integer"
+        },
+        "recovery": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "strategy": {
+              "const": "bounded_same_route_health_probe/v1"
+            },
+            "max_probe_attempts": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 3
+            },
+            "max_probe_success_formal_failure_cycles": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 3
+            },
+            "probe_timeout_budget_seconds": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "required": [
+            "strategy",
+            "max_probe_attempts",
+            "max_probe_success_formal_failure_cycles",
+            "probe_timeout_budget_seconds"
+          ]
+        }
+      },
+      "required": [
+        "config_schema_version",
+        "route_count",
+        "recovery"
+      ]
+    }
+  },
+  "required": [
+    "schema_version",
+    "selection_id",
+    "adapter_kind",
+    "implementation_unit_id",
+    "implementation_digest",
+    "model_condition",
+    "timeout_seconds",
+    "max_output_tokens",
+    "max_response_bytes",
+    "context_window_tokens",
+    "context_compaction_retained_tokens",
+    "reasoning_effort",
+    "default_reasoning_effort",
+    "supported_reasoning_efforts",
+    "physical_profile_id",
+    "runtime",
+    "route_provenance",
+    "adapter_profile"
+  ]
+}

@@ -1,5 +1,0 @@
-Traceback (most recent call last):
-  File "<WORKSPACE>/task-complete-v5-20261009/stages/rsi/resume_extract.py", line 67, in <module>
-    assert projection['marking']['checkpoint_ref']['version_id']==str(checkpoint.version_id)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-AssertionError

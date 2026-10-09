@@ -1,1 +1,0 @@
-{"status": "PASS", "native_transport": "native_owner_socket", "firings": 10, "business_resources": 12, "source_resources": 2, "actual_model_call_counts": [0, 0], "readback_registry_unchanged": true, "total_kwh": "2.000", "total_cny": "1.70"}

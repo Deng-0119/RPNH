@@ -1,6 +1,0 @@
-test_counter_tuple_is_settled_and_post_limit_excess_not_fake (test_collect.CollectorChecks.test_counter_tuple_is_settled_and_post_limit_excess_not_fake) ... ok
-
-----------------------------------------------------------------------
-Ran 1 test in 0.001s
-
-OK

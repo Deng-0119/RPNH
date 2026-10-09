@@ -1,0 +1,646 @@
+{
+  "schema": "rpnh/dsh_codec_fixtures/v1",
+  "legacy_revision": "ddefc45fbc7f8e46dd73185e68295696d1297887",
+  "candidate_revision": "5badb15009ae1756c3afe0ae0cef1faafc290ccc",
+  "valid": [
+    {
+      "name": "success",
+      "v3": {
+        "id": "result-1",
+        "role": "user",
+        "source": {
+          "kind": "tool",
+          "callId": "call-1"
+        },
+        "content": [
+          {
+            "type": "tool-result",
+            "toolCallId": "call-1",
+            "content": [
+              {
+                "type": "text",
+                "text": "结果 5"
+              }
+            ],
+            "isError": false
+          }
+        ]
+      },
+      "v4": {
+        "id": "result-1",
+        "role": "tool",
+        "source": {
+          "kind": "tool",
+          "callId": "call-1"
+        },
+        "toolCallId": "call-1",
+        "content": [
+          {
+            "type": "text",
+            "text": "结果 5"
+          }
+        ],
+        "isError": false
+      }
+    },
+    {
+      "name": "error",
+      "v3": {
+        "id": "result-1",
+        "role": "user",
+        "source": {
+          "kind": "tool",
+          "callId": "call-1"
+        },
+        "content": [
+          {
+            "type": "tool-result",
+            "toolCallId": "call-1",
+            "content": [
+              {
+                "type": "text",
+                "text": "{\"error\":\"handler_failed\"}"
+              }
+            ],
+            "isError": true
+          }
+        ]
+      },
+      "v4": {
+        "id": "result-1",
+        "role": "tool",
+        "source": {
+          "kind": "tool",
+          "callId": "call-1"
+        },
+        "toolCallId": "call-1",
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"error\":\"handler_failed\"}"
+          }
+        ],
+        "isError": true
+      }
+    },
+    {
+      "name": "absent",
+      "v3": {
+        "id": "result-1",
+        "role": "user",
+        "source": {
+          "kind": "tool",
+          "callId": "call-1"
+        },
+        "content": [
+          {
+            "type": "tool-result",
+            "toolCallId": "call-1",
+            "content": []
+          }
+        ]
+      },
+      "v4": {
+        "id": "result-1",
+        "role": "tool",
+        "source": {
+          "kind": "tool",
+          "callId": "call-1"
+        },
+        "toolCallId": "call-1",
+        "content": []
+      }
+    },
+    {
+      "name": "false_empty",
+      "v3": {
+        "id": "result-1",
+        "role": "user",
+        "source": {
+          "kind": "tool",
+          "callId": "call-1"
+        },
+        "content": [
+          {
+            "type": "tool-result",
+            "toolCallId": "call-1",
+            "content": [],
+            "isError": false
+          }
+        ]
+      },
+      "v4": {
+        "id": "result-1",
+        "role": "tool",
+        "source": {
+          "kind": "tool",
+          "callId": "call-1"
+        },
+        "toolCallId": "call-1",
+        "content": [],
+        "isError": false
+      }
+    },
+    {
+      "name": "rich_content",
+      "v3": {
+        "id": "result-1",
+        "role": "user",
+        "source": {
+          "kind": "tool",
+          "callId": "call-1"
+        },
+        "content": [
+          {
+            "type": "tool-result",
+            "toolCallId": "call-1",
+            "content": [
+              {
+                "type": "image",
+                "url": "fixture://image"
+              }
+            ],
+            "isError": false
+          }
+        ]
+      },
+      "v4": {
+        "id": "result-1",
+        "role": "tool",
+        "source": {
+          "kind": "tool",
+          "callId": "call-1"
+        },
+        "toolCallId": "call-1",
+        "content": [
+          {
+            "type": "image",
+            "url": "fixture://image"
+          }
+        ],
+        "isError": false
+      }
+    }
+  ],
+  "invalid": [
+    {
+      "name": "v3_wrong_role",
+      "revision": "ddefc45fbc7f8e46dd73185e68295696d1297887",
+      "message": {
+        "id": "result-1",
+        "role": "assistant",
+        "source": {
+          "kind": "tool",
+          "callId": "call-1"
+        },
+        "content": [
+          {
+            "type": "tool-result",
+            "toolCallId": "call-1",
+            "content": [
+              {
+                "type": "text",
+                "text": "结果 5"
+              }
+            ],
+            "isError": false
+          }
+        ]
+      }
+    },
+    {
+      "name": "v3_wrong_source",
+      "revision": "ddefc45fbc7f8e46dd73185e68295696d1297887",
+      "message": {
+        "id": "result-1",
+        "role": "user",
+        "source": {
+          "kind": "user"
+        },
+        "content": [
+          {
+            "type": "tool-result",
+            "toolCallId": "call-1",
+            "content": [
+              {
+                "type": "text",
+                "text": "结果 5"
+              }
+            ],
+            "isError": false
+          }
+        ]
+      }
+    },
+    {
+      "name": "v3_wrong_call",
+      "revision": "ddefc45fbc7f8e46dd73185e68295696d1297887",
+      "message": {
+        "id": "result-1",
+        "role": "user",
+        "source": {
+          "kind": "tool",
+          "callId": "other"
+        },
+        "content": [
+          {
+            "type": "tool-result",
+            "toolCallId": "call-1",
+            "content": [
+              {
+                "type": "text",
+                "text": "结果 5"
+              }
+            ],
+            "isError": false
+          }
+        ]
+      }
+    },
+    {
+      "name": "v3_empty_identity",
+      "revision": "ddefc45fbc7f8e46dd73185e68295696d1297887",
+      "message": {
+        "id": "",
+        "role": "user",
+        "source": {
+          "kind": "tool",
+          "callId": "call-1"
+        },
+        "content": [
+          {
+            "type": "tool-result",
+            "toolCallId": "call-1",
+            "content": [
+              {
+                "type": "text",
+                "text": "结果 5"
+              }
+            ],
+            "isError": false
+          }
+        ]
+      }
+    },
+    {
+      "name": "v3_non_boolean_error",
+      "revision": "ddefc45fbc7f8e46dd73185e68295696d1297887",
+      "message": {
+        "id": "result-1",
+        "role": "user",
+        "source": {
+          "kind": "tool",
+          "callId": "call-1"
+        },
+        "content": [
+          {
+            "type": "tool-result",
+            "toolCallId": "call-1",
+            "content": [
+              {
+                "type": "text",
+                "text": "结果 5"
+              }
+            ],
+            "isError": 1
+          }
+        ]
+      }
+    },
+    {
+      "name": "v3_null_error",
+      "revision": "ddefc45fbc7f8e46dd73185e68295696d1297887",
+      "message": {
+        "id": "result-1",
+        "role": "user",
+        "source": {
+          "kind": "tool",
+          "callId": "call-1"
+        },
+        "content": [
+          {
+            "type": "tool-result",
+            "toolCallId": "call-1",
+            "content": [
+              {
+                "type": "text",
+                "text": "结果 5"
+              }
+            ],
+            "isError": null
+          }
+        ]
+      }
+    },
+    {
+      "name": "v3_non_array_content",
+      "revision": "ddefc45fbc7f8e46dd73185e68295696d1297887",
+      "message": {
+        "id": "result-1",
+        "role": "user",
+        "source": {
+          "kind": "tool",
+          "callId": "call-1"
+        },
+        "content": [
+          {
+            "type": "tool-result",
+            "toolCallId": "call-1",
+            "content": "x",
+            "isError": false
+          }
+        ]
+      }
+    },
+    {
+      "name": "v3_nested_result",
+      "revision": "ddefc45fbc7f8e46dd73185e68295696d1297887",
+      "message": {
+        "id": "result-1",
+        "role": "user",
+        "source": {
+          "kind": "tool",
+          "callId": "call-1"
+        },
+        "content": [
+          {
+            "type": "tool-result",
+            "toolCallId": "call-1",
+            "content": [
+              {
+                "type": "tool-result",
+                "content": []
+              }
+            ],
+            "isError": false
+          }
+        ]
+      }
+    },
+    {
+      "name": "v3_non_object_block",
+      "revision": "ddefc45fbc7f8e46dd73185e68295696d1297887",
+      "message": {
+        "id": "result-1",
+        "role": "user",
+        "source": {
+          "kind": "tool",
+          "callId": "call-1"
+        },
+        "content": [
+          {
+            "type": "tool-result",
+            "toolCallId": "call-1",
+            "content": [
+              null
+            ],
+            "isError": false
+          }
+        ]
+      }
+    },
+    {
+      "name": "v3_mixed_shape",
+      "revision": "ddefc45fbc7f8e46dd73185e68295696d1297887",
+      "message": {
+        "id": "result-1",
+        "role": "user",
+        "source": {
+          "kind": "tool",
+          "callId": "call-1"
+        },
+        "content": [
+          {
+            "type": "tool-result",
+            "toolCallId": "call-1",
+            "content": [
+              {
+                "type": "text",
+                "text": "结果 5"
+              }
+            ],
+            "isError": false
+          }
+        ],
+        "toolCallId": "call-1"
+      }
+    },
+    {
+      "name": "v4_wrong_role",
+      "revision": "5badb15009ae1756c3afe0ae0cef1faafc290ccc",
+      "message": {
+        "id": "result-1",
+        "role": "assistant",
+        "source": {
+          "kind": "tool",
+          "callId": "call-1"
+        },
+        "toolCallId": "call-1",
+        "content": [
+          {
+            "type": "text",
+            "text": "结果 5"
+          }
+        ],
+        "isError": false
+      }
+    },
+    {
+      "name": "v4_wrong_source",
+      "revision": "5badb15009ae1756c3afe0ae0cef1faafc290ccc",
+      "message": {
+        "id": "result-1",
+        "role": "tool",
+        "source": {
+          "kind": "user"
+        },
+        "toolCallId": "call-1",
+        "content": [
+          {
+            "type": "text",
+            "text": "结果 5"
+          }
+        ],
+        "isError": false
+      }
+    },
+    {
+      "name": "v4_wrong_call",
+      "revision": "5badb15009ae1756c3afe0ae0cef1faafc290ccc",
+      "message": {
+        "id": "result-1",
+        "role": "tool",
+        "source": {
+          "kind": "tool",
+          "callId": "other"
+        },
+        "toolCallId": "call-1",
+        "content": [
+          {
+            "type": "text",
+            "text": "结果 5"
+          }
+        ],
+        "isError": false
+      }
+    },
+    {
+      "name": "v4_empty_identity",
+      "revision": "5badb15009ae1756c3afe0ae0cef1faafc290ccc",
+      "message": {
+        "id": "",
+        "role": "tool",
+        "source": {
+          "kind": "tool",
+          "callId": "call-1"
+        },
+        "toolCallId": "call-1",
+        "content": [
+          {
+            "type": "text",
+            "text": "结果 5"
+          }
+        ],
+        "isError": false
+      }
+    },
+    {
+      "name": "v4_non_boolean_error",
+      "revision": "5badb15009ae1756c3afe0ae0cef1faafc290ccc",
+      "message": {
+        "id": "result-1",
+        "role": "tool",
+        "source": {
+          "kind": "tool",
+          "callId": "call-1"
+        },
+        "toolCallId": "call-1",
+        "content": [
+          {
+            "type": "text",
+            "text": "结果 5"
+          }
+        ],
+        "isError": 1
+      }
+    },
+    {
+      "name": "v4_null_error",
+      "revision": "5badb15009ae1756c3afe0ae0cef1faafc290ccc",
+      "message": {
+        "id": "result-1",
+        "role": "tool",
+        "source": {
+          "kind": "tool",
+          "callId": "call-1"
+        },
+        "toolCallId": "call-1",
+        "content": [
+          {
+            "type": "text",
+            "text": "结果 5"
+          }
+        ],
+        "isError": null
+      }
+    },
+    {
+      "name": "v4_non_array_content",
+      "revision": "5badb15009ae1756c3afe0ae0cef1faafc290ccc",
+      "message": {
+        "id": "result-1",
+        "role": "tool",
+        "source": {
+          "kind": "tool",
+          "callId": "call-1"
+        },
+        "toolCallId": "call-1",
+        "content": "x",
+        "isError": false
+      }
+    },
+    {
+      "name": "v4_nested_result",
+      "revision": "5badb15009ae1756c3afe0ae0cef1faafc290ccc",
+      "message": {
+        "id": "result-1",
+        "role": "tool",
+        "source": {
+          "kind": "tool",
+          "callId": "call-1"
+        },
+        "toolCallId": "call-1",
+        "content": [
+          {
+            "type": "tool-result",
+            "content": []
+          }
+        ],
+        "isError": false
+      }
+    },
+    {
+      "name": "v4_non_object_block",
+      "revision": "5badb15009ae1756c3afe0ae0cef1faafc290ccc",
+      "message": {
+        "id": "result-1",
+        "role": "tool",
+        "source": {
+          "kind": "tool",
+          "callId": "call-1"
+        },
+        "toolCallId": "call-1",
+        "content": [
+          null
+        ],
+        "isError": false
+      }
+    },
+    {
+      "name": "v4_mixed_shape",
+      "revision": "5badb15009ae1756c3afe0ae0cef1faafc290ccc",
+      "message": {
+        "id": "result-1",
+        "role": "tool",
+        "source": {
+          "kind": "tool",
+          "callId": "call-1"
+        },
+        "toolCallId": "call-1",
+        "content": [
+          {
+            "type": "tool-result",
+            "toolCallId": "call-1",
+            "content": []
+          }
+        ],
+        "isError": false
+      }
+    },
+    {
+      "name": "unknown_revision",
+      "revision": "latest",
+      "message": {
+        "id": "result-1",
+        "role": "user",
+        "source": {
+          "kind": "tool",
+          "callId": "call-1"
+        },
+        "content": [
+          {
+            "type": "tool-result",
+            "toolCallId": "call-1",
+            "content": [
+              {
+                "type": "text",
+                "text": "结果 5"
+              }
+            ],
+            "isError": false
+          }
+        ]
+      }
+    }
+  ]
+}

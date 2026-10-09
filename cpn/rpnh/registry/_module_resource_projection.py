@@ -182,8 +182,23 @@ def _resource_projection(reads, compiled, net_ref, net, root_ref, root, declarat
                 or schema_id not in compiled.source.required_schemas):
             raise ValueError("resource binding lacks exact task/schema/root membership")
         source = metadata["content_schema_authority_ref"]
-        authority = _resource_from_payload(source)
-        verified_id, schema_document = reads.owner_schema(authority, schema_id)
+        from .parent_child import CAPABILITY_SCHEMA
+        if (schema_id == CAPABILITY_SCHEMA
+                and source.get("entity_type") == "registry_type_catalog/v1"):
+            if source not in root["resource_refs"]:
+                raise ValueError("H7 protected schema source is outside its exact root")
+            authority = _version_from_payload(source)
+            catalog = reads.metadata(authority, "registry_type_catalog/v1")
+            if type(reads) is _LegacyResourceReads:
+                prepared = reads.core.get_version(authority.version_id)
+                actual = json.loads(reads.core.object_store.read_registered(prepared))
+                if actual != catalog:
+                    raise ValueError("H7 catalog bytes differ from recorded authority")
+            schema_document = json.loads(catalog["schemas"][schema_id]["source"])
+            verified_id = schema_document["$id"]
+        else:
+            authority = _resource_from_payload(source)
+            verified_id, schema_document = reads.owner_schema(authority, schema_id)
         if (verified_id != schema_id
                 or schema_document != compiled.registrations["schema"][schema_id]["schema"]):
             raise ValueError("bound resource schema differs from exact registered declaration")

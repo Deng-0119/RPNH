@@ -4,6 +4,7 @@ from __future__ import annotations
 from collections import defaultdict, deque
 from dataclasses import dataclass, field
 import json
+from pathlib import Path
 import re
 import threading
 import time
@@ -13,8 +14,77 @@ from uuid import uuid4
 
 from cpn.rpnh.frontend_application import FrontendError, canonical, request_identity, stable_id
 
-OPENCODE_VERSION = "1.18.32"
-OPENCODE_COMMIT = "545f51d26cc39a907d2867492d498d9607ea5fa4"
+@dataclass(frozen=True)
+class OpenCodeCompatibilityProfile:
+    """An exact presentation target, not a declaration of native certification."""
+
+    version: str
+    commit: str
+    certification_only: bool
+
+
+def _load_opencode_profiles() -> tuple[OpenCodeCompatibilityProfile, ...]:
+    # This packaged manifest is the only version/commit source. No environment,
+    # user config, binary output, or caller-provided manifest changes the set.
+    manifest = json.loads(Path(__file__).with_name(
+        "opencode_compatibility.v1.json").read_text(encoding="utf-8"))
+    if manifest.get("schema_version") != "rpnh/opencode_compatibility/v1":
+        raise ValueError("Unsupported OpenCode compatibility manifest")
+    upstream = manifest["upstream"]
+    profiles = [OpenCodeCompatibilityProfile(
+        upstream["package_version"], upstream["commit"], False)]
+    for candidate in manifest.get("certification_candidates", []):
+        if (candidate["status"] != "certification-only"
+                or candidate["production_enabled"] is not False
+                or candidate["contract_source_commit"] != upstream["commit"]
+                or candidate["native_g2"] != "not-run"
+                or candidate["native_g3"] != "not-run"):
+            raise ValueError("Invalid OpenCode certification-only metadata")
+        profiles.append(OpenCodeCompatibilityProfile(
+            candidate["package_version"], candidate["commit"], True))
+    for profile in profiles:
+        if (not isinstance(profile.version, str)
+                or re.fullmatch(r"[0-9]+\.[0-9]+\.[0-9]+", profile.version) is None
+                or not isinstance(profile.commit, str)
+                or re.fullmatch(r"[0-9a-f]{40}", profile.commit) is None):
+            raise ValueError("OpenCode profiles require exact versions and commits")
+    if len({profile.version for profile in profiles}) != len(profiles):
+        raise ValueError("Duplicate OpenCode compatibility version")
+    return tuple(profiles)
+
+
+_OPENCODE_PROFILES = _load_opencode_profiles()
+DEFAULT_PROFILE = _OPENCODE_PROFILES[0]
+# Backwards-compatible aliases retain the production pin; never monkeypatch
+# them to exercise a different client. Tests explicitly resolve a profile.
+OPENCODE_VERSION = DEFAULT_PROFILE.version
+OPENCODE_COMMIT = DEFAULT_PROFILE.commit
+
+
+def get_opencode_profile(
+        *, certification_version: str | None = None,
+) -> OpenCodeCompatibilityProfile:
+    if certification_version is None:
+        return DEFAULT_PROFILE
+    for profile in _OPENCODE_PROFILES[1:]:
+        if type(certification_version) is str and certification_version == profile.version:
+            return profile
+    raise ValueError("Unknown exact OpenCode certification candidate")
+
+
+def require_opencode_profile(
+        profile: OpenCodeCompatibilityProfile,
+) -> OpenCodeCompatibilityProfile:
+    """Reject forged/mixed targets before a process or application is touched."""
+    if (type(profile) is not OpenCodeCompatibilityProfile
+            or type(profile.certification_only) is not bool
+            or type(profile.version) is not str
+            or type(profile.commit) is not str
+            or profile not in _OPENCODE_PROFILES):
+        raise ValueError("Unregistered OpenCode compatibility profile")
+    return profile
+
+
 COMMANDS = {
     "rpnh-help": "RPNH controls and limitations",
     "rpnh-tasks": "List independent RPNH tasks/workflows",
@@ -44,7 +114,9 @@ def _identity(prefix: str, sid: str, ordinal: int, kind: str, created: int) -> s
 class OpenCodeProtocol:
     """Exact active-model projection and a fail-closed HTTP route allowlist."""
 
-    def __init__(self, gateway: Any, directory: str) -> None:
+    def __init__(self, gateway: Any, directory: str, *,
+                 profile: OpenCodeCompatibilityProfile = DEFAULT_PROFILE) -> None:
+        self._profile = require_opencode_profile(profile)
         self.gateway, self.directory = gateway, directory
         configuration = gateway.call("configuration")
         if (not isinstance(configuration, Mapping)
@@ -92,6 +164,10 @@ class OpenCodeProtocol:
         self._epoch = uuid4().hex
         self._closed = False
         self._observations: dict[str, deque[dict[str, Any]]] = defaultdict(lambda: deque(maxlen=20))
+
+    @property
+    def profile(self) -> OpenCodeCompatibilityProfile:
+        return self._profile
 
     def notify(self) -> None:
         with self._condition:
@@ -209,7 +285,7 @@ class OpenCodeProtocol:
         first = view["turns"][0]["text"] if view["turns"] else "RPNH session"
         selection = view["model"]["selection"]
         return {"id": view["id"], "slug": view["id"], "projectID": "rpnh", "directory": self.directory,
-                "title": first[:120], "agent": "rpnh", "version": OPENCODE_VERSION,
+                "title": first[:120], "agent": "rpnh", "version": self.profile.version,
                 "model": {"providerID": "rpnh", "id": selection},
                 "time": {"created": view["created"], "updated": view["updated"]},
                 "metadata": {"rpnh_authority": "Registry", "rpnh_metrics": "unavailable",
@@ -507,7 +583,7 @@ class OpenCodeProtocol:
         if path == "/global/event":
             return Reply(200)  # The HTTP transport handles this as SSE.
         if path in {"/global/health", "/health"}:
-            return Reply(200, {"healthy": True, "version": OPENCODE_VERSION})
+            return Reply(200, {"healthy": True, "version": self.profile.version})
         if path == "/experimental/capabilities":
             return Reply(200, {"backgroundSubagents": False})
         if path == "/path":

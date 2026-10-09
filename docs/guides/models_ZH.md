@@ -104,6 +104,12 @@ model 与 effort 的权威属于 basic harness 配置层，不属于任何前端
 
 每个可选外部 profile 只有一条精确路由，凭据采用环境变量到 header/prefix 的映射或 `null`。endpoint 不得包含 userinfo/query/fragment；远程路由必须使用 HTTPS，明文 HTTP 仅限 `localhost` 或 loopback IP 上的同机 OpenAI-compatible 服务。静态认证/连接类 header、重复凭据 header 会被拒绝。各整数执行限额为正数。`context_window_tokens` 是用户为精确模型声明的可选容量；提供后，RPNH 会在调用已选路由前主动执行 context-pressure compaction。`context_compaction_retained_tokens` 可选地控制最近完整消息尾部，且必须小于窗口。未提供窗口时，RPNH 不猜测模型容量，只能在实际观察到 response-length 边界后处理。完整的可选 `runtime` 对象控制 task、并发、压缩和 workspace 策略；省略时解析为文档默认值，生成 profile 仍会明确记录。探测次数与恢复循环次数由 schema 限定在一至三。
 
+Codex UI 协议要求默认 effort 非空。仅对未配置 effort 的模型，适配层展示
+wire 标记 `none`，回传时还原为同一 profile 的 canonical 空值；真正配置
+字符串 `none` 的模型仍保留该字符串。不会添加 provider 参数或目录值。
+Codex 支持版本仍固定为 0.155.0；对 0.161.0 的 schema 检查不代表原生
+客户端认证，也未修复另行处理的历史分页缺口。
+
 ## 传输、恢复和外部效果
 catalog 对外暴露的协议是 `openai_chat_completions/v1`，不是所有宣称兼容的 API。另一种 `local_process` 必须声明 `argv`、`probe_argv`、`env`、`inherit_env`；`{model}` 替换保留所选模型。声明 effort 的本地模型还必须在正式 `argv` 中放置 `{reasoning_effort}`；构建器会为每个支持值生成不可变 execution variant。子进程及其 probe 仍可能调用付费模型，不能把“本地进程”等同“离线”。
 

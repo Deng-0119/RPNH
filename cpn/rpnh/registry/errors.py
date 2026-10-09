@@ -115,3 +115,27 @@ class IncompleteNativeRun(ResourceServiceError):
 
 class UnknownRunLayout(ResourceServiceError):
     pass
+
+
+class TerminalReadIncomplete(ResourceServiceError):
+    """A bounded terminal read did not finish; no semantic result was proven."""
+
+    def __init__(self, reason: str, detail: str = ""):
+        self.reason = reason
+        super().__init__(reason + (": " + detail if detail else ""))
+
+
+class TerminalReadUnsupported(ResourceServiceError):
+    """Valid historical composition outside the terminal reader's support."""
+
+    def __init__(self, reason: str, detail: str = ""):
+        self.reason = reason
+        super().__init__(reason + (": " + detail if detail else ""))
+
+
+class TerminalReadStale(ResourceServiceError):
+    """An explicitly changed source, Registry cut, or writer requires a reread."""
+
+    def __init__(self, reason: str, detail: str = ""):
+        self.reason = reason
+        super().__init__(reason + (": " + detail if detail else ""))

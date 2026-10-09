@@ -1,0 +1,346 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "registry_v1/parent_child_dispatch/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "record_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "entity_type": {
+          "type": "string",
+          "minLength": 1
+        },
+        "logical_id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
+        },
+        "version_id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
+        }
+      },
+      "required": [
+        "entity_type",
+        "logical_id",
+        "version_id"
+      ]
+    },
+    "parent": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "source_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "binding_ref": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "entity_type": {
+              "type": "string",
+              "minLength": 1
+            },
+            "logical_id": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
+            },
+            "version_id": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
+            }
+          },
+          "required": [
+            "entity_type",
+            "logical_id",
+            "version_id"
+          ]
+        },
+        "run_ref": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "entity_type": {
+              "type": "string",
+              "minLength": 1
+            },
+            "logical_id": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
+            },
+            "version_id": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
+            }
+          },
+          "required": [
+            "entity_type",
+            "logical_id",
+            "version_id"
+          ]
+        },
+        "task_ref": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "entity_type": {
+              "type": "string",
+              "minLength": 1
+            },
+            "logical_id": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
+            },
+            "version_id": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
+            }
+          },
+          "required": [
+            "entity_type",
+            "logical_id",
+            "version_id"
+          ]
+        },
+        "branch_ref": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "entity_type": {
+              "type": "string",
+              "minLength": 1
+            },
+            "logical_id": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
+            },
+            "version_id": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
+            }
+          },
+          "required": [
+            "entity_type",
+            "logical_id",
+            "version_id"
+          ]
+        }
+      },
+      "required": [
+        "source_id",
+        "binding_ref",
+        "run_ref",
+        "task_ref",
+        "branch_ref"
+      ]
+    },
+    "slot_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "execution": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "firing_ref": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "entity_type": {
+              "type": "string",
+              "minLength": 1
+            },
+            "logical_id": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
+            },
+            "version_id": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
+            }
+          },
+          "required": [
+            "entity_type",
+            "logical_id",
+            "version_id"
+          ]
+        },
+        "invocation_ref": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "entity_type": {
+              "type": "string",
+              "minLength": 1
+            },
+            "logical_id": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
+            },
+            "version_id": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
+            }
+          },
+          "required": [
+            "entity_type",
+            "logical_id",
+            "version_id"
+          ]
+        },
+        "lease_ref": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "entity_type": {
+              "type": "string",
+              "minLength": 1
+            },
+            "logical_id": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
+            },
+            "version_id": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
+            }
+          },
+          "required": [
+            "entity_type",
+            "logical_id",
+            "version_id"
+          ]
+        },
+        "start_event_id": {
+          "type": "string",
+          "pattern": "^event:[a-f0-9]{32}$"
+        },
+        "net_ref": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "entity_type": {
+              "type": "string",
+              "minLength": 1
+            },
+            "logical_id": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
+            },
+            "version_id": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
+            }
+          },
+          "required": [
+            "entity_type",
+            "logical_id",
+            "version_id"
+          ]
+        },
+        "round_ref": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "entity_type": {
+              "type": "string",
+              "minLength": 1
+            },
+            "logical_id": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
+            },
+            "version_id": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
+            }
+          },
+          "required": [
+            "entity_type",
+            "logical_id",
+            "version_id"
+          ]
+        },
+        "run_authority_ref": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "entity_type": {
+              "type": "string",
+              "minLength": 1
+            },
+            "logical_id": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
+            },
+            "version_id": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
+            }
+          },
+          "required": [
+            "entity_type",
+            "logical_id",
+            "version_id"
+          ]
+        },
+        "execution_generation": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "original_writer_epoch": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "required": [
+        "firing_ref",
+        "invocation_ref",
+        "lease_ref",
+        "start_event_id",
+        "net_ref",
+        "round_ref",
+        "run_authority_ref",
+        "execution_generation",
+        "original_writer_epoch"
+      ]
+    },
+    "intent_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "entity_type": {
+          "type": "string",
+          "minLength": 1
+        },
+        "logical_id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
+        },
+        "version_id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
+        }
+      },
+      "required": [
+        "entity_type",
+        "logical_id",
+        "version_id"
+      ]
+    },
+    "bundle_digest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    }
+  },
+  "required": [
+    "record_ref",
+    "parent",
+    "slot_id",
+    "execution",
+    "intent_ref",
+    "bundle_digest"
+  ]
+}

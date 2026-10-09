@@ -46,6 +46,8 @@ class RuntimeNet:
         self.sources = tuple(place for place in self.places if not self.producers_of(place))
         self.registry_read_arcs = tuple((arc.place, arc.transition, arc.weight)
             for arc in self._arcs if arc.direction == "input" and arc.mode == "read")
+        self.lease_reference_arcs = tuple(arc for arc in self.registry_read_arcs
+            if self._places[arc[0]].token_kind == "resource_lease")
         self.token_input_arcs = tuple((arc.place, arc.transition, arc.weight)
             for arc in self._arcs if arc.direction == "input" and arc.mode in {"consume", "borrow"})
         self.output_arcs = tuple((arc.transition, arc.place, arc.weight)

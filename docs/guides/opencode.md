@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: en
   counterpart: opencode_ZH.md
-  revision: "2026-09-29.2"
+  revision: "2026-10-08.1"
   status: locally-validated-integration-candidate
   upstream-version: "1.18.32"
 ---
@@ -170,6 +170,66 @@ Large histories can exceed the v1 display limit and fail explicitly. Diagnostics
 retain bounded route shapes/statuses, not prompt bodies, headers or arbitrary
 URLs. Unknown outcomes, profile drift, missing owners and unsupported requests
 are explicit errors; none asserts successful execution.
+
+## Explicit candidate certification (test-only)
+
+Production remains pinned to **1.18.32**. The manifest additionally records
+**1.18.35** (`53d1eabb61e21162157817bf677da0a4ad3332e3`) as
+`certification-only`, with production disabled and native G2/G3 `not-run`.
+There is no product CLI, environment-variable or config switch for the candidate.
+The exact immutable profile is explicitly shared by the test's binary probe and
+protocol instance. It changes declared version metadata only; DTOs, execution,
+Registry, provider/model ownership and Petri-net projection are unchanged.
+
+Run the candidate's pure G1 checks without a client, socket, PTY or provider:
+
+```bash
+python -m pytest -q tests/test_opencode_candidate_profiles.py
+```
+
+The packaged schema remains the reviewed source-extracted subset for 1.18.32.
+Both profiles share its DTO checks. Its health response has an old-version
+constant: candidate tests separately check the exact candidate version and bind
+only that version metadata for structural validation. This is not an unchanged
+old health-constant pass, official SDK compilation or stock-client acceptance.
+
+Only after separately authorizing native execution, using an already obtained
+trusted, unmodified Linux binary and preinstalled test dependencies:
+
+```bash
+python -m pytest -q tests/test_opencode_candidate_native.py \
+  --opencode-certify-version=1.18.35 \
+  --opencode-certify-binary=/absolute/path/to/opencode \
+  --opencode-certify-lane=contract
+# Run separately for the synthetic committed-Registry read smoke:
+python -m pytest -q tests/test_opencode_candidate_native.py \
+  --opencode-certify-version=1.18.35 \
+  --opencode-certify-binary=/absolute/path/to/opencode \
+  --opencode-certify-lane=registry-read
+```
+
+These are limited smoke scenarios, not complete G2/G3 certification. Without
+explicit options the candidate native cases do not run. Partial options,
+unsupported versions/platforms, missing binaries/dependencies, wrong probe
+output or a deselected requested lane fail rather than silently passing a skip.
+The gates never install, log in, contact a real model or accept a user Registry
+path. Record binary provenance separately: a local hash and version output alone
+do not prove an official release artifact. For the production control, repeat either explicit smoke command with
+`--opencode-certify-version=1.18.32` and the corresponding stock binary. Both
+exact targets are test-only selections; this does not alter the legacy pinned
+PTY test or the production launcher.
+
+G2 uses the original HTTP/SSE protocol and `ApplicationDouble`. G3 prepares two
+committed turns using the existing deterministic fake port, then measures the
+original `FrontendGateway`/`RegistryFrontendApplication` read path with zero new
+fake-port/model/submit/spawn effects. Preparation calls are reported separately.
+Normal gateway ticks and exclusive owner-lease acquire/release remain real.
+Read-only net checks use `/rpnh-net` and the existing projection/filter;
+`/rpnh-tasks` can reconcile links and is excluded from strict read-only measures.
+Picker coverage, forced SSE reconnect and long-history page boundaries remain
+uncovered by these smoke gates. Linux and WSL2 are separately measured targets;
+no native Windows or macOS support is added. Passing evidence never updates the
+manifest's certification state or promotes the default pin.
 
 ## Verification and implementation map
 

@@ -44,6 +44,7 @@ def _bootstrap_identity(
         exact_task_ref: VersionRef | None = None,
         exact_task_branch_ref: VersionRef | None = None,
         project_identity_objects: tuple[object, ...] = (),
+    _parent_bound_acceptance: dict | None = None,
 ) -> NativeRunIdentity:
     catalog_rows = [
         row for row in core.event_store.object_rows()
@@ -145,6 +146,11 @@ def _bootstrap_identity(
             object_type=object_type, logical_id=logical_id, version_id=version_id,
             payload=canonical_json(metadata), metadata=metadata,
             media_type="application/json", schema_ref=f"registry_v1/{object_type}")
+    if _parent_bound_acceptance is not None:
+        from .parent_bound import stage_bound_bootstrap
+        stage_bound_bootstrap(core, tx, run_ref=run_ref, task_ref=task_ref,
+            branch_ref=branch_ref, genesis_ref=genesis_ref, bootstrap_ref=bootstrap_ref,
+            acceptance=_parent_bound_acceptance)
     tx.commit()
     core.event_store.get_or_create_meta("native_run_ref", json.dumps(_ref_payload(run_ref)))
     core.event_store.get_or_create_meta(

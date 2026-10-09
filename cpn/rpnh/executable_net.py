@@ -163,6 +163,9 @@ def _make_document(source, fragments, symbolic, registrations):
         aliases.update({f"{name}.{p.name}": f"{name}.{p.name}" for p in fragment.places})
         for binding in fragment.ports + fragment.internal_bindings:
             aliases[f"{name}.{binding.place}"] = symbolic["port_places"][f"{name}.{binding.name}"]
+    from .bound_child_lowering import has_bound_origin, ORIGIN_SYMBOL
+    if has_bound_origin(ModuleDeclaration.from_dict(source)):
+        aliases[ORIGIN_SYMBOL] = ORIGIN_SYMBOL
     return {
         "schema_version": "rpnh/executable_net/v1", "source": source,
         "fragments": {k: asdict(v) for k, v in fragments.items()},
@@ -417,7 +420,8 @@ def _load_compiled_net(document, *, offline_schema_validation):
         # A typed author proof opts into offline validation. Legacy v1 sources
         # without this reserved proof keep their existing validator behavior.
         from .control_ir import control_proof_key
-        if control_proof_key(source.designer_constraints or {}) is not None:
+        from .bound_child_lowering import has_bound_origin
+        if control_proof_key(source.designer_constraints or {}) is not None or has_bound_origin(source):
             offline_schema_validation = True
         fragments = {k: _fragment(v) for k, v in value["fragments"].items()}
         symbolic = _verify(value, source, fragments, offline_schema_validation=offline_schema_validation)

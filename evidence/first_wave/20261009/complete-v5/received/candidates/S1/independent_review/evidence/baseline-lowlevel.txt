@@ -1,4 +1,0 @@
-source /workspace/scratch/18c810e6dd59/rpnh-parent-child-seam-design/source/cpn/__init__.py
-correct ADMITTED VersionRef(entity_type='transition_firing/v1', entity_id=TypedId(kind='transition_firing', value='3cfeb549aac75fa58c31eb3cd296e8ae'), version_id=TypedId(kind='transition_firing_version', value='b9f4dbdb2d935482ab7a630a84d54716'))
-missing_lease ADMITTED VersionRef(entity_type='transition_firing/v1', entity_id=TypedId(kind='transition_firing', value='a2ba8891266a51558b4a7d372a42924e'), version_id=TypedId(kind='transition_firing_version', value='06ab86969a89587db63215fbfa36648c'))
-consume_lease ADMITTED VersionRef(entity_type='transition_firing/v1', entity_id=TypedId(kind='transition_firing', value='2385c183aa1e5f849006db502694387d'), version_id=TypedId(kind='transition_firing_version', value='5c50f9bdfba55f4e8e76b4323a43e294'))

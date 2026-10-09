@@ -13,6 +13,7 @@ from cpn.frontend.codex_app_server import (
     CodexAppServer,
     ThreadState,
 )
+from cpn.frontend.codex_history import codex_thread_id
 from cpn.rpnh.agent_tasks import AgentStage
 from cpn.rpnh.main_session import (
     MainDecision,
@@ -153,6 +154,14 @@ class _RecoverySession:
             committed_history: list[tuple[str, str]] | None = None,
     ) -> None:
         self.root = root
+        # The live-control double still has an actual, pre-existing Registry
+        # identity for owner/source lifecycle checks. It does not grant history.
+        from cpn.rpnh.registry._registry import _RegistryCore
+        from cpn.rpnh.registry.main_thread import MainThreadRegistry
+        self._registry_core = _RegistryCore(root / "main", create=False, read_only=True)
+        self._main_thread = MainThreadRegistry(self._registry_core, session_root=root)
+        self.history_registry = self._main_thread
+        self._thread_ref = self._main_thread.capture_read_cut().thread_ref
         self.child_path_root = root / "main"
         self.execution_config_path = execution.resolve()
         self.history = list(history or [])
@@ -547,7 +556,7 @@ def test_codex_projects_one_direct_basic_main_session(tmp_path: Path) -> None:
     MainSession(root, execution)
 
     server = CodexAppServer(root, execution)
-    thread_id = stable_frontend_session_id(root)
+    thread_id = codex_thread_id(stable_frontend_session_id(root))
 
     assert tuple(server._threads) == (thread_id,)
     assert server._threads[thread_id].session.root == root.resolve()
@@ -566,7 +575,7 @@ def test_codex_fresh_thread_is_direct_and_rejects_a_second_thread(
     asyncio.run(server._start_thread(socket, "first", {}))
     state = next(iter(server._threads.values()))
     assert state.session.root == root.resolve()
-    assert state.thread_id == stable_frontend_session_id(root)
+    assert state.thread_id == codex_thread_id(stable_frontend_session_id(root))
     assert not (root / "threads").exists()
     with pytest.raises(ValueError, match="already bound"):
         asyncio.run(server._start_thread(socket, "second", {}))
@@ -603,7 +612,7 @@ def test_codex_resume_rebuilds_transcript_and_sanitizes_forged_sidecar(
     server = CodexAppServer(root, execution)
     state = next(iter(server._threads.values()))
     turn = state.turns[0]
-    assert state.thread_id == stable_frontend_session_id(root)
+    assert state.thread_id == codex_thread_id(stable_frontend_session_id(root))
     assert turn["items"][0]["content"][0]["text"] == (
         "authoritative question")
     assert turn["items"][1]["text"] == "authoritative answer"
@@ -698,7 +707,7 @@ def test_codex_resume_projection_starts_no_worker_or_reconciliation(
     server.close()
 
 
-def test_codex_resumed_transcript_preserves_live_launch_annotation(
+def test_codex_live_launch_cache_is_separate_from_paginated_history(
         tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     execution = _local_profile(tmp_path / "profiles")
@@ -740,8 +749,8 @@ def test_codex_resumed_transcript_preserves_live_launch_annotation(
     asyncio.run(server.handle(socket))
 
     response = next(item for item in socket.sent if item.get("id") == 1)
-    transcript_text = response["result"]["thread"]["turns"][0][
-        "items"][1]["text"]
+    assert response["result"]["thread"]["turns"] == []
+    transcript_text = server._threads[thread_id].turns[0]["items"][1]["text"]
     assert transcript_text == live_text
     assert transcript_text == (
         "delegated\n\n[launched task-durable: single_agent]")
@@ -1210,3 +1219,211 @@ def test_codex_shutdown_stops_only_foreground_main_turn(
     assert control.stop_calls == 1
     assert state.active is None
     assert state.turns == []
+
+
+def _wire_effort_profiles(root: Path) -> tuple[Path, Path, Path]:
+    """Same exact model; absence and configured 'none' are distinct selections."""
+    root.mkdir(parents=True)
+    models = []
+    for name in ("unconfigured", "configured-none"):
+        model = {
+            "profile": name,
+            "model_condition": "same-exact-model",
+            "adapter": {
+                "adapter_kind": "local_process",
+                "argv": ["/usr/bin/true", "--model", "{model}"],
+                "probe_argv": ["/usr/bin/true"], "env": {}, "inherit_env": [],
+            },
+            "timeout_seconds": 60,
+            "max_output_tokens": 1024,
+            "max_response_bytes": 8192,
+        }
+        if name == "configured-none":
+            model["reasoning_efforts"] = {
+                "supported": ["none", "low"], "default": "none"}
+            model["adapter"]["argv"] += ["--effort", "{reasoning_effort}"]
+        models.append(model)
+    catalog = root / "catalog.json"
+    catalog.write_text(json.dumps({
+        "schema_version": "rpnh/provider_model_catalog/v3",
+        "providers": [{"provider": "local", "display_name": "Local",
+                       "models": models}],
+    }), encoding="utf-8")
+    generated = root / "generated"
+    build_provider_catalog(catalog, generated)
+    return tuple(generated / "execution" / name for name in (
+        "unconfigured.json", "configured-none.json",
+        "configured-none--effort-low.json"))
+
+
+@pytest.mark.parametrize("version", ["0.155.0", "0.161.0"])
+def test_codex_effort_wire_codec_matches_official_schema(
+        tmp_path: Path, version: str,
+) -> None:
+    import jsonschema
+
+    no_effort, configured_none, low = _wire_effort_profiles(tmp_path / "profiles")
+    server = CodexAppServer(tmp_path / "session", no_effort)
+    fixtures = Path(__file__).parent / "fixtures" / "codex" / version
+    schema = json.loads((fixtures / "ModelListResponse.json").read_text())
+    response = {"data": [server._model(p) for p in server.model_profiles],
+                "nextCursor": None}
+    jsonschema.Draft7Validator(schema).validate(response)
+    # This is a source-derived picker projection, not execution of Rust/TUI.
+    for model in response["data"]:
+        choices = [option["reasoningEffort"]
+                   for option in model["supportedReasoningEfforts"]]
+        choices = choices or [model["defaultReasoningEffort"]]
+        for choice in choices:
+            profile = server._profile_for_selection(model["model"], choice)
+            assert server._effort_to_wire(profile, profile.reasoning_effort) == choice
+    assert server._profile_for_selection("unconfigured", "none").path == no_effort
+    assert server._profile_for_selection("unconfigured", "none").reasoning_effort is None
+    assert server._profile_for_selection("configured-none", "none").path == configured_none
+    assert server._profile_for_selection("configured-none", "none").reasoning_effort == "none"
+    assert server._profile_for_selection("configured-none", "low").path == low
+    assert next(m for m in response["data"] if m["id"] == "unconfigured")[
+        "supportedReasoningEfforts"] == []
+    with pytest.raises(ValueError, match="unknown RPNH reasoning effort"):
+        server._profile_for_selection("unconfigured", "medium")
+    with pytest.raises(ValueError, match="unknown RPNH provider/model"):
+        server._profile_for_selection("unknown", "none")
+    assert "export type ReasoningEffort = string;" in (
+        fixtures / "ReasoningEffort.ts").read_text()
+    server.close()
+
+
+@pytest.mark.parametrize("canonical_effort,index", [(None, 0), ("none", 1), ("low", 2)])
+def test_codex_effort_wire_roundtrip_preserves_execution_identity(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+        canonical_effort: str | None, index: int,
+) -> None:
+    paths = _wire_effort_profiles(tmp_path / "profiles")
+    execution = paths[index]
+    selected_config = tmp_path / "user" / "config.json"
+    monkeypatch.setenv("RPNH_CONFIG", str(selected_config))
+    # No adapter/probe executable, provider, worker or physical transport runs.
+    def forbidden(*_args, **_kwargs):
+        raise AssertionError("wire test must not execute a provider or worker")
+    monkeypatch.setattr("cpn.frontend.codex_app_server.subprocess.Popen", forbidden)
+    monkeypatch.setattr(TaskControl, "start", forbidden)
+    server = CodexAppServer(tmp_path / "session", execution)
+    profile = profile_for_path(execution)
+    identity = server._execution_identity(execution)
+    profile_bytes = {p: p.read_bytes() for p in paths}
+    adapter_paths = tuple((paths[0].parent.parent / "adapters").glob("*.json"))
+    assert adapter_paths
+    adapter_bytes = {p: p.read_bytes() for p in adapter_paths}
+    wire_effort = "none" if canonical_effort is None else canonical_effort
+    socket = _FakeWebSocket([])
+    server._initialized_connections.add(id(socket))
+
+    async def request(method, params=None):
+        await server._handle_request(socket, method, method, params or {})
+        return next(item["result"] for item in reversed(socket.sent)
+                    if item.get("id") == method)
+
+    async def roundtrip():
+        config = await request("config/read")
+        assert config["config"]["model_reasoning_effort"] == wire_effort
+        assert config["config"]["model"] == profile.selection_id
+        await request("config/batchWrite", {"edits": [
+            {"keyPath": "model", "value": profile.selection_id,
+             "mergeStrategy": "replace"},
+            {"keyPath": "model_reasoning_effort", "value": wire_effort,
+             "mergeStrategy": "replace"},
+        ]})
+        started = await request("thread/start", {
+            "model": profile.selection_id, "effort": wire_effort,
+            "cwd": str(tmp_path),
+        })
+        assert started["reasoningEffort"] == wire_effort
+        state = server._threads[started["thread"]["id"]]
+        assert state.reasoning_effort == canonical_effort
+        assert state.session.execution_config_path == execution
+        # Cross a different selection before decoding 'none' again.
+        other = profile_for_path(paths[1 if index == 0 else 0])
+        await request("thread/settings/update", {
+            "threadId": state.thread_id, "model": other.selection_id,
+            "effort": "none",
+        })
+        assert state.reasoning_effort == other.reasoning_effort
+        await request("thread/settings/update", {
+            "threadId": state.thread_id, "model": profile.selection_id,
+            "effort": wire_effort,
+        })
+        assert state.reasoning_effort == canonical_effort
+        assert state.session.execution_config_path == execution
+        core = state.session._registry_core
+        before_read = (core.event_store.max_ordinal(), core.event_store.writer_epoch)
+        owner_lease = server._lease
+        resumed = await request("thread/resume", {"threadId": state.thread_id})
+        assert resumed["reasoningEffort"] == wire_effort
+        assert (core.event_store.max_ordinal(), core.event_store.writer_epoch) == before_read
+        assert server._lease is owner_lease
+        # Stop exactly at the execution handoff. This proves turn/start decoded
+        # the canonical profile, not successful worker/turn execution.
+        class PreparationObserved(Exception):
+            pass
+        def observe_preparation(text):
+            assert text == "codec only"
+            assert state.session.execution_config_path == execution
+            assert state.reasoning_effort == canonical_effort
+            assert server._execution_identity(execution) == identity
+            raise PreparationObserved
+        monkeypatch.setattr(state.session, "prepare_turn", observe_preparation)
+        with pytest.raises(PreparationObserved):
+            await request("turn/start", {
+                "threadId": state.thread_id, "model": profile.selection_id,
+                "effort": wire_effort,
+                "input": [{"type": "text", "text": "codec only"}],
+            })
+        assert state.active is None
+
+    try:
+        asyncio.run(roundtrip())
+        assert server.default_reasoning_effort == canonical_effort
+        assert server._execution_identity(execution) == identity
+        saved = json.loads(selected_config.read_text())
+        assert saved["reasoning_effort"] == canonical_effort
+        assert saved["execution_config_path"] == str(execution)
+        assert {p: p.read_bytes() for p in paths} == profile_bytes
+        assert {p: p.read_bytes() for p in adapter_paths} == adapter_bytes
+    finally:
+        server.close()
+    # Reopen the real committed empty Registry without launching or reconciling.
+    reopened = CodexAppServer(tmp_path / "session", execution)
+    try:
+        state = next(iter(reopened._threads.values()))
+        assert state.reasoning_effort == canonical_effort
+        assert state.session.execution_config_path == execution
+        assert reopened._selected_effort_to_wire(
+            state.model_id, state.reasoning_effort) == wire_effort
+        assert reopened._execution_identity(execution) == identity
+    finally:
+        reopened.close()
+
+
+def test_codex_none_marker_does_not_become_an_unlisted_effort(tmp_path: Path) -> None:
+    _, medium, _ = _reasoning_effort_profiles(tmp_path / "profiles")
+    server = CodexAppServer(tmp_path / "session", medium)
+    with pytest.raises(ValueError, match="unknown RPNH reasoning effort"):
+        server._profile_for_selection("reasoning-model", "none")
+    assert server._profile_for_selection("reasoning-model", None).path == medium
+    server.close()
+
+
+def test_codex_schema_candidate_does_not_expand_native_version_pin(tmp_path: Path) -> None:
+    from cpn.frontend.codex_app_server import CODEX_FRONTEND_VERSION
+
+    assert CODEX_FRONTEND_VERSION == "0.155.0"
+    execution = _local_profile(tmp_path / "profiles")
+    server = CodexAppServer(tmp_path / "session", execution)
+    socket = _FakeWebSocket([])
+    with pytest.raises(ValueError, match="0.155.0 exactly"):
+        asyncio.run(server._handle_request(socket, "initialize", "initialize", {
+            "clientInfo": {"name": "codex-tui", "version": "0.161.0"},
+        }))
+    assert not socket.sent
+    assert not server._threads
+    server.close()

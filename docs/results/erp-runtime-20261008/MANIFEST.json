@@ -1,0 +1,27 @@
+{
+  "representation": "new curated distribution bytes, not original raw bytes",
+  "study": "erp-runtime-20261008",
+  "source_document_tree": "1af8f456bbef1a00d7f4764ffa2545559ad70dec",
+  "files": [
+    {
+      "path": "README.md",
+      "bytes": 3436,
+      "sha256": "e7ef243b85c3b3febcd98091e6485d96c513913d4c949762b4f4f84c0869a7f2",
+      "git_blob_sha1": "a6ac81d5467b345d41dba76a119ddee13c37f61f"
+    },
+    {
+      "path": "README_ZH.md",
+      "bytes": 2946,
+      "sha256": "ffc24dd7943b3a9084137177087ca5fc111182e547cbdd25ff415123ca53b09b",
+      "git_blob_sha1": "84f9af14a7cba3b9dc10708097e8bd40a47d8c65"
+    },
+    {
+      "path": "results.json",
+      "bytes": 12152,
+      "sha256": "765cf937e2352aaf2ece1799e0c5dd49a68b4dea6e055e6c25d8cd553b185bbe",
+      "git_blob_sha1": "a77d429bab4becd068d44b546ec755649ca628d1"
+    }
+  ],
+  "transformation": "Allowlisted score/status/source/input projection and rewritten bilingual prose; omitted transcripts, diagnostics, private profiles, databases and private storage paths.",
+  "acceptance": "bounded static documentation review only; parent export/package/link/language gates required"
+}

@@ -1,1 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="0" skipped="0" tests="1" time="3.231" timestamp="2026-10-08T19:42:04.045867-04:00" hostname="54cb1abdc64d"><testcase classname="tests.test_history_business_refs" name="test_original_operation_config_is_opaque_business_data" time="2.552" /></testsuite></testsuites>

@@ -284,6 +284,8 @@ def stage_checkpoint_reentry(
         source_checkpoint_ref: VersionRef, command_id: str, reason: str,
 ) -> VersionRef:
     """Atomically append one owner-selected execution generation."""
+    from .parent_bound import reject_bound_reentry
+    reject_bound_reentry(core)
     if (not isinstance(core, _RegistryCore) or core.read_only
             or not isinstance(kernel, _ResourceServiceKernel)
             or kernel._ResourceServiceKernel__core is not core

@@ -773,9 +773,9 @@ class TeamNetMarking:
         from ._marking import selection as _selection
         return _selection._claim_input_arcs(self, t_id)
 
-    def _is_enabled_locked(self, t_id: str, timed_wait_guard_states: Sequence[TimedWaitGuardState]=(), *, _timed_wait_guard_state_map: Optional[Mapping[str, TimedWaitGuardState]]=None) -> bool:
+    def _is_enabled_locked(self, t_id: str, timed_wait_guard_states: Sequence[TimedWaitGuardState]=(), *, _timed_wait_guard_state_map: Optional[Mapping[str, TimedWaitGuardState]]=None, allowed_token_ids: Optional[set[int]]=None) -> bool:
         from ._marking import selection as _selection
-        return _selection._is_enabled_locked(self, t_id, timed_wait_guard_states, _timed_wait_guard_state_map=_timed_wait_guard_state_map)
+        return _selection._is_enabled_locked(self, t_id, timed_wait_guard_states, _timed_wait_guard_state_map=_timed_wait_guard_state_map, allowed_token_ids=allowed_token_ids)
 
     @staticmethod
     def _version_ref_from_exact(value: object) -> VersionRef:

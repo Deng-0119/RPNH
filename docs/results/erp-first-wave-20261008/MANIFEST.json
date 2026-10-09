@@ -1,0 +1,27 @@
+{
+  "representation": "new curated distribution bytes, not original raw bytes",
+  "study": "erp-first-wave-20261008",
+  "source_document_tree": "1af8f456bbef1a00d7f4764ffa2545559ad70dec",
+  "files": [
+    {
+      "path": "README.md",
+      "bytes": 5224,
+      "sha256": "bfcb7f60c6bdb5feec39ba29fa8b402d370b4a7b916e55d390ba921c76914678",
+      "git_blob_sha1": "43df00f9dc636a17f57e5cd168d77a9251ccafc4"
+    },
+    {
+      "path": "README_ZH.md",
+      "bytes": 4565,
+      "sha256": "8f6424f603178017cedde0ac372743cdc7f42b293d1c43a014076cd5229fae66",
+      "git_blob_sha1": "6430160ca66a87f2cf6b53eea03bde40bc0847fa"
+    },
+    {
+      "path": "results.json",
+      "bytes": 65570,
+      "sha256": "024aef5af928cf217c0e7aa6dc91eb05863bf33b78fba26ca4dbe05178d6b201",
+      "git_blob_sha1": "6af5d3411c45880b397c6e6df36d01908f757690"
+    }
+  ],
+  "transformation": "Allowlisted score/status/source/input projection and rewritten bilingual prose; omitted transcripts, diagnostics, private profiles, databases and private storage paths.",
+  "acceptance": "bounded static documentation review only; parent export/package/link/language gates required"
+}

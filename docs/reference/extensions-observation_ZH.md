@@ -15,6 +15,9 @@ metadata:
 
 # 插件 SDK、适配与只读观察
 
+trusted-host、refs-only Registry 历史边界见
+[固定切面的主线程历史](main-thread-history_ZH.md)。
+
 ## 原生插件契约
 这些 API 随统一包提供；外部插件仍是独立安装、显式选择的可信包。`PluginDefinition` 绑定
 name/version、operation tuple、config schema 和可选资源。`PluginOperation(name,

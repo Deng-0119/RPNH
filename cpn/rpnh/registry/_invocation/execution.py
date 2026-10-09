@@ -32,6 +32,8 @@ from ..invocations import (
 
 def revalidate_io(lifecycle, context: InvocationContext, *, boundary: str) -> None:
     """Re-authorize an immutable DTO from current D1-C heads before I/O."""
+    from ..parent_bound import assert_bound_integrity
+    assert_bound_integrity(lifecycle.service, for_execution=True)
     if not isinstance(context, InvocationContext):
         raise TypeError("governed I/O requires an explicit InvocationContext")
     if lifecycle.service.writer_epoch != lifecycle.service.event_store.writer_epoch:

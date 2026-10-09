@@ -89,6 +89,14 @@ def canonical_text(value: Any) -> str:
 
 
 CURRENT_OBJECT_TYPES = (
+    "parent_child_intent/v1",
+    "parent_child_intent/v2",
+    "parent_child_dispatch/v1",
+    "parent_child_worker/v1",
+    "parent_child_acceptance/v1",
+    "parent_bound_bootstrap/v1",
+    "parent_bound_origin/v1",
+
     "agent/v1",
     "agent_loop_resource_grant_authority/v1",
     "bootstrap_command/v1",
@@ -168,6 +176,7 @@ CURRENT_OBJECT_TYPES = (
 )
 
 CURRENT_EVENT_TYPES = (
+    "parent_child_recorded/v1",
     "agent_turn_recorded/v2",
     "capability_activated/v1",
     "capability_allowed/v1",
@@ -265,6 +274,15 @@ CURRENT_RELATION_TYPES = (
 )
 
 CURRENT_CONTENT_SCHEMA_REFS = (
+    "rpnh/installed_public_material_contract/v1",
+    "rpnh/public_implementation_observation/v1",
+    "rpnh/public_material_selection/v1",
+    "rpnh/public_execution_policy/v1",
+    "rpnh/registered_public_material_inventory/v1",
+    "rpnh/agent_task_spec/v13",
+
+    "rpnh/parent_child_request/v1",
+    "rpnh/parent_origin_capability/v1",
     "registry_v1/fact_event_envelope/v1",
     "registry_v1/llm_input_target/v1",
     "registry_v1/mechanical_transition_receipt/v1",

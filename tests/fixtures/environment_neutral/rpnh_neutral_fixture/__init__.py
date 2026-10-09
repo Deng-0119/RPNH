@@ -114,6 +114,18 @@ def probes(local):
 def profile(local):
     from cpn.rpnh.collaboration.environment_host import HostProfile
     from cpn.plugins.runtime import plugin_registration
+    from cpn.rpnh.public_module_materials import PublicHostSelection
+    if type(local) is PublicHostSelection:
+        configuration = local.configuration['configuration']
+        public_catalog = catalog(configuration)
+        def public_registration():
+            result = plugin_registration(public_catalog)
+            result.register_schema('rpnh/neutral_public_configuration/v1', {
+                **definition().config_schema, '$id': 'rpnh/neutral_public_configuration/v1',
+                '$schema': 'http://json-schema.org/draft-07/schema#'})
+            return result
+        return HostProfile(PROFILE_ID, public_registration,
+            catalog=public_catalog, public_material_contract=local.contract_bytes)
     def policy():
         return probes(local)
     def registration():

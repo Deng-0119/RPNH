@@ -1,3 +1,0 @@
-................................                                         [100%]
-- generated xml file: /workspace/scratch/18c810e6dd59/rpnh-static-lease-read-review/evidence/final-pure-regressions.xml -
-32 passed, 3 deselected in 55.19s

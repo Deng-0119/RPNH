@@ -1,8 +1,0 @@
-{
-  "attempt": "a004",
-  "created_utc": "2026-10-09T03:44:37.454081+00:00",
-  "evidence_policy": "Frozen probe source and attempt-local observations; never overwrite earlier attempts.",
-  "acceptance_scenes": 7,
-  "planned_test_cases": 10,
-  "selected_cases": 10
-}

@@ -64,6 +64,8 @@ def _compile_module(module, registration, *, offline):
     # Prepared typed Modules re-enter through author publication/full readers.
     # Use the existing Module JSON view so legacy Python key normalization stays intact.
     typed = author is not None or control_proof_key(module.to_dict()["designer_constraints"]) is not None
+    from .bound_child_lowering import has_bound_origin
+    offline = offline or has_bound_origin(module)
     if not typed and not offline:
         symbolic = module.lower(observed)
     else:

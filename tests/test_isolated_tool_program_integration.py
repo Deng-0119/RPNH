@@ -183,7 +183,7 @@ raise RuntimeError('synthetic script exception')
 
 @pytest.mark.parametrize("source", [
     "import socket\nsocket.socket()\nresult('impossible')",
-    "open('/home/deng123/RPNH/RPNH-main/README.md').read()\nresult('impossible')",
+    f"open({str(Path(__file__).resolve().parents[1] / 'README.md')!r}).read()\nresult('impossible')",
     "tools.call('illegal', 'workspace', {})\nresult('impossible')",
 ])
 def test_actual_isolation_rejects_direct_network_host_file_and_undeclared_tool(tmp_path, monkeypatch, source):

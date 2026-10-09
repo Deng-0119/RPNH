@@ -1,6 +1,0 @@
-{
-  "label": "Escaped UTF-8 view; companion, NOT a replacement or repaired result",
-  "raw_payload": "stages/core/lower-independent.stdout.log",
-  "raw_sha256": "9ac7cf26d484b317ae559910f562e7eb8f374c234447146ce489a4d53062d775",
-  "text": ".......................\u0000"
-}

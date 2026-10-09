@@ -1,0 +1,2103 @@
+{
+  "representation": "curated projection; changed bytes; not original verifier bytes or transcripts",
+  "source": {
+    "base_commit": "ae09445fe1d9b973502bc5d2c961976c1d2c0163",
+    "tested_commit": "6f8ee2e406f3c70edb73206f861e56a0202b9f15",
+    "head_tree": "9ea1fe710d835b099c363f768e9fd6fb57357064",
+    "owned_tree_sha256": "298d4e10c86d143f4191ba3e7a2bfe57fab25e50013c2b1b1dcdeb9e3654c749",
+    "tracked_clean": true
+  },
+  "historical_owned_files": [
+    {
+      "bytes": 12568,
+      "mode": "100644",
+      "path": "examples/erp_bench/README.md",
+      "sha256": "5a1c778de55d6d82b33ffdb934306974d3b8412b1d33a32c2c434e3e746973bc"
+    },
+    {
+      "bytes": 11548,
+      "mode": "100644",
+      "path": "examples/erp_bench/README_ZH.md",
+      "sha256": "792d02e5775207dad6bf7ce23665450e9da528484b8e914494f5cf1d61c39473"
+    },
+    {
+      "bytes": 1215,
+      "mode": "100644",
+      "path": "examples/erp_bench/THIRD_PARTY_NOTICES.md",
+      "sha256": "71f73eaa86aae2adb2d5d335acb3274d7a333b6018f0ba30999f8851f13cc127"
+    },
+    {
+      "bytes": 7048,
+      "mode": "100644",
+      "path": "examples/erp_bench/licenses/ERP_BENCH_CC0_1.0.txt",
+      "sha256": "a2010f343487d3f7618affe54f789f5487602331c0a8d03f49e9a7c547cf0499"
+    },
+    {
+      "bytes": 1074,
+      "mode": "100644",
+      "path": "examples/erp_bench/licenses/RPNH_MIT.txt",
+      "sha256": "d7f0ad666e3545d2af6ad5ce673d11a77ec135d622f9fe3da26b82aeaee0430c"
+    },
+    {
+      "bytes": 675,
+      "mode": "100644",
+      "path": "examples/erp_bench/pyproject.toml",
+      "sha256": "f961e8493843a79b183a3a6873d83ff21f3524ca88ae490e4745c25a867e4e63"
+    },
+    {
+      "bytes": 15688,
+      "mode": "100644",
+      "path": "examples/erp_bench/scripts/native_acceptance.py",
+      "sha256": "24741d5f1b1c07fa3e0b2edcbbb8d733470257188335a2d2afc255c7bc332224"
+    },
+    {
+      "bytes": 22,
+      "mode": "100644",
+      "path": "examples/erp_bench/src/rpnh_erp_bench/__init__.py",
+      "sha256": "91447944015cec709e8aa7655f7e9d64e1e4508e7023a57fe3746911c0fc6fed"
+    },
+    {
+      "bytes": 9874,
+      "mode": "100644",
+      "path": "examples/erp_bench/src/rpnh_erp_bench/bridge.py",
+      "sha256": "56eaa724e7d5f7080f072153a0a3bf9250f6e6444f02b2e73c34aa806d9deedf"
+    },
+    {
+      "bytes": 5533,
+      "mode": "100644",
+      "path": "examples/erp_bench/src/rpnh_erp_bench/cli.py",
+      "sha256": "de0b6d0705a7b026a68a96b441842e68430b15d65d5b340eb644828070f73394"
+    },
+    {
+      "bytes": 1243,
+      "mode": "100644",
+      "path": "examples/erp_bench/src/rpnh_erp_bench/data/source-pins.json",
+      "sha256": "09ea82eee06e1cc0f4408351db2043889f58711268e02ee51fca29e248a93318"
+    },
+    {
+      "bytes": 11622,
+      "mode": "100644",
+      "path": "examples/erp_bench/src/rpnh_erp_bench/data/task-identities.json",
+      "sha256": "628ba50ded6beac960789d0a5db46fd10ab56ae084b3f053ef7edf253c0ce89e"
+    },
+    {
+      "bytes": 18323,
+      "mode": "100644",
+      "path": "examples/erp_bench/src/rpnh_erp_bench/driver.py",
+      "sha256": "034f8d6415a8c22b0ea012ae87ce7ddf72a01fff6438da36f30208494ec10a32"
+    },
+    {
+      "bytes": 2857,
+      "mode": "100644",
+      "path": "examples/erp_bench/src/rpnh_erp_bench/endpoint.py",
+      "sha256": "472ef38d70ddc348e00d8354794b29de9bbd4d87fc010aeb2ef8e26cc674959e"
+    },
+    {
+      "bytes": 35140,
+      "mode": "100644",
+      "path": "examples/erp_bench/src/rpnh_erp_bench/environment.py",
+      "sha256": "110a02623ab9bd752d0ce00cad31e91767c068319a5d27d9e6f3e9891c3c9727"
+    },
+    {
+      "bytes": 15286,
+      "mode": "100644",
+      "path": "examples/erp_bench/src/rpnh_erp_bench/evidence.py",
+      "sha256": "b26342af25213858b19581272987e837bdf470a9e7a2f8fe4aa9ff366782e461"
+    },
+    {
+      "bytes": 8752,
+      "mode": "100644",
+      "path": "examples/erp_bench/src/rpnh_erp_bench/export.py",
+      "sha256": "99b20eda16542805c86f56ef61c4ce14df5e59ba28375962184e92d944ec8d58"
+    },
+    {
+      "bytes": 15627,
+      "mode": "100644",
+      "path": "examples/erp_bench/src/rpnh_erp_bench/native.py",
+      "sha256": "b87423511b50d8f2a7b865b1dc3f7ec3e1b0e84c760ef67cc0be5280dae7bd46"
+    },
+    {
+      "bytes": 4850,
+      "mode": "100644",
+      "path": "examples/erp_bench/src/rpnh_erp_bench/planning.py",
+      "sha256": "d9c38bb70568e1c05d31175cdbb46692491b490dc5a87a5d1f85164454195200"
+    },
+    {
+      "bytes": 4736,
+      "mode": "100644",
+      "path": "examples/erp_bench/src/rpnh_erp_bench/plugin.py",
+      "sha256": "33664264a0cff411efa9445d9c513d647983b5b9ff255a8384eb6f06825e39c0"
+    },
+    {
+      "bytes": 22916,
+      "mode": "100644",
+      "path": "examples/erp_bench/src/rpnh_erp_bench/sandbox.py",
+      "sha256": "2230e7edaea3002d43ba1966197e76121626f281ee73e7dea104393a3ce1f65c"
+    },
+    {
+      "bytes": 11111,
+      "mode": "100644",
+      "path": "examples/erp_bench/src/rpnh_erp_bench/scoring.py",
+      "sha256": "4d555f2d3cf6253ce1bb0c03e8262d1ef237f75eb9a39e5c60c84dcfbd488e5f"
+    },
+    {
+      "bytes": 6730,
+      "mode": "100644",
+      "path": "examples/erp_bench/src/rpnh_erp_bench/source.py",
+      "sha256": "55fef9d36b28146515c525da7c0682a3d57a482ed1254b1dc30de80039b53b67"
+    },
+    {
+      "bytes": 6661,
+      "mode": "100644",
+      "path": "examples/erp_bench/tests/fake_provider.py",
+      "sha256": "d31102ce8db095cce8fad6efb7e9914d0d28ecd7eceb6ff41f813f87e0254d58"
+    },
+    {
+      "bytes": 30578,
+      "mode": "100644",
+      "path": "examples/erp_bench/tests/test_bridge.py",
+      "sha256": "631210897d3df61be1a1b76f062e37b7bb3b82a60a44aed4c930bc0722af7124"
+    },
+    {
+      "bytes": 10214,
+      "mode": "100644",
+      "path": "examples/erp_bench/tests/test_cli.py",
+      "sha256": "379c02213ce990ba78b45150011b374b6d9130e98f2ec762022c42af663065bb"
+    },
+    {
+      "bytes": 9715,
+      "mode": "100644",
+      "path": "examples/erp_bench/tests/test_driver.py",
+      "sha256": "ed86777cd881ede340e5f1d6e55b779bc74e1a56aacc35940fc8f54cb7ee53f8"
+    },
+    {
+      "bytes": 1474,
+      "mode": "100644",
+      "path": "examples/erp_bench/tests/test_endpoint.py",
+      "sha256": "0ed7c7db4b533ada12c0fec0040602d3d78b03ad3c0bec4ff11ff1563f3c0b10"
+    },
+    {
+      "bytes": 18669,
+      "mode": "100644",
+      "path": "examples/erp_bench/tests/test_environment.py",
+      "sha256": "fd1a2c63b7b7940ec76ef55d111be99319d48781a014357cfd232a613178c62e"
+    },
+    {
+      "bytes": 17578,
+      "mode": "100644",
+      "path": "examples/erp_bench/tests/test_evidence.py",
+      "sha256": "5831c557764bfdfa2b92f3efcb3ba5897e32223c23ec4752de26ccfdba85d2be"
+    },
+    {
+      "bytes": 25273,
+      "mode": "100644",
+      "path": "examples/erp_bench/tests/test_native.py",
+      "sha256": "5b27d4446af2d5bc244b11a8022d4e4eb964dff0b2cb3264c1eb1654d96caa5f"
+    },
+    {
+      "bytes": 2826,
+      "mode": "100644",
+      "path": "examples/erp_bench/tests/test_planning.py",
+      "sha256": "a4fae027379dd244b499e26e42233b94cc0eda863f990af450bcefbfa2cc7d34"
+    },
+    {
+      "bytes": 5677,
+      "mode": "100644",
+      "path": "examples/erp_bench/tests/test_plugin.py",
+      "sha256": "5e3fb306d5a637aa4f1cbb976cbab5db4b6f9c5cc82a769ab3abf2e6bc44b364"
+    },
+    {
+      "bytes": 6372,
+      "mode": "100644",
+      "path": "examples/erp_bench/tests/test_scoring.py",
+      "sha256": "de6cc37ec77fa6ecccbf1677e4d9ea57053123d524a6f54c47a73d340244a48f"
+    },
+    {
+      "bytes": 5657,
+      "mode": "100644",
+      "path": "examples/erp_bench/tests/test_sources.py",
+      "sha256": "2565d69ded130121ace776d0a850987bb72ebe12320f8db9b6dc6ce70d2da29e"
+    }
+  ],
+  "publication_commit": "74fad32d369876841686d10d33361c016e3d3648",
+  "upstream_repository": "https://github.com/agentic-labs/erp-bench",
+  "upstream_revision": "ceba3880af555129b5278e056a0c20f2fb5a0ba9",
+  "selected_inputs": {
+    "2000_easy_01_buy_only_baseline": {
+      "task_toml": {
+        "schema_version": "1.1",
+        "artifacts": [],
+        "task": {
+          "name": "agentic-labs/2000_easy_01_buy_only_baseline",
+          "description": "",
+          "authors": [],
+          "keywords": []
+        },
+        "metadata": {
+          "scenario_number": 2000,
+          "name": "Sound Privacy Panels",
+          "difficulty": "easy",
+          "category": "erp",
+          "objective_kind": "constraint_only",
+          "task_pattern": "01_buy_only_baseline",
+          "tags": [
+            "odoo",
+            "erp-bench",
+            "procurement"
+          ],
+          "seed": 8014130904848695607
+        },
+        "verifier": {
+          "timeout_sec": 300.0,
+          "env": {}
+        },
+        "agent": {
+          "timeout_sec": 3600.0
+        },
+        "environment": {
+          "build_timeout_sec": 600.0,
+          "cpus": 3,
+          "memory_mb": 4096,
+          "storage_mb": 2048,
+          "gpus": 0,
+          "allow_internet": true,
+          "mcp_servers": [],
+          "env": {}
+        },
+        "solution": {
+          "env": {}
+        }
+      },
+      "files": {
+        "LICENSE": {
+          "sha256": "a2010f343487d3f7618affe54f789f5487602331c0a8d03f49e9a7c547cf0499",
+          "bytes": 7048,
+          "git_blob_sha1": "0e259d42c996742e9e3cba14c677129b2c1b6311",
+          "hash_origin": "provided_source_files"
+        },
+        "agents/pi.py": {
+          "sha256": "8c6c45bdc74a3842b225c168631cb73aaf58e465e53667c8f3c4cf54cfa99739",
+          "bytes": 7756,
+          "git_blob_sha1": "f29130dcbd11bb0905a63a62884d49af3b5d611a",
+          "hash_origin": "provided_source_files"
+        },
+        "pyproject.toml": {
+          "sha256": "e057b5c1365f4b21c8ea7ecaff64089a2f8e651ea8dd3f3e93e7189a73996bf2",
+          "bytes": 1127,
+          "git_blob_sha1": "3b73337736d159c0ea1eb2cd709cb2d91f44118a",
+          "hash_origin": "provided_source_files"
+        },
+        "tasks/2000_easy_01_buy_only_baseline/environment/Dockerfile": {
+          "sha256": "5e91604e9ea71d331423817aa1a26e2df2432c0866abf4b082864efd6e332234",
+          "bytes": 1139,
+          "git_blob_sha1": "157a77cfcac5c9ecb0e688f71b3275cf5564b593",
+          "hash_origin": "pinned_git_checkout"
+        },
+        "tasks/2000_easy_01_buy_only_baseline/environment/entrypoint.sh": {
+          "sha256": "17081066295528704b6c9af5c66864884ea682640bcc9a154b03e862fe8ccbc5",
+          "bytes": 3131,
+          "git_blob_sha1": "365182a6c3388a4ef8f7093afba245d081fb7032",
+          "hash_origin": "pinned_git_checkout"
+        },
+        "tasks/2000_easy_01_buy_only_baseline/environment/odoo.conf": {
+          "sha256": "30a5cd6cdc5f0e10926ad5d3a9f424e0826fe6bcbbb785d4ef0aeedc7628a6c8",
+          "bytes": 137,
+          "git_blob_sha1": "e2bcec3c90cd5bc48e1135b094c3a7ac0a12522d",
+          "hash_origin": "pinned_git_checkout"
+        },
+        "tasks/2000_easy_01_buy_only_baseline/environment/scenario_data.json": {
+          "sha256": "4cc03ddfa9def158f86a80435543e9ec109de30be1443579219fc1b508af6812",
+          "bytes": 64615,
+          "git_blob_sha1": "ce4dbceaa24fdad22cb16ab5348acbe7156f1fc6",
+          "hash_origin": "pinned_git_checkout"
+        },
+        "tasks/2000_easy_01_buy_only_baseline/environment/setup_scenario.py": {
+          "sha256": "1a532a2f1c1cb68fb965e4ca5d072528b4b4a992327685de71ffa0000ac94714",
+          "bytes": 64716,
+          "git_blob_sha1": "2906dec5b4f04da458800b12a243a3d74ddbbc9d",
+          "hash_origin": "pinned_git_checkout"
+        },
+        "tasks/2000_easy_01_buy_only_baseline/instruction.md": {
+          "sha256": "6d98cddc801e977c5a6785c8b9b1d4f2e768da61f0bde3a1accb4b56e3beaf0a",
+          "bytes": 4816,
+          "git_blob_sha1": "ef815401fececbc9157c5c2253b6aaf1fecf9d9e",
+          "hash_origin": "provided_source_files"
+        },
+        "tasks/2000_easy_01_buy_only_baseline/solution/optimal_plan.json": {
+          "sha256": "0d7f820ea011c326d9a51637a5fdde17176a40cc7df6bedd5b5b7f008a4ae468",
+          "bytes": 4111,
+          "git_blob_sha1": "bbc7914abc608b2dda64ef5b07a481337d072760",
+          "hash_origin": "pinned_git_checkout"
+        },
+        "tasks/2000_easy_01_buy_only_baseline/solution/solve.sh": {
+          "sha256": "785703e87380d18ced9b4d776bbd874ab289adf56a24a61d53ad1b72f8e999fa",
+          "bytes": 940,
+          "git_blob_sha1": "bfac892d3cefae1b066bcde1661136e4529877c4",
+          "hash_origin": "pinned_git_checkout"
+        },
+        "tasks/2000_easy_01_buy_only_baseline/solution/solver.py": {
+          "sha256": "52fa4ffa33dd768a12f4a798efc4251907aa9ce23ff5c6b84e8aa6211e016edc",
+          "bytes": 37195,
+          "git_blob_sha1": "1bc70528edfa936e1c37575d03da35c3479d5cd6",
+          "hash_origin": "pinned_git_checkout"
+        },
+        "tasks/2000_easy_01_buy_only_baseline/task.toml": {
+          "sha256": "6578045106cfeeb38a60d52daa0172b22e1d9ab5a4bf08e4a73dbd62dfe4e9bc",
+          "bytes": 637,
+          "git_blob_sha1": "fd0eb97e67f914fa510b3a29220014021bbfc9ce",
+          "hash_origin": "provided_source_files"
+        },
+        "tasks/2000_easy_01_buy_only_baseline/tests/checks.py": {
+          "sha256": "ef24330d612c015a40d0ab0b9c173fef3c8efdcd592248bc50f023784bf5c9d7",
+          "bytes": 101947,
+          "git_blob_sha1": "a815b30d7e8b401b1e46c113c571ade6cc3fb203",
+          "hash_origin": "provided_source_files"
+        },
+        "tasks/2000_easy_01_buy_only_baseline/tests/test.sh": {
+          "sha256": "9f1dbb9ffeaafd52d84a9f9f74a072d1e143c2304ecae3f174f8c809f49a0bec",
+          "bytes": 10938,
+          "git_blob_sha1": "4bb60f5549b2e941fb208325d52f8705afabe7d9",
+          "hash_origin": "provided_source_files"
+        }
+      }
+    },
+    "2299_hard_repair_plan_hard": {
+      "task_toml": {
+        "schema_version": "1.1",
+        "artifacts": [],
+        "task": {
+          "name": "agentic-labs/2299_hard_repair_plan_hard",
+          "description": "",
+          "authors": [],
+          "keywords": []
+        },
+        "metadata": {
+          "scenario_number": 2299,
+          "name": "Carport Solar Canopy Module",
+          "difficulty": "hard",
+          "category": "erp",
+          "objective_kind": "repair_plan",
+          "task_pattern": "repair_plan_hard",
+          "tags": [
+            "odoo",
+            "erp-bench",
+            "procurement"
+          ],
+          "seed": 7558252979609430294
+        },
+        "verifier": {
+          "timeout_sec": 300.0,
+          "env": {}
+        },
+        "agent": {
+          "timeout_sec": 3600.0
+        },
+        "environment": {
+          "build_timeout_sec": 600.0,
+          "cpus": 3,
+          "memory_mb": 4096,
+          "storage_mb": 2048,
+          "gpus": 0,
+          "allow_internet": true,
+          "mcp_servers": [],
+          "env": {}
+        },
+        "solution": {
+          "env": {}
+        }
+      },
+      "files": {
+        "LICENSE": {
+          "sha256": "a2010f343487d3f7618affe54f789f5487602331c0a8d03f49e9a7c547cf0499",
+          "bytes": 7048,
+          "git_blob_sha1": "0e259d42c996742e9e3cba14c677129b2c1b6311",
+          "hash_origin": "provided_source_files"
+        },
+        "agents/pi.py": {
+          "sha256": "8c6c45bdc74a3842b225c168631cb73aaf58e465e53667c8f3c4cf54cfa99739",
+          "bytes": 7756,
+          "git_blob_sha1": "f29130dcbd11bb0905a63a62884d49af3b5d611a",
+          "hash_origin": "provided_source_files"
+        },
+        "pyproject.toml": {
+          "sha256": "e057b5c1365f4b21c8ea7ecaff64089a2f8e651ea8dd3f3e93e7189a73996bf2",
+          "bytes": 1127,
+          "git_blob_sha1": "3b73337736d159c0ea1eb2cd709cb2d91f44118a",
+          "hash_origin": "provided_source_files"
+        },
+        "tasks/2299_hard_repair_plan_hard/environment/Dockerfile": {
+          "sha256": "5e91604e9ea71d331423817aa1a26e2df2432c0866abf4b082864efd6e332234",
+          "bytes": 1139,
+          "git_blob_sha1": "157a77cfcac5c9ecb0e688f71b3275cf5564b593",
+          "hash_origin": "provided_source_files"
+        },
+        "tasks/2299_hard_repair_plan_hard/environment/entrypoint.sh": {
+          "sha256": "17081066295528704b6c9af5c66864884ea682640bcc9a154b03e862fe8ccbc5",
+          "bytes": 3131,
+          "git_blob_sha1": "365182a6c3388a4ef8f7093afba245d081fb7032",
+          "hash_origin": "provided_source_files"
+        },
+        "tasks/2299_hard_repair_plan_hard/environment/odoo.conf": {
+          "sha256": "30a5cd6cdc5f0e10926ad5d3a9f424e0826fe6bcbbb785d4ef0aeedc7628a6c8",
+          "bytes": 137,
+          "git_blob_sha1": "e2bcec3c90cd5bc48e1135b094c3a7ac0a12522d",
+          "hash_origin": "pinned_git_checkout"
+        },
+        "tasks/2299_hard_repair_plan_hard/environment/scenario_data.json": {
+          "sha256": "ff63976b23ef7e4e004a61bf3a4cdeec05a52882c71b8c36ffd26412f934209a",
+          "bytes": 103442,
+          "git_blob_sha1": "f1248409405c649ebbad36d62695128d91a1a309",
+          "hash_origin": "pinned_git_checkout"
+        },
+        "tasks/2299_hard_repair_plan_hard/environment/setup_scenario.py": {
+          "sha256": "1a532a2f1c1cb68fb965e4ca5d072528b4b4a992327685de71ffa0000ac94714",
+          "bytes": 64716,
+          "git_blob_sha1": "2906dec5b4f04da458800b12a243a3d74ddbbc9d",
+          "hash_origin": "pinned_git_checkout"
+        },
+        "tasks/2299_hard_repair_plan_hard/instruction.md": {
+          "sha256": "c760020d5e9261783458b7d814a910de3e6ebc67b30633d07942796838ecc8e2",
+          "bytes": 7369,
+          "git_blob_sha1": "a9f4d202e9fdbf7dff145b9f4bfea013f5c98f4c",
+          "hash_origin": "provided_source_files"
+        },
+        "tasks/2299_hard_repair_plan_hard/solution/optimal_plan.json": {
+          "sha256": "caf4d641e7364115e743a0aeddb3496068ed964993e055536e6ae68d705865ef",
+          "bytes": 26724,
+          "git_blob_sha1": "8e85f0607a8120ce5e921003d4d22af34f9e2f3a",
+          "hash_origin": "pinned_git_checkout"
+        },
+        "tasks/2299_hard_repair_plan_hard/solution/solve.sh": {
+          "sha256": "ab52c705b0ad36c229057e15a1160f29f72936af14482339150ca6b3914952e8",
+          "bytes": 961,
+          "git_blob_sha1": "345c63e9a25f13cc6a2e99e06d01b761af312aab",
+          "hash_origin": "pinned_git_checkout"
+        },
+        "tasks/2299_hard_repair_plan_hard/solution/solver.py": {
+          "sha256": "43b8a975556ea2f53ea5d24c5ee328448ebae7bf44bba5d386d4321c268b546d",
+          "bytes": 79774,
+          "git_blob_sha1": "e068846e84ff4967ab6b3feb99a5e8c1b7bd9c83",
+          "hash_origin": "pinned_git_checkout"
+        },
+        "tasks/2299_hard_repair_plan_hard/task.toml": {
+          "sha256": "f697dc552c53d97921cad63e15b5b86908eb0bae742fdded6b60dba20b02789d",
+          "bytes": 632,
+          "git_blob_sha1": "b00c3d16063f49640651342c9c386a1a68c2cfa9",
+          "hash_origin": "provided_source_files"
+        },
+        "tasks/2299_hard_repair_plan_hard/tests/checks.py": {
+          "sha256": "a46d294463cb8718fb1ed6cc0208caca20562873fdf0987c050c99669fae3583",
+          "bytes": 137406,
+          "git_blob_sha1": "731f73fb0b6486e1a86d40eea33036619add8052",
+          "hash_origin": "provided_source_files"
+        },
+        "tasks/2299_hard_repair_plan_hard/tests/test.sh": {
+          "sha256": "197c4b3bfd0376a0a0b7a8244639f74699779ac8d354ff2c1c41bae22a33b608",
+          "bytes": 15941,
+          "git_blob_sha1": "7ed5f6045f1557a6ff047115c44a34d597102d58",
+          "hash_origin": "provided_source_files"
+        }
+      }
+    }
+  },
+  "model_condition": {
+    "adapter_kind": "local_process",
+    "context_compaction_retained_tokens": null,
+    "context_window_tokens": null,
+    "identity_scope": "Configured exact model; actual submissions come from Registry evidence.",
+    "max_output_tokens_per_request": 128000,
+    "max_response_bytes_per_request": 16777216,
+    "model_condition": "gpt-5.6-terra",
+    "reasoning_effort": null,
+    "request_timeout_seconds": 900,
+    "runtime": {
+      "context_pressure_trigger_ratio": 0.9,
+      "context_tool_output_byte_limit": 10000,
+      "main_history_message_limit": 20,
+      "max_parallel_nodes": 4,
+      "max_turns_per_node": 12,
+      "workspace": {
+        "input_size_bytes": 16777216,
+        "memory_bytes": 4294967296,
+        "process_limit": 64,
+        "source_size_bytes": 16777216,
+        "timeout_seconds": 120
+      }
+    }
+  },
+  "world_condition": {
+    "harbor_version": "0.24.0",
+    "build_compatibility": {
+      "adapted_dockerfile_sha256": "484e7685785011e69e8e4f5e1940245e450a60998229437a1564d944716e83eb",
+      "condition": "declared_uv_break_system_packages",
+      "odoo_client_lib_requested": "2.0.0",
+      "original_dockerfile_sha256": "5e91604e9ea71d331423817aa1a26e2df2432c0866abf4b082864efd6e332234"
+    },
+    "dependency_versions": {
+      "solver": {
+        "ip6tables": {
+          "exit_code": 0,
+          "version": "ip6tables v1.8.10 (nf_tables)"
+        },
+        "iptables": {
+          "exit_code": 0,
+          "version": "iptables v1.8.10 (nf_tables)"
+        },
+        "odoo-client-lib": "2.0.0",
+        "python": "3.12.3",
+        "system_packages": {
+          "exit_code": 0,
+          "version": "odoo\t19.0.20260926\npostgresql-18\t18.6-1.pgdg24.04+2"
+        },
+        "uv": {
+          "exit_code": 0,
+          "version": "uv 0.12.23 (x86_64-unknown-linux-musl)"
+        }
+      },
+      "verifier": {
+        "ip6tables": {
+          "exit_code": 0,
+          "version": "ip6tables v1.8.10 (nf_tables)"
+        },
+        "iptables": {
+          "exit_code": 0,
+          "version": "iptables v1.8.10 (nf_tables)"
+        },
+        "odoo-client-lib": "2.0.0",
+        "python": "3.12.3",
+        "system_packages": {
+          "exit_code": 0,
+          "version": "odoo\t19.0.20260926\npostgresql-18\t18.6-1.pgdg24.04+2"
+        },
+        "uv": {
+          "exit_code": 0,
+          "version": "uv 0.12.23 (x86_64-unknown-linux-musl)"
+        }
+      }
+    },
+    "isolation": {
+      "condition": "adapted_network_none_nonroot_script",
+      "probe": {
+        "network": "none",
+        "odoo_loopback": true,
+        "uid": 1001
+      }
+    },
+    "container_limits": {
+      "CapAdd": [
+        "CAP_NET_ADMIN"
+      ],
+      "CapDrop": null,
+      "Memory": 4294967296,
+      "MemorySwap": 8589934592,
+      "NanoCpus": 3000000000,
+      "NetworkMode": "none",
+      "StorageOpt": null,
+      "declared_storage_mb": 2048,
+      "storage_quota_enforced": null,
+      "storage_scope": "declaration only; no verified writable-layer quota"
+    },
+    "images": [
+      {
+        "Id": "sha256:735bb50d38c9a2251e40b026b9eb39250cc7ecdd8bb20246377d97592d00a4c4",
+        "RepoDigests": [],
+        "RepoTags": [
+          "erp-showcase-2299-a01-main:latest"
+        ],
+        "Size": 2361022788
+      }
+    ]
+  },
+  "historical_attempts": [
+    {
+      "run": "s01",
+      "record_id": "erp-smoke-2000-a01-startup",
+      "task_id": "2000_easy_01_buy_only_baseline",
+      "source": {
+        "base_commit": "ae09445fe1d9b973502bc5d2c961976c1d2c0163",
+        "tested_commit": "8980e1f0552d30f490af08e60d4e8e3724ea638e"
+      },
+      "real_provider_calls": null,
+      "fake_provider_calls": null,
+      "accounting_status": "unknown",
+      "stages": {
+        "evaluation": {
+          "status": "blocked",
+          "command_kinds": []
+        },
+        "mock": {
+          "status": "not_run",
+          "command_kinds": []
+        },
+        "native": {
+          "status": "blocked",
+          "command_kinds": []
+        },
+        "offline": {
+          "status": "not_run",
+          "command_kinds": []
+        },
+        "provider": {
+          "status": "blocked",
+          "command_kinds": []
+        }
+      },
+      "scores": []
+    },
+    {
+      "run": "s02",
+      "record_id": "erp-smoke-2000-a02",
+      "task_id": "2000_easy_01_buy_only_baseline",
+      "source": {
+        "base_commit": "ae09445fe1d9b973502bc5d2c961976c1d2c0163",
+        "tested_commit": "5df13012e08b474cc0fe86d9531b4df5d5325c08"
+      },
+      "real_provider_calls": null,
+      "fake_provider_calls": null,
+      "accounting_status": "unknown",
+      "stages": {
+        "evaluation": {
+          "status": "blocked",
+          "command_kinds": []
+        },
+        "mock": {
+          "status": "not_run",
+          "command_kinds": []
+        },
+        "native": {
+          "status": "failed",
+          "command_kinds": [
+            "TaskControl.start/status/result/result_evidence/stop"
+          ]
+        },
+        "offline": {
+          "status": "not_run",
+          "command_kinds": []
+        },
+        "provider": {
+          "status": "failed",
+          "command_kinds": [
+            "RPNH existing exact-model local_process execution"
+          ]
+        }
+      },
+      "scores": []
+    },
+    {
+      "run": "s03",
+      "record_id": "erp-smoke-2000-a03",
+      "task_id": "2000_easy_01_buy_only_baseline",
+      "source": {
+        "base_commit": "ae09445fe1d9b973502bc5d2c961976c1d2c0163",
+        "tested_commit": "2ca5fbceb058e4ffe3d5b761ca3a6834dac8f621"
+      },
+      "real_provider_calls": 11,
+      "fake_provider_calls": 0,
+      "accounting_status": "verified",
+      "stages": {
+        "evaluation": {
+          "status": "passed",
+          "command_kinds": [
+            "Harbor Verifier.verify with unchanged original tests/test.sh"
+          ]
+        },
+        "mock": {
+          "status": "not_run",
+          "command_kinds": []
+        },
+        "native": {
+          "status": "passed",
+          "command_kinds": [
+            "TaskControl.start/status/result/result_evidence/stop"
+          ]
+        },
+        "offline": {
+          "status": "not_run",
+          "command_kinds": []
+        },
+        "provider": {
+          "status": "passed",
+          "command_kinds": [
+            "RPNH existing exact-model local_process execution"
+          ]
+        }
+      },
+      "scores": [
+        {
+          "claim": "grader_compatibility",
+          "components": {
+            "constraint.earned": 0,
+            "constraint.total": 27,
+            "hygiene.earned": 1,
+            "hygiene.total": 5,
+            "optimality.score": 100.0,
+            "optimality.total": 100.0,
+            "optimality_detail.optimality_score": 100.0,
+            "optimality_detail.primary_actual": 0.0,
+            "optimality_detail.primary_expected": 0.0,
+            "optimality_detail.primary_score": 100.0,
+            "overall_score": 0.0,
+            "rules.applicable": 32,
+            "rules.failed": 28,
+            "rules.not_applicable": 6,
+            "rules.passed": 4,
+            "rules.total": 38,
+            "spend.assembly_spend": 0.0,
+            "spend.component_spend": 0.0,
+            "spend.expected_spend": 3065.92,
+            "spend.finished_goods_spend": 0.0,
+            "spend.optimality_score": null,
+            "spend.other_spend": 0.0,
+            "spend.spend_delta": -3065.92,
+            "spend.spend_delta_abs": 3065.92,
+            "spend.spend_score": 0.67,
+            "spend.total_new_spend": 0.0
+          },
+          "scorer_id": "erp-bench/2000_easy_01_buy_only_baseline/tests/test.sh",
+          "scorer_revision": "ceba3880af555129b5278e056a0c20f2fb5a0ba9"
+        }
+      ]
+    },
+    {
+      "run": "s04",
+      "record_id": "erp-smoke-2000-a04",
+      "task_id": "2000_easy_01_buy_only_baseline",
+      "source": {
+        "base_commit": "ae09445fe1d9b973502bc5d2c961976c1d2c0163",
+        "tested_commit": "6f8ee2e406f3c70edb73206f861e56a0202b9f15"
+      },
+      "real_provider_calls": 9,
+      "fake_provider_calls": 0,
+      "accounting_status": "verified",
+      "stages": {
+        "evaluation": {
+          "status": "passed",
+          "command_kinds": [
+            "Harbor Verifier.verify with unchanged original tests/test.sh"
+          ]
+        },
+        "mock": {
+          "status": "not_run",
+          "command_kinds": []
+        },
+        "native": {
+          "status": "passed",
+          "command_kinds": [
+            "TaskControl.start/status/result/result_evidence/stop"
+          ]
+        },
+        "offline": {
+          "status": "not_run",
+          "command_kinds": []
+        },
+        "provider": {
+          "status": "passed",
+          "command_kinds": [
+            "RPNH existing exact-model local_process execution"
+          ]
+        }
+      },
+      "scores": [
+        {
+          "claim": "grader_compatibility",
+          "components": {
+            "constraint.earned": 31,
+            "constraint.total": 31,
+            "hygiene.earned": 6,
+            "hygiene.total": 6,
+            "optimality.score": 100.0,
+            "optimality.total": 100.0,
+            "optimality_detail.optimality_score": 100.0,
+            "optimality_detail.primary_actual": 0.0,
+            "optimality_detail.primary_expected": 0.0,
+            "optimality_detail.primary_score": 100.0,
+            "overall_score": 100.0,
+            "rules.applicable": 37,
+            "rules.failed": 0,
+            "rules.not_applicable": 1,
+            "rules.passed": 37,
+            "rules.total": 38,
+            "spend.assembly_spend": 0.0,
+            "spend.component_spend": 0.0,
+            "spend.expected_spend": 3065.92,
+            "spend.finished_goods_spend": 3065.92,
+            "spend.optimality_score": null,
+            "spend.other_spend": 0.0,
+            "spend.spend_delta": 0.0,
+            "spend.spend_delta_abs": 0.0,
+            "spend.spend_score": 100.0,
+            "spend.total_new_spend": 3065.92
+          },
+          "scorer_id": "erp-bench/2000_easy_01_buy_only_baseline/tests/test.sh",
+          "scorer_revision": "ceba3880af555129b5278e056a0c20f2fb5a0ba9"
+        }
+      ]
+    },
+    {
+      "run": "h01",
+      "record_id": "erp-showcase-2299-a01",
+      "task_id": "2299_hard_repair_plan_hard",
+      "source": {
+        "base_commit": "ae09445fe1d9b973502bc5d2c961976c1d2c0163",
+        "tested_commit": "6f8ee2e406f3c70edb73206f861e56a0202b9f15"
+      },
+      "real_provider_calls": 13,
+      "fake_provider_calls": 0,
+      "accounting_status": "verified",
+      "stages": {
+        "evaluation": {
+          "status": "passed",
+          "command_kinds": [
+            "Harbor Verifier.verify with unchanged original tests/test.sh"
+          ]
+        },
+        "mock": {
+          "status": "not_run",
+          "command_kinds": []
+        },
+        "native": {
+          "status": "passed",
+          "command_kinds": [
+            "TaskControl.start/status/result/result_evidence/stop"
+          ]
+        },
+        "offline": {
+          "status": "not_run",
+          "command_kinds": []
+        },
+        "provider": {
+          "status": "passed",
+          "command_kinds": [
+            "RPNH existing exact-model local_process execution"
+          ]
+        }
+      },
+      "scores": [
+        {
+          "claim": "grader_compatibility",
+          "components": {
+            "constraint.earned": 63,
+            "constraint.total": 75,
+            "hygiene.earned": 15,
+            "hygiene.total": 20,
+            "optimality.score": 91.66,
+            "optimality.total": 100.0,
+            "optimality_detail.optimality_score": 91.66,
+            "optimality_detail.primary_actual": 184.0,
+            "optimality_detail.primary_expected": 184.0,
+            "optimality_detail.primary_score": 100.0,
+            "optimality_detail.secondary_actual_spend": 181383.92,
+            "optimality_detail.secondary_expected_spend": 133394.07,
+            "optimality_detail.secondary_score": 16.55,
+            "overall_score": 21.0,
+            "rules.applicable": 95,
+            "rules.failed": 9,
+            "rules.not_applicable": 0,
+            "rules.passed": 86,
+            "rules.total": 95,
+            "spend.assembly_spend": 4104.0,
+            "spend.component_spend": 28561.39,
+            "spend.expected_spend": 133394.07,
+            "spend.finished_goods_spend": 148718.53,
+            "spend.optimality_score": null,
+            "spend.other_spend": 0.0,
+            "spend.spend_delta": 47989.85,
+            "spend.spend_delta_abs": 47989.85,
+            "spend.spend_score": 16.55,
+            "spend.total_new_spend": 181383.92
+          },
+          "scorer_id": "erp-bench/2299_hard_repair_plan_hard/tests/test.sh",
+          "scorer_revision": "ceba3880af555129b5278e056a0c20f2fb5a0ba9"
+        }
+      ]
+    }
+  ],
+  "A04": {
+    "task_id": "2000_easy_01_buy_only_baseline",
+    "score_scale": "0-100",
+    "passed_threshold": 99,
+    "scorer_revision": "ceba3880af555129b5278e056a0c20f2fb5a0ba9",
+    "verifier_exit_code": 0,
+    "reward": {
+      "overall_score": 100.0,
+      "passed": true,
+      "constraint": {
+        "earned": 31,
+        "total": 31
+      },
+      "hygiene": {
+        "earned": 6,
+        "total": 6
+      },
+      "optimality": {
+        "score": 100.0,
+        "total": 100.0
+      },
+      "spend": {
+        "assembly_spend": 0.0,
+        "component_spend": 0.0,
+        "expected_spend": 3065.92,
+        "finished_goods_spend": 3065.92,
+        "optimality_score": null,
+        "other_spend": 0.0,
+        "spend_delta": 0.0,
+        "spend_delta_abs": 0.0,
+        "spend_score": 100.0,
+        "total_new_spend": 3065.92,
+        "verified_spend_complete": true
+      },
+      "optimality_detail": {
+        "objective_kind": "constraint_only",
+        "optimality_score": 100.0,
+        "primary_actual": 0.0,
+        "primary_expected": 0.0,
+        "primary_score": 100.0
+      },
+      "rules": {
+        "total": 38,
+        "applicable": 37,
+        "passed": 37,
+        "failed": 0,
+        "not_applicable": 1,
+        "rows": [
+          {
+            "row_number": 1,
+            "dimension": "constraint",
+            "rule": "demand_coverage",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 2,
+            "dimension": "constraint",
+            "rule": "demand_coverage",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 3,
+            "dimension": "constraint",
+            "rule": "demand_coverage",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 4,
+            "dimension": "constraint",
+            "rule": "demand_coverage",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 5,
+            "dimension": "constraint",
+            "rule": "deadline_fulfillment",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 6,
+            "dimension": "constraint",
+            "rule": "deadline_fulfillment",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 7,
+            "dimension": "constraint",
+            "rule": "deadline_fulfillment",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 8,
+            "dimension": "constraint",
+            "rule": "deadline_fulfillment",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 9,
+            "dimension": "constraint",
+            "rule": "list_price",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 10,
+            "dimension": "constraint",
+            "rule": "list_price",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 11,
+            "dimension": "constraint",
+            "rule": "list_price",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 12,
+            "dimension": "constraint",
+            "rule": "list_price",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 13,
+            "dimension": "constraint",
+            "rule": "sale_revenue",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 14,
+            "dimension": "constraint",
+            "rule": "sale_revenue",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 15,
+            "dimension": "constraint",
+            "rule": "sale_revenue",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 16,
+            "dimension": "constraint",
+            "rule": "sale_revenue",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 17,
+            "dimension": "constraint",
+            "rule": "budget_compliance",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 18,
+            "dimension": "constraint",
+            "rule": "budget_compliance",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 19,
+            "dimension": "constraint",
+            "rule": "budget_compliance",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 20,
+            "dimension": "constraint",
+            "rule": "budget_compliance",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 21,
+            "dimension": "constraint",
+            "rule": "new_spend_margin_policy",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 22,
+            "dimension": "constraint",
+            "rule": "supply_timing_feasible",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 23,
+            "dimension": "constraint",
+            "rule": "po_delivery_schedule_compliance",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 24,
+            "dimension": "constraint",
+            "rule": "po_consolidation_compliance",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 25,
+            "dimension": "constraint",
+            "rule": "po_min_qty_compliance",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 26,
+            "dimension": "constraint",
+            "rule": "po_price_tier_compliance",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 27,
+            "dimension": "constraint",
+            "rule": "finished_stock_capacity_compliance",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 28,
+            "dimension": "constraint",
+            "rule": "assembly_capacity_compliance",
+            "status": "NA",
+            "passed": false,
+            "applicable": false
+          },
+          {
+            "row_number": 29,
+            "dimension": "constraint",
+            "rule": "finished_vendor_max_qty_compliance",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 30,
+            "dimension": "constraint",
+            "rule": "component_vendor_max_qty_compliance",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 31,
+            "dimension": "constraint",
+            "rule": "component_stock_capacity_compliance",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 32,
+            "dimension": "constraint",
+            "rule": "supply_coverage",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 33,
+            "dimension": "hygiene",
+            "rule": "so_confirmed",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 34,
+            "dimension": "hygiene",
+            "rule": "so_confirmed",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 35,
+            "dimension": "hygiene",
+            "rule": "so_confirmed",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 36,
+            "dimension": "hygiene",
+            "rule": "so_confirmed",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 37,
+            "dimension": "hygiene",
+            "rule": "po_origin_traceability",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 38,
+            "dimension": "hygiene",
+            "rule": "adjacent_data_untouched",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          }
+        ]
+      }
+    }
+  },
+  "H01": {
+    "task_id": "2299_hard_repair_plan_hard",
+    "score_scale": "0-100",
+    "passed_threshold": 99,
+    "reward": {
+      "overall_score": 21.0,
+      "passed": false,
+      "constraint": {
+        "earned": 63,
+        "total": 75
+      },
+      "hygiene": {
+        "earned": 15,
+        "total": 20
+      },
+      "optimality": {
+        "score": 91.66,
+        "total": 100.0
+      },
+      "spend": {
+        "assembly_spend": 4104.0,
+        "component_spend": 28561.39,
+        "expected_spend": 133394.07,
+        "finished_goods_spend": 148718.53,
+        "optimality_score": null,
+        "other_spend": 0.0,
+        "spend_delta": 47989.85,
+        "spend_delta_abs": 47989.85,
+        "spend_score": 16.55,
+        "total_new_spend": 181383.92,
+        "verified_spend_complete": true
+      },
+      "optimality_detail": {
+        "objective_kind": "repair_plan",
+        "optimality_score": 91.66,
+        "primary_actual": 184.0,
+        "primary_expected": 184.0,
+        "primary_score": 100.0,
+        "secondary_actual_spend": 181383.92,
+        "secondary_expected_spend": 133394.07,
+        "secondary_score": 16.55
+      },
+      "rules": {
+        "total": 95,
+        "applicable": 95,
+        "passed": 86,
+        "failed": 9,
+        "not_applicable": 0,
+        "rows": [
+          {
+            "row_number": 1,
+            "dimension": "constraint",
+            "rule": "demand_coverage",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 2,
+            "dimension": "constraint",
+            "rule": "demand_coverage",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 3,
+            "dimension": "constraint",
+            "rule": "demand_coverage",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 4,
+            "dimension": "constraint",
+            "rule": "demand_coverage",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 5,
+            "dimension": "constraint",
+            "rule": "demand_coverage",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 6,
+            "dimension": "constraint",
+            "rule": "demand_coverage",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 7,
+            "dimension": "constraint",
+            "rule": "demand_coverage",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 8,
+            "dimension": "constraint",
+            "rule": "demand_coverage",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 9,
+            "dimension": "constraint",
+            "rule": "demand_coverage",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 10,
+            "dimension": "constraint",
+            "rule": "demand_coverage",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 11,
+            "dimension": "constraint",
+            "rule": "demand_coverage",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 12,
+            "dimension": "constraint",
+            "rule": "demand_coverage",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 13,
+            "dimension": "constraint",
+            "rule": "deadline_fulfillment",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 14,
+            "dimension": "constraint",
+            "rule": "deadline_fulfillment",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 15,
+            "dimension": "constraint",
+            "rule": "deadline_fulfillment",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 16,
+            "dimension": "constraint",
+            "rule": "deadline_fulfillment",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 17,
+            "dimension": "constraint",
+            "rule": "deadline_fulfillment",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 18,
+            "dimension": "constraint",
+            "rule": "deadline_fulfillment",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 19,
+            "dimension": "constraint",
+            "rule": "deadline_fulfillment",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 20,
+            "dimension": "constraint",
+            "rule": "deadline_fulfillment",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 21,
+            "dimension": "constraint",
+            "rule": "deadline_fulfillment",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 22,
+            "dimension": "constraint",
+            "rule": "deadline_fulfillment",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 23,
+            "dimension": "constraint",
+            "rule": "deadline_fulfillment",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 24,
+            "dimension": "constraint",
+            "rule": "deadline_fulfillment",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 25,
+            "dimension": "constraint",
+            "rule": "list_price",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 26,
+            "dimension": "constraint",
+            "rule": "list_price",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 27,
+            "dimension": "constraint",
+            "rule": "list_price",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 28,
+            "dimension": "constraint",
+            "rule": "list_price",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 29,
+            "dimension": "constraint",
+            "rule": "list_price",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 30,
+            "dimension": "constraint",
+            "rule": "list_price",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 31,
+            "dimension": "constraint",
+            "rule": "list_price",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 32,
+            "dimension": "constraint",
+            "rule": "list_price",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 33,
+            "dimension": "constraint",
+            "rule": "list_price",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 34,
+            "dimension": "constraint",
+            "rule": "list_price",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 35,
+            "dimension": "constraint",
+            "rule": "list_price",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 36,
+            "dimension": "constraint",
+            "rule": "list_price",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 37,
+            "dimension": "constraint",
+            "rule": "sale_revenue",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 38,
+            "dimension": "constraint",
+            "rule": "sale_revenue",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 39,
+            "dimension": "constraint",
+            "rule": "sale_revenue",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 40,
+            "dimension": "constraint",
+            "rule": "sale_revenue",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 41,
+            "dimension": "constraint",
+            "rule": "sale_revenue",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 42,
+            "dimension": "constraint",
+            "rule": "sale_revenue",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 43,
+            "dimension": "constraint",
+            "rule": "sale_revenue",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 44,
+            "dimension": "constraint",
+            "rule": "sale_revenue",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 45,
+            "dimension": "constraint",
+            "rule": "sale_revenue",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 46,
+            "dimension": "constraint",
+            "rule": "sale_revenue",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 47,
+            "dimension": "constraint",
+            "rule": "sale_revenue",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 48,
+            "dimension": "constraint",
+            "rule": "sale_revenue",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 49,
+            "dimension": "constraint",
+            "rule": "budget_compliance",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 50,
+            "dimension": "constraint",
+            "rule": "budget_compliance",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 51,
+            "dimension": "constraint",
+            "rule": "budget_compliance",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 52,
+            "dimension": "constraint",
+            "rule": "budget_compliance",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 53,
+            "dimension": "constraint",
+            "rule": "budget_compliance",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 54,
+            "dimension": "constraint",
+            "rule": "budget_compliance",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 55,
+            "dimension": "constraint",
+            "rule": "budget_compliance",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 56,
+            "dimension": "constraint",
+            "rule": "budget_compliance",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 57,
+            "dimension": "constraint",
+            "rule": "budget_compliance",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 58,
+            "dimension": "constraint",
+            "rule": "budget_compliance",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 59,
+            "dimension": "constraint",
+            "rule": "budget_compliance",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 60,
+            "dimension": "constraint",
+            "rule": "budget_compliance",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 61,
+            "dimension": "constraint",
+            "rule": "new_spend_margin_policy",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 62,
+            "dimension": "constraint",
+            "rule": "supply_timing_feasible",
+            "status": "FAIL",
+            "passed": false,
+            "applicable": true
+          },
+          {
+            "row_number": 63,
+            "dimension": "constraint",
+            "rule": "po_delivery_schedule_compliance",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 64,
+            "dimension": "constraint",
+            "rule": "po_consolidation_compliance",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 65,
+            "dimension": "constraint",
+            "rule": "po_min_qty_compliance",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 66,
+            "dimension": "constraint",
+            "rule": "po_price_tier_compliance",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 67,
+            "dimension": "constraint",
+            "rule": "mo_schedule_compliance",
+            "status": "FAIL",
+            "passed": false,
+            "applicable": true
+          },
+          {
+            "row_number": 68,
+            "dimension": "constraint",
+            "rule": "finished_stock_capacity_compliance",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 69,
+            "dimension": "constraint",
+            "rule": "assembly_capacity_compliance",
+            "status": "FAIL",
+            "passed": false,
+            "applicable": true
+          },
+          {
+            "row_number": 70,
+            "dimension": "constraint",
+            "rule": "finished_vendor_max_qty_compliance",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 71,
+            "dimension": "constraint",
+            "rule": "component_vendor_max_qty_compliance",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 72,
+            "dimension": "constraint",
+            "rule": "component_stock_capacity_compliance",
+            "status": "FAIL",
+            "passed": false,
+            "applicable": true
+          },
+          {
+            "row_number": 73,
+            "dimension": "constraint",
+            "rule": "mo_component_feasibility",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 74,
+            "dimension": "constraint",
+            "rule": "supply_coverage",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 75,
+            "dimension": "constraint",
+            "rule": "repair_state_compliance",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 76,
+            "dimension": "hygiene",
+            "rule": "seeded_order_confirmed",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 77,
+            "dimension": "hygiene",
+            "rule": "seeded_order_confirmed",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 78,
+            "dimension": "hygiene",
+            "rule": "seeded_order_confirmed",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 79,
+            "dimension": "hygiene",
+            "rule": "seeded_order_confirmed",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 80,
+            "dimension": "hygiene",
+            "rule": "seeded_order_confirmed",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 81,
+            "dimension": "hygiene",
+            "rule": "seeded_order_confirmed",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 82,
+            "dimension": "hygiene",
+            "rule": "seeded_order_confirmed",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 83,
+            "dimension": "hygiene",
+            "rule": "seeded_order_confirmed",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 84,
+            "dimension": "hygiene",
+            "rule": "seeded_order_confirmed",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 85,
+            "dimension": "hygiene",
+            "rule": "seeded_order_confirmed",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 86,
+            "dimension": "hygiene",
+            "rule": "seeded_order_confirmed",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 87,
+            "dimension": "hygiene",
+            "rule": "seeded_order_confirmed",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 88,
+            "dimension": "hygiene",
+            "rule": "po_origin_traceability",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 89,
+            "dimension": "hygiene",
+            "rule": "po_origin_traceability",
+            "status": "FAIL",
+            "passed": false,
+            "applicable": true
+          },
+          {
+            "row_number": 90,
+            "dimension": "hygiene",
+            "rule": "po_origin_traceability",
+            "status": "FAIL",
+            "passed": false,
+            "applicable": true
+          },
+          {
+            "row_number": 91,
+            "dimension": "hygiene",
+            "rule": "po_origin_traceability",
+            "status": "FAIL",
+            "passed": false,
+            "applicable": true
+          },
+          {
+            "row_number": 92,
+            "dimension": "hygiene",
+            "rule": "po_origin_traceability",
+            "status": "FAIL",
+            "passed": false,
+            "applicable": true
+          },
+          {
+            "row_number": 93,
+            "dimension": "hygiene",
+            "rule": "po_origin_traceability",
+            "status": "FAIL",
+            "passed": false,
+            "applicable": true
+          },
+          {
+            "row_number": 94,
+            "dimension": "hygiene",
+            "rule": "mrp_origin_traceability",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          },
+          {
+            "row_number": 95,
+            "dimension": "hygiene",
+            "rule": "adjacent_data_untouched",
+            "status": "PASS",
+            "passed": true,
+            "applicable": true
+          }
+        ]
+      }
+    }
+  },
+  "A03": {
+    "source_commit": "2ca5fbceb058e4ffe3d5b761ca3a6834dac8f621",
+    "original_reward": 0.0,
+    "model_calls": [
+      11,
+      0
+    ]
+  },
+  "unsupported_claims_withdrawn": [
+    "A separate integration-only offline command window lacks an exact standalone source lock; its coverage claim is excluded from these curated results."
+  ],
+  "limits": [
+    "No measured matched-task comparison or causal harness advantage.",
+    "A01/A02 model accounting unknown, not zero; no original score.",
+    "A04 raw control transcripts not collected at this evidence boundary.",
+    "Vendor HTTP wire/full Codex event streams were not retained.",
+    "Some historical resources failed fresh-reader provenance checks; byte recovery does not validate their provenance.",
+    "No historical result is a test of the combined V6 product."
+  ]
+}

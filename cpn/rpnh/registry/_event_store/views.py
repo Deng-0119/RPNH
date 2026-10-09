@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+from contextlib import nullcontext
 import sqlite3
 from typing import Any, Mapping
 
@@ -47,11 +48,11 @@ def canonical_events(
     return tuple(store._row_to_envelope(row) for row in rows)
 
 def ordered_firing_record(
-        store, firing_version_id: TypedId | str,
+        store, firing_version_id: TypedId | str, *, _db=None,
 ) -> Mapping[str, Any]:
     """Return one firing's exact event and Petri closure in ordinal order."""
     firing_id = str(firing_version_id)
-    with store.connect() as db:
+    with (store.connect() if _db is None else nullcontext(_db)) as db:
         publication = db.execute(
             "SELECT * FROM firing_publications "
             "WHERE firing_version_id=?", (firing_id,)).fetchone()

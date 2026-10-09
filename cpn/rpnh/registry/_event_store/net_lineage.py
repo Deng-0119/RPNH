@@ -327,7 +327,7 @@ def _verify_adoption_events(event_store, catalog, event_rows, *, _db, offline=Fa
                           _version_ref_from_payload(event.payload["supersedes_net_ref"]))
         except (KeyError, TypeError, ValueError) as exc:
             raise RegistryCorruptError("net adoption exact refs are malformed") from exc
-        if supersedes != head or candidate == head:
+        if supersedes != head or candidate in lineage:
             raise RegistryCorruptError("net adoption chain is forked or discontinuous")
         closure = validate_registered_net_closure(
             event_store, catalog, candidate, _db=_db, _memo=closure_memo, _prefix_reads=prefix_reads)

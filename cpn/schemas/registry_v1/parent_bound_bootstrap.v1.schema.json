@@ -1,0 +1,208 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "registry_v1/parent_bound_bootstrap/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "record_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "entity_type": {
+          "type": "string",
+          "minLength": 1
+        },
+        "logical_id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
+        },
+        "version_id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
+        }
+      },
+      "required": [
+        "entity_type",
+        "logical_id",
+        "version_id"
+      ]
+    },
+    "child_run_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "entity_type": {
+          "type": "string",
+          "minLength": 1
+        },
+        "logical_id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
+        },
+        "version_id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
+        }
+      },
+      "required": [
+        "entity_type",
+        "logical_id",
+        "version_id"
+      ]
+    },
+    "child_task_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "entity_type": {
+          "type": "string",
+          "minLength": 1
+        },
+        "logical_id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
+        },
+        "version_id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
+        }
+      },
+      "required": [
+        "entity_type",
+        "logical_id",
+        "version_id"
+      ]
+    },
+    "child_branch_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "entity_type": {
+          "type": "string",
+          "minLength": 1
+        },
+        "logical_id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
+        },
+        "version_id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
+        }
+      },
+      "required": [
+        "entity_type",
+        "logical_id",
+        "version_id"
+      ]
+    },
+    "genesis_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "entity_type": {
+          "type": "string",
+          "minLength": 1
+        },
+        "logical_id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
+        },
+        "version_id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
+        }
+      },
+      "required": [
+        "entity_type",
+        "logical_id",
+        "version_id"
+      ]
+    },
+    "bootstrap_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "entity_type": {
+          "type": "string",
+          "minLength": 1
+        },
+        "logical_id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
+        },
+        "version_id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
+        }
+      },
+      "required": [
+        "entity_type",
+        "logical_id",
+        "version_id"
+      ]
+    },
+    "initial_writer_epoch": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "acceptance": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "parent_source_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "acceptance_json": {
+          "type": "string",
+          "minLength": 1
+        },
+        "intent_json": {
+          "type": "string",
+          "minLength": 1
+        },
+        "acceptance_transaction_id": {
+          "type": "string",
+          "pattern": "^transaction:[a-f0-9]{32}$"
+        },
+        "acceptance_event_id": {
+          "type": "string",
+          "pattern": "^event:[a-f0-9]{32}$"
+        },
+        "acceptance_commit_ordinal": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "initial_declaration_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      },
+      "required": [
+        "parent_source_id",
+        "acceptance_json",
+        "intent_json",
+        "acceptance_transaction_id",
+        "acceptance_event_id",
+        "acceptance_commit_ordinal",
+        "initial_declaration_digest"
+      ]
+    },
+    "initial_declaration_digest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    }
+  },
+  "required": [
+    "record_ref",
+    "child_run_ref",
+    "child_task_ref",
+    "child_branch_ref",
+    "genesis_ref",
+    "bootstrap_ref",
+    "initial_writer_epoch",
+    "acceptance",
+    "initial_declaration_digest"
+  ]
+}

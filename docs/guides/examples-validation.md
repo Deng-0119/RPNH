@@ -6,14 +6,19 @@ metadata:
   audience: user-and-maintainer
   language: en
   counterpart: examples-validation_ZH.md
-  revision: "2026-09-29.3"
-  status: dated-focused-and-live-evidence
-  basis: "cumulative dated evidence; current main compatibility recorded separately"
+  revision: "2026-10-09.1"
+  status: historical-focused-and-live-record
+  basis: "dated historical evidence; not certification of later source revisions"
 ---
 
 [English](examples-validation.md) | [中文](examples-validation_ZH.md)
 
 # User-example validation record
+
+All PASS labels and counts below belong to their original historical windows.
+They are not fresh checks of the combined product. Reproduction commands require
+the appropriate source and installed host dependencies; no examples or models
+were executed for this documentation rewrite.
 
 This is a cumulative, dated validation record. Its earliest example baseline was
 `main@6c675cb`; later sections identify their own 2026-09-26 or 2026-09-28
@@ -63,7 +68,7 @@ without another model call. Current main deliberately changed this boundary:
 reopening the canonical MainSession is observational, and the user must issue
 the explicit frontend resume command to commit terminal evidence.
 
-This record is focused candidate evidence, not a full release suite. Host-path
+This record is focused historical evidence, not a full release suite. Host-path
 PASS means transport, Registry settlement and frontend projection completed; it
 does not convert the OpenCode model-content warning into exact prompt compliance.
 Generated Registries, raw adapter audits, credentials and private route details
@@ -165,9 +170,9 @@ provider-backed tasks. Their runners require a user-owned exact execution
 selection and make the main agent design the workflow; neither package embeds a
 provider/model or a historical graph.
 
-| Real workflow | Current terminal evidence | Independent business check | PetriNet |
+| Real workflow | Historical terminal evidence | Independent business check | PetriNet |
 |---|---|---|---|
-| [JB steering packet](../../examples/jb_steering_packet/README.md) | Current Registry authority references a registered terminal result | Official PLOS sources; deterministic baseline, survival and 778-participant reference | 7 transitions, 17 places, 49 edges |
+| [JB steering packet](../../examples/jb_steering_packet/README.md) | The observed Registry authority referenced a registered terminal result | Official PLOS sources; deterministic baseline, survival and 778-participant reference | 7 transitions, 17 places, 49 edges |
 | [3-DOF powered descent](../../examples/three_dof_powered_descent/README.md) | A separate later Registry observed on 2026-09-29 has current authority over a registered terminal result | Stdlib verifier accepts the observed trajectory against dynamics and all stated limits | 5 transitions, 15 places, 52 edges |
 
 For both graphs, default and `--show-resources` projections are identical and
@@ -182,8 +187,10 @@ Registries, identifiers, transcripts, credentials and private route details
 remain outside the repository. Capturing these two images and validating the
 offline reference programs made no new provider/model call.
 
-Current commands apply to current `main`. A user's own route and newly generated
+Use the commands with a compatible source revision and host installation. A user's own route and newly generated
 business result still require their own Registry and semantic acceptance; the
 published screenshots are observation aids, not replay fixtures.
 The 3-DOF package is evidence from a separate later Registry and does not
 rewrite or supersede the dated 2026-09-28 archival record.
+
+Separate dated native and benchmark windows are indexed in [curated results](../results/README.md). Their scores and limits are not added to the counts above.

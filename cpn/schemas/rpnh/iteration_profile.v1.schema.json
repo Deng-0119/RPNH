@@ -1,0 +1,208 @@
+{
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "const": "rpnh/iteration_profile/v1"
+    },
+    "template": {
+      "const": "propose_evaluate_select/v1"
+    },
+    "name": {
+      "type": "string",
+      "pattern": "^[A-Za-z][A-Za-z0-9_-]*$",
+      "maxLength": 128
+    },
+    "rounds": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 32
+    },
+    "schemas": {
+      "type": "object",
+      "properties": {
+        "state": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*(?:/[a-z][a-z0-9_]*)+/v[1-9][0-9]*$"
+        },
+        "candidate": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*(?:/[a-z][a-z0-9_]*)+/v[1-9][0-9]*$"
+        },
+        "evaluation_request": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*(?:/[a-z][a-z0-9_]*)+/v[1-9][0-9]*$"
+        },
+        "evaluation": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*(?:/[a-z][a-z0-9_]*)+/v[1-9][0-9]*$"
+        }
+      },
+      "required": [
+        "state",
+        "candidate",
+        "evaluation_request",
+        "evaluation"
+      ],
+      "additionalProperties": false
+    },
+    "roles": {
+      "type": "object",
+      "properties": {
+        "proposer": {
+          "type": "object",
+          "properties": {
+            "executor_key": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256
+            },
+            "model_profile_ref": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 256
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "executor_key",
+            "model_profile_ref"
+          ],
+          "additionalProperties": false
+        },
+        "evaluator": {
+          "type": "object",
+          "properties": {
+            "executor_key": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256
+            },
+            "model_profile_ref": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 256
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "executor_key",
+            "model_profile_ref"
+          ],
+          "additionalProperties": false
+        },
+        "selector": {
+          "type": "object",
+          "properties": {
+            "executor_key": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256
+            },
+            "model_profile_ref": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 256
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "executor_key",
+            "model_profile_ref"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "proposer",
+        "evaluator",
+        "selector"
+      ],
+      "additionalProperties": false
+    },
+    "terminal_key": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256
+    },
+    "native_model_call_budget": {
+      "type": "object",
+      "properties": {
+        "unit": {
+          "const": "registered_model_call"
+        },
+        "maximum": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "required": [
+        "unit",
+        "maximum"
+      ],
+      "additionalProperties": false
+    },
+    "terminal_outcomes": {
+      "type": "object",
+      "properties": {
+        "stop": {
+          "enum": [
+            "complete",
+            "failed"
+          ]
+        },
+        "final_select": {
+          "enum": [
+            "complete",
+            "failed"
+          ]
+        },
+        "final_retain": {
+          "enum": [
+            "complete",
+            "failed"
+          ]
+        }
+      },
+      "required": [
+        "stop",
+        "final_select",
+        "final_retain"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "schema_version",
+    "template",
+    "name",
+    "rounds",
+    "schemas",
+    "roles",
+    "terminal_key",
+    "native_model_call_budget",
+    "terminal_outcomes"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "rpnh/iteration_profile/v1",
+  "title": "Inert bounded iteration authoring profile",
+  "description": "Optional author input only. No runtime authority, scorer implementation, fixture bodies or provider credentials."
+}

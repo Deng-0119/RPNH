@@ -32,6 +32,8 @@ Explicit opt-in [author/graph interfaces](docs/reference/declarations.md), [Work
 
 Offline preparation and inspection are available through [portable package preview and exact local locks](docs/guides/portable-packages.md), [HOST declaration diagnostics](docs/guides/host-readiness.md), and [checkpoint comparison](docs/guides/checkpoint-comparison.md). Package commands use the installed `rpnh` entry; the HOST diagnostic is an explicit Python API. These interfaces inspect materials and recorded facts without granting execution authority.
 
+See [curated results](docs/results/README.md) for historical application scores and zero-model runtime checks. Each record keeps its tested source and conditions; these older windows do not certify a later combined product or a new rc2 binary release.
+
 ## See a multi-agent run
 
 [Controlled managed tools](docs/controlled-managed-tools.md) covers exact result

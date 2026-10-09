@@ -21,3 +21,12 @@ wheel. Their license files are copied beside the assets.
 Python and JavaScript dependencies installed by package managers are not
 relicensed by RPNH. Consult each dependency's package metadata and included
 license before redistribution.
+
+## Codex protocol test fixtures
+
+The unmodified JSON schemas and generated TypeScript declarations under
+`tests/fixtures/codex` come from `openai/codex` 0.155.0 and 0.161.0, licensed
+under Apache-2.0. Exact upstream commits, file hashes and source links are in
+`tests/fixtures/codex/PROVENANCE.json`; the license is preserved at
+`tests/fixtures/codex/UPSTREAM_LICENSE`. These are offline contract fixtures,
+not bundled Codex clients or a claim of native-client certification.

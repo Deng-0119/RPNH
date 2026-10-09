@@ -1,0 +1,55 @@
+{
+  "scope": "Offline wire-schema fixtures and source-reviewed picker contract; not a native client certification.",
+  "versions": {
+    "0.155.0": {
+      "commit": "f0a1b8f0849d90960bc406b848f32e5a129b0457",
+      "schema": {
+        "path": "0.155.0/ModelListResponse.json",
+        "upstream_path": "codex-rs/app-server-protocol/schema/json/v2/ModelListResponse.json",
+        "url": "https://github.com/openai/codex/blob/f0a1b8f0849d90960bc406b848f32e5a129b0457/codex-rs/app-server-protocol/schema/json/v2/ModelListResponse.json",
+        "sha256": "c7b58b332f6cf18fd64235409a6daf27bb9e6c09d12dcd0daa2f3dc628b55f6f",
+        "git_blob_sha1": "657a433f88ae548aa81fb1c2ee44ba4fc5a781f8"
+      },
+      "reasoning_effort_typescript": {
+        "path": "0.155.0/ReasoningEffort.ts",
+        "git_blob_sha1": "d40f5bd6578e63f45f9fd0bee8d8979026561de7",
+        "url": "https://github.com/openai/codex/blob/rust-v0.155.0/codex-rs/app-server-protocol/schema/typescript/ReasoningEffort.ts"
+      },
+      "picker_source": {
+        "git_blob_sha1": "2155103740617250cbf5d26195067106fa413fd1",
+        "url": "https://github.com/openai/codex/blob/rust-v0.155.0/codex-rs/tui/src/chatwidget/model_popups.rs",
+        "observed_contract": "open_reasoning_popup falls back to default_reasoning_effort when supported choices are empty, then applies the sole choice; source review only."
+      },
+      "rust_effort_source": {
+        "git_blob_sha1": "8c021b17c2a870b5e1e69e3e57210d46c8722606",
+        "url": "https://github.com/openai/codex/blob/rust-v0.155.0/codex-rs/protocol/src/openai_models.rs"
+      }
+    },
+    "0.161.0": {
+      "commit": "979011409de0a60b52f179721948e65531d26144",
+      "schema": {
+        "path": "0.161.0/ModelListResponse.json",
+        "upstream_path": "codex-rs/app-server-protocol/schema/json/v2/ModelListResponse.json",
+        "url": "https://github.com/openai/codex/blob/979011409de0a60b52f179721948e65531d26144/codex-rs/app-server-protocol/schema/json/v2/ModelListResponse.json",
+        "sha256": "2fb387a2ed258fc74258828ea342d68f89ce4e8e22cd0329ca59d2b423f9108b",
+        "git_blob_sha1": "ee3ca9ae1449457d8338507274d587342780f891"
+      },
+      "reasoning_effort_typescript": {
+        "path": "0.161.0/ReasoningEffort.ts",
+        "git_blob_sha1": "d40f5bd6578e63f45f9fd0bee8d8979026561de7",
+        "url": "https://github.com/openai/codex/blob/979011409de0a60b52f179721948e65531d26144/codex-rs/app-server-protocol/schema/typescript/ReasoningEffort.ts"
+      },
+      "picker_source": {
+        "git_blob_sha1": "03efe3110aa142e6b98e286e38f4b7abdd7f1e79",
+        "url": "https://github.com/openai/codex/blob/979011409de0a60b52f179721948e65531d26144/codex-rs/tui/src/chatwidget/model_popups.rs",
+        "observed_contract": "open_reasoning_popup falls back to default_reasoning_effort when supported choices are empty, then applies the sole choice; source review only."
+      },
+      "rust_effort_source": {
+        "git_blob_sha1": "b2dde1499eee6428ac6a281e65c85901648133f4",
+        "url": "https://github.com/openai/codex/blob/979011409de0a60b52f179721948e65531d26144/codex-rs/protocol/src/openai_models.rs"
+      }
+    }
+  },
+  "license": "Apache-2.0; unmodified upstream license in UPSTREAM_LICENSE",
+  "typescript_note": "Both upstream ReasoningEffort.ts exports are string aliases; the Rust enum, serializer and parser establish the named None/none mapping. TypeScript was not compiled."
+}

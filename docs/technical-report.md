@@ -6,7 +6,7 @@ metadata:
   audience: application-developer-and-researcher
   language: en
   counterpart: technical-report_ZH.md
-  revision: "2026-10-08.5"
+  revision: "2026-10-09.1"
   status: technical-report
   basis: "Deng-0119/RPNH at 8dd360e4848912a998dbd83220c3f0ce0a1caa86"
   erp-runtime-supplement: "integrated at e92b05c9afe324ebb675f2d67b73c02efe7b9536"
@@ -19,13 +19,13 @@ English | [中文](technical-report_ZH.md) | [Documentation](index.md)
 ## Executable processes for Agent and program systems
 
 **Updated:** 2026-10-08. **Source snapshot:**
-[`8dd360e`](https://github.com/Deng-0119/RPNH/tree/8dd360e4848912a998dbd83220c3f0ce0a1caa86).
+`8dd360e4848912a998dbd83220c3f0ce0a1caa86`.
 Experiment source revisions and publication revisions are identified separately
 in [§9](#9-example-results).
 The ERP runtime supplement is integrated at
-[`e92b05c`](https://github.com/Deng-0119/RPNH/tree/e92b05c9afe324ebb675f2d67b73c02efe7b9536).
+`e92b05c9afe324ebb675f2d67b73c02efe7b9536`.
 The atomic-tool pipeline and native evidence are integrated at
-[`80a17c3`](https://github.com/Deng-0119/RPNH/tree/80a17c3ce45ec3c7a1b39c170c36bbb922276de1).
+`80a17c3ce45ec3c7a1b39c170c36bbb922276de1`.
 
 ## Abstract
 
@@ -514,6 +514,9 @@ public `v0.1.0rc1` binaries contain an earlier feature set. See
 
 ## 9. Example results
 
+This section links to [curated historical results](results/README.md), retaining complete score/status projections, tested source, inputs and conditions. These are rewritten summaries, not raw logs or Registry exports. Results apply only to their historical windows; this documentation rewrite did not validate a new combined product.
+
+
 The ERP and SCB examples connect RPNH to two kinds of application: ERP operations
 on a persistent business system and code changes under progressively revealed
 requirements. The tables below keep the original evaluator's result separate
@@ -544,22 +547,7 @@ network. [Source identity][erp-source] · [Model condition][erp-model] ·
 | `2000_easy_01_buy_only_baseline`, A04 / `s04` | 100/100, passed | 37/37 | 9 |
 | `2299_hard_repair_plan_hard`, A01 / `h01` | 21/100, failed | 86/95 | 13 |
 
-Sources: [A04 score projection][erp-smoke], [H01 original reward][erp-reward]
-and [H01 rule results][erp-rules]. A04 retains public score/lifecycle projections
-and raw-file hashes; H01 also includes the original reward, rule results and
-checker log. The [collection manifest][erp-manifest] identifies the available
-materials and historical provenance-validation limits.
-
-The hard task completed its execution path but did not satisfy business
-acceptance. Its nine failed checks comprise four constraints and five
-component-purchase provenance checks. The original scoring rule gates the other
-dimensions when constraints are incomplete, yielding 21/100 from 63/75 constraint
-points; 86/95 is a check count, not the score. One concrete mismatch is workcenter
-capacity: the Agent's readback used 45 minutes per unit, while the task's route
-rule uses 55, producing 6,270 minutes against a 5,555-minute cap. Three constraint
-checks also recorded `bool`/`datetime.date` exceptions. These remain part of the
-original result. [Scoring rule][erp-score-rule] · [Readback][erp-readback] ·
-[Route rule][erp-route] · [Checker log][erp-checks].
+The [curated ERP results][erp-smoke] retain every emitted metric and rule status: 37 applicable checks plus one NA for A04, and 95 applicable checks for H01. The hard task's nine failures comprise four constraints and five purchase-provenance checks. Under the original scoring gate, incomplete constraints prevent the other dimensions from contributing, so 63/75 constraint points yield 21/100 overall. The 86/95 value is a check count. The checker also recorded type exceptions; the aggregate score alone cannot establish one cause. See the [original scoring rule][erp-score-rule].
 
 This example illustrates the division of responsibility: RPNH records execution,
 products and lineage; the application supplies domain validation, and the
@@ -594,7 +582,7 @@ were published at `dbad00458e9b356fcaf0bb97ceb90258ed9b1de0`.
 | 2 | 25/25 | 0 | `complete` | 5 |
 | 3 | 40/47 | 1 | `complete` | 14 |
 
-Original reports: [checkpoint 1][scb-cp1], [checkpoint 2][scb-cp2],
+Complete case/status projections: [checkpoint 1][scb-cp1], [checkpoint 2][scb-cp2],
 [checkpoint 3][scb-cp3]. The third checkpoint has seven business-test failures
 and `infrastructure_failure=false`. Its failures comprise two Core cases and
 five Functionality cases; all 25 regression cases pass. Checkpoint totals include
@@ -606,7 +594,7 @@ was 998.82 seconds. Upstream cost, net-cost and step caps were disabled (set to 
 the applied model-call limit is the relevant bounded control for this run.
 The task-level normalized token total and USD cost were not provided. Per-call
 adapter returns retain token-usage fields, which are separate from a normalized
-task-level total. [Run summary][scb-summary] · [Published evidence][scb-collection].
+task-level total. [Run summary][scb-summary] · [Curated status projection][scb-collection].
 
 The solver ran without network access in a fresh container for each checkpoint,
 with source snapshots carried forward. Image building and evaluation used host
@@ -654,10 +642,8 @@ admission, dependencies, intermediate products and consistent readback.
 ### 9.4 Additional retained results
 
 The repository also retains an earlier ERP smoke run, A03, at `2ca5fbc`, with
-0/100 and 11 real calls. Its [diagnosis][erp-a03] identifies an input-reader
-binding omission; that historical condition is distinct from the later A04 run.
-A recorded [ERP offline test window][erp-test-command] reports 190 passed tests
-and 35 separately reported subtests for `examples/erp_bench/tests`.
+0/100 and 11 real calls. Its [historical status projection][erp-a03] remains distinct from A04. The request-dependent input-reader diagnosis is withdrawn from this public summary.
+A separate integration-only offline window lacks an exact standalone source lock; its coverage claim is withdrawn from these curated results.
 
 A separate ERP runtime validation used `dbad004` plus the ERP adapter changes
 and native fixture subsequently integrated at `e92b05c`. The
@@ -709,8 +695,7 @@ process exited, a separate process read back the persisted Registry. All 11
 stable top-level export fields matched, while live-only transport and stop-reason
 fields were absent from the readback. Before/after Registry snapshots retained
 event ordinal/count 1001, ten dispatch reservations, ten execution starts and
-model counts `[0,0]`. The published exports and snapshots document unchanged
-execution records during readback; the original Registry database remains local.
+model counts `[0,0]`. The curated readback projection records unchanged execution counts and field equality.
 [CLI export][entry-reader-cli] · [Readback export][entry-reader-readback] ·
 [Readback audit][entry-reader-audit].
 
@@ -763,45 +748,45 @@ are described in the corresponding guides.
 [receiver-source]: https://github.com/Deng-0119/RPNH/blob/dbad00458e9b356fcaf0bb97ceb90258ed9b1de0/cpn/rpnh/collaboration/environment_host.py
 [task-control-source]: https://github.com/Deng-0119/RPNH/blob/d92ff3704b6002bf5ecbccb3e6a3d1489809a805/cpn/rpnh/task_control.py
 [net-tests]: https://github.com/Deng-0119/RPNH/blob/dbad00458e9b356fcaf0bb97ceb90258ed9b1de0/tests/test_native_net_operations.py
-[erp-source]: https://github.com/Deng-0119/RPNH/blob/dbad00458e9b356fcaf0bb97ceb90258ed9b1de0/evidence/first_wave/20261008/erp/records/r/h01/public/source-identity.json
-[erp-model]: https://github.com/Deng-0119/RPNH/blob/dbad00458e9b356fcaf0bb97ceb90258ed9b1de0/evidence/first_wave/20261008/erp/records/r/h01/public/model-configuration.json
-[erp-smoke]: https://github.com/Deng-0119/RPNH/blob/dbad00458e9b356fcaf0bb97ceb90258ed9b1de0/evidence/first_wave/20261008/erp/records/r/s04/public/original-score.json
-[erp-reward]: https://github.com/Deng-0119/RPNH/blob/dbad00458e9b356fcaf0bb97ceb90258ed9b1de0/evidence/first_wave/20261008/erp/records/r/h01/w/harbor/verifier/reward.json
-[erp-rules]: https://github.com/Deng-0119/RPNH/blob/dbad00458e9b356fcaf0bb97ceb90258ed9b1de0/evidence/first_wave/20261008/erp/records/r/h01/w/harbor/verifier/rule_results.tsv
-[erp-a03]: https://github.com/Deng-0119/RPNH/blob/dbad00458e9b356fcaf0bb97ceb90258ed9b1de0/evidence/first_wave/20261008/erp/records/records/input-delivery-a03-v2/public/diagnosis.json
-[erp-test-command]: https://github.com/Deng-0119/RPNH/blob/dbad00458e9b356fcaf0bb97ceb90258ed9b1de0/evidence/first_wave/20261008/scb-local/checks/erp-integrated-tests-01.json
-[erp-world]: https://github.com/Deng-0119/RPNH/blob/dbad00458e9b356fcaf0bb97ceb90258ed9b1de0/evidence/first_wave/20261008/erp/records/r/h01/public/world-projection.json
+[erp-source]: results/erp-first-wave-20261008/README.md
+[erp-model]: results/erp-first-wave-20261008/README.md
+[erp-smoke]: results/erp-first-wave-20261008/README.md
+[erp-reward]: results/erp-first-wave-20261008/README.md
+[erp-rules]: results/erp-first-wave-20261008/README.md
+[erp-a03]: results/erp-first-wave-20261008/README.md
+[erp-test-command]: results/erp-first-wave-20261008/README.md
+[erp-world]: results/erp-first-wave-20261008/README.md
 [erp-score-rule]: https://github.com/agentic-labs/erp-bench/blob/ceba3880af555129b5278e056a0c20f2fb5a0ba9/tasks/2299_hard_repair_plan_hard/tests/test.sh#L351-L362
-[erp-readback]: https://github.com/Deng-0119/RPNH/blob/dbad00458e9b356fcaf0bb97ceb90258ed9b1de0/evidence/first_wave/20261008/erp/records/registry/h01/agent_action_v3/a33b2d441be95df9b29a5ee5336489fc.json
+[erp-readback]: results/erp-first-wave-20261008/README.md
 [erp-route]: https://github.com/agentic-labs/erp-bench/blob/ceba3880af555129b5278e056a0c20f2fb5a0ba9/tasks/2299_hard_repair_plan_hard/tests/checks.py#L305-L313
-[erp-checks]: https://github.com/Deng-0119/RPNH/blob/dbad00458e9b356fcaf0bb97ceb90258ed9b1de0/evidence/first_wave/20261008/erp/logs/r/h01/w/harbor/verifier/checks.log
-[erp-manifest]: https://github.com/Deng-0119/RPNH/blob/dbad00458e9b356fcaf0bb97ceb90258ed9b1de0/evidence/first_wave/20261008/erp/MANIFEST.json
-[scb-summary]: https://github.com/Deng-0119/RPNH/blob/dbad00458e9b356fcaf0bb97ceb90258ed9b1de0/evidence/first_wave/20261008/scb-real/preparation/evidence/scb-real-summary.json
-[scb-identity]: https://github.com/Deng-0119/RPNH/blob/dbad00458e9b356fcaf0bb97ceb90258ed9b1de0/evidence/first_wave/20261008/scb-real/preparation/evidence/scb-real-install-byte-identity.json
-[scb-cp1]: https://github.com/Deng-0119/RPNH/blob/dbad00458e9b356fcaf0bb97ceb90258ed9b1de0/evidence/first_wave/20261008/scb-real/run/checkpoint_1/evaluation/report.json
-[scb-cp2]: https://github.com/Deng-0119/RPNH/blob/dbad00458e9b356fcaf0bb97ceb90258ed9b1de0/evidence/first_wave/20261008/scb-real/run/checkpoint_2/evaluation/report.json
-[scb-cp3]: https://github.com/Deng-0119/RPNH/blob/dbad00458e9b356fcaf0bb97ceb90258ed9b1de0/evidence/first_wave/20261008/scb-real/run/checkpoint_3/evaluation/report.json
-[scb-collection]: https://github.com/Deng-0119/RPNH/blob/dbad00458e9b356fcaf0bb97ceb90258ed9b1de0/evidence/first_wave/20261008/scb-real/README_ZH.md
-[scb-development]: https://github.com/Deng-0119/RPNH/blob/dbad00458e9b356fcaf0bb97ceb90258ed9b1de0/evidence/first_wave/20261008/scb-real/run/development-summary.json
-[scb-adaptation]: https://github.com/Deng-0119/RPNH/blob/dbad00458e9b356fcaf0bb97ceb90258ed9b1de0/evidence/first_wave/20261008/scb-real/preparation/work/scb-real-plan01/adaptation.json
+[erp-checks]: results/erp-first-wave-20261008/README.md
+[erp-manifest]: results/erp-first-wave-20261008/README.md
+[scb-summary]: results/scb-prefix3-20261008/README.md
+[scb-identity]: results/scb-prefix3-20261008/README.md
+[scb-cp1]: results/scb-prefix3-20261008/README.md
+[scb-cp2]: results/scb-prefix3-20261008/README.md
+[scb-cp3]: results/scb-prefix3-20261008/README.md
+[scb-collection]: results/scb-prefix3-20261008/README.md
+[scb-development]: results/scb-prefix3-20261008/README.md
+[scb-adaptation]: results/scb-prefix3-20261008/README.md
 [erp-unknown-contract]: https://github.com/Deng-0119/RPNH/blob/e92b05c9afe324ebb675f2d67b73c02efe7b9536/examples/erp_bench/README.md#action-boundary-and-lifecycle
-[erp-unknown-source]: https://github.com/Deng-0119/RPNH/blob/e92b05c9afe324ebb675f2d67b73c02efe7b9536/evidence/first_wave/20261008/erp-unknown/INTEGRATION_SOURCE_MATCH.json
-[erp-unknown-offline]: https://github.com/Deng-0119/RPNH/blob/e92b05c9afe324ebb675f2d67b73c02efe7b9536/evidence/first_wave/20261008/erp-unknown/local/offline-deduplicated-results.json
-[erp-unknown-owner]: https://github.com/Deng-0119/RPNH/blob/e92b05c9afe324ebb675f2d67b73c02efe7b9536/evidence/first_wave/20261008/erp-unknown/B/export_safe.json
-[erp-unknown-native]: https://github.com/Deng-0119/RPNH/blob/e92b05c9afe324ebb675f2d67b73c02efe7b9536/evidence/first_wave/20261008/erp-unknown/C/export_safe.json
+[erp-unknown-source]: results/erp-runtime-20261008/README.md
+[erp-unknown-offline]: results/erp-runtime-20261008/README.md
+[erp-unknown-owner]: results/erp-runtime-20261008/README.md
+[erp-unknown-native]: results/erp-runtime-20261008/README.md
 [erp-unknown-fixture]: https://github.com/Deng-0119/RPNH/blob/e92b05c9afe324ebb675f2d67b73c02efe7b9536/examples/erp_bench/scripts/unknown_native_acceptance.py
 [tool-pipeline-example]: https://github.com/Deng-0119/RPNH/blob/80a17c3ce45ec3c7a1b39c170c36bbb922276de1/examples/tool_pipeline/README.md
 [tool-pipeline-declaration]: https://github.com/Deng-0119/RPNH/blob/80a17c3ce45ec3c7a1b39c170c36bbb922276de1/examples/tool_pipeline/module.json
 [tool-pipeline-host]: https://github.com/Deng-0119/RPNH/blob/80a17c3ce45ec3c7a1b39c170c36bbb922276de1/examples/tool_pipeline/host.py
-[tool-pipeline-identity]: https://github.com/Deng-0119/RPNH/blob/80a17c3ce45ec3c7a1b39c170c36bbb922276de1/evidence/first_wave/20261008/tool-pipeline/local/tested-source.json
-[tool-pipeline-tests]: https://github.com/Deng-0119/RPNH/blob/80a17c3ce45ec3c7a1b39c170c36bbb922276de1/evidence/first_wave/20261008/tool-pipeline/local/native-test-inventory.json
-[tool-pipeline-evidence]: https://github.com/Deng-0119/RPNH/blob/80a17c3ce45ec3c7a1b39c170c36bbb922276de1/evidence/first_wave/20261008/tool-pipeline/local/native-evidence-audit.json
-[tool-pipeline-readback]: https://github.com/Deng-0119/RPNH/blob/80a17c3ce45ec3c7a1b39c170c36bbb922276de1/evidence/first_wave/20261008/tool-pipeline/local/readback-protocol.json
+[tool-pipeline-identity]: results/tool-pipeline-20261008/README.md
+[tool-pipeline-tests]: results/tool-pipeline-20261008/README.md
+[tool-pipeline-evidence]: results/tool-pipeline-20261008/README.md
+[tool-pipeline-readback]: results/tool-pipeline-20261008/README.md
 [orchestrator-source]: https://github.com/Deng-0119/RPNH/blob/d92ff3704b6002bf5ecbccb3e6a3d1489809a805/cpn/orchestrator/runner.py
 [pipeline-entry-source]: https://github.com/Deng-0119/RPNH/blob/d92ff3704b6002bf5ecbccb3e6a3d1489809a805/examples/tool_pipeline/run.py
 [run-reader-source]: https://github.com/Deng-0119/RPNH/blob/d92ff3704b6002bf5ecbccb3e6a3d1489809a805/cpn/rpnh/registry/run_authority.py
-[entry-reader-identity]: https://github.com/Deng-0119/RPNH/blob/d92ff3704b6002bf5ecbccb3e6a3d1489809a805/evidence/first_wave/20261009/taskcontrol-reader/local/source-before.json
-[entry-reader-evidence]: https://github.com/Deng-0119/RPNH/blob/8dd360e4848912a998dbd83220c3f0ce0a1caa86/evidence/first_wave/20261009/taskcontrol-reader/README_ZH.md
-[entry-reader-cli]: https://github.com/Deng-0119/RPNH/blob/d92ff3704b6002bf5ecbccb3e6a3d1489809a805/evidence/first_wave/20261009/taskcontrol-reader/native/cli/evidence.json
-[entry-reader-readback]: https://github.com/Deng-0119/RPNH/blob/d92ff3704b6002bf5ecbccb3e6a3d1489809a805/evidence/first_wave/20261009/taskcontrol-reader/native/readback/evidence.json
-[entry-reader-audit]: https://github.com/Deng-0119/RPNH/blob/d92ff3704b6002bf5ecbccb3e6a3d1489809a805/evidence/first_wave/20261009/taskcontrol-reader/local/native-cli-readback-audit.json
+[entry-reader-identity]: results/entry-reader-20261009/README.md
+[entry-reader-evidence]: results/entry-reader-20261009/README.md
+[entry-reader-cli]: results/entry-reader-20261009/README.md
+[entry-reader-readback]: results/entry-reader-20261009/README.md
+[entry-reader-audit]: results/entry-reader-20261009/README.md

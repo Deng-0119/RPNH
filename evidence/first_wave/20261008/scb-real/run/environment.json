@@ -1,1 +1,0 @@
-{"runtime_policy":"fresh_container_per_checkpoint","solver_image_id":"sha256:cb677f5f576ea04bdf0e7bde14538ab28a5898c2ea0ab1f6fb8c646eaaa5ded7","solver_network":"none"}

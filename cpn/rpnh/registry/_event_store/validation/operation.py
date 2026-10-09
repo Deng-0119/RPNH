@@ -1450,7 +1450,7 @@ def validate_operation_contract_objects(context) -> None:
                 raise RegistryConflict(
                     "generic fault terminal evidence is outside its route")
 
-def validate_operation_event(context, pending):
+def validate_operation_event(context, pending, *, started_event_id=None):
     db = context.db
     event_store = context.event_store
     payload = pending.payload
@@ -1972,6 +1972,21 @@ def validate_operation_event(context, pending):
         writer_epoch_row = db.execute(
             "SELECT value FROM registry_meta WHERE key='writer_epoch'",
         ).fetchone()
+        if started_event_id is not None:
+            stored = db.execute("SELECT * FROM events WHERE event_id=? AND event_type='operation_execution_started/v1'",
+                (started_event_id,)).fetchone()
+            if (stored is None or json.loads(stored['payload_json']) != dict(payload)
+                    or stored['producer_invocation_id'] != str(pending.producer_invocation_id)
+                    or stored['task_id'] != str(task_id)
+                    or db.execute("SELECT status FROM transactions WHERE transaction_id=?",
+                        (stored['transaction_id'],)).fetchone()[0] != 'committed'):
+                raise RegistryConflict("ordinary Start recheck lacks its original committed fact")
+            first = db.execute("SELECT MIN(ordinal) FROM events WHERE transaction_id=?",
+                (stored['transaction_id'],)).fetchone()[0]
+            current_ordinal_row = db.execute("SELECT MAX(ordinal) FROM events WHERE ordinal<?", (first,)).fetchone()
+            current_task_row = db.execute("SELECT MAX(task_control_sequence) AS sequence FROM events WHERE task_id=? AND ordinal<?",
+                (str(task_id), first)).fetchone()
+            writer_epoch_row = {'value': stored['writer_fencing_epoch']}
         if (payload.get("admission_registry_ordinal")
                 != int(current_ordinal_row[0] or 0)
                 or payload.get("admission_task_control_sequence")

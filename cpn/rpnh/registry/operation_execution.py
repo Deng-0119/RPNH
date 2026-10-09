@@ -230,3 +230,32 @@ def verify_operation_execution(core: _RegistryCore, kernel: _ResourceServiceKern
 
 __all__ = ('start_registered_operation_execution', 'verify_operation_execution', 'operation_start_payload',
            'declaration_terminal_delivery_authority')
+
+
+def revalidate_started_operation_at(store, db, *, task_id, start_event_id):
+    """Recheck ordinary Start in one existing exact-producer snapshot.
+
+    This is a shared Registry helper for durable causal consumers. It does not
+    compare admission to today's head: unrelated legitimate settlements may
+    have advanced marking since Start. The caller must check current claims.
+    """
+    import json
+    from .identities import TypedId
+    from .models import PendingEvent
+    from .event_store import RegistryConflict
+    from ._event_store.proposal import TransactionValidationContext
+    from ._event_store.validation.operation import validate_operation_event
+    row = db.execute("SELECT * FROM events WHERE event_id=? AND event_type='operation_execution_started/v1'",
+                     (str(start_event_id),)).fetchone()
+    if row is None or row['task_id'] != str(task_id):
+        raise RegistryConflict('ordinary Start is absent or belongs to another task')
+    pending = PendingEvent(row['event_type'], row['criticality'], row['stream_id'], row['aggregate_id'],
+        row['aggregate_type'], row['idempotency_key'], row['command_id'], json.loads(row['payload_json']),
+        row['payload_schema_ref'], producer_principal=row['producer_principal'],
+        producer_invocation_id=TypedId.parse(row['producer_invocation_id']))
+    context = TransactionValidationContext(db, (), (pending,), (), event_store=store, task_id=task_id,
+        branch_id=row['branch_id'], task_round_id=TypedId.parse(row['task_round_id']),
+        net_instance_id=TypedId.parse(row['net_instance_id']), transaction_id=TypedId.parse(row['transaction_id']),
+        idempotency_key=row['idempotency_key'], transaction_writer_epoch=row['writer_fencing_epoch'])
+    context.validate_reference_visibility()
+    validate_operation_event(context, pending, started_event_id=str(start_event_id))

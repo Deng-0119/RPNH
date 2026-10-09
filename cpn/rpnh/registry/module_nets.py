@@ -292,6 +292,18 @@ def publish_module_net(core: _RegistryCore, compiled: CompiledPetriNet,
         host_bindings=host_bindings, host_resources=host_resources,
         host_artifacts=host_artifacts, idempotency_key=idempotency_key)
     objects, resource_plan, resource_bindings = graph.objects, graph.resource_plan, graph.resource_bindings
+    # H7's protected resource retains the original catalog schema authority.
+    # Include that exact source in the same root, rather than disguising it as
+    # an application schema resource. Other owner resources are unchanged.
+    from .parent_child import CAPABILITY_SCHEMA
+    if any(core.get_version(ref.resource_version_id).metadata.get("content_schema_ref")
+           == CAPABILITY_SCHEMA for ref in owner_resource_inputs.values()):
+        from .publication import _registry_type_catalog_ref
+        catalog_source = ref_payload(_registry_type_catalog_ref(core))
+        objects = tuple((ref, {**metadata, "resource_refs": sorted(
+            [*metadata["resource_refs"], catalog_source], key=canonical_json)})
+            if ref.entity_type == "team_design_root/v1" else (ref, metadata)
+            for ref, metadata in objects)
     for ref, metadata in objects:
         core.catalog.validate_instance(ref.entity_type, category="object", instance=metadata)
     for ref, metadata in objects:

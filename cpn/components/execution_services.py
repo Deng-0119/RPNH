@@ -42,8 +42,18 @@ class _RegisteredOptionalInputBinding:
         self.interruption_requested = (
             interruption_requested or (lambda: False))
 
+    def __setattr__(self, name, value):
+        if hasattr(self, 'interruption_requested'):
+            raise AttributeError('per-firing optional input association is immutable')
+        object.__setattr__(self, name, value)
+
     def request_once(self, attempt):
-        self.gateway.prepare_optional_input_submission(self.execution, attempt)
+        from cpn.rpnh.public_material_contracts import POLICY
+        policy = getattr(self.input_port, 'execution_policy', {})
+        if isinstance(policy, Mapping) and policy.get('schema_version') == POLICY:
+            self.gateway.prepare_optional_input_submission(self.execution, attempt, _owner_binding=self)
+        else:
+            self.gateway.prepare_optional_input_submission(self.execution, attempt)
         interruptible = getattr(
             self.input_port, "request_once_interruptible", None)
         try:
@@ -116,7 +126,7 @@ class ExecutionServices:
     def __init__(self, *, owner: RunOwner, event_loop: OwnerEventLoop,
                  provider_attempts: ProviderAttemptLedger | None = None,
                  llm_input_port=None, llm_input_ports_by_transition=None,
-                 interruption_requested=None) -> None:
+                 interruption_requested=None, registered_material_context=None) -> None:
         if not isinstance(owner, RunOwner):
             raise TypeError("execution services require the existing RunOwner")
         if not isinstance(event_loop, OwnerEventLoop) or event_loop.owner is not owner:
@@ -127,6 +137,8 @@ class ExecutionServices:
                 or provider_attempts.service is not owner._core):
             raise TypeError("provider ledger must be bound to this owner's sole Core")
         self._owner = owner
+        self._registered_material_context = registered_material_context
+        self._input_bindings = {}  # Original per-firing wrapper associations, never permissions.
         self._event_loop = event_loop
         self._llm_input_port = llm_input_port
         if (llm_input_ports_by_transition is not None
@@ -138,6 +150,9 @@ class ExecutionServices:
                 "transition input ports require a nonempty string mapping")
         self._llm_input_ports_by_transition = dict(
             llm_input_ports_by_transition or {})
+        from types import MappingProxyType
+        self._llm_input_ports_by_transition = MappingProxyType(self._llm_input_ports_by_transition)
+        self._material_port_association = (self._llm_input_port, self._llm_input_ports_by_transition)
         if (interruption_requested is not None
                 and not callable(interruption_requested)):
             raise TypeError("interruption request probe must be callable")
@@ -186,10 +201,41 @@ class ExecutionServices:
             self._registered_host_llm_service = RegisteredHostLLMRegistryService(
                 owner=owner, kernel=self._kernel,
                 repository=self._repository,
-                provider_attempts=provider_attempts)
+                provider_attempts=provider_attempts,
+                registered_material_checker=self._check_registered_host_materials)
             methods.update(
                 self._registered_host_llm_service.gateway_methods())
         self.gateway = RegistryGateway(event_loop, methods)
+
+    def __setattr__(self, name, value):
+        if (hasattr(self, '_material_port_association')
+                and name in ('_llm_input_port','_llm_input_ports_by_transition','_material_port_association','_registered_material_context')):
+            raise AttributeError('owner input port/source association is immutable')
+        object.__setattr__(self, name, value)
+
+    def _selected_input_port(self, execution):
+        shared, ports = self._material_port_association
+        if self._llm_input_port is not shared or self._llm_input_ports_by_transition is not ports:
+            raise OperationAuthorityError('owner input port association changed')
+        return ports.get(execution.operation.firing.transition_id, shared)
+
+    def _check_wrapper_association(self, execution, binding):
+        from cpn.rpnh.public_material_contracts import POLICY
+        port = self._selected_input_port(execution)
+        policy = getattr(port, 'execution_policy', {})
+        if self._registered_material_context is None and policy.get('schema_version') != POLICY:
+            return
+        key = str(execution.operation.canonical.context.invocation_ref.version_id)
+        if self._input_bindings.get(key) is not binding or binding is None:
+            raise OperationAuthorityError('public submission lacks original owner wrapper association')
+        actual = getattr(binding, 'input_port', getattr(binding, '_input_port', None))
+        if actual is not port:
+            raise OperationAuthorityError('public wrapper differs from current owner port')
+
+    def _check_registered_host_materials(self, execution, binding=None):
+        from .registered_material_checks import check_registered_execution
+        check_registered_execution(self, execution, reader='registered_host')
+        self._check_wrapper_association(execution, binding)
 
     def prepare_dispatcher(self, *, execution, executable, claimed_inputs, event_loop):
         """Prepare the actual optional scheduler shell on this owner's services.
@@ -206,11 +252,13 @@ class ExecutionServices:
             registered_operation_host_protocols,
         )
         from .registered_host_llm import HOST_PROTOCOL, RegisteredHostLLM
-        port = self._llm_input_ports_by_transition.get(
-            execution.operation.firing.transition_id,
-            self._llm_input_port)
+        port = self._selected_input_port(execution)
         executor = self._owner.registration.resolve(
             "executor", execution.operation.spec.executor_key)
+        from .registered_material_checks import check_registered_execution
+        reader = ('registered_host' if HOST_PROTOCOL in registered_operation_host_protocols(
+            execution.operation.spec.executor_key) else 'optional')
+        check_registered_execution(self, execution, reader=reader)
         registered_llm = None
         if port is not None and executor is execute_default_operation:
             port = _RegisteredOptionalInputBinding(
@@ -226,6 +274,9 @@ class ExecutionServices:
                 input_port=port,
                 interruption_requested=self._interruption_requested)
             port = None
+        if isinstance(port, _RegisteredOptionalInputBinding) or registered_llm is not None:
+            key = str(execution.operation.canonical.context.invocation_ref.version_id)
+            self._input_bindings[key] = port if registered_llm is None else registered_llm
         dispatcher = RegisteredOperationDispatcher(execution=execution, executable=executable,
             claimed_inputs=claimed_inputs, registry=self.gateway, resources=self.resources,
             llm_input_port=port, registered_llm=registered_llm)
@@ -255,8 +306,11 @@ class ExecutionServices:
             raise OperationAuthorityError("neutral input DTO differs from registered call/recipe/model")
         return execution, provider
 
-    def _prepare_optional_input_submission(self, execution, attempt):
+    def _prepare_optional_input_submission(self, execution, attempt, *, _owner_binding=None):
         execution, provider = self._optional_input_authority(execution, attempt)
+        from .registered_material_checks import check_registered_execution
+        check_registered_execution(self, execution, reader='optional', attempt=attempt, provider=provider)
+        self._check_wrapper_association(execution, _owner_binding)
         key = "optional-input:" + str(attempt.attempt_ref.version_id)
         materialized = self._provider_ledger.record_materialization(
             context=execution.operation.canonical.context, attempt=provider,

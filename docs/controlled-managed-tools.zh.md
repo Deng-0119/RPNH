@@ -4,9 +4,10 @@ description: 显式启用 managed 结果回读、调度和隔离工具程序。
 metadata:
   document-kind: guide
   audience: operator-and-developer
-  language: zh
+  language: zh-CN
   counterpart: controlled-managed-tools.md
   revision: "2026-10-08.2"
+  status: reference
 ---
 
 [English](controlled-managed-tools.md) | [中文](controlled-managed-tools.zh.md)

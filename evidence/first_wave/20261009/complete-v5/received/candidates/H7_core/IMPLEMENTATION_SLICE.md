@@ -1,9 +1,0 @@
-# H7 Registry offline core implementation slice
-
-Pinned source: main 1f191645c4d60c8b190d42e9fad99c85e8981c03, product d92ff3704b6002bf5ecbccb3e6a3d1489809a805, copied S1 candidate 979 files with exact patch bd0e2a8d362179fd68bd5451a932449f059b7038db16ca627eb84843f809bd4d. Frozen inputs unchanged.
-
-Implement one Registry-native causal chain: registered typed request -> canonical material/target -> provisional producer-owned intent -> one dispatch claim -> exact worker observation -> acceptance -> bound bootstrap/genesis -> origin resource -> initial PN read witness -> ordinary admission/Start/products/Success. The target and material preparation is pure. Existing Registry transactions, firing root/member scopes, current authority, PetriNet claims and S1 references remain authoritative.
-
-The first slice does not install a production transport evidence issuer, a receipt parser or a writable bound-child launch composition. The opaque native-boundary evidence has no normal constructor; offline tests explicitly allocate it in tests to test Registry validation without claiming kernel authentication. Production absence is UNSUPPORTED, never a caller Boolean. No public start_run/task worker interface accepts a bound receipt. Physical target reservation and real AgentTask/Module transport wiring remain NOT_RUN/unimplemented. A test-created temporary Core does not certify Core-before-reservation safety.
-
-Core guards reject generic protected publication, cross-firing references, stale entry/claim, replay after closure, forged/cross-run origin capability, successor adoption and bound child reentry. Only bound child is fixed-net; ordinary Module and generic S1 semantics are unchanged. Changes may be narrowed to a independently reviewable partial closure rather than claiming all 66 D0 contract items.

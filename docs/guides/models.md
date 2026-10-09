@@ -107,6 +107,13 @@ The following is **schema-oriented example data, not a usable service**. Replace
 
 The generator accepts exactly one external route per selected profile and generic environment-to-header credentials (or `null`). The endpoint must omit userinfo/query/fragment; remote routes require HTTPS, while plain HTTP is limited to `localhost` or a loopback IP for a same-machine OpenAI-compatible server. Static authentication/connection headers and duplicate credential headers are rejected. All integer limits are positive. `context_window_tokens` is an optional exact-model capacity supplied by the user; when present it enables proactive context-pressure compaction before the configured route is called. `context_compaction_retained_tokens` optionally controls the recent complete-message tail and must be smaller than the window. When the window is absent, RPNH does not invent a capacity and can only react to an observed response-length boundary. The complete optional `runtime` object controls task, concurrency, compaction and workspace policy; omission resolves to the documented defaults and generated profiles still record those values. The recovery attempt/cycle fields are bounded from one to three by the schema.
 
+Codex requires a non-null default effort on its UI wire. For an unconfigured
+model only, the adapter displays the wire token `none` and decodes it back to
+the same profile with no canonical effort. A model explicitly configured with
+the string `none` remains distinct. No provider argument or catalog value is
+added. The supported Codex pin remains 0.155.0; schema checks against 0.161.0
+do not certify that native client or fix the separate paginated-history gap.
+
 ## Transport, recovery and effects
 The external transport exposed by this catalog is `openai_chat_completions/v1`, not every API marketed as compatible. The alternative `local_process` adapter requires explicit `argv`, `probe_argv`, `env` and `inherit_env`; `{model}` substitution preserves the selected model. A local model that declares efforts must also place `{reasoning_effort}` in its formal `argv`; the builder materializes one immutable execution variant for every supported value. A local process or its probe may still call a paid model. Do not treat “local” as “offline”.
 

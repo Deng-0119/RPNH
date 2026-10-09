@@ -190,6 +190,9 @@ def registered_host_execution_identity(
     if not isinstance(execution_policy, Mapping):
         raise TypeError(
             "registered HOST execution policy must be an object")
+    from cpn.rpnh.public_material_contracts import POLICY, validate_policy
+    if execution_policy.get('schema_version') == POLICY:
+        return validate_policy(dict(execution_policy))
     document = json.loads(canonical_json(dict(execution_policy)))
     if document.get("schema_version") == EXECUTION_IDENTITY_VERSION:
         route_keys = {
@@ -287,14 +290,14 @@ def registered_host_execution_identity(
 
 def registered_host_execution_route(selection) -> dict[str, object]:
     """Return the common Registry route document for any HOST adapter."""
-    from cpn.llm_adapters.config import LLMExecutionSelection
+    from cpn.llm_adapters.config import LLMExecutionSelection, RegisteredLLMExecutionSelection
 
-    if not isinstance(selection, LLMExecutionSelection):
+    if not isinstance(selection, (LLMExecutionSelection, RegisteredLLMExecutionSelection)):
         raise TypeError(
             "registered HOST route requires LLMExecutionSelection")
     identity = registered_host_execution_identity(
         selection.as_registry_policy())
-    routes = identity.get("routes")
+    routes = identity.get("route_provenance") if type(selection) is RegisteredLLMExecutionSelection else identity.get("routes")
     if (not isinstance(routes, list) or len(routes) != 1
             or not isinstance(routes[0], Mapping)
             or not isinstance(routes[0].get("transport"), str)
@@ -345,6 +348,11 @@ class RegisteredHostLLM:
         self._interruption_requested = interruption_requested
         self._used = False
 
+    def __setattr__(self, name, value):
+        if hasattr(self, '_used') and name != '_used':
+            raise AttributeError('registered HOST input association is immutable')
+        object.__setattr__(self, name, value)
+
     def request(self, request: Mapping[str, object] | bytes) -> bytes:
         if self._used:
             raise OperationAuthorityError(
@@ -368,8 +376,10 @@ class RegisteredHostLLM:
         from cpn.llm_adapters.factory import bound_llm_execution_policy
         execution_policy = registered_host_execution_identity(
             bound_llm_execution_policy(self._input_port))
+        from cpn.rpnh.public_material_contracts import POLICY
+        association = {'_owner_binding': self} if execution_policy.get('schema_version') == POLICY else {}
         plan = self._gateway.reconcile_registered_host_llm(
-            self._execution, payload, execution_policy)
+            self._execution, payload, execution_policy, **association)
         if plan.classification == "semantic_success":
             return plan.response
         if not plan.physical_request_allowed:
@@ -444,12 +454,13 @@ class _RegisteredHostRequestAuthority:
 class RegisteredHostLLMRegistryService:
     """Owner-side preparation and terminal recording for registered HOST calls."""
 
-    def __init__(self, *, owner, kernel, repository, provider_attempts) -> None:
+    def __init__(self, *, owner, kernel, repository, provider_attempts, registered_material_checker=None) -> None:
         self.owner = owner
         self.core = owner._core
         self.kernel = kernel
         self.repository = repository
         self.ledger = provider_attempts
+        self._registered_material_checker = registered_material_checker
 
     def gateway_methods(self):
         return {
@@ -558,9 +569,14 @@ class RegisteredHostLLMRegistryService:
         return execution, context, call, provider, attempt_document
 
     def _request_authority(
-            self, execution, request_bytes, execution_policy,
+            self, execution, request_bytes, execution_policy, *, _owner_binding=None,
     ) -> _RegisteredHostRequestAuthority:
         execution = self._execution(execution)
+        from cpn.rpnh.public_material_contracts import POLICY
+        if self._registered_material_checker is not None:
+            self._registered_material_checker(execution, _owner_binding)
+        elif isinstance(execution_policy, Mapping) and execution_policy.get('schema_version') == POLICY:
+            raise OperationAuthorityError('public RegisteredHost requires owner material checker')
         if not isinstance(request_bytes, bytes) or not request_bytes:
             raise TypeError("registered HOST LLM request requires bytes")
         try:
@@ -657,9 +673,9 @@ class RegisteredHostLLMRegistryService:
             request_bytes, key, request_ref, attempt_ref, call_ref,
             provider_ref)
 
-    def prepare(self, execution, request_bytes, execution_policy):
+    def prepare(self, execution, request_bytes, execution_policy, *, _owner_binding=None):
         authority = self._request_authority(
-            execution, request_bytes, execution_policy)
+            execution, request_bytes, execution_policy, **({} if _owner_binding is None else {'_owner_binding': _owner_binding}))
         execution = authority.execution
         context = authority.context
         target_ref = authority.target_ref
@@ -1037,17 +1053,20 @@ class RegisteredHostLLMRegistryService:
         return payload
 
     def classify_resume(
-            self, execution, request_bytes, execution_policy,
+            self, execution, request_bytes, execution_policy, *, _owner_binding=None,
     ) -> RegisteredHostLLMResumePlan:
         """Classify one exact firing without creating or replaying a call."""
         authority = self._request_authority(
-            execution, request_bytes, execution_policy)
+            execution, request_bytes, execution_policy, **({} if _owner_binding is None else {'_owner_binding': _owner_binding}))
         store = self.core.event_store
         if store.object_row(authority.attempt_ref.version_id) is None:
             if self._partial_firing_exists(authority):
                 return self._inconsistent_plan(authority)
             return RegisteredHostLLMResumePlan(
                 "fresh", authority.context.operation_binding_ref)
+        from cpn.rpnh.public_material_contracts import POLICY
+        if isinstance(execution_policy, Mapping) and execution_policy.get('schema_version') == POLICY:
+            raise OperationAuthorityError('public RegisteredHost resume/reopen is unsupported')
         try:
             attempt = self._attempt_for_authority(authority)
             host_rows = tuple(
@@ -1234,18 +1253,18 @@ class RegisteredHostLLMRegistryService:
             return self._inconsistent_plan(authority)
 
     def reconcile(
-            self, execution, request_bytes, execution_policy,
+            self, execution, request_bytes, execution_policy, *, _owner_binding=None,
     ) -> RegisteredHostLLMResumePlan:
         """Reconcile one v3 attempt, never issuing a physical request here."""
         plan = self.classify_resume(
-            execution, request_bytes, execution_policy)
+            execution, request_bytes, execution_policy, **({} if _owner_binding is None else {'_owner_binding': _owner_binding}))
         if plan.classification == "fresh":
-            attempt = self.prepare(execution, request_bytes, execution_policy)
+            attempt = self.prepare(execution, request_bytes, execution_policy, **({} if _owner_binding is None else {'_owner_binding': _owner_binding}))
             return RegisteredHostLLMResumePlan(
                 "submission_ready", attempt.attempt_ref, attempt=attempt)
         if plan.classification == "raw_response":
             refreshed = self.classify_resume(
-                execution, request_bytes, execution_policy)
+                execution, request_bytes, execution_policy, **({} if _owner_binding is None else {'_owner_binding': _owner_binding}))
             if refreshed.classification != "raw_response":
                 return refreshed
             observation = self._events_of_type(
@@ -1264,11 +1283,11 @@ class RegisteredHostLLMRegistryService:
                 status_code=facts.get("status_code"),
                 external_request_id=facts.get("external_request_id"))
             return self.classify_resume(
-                execution, request_bytes, execution_policy)
+                execution, request_bytes, execution_policy, **({} if _owner_binding is None else {'_owner_binding': _owner_binding}))
         committed_permit = False
         while plan.classification == "pre_submission":
             authority = self._request_authority(
-                execution, request_bytes, execution_policy)
+                execution, request_bytes, execution_policy, **({} if _owner_binding is None else {'_owner_binding': _owner_binding}))
             _execution, context, _call, provider, _document = self._hydrate(
                 authority.execution, plan.attempt)
             key = authority.key
@@ -1308,7 +1327,7 @@ class RegisteredHostLLMRegistryService:
                     idempotency_key=key + ":permit")
                 committed_permit = True
             plan = self.classify_resume(
-                execution, request_bytes, execution_policy)
+                execution, request_bytes, execution_policy, **({} if _owner_binding is None else {'_owner_binding': _owner_binding}))
         if committed_permit and plan.classification == "submission_unknown":
             return RegisteredHostLLMResumePlan(
                 "submission_ready", plan.attempt.attempt_ref,

@@ -115,3 +115,62 @@ def hydrate_module_runtime(core: _RegistryCore):
 
 
 __all__ = ("hydrate_module_runtime", "hydrate_module_resource_plan")
+
+
+# Deliberately not ExecutableNetAuthority: historical material confers no
+# admission, scheduling, or current-head authority.
+from dataclasses import dataclass
+
+
+@dataclass(frozen=True, slots=True)
+class _TerminalNetMaterial:
+    net_ref: object
+    team_design_root_ref: object
+    declaration_resource_ref: object
+    transitions: tuple
+
+
+def _read_terminal_net_material(core, reads, net_ref):
+    """Read immutable per-net material through the fixed same-Registry reader."""
+    from ._event_store.adoption_reads import AdoptionPrefixReads
+    from ._event_store.net_lineage import validate_registered_net_closure
+    from .errors import ResourceIntegrityFault
+    if (type(reads) is not AdoptionPrefixReads or not reads.terminal
+            or reads.store is not core.event_store or reads.catalog is not core.catalog
+            or reads.task_id != core.task_id):
+        raise TypeError("historical terminal material requires its fixed Registry read")
+    net = validate_registered_net_closure(core.event_store, core.catalog, net_ref,
+        _db=reads.db, _memo={}, _prefix_reads=reads)
+    declaration_ref = _resource_from_payload(net["team_net_declaration_resource_ref"])
+    compiled = reads.compiled(declaration_ref.as_version_ref())
+    prepared = reads.prepared(declaration_ref.as_version_ref(), "resource_version/v1")
+    root_ref = _version_from_payload(net["team_design_root_ref"])
+    root = reads.metadata(root_ref, "team_design_root/v1")
+    if (root["task_ref"]["logical_id"] != str(core.task_id)
+            or prepared.metadata["task_ref"] != root["task_ref"]
+            or prepared.metadata["content_schema_ref"] != compiled.schema_version):
+        raise ResourceIntegrityFault("historical Module declaration differs from exact task/schema")
+    transitions = []
+    declared = {item.name for item in compiled.symbolic.transitions}
+    for value in net["executable_transition_binding_refs"]:
+        ref = _version_from_payload(value)
+        data = reads.metadata(ref, "executable_transition_binding/v1")
+        if (data["transition_id"] not in declared
+                or data["declaration_resource_ref"] != net["team_net_declaration_resource_ref"]
+                or data["declaration_schema_ref"] != compiled.schema_version):
+            raise ResourceIntegrityFault("historical transition differs from compiled declaration")
+        binding = reads.metadata(_version_from_payload(data["operation_binding_ref"]), "operation_binding/v1")
+        spec = reads.metadata(_version_from_payload(binding["operation_spec_ref"]), "operation_spec/v1")
+        transitions.append(ExecutableTransitionAuthority(binding_ref=ref, transition_id=data["transition_id"],
+            execution_kind=("agent" if data["agent_ref"] is not None else spec["implementation_contracts"]["transport"]),
+            node_ref=_version_from_payload(data["node_ref"]),
+            activation_ref=None if data["activation_ref"] is None else _version_from_payload(data["activation_ref"]),
+            operation_binding_ref=_version_from_payload(data["operation_binding_ref"]),
+            principal_ref=_version_from_payload(data["principal_ref"]),
+            agent_ref=None if data["agent_ref"] is None else _version_from_payload(data["agent_ref"])))
+    if len(transitions) != len(declared) or {item.transition_id for item in transitions} != declared:
+        raise ResourceIntegrityFault("historical Module transition inventory differs from exact closure")
+    plan = reads.resource_plan(compiled, net_ref, net, root_ref, root, declaration_ref)
+    structure = RuntimeNet(compiled, net_ref=net_ref, resource_plan=plan)
+    return _TerminalNetMaterial(net_ref, root_ref, declaration_ref,
+        tuple(sorted(transitions, key=lambda item: item.transition_id))), structure

@@ -12,6 +12,7 @@ import re
 from pathlib import Path
 from typing import Callable, Iterable, Mapping
 from jsonschema import Draft7Validator
+from .message_codec import decode_tool_result, make_tool_result
 from cpn.components.execution_services import ExecutionServices
 from cpn.components.registered_host_llm import (
     EXECUTION_PROVENANCE_DOCUMENT,
@@ -903,17 +904,10 @@ class DshBackend:
                         # string re-escaping in both repeated message fields.
                         'text': '\\' * operation.max_result_bytes,
                     }]
-                    projected = [*state['messages'], {
-                        'id': f"result-{call['id']}",
-                        'role': 'user',
-                        'source': {'kind': 'tool', 'callId': call['id']},
-                        'content': [{
-                            'type': 'tool-result',
-                            'toolCallId': call['id'],
-                            'content': worst_content,
-                            'isError': False,
-                        }],
-                    }]
+                    projected = [*state['messages'], make_tool_result(
+                        message_id=f"result-{call['id']}", call_id=call['id'],
+                        content=worst_content, is_error=False,
+                        revision=REVISION)]
                     allow = self._configured_frame_budget_fits(
                         route=state['route'], messages=projected,
                         request_id=state['request_id'])
@@ -1004,17 +998,9 @@ class DshBackend:
                 'value': output,
                 'isError': is_error,
                 'content': content,
-                'message': {
-                    'id': f"result-{call['id']}",
-                    'role': 'user',
-                    'source': {'kind': 'tool', 'callId': call['id']},
-                    'content': [{
-                        'type': 'tool-result',
-                        'toolCallId': call['id'],
-                        'content': content,
-                        'isError': is_error,
-                    }],
-                },
+                'message': make_tool_result(
+                    message_id=f"result-{call['id']}", call_id=call['id'],
+                    content=content, is_error=is_error, revision=REVISION),
             }
         elif stage == 'model' and self.configured:
             if registered_llm is None:
@@ -1086,18 +1072,14 @@ class DshBackend:
         if call['name'] == 'read_dataset' and not is_error:
             state['read_values'] = observation['value']
         tool_message = observation.get('message')
-        tool_content = (
-            tool_message.get('content')
-            if isinstance(tool_message, Mapping) else None)
-        if (not isinstance(tool_message, Mapping)
-                or tool_message.get('role') != 'user'
-                or tool_message.get('source') != {
-                    'kind': 'tool', 'callId': call['id']}
-                or not isinstance(tool_content, list)
-                or len(tool_content) != 1
-                or not isinstance(tool_content[0], Mapping)
-                or tool_content[0].get('type') != 'tool-result'
-                or tool_content[0].get('toolCallId') != call['id']
-                or tool_content[0].get('isError') is not is_error):
+        try:
+            decoded = decode_tool_result(
+                tool_message, REVISION, require_error=True)
+        except ValueError as exc:
+            raise ValueError(
+                'tool message is not correlated with the admitted tool call') from exc
+        if (decoded['source'] != {'kind': 'tool', 'callId': call['id']}
+                or decoded['callId'] != call['id']
+                or decoded['isError'] is not is_error):
             raise ValueError('tool message is not correlated with the admitted tool call')
         return 'complete', 'ready_output', {**state, 'messages': [*state['messages'], tool_message]}

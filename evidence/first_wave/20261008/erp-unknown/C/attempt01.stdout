@@ -1,6 +1,0 @@
-{"case": "explicit_unknown", "status": "passed", "counts": {"worker_dispatch": 1, "bridge_request": 1, "backend_effect": 1}}
-{"case": "backend_exception", "status": "passed", "counts": {"worker_dispatch": 1, "bridge_request": 1, "backend_effect": 1}}
-{"case": "lost_completed_reply", "status": "passed", "counts": {"worker_dispatch": 1, "bridge_request": 1, "backend_effect": 1}}
-{"case": "known_failed_nonzero", "status": "passed", "counts": {"worker_dispatch": 2, "bridge_request": 2, "backend_effect": 2}}
-{"case": "known_domain_infeasible", "status": "passed", "counts": {"worker_dispatch": 2, "bridge_request": 2, "backend_effect": 2}}
-{"case": "known_completed", "status": "passed", "counts": {"worker_dispatch": 2, "bridge_request": 2, "backend_effect": 2}}

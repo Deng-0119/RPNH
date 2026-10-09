@@ -22,7 +22,14 @@ def validate_module_bindings(net, root, outputs, nodes, exact, corrupt):
         source_ref = ({"entity_type": "resource_version/v1", "logical_id": source["resource_id"],
                        "version_id": source["resource_version_id"]}
                       if "resource_id" in source else source)
-        exact(source_ref, "resource_version/v1")
+        from .parent_child import CAPABILITY_SCHEMA
+        if (metadata.get("content_schema_ref") == CAPABILITY_SCHEMA
+                and source_ref.get("entity_type") == "registry_type_catalog/v1"):
+            catalog = exact(source_ref, "registry_type_catalog/v1")
+            if CAPABILITY_SCHEMA not in catalog.get("schemas", {}):
+                raise corrupt("H7 capability source lacks its protected mechanical schema")
+        else:
+            exact(source_ref, "resource_version/v1")
         if (metadata["task_ref"] != root["task_ref"] or value not in root_resources
                 or source_ref not in root_resources):
             raise corrupt("Module owner resource/source is outside exact task/root membership")

@@ -1,1 +1,0 @@
-{"argv": ["docker", "buildx", "bake", "--allow=network.host", "-f", "-"], "stdin": "build-definition.json"}

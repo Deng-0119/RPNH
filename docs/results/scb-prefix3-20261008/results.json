@@ -1,0 +1,1106 @@
+{
+  "status": "SELECTED_PREFIX_COMPLETED_WITH_BUSINESS_FAILURE",
+  "mode": "adapted_development_prefix",
+  "task": "code_search",
+  "scope": "first_3_of_5_checkpoints",
+  "selected_pass_policy": "any-case",
+  "official_agent_runner": "not_run",
+  "runner_revision": "31ceea3add480edb33431e70475c4c70597e6b31",
+  "problems_revision": "9cd9ca3a51c3d3e2a99d2488a25baf73a2204451",
+  "runtime_matches_product": "74fad32d369876841686d10d33361c016e3d3648",
+  "model": "codex/gpt-5.6-terra",
+  "max_model_calls_per_checkpoint": 48,
+  "owner_wait_seconds_per_checkpoint": 7200,
+  "solver_network": "none",
+  "evaluation_network": "host",
+  "image_build_network": "host",
+  "upstream_cost_net_cost_step_limits": [
+    0,
+    0,
+    0
+  ],
+  "settled_real_model_calls": 24,
+  "real_call_classification": "Actual official Codex endpoint/unchanged selected subscription bridge; no fixture provider in this real run. Registry tuple alone does not classify real versus fake.",
+  "post_limit_excess_calls": 0,
+  "source_continuity_checked": true,
+  "grader_feedback_to_solver": false,
+  "automatic_retry_or_resume": false,
+  "normalized_tokens": null,
+  "cost_usd": null,
+  "usage_status": "unavailable",
+  "elapsed_seconds": 998.822568,
+  "raw_original_manifests_rewritten": false,
+  "limitations": [
+    "Partial prefix, not full5 or unmodified official benchmark.",
+    "No quality judge/official AgentRunner or causal harness advantage measurement.",
+    "Per-checkpoint tests include regression cases; case counts must not be added as unique benchmark tasks."
+  ],
+  "representation": "curated complete case/status projection; no assertion text, solver source, tool/model transcript",
+  "upstream_sources": {
+    "runner": {
+      "repository": "https://github.com/SprocketLab/slop-code-bench",
+      "revision": "31ceea3add480edb33431e70475c4c70597e6b31",
+      "license": "MIT",
+      "inspected_files": [
+        {
+          "path": "docs/agents/agent-class.md",
+          "git_blob_sha": "03f55fbe43f3c4ed5c19bc9b78ebb25dc8151c3b"
+        },
+        {
+          "path": "src/slop_code/agent_runner/agent.py",
+          "git_blob_sha": "689105a48767ed5ef543c9e9a9d7918764d92914"
+        },
+        {
+          "path": "src/slop_code/agent_runner/runner.py",
+          "git_blob_sha": "b2a2bae77819e13f0d835fbde65281b5113ba074"
+        },
+        {
+          "path": "src/slop_code/agent_runner/models.py",
+          "git_blob_sha": "5bded693df597d2ad2e7106866d6cdd394ebd6cf"
+        },
+        {
+          "path": "src/slop_code/execution/session.py",
+          "git_blob_sha": "7e66b2030be0461a05c38af122db95db54adaafc"
+        },
+        {
+          "path": "src/slop_code/execution/protocols.py",
+          "git_blob_sha": "ef7f787fb94cfbf8f6c9c33c495176c8f57f0479"
+        },
+        {
+          "path": "src/slop_code/execution/models.py",
+          "git_blob_sha": "206975a3e850c9be10729aaff87dac69146bce14"
+        }
+      ]
+    },
+    "problems": {
+      "repository": "https://github.com/gabeorlanski/scb-problems",
+      "revision": "9cd9ca3a51c3d3e2a99d2488a25baf73a2204451",
+      "license": "Apache-2.0",
+      "task": "code_search",
+      "configuration_git_blob_sha": "a329353763b33a2d57e9186a957e2a3665333c49",
+      "checkpoint_names": [
+        "checkpoint_1",
+        "checkpoint_2",
+        "checkpoint_3",
+        "checkpoint_4",
+        "checkpoint_5"
+      ]
+    }
+  },
+  "installation": {
+    "product_head_at_launch": "74fad32d369876841686d10d33361c016e3d3648",
+    "payloads_verified": [
+      {
+        "matched_payloads": 781,
+        "all_payload_bytes_match": true
+      },
+      {
+        "matched_payloads": 11,
+        "all_payload_bytes_match": true
+      }
+    ]
+  },
+  "publication_commit": "dbad00458e9b356fcaf0bb97ceb90258ed9b1de0",
+  "image_build_adaptation": "same-version download compatibility using proxy/pipefail/retry; solver recipe version unchanged",
+  "upstream_tests_changed": false,
+  "upstream_grader_changed": false,
+  "checkpoints": [
+    {
+      "checkpoint": "checkpoint_1",
+      "passed_cases": 13,
+      "total_cases": 13,
+      "pass_counts": {
+        "Core": 7,
+        "Functionality": 4,
+        "Regression": 0,
+        "Error": 2
+      },
+      "total_counts": {
+        "Core": 7,
+        "Functionality": 4,
+        "Regression": 0,
+        "Error": 2
+      },
+      "all_original_cases_passed": true,
+      "infrastructure_failure": false,
+      "pytest_exit_code": 0,
+      "settled_model_calls": 5,
+      "post_limit_excess_calls": 0,
+      "commands_started": 3,
+      "commands_finished": 3,
+      "command_exit_codes": [
+        0,
+        0,
+        0
+      ],
+      "owner_run_outcome": "complete",
+      "source_before_sha256": "c5ec8daea09e8536c2a8a137b37270172a3e9b1f551952a6a7d95e64416eafc9",
+      "source_after_sha256": "dcadaee6b65c5cbce2b65246dccab69b2147309347eba3f44f21492b81e4a2c1",
+      "native_workspace_reuse": false,
+      "generation": 0,
+      "evaluator": {
+        "exit_code": 0,
+        "duration_seconds": 1.3753631114959717,
+        "summary": {
+          "passed": 13,
+          "total": 13,
+          "collected": 13
+        },
+        "category_projection": "Earlier-checkpoint cases are Regression; current error/functionality markers select Error/Functionality, otherwise Core. Complete totals and passes checked against original category summary.",
+        "cases": [
+          {
+            "nodeid": ".evaluation_tests/test_checkpoint_1.py::test_basic",
+            "outcome": "passed",
+            "markers": [
+              "core"
+            ],
+            "category": "Core"
+          },
+          {
+            "nodeid": ".evaluation_tests/test_checkpoint_1.py::test_single_match",
+            "outcome": "passed",
+            "markers": [
+              "core"
+            ],
+            "category": "Core"
+          },
+          {
+            "nodeid": ".evaluation_tests/test_checkpoint_1.py::test_spec_example",
+            "outcome": "passed",
+            "markers": [
+              "core"
+            ],
+            "category": "Core"
+          },
+          {
+            "nodeid": ".evaluation_tests/test_checkpoint_1.py::test_output_order_and_format",
+            "outcome": "passed",
+            "markers": [],
+            "category": "Core"
+          },
+          {
+            "nodeid": ".evaluation_tests/test_checkpoint_1.py::test_no_matches_outputs_nothing",
+            "outcome": "passed",
+            "markers": [],
+            "category": "Core"
+          },
+          {
+            "nodeid": ".evaluation_tests/test_checkpoint_1.py::test_ignore_non_py_files",
+            "outcome": "passed",
+            "markers": [],
+            "category": "Core"
+          },
+          {
+            "nodeid": ".evaluation_tests/test_checkpoint_1.py::test_skip_undecodable_file",
+            "outcome": "passed",
+            "markers": [
+              "error"
+            ],
+            "category": "Error"
+          },
+          {
+            "nodeid": ".evaluation_tests/test_checkpoint_1.py::test_undecodable_file_before_decodable_still_scans",
+            "outcome": "passed",
+            "markers": [
+              "error"
+            ],
+            "category": "Error"
+          },
+          {
+            "nodeid": ".evaluation_tests/test_checkpoint_1.py::test_encoding_option_reads_non_utf8",
+            "outcome": "passed",
+            "markers": [],
+            "category": "Core"
+          },
+          {
+            "nodeid": ".evaluation_tests/test_checkpoint_1.py::test_case_insensitive_and_language",
+            "outcome": "passed",
+            "markers": [
+              "functionality"
+            ],
+            "category": "Functionality"
+          },
+          {
+            "nodeid": ".evaluation_tests/test_checkpoint_1.py::test_multi_file_ordering",
+            "outcome": "passed",
+            "markers": [
+              "functionality"
+            ],
+            "category": "Functionality"
+          },
+          {
+            "nodeid": ".evaluation_tests/test_checkpoint_1.py::test_regex_flag_variations",
+            "outcome": "passed",
+            "markers": [
+              "functionality"
+            ],
+            "category": "Functionality"
+          },
+          {
+            "nodeid": ".evaluation_tests/test_checkpoint_1.py::test_unicode_and_ties",
+            "outcome": "passed",
+            "markers": [
+              "functionality"
+            ],
+            "category": "Functionality"
+          }
+        ]
+      }
+    },
+    {
+      "checkpoint": "checkpoint_2",
+      "passed_cases": 25,
+      "total_cases": 25,
+      "pass_counts": {
+        "Core": 5,
+        "Functionality": 5,
+        "Regression": 13,
+        "Error": 2
+      },
+      "total_counts": {
+        "Core": 5,
+        "Functionality": 5,
+        "Regression": 13,
+        "Error": 2
+      },
+      "all_original_cases_passed": true,
+      "infrastructure_failure": false,
+      "pytest_exit_code": 0,
+      "settled_model_calls": 5,
+      "post_limit_excess_calls": 0,
+      "commands_started": 3,
+      "commands_finished": 3,
+      "command_exit_codes": [
+        0,
+        0,
+        0
+      ],
+      "owner_run_outcome": "complete",
+      "source_before_sha256": "dcadaee6b65c5cbce2b65246dccab69b2147309347eba3f44f21492b81e4a2c1",
+      "source_after_sha256": "feba7293432accf666c5f28149b769e7bff0928882b906e003b495b02a8793c6",
+      "native_workspace_reuse": false,
+      "generation": 0,
+      "evaluator": {
+        "exit_code": 0,
+        "duration_seconds": 2.517209053039551,
+        "summary": {
+          "passed": 25,
+          "total": 25,
+          "collected": 25
+        },
+        "category_projection": "Earlier-checkpoint cases are Regression; current error/functionality markers select Error/Functionality, otherwise Core. Complete totals and passes checked against original category summary.",
+        "cases": [
+          {
+            "nodeid": ".evaluation_tests/test_checkpoint_1.py::test_basic",
+            "outcome": "passed",
+            "markers": [
+              "core"
+            ],
+            "category": "Regression"
+          },
+          {
+            "nodeid": ".evaluation_tests/test_checkpoint_1.py::test_single_match",
+            "outcome": "passed",
+            "markers": [
+              "core"
+            ],
+            "category": "Regression"
+          },
+          {
+            "nodeid": ".evaluation_tests/test_checkpoint_1.py::test_spec_example",
+            "outcome": "passed",
+            "markers": [
+              "core"
+            ],
+            "category": "Regression"
+          },
+          {
+            "nodeid": ".evaluation_tests/test_checkpoint_1.py::test_output_order_and_format",
+            "outcome": "passed",
+            "markers": [],
+            "category": "Regression"
+          },
+          {
+            "nodeid": ".evaluation_tests/test_checkpoint_1.py::test_no_matches_outputs_nothing",
+            "outcome": "passed",
+            "markers": [],
+            "category": "Regression"
+          },
+          {
+            "nodeid": ".evaluation_tests/test_checkpoint_1.py::test_ignore_non_py_files",
+            "outcome": "passed",
+            "markers": [],
+            "category": "Regression"
+          },
+          {
+            "nodeid": ".evaluation_tests/test_checkpoint_1.py::test_skip_undecodable_file",
+            "outcome": "passed",
+            "markers": [
+              "error"
+            ],
+            "category": "Regression"
+          },
+          {
+            "nodeid": ".evaluation_tests/test_checkpoint_1.py::test_undecodable_file_before_decodable_still_scans",
+            "outcome": "passed",
+            "markers": [
+              "error"
+            ],
+            "category": "Regression"
+          },
+          {
+            "nodeid": ".evaluation_tests/test_checkpoint_1.py::test_encoding_option_reads_non_utf8",
+            "outcome": "passed",
+            "markers": [],
+            "category": "Regression"
+          },
+          {
+            "nodeid": ".evaluation_tests/test_checkpoint_1.py::test_case_insensitive_and_language",
+            "outcome": "passed",
+            "markers": [
+              "functionality"
+            ],
+            "category": "Regression"
+          },
+          {
+            "nodeid": ".evaluation_tests/test_checkpoint_1.py::test_multi_file_ordering",
+            "outcome": "passed",
+            "markers": [
+              "functionality"
+            ],
+            "category": "Regression"
+          },
+          {
+            "nodeid": ".evaluation_tests/test_checkpoint_1.py::test_regex_flag_variations",
+            "outcome": "passed",
+            "markers": [
+              "functionality"
+            ],
+            "category": "Regression"
+          },
+          {
+            "nodeid": ".evaluation_tests/test_checkpoint_1.py::test_unicode_and_ties",
+            "outcome": "passed",
+            "markers": [
+              "functionality"
+            ],
+            "category": "Regression"
+          },
+          {
+            "nodeid": ".evaluation_tests/test_checkpoint_2.py::test_multi_language",
+            "outcome": "passed",
+            "markers": [
+              "core"
+            ],
+            "category": "Core"
+          },
+          {
+            "nodeid": ".evaluation_tests/test_checkpoint_2.py::test_cpp_only",
+            "outcome": "passed",
+            "markers": [
+              "core"
+            ],
+            "category": "Core"
+          },
+          {
+            "nodeid": ".evaluation_tests/test_checkpoint_2.py::test_javascript_only",
+            "outcome": "passed",
+            "markers": [
+              "core"
+            ],
+            "category": "Core"
+          },
+          {
+            "nodeid": ".evaluation_tests/test_checkpoint_2.py::test_no_language_filter",
+            "outcome": "passed",
+            "markers": [],
+            "category": "Core"
+          },
+          {
+            "nodeid": ".evaluation_tests/test_checkpoint_2.py::test_python_regex",
+            "outcome": "passed",
+            "markers": [],
+            "category": "Core"
+          },
+          {
+            "nodeid": ".evaluation_tests/test_checkpoint_2.py::test_all_cpp_header_extensions",
+            "outcome": "passed",
+            "markers": [
+              "functionality"
+            ],
+            "category": "Functionality"
+          },
+          {
+            "nodeid": ".evaluation_tests/test_checkpoint_2.py::test_all_cpp_source_extensions",
+            "outcome": "passed",
+            "markers": [
+              "functionality"
+            ],
+            "category": "Functionality"
+          },
+          {
+            "nodeid": ".evaluation_tests/test_checkpoint_2.py::test_all_js_extensions",
+            "outcome": "passed",
+            "markers": [
+              "functionality"
+            ],
+            "category": "Functionality"
+          },
+          {
+            "nodeid": ".evaluation_tests/test_checkpoint_2.py::test_multiple_languages_no_filter",
+            "outcome": "passed",
+            "markers": [
+              "functionality"
+            ],
+            "category": "Functionality"
+          },
+          {
+            "nodeid": ".evaluation_tests/test_checkpoint_2.py::test_language_filter_excludes_others",
+            "outcome": "passed",
+            "markers": [
+              "error"
+            ],
+            "category": "Error"
+          },
+          {
+            "nodeid": ".evaluation_tests/test_checkpoint_2.py::test_unsupported_extensions_are_ignored",
+            "outcome": "passed",
+            "markers": [
+              "error"
+            ],
+            "category": "Error"
+          },
+          {
+            "nodeid": ".evaluation_tests/test_checkpoint_2.py::test_multiple_language_array",
+            "outcome": "passed",
+            "markers": [
+              "functionality"
+            ],
+            "category": "Functionality"
+          }
+        ]
+      }
+    },
+    {
+      "checkpoint": "checkpoint_3",
+      "passed_cases": 40,
+      "total_cases": 47,
+      "pass_counts": {
+        "Core": 6,
+        "Functionality": 7,
+        "Regression": 25,
+        "Error": 2
+      },
+      "total_counts": {
+        "Core": 8,
+        "Functionality": 12,
+        "Regression": 25,
+        "Error": 2
+      },
+      "all_original_cases_passed": false,
+      "infrastructure_failure": false,
+      "pytest_exit_code": 1,
+      "settled_model_calls": 14,
+      "post_limit_excess_calls": 0,
+      "commands_started": 9,
+      "commands_finished": 9,
+      "command_exit_codes": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "owner_run_outcome": "complete",
+      "source_before_sha256": "feba7293432accf666c5f28149b769e7bff0928882b906e003b495b02a8793c6",
+      "source_after_sha256": "7aec8e2671a6be0c0adcc59c1d4db34db6e126b35d7fa255e002452cb08b40b2",
+      "native_workspace_reuse": false,
+      "generation": 0,
+      "evaluator": {
+        "exit_code": 1,
+        "duration_seconds": 4.787970066070557,
+        "summary": {
+          "passed": 40,
+          "failed": 7,
+          "total": 47,
+          "collected": 47
+        },
+        "category_projection": "Earlier-checkpoint cases are Regression; current error/functionality markers select Error/Functionality, otherwise Core. Complete totals and passes checked against original category summary.",
+        "cases": [
+          {
+            "nodeid": ".evaluation_tests/test_checkpoint_1.py::test_basic",
+            "outcome": "passed",
+            "markers": [
+              "core"
+            ],
+            "category": "Regression"
+          },
+          {
+            "nodeid": ".evaluation_tests/test_checkpoint_1.py::test_single_match",
+            "outcome": "passed",
+            "markers": [
+              "core"
+            ],
+            "category": "Regression"
+          },
+          {
+            "nodeid": ".evaluation_tests/test_checkpoint_1.py::test_spec_example",
+            "outcome": "passed",
+            "markers": [
+              "core"
+            ],
+            "category": "Regression"
+          },
+          {
+            "nodeid": ".evaluation_tests/test_checkpoint_1.py::test_output_order_and_format",
+            "outcome": "passed",
+            "markers": [],
+            "category": "Regression"
+          },
+          {
+            "nodeid": ".evaluation_tests/test_checkpoint_1.py::test_no_matches_outputs_nothing",
+            "outcome": "passed",
+            "markers": [],
+            "category": "Regression"
+          },
+          {
+            "nodeid": ".evaluation_tests/test_checkpoint_1.py::test_ignore_non_py_files",
+            "outcome": "passed",
+            "markers": [],
+            "category": "Regression"
+          },
+          {
+            "nodeid": ".evaluation_tests/test_checkpoint_1.py::test_skip_undecodable_file",
+            "outcome": "passed",
+            "markers": [
+              "error"
+            ],
+            "category": "Regression"
+          },
+          {
+            "nodeid": ".evaluation_tests/test_checkpoint_1.py::test_undecodable_file_before_decodable_still_scans",
+            "outcome": "passed",
+            "markers": [
+              "error"
+            ],
+            "category": "Regression"
+          },
+          {
+            "nodeid": ".evaluation_tests/test_checkpoint_1.py::test_encoding_option_reads_non_utf8",
+            "outcome": "passed",
+            "markers": [],
+            "category": "Regression"
+          },
+          {
+            "nodeid": ".evaluation_tests/test_checkpoint_1.py::test_case_insensitive_and_language",
+            "outcome": "passed",
+            "markers": [
+              "functionality"
+            ],
+            "category": "Regression"
+          },
+          {
+            "nodeid": ".evaluation_tests/test_checkpoint_1.py::test_multi_file_ordering",
+            "outcome": "passed",
+            "markers": [
+              "functionality"
+            ],
+            "category": "Regression"
+          },
+          {
+            "nodeid": ".evaluation_tests/test_checkpoint_1.py::test_regex_flag_variations",
+            "outcome": "passed",
+            "markers": [
+              "functionality"
+            ],
+            "category": "Regression"
+          },
+          {
+            "nodeid": ".evaluation_tests/test_checkpoint_1.py::test_unicode_and_ties",
+            "outcome": "passed",
+            "markers": [
+              "functionality"
+            ],
+            "category": "Regression"
+          },
+          {
+            "nodeid": ".evaluation_tests/test_checkpoint_2.py::test_multi_language",
+            "outcome": "passed",
+            "markers": [
+              "core"
+            ],
+            "category": "Regression"
+          },
+          {
+            "nodeid": ".evaluation_tests/test_checkpoint_2.py::test_cpp_only",
+            "outcome": "passed",
+            "markers": [
+              "core"
+            ],
+            "category": "Regression"
+          },
+          {
+            "nodeid": ".evaluation_tests/test_checkpoint_2.py::test_javascript_only",
+            "outcome": "passed",
+            "markers": [
+              "core"
+            ],
+            "category": "Regression"
+          },
+          {
+            "nodeid": ".evaluation_tests/test_checkpoint_2.py::test_no_language_filter",
+            "outcome": "passed",
+            "markers": [],
+            "category": "Regression"
+          },
+          {
+            "nodeid": ".evaluation_tests/test_checkpoint_2.py::test_python_regex",
+            "outcome": "passed",
+            "markers": [],
+            "category": "Regression"
+          },
+          {
+            "nodeid": ".evaluation_tests/test_checkpoint_2.py::test_all_cpp_header_extensions",
+            "outcome": "passed",
+            "markers": [
+              "functionality"
+            ],
+            "category": "Regression"
+          },
+          {
+            "nodeid": ".evaluation_tests/test_checkpoint_2.py::test_all_cpp_source_extensions",
+            "outcome": "passed",
+            "markers": [
+              "functionality"
+            ],
+            "category": "Regression"
+          },
+          {
+            "nodeid": ".evaluation_tests/test_checkpoint_2.py::test_all_js_extensions",
+            "outcome": "passed",
+            "markers": [
+              "functionality"
+            ],
+            "category": "Regression"
+          },
+          {
+            "nodeid": ".evaluation_tests/test_checkpoint_2.py::test_multiple_languages_no_filter",
+            "outcome": "passed",
+            "markers": [
+              "functionality"
+            ],
+            "category": "Regression"
+          },
+          {
+            "nodeid": ".evaluation_tests/test_checkpoint_2.py::test_language_filter_excludes_others",
+            "outcome": "passed",
+            "markers": [
+              "error"
+            ],
+            "category": "Regression"
+          },
+          {
+            "nodeid": ".evaluation_tests/test_checkpoint_2.py::test_unsupported_extensions_are_ignored",
+            "outcome": "passed",
+            "markers": [
+              "error"
+            ],
+            "category": "Regression"
+          },
+          {
+            "nodeid": ".evaluation_tests/test_checkpoint_2.py::test_multiple_language_array",
+            "outcome": "passed",
+            "markers": [
+              "functionality"
+            ],
+            "category": "Regression"
+          },
+          {
+            "nodeid": ".evaluation_tests/test_checkpoint_3.py::test_simple_pattern_python",
+            "outcome": "passed",
+            "markers": [
+              "core"
+            ],
+            "category": "Core"
+          },
+          {
+            "nodeid": ".evaluation_tests/test_checkpoint_3.py::test_simple_pattern_javascript",
+            "outcome": "passed",
+            "markers": [
+              "core"
+            ],
+            "category": "Core"
+          },
+          {
+            "nodeid": ".evaluation_tests/test_checkpoint_3.py::test_simple_pattern_cpp",
+            "outcome": "passed",
+            "markers": [
+              "core"
+            ],
+            "category": "Core"
+          },
+          {
+            "nodeid": ".evaluation_tests/test_checkpoint_3.py::test_repeated_metavar",
+            "outcome": "passed",
+            "markers": [],
+            "category": "Core"
+          },
+          {
+            "nodeid": ".evaluation_tests/test_checkpoint_3.py::test_optional_metavar",
+            "outcome": "failed",
+            "markers": [],
+            "category": "Core"
+          },
+          {
+            "nodeid": ".evaluation_tests/test_checkpoint_3.py::test_multiple_metavars",
+            "outcome": "failed",
+            "markers": [],
+            "category": "Core"
+          },
+          {
+            "nodeid": ".evaluation_tests/test_checkpoint_3.py::test_mixed_rules",
+            "outcome": "passed",
+            "markers": [],
+            "category": "Core"
+          },
+          {
+            "nodeid": ".evaluation_tests/test_checkpoint_3.py::test_repeated_metavar_mismatch_produces_no_match",
+            "outcome": "passed",
+            "markers": [
+              "error"
+            ],
+            "category": "Error"
+          },
+          {
+            "nodeid": ".evaluation_tests/test_checkpoint_3.py::test_no_matches",
+            "outcome": "passed",
+            "markers": [
+              "error"
+            ],
+            "category": "Error"
+          },
+          {
+            "nodeid": ".evaluation_tests/test_checkpoint_3.py::test_multiline_python_if_blocks",
+            "outcome": "failed",
+            "markers": [
+              "functionality"
+            ],
+            "category": "Functionality"
+          },
+          {
+            "nodeid": ".evaluation_tests/test_checkpoint_3.py::test_multiline_cpp_if_blocks",
+            "outcome": "passed",
+            "markers": [
+              "functionality"
+            ],
+            "category": "Functionality"
+          },
+          {
+            "nodeid": ".evaluation_tests/test_checkpoint_3.py::test_language_filtering",
+            "outcome": "failed",
+            "markers": [
+              "functionality"
+            ],
+            "category": "Functionality"
+          },
+          {
+            "nodeid": ".evaluation_tests/test_checkpoint_3.py::test_literal_dollar_sign",
+            "outcome": "failed",
+            "markers": [
+              "functionality"
+            ],
+            "category": "Functionality"
+          },
+          {
+            "nodeid": ".evaluation_tests/test_checkpoint_3.py::test_multiple_files_sorted",
+            "outcome": "failed",
+            "markers": [
+              "functionality"
+            ],
+            "category": "Functionality"
+          },
+          {
+            "nodeid": ".evaluation_tests/test_checkpoint_3.py::test_same_start_ordering",
+            "outcome": "passed",
+            "markers": [
+              "functionality"
+            ],
+            "category": "Functionality"
+          },
+          {
+            "nodeid": ".evaluation_tests/test_checkpoint_3.py::test_captures_key_order",
+            "outcome": "passed",
+            "markers": [],
+            "category": "Core"
+          },
+          {
+            "nodeid": ".evaluation_tests/test_checkpoint_3.py::test_default_languages_include_cpp",
+            "outcome": "passed",
+            "markers": [
+              "functionality"
+            ],
+            "category": "Functionality"
+          },
+          {
+            "nodeid": ".evaluation_tests/test_checkpoint_3.py::test_python_list_comprehension",
+            "outcome": "passed",
+            "markers": [
+              "functionality"
+            ],
+            "category": "Functionality"
+          },
+          {
+            "nodeid": ".evaluation_tests/test_checkpoint_3.py::test_sorting_same_start_different_end",
+            "outcome": "passed",
+            "markers": [
+              "functionality"
+            ],
+            "category": "Functionality"
+          },
+          {
+            "nodeid": ".evaluation_tests/test_checkpoint_3.py::test_special_chars_in_captures",
+            "outcome": "failed",
+            "markers": [
+              "functionality"
+            ],
+            "category": "Functionality"
+          },
+          {
+            "nodeid": ".evaluation_tests/test_checkpoint_3.py::test_triple_metavar_repetition",
+            "outcome": "passed",
+            "markers": [
+              "functionality"
+            ],
+            "category": "Functionality"
+          },
+          {
+            "nodeid": ".evaluation_tests/test_checkpoint_3.py::test_unicode_in_captures",
+            "outcome": "passed",
+            "markers": [
+              "functionality"
+            ],
+            "category": "Functionality"
+          }
+        ]
+      }
+    }
+  ],
+  "checkpoint_4": {
+    "status": "not_run",
+    "score": null
+  },
+  "checkpoint_5": {
+    "status": "not_run",
+    "score": null
+  },
+  "quality_judge": "not_run",
+  "older_synthetic_native_window": {
+    "status": "PASS_FINITE",
+    "condition": "synthetic native subprocess and pinned Docker Session fixtures",
+    "source": {
+      "head": "6f8ee2e406f3c70edb73206f861e56a0202b9f15",
+      "adapter_base": "ae09445fe1d9b973502bc5d2c961976c1d2c0163",
+      "uncommitted_package_overlay": {
+        "package_files": {
+          "__init__.py": "d110552daeaaeb407b30ffbddaab57004301e89ec6df3aad7ef81fecdcfe218d",
+          "preflight.py": "97ac509d0ba59f1f8e9e3938f0e4c23a7254b8f527329be7f372870b3933aa12",
+          "condition.example.json": "fb40f61bb0015b1ef1dda526bd7bd6fa8b1e140f1c5a2301f7d749002a3e014a",
+          "run.py": "698f28dc90cab70a93b1e93ba8cccbb7a5dadc3ad174f86ce15ac980b29216f4",
+          "wire.py": "7163db101bbbbaa476f5d5bfffb714eb1d9b9b302d8ab4bfee038ee4061951c7",
+          "sources.json": "55c9fb49a5483bd7f93a39e399fc381d690259df0555cdcfb527d8853a838ba9",
+          "plugin.py": "ed80903120515facf8a052d4226dbbc864e6f37615ea5f222840de20f0ccc569",
+          "broker.py": "934e5e32e5de6313550f6faab4fd91b1c71530cc3e8e0e7decee2385471f260f",
+          "endpoint.py": "9be06e51a874b6226a7a5b45b8e0ef24833748f77b3ff51d34ef0a66466c4c63",
+          "contracts.py": "611f09777a3c6e5d84d9e6878ea81aa8a0032a181070984c636b7c3895f20036",
+          "pilot.py": "578873f967f31e231e2263fab87a7b4a69a4d25bea6cfa128585ebdbab70a201"
+        },
+        "pyproject_sha256": "737ddc7c29e2d17d47721ccdd9a48dac6724c2c90d8337b43997f4adfd802493"
+      },
+      "offline_changed_source": {
+        "examples/slopcodebench/broker.py": "934e5e32e5de6313550f6faab4fd91b1c71530cc3e8e0e7decee2385471f260f",
+        "examples/slopcodebench/pilot.py": "578873f967f31e231e2263fab87a7b4a69a4d25bea6cfa128585ebdbab70a201",
+        "examples/slopcodebench/tests/test_session_pilot.py": "9b716997be62b24fa275ff732b8559ce553a53c30d5ceb43df8f0e2016fed21e"
+      },
+      "helper_sha256": {
+        "scb_fake_provider.py": "321b1d72bd5775432ccee153afa0ee59cd1c9b3eed3e20639fac04d5d58ca23c",
+        "scb_native_acceptance.py": "34cec496a6bf69b6e01371853efaae3aa1155882e95a599a30e6b19e291923aa",
+        "scb_subprocess_fixture.py": "696c18fcc80d0eb9f3a06861c90fcc62d2a8b819fbf45bde73326d24153bc1a1"
+      },
+      "plugin_worker_sha256": "ae35e6c6c92d81c82a3ac0026042c1a29b0412d8ca02ddf50afb48763268faa8",
+      "task_control_sha256": "d4c7dbee54dcf9775b5fd978345e3b6187f472ba2a79649596cb3f0dec26dadc"
+    },
+    "input": "minimal synthetic command/writer fixture; no code_search prompt, benchmark tests or solution",
+    "offline": {
+      "passed": 59,
+      "exit_code": 0,
+      "portable_command": [
+        "python",
+        "-B",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "examples/slopcodebench/tests"
+      ],
+      "nodeids": null,
+      "nodeids_status": "not provided by terse recorded pytest output"
+    },
+    "versions": {
+      "rpnh-harness": "0.1.0rc2",
+      "rpnh-slopcodebench": "0.1.0",
+      "docker": "7.2.0",
+      "pydantic": "2.13.5",
+      "jsonschema": "4.26.0"
+    },
+    "runner_revision": "31ceea3add480edb33431e70475c4c70597e6b31",
+    "image": {
+      "id": "sha256:a4b6653bf808e94a24dc17dcb67585ec9ee1c8928d57d04fcc893dc36ec0d5a6",
+      "scope": "minimal synthetic fixture image, not official general-purpose SCB prepared base",
+      "network": "none",
+      "only_mount": "own disposable Session workspace"
+    },
+    "limits": {
+      "case_owner_wall_seconds": 90,
+      "synthetic_call_cap_per_case": 8,
+      "broker_command_seconds": 60,
+      "native_operation_seconds": 180
+    },
+    "earlier_conditions": [
+      {
+        "condition": "na01",
+        "exit_code": 1,
+        "status": "failed"
+      },
+      {
+        "condition": "na02",
+        "exit_code": 1,
+        "status": "failed"
+      },
+      {
+        "condition": "na03",
+        "exit_code": 1,
+        "status": "failed"
+      },
+      {
+        "condition": "na04",
+        "exit_code": 1,
+        "status": "failed"
+      }
+    ],
+    "final_scenarios": [
+      {
+        "condition": "na05",
+        "case": "complete",
+        "backend": "subprocess",
+        "status": "PASS",
+        "owner_exit_code": 0,
+        "registered_fake_call_counts": [
+          3,
+          0
+        ],
+        "actual_managed_commands": 1,
+        "owner_snapshot_roundtrip": true,
+        "broker_quiescent": true,
+        "owner_forced_termination": false,
+        "reported_stream_exit_code": 0,
+        "stream_exit_interpretation": "observed",
+        "terminal_present": true,
+        "snapshot": null
+      },
+      {
+        "condition": "na05",
+        "case": "stop",
+        "backend": "subprocess",
+        "status": "PASS",
+        "owner_exit_code": 2,
+        "registered_fake_call_counts": [
+          2,
+          0
+        ],
+        "actual_managed_commands": 1,
+        "owner_snapshot_roundtrip": false,
+        "broker_quiescent": true,
+        "owner_forced_termination": false,
+        "reported_stream_exit_code": -15,
+        "stream_exit_interpretation": "observed",
+        "terminal_present": false,
+        "snapshot": null
+      },
+      {
+        "condition": "na06",
+        "case": "complete",
+        "backend": "docker",
+        "status": "PASS",
+        "owner_exit_code": 0,
+        "registered_fake_call_counts": [
+          3,
+          0
+        ],
+        "actual_managed_commands": 1,
+        "owner_snapshot_roundtrip": true,
+        "broker_quiescent": true,
+        "owner_forced_termination": false,
+        "reported_stream_exit_code": 0,
+        "stream_exit_interpretation": "observed",
+        "terminal_present": true,
+        "snapshot": {
+          "manifest_sha256": "8b508ec746bf4d927d9ff275b085249deab87ec5ffcf1546629934509b50effc",
+          "official_evaluator": "not_run",
+          "official_snapshot": true,
+          "source_persistence": true
+        }
+      },
+      {
+        "condition": "na06",
+        "case": "stop",
+        "backend": "docker",
+        "status": "PASS",
+        "owner_exit_code": 2,
+        "registered_fake_call_counts": [
+          2,
+          0
+        ],
+        "actual_managed_commands": 1,
+        "owner_snapshot_roundtrip": false,
+        "broker_quiescent": true,
+        "owner_forced_termination": false,
+        "reported_stream_exit_code": -1,
+        "stream_exit_interpretation": "unknown; upstream uses -1 after stop",
+        "terminal_present": false,
+        "snapshot": null
+      }
+    ],
+    "official_evaluator": "not_run",
+    "official_AgentRunner": "not_run",
+    "timeout_case": "not_run",
+    "real_provider_calls": 0,
+    "portable_helper_recipe": [
+      "python",
+      "-B",
+      "$HELPER",
+      "--backend",
+      "$BACKEND",
+      "--site",
+      "$INSTALLED_SITE",
+      "--frozen-manifest",
+      "$FROZEN_MANIFEST",
+      "--output",
+      "$NEW_OUTPUT"
+    ],
+    "reproduction_limits": [
+      "Historical helper inputs are identified but not redistributed in this public summary.",
+      "Full early helper source versions were not snapshotted; no reconstruction claimed.",
+      "This finite fixture did not execute full CheckpointPilot.run/CLI or original benchmark evaluation."
+    ]
+  },
+  "record_limitations": [
+    "Some original pytest actual_stdout was abbreviated; missing text not reconstructed.",
+    "Fresh-reader provenance failures are not resolved by exact-byte recovery.",
+    "No new V6 run or causal explanation inferred from these scores."
+  ]
+}

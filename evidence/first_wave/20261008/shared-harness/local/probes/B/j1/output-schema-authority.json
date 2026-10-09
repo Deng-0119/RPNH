@@ -1,1 +1,0 @@
-{"$id":"application/local_b_structured/v1","$schema":"http://json-schema.org/draft-07/schema#","additionalProperties":false,"properties":{"message":{"type":"string"},"values":{"items":{"type":"integer"},"type":"array"},"verified":{"type":"boolean"}},"required":["message","values","verified"],"type":"object"}

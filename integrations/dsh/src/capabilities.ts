@@ -4,7 +4,9 @@ import { Context, Service } from '@deepseek-ai/cordis'
 import { LlmAdapter, BlockAssembler, ToolCallId, createAssistantMessage, createToolResultMessage } from '@deepseek-ai/dsh-llm'
 import type { GenerateOptions, StreamChunk } from '@deepseek-ai/dsh-llm'
 import type { Agent } from '@deepseek-ai/dsh-agent'
-import type { JsonRecord, EffectHost } from './bridge.ts'
+import { REVISION, type JsonRecord, type EffectHost } from './bridge.ts'
+import { toolResultText } from './message-codec.ts'
+import { providerMessages } from './provider-message-codec.ts'
 type Grant = { frame: JsonRecord; used: boolean; raw?: unknown }
 const equal = (a: unknown, b: unknown): boolean => isDeepStrictEqual(a, b)
 const record = (value: unknown): JsonRecord | undefined => value !== null && typeof value === 'object' && !Array.isArray(value)
@@ -31,63 +33,6 @@ function exactToolArguments(value: unknown): value is string {
     const parsed = JSON.parse(value)
     return parsed !== null && typeof parsed === 'object' && !Array.isArray(parsed)
   } catch { return false }
-}
-function providerMessages(messages: unknown, toolNames: Set<string>): JsonRecord[] {
-  if (!Array.isArray(messages)) throw new Error('configured DSH provider requests require a message array')
-  const output: JsonRecord[] = []
-  let pending: { id: string; name: string; arguments: string } | undefined
-  for (const rawMessage of messages) {
-    const message = record(rawMessage)
-    if (!message || !Array.isArray(message.content) || message.content.length === 0) {
-      throw new Error('configured DSH provider requests contain an invalid message')
-    }
-    const blocks = message.content.map(record)
-    if (blocks.some(block => !block)) throw new Error('configured DSH provider requests contain an invalid block')
-    if (message.role === 'assistant') {
-      if (pending) throw new Error('configured DSH tool call has no correlated result')
-      const calls = blocks.filter(block => block!.type === 'tool-call')
-      if (calls.length > 1) throw new Error('configured DSH provider requests do not support parallel tool calls')
-      if (blocks.some(block => !['text', 'reasoning', 'tool-call'].includes(block!.type))) {
-        throw new Error('configured DSH provider requests contain an unknown assistant block')
-      }
-      const content = blocks.filter(block => block!.type !== 'tool-call').map(block => {
-        if (typeof block!.text !== 'string') throw new Error('configured DSH provider requests contain invalid assistant text')
-        return block!.text
-      }).join('')
-      const call = calls[0]
-      if (!call) {
-        output.push({ role: 'assistant', content })
-        continue
-      }
-      if (typeof call.id !== 'string' || !call.id || typeof call.name !== 'string' || !toolNames.has(call.name)
-        || !exactToolArguments(call.arguments) || ('raw_arguments' in call && call.raw_arguments !== call.arguments)) {
-        throw new Error('configured DSH provider requests contain an invalid or changed tool call')
-      }
-      pending = { id: call.id, name: call.name, arguments: call.arguments }
-      output.push({ role: 'assistant', ...(content ? { content } : {}), tool_calls: [{ id: call.id, type: 'function',
-        function: { name: call.name, arguments: call.arguments } }] })
-      continue
-    }
-    if (message.role !== 'user') throw new Error('configured DSH provider requests contain an unsupported role')
-    const source = record(message.source)
-    if (source?.kind !== 'tool') {
-      if (pending || blocks.some(block => block!.type !== 'text' || typeof block!.text !== 'string')) {
-        throw new Error('configured DSH provider requests contain an invalid user message')
-      }
-      output.push({ role: 'user', content: blocks.map(block => block!.text).join('') })
-      continue
-    }
-    const result = blocks.length === 1 ? blocks[0] : undefined
-    const resultContent = result && Array.isArray(result.content) ? result.content.map(record) : undefined
-    if (!pending || source.callId !== pending.id || !result || result.type !== 'tool-result'
-      || result.toolCallId !== pending.id || typeof result.isError !== 'boolean' || !resultContent || resultContent.some(block => !block || block.type !== 'text' || typeof block.text !== 'string')) {
-      throw new Error('configured DSH tool result is malformed or uncorrelated')
-    }
-    output.push({ role: 'tool', tool_call_id: pending.id, content: resultContent.map(block => block!.text).join('') })
-    pending = undefined
-  }
-  if (pending) throw new Error('configured DSH tool call has no correlated result')
-  return output
 }
 export interface PhysicalCounters { model: number; tools: number; tickets: string[] }
 declare module '@deepseek-ai/cordis' { interface Context { rpnhCapabilities: CapabilityHost } }
@@ -154,7 +99,7 @@ export class CapabilityHost extends Service {
     }
     const registeredTools = args.registered_tools
     const toolNames = registeredToolNames(registeredTools)
-    const messages = providerMessages(args.messages, toolNames)
+    const messages = providerMessages(args.messages, toolNames, REVISION)
     const providerRequest = { protocol: 'registered_llm/v1', messages, tools: registeredTools,
       tool_choice: registeredTools.length === 0 ? 'none' : 'auto', placeholders: [] }
     this.prepared.set(frame.ticket.execution_ref.version_id, {
@@ -234,7 +179,7 @@ export class CapabilityHost extends Service {
           const assembly = new BlockAssembler(); const chunks: StreamChunk[] = []
           for await (const chunk of prepared.stream(options)) { chunks.push(chunk); assembly.push(chunk) }
           if (!this.require('model').used) throw new Error('model pipeline returned without a physical dispatch')
-          return { message: assembly.message({ kind: 'model', ...frame.arguments.route }), chunks,
+          return { message: createAssistantMessage({ source: frame.arguments.route, content: assembly.blocks() }), chunks,
                    finish: assembly.finish, wire_request: { ...options, signal: undefined } }
         }
         if (frame.ticket.kind !== 'tool') throw new Error('unknown capability kind')
@@ -261,11 +206,11 @@ class OfflineAdapter extends LlmAdapter {
     if (step === 0) block = { type: 'tool-call', id: ToolCallId(`read-${g.frame.ticket.request_id}`), name: 'read_dataset', arguments: '{}' }
     else if (step === 1) {
       const last: any = options.messages.at(-1)
-      const value = JSON.parse(last.content[0].content[0].text)
+      const value = JSON.parse(toolResultText(last, REVISION))
       block = { type: 'tool-call', id: ToolCallId(`sum-${g.frame.ticket.request_id}`), name: 'sum_values', arguments: JSON.stringify({ values: value }) }
     } else {
       const last: any = options.messages.at(-1)
-      block = { type: 'text', text: `Sum: ${last.content[0].content[0].text}` }
+      block = { type: 'text', text: `Sum: ${toolResultText(last, REVISION)}` }
     }
     yield { type: 'block-start', index: 0, blockType: block.type }
     yield { type: 'block-end', index: 0, block }

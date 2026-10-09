@@ -68,6 +68,7 @@ integrations = [
   "dsh/verify.sh",
   "dsh/patch_upstream.py",
   "dsh/src/*.ts",
+  "dsh/fixtures/*.json",
 ]
 
 [tool.pytest.ini_options]

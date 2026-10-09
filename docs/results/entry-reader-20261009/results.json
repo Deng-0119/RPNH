@@ -1,0 +1,721 @@
+{
+  "representation": "curated historical source/test/status projection",
+  "H1": {
+    "status": "PASS_NATIVE_FINITE",
+    "tested_base": "674252feb836f631c162979f177d1fe91f22559f",
+    "patch_sha256": "71261d059d205b375334450aef281702a1c573562c6e905a08d411b907749a6c",
+    "file_manifest": [
+      {
+        "path": "cpn/orchestrator/runner.py",
+        "baseline_git_blob": "bac48e3ac57f84531282ed2d034fae22676f444e",
+        "baseline_sha256": "b2ca4aa17c4b960b732ca0b814f8dc96c885babb9a1fbd095b47da953fe4ba03",
+        "final_git_blob": "3e6fcebe1a59a2a193572d6bc963f1949a8067f4",
+        "final_sha256": "6ae5153b2925ca3a0237383889014f1197f6bfa98e0f1f8523ef003db72949f3"
+      },
+      {
+        "path": "cpn/rpnh/agent_tasks.py",
+        "baseline_git_blob": "d45c6f01d5c2da437ae106b4525fc11558227ce3",
+        "baseline_sha256": "1e26404c15ec14e75959a889a2e978b782413222e3cb993cd45e8bea40be178f",
+        "final_git_blob": "e2283345a354124ae2861881dce0cfcafa47db67",
+        "final_sha256": "247c1ec9b9d5eb380071b0bfbf8e1bc45d20038f9dd5c0aaa8c292be62927c11"
+      },
+      {
+        "path": "examples/tool_pipeline/README.md",
+        "baseline_git_blob": "a078bdb696d2c30128442eb06d2658bd694a83c5",
+        "baseline_sha256": "f544ef304ac13f353af2bb207afab18e8a86a69391b407a7adafaa81674c7032",
+        "final_git_blob": "3be8ed3dbedacc613b11131732694c26b4a9c2ac",
+        "final_sha256": "3a5fa5078bf3b20d150ea461bc708037a26b41256244da4d63b6769c3d90eba3"
+      },
+      {
+        "path": "examples/tool_pipeline/README_ZH.md",
+        "baseline_git_blob": "ff672b5667a10524be7e4039c6e5efb08147b8db",
+        "baseline_sha256": "5449c8ef872ee8139c780b878adc394fbe112f25888099d15f5863db9674dbc7",
+        "final_git_blob": "cec5760583b6cd5b693c6c37ca2771db5e560edd",
+        "final_sha256": "96da52bfd074c2ee0f8c21408048767115ea1bc0ee7c2a1794b52a8743e106e4"
+      },
+      {
+        "path": "examples/tool_pipeline/run.py",
+        "baseline_git_blob": "1f9378d6a0aa005a3d18fefc5bf4739cee86d7b7",
+        "baseline_sha256": "71bf5b015d8a4ca7e2a0888ff47df8586dd26982576a92fc62725db0ac8c5ad9",
+        "final_git_blob": "b50a7ebc373817ed10f936d399e6a0934a10dbf8",
+        "final_sha256": "ad0df2b9d2e018d3b17dc49350a051f8620e3a3c31cfb96840afb6bbbb694dc4"
+      },
+      {
+        "path": "examples/tool_pipeline/tests/test_pipeline.py",
+        "baseline_git_blob": "33d85e416f014afa440eb2c73a11dab11c3e6afd",
+        "baseline_sha256": "387e64049bdd70d2305a09ff40610a61f2347e5f34690dcfcb4a6814378afbfb",
+        "final_git_blob": "1633a100241f847150b9aeefddbd8bb841a3f103",
+        "final_sha256": "9ce908bd82781b426387e9fa5ccf4b7145bc75926f3fcaba91933db32be813f7"
+      },
+      {
+        "path": "tests/test_orchestrator_boundary.py",
+        "baseline_git_blob": null,
+        "baseline_sha256": null,
+        "final_git_blob": "35abfa84da0a30fd9810b42627e0693074fca2e7",
+        "final_sha256": "6545ed83ea5a1986337d75512a50cc82036e0733a7097ec32a6f1d0f06ad49d1"
+      }
+    ],
+    "publication_commit": "715468dab0b1bea07d7e94a7aa0606eaf194365c",
+    "unique_count": 39,
+    "execution_count": 39,
+    "windows": [
+      {
+        "id": "native-focused",
+        "status": "PASS",
+        "tests": 36,
+        "time_seconds": 714.492,
+        "test_ids": [
+          "tests/test_orchestrator_boundary.py::test_entry_forwards_boundaries_without_owning_resources[False]",
+          "tests/test_orchestrator_boundary.py::test_entry_forwards_boundaries_without_owning_resources[True]",
+          "tests/test_harness_quiescence.py::test_finite_harness_returns_quiescent_marking_without_spinning",
+          "tests/test_harness_quiescence.py::test_waiting_harness_returns_blocked_result_without_dispatch_spin",
+          "tests/test_harness_quiescence.py::test_owner_stop_wins_over_a_racing_worker_product",
+          "tests/test_harness_quiescence.py::test_untracked_registry_firing_reports_reconciliation_required",
+          "tests/test_harness_resource_continuation.py::test_adapter_retains_exact_dispatcher_for_resource_resume",
+          "tests/test_harness_resource_continuation.py::test_harness_resumes_all_currently_grantable_resource_waiters",
+          "examples/tool_pipeline/tests/test_pipeline.py::test_complete_report_and_independent_validation",
+          "examples/tool_pipeline/tests/test_pipeline.py::test_real_overlap_capacity_and_branch_progress",
+          "examples/tool_pipeline/tests/test_pipeline.py::test_exact_lineage_and_partial_order",
+          "examples/tool_pipeline/tests/test_pipeline.py::test_readback_needs_no_exports_or_process_cache",
+          "examples/tool_pipeline/tests/test_pipeline.py::test_round_each_interval_half_up",
+          "examples/tool_pipeline/tests/test_pipeline.py::test_invalid_data_cannot_reach_final[unit]",
+          "examples/tool_pipeline/tests/test_pipeline.py::test_invalid_data_cannot_reach_final[time]",
+          "examples/tool_pipeline/tests/test_pipeline.py::test_invalid_data_cannot_reach_final[both_invalid]",
+          "examples/tool_pipeline/tests/test_pipeline.py::test_invalid_data_cannot_reach_final[candidate]",
+          "examples/tool_pipeline/tests/test_pipeline.py::test_input_middleware_rejects_invalid_values[negative]",
+          "examples/tool_pipeline/tests/test_pipeline.py::test_input_middleware_rejects_invalid_values[float]",
+          "examples/tool_pipeline/tests/test_pipeline.py::test_input_middleware_rejects_invalid_values[duplicate]",
+          "examples/tool_pipeline/tests/test_pipeline.py::test_input_middleware_rejects_invalid_values[nan]",
+          "examples/tool_pipeline/tests/test_pipeline.py::test_input_middleware_rejects_invalid_values[timezone]",
+          "examples/tool_pipeline/tests/test_pipeline.py::test_input_middleware_rejects_invalid_values[overlap]",
+          "examples/tool_pipeline/tests/test_pipeline.py::test_input_middleware_rejects_invalid_values[too_large]",
+          "examples/tool_pipeline/tests/test_pipeline.py::test_worker_exception_keeps_unresolved_firing",
+          "examples/tool_pipeline/tests/test_pipeline.py::test_truncated_final_payload_fails_readback",
+          "examples/tool_pipeline/tests/test_pipeline.py::test_independent_validator_rejects_other_schema_valid_candidates[source_version]",
+          "examples/tool_pipeline/tests/test_pipeline.py::test_independent_validator_rejects_other_schema_valid_candidates[line_amount]",
+          "examples/tool_pipeline/tests/test_pipeline.py::test_independent_validator_rejects_other_schema_valid_candidates[total_usage]",
+          "examples/tool_pipeline/tests/test_pipeline.py::test_independent_validator_rejects_other_schema_valid_candidates[missing_line]",
+          "examples/tool_pipeline/tests/test_pipeline.py::test_existing_entry_matches_direct_harness[1]",
+          "examples/tool_pipeline/tests/test_pipeline.py::test_existing_entry_matches_direct_harness[2]",
+          "examples/tool_pipeline/tests/test_pipeline.py::test_entry_stop_drains_admitted_siblings_without_new_work",
+          "examples/tool_pipeline/tests/test_pipeline.py::test_launcher_closes_each_owned_resource_once",
+          "examples/tool_pipeline/tests/test_pipeline.py::test_agent_task_preconstruction_stop_keeps_host_ownership",
+          "examples/tool_pipeline/tests/test_pipeline.py::test_legacy_factory_returns_shared_entry_harness"
+        ]
+      },
+      {
+        "id": "native-agent-task",
+        "status": "PASS",
+        "tests": 3,
+        "time_seconds": 138.757,
+        "test_ids": [
+          "tests/test_task_frontend.py::test_interrupted_firing_does_not_publish_workspace_files",
+          "tests/test_task_frontend.py::test_resume_uses_persisted_transition_profiles_when_graph_swaps_them",
+          "tests/test_task_frontend.py::test_interruption_checkpoints_prior_workspace_action_and_discards_current"
+        ]
+      }
+    ],
+    "cloud_pipe_semantics": {
+      "status": "PASS",
+      "unique_count": 39,
+      "execution_count": 50
+    },
+    "cloud_native": "BLOCKED_ENV: AF_UNIX EPERM"
+  },
+  "H1_H2a": {
+    "status": "PASS_NATIVE_FINITE",
+    "tested_base": "715468dab0b1bea07d7e94a7aa0606eaf194365c",
+    "base_git_tree": "2e64ef41ac2bb55fdd98b68ef4d16309a2362d83",
+    "reader_patch_sha256": "62f914d41d953e9badd4eb06eec43273f9d52bd5bd9b948ad6e10137d3ed2b24",
+    "reader_file_manifest": [
+      {
+        "path": "cpn/rpnh/registry/run_authority.py",
+        "kind": "file",
+        "sha256": "7475c2d5403dea49dc0a45796a3f84beab6c7516f18466bc8e1338bf0be684e3",
+        "size": 28641,
+        "executable": false
+      },
+      {
+        "path": "cpn/rpnh/task_control.py",
+        "kind": "file",
+        "sha256": "b8658b6c19d64eb4bc34a9c320c84a9140cab624e236ffe8c8edfcc7bd026729",
+        "size": 39860,
+        "executable": false
+      },
+      {
+        "path": "docs/ARCHITECTURE.md",
+        "kind": "file",
+        "sha256": "e87be412e593f56dd002549f50cb22e8d878f3afc756d2d9f1fb396a9a9ee6a5",
+        "size": 19908,
+        "executable": false
+      },
+      {
+        "path": "docs/ARCHITECTURE_ZH.md",
+        "kind": "file",
+        "sha256": "580f623adfdfd003215f7a0c2a240671f808efc67c2bd04b926450878a87e011",
+        "size": 18480,
+        "executable": false
+      },
+      {
+        "path": "tests/test_task_control_registry_reads.py",
+        "kind": "file",
+        "sha256": "49930313e1cc0f49846cd406a34003a54517fbff6c8c91303c964c2c6b89442b",
+        "size": 24747,
+        "executable": false
+      }
+    ],
+    "tested_worktree_manifest_sha256": "488ce0b6ffac52b468db3d3d5cdc87a263fcb95aadbcc48d4df1f81d26cb5323",
+    "manifest_entries": 3493,
+    "publication_commit": "d92ff3704b6002bf5ecbccb3e6a3d1489809a805",
+    "unique_count": 166,
+    "execution_count": 166,
+    "repository_count": 154,
+    "independent_count": 12,
+    "H1_unique": 39,
+    "H2a_unique": 130,
+    "shared_classic": 3,
+    "windows": [
+      {
+        "id": "h2-focused",
+        "status": "PASS",
+        "tests": 47,
+        "time_seconds": 232.559,
+        "test_ids": [
+          "tests/test_task_control_registry_reads.py::test_exact_legacy_result_and_status_shapes[complete-answer]",
+          "tests/test_task_control_registry_reads.py::test_exact_legacy_result_and_status_shapes[complete-output1]",
+          "tests/test_task_control_registry_reads.py::test_exact_legacy_result_and_status_shapes[complete-output2]",
+          "tests/test_task_control_registry_reads.py::test_exact_legacy_result_and_status_shapes[complete-None]",
+          "tests/test_task_control_registry_reads.py::test_exact_legacy_result_and_status_shapes[failed-answer]",
+          "tests/test_task_control_registry_reads.py::test_exact_legacy_result_and_status_shapes[failed-output1]",
+          "tests/test_task_control_registry_reads.py::test_exact_legacy_result_and_status_shapes[failed-output2]",
+          "tests/test_task_control_registry_reads.py::test_exact_legacy_result_and_status_shapes[failed-None]",
+          "tests/test_task_control_registry_reads.py::test_current_generation_never_falls_back_and_counts_remain_historical[running]",
+          "tests/test_task_control_registry_reads.py::test_current_generation_never_falls_back_and_counts_remain_historical[stopped_by_owner]",
+          "tests/test_task_control_registry_reads.py::test_current_generation_never_falls_back_and_counts_remain_historical[terminal]",
+          "tests/test_task_control_registry_reads.py::test_consumer_reuses_native_read_and_rechecks_same_cut_after_counts[result]",
+          "tests/test_task_control_registry_reads.py::test_consumer_reuses_native_read_and_rechecks_same_cut_after_counts[status]",
+          "tests/test_task_control_registry_reads.py::test_reads_do_not_open_writers_change_head_or_object_bytes[result]",
+          "tests/test_task_control_registry_reads.py::test_reads_do_not_open_writers_change_head_or_object_bytes[status]",
+          "tests/test_task_control_registry_reads.py::test_counts_race_is_rejected_before_delivery[head-result]",
+          "tests/test_task_control_registry_reads.py::test_counts_race_is_rejected_before_delivery[head-status]",
+          "tests/test_task_control_registry_reads.py::test_counts_race_is_rejected_before_delivery[epoch-result]",
+          "tests/test_task_control_registry_reads.py::test_counts_race_is_rejected_before_delivery[epoch-status]",
+          "tests/test_task_control_registry_reads.py::test_counts_race_is_rejected_before_delivery[run_pointer-result]",
+          "tests/test_task_control_registry_reads.py::test_counts_race_is_rejected_before_delivery[run_pointer-status]",
+          "tests/test_task_control_registry_reads.py::test_payload_decode_race_is_rejected",
+          "tests/test_task_control_registry_reads.py::test_wrong_canonical_typed_identity_is_rejected[terminal_evidence_ref-result]",
+          "tests/test_task_control_registry_reads.py::test_wrong_canonical_typed_identity_is_rejected[terminal_evidence_ref-status]",
+          "tests/test_task_control_registry_reads.py::test_wrong_canonical_typed_identity_is_rejected[run_ref-result]",
+          "tests/test_task_control_registry_reads.py::test_wrong_canonical_typed_identity_is_rejected[run_ref-status]",
+          "tests/test_task_control_registry_reads.py::test_wrong_canonical_typed_identity_is_rejected[final_checkpoint_ref-result]",
+          "tests/test_task_control_registry_reads.py::test_wrong_canonical_typed_identity_is_rejected[final_checkpoint_ref-status]",
+          "tests/test_task_control_registry_reads.py::test_reader_rejection_never_uses_legacy_fallback[result]",
+          "tests/test_task_control_registry_reads.py::test_reader_rejection_never_uses_legacy_fallback[status]",
+          "tests/test_task_control_registry_reads.py::test_legal_large_terminal_product_remains_available[4194304]",
+          "tests/test_task_control_registry_reads.py::test_legal_large_terminal_product_remains_available[4194305]",
+          "tests/test_task_control_registry_reads.py::test_product_backing_growth_is_bounded_and_fails_without_truncation",
+          "tests/test_task_control_registry_reads.py::test_status_keeps_process_and_socket_observations_separate",
+          "tests/test_task_control_registry_reads.py::test_status_reader_error_shape_and_os_stop_remain",
+          "tests/test_task_control_registry_reads.py::test_resume_still_accepts_only_current_owner_stopped_state",
+          "tests/test_task_control_registry_reads.py::test_missing_registry_is_not_created",
+          "tests/test_task_control_registry_reads.py::test_basic_and_application_result_use_same_consumer",
+          "tests/test_task_control_registry_reads.py::test_descriptors_default_to_registered_size_and_keep_explicit_budget[result]",
+          "tests/test_task_control_registry_reads.py::test_descriptors_default_to_registered_size_and_keep_explicit_budget[status]",
+          "tests/test_task_control_registry_reads.py::test_descriptor_backing_growth_is_bounded_without_truncation[result]",
+          "tests/test_task_control_registry_reads.py::test_descriptor_backing_growth_is_bounded_without_truncation[status]",
+          "tests/test_task_control_registry_reads.py::test_registered_nonzero_call_baseline_remains_cumulative_across_generations",
+          "tests/test_task_control_registry_reads.py::test_cross_registry_run_identity_is_rejected[result]",
+          "tests/test_task_control_registry_reads.py::test_cross_registry_run_identity_is_rejected[status]",
+          "tests/test_task_control_registry_reads.py::test_stale_terminal_in_current_authority_cannot_select_history[result]",
+          "tests/test_task_control_registry_reads.py::test_stale_terminal_in_current_authority_cannot_select_history[status]"
+        ]
+      },
+      {
+        "id": "h2-compatibility",
+        "status": "PASS",
+        "tests": 44,
+        "time_seconds": 1.393,
+        "test_ids": [
+          "tests/test_run_descriptor_reads.py::test_strict_registered_descriptor_rejects_duplicate_keys",
+          "tests/test_run_descriptor_reads.py::test_strict_registered_descriptor_rejects_nonfinite[NaN]",
+          "tests/test_run_descriptor_reads.py::test_strict_registered_descriptor_rejects_nonfinite[Infinity]",
+          "tests/test_run_descriptor_reads.py::test_strict_registered_descriptor_rejects_nonfinite[-Infinity]",
+          "tests/test_run_descriptor_reads.py::test_strict_registered_descriptor_rejects_nonfinite[1e999]",
+          "tests/test_run_descriptor_reads.py::test_bounded_descriptor_refuses_enlarged_backing_file",
+          "tests/test_run_descriptor_reads.py::test_registered_read_bound_is_typed[-1]",
+          "tests/test_run_descriptor_reads.py::test_registered_read_bound_is_typed[True]",
+          "tests/test_run_descriptor_reads.py::test_registered_read_bound_is_typed[1.5]",
+          "tests/test_package_result_projection.py::test_bounded_terminal_json_serializes_exact_bytes",
+          "tests/test_package_result_projection.py::test_non_json_body_is_omitted_without_content[{\"x\":NaN}]",
+          "tests/test_package_result_projection.py::test_non_json_body_is_omitted_without_content[{\"x\":1,\"x\":2}]",
+          "tests/test_package_result_projection.py::test_non_json_body_is_omitted_without_content[{\"x\":\"\\ud800\"}]",
+          "tests/test_package_result_projection.py::test_non_json_body_is_omitted_without_content[not json]",
+          "tests/test_package_result_projection.py::test_non_json_body_is_omitted_without_content[{\"x\":\"\\xff\"}]",
+          "tests/test_package_result_projection.py::test_non_json_body_is_omitted_without_content[{\"x\":1e999}]",
+          "tests/test_package_result_projection.py::test_unsupported_media_is_not_read",
+          "tests/test_package_result_projection.py::test_oversize_body_is_not_read",
+          "tests/test_package_result_projection.py::test_backing_size_mismatch_fails_without_returning_body",
+          "tests/test_package_result_projection.py::test_no_terminal_does_not_read_owner_resources",
+          "tests/test_package_result_projection.py::test_cli_result_opt_in_requires_explicit_private_output",
+          "tests/test_package_result_projection.py::test_host_request_body_is_opt_in_and_bool_only",
+          "tests/test_opencode_application_boundary.py::test_real_submit_method_persists_identity_before_start_and_deduplicates",
+          "tests/test_opencode_application_boundary.py::test_foreign_turn_is_visible_without_frontend_request_or_model_evidence",
+          "tests/test_opencode_application_boundary.py::test_actual_submission_conflict_and_model_drift",
+          "tests/test_opencode_application_boundary.py::test_agent_launch_does_not_replay_a_parent_relative_registry_link",
+          "tests/test_opencode_application_boundary.py::test_profile_switch_is_per_turn_and_read_only_commands_do_not_switch",
+          "tests/test_opencode_application_boundary.py::test_dead_process_is_not_success",
+          "tests/test_opencode_application_boundary.py::test_exact_abort_is_coalesced_until_checkpoint_and_resume",
+          "tests/test_opencode_application_boundary.py::test_not_ready_abort_does_not_send_early_sigint",
+          "tests/test_opencode_application_boundary.py::test_shutdown_checkpoints_main_turn_without_stopping_child_registry",
+          "tests/test_opencode_application_boundary.py::test_unknown_populated_attempt_is_not_replayed",
+          "tests/test_opencode_application_boundary.py::test_rollback_retains_attempt_identity",
+          "tests/test_opencode_application_boundary.py::test_net_calls_existing_projection_and_filter[-False-False]",
+          "tests/test_opencode_application_boundary.py::test_net_calls_existing_projection_and_filter[--show-resources-True-False]",
+          "tests/test_opencode_application_boundary.py::test_net_calls_existing_projection_and_filter[--resources-only-False-True]",
+          "tests/test_opencode_application_boundary.py::test_status_redacts_paths_and_private_errors",
+          "tests/test_basic_cli_task_switching.py::test_tasks_reconciles_main_registry_child_indexes",
+          "tests/test_basic_cli_task_switching.py::test_noninteractive_main_failure_is_controlled_and_nonzero",
+          "tests/test_basic_cli_task_switching.py::test_switches_between_multiple_agents_and_main",
+          "tests/test_basic_cli_task_switching.py::test_resume_and_rollback_are_scoped_by_current_focus",
+          "tests/test_basic_cli_task_switching.py::test_selected_workflow_requires_an_explicit_target",
+          "tests/test_basic_cli_task_switching.py::test_slash_net_view_opens_selected_registry_run",
+          "tests/test_basic_cli_task_switching.py::test_explicit_task_net_view_works_without_selection"
+        ]
+      },
+      {
+        "id": "h2-shared",
+        "status": "PASS",
+        "tests": 15,
+        "time_seconds": 91.731,
+        "test_ids": [
+          "examples/harnessaudit_office/tests/test_registry_reader_consumers.py::test_two_consumers_share_exact_identity_payload_and_read_only_source",
+          "examples/harnessaudit_office/tests/test_registry_reader_consumers.py::test_two_consumers_reject_superseded_terminal_generation",
+          "examples/harnessaudit_office/tests/test_registry_reader_consumers.py::test_reader_expected_owner_context_never_selects_identity[run]",
+          "examples/harnessaudit_office/tests/test_registry_reader_consumers.py::test_reader_expected_owner_context_never_selects_identity[task]",
+          "examples/harnessaudit_office/tests/test_registry_reader_consumers.py::test_reader_expected_owner_context_never_selects_identity[net]",
+          "examples/harnessaudit_office/tests/test_registry_reader_consumers.py::test_current_cut_rejects_historical_view_substitution",
+          "examples/harnessaudit_office/tests/test_registry_reader_consumers.py::test_authority_selection_respects_supplied_canonical_view",
+          "examples/harnessaudit_office/tests/test_registry_reader_consumers.py::test_environment_renderer_rechecks_same_cut_before_delivery[head]",
+          "examples/harnessaudit_office/tests/test_registry_reader_consumers.py::test_environment_renderer_rechecks_same_cut_before_delivery[epoch]",
+          "examples/harnessaudit_office/tests/test_registry_reader_consumers.py::test_result_provenance_is_native_reader_requirement",
+          "examples/harnessaudit_office/tests/test_registry_reader_consumers.py::test_descriptor_bound_and_product_physical_bound_are_enforced",
+          "examples/harnessaudit_office/tests/test_registry_reader_consumers.py::test_environment_rejects_descriptor_byte_corruption",
+          "examples/harnessaudit_office/tests/test_registry_reader_consumers.py::test_cut_is_bound_to_exact_registry_handle_and_kernel",
+          "examples/harnessaudit_office/tests/test_registry_reader_consumers.py::test_environment_preserves_fresh_owner_net_assertion",
+          "examples/harnessaudit_office/tests/test_registry_reader_consumers.py::test_both_consumers_reject_missing_actual_resource_provenance"
+        ]
+      },
+      {
+        "id": "h2-independent",
+        "status": "PASS",
+        "tests": 12,
+        "time_seconds": 72.818,
+        "test_ids": [
+          "package/independent-review/test_taskcontrol_independent.py::test_read_never_writes_and_preserves_exact_shapes",
+          "package/independent-review/test_taskcontrol_independent.py::test_same_cut_recheck_after_accounting[head-result]",
+          "package/independent-review/test_taskcontrol_independent.py::test_same_cut_recheck_after_accounting[head-status]",
+          "package/independent-review/test_taskcontrol_independent.py::test_same_cut_recheck_after_accounting[epoch-result]",
+          "package/independent-review/test_taskcontrol_independent.py::test_same_cut_recheck_after_accounting[epoch-status]",
+          "package/independent-review/test_taskcontrol_independent.py::test_reopened_generation_never_returns_old_terminal",
+          "package/independent-review/test_taskcontrol_independent.py::test_legacy_large_result_remains_readable",
+          "package/independent-review/test_taskcontrol_independent.py::test_status_socket_snapshot_remains_independent_observation",
+          "package/independent-review/test_taskcontrol_independent.py::test_terminal_descriptor_bytes_are_shared_authority[result]",
+          "package/independent-review/test_taskcontrol_independent.py::test_terminal_descriptor_bytes_are_shared_authority[status]",
+          "package/independent-review/test_taskcontrol_independent.py::test_default_descriptor_reads_use_registered_size_and_explicit_budget_unchanged",
+          "package/independent-review/test_large_descriptor.py::test_valid_descriptor_above_four_mib_is_readable"
+        ]
+      },
+      {
+        "id": "h2-native-status",
+        "status": "PASS",
+        "tests": 7,
+        "time_seconds": 2.635,
+        "test_ids": [
+          "tests/test_task_frontend.py::test_task_control_launches_an_installed_module_worker",
+          "tests/test_task_frontend.py::test_task_control_serializes_canonical_paths_before_worker_launch",
+          "tests/test_task_frontend.py::test_task_control_keeps_owner_socket_in_registry_and_shortens_only_transport",
+          "tests/test_task_frontend.py::test_task_status_preserves_local_exit_code_without_forging_recovered_code",
+          "tests/test_task_frontend.py::test_task_control_upgrades_pending_v3_worker_specs_before_recovery",
+          "tests/test_task_frontend.py::test_task_control_rehomes_a_persisted_global_tmp_owner_socket",
+          "tests/test_task_frontend.py::test_task_control_recovers_pre_spawn_intent_with_same_identity"
+        ]
+      },
+      {
+        "id": "h2-native-callbacks",
+        "status": "PASS",
+        "tests": 2,
+        "time_seconds": 0.606,
+        "test_ids": [
+          "tests/test_transport_completion_faults.py::test_accepted_host_reply_cancellation_is_not_owner_cancellation",
+          "tests/test_transport_completion_faults.py::test_accepted_host_exception_preserves_later_completion"
+        ]
+      },
+      {
+        "id": "h1-classic",
+        "status": "PASS",
+        "tests": 3,
+        "time_seconds": 162.904,
+        "test_ids": [
+          "tests/test_task_frontend.py::test_resume_uses_persisted_transition_profiles_when_graph_swaps_them",
+          "tests/test_task_frontend.py::test_interrupted_firing_does_not_publish_workspace_files",
+          "tests/test_task_frontend.py::test_interruption_checkpoints_prior_workspace_action_and_discards_current"
+        ]
+      },
+      {
+        "id": "h1-focused",
+        "status": "PASS",
+        "tests": 36,
+        "time_seconds": 745.261,
+        "test_ids": [
+          "tests/test_orchestrator_boundary.py::test_entry_forwards_boundaries_without_owning_resources[False]",
+          "tests/test_orchestrator_boundary.py::test_entry_forwards_boundaries_without_owning_resources[True]",
+          "tests/test_harness_quiescence.py::test_finite_harness_returns_quiescent_marking_without_spinning",
+          "tests/test_harness_quiescence.py::test_waiting_harness_returns_blocked_result_without_dispatch_spin",
+          "tests/test_harness_quiescence.py::test_owner_stop_wins_over_a_racing_worker_product",
+          "tests/test_harness_quiescence.py::test_untracked_registry_firing_reports_reconciliation_required",
+          "tests/test_harness_resource_continuation.py::test_adapter_retains_exact_dispatcher_for_resource_resume",
+          "tests/test_harness_resource_continuation.py::test_harness_resumes_all_currently_grantable_resource_waiters",
+          "examples/tool_pipeline/tests/test_pipeline.py::test_complete_report_and_independent_validation",
+          "examples/tool_pipeline/tests/test_pipeline.py::test_real_overlap_capacity_and_branch_progress",
+          "examples/tool_pipeline/tests/test_pipeline.py::test_exact_lineage_and_partial_order",
+          "examples/tool_pipeline/tests/test_pipeline.py::test_readback_needs_no_exports_or_process_cache",
+          "examples/tool_pipeline/tests/test_pipeline.py::test_round_each_interval_half_up",
+          "examples/tool_pipeline/tests/test_pipeline.py::test_invalid_data_cannot_reach_final[unit]",
+          "examples/tool_pipeline/tests/test_pipeline.py::test_invalid_data_cannot_reach_final[time]",
+          "examples/tool_pipeline/tests/test_pipeline.py::test_invalid_data_cannot_reach_final[both_invalid]",
+          "examples/tool_pipeline/tests/test_pipeline.py::test_invalid_data_cannot_reach_final[candidate]",
+          "examples/tool_pipeline/tests/test_pipeline.py::test_input_middleware_rejects_invalid_values[negative]",
+          "examples/tool_pipeline/tests/test_pipeline.py::test_input_middleware_rejects_invalid_values[float]",
+          "examples/tool_pipeline/tests/test_pipeline.py::test_input_middleware_rejects_invalid_values[duplicate]",
+          "examples/tool_pipeline/tests/test_pipeline.py::test_input_middleware_rejects_invalid_values[nan]",
+          "examples/tool_pipeline/tests/test_pipeline.py::test_input_middleware_rejects_invalid_values[timezone]",
+          "examples/tool_pipeline/tests/test_pipeline.py::test_input_middleware_rejects_invalid_values[overlap]",
+          "examples/tool_pipeline/tests/test_pipeline.py::test_input_middleware_rejects_invalid_values[too_large]",
+          "examples/tool_pipeline/tests/test_pipeline.py::test_worker_exception_keeps_unresolved_firing",
+          "examples/tool_pipeline/tests/test_pipeline.py::test_truncated_final_payload_fails_readback",
+          "examples/tool_pipeline/tests/test_pipeline.py::test_independent_validator_rejects_other_schema_valid_candidates[source_version]",
+          "examples/tool_pipeline/tests/test_pipeline.py::test_independent_validator_rejects_other_schema_valid_candidates[line_amount]",
+          "examples/tool_pipeline/tests/test_pipeline.py::test_independent_validator_rejects_other_schema_valid_candidates[total_usage]",
+          "examples/tool_pipeline/tests/test_pipeline.py::test_independent_validator_rejects_other_schema_valid_candidates[missing_line]",
+          "examples/tool_pipeline/tests/test_pipeline.py::test_existing_entry_matches_direct_harness[1]",
+          "examples/tool_pipeline/tests/test_pipeline.py::test_existing_entry_matches_direct_harness[2]",
+          "examples/tool_pipeline/tests/test_pipeline.py::test_entry_stop_drains_admitted_siblings_without_new_work",
+          "examples/tool_pipeline/tests/test_pipeline.py::test_launcher_closes_each_owned_resource_once",
+          "examples/tool_pipeline/tests/test_pipeline.py::test_agent_task_preconstruction_stop_keeps_host_ownership",
+          "examples/tool_pipeline/tests/test_pipeline.py::test_legacy_factory_returns_shared_entry_harness"
+        ]
+      }
+    ],
+    "historical_cloud_status": "6 PASS / 1 BLOCKED_ENV at AF_UNIX construction",
+    "historical_cloud_resume": "BLOCKED_ENV before provider dispatch and resume assertions",
+    "old_baseline_expected_failures": 20
+  },
+  "input": "Synthetic pipeline fixtures and scripted AgentTask interruption/resume; no business cohort",
+  "native_cli": {
+    "run_outcome": "complete",
+    "total_kwh": "2.000",
+    "total_cny": "1.70",
+    "firings": 10,
+    "business_resources": 12,
+    "source_resources": 2,
+    "model_counts": [
+      0,
+      0
+    ]
+  },
+  "readback": {
+    "all_11_stable_fields_equal": true,
+    "before": {
+      "max_ordinal": 1001,
+      "event_count": 1001,
+      "dispatch_reservations": 10,
+      "execution_starts": 10,
+      "actual_model_call_counts": [
+        0,
+        0
+      ]
+    },
+    "after": {
+      "max_ordinal": 1001,
+      "event_count": 1001,
+      "dispatch_reservations": 10,
+      "execution_starts": 10,
+      "actual_model_call_counts": [
+        0,
+        0
+      ]
+    },
+    "live_only_fields": [
+      "stop_reason",
+      "transport"
+    ],
+    "model_counts": [
+      0,
+      0
+    ]
+  },
+  "classic_scripted_ledgers": [
+    [
+      2,
+      0
+    ],
+    [
+      3,
+      0
+    ],
+    [
+      3,
+      0
+    ]
+  ],
+  "real_provider_requests": 0,
+  "prior_shared_harness_A": {
+    "status": "PARTIAL_ENV",
+    "retested_by_H1_H2a": false
+  },
+  "limits": [
+    "Tests include unit checks; no all-socket or whole-repository claim.",
+    "Final OS signal handler identity not separately probed.",
+    "Independent package tests are historical inputs, not redistributed as product tests here.",
+    "No combined V6 certification; counts from different revisions must not be added."
+  ],
+  "historical_command_recipes": [
+    {
+      "window": "h2-focused",
+      "argv": [
+        "$PYTHON",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "tests/test_task_control_registry_reads.py",
+        "--basetemp=$TMP",
+        "--junitxml=$JUNIT"
+      ],
+      "cwd": "$SOURCE",
+      "original_exit_code": 0,
+      "newly_executed": false
+    },
+    {
+      "window": "h2-compatibility",
+      "argv": [
+        "$PYTHON",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "tests/test_run_descriptor_reads.py",
+        "tests/test_package_result_projection.py",
+        "tests/test_opencode_application_boundary.py",
+        "tests/test_basic_cli_task_switching.py",
+        "--basetemp=$TMP",
+        "--junitxml=$JUNIT"
+      ],
+      "cwd": "$SOURCE",
+      "original_exit_code": 0,
+      "newly_executed": false
+    },
+    {
+      "window": "h2-shared",
+      "argv": [
+        "env",
+        "PYTHONPATH=$SOURCE:$SOURCE/examples/harnessaudit_office/tests",
+        "$PYTHON",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "examples/harnessaudit_office/tests/test_registry_reader_consumers.py",
+        "--basetemp=$TMP",
+        "--junitxml=$JUNIT"
+      ],
+      "cwd": "$SOURCE",
+      "original_exit_code": 0,
+      "newly_executed": false
+    },
+    {
+      "window": "h2-independent",
+      "argv": [
+        "env",
+        "PYTHONPATH=$SOURCE:$SOURCE/tests:$SOURCE/examples/harnessaudit_office/tests:$INDEPENDENT_TESTS",
+        "$PYTHON",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "$INDEPENDENT_TESTS/test_taskcontrol_independent.py",
+        "$INDEPENDENT_TESTS/test_large_descriptor.py",
+        "--import-mode=importlib",
+        "--basetemp=$TMP",
+        "--junitxml=$JUNIT"
+      ],
+      "cwd": "$SOURCE",
+      "original_exit_code": 0,
+      "newly_executed": false
+    },
+    {
+      "window": "h2-native-status",
+      "argv": [
+        "$PYTHON",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "tests/test_task_frontend.py",
+        "-k",
+        "task_control or task_status",
+        "--basetemp=$TMP",
+        "--junitxml=$JUNIT"
+      ],
+      "cwd": "$SOURCE",
+      "original_exit_code": 0,
+      "newly_executed": false
+    },
+    {
+      "window": "h2-native-callbacks",
+      "argv": [
+        "env",
+        "PYTHONPATH=$SOURCE:$SOURCE/tests",
+        "$PYTHON",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "tests/test_transport_completion_faults.py::test_accepted_host_reply_cancellation_is_not_owner_cancellation",
+        "tests/test_transport_completion_faults.py::test_accepted_host_exception_preserves_later_completion",
+        "--basetemp=$TMP",
+        "--junitxml=$JUNIT"
+      ],
+      "cwd": "$SOURCE",
+      "original_exit_code": 0,
+      "newly_executed": false
+    },
+    {
+      "window": "h1-classic",
+      "argv": [
+        "$PYTHON",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "tests/test_task_frontend.py::test_resume_uses_persisted_transition_profiles_when_graph_swaps_them",
+        "tests/test_task_frontend.py::test_interrupted_firing_does_not_publish_workspace_files",
+        "tests/test_task_frontend.py::test_interruption_checkpoints_prior_workspace_action_and_discards_current",
+        "--basetemp=$TMP",
+        "--junitxml=$JUNIT"
+      ],
+      "cwd": "$SOURCE",
+      "original_exit_code": 0,
+      "newly_executed": false
+    },
+    {
+      "window": "h1-focused",
+      "argv": [
+        "$PYTHON",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "tests/test_orchestrator_boundary.py",
+        "tests/test_harness_quiescence.py",
+        "tests/test_harness_resource_continuation.py",
+        "examples/tool_pipeline/tests",
+        "--basetemp=$TMP",
+        "--junitxml=$JUNIT"
+      ],
+      "cwd": "$SOURCE",
+      "original_exit_code": 0,
+      "newly_executed": false
+    },
+    {
+      "window": "native-cli",
+      "argv": [
+        "$PYTHON",
+        "-m",
+        "examples.tool_pipeline.run",
+        "--run-dir",
+        "$RUN",
+        "--output-dir",
+        "$EXPORT"
+      ],
+      "cwd": "$SOURCE",
+      "original_exit_code": 0,
+      "newly_executed": false
+    },
+    {
+      "window": "native-readback",
+      "argv": [
+        "$PYTHON",
+        "-m",
+        "examples.tool_pipeline.run",
+        "--run-dir",
+        "$RUN",
+        "--output-dir",
+        "$READBACK",
+        "--readback"
+      ],
+      "cwd": "$SOURCE",
+      "original_exit_code": 0,
+      "newly_executed": false
+    },
+    {
+      "window": "native-focused",
+      "argv": [
+        "$PYTHON",
+        "-B",
+        "-m",
+        "pytest",
+        "-q",
+        "tests/test_orchestrator_boundary.py",
+        "tests/test_harness_quiescence.py",
+        "tests/test_harness_resource_continuation.py",
+        "examples/tool_pipeline/tests",
+        "--basetemp=$TMP",
+        "--junitxml=$JUNIT",
+        "-p",
+        "no:cacheprovider"
+      ],
+      "cwd": "$SOURCE",
+      "original_exit_code": 0,
+      "newly_executed": false
+    },
+    {
+      "window": "native-agent-task",
+      "argv": [
+        "$PYTHON",
+        "-B",
+        "-m",
+        "pytest",
+        "-q",
+        "tests/test_task_frontend.py::test_interrupted_firing_does_not_publish_workspace_files",
+        "tests/test_task_frontend.py::test_resume_uses_persisted_transition_profiles_when_graph_swaps_them",
+        "tests/test_task_frontend.py::test_interruption_checkpoints_prior_workspace_action_and_discards_current",
+        "--basetemp=$TMP",
+        "--junitxml=$JUNIT",
+        "-p",
+        "no:cacheprovider"
+      ],
+      "cwd": "$SOURCE",
+      "original_exit_code": 0,
+      "newly_executed": false
+    }
+  ],
+  "command_placeholders": {
+    "PYTHON": "historical installed interpreter",
+    "SOURCE": "exact historical source overlay",
+    "TMP": "new short native temporary directory",
+    "JUNIT": "new result file",
+    "INDEPENDENT_TESTS": "separately supplied historical package fixtures",
+    "RUN": "native pipeline run directory",
+    "EXPORT": "new export directory",
+    "READBACK": "new readback directory"
+  }
+}

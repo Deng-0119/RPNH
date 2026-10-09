@@ -99,7 +99,7 @@ class AgentTaskSpec:
     run_dir: Path
     prompt: str
     stages: tuple[AgentStage, ...]
-    execution_config_path: Path
+    execution_config_path: Path | None
     workflow_graph: AgentWorkflowGraph | None = None
     max_attempts_per_stage: int | None = 12
     max_parallel_nodes: int = 4
@@ -112,19 +112,40 @@ class AgentTaskSpec:
         default_factory=dict)
     managed_tool_policy: Mapping[str, Any] | None = None
     tool_program_policy: Mapping[str, Any] | None = None
+    registered_execution_sources: tuple[tuple[str, str], ...] = ()
 
     def __post_init__(self) -> None:
+        if type(self.registered_execution_sources) is not tuple:
+            raise TypeError('registered execution sources require immutable tuples')
+        public = bool(self.registered_execution_sources)
+        if public:
+            if (type(self.registered_execution_sources) is not tuple
+                    or len(self.registered_execution_sources) != 1
+                    or type(self.registered_execution_sources[0]) is not tuple
+                    or len(self.registered_execution_sources[0]) != 2
+                    or self.registered_execution_sources[0][0] != 'default'
+                    or type(self.registered_execution_sources[0][1]) is not str
+                    or re.fullmatch(r'[a-z][a-z0-9_.:-]{0,127}', self.registered_execution_sources[0][1]) is None
+                    or self.execution_config_path is not None or self.execution_profiles
+                    or self.workflow_graph is not None or len(self.stages) != 1
+                    or self.plugin_configuration is not None or self.plugin_catalog_digest is not None
+                    or self.managed_bindings or self.managed_tool_policy is not None
+                    or self.tool_program_policy is not None or self.max_parallel_nodes != 1
+                    or self.owner_socket_path is None):
+                raise ValueError('registered AgentTask requires exclusive single-stage public sources')
         if (not isinstance(self.run_dir, Path)
-                or not isinstance(self.execution_config_path, Path)):
+                or not public and not isinstance(self.execution_config_path, Path)):
             raise TypeError("agent task paths require pathlib.Path")
         object.__setattr__(self, "run_dir", self.run_dir.resolve())
-        object.__setattr__(
-            self, "execution_config_path", self.execution_config_path.resolve())
+        if self.execution_config_path is not None:
+            object.__setattr__(self, "execution_config_path", self.execution_config_path.resolve())
         if self.owner_socket_path is not None:
             if not isinstance(self.owner_socket_path, Path):
                 raise TypeError("owner_socket_path requires pathlib.Path or None")
             object.__setattr__(
                 self, "owner_socket_path", self.owner_socket_path.resolve())
+        if public and self.owner_socket_path != self.run_dir / 'owner.sock':
+            raise ValueError('registered AgentTask socket must be owner.sock')
         if (not isinstance(self.prompt, str) or not self.prompt.strip()):
             raise ValueError("agent task prompt must be nonempty text")
         if (not isinstance(self.stages, tuple)
@@ -294,6 +315,21 @@ class AgentTaskSpec:
             self, *, document_root: Path | None = None,
     ) -> dict[str, Any]:
         from cpn.plugins.api import json_copy
+        if self.registered_execution_sources:
+            if document_root is None:
+                raise ValueError('registered worker document requires final document root')
+            return {
+                'schema_version': 'rpnh/agent_task_spec/v13',
+                'run_relative_path': self._relative_worker_path(self.run_dir, Path(document_root).resolve()),
+                'prompt': self.prompt,
+                'stages': [{'stage_id': stage.stage_id, 'instruction': stage.instruction} for stage in self.stages],
+                'workflow_graph': None,
+                'registered_execution_sources': dict(self.registered_execution_sources),
+                'max_attempts_per_stage': self.max_attempts_per_stage,
+                'max_parallel_nodes': self.max_parallel_nodes,
+                'owner_statement': self.owner_statement,
+                'owner_socket_relative_path': 'owner.sock',
+            }
         if document_root is not None:
             root = Path(document_root).resolve()
             socket_relative = (
@@ -382,6 +418,19 @@ class AgentTaskSpec:
     def from_worker_document(
             cls, value: object, *, document_root: Path | None = None,
     ) -> "AgentTaskSpec":
+        if isinstance(value, Mapping) and value.get('schema_version') == 'rpnh/agent_task_spec/v13':
+            from .public_material_contracts import validate
+            if type(value) is not dict: raise TypeError('public Spec requires an exact JSON object')
+            value = validate('rpnh/agent_task_spec/v13', value)
+            if document_root is None:
+                raise ValueError('registered worker document requires final document root')
+            run_dir = cls._resolve_worker_path(value['run_relative_path'], Path(document_root).resolve(), label='run_relative_path')
+            return cls(run_dir=run_dir, prompt=value['prompt'],
+                stages=tuple(AgentStage(**stage) for stage in value['stages']),
+                execution_config_path=None, max_attempts_per_stage=value['max_attempts_per_stage'],
+                max_parallel_nodes=value['max_parallel_nodes'], owner_statement=value['owner_statement'],
+                owner_socket_path=run_dir / 'owner.sock',
+                registered_execution_sources=tuple(value['registered_execution_sources'].items()))
         fields_v1 = {
             "schema_version", "run_dir", "prompt", "stages",
             "execution_config_path", "max_attempts_per_stage",
@@ -628,8 +677,14 @@ def agent_task_registration(plugin_catalog=None, managed_catalogs=()) -> Registr
     return registration
 
 
-def agent_task_catalog(plugin_catalog=None) -> SchemaCatalog:
+def agent_task_catalog(plugin_catalog=None, *, registered_public=False) -> SchemaCatalog:
     schemas, types = optional_agent_loop_schema_data()
+    paths = {}
+    if registered_public:
+        from .collaboration import source_identity_schema_data
+        public_schemas, public_types, paths = source_identity_schema_data()
+        schemas = {**schemas, **public_schemas}
+        types = (*types, *public_types)
     extra = {}
     if plugin_catalog is not None:
         from cpn.plugins.runtime import plugin_registration
@@ -643,7 +698,7 @@ def agent_task_catalog(plugin_catalog=None) -> SchemaCatalog:
             WORKFLOW_GRAPH_CONFIG_SCHEMA_V1),
         WORKFLOW_GRAPH_CONFIG_SCHEMA_ID: WORKFLOW_GRAPH_CONFIG_SCHEMA,
         WORKFLOW_GRAPH_CONFIG_SCHEMA_V3_ID: WORKFLOW_GRAPH_CONFIG_SCHEMA_V3,
-    }, types=types)
+    }, types=types, schema_paths=paths)
 
 
 def build_agent_task_module(
@@ -768,6 +823,9 @@ def build_agent_task_module(
 
 def _execution_route(selection) -> dict[str, Any]:
     provenance = selection.as_registry_policy()
+    from .public_material_contracts import POLICY, validate_policy
+    if provenance.get('schema_version') == POLICY:
+        provenance = validate_policy(provenance)
     routes = provenance.get("route_provenance")
     if not isinstance(routes, list) or not routes:
         raise ValueError("execution selection lacks registered route provenance")
@@ -907,10 +965,21 @@ def _execute_agent_task(
         checkpoint_version_id: str | None = None,
         reopen_command_id: str | None = None,
         reopen_reason: str | None = None,
+        registered_context=None,
 ) -> dict[str, Any]:
     """Run or resume one task through the owner/Harness/AgentLoop path."""
     if not isinstance(spec, AgentTaskSpec):
         raise TypeError("run_agent_task requires AgentTaskSpec")
+    if spec.registered_execution_sources:
+        from .public_agent_materials import RegisteredAgentExecutionContext
+        if type(registered_context) is not RegisteredAgentExecutionContext or resume:
+            raise ValueError('registered AgentTask requires fresh bound verified execution context')
+        registered_context.verify_spec(spec)
+        # The native receipt/origin issuer remains deliberately unavailable.
+        # No public DTO or valid material inventory can authorize native launch.
+        registered_context.require_native_execution()
+    elif registered_context is not None:
+        raise ValueError('registered context cannot replace legacy execution sources')
     destination = spec.run_dir.resolve()
     if not resume and os.path.lexists(destination):
         raise ValueError("agent task requires an absent run directory")

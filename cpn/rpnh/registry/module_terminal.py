@@ -19,7 +19,7 @@ from .module_runtime import hydrate_module_runtime
 from .publication import _ref_payload, _resource_from_payload, _version_from_payload
 from .resource_service import _ResourceServiceKernel, _resource_payload
 from .resources import CanonicalInvocationAuthority, InvocationContextHandle
-from .run_authority import current_run_execution_authority
+from .run_authority import current_run_execution_authority, RunReadCut
 from .schema_catalog import canonical_json
 
 
@@ -46,7 +46,7 @@ def _existing(core, kernel, object_type, self_field, material):
     return ref
 
 
-def _registered_terminal_key(core, kernel, compiled, task_ref, terminal):
+def _registered_terminal_key(core, kernel, compiled, task_ref, terminal, *, _prefix_reads=None):
     declaration = compiled.registrations["tool"].get(terminal.key)
     if declaration is None:
         return False
@@ -65,15 +65,18 @@ def _registered_terminal_key(core, kernel, compiled, task_ref, terminal):
     row = matches[0]
     resource = _resource_from_payload({"resource_id": str(row["logical_id"]),
                                       "resource_version_id": str(row["version_id"])})
-    prepared = kernel._prepared(resource)
+    prepared = (kernel._prepared(resource) if _prefix_reads is None else
+        _prefix_reads.prepared(resource.as_version_ref(), "resource_version/v1"))
+    raw = (core.object_store.read_registered(prepared) if _prefix_reads is None else
+        _prefix_reads._payload(resource.as_version_ref(), prepared))
     if (prepared.metadata.get("task_ref") != task_ref
             or prepared.metadata.get("origin_kind") != "private_system"
-            or json.loads(core.object_store.read_registered(prepared)) != declaration):
+            or json.loads(raw) != declaration):
         raise ResourceIntegrityFault("terminal key differs from exact stored HOST declaration")
     return True
 
 
-def _producing_token(core, kernel, executable, structure, carrier, product, port, firing_ref):
+def _producing_token(core, kernel, executable, structure, carrier, product, port, firing_ref, *, _stop_refs=()):
     """Reclose exact immutable consumed-forward deposits back to the producer.
 
     A token's creation transaction selects its actual settled firing, not its
@@ -95,6 +98,10 @@ def _producing_token(core, kernel, executable, structure, carrier, product, port
                 or token["kind"] != carrier.state.kind
                 or port.schema not in places[token["place"]].admitted_schemas):
             raise ResourceIntegrityFault("terminal forward lineage changes exact resource/schema/colour")
+        if ref in _stop_refs:
+            # Only the historical resolver supplies fully verified committed
+            # owner-mapping targets; this is not an execution fallback.
+            return ref
         transaction = core.event_store.object_row(ref.version_id)["transaction_id"]
         with core.event_store.connect() as db:
             rows = [dict(row) for row in db.execute(
@@ -239,7 +246,10 @@ def _unwrap_reentry_carrier(core, kernel, carrier):
         "terminal reentry carrier token ancestry is cyclic")
 
 
-def _terminal_material_for_binding(core, kernel, terminal):
+def _terminal_material_for_binding(core, kernel, terminal, *, read_budget=None, _cross_cuts=None, _read_counts=None):
+    initial_head = core.event_store.max_ordinal()
+    initial_epoch = core.event_store.writer_epoch
+    initial_source = core.event_store.get_meta("native_run_ref")
     # An absent or non-Module execution source is not a terminal prestate.
     if not core.event_store.canonical_object_rows(object_type="run_execution_authority/v1"):
         return None
@@ -292,6 +302,40 @@ def _terminal_material_for_binding(core, kernel, terminal):
     canonical = CanonicalInvocationAuthority(context, InvocationContextHandle(invocation_ref), kernel._head())
     firing = verify_transition_firing(core, kernel, canonical)
     firing_ref = firing.transition_firing_ref
+    cross_cut = None
+    compatible = True
+    producer_outcome = terminal.outcome
+    if context.net_instance_ref != executable.net_ref:
+        from ._terminal_adoption import resolve_adopted_terminal, assert_terminal_cut
+        from .errors import TerminalReadStale
+        view = core.event_store.canonical_view()
+        cross_cut = RunReadCut(view, view.through_ordinal, initial_epoch,
+            core.task_id, initial_source, core)
+        if _cross_cuts is not None:
+            _cross_cuts.append(cross_cut)
+        if cross_cut.physical_head != initial_head:
+            raise TerminalReadStale("STALE_CUT")
+        resolved = resolve_adopted_terminal(core, kernel,
+            current_executable=executable, current_structure=structure,
+            marking=marking, terminal=terminal, carrier=token, product=product,
+            context=context, firing_ref=firing_ref, authority=authority,
+            cut=cross_cut, read_budget=(None if read_budget is None else
+                read_budget - sum(_read_counts or ())), _read_counts=_read_counts)
+        executable, structure, token, compatible = resolved
+        compiled = structure.compiled
+        declaration = next(item for item in compiled.symbolic.transitions
+            if item.name == firing.transition_id)
+        operation_name = declaration.operation
+        operation = next(item for item in compiled.operations
+            if item.declaration.name == operation_name)
+        # Mechanical output handles belong to the original producing net.
+        original_output = _object(core, kernel,
+            _version_from_payload(metadata["origin"]["primary_ref"]), "output_binding/v1")
+        port = next(item for item in compiled.ports if item.port_id == original_output["output_port_id"])
+        producer_outcome = metadata["descriptors"]["output_outcome_id"]
+        if producer_outcome != token.state.verdict:
+            raise ResourceIntegrityFault("terminal product outcome differs from original producing carrier verdict")
+        assert_terminal_cut(core, cross_cut)
     if (str(publication["invocation_version_id"]) != str(invocation_ref.version_id)
             or str(publication["firing_version_id"]) != str(firing_ref.version_id)
             or str(publication["net_version_id"]) != str(executable.net_ref.version_id)
@@ -348,8 +392,8 @@ def _terminal_material_for_binding(core, kernel, terminal):
             or metadata.get("content_schema_authority_ref") != output["content_schema_ref"]
             or descriptors.get("output_port_id") != port.port_id
             or descriptors.get("place") != port.place
-            or descriptors.get("output_outcome_id") != terminal.outcome
-            or output.get("declared_outcome_id", terminal.outcome) != terminal.outcome):
+            or descriptors.get("output_outcome_id") != producer_outcome
+            or output.get("declared_outcome_id", producer_outcome) != producer_outcome):
         raise ResourceIntegrityFault("terminal product lacks exact output-binding/origin/outcome authority")
     record = core.event_store.ordered_firing_record(firing_ref.version_id)
     settlements = tuple(event for event in record["events"]
@@ -399,12 +443,40 @@ def _terminal_material_for_binding(core, kernel, terminal):
         if (name not in counts or _ref_payload(out_ref) not in binding["output_binding_refs"]
                 or data["producer_ref"] != _ref_payload(invocation_ref)
                 or data["origin"]["kind"] != "petri_output"
-                or data["descriptors"].get("output_outcome_id") != terminal.outcome):
+                or data["descriptors"].get("output_outcome_id") != producer_outcome):
             raise ResourceIntegrityFault("terminal result bundle differs from declared producer/outcome")
+        if cross_cut is not None:
+            declared_ports = [value for value in compiled.ports if value.name == name]
+            spec_ports_for_output = [value for value in spec["output_ports"] if value["port_id"] == out["output_port_id"]]
+            if len(declared_ports) != 1 or len(spec_ports_for_output) != 1:
+                raise ResourceIntegrityFault("terminal bundle output lacks exact original port/spec")
+            declared_port, output_spec = declared_ports[0], spec_ports_for_output[0]
+            if (out["output_binding_id"] != str(out_ref.entity_id)
+                    or out["output_binding_version_id"] != str(out_ref.version_id)
+                    or out["net_ref"] != _ref_payload(executable.net_ref)
+                    or out["node_ref"] != _ref_payload(transition.node_ref)
+                    or out["task_round_ref"] != _ref_payload(context.task_round_ref)
+                    or out["opaque_action_ref"] != _ref_payload(spec_ref)
+                    or out["place"] != declared_port.place
+                    or out["place_ref"] != output_spec["schema_ref"]
+                    or out["content_schema_ref"] != output_spec["content_schema_ref"]
+                    or out["content_schema_id"] != declared_port.schema
+                    or data["task_ref"] != authority["task_ref"]
+                    or data["content_schema_ref"] != declared_port.schema
+                    or data["content_schema_authority_ref"] != out["content_schema_ref"]
+                    or data["origin"].get("secondary_ref") != (None if context.activation_ref is None else _ref_payload(context.activation_ref))
+                    or data["descriptors"].get("place") != declared_port.place
+                    or data["descriptors"].get("output_port_id") != declared_port.port_id
+                    or out.get("declared_outcome_id", producer_outcome) != producer_outcome):
+                raise ResourceIntegrityFault("terminal bundle output changes exact original output authority")
         counts[name] += 1
     from .operation_output_contract import validate_compiled_output_bundle
     validate_compiled_output_bundle(operation.declaration, counts,
-        declared_outcomes=(terminal.outcome,), selected_outcome_id=terminal.outcome)
+        declared_outcomes=(producer_outcome,), selected_outcome_id=producer_outcome)
+    if cross_cut is not None:
+        assert_terminal_cut(core, cross_cut)
+    if not compatible:
+        return None
     index_material = {"authority_kind": terminal.key, "terminal_outcome": outcome,
         "entries": [_resource_payload(product)], "upstream_outcome": None,
         "upstream_disposition_refs": [], "terminal_result_ref": _ref_payload(product.as_version_ref()),
@@ -412,10 +484,12 @@ def _terminal_material_for_binding(core, kernel, terminal):
     evidence_material = {"run_ref": authority["run_ref"], "terminal_occurrence_ref": _ref_payload(firing_ref),
         "producer": terminal.key, "run_outcome": outcome, "terminal_result_ref": _ref_payload(product.as_version_ref()),
         "final_checkpoint_ref": _ref_payload(marking.checkpoint_ref)}
-    return authority_ref, authority, index_material, evidence_material
+    return authority_ref, authority, index_material, evidence_material, cross_cut
 
 
-def _terminal_material(core, kernel):
+def _terminal_material(core, kernel, *, read_budget=None):
+    initial_head = core.event_store.max_ordinal()
+    cross_cuts, read_counts = [], []
     if not core.event_store.canonical_object_rows(object_type="run_execution_authority/v1"):
         return None
     _ref, authority = current_run_execution_authority(core, kernel)
@@ -424,26 +498,117 @@ def _terminal_material(core, kernel):
     _executable, structure, _marking = hydrate_module_runtime(core)
     source = structure.compiled.source
     matches = [material for terminal in (source.terminal, *source.terminal_alternatives)
-               if (material := _terminal_material_for_binding(core, kernel, terminal)) is not None]
+               if (material := _terminal_material_for_binding(core, kernel, terminal, read_budget=read_budget, _cross_cuts=cross_cuts, _read_counts=read_counts)) is not None]
+    if cross_cuts:
+        from ._terminal_adoption import assert_terminal_cut
+        from .errors import TerminalReadStale
+        for cut in cross_cuts:
+            if cut.physical_head != initial_head:
+                raise TerminalReadStale("STALE_CUT")
+            assert_terminal_cut(core, cut)
+        # A same-net candidate beside an ineligible historical candidate still
+        # depends on the complete scan, and must use its common head CAS.
+        matches = [(*material[:4], cross_cuts[0]) for material in matches]
     if len(matches) > 1:
         raise ResourceIntegrityFault("multiple registered terminal bindings match exact settled products")
     return matches[0] if matches else None
 
 
-def register_module_terminal(core: _RegistryCore, kernel: _ResourceServiceKernel) -> VersionRef | None:
+
+def _historical_candidate_for_error_classification(core, kernel):
+    """Prove only current-carrier/original-producer identity for error routing.
+
+    This does not traverse owner result bytes, grant terminal eligibility, or
+    return execution authority. Failure to establish the distinction preserves
+    the legacy exception. Successful terminal publication still requires every
+    original and adoption proof above.
+    """
+    from ..executable_net import _load_compiled_net_offline
+    try:
+        _authority_ref, authority = current_run_execution_authority(core, kernel)
+        if authority["declaration_schema_ref"] != "rpnh/executable_net/v1":
+            return False
+        if canonical_json(_object(core, kernel, _authority_ref, "run_execution_authority/v1")) != canonical_json(authority):
+            return False
+        checkpoint = _object(core, kernel, _version_from_payload(authority["latest_checkpoint_ref"]), "marking_checkpoint/v1")
+        net_ref = _version_from_payload(checkpoint["net_instance_ref"])
+        net = _object(core, kernel, net_ref, "net_instance/v1")
+        root = _object(core, kernel, _version_from_payload(net["team_design_root_ref"]), "team_design_root/v1")
+        declaration_ref = _resource_from_payload(net["team_net_declaration_resource_ref"])
+        if (authority["declaration_ref"] != _ref_payload(declaration_ref.as_version_ref())
+                or root["task_ref"] != authority["task_ref"] or root["run_ref"] != authority["run_ref"]
+                or checkpoint["team_design_root_ref"] != net["team_design_root_ref"] or checkpoint["settled"] is not True):
+            return False
+        compiled = _load_compiled_net_offline(json.loads(core.object_store.read_registered(kernel._prepared(declaration_ref))))
+        for terminal in (compiled.source.terminal, *compiled.source.terminal_alternatives):
+            if terminal.config.get("run_outcome") not in {"complete", "failed"}:
+                continue
+            name = f"{terminal.source.component}.{terminal.source.port}"
+            port = next(value for value in compiled.ports if value.name == name)
+            tokens = [_object(core, kernel, _version_from_payload(value), "petri_token/v1") for value in checkpoint["token_refs"]]
+            selected = [value for value in tokens if value["net_instance_ref"] == _ref_payload(net_ref)
+                and value["epoch"] == checkpoint["epoch"] and value["consumed_by"] is None
+                and value["place"] == port.place and value["verdict"] == terminal.outcome]
+            if len(selected) != 1:
+                continue
+            resources = {canonical_json(value) for value in (selected[0]["resource_ref"], selected[0]["work_resource_ref"]) if value is not None}
+            if len(resources) != 1:
+                continue
+            product = _resource_from_payload(json.loads(next(iter(resources))))
+            metadata = kernel._prepared(product).metadata
+            invocation_ref = _version_from_payload(metadata["producer_ref"])
+            _object(core, kernel, invocation_ref, "invocation/v1")
+            context = InvocationLifecycle(core).hydrate_context(invocation_ref, require_current_writer=False)
+            firing = verify_transition_firing(core, kernel, CanonicalInvocationAuthority(
+                context, InvocationContextHandle(invocation_ref), kernel._head()))
+            publication = core.event_store.firing_publication_for_invocation(invocation_ref.version_id)
+            if (metadata["task_ref"] == authority["task_ref"] and context.task_ref == _version_from_payload(authority["task_ref"])
+                    and publication is not None and publication["state"] == "PUBLISHED"
+                    and str(publication["firing_version_id"]) == str(firing.transition_firing_ref.version_id)
+                    and str(publication["net_version_id"]) == str(context.net_instance_ref.version_id)
+                    and context.net_instance_ref != net_ref):
+                return True
+    except Exception:
+        return False
+    return False
+
+def register_module_terminal(core: _RegistryCore, kernel: _ResourceServiceKernel, *, read_budget=None) -> VersionRef | None:
     """Publish index/evidence/same-lineage authority together, or leave open.
 
-Unsupported or unavailable exact prestates return None. Conflicting immutable
-material is an integrity fault, not permission to repair or fabricate closure.
+Absent prestates and fully proved incompatible adoptions return None.
+Historical unsupported/incomplete/stale reads have explicit non-integrity
+exceptions. Conflicting immutable material remains an integrity fault.
 The caller must be the sole execution owner using this Registry's writer epoch.
+read_budget optionally bounds total unique object reads across historical
+candidate proofs; the original same-net path has no new read budget.
 """
     if (not isinstance(core, _RegistryCore) or core.read_only
             or not isinstance(kernel, _ResourceServiceKernel)
             or kernel._ResourceServiceKernel__core is not core):
         raise TypeError("Module terminal requires execution-owner Core and Kernel")
     if core.writer_epoch != core.event_store.writer_epoch:
+        from .errors import TerminalReadStale
+        if _historical_candidate_for_error_classification(core, kernel):
+            raise TerminalReadStale("STALE_WRITER")
         raise ResourceIntegrityFault("Module terminal writer epoch is stale")
-    material = _terminal_material(core, kernel)
+    if read_budget is not None and (type(read_budget) is not int or read_budget < 0):
+        raise TypeError("terminal read budget must be a nonnegative integer")
+    try:
+        material = _terminal_material(core, kernel, read_budget=read_budget)
+    except Exception as exc:
+        # Legacy current-head hydration may encounter the physical owner
+        # witness before the cross-net resolver. Translate only its explicit
+        # unreadable-storage cause, and only for a proven historical carrier.
+        from .errors import TerminalReadIncomplete
+        cause, seen, unavailable, missing = exc, set(), False, False
+        while cause is not None and id(cause) not in seen:
+            seen.add(id(cause))
+            missing = missing or isinstance(cause, FileNotFoundError)
+            unavailable = unavailable or isinstance(cause, OSError)
+            cause = cause.__cause__
+        if unavailable and not missing and _historical_candidate_for_error_classification(core, kernel):
+            raise TerminalReadIncomplete("STORAGE_READ_UNAVAILABLE", "terminal canonical read could not finish") from exc
+        raise
     if material is None:
         # Earlier execution generations retain immutable terminal objects.
         # Current authority, not global object count, selects whether this
@@ -457,7 +622,7 @@ The caller must be the sole execution owner using this Registry's writer epoch.
                 raise ResourceIntegrityFault(
                     "current terminal authority is internally inconsistent")
         return None
-    authority_ref, authority, index_material, evidence_material = material
+    authority_ref, authority, index_material, evidence_material, cross_cut = material
     if authority["status"] == "terminal":
         if authority["terminal_evidence_ref"] is None:
             raise ResourceIntegrityFault(
@@ -486,6 +651,9 @@ The caller must be the sole execution owner using this Registry's writer epoch.
                 }) != 1):
             raise ResourceIntegrityFault(
                 "current terminal closure conflicts with its generation")
+        if cross_cut is not None:
+            from ._terminal_adoption import assert_terminal_cut
+            assert_terminal_cut(core, cross_cut)
         return evidence_ref
     if (authority["terminal_evidence_ref"] is not None
             or authority["status"] == "stopped_by_owner"):
@@ -509,6 +677,10 @@ The caller must be the sole execution owner using this Registry's writer epoch.
         "run-terminal-evidence:"
         f"{evidence_material['terminal_occurrence_ref']['version_id']}:"
         f"{evidence_material['final_checkpoint_ref']['version_id']}"))
+    if cross_cut is not None:
+        from ._terminal_adoption import assert_terminal_cut
+        assert_terminal_cut(core, cross_cut)
+        tx.expect_registry_ordinal(cross_cut.physical_head)
     for ref, document in documents:
         tx.prewrite(object_type=ref.entity_type, logical_id=ref.entity_id, version_id=ref.version_id,
             payload=canonical_json(document), metadata=document, media_type="application/json",

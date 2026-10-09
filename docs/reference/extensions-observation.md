@@ -15,6 +15,9 @@ metadata:
 
 # Plugin SDK, adapters and read-only observation
 
+For the trusted-host, refs-only Registry history boundary, see
+[Fixed-cut main-thread history](main-thread-history.md).
+
 ## Native plugin author contracts
 These APIs ship in the unified package. An external plugin is still an
 independently installed, explicitly selected trusted package. `PluginDefinition`

@@ -1,8 +1,0 @@
-Traceback (most recent call last):
-  File "<WORKSPACE>/task-complete-v5-20261009/stages/codex/lane_tools.py", line 81, in <module>
-    elif op=='lock': lock(int(sys.argv[2]),sys.argv[3])
-                     ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "<WORKSPACE>/task-complete-v5-20261009/stages/codex/lane_tools.py", line 61, in lock
-    assert not bad
-           ^^^^^^^
-AssertionError

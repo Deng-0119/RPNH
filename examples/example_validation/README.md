@@ -2,7 +2,7 @@
 
 [中文](README_ZH.md)
 
-A small, read-only publication envelope for the first parallel examples. It
+A small, read-only publication envelope for example validation records. It
 borrows the exact-byte hashes, retained-private/distributed-copy distinction,
 append-only history and independent scoring boundaries from
 [AutomationBench evidence](../automationbench/docs/EVIDENCE.md). It does not
@@ -19,7 +19,7 @@ authoritative. The helper uses only the Python standard library.
   emits `rpnh/example-merge-summary/v1` JSON on stdout.
 - `tests/test_validation.py`: synthetic offline fixtures only.
 
-Each lane returns a **new** `result-manifest.json` beside its allowlisted public
+Each validation produces a **new** `result-manifest.json` beside its allowlisted public
 artifacts. Use stable, unique record IDs. The logical condition must pin task
 scope, reveal/feedback policy, seed/reset policy, permitted action surface,
 evaluator and budget semantics. Hash its exact file bytes, not reserialized
@@ -33,16 +33,12 @@ parameters/budgets. No keys, tokens, accounts, private endpoints or local paths.
 `source` identifies the RPNH base plus the exact tested commit if available.
 Uncommitted overlays use `tested_commit: null` and final per-file hashes; never
 invent a commit for them. Include **every** changed owned file and its base hash
-(`null` only for additions), final hash and relative path. Deletions are not in
-this first-wave contract. Freeze an immutable source snapshot before computing
+(`null` only for additions), final hash and relative path. Deletions are not supported by this version of the contract. Freeze an immutable source snapshot before computing
 hashes. The helper checks listed files only; the integrator must compare the
 actual diff/inventory, reject undeclared changes and preserve unrelated files.
 
-Ownership for this wave: cloud `examples/slopcodebench/`, user-local
-`examples/erp_bench/`, integrator `examples/example_validation/`. The WNTR/Chama
-reserve receives its own explicitly assigned prefix if activated. Do not create
-aliases, edit another lane, change core/global catalog, or apply onto a dirty
-worktree. Check the same agreed base in a fresh checkout before merge.
+Set an explicit source-path allowlist for each validation package. Review the
+complete diff against the agreed clean baseline and preserve unrelated files.
 
 ## What a stage means
 
@@ -113,17 +109,19 @@ numbers are not measured experiment failures or gains.
 
 ## Validate, review, then merge
 
-From the repository root, with the return package and clean baseline available:
+From the repository root, supply your validation package, final source snapshot
+and clean baseline. `EXPECTED_BASE` is the exact baseline commit agreed for that
+package; the example allowlist below selects ERP files:
 
 ```sh
 python examples/example_validation/validate.py RETURN/result-manifest.json \
   --artifacts-root RETURN --source-root FINAL --base-root BASE \
-  --expected-base ae09445fe1d9b973502bc5d2c961976c1d2c0163 \
+  --expected-base "$EXPECTED_BASE" \
   --allow-prefix examples/erp_bench/ > merge-summary.json
 python -m unittest discover -s examples/example_validation/tests -v
 ```
 
-Use `examples/slopcodebench/` for the cloud lane. Options omitted are explicitly
+Use `examples/slopcodebench/` when validating that example. Options omitted are explicitly
 unverified in the summary. The template passes structural checks while all
 runtime stages remain not run. `merge_review_ready` only means the requested
 base/path/hash checks, declared public-file review and offline pass are present;

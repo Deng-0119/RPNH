@@ -1,1 +1,0 @@
-{"finish_reason": "tool_calls", "protocol": "llm_response_envelope/v1", "tool_calls": [{"arguments": "{\"path\": \"registered_resources/d61ce67b0bcf598783bb58d3f801f32a/a90c3d212cbe5be1805d49d6c78157c9/content\"}", "id": "native-read", "name": "read_file"}]}

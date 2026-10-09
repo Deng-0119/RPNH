@@ -13,6 +13,28 @@
             "packages/tui/src/component/prompt/index.tsx"
         ]
     },
+    "certification_candidates": [
+        {
+            "package_version": "1.18.35",
+            "commit": "53d1eabb61e21162157817bf677da0a4ad3332e3",
+            "status": "certification-only",
+            "production_enabled": false,
+            "contract_source_commit": "545f51d26cc39a907d2867492d498d9607ea5fa4",
+            "shared_contract_evidence": {
+                "kind": "complete-git-subtree-blob-equality",
+                "scope": "packages/sdk/js/src/",
+                "files_compared": 39,
+                "identical_blobs": 39,
+                "default_tree_url": "https://github.com/anomalyco/opencode/tree/545f51d26cc39a907d2867492d498d9607ea5fa4/packages/sdk/js/src",
+                "candidate_tree_url": "https://github.com/anomalyco/opencode/tree/53d1eabb61e21162157817bf677da0a4ad3332e3/packages/sdk/js/src",
+                "sdk_gen_blob": "a2bcd4252c6d8a185469dcda23a8cccc819218f0",
+                "types_gen_blob": "f06c20cc413e95c79f397a34d8d9d3e8871b6ab4",
+                "limits": "Source equality only; not compiled SDK validation or native certification."
+            },
+            "native_g2": "not-run",
+            "native_g3": "not-run"
+        }
+    ],
     "permission": "unavailable",
     "attachments": "unavailable",
     "catalog": "all selectable RPNH profiles; exact provider/model remains RPNH-owned",

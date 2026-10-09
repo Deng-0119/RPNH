@@ -1,5 +1,0 @@
-cpn/rpnh/task_control.py
-cpn/rpnh/registry/run_authority.py
-tests/test_task_control_registry_reads.py
-docs/ARCHITECTURE.md
-docs/ARCHITECTURE_ZH.md

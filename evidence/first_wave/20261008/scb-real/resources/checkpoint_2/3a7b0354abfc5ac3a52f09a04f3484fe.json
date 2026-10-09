@@ -1,1 +1,0 @@
-"Extended code_search.py to scan Python, JavaScript (.js, .mjs, .cjs), and C++ (.cc, .cpp, .cxx, .hh, .hpp, .hxx) files; added language-filtered rules with all three languages as the default; and smoke-tested matching and language labels across all supported types. No dependencies were added."

@@ -28,6 +28,7 @@ ASSETS = {
       for host in ("basic", "codex", "dsh", "opencode")
       for name in ("README.md", "README_ZH.md", "evidence.json")),
     "integrations/dsh/UPSTREAM.json",
+    "integrations/dsh/fixtures/message-codec.v1.json",
     "integrations/dsh/UPSTREAM_LICENSE",
     "integrations/dsh/prepare.sh",
     "integrations/dsh/run.sh",

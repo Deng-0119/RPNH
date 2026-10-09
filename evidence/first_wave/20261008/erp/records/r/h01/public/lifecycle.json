@@ -1,8 +1,0 @@
-{
-  "business_passed": false,
-  "failed_phase": null,
-  "failure_class": null,
-  "original_verifier_completed": true,
-  "owner_started": true,
-  "scope": "Fresh isolated condition; no restore, retry or resumed solver."
-}

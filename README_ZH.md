@@ -31,6 +31,8 @@ workspace 或恢复状态的独立所有者。
 
 [受控 managed 工具](docs/controlled-managed-tools.zh.md)介绍精确结果分页、有界并发、隔离 Python 程序、只读结果证据与来源预检。新能力通过显式 HOST 策略选择；既有默认工具目录与基准对照条件保持原样。
 
+历史应用评分与零模型 runtime 验证见[精选结果](docs/results/README_ZH.md)。每项保留实际源码与条件；这些旧窗口不认证后续组合产品，也不代表已发布新的 rc2 二进制。
+
 ## 先看一次多 Agent 运行
 
 下图来自仓库内 `parallel` 案例完成后的真实 Registry 看板。`prepare` 会同时启用两个独立

@@ -330,6 +330,8 @@ def get_meta(store, key: str) -> str | None:
 def rotate_writer(store, *, expected_epoch: int) -> int:
     with store.connect() as db:
         db.execute("BEGIN IMMEDIATE")
+        from ..parent_bound import reject_bound_writer_at
+        reject_bound_writer_at(db)
         current = int(db.execute(
             "SELECT value FROM registry_meta WHERE key='writer_epoch'").fetchone()[0])
         if current != expected_epoch:
@@ -345,6 +347,8 @@ def acquire_writer(store) -> int:
     """Atomically acquire the sole production-writer epoch."""
     with store.connect() as db:
         db.execute("BEGIN IMMEDIATE")
+        from ..parent_bound import reject_bound_writer_at
+        reject_bound_writer_at(db)
         current = int(db.execute(
             "SELECT value FROM registry_meta WHERE key='writer_epoch'").fetchone()[0])
         replacement = current + 1

@@ -1,6 +1,0 @@
-{
-  "review_sha256": "4037cc7f1ad5c443fbd5d6422241f08e0ce34b0f17646941b6bae04a8e4b891c",
-  "source": "<WORKSPACE>/.v26/o",
-  "baseline": "<WORKSPACE>/task-complete-v5-20261009/stages/opencode/package/rpnh-opencode-candidate-gate/baseline",
-  "review_test_unmodified": true
-}

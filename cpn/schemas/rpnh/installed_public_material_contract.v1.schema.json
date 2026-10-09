@@ -1,0 +1,543 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "rpnh/installed_public_material_contract/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "rpnh/installed_public_material_contract/v1"
+    },
+    "contract_id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_.:-]{0,127}(?![\\s\\S])"
+    },
+    "revision": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_.:-]{0,127}(?![\\s\\S])"
+    },
+    "profile_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 240
+    },
+    "preparation_abi": {
+      "const": "rpnh/public_material_preparation/v1"
+    },
+    "coverage_basis": {
+      "const": "installer_declared_public_closure/v1"
+    },
+    "supported_payloads": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "module",
+          "agent_task"
+        ]
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "implementation_units": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "unit_id": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_.:-]{0,127}(?![\\s\\S])"
+          },
+          "distribution": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "name": {
+                "type": "string",
+                "minLength": 1
+              },
+              "version": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "required": [
+              "name",
+              "version"
+            ]
+          },
+          "runtime_abi": {
+            "type": "string",
+            "minLength": 1
+          },
+          "mode": {
+            "enum": [
+              "inline_public_bytes",
+              "installed_digest_identity"
+            ]
+          },
+          "asset_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9_.:-]{0,127}(?![\\s\\S])"
+            },
+            "minItems": 1,
+            "uniqueItems": true
+          },
+          "dependency_unit_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9_.:-]{0,127}(?![\\s\\S])"
+            },
+            "uniqueItems": true
+          }
+        },
+        "required": [
+          "unit_id",
+          "distribution",
+          "runtime_abi",
+          "mode",
+          "asset_ids",
+          "dependency_unit_ids"
+        ]
+      },
+      "minItems": 1,
+      "maxItems": 1024
+    },
+    "preparation_roots": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "profile_factory": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_.:-]{0,127}(?![\\s\\S])"
+          },
+          "uniqueItems": true
+        },
+        "registration_factory": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_.:-]{0,127}(?![\\s\\S])"
+          },
+          "uniqueItems": true
+        },
+        "lowerer": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_.:-]{0,127}(?![\\s\\S])"
+          },
+          "uniqueItems": true
+        },
+        "serializer": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_.:-]{0,127}(?![\\s\\S])"
+          },
+          "uniqueItems": true
+        },
+        "compiler": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_.:-]{0,127}(?![\\s\\S])"
+          },
+          "uniqueItems": true
+        },
+        "catalog_factory": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_.:-]{0,127}(?![\\s\\S])"
+          },
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "profile_factory",
+        "registration_factory",
+        "lowerer",
+        "serializer",
+        "compiler",
+        "catalog_factory"
+      ]
+    },
+    "execution_roots": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "executors": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_.:-]{0,127}(?![\\s\\S])"
+          },
+          "uniqueItems": true
+        },
+        "tools": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_.:-]{0,127}(?![\\s\\S])"
+          },
+          "uniqueItems": true
+        },
+        "services": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_.:-]{0,127}(?![\\s\\S])"
+          },
+          "uniqueItems": true
+        },
+        "host_bindings": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_.:-]{0,127}(?![\\s\\S])"
+          },
+          "uniqueItems": true
+        },
+        "configuration_sources": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_.:-]{0,127}(?![\\s\\S])"
+          },
+          "uniqueItems": true
+        },
+        "before_dispatch": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_.:-]{0,127}(?![\\s\\S])"
+          },
+          "uniqueItems": true
+        },
+        "adapter": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_.:-]{0,127}(?![\\s\\S])"
+          },
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "executors",
+        "tools",
+        "services",
+        "host_bindings",
+        "configuration_sources",
+        "before_dispatch",
+        "adapter"
+      ]
+    },
+    "registrations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "enum": [
+              "schema",
+              "component",
+              "executor",
+              "tool",
+              "analyzer"
+            ]
+          },
+          "key": {
+            "type": "string",
+            "minLength": 1
+          },
+          "implementation_unit_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9_.:-]{0,127}(?![\\s\\S])"
+            },
+            "uniqueItems": true
+          },
+          "public_slot_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9_.:-]{0,127}(?![\\s\\S])"
+            },
+            "uniqueItems": true
+          }
+        },
+        "required": [
+          "kind",
+          "key",
+          "implementation_unit_ids",
+          "public_slot_ids"
+        ]
+      },
+      "maxItems": 4096
+    },
+    "public_slots": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "slot_id": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_.:-]{0,127}(?![\\s\\S])"
+          },
+          "role": {
+            "enum": [
+              "public_host",
+              "execution_policy",
+              "input",
+              "budget"
+            ]
+          },
+          "body_schema_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "cardinality": {
+            "enum": [
+              "one",
+              "optional_one"
+            ]
+          },
+          "selection_rule": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "kind": {
+                "enum": [
+                  "always",
+                  "payload",
+                  "registration"
+                ]
+              },
+              "payload_kind": {
+                "anyOf": [
+                  {
+                    "enum": [
+                      "module",
+                      "agent_task"
+                    ]
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "registration_key": {
+                "anyOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "kind": {
+                        "enum": [
+                          "schema",
+                          "component",
+                          "executor",
+                          "tool",
+                          "analyzer"
+                        ]
+                      },
+                      "key": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    },
+                    "required": [
+                      "kind",
+                      "key"
+                    ]
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            },
+            "required": [
+              "kind",
+              "payload_kind",
+              "registration_key"
+            ]
+          }
+        },
+        "required": [
+          "slot_id",
+          "role",
+          "body_schema_id",
+          "cardinality",
+          "selection_rule"
+        ]
+      }
+    },
+    "binding_slots": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "slot_id": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_.:-]{0,127}(?![\\s\\S])"
+          },
+          "service_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9_.:-]{0,127}(?![\\s\\S])"
+            },
+            "minItems": 1,
+            "uniqueItems": true
+          },
+          "account_binding_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9_.:-]{0,127}(?![\\s\\S])"
+            },
+            "minItems": 1,
+            "uniqueItems": true
+          },
+          "resolver": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[a-z][a-z0-9_.:-]{0,127}(?![\\s\\S])"
+              },
+              "revision": {
+                "type": "string",
+                "pattern": "^[a-z][a-z0-9_.:-]{0,127}(?![\\s\\S])"
+              },
+              "implementation_unit_id": {
+                "type": "string",
+                "pattern": "^[a-z][a-z0-9_.:-]{0,127}(?![\\s\\S])"
+              },
+              "abi": {
+                "const": "rpnh/opaque-secret-resolver/v1"
+              }
+            },
+            "required": [
+              "id",
+              "revision",
+              "implementation_unit_id",
+              "abi"
+            ]
+          },
+          "renderer": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[a-z][a-z0-9_.:-]{0,127}(?![\\s\\S])"
+              },
+              "revision": {
+                "type": "string",
+                "pattern": "^[a-z][a-z0-9_.:-]{0,127}(?![\\s\\S])"
+              },
+              "implementation_unit_id": {
+                "type": "string",
+                "pattern": "^[a-z][a-z0-9_.:-]{0,127}(?![\\s\\S])"
+              },
+              "abi": {
+                "const": "rpnh/credential-renderer/v1"
+              }
+            },
+            "required": [
+              "id",
+              "revision",
+              "implementation_unit_id",
+              "abi"
+            ]
+          }
+        },
+        "required": [
+          "slot_id",
+          "service_ids",
+          "account_binding_ids",
+          "resolver",
+          "renderer"
+        ]
+      },
+      "maxItems": 64
+    },
+    "supported_shape": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "module_operations": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_.:-]{0,127}(?![\\s\\S])"
+          },
+          "uniqueItems": true
+        },
+        "agent_task_mode": {
+          "anyOf": [
+            {
+              "const": "single_stage_plugin_free"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "local_process": {
+          "const": false
+        },
+        "workflow": {
+          "const": false
+        },
+        "managed_plugins": {
+          "const": false
+        }
+      },
+      "required": [
+        "module_operations",
+        "agent_task_mode",
+        "local_process",
+        "workflow",
+        "managed_plugins"
+      ]
+    },
+    "assumptions": {
+      "const": [
+        "binding_identity",
+        "dependency_completeness",
+        "preparation_side_effect_contract"
+      ]
+    }
+  },
+  "required": [
+    "schema_version",
+    "contract_id",
+    "revision",
+    "profile_id",
+    "preparation_abi",
+    "coverage_basis",
+    "supported_payloads",
+    "implementation_units",
+    "preparation_roots",
+    "execution_roots",
+    "registrations",
+    "public_slots",
+    "binding_slots",
+    "supported_shape",
+    "assumptions"
+  ]
+}

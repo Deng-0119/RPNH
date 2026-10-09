@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: en
   counterpart: index_ZH.md
-  revision: "2026-10-07.1"
+  revision: "2026-10-09.1"
   status: source-candidate-not-published
   basis: "core; adapter differences explicitly labelled"
 ---
@@ -58,7 +58,6 @@ has a corresponding Chinese page.
 | Read the detailed provider catalog format | [Provider/model configuration](PROVIDER_MODEL_CONFIGURATION.md) |
 | Inspect viewer evidence limits | [Display observation](DISPLAY_OBSERVATION.md) |
 | Audit source integration and exclusions | [Source provenance](PROVENANCE.md) |
-| Review resolved observations and reopen conditions | [Engineering follow-up record](DEFERRED_ENGINEERING_WORK.md) |
 | Author ordinary descendants and independent copies of adapted regions | [Open-region descendants](reference/open-region-descendants.md) |
 | Look up declaration/compile contracts | [Declarations](reference/declarations.md) |
 | Understand runtime, owner and atomic records | [Runtime and Registry](reference/runtime-registry.md) |
@@ -70,6 +69,7 @@ has a corresponding Chinese page.
 | Review dated focused/live example evidence | [Examples validation](guides/examples-validation.md) |
 | Import explicitly selected ordinary author changes | [Selective plain transplant](reference/plain-transplant.md) |
 | Author ordinary descendants and independent copies of selective transplants | [Transplant descendants](reference/plain-transplant-descendants.md) |
+| Review historical scores, exact sources and unrun scope | [Curated results](results/README.md) |
 
 ## Reading the reference
 Declaration contracts, advanced trusted-host interfaces and private implementation modules are explicitly separated. Source paths in each page are repository-relative navigation aids, not independent installation instructions. Optional APIs are labelled by capability; their availability must be checked in the selected source/artifact. A generated page does not grant SDK stability.
@@ -105,3 +105,10 @@ non-secret acceptance summaries may be published with the relevant example.
 | Nested Assembly merge | [plain-merge-nested-assembly](reference/plain-merge-nested-assembly.md) |
 | Open-region authoring | [open-region-authoring](reference/open-region-authoring.md) |
 | Normal-child root closure | [normal-child-root-contract](reference/normal-child-root-contract.md) |
+
+## Exact reads and frontend protocol
+
+- [Static resource-lease reads](guides/static-lease-reads.md)
+- [Main-thread history at a fixed cut](reference/main-thread-history.md)
+- [Codex history projection](reference/codex-history.md)
+- [Explicit Codex 0.161 protocol candidate](CODEX_0161_CANDIDATE.md)

@@ -434,6 +434,8 @@ def resume_owner_stopped_run(
         idempotency_key: str,
 ) -> VersionRef:
     """Reauthorize one drained owner-stop checkpoint for this writer entry."""
+    from .parent_bound import reject_bound_reentry
+    reject_bound_reentry(core)
     from .resources import ResourceVersionRef
     if (not isinstance(immutable_input_ref, ResourceVersionRef)
             or not isinstance(mutable_stage_ref, ResourceVersionRef)
@@ -515,6 +517,8 @@ def record_recovered_run_entry(
         immutable_input_ref, mutable_stage_ref, recovery_manifest_ref,
 ) -> VersionRef:
     """Bind a recovered running checkpoint to the immediate new writer."""
+    from .parent_bound import reject_bound_reentry
+    reject_bound_reentry(core)
     from .resources import ResourceVersionRef
     if (not isinstance(immutable_input_ref, ResourceVersionRef)
             or not isinstance(mutable_stage_ref, ResourceVersionRef)

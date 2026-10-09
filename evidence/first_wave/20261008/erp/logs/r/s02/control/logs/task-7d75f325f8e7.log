@@ -1,1 +1,0 @@
-{"schema_version": "rpnh/agent_task_worker_error/v1", "error_type": "LLMExecutionConfigError", "error": "Codex executable is unavailable; install codex-cli 0.155.0"}

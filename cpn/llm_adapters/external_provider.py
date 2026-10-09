@@ -412,6 +412,83 @@ class ExternalProviderInputPort:
         self._lock = threading.Lock()
         self._closed = False
 
+    @classmethod
+    def from_public(cls, selection, *, destination_run_root: Path,
+                    resolver=None, renderer=None):
+        from .config import RegisteredLLMExecutionSelection
+        from .public_credentials import check_capability
+        from cpn.rpnh.public_material_contracts import canonical
+        if cls is not ExternalProviderInputPort or type(selection) is not RegisteredLLMExecutionSelection:
+            raise TypeError('public factory requires the original adapter and public selection')
+        identity = selection.public_identity
+        policy = identity['policy']
+        route = policy['route_provenance'][0]
+        if route['outbound_model'] != selection.input_target.model_condition:
+            raise AdapterConfigError('public route exact model differs from target')
+        check_capability(resolver, identity['resolver'])
+        check_capability(renderer, identity['renderer'])
+        # Reuse original pure route parser; never invoke private loader/constructor.
+        parsed = _route({key: route[key] for key in (
+            'route_id', 'provider', 'backend', 'protocol', 'endpoint', 'outbound_model')}
+            | {'credential': None, 'headers': {}})
+        self = cls.__new__(cls)
+        self._model_condition = policy['model_condition']
+        self._max_output_tokens = policy['max_output_tokens']
+        self._timeout_seconds = policy['timeout_seconds']
+        self._max_response_bytes = policy['max_response_bytes']
+        self._routes = (parsed,)
+        self._recovery = recovery_policy_from_document(policy['adapter_profile']['recovery'])
+        self._reasoning_effort = policy['reasoning_effort']
+        self._audit = PrivateAttemptAudit(destination_run_root)
+        # Fresh public mode never reads historical private audit route selection.
+        self._active_route_index = 0
+        self._lock = threading.Lock()
+        self._closed = False
+        self._public_identity_bytes = canonical(identity)
+        self._public_resolver = resolver
+        self._public_renderer = renderer
+        self._public_association = (resolver, renderer,
+            None if resolver is None else resolver.callback,
+            None if renderer is None else renderer.callback)
+        return self
+
+    def __setattr__(self, name, value):
+        frozen = {'_public_identity_bytes', '_public_resolver', '_public_renderer',
+                  '_public_association', '_model_condition', '_max_output_tokens',
+                  '_timeout_seconds', '_max_response_bytes', '_routes', '_recovery',
+                  '_reasoning_effort'}
+        if hasattr(self, '_public_association') and name in frozen:
+            raise AttributeError('registered provider construction identity is immutable')
+        object.__setattr__(self, name, value)
+
+    @property
+    def public_identity(self):
+        from cpn.rpnh.public_material_contracts import decode
+        raw = getattr(self, '_public_identity_bytes', None)
+        if raw is None: raise ValueError('legacy provider has no registered public identity')
+        self.assert_public_association()
+        return decode(raw, canonical_required=True)
+
+    def assert_public_association(self):
+        from .public_credentials import check_capability
+        from cpn.rpnh.public_material_contracts import decode
+        identity = decode(self._public_identity_bytes, canonical_required=True)
+        resolver, renderer, resolve, render = self._public_association
+        if (self._public_resolver is not resolver or self._public_renderer is not renderer
+                or resolver is not None and resolver.callback is not resolve
+                or renderer is not None and renderer.callback is not render):
+            raise ValueError('registered provider capability association changed')
+        check_capability(resolver, identity['resolver'])
+        check_capability(renderer, identity['renderer'])
+
+    def _resolved_headers(self, route):
+        if hasattr(self, '_public_identity_bytes'):
+            from .public_credentials import resolved_public_headers
+            if route is not self._routes[0]: raise ValueError('public route changed')
+            return resolved_public_headers(self.public_identity,
+                self._public_resolver, self._public_renderer)
+        return _credential_headers(route)
+
     @staticmethod
     def _private_identity(
             attempt: LLMCallAttempt, *, call_ordinal: int, label: str,
@@ -498,7 +575,7 @@ class ExternalProviderInputPort:
                 watch_interrupted.set()
                 raise LLMInputPortInterrupted(
                     submission_state="not_submitted")
-            with _credential_headers(route) as headers:
+            with self._resolved_headers(route) as headers:
                 headers.update(route.headers)
                 progress("credential_resolution_complete")
                 transport_phase = "connection"

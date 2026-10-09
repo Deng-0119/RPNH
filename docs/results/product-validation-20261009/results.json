@@ -1,0 +1,132 @@
+{
+  "schema": "rpnh/finite_product_validation/v1",
+  "condition": "Local Linux/WSL, Python3.13.12; existingdependencies only, pytest8.4.2 for combined gates. No real provider/model/business call. Registry fake-port counters are synthetic.",
+  "source_identity": {
+    "full_materialized_files": 5843,
+    "full_materialized_sha256": "1bbb557793dd548ff692fac966cd9d73f944be731a1ccf291320b26ba22c0c71",
+    "public_derivation": "Same core/schema/selected original test bytes. Public docs closure, portable test paths and repaired RSI example/test followups are separately bound."
+  },
+  "combined": {
+    "unique_passing_original_cases": 762,
+    "selected_original_cases": 763,
+    "original575_window": {
+      "passed": 475,
+      "failures": 8,
+      "setup_errors": 91,
+      "skipped": 1,
+      "status": "FAILED"
+    },
+    "corrected_frontends": {
+      "first": {
+        "passed": 97,
+        "failed": 2
+      },
+      "second": {
+        "passed": 2,
+        "failed": 0
+      }
+    },
+    "original188_window": {
+      "passed": 183,
+      "failed": 5,
+      "status": "FAILED"
+    },
+    "corrected_materials": {
+      "first": {
+        "passed": 2,
+        "native_boundary_blocked": 3
+      },
+      "native_local_owner": {
+        "passed": 3,
+        "failed": 0
+      }
+    },
+    "original_failure_causes": [
+      "Task-local configuration and loader resource API",
+      "Task-local directory-descriptor audit interpretation",
+      "Original DSH tests require actual local owner AF_UNIX, not the selected D0 boundary"
+    ],
+    "optional_case_not_run": "TypeScript/Python codec parity; deferred by owner to shorten verification. No Node24/stockDSH qualification."
+  },
+  "RSI": {
+    "initial_ABI": {
+      "passed": 0,
+      "failed": 3
+    },
+    "typed_ABI_attempt": {
+      "passed": 2,
+      "failed": 1,
+      "failure": "Supplemental stop assertion expected None; terminal admission API rejects with ValueError."
+    },
+    "final": {
+      "passed": 4,
+      "failed": 0,
+      "cases": [
+        "select2rounds",
+        "retain2rounds",
+        "stop-before-round2",
+        "retain10rounds"
+      ],
+      "operation_counts": [
+        6,
+        6,
+        3,
+        30
+      ],
+      "registered_model_counts": [
+        0,
+        0
+      ]
+    },
+    "scope": "Actual ExecutionServices->original Orchestrator, original Registry and typed products; D0 memory owner IPC, no worker or native stock claims."
+  },
+  "independent_lanes": {
+    "M1M2": {
+      "passed": 955,
+      "scope": "Finite D0 local reviewed environment, pytest9.0.3; not inherited by combined gate."
+    },
+    "R5": {
+      "coverage_unique": 1154,
+      "split": [
+        1024,
+        130
+      ],
+      "original_full_window": "FAILED exactinputmembership;1135 passingcalls,19originalnotrun",
+      "correction": "Only review report destination rebound; product/assertions/oldlocks unchanged."
+    },
+    "Codex_actual_full": {
+      "physical_files": 5733,
+      "composed122": 122,
+      "default8": 8,
+      "stock": "NOT_RUN",
+      "native_fullbinding": "BLOCKED"
+    },
+    "terminal_R3": {
+      "D0": 133,
+      "native_after": 10,
+      "scope": "Original scoped g7 owner/adoption fix with expected pre-fix failures; not complete H7."
+    }
+  },
+  "release": {
+    "docs_check_build": "PASS",
+    "wheel_sdist_roundtrip": "PASS",
+    "installed_payload_members": 832,
+    "guarded_data_only_commands": 16,
+    "example_exports": [
+      "adapter_task",
+      "native_plugin",
+      "hybrid_summary",
+      "compose_serial",
+      "package_reuse"
+    ]
+  },
+  "limitations": [
+    "exact stock Codex0.155/0.161 clients absent",
+    "Codex native fixture fulltreebinding BLOCKED",
+    "fullH7 nativeissuer/peer/workercompletion UNIMPLEMENTED",
+    "Node24 stockDSH notavailable",
+    "Codex0.162/productorigin futurequeue unimplemented"
+  ],
+  "historical_business_scores_recomputed": false,
+  "no_single_clean_combined_or_fullR5_run_claim": true
+}

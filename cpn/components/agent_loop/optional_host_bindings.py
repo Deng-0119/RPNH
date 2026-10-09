@@ -145,6 +145,14 @@ def make_optional_agent_host_bindings(llm_input_target: LLMInputTarget, *,
         from jsonschema import Draft7Validator
         Draft7Validator(EXECUTION_PROVENANCE_DOCUMENT).validate(
             profile_backend)
+        from cpn.rpnh.public_material_contracts import POLICY, validate_policy, canonical, validate_public_backend
+        validate_public_backend(profile_backend)
+        nested = profile_backend.get('selection', {})
+        if nested.get('schema_version') == POLICY:
+            nested = validate_policy(nested)
+            expected = LLMInputTarget(**{key:nested[key] for key in ('model_condition','max_output_tokens','max_response_bytes','context_window_tokens','context_compaction_retained_tokens')})
+            if canonical(expected.as_registry_document()) != canonical(profile_target.as_registry_document()):
+                raise ValueError('public optional target differs from full execution policy')
         if profile_backend.get("model") != profile_target.model_condition:
             raise ValueError("optional route must preserve the exact configured model")
         if set(profile_transport) != {

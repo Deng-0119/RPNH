@@ -11,12 +11,21 @@ import re
 import sqlite3
 import uuid
 from pathlib import Path
-from typing import Any, Mapping, NamedTuple
+from typing import Any, Literal, Mapping, NamedTuple
 
 from ._registry import _RegistryCore
-from .event_store import RegistryConflict
+from .event_store import CanonicalView, RegistryConflict
 from .identities import TypedId
-from .models import VersionRef
+from .main_thread_history import (
+    MainThreadHistoryAnchor,
+    MainThreadHistoryChildLink,
+    MainThreadHistoryItem,
+    MainThreadHistoryPage,
+    MainThreadHistoryProjection,
+    MainThreadHistoryTurn,
+    MainThreadReadCut,
+)
+from .models import PreparedObject, VersionRef
 from .schema_catalog import canonical_json
 from ..path_refs import relative_child_registry, resolve_child_registry
 
@@ -102,6 +111,7 @@ class MainThreadRegistry:
     CHILD_PATH_BASE_META = "main_thread_child_path_base"
     REGISTRY_ROOT_PATH_BASE = "registry_root/v1"
     LEGACY_SESSION_PATH_BASE = "session_root/v1"
+    HISTORY_PAGE_MAX_ENTRIES = 100
 
     def __init__(
             self, core: _RegistryCore, *, session_root: Path | str,
@@ -149,12 +159,33 @@ class MainThreadRegistry:
     def _read_registered_bytes(
             self, core: _RegistryCore, ref: VersionRef, *,
             expected_type: str | None = None,
+            view: CanonicalView | None = None,
+            max_bytes: int | None = None,
     ) -> tuple[Any, bytes]:
         if expected_type is not None and ref.entity_type != expected_type:
             raise MainThreadAuthorityError(
                 f"expected {expected_type}, received {ref.entity_type}")
         try:
-            prepared = core.get_version(ref.version_id)
+            if view is None:
+                prepared = core.get_version(ref.version_id)
+            else:
+                row = core.event_store.object_row_for_view(view, ref.version_id)
+                if row is None:
+                    raise MainThreadAuthorityError(
+                        "exact Registry object is not canonical at the read cut")
+                if max_bytes is not None and row["size"] > max_bytes:
+                    raise ValueError("registered payload exceeds reader byte bound")
+                # Use the row admitted by this view, not get_version's ambient
+                # positive memo. The ObjectStore still verifies its envelope,
+                # exact locator, size, and bytes below.
+                prepared = PreparedObject(
+                    row["object_type"], TypedId.parse(row["logical_id"]),
+                    TypedId.parse(row["version_id"]), row["size"],
+                    row["media_type"], row["schema_ref"],
+                    (TypedId.parse(row["producer_invocation_id"], expected="invocation")
+                     if row["producer_invocation_id"] else None),
+                    row["storage_locator"], json.loads(row["metadata_json"]),
+                )
             if (prepared.object_type != ref.entity_type
                     or prepared.logical_id != ref.entity_id):
                 raise MainThreadAuthorityError(
@@ -162,7 +193,10 @@ class MainThreadRegistry:
             core.catalog.validate_instance(
                 prepared.object_type, category="object",
                 instance=prepared.metadata)
-            payload = core.object_store.read_registered(prepared)
+            payload = core.object_store.read_registered(
+                prepared, max_bytes=(
+                    prepared.size if view is not None
+                    else max_bytes))
         except MainThreadAuthorityError:
             raise
         except Exception as exc:
@@ -173,9 +207,12 @@ class MainThreadRegistry:
     def _read_exact(
             self, core: _RegistryCore, ref: VersionRef, *,
             expected_type: str | None = None,
+            view: CanonicalView | None = None,
+            max_bytes: int | None = None,
     ) -> dict[str, Any]:
         prepared, payload = self._read_registered_bytes(
-            core, ref, expected_type=expected_type)
+            core, ref, expected_type=expected_type, view=view,
+            max_bytes=max_bytes)
         try:
             document = json.loads(payload)
         except (TypeError, ValueError, json.JSONDecodeError) as exc:
@@ -188,8 +225,12 @@ class MainThreadRegistry:
 
     def _ordered_documents(
             self, core: _RegistryCore, object_type: str,
+            *, view: CanonicalView | None = None,
+            max_bytes: int | None = None,
     ) -> list[tuple[VersionRef, dict[str, Any]]]:
-        rows = core.event_store.canonical_object_rows(object_type=object_type)
+        rows = core.event_store.canonical_object_rows(
+            object_type=object_type,
+            through_ordinal=None if view is None else view.through_ordinal)
         try:
             event_ordinals = {}
             for row in rows:
@@ -213,11 +254,16 @@ class MainThreadRegistry:
                 TypedId.parse(str(row["logical_id"])),
                 TypedId.parse(str(row["version_id"])),
             )
-            result.append((ref, self._read_exact(core, ref)))
+            result.append((ref, self._read_exact(
+                core, ref, view=view, max_bytes=max_bytes)))
         return result
 
-    def _thread_versions(self) -> list[tuple[VersionRef, dict[str, Any]]]:
-        versions = self._ordered_documents(self.core, "main_thread/v1")
+    def _thread_versions(
+            self, *, view: CanonicalView | None = None,
+            max_bytes: int | None = None,
+    ) -> list[tuple[VersionRef, dict[str, Any]]]:
+        versions = self._ordered_documents(
+            self.core, "main_thread/v1", view=view, max_bytes=max_bytes)
         if not versions:
             raise MainThreadAuthorityError("main-thread authority is missing")
         if len({ref.entity_id for ref, _document in versions}) != 1:
@@ -236,10 +282,12 @@ class MainThreadRegistry:
         return versions
 
     def _turn_lineages(
-            self, thread_id: TypedId,
+            self, thread_id: TypedId, *, view: CanonicalView | None = None,
+            max_bytes: int | None = None,
     ) -> list[list[tuple[VersionRef, dict[str, Any]]]]:
         grouped: dict[TypedId, list[tuple[VersionRef, dict[str, Any]]]] = {}
-        for ref, document in self._ordered_documents(self.core, "main_turn/v1"):
+        for ref, document in self._ordered_documents(
+                self.core, "main_turn/v1", view=view, max_bytes=max_bytes):
             if document.get("main_thread_id") != str(thread_id):
                 raise MainThreadAuthorityError(
                     "main-turn belongs to another thread lineage")
@@ -288,11 +336,13 @@ class MainThreadRegistry:
         return lineages
 
     def _child_registry_link_lineages(
-            self, thread_id: TypedId,
+            self, thread_id: TypedId, *, view: CanonicalView | None = None,
+            max_bytes: int | None = None,
     ) -> list[list[tuple[VersionRef, dict[str, Any]]]]:
         grouped: dict[TypedId, list[tuple[VersionRef, dict[str, Any]]]] = {}
         for ref, document in self._ordered_documents(
-                self.core, "main_child_registry_link/v1"):
+                self.core, "main_child_registry_link/v1", view=view,
+                max_bytes=max_bytes):
             if document.get("main_thread_id") != str(thread_id):
                 raise MainThreadAuthorityError(
                     "child Registry link belongs to another main thread")
@@ -348,7 +398,8 @@ class MainThreadRegistry:
             if origin is not None:
                 origin_ref = _parse_ref(origin)
                 origin_turn = self._read_exact(
-                    self.core, origin_ref, expected_type="main_turn/v1")
+                    self.core, origin_ref, expected_type="main_turn/v1",
+                    view=view, max_bytes=max_bytes)
                 if (origin_turn.get("state") != "committed"
                         or origin_turn.get("main_thread_id")
                         != str(thread_id)):
@@ -1269,10 +1320,19 @@ class MainThreadRegistry:
         return ThreadTurnAdvance(successor_ref, failed_ref)
 
     def project_current_thread(self) -> dict[str, Any]:
-        thread_ref, thread = self._current_thread()
-        lineages = self._turn_lineages(thread_ref.entity_id)
+        """Preserve the trusted-host dictionary projection at one current cut."""
+
+        return self._project_thread_at_view(self.core.event_store.canonical_view())
+
+    def _project_thread_at_view(
+            self, view: CanonicalView, *, max_bytes: int | None = None,
+    ) -> dict[str, Any]:
+        thread_ref, thread = self._thread_versions(
+            view=view, max_bytes=max_bytes)[-1]
+        lineages = self._turn_lineages(
+            thread_ref.entity_id, view=view, max_bytes=max_bytes)
         child_link_lineages = self._child_registry_link_lineages(
-            thread_ref.entity_id)
+            thread_ref.entity_id, view=view, max_bytes=max_bytes)
         if int(thread["next_turn_ordinal"]) != len(lineages) + 1:
             raise MainThreadAuthorityError(
                 "thread next ordinal differs from registered turns")
@@ -1336,6 +1396,217 @@ class MainThreadRegistry:
                 dict(lineage[-1][1]) for lineage in child_link_lineages
             ],
         }
+
+    def capture_read_cut(
+            self, *, max_object_bytes: int | None = None,
+    ) -> MainThreadReadCut:
+        """Capture native history identity without a lease or execution action.
+
+        A CanonicalView alone has no source identity. The event and exact
+        thread ref bind it to this Registry and survive reopening the reader.
+        Neither this cut nor a pagination anchor is a public read grant.
+        """
+
+        self._validate_history_budget(max_object_bytes)
+        _first, boundary = self.core.event_store.first_and_last_events()
+        if boundary is None:
+            raise MainThreadAuthorityError("main-thread authority is missing")
+        view = self.core.event_store.canonical_view(
+            through_ordinal=boundary.ordinal)
+        projection = self._project_thread_at_view(
+            view, max_bytes=max_object_bytes)
+        cut = MainThreadReadCut(
+            self.core.task_id, self.core.branch_id, view, boundary.event_id,
+            _parse_ref(projection["thread_ref"]))
+        self._validate_read_cut(cut)
+        return cut
+
+    @staticmethod
+    def _validate_history_budget(max_object_bytes: int | None) -> None:
+        if max_object_bytes is not None and (
+                type(max_object_bytes) is not int or max_object_bytes < 0):
+            raise TypeError("history object budget must be a nonnegative integer")
+
+    def _validate_read_cut(self, cut: MainThreadReadCut) -> None:
+        if not isinstance(cut, MainThreadReadCut):
+            raise TypeError("history requires a source-bound MainThreadReadCut")
+        if (not isinstance(cut.view, CanonicalView)
+                or not isinstance(cut.boundary_event_id, TypedId)
+                or cut.boundary_event_id.kind != "event"
+                or not isinstance(cut.thread_ref, VersionRef)
+                or cut.thread_ref.entity_type != "main_thread/v1"
+                or not isinstance(cut.thread_ref.entity_id, TypedId)
+                or cut.thread_ref.entity_id.kind != "resource"
+                or not isinstance(cut.thread_ref.version_id, TypedId)
+                or cut.thread_ref.version_id.kind != "resource_version"):
+            raise MainThreadAuthorityError("main-thread read cut is malformed")
+        if (cut.task_id != self.core.task_id
+                or cut.branch_id != self.core.branch_id
+                or self.core.event_store.get_meta("task_id") != str(cut.task_id)
+                or self.core.event_store.get_meta("branch_id") != cut.branch_id):
+            raise MainThreadAuthorityError("read cut belongs to another Registry")
+        try:
+            self.core.event_store.canonical_view(
+                through_ordinal=cut.view.through_ordinal)
+        except (TypeError, RegistryConflict) as exc:
+            raise MainThreadAuthorityError("read cut ordinal is invalid") from exc
+        boundary = self.core.event_store.event_by_id(cut.boundary_event_id)
+        if (boundary is None or boundary.ordinal != cut.view.through_ordinal
+                or boundary.task_id != cut.task_id
+                or boundary.branch_id != cut.branch_id):
+            raise MainThreadAuthorityError("read cut boundary identity differs")
+
+    def project_thread_at(
+            self, cut: MainThreadReadCut, *, max_object_bytes: int | None = None,
+    ) -> MainThreadHistoryProjection:
+        """Read refs-only committed history at a revalidated canonical cut.
+
+        Only existing main-thread display membership is projected: active,
+        interrupted and failed turns do not produce conversational items.
+        Raw input/answer JSON, provider profiles, child paths and child bodies
+        are not returned. TaskControl is never queried or reconciled.
+        """
+
+        self._validate_history_budget(max_object_bytes)
+        self._validate_read_cut(cut)
+        projection = self._project_thread_at_view(
+            cut.view, max_bytes=max_object_bytes)
+        if _parse_ref(projection["thread_ref"]) != cut.thread_ref:
+            raise MainThreadAuthorityError("read cut exact thread identity differs")
+        turns = []
+        for item in projection["committed_history"]:
+            ref = _parse_ref(item["turn_ref"])
+            ordinal = int(item["ordinal"])
+            turns.append(MainThreadHistoryTurn(ordinal, ref, (
+                MainThreadHistoryItem(ref, ordinal, 0, "user_input"),
+                MainThreadHistoryItem(ref, ordinal, 1, "answer"),
+            )))
+        links = tuple(MainThreadHistoryChildLink(
+            _parse_ref(link["main_child_registry_link_ref"]),
+            _coerce_ref(link["origin_main_turn_ref"]),
+            link["task_control_id"], link["task_kind"], link["state"],
+        ) for link in projection["child_registry_links"])
+        return MainThreadHistoryProjection(
+            cut, projection["state"], projection["next_turn_ordinal"],
+            _coerce_ref(projection["active_turn_ref"]),
+            _coerce_ref(projection["latest_turn_ref"]),
+            _coerce_ref(projection["latest_committed_turn_ref"]),
+            tuple(turns), links,
+        )
+
+    def page_turns_at(
+            self, cut: MainThreadReadCut, *, limit: int = 50,
+            order: Literal["asc", "desc"] = "asc",
+            anchor: MainThreadHistoryAnchor | None = None,
+            max_object_bytes: int | None = None,
+    ) -> MainThreadHistoryPage[MainThreadHistoryTurn]:
+        """Page native committed turn refs; this is not a transport RPC."""
+
+        return self._page_history(
+            cut, query="turns", limit=limit, order=order,
+            turn_filter=None, anchor=anchor, max_object_bytes=max_object_bytes)
+
+    def _committed_turn_documents_at(
+            self, cut: MainThreadReadCut, exact_refs: tuple[VersionRef, ...], *,
+            max_object_bytes: int | None = None,
+    ) -> tuple[MainThreadHistoryProjection, tuple[dict[str, Any], ...]]:
+        """Existing owner-host hydration seam; never a public body/grant API.
+
+        Membership and exact body validation stay together here. Only the
+        MainSession safe renderer may forward a projection to a frontend.
+        """
+        if (not isinstance(exact_refs, tuple)
+                or len(exact_refs) > self.HISTORY_PAGE_MAX_ENTRIES
+                or any(not isinstance(ref, VersionRef) for ref in exact_refs)
+                or len(set(exact_refs)) != len(exact_refs)):
+            raise ValueError("history requires at most 100 unique exact turn refs")
+        projection = self.project_thread_at(cut, max_object_bytes=max_object_bytes)
+        members = {turn.turn_ref for turn in projection.turns}
+        if any(ref not in members for ref in exact_refs):
+            raise MainThreadAuthorityError("history turn is not committed at this cut")
+        documents = tuple(self._read_exact(
+            self.core, ref, expected_type="main_turn/v1", view=cut.view,
+            max_bytes=max_object_bytes,
+        ) for ref in exact_refs)
+        return projection, documents
+
+    def page_items_at(
+            self, cut: MainThreadReadCut, *, limit: int = 50,
+            order: Literal["asc", "desc"] = "asc",
+            turn_filter: VersionRef | None = None,
+            anchor: MainThreadHistoryAnchor | None = None,
+            max_object_bytes: int | None = None,
+    ) -> MainThreadHistoryPage[MainThreadHistoryItem]:
+        """Page exact field slots in (turn ordinal, field position) order."""
+
+        return self._page_history(
+            cut, query="items", limit=limit, order=order,
+            turn_filter=turn_filter, anchor=anchor, max_object_bytes=max_object_bytes)
+
+    def _page_history(
+            self, cut: MainThreadReadCut, *, query: str, limit: int,
+            order: str, turn_filter: VersionRef | None,
+            anchor: MainThreadHistoryAnchor | None,
+            max_object_bytes: int | None,
+    ) -> MainThreadHistoryPage:
+        if type(limit) is not int or not 1 <= limit <= self.HISTORY_PAGE_MAX_ENTRIES:
+            raise ValueError("history page limit must be an integer from 1 to 100")
+        if order not in {"asc", "desc"}:
+            raise ValueError("history page order must be asc or desc")
+        if turn_filter is not None and not isinstance(turn_filter, VersionRef):
+            raise TypeError("history turn filter requires one exact VersionRef")
+        if anchor is not None:
+            if not isinstance(anchor, MainThreadHistoryAnchor):
+                raise TypeError("history position requires a native anchor")
+            if (anchor.cut != cut or anchor.query != query
+                    or anchor.order != order or anchor.turn_filter != turn_filter):
+                raise MainThreadAuthorityError("history anchor query or cut differs")
+            if (type(anchor.turn_ordinal) is not int or anchor.turn_ordinal < 1
+                    or type(anchor.inclusive) is not bool
+                    or not isinstance(anchor.turn_ref, VersionRef)
+                    or (query == "turns" and anchor.item_index is not None)
+                    or (query == "items" and (
+                        type(anchor.item_index) is not int
+                        or anchor.item_index not in {0, 1}))):
+                raise MainThreadAuthorityError("history anchor position is malformed")
+        projection = self.project_thread_at(cut, max_object_bytes=max_object_bytes)
+        if (turn_filter is not None and not any(
+                turn.turn_ref == turn_filter for turn in projection.turns)):
+            raise MainThreadAuthorityError("turn filter is not committed at this cut")
+        entries = (projection.turns if query == "turns" else tuple(
+            item for turn in projection.turns
+            if turn_filter is None or turn.turn_ref == turn_filter
+            for item in turn.items))
+        ordered = entries if order == "asc" else reversed(entries)
+        found = anchor is None
+        selected = []
+        more = False
+        for entry in ordered:
+            ordinal = entry.ordinal if query == "turns" else entry.turn_ordinal
+            index = None if query == "turns" else entry.item_index
+            if not found:
+                if (entry.turn_ref != anchor.turn_ref
+                        or ordinal != anchor.turn_ordinal
+                        or index != anchor.item_index):
+                    continue
+                found = True
+                if not anchor.inclusive:
+                    continue
+            if len(selected) == limit:
+                more = True
+                break
+            selected.append(entry)
+        if not found:
+            raise MainThreadAuthorityError("history anchor is not present at this cut")
+        next_anchor = None
+        if more:
+            last = selected[-1]
+            next_anchor = MainThreadHistoryAnchor(
+                cut, query, order, turn_filter, last.turn_ref,
+                last.ordinal if query == "turns" else last.turn_ordinal,
+                None if query == "turns" else last.item_index,
+            )
+        return MainThreadHistoryPage(cut, tuple(selected), next_anchor)
 
     def recover_thread(self) -> dict[str, Any]:
         """Rebuild current authority and committed history from Registry only."""

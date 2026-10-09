@@ -1061,6 +1061,9 @@ class EventStore:
                  read_only: bool = False) -> None:
         self.path = Path(path)
         self.read_only = bool(read_only)
+        if not self.read_only:
+            from .parent_bound import preflight_bound_writer
+            preflight_bound_writer(self.path)
         if self.read_only:
             if not self.path.is_file():
                 raise RegistryCorruptError("read-only Registry database is missing")
@@ -1080,6 +1083,11 @@ class EventStore:
         self._journal_mode_ready = self.read_only
         if not self.read_only:
             self._initialize()
+
+    def classify_child_acceptance_history(self, assertion):
+        """Read-only source-qualified history; never receipt delivery or authority."""
+        from .acceptance_history import classify_child_acceptance_history
+        return classify_child_acceptance_history(self, assertion)
 
     @staticmethod
     def _pending_event_authorization_material(
@@ -1988,9 +1996,9 @@ class EventStore:
         from ._event_store import views
         return views.firing_activity_page(self, **kwargs)
 
-    def ordered_firing_record(self, firing_version_id: TypedId | str) -> Mapping[str, Any]:
+    def ordered_firing_record(self, firing_version_id: TypedId | str, *, _db=None) -> Mapping[str, Any]:
         from ._event_store import views
-        return views.ordered_firing_record(self, firing_version_id)
+        return views.ordered_firing_record(self, firing_version_id, _db=_db)
 
     def reconstruct_firing_state(self, firing_version_id: TypedId | str) -> Mapping[str, Any]:
         from ._event_store import views

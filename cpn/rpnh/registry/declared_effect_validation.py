@@ -286,8 +286,10 @@ def validate_declared_effect_success(store, db, *, firing, invocation, result,
     claimed_colours = tuple((tokens[ref]["place"], tokens[ref]["verdict"]) for ref in claimed)
     view = view.for_claimed_inputs(firing["transition_id"], claimed_colours)
     places = {p.name: p for p in compiled.symbolic.places}
-    consumed_places = set(view.inputs_of(firing["transition_id"]))
-    # Core read is exact consume-return: it also retires its predecessor ref.
+    consumed_places = {a.place for a in view._arcs if a.transition == firing["transition_id"]
+        and a.direction == "input" and a.mode in {"consume", "borrow", "read"}
+        and not (a.mode == "read" and a.place in view.resource_lease_places())}
+    # Ordinary read is consume-return; static lease references retain their ref.
     consumed = {ref for ref in claimed if tokens[ref]["place"] in consumed_places}
     other_claims = set()
     if published_transaction_id is None:

@@ -1,4 +1,0 @@
-Traceback (most recent call last):
-  File "/home/deng123/RPNH/task-erp-first-wave-20261008/venv/lib/python3.13/site-packages/rpnh_erp_bench/driver.py", line 171, in run_trial
-    raise RuntimeError("owner is not quiescent; grading is forbidden")
-RuntimeError: owner is not quiescent; grading is forbidden

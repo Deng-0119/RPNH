@@ -1,0 +1,345 @@
+{
+  "representation": "curated deterministic result, input and status projection",
+  "source": {
+    "package_base": "00f2d29c7deffed44e2ec635a24f390c6e0d9ace",
+    "tested_head": "00f2d29c7deffed44e2ec635a24f390c6e0d9ace",
+    "commit_tree": "c951267ed6ce5f563f69aafd5f695e30625cff40",
+    "cpn_tree": "27aef45c5ff39e543ce3a683a5a5654921cda3d4",
+    "source_set_sha256": "a547de500345f51c102fb197dfabedafc2aa48c251dc19d9e10733cbe2553618",
+    "files": [
+      {
+        "path": "examples/tool_pipeline/README.md",
+        "size_bytes": 10492,
+        "sha256": "f544ef304ac13f353af2bb207afab18e8a86a69391b407a7adafaa81674c7032"
+      },
+      {
+        "path": "examples/tool_pipeline/README_ZH.md",
+        "size_bytes": 8898,
+        "sha256": "5449c8ef872ee8139c780b878adc394fbe112f25888099d15f5863db9674dbc7"
+      },
+      {
+        "path": "examples/tool_pipeline/__init__.py",
+        "size_bytes": 67,
+        "sha256": "bdb0e7dc3564cc7d6254dedb6dac52c64001b52d1c60b30da9ccccf1bd4646f8"
+      },
+      {
+        "path": "examples/tool_pipeline/contracts.py",
+        "size_bytes": 4324,
+        "sha256": "80343a6929294ddf5aaa663595a3c2508a4550a85e93de71bd68b948df294534"
+      },
+      {
+        "path": "examples/tool_pipeline/fixtures/expected-report.json",
+        "size_bytes": 563,
+        "sha256": "d369c18417ae7b8ccb88d9ef8f4fce6844f637df81b3e17e5ced51414e5b68d5"
+      },
+      {
+        "path": "examples/tool_pipeline/fixtures/tariff-rounding.json",
+        "size_bytes": 310,
+        "sha256": "b842b97864781615e18fa2f8b367228833760fb42c7e014ec28b039f29cc2df0"
+      },
+      {
+        "path": "examples/tool_pipeline/fixtures/tariff.json",
+        "size_bytes": 309,
+        "sha256": "a5fec5935e2698908b1dbd54c375191ea70c17a2983a32d0dc6fcec729cc5cab"
+      },
+      {
+        "path": "examples/tool_pipeline/fixtures/usage-rounding.json",
+        "size_bytes": 265,
+        "sha256": "9aa5d52da06da6412d578b08203d83da986f89b2655aa98f0bc9a9bcef9c4590"
+      },
+      {
+        "path": "examples/tool_pipeline/fixtures/usage.json",
+        "size_bytes": 270,
+        "sha256": "ee40f4a6d10cead79a1c2323d91214c1b45e05aee27640413520bf449f12eddf"
+      },
+      {
+        "path": "examples/tool_pipeline/host.py",
+        "size_bytes": 8293,
+        "sha256": "0cb8ae2074f726a29785c7b8995d56ddff93ae27e7471a1112e4ae198c0fe9fc"
+      },
+      {
+        "path": "examples/tool_pipeline/module.json",
+        "size_bytes": 19316,
+        "sha256": "fd8483bbc7974386531383d4988fe42f3deb350b78c1a06837473710a171d577"
+      },
+      {
+        "path": "examples/tool_pipeline/run.py",
+        "size_bytes": 9136,
+        "sha256": "71bf5b015d8a4ca7e2a0888ff47df8586dd26982576a92fc62725db0ac8c5ad9"
+      },
+      {
+        "path": "examples/tool_pipeline/tests/conftest.py",
+        "size_bytes": 565,
+        "sha256": "2ab95b8eb43bbf8b2b2385713dd6a49880f990cb9e1196173832771eab6287e9"
+      },
+      {
+        "path": "examples/tool_pipeline/tests/pipe_transport.py",
+        "size_bytes": 1432,
+        "sha256": "bf5beda6088f19959752655512d8fbba1ea4b1abab1d999d31502c8428af46c9"
+      },
+      {
+        "path": "examples/tool_pipeline/tests/test_pipeline.py",
+        "size_bytes": 19319,
+        "sha256": "387e64049bdd70d2305a09ff40610a61f2347e5f34690dcfcb4a6814378afbfb"
+      },
+      {
+        "path": "examples/tool_pipeline/tools.py",
+        "size_bytes": 10202,
+        "sha256": "4505285f2a3d801f2ac31adc63cbc73aa3d5a271a5f6a88b44fac6bc05d7fca9"
+      }
+    ],
+    "core_changed": false
+  },
+  "publication_commit": "80a17c3ce45ec3c7a1b39c170c36bbb922276de1",
+  "inputs": {
+    "usage.json": {
+      "schema_version": "tool_pipeline/usage/v1",
+      "timezone": "UTC",
+      "unit": "Wh",
+      "intervals": [
+        {
+          "interval_id": "A",
+          "start": "2026-01-01T00:00:00Z",
+          "end": "2026-01-01T01:00:00Z",
+          "wh": "1500"
+        },
+        {
+          "interval_id": "B",
+          "start": "2026-01-01T01:00:00Z",
+          "end": "2026-01-01T02:00:00Z",
+          "wh": "500"
+        }
+      ]
+    },
+    "tariff.json": {
+      "schema_version": "tool_pipeline/tariff/v1",
+      "timezone": "UTC",
+      "unit": "fen/kWh",
+      "currency": "CNY",
+      "intervals": [
+        {
+          "interval_id": "A",
+          "start": "2026-01-01T00:00:00Z",
+          "end": "2026-01-01T01:00:00Z",
+          "fen_per_kwh": "80"
+        },
+        {
+          "interval_id": "B",
+          "start": "2026-01-01T01:00:00Z",
+          "end": "2026-01-01T02:00:00Z",
+          "fen_per_kwh": "100"
+        }
+      ]
+    },
+    "usage-rounding.json": {
+      "schema_version": "tool_pipeline/usage/v1",
+      "timezone": "UTC",
+      "unit": "Wh",
+      "intervals": [
+        {
+          "interval_id": "A",
+          "start": "2026-01-01T00:00:00Z",
+          "end": "2026-01-01T01:00:00Z",
+          "wh": "5"
+        },
+        {
+          "interval_id": "B",
+          "start": "2026-01-01T01:00:00Z",
+          "end": "2026-01-01T02:00:00Z",
+          "wh": "5"
+        }
+      ]
+    },
+    "tariff-rounding.json": {
+      "schema_version": "tool_pipeline/tariff/v1",
+      "timezone": "UTC",
+      "unit": "fen/kWh",
+      "currency": "CNY",
+      "intervals": [
+        {
+          "interval_id": "A",
+          "start": "2026-01-01T00:00:00Z",
+          "end": "2026-01-01T01:00:00Z",
+          "fen_per_kwh": "100"
+        },
+        {
+          "interval_id": "B",
+          "start": "2026-01-01T01:00:00Z",
+          "end": "2026-01-01T02:00:00Z",
+          "fen_per_kwh": "100"
+        }
+      ]
+    }
+  },
+  "scorer": "example independent integer-fen-half-up/v1 validator, not a business benchmark grader",
+  "tests": {
+    "status": "PASS",
+    "unique_test_ids": [
+      "default::test_complete_report_and_independent_validation",
+      "default::test_exact_lineage_and_partial_order",
+      "default::test_independent_validator_rejects_other_schema_valid_candidates[line_amount]",
+      "default::test_independent_validator_rejects_other_schema_valid_candidates[missing_line]",
+      "default::test_independent_validator_rejects_other_schema_valid_candidates[source_version]",
+      "default::test_independent_validator_rejects_other_schema_valid_candidates[total_usage]",
+      "default::test_input_middleware_rejects_invalid_values[duplicate]",
+      "default::test_input_middleware_rejects_invalid_values[float]",
+      "default::test_input_middleware_rejects_invalid_values[nan]",
+      "default::test_input_middleware_rejects_invalid_values[negative]",
+      "default::test_input_middleware_rejects_invalid_values[overlap]",
+      "default::test_input_middleware_rejects_invalid_values[timezone]",
+      "default::test_input_middleware_rejects_invalid_values[too_large]",
+      "default::test_invalid_data_cannot_reach_final[both_invalid]",
+      "default::test_invalid_data_cannot_reach_final[candidate]",
+      "default::test_invalid_data_cannot_reach_final[time]",
+      "default::test_invalid_data_cannot_reach_final[unit]",
+      "default::test_readback_needs_no_exports_or_process_cache",
+      "default::test_real_overlap_capacity_and_branch_progress",
+      "default::test_round_each_interval_half_up",
+      "default::test_truncated_final_payload_fails_readback",
+      "default::test_worker_exception_keeps_unresolved_firing",
+      "extra::test_forged_parents_native",
+      "extra::test_single_worker_native",
+      "extra::test_source_version_native",
+      "extra::test_usage_mutations_native[duplicate]",
+      "extra::test_usage_mutations_native[float]",
+      "extra::test_usage_mutations_native[nan]",
+      "extra::test_usage_mutations_native[negative]",
+      "extra::test_usage_mutations_native[overlap]",
+      "extra::test_usage_mutations_native[too_large]",
+      "mirror::test_missing_usage_join_native"
+    ],
+    "unique_count": 32,
+    "executed_count": 33,
+    "single_worker_max_active": 1
+  },
+  "windows": [
+    {
+      "tests": 22,
+      "time_seconds": 351.32,
+      "test_ids": [
+        "default::test_complete_report_and_independent_validation",
+        "default::test_real_overlap_capacity_and_branch_progress",
+        "default::test_exact_lineage_and_partial_order",
+        "default::test_readback_needs_no_exports_or_process_cache",
+        "default::test_round_each_interval_half_up",
+        "default::test_invalid_data_cannot_reach_final[unit]",
+        "default::test_invalid_data_cannot_reach_final[time]",
+        "default::test_invalid_data_cannot_reach_final[both_invalid]",
+        "default::test_invalid_data_cannot_reach_final[candidate]",
+        "default::test_input_middleware_rejects_invalid_values[negative]",
+        "default::test_input_middleware_rejects_invalid_values[float]",
+        "default::test_input_middleware_rejects_invalid_values[duplicate]",
+        "default::test_input_middleware_rejects_invalid_values[nan]",
+        "default::test_input_middleware_rejects_invalid_values[timezone]",
+        "default::test_input_middleware_rejects_invalid_values[overlap]",
+        "default::test_input_middleware_rejects_invalid_values[too_large]",
+        "default::test_worker_exception_keeps_unresolved_firing",
+        "default::test_truncated_final_payload_fails_readback",
+        "default::test_independent_validator_rejects_other_schema_valid_candidates[source_version]",
+        "default::test_independent_validator_rejects_other_schema_valid_candidates[line_amount]",
+        "default::test_independent_validator_rejects_other_schema_valid_candidates[total_usage]",
+        "default::test_independent_validator_rejects_other_schema_valid_candidates[missing_line]"
+      ],
+      "id": "1"
+    },
+    {
+      "tests": 9,
+      "time_seconds": 358.304,
+      "test_ids": [
+        "extra::test_usage_mutations_native[negative]",
+        "extra::test_usage_mutations_native[float]",
+        "extra::test_usage_mutations_native[nan]",
+        "extra::test_usage_mutations_native[duplicate]",
+        "extra::test_usage_mutations_native[overlap]",
+        "extra::test_usage_mutations_native[too_large]",
+        "extra::test_source_version_native",
+        "extra::test_forged_parents_native",
+        "extra::test_single_worker_native"
+      ],
+      "id": "2"
+    },
+    {
+      "tests": 1,
+      "time_seconds": 77.376,
+      "test_ids": [
+        "mirror::test_missing_usage_join_native"
+      ],
+      "id": "3"
+    },
+    {
+      "tests": 1,
+      "time_seconds": 75.583,
+      "test_ids": [
+        "mirror::test_missing_usage_join_native"
+      ],
+      "id": "4"
+    }
+  ],
+  "commands": [
+    {
+      "id": "native-tests",
+      "exit_code": 0
+    },
+    {
+      "id": "native-standard",
+      "exit_code": 0
+    },
+    {
+      "id": "native-rounding",
+      "exit_code": 0
+    },
+    {
+      "id": "native-readback",
+      "exit_code": 0
+    }
+  ],
+  "standard": {
+    "run_outcome": "complete",
+    "total_kwh": "2.000",
+    "total_cny": "1.70",
+    "firings": 10,
+    "business_resources": 12,
+    "source_resources": 2,
+    "max_active": 2
+  },
+  "rounding": {
+    "total_cny": "0.02"
+  },
+  "process_readback": {
+    "status": "PASS",
+    "all_stable_fields_equal": true,
+    "live_only_fields": [
+      "stop_reason",
+      "transport"
+    ],
+    "before": {
+      "max_ordinal": 1001,
+      "event_count": 1001,
+      "dispatch_reservations": 10,
+      "execution_starts": 10,
+      "actual_model_call_counts": [
+        0,
+        0
+      ]
+    },
+    "after": {
+      "max_ordinal": 1001,
+      "event_count": 1001,
+      "dispatch_reservations": 10,
+      "execution_starts": 10,
+      "actual_model_call_counts": [
+        0,
+        0
+      ]
+    }
+  },
+  "real_model_calls": 0,
+  "historical_transport": {
+    "pipe_semantic_tests": "separate finite history; not native AF_UNIX",
+    "cloud_native": "blocked by AF_UNIX EPERM; later local success does not relabel it"
+  },
+  "limits": [
+    "32 unique IDs / 33 executions include unit tests; not 32 socket integrations.",
+    "Publication is not a clean-checkout rerun; no new V6 result."
+  ]
+}

@@ -1,6 +1,0 @@
-{
-  "error": "owner exited before actual subprocess admission",
-  "fixture_subprocess_entered": false,
-  "traceback": "Traceback (most recent call last):\n  File \"/home/deng123/RPNH/task-first-wave-examples-20261008/work/scb_native_acceptance.py\", line 133, in case_run\n    require(handle.process.poll() is None, 'owner exited before actual subprocess admission')\n    ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/deng123/RPNH/task-first-wave-examples-20261008/work/scb_native_acceptance.py\", line 31, in require\n    raise AssertionError(message)\nAssertionError: owner exited before actual subprocess admission\n",
-  "type": "AssertionError"
-}

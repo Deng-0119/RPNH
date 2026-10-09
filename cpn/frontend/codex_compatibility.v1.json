@@ -51,6 +51,8 @@
     "thread/loaded/list",
     "thread/list",
     "thread/read",
+    "thread/turns/list",
+    "thread/items/list",
     "thread/name/set",
     "thread/settings/update",
     "turn/start",
@@ -71,14 +73,16 @@
     "Codex_backend_execution",
     "Codex_owned_provider_credentials",
     "direct_model_dispatch_by_the_frontend",
-    "multi_version_compatibility"
+    "automatic_or_unbounded_multi_version_compatibility"
   ],
   "verification": {
     "policy": "Validation results belong to fixed commits and CI artifacts, not static status claims.",
     "workflow": ".github/workflows/compatibility-audit.yml",
     "tests": [
       "tests/test_codex_compat.py",
-      "tests/test_frontend_boundary.py"
+      "tests/test_frontend_boundary.py",
+      "tests/test_codex_history.py",
+      "tests/test_codex_0161_candidate.py"
     ],
     "live_provider_calls": false
   },
@@ -98,5 +102,31 @@
       "apps/list"
     ],
     "meaning": "Empty discovery is a compatibility response, not an installed capability."
+  },
+  "history_projection": {
+    "source": "existing owner-bound MainThreadRegistry fixed canonical cut",
+    "wire_thread_id": "UUID rendering of the unchanged stable session identity",
+    "safe_items": "committed original user text and safe main decision text only",
+    "native_client_certification": "separate version-pinned runtime gate"
+  },
+  "compatibility_profiles": {
+    "default": "pinned-0.155.0",
+    "selection": "Explicit local keyword only. No environment, version-range, initialize-selected or automatic candidate selection.",
+    "profiles": {
+      "pinned-0.155.0": {
+        "version": "0.155.0",
+        "reported_cli_version": "codex-cli 0.155.0",
+        "object_item_cursor": false,
+        "explicit_history_defaults": false,
+        "status": "PINNED_PARTIAL_COMPATIBILITY"
+      },
+      "candidate-0.161.0": {
+        "version": "0.161.0",
+        "reported_cli_version": "codex-cli 0.161.0",
+        "object_item_cursor": true,
+        "explicit_history_defaults": true,
+        "status": "CANDIDATE_NATIVE_CERTIFICATION_PENDING"
+      }
+    }
   }
 }
