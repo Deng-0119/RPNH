@@ -1,0 +1,15 @@
+{
+  "old_patch_sha256": "c1d5665c4955b0c129cc7b0b89b456a55307597bd0febae0ea1f76290b089fcb",
+  "new_patch_sha256": "df0c3090e84f532d158dd02d7b65489323563a470843e4bd4e2688ffcc25900b",
+  "source_files": 1041,
+  "unchanged_source_files": 1040,
+  "only_changed_path": "docs/reference/codex-history_ZH.md",
+  "exact_change": "  language: zh ->   language: zh-CN",
+  "manifest_files": 21,
+  "manifest_hashes_match": true,
+  "git_apply_check": true,
+  "git_apply": true,
+  "applied_tree_equals_source": true,
+  "product_python_and_tests_unchanged": true,
+  "product_runtime_matrix_rerun": false
+}

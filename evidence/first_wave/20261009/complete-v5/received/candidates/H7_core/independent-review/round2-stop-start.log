@@ -1,0 +1,10 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+________ test_bound_first_business_start_after_durable_stop_is_rejected ________
+rpnh-parent-child-core-boundary-review/tests/test_boundary_child.py:98: in test_bound_first_business_start_after_durable_stop_is_rejected
+    with pytest.raises((RegistryConflict, ValueError)):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE any of (<class 'cpn.rpnh.registry.event_store.RegistryConflict'>, <class 'ValueError'>)
+=========================== short test summary info ============================
+FAILED rpnh-parent-child-core-boundary-review/tests/test_boundary_child.py::test_bound_first_business_start_after_durable_stop_is_rejected
+1 failed in 5.61s

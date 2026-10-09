@@ -1,0 +1,128 @@
+[
+  {
+    "path": "docs-check.log",
+    "source": "original_zip",
+    "original_sha256": "1bb2d258d9a63f016fca0cf3af9b2117887845e41e386ca832ced015f998b117",
+    "delivered_sha256": "0eb3f01af0c2b064b2d833fbfec24235876efa4648e9b7ca73ff35b581b673f5",
+    "transform": "Replace cloud workspace/temp prefixes; remove XML hostname only; preserve testcase names, counts, outcomes."
+  },
+  {
+    "path": "existing-tests.log",
+    "source": "original_zip",
+    "original_sha256": "5dc71be49e99380f4d28808e578819c9c0fed80d5096cb7375d2d480c7c6f4f5",
+    "delivered_sha256": "dbadec997a0fc5699f0b96cdde4a46d2c0f9becc0e4242e3ae612de4069e30f7",
+    "transform": "Replace cloud workspace/temp prefixes; remove XML hostname only; preserve testcase names, counts, outcomes."
+  },
+  {
+    "path": "existing-tests.xml",
+    "source": "original_zip",
+    "original_sha256": "f1d8a11184fb0739182f3f7669b642266000638adcc8e06f2775ab8c3db54050",
+    "delivered_sha256": "7c1b07f90d7d50de2eb96353c5089a9de76675d7019aa92144f28ede3b37f38e",
+    "transform": "Replace cloud workspace/temp prefixes; remove XML hostname only; preserve testcase names, counts, outcomes."
+  },
+  {
+    "path": "final-tests.log",
+    "source": "original_zip",
+    "original_sha256": "e0079b37db7719f0ee88f990077ef09611aa9980d22c79f56019eb33bae6204c",
+    "delivered_sha256": "459f8b7fd1afa1f6b9a3d8bf8ca03bbf7ea212c6e9809d1ce715967d7bbb3201",
+    "transform": "Replace cloud workspace/temp prefixes; remove XML hostname only; preserve testcase names, counts, outcomes."
+  },
+  {
+    "path": "final-tests.xml",
+    "source": "original_zip",
+    "original_sha256": "e1854b1912a846c79525f21bb4155c407d6c6bcb8f4f58379ccecdff731a8e16",
+    "delivered_sha256": "f2d78fe3f45dac99caa3d806d17d65d3c9abf6ace4edec94887acdd868ec6e31",
+    "transform": "Replace cloud workspace/temp prefixes; remove XML hostname only; preserve testcase names, counts, outcomes."
+  },
+  {
+    "path": "history-tests.log",
+    "source": "original_zip",
+    "original_sha256": "c9a7139f1f12b3b7005b79265e7b8d4453a59bb49c91a772d641829a8e6c0a64",
+    "delivered_sha256": "a22a133184259215eabe85fe18ff89731c78c1e11b9b5c4193a79397cd5d8809",
+    "transform": "Replace cloud workspace/temp prefixes; remove XML hostname only; preserve testcase names, counts, outcomes."
+  },
+  {
+    "path": "history-tests.xml",
+    "source": "original_zip",
+    "original_sha256": "df2c35c0a58e05ca7e31ac8130187d007474dcfc525dfa1c4d5b74525729e71e",
+    "delivered_sha256": "8be4b208482128ab00cf1eb04d781b4e1605657b15a5b5b971512286afe10d1c",
+    "transform": "Replace cloud workspace/temp prefixes; remove XML hostname only; preserve testcase names, counts, outcomes."
+  },
+  {
+    "path": "independent-review/REVIEW.md",
+    "source": "original_zip",
+    "original_sha256": "fd0cfe14407a3cfe3846ac60fa801a8b95984dde0178e32dcbb5739336e863ce",
+    "delivered_sha256": "b63e8b61aa43e4a7bad59773adc63d029e27d0e694ccfb4ed0b5d08416b77853",
+    "transform": "Replace cloud workspace/temp prefixes; remove XML hostname only; preserve testcase names, counts, outcomes."
+  },
+  {
+    "path": "independent-review/results.log",
+    "source": "original_zip",
+    "original_sha256": "2cea5890f9afbaf76983a223814abb345a32cc3b750715a5e4c7d06b37ccef88",
+    "delivered_sha256": "80e3a091a5ff69ba5a296cb6f8becc66355b0b49df30d5c6f5346f610973bc0e",
+    "transform": "Replace cloud workspace/temp prefixes; remove XML hostname only; preserve testcase names, counts, outcomes."
+  },
+  {
+    "path": "independent-review/results.xml",
+    "source": "original_zip",
+    "original_sha256": "b40af226f5fece24db61622913ae1bce1095235a8f183b72ae424cc9252f46d5",
+    "delivered_sha256": "561424fcb8cf1c2dd7c358f37245696799e2e18b1164467913464705bf404196",
+    "transform": "Replace cloud workspace/temp prefixes; remove XML hostname only; preserve testcase names, counts, outcomes."
+  },
+  {
+    "path": "initial-history-tests.log",
+    "source": "original_zip",
+    "original_sha256": "cd141d9ca4bd9f6b4fb3ea277408accb45b1fea13d3d947adc37ceda17247fdc",
+    "delivered_sha256": "961e42bdac9a2a0568d511119d65218cf6f28046b9b7aa51244f28bf4c5f4a5f",
+    "transform": "Replace cloud workspace/temp prefixes; remove XML hostname only; preserve testcase names, counts, outcomes."
+  },
+  {
+    "path": "initial-history-tests.xml",
+    "source": "original_zip",
+    "original_sha256": "2b39eabbd9467760800c1a1dbac161afb58a65e171907a9ad5539a39cc84394b",
+    "delivered_sha256": "2f8ca396e55a71c50c27d1bc41cae0503e2bbfb2bccc23db8447d49b329367eb",
+    "transform": "Replace cloud workspace/temp prefixes; remove XML hostname only; preserve testcase names, counts, outcomes."
+  },
+  {
+    "path": "initial-readonly-wal-index-test.log",
+    "source": "original_zip",
+    "original_sha256": "63c17bd9bf3793336081c64179357ac50550c9af3a980dcfeb691bd58f942b5a",
+    "delivered_sha256": "41295aa8aafefe982a27601eb863141a76c2aadc4fe3b514a40ab2360efae179",
+    "transform": "Replace cloud workspace/temp prefixes; remove XML hostname only; preserve testcase names, counts, outcomes."
+  },
+  {
+    "path": "latest-main-tests.log",
+    "source": "original_zip",
+    "original_sha256": "11c8f20eabe2c6d838b74711479a510897f3c9bb308fe130da46324219cbd6f6",
+    "delivered_sha256": "52a5f5f9a9184f41f2e6da17e49a25531700bb3ae73f9cac64eaeb05d7587fb9",
+    "transform": "Replace cloud workspace/temp prefixes; remove XML hostname only; preserve testcase names, counts, outcomes."
+  },
+  {
+    "path": "latest-main-tests.xml",
+    "source": "original_zip",
+    "original_sha256": "ffe5be4a73a673befca2fdf00a0da154fa0759505135601aad2f35f0b1df59ef",
+    "delivered_sha256": "1c2b87c9ca9728309b9c588edff0fa15f3fb7cbdc0b0aaf3d147dfd0e8641fee",
+    "transform": "Replace cloud workspace/temp prefixes; remove XML hostname only; preserve testcase names, counts, outcomes."
+  },
+  {
+    "path": "provisional-test.xml",
+    "source": "original_zip",
+    "original_sha256": "b45f98e39dc401c267bddb756b0c8abca38a852d605e6ea368d7802c57cb2e0a",
+    "delivered_sha256": "4d93072caa029e126e94af417ab43f2cfa4098953ec839312beca9617856876f",
+    "transform": "Replace cloud workspace/temp prefixes; remove XML hostname only; preserve testcase names, counts, outcomes."
+  },
+  {
+    "path": "portable-gate-validation.log",
+    "source": "author_handoff",
+    "original_sha256": "c8d59894d7d42d4ef26133a3920715589d156b9d11d1bb93c798716ffd25147e",
+    "delivered_sha256": "5a632dacfbf8cd3a44071a069df9ea4785573579884b33f5e3120b1d1a99e607",
+    "transform": "Replace cloud workspace/temp prefixes; remove XML hostname only; preserve testcase names, counts, outcomes."
+  },
+  {
+    "path": "portable-gate-validation.xml",
+    "source": "author_handoff",
+    "original_sha256": "7931bebe0d8f745f6eb046fcea84174fa5869713436447071fc989c0c0171ec6",
+    "delivered_sha256": "a27b2b1bfe63c58957c11ffcc736e70bdfaee0268efb2e13dede5b1347c350b9",
+    "transform": "Replace cloud workspace/temp prefixes; remove XML hostname only; preserve testcase names, counts, outcomes."
+  }
+]

@@ -1,0 +1,10 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.14, pytest-8.4.2, pluggy-1.6.0 -- /workspace/scratch/18c810e6dd59/rpnh-acceptance-history-review/round2-source/../../rpnh-recovery-20261003/source/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /workspace/scratch/18c810e6dd59/rpnh-acceptance-history-review
+collecting ... collected 3 items / 2 deselected / 1 selected
+
+../tests/test_history_business_refs.py::test_original_operation_config_is_opaque_business_data PASSED [100%]
+
+- generated xml file: /workspace/scratch/18c810e6dd59/rpnh-acceptance-history-review/evidence/round2-operation-config-corrected.xml -
+======================= 1 passed, 2 deselected in 3.23s ========================

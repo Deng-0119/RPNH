@@ -1,0 +1,32 @@
+{
+  "command": [
+    "<WORKSPACE>/.p26/v/bin/python",
+    "<WORKSPACE>/task-complete-v5-20261009/raw/RPNH_Static_Lease_Reads_Offline_Candidate_20261008/RPNH_Static_Lease_Reads_Offline_Candidate_20261008/tools/offline_pytest.py",
+    "-p",
+    "no:cacheprovider",
+    "-q",
+    "tests/test_static_lease_reads.py",
+    "tests/test_static_lease_interactions.py",
+    "tests/test_static_lease_exact_selection.py",
+    "tests/test_marking_modularization.py",
+    "tests/test_petri_marking_delta.py",
+    "tests/test_optional_resource_request.py",
+    "tests/test_firing_activity.py",
+    "--basetemp=<WORKSPACE>/.v26/usa",
+    "--junitxml=<WORKSPACE>/task-complete-v5-20261009/stages/core/S1/resume-author.xml"
+  ],
+  "cwd": "<WORKSPACE>/.v26/c1",
+  "pid": 17719,
+  "started_at_utc": "2026-10-09T03:15:30.213800+00:00",
+  "finished_at_utc": "2026-10-09T03:18:39.598701+00:00",
+  "elapsed_seconds": 192.51870001099996,
+  "exit_code": 0,
+  "environment": {
+    "PYTHONPATH": "<WORKSPACE>/.v26/c1:<WORKSPACE>/.v26/c1/tests",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1",
+    "TMPDIR": "<WORKSPACE>/.v26/tmp",
+    "PYTEST_ADDOPTS": null,
+    "PYTEST_PLUGINS": null
+  }
+}

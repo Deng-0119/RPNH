@@ -1,0 +1,1107 @@
+{
+  "source_manifest": "evidence/final21-source-after.json",
+  "source_aggregate_sha256": "ac68327e442b7bda8a6aa2ba93c0cd20ad72181a661b0497627b08713334907e",
+  "fixture": "test_bound_origin_true_admission_start_success",
+  "evidence_kind": "real temporary Registry/PN, explicitly injected offline native observation; no OS peer/Popen/reservation proof",
+  "parent": {
+    "writer_epoch": 2,
+    "records": [
+      {
+        "type": "native_run_identity/v1",
+        "logical_id": "run:4b5d50d38ff548acba879c3315167be1",
+        "version_id": "run_version:d5e711fec51049c4871bf9c1a42ce897",
+        "transaction_id": "transaction:d8ab2c19271956abbb1755d00f780abf",
+        "producer_invocation_id": null,
+        "published_event_id": "event:944aeb8981aa4146a306cf662612b4bd",
+        "payload_sha256": "72360092d9f28bc746f89c61ef2102ad21c1f7855fe3eace82f948e08f4b37a2",
+        "metadata": {
+          "branch_id": "main",
+          "protocol_versions": [
+            "application/net_operation_test_text/v1"
+          ],
+          "run_id": "run:4b5d50d38ff548acba879c3315167be1",
+          "run_version_id": "run_version:d5e711fec51049c4871bf9c1a42ce897",
+          "task_branch_ref": {
+            "entity_type": "task_branch/v1",
+            "logical_id": "task_branch:feac4fcfe11245889832341d586d0ae4",
+            "version_id": "task_branch_version:4a0b11c7712c40459cd9b984f2a3de2e"
+          },
+          "task_ref": {
+            "entity_type": "task/v1",
+            "logical_id": "task:8eb9fceb891e4326aff301c3cdf0a4d2",
+            "version_id": "task_version:2785743e152544e9ad88ec5d65dfaacf"
+          }
+        }
+      },
+      {
+        "type": "native_genesis_manifest/v1",
+        "logical_id": "native_genesis:35727833873b454885aa738d7c0f195e",
+        "version_id": "native_genesis_version:6cb27cb4685e43d18988e16782aed692",
+        "transaction_id": "transaction:d8ab2c19271956abbb1755d00f780abf",
+        "producer_invocation_id": null,
+        "published_event_id": "event:462110059df84dec8d0dbc41b131f00b",
+        "payload_sha256": "c4827adf68ae5ce137df285f7b5e48bcc7beab09a629ae79d0259864ff8f7f17",
+        "metadata": {
+          "bootstrap_transaction_id": "transaction:d8ab2c19271956abbb1755d00f780abf",
+          "format": "d1-c-greenfield/v1",
+          "genesis_id": "native_genesis:35727833873b454885aa738d7c0f195e",
+          "genesis_version_id": "native_genesis_version:6cb27cb4685e43d18988e16782aed692",
+          "run_identity_ref": {
+            "entity_type": "native_run_identity/v1",
+            "logical_id": "run:4b5d50d38ff548acba879c3315167be1",
+            "version_id": "run_version:d5e711fec51049c4871bf9c1a42ce897"
+          },
+          "type_catalog_ref": {
+            "entity_type": "registry_type_catalog/v1",
+            "logical_id": "schema:6223867470b44d30b76be34311f6d3e8",
+            "version_id": "resource_version:98ac440445234d0894923d81d046c3c3"
+          }
+        }
+      },
+      {
+        "type": "collaboration_source_binding/v1",
+        "logical_id": "resource:7a5a19e840935bfe94ce65dcec47d519",
+        "version_id": "resource_version:22bc22ab9d095a198f8f9aedc4e0d256",
+        "transaction_id": "transaction:0aa4c86c044f596c8b8a95eec8dfcf29",
+        "producer_invocation_id": null,
+        "published_event_id": "event:74b78fe60e3c4cde93d6778b9993fe12",
+        "payload_sha256": "0bec351f1f33046bfcda5127ded7021be0cb731eece6760f39a5b7627e608dea",
+        "metadata": {
+          "binding_ref": {
+            "entity_type": "collaboration_source_binding/v1",
+            "logical_id": "resource:7a5a19e840935bfe94ce65dcec47d519",
+            "version_id": "resource_version:22bc22ab9d095a198f8f9aedc4e0d256"
+          },
+          "bootstrap_command_ref": {
+            "entity_type": "bootstrap_command/v1",
+            "logical_id": "bootstrap_command:c5c2ac2c4b8d4dfd9cadbc3d7819bec4",
+            "version_id": "bootstrap_command_version:84a5239fdfb748dfa46b592ef6fca563"
+          },
+          "command_id": "parent:source",
+          "native_run_ref": {
+            "entity_type": "native_run_identity/v1",
+            "logical_id": "run:4b5d50d38ff548acba879c3315167be1",
+            "version_id": "run_version:d5e711fec51049c4871bf9c1a42ce897"
+          },
+          "schema_version": "registry_v1/collaboration_source_binding/v1",
+          "source_id": "parent-source",
+          "task_ref": {
+            "entity_type": "task/v1",
+            "logical_id": "task:8eb9fceb891e4326aff301c3cdf0a4d2",
+            "version_id": "task_version:2785743e152544e9ad88ec5d65dfaacf"
+          }
+        }
+      },
+      {
+        "type": "parent_child_intent/v1",
+        "logical_id": "resource:843eeb2b6d205ba8b3ecb639051aac72",
+        "version_id": "resource_version:8748803b01775c7fa088d88e45ac2793",
+        "transaction_id": "transaction:3505b6822eb25c168092b1f01425bf7c",
+        "producer_invocation_id": "invocation:b61b35bc33795d69b63b98f8cdc6222e",
+        "published_event_id": "event:7a26241c45ee40cbaa20dca584bdd00a",
+        "payload_sha256": "2bf5cb785d481796e8e6c2001c67c6db6174b8dcc2bc454b47d650f3fe637a75",
+        "metadata": {
+          "envelope": {
+            "intent_ref": {
+              "entity_type": "parent_child_intent/v1",
+              "logical_id": "resource:843eeb2b6d205ba8b3ecb639051aac72",
+              "version_id": "resource_version:8748803b01775c7fa088d88e45ac2793"
+            },
+            "parent": {
+              "binding_ref": {
+                "entity_type": "collaboration_source_binding/v1",
+                "logical_id": "resource:7a5a19e840935bfe94ce65dcec47d519",
+                "version_id": "resource_version:22bc22ab9d095a198f8f9aedc4e0d256"
+              },
+              "branch_ref": {
+                "entity_type": "task_branch/v1",
+                "logical_id": "task_branch:feac4fcfe11245889832341d586d0ae4",
+                "version_id": "task_branch_version:4a0b11c7712c40459cd9b984f2a3de2e"
+              },
+              "run_ref": {
+                "entity_type": "native_run_identity/v1",
+                "logical_id": "run:4b5d50d38ff548acba879c3315167be1",
+                "version_id": "run_version:d5e711fec51049c4871bf9c1a42ce897"
+              },
+              "source_id": "parent-source",
+              "task_ref": {
+                "entity_type": "task/v1",
+                "logical_id": "task:8eb9fceb891e4326aff301c3cdf0a4d2",
+                "version_id": "task_version:2785743e152544e9ad88ec5d65dfaacf"
+              }
+            },
+            "protocol": "rpnh/parent-bound-child-envelope/v1",
+            "public_material_digest": "4c59bb169cfdb1be3e77e57856ad2f0eccb8766bd24ca11db7e66a91855dab41",
+            "slot_id": "child",
+            "target": {
+              "document_root": "/workspace/scratch/18c810e6dd59/rpnh-parent-child-core-implementation/evidence/final-tmp21/test_bound_origin_true_admissi0/control/bound_tasks/task-h7-0311921bfeb71dee1058d0b3c04a5e29e3eb3f05e4417ebf8641f99a6121b497",
+              "key_digest": "0311921bfeb71dee1058d0b3c04a5e29e3eb3f05e4417ebf8641f99a6121b497",
+              "relative_path": "h7-runs/0311921bfeb71dee1058d0b3c04a5e29e3eb3f05e4417ebf8641f99a6121b497/run",
+              "root_binding": "test-root-binding",
+              "transport_task_id": "task-h7-0311921bfeb71dee1058d0b3c04a5e29e3eb3f05e4417ebf8641f99a6121b497"
+            }
+          },
+          "envelope_digest": "9db1c470af4753122d2747d75b7ca2b100012626113d6b1f1a5c403f100ce62a",
+          "execution": {
+            "execution_generation": 0,
+            "firing_ref": {
+              "entity_type": "transition_firing/v1",
+              "logical_id": "transition_firing:a536bfdfbf4d50859542fffd12177671",
+              "version_id": "transition_firing_version:165046183f435a088128980464610c66"
+            },
+            "invocation_ref": {
+              "entity_type": "invocation/v1",
+              "logical_id": "invocation:b61b35bc33795d69b63b98f8cdc6222e",
+              "version_id": "invocation_version:1b82782905125577a253eb1d939529d3"
+            },
+            "lease_ref": {
+              "entity_type": "operation_execution_lease/v1",
+              "logical_id": "operation_execution_lease:c146e2958c2f590cb5be1333af8dc244",
+              "version_id": "operation_execution_lease_version:08200a82252b5fb6a9c64b505c6715ff"
+            },
+            "net_ref": {
+              "entity_type": "net_instance/v1",
+              "logical_id": "net_instance:04ad25bf2ae650f88042078ddcec4477",
+              "version_id": "net_instance_version:1417fdbc246a5b3d8f667b2189f312e2"
+            },
+            "original_writer_epoch": 2,
+            "round_ref": {
+              "entity_type": "task_round/v1",
+              "logical_id": "task_round:1f5ed21133e34f6e8d95329a08e1afaf",
+              "version_id": "task_round_version:20993a12c62647b79bc6d31f34bc73be"
+            },
+            "run_authority_ref": {
+              "entity_type": "run_execution_authority/v1",
+              "logical_id": "run_execution_authority:eba2da3db62152c08d8048f28ee7af57",
+              "version_id": "run_execution_authority_version:3df52adff69a5451baf3be9d796940a2"
+            },
+            "start_event_id": "event:7f9c82334ee0456db51478b110f28993"
+          },
+          "materials": {
+            "initial_declaration_digest": "3e9a0e5412d7f09f40e81ebb18489beb38028cf5be95a82147c0b53f9c6314f0",
+            "inventory": [
+              {
+                "name": "budgets",
+                "sha256": "e094cedf16ea5515a35def97130859d31532e97c9793c2cfd5dd9dad2cdc3d33",
+                "size": 21
+              },
+              {
+                "name": "host",
+                "sha256": "210ff3b57cad9bf73d9f5913edc71d65f450418cc4533c86cb9f3c6c9cc9a482",
+                "size": 18
+              },
+              {
+                "name": "implementation",
+                "sha256": "ab423ead38965439e109864bf87552c02600423b8aaf5ea19aa2bdda83ff03be",
+                "size": 28
+              },
+              {
+                "name": "inputs",
+                "sha256": "87321af7654a3a5e2cc6362361eba103d1ee3743de3e98b973cba9c5b1a688c0",
+                "size": 20
+              },
+              {
+                "name": "lowered_net",
+                "sha256": "3e9a0e5412d7f09f40e81ebb18489beb38028cf5be95a82147c0b53f9c6314f0",
+                "size": 11793
+              },
+              {
+                "name": "normalized_request",
+                "sha256": "fab0a397a544ea5566fc2cab58682f232ff6366851e3862d80ba0707ba3e014e",
+                "size": 2232
+              },
+              {
+                "name": "registration",
+                "sha256": "f0e9d19ac191cb943f6f30315c74c47110d0d6d6a0da442acfa6eb8c3f0ad659",
+                "size": 26
+              }
+            ],
+            "normalized_request": {
+              "request": {
+                "child_kind": "module",
+                "definition": {
+                  "analyzers": [],
+                  "budget_buckets": [
+                    {
+                      "bucket_id": "work",
+                      "budget_scope": "module",
+                      "finalization_scope": null,
+                      "max_attempts": 3
+                    }
+                  ],
+                  "budgets": {},
+                  "components": [
+                    {
+                      "config": {},
+                      "config_schema": "application/operation_component_config/v1",
+                      "key": "test_h7_child",
+                      "name": "step",
+                      "operations": [
+                        {
+                          "budget_binding": {
+                            "bucket_id": "work",
+                            "budget_scope": "module",
+                            "finalization_scope": null
+                          },
+                          "config": {},
+                          "executor": "test/net-operation-business/v1",
+                          "inputs": [
+                            "request"
+                          ],
+                          "name": "run",
+                          "outcomes": [
+                            {
+                              "effects": [],
+                              "name": "complete",
+                              "products": [
+                                {
+                                  "maximum": 1,
+                                  "minimum": 1,
+                                  "port": "result"
+                                }
+                              ]
+                            }
+                          ],
+                          "outputs": [
+                            "result"
+                          ],
+                          "request_port": null,
+                          "tools": []
+                        }
+                      ],
+                      "ports": [
+                        {
+                          "cardinality": 1,
+                          "cardinality_maximum": null,
+                          "cardinality_minimum": null,
+                          "channel": "data",
+                          "direction": "input",
+                          "name": "request",
+                          "schema": "application/net_operation_test_text/v1"
+                        },
+                        {
+                          "cardinality": 1,
+                          "cardinality_maximum": null,
+                          "cardinality_minimum": null,
+                          "channel": "data",
+                          "direction": "output",
+                          "name": "result",
+                          "schema": "application/net_operation_test_text/v1"
+                        }
+                      ]
+                    }
+                  ],
+                  "designer_constraints": {},
+                  "entry": {
+                    "request": {
+                      "component": "step",
+                      "port": "request"
+                    }
+                  },
+                  "exit": {
+                    "result": {
+                      "component": "step",
+                      "port": "result"
+                    }
+                  },
+                  "links": [],
+                  "name": "H7Child",
+                  "required_schemas": [
+                    "application/net_operation_test_text/v1",
+                    "application/operation_component_config/v1",
+                    "rpnh/parent_origin_capability/v1"
+                  ],
+                  "schema_version": "rpnh/module_declaration/v1",
+                  "terminal": {
+                    "config": {
+                      "run_outcome": "complete"
+                    },
+                    "key": "test/net-operation-terminal/v1",
+                    "operation": "run",
+                    "outcome": "complete",
+                    "source": {
+                      "component": "step",
+                      "port": "result"
+                    }
+                  },
+                  "terminal_alternatives": []
+                },
+                "public_configuration": {
+                  "mode": "offline"
+                },
+                "schema_version": "rpnh/parent_child_request/v1",
+                "slot_id": "child"
+              },
+              "target": {
+                "document_root": "/workspace/scratch/18c810e6dd59/rpnh-parent-child-core-implementation/evidence/final-tmp21/test_bound_origin_true_admissi0/control/bound_tasks/task-h7-0311921bfeb71dee1058d0b3c04a5e29e3eb3f05e4417ebf8641f99a6121b497",
+                "key_digest": "0311921bfeb71dee1058d0b3c04a5e29e3eb3f05e4417ebf8641f99a6121b497",
+                "relative_path": "h7-runs/0311921bfeb71dee1058d0b3c04a5e29e3eb3f05e4417ebf8641f99a6121b497/run",
+                "root_binding": "test-root-binding",
+                "transport_task_id": "task-h7-0311921bfeb71dee1058d0b3c04a5e29e3eb3f05e4417ebf8641f99a6121b497"
+              }
+            },
+            "public_material_digest": "4c59bb169cfdb1be3e77e57856ad2f0eccb8766bd24ca11db7e66a91855dab41",
+            "request_sha256": "b80bdb84098b1298db6e4c370aa9abc7e1c5148743fe26f0ad9771cf2097ff00"
+          },
+          "parent": {
+            "binding_ref": {
+              "entity_type": "collaboration_source_binding/v1",
+              "logical_id": "resource:7a5a19e840935bfe94ce65dcec47d519",
+              "version_id": "resource_version:22bc22ab9d095a198f8f9aedc4e0d256"
+            },
+            "branch_ref": {
+              "entity_type": "task_branch/v1",
+              "logical_id": "task_branch:feac4fcfe11245889832341d586d0ae4",
+              "version_id": "task_branch_version:4a0b11c7712c40459cd9b984f2a3de2e"
+            },
+            "run_ref": {
+              "entity_type": "native_run_identity/v1",
+              "logical_id": "run:4b5d50d38ff548acba879c3315167be1",
+              "version_id": "run_version:d5e711fec51049c4871bf9c1a42ce897"
+            },
+            "source_id": "parent-source",
+            "task_ref": {
+              "entity_type": "task/v1",
+              "logical_id": "task:8eb9fceb891e4326aff301c3cdf0a4d2",
+              "version_id": "task_version:2785743e152544e9ad88ec5d65dfaacf"
+            }
+          },
+          "record_ref": {
+            "entity_type": "parent_child_intent/v1",
+            "logical_id": "resource:843eeb2b6d205ba8b3ecb639051aac72",
+            "version_id": "resource_version:8748803b01775c7fa088d88e45ac2793"
+          },
+          "request": {
+            "child_kind": "module",
+            "definition": {
+              "analyzers": [],
+              "budget_buckets": [
+                {
+                  "bucket_id": "work",
+                  "budget_scope": "module",
+                  "finalization_scope": null,
+                  "max_attempts": 3
+                }
+              ],
+              "budgets": {},
+              "components": [
+                {
+                  "config": {},
+                  "config_schema": "application/operation_component_config/v1",
+                  "key": "test_h7_child",
+                  "name": "step",
+                  "operations": [
+                    {
+                      "budget_binding": {
+                        "bucket_id": "work",
+                        "budget_scope": "module",
+                        "finalization_scope": null
+                      },
+                      "config": {},
+                      "executor": "test/net-operation-business/v1",
+                      "inputs": [
+                        "request"
+                      ],
+                      "name": "run",
+                      "outcomes": [
+                        {
+                          "effects": [],
+                          "name": "complete",
+                          "products": [
+                            {
+                              "maximum": 1,
+                              "minimum": 1,
+                              "port": "result"
+                            }
+                          ]
+                        }
+                      ],
+                      "outputs": [
+                        "result"
+                      ],
+                      "request_port": null,
+                      "tools": []
+                    }
+                  ],
+                  "ports": [
+                    {
+                      "cardinality": 1,
+                      "cardinality_maximum": null,
+                      "cardinality_minimum": null,
+                      "channel": "data",
+                      "direction": "input",
+                      "name": "request",
+                      "schema": "application/net_operation_test_text/v1"
+                    },
+                    {
+                      "cardinality": 1,
+                      "cardinality_maximum": null,
+                      "cardinality_minimum": null,
+                      "channel": "data",
+                      "direction": "output",
+                      "name": "result",
+                      "schema": "application/net_operation_test_text/v1"
+                    }
+                  ]
+                }
+              ],
+              "designer_constraints": {},
+              "entry": {
+                "request": {
+                  "component": "step",
+                  "port": "request"
+                }
+              },
+              "exit": {
+                "result": {
+                  "component": "step",
+                  "port": "result"
+                }
+              },
+              "links": [],
+              "name": "H7Child",
+              "required_schemas": [
+                "application/net_operation_test_text/v1",
+                "application/operation_component_config/v1",
+                "rpnh/parent_origin_capability/v1"
+              ],
+              "schema_version": "rpnh/module_declaration/v1",
+              "terminal": {
+                "config": {
+                  "run_outcome": "complete"
+                },
+                "key": "test/net-operation-terminal/v1",
+                "operation": "run",
+                "outcome": "complete",
+                "source": {
+                  "component": "step",
+                  "port": "result"
+                }
+              },
+              "terminal_alternatives": []
+            },
+            "public_configuration": {
+              "mode": "offline"
+            },
+            "schema_version": "rpnh/parent_child_request/v1",
+            "slot_id": "child"
+          },
+          "request_ref": {
+            "entity_type": "resource_version/v1",
+            "logical_id": "resource:d34a20f75e895b2aa53c0e7380efe323",
+            "version_id": "resource_version:0877735217bb581791c549797a76a842"
+          },
+          "slot_id": "child",
+          "target": {
+            "document_root": "/workspace/scratch/18c810e6dd59/rpnh-parent-child-core-implementation/evidence/final-tmp21/test_bound_origin_true_admissi0/control/bound_tasks/task-h7-0311921bfeb71dee1058d0b3c04a5e29e3eb3f05e4417ebf8641f99a6121b497",
+            "key_digest": "0311921bfeb71dee1058d0b3c04a5e29e3eb3f05e4417ebf8641f99a6121b497",
+            "relative_path": "h7-runs/0311921bfeb71dee1058d0b3c04a5e29e3eb3f05e4417ebf8641f99a6121b497/run",
+            "root_binding": "test-root-binding",
+            "transport_task_id": "task-h7-0311921bfeb71dee1058d0b3c04a5e29e3eb3f05e4417ebf8641f99a6121b497"
+          }
+        }
+      },
+      {
+        "type": "parent_child_dispatch/v1",
+        "logical_id": "resource:fb890ca48b6b53b8a634f032b71a73d4",
+        "version_id": "resource_version:b219cdf1d4c351f7b8894fcd5117f099",
+        "transaction_id": "transaction:9562dfe98c7c5222a071e83668767565",
+        "producer_invocation_id": "invocation:b61b35bc33795d69b63b98f8cdc6222e",
+        "published_event_id": "event:e013a544c1da4515815ecadd5b7e9ba9",
+        "payload_sha256": "d11f697a203d8cc8685ccb9f0762c35e406b8716dcb539cf46d74d137b43017f",
+        "metadata": {
+          "bundle_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "execution": {
+            "execution_generation": 0,
+            "firing_ref": {
+              "entity_type": "transition_firing/v1",
+              "logical_id": "transition_firing:a536bfdfbf4d50859542fffd12177671",
+              "version_id": "transition_firing_version:165046183f435a088128980464610c66"
+            },
+            "invocation_ref": {
+              "entity_type": "invocation/v1",
+              "logical_id": "invocation:b61b35bc33795d69b63b98f8cdc6222e",
+              "version_id": "invocation_version:1b82782905125577a253eb1d939529d3"
+            },
+            "lease_ref": {
+              "entity_type": "operation_execution_lease/v1",
+              "logical_id": "operation_execution_lease:c146e2958c2f590cb5be1333af8dc244",
+              "version_id": "operation_execution_lease_version:08200a82252b5fb6a9c64b505c6715ff"
+            },
+            "net_ref": {
+              "entity_type": "net_instance/v1",
+              "logical_id": "net_instance:04ad25bf2ae650f88042078ddcec4477",
+              "version_id": "net_instance_version:1417fdbc246a5b3d8f667b2189f312e2"
+            },
+            "original_writer_epoch": 2,
+            "round_ref": {
+              "entity_type": "task_round/v1",
+              "logical_id": "task_round:1f5ed21133e34f6e8d95329a08e1afaf",
+              "version_id": "task_round_version:20993a12c62647b79bc6d31f34bc73be"
+            },
+            "run_authority_ref": {
+              "entity_type": "run_execution_authority/v1",
+              "logical_id": "run_execution_authority:eba2da3db62152c08d8048f28ee7af57",
+              "version_id": "run_execution_authority_version:3df52adff69a5451baf3be9d796940a2"
+            },
+            "start_event_id": "event:7f9c82334ee0456db51478b110f28993"
+          },
+          "intent_ref": {
+            "entity_type": "parent_child_intent/v1",
+            "logical_id": "resource:843eeb2b6d205ba8b3ecb639051aac72",
+            "version_id": "resource_version:8748803b01775c7fa088d88e45ac2793"
+          },
+          "parent": {
+            "binding_ref": {
+              "entity_type": "collaboration_source_binding/v1",
+              "logical_id": "resource:7a5a19e840935bfe94ce65dcec47d519",
+              "version_id": "resource_version:22bc22ab9d095a198f8f9aedc4e0d256"
+            },
+            "branch_ref": {
+              "entity_type": "task_branch/v1",
+              "logical_id": "task_branch:feac4fcfe11245889832341d586d0ae4",
+              "version_id": "task_branch_version:4a0b11c7712c40459cd9b984f2a3de2e"
+            },
+            "run_ref": {
+              "entity_type": "native_run_identity/v1",
+              "logical_id": "run:4b5d50d38ff548acba879c3315167be1",
+              "version_id": "run_version:d5e711fec51049c4871bf9c1a42ce897"
+            },
+            "source_id": "parent-source",
+            "task_ref": {
+              "entity_type": "task/v1",
+              "logical_id": "task:8eb9fceb891e4326aff301c3cdf0a4d2",
+              "version_id": "task_version:2785743e152544e9ad88ec5d65dfaacf"
+            }
+          },
+          "record_ref": {
+            "entity_type": "parent_child_dispatch/v1",
+            "logical_id": "resource:fb890ca48b6b53b8a634f032b71a73d4",
+            "version_id": "resource_version:b219cdf1d4c351f7b8894fcd5117f099"
+          },
+          "slot_id": "child"
+        }
+      },
+      {
+        "type": "parent_child_worker/v1",
+        "logical_id": "resource:2b1638fc39355656953b00e2be2cc3aa",
+        "version_id": "resource_version:566793544a15529abe522c24b6eb300a",
+        "transaction_id": "transaction:ced32efe50fb5fbba9c575dfeac324e0",
+        "producer_invocation_id": "invocation:b61b35bc33795d69b63b98f8cdc6222e",
+        "published_event_id": "event:142c332e7c954089b3eaa3ab559f3067",
+        "payload_sha256": "3040c5c66b6ea1b3ec7af8ce714832b6d3326aa04ad8b48db3cedca54ea4ff2a",
+        "metadata": {
+          "dispatch_ref": {
+            "entity_type": "parent_child_dispatch/v1",
+            "logical_id": "resource:fb890ca48b6b53b8a634f032b71a73d4",
+            "version_id": "resource_version:b219cdf1d4c351f7b8894fcd5117f099"
+          },
+          "execution": {
+            "execution_generation": 0,
+            "firing_ref": {
+              "entity_type": "transition_firing/v1",
+              "logical_id": "transition_firing:a536bfdfbf4d50859542fffd12177671",
+              "version_id": "transition_firing_version:165046183f435a088128980464610c66"
+            },
+            "invocation_ref": {
+              "entity_type": "invocation/v1",
+              "logical_id": "invocation:b61b35bc33795d69b63b98f8cdc6222e",
+              "version_id": "invocation_version:1b82782905125577a253eb1d939529d3"
+            },
+            "lease_ref": {
+              "entity_type": "operation_execution_lease/v1",
+              "logical_id": "operation_execution_lease:c146e2958c2f590cb5be1333af8dc244",
+              "version_id": "operation_execution_lease_version:08200a82252b5fb6a9c64b505c6715ff"
+            },
+            "net_ref": {
+              "entity_type": "net_instance/v1",
+              "logical_id": "net_instance:04ad25bf2ae650f88042078ddcec4477",
+              "version_id": "net_instance_version:1417fdbc246a5b3d8f667b2189f312e2"
+            },
+            "original_writer_epoch": 2,
+            "round_ref": {
+              "entity_type": "task_round/v1",
+              "logical_id": "task_round:1f5ed21133e34f6e8d95329a08e1afaf",
+              "version_id": "task_round_version:20993a12c62647b79bc6d31f34bc73be"
+            },
+            "run_authority_ref": {
+              "entity_type": "run_execution_authority/v1",
+              "logical_id": "run_execution_authority:eba2da3db62152c08d8048f28ee7af57",
+              "version_id": "run_execution_authority_version:3df52adff69a5451baf3be9d796940a2"
+            },
+            "start_event_id": "event:7f9c82334ee0456db51478b110f28993"
+          },
+          "intent_ref": {
+            "entity_type": "parent_child_intent/v1",
+            "logical_id": "resource:843eeb2b6d205ba8b3ecb639051aac72",
+            "version_id": "resource_version:8748803b01775c7fa088d88e45ac2793"
+          },
+          "parent": {
+            "binding_ref": {
+              "entity_type": "collaboration_source_binding/v1",
+              "logical_id": "resource:7a5a19e840935bfe94ce65dcec47d519",
+              "version_id": "resource_version:22bc22ab9d095a198f8f9aedc4e0d256"
+            },
+            "branch_ref": {
+              "entity_type": "task_branch/v1",
+              "logical_id": "task_branch:feac4fcfe11245889832341d586d0ae4",
+              "version_id": "task_branch_version:4a0b11c7712c40459cd9b984f2a3de2e"
+            },
+            "run_ref": {
+              "entity_type": "native_run_identity/v1",
+              "logical_id": "run:4b5d50d38ff548acba879c3315167be1",
+              "version_id": "run_version:d5e711fec51049c4871bf9c1a42ce897"
+            },
+            "source_id": "parent-source",
+            "task_ref": {
+              "entity_type": "task/v1",
+              "logical_id": "task:8eb9fceb891e4326aff301c3cdf0a4d2",
+              "version_id": "task_version:2785743e152544e9ad88ec5d65dfaacf"
+            }
+          },
+          "record_ref": {
+            "entity_type": "parent_child_worker/v1",
+            "logical_id": "resource:2b1638fc39355656953b00e2be2cc3aa",
+            "version_id": "resource_version:566793544a15529abe522c24b6eb300a"
+          },
+          "slot_id": "child",
+          "worker": {
+            "boot_id": "offline-only",
+            "pid": 12345,
+            "start_ticks": 100,
+            "uid": 1000
+          }
+        }
+      },
+      {
+        "type": "parent_child_acceptance/v1",
+        "logical_id": "resource:64e00b98b2525c90a9ccbcfc2a20d899",
+        "version_id": "resource_version:3476702ebe675056b74564b35f60602b",
+        "transaction_id": "transaction:8d5f11ee50c6559f9b1045c6b680a572",
+        "producer_invocation_id": "invocation:b61b35bc33795d69b63b98f8cdc6222e",
+        "published_event_id": "event:241b061fb4c44c56af959829a0c406d0",
+        "payload_sha256": "087c71e4d5ed2ee151ac8142c9f0f5e107a63ab0e8fff41e4c691f021244c82c",
+        "metadata": {
+          "allowed_action": "fresh_bound_bootstrap_once",
+          "dispatch_ref": {
+            "entity_type": "parent_child_dispatch/v1",
+            "logical_id": "resource:fb890ca48b6b53b8a634f032b71a73d4",
+            "version_id": "resource_version:b219cdf1d4c351f7b8894fcd5117f099"
+          },
+          "envelope_digest": "9db1c470af4753122d2747d75b7ca2b100012626113d6b1f1a5c403f100ce62a",
+          "execution": {
+            "execution_generation": 0,
+            "firing_ref": {
+              "entity_type": "transition_firing/v1",
+              "logical_id": "transition_firing:a536bfdfbf4d50859542fffd12177671",
+              "version_id": "transition_firing_version:165046183f435a088128980464610c66"
+            },
+            "invocation_ref": {
+              "entity_type": "invocation/v1",
+              "logical_id": "invocation:b61b35bc33795d69b63b98f8cdc6222e",
+              "version_id": "invocation_version:1b82782905125577a253eb1d939529d3"
+            },
+            "lease_ref": {
+              "entity_type": "operation_execution_lease/v1",
+              "logical_id": "operation_execution_lease:c146e2958c2f590cb5be1333af8dc244",
+              "version_id": "operation_execution_lease_version:08200a82252b5fb6a9c64b505c6715ff"
+            },
+            "net_ref": {
+              "entity_type": "net_instance/v1",
+              "logical_id": "net_instance:04ad25bf2ae650f88042078ddcec4477",
+              "version_id": "net_instance_version:1417fdbc246a5b3d8f667b2189f312e2"
+            },
+            "original_writer_epoch": 2,
+            "round_ref": {
+              "entity_type": "task_round/v1",
+              "logical_id": "task_round:1f5ed21133e34f6e8d95329a08e1afaf",
+              "version_id": "task_round_version:20993a12c62647b79bc6d31f34bc73be"
+            },
+            "run_authority_ref": {
+              "entity_type": "run_execution_authority/v1",
+              "logical_id": "run_execution_authority:eba2da3db62152c08d8048f28ee7af57",
+              "version_id": "run_execution_authority_version:3df52adff69a5451baf3be9d796940a2"
+            },
+            "start_event_id": "event:7f9c82334ee0456db51478b110f28993"
+          },
+          "intent_ref": {
+            "entity_type": "parent_child_intent/v1",
+            "logical_id": "resource:843eeb2b6d205ba8b3ecb639051aac72",
+            "version_id": "resource_version:8748803b01775c7fa088d88e45ac2793"
+          },
+          "parent": {
+            "binding_ref": {
+              "entity_type": "collaboration_source_binding/v1",
+              "logical_id": "resource:7a5a19e840935bfe94ce65dcec47d519",
+              "version_id": "resource_version:22bc22ab9d095a198f8f9aedc4e0d256"
+            },
+            "branch_ref": {
+              "entity_type": "task_branch/v1",
+              "logical_id": "task_branch:feac4fcfe11245889832341d586d0ae4",
+              "version_id": "task_branch_version:4a0b11c7712c40459cd9b984f2a3de2e"
+            },
+            "run_ref": {
+              "entity_type": "native_run_identity/v1",
+              "logical_id": "run:4b5d50d38ff548acba879c3315167be1",
+              "version_id": "run_version:d5e711fec51049c4871bf9c1a42ce897"
+            },
+            "source_id": "parent-source",
+            "task_ref": {
+              "entity_type": "task/v1",
+              "logical_id": "task:8eb9fceb891e4326aff301c3cdf0a4d2",
+              "version_id": "task_version:2785743e152544e9ad88ec5d65dfaacf"
+            }
+          },
+          "public_material_digest": "4c59bb169cfdb1be3e77e57856ad2f0eccb8766bd24ca11db7e66a91855dab41",
+          "record_ref": {
+            "entity_type": "parent_child_acceptance/v1",
+            "logical_id": "resource:64e00b98b2525c90a9ccbcfc2a20d899",
+            "version_id": "resource_version:3476702ebe675056b74564b35f60602b"
+          },
+          "request_digest": "ef11ee7d8391c41681d17887737370f547364cbe09b3bac97c6d4231101c41d9",
+          "slot_id": "child",
+          "target": {
+            "document_root": "/workspace/scratch/18c810e6dd59/rpnh-parent-child-core-implementation/evidence/final-tmp21/test_bound_origin_true_admissi0/control/bound_tasks/task-h7-0311921bfeb71dee1058d0b3c04a5e29e3eb3f05e4417ebf8641f99a6121b497",
+            "key_digest": "0311921bfeb71dee1058d0b3c04a5e29e3eb3f05e4417ebf8641f99a6121b497",
+            "relative_path": "h7-runs/0311921bfeb71dee1058d0b3c04a5e29e3eb3f05e4417ebf8641f99a6121b497/run",
+            "root_binding": "test-root-binding",
+            "transport_task_id": "task-h7-0311921bfeb71dee1058d0b3c04a5e29e3eb3f05e4417ebf8641f99a6121b497"
+          },
+          "worker": {
+            "boot_id": "offline-only",
+            "pid": 12345,
+            "start_ticks": 100,
+            "uid": 1000
+          },
+          "worker_ref": {
+            "entity_type": "parent_child_worker/v1",
+            "logical_id": "resource:2b1638fc39355656953b00e2be2cc3aa",
+            "version_id": "resource_version:566793544a15529abe522c24b6eb300a"
+          }
+        }
+      }
+    ],
+    "firing_roots": [
+      {
+        "firing_version_id": "transition_firing_version:165046183f435a088128980464610c66",
+        "firing_logical_id": "transition_firing:a536bfdfbf4d50859542fffd12177671",
+        "invocation_version_id": "invocation_version:1b82782905125577a253eb1d939529d3",
+        "invocation_logical_id": "invocation:b61b35bc33795d69b63b98f8cdc6222e",
+        "net_version_id": "net_instance_version:1417fdbc246a5b3d8f667b2189f312e2",
+        "operation_binding_version_id": "operation_binding_version:8fc4fa8dba085f77beb2c52085dfbd0a",
+        "admission_checkpoint_version_id": "marking_checkpoint_version:59aa512d8b97515299ef1470669b9199",
+        "state": "PROVISIONAL",
+        "opened_transaction_id": "transaction:2d3813e678cb57129e3800f7c2e842f3",
+        "published_transaction_id": null,
+        "operation_result_version_id": null,
+        "workspace_lineage_id": null,
+        "workspace_revision_version_id": null,
+        "marking_checkpoint_version_id": null
+      }
+    ],
+    "event_counts": {
+      "firing_admitted/v1": 1,
+      "invocation_started/v1": 1,
+      "marking_checkpoint_committed/v1": 1,
+      "net_adopted/v1": 1,
+      "object_version_published/v1": 54,
+      "observed_read/v1": 1,
+      "operation_dispatch_reserved/v1": 1,
+      "operation_execution_started/v1": 1,
+      "parent_child_recorded/v1": 4,
+      "relation_published/v1": 53,
+      "resource_delivery_acknowledged/v1": 1,
+      "resource_delivery_prepared/v1": 1,
+      "resource_release_authorized/v1": 1,
+      "transaction_committed/v1": 38,
+      "transition_firing_started/v1": 1
+    }
+  },
+  "child": {
+    "writer_epoch": 2,
+    "records": [
+      {
+        "type": "native_run_identity/v1",
+        "logical_id": "run:ce66c2456a9b404f9fe45032cf292f2a",
+        "version_id": "run_version:06affcc71bae4138abb16185814dc0b4",
+        "transaction_id": "transaction:2e452925d7fb5d97b58ca0a3c2b54dca",
+        "producer_invocation_id": null,
+        "published_event_id": "event:7842d4a572ff4f38a6a28f4af0ce87b5",
+        "payload_sha256": "b31d7ccac76dc8417f2a696096759944aa80d5d3d4e569b82422c52ee7c4a2f2",
+        "metadata": {
+          "branch_id": "main",
+          "protocol_versions": [
+            "application/net_operation_test_text/v1",
+            "rpnh/parent-bound-child/v1"
+          ],
+          "run_id": "run:ce66c2456a9b404f9fe45032cf292f2a",
+          "run_version_id": "run_version:06affcc71bae4138abb16185814dc0b4",
+          "task_branch_ref": {
+            "entity_type": "task_branch/v1",
+            "logical_id": "task_branch:8a12adae66cf4ab98a2a0961d14c85f3",
+            "version_id": "task_branch_version:bec1d1f0d63d4d9791b86b0f066c1e6c"
+          },
+          "task_ref": {
+            "entity_type": "task/v1",
+            "logical_id": "task:ba7b617296c9402d817e9729dba99ae4",
+            "version_id": "task_version:698a827e793a40879597892ed997864d"
+          }
+        }
+      },
+      {
+        "type": "native_genesis_manifest/v1",
+        "logical_id": "native_genesis:e5c3ffb0478c44d2971c1c838301cbe5",
+        "version_id": "native_genesis_version:4d99dcffcf0f4e7f8605ae7defc3f7b9",
+        "transaction_id": "transaction:2e452925d7fb5d97b58ca0a3c2b54dca",
+        "producer_invocation_id": null,
+        "published_event_id": "event:1d5dcc5a16be46968707241705e3a64d",
+        "payload_sha256": "882a5c365408336905d3250f90223df8ca1b81825000ae21825bb193afa9deb1",
+        "metadata": {
+          "bootstrap_transaction_id": "transaction:2e452925d7fb5d97b58ca0a3c2b54dca",
+          "format": "d1-c-greenfield/v1",
+          "genesis_id": "native_genesis:e5c3ffb0478c44d2971c1c838301cbe5",
+          "genesis_version_id": "native_genesis_version:4d99dcffcf0f4e7f8605ae7defc3f7b9",
+          "run_identity_ref": {
+            "entity_type": "native_run_identity/v1",
+            "logical_id": "run:ce66c2456a9b404f9fe45032cf292f2a",
+            "version_id": "run_version:06affcc71bae4138abb16185814dc0b4"
+          },
+          "type_catalog_ref": {
+            "entity_type": "registry_type_catalog/v1",
+            "logical_id": "schema:b300a95bf8fb4e2f9e5b6f21be5696fb",
+            "version_id": "resource_version:f82b5ad6c7a14acf938d8a391221124e"
+          }
+        }
+      },
+      {
+        "type": "parent_bound_bootstrap/v1",
+        "logical_id": "resource:c670738734b45ee3bd16c1b7183b304f",
+        "version_id": "resource_version:e1dffbdd216c50af9cc8ed24e65e0b62",
+        "transaction_id": "transaction:2e452925d7fb5d97b58ca0a3c2b54dca",
+        "producer_invocation_id": null,
+        "published_event_id": "event:41ab5c293aa14216a725020971a54a94",
+        "payload_sha256": "437ab281184f1aeeda9e7c4323b8e540742f9526e5cbbf7cd29f69c825f43cb4",
+        "metadata": {
+          "acceptance": {
+            "acceptance_commit_ordinal": 160,
+            "acceptance_event_id": "event:faf96677decf401996a9ff4544c59e50",
+            "acceptance_json": "{\"allowed_action\":\"fresh_bound_bootstrap_once\",\"dispatch_ref\":{\"entity_type\":\"parent_child_dispatch/v1\",\"logical_id\":\"resource:fb890ca48b6b53b8a634f032b71a73d4\",\"version_id\":\"resource_version:b219cdf1d4c351f7b8894fcd5117f099\"},\"envelope_digest\":\"9db1c470af4753122d2747d75b7ca2b100012626113d6b1f1a5c403f100ce62a\",\"execution\":{\"execution_generation\":0,\"firing_ref\":{\"entity_type\":\"transition_firing/v1\",\"logical_id\":\"transition_firing:a536bfdfbf4d50859542fffd12177671\",\"version_id\":\"transition_firing_version:165046183f435a088128980464610c66\"},\"invocation_ref\":{\"entity_type\":\"invocation/v1\",\"logical_id\":\"invocation:b61b35bc33795d69b63b98f8cdc6222e\",\"version_id\":\"invocation_version:1b82782905125577a253eb1d939529d3\"},\"lease_ref\":{\"entity_type\":\"operation_execution_lease/v1\",\"logical_id\":\"operation_execution_lease:c146e2958c2f590cb5be1333af8dc244\",\"version_id\":\"operation_execution_lease_version:08200a82252b5fb6a9c64b505c6715ff\"},\"net_ref\":{\"entity_type\":\"net_instance/v1\",\"logical_id\":\"net_instance:04ad25bf2ae650f88042078ddcec4477\",\"version_id\":\"net_instance_version:1417fdbc246a5b3d8f667b2189f312e2\"},\"original_writer_epoch\":2,\"round_ref\":{\"entity_type\":\"task_round/v1\",\"logical_id\":\"task_round:1f5ed21133e34f6e8d95329a08e1afaf\",\"version_id\":\"task_round_version:20993a12c62647b79bc6d31f34bc73be\"},\"run_authority_ref\":{\"entity_type\":\"run_execution_authority/v1\",\"logical_id\":\"run_execution_authority:eba2da3db62152c08d8048f28ee7af57\",\"version_id\":\"run_execution_authority_version:3df52adff69a5451baf3be9d796940a2\"},\"start_event_id\":\"event:7f9c82334ee0456db51478b110f28993\"},\"intent_ref\":{\"entity_type\":\"parent_child_intent/v1\",\"logical_id\":\"resource:843eeb2b6d205ba8b3ecb639051aac72\",\"version_id\":\"resource_version:8748803b01775c7fa088d88e45ac2793\"},\"parent\":{\"binding_ref\":{\"entity_type\":\"collaboration_source_binding/v1\",\"logical_id\":\"resource:7a5a19e840935bfe94ce65dcec47d519\",\"version_id\":\"resource_version:22bc22ab9d095a198f8f9aedc4e0d256\"},\"branch_ref\":{\"entity_type\":\"task_branch/v1\",\"logical_id\":\"task_branch:feac4fcfe11245889832341d586d0ae4\",\"version_id\":\"task_branch_version:4a0b11c7712c40459cd9b984f2a3de2e\"},\"run_ref\":{\"entity_type\":\"native_run_identity/v1\",\"logical_id\":\"run:4b5d50d38ff548acba879c3315167be1\",\"version_id\":\"run_version:d5e711fec51049c4871bf9c1a42ce897\"},\"source_id\":\"parent-source\",\"task_ref\":{\"entity_type\":\"task/v1\",\"logical_id\":\"task:8eb9fceb891e4326aff301c3cdf0a4d2\",\"version_id\":\"task_version:2785743e152544e9ad88ec5d65dfaacf\"}},\"public_material_digest\":\"4c59bb169cfdb1be3e77e57856ad2f0eccb8766bd24ca11db7e66a91855dab41\",\"record_ref\":{\"entity_type\":\"parent_child_acceptance/v1\",\"logical_id\":\"resource:64e00b98b2525c90a9ccbcfc2a20d899\",\"version_id\":\"resource_version:3476702ebe675056b74564b35f60602b\"},\"request_digest\":\"ef11ee7d8391c41681d17887737370f547364cbe09b3bac97c6d4231101c41d9\",\"slot_id\":\"child\",\"target\":{\"document_root\":\"/workspace/scratch/18c810e6dd59/rpnh-parent-child-core-implementation/evidence/final-tmp21/test_bound_origin_true_admissi0/control/bound_tasks/task-h7-0311921bfeb71dee1058d0b3c04a5e29e3eb3f05e4417ebf8641f99a6121b497\",\"key_digest\":\"0311921bfeb71dee1058d0b3c04a5e29e3eb3f05e4417ebf8641f99a6121b497\",\"relative_path\":\"h7-runs/0311921bfeb71dee1058d0b3c04a5e29e3eb3f05e4417ebf8641f99a6121b497/run\",\"root_binding\":\"test-root-binding\",\"transport_task_id\":\"task-h7-0311921bfeb71dee1058d0b3c04a5e29e3eb3f05e4417ebf8641f99a6121b497\"},\"worker\":{\"boot_id\":\"offline-only\",\"pid\":12345,\"start_ticks\":100,\"uid\":1000},\"worker_ref\":{\"entity_type\":\"parent_child_worker/v1\",\"logical_id\":\"resource:2b1638fc39355656953b00e2be2cc3aa\",\"version_id\":\"resource_version:566793544a15529abe522c24b6eb300a\"}}",
+            "acceptance_transaction_id": "transaction:8d5f11ee50c6559f9b1045c6b680a572",
+            "initial_declaration_digest": "3e9a0e5412d7f09f40e81ebb18489beb38028cf5be95a82147c0b53f9c6314f0",
+            "intent_json": "{\"envelope\":{\"intent_ref\":{\"entity_type\":\"parent_child_intent/v1\",\"logical_id\":\"resource:843eeb2b6d205ba8b3ecb639051aac72\",\"version_id\":\"resource_version:8748803b01775c7fa088d88e45ac2793\"},\"parent\":{\"binding_ref\":{\"entity_type\":\"collaboration_source_binding/v1\",\"logical_id\":\"resource:7a5a19e840935bfe94ce65dcec47d519\",\"version_id\":\"resource_version:22bc22ab9d095a198f8f9aedc4e0d256\"},\"branch_ref\":{\"entity_type\":\"task_branch/v1\",\"logical_id\":\"task_branch:feac4fcfe11245889832341d586d0ae4\",\"version_id\":\"task_branch_version:4a0b11c7712c40459cd9b984f2a3de2e\"},\"run_ref\":{\"entity_type\":\"native_run_identity/v1\",\"logical_id\":\"run:4b5d50d38ff548acba879c3315167be1\",\"version_id\":\"run_version:d5e711fec51049c4871bf9c1a42ce897\"},\"source_id\":\"parent-source\",\"task_ref\":{\"entity_type\":\"task/v1\",\"logical_id\":\"task:8eb9fceb891e4326aff301c3cdf0a4d2\",\"version_id\":\"task_version:2785743e152544e9ad88ec5d65dfaacf\"}},\"protocol\":\"rpnh/parent-bound-child-envelope/v1\",\"public_material_digest\":\"4c59bb169cfdb1be3e77e57856ad2f0eccb8766bd24ca11db7e66a91855dab41\",\"slot_id\":\"child\",\"target\":{\"document_root\":\"/workspace/scratch/18c810e6dd59/rpnh-parent-child-core-implementation/evidence/final-tmp21/test_bound_origin_true_admissi0/control/bound_tasks/task-h7-0311921bfeb71dee1058d0b3c04a5e29e3eb3f05e4417ebf8641f99a6121b497\",\"key_digest\":\"0311921bfeb71dee1058d0b3c04a5e29e3eb3f05e4417ebf8641f99a6121b497\",\"relative_path\":\"h7-runs/0311921bfeb71dee1058d0b3c04a5e29e3eb3f05e4417ebf8641f99a6121b497/run\",\"root_binding\":\"test-root-binding\",\"transport_task_id\":\"task-h7-0311921bfeb71dee1058d0b3c04a5e29e3eb3f05e4417ebf8641f99a6121b497\"}},\"envelope_digest\":\"9db1c470af4753122d2747d75b7ca2b100012626113d6b1f1a5c403f100ce62a\",\"execution\":{\"execution_generation\":0,\"firing_ref\":{\"entity_type\":\"transition_firing/v1\",\"logical_id\":\"transition_firing:a536bfdfbf4d50859542fffd12177671\",\"version_id\":\"transition_firing_version:165046183f435a088128980464610c66\"},\"invocation_ref\":{\"entity_type\":\"invocation/v1\",\"logical_id\":\"invocation:b61b35bc33795d69b63b98f8cdc6222e\",\"version_id\":\"invocation_version:1b82782905125577a253eb1d939529d3\"},\"lease_ref\":{\"entity_type\":\"operation_execution_lease/v1\",\"logical_id\":\"operation_execution_lease:c146e2958c2f590cb5be1333af8dc244\",\"version_id\":\"operation_execution_lease_version:08200a82252b5fb6a9c64b505c6715ff\"},\"net_ref\":{\"entity_type\":\"net_instance/v1\",\"logical_id\":\"net_instance:04ad25bf2ae650f88042078ddcec4477\",\"version_id\":\"net_instance_version:1417fdbc246a5b3d8f667b2189f312e2\"},\"original_writer_epoch\":2,\"round_ref\":{\"entity_type\":\"task_round/v1\",\"logical_id\":\"task_round:1f5ed21133e34f6e8d95329a08e1afaf\",\"version_id\":\"task_round_version:20993a12c62647b79bc6d31f34bc73be\"},\"run_authority_ref\":{\"entity_type\":\"run_execution_authority/v1\",\"logical_id\":\"run_execution_authority:eba2da3db62152c08d8048f28ee7af57\",\"version_id\":\"run_execution_authority_version:3df52adff69a5451baf3be9d796940a2\"},\"start_event_id\":\"event:7f9c82334ee0456db51478b110f28993\"},\"materials\":{\"initial_declaration_digest\":\"3e9a0e5412d7f09f40e81ebb18489beb38028cf5be95a82147c0b53f9c6314f0\",\"inventory\":[{\"name\":\"budgets\",\"sha256\":\"e094cedf16ea5515a35def97130859d31532e97c9793c2cfd5dd9dad2cdc3d33\",\"size\":21},{\"name\":\"host\",\"sha256\":\"210ff3b57cad9bf73d9f5913edc71d65f450418cc4533c86cb9f3c6c9cc9a482\",\"size\":18},{\"name\":\"implementation\",\"sha256\":\"ab423ead38965439e109864bf87552c02600423b8aaf5ea19aa2bdda83ff03be\",\"size\":28},{\"name\":\"inputs\",\"sha256\":\"87321af7654a3a5e2cc6362361eba103d1ee3743de3e98b973cba9c5b1a688c0\",\"size\":20},{\"name\":\"lowered_net\",\"sha256\":\"3e9a0e5412d7f09f40e81ebb18489beb38028cf5be95a82147c0b53f9c6314f0\",\"size\":11793},{\"name\":\"normalized_request\",\"sha256\":\"fab0a397a544ea5566fc2cab58682f232ff6366851e3862d80ba0707ba3e014e\",\"size\":2232},{\"name\":\"registration\",\"sha256\":\"f0e9d19ac191cb943f6f30315c74c47110d0d6d6a0da442acfa6eb8c3f0ad659\",\"size\":26}],\"normalized_request\":{\"request\":{\"child_kind\":\"module\",\"definition\":{\"analyzers\":[],\"budget_buckets\":[{\"bucket_id\":\"work\",\"budget_scope\":\"module\",\"finalization_scope\":null,\"max_attempts\":3}],\"budgets\":{},\"components\":[{\"config\":{},\"config_schema\":\"application/operation_component_config/v1\",\"key\":\"test_h7_child\",\"name\":\"step\",\"operations\":[{\"budget_binding\":{\"bucket_id\":\"work\",\"budget_scope\":\"module\",\"finalization_scope\":null},\"config\":{},\"executor\":\"test/net-operation-business/v1\",\"inputs\":[\"request\"],\"name\":\"run\",\"outcomes\":[{\"effects\":[],\"name\":\"complete\",\"products\":[{\"maximum\":1,\"minimum\":1,\"port\":\"result\"}]}],\"outputs\":[\"result\"],\"request_port\":null,\"tools\":[]}],\"ports\":[{\"cardinality\":1,\"cardinality_maximum\":null,\"cardinality_minimum\":null,\"channel\":\"data\",\"direction\":\"input\",\"name\":\"request\",\"schema\":\"application/net_operation_test_text/v1\"},{\"cardinality\":1,\"cardinality_maximum\":null,\"cardinality_minimum\":null,\"channel\":\"data\",\"direction\":\"output\",\"name\":\"result\",\"schema\":\"application/net_operation_test_text/v1\"}]}],\"designer_constraints\":{},\"entry\":{\"request\":{\"component\":\"step\",\"port\":\"request\"}},\"exit\":{\"result\":{\"component\":\"step\",\"port\":\"result\"}},\"links\":[],\"name\":\"H7Child\",\"required_schemas\":[\"application/net_operation_test_text/v1\",\"application/operation_component_config/v1\",\"rpnh/parent_origin_capability/v1\"],\"schema_version\":\"rpnh/module_declaration/v1\",\"terminal\":{\"config\":{\"run_outcome\":\"complete\"},\"key\":\"test/net-operation-terminal/v1\",\"operation\":\"run\",\"outcome\":\"complete\",\"source\":{\"component\":\"step\",\"port\":\"result\"}},\"terminal_alternatives\":[]},\"public_configuration\":{\"mode\":\"offline\"},\"schema_version\":\"rpnh/parent_child_request/v1\",\"slot_id\":\"child\"},\"target\":{\"document_root\":\"/workspace/scratch/18c810e6dd59/rpnh-parent-child-core-implementation/evidence/final-tmp21/test_bound_origin_true_admissi0/control/bound_tasks/task-h7-0311921bfeb71dee1058d0b3c04a5e29e3eb3f05e4417ebf8641f99a6121b497\",\"key_digest\":\"0311921bfeb71dee1058d0b3c04a5e29e3eb3f05e4417ebf8641f99a6121b497\",\"relative_path\":\"h7-runs/0311921bfeb71dee1058d0b3c04a5e29e3eb3f05e4417ebf8641f99a6121b497/run\",\"root_binding\":\"test-root-binding\",\"transport_task_id\":\"task-h7-0311921bfeb71dee1058d0b3c04a5e29e3eb3f05e4417ebf8641f99a6121b497\"}},\"public_material_digest\":\"4c59bb169cfdb1be3e77e57856ad2f0eccb8766bd24ca11db7e66a91855dab41\",\"request_sha256\":\"b80bdb84098b1298db6e4c370aa9abc7e1c5148743fe26f0ad9771cf2097ff00\"},\"parent\":{\"binding_ref\":{\"entity_type\":\"collaboration_source_binding/v1\",\"logical_id\":\"resource:7a5a19e840935bfe94ce65dcec47d519\",\"version_id\":\"resource_version:22bc22ab9d095a198f8f9aedc4e0d256\"},\"branch_ref\":{\"entity_type\":\"task_branch/v1\",\"logical_id\":\"task_branch:feac4fcfe11245889832341d586d0ae4\",\"version_id\":\"task_branch_version:4a0b11c7712c40459cd9b984f2a3de2e\"},\"run_ref\":{\"entity_type\":\"native_run_identity/v1\",\"logical_id\":\"run:4b5d50d38ff548acba879c3315167be1\",\"version_id\":\"run_version:d5e711fec51049c4871bf9c1a42ce897\"},\"source_id\":\"parent-source\",\"task_ref\":{\"entity_type\":\"task/v1\",\"logical_id\":\"task:8eb9fceb891e4326aff301c3cdf0a4d2\",\"version_id\":\"task_version:2785743e152544e9ad88ec5d65dfaacf\"}},\"record_ref\":{\"entity_type\":\"parent_child_intent/v1\",\"logical_id\":\"resource:843eeb2b6d205ba8b3ecb639051aac72\",\"version_id\":\"resource_version:8748803b01775c7fa088d88e45ac2793\"},\"request\":{\"child_kind\":\"module\",\"definition\":{\"analyzers\":[],\"budget_buckets\":[{\"bucket_id\":\"work\",\"budget_scope\":\"module\",\"finalization_scope\":null,\"max_attempts\":3}],\"budgets\":{},\"components\":[{\"config\":{},\"config_schema\":\"application/operation_component_config/v1\",\"key\":\"test_h7_child\",\"name\":\"step\",\"operations\":[{\"budget_binding\":{\"bucket_id\":\"work\",\"budget_scope\":\"module\",\"finalization_scope\":null},\"config\":{},\"executor\":\"test/net-operation-business/v1\",\"inputs\":[\"request\"],\"name\":\"run\",\"outcomes\":[{\"effects\":[],\"name\":\"complete\",\"products\":[{\"maximum\":1,\"minimum\":1,\"port\":\"result\"}]}],\"outputs\":[\"result\"],\"request_port\":null,\"tools\":[]}],\"ports\":[{\"cardinality\":1,\"cardinality_maximum\":null,\"cardinality_minimum\":null,\"channel\":\"data\",\"direction\":\"input\",\"name\":\"request\",\"schema\":\"application/net_operation_test_text/v1\"},{\"cardinality\":1,\"cardinality_maximum\":null,\"cardinality_minimum\":null,\"channel\":\"data\",\"direction\":\"output\",\"name\":\"result\",\"schema\":\"application/net_operation_test_text/v1\"}]}],\"designer_constraints\":{},\"entry\":{\"request\":{\"component\":\"step\",\"port\":\"request\"}},\"exit\":{\"result\":{\"component\":\"step\",\"port\":\"result\"}},\"links\":[],\"name\":\"H7Child\",\"required_schemas\":[\"application/net_operation_test_text/v1\",\"application/operation_component_config/v1\",\"rpnh/parent_origin_capability/v1\"],\"schema_version\":\"rpnh/module_declaration/v1\",\"terminal\":{\"config\":{\"run_outcome\":\"complete\"},\"key\":\"test/net-operation-terminal/v1\",\"operation\":\"run\",\"outcome\":\"complete\",\"source\":{\"component\":\"step\",\"port\":\"result\"}},\"terminal_alternatives\":[]},\"public_configuration\":{\"mode\":\"offline\"},\"schema_version\":\"rpnh/parent_child_request/v1\",\"slot_id\":\"child\"},\"request_ref\":{\"entity_type\":\"resource_version/v1\",\"logical_id\":\"resource:d34a20f75e895b2aa53c0e7380efe323\",\"version_id\":\"resource_version:0877735217bb581791c549797a76a842\"},\"slot_id\":\"child\",\"target\":{\"document_root\":\"/workspace/scratch/18c810e6dd59/rpnh-parent-child-core-implementation/evidence/final-tmp21/test_bound_origin_true_admissi0/control/bound_tasks/task-h7-0311921bfeb71dee1058d0b3c04a5e29e3eb3f05e4417ebf8641f99a6121b497\",\"key_digest\":\"0311921bfeb71dee1058d0b3c04a5e29e3eb3f05e4417ebf8641f99a6121b497\",\"relative_path\":\"h7-runs/0311921bfeb71dee1058d0b3c04a5e29e3eb3f05e4417ebf8641f99a6121b497/run\",\"root_binding\":\"test-root-binding\",\"transport_task_id\":\"task-h7-0311921bfeb71dee1058d0b3c04a5e29e3eb3f05e4417ebf8641f99a6121b497\"}}",
+            "parent_source_id": "parent-source"
+          },
+          "bootstrap_ref": {
+            "entity_type": "bootstrap_command/v1",
+            "logical_id": "bootstrap_command:3d6d7dcbe16646b4a116af634bf8c094",
+            "version_id": "bootstrap_command_version:18feab39253145db84845de2f303fc55"
+          },
+          "child_branch_ref": {
+            "entity_type": "task_branch/v1",
+            "logical_id": "task_branch:8a12adae66cf4ab98a2a0961d14c85f3",
+            "version_id": "task_branch_version:bec1d1f0d63d4d9791b86b0f066c1e6c"
+          },
+          "child_run_ref": {
+            "entity_type": "native_run_identity/v1",
+            "logical_id": "run:ce66c2456a9b404f9fe45032cf292f2a",
+            "version_id": "run_version:06affcc71bae4138abb16185814dc0b4"
+          },
+          "child_task_ref": {
+            "entity_type": "task/v1",
+            "logical_id": "task:ba7b617296c9402d817e9729dba99ae4",
+            "version_id": "task_version:698a827e793a40879597892ed997864d"
+          },
+          "genesis_ref": {
+            "entity_type": "native_genesis_manifest/v1",
+            "logical_id": "native_genesis:e5c3ffb0478c44d2971c1c838301cbe5",
+            "version_id": "native_genesis_version:4d99dcffcf0f4e7f8605ae7defc3f7b9"
+          },
+          "initial_declaration_digest": "3e9a0e5412d7f09f40e81ebb18489beb38028cf5be95a82147c0b53f9c6314f0",
+          "initial_writer_epoch": 2,
+          "record_ref": {
+            "entity_type": "parent_bound_bootstrap/v1",
+            "logical_id": "resource:c670738734b45ee3bd16c1b7183b304f",
+            "version_id": "resource_version:e1dffbdd216c50af9cc8ed24e65e0b62"
+          }
+        }
+      },
+      {
+        "type": "collaboration_source_binding/v1",
+        "logical_id": "resource:28e4ab72129c54878779a25220c0e8d4",
+        "version_id": "resource_version:5f6e40372e9e5fef89a31668e03f3978",
+        "transaction_id": "transaction:64ca603cdcba58ba8198f4659ad12290",
+        "producer_invocation_id": null,
+        "published_event_id": "event:4c3cb33f2fab42f783466dbe7d20879c",
+        "payload_sha256": "6ef9b5f41eb5a17edfa239f07996eb9b440a40c6596d52f64270dbb580cd1405",
+        "metadata": {
+          "binding_ref": {
+            "entity_type": "collaboration_source_binding/v1",
+            "logical_id": "resource:28e4ab72129c54878779a25220c0e8d4",
+            "version_id": "resource_version:5f6e40372e9e5fef89a31668e03f3978"
+          },
+          "bootstrap_command_ref": {
+            "entity_type": "bootstrap_command/v1",
+            "logical_id": "bootstrap_command:3d6d7dcbe16646b4a116af634bf8c094",
+            "version_id": "bootstrap_command_version:18feab39253145db84845de2f303fc55"
+          },
+          "command_id": "child:source",
+          "native_run_ref": {
+            "entity_type": "native_run_identity/v1",
+            "logical_id": "run:ce66c2456a9b404f9fe45032cf292f2a",
+            "version_id": "run_version:06affcc71bae4138abb16185814dc0b4"
+          },
+          "schema_version": "registry_v1/collaboration_source_binding/v1",
+          "source_id": "child-source",
+          "task_ref": {
+            "entity_type": "task/v1",
+            "logical_id": "task:ba7b617296c9402d817e9729dba99ae4",
+            "version_id": "task_version:698a827e793a40879597892ed997864d"
+          }
+        }
+      },
+      {
+        "type": "parent_bound_origin/v1",
+        "logical_id": "resource:527898e175ee57b5aea58873b30d5734",
+        "version_id": "resource_version:7d8ee442d4185c73af855782fa93eea4",
+        "transaction_id": "transaction:30bad53b778f53a788bce6acacb3cff5",
+        "producer_invocation_id": null,
+        "published_event_id": "event:94f8617a63764ef3ae64e6bce5e50a78",
+        "payload_sha256": "5cd2cc5fbf4eb42896a9210d18a5a6cc3ac3455a21edbe294f824f57c2e4d3f6",
+        "metadata": {
+          "capability_ref": {
+            "entity_type": "resource_version/v1",
+            "logical_id": "resource:046de2d8317254c881309b482615bc2e",
+            "version_id": "resource_version:776b5889592255e7bac6e4f3c2d256eb"
+          },
+          "child_run_ref": {
+            "entity_type": "native_run_identity/v1",
+            "logical_id": "run:ce66c2456a9b404f9fe45032cf292f2a",
+            "version_id": "run_version:06affcc71bae4138abb16185814dc0b4"
+          },
+          "child_source_binding_ref": {
+            "entity_type": "collaboration_source_binding/v1",
+            "logical_id": "resource:28e4ab72129c54878779a25220c0e8d4",
+            "version_id": "resource_version:5f6e40372e9e5fef89a31668e03f3978"
+          },
+          "child_task_ref": {
+            "entity_type": "task/v1",
+            "logical_id": "task:ba7b617296c9402d817e9729dba99ae4",
+            "version_id": "task_version:698a827e793a40879597892ed997864d"
+          },
+          "initial_declaration_digest": "3e9a0e5412d7f09f40e81ebb18489beb38028cf5be95a82147c0b53f9c6314f0",
+          "initial_writer_epoch": 2,
+          "marker_ref": {
+            "entity_type": "parent_bound_bootstrap/v1",
+            "logical_id": "resource:c670738734b45ee3bd16c1b7183b304f",
+            "version_id": "resource_version:e1dffbdd216c50af9cc8ed24e65e0b62"
+          },
+          "record_ref": {
+            "entity_type": "parent_bound_origin/v1",
+            "logical_id": "resource:527898e175ee57b5aea58873b30d5734",
+            "version_id": "resource_version:7d8ee442d4185c73af855782fa93eea4"
+          }
+        }
+      }
+    ],
+    "firing_roots": [
+      {
+        "firing_version_id": "transition_firing_version:9de5cef695e85160b626f61b869b04fa",
+        "firing_logical_id": "transition_firing:2a822c8351cb5de3b76a5da80ab0da95",
+        "invocation_version_id": "invocation_version:7fc0a7ce5a3d5f74804c38927747d361",
+        "invocation_logical_id": "invocation:71c01b11e18359efa57003687e005229",
+        "net_version_id": "net_instance_version:8800812e63c557f18d4a0e22c8dcc192",
+        "operation_binding_version_id": "operation_binding_version:d6676db2394c5c35bcd0453c8594eff2",
+        "admission_checkpoint_version_id": "marking_checkpoint_version:11a42bd7b7795814b2f81f9675a84b7e",
+        "state": "PUBLISHED",
+        "opened_transaction_id": "transaction:2797193616fa5534acbe4d6e5b182a7a",
+        "published_transaction_id": "transaction:946aed97a20c55289ec4ee54cb3eac0a",
+        "operation_result_version_id": "operation_result_version:eac5fad19b0c512ebd6458f309bbf318",
+        "workspace_lineage_id": null,
+        "workspace_revision_version_id": null,
+        "marking_checkpoint_version_id": "marking_checkpoint_version:2455b3ac1a455d6e8907302b6c7b5a4f"
+      },
+      {
+        "firing_version_id": "transition_firing_version:9e4d7660fb385cbe9021a6232425bb16",
+        "firing_logical_id": "transition_firing:2eee78b34e9258c8be30e6a52561fc53",
+        "invocation_version_id": "invocation_version:95019326a81252a5ac9097e983a0ded7",
+        "invocation_logical_id": "invocation:05dcc0057c8f55c1a45a2d1d05730dc1",
+        "net_version_id": "net_instance_version:8800812e63c557f18d4a0e22c8dcc192",
+        "operation_binding_version_id": "operation_binding_version:d6676db2394c5c35bcd0453c8594eff2",
+        "admission_checkpoint_version_id": "marking_checkpoint_version:11a42bd7b7795814b2f81f9675a84b7e",
+        "state": "PUBLISHED",
+        "opened_transaction_id": "transaction:b24f66506c015b878ed3f249c56fa44a",
+        "published_transaction_id": "transaction:801f6bbb2283590fa1ae742dc6bc4814",
+        "operation_result_version_id": "operation_result_version:1d502f6c22bf5decb95c1409e6c2d929",
+        "workspace_lineage_id": null,
+        "workspace_revision_version_id": null,
+        "marking_checkpoint_version_id": "marking_checkpoint_version:1e3f64a98390538594ffa366a6798234"
+      }
+    ],
+    "event_counts": {
+      "execution_children_sealed/v1": 2,
+      "firing_admitted/v1": 2,
+      "invocation_started/v1": 2,
+      "marking_checkpoint_committed/v1": 3,
+      "net_adopted/v1": 1,
+      "object_version_published/v1": 77,
+      "observed_read/v1": 2,
+      "operation_dispatch_reserved/v1": 2,
+      "operation_execution_started/v1": 2,
+      "operation_terminal_ready/v1": 2,
+      "relation_published/v1": 76,
+      "resource_delivery_acknowledged/v1": 2,
+      "resource_delivery_prepared/v1": 2,
+      "resource_release_authorized/v1": 2,
+      "transaction_committed/v1": 45,
+      "transition_firing_settled/v1": 2,
+      "transition_firing_started/v1": 2
+    },
+    "protected_origin_token_count": 1,
+    "protected_origin_tokens": [
+      {
+        "consumed_by": null,
+        "consumer": null,
+        "continuation": null,
+        "epoch": 0,
+        "kind": null,
+        "lease_claims": [],
+        "lease_identity_ref": {
+          "entity_type": "resource_version/v1",
+          "logical_id": "resource:046de2d8317254c881309b482615bc2e",
+          "version_id": "resource_version:776b5889592255e7bac6e4f3c2d256eb"
+        },
+        "net_instance_ref": {
+          "entity_type": "net_instance/v1",
+          "logical_id": "net_instance:beea0149df985f6fbca99e4d7aea0b08",
+          "version_id": "net_instance_version:8800812e63c557f18d4a0e22c8dcc192"
+        },
+        "override_warning": null,
+        "petri_token_ref": {
+          "entity_type": "petri_token/v1",
+          "logical_id": "petri_token:2695387effa55654a2094eae33879ed8",
+          "version_id": "petri_token_version:d62a595e1dbf55b5b328f1654503e577"
+        },
+        "place": "step.h7origin",
+        "producer": null,
+        "resource_ref": {
+          "resource_id": "resource:046de2d8317254c881309b482615bc2e",
+          "resource_version_id": "resource_version:776b5889592255e7bac6e4f3c2d256eb"
+        },
+        "token_id": 1,
+        "verdict": null,
+        "work_resource_ref": null
+      }
+    ]
+  },
+  "assertions": {
+    "parent_h7_record_count": 4,
+    "parent_unsettled_roots": 1,
+    "child_settled_roots": 2,
+    "child_ordinary_starts": 2,
+    "child_successes": 2,
+    "one_exact_origin_token": true,
+    "native_physical_target_reservation": "NOT_RUN",
+    "native_final_child_terminal": "NOT_ASSERTED",
+    "parent_observation_completion": "UNSUPPORTED"
+  }
+}

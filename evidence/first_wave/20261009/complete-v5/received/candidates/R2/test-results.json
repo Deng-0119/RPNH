@@ -1,0 +1,56 @@
+{
+  "tested_main": "715468dab0b1bea07d7e94a7aa0606eaf194365c",
+  "explicit_r1_overlay": "r1-successor-overlay.json",
+  "r2_final": {
+    "total": 15,
+    "passed": 15,
+    "failed": 0,
+    "skipped": 0,
+    "pure_registry_or_compiler": 11,
+    "existing_pipe_orchestrator": 4
+  },
+  "r1_compiler_compat": {
+    "total": 150,
+    "passed": 150,
+    "failed": 0,
+    "skipped": 0,
+    "pure_compiler_schema": 141,
+    "registry_step": 9
+  },
+  "native_attempt": {
+    "total": 1,
+    "failed": 1,
+    "classification": "partial_env",
+    "failure": "PermissionError EPERM at OwnerEventLoop AF_UNIX socket creation",
+    "host_dispatches": 0,
+    "other_three_native_parameters": "not run"
+  },
+  "early_derived_fixture": {
+    "passed": 6,
+    "failed": 4,
+    "final_acceptance": false,
+    "cause": "test output-body helper incorrectly used VerifiedResourceArtifact.payload; corrected to existing exact registered read"
+  },
+  "model_calls": 0,
+  "new_dependencies": false,
+  "publication": false,
+  "actions": false,
+  "old_r1_untouched": true,
+  "latest_head_observed": "d92ff3704b6002bf5ecbccb3e6a3d1489809a805",
+  "latest_head_full_suite": false,
+  "h2a_focused_readback": {
+    "original_targeted_cases_repeated": 3,
+    "passed": 3,
+    "registries_read_per_source": 3,
+    "statuses": [
+      "terminal_complete",
+      "terminal_failed",
+      "running"
+    ],
+    "semantic_results_equal": true,
+    "canonical_bytes_head_epoch_unchanged": true,
+    "sqlite_bookkeeping_side_effects_observed": true,
+    "not_entire_directory_zero_write": true,
+    "not_full_head_suite": true
+  }
+}

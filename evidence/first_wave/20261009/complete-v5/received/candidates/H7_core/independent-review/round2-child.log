@@ -1,0 +1,10 @@
+....F.                                                                   [100%]
+=================================== FAILURES ===================================
+_______ test_direct_same_writer_stopped_to_running_authority_is_rejected _______
+rpnh-parent-child-core-boundary-review/tests/test_boundary_child.py:77: in test_direct_same_writer_stopped_to_running_authority_is_rejected
+    with pytest.raises(RegistryConflict):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE <class 'cpn.rpnh.registry.event_store.RegistryConflict'>
+=========================== short test summary info ============================
+FAILED rpnh-parent-child-core-boundary-review/tests/test_boundary_child.py::test_direct_same_writer_stopped_to_running_authority_is_rejected
+1 failed, 5 passed in 16.43s

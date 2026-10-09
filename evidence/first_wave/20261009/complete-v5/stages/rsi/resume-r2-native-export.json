@@ -1,0 +1,21 @@
+{
+  "command": [
+    "<WORKSPACE>/.p26/v/bin/python",
+    "<WORKSPACE>/task-complete-v5-20261009/stages/rsi/resume_extract.py",
+    "ur2n",
+    "resume-r2-native-export",
+    "--cli"
+  ],
+  "cwd": "<WORKSPACE>/.v26/r2",
+  "pid": 20240,
+  "started_at_utc": "2026-10-09T03:36:12.984529+00:00",
+  "finished_at_utc": "2026-10-09T03:36:20.471947+00:00",
+  "elapsed_seconds": 7.487421448999157,
+  "exit_code": 0,
+  "environment": {
+    "PYTHONPATH": "<WORKSPACE>/.v26/r2",
+    "TMPDIR": "<WORKSPACE>/.v26/urtmp",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1"
+  }
+}

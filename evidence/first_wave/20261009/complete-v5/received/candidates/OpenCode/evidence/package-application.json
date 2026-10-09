@@ -1,0 +1,7 @@
+{
+  "status": "PASS",
+  "method": "copy verified baseline, git apply, compare every source path/sha256",
+  "source_files": 977,
+  "changed_files": 10,
+  "patch_sha256": "ee33ed95126989319e981683a308e3182d9b5b4e4c0f0a900e5bb8f111716bba"
+}

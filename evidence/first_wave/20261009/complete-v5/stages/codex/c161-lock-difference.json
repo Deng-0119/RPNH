@@ -1,0 +1,21 @@
+{
+  "command": [
+    "<WORKSPACE>/.p26/v/bin/python",
+    "-c",
+    "import difflib; from pathlib import Path; a=Path('<WORKSPACE>/.v26/x3'); b=Path('<WORKSPACE>/task-complete-v5-20261009/stages/codex/package4/source');\nfor n in (\"docs/ARCHITECTURE.md\",\"docs/ARCHITECTURE_ZH.md\"):\n print(\"\".join(difflib.unified_diff((b/n).read_text().splitlines(True),(a/n).read_text().splitlines(True),fromfile=\"frozen/\"+n,tofile=\"actual/\"+n)))"
+  ],
+  "cwd": "<WORKSPACE>/.v26/x3",
+  "pid": 14474,
+  "started_at_utc": "2026-10-09T01:21:24.234828+00:00",
+  "finished_at_utc": "2026-10-09T01:21:24.264494+00:00",
+  "elapsed_seconds": 0.02971469699696172,
+  "exit_code": 0,
+  "environment": {
+    "PYTHONPATH": "<WORKSPACE>/.v26/x3",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1",
+    "TMPDIR": "<WORKSPACE>/.v26/tmp",
+    "PYTEST_ADDOPTS": null,
+    "PYTEST_PLUGINS": null
+  }
+}

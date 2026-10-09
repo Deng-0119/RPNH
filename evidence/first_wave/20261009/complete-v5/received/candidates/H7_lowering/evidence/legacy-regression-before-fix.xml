@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="0.616" timestamp="2026-10-08T20:04:33.812236-04:00" hostname="54cb1abdc64d"><testcase classname="tests.test_typed_author_interoperation" name="test_legacy_direct_python_numeric_constraint_keys_still_normalize" time="0.005"><failure message="AttributeError: 'int' object has no attribute 'startswith'">tests/test_typed_author_interoperation.py:205: in test_legacy_direct_python_numeric_constraint_keys_still_normalize
+    compiled_direct = compile_module(direct, registration())
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+cpn/rpnh/compiler.py:49: in compile_module
+    return _compile_module(module, registration, offline=False)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+cpn/rpnh/compiler.py:68: in _compile_module
+    offline = offline or has_bound_origin(module)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^
+cpn/rpnh/bound_child_lowering.py:25: in has_bound_origin
+    keys = [key for key in constraints if key.startswith("rpnh_parent_bound_origin_")]
+                                          ^^^^^^^^^^^^^^
+E   AttributeError: 'int' object has no attribute 'startswith'</failure></testcase></testsuite></testsuites>

@@ -1,0 +1,36 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.14, pytest-8.4.2, pluggy-1.6.0 -- /workspace/scratch/18c810e6dd59/rpnh-recovery-20261003/source/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /workspace/scratch/18c810e6dd59/rpnh-bound-child-lowering-review/reviewed-source
+collecting ... ERROR: found no collectors for /workspace/scratch/18c810e6dd59/rpnh-bound-child-lowering-review/reviewed-source/tests/test_native_net_operations.py::test_extract_whole_and_component_boundary_round_trip
+
+ERROR: found no collectors for /workspace/scratch/18c810e6dd59/rpnh-bound-child-lowering-review/reviewed-source/tests/test_native_net_operations.py::test_serial_parallel_and_instance_are_explicit_and_lowerable
+
+ERROR: found no collectors for /workspace/scratch/18c810e6dd59/rpnh-bound-child-lowering-review/reviewed-source/tests/test_native_net_operations.py::test_compose_rejects_implicit_broadcast_and_incompatible_link
+
+ERROR: found no collectors for /workspace/scratch/18c810e6dd59/rpnh-bound-child-lowering-review/reviewed-source/tests/test_native_net_operations.py::test_compose_rejects_ambiguous_qualified_public_names
+
+ERROR: found no collectors for /workspace/scratch/18c810e6dd59/rpnh-bound-child-lowering-review/reviewed-source/tests/test_native_net_operations.py::test_branch_definition_and_instance_keep_source_inert
+
+ERROR: found no collectors for /workspace/scratch/18c810e6dd59/rpnh-bound-child-lowering-review/reviewed-source/tests/test_native_net_operations.py::test_replacement_plan_uses_existing_owner_adoption_path
+
+collected 0 items / 1 error
+
+==================================== ERRORS ====================================
+_____________ ERROR collecting tests/test_native_net_operations.py _____________
+tests/test_native_net_operations.py:58: in <module>
+    live_agent_replacement = _load_source_module(
+tests/test_native_net_operations.py:54: in _load_source_module
+    spec.loader.exec_module(module)
+<frozen importlib._bootstrap_external>:995: in exec_module
+    ???
+<frozen importlib._bootstrap_external>:1132: in get_code
+    ???
+<frozen importlib._bootstrap_external>:1190: in get_data
+    ???
+E   FileNotFoundError: [Errno 2] No such file or directory: '/workspace/scratch/18c810e6dd59/rpnh-bound-child-lowering-review/reviewed-source/examples/net_operations/live_agent_replacement.py'
+- generated xml file: /workspace/scratch/18c810e6dd59/rpnh-bound-child-lowering-review/evidence/ordinary-revision-regression.xml -
+=========================== short test summary info ============================
+ERROR tests/test_native_net_operations.py - FileNotFoundError: [Errno 2] No s...
+=============================== 1 error in 0.42s ===============================
+OFFLINE_SENTINEL_ATTEMPTS=0

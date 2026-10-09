@@ -1,0 +1,30 @@
+{
+  "patch_sha256": "bd0e2a8d362179fd68bd5451a932449f059b7038db16ca627eb84843f809bd4d",
+  "commands": [
+    {
+      "command": [
+        "git",
+        "apply",
+        "--check",
+        "--whitespace=error",
+        "/workspace/scratch/18c810e6dd59/rpnh-static-lease-read-fix/static-lease-reads.patch"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "apply",
+        "--whitespace=error",
+        "/workspace/scratch/18c810e6dd59/rpnh-static-lease-read-fix/static-lease-reads.patch"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "verified_candidate_files": 979,
+  "mismatches": []
+}

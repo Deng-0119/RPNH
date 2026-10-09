@@ -1,0 +1,206 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.14, pytest-8.4.2, pluggy-1.6.0 -- /workspace/scratch/18c810e6dd59/rpnh-acceptance-history-review/round2-source/../../rpnh-recovery-20261003/source/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /workspace/scratch/18c810e6dd59/rpnh-acceptance-history-review
+collecting ... collected 38 items
+
+../tests/test_history_independent.py::test_actual_source_head_damage_is_not_rebuilt_from_cut[0] PASSED [  2%]
+../tests/test_history_independent.py::test_actual_source_head_damage_is_not_rebuilt_from_cut[1] PASSED [  5%]
+../tests/test_history_independent.py::test_actual_source_head_damage_is_not_rebuilt_from_cut[2] PASSED [  7%]
+../tests/test_history_independent.py::test_actual_source_head_damage_is_not_rebuilt_from_cut[3] PASSED [ 10%]
+../tests/test_history_independent.py::test_each_phase_original_epoch_is_validated[0] PASSED [ 13%]
+../tests/test_history_independent.py::test_each_phase_original_epoch_is_validated[1] PASSED [ 15%]
+../tests/test_history_independent.py::test_each_phase_original_epoch_is_validated[2] PASSED [ 18%]
+../tests/test_history_independent.py::test_complete_phase_event_envelope_is_checked[command_id-object_version_published/v1] PASSED [ 21%]
+../tests/test_history_independent.py::test_complete_phase_event_envelope_is_checked[command_id-relation_published/v1] PASSED [ 23%]
+../tests/test_history_independent.py::test_complete_phase_event_envelope_is_checked[command_id-transaction_committed/v1] PASSED [ 26%]
+../tests/test_history_independent.py::test_complete_phase_event_envelope_is_checked[idempotency_key-object_version_published/v1] PASSED [ 28%]
+../tests/test_history_independent.py::test_complete_phase_event_envelope_is_checked[idempotency_key-relation_published/v1] PASSED [ 31%]
+../tests/test_history_independent.py::test_complete_phase_event_envelope_is_checked[idempotency_key-transaction_committed/v1] PASSED [ 34%]
+../tests/test_history_independent.py::test_complete_phase_event_envelope_is_checked[causation_event_id-object_version_published/v1] PASSED [ 36%]
+../tests/test_history_independent.py::test_complete_phase_event_envelope_is_checked[causation_event_id-relation_published/v1] PASSED [ 39%]
+../tests/test_history_independent.py::test_complete_phase_event_envelope_is_checked[causation_event_id-transaction_committed/v1] PASSED [ 42%]
+../tests/test_history_independent.py::test_complete_phase_event_envelope_is_checked[parent_event_ids_json-object_version_published/v1] PASSED [ 44%]
+../tests/test_history_independent.py::test_complete_phase_event_envelope_is_checked[parent_event_ids_json-relation_published/v1] PASSED [ 47%]
+../tests/test_history_independent.py::test_complete_phase_event_envelope_is_checked[parent_event_ids_json-transaction_committed/v1] PASSED [ 50%]
+../tests/test_history_independent.py::test_unsupported_lifecycle_does_not_mask_corruption[published_flag] FAILED [ 52%]
+../tests/test_history_independent.py::test_unsupported_lifecycle_does_not_mask_corruption[published_and_digest] FAILED [ 55%]
+../tests/test_history_independent.py::test_unsupported_lifecycle_does_not_mask_corruption[published_and_member] FAILED [ 57%]
+../tests/test_history_independent.py::test_foreign_original_registry_cannot_use_copied_assertion PASSED [ 60%]
+../tests/test_history_independent.py::test_real_later_authority_change_keeps_same_scope_proof_read_only[writer_only] PASSED [ 63%]
+../tests/test_history_independent.py::test_real_later_authority_change_keeps_same_scope_proof_read_only[durable_stop] PASSED [ 65%]
+../tests/test_history_independent.py::test_real_later_authority_change_keeps_same_scope_proof_read_only[provisional_products] PASSED [ 68%]
+../tests/test_history_independent.py::test_caller_writer_handle_and_reader_memo_do_not_authorize_history PASSED [ 71%]
+../tests/test_history_independent.py::test_original_each_phase_cut_requires_prior_native_facts[intent_before_start] PASSED [ 73%]
+../tests/test_history_independent.py::test_original_each_phase_cut_requires_prior_native_facts[dispatch_before_intent] PASSED [ 76%]
+../tests/test_history_independent.py::test_original_each_phase_cut_requires_prior_native_facts[worker_before_dispatch] PASSED [ 78%]
+../tests/test_history_independent.py::test_source_root_start_and_schema_closure[root_invocation] PASSED [ 81%]
+../tests/test_history_independent.py::test_source_root_start_and_schema_closure[root_admission] PASSED [ 84%]
+../tests/test_history_independent.py::test_source_root_start_and_schema_closure[root_foreign_member] FAILED [ 86%]
+../tests/test_history_independent.py::test_source_root_start_and_schema_closure[extra_transaction_member] PASSED [ 89%]
+../tests/test_history_independent.py::test_source_root_start_and_schema_closure[missing_start_member] PASSED [ 92%]
+../tests/test_history_independent.py::test_source_root_start_and_schema_closure[start_wrong_transaction] PASSED [ 94%]
+../tests/test_history_independent.py::test_source_root_start_and_schema_closure[missing_source_bytes] PASSED [ 97%]
+../tests/test_history_independent.py::test_source_root_start_and_schema_closure[content_schema_bytes] PASSED [100%]
+
+=================================== FAILURES ===================================
+_____ test_unsupported_lifecycle_does_not_mask_corruption[published_flag] ______
+
+tmp_path = PosixPath('/tmp/pytest-of-agent/pytest-199/test_unsupported_lifecycle_doe0')
+damage = 'published_flag'
+
+    @pytest.mark.parametrize('damage', ['published_flag', 'published_and_digest', 'published_and_member'])
+    def test_unsupported_lifecycle_does_not_mask_corruption(tmp_path, damage):
+        _, store, query = fixture(tmp_path)
+        with store.connect() as db:
+            # Intentionally corrupt state, not a claim that H7 can really settle.
+>           db.execute("UPDATE firing_publications SET state='PUBLISHED'")
+E           sqlite3.IntegrityError: CHECK constraint failed: (state='PROVISIONAL'
+E                                AND published_transaction_id IS NULL
+E                                AND operation_result_version_id IS NULL
+E                                AND workspace_lineage_id IS NULL
+E                                AND workspace_revision_version_id IS NULL
+E                                AND marking_checkpoint_version_id IS NULL)
+E                               OR
+E                               (state='PUBLISHED'
+E                                AND published_transaction_id IS NOT NULL
+E                                AND operation_result_version_id IS NOT NULL
+E                                AND ((workspace_lineage_id IS NULL
+E                                      AND workspace_revision_version_id IS NULL)
+E                                     OR
+E                                     (workspace_lineage_id IS NOT NULL
+E                                      AND workspace_revision_version_id IS NOT NULL))
+E                                AND marking_checkpoint_version_id IS NOT NULL)
+
+../tests/test_history_independent.py:65: IntegrityError
+__ test_unsupported_lifecycle_does_not_mask_corruption[published_and_digest] ___
+
+tmp_path = PosixPath('/tmp/pytest-of-agent/pytest-199/test_unsupported_lifecycle_doe1')
+damage = 'published_and_digest'
+
+    @pytest.mark.parametrize('damage', ['published_flag', 'published_and_digest', 'published_and_member'])
+    def test_unsupported_lifecycle_does_not_mask_corruption(tmp_path, damage):
+        _, store, query = fixture(tmp_path)
+        with store.connect() as db:
+            # Intentionally corrupt state, not a claim that H7 can really settle.
+>           db.execute("UPDATE firing_publications SET state='PUBLISHED'")
+E           sqlite3.IntegrityError: CHECK constraint failed: (state='PROVISIONAL'
+E                                AND published_transaction_id IS NULL
+E                                AND operation_result_version_id IS NULL
+E                                AND workspace_lineage_id IS NULL
+E                                AND workspace_revision_version_id IS NULL
+E                                AND marking_checkpoint_version_id IS NULL)
+E                               OR
+E                               (state='PUBLISHED'
+E                                AND published_transaction_id IS NOT NULL
+E                                AND operation_result_version_id IS NOT NULL
+E                                AND ((workspace_lineage_id IS NULL
+E                                      AND workspace_revision_version_id IS NULL)
+E                                     OR
+E                                     (workspace_lineage_id IS NOT NULL
+E                                      AND workspace_revision_version_id IS NOT NULL))
+E                                AND marking_checkpoint_version_id IS NOT NULL)
+
+../tests/test_history_independent.py:65: IntegrityError
+__ test_unsupported_lifecycle_does_not_mask_corruption[published_and_member] ___
+
+tmp_path = PosixPath('/tmp/pytest-of-agent/pytest-199/test_unsupported_lifecycle_doe2')
+damage = 'published_and_member'
+
+    @pytest.mark.parametrize('damage', ['published_flag', 'published_and_digest', 'published_and_member'])
+    def test_unsupported_lifecycle_does_not_mask_corruption(tmp_path, damage):
+        _, store, query = fixture(tmp_path)
+        with store.connect() as db:
+            # Intentionally corrupt state, not a claim that H7 can really settle.
+>           db.execute("UPDATE firing_publications SET state='PUBLISHED'")
+E           sqlite3.IntegrityError: CHECK constraint failed: (state='PROVISIONAL'
+E                                AND published_transaction_id IS NULL
+E                                AND operation_result_version_id IS NULL
+E                                AND workspace_lineage_id IS NULL
+E                                AND workspace_revision_version_id IS NULL
+E                                AND marking_checkpoint_version_id IS NULL)
+E                               OR
+E                               (state='PUBLISHED'
+E                                AND published_transaction_id IS NOT NULL
+E                                AND operation_result_version_id IS NOT NULL
+E                                AND ((workspace_lineage_id IS NULL
+E                                      AND workspace_revision_version_id IS NULL)
+E                                     OR
+E                                     (workspace_lineage_id IS NOT NULL
+E                                      AND workspace_revision_version_id IS NOT NULL))
+E                                AND marking_checkpoint_version_id IS NOT NULL)
+
+../tests/test_history_independent.py:65: IntegrityError
+________ test_source_root_start_and_schema_closure[root_foreign_member] ________
+
+tmp_path = PosixPath('/tmp/pytest-of-agent/pytest-199/test_source_root_start_and_sch2')
+damage = 'root_foreign_member'
+
+    @pytest.mark.parametrize('damage', ['root_invocation', 'root_admission', 'root_foreign_member', 'extra_transaction_member', 'missing_start_member', 'start_wrong_transaction', 'missing_source_bytes', 'content_schema_bytes'])
+    def test_source_root_start_and_schema_closure(tmp_path, damage):
+        values, store, query = fixture(tmp_path)
+        core = values[0]._core
+        body = core.get_version(query.acceptance_ref.version_id).metadata
+        with store.connect() as db:
+            firing = body['execution']['firing_ref']['version_id']
+            if damage == 'root_invocation':
+                db.execute('UPDATE firing_publications SET invocation_logical_id=? WHERE firing_version_id=?', (str(new_id('invocation')), firing))
+            elif damage == 'root_admission':
+                db.execute('UPDATE firing_publications SET admission_checkpoint_version_id=? WHERE firing_version_id=?', (str(new_id('resource_version')), firing))
+            elif damage == 'root_foreign_member':
+>               db.execute('UPDATE firing_temporary_members SET firing_version_id=? WHERE member_identity=?', (str(new_id('resource_version')), str(query.acceptance_ref.version_id)))
+E               sqlite3.IntegrityError: FOREIGN KEY constraint failed
+
+../tests/test_history_independent.py:149: IntegrityError
+- generated xml file: /workspace/scratch/18c810e6dd59/rpnh-acceptance-history-review/evidence/round2.xml -
+=========================== short test summary info ============================
+FAILED ../tests/test_history_independent.py::test_unsupported_lifecycle_does_not_mask_corruption[published_flag] - sqlite3.IntegrityError: CHECK constraint failed: (state='PROVISIONAL'
+                     AND published_transaction_id IS NULL
+                     AND operation_result_version_id IS NULL
+                     AND workspace_lineage_id IS NULL
+                     AND workspace_revision_version_id IS NULL
+                     AND marking_checkpoint_version_id IS NULL)
+                    OR
+                    (state='PUBLISHED'
+                     AND published_transaction_id IS NOT NULL
+                     AND operation_result_version_id IS NOT NULL
+                     AND ((workspace_lineage_id IS NULL
+                           AND workspace_revision_version_id IS NULL)
+                          OR
+                          (workspace_lineage_id IS NOT NULL
+                           AND workspace_revision_version_id IS NOT NULL))
+                     AND marking_checkpoint_version_id IS NOT NULL)
+FAILED ../tests/test_history_independent.py::test_unsupported_lifecycle_does_not_mask_corruption[published_and_digest] - sqlite3.IntegrityError: CHECK constraint failed: (state='PROVISIONAL'
+                     AND published_transaction_id IS NULL
+                     AND operation_result_version_id IS NULL
+                     AND workspace_lineage_id IS NULL
+                     AND workspace_revision_version_id IS NULL
+                     AND marking_checkpoint_version_id IS NULL)
+                    OR
+                    (state='PUBLISHED'
+                     AND published_transaction_id IS NOT NULL
+                     AND operation_result_version_id IS NOT NULL
+                     AND ((workspace_lineage_id IS NULL
+                           AND workspace_revision_version_id IS NULL)
+                          OR
+                          (workspace_lineage_id IS NOT NULL
+                           AND workspace_revision_version_id IS NOT NULL))
+                     AND marking_checkpoint_version_id IS NOT NULL)
+FAILED ../tests/test_history_independent.py::test_unsupported_lifecycle_does_not_mask_corruption[published_and_member] - sqlite3.IntegrityError: CHECK constraint failed: (state='PROVISIONAL'
+                     AND published_transaction_id IS NULL
+                     AND operation_result_version_id IS NULL
+                     AND workspace_lineage_id IS NULL
+                     AND workspace_revision_version_id IS NULL
+                     AND marking_checkpoint_version_id IS NULL)
+                    OR
+                    (state='PUBLISHED'
+                     AND published_transaction_id IS NOT NULL
+                     AND operation_result_version_id IS NOT NULL
+                     AND ((workspace_lineage_id IS NULL
+                           AND workspace_revision_version_id IS NULL)
+                          OR
+                          (workspace_lineage_id IS NOT NULL
+                           AND workspace_revision_version_id IS NOT NULL))
+                     AND marking_checkpoint_version_id IS NOT NULL)
+FAILED ../tests/test_history_independent.py::test_source_root_start_and_schema_closure[root_foreign_member] - sqlite3.IntegrityError: FOREIGN KEY constraint failed
+=================== 4 failed, 34 passed in 82.24s (0:01:22) ====================

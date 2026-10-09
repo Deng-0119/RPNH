@@ -1,0 +1,161 @@
+{
+  "utc": "2026-10-09T03:22:33.500561+00:00",
+  "git": {
+    "repo": "<WORKSPACE>/.v26/r2",
+    "head": "1f191645c4d60c8b190d42e9fad99c85e8981c03",
+    "status": "",
+    "raw_commands": [
+      {
+        "command": [
+          "git",
+          "-C",
+          "<WORKSPACE>/.v26/r2",
+          "rev-parse",
+          "HEAD"
+        ],
+        "started_at_utc": "2026-10-09T03:22:33.500579+00:00",
+        "finished_at_utc": "2026-10-09T03:22:33.502412+00:00",
+        "exit_code": 0,
+        "stdout": "1f191645c4d60c8b190d42e9fad99c85e8981c03\n",
+        "stderr": ""
+      },
+      {
+        "command": [
+          "git",
+          "-C",
+          "<WORKSPACE>/.v26/r2",
+          "branch",
+          "--show-current"
+        ],
+        "started_at_utc": "2026-10-09T03:22:33.502421+00:00",
+        "finished_at_utc": "2026-10-09T03:22:33.503873+00:00",
+        "exit_code": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "command": [
+          "git",
+          "-C",
+          "<WORKSPACE>/.v26/r2",
+          "rev-parse",
+          "origin/main"
+        ],
+        "started_at_utc": "2026-10-09T03:22:33.503881+00:00",
+        "finished_at_utc": "2026-10-09T03:22:33.505134+00:00",
+        "exit_code": 0,
+        "stdout": "1f191645c4d60c8b190d42e9fad99c85e8981c03\n",
+        "stderr": ""
+      },
+      {
+        "command": [
+          "git",
+          "-C",
+          "<WORKSPACE>/.v26/r2",
+          "status",
+          "--porcelain=v1",
+          "--untracked-files=all"
+        ],
+        "started_at_utc": "2026-10-09T03:22:33.505140+00:00",
+        "finished_at_utc": "2026-10-09T03:22:33.513848+00:00",
+        "exit_code": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "command": [
+          "git",
+          "-C",
+          "<WORKSPACE>/.v26/r2",
+          "diff",
+          "--binary",
+          "HEAD"
+        ],
+        "started_at_utc": "2026-10-09T03:22:33.513870+00:00",
+        "finished_at_utc": "2026-10-09T03:22:33.517654+00:00",
+        "exit_code": 0,
+        "stdout": "",
+        "stderr": ""
+      }
+    ]
+  },
+  "changed_files": [
+    {
+      "path": "cpn/examples/iteration_profile/README.md",
+      "exists": false,
+      "sha256": null,
+      "bytes": null,
+      "mode": null
+    },
+    {
+      "path": "cpn/examples/iteration_profile/README_ZH.md",
+      "exists": false,
+      "sha256": null,
+      "bytes": null,
+      "mode": null
+    },
+    {
+      "path": "cpn/examples/iteration_profile/propose_evaluate_select.json",
+      "exists": false,
+      "sha256": null,
+      "bytes": null,
+      "mode": null
+    },
+    {
+      "path": "cpn/rpnh/iteration_profile.py",
+      "exists": false,
+      "sha256": null,
+      "bytes": null,
+      "mode": null
+    },
+    {
+      "path": "cpn/schemas/rpnh/iteration_profile.v1.schema.json",
+      "exists": false,
+      "sha256": null,
+      "bytes": null,
+      "mode": null
+    },
+    {
+      "path": "examples/rsi_workflows/README.md",
+      "exists": false,
+      "sha256": null,
+      "bytes": null,
+      "mode": null
+    },
+    {
+      "path": "examples/rsi_workflows/README_ZH.md",
+      "exists": false,
+      "sha256": null,
+      "bytes": null,
+      "mode": null
+    },
+    {
+      "path": "examples/rsi_workflows/deterministic.py",
+      "exists": false,
+      "sha256": null,
+      "bytes": null,
+      "mode": null
+    },
+    {
+      "path": "examples/rsi_workflows/tests/conftest.py",
+      "exists": false,
+      "sha256": null,
+      "bytes": null,
+      "mode": null
+    },
+    {
+      "path": "examples/rsi_workflows/tests/test_runtime.py",
+      "exists": false,
+      "sha256": null,
+      "bytes": null,
+      "mode": null
+    },
+    {
+      "path": "tests/test_iteration_profile.py",
+      "exists": false,
+      "sha256": null,
+      "bytes": null,
+      "mode": null
+    }
+  ]
+}

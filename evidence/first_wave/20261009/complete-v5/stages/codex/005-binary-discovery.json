@@ -1,0 +1,21 @@
+{
+  "command": [
+    "<WORKSPACE>/.p26/v/bin/python",
+    "-c",
+    "from pathlib import Path\nimport json,os\nroots=[Path('<USER_HOME>/.local/bin'),Path('<USER_HOME>/.nvm/versions/node'),Path('/usr/bin')]\nfor root in roots:\n if not root.exists(): continue\n if root.name=='node':\n  matches=list(root.glob('*/bin/*codex*'))+list(root.glob('*/lib/node_modules/@openai/codex*/package.json'))+list(root.glob('*/lib/node_modules/@openai/codex*/node_modules/@openai/*/package.json'))\n else: matches=list(root.glob('*codex*'))\n for p in matches:\n  print(json.dumps({'path':str(p),'realpath':str(p.resolve()),'symlink':p.is_symlink(),'size':p.stat().st_size if p.exists() else None}))\n  if p.name=='package.json':\n   d=json.loads(p.read_text()); print(json.dumps({k:d.get(k) for k in ('name','version','repository','bin')}))\n"
+  ],
+  "cwd": "<WORKSPACE>",
+  "pid": 13722,
+  "started_at_utc": "2026-10-09T01:17:50.738846+00:00",
+  "finished_at_utc": "2026-10-09T01:17:50.776352+00:00",
+  "elapsed_seconds": 0.0375209999983781,
+  "exit_code": 0,
+  "environment": {
+    "PYTHONPATH": "<WORKSPACE>",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1",
+    "TMPDIR": "<WORKSPACE>/.v26/tmp",
+    "PYTEST_ADDOPTS": null,
+    "PYTEST_PLUGINS": null
+  }
+}

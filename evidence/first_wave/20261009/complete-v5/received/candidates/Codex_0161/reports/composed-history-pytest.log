@@ -1,0 +1,5 @@
+........................................................................ [ 59%]
+................................................{"scenario": "three_committed_one_failed_items_limit_1", "connections": 178, "writable_connections": 0, "elapsed_seconds": 0.165341, "claim": "one-fixture measurement, not a scalability bound"}
+..                       [100%]
+- generated xml file: /workspace/scratch/18c810e6dd59/rpnh-codex-0161-implementation/reports/composed-history-junit.xml -
+122 passed in 99.83s (0:01:39)

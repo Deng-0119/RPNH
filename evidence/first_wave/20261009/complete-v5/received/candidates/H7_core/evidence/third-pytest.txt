@@ -1,0 +1,47 @@
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+_________________ test_real_parent_causal_chain_is_provisional _________________
+tests/test_parent_child_core.py:12: in test_real_parent_causal_chain_is_provisional
+    owner,admitted,execution,prepared,intent,dispatch,worker,acceptance=accepted_parent(tmp_path/'parent')
+                                                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/parent_child_fixtures.py:110: in accepted_parent
+    owner,admitted,execution,prepared=parent_owner(path,child_compiled=child_compiled)
+                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/parent_child_fixtures.py:79: in parent_owner
+    owner=start_run(module,reg,run_dir=path,task_input=task,entry_inputs={'request':task},
+cpn/rpnh/run.py:613: in start_run
+    operations = publish_module_operations(core, compiled, registration,
+cpn/rpnh/registry/module_operations.py:78: in publish_module_operations
+    if category == "executor" and registered_operation_contract(key) != declaration:
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+cpn/rpnh/registry/_operation/registration.py:169: in registered_operation_contract
+    _validate_operation_contract(declaration["contracts"])
+cpn/rpnh/registry/_operation/registration.py:77: in _validate_operation_contract
+    raise OperationAuthorityError(
+E   cpn.rpnh.registry.operations.OperationAuthorityError: operation contract must declare transport and port ABI
+________________ test_bound_origin_true_admission_start_success ________________
+tests/test_parent_child_core.py:23: in test_bound_origin_true_admission_start_success
+    owner,parent=bound_owner(tmp_path/'child',monkeypatch)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/parent_child_fixtures.py:121: in bound_owner
+    values=accepted_parent(path.parent/'parent',compiled);parent=values[0];accepted=values[-1]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/parent_child_fixtures.py:110: in accepted_parent
+    owner,admitted,execution,prepared=parent_owner(path,child_compiled=child_compiled)
+                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/parent_child_fixtures.py:79: in parent_owner
+    owner=start_run(module,reg,run_dir=path,task_input=task,entry_inputs={'request':task},
+cpn/rpnh/run.py:613: in start_run
+    operations = publish_module_operations(core, compiled, registration,
+cpn/rpnh/registry/module_operations.py:78: in publish_module_operations
+    if category == "executor" and registered_operation_contract(key) != declaration:
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+cpn/rpnh/registry/_operation/registration.py:169: in registered_operation_contract
+    _validate_operation_contract(declaration["contracts"])
+cpn/rpnh/registry/_operation/registration.py:77: in _validate_operation_contract
+    raise OperationAuthorityError(
+E   cpn.rpnh.registry.operations.OperationAuthorityError: operation contract must declare transport and port ABI
+=========================== short test summary info ============================
+FAILED tests/test_parent_child_core.py::test_real_parent_causal_chain_is_provisional
+FAILED tests/test_parent_child_core.py::test_bound_origin_true_admission_start_success
+2 failed in 1.86s

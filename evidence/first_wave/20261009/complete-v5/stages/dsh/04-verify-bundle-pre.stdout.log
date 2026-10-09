@@ -1,0 +1,7 @@
+{
+  "status": "passed",
+  "archive_files_checked": 1459,
+  "checkout_checked": true,
+  "errors": [],
+  "scope": "byte integrity only; no native/typecheck or support admission"
+}

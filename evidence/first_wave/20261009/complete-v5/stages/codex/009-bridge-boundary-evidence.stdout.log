@@ -1,0 +1,45 @@
+def test_bridge_process_loads_rpnh_instructions_without_altering_registered_request(tmp_path):
+    """Real local subprocesses; the endpoint is a fixture, not a live model."""
+    import os
+    import subprocess
+    import sys
+    fake = tmp_path / "fixture-endpoint"
+    fake.write_text("#!" + sys.executable + "\n" + '''import json, sys, tomllib
+from pathlib import Path
+args = sys.argv[1:]
+config = tomllib.loads("\\n".join(args[i+1] for i,a in enumerate(args[:-1]) if a == "-c"))
+instructions = Path(config["model_instructions_file"]).read_text()
+assert "RPNH alone owns tool execution" in instructions
+assert "Codex" not in instructions
+assert args[args.index("--sandbox") + 1] == "read-only"
+mode_probe = Path(config["model_instructions_file"]).parent / "mode-probe"
+mode_probe.mkdir()
+assert mode_probe.stat().st_mode & 0o777 == 0o700
+prompt = sys.stdin.read()
+request = json.loads(prompt.split("REQUEST_JSON_BEGIN\\n", 1)[1].rsplit("\\nREQUEST_JSON_END",1)[0])
+assert request["messages"][0]["content"] == "Explain Codex; preserve my words."
+answer = {"protocol":"llm_response_envelope/v1", "text":"fixture-ok", "tool_calls":[],
+          "reasoning_content":None,"finish_reason":"stop","usage":None}
+print(json.dumps({"type":"item.completed", "item":{"type":"agent_message", "text":json.dumps(answer)}}))
+print(json.dumps({"type":"turn.completed", "usage":None}))
+''')
+    fake.chmod(0o700)
+    schema = Path(bridge.__file__).with_name("codex_subscription_response_format.v1.schema.json")
+    request = {"protocol": "llm_request_envelope/v1", "model_condition": "fixture-model",
+               "max_output_tokens": 1024, "messages": [{"role": "user", "content": "Explain Codex; preserve my words."}],
+               "tools": [], "tool_choice": "auto"}
+    payload = json.dumps(request, ensure_ascii=True, allow_nan=False, sort_keys=True, separators=(",", ":")).encode()
+    repo = str(Path(__file__).resolve().parents[1])
+    (tmp_path / "unused-home").mkdir()
+    (tmp_path / "unused-home" / "auth.json").write_text("{}")
+    environment = {"PATH": os.environ.get("PATH", ""), "PYTHONPATH": repo, "HOME": str(tmp_path),
+                   "CODEX_HOME": str(tmp_path / "unused-home")}
+    completed = subprocess.run([
+        sys.executable, "-m", "cpn.llm_adapters.codex_subscription_bridge", "--codex", str(fake),
+        "--model", "fixture-model", "--model-context-window", "32768", "--model-max-output-tokens", "1024",
+        "--output-token-policy", "auto", "--reasoning-effort", "medium", "--verbosity", "medium",
+        "--response-schema", str(schema),
+    ], input=payload, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=environment, cwd=tmp_path, timeout=20)
+    assert completed.returncode == 0, completed.stderr.decode()
+    assert json.loads(completed.stdout)["text"] == "fixture-ok"
+    assert not list(tmp_path.glob("codex-subscription-endpoint-*"))

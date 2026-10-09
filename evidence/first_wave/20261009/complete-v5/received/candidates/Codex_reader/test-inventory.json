@@ -1,0 +1,287 @@
+[
+  {
+    "classname": "tests.test_main_thread_history",
+    "name": "test_pages_cover_all_native_turns_and_field_slots_both_orders",
+    "outcome": "passed"
+  },
+  {
+    "classname": "tests.test_main_thread_history",
+    "name": "test_append_does_not_change_old_cut_or_interleaved_readers",
+    "outcome": "passed"
+  },
+  {
+    "classname": "tests.test_main_thread_history",
+    "name": "test_current_projection_uses_one_cut_even_if_writer_appends_between_reads",
+    "outcome": "passed"
+  },
+  {
+    "classname": "tests.test_main_thread_history",
+    "name": "test_empty_partial_stopped_failed_membership_matches_current",
+    "outcome": "passed"
+  },
+  {
+    "classname": "tests.test_main_thread_history",
+    "name": "test_read_cuts_reject_wrong_source_thread_boundary_future_and_raw_views",
+    "outcome": "passed"
+  },
+  {
+    "classname": "tests.test_main_thread_history",
+    "name": "test_anchor_binds_query_cut_filter_direction_and_exact_identity",
+    "outcome": "passed"
+  },
+  {
+    "classname": "tests.test_main_thread_history",
+    "name": "test_inclusive_initial_and_exclusive_continuation_do_not_skip_or_repeat",
+    "outcome": "passed"
+  },
+  {
+    "classname": "tests.test_main_thread_history",
+    "name": "test_refs_only_projection_does_not_expose_private_json_or_follow_child_refs",
+    "outcome": "passed"
+  },
+  {
+    "classname": "tests.test_main_thread_history",
+    "name": "test_child_links_are_at_cut_and_never_current_taskcontrol_annotations",
+    "outcome": "passed"
+  },
+  {
+    "classname": "tests.test_main_thread_history",
+    "name": "test_readonly_core_counters_files_and_no_writer_calls",
+    "outcome": "passed"
+  },
+  {
+    "classname": "tests.test_main_thread_history",
+    "name": "test_object_body_bound_and_corrupt_exact_bytes_fail_closed",
+    "outcome": "passed"
+  },
+  {
+    "classname": "tests.test_main_thread_history",
+    "name": "test_large_registered_history_has_no_implicit_reader_cap",
+    "outcome": "passed"
+  },
+  {
+    "classname": "tests.test_main_thread_history",
+    "name": "test_lineage_damage_is_not_hidden_by_paging",
+    "outcome": "passed"
+  },
+  {
+    "classname": "tests.test_main_thread_history",
+    "name": "test_future_and_provisional_objects_cannot_enter_fixed_history",
+    "outcome": "passed"
+  },
+  {
+    "classname": "tests.test_main_thread_registry",
+    "name": "test_two_committed_turns_recover_one_thread_and_history",
+    "outcome": "passed"
+  },
+  {
+    "classname": "tests.test_main_thread_registry",
+    "name": "test_new_main_registry_resolves_each_child_from_its_registry_root",
+    "outcome": "passed"
+  },
+  {
+    "classname": "tests.test_main_thread_registry",
+    "name": "test_unknown_main_registry_child_path_base_fails_loudly",
+    "outcome": "passed"
+  },
+  {
+    "classname": "tests.test_main_thread_registry",
+    "name": "test_terminal_receipt_commit_is_idempotent",
+    "outcome": "passed"
+  },
+  {
+    "classname": "tests.test_main_thread_registry",
+    "name": "test_stopped_receipt_commits_interruption_without_history_pair",
+    "outcome": "passed"
+  },
+  {
+    "classname": "tests.test_main_thread_registry",
+    "name": "test_running_receipt_commits_failed_main_turn_without_child_terminal",
+    "outcome": "passed"
+  },
+  {
+    "classname": "tests.test_main_thread_registry",
+    "name": "test_path_escape_and_mismatched_receipt_have_no_partial_write",
+    "outcome": "passed"
+  },
+  {
+    "classname": "tests.test_main_thread_registry",
+    "name": "test_main_thread_indexes_independent_child_registry_without_copying_it",
+    "outcome": "passed"
+  },
+  {
+    "classname": "tests.test_main_thread_registry",
+    "name": "test_empty_child_sqlite_startup_window_is_not_registry_corruption",
+    "outcome": "passed"
+  },
+  {
+    "classname": "tests.test_main_thread_registry",
+    "name": "test_published_malformed_child_identity_is_rejected",
+    "outcome": "passed"
+  },
+  {
+    "classname": "tests.test_main_thread_registry",
+    "name": "test_published_child_pointer_does_not_hide_registry_damage[missing_object_root]",
+    "outcome": "passed"
+  },
+  {
+    "classname": "tests.test_main_thread_registry",
+    "name": "test_published_child_pointer_does_not_hide_registry_damage[missing_task_id]",
+    "outcome": "passed"
+  },
+  {
+    "classname": "tests.test_main_session_registry",
+    "name": "test_new_session_registry_and_prepare_retry_use_exact_attempt",
+    "outcome": "passed"
+  },
+  {
+    "classname": "tests.test_main_session_registry",
+    "name": "test_markerless_session_keeps_legacy_session_relative_children",
+    "outcome": "passed"
+  },
+  {
+    "classname": "tests.test_main_session_registry",
+    "name": "test_main_turn_uses_profile_runtime_policy_without_source_edits",
+    "outcome": "passed"
+  },
+  {
+    "classname": "tests.test_main_session_registry",
+    "name": "test_active_turn_snapshot_reports_registered_pending_start",
+    "outcome": "passed"
+  },
+  {
+    "classname": "tests.test_main_session_registry",
+    "name": "test_active_turn_resume_rejects_execution_profile_change_without_rewrite",
+    "outcome": "passed"
+  },
+  {
+    "classname": "tests.test_main_session_registry",
+    "name": "test_idle_resume_requires_persisted_profile_and_rejects_explicit_change",
+    "outcome": "passed"
+  },
+  {
+    "classname": "tests.test_main_session_registry",
+    "name": "test_idle_resume_rejects_in_place_profile_identity_change",
+    "outcome": "passed"
+  },
+  {
+    "classname": "tests.test_main_session_registry",
+    "name": "test_active_turn_rejects_in_place_profile_identity_change_before_worker",
+    "outcome": "passed"
+  },
+  {
+    "classname": "tests.test_main_session_registry",
+    "name": "test_active_turn_resume_rejects_corrupt_v2_profile_without_legacy_fallback",
+    "outcome": "passed"
+  },
+  {
+    "classname": "tests.test_main_session_registry",
+    "name": "test_active_turn_resume_rejects_local_executable_change",
+    "outcome": "passed"
+  },
+  {
+    "classname": "tests.test_main_session_registry",
+    "name": "test_active_turn_allows_unchanged_profile_identity",
+    "outcome": "passed"
+  },
+  {
+    "classname": "tests.test_main_session_registry",
+    "name": "test_paused_turn_rejects_in_place_profile_identity_before_resume_worker",
+    "outcome": "passed"
+  },
+  {
+    "classname": "tests.test_main_session_registry",
+    "name": "test_legacy_v1_profile_is_readable_and_upgrades_on_resume",
+    "outcome": "passed"
+  },
+  {
+    "classname": "tests.test_main_session_registry",
+    "name": "test_complete_turn_registers_receipt_commits_and_is_idempotent",
+    "outcome": "passed"
+  },
+  {
+    "classname": "tests.test_main_session_registry",
+    "name": "test_direct_agent_launch_gets_an_independent_registry_index",
+    "outcome": "passed"
+  },
+  {
+    "classname": "tests.test_main_session_registry",
+    "name": "test_workflow_child_ingress_preserves_large_original_user_task",
+    "outcome": "passed"
+  },
+  {
+    "classname": "tests.test_main_session_registry",
+    "name": "test_resume_projection_is_effect_free_until_activation_compensates_once[False]",
+    "outcome": "passed"
+  },
+  {
+    "classname": "tests.test_main_session_registry",
+    "name": "test_resume_projection_is_effect_free_until_activation_compensates_once[True]",
+    "outcome": "passed"
+  },
+  {
+    "classname": "tests.test_main_session_registry",
+    "name": "test_conflicting_active_request_is_rejected_before_launch_compensation",
+    "outcome": "passed"
+  },
+  {
+    "classname": "tests.test_main_session_registry",
+    "name": "test_new_turn_prepare_activates_committed_launch_compensation_once",
+    "outcome": "passed"
+  },
+  {
+    "classname": "tests.test_main_session_registry",
+    "name": "test_resume_rebuilds_projection_from_registry_authority[missing]",
+    "outcome": "passed"
+  },
+  {
+    "classname": "tests.test_main_session_registry",
+    "name": "test_resume_rebuilds_projection_from_registry_authority[corrupt]",
+    "outcome": "passed"
+  },
+  {
+    "classname": "tests.test_main_session_registry",
+    "name": "test_resume_rebuilds_projection_from_registry_authority[lying]",
+    "outcome": "passed"
+  },
+  {
+    "classname": "tests.test_main_session_registry",
+    "name": "test_interrupted_receipt_does_not_enter_history_and_retry_is_idempotent",
+    "outcome": "passed"
+  },
+  {
+    "classname": "tests.test_main_session_registry",
+    "name": "test_complete_turn_rejects_absent_child_registry_without_history",
+    "outcome": "passed"
+  },
+  {
+    "classname": "tests.test_main_session_registry",
+    "name": "test_paused_main_turn_resumes_the_same_child_registry",
+    "outcome": "passed"
+  },
+  {
+    "classname": "tests.test_main_session_registry",
+    "name": "test_turn_stop_does_not_implicitly_rollback_main_history",
+    "outcome": "passed"
+  },
+  {
+    "classname": "tests.test_main_session_registry",
+    "name": "test_nonterminal_child_fails_main_turn_without_forging_terminal_result",
+    "outcome": "passed"
+  },
+  {
+    "classname": "tests.test_main_session_registry",
+    "name": "test_explicit_main_rollback_returns_to_prior_completed_turn_only",
+    "outcome": "passed"
+  },
+  {
+    "classname": "tests.test_main_session_registry",
+    "name": "test_main_rollback_preserves_indexed_independent_child_registry",
+    "outcome": "passed"
+  },
+  {
+    "classname": "tests.test_main_session_registry",
+    "name": "test_turn_does_not_accept_process_result_as_terminal_evidence",
+    "outcome": "passed"
+  }
+]

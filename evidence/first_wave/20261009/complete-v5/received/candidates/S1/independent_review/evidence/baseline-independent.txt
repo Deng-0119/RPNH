@@ -1,0 +1,18 @@
+Traceback (most recent call last):
+  File "<stdin>", line 8, in <module>
+  File "/workspace/scratch/18c810e6dd59/rpnh-parent-child-seam-design/source/cpn/rpnh/run.py", line 476, in admit
+    return admit_module_firing(self._core, transition_id=transition_id,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/18c810e6dd59/rpnh-parent-child-seam-design/source/cpn/rpnh/registry/module_execution.py", line 144, in admit_module_firing
+    firings, epoch = local.claim_firing_set(max_count=1, allowed={transition_id})
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/18c810e6dd59/rpnh-parent-child-seam-design/source/cpn/rpnh/marking.py", line 1144, in claim_firing_set
+    return _claims.claim_firing_set(self, max_count, allowed, timed_wait_guard_states=timed_wait_guard_states)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/18c810e6dd59/rpnh-parent-child-seam-design/source/cpn/rpnh/_marking/claims.py", line 235, in claim_firing_set
+    analyze_checkpoint_firing_step(self._net, claim_epoch=claim_epoch, tokens=tuple(self._tokens), selected_firing_ids=tuple(firing_set), selected_occurrence_keys=tuple((claim_id for claim_id, _tid, _claim in claims)), claimed_token_refs=claimed_token_refs, expected_consumed_place_counts={claim_id: claim.consumed_place_counts for claim_id, _tid, claim in claims}, enabledness=lambda transition_id: self._is_enabled_locked(transition_id, timed_wait_guard_states, _timed_wait_guard_state_map=timed_wait_guard_state_map))
+  File "/workspace/scratch/18c810e6dd59/rpnh-parent-child-seam-design/source/cpn/rpnh/checks.py", line 157, in analyze_checkpoint_firing_step
+    raise CheckpointFiringStepError(
+cpn.rpnh.checks.CheckpointFiringStepError: resource lease has no exact variable consume-return inscription
+cpn path /workspace/scratch/18c810e6dd59/rpnh-parent-child-seam-design/source/cpn/__init__.py
+EXPECTED BASELINE FAILURE CheckpointFiringStepError resource lease has no exact variable consume-return inscription

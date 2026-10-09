@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="6.700" timestamp="2026-10-09T11:38:23.328747+08:00" hostname="DYK1"><testcase classname="test_native_s1" name="test_g2_same_transition" time="6.225"><failure message="ValueError: product submission invents a symbolic output port">tmp_path = PosixPath('&lt;WORKSPACE&gt;/.v26/unS1-a001-1/test_g2_same_transition0')
+
+    def test_g2_same_transition(tmp_path):
+        owner = lease_owner(tmp_path / 'r', occurrences=2)
+        initial = lease_state(current(owner)[2])
+        with Native(owner, 'g2') as n:
+            assert len(n.harness.schedule_ready()) == 1
+            assert len(n.harness.schedule_ready()) == 1
+            assert n.snapshot('two-live')['active'] == 2
+            net, structure, marking = current(owner)
+            active = install_active_module_claims(owner._core,
+                TeamNetMarking.from_authority(structure, marking), net.net_ref)
+            assert all(a.transition_id == 'step.run' and initial.token_ref in a.claimed_input_refs for a in active)
+            assert len({a.transition_firing_ref for a in active}) == 2
+&gt;           n.release(0)
+
+../../task-complete-v5-20261009/stages/core/S1/native/a001/test_native_s1.py:218: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../../task-complete-v5-20261009/stages/core/S1/native/a001/test_native_s1.py:129: in release
+    result = self.host(callback)
+             ^^^^^^^^^^^^^^^^^^^
+../../task-complete-v5-20261009/stages/core/S1/native/a001/test_native_s1.py:125: in host
+    return future.result(timeout=0)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+../../../miniforge3/lib/python3.13/concurrent/futures/_base.py:449: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+../../../miniforge3/lib/python3.13/concurrent/futures/_base.py:401: in __get_result
+    raise self._exception
+cpn/rpnh/control_server.py:132: in _dispatch_host
+    event.reply.set_result(event.execute())
+                           ^^^^^^^^^^^^^^^
+../../task-complete-v5-20261009/stages/core/S1/native/a001/test_native_s1.py:107: in invoke
+    outputs = self.owner.products(execution, outcome_id='complete',
+cpn/rpnh/run.py:318: in products
+    return publish_operation_products(self._core, kernel, repository, execution,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+core = &lt;cpn.rpnh.registry._registry._RegistryCore object at 0x73d47128a270&gt;
+kernel = &lt;cpn.rpnh.registry.resource_service._ResourceServiceKernel object at 0x73d46e3e1240&gt;
+repository = &lt;cpn.rpnh.registry.operation_repository.RegistryOperationAuthorityRepository object at 0x73d4712aa800&gt;
+execution = OperationExecutionAuthority(operation=RegisteredOperationAuthority(input_plan=RegisteredOperationInputPlanAuthority(ca...tion:fe51f80adbf75b35a295395113e6f230': 1, 'transition-firing:transition_firing:02c2b0a301da5021afcdf4f11a7f54d7': 1}))
+
+    def publish_operation_products(core: _RegistryCore, kernel: _ResourceServiceKernel,
+            repository, execution: OperationExecutionAuthority, *, outcome_id: str,
+            products: Mapping[str, tuple[bytes, ...]], idempotency_key: str) -&gt; RegisteredOperationOutputsAuthority:
+        """Publish exact declared products, without result/Success/terminal authority.
+    
+        The only accepted keys are this registered operation's symbolic output
+        ports. Every schema, quantity and selected outcome comes from the actual
+        immutable shared declaration, not an executor's role or document prose.
+        """
+        if (not isinstance(core, _RegistryCore) or core.read_only
+                or not isinstance(idempotency_key, str) or not idempotency_key
+                or not isinstance(products, Mapping)):
+            raise TypeError("product submission requires owner Registry, bytes mapping and key")
+        execution = verify_operation_execution(core, kernel, repository, execution)
+        operation = execution.operation
+        context = operation.canonical.context
+        executable = kernel._exact_object(operation.transition.binding_ref,
+            expected_type="executable_transition_binding/v1")
+        declaration_ref = _resource_from_payload(executable.metadata["declaration_resource_ref"])
+        compiled = load_compiled_net(json.loads(kernel._read_firing_registered(context, declaration_ref)))
+        transition = next(item for item in compiled.symbolic.transitions
+            if item.name == operation.firing.transition_id)
+        declared = next(item for item in compiled.operations if item.declaration.name == transition.operation).declaration
+        selected = next((item for item in declared.outcomes if item.name == outcome_id), None)
+        if selected is None:
+            raise ValueError("product submission selects an undeclared operation outcome")
+        if set(products) - set(declared.outputs):
+&gt;           raise ValueError("product submission invents a symbolic output port")
+E           ValueError: product submission invents a symbolic output port
+
+cpn/rpnh/registry/operation_outputs.py:49: ValueError</failure></testcase></testsuite></testsuites>

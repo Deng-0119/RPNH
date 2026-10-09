@@ -1,0 +1,10 @@
+{
+  "status": "PASS",
+  "baseline_head": "1f191645c4d60c8b190d42e9fad99c85e8981c03",
+  "files": 3656,
+  "mismatches": [],
+  "observed_inventory_sha256": "3408d0367ac311f56918525bbb6c678c43ac43c4b69ffc574a7f6787a4df069d",
+  "inventory_hash_format": "UTF-8 canonical JSON sorted path records: path, sha256, executable; sort_keys=True, separators=(comma,colon)",
+  "added": [],
+  "missing": []
+}

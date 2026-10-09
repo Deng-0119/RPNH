@@ -1,0 +1,44 @@
+{
+  "verdict": "no_blocking_findings_within_bounded_D0_scope",
+  "native_pass": false,
+  "full_repository_pass": false,
+  "model_validation": false,
+  "suites": [
+    {
+      "scope": "original_socket_free_registry_D0",
+      "errors": "0",
+      "failures": "0",
+      "skipped": "0",
+      "tests": "11",
+      "time": "179.050",
+      "timestamp": "2026-10-08T13:16:03.382064-04:00",
+      "hostname": "54cb1abdc64d",
+      "junit_suite_name": "pytest",
+      "evidence_stem": "independent-d0"
+    },
+    {
+      "scope": "independent_registry_boundary_probes_D0",
+      "errors": "0",
+      "failures": "0",
+      "skipped": "0",
+      "tests": "5",
+      "time": "139.487",
+      "timestamp": "2026-10-08T13:18:03.912671-04:00",
+      "hostname": "54cb1abdc64d",
+      "junit_suite_name": "pytest",
+      "evidence_stem": "independent-probes"
+    },
+    {
+      "scope": "original_Harness_test_only_pipe_D0",
+      "errors": "0",
+      "failures": "0",
+      "skipped": "0",
+      "tests": "4",
+      "time": "262.509",
+      "timestamp": "2026-10-08T13:18:17.019076-04:00",
+      "hostname": "54cb1abdc64d",
+      "junit_suite_name": "pytest",
+      "evidence_stem": "independent-harness-pipe"
+    }
+  ]
+}

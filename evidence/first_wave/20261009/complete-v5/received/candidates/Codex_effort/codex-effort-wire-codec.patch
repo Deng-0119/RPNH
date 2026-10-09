@@ -1,0 +1,1225 @@
+--- a/THIRD_PARTY_NOTICES.md
++++ b/THIRD_PARTY_NOTICES.md
+@@ -21,3 +21,12 @@
+ Python and JavaScript dependencies installed by package managers are not
+ relicensed by RPNH. Consult each dependency's package metadata and included
+ license before redistribution.
++
++## Codex protocol test fixtures
++
++The unmodified JSON schemas and generated TypeScript declarations under
++`tests/fixtures/codex` come from `openai/codex` 0.155.0 and 0.161.0, licensed
++under Apache-2.0. Exact upstream commits, file hashes and source links are in
++`tests/fixtures/codex/PROVENANCE.json`; the license is preserved at
++`tests/fixtures/codex/UPSTREAM_LICENSE`. These are offline contract fixtures,
++not bundled Codex clients or a claim of native-client certification.
+--- a/cpn/frontend/codex_app_server.py
++++ b/cpn/frontend/codex_app_server.py
+@@ -436,6 +436,32 @@
+             })
+         return attachments
+ 
++    @staticmethod
++    def _has_unconfigured_effort(profile: ExecutionProfile) -> bool:
++        """Identify absence of canonical configuration, not the string "none"."""
++        return (
++            profile.reasoning_effort is None
++            and profile.default_reasoning_effort is None
++            and not profile.supported_reasoning_efforts)
++
++    @classmethod
++    def _effort_to_wire(
++            cls, profile: ExecutionProfile, effort: str | None,
++    ) -> str | None:
++        """Codex's None enum is a display token scoped to one selection.
++
++        Never write it into an execution profile or provider request. A model
++        configured with the literal effort "none" retains that exact value.
++        """
++        if effort is None and cls._has_unconfigured_effort(profile):
++            return "none"
++        return effort
++
++    def _selected_effort_to_wire(
++            self, model_id: str, effort: str | None,
++    ) -> str | None:
++        return self._effort_to_wire(self._profiles_by_model_id[model_id], effort)
++
+     def _profile_for_selection(
+             self, model_id: str, effort: object = None,
+     ) -> ExecutionProfile:
+@@ -445,6 +471,10 @@
+         if logical is None:
+             raise ValueError(
+                 f"unknown RPNH provider/model selection: {model_id}")
++        # Decode only after resolving the selection. "none" is also a real
++        # configured effort and must not be normalized globally.
++        if effort == "none" and self._has_unconfigured_effort(logical):
++            effort = None
+         selected_effort = (
+             logical.default_reasoning_effort if effort is None else effort)
+         if selected_effort is not None and not isinstance(
+@@ -510,7 +540,8 @@
+                 f"{readiness}"),
+             "hidden": False,
+             "isDefault": profile.selection_id == self.default_model_id,
+-            "defaultReasoningEffort": profile.default_reasoning_effort,
++            "defaultReasoningEffort": self._effort_to_wire(
++                profile, profile.default_reasoning_effort),
+             "supportedReasoningEfforts": [{
+                 "reasoningEffort": effort,
+                 "description": (
+@@ -655,7 +686,8 @@
+             "approvalPolicy": "never",
+             "approvalsReviewer": "user",
+             "sandbox": {"type": "dangerFullAccess"},
+-            "reasoningEffort": state.reasoning_effort,
++            "reasoningEffort": self._selected_effort_to_wire(
++                state.model_id, state.reasoning_effort),
+             "serviceTier": None,
+             "instructionSources": [],
+         })
+@@ -1154,7 +1186,8 @@
+             await self._result(websocket, request_id, {
+                 "config": {
+                     "model": self.default_model_id,
+-                    "model_reasoning_effort": self.default_reasoning_effort,
++                    "model_reasoning_effort": self._selected_effort_to_wire(
++                        self.default_model_id, self.default_reasoning_effort),
+                     "model_provider": "rpnh",
+                     "default_permissions": ":danger-full-access",
+                     "approval_policy": "never",
+@@ -1209,7 +1242,8 @@
+                 "approvalPolicy": "never",
+                 "approvalsReviewer": "user",
+                 "sandbox": {"type": "dangerFullAccess"},
+-                "reasoningEffort": state.reasoning_effort,
++                "reasoningEffort": self._selected_effort_to_wire(
++                    state.model_id, state.reasoning_effort),
+                 "serviceTier": None,
+                 "instructionSources": [],
+             })
+--- a/docs/guides/models.md
++++ b/docs/guides/models.md
+@@ -107,6 +107,13 @@
+ 
+ The generator accepts exactly one external route per selected profile and generic environment-to-header credentials (or `null`). The endpoint must omit userinfo/query/fragment; remote routes require HTTPS, while plain HTTP is limited to `localhost` or a loopback IP for a same-machine OpenAI-compatible server. Static authentication/connection headers and duplicate credential headers are rejected. All integer limits are positive. `context_window_tokens` is an optional exact-model capacity supplied by the user; when present it enables proactive context-pressure compaction before the configured route is called. `context_compaction_retained_tokens` optionally controls the recent complete-message tail and must be smaller than the window. When the window is absent, RPNH does not invent a capacity and can only react to an observed response-length boundary. The complete optional `runtime` object controls task, concurrency, compaction and workspace policy; omission resolves to the documented defaults and generated profiles still record those values. The recovery attempt/cycle fields are bounded from one to three by the schema.
+ 
++Codex requires a non-null default effort on its UI wire. For an unconfigured
++model only, the adapter displays the wire token `none` and decodes it back to
++the same profile with no canonical effort. A model explicitly configured with
++the string `none` remains distinct. No provider argument or catalog value is
++added. The supported Codex pin remains 0.155.0; schema checks against 0.161.0
++do not certify that native client or fix the separate paginated-history gap.
++
+ ## Transport, recovery and effects
+ The external transport exposed by this catalog is `openai_chat_completions/v1`, not every API marketed as compatible. The alternative `local_process` adapter requires explicit `argv`, `probe_argv`, `env` and `inherit_env`; `{model}` substitution preserves the selected model. A local model that declares efforts must also place `{reasoning_effort}` in its formal `argv`; the builder materializes one immutable execution variant for every supported value. A local process or its probe may still call a paid model. Do not treat “local” as “offline”.
+ 
+--- a/docs/guides/models_ZH.md
++++ b/docs/guides/models_ZH.md
+@@ -104,6 +104,12 @@
+ 
+ 每个可选外部 profile 只有一条精确路由，凭据采用环境变量到 header/prefix 的映射或 `null`。endpoint 不得包含 userinfo/query/fragment；远程路由必须使用 HTTPS，明文 HTTP 仅限 `localhost` 或 loopback IP 上的同机 OpenAI-compatible 服务。静态认证/连接类 header、重复凭据 header 会被拒绝。各整数执行限额为正数。`context_window_tokens` 是用户为精确模型声明的可选容量；提供后，RPNH 会在调用已选路由前主动执行 context-pressure compaction。`context_compaction_retained_tokens` 可选地控制最近完整消息尾部，且必须小于窗口。未提供窗口时，RPNH 不猜测模型容量，只能在实际观察到 response-length 边界后处理。完整的可选 `runtime` 对象控制 task、并发、压缩和 workspace 策略；省略时解析为文档默认值，生成 profile 仍会明确记录。探测次数与恢复循环次数由 schema 限定在一至三。
+ 
++Codex UI 协议要求默认 effort 非空。仅对未配置 effort 的模型，适配层展示
++wire 标记 `none`，回传时还原为同一 profile 的 canonical 空值；真正配置
++字符串 `none` 的模型仍保留该字符串。不会添加 provider 参数或目录值。
++Codex 支持版本仍固定为 0.155.0；对 0.161.0 的 schema 检查不代表原生
++客户端认证，也未修复另行处理的历史分页缺口。
++
+ ## 传输、恢复和外部效果
+ catalog 对外暴露的协议是 `openai_chat_completions/v1`，不是所有宣称兼容的 API。另一种 `local_process` 必须声明 `argv`、`probe_argv`、`env`、`inherit_env`；`{model}` 替换保留所选模型。声明 effort 的本地模型还必须在正式 `argv` 中放置 `{reasoning_effort}`；构建器会为每个支持值生成不可变 execution variant。子进程及其 probe 仍可能调用付费模型，不能把“本地进程”等同“离线”。
+ 
+--- /dev/null
++++ b/tests/fixtures/codex/0.155.0/ModelListResponse.json
+@@ -0,0 +1,270 @@
++{
++  "$schema": "http://json-schema.org/draft-07/schema#",
++  "definitions": {
++    "InputModality": {
++      "description": "Canonical user-input modality tags advertised by a model.",
++      "oneOf": [
++        {
++          "description": "Plain text turns and tool payloads.",
++          "enum": [
++            "text"
++          ],
++          "type": "string"
++        },
++        {
++          "description": "Image attachments included in user turns.",
++          "enum": [
++            "image"
++          ],
++          "type": "string"
++        },
++        {
++          "description": "Audio attachments included in user turns.",
++          "enum": [
++            "audio"
++          ],
++          "type": "string"
++        }
++      ]
++    },
++    "Model": {
++      "properties": {
++        "additionalSpeedTiers": {
++          "default": [],
++          "description": "Deprecated: use `serviceTiers` instead.",
++          "items": {
++            "type": "string"
++          },
++          "type": "array"
++        },
++        "availabilityNux": {
++          "anyOf": [
++            {
++              "$ref": "#/definitions/ModelAvailabilityNux"
++            },
++            {
++              "type": "null"
++            }
++          ]
++        },
++        "defaultReasoningEffort": {
++          "$ref": "#/definitions/ReasoningEffort"
++        },
++        "defaultServiceTier": {
++          "default": null,
++          "description": "Catalog default service tier id for this model, when one is configured.",
++          "type": [
++            "string",
++            "null"
++          ]
++        },
++        "description": {
++          "type": "string"
++        },
++        "displayName": {
++          "type": "string"
++        },
++        "hidden": {
++          "type": "boolean"
++        },
++        "id": {
++          "type": "string"
++        },
++        "inputModalities": {
++          "default": [
++            "text",
++            "image"
++          ],
++          "items": {
++            "$ref": "#/definitions/InputModality"
++          },
++          "type": "array"
++        },
++        "isDefault": {
++          "type": "boolean"
++        },
++        "model": {
++          "type": "string"
++        },
++        "modelSpecialty": {
++          "default": null,
++          "type": [
++            "string",
++            "null"
++          ]
++        },
++        "multiAgentVersion": {
++          "anyOf": [
++            {
++              "$ref": "#/definitions/MultiAgentVersion"
++            },
++            {
++              "type": "null"
++            }
++          ],
++          "description": "Multi-agent runtime declared by this model, when available."
++        },
++        "serviceTiers": {
++          "default": [],
++          "items": {
++            "$ref": "#/definitions/ModelServiceTier"
++          },
++          "type": "array"
++        },
++        "supportedReasoningEfforts": {
++          "items": {
++            "$ref": "#/definitions/ReasoningEffortOption"
++          },
++          "type": "array"
++        },
++        "supportsPersonality": {
++          "default": false,
++          "type": "boolean"
++        },
++        "upgrade": {
++          "type": [
++            "string",
++            "null"
++          ]
++        },
++        "upgradeInfo": {
++          "anyOf": [
++            {
++              "$ref": "#/definitions/ModelUpgradeInfo"
++            },
++            {
++              "type": "null"
++            }
++          ]
++        }
++      },
++      "required": [
++        "defaultReasoningEffort",
++        "description",
++        "displayName",
++        "hidden",
++        "id",
++        "isDefault",
++        "model",
++        "supportedReasoningEfforts"
++      ],
++      "type": "object"
++    },
++    "ModelAvailabilityNux": {
++      "properties": {
++        "message": {
++          "type": "string"
++        }
++      },
++      "required": [
++        "message"
++      ],
++      "type": "object"
++    },
++    "ModelServiceTier": {
++      "properties": {
++        "description": {
++          "type": "string"
++        },
++        "id": {
++          "type": "string"
++        },
++        "name": {
++          "type": "string"
++        }
++      },
++      "required": [
++        "description",
++        "id",
++        "name"
++      ],
++      "type": "object"
++    },
++    "ModelUpgradeInfo": {
++      "properties": {
++        "migrationMarkdown": {
++          "type": [
++            "string",
++            "null"
++          ]
++        },
++        "model": {
++          "type": "string"
++        },
++        "modelLink": {
++          "type": [
++            "string",
++            "null"
++          ]
++        },
++        "retirementAt": {
++          "description": "Informational Unix timestamp for this upgrade's scheduled retirement, if known.",
++          "format": "int64",
++          "type": [
++            "integer",
++            "null"
++          ]
++        },
++        "upgradeCopy": {
++          "type": [
++            "string",
++            "null"
++          ]
++        }
++      },
++      "required": [
++        "model"
++      ],
++      "type": "object"
++    },
++    "MultiAgentVersion": {
++      "description": "Multi-agent runtime supported by a model.",
++      "enum": [
++        "disabled",
++        "v1",
++        "v2"
++      ],
++      "type": "string"
++    },
++    "ReasoningEffort": {
++      "description": "A non-empty reasoning effort value advertised by the model.",
++      "minLength": 1,
++      "type": "string"
++    },
++    "ReasoningEffortOption": {
++      "properties": {
++        "description": {
++          "type": "string"
++        },
++        "reasoningEffort": {
++          "$ref": "#/definitions/ReasoningEffort"
++        }
++      },
++      "required": [
++        "description",
++        "reasoningEffort"
++      ],
++      "type": "object"
++    }
++  },
++  "properties": {
++    "data": {
++      "items": {
++        "$ref": "#/definitions/Model"
++      },
++      "type": "array"
++    },
++    "nextCursor": {
++      "description": "Opaque cursor to pass to the next call to continue after the last item. If None, there are no more items to return.",
++      "type": [
++        "string",
++        "null"
++      ]
++    }
++  },
++  "required": [
++    "data"
++  ],
++  "title": "ModelListResponse",
++  "type": "object"
++}
+\ No newline at end of file
+--- /dev/null
++++ b/tests/fixtures/codex/0.155.0/ReasoningEffort.ts
+@@ -0,0 +1,8 @@
++// GENERATED CODE! DO NOT MODIFY BY HAND!
++
++// This file was generated by [ts-rs](https://github.com/Aleph-Alpha/ts-rs). Do not edit this file manually.
++
++/**
++ * See https://platform.openai.com/docs/guides/reasoning?api-mode=responses#get-started-with-reasoning
++ */
++export type ReasoningEffort = string;
+--- /dev/null
++++ b/tests/fixtures/codex/0.161.0/ModelListResponse.json
+@@ -0,0 +1,308 @@
++{
++  "$schema": "http://json-schema.org/draft-07/schema#",
++  "definitions": {
++    "CyberAccessProgram": {
++      "description": "Requested cyber treatment for an OpenAI model turn. Authorization and model-tier restrictions remain server-owned.",
++      "enum": [
++        "standard",
++        "daybreakBlue",
++        "daybreakRed"
++      ],
++      "type": "string"
++    },
++    "InputModality": {
++      "description": "Canonical user-input modality tags advertised by a model.",
++      "oneOf": [
++        {
++          "description": "Plain text turns and tool payloads.",
++          "enum": [
++            "text"
++          ],
++          "type": "string"
++        },
++        {
++          "description": "Image attachments included in user turns.",
++          "enum": [
++            "image"
++          ],
++          "type": "string"
++        },
++        {
++          "description": "Audio attachments included in user turns.",
++          "enum": [
++            "audio"
++          ],
++          "type": "string"
++        }
++      ]
++    },
++    "Model": {
++      "properties": {
++        "additionalSpeedTiers": {
++          "default": [],
++          "description": "Deprecated: use `serviceTiers` instead.",
++          "items": {
++            "type": "string"
++          },
++          "type": "array"
++        },
++        "availabilityNux": {
++          "anyOf": [
++            {
++              "$ref": "#/definitions/ModelAvailabilityNux"
++            },
++            {
++              "type": "null"
++            }
++          ]
++        },
++        "availableAccessPrograms": {
++          "anyOf": [
++            {
++              "$ref": "#/definitions/ModelAccessPrograms"
++            },
++            {
++              "type": "null"
++            }
++          ],
++          "default": null,
++          "description": "Null when the catalog does not provide access-program metadata."
++        },
++        "defaultReasoningEffort": {
++          "$ref": "#/definitions/ReasoningEffort"
++        },
++        "defaultServiceTier": {
++          "default": null,
++          "description": "Catalog default service tier id for this model, when one is configured.",
++          "type": [
++            "string",
++            "null"
++          ]
++        },
++        "description": {
++          "type": "string"
++        },
++        "displayName": {
++          "type": "string"
++        },
++        "hidden": {
++          "type": "boolean"
++        },
++        "id": {
++          "type": "string"
++        },
++        "inputModalities": {
++          "default": [
++            "text",
++            "image"
++          ],
++          "items": {
++            "$ref": "#/definitions/InputModality"
++          },
++          "type": "array"
++        },
++        "isDefault": {
++          "type": "boolean"
++        },
++        "model": {
++          "type": "string"
++        },
++        "modelSpecialty": {
++          "default": null,
++          "type": [
++            "string",
++            "null"
++          ]
++        },
++        "multiAgentVersion": {
++          "anyOf": [
++            {
++              "$ref": "#/definitions/MultiAgentVersion"
++            },
++            {
++              "type": "null"
++            }
++          ],
++          "description": "Multi-agent runtime declared by this model, when available."
++        },
++        "serviceTiers": {
++          "default": [],
++          "items": {
++            "$ref": "#/definitions/ModelServiceTier"
++          },
++          "type": "array"
++        },
++        "supportedReasoningEfforts": {
++          "items": {
++            "$ref": "#/definitions/ReasoningEffortOption"
++          },
++          "type": "array"
++        },
++        "supportsPersonality": {
++          "default": false,
++          "description": "@deprecated Always false; models no longer support personality selection.",
++          "type": "boolean"
++        },
++        "upgrade": {
++          "type": [
++            "string",
++            "null"
++          ]
++        },
++        "upgradeInfo": {
++          "anyOf": [
++            {
++              "$ref": "#/definitions/ModelUpgradeInfo"
++            },
++            {
++              "type": "null"
++            }
++          ]
++        }
++      },
++      "required": [
++        "defaultReasoningEffort",
++        "description",
++        "displayName",
++        "hidden",
++        "id",
++        "isDefault",
++        "model",
++        "supportedReasoningEfforts"
++      ],
++      "type": "object"
++    },
++    "ModelAccessPrograms": {
++      "description": "Caller-specific explicit access programs advertised by model discovery.",
++      "properties": {
++        "cyber": {
++          "description": "Accepted explicit selections.",
++          "items": {
++            "$ref": "#/definitions/CyberAccessProgram"
++          },
++          "type": "array"
++        }
++      },
++      "required": [
++        "cyber"
++      ],
++      "type": "object"
++    },
++    "ModelAvailabilityNux": {
++      "properties": {
++        "message": {
++          "type": "string"
++        }
++      },
++      "required": [
++        "message"
++      ],
++      "type": "object"
++    },
++    "ModelServiceTier": {
++      "properties": {
++        "description": {
++          "type": "string"
++        },
++        "id": {
++          "type": "string"
++        },
++        "name": {
++          "type": "string"
++        }
++      },
++      "required": [
++        "description",
++        "id",
++        "name"
++      ],
++      "type": "object"
++    },
++    "ModelUpgradeInfo": {
++      "properties": {
++        "migrationMarkdown": {
++          "type": [
++            "string",
++            "null"
++          ]
++        },
++        "model": {
++          "type": "string"
++        },
++        "modelLink": {
++          "type": [
++            "string",
++            "null"
++          ]
++        },
++        "retirementAt": {
++          "description": "Informational Unix timestamp for this upgrade's scheduled retirement, if known.",
++          "format": "int64",
++          "type": [
++            "integer",
++            "null"
++          ]
++        },
++        "upgradeCopy": {
++          "type": [
++            "string",
++            "null"
++          ]
++        }
++      },
++      "required": [
++        "model"
++      ],
++      "type": "object"
++    },
++    "MultiAgentVersion": {
++      "description": "Multi-agent runtime supported by a model.",
++      "enum": [
++        "disabled",
++        "v1",
++        "v2"
++      ],
++      "type": "string"
++    },
++    "ReasoningEffort": {
++      "description": "A non-empty reasoning effort value advertised by the model.",
++      "minLength": 1,
++      "type": "string"
++    },
++    "ReasoningEffortOption": {
++      "properties": {
++        "description": {
++          "type": "string"
++        },
++        "reasoningEffort": {
++          "$ref": "#/definitions/ReasoningEffort"
++        }
++      },
++      "required": [
++        "description",
++        "reasoningEffort"
++      ],
++      "type": "object"
++    }
++  },
++  "properties": {
++    "data": {
++      "items": {
++        "$ref": "#/definitions/Model"
++      },
++      "type": "array"
++    },
++    "nextCursor": {
++      "description": "Opaque cursor to pass to the next call to continue after the last item. If None, there are no more items to return.",
++      "type": [
++        "string",
++        "null"
++      ]
++    }
++  },
++  "required": [
++    "data"
++  ],
++  "title": "ModelListResponse",
++  "type": "object"
++}
+\ No newline at end of file
+--- /dev/null
++++ b/tests/fixtures/codex/0.161.0/ReasoningEffort.ts
+@@ -0,0 +1,8 @@
++// GENERATED CODE! DO NOT MODIFY BY HAND!
++
++// This file was generated by [ts-rs](https://github.com/Aleph-Alpha/ts-rs). Do not edit this file manually.
++
++/**
++ * See https://platform.openai.com/docs/guides/reasoning?api-mode=responses#get-started-with-reasoning
++ */
++export type ReasoningEffort = string;
+--- /dev/null
++++ b/tests/fixtures/codex/PROVENANCE.json
+@@ -0,0 +1,55 @@
++{
++  "scope": "Offline wire-schema fixtures and source-reviewed picker contract; not a native client certification.",
++  "versions": {
++    "0.155.0": {
++      "commit": "f0a1b8f0849d90960bc406b848f32e5a129b0457",
++      "schema": {
++        "path": "0.155.0/ModelListResponse.json",
++        "upstream_path": "codex-rs/app-server-protocol/schema/json/v2/ModelListResponse.json",
++        "url": "https://github.com/openai/codex/blob/f0a1b8f0849d90960bc406b848f32e5a129b0457/codex-rs/app-server-protocol/schema/json/v2/ModelListResponse.json",
++        "sha256": "c7b58b332f6cf18fd64235409a6daf27bb9e6c09d12dcd0daa2f3dc628b55f6f",
++        "git_blob_sha1": "657a433f88ae548aa81fb1c2ee44ba4fc5a781f8"
++      },
++      "reasoning_effort_typescript": {
++        "path": "0.155.0/ReasoningEffort.ts",
++        "git_blob_sha1": "d40f5bd6578e63f45f9fd0bee8d8979026561de7",
++        "url": "https://github.com/openai/codex/blob/rust-v0.155.0/codex-rs/app-server-protocol/schema/typescript/ReasoningEffort.ts"
++      },
++      "picker_source": {
++        "git_blob_sha1": "2155103740617250cbf5d26195067106fa413fd1",
++        "url": "https://github.com/openai/codex/blob/rust-v0.155.0/codex-rs/tui/src/chatwidget/model_popups.rs",
++        "observed_contract": "open_reasoning_popup falls back to default_reasoning_effort when supported choices are empty, then applies the sole choice; source review only."
++      },
++      "rust_effort_source": {
++        "git_blob_sha1": "8c021b17c2a870b5e1e69e3e57210d46c8722606",
++        "url": "https://github.com/openai/codex/blob/rust-v0.155.0/codex-rs/protocol/src/openai_models.rs"
++      }
++    },
++    "0.161.0": {
++      "commit": "979011409de0a60b52f179721948e65531d26144",
++      "schema": {
++        "path": "0.161.0/ModelListResponse.json",
++        "upstream_path": "codex-rs/app-server-protocol/schema/json/v2/ModelListResponse.json",
++        "url": "https://github.com/openai/codex/blob/979011409de0a60b52f179721948e65531d26144/codex-rs/app-server-protocol/schema/json/v2/ModelListResponse.json",
++        "sha256": "2fb387a2ed258fc74258828ea342d68f89ce4e8e22cd0329ca59d2b423f9108b",
++        "git_blob_sha1": "ee3ca9ae1449457d8338507274d587342780f891"
++      },
++      "reasoning_effort_typescript": {
++        "path": "0.161.0/ReasoningEffort.ts",
++        "git_blob_sha1": "d40f5bd6578e63f45f9fd0bee8d8979026561de7",
++        "url": "https://github.com/openai/codex/blob/979011409de0a60b52f179721948e65531d26144/codex-rs/app-server-protocol/schema/typescript/ReasoningEffort.ts"
++      },
++      "picker_source": {
++        "git_blob_sha1": "03efe3110aa142e6b98e286e38f4b7abdd7f1e79",
++        "url": "https://github.com/openai/codex/blob/979011409de0a60b52f179721948e65531d26144/codex-rs/tui/src/chatwidget/model_popups.rs",
++        "observed_contract": "open_reasoning_popup falls back to default_reasoning_effort when supported choices are empty, then applies the sole choice; source review only."
++      },
++      "rust_effort_source": {
++        "git_blob_sha1": "b2dde1499eee6428ac6a281e65c85901648133f4",
++        "url": "https://github.com/openai/codex/blob/979011409de0a60b52f179721948e65531d26144/codex-rs/protocol/src/openai_models.rs"
++      }
++    }
++  },
++  "license": "Apache-2.0; unmodified upstream license in UPSTREAM_LICENSE",
++  "typescript_note": "Both upstream ReasoningEffort.ts exports are string aliases; the Rust enum, serializer and parser establish the named None/none mapping. TypeScript was not compiled."
++}
+--- /dev/null
++++ b/tests/fixtures/codex/UPSTREAM_LICENSE
+@@ -0,0 +1,201 @@
++                                 Apache License
++                           Version 2.0, January 2004
++                        http://www.apache.org/licenses/
++
++TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION
++
++1.  Definitions.
++
++    "License" shall mean the terms and conditions for use, reproduction,
++    and distribution as defined by Sections 1 through 9 of this document.
++
++    "Licensor" shall mean the copyright owner or entity authorized by
++    the copyright owner that is granting the License.
++
++    "Legal Entity" shall mean the union of the acting entity and all
++    other entities that control, are controlled by, or are under common
++    control with that entity. For the purposes of this definition,
++    "control" means (i) the power, direct or indirect, to cause the
++    direction or management of such entity, whether by contract or
++    otherwise, or (ii) ownership of fifty percent (50%) or more of the
++    outstanding shares, or (iii) beneficial ownership of such entity.
++
++    "You" (or "Your") shall mean an individual or Legal Entity
++    exercising permissions granted by this License.
++
++    "Source" form shall mean the preferred form for making modifications,
++    including but not limited to software source code, documentation
++    source, and configuration files.
++
++    "Object" form shall mean any form resulting from mechanical
++    transformation or translation of a Source form, including but
++    not limited to compiled object code, generated documentation,
++    and conversions to other media types.
++
++    "Work" shall mean the work of authorship, whether in Source or
++    Object form, made available under the License, as indicated by a
++    copyright notice that is included in or attached to the work
++    (an example is provided in the Appendix below).
++
++    "Derivative Works" shall mean any work, whether in Source or Object
++    form, that is based on (or derived from) the Work and for which the
++    editorial revisions, annotations, elaborations, or other modifications
++    represent, as a whole, an original work of authorship. For the purposes
++    of this License, Derivative Works shall not include works that remain
++    separable from, or merely link (or bind by name) to the interfaces of,
++    the Work and Derivative Works thereof.
++
++    "Contribution" shall mean any work of authorship, including
++    the original version of the Work and any modifications or additions
++    to that Work or Derivative Works thereof, that is intentionally
++    submitted to Licensor for inclusion in the Work by the copyright owner
++    or by an individual or Legal Entity authorized to submit on behalf of
++    the copyright owner. For the purposes of this definition, "submitted"
++    means any form of electronic, verbal, or written communication sent
++    to the Licensor or its representatives, including but not limited to
++    communication on electronic mailing lists, source code control systems,
++    and issue tracking systems that are managed by, or on behalf of, the
++    Licensor for the purpose of discussing and improving the Work, but
++    excluding communication that is conspicuously marked or otherwise
++    designated in writing by the copyright owner as "Not a Contribution."
++
++    "Contributor" shall mean Licensor and any individual or Legal Entity
++    on behalf of whom a Contribution has been received by Licensor and
++    subsequently incorporated within the Work.
++
++2.  Grant of Copyright License. Subject to the terms and conditions of
++    this License, each Contributor hereby grants to You a perpetual,
++    worldwide, non-exclusive, no-charge, royalty-free, irrevocable
++    copyright license to reproduce, prepare Derivative Works of,
++    publicly display, publicly perform, sublicense, and distribute the
++    Work and such Derivative Works in Source or Object form.
++
++3.  Grant of Patent License. Subject to the terms and conditions of
++    this License, each Contributor hereby grants to You a perpetual,
++    worldwide, non-exclusive, no-charge, royalty-free, irrevocable
++    (except as stated in this section) patent license to make, have made,
++    use, offer to sell, sell, import, and otherwise transfer the Work,
++    where such license applies only to those patent claims licensable
++    by such Contributor that are necessarily infringed by their
++    Contribution(s) alone or by combination of their Contribution(s)
++    with the Work to which such Contribution(s) was submitted. If You
++    institute patent litigation against any entity (including a
++    cross-claim or counterclaim in a lawsuit) alleging that the Work
++    or a Contribution incorporated within the Work constitutes direct
++    or contributory patent infringement, then any patent licenses
++    granted to You under this License for that Work shall terminate
++    as of the date such litigation is filed.
++
++4.  Redistribution. You may reproduce and distribute copies of the
++    Work or Derivative Works thereof in any medium, with or without
++    modifications, and in Source or Object form, provided that You
++    meet the following conditions:
++
++    (a) You must give any other recipients of the Work or
++    Derivative Works a copy of this License; and
++
++    (b) You must cause any modified files to carry prominent notices
++    stating that You changed the files; and
++
++    (c) You must retain, in the Source form of any Derivative Works
++    that You distribute, all copyright, patent, trademark, and
++    attribution notices from the Source form of the Work,
++    excluding those notices that do not pertain to any part of
++    the Derivative Works; and
++
++    (d) If the Work includes a "NOTICE" text file as part of its
++    distribution, then any Derivative Works that You distribute must
++    include a readable copy of the attribution notices contained
++    within such NOTICE file, excluding those notices that do not
++    pertain to any part of the Derivative Works, in at least one
++    of the following places: within a NOTICE text file distributed
++    as part of the Derivative Works; within the Source form or
++    documentation, if provided along with the Derivative Works; or,
++    within a display generated by the Derivative Works, if and
++    wherever such third-party notices normally appear. The contents
++    of the NOTICE file are for informational purposes only and
++    do not modify the License. You may add Your own attribution
++    notices within Derivative Works that You distribute, alongside
++    or as an addendum to the NOTICE text from the Work, provided
++    that such additional attribution notices cannot be construed
++    as modifying the License.
++
++    You may add Your own copyright statement to Your modifications and
++    may provide additional or different license terms and conditions
++    for use, reproduction, or distribution of Your modifications, or
++    for any such Derivative Works as a whole, provided Your use,
++    reproduction, and distribution of the Work otherwise complies with
++    the conditions stated in this License.
++
++5.  Submission of Contributions. Unless You explicitly state otherwise,
++    any Contribution intentionally submitted for inclusion in the Work
++    by You to the Licensor shall be under the terms and conditions of
++    this License, without any additional terms or conditions.
++    Notwithstanding the above, nothing herein shall supersede or modify
++    the terms of any separate license agreement you may have executed
++    with Licensor regarding such Contributions.
++
++6.  Trademarks. This License does not grant permission to use the trade
++    names, trademarks, service marks, or product names of the Licensor,
++    except as required for reasonable and customary use in describing the
++    origin of the Work and reproducing the content of the NOTICE file.
++
++7.  Disclaimer of Warranty. Unless required by applicable law or
++    agreed to in writing, Licensor provides the Work (and each
++    Contributor provides its Contributions) on an "AS IS" BASIS,
++    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
++    implied, including, without limitation, any warranties or conditions
++    of TITLE, NON-INFRINGEMENT, MERCHANTABILITY, or FITNESS FOR A
++    PARTICULAR PURPOSE. You are solely responsible for determining the
++    appropriateness of using or redistributing the Work and assume any
++    risks associated with Your exercise of permissions under this License.
++
++8.  Limitation of Liability. In no event and under no legal theory,
++    whether in tort (including negligence), contract, or otherwise,
++    unless required by applicable law (such as deliberate and grossly
++    negligent acts) or agreed to in writing, shall any Contributor be
++    liable to You for damages, including any direct, indirect, special,
++    incidental, or consequential damages of any character arising as a
++    result of this License or out of the use or inability to use the
++    Work (including but not limited to damages for loss of goodwill,
++    work stoppage, computer failure or malfunction, or any and all
++    other commercial damages or losses), even if such Contributor
++    has been advised of the possibility of such damages.
++
++9.  Accepting Warranty or Additional Liability. While redistributing
++    the Work or Derivative Works thereof, You may choose to offer,
++    and charge a fee for, acceptance of support, warranty, indemnity,
++    or other liability obligations and/or rights consistent with this
++    License. However, in accepting such obligations, You may act only
++    on Your own behalf and on Your sole responsibility, not on behalf
++    of any other Contributor, and only if You agree to indemnify,
++    defend, and hold each Contributor harmless for any liability
++    incurred by, or claims asserted against, such Contributor by reason
++    of your accepting any such warranty or additional liability.
++
++END OF TERMS AND CONDITIONS
++
++APPENDIX: How to apply the Apache License to your work.
++
++      To apply the Apache License to your work, attach the following
++      boilerplate notice, with the fields enclosed by brackets "[]"
++      replaced with your own identifying information. (Don't include
++      the brackets!)  The text should be enclosed in the appropriate
++      comment syntax for the file format. We also recommend that a
++      file or class name and description of purpose be included on the
++      same "printed page" as the copyright notice for easier
++      identification within third-party archives.
++
++Copyright 2025 OpenAI
++
++Licensed under the Apache License, Version 2.0 (the "License");
++you may not use this file except in compliance with the License.
++You may obtain a copy of the License at
++
++       http://www.apache.org/licenses/LICENSE-2.0
++
++Unless required by applicable law or agreed to in writing, software
++distributed under the License is distributed on an "AS IS" BASIS,
++WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++See the License for the specific language governing permissions and
++limitations under the License.
+--- /dev/null
++++ b/tests/fixtures/codex/UPSTREAM_NOTICE
+@@ -0,0 +1,6 @@
++OpenAI Codex
++Copyright 2025 OpenAI
++
++This project includes code derived from [Ratatui](https://github.com/ratatui/ratatui), licensed under the MIT license.
++Copyright (c) 2016-2022 Florian Dehau
++Copyright (c) 2023-2025 The Ratatui Developers
+--- a/tests/test_codex_compat.py
++++ b/tests/test_codex_compat.py
+@@ -1210,3 +1210,211 @@
+     assert control.stop_calls == 1
+     assert state.active is None
+     assert state.turns == []
++
++
++def _wire_effort_profiles(root: Path) -> tuple[Path, Path, Path]:
++    """Same exact model; absence and configured 'none' are distinct selections."""
++    root.mkdir(parents=True)
++    models = []
++    for name in ("unconfigured", "configured-none"):
++        model = {
++            "profile": name,
++            "model_condition": "same-exact-model",
++            "adapter": {
++                "adapter_kind": "local_process",
++                "argv": ["/usr/bin/true", "--model", "{model}"],
++                "probe_argv": ["/usr/bin/true"], "env": {}, "inherit_env": [],
++            },
++            "timeout_seconds": 60,
++            "max_output_tokens": 1024,
++            "max_response_bytes": 8192,
++        }
++        if name == "configured-none":
++            model["reasoning_efforts"] = {
++                "supported": ["none", "low"], "default": "none"}
++            model["adapter"]["argv"] += ["--effort", "{reasoning_effort}"]
++        models.append(model)
++    catalog = root / "catalog.json"
++    catalog.write_text(json.dumps({
++        "schema_version": "rpnh/provider_model_catalog/v3",
++        "providers": [{"provider": "local", "display_name": "Local",
++                       "models": models}],
++    }), encoding="utf-8")
++    generated = root / "generated"
++    build_provider_catalog(catalog, generated)
++    return tuple(generated / "execution" / name for name in (
++        "unconfigured.json", "configured-none.json",
++        "configured-none--effort-low.json"))
++
++
++@pytest.mark.parametrize("version", ["0.155.0", "0.161.0"])
++def test_codex_effort_wire_codec_matches_official_schema(
++        tmp_path: Path, version: str,
++) -> None:
++    import jsonschema
++
++    no_effort, configured_none, low = _wire_effort_profiles(tmp_path / "profiles")
++    server = CodexAppServer(tmp_path / "session", no_effort)
++    fixtures = Path(__file__).parent / "fixtures" / "codex" / version
++    schema = json.loads((fixtures / "ModelListResponse.json").read_text())
++    response = {"data": [server._model(p) for p in server.model_profiles],
++                "nextCursor": None}
++    jsonschema.Draft7Validator(schema).validate(response)
++    # This is a source-derived picker projection, not execution of Rust/TUI.
++    for model in response["data"]:
++        choices = [option["reasoningEffort"]
++                   for option in model["supportedReasoningEfforts"]]
++        choices = choices or [model["defaultReasoningEffort"]]
++        for choice in choices:
++            profile = server._profile_for_selection(model["model"], choice)
++            assert server._effort_to_wire(profile, profile.reasoning_effort) == choice
++    assert server._profile_for_selection("unconfigured", "none").path == no_effort
++    assert server._profile_for_selection("unconfigured", "none").reasoning_effort is None
++    assert server._profile_for_selection("configured-none", "none").path == configured_none
++    assert server._profile_for_selection("configured-none", "none").reasoning_effort == "none"
++    assert server._profile_for_selection("configured-none", "low").path == low
++    assert next(m for m in response["data"] if m["id"] == "unconfigured")[
++        "supportedReasoningEfforts"] == []
++    with pytest.raises(ValueError, match="unknown RPNH reasoning effort"):
++        server._profile_for_selection("unconfigured", "medium")
++    with pytest.raises(ValueError, match="unknown RPNH provider/model"):
++        server._profile_for_selection("unknown", "none")
++    assert "export type ReasoningEffort = string;" in (
++        fixtures / "ReasoningEffort.ts").read_text()
++    server.close()
++
++
++@pytest.mark.parametrize("canonical_effort,index", [(None, 0), ("none", 1), ("low", 2)])
++def test_codex_effort_wire_roundtrip_preserves_execution_identity(
++        tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
++        canonical_effort: str | None, index: int,
++) -> None:
++    paths = _wire_effort_profiles(tmp_path / "profiles")
++    execution = paths[index]
++    selected_config = tmp_path / "user" / "config.json"
++    monkeypatch.setenv("RPNH_CONFIG", str(selected_config))
++    # No adapter/probe executable, provider, worker or physical transport runs.
++    def forbidden(*_args, **_kwargs):
++        raise AssertionError("wire test must not execute a provider or worker")
++    monkeypatch.setattr("cpn.frontend.codex_app_server.subprocess.Popen", forbidden)
++    monkeypatch.setattr(TaskControl, "start", forbidden)
++    server = CodexAppServer(tmp_path / "session", execution)
++    profile = profile_for_path(execution)
++    identity = server._execution_identity(execution)
++    profile_bytes = {p: p.read_bytes() for p in paths}
++    adapter_paths = tuple((paths[0].parent.parent / "adapters").glob("*.json"))
++    assert adapter_paths
++    adapter_bytes = {p: p.read_bytes() for p in adapter_paths}
++    wire_effort = "none" if canonical_effort is None else canonical_effort
++    socket = _FakeWebSocket([])
++    server._initialized_connections.add(id(socket))
++
++    async def request(method, params=None):
++        await server._handle_request(socket, method, method, params or {})
++        return next(item["result"] for item in reversed(socket.sent)
++                    if item.get("id") == method)
++
++    async def roundtrip():
++        config = await request("config/read")
++        assert config["config"]["model_reasoning_effort"] == wire_effort
++        assert config["config"]["model"] == profile.selection_id
++        await request("config/batchWrite", {"edits": [
++            {"keyPath": "model", "value": profile.selection_id,
++             "mergeStrategy": "replace"},
++            {"keyPath": "model_reasoning_effort", "value": wire_effort,
++             "mergeStrategy": "replace"},
++        ]})
++        started = await request("thread/start", {
++            "model": profile.selection_id, "effort": wire_effort,
++            "cwd": str(tmp_path),
++        })
++        assert started["reasoningEffort"] == wire_effort
++        state = server._threads[started["thread"]["id"]]
++        assert state.reasoning_effort == canonical_effort
++        assert state.session.execution_config_path == execution
++        # Cross a different selection before decoding 'none' again.
++        other = profile_for_path(paths[1 if index == 0 else 0])
++        await request("thread/settings/update", {
++            "threadId": state.thread_id, "model": other.selection_id,
++            "effort": "none",
++        })
++        assert state.reasoning_effort == other.reasoning_effort
++        await request("thread/settings/update", {
++            "threadId": state.thread_id, "model": profile.selection_id,
++            "effort": wire_effort,
++        })
++        assert state.reasoning_effort == canonical_effort
++        assert state.session.execution_config_path == execution
++        core = state.session._registry_core
++        before_read = (core.event_store.max_ordinal(), core.event_store.writer_epoch)
++        owner_lease = server._lease
++        resumed = await request("thread/resume", {"threadId": state.thread_id})
++        assert resumed["reasoningEffort"] == wire_effort
++        assert (core.event_store.max_ordinal(), core.event_store.writer_epoch) == before_read
++        assert server._lease is owner_lease
++        # Stop exactly at the execution handoff. This proves turn/start decoded
++        # the canonical profile, not successful worker/turn execution.
++        class PreparationObserved(Exception):
++            pass
++        def observe_preparation(text):
++            assert text == "codec only"
++            assert state.session.execution_config_path == execution
++            assert state.reasoning_effort == canonical_effort
++            assert server._execution_identity(execution) == identity
++            raise PreparationObserved
++        monkeypatch.setattr(state.session, "prepare_turn", observe_preparation)
++        with pytest.raises(PreparationObserved):
++            await request("turn/start", {
++                "threadId": state.thread_id, "model": profile.selection_id,
++                "effort": wire_effort,
++                "input": [{"type": "text", "text": "codec only"}],
++            })
++        assert state.active is None
++
++    try:
++        asyncio.run(roundtrip())
++        assert server.default_reasoning_effort == canonical_effort
++        assert server._execution_identity(execution) == identity
++        saved = json.loads(selected_config.read_text())
++        assert saved["reasoning_effort"] == canonical_effort
++        assert saved["execution_config_path"] == str(execution)
++        assert {p: p.read_bytes() for p in paths} == profile_bytes
++        assert {p: p.read_bytes() for p in adapter_paths} == adapter_bytes
++    finally:
++        server.close()
++    # Reopen the real committed empty Registry without launching or reconciling.
++    reopened = CodexAppServer(tmp_path / "session", execution)
++    try:
++        state = next(iter(reopened._threads.values()))
++        assert state.reasoning_effort == canonical_effort
++        assert state.session.execution_config_path == execution
++        assert reopened._selected_effort_to_wire(
++            state.model_id, state.reasoning_effort) == wire_effort
++        assert reopened._execution_identity(execution) == identity
++    finally:
++        reopened.close()
++
++
++def test_codex_none_marker_does_not_become_an_unlisted_effort(tmp_path: Path) -> None:
++    _, medium, _ = _reasoning_effort_profiles(tmp_path / "profiles")
++    server = CodexAppServer(tmp_path / "session", medium)
++    with pytest.raises(ValueError, match="unknown RPNH reasoning effort"):
++        server._profile_for_selection("reasoning-model", "none")
++    assert server._profile_for_selection("reasoning-model", None).path == medium
++    server.close()
++
++
++def test_codex_schema_candidate_does_not_expand_native_version_pin(tmp_path: Path) -> None:
++    from cpn.frontend.codex_app_server import CODEX_FRONTEND_VERSION
++
++    assert CODEX_FRONTEND_VERSION == "0.155.0"
++    execution = _local_profile(tmp_path / "profiles")
++    server = CodexAppServer(tmp_path / "session", execution)
++    socket = _FakeWebSocket([])
++    with pytest.raises(ValueError, match="0.155.0 exactly"):
++        asyncio.run(server._handle_request(socket, "initialize", "initialize", {
++            "clientInfo": {"name": "codex-tui", "version": "0.161.0"},
++        }))
++    assert not socket.sent
++    assert not server._threads
++    server.close()

@@ -1,0 +1,16 @@
+{
+  "source": "/workspace/scratch/18c810e6dd59/rpnh-parent-child-core-boundary-review/final-source",
+  "exit_status": 1,
+  "collected": [
+    "rpnh-parent-child-core-boundary-review/tests/test_boundary_finalize.py::test_prospective_protected_lifetime_fails_before_commit"
+  ],
+  "outcomes": [
+    {
+      "nodeid": "rpnh-parent-child-core-boundary-review/tests/test_boundary_finalize.py::test_prospective_protected_lifetime_fails_before_commit",
+      "when": "call",
+      "outcome": "failed",
+      "duration": 3.4477547030037385
+    }
+  ],
+  "sentinel_blocked_events": []
+}

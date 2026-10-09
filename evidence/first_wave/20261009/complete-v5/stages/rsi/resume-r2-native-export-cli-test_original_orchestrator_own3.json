@@ -1,0 +1,18 @@
+{
+  "command": [
+    "<WORKSPACE>/.p26/v/bin/python",
+    "-m",
+    "cpn",
+    "net",
+    "show",
+    "--run",
+    "<WORKSPACE>/.v26/ur2n/test_original_orchestrator_own3/run",
+    "--format",
+    "json"
+  ],
+  "started_at_utc": "2026-10-09T03:36:19.172355+00:00",
+  "finished_at_utc": "2026-10-09T03:36:20.311946+00:00",
+  "exit_code": 0,
+  "stdout": "<WORKSPACE>/task-complete-v5-20261009/stages/rsi/resume-r2-native-export-cli-test_original_orchestrator_own3.stdout.log",
+  "stderr": "<WORKSPACE>/task-complete-v5-20261009/stages/rsi/resume-r2-native-export-cli-test_original_orchestrator_own3.stderr.log"
+}

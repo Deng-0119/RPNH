@@ -1,0 +1,68 @@
+{
+  "status": "offline_implementation_reviewed_native_gate_pending",
+  "patch": "codex-owner-history-projection.patch",
+  "patch_sha256": "df0c3090e84f532d158dd02d7b65489323563a470843e4bd4e2688ffcc25900b",
+  "prior_tested_freeze_patch_sha256": "c1d5665c4955b0c129cc7b0b89b456a55307597bd0febae0ea1f76290b089fcb",
+  "doc_only_delta": "docs/reference/codex-history_ZH.md: metadata language zh -> zh-CN; runtime/test bytes unchanged",
+  "changed_files": 21,
+  "main_composite_base": "715468dab0b1bea07d7e94a7aa0606eaf194365c",
+  "original_dependency_patch_base": "ec9077e95b830d09e7252c6d5d8ebcdbb9eb4ac4",
+  "required_overlays": [
+    {
+      "patch": "native-main-thread-history.patch",
+      "sha256": "f4726d7c1a230c8935b22310bb1d29f7c8e68342ef9b660cabb6430b8a3d4654",
+      "already_delivered": true
+    },
+    {
+      "patch": "codex-effort-wire-codec.patch",
+      "sha256": "3be0de65edb5a4f68579f115f5072bacc3e4fe4ffefeba96b226e45cbcab8a8d",
+      "already_delivered": true
+    }
+  ],
+  "separate_new_head_dependency_overlay": {
+    "commit": "d92ff3704b6002bf5ecbccb3e6a3d1489809a805",
+    "files": [
+      "cpn/rpnh/task_control.py",
+      "cpn/rpnh/registry/run_authority.py"
+    ],
+    "passed": 119,
+    "deselected": 1,
+    "full_head_certification": false
+  },
+  "later_document_only_main": "8dd360e4848912a998dbd83220c3f0ce0a1caa86",
+  "author_focused": {
+    "passed": 119,
+    "deselected": 1
+  },
+  "author_additional_native_registry": {
+    "passed": 43,
+    "not_selected_native_cases": 9
+  },
+  "author_unique_cases": 162,
+  "independent_review": {
+    "passed": 128,
+    "extra_probe_cases": 21,
+    "overlaps_author_tests": true,
+    "report": "independent-review/INDEPENDENT_REVIEW_ZH.md",
+    "doc_only_followup": {
+      "status": "passed",
+      "report": "independent-review/DOC_ONLY_ADDENDUM_ZH.md",
+      "report_sha256": "903b618073a9db4123b7b3ed0f3d7a9f6e5fa79318b5a689df0e63e7e8abc364",
+      "scope": "One metadata line; other 1040 source files unchanged; new patch apply exact; no repeated runtime matrix"
+    }
+  },
+  "current_pin": "0.155.0",
+  "stock_0155_native_gate": "NOT_RUN",
+  "stock_0161_native_gate": "NOT_RUN; pin unchanged",
+  "native_gate_plan": "native-gate/NATIVE_GATE_ZH.md",
+  "real_provider_calls": 0,
+  "installs": 0,
+  "login_changes": 0,
+  "actions": 0,
+  "pushes": 0,
+  "uploads": 0,
+  "read_mode": "existing same-source RegistryCore mode=ro/query_only; no new persistent authority/grant",
+  "sqlite_scope": "No new history rw connection or authority write; first RO open may create SHM/empty WAL; physical hash claims use documented observation windows",
+  "object_store_global_hardening": "NOT_CHANGED; no malicious same-OS-owner ABA/race guarantee",
+  "baseline_kind": "verified isolated source subset; not a complete repository checkout"
+}

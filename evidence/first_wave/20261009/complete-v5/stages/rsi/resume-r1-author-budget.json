@@ -1,0 +1,7 @@
+{
+  "utc": "2026-10-09T03:17:13.704667+00:00",
+  "host_free_bytes": 54022123520,
+  "whole_v26_and_task_bytes": 3691380736,
+  "expanded_resume_runtime_bytes": 4096,
+  "host_df": "Filesystem        1B-blocks         Used   Available Use% Mounted on\nD:\\            807072165888 753050042368 54022123520  94% /mnt/d\n"
+}

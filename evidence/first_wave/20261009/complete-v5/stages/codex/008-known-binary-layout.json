@@ -1,0 +1,21 @@
+{
+  "command": [
+    "<WORKSPACE>/.p26/v/bin/python",
+    "-c",
+    "from pathlib import Path\nimport json,hashlib\nr=Path('<USER_HOME>/.nvm/versions/node/v22.22.1/lib/node_modules/@openai/codex/node_modules/@openai/codex-linux-x64')\nfor p in r.rglob('codex'):\n if p.is_file(): print(json.dumps({'path':str(p),'sha256':hashlib.sha256(p.read_bytes()).hexdigest(),'elf':p.open('rb').read(4)==b'\\x7fELF','executed':False,'metadata_version':'0.160.0-linux-x64','official_provenance':'NOT_ESTABLISHED'}))\n"
+  ],
+  "cwd": "<WORKSPACE>",
+  "pid": 14271,
+  "started_at_utc": "2026-10-09T01:20:06.753868+00:00",
+  "finished_at_utc": "2026-10-09T01:20:07.513351+00:00",
+  "elapsed_seconds": 0.7594999779976206,
+  "exit_code": 0,
+  "environment": {
+    "PYTHONPATH": "<WORKSPACE>",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1",
+    "TMPDIR": "<WORKSPACE>/.v26/tmp",
+    "PYTEST_ADDOPTS": null,
+    "PYTEST_PLUGINS": null
+  }
+}

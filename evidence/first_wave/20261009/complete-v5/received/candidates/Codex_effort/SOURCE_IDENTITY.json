@@ -1,0 +1,42 @@
+{
+  "repository": "Deng-0119/RPNH",
+  "author_baseline_commit": "ec9077e95b830d09e7252c6d5d8ebcdbb9eb4ac4",
+  "author_code_tree_commit": "674252feb836f631c162979f177d1fe91f22559f",
+  "packaging_live_main_read_at_utc": "2026-10-08T16:53:30Z",
+  "packaging_live_main": "715468dab0b1bea07d7e94a7aa0606eaf194365c",
+  "applicable_fixed_commits": [
+    "ec9077e95b830d09e7252c6d5d8ebcdbb9eb4ac4",
+    "715468dab0b1bea07d7e94a7aa0606eaf194365c"
+  ],
+  "patch_sha256": "3be0de65edb5a4f68579f115f5072bacc3e4fe4ffefeba96b226e45cbcab8a8d",
+  "source_whitelist": [
+    "THIRD_PARTY_NOTICES.md",
+    "cpn/frontend/codex_app_server.py",
+    "docs/guides/models.md",
+    "docs/guides/models_ZH.md",
+    "tests/fixtures/codex/0.155.0/ModelListResponse.json",
+    "tests/fixtures/codex/0.155.0/ReasoningEffort.ts",
+    "tests/fixtures/codex/0.161.0/ModelListResponse.json",
+    "tests/fixtures/codex/0.161.0/ReasoningEffort.ts",
+    "tests/fixtures/codex/PROVENANCE.json",
+    "tests/fixtures/codex/UPSTREAM_LICENSE",
+    "tests/fixtures/codex/UPSTREAM_NOTICE",
+    "tests/test_codex_compat.py"
+  ],
+  "modified_old_blob_count": 5,
+  "new_file_absence_required": [
+    "tests/fixtures/codex/0.155.0/ModelListResponse.json",
+    "tests/fixtures/codex/0.155.0/ReasoningEffort.ts",
+    "tests/fixtures/codex/0.161.0/ModelListResponse.json",
+    "tests/fixtures/codex/0.161.0/ReasoningEffort.ts",
+    "tests/fixtures/codex/PROVENANCE.json",
+    "tests/fixtures/codex/UPSTREAM_LICENSE",
+    "tests/fixtures/codex/UPSTREAM_NOTICE"
+  ],
+  "pin": "0.155.0",
+  "source_snapshot_is_partial": true,
+  "target_rule": "Before applying to any checkout, verify the exact target old blobs and absence of new files. A matching branch name alone is insufficient. Stop on divergence; do not overwrite or expand the patch.",
+  "baseline_provenance_original_sha256": "7a44147a4af507389ba6a0c65f878a4127ccb50ec2ae927208125ac7023b1963",
+  "h1_readback_tree_sha256": "f62c697841036a4c4028c6594010c14bc5f39f19dea4bbbb2ccc49fe10a3d850",
+  "upstream_source_policy": "Only 4 necessary schema/TypeScript files plus PROVENANCE/LICENSE/NOTICE are copied; Rust/picker are fixed-commit source-reading evidence, not compiled/native fixtures."
+}

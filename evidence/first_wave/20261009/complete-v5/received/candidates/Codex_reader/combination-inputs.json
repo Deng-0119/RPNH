@@ -1,0 +1,294 @@
+{
+  "combination_base_commit": "715468dab0b1bea07d7e94a7aa0606eaf194365c",
+  "original_history_base_commit": "ec9077e95b830d09e7252c6d5d8ebcdbb9eb4ac4",
+  "status": "input_identities_only_combination_tests_NOT_RUN_R1_ON_HOLD",
+  "packages": [
+    {
+      "name": "H1",
+      "zip_name": "RPNH_Owner_Entry_Local_Validation_20261008.zip",
+      "zip_sha256": "5f4971b3c5c039a058155f9b3e835e2151fdc8522460fc9e828e165e80b36195",
+      "manifest_member": "RPNH_Owner_Entry_Local_Validation_20261008/file-manifest.json",
+      "manifest_sha256": "07ee4b56d801dd0b2f160fabcb15ec5a9e1707998b39eff11237cbf9ad7da7b6",
+      "patch_name": "owner-entry-convergence.patch",
+      "patch_sha256": "71261d059d205b375334450aef281702a1c573562c6e905a08d411b907749a6c",
+      "role": "already_merged_into_base_do_not_reapply",
+      "files": [
+        {
+          "path": "cpn/orchestrator/runner.py",
+          "sha256": "6ae5153b2925ca3a0237383889014f1197f6bfa98e0f1f8523ef003db72949f3",
+          "git_blob_sha1": "3e6fcebe1a59a2a193572d6bc963f1949a8067f4",
+          "bytes": 2012
+        },
+        {
+          "path": "cpn/rpnh/agent_tasks.py",
+          "sha256": "247c1ec9b9d5eb380071b0bfbf8e1bc45d20038f9dd5c0aaa8c292be62927c11",
+          "git_blob_sha1": "e2283345a354124ae2861881dce0cfcafa47db67",
+          "bytes": 56122
+        },
+        {
+          "path": "examples/tool_pipeline/README.md",
+          "sha256": "3a5fa5078bf3b20d150ea461bc708037a26b41256244da4d63b6769c3d90eba3",
+          "git_blob_sha1": "3be8ed3dbedacc613b11131732694c26b4a9c2ac",
+          "bytes": 10979
+        },
+        {
+          "path": "examples/tool_pipeline/README_ZH.md",
+          "sha256": "96da52bfd074c2ee0f8c21408048767115ea1bc0ee7c2a1794b52a8743e106e4",
+          "git_blob_sha1": "cec5760583b6cd5b693c6c37ca2771db5e560edd",
+          "bytes": 9358
+        },
+        {
+          "path": "examples/tool_pipeline/run.py",
+          "sha256": "ad0df2b9d2e018d3b17dc49350a051f8620e3a3c31cfb96840afb6bbbb694dc4",
+          "git_blob_sha1": "b50a7ebc373817ed10f936d399e6a0934a10dbf8",
+          "bytes": 9463
+        },
+        {
+          "path": "examples/tool_pipeline/tests/test_pipeline.py",
+          "sha256": "9ce908bd82781b426387e9fa5ccf4b7145bc75926f3fcaba91933db32be813f7",
+          "git_blob_sha1": "1633a100241f847150b9aeefddbd8bb841a3f103",
+          "bytes": 29236
+        },
+        {
+          "path": "tests/test_orchestrator_boundary.py",
+          "sha256": "6545ed83ea5a1986337d75512a50cc82036e0733a7097ec32a6f1d0f06ad49d1",
+          "git_blob_sha1": "35abfa84da0a30fd9810b42627e0693074fca2e7",
+          "bytes": 1896
+        }
+      ]
+    },
+    {
+      "name": "H2a",
+      "zip_name": "RPNH_H2a_TaskControl_Reader_Convergence_20261008.zip",
+      "zip_sha256": "0de920a4371ec83c6425607d90cfb2a035326d0e8da77f3e90bb18a133147fac",
+      "manifest_member": "rpnh-taskcontrol-reader-convergence/file-manifest.json",
+      "manifest_sha256": "8ba33d766fd033128639afb1df2c265f81cc44b1daa568499651e90a1c121271",
+      "patch_name": "taskcontrol-reader-convergence.patch",
+      "patch_sha256": "62f914d41d953e9badd4eb06eec43273f9d52bd5bd9b948ad6e10137d3ed2b24",
+      "role": "candidate_patch_requires_local_gate",
+      "files": [
+        {
+          "path": "cpn/rpnh/task_control.py",
+          "sha256": "b8658b6c19d64eb4bc34a9c320c84a9140cab624e236ffe8c8edfcc7bd026729",
+          "git_blob_sha1": "265610e6b96bef0f3d1c452f532afeab3d3caeb8",
+          "bytes": 39860
+        },
+        {
+          "path": "cpn/rpnh/registry/run_authority.py",
+          "sha256": "7475c2d5403dea49dc0a45796a3f84beab6c7516f18466bc8e1338bf0be684e3",
+          "git_blob_sha1": "6acb261942626238e88e5949b2ce87b35e4450f5",
+          "bytes": 28641
+        },
+        {
+          "path": "tests/test_task_control_registry_reads.py",
+          "sha256": "49930313e1cc0f49846cd406a34003a54517fbff6c8c91303c964c2c6b89442b",
+          "git_blob_sha1": "4cbb336125c66285f5d78e5a5048fb040dca87df",
+          "bytes": 24747
+        },
+        {
+          "path": "docs/ARCHITECTURE.md",
+          "sha256": "e87be412e593f56dd002549f50cb22e8d878f3afc756d2d9f1fb396a9a9ee6a5",
+          "git_blob_sha1": "4eeb1c8a9749d55300d4c585f5f3d9efc034f800",
+          "bytes": 19908
+        },
+        {
+          "path": "docs/ARCHITECTURE_ZH.md",
+          "sha256": "580f623adfdfd003215f7a0c2a240671f808efc67c2bd04b926450878a87e011",
+          "git_blob_sha1": "e69083b935b3a43f71649231126633573d2260eb",
+          "bytes": 18480
+        }
+      ]
+    },
+    {
+      "name": "codec",
+      "zip_name": "RPNH_Codex_Effort_Local_Validation_20261008.zip",
+      "zip_sha256": "8e78f56ceed64c294f84e4f3a19eb7db6346567884d4561e87e7ab25c366f645",
+      "manifest_member": "codex-effort-local-validation-20261008/file-manifest.json",
+      "manifest_sha256": "04883428f1120b4e2c76f8b0d912ca11f87c265284ccb982ad89f4da97f9c6e8",
+      "patch_name": "codex-effort-wire-codec.patch",
+      "patch_sha256": "3be0de65edb5a4f68579f115f5072bacc3e4fe4ffefeba96b226e45cbcab8a8d",
+      "role": "candidate_patch_requires_local_gate",
+      "files": [
+        {
+          "path": "THIRD_PARTY_NOTICES.md",
+          "sha256": "3cb70869b323907b561460d523cd9bbc18c68c5ded0bab12cb68398f6f885a79",
+          "git_blob_sha1": "b52204033b373d11147ea0ae7edbc6fe194737e8",
+          "bytes": 1407
+        },
+        {
+          "path": "cpn/frontend/codex_app_server.py",
+          "sha256": "6c9beb7fda5d3cf66a79781ff6a83e53c49fc8efa1e770a8a5865c047955804f",
+          "git_blob_sha1": "3fe5c56c5c1e5fd6693cb358dea892e409684ff7",
+          "bytes": 62305
+        },
+        {
+          "path": "docs/guides/models.md",
+          "sha256": "20aac5c71ebf7f05c3710b0bea9b9b18110053342c332f36817d6d1e0688e347",
+          "git_blob_sha1": "433f6ddf7798cfff7b5b9335cef6459ae6093b1b",
+          "bytes": 8904
+        },
+        {
+          "path": "docs/guides/models_ZH.md",
+          "sha256": "04e066ad497a8f2141910df1b6a82104df98ec80fa24e27e7e989a4cb183d0b6",
+          "git_blob_sha1": "992c8e13818274c90c17ef1b9bd72822c4d32b65",
+          "bytes": 8096
+        },
+        {
+          "path": "tests/fixtures/codex/0.155.0/ModelListResponse.json",
+          "sha256": "c7b58b332f6cf18fd64235409a6daf27bb9e6c09d12dcd0daa2f3dc628b55f6f",
+          "git_blob_sha1": "657a433f88ae548aa81fb1c2ee44ba4fc5a781f8",
+          "bytes": 6002
+        },
+        {
+          "path": "tests/fixtures/codex/0.155.0/ReasoningEffort.ts",
+          "sha256": "a29212fd92094fc023f5d8727412325c60b05dfb429a1e6291b60ceba1eb1743",
+          "git_blob_sha1": "d40f5bd6578e63f45f9fd0bee8d8979026561de7",
+          "bytes": 302
+        },
+        {
+          "path": "tests/fixtures/codex/0.161.0/ModelListResponse.json",
+          "sha256": "2fb387a2ed258fc74258828ea342d68f89ce4e8e22cd0329ca59d2b423f9108b",
+          "git_blob_sha1": "ee3ca9ae1449457d8338507274d587342780f891",
+          "bytes": 7169
+        },
+        {
+          "path": "tests/fixtures/codex/0.161.0/ReasoningEffort.ts",
+          "sha256": "a29212fd92094fc023f5d8727412325c60b05dfb429a1e6291b60ceba1eb1743",
+          "git_blob_sha1": "d40f5bd6578e63f45f9fd0bee8d8979026561de7",
+          "bytes": 302
+        },
+        {
+          "path": "tests/fixtures/codex/PROVENANCE.json",
+          "sha256": "1961f8bb7f2be5c3c0caa41424ba65c8d850f86598d62ffea58851d7d60c5aa5",
+          "git_blob_sha1": "c8e761285061480c41879690a25166151957875e",
+          "bytes": 3435
+        },
+        {
+          "path": "tests/fixtures/codex/UPSTREAM_LICENSE",
+          "sha256": "d17f227e4df5da1600391338865ce0f3055211760a36688f816941d58232d8dc",
+          "git_blob_sha1": "4606e72e042564097e8780d66c1d4dcb611869bd",
+          "bytes": 10926
+        },
+        {
+          "path": "tests/fixtures/codex/UPSTREAM_NOTICE",
+          "sha256": "9d71575ecfd9a843fc1677b0efb08053c6ba9fd686a0de1a6f5382fd3c220915",
+          "git_blob_sha1": "2805899d56d0332d175cfc613c67d45d6f006db7",
+          "bytes": 242
+        },
+        {
+          "path": "tests/test_codex_compat.py",
+          "sha256": "4072fd4bde6298cae5c999cfb40d460458130aa2d8774b38cc6dbaeba7be21f7",
+          "git_blob_sha1": "2e9113b3ee6fa567def750fa67a4fa41e70caa10",
+          "bytes": 51860
+        }
+      ]
+    },
+    {
+      "name": "R1",
+      "zip_name": "RPNH_R1_Inert_Iteration_Profile_20261008.zip",
+      "zip_sha256": "aa210453d56af6ae3ed1658b48edb490db9ee61ce0c1566a0633670dbee912cc",
+      "manifest_member": "RPNH_R1_Inert_Iteration_Profile/file-manifest.json",
+      "manifest_sha256": "1aa1301c58fe37b4de5738db30948988ceb4c289652eb6cd3fafe04f242b723a",
+      "patch_name": "inert-iteration-profile.patch",
+      "patch_sha256": "cad3873f4225c326c1dc4ebff2a382c8de9b9ffb0e8d372fbb296f07200f9a45",
+      "role": "HOLD_FOR_REPLACEMENT_historical_identity_only_DO_NOT_APPLY",
+      "files": [
+        {
+          "path": "cpn/rpnh/iteration_profile.py",
+          "sha256": "87bae6a32c96c5902dec06dd69ce2da70df5dd76520c2f425a9fbf62772ead2f",
+          "git_blob_sha1": null,
+          "bytes": 12632
+        },
+        {
+          "path": "cpn/schemas/rpnh/iteration_profile.v1.schema.json",
+          "sha256": "684d0bb6f6bff7951189512549a578f5eb157f5e2b69d5cb3355e75872f03a7c",
+          "git_blob_sha1": null,
+          "bytes": 4333
+        },
+        {
+          "path": "cpn/examples/iteration_profile/propose_evaluate_select.json",
+          "sha256": "8b485aec8bb7c2a96627b90d15323a3e48d7421e99a64b62d666657c604946fc",
+          "git_blob_sha1": null,
+          "bytes": 889
+        },
+        {
+          "path": "cpn/examples/iteration_profile/README.md",
+          "sha256": "3c91d3c776e0d2cc73215132af121fceb7bc27a3fbae6acc8dc8a56fa7f1c7a7",
+          "git_blob_sha1": null,
+          "bytes": 9076
+        },
+        {
+          "path": "cpn/examples/iteration_profile/README_ZH.md",
+          "sha256": "2ec89538375e39b554ebb842ba1486cf5e8c95373ca0e70646a4dc2fd99d1d80",
+          "git_blob_sha1": null,
+          "bytes": 8009
+        },
+        {
+          "path": "tests/test_iteration_profile.py",
+          "sha256": "7377773d56dbf10f4bb8fb2ed187767d732671dd09d29076c56d4f4b5583d96a",
+          "git_blob_sha1": null,
+          "bytes": 16066
+        }
+      ],
+      "hold_reason": "compiler terminal.config={} lacks native run_outcome; replacement patch and independent review pending"
+    },
+    {
+      "name": "native_history",
+      "zip_name": "RPNH_Native_MainThread_History_Read_20261008.zip",
+      "zip_sha256": "a9cf982a8ad12244365e1de3d38ee476942fb62beaa3e326de1fb46648edf283",
+      "manifest_member": "file-manifest.json",
+      "manifest_sha256": "312b892d5fa049efe0b3e9e4a675e68c097e2afeeee914ecc697c76014b3c126",
+      "patch_name": "native-main-thread-history.patch",
+      "patch_sha256": "f4726d7c1a230c8935b22310bb1d29f7c8e68342ef9b660cabb6430b8a3d4654",
+      "role": "candidate_patch_requires_local_gate",
+      "files": [
+        {
+          "path": "cpn/rpnh/registry/main_thread.py",
+          "sha256": "b3a0bb075b720f0dc6d3c854468a54a51a90848dbd0af0c7d16ac32c0d3b6fe1",
+          "git_blob_sha1": "e0573334564c797229e6b99c051604a11c4773ae",
+          "bytes": 75249
+        },
+        {
+          "path": "cpn/rpnh/registry/main_thread_history.py",
+          "sha256": "714dcece4be9f5cff64892bb2a01ebb21611d4f556ad493b166629bcc9c79c82",
+          "git_blob_sha1": "d7aefa03af143d55fec9859823e9f6bcff107f73",
+          "bytes": 3175
+        },
+        {
+          "path": "docs/reference/extensions-observation.md",
+          "sha256": "6f98d6efbf6cecafd8aca3fe80930798d9f6b20880e638a122bd99bef24bc867",
+          "git_blob_sha1": "215fe583a6ba428a4870c17069f85209dda0b884",
+          "bytes": 9590
+        },
+        {
+          "path": "docs/reference/extensions-observation_ZH.md",
+          "sha256": "ddc8f6ec7cc132bd5c851c7a95b0b7d0e5528b5043b91ee8874a5b866107c83e",
+          "git_blob_sha1": "7bbab8f5fcd60f4dcbbfc471b71d7aaf5f4638f6",
+          "bytes": 8216
+        },
+        {
+          "path": "docs/reference/main-thread-history.md",
+          "sha256": "03ab0b5efd78d2bf8cd252657aa2b46c988f8537e9f65eaf6a7f0baea11c6f75",
+          "git_blob_sha1": "038386df6315242e0792386baacb47bb39798b4f",
+          "bytes": 6957
+        },
+        {
+          "path": "docs/reference/main-thread-history_ZH.md",
+          "sha256": "619e7a3ae33a2dfe5cd21ea6712dc716fbda0fb77ee59378ee1800961849350f",
+          "git_blob_sha1": "1836eb4420b64c3775bc9ad0f31d37cb221e0e94",
+          "bytes": 6185
+        },
+        {
+          "path": "tests/test_main_thread_history.py",
+          "sha256": "23379c0ff39d8aa8eb65fd83cf83e1d14e263d12d2db4aedc6ccd392a365497b",
+          "git_blob_sha1": "67a70b5cfd378e9efa325a8b62f1b589332dc727",
+          "bytes": 25317
+        }
+      ]
+    }
+  ],
+  "frozen_unique_target_paths": 37,
+  "frozen_target_path_collisions": {},
+  "local_head_and_uncommitted_changes_require_new_collision_check": true,
+  "frozen_collision_result_scope": "Historical exact five inputs only; R1 is held, replacement requires fresh complete collision and identity checks"
+}

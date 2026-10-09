@@ -1,0 +1,7 @@
+cpn/rpnh/registry/main_thread.py
+cpn/rpnh/registry/main_thread_history.py
+docs/reference/extensions-observation.md
+docs/reference/extensions-observation_ZH.md
+docs/reference/main-thread-history.md
+docs/reference/main-thread-history_ZH.md
+tests/test_main_thread_history.py

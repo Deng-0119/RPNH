@@ -1,0 +1,36 @@
+{
+  "thread": {
+    "id": "c67ce954-8d92-5dd2-babc-dd9fdb9046a6",
+    "sessionId": "c67ce954-8d92-5dd2-babc-dd9fdb9046a6",
+    "preview": "Synthetic question",
+    "name": null,
+    "ephemeral": false,
+    "model": "fixture-model",
+    "modelProvider": "rpnh",
+    "createdAt": 0,
+    "updatedAt": 0,
+    "recencyAt": 0,
+    "cwd": "/synthetic/fixture",
+    "cliVersion": "0.155.0",
+    "source": "appServer",
+    "status": {
+      "type": "idle"
+    },
+    "turns": [],
+    "projectId": null,
+    "historyMode": "paginated"
+  },
+  "turnsBackwardsCursor": "opaque-fixture-turns",
+  "itemsBackwardsCursor": "opaque-fixture-items",
+  "model": "fixture-model",
+  "modelProvider": "rpnh",
+  "cwd": "/synthetic/fixture",
+  "approvalPolicy": "never",
+  "approvalsReviewer": "user",
+  "sandbox": {
+    "type": "dangerFullAccess"
+  },
+  "reasoningEffort": "medium",
+  "serviceTier": null,
+  "instructionSources": []
+}

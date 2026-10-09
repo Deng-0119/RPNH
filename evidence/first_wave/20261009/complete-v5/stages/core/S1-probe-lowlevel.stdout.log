@@ -1,0 +1,4 @@
+source <WORKSPACE>/.v26/c1/cpn/__init__.py
+correct ADMITTED VersionRef(entity_type='transition_firing/v1', entity_id=TypedId(kind='transition_firing', value='599f36144c89576b9c799fd30ca2e61c'), version_id=TypedId(kind='transition_firing_version', value='feb1abd4dadd5290880ba2e983f211b3'))
+missing_lease REJECTED RegistryConflict static lease claim differs from adopted PN/marking: exact registered firing is not currently enabled
+consume_lease REJECTED RegistryConflict static lease claim differs from adopted PN/marking: read reference was declared consumed

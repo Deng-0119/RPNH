@@ -1,0 +1,19 @@
+{
+  "command": [
+    "<WORKSPACE>/.p26/v/bin/python",
+    "-c",
+    "import py_compile; from pathlib import Path; out=Path('<WORKSPACE>/task-complete-v5-20261009/stages/rsi/resume-compiled'); out.mkdir(); [py_compile.compile(p,cfile=str(out/(Path(p).name+\"c\")),doraise=True) for p in [\"cpn/rpnh/iteration_profile.py\",\"tests/test_iteration_profile.py\"]]"
+  ],
+  "cwd": "<WORKSPACE>/.v26/r1",
+  "pid": 18621,
+  "started_at_utc": "2026-10-09T03:21:36.159691+00:00",
+  "finished_at_utc": "2026-10-09T03:21:36.189302+00:00",
+  "elapsed_seconds": 0.029609995000100753,
+  "exit_code": 0,
+  "environment": {
+    "PYTHONPATH": "<WORKSPACE>/.v26/r1",
+    "TMPDIR": "<WORKSPACE>/.v26/urtmp",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1"
+  }
+}

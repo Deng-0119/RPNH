@@ -1,0 +1,19 @@
+{
+  "command": [
+    "<WORKSPACE>/.p26/v/bin/python",
+    "-c",
+    "import importlib,importlib.metadata,json,sys; from pathlib import Path; mods=['cpn', 'cpn.rpnh.iteration_profile', 'cpn.rpnh.registry.run_authority', 'cpn.rpnh.task_control', 'examples.rsi_workflows.deterministic', 'cpn.rpnh.control_server', 'cpn.orchestrator.runner']; rows={m:importlib.import_module(m).__file__ for m in mods}; assert all(Path(v).resolve().is_relative_to(Path('<WORKSPACE>/.v26/r2')) for v in rows.values()); print(json.dumps({\"python\":sys.executable,\"version\":sys.version,\"imports\":rows,\"distributions\":{n:importlib.metadata.version(n) for n in [\"pytest\",\"jsonschema\",\"packaging\",\"websockets\"]}},indent=2))"
+  ],
+  "cwd": "<WORKSPACE>/.v26/r2",
+  "pid": 19170,
+  "started_at_utc": "2026-10-09T03:22:48.454798+00:00",
+  "finished_at_utc": "2026-10-09T03:22:49.074318+00:00",
+  "elapsed_seconds": 0.619526532999771,
+  "exit_code": 0,
+  "environment": {
+    "PYTHONPATH": "<WORKSPACE>/.v26/r2",
+    "TMPDIR": "<WORKSPACE>/.v26/urtmp",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1"
+  }
+}

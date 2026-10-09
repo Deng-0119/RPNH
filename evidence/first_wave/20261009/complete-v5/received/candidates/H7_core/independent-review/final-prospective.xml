@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="4.250" timestamp="2026-10-08T18:56:25.183904-04:00" hostname="54cb1abdc64d"><testcase classname="rpnh-parent-child-core-boundary-review.tests.test_boundary_finalize" name="test_prospective_protected_lifetime_fails_before_commit" time="3.449"><failure message="AssertionError: wrong protected lifetime committed before later integrity rejection&#10;assert ['parent_bound_origin/v1'] == []&#10;  &#10;  Left contains one more item: 'parent_bound_origin/v1'&#10;  &#10;  Full diff:&#10;  - []&#10;  + [&#10;  +     'parent_bound_origin/v1',&#10;  + ]">tmp_path = PosixPath('/tmp/pytest-of-agent/pytest-193/test_prospective_protected_lif0')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7f8f52f1b920&gt;
+
+    def test_prospective_protected_lifetime_fails_before_commit(tmp_path, monkeypatch):
+        """Inject a locally valid private-system lifetime different from native bootstrap."""
+        from cpn.rpnh.registry import resource_service
+        original_publish = resource_service._publish_private_system
+        original_commit = EventStore.publish_batch
+        committed = []
+        def substitute(core, task_ref, command, **kwargs):
+            if command.content_schema_ref == h7.CAPABILITY_SCHEMA:
+                command = replace(command, lifetime_ref=task_ref)
+            return original_publish(core, task_ref, command, **kwargs)
+        def observe(self, **kwargs):
+            result = original_commit(self, **kwargs)
+            committed.extend(o.object_type for o in kwargs['objects']
+                             if o.object_type == h7.BOUND_KINDS[1])
+            return result
+        monkeypatch.setattr(resource_service, '_publish_private_system', substitute)
+        monkeypatch.setattr(EventStore, 'publish_batch', observe)
+        with pytest.raises((RegistryConflict, ResourceIdempotencyConflict)):
+            bound_owner(tmp_path / 'child', monkeypatch)
+&gt;       assert committed == [], 'wrong protected lifetime committed before later integrity rejection'
+E       AssertionError: wrong protected lifetime committed before later integrity rejection
+E       assert ['parent_bound_origin/v1'] == []
+E         
+E         Left contains one more item: 'parent_bound_origin/v1'
+E         
+E         Full diff:
+E         - []
+E         + [
+E         +     'parent_bound_origin/v1',
+E         + ]
+
+rpnh-parent-child-core-boundary-review/tests/test_boundary_finalize.py:29: AssertionError</failure></testcase></testsuite></testsuites>

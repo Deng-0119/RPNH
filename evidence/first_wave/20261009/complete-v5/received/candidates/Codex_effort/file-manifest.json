@@ -1,0 +1,103 @@
+{
+  "baseline_commit": "ec9077e95b830d09e7252c6d5d8ebcdbb9eb4ac4",
+  "patch": "codex-effort-wire-codec.patch",
+  "patch_sha256": "3be0de65edb5a4f68579f115f5072bacc3e4fe4ffefeba96b226e45cbcab8a8d",
+  "files": [
+    {
+      "path": "THIRD_PARTY_NOTICES.md",
+      "status": "modified",
+      "baseline_git_blob_sha1": "724ff176ae6e6ce5de480c003f204d9e70fb208c",
+      "final_git_blob_sha1": "b52204033b373d11147ea0ae7edbc6fe194737e8",
+      "sha256": "3cb70869b323907b561460d523cd9bbc18c68c5ded0bab12cb68398f6f885a79",
+      "bytes": 1407
+    },
+    {
+      "path": "cpn/frontend/codex_app_server.py",
+      "status": "modified",
+      "baseline_git_blob_sha1": "62b14609aff161a4a031b70f659251880b03e60c",
+      "final_git_blob_sha1": "3fe5c56c5c1e5fd6693cb358dea892e409684ff7",
+      "sha256": "6c9beb7fda5d3cf66a79781ff6a83e53c49fc8efa1e770a8a5865c047955804f",
+      "bytes": 62305
+    },
+    {
+      "path": "docs/guides/models.md",
+      "status": "modified",
+      "baseline_git_blob_sha1": "a3a01cba1afefd00910df19dd3803ba2e0332796",
+      "final_git_blob_sha1": "433f6ddf7798cfff7b5b9335cef6459ae6093b1b",
+      "sha256": "20aac5c71ebf7f05c3710b0bea9b9b18110053342c332f36817d6d1e0688e347",
+      "bytes": 8904
+    },
+    {
+      "path": "docs/guides/models_ZH.md",
+      "status": "modified",
+      "baseline_git_blob_sha1": "08033364b4b29e5096d288776508783e3ddabd03",
+      "final_git_blob_sha1": "992c8e13818274c90c17ef1b9bd72822c4d32b65",
+      "sha256": "04e066ad497a8f2141910df1b6a82104df98ec80fa24e27e7e989a4cb183d0b6",
+      "bytes": 8096
+    },
+    {
+      "path": "tests/fixtures/codex/0.155.0/ModelListResponse.json",
+      "status": "added",
+      "baseline_git_blob_sha1": null,
+      "final_git_blob_sha1": "657a433f88ae548aa81fb1c2ee44ba4fc5a781f8",
+      "sha256": "c7b58b332f6cf18fd64235409a6daf27bb9e6c09d12dcd0daa2f3dc628b55f6f",
+      "bytes": 6002
+    },
+    {
+      "path": "tests/fixtures/codex/0.155.0/ReasoningEffort.ts",
+      "status": "added",
+      "baseline_git_blob_sha1": null,
+      "final_git_blob_sha1": "d40f5bd6578e63f45f9fd0bee8d8979026561de7",
+      "sha256": "a29212fd92094fc023f5d8727412325c60b05dfb429a1e6291b60ceba1eb1743",
+      "bytes": 302
+    },
+    {
+      "path": "tests/fixtures/codex/0.161.0/ModelListResponse.json",
+      "status": "added",
+      "baseline_git_blob_sha1": null,
+      "final_git_blob_sha1": "ee3ca9ae1449457d8338507274d587342780f891",
+      "sha256": "2fb387a2ed258fc74258828ea342d68f89ce4e8e22cd0329ca59d2b423f9108b",
+      "bytes": 7169
+    },
+    {
+      "path": "tests/fixtures/codex/0.161.0/ReasoningEffort.ts",
+      "status": "added",
+      "baseline_git_blob_sha1": null,
+      "final_git_blob_sha1": "d40f5bd6578e63f45f9fd0bee8d8979026561de7",
+      "sha256": "a29212fd92094fc023f5d8727412325c60b05dfb429a1e6291b60ceba1eb1743",
+      "bytes": 302
+    },
+    {
+      "path": "tests/fixtures/codex/PROVENANCE.json",
+      "status": "added",
+      "baseline_git_blob_sha1": null,
+      "final_git_blob_sha1": "c8e761285061480c41879690a25166151957875e",
+      "sha256": "1961f8bb7f2be5c3c0caa41424ba65c8d850f86598d62ffea58851d7d60c5aa5",
+      "bytes": 3435
+    },
+    {
+      "path": "tests/fixtures/codex/UPSTREAM_LICENSE",
+      "status": "added",
+      "baseline_git_blob_sha1": null,
+      "final_git_blob_sha1": "4606e72e042564097e8780d66c1d4dcb611869bd",
+      "sha256": "d17f227e4df5da1600391338865ce0f3055211760a36688f816941d58232d8dc",
+      "bytes": 10926
+    },
+    {
+      "path": "tests/fixtures/codex/UPSTREAM_NOTICE",
+      "status": "added",
+      "baseline_git_blob_sha1": null,
+      "final_git_blob_sha1": "2805899d56d0332d175cfc613c67d45d6f006db7",
+      "sha256": "9d71575ecfd9a843fc1677b0efb08053c6ba9fd686a0de1a6f5382fd3c220915",
+      "bytes": 242
+    },
+    {
+      "path": "tests/test_codex_compat.py",
+      "status": "modified",
+      "baseline_git_blob_sha1": "52d9fc40c40d22b10d0779ceea0af36a63f67b61",
+      "final_git_blob_sha1": "2e9113b3ee6fa567def750fa67a4fa41e70caa10",
+      "sha256": "4072fd4bde6298cae5c999cfb40d460458130aa2d8774b38cc6dbaeba7be21f7",
+      "bytes": 51860
+    }
+  ]
+}

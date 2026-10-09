@@ -1,0 +1,275 @@
+"""Synthetic pure HOSTs for the existing bounded iteration Module.
+
+No run, scheduler, admission, provider, mutable winner or external state lives
+here. Only the existing owner may publish/settle the returned product bytes.
+The integer-distance condition is an example, unrelated to frozen RRSI scores.
+"""
+from __future__ import annotations
+
+import json
+
+from cpn.components.basic import register_basic_components
+from cpn.rpnh.iteration_profile import IterationProfile
+from cpn.rpnh.registration import Registration
+from cpn.rpnh.registry.schema_catalog import canonical_json
+
+
+STATE = "application/synthetic_iteration_state/v1"
+CANDIDATE = "application/synthetic_iteration_candidate/v1"
+REQUEST = "application/synthetic_iteration_request/v1"
+EVALUATION = "application/synthetic_iteration_evaluation/v1"
+CONFIG = "application/synthetic_iteration_config/v1"
+TERMINAL_CONFIG = "application/synthetic_iteration_terminal_config/v1"
+TERMINAL = "example/synthetic_iteration_terminal/v1"
+SCORER = "integer_absolute_distance/v1"
+
+
+def _object(properties):
+    return {"type": "object", "properties": properties,
+            "required": list(properties), "additionalProperties": False}
+
+
+def _nullable(schema):
+    return {"anyOf": [schema, {"type": "null"}]}
+
+
+_STRING = {"type": "string", "minLength": 1}
+_INTEGER = {"type": "integer"}
+_ROUND = {"type": "integer", "minimum": 1, "maximum": 32}
+_RESOURCE = _object({"resource_id": _STRING, "resource_version_id": _STRING})
+_BINDING = _object({"entity_type": {"const": "operation_binding/v1"},
+                    "logical_id": _STRING, "version_id": _STRING})
+_DECISION = _object({
+    "outcome": {"enum": ["select", "retain", "stop"]},
+    "candidate_selected": {"type": "boolean"},
+    "incumbent_ref": _RESOURCE, "candidate_ref": _RESOURCE,
+    "evaluation_ref": _RESOURCE, "request_ref": _RESOURCE,
+    "scorer_binding_ref": _BINDING,
+})
+SCHEMAS = {
+    STATE: _object({"round": {"type": "integer", "minimum": 0, "maximum": 32},
+        "value": _INTEGER, "selected_candidate_ref": _nullable(_RESOURCE),
+        "parent_state_ref": _nullable(_RESOURCE), "decision": _nullable(_DECISION)}),
+    CANDIDATE: _object({"round": _ROUND, "value": _INTEGER,
+        "incumbent_value": _INTEGER, "parent_state_ref": _RESOURCE}),
+    REQUEST: _object({"round": _ROUND, "target": _INTEGER,
+        "scorer": {"const": SCORER}, "status": {"enum": ["known", "unknown"]},
+        "stop": {"type": "boolean"}}),
+    EVALUATION: _object({"round": _ROUND, "candidate_ref": _RESOURCE,
+        "parent_state_ref": _RESOURCE, "request_ref": _RESOURCE,
+        "scorer_binding_ref": _BINDING, "scorer": {"const": SCORER},
+        "status": {"enum": ["known", "unknown"]},
+        "candidate_score": _nullable(_INTEGER), "incumbent_score": _nullable(_INTEGER),
+        "stop": {"type": "boolean"}}),
+    CONFIG: _object({}),
+    TERMINAL_CONFIG: {"type": "object", "properties": {
+        "run_outcome": {"enum": ["complete", "failed"]}}, "additionalProperties": False},
+}
+
+
+def resource_ref(ref):
+    return {"resource_id": str(ref.resource_id),
+            "resource_version_id": str(ref.resource_version_id)}
+
+
+def _version_ref(ref):
+    return {"entity_type": ref.entity_type, "logical_id": str(ref.entity_id),
+            "version_id": str(ref.version_id)}
+
+
+def _input(execution, schema):
+    """Resolve the sole declared port of this example's chosen content schema."""
+    ports = {port.port_id for port in execution.operation.spec.input_ports
+             if port.content_schema_id == schema}
+    matches = [item for item in execution.operation.inputs if item.port_id in ports]
+    if len(matches) != 1:
+        raise ValueError("synthetic HOST requires one exact claimed input per schema")
+    item = matches[0]
+    return json.loads(item.consumer_payload), resource_ref(item.resource_ref)
+
+
+def _component(execution):
+    component = execution.operation.firing.transition_id.rsplit(".", 1)[0]
+    return component, int(component.split("_")[1])
+
+
+def propose(*, execution):
+    state, state_ref = _input(execution, STATE)
+    component, round_number = _component(execution)
+    if state["round"] + 1 != round_number:
+        raise ValueError("state does not belong to this declared round")
+    return "proposed", {
+        component + ".incumbent": (canonical_json({**state, "parent_state_ref": state_ref}),),
+        component + ".candidate": (canonical_json({"round": round_number,
+            "value": state["value"] + 1, "incumbent_value": state["value"],
+            "parent_state_ref": state_ref}),),
+    }
+
+
+def evaluate(*, execution):
+    candidate, candidate_ref = _input(execution, CANDIDATE)
+    request, request_ref = _input(execution, REQUEST)
+    component, round_number = _component(execution)
+    if not candidate["round"] == request["round"] == round_number:
+        raise ValueError("evaluation inputs do not belong to the same declared round")
+    known = request["status"] == "known"
+    value = {"round": round_number, "candidate_ref": candidate_ref,
+        "parent_state_ref": candidate["parent_state_ref"], "request_ref": request_ref,
+        "scorer_binding_ref": _version_ref(execution.operation.operation_binding.operation_binding_ref),
+        "scorer": SCORER, "status": request["status"], "stop": request["stop"],
+        "candidate_score": abs(candidate["value"] - request["target"]) if known else None,
+        "incumbent_score": abs(candidate["incumbent_value"] - request["target"]) if known else None}
+    return "evaluated", {component + ".evaluation": (canonical_json(value),)}
+
+
+def select(*, execution):
+    incumbent, incumbent_ref = _input(execution, STATE)
+    candidate, candidate_ref = _input(execution, CANDIDATE)
+    evaluation, evaluation_ref = _input(execution, EVALUATION)
+    component, round_number = _component(execution)
+    # Business consistency checks after native admission, never admission rules.
+    if (not candidate["round"] == evaluation["round"] == round_number
+            or incumbent["round"] + 1 != round_number
+            or evaluation["candidate_ref"] != candidate_ref
+            or not candidate["parent_state_ref"] == incumbent["parent_state_ref"]
+                    == evaluation["parent_state_ref"]
+            or candidate["incumbent_value"] != incumbent["value"]):
+        raise ValueError("selection inputs lack exact same-round candidate/evaluation lineage")
+    scores = (evaluation["candidate_score"], evaluation["incumbent_score"])
+    if ((evaluation["status"] == "known" and any(type(s) is not int for s in scores))
+            or (evaluation["status"] == "unknown" and scores != (None, None))):
+        raise ValueError("evaluation status does not match its score evidence")
+    selected = evaluation["status"] == "known" and scores[0] < scores[1]
+    outcome = "stop" if evaluation["stop"] else "select" if selected else "retain"
+    state = {"round": round_number,
+        "value": candidate["value"] if selected else incumbent["value"],
+        "selected_candidate_ref": candidate_ref if selected else incumbent["selected_candidate_ref"],
+        "parent_state_ref": incumbent_ref,
+        "decision": {"outcome": outcome, "candidate_selected": selected,
+            "incumbent_ref": incumbent_ref, "candidate_ref": candidate_ref,
+            "evaluation_ref": evaluation_ref, "request_ref": evaluation["request_ref"],
+            "scorer_binding_ref": evaluation["scorer_binding_ref"]}}
+    return outcome, {component + (".stop" if outcome == "stop" else ".next"):
+                     (canonical_json(state),)}
+
+
+def _terminal_not_callable(*args, **kwargs):
+    raise AssertionError("the existing terminal binding is publication authority, not a callback")
+
+
+def registration():
+    """Explicit trusted HOST installation; no Registry or run is created."""
+    result = Registration()
+    register_basic_components(result)
+    for name, body in SCHEMAS.items():
+        result.register_schema(name, {"$id": name,
+            "$schema": "http://json-schema.org/draft-07/schema#", **body})
+    for role, function in (("proposer", propose), ("evaluator", evaluate), ("selector", select)):
+        result.register_executor("example/synthetic_iteration_" + role + "/v1", function,
+            identity={"implementation_id": "synthetic_iteration_" + role, "revision": "v1"},
+            contracts={"transport": "deterministic", "input_ports": None,
+                       "output_ports": None, "config_schema": CONFIG})
+    result.register_tool(TERMINAL, _terminal_not_callable,
+        identity={"implementation_id": "synthetic_iteration_terminal", "revision": "v1"},
+        contracts={"binding_protocol": "rpnh/module_terminal/v1", "config_schema": TERMINAL_CONFIG})
+    return result
+
+
+def profile(rounds=2):
+    """Inert R1 author data, with native model-call cap independent of rounds."""
+    return IterationProfile.from_dict({"schema_version": "rpnh/iteration_profile/v1",
+        "template": "propose_evaluate_select/v1", "name": "SyntheticIteration", "rounds": rounds,
+        "schemas": {"state": STATE, "candidate": CANDIDATE,
+                    "evaluation_request": REQUEST, "evaluation": EVALUATION},
+        "roles": {role: {"executor_key": "example/synthetic_iteration_" + role + "/v1",
+                         "model_profile_ref": None} for role in ("proposer", "evaluator", "selector")},
+        "terminal_key": TERMINAL,
+        "terminal_outcomes": {"stop": "complete", "final_select": "complete", "final_retain": "complete"},
+        "native_model_call_budget": {"unit": "registered_model_call", "maximum": 1}})
+
+"""R2 real Registry steps plus the original Orchestrator with explicit transport.
+
+The named step helper is a test probe, not a loop, scheduler or permission rule.
+Native tests default to genuine AF_UNIX. --rsi-transport=pipe is a labelled D0
+transport double reused unchanged from the existing tool_pipeline test fixture.
+"""
+from concurrent.futures import Future
+import json
+import socket
+import subprocess
+
+import pytest
+
+from cpn.orchestrator.runner import Orchestrator
+from cpn.rpnh.harness import OperationDispatch, OperationProducts
+from cpn.rpnh.iteration_profile import IterationProfile, compile_iteration_profile
+from cpn.rpnh.marking import TeamNetMarking
+from cpn.rpnh.registry._registry import _RegistryCore
+from cpn.rpnh.registry.module_runtime import hydrate_module_runtime
+from cpn.rpnh.registry.resource_service import _ResourceServiceKernel
+from cpn.rpnh.registry.run_authority import read_run_execution, read_run_terminal_bytes
+from cpn.rpnh.registry.schema_catalog import canonical_json
+from cpn.rpnh.run import OwnerInput, start_run
+from examples.rsi_workflows import deterministic as example
+
+
+def owner(tmp_path, rounds=2, *, target=3, unknown=False, stop=False, terminal_outcomes=None):
+    registration = example.registration()
+    profile = example.profile(rounds)
+    if te
+READBACK_STRICT_HISTORY
+"""Read-only compatibility probe, outside the five-file R2 implementation.
+
+Reads completed test Registries created by the recorded author run. No new
+owner, writer, registry, step, provider call, socket or replay is created.
+"""
+import hashlib
+import json
+from pathlib import Path
+import sys
+
+import cpn.rpnh.registry.run_authority as readers
+from cpn.rpnh.registry._registry import _RegistryCore
+from cpn.rpnh.registry.resource_service import _ResourceServiceKernel
+from cpn.rpnh.task_control import TaskControl
+
+
+def files(root):
+    return {str(p.relative_to(root)): hashlib.sha256(p.read_bytes()).hexdigest()
+            for p in sorted(root.rglob("*")) if p.is_file()}
+
+
+root = Path(sys.argv[1])
+rows = []
+for directory in sorted(root.iterdir()):
+    if directory.is_symlink():
+        continue
+    run_dir = directory / "run"
+    if not (run_dir / ".registry_v1/registry.sqlite3").is_file():
+        continue
+    before_files = files(run_dir)
+    core = _RegistryCore(run_dir, create=False, read_only=True)
+    before_head = core.event_store.max_ordinal()
+    before_epoch = core.writer_epoch
+    read = readers.read_run_execution(core, _ResourceServiceKernel(core))
+    value = (None if read.terminal is None else
+             json.loads(readers.read_run_terminal_bytes(core, read)))
+    status = TaskControl._read_terminal_status(run_dir)
+    read.cut.assert_unchanged(core)
+    assert before_head == core.event_store.max_ordinal()
+    assert before_epoch == core.writer_epoch
+    assert before_files == files(run_dir)
+    assert status["execution_status"] == read.status
+    assert status["actual_model_call_counts"] == [0, 0]
+    rows.append({"fixture": directory.name, "head": before_head,
+        "writer_epoch": before_epoch, "status": read.status,
+        "run_outcome": None if read.terminal is None else read.terminal.run_outcome,
+        "terminal_version": None if read.terminal is None else str(read.terminal.evidence_ref.version_id),
+        "result": value, "task_control_status": status, "unchanged": True})
+assert rows, "completed author fixtures are no longer available"
+output = {"reader_file": readers.__file__, "python": sys.executable,
+          "registry_count": len(rows), "rows": rows}
+Path(sys.argv[2]).write_text(json.dumps(output, indent=2) + "\n")
+print(json.dumps({"registry_count": len(rows), "terminal_count": sum(row["status"] == "terminal" for row in rows),
+                 "readonly_unchanged": True, "reader_file": readers.__file__}))
+

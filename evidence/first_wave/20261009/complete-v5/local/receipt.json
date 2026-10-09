@@ -1,0 +1,7 @@
+{
+  "received_at_utc": "2026-10-09T01:13:12.103735+00:00",
+  "source": "<INPUT_DIRECTORY>/RPNH_Complete_Local_Bundle_v5_Transfer_20261009.zip",
+  "zip_sha256": "126b79ebde8093bf94536453130607ab4f680a951ca0bf58d9761d705eeda326",
+  "tar_xz_sha256": "fa844d1cbac119a007b2c84756386bfc900612a2511916f0e35f3275a87a8856",
+  "external_sources_read_only": true
+}

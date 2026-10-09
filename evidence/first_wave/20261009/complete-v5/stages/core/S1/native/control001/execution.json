@@ -1,0 +1,59 @@
+{
+  "command": [
+    "<WORKSPACE>/.p26/v/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "-p",
+    "no:cacheprovider",
+    "--confcutdir=<WORKSPACE>/task-complete-v5-20261009/stages/core/S1/native/control001",
+    "--rootdir=<WORKSPACE>/task-complete-v5-20261009/stages/core/S1/native/control001",
+    "--basetemp=<WORKSPACE>/.v26/unS1-control001",
+    "--junitxml=<WORKSPACE>/task-complete-v5-20261009/stages/core/S1/native/control001/control.xml",
+    "<WORKSPACE>/task-complete-v5-20261009/stages/core/S1/native/control001/test_g7_control.py::test_g7_no_pending_replacement"
+  ],
+  "cwd": "<WORKSPACE>/.v26/c1",
+  "started_utc": "2026-10-09T03:53:27.948343+00:00",
+  "resources_before": {
+    "utc": "2026-10-09T03:53:27.943413+00:00",
+    "windows_D_free_bytes": 54021922816,
+    "task_plus_v26_bytes": 4109856768,
+    "native_runtime_bytes": 199778304,
+    "memory_available_bytes": 15132286976,
+    "allowed": true
+  },
+  "env": {
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1",
+    "PYTHONPATH": "<WORKSPACE>/.v26/c1:<WORKSPACE>/.v26/c1/tests",
+    "PYTEST_ADDOPTS": "",
+    "TMPDIR": "<WORKSPACE>/.v26/unS1-control001"
+  },
+  "pid": 21094,
+  "exit_code": 0,
+  "finished_utc": "2026-10-09T03:53:40.639591+00:00",
+  "source_unchanged": true,
+  "source_final": {
+    "status": "PASS",
+    "baseline_head": "1f191645c4d60c8b190d42e9fad99c85e8981c03",
+    "files": 3656,
+    "mismatches": [],
+    "observed_inventory_sha256": "3408d0367ac311f56918525bbb6c678c43ac43c4b69ffc574a7f6787a4df069d",
+    "inventory_hash_format": "UTF-8 canonical JSON sorted path records: path, sha256, executable; sort_keys=True, separators=(comma,colon)",
+    "added": [],
+    "missing": []
+  },
+  "resources_after": {
+    "utc": "2026-10-09T03:53:41.186879+00:00",
+    "windows_D_free_bytes": 54021922816,
+    "task_plus_v26_bytes": 4139753472,
+    "native_runtime_bytes": 206204928,
+    "memory_available_bytes": 15129812992,
+    "allowed": true
+  },
+  "process_reaped": true,
+  "residual_sockets": [],
+  "runtime_dir": "<WORKSPACE>/.v26/unS1-control001",
+  "junit": "<WORKSPACE>/task-complete-v5-20261009/stages/core/S1/native/control001/control.xml",
+  "status": "PASS"
+}

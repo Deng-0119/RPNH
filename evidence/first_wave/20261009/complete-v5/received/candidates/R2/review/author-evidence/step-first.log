@@ -1,0 +1,114 @@
+.FFFF.....                                                               [100%]
+=================================== FAILURES ===================================
+___ test_exact_lineage_and_stale_previous_round_do_not_enable_next_selector ____
+
+tmp_path = PosixPath('/tmp/pytest-of-agent/pytest-76/test_exact_lineage_and_stale_p0')
+deny_external = None
+
+    def test_exact_lineage_and_stale_previous_round_do_not_enable_next_selector(tmp_path, deny_external):
+        run, _ = owner(tmp_path)
+        proposer, proposed = step(run, "round_1_proposer.run")
+        evaluator, evaluated = step(run, "round_1_evaluator.run")
+        selector, selected = step(run, "round_1_selector.run")
+        candidate = by_schema(evaluator, example.CANDIDATE)
+        assert by_schema(selector, example.CANDIDATE).resource_ref == candidate.resource_ref
+        assert by_schema(selector, example.EVALUATION).resource_ref == evaluated.outputs[0].resource_ref
+>       assert body(evaluated.outputs[0])["candidate_ref"] == example.resource_ref(candidate.resource_ref)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+examples/rsi_workflows/tests/test_runtime.py:126: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+output = RegisteredOperationOutputAuthority(port_id='port_1', place='round_1_evaluator.evaluation', place_ref=VersionRef(entity...dbf896b98279b70d043': 1})), work_resource_ref=None, kind=None, verdict='evaluated', continuation=None, lease_claims=())
+
+    def body(output):
+>       return json.loads(output.artifact.payload)
+                          ^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: 'VerifiedResourceArtifact' object has no attribute 'payload'
+
+examples/rsi_workflows/tests/test_runtime.py:73: AttributeError
+_____ test_select_retain_unknown_and_native_terminal_read[3-False-select] ______
+
+tmp_path = PosixPath('/tmp/pytest-of-agent/pytest-76/test_select_retain_unknown_and0')
+deny_external = None, target = 3, unknown = False, expected = 'select'
+
+    @pytest.mark.parametrize("target,unknown,expected", [(3, False, "select"), (0, False, "retain"), (3, True, "retain")])
+    def test_select_retain_unknown_and_native_terminal_read(tmp_path, deny_external, target, unknown, expected):
+        run, _ = owner(tmp_path, rounds=1, target=target, unknown=unknown)
+        step(run, "round_1_proposer.run")
+        step(run, "round_1_evaluator.run")
+        _, outputs = step(run, "round_1_selector.run")
+        assert outputs.selected_outcome_id == expected
+>       assert body(outputs.outputs[0])["value"] == (1 if expected == "select" else 0)
+               ^^^^^^^^^^^^^^^^^^^^^^^^
+
+examples/rsi_workflows/tests/test_runtime.py:150: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+output = RegisteredOperationOutputAuthority(port_id='port_9', place='round_1_selector.next', place_ref=VersionRef(entity_type='...c95cceadec178178631f30': 1})), work_resource_ref=None, kind=None, verdict='select', continuation=None, lease_claims=())
+
+    def body(output):
+>       return json.loads(output.artifact.payload)
+                          ^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: 'VerifiedResourceArtifact' object has no attribute 'payload'
+
+examples/rsi_workflows/tests/test_runtime.py:73: AttributeError
+_____ test_select_retain_unknown_and_native_terminal_read[0-False-retain] ______
+
+tmp_path = PosixPath('/tmp/pytest-of-agent/pytest-76/test_select_retain_unknown_and1')
+deny_external = None, target = 0, unknown = False, expected = 'retain'
+
+    @pytest.mark.parametrize("target,unknown,expected", [(3, False, "select"), (0, False, "retain"), (3, True, "retain")])
+    def test_select_retain_unknown_and_native_terminal_read(tmp_path, deny_external, target, unknown, expected):
+        run, _ = owner(tmp_path, rounds=1, target=target, unknown=unknown)
+        step(run, "round_1_proposer.run")
+        step(run, "round_1_evaluator.run")
+        _, outputs = step(run, "round_1_selector.run")
+        assert outputs.selected_outcome_id == expected
+>       assert body(outputs.outputs[0])["value"] == (1 if expected == "select" else 0)
+               ^^^^^^^^^^^^^^^^^^^^^^^^
+
+examples/rsi_workflows/tests/test_runtime.py:150: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+output = RegisteredOperationOutputAuthority(port_id='port_9', place='round_1_selector.next', place_ref=VersionRef(entity_type='...215a6cb950b91628c036a4': 1})), work_resource_ref=None, kind=None, verdict='retain', continuation=None, lease_claims=())
+
+    def body(output):
+>       return json.loads(output.artifact.payload)
+                          ^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: 'VerifiedResourceArtifact' object has no attribute 'payload'
+
+examples/rsi_workflows/tests/test_runtime.py:73: AttributeError
+______ test_select_retain_unknown_and_native_terminal_read[3-True-retain] ______
+
+tmp_path = PosixPath('/tmp/pytest-of-agent/pytest-76/test_select_retain_unknown_and2')
+deny_external = None, target = 3, unknown = True, expected = 'retain'
+
+    @pytest.mark.parametrize("target,unknown,expected", [(3, False, "select"), (0, False, "retain"), (3, True, "retain")])
+    def test_select_retain_unknown_and_native_terminal_read(tmp_path, deny_external, target, unknown, expected):
+        run, _ = owner(tmp_path, rounds=1, target=target, unknown=unknown)
+        step(run, "round_1_proposer.run")
+        step(run, "round_1_evaluator.run")
+        _, outputs = step(run, "round_1_selector.run")
+        assert outputs.selected_outcome_id == expected
+>       assert body(outputs.outputs[0])["value"] == (1 if expected == "select" else 0)
+               ^^^^^^^^^^^^^^^^^^^^^^^^
+
+examples/rsi_workflows/tests/test_runtime.py:150: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+output = RegisteredOperationOutputAuthority(port_id='port_9', place='round_1_selector.next', place_ref=VersionRef(entity_type='...8159daa3690b8a180c0b41': 1})), work_resource_ref=None, kind=None, verdict='retain', continuation=None, lease_claims=())
+
+    def body(output):
+>       return json.loads(output.artifact.payload)
+                          ^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: 'VerifiedResourceArtifact' object has no attribute 'payload'
+
+examples/rsi_workflows/tests/test_runtime.py:73: AttributeError
+- generated xml file: /workspace/scratch/18c810e6dd59/rpnh-rsi-runtime-validation/step-first.xml -
+=========================== short test summary info ============================
+FAILED examples/rsi_workflows/tests/test_runtime.py::test_exact_lineage_and_stale_previous_round_do_not_enable_next_selector
+FAILED examples/rsi_workflows/tests/test_runtime.py::test_select_retain_unknown_and_native_terminal_read[3-False-select]
+FAILED examples/rsi_workflows/tests/test_runtime.py::test_select_retain_unknown_and_native_terminal_read[0-False-retain]
+FAILED examples/rsi_workflows/tests/test_runtime.py::test_select_retain_unknown_and_native_terminal_read[3-True-retain]
+4 failed, 6 passed, 4 deselected in 159.55s (0:02:39)

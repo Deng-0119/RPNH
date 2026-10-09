@@ -1,0 +1,9 @@
+{
+  "git_apply_check_exit": 0,
+  "git_apply_exit": 0,
+  "result_hash_mismatches": [],
+  "changed_file_count": 13,
+  "baseline_commit": "8dd360e4848912a998dbd83220c3f0ce0a1caa86",
+  "candidate_patch_sha256": "0bddfeb49e1b829911d2f594670476bef39a6e6aefff28c5f61f545506a26b06",
+  "scope": "scratch copy of the affected exact baseline files only; no authoritative worktree or remote mutation"
+}

@@ -1,0 +1,21 @@
+{
+  "command": [
+    "<WORKSPACE>/.p26/v/bin/python",
+    "-c",
+    "from pathlib import Path\nimport hashlib,json,re\np=Path('<USER_HOME>/.local/bin/codex'); s=p.read_text()\nprint(json.dumps({'path':str(p),'sha256':hashlib.sha256(p.read_bytes()).hexdigest(),'type':'script','line_count':len(s.splitlines()),'exec_lines': [i for i,l in enumerate(s.splitlines(),1) if re.search(r'\\bexec\\b',l)],'references_nvm':'.nvm' in s,'references_state_home':'CODEX_HOME' in s,'writes_mkdir':'mkdir' in s}))\nfor p in Path('<USER_HOME>/.nvm/versions/node').glob('*/lib/node_modules/@openai/codex/node_modules/@openai/*/vendor/*/codex/codex'):\n print(json.dumps({'path':str(p),'magic_hex':p.open('rb').read(4).hex(),'sha256':hashlib.sha256(p.read_bytes()).hexdigest(),'launched':False,'trusted_official_provenance':'NOT_ESTABLISHED'}))\n"
+  ],
+  "cwd": "<WORKSPACE>",
+  "pid": 13831,
+  "started_at_utc": "2026-10-09T01:18:04.913249+00:00",
+  "finished_at_utc": "2026-10-09T01:18:04.944611+00:00",
+  "elapsed_seconds": 0.03137568200327223,
+  "exit_code": 0,
+  "environment": {
+    "PYTHONPATH": "<WORKSPACE>",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1",
+    "TMPDIR": "<WORKSPACE>/.v26/tmp",
+    "PYTEST_ADDOPTS": null,
+    "PYTEST_PLUGINS": null
+  }
+}

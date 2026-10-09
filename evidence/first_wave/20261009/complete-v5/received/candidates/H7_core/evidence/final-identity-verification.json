@@ -1,0 +1,8 @@
+{
+  "status": "PASS",
+  "candidate_files": 992,
+  "candidate_aggregate_sha256": "ac68327e442b7bda8a6aa2ba93c0cd20ad72181a661b0497627b08713334907e",
+  "S1_files": 979,
+  "S1_aggregate_sha256": "4a7841ac16432aeb173562ec797bc062839a006fdb684d5ea1e3b161c6c49fbc",
+  "H7_patch_sha256": "7746881935e0d35e85cb71b2e08bab82ab3f844d52771212b39b3a7728448ed3"
+}

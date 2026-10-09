@@ -1,0 +1,314 @@
+{
+  "records": [
+    {
+      "path": "r1-author-after.identity.json",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "nul_count": 0,
+      "completion_authoritative": false
+    },
+    {
+      "path": "r1-author-before.identity.json",
+      "bytes": 4056,
+      "sha256": "7fa7acd7cfeed3c92678eb800d40d11b908ea44811d65c15ba39959b77ae3d38",
+      "nul_count": 0,
+      "completion_authoritative": false
+    },
+    {
+      "path": "r1-author.gate.json",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "nul_count": 0,
+      "completion_authoritative": false
+    },
+    {
+      "path": "r1-author.json",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "nul_count": 0,
+      "completion_authoritative": false
+    },
+    {
+      "path": "r1-author.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "nul_count": 0,
+      "completion_authoritative": false
+    },
+    {
+      "path": "r1-author.stdout.log",
+      "bytes": 366,
+      "sha256": "b6b586a0cab367d333638b98983239e52e0a877c964a7ae0ff4deedec0425473",
+      "nul_count": 0,
+      "completion_authoritative": false
+    },
+    {
+      "path": "r1-author.xml",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "nul_count": 0,
+      "completion_authoritative": false
+    },
+    {
+      "path": "r1-compile-after.identity.json",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "nul_count": 0,
+      "completion_authoritative": false
+    },
+    {
+      "path": "r1-compile-before.identity.json",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "nul_count": 0,
+      "completion_authoritative": false
+    },
+    {
+      "path": "r1-compile.gate.json",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "nul_count": 0,
+      "completion_authoritative": false
+    },
+    {
+      "path": "r1-compile.json",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "nul_count": 0,
+      "completion_authoritative": false
+    },
+    {
+      "path": "r1-compile.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "nul_count": 0,
+      "completion_authoritative": false
+    },
+    {
+      "path": "r1-compile.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "nul_count": 0,
+      "completion_authoritative": false
+    },
+    {
+      "path": "r1-full-apply-after.identity.json",
+      "bytes": 4056,
+      "sha256": "6e9ede80aa971c792b9d4da14d46756052079cfe894af2478a96a96fab6a9f1e",
+      "nul_count": 0,
+      "completion_authoritative": null
+    },
+    {
+      "path": "r1-full-apply-before.identity.json",
+      "bytes": 3106,
+      "sha256": "036f22c77aa5f5d43ad5d743b564cc96ac2d2aa04dbe8bdce767380a01e87751",
+      "nul_count": 0,
+      "completion_authoritative": null
+    },
+    {
+      "path": "r1-full-apply.gate.json",
+      "bytes": 456,
+      "sha256": "7a341df6573b61d55f8c5038c797dd3cd2434f6608b77734f13e7d6c4a8689ba",
+      "nul_count": 0,
+      "completion_authoritative": null
+    },
+    {
+      "path": "r1-full-apply.json",
+      "bytes": 674,
+      "sha256": "f049f2b7602df73c79782dcdbd484e404418ee636c2a77e7d329688aefed54f7",
+      "nul_count": 0,
+      "completion_authoritative": null
+    },
+    {
+      "path": "r1-full-apply.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "nul_count": 0,
+      "completion_authoritative": null
+    },
+    {
+      "path": "r1-full-apply.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "nul_count": 0,
+      "completion_authoritative": null
+    },
+    {
+      "path": "r1-full-check-after.identity.json",
+      "bytes": 3106,
+      "sha256": "d977a8f6b965053946fa3bbb198a8073d57681a596c3be2e9f7e3c7e5dc4ecab",
+      "nul_count": 0,
+      "completion_authoritative": null
+    },
+    {
+      "path": "r1-full-check-before.identity.json",
+      "bytes": 3106,
+      "sha256": "c1fca797cb52aab5d831033eda9a6fcd5420b52e6a245db9d3320e2a5edce73c",
+      "nul_count": 0,
+      "completion_authoritative": null
+    },
+    {
+      "path": "r1-full-check.gate.json",
+      "bytes": 455,
+      "sha256": "403815702812b83d0ada99360d844e0813ff84694fd4e24b846ebbac3461e580",
+      "nul_count": 0,
+      "completion_authoritative": null
+    },
+    {
+      "path": "r1-full-check.json",
+      "bytes": 688,
+      "sha256": "06367311561aadb08cbc7f265869bdb78397bc85b5afdd4201453c33dea11556",
+      "nul_count": 0,
+      "completion_authoritative": null
+    },
+    {
+      "path": "r1-full-check.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "nul_count": 0,
+      "completion_authoritative": null
+    },
+    {
+      "path": "r1-full-check.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "nul_count": 0,
+      "completion_authoritative": null
+    },
+    {
+      "path": "r1-full-manifest-after.json",
+      "bytes": 1461,
+      "sha256": "224b6c004575f5fbcc4c6707c9b8be673212b90110d8ddc81ea2af640bbf0ea3",
+      "nul_count": 0,
+      "completion_authoritative": null
+    },
+    {
+      "path": "r1-full-manifest-before.json",
+      "bytes": 2085,
+      "sha256": "da7b2d33d16a8a1bbcb871ee7c9ca73b15cc47f9979a10beaf0a8e345e96c8d3",
+      "nul_count": 0,
+      "completion_authoritative": null
+    },
+    {
+      "path": "r1-import-after.identity.json",
+      "bytes": 4056,
+      "sha256": "d26d8e09b782742142f8a0699cf8cc7f965dc3f2da804d590a7b4278a1cbbc9d",
+      "nul_count": 0,
+      "completion_authoritative": null
+    },
+    {
+      "path": "r1-import-before.identity.json",
+      "bytes": 4056,
+      "sha256": "92fad6571b226248f03fcb7a613c504045dd9fb41326bdcb03e6e8832f3d6015",
+      "nul_count": 0,
+      "completion_authoritative": null
+    },
+    {
+      "path": "r1-import.gate.json",
+      "bytes": 440,
+      "sha256": "93941da4f51f11cfe4c903b440860efa7e6c16e6b700c3d6c98019162dcd3859",
+      "nul_count": 0,
+      "completion_authoritative": null
+    },
+    {
+      "path": "r1-import.json",
+      "bytes": 1117,
+      "sha256": "049bd7ebc0da1fca6e2963b67aa69415b21428476ef8b9f46e1ee6168cbe16cd",
+      "nul_count": 0,
+      "completion_authoritative": null
+    },
+    {
+      "path": "r1-import.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "nul_count": 0,
+      "completion_authoritative": null
+    },
+    {
+      "path": "r1-import.stdout.log",
+      "bytes": 637,
+      "sha256": "c0ed7fb03257eea986df91e28a57df85ade3d5a830c7d7cd4e45a974b43edcd0",
+      "nul_count": 0,
+      "completion_authoritative": null
+    },
+    {
+      "path": "r1-independent-compiler-collection-after.identity.json",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "nul_count": 0,
+      "completion_authoritative": false
+    },
+    {
+      "path": "r1-independent-compiler-collection-before.identity.json",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "nul_count": 0,
+      "completion_authoritative": false
+    },
+    {
+      "path": "r1-independent-compiler-collection.gate.json",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "nul_count": 0,
+      "completion_authoritative": false
+    },
+    {
+      "path": "r1-independent-compiler-collection.json",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "nul_count": 0,
+      "completion_authoritative": false
+    },
+    {
+      "path": "r1-independent-compiler-collection.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "nul_count": 0,
+      "completion_authoritative": false
+    },
+    {
+      "path": "r1-independent-compiler-collection.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "nul_count": 0,
+      "completion_authoritative": false
+    },
+    {
+      "path": "r1-independent-compiler-collection.xml",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "nul_count": 0,
+      "completion_authoritative": false
+    },
+    {
+      "path": "r1-independent-registry-before.identity.json",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "nul_count": 0,
+      "completion_authoritative": false
+    },
+    {
+      "path": "r1-independent-registry.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "nul_count": 0,
+      "completion_authoritative": false
+    },
+    {
+      "path": "r1-independent-registry.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "nul_count": 0,
+      "completion_authoritative": false
+    },
+    {
+      "path": "r1-initial.identity.json",
+      "bytes": 3876,
+      "sha256": "02911ebbbdc2063ad14a2ae1d67db7ab6ae2797a3f01a9c58af26e6059f74442",
+      "nul_count": 0,
+      "completion_authoritative": null
+    }
+  ],
+  "rule": "Old author/independent/compile records are interrupted/inconclusive; no dots, NUL, partial XML or missing actual exit counts as PASS.",
+  "preserved_runtime": "<WORKSPACE>/task-complete-v5-20261009/preserved-runtime-v2"
+}

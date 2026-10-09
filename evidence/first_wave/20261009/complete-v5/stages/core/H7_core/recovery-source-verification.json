@@ -1,0 +1,7 @@
+{
+  "status": "PASS",
+  "full_original_inventory_bytes_match": true,
+  "file_count": 3669,
+  "initial_inventory_sha256": "7e9b6e43c9c1bf8b9ad6c0150da8576abf749cd2b607e62c455efdd652c87c49",
+  "old_incomplete_runs_remain_inconclusive": true
+}

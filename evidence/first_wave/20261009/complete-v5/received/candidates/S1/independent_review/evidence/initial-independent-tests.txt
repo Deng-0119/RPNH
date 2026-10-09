@@ -1,0 +1,191 @@
+.FFF.                                                                    [100%]
+=================================== FAILURES ===================================
+___________ test_variable_read_coexists_without_extra_carrier[same] ____________
+
+tmp_path = PosixPath('/tmp/pytest-of-agent/pytest-141/test_variable_read_coexists_wi0')
+variable = 'same'
+
+    @pytest.mark.parametrize('variable',['same','separate'])
+    def test_variable_read_coexists_without_extra_carrier(tmp_path,variable):
+        owner=independent_owner(tmp_path/'run',variable=variable)
+        original=leases(owner)
+        a=owner.admit('step.run',logical_tau=0,command_id='review:admit')
+        assert a is not None
+>       e=owner.start(a,command_id='review:start')
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+rpnh-static-lease-read-review/test_independent_static_lease.py:91: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+rpnh-static-lease-read-fix/source/cpn/rpnh/run.py:290: in start
+    return start_module_firing(
+rpnh-static-lease-read-fix/source/cpn/rpnh/registry/module_gateway.py:39: in start_module_firing
+    plan = plan_registered_operation_inputs(
+rpnh-static-lease-read-fix/source/cpn/rpnh/registry/operations.py:1987: in plan_registered_operation_inputs
+    return implementation(
+rpnh-static-lease-read-fix/source/cpn/rpnh/registry/_operation/inputs.py:246: in plan_registered_operation_inputs
+    claims = repository.resolve_operation_input_claims(
+rpnh-static-lease-read-fix/source/cpn/rpnh/registry/operation_repository.py:759: in resolve_operation_input_claims
+    relation = self.__resolve_input_relation(
+rpnh-static-lease-read-fix/source/cpn/rpnh/registry/operation_repository.py:746: in __resolve_input_relation
+    return _solve_input_relation(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def _solve_input_relation(
+            *, candidates: tuple[_InputRelationCandidate, ...],
+            ports: tuple[OperationPortAuthority, ...],
+            static_excluded_port_ids: frozenset[str] = frozenset(),
+    ) -> tuple[_InputRelationAssignment, ...]:
+        """Solve the complete deterministic token/resource/port relation.
+    
+        This function consumes only immutable phase facts.  Planning and hydration
+        gather those facts independently and both call this solver; neither phase
+        treats the other phase's result as authority.
+        """
+        ordered_candidates = tuple(sorted(
+            candidates, key=_input_candidate_sort_key))
+        if len({item.token_ref for item in ordered_candidates}) != len(
+                ordered_candidates):
+            raise OperationAuthorityError(
+                "operation input relation contains a duplicate claimed token")
+        if len({port.port_id for port in ports}) != len(ports):
+            raise OperationAuthorityError(
+                "operation input relation contains a duplicate port identity")
+        for candidate in ordered_candidates:
+            if candidate.token_ref not in candidate.semantic_token_refs:
+                raise OperationAuthorityError(
+                    "operation input resource is not carried by its exact "
+                    "semantic Petri token")
+    
+        ports_by_schema: dict[str, tuple[OperationPortAuthority, ...]] = {}
+        for port in sorted(ports, key=lambda item: item.port_id):
+            for schema_id in port.accepted_input_schema_ids:
+                ports_by_schema.setdefault(schema_id, ())
+                ports_by_schema[schema_id] += (port,)
+    
+        assigned: dict[_InputRelationCandidate, OperationPortAuthority] = {}
+        residual_by_schema: dict[str, list[_InputRelationCandidate]] = {}
+    
+        # A binding-listed resource is not automatically a static lease token:
+        # ordinary launch-time documents, including the initial Intake document,
+        # are also fixed operation inputs and carry no lease identity.  Only a
+        # schema with an explicitly declared static lease port enters the exact
+        # identity relation below; ordinary inputs continue to use their actual
+        # Petri place in the dynamic-place relation.
+        for candidate in ordered_candidates:
+            if not candidate.statically_bound:
+                continue
+            if candidate.lease_identity_ref is None:
+                static_lease_ports = tuple(
+                    port for port in ports_by_schema[candidate.content_schema_id]
+                    if (port.port_id not in static_excluded_port_ids
+                        and port.lease_identity_ref is not None))
+                if static_lease_ports:
+                    raise OperationAuthorityError(
+                        "statically bound operation input lacks exact lease identity")
+                continue
+            exact_ports = tuple(
+                port for port in ports_by_schema[candidate.content_schema_id]
+                if (port.port_id not in static_excluded_port_ids
+                    and port.lease_identity_ref == candidate.lease_identity_ref))
+            if len(exact_ports) == 1:
+                assigned[candidate] = exact_ports[0]
+            else:
+>               raise OperationAuthorityError(
+                    "statically bound operation input has no unique explicit "
+                    "lease-identity/port authority")
+E               cpn.rpnh.registry.operations.OperationAuthorityError: statically bound operation input has no unique explicit lease-identity/port authority
+
+rpnh-static-lease-read-fix/source/cpn/rpnh/registry/operation_repository.py:230: OperationAuthorityError
+_________ test_variable_read_coexists_without_extra_carrier[separate] __________
+
+tmp_path = PosixPath('/tmp/pytest-of-agent/pytest-141/test_variable_read_coexists_wi1')
+variable = 'separate'
+
+    @pytest.mark.parametrize('variable',['same','separate'])
+    def test_variable_read_coexists_without_extra_carrier(tmp_path,variable):
+        owner=independent_owner(tmp_path/'run',variable=variable)
+        original=leases(owner)
+        a=owner.admit('step.run',logical_tau=0,command_id='review:admit')
+        assert a is not None
+        e=owner.start(a,command_id='review:start')
+>       assert len(e.operation.firing.claimed_input_refs)==1+len(original)
+E       AssertionError: assert 2 == (1 + 2)
+E        +  where 2 = len((VersionRef(entity_type='petri_token/v1', entity_id=TypedId(kind='petri_token', value='d8988643e3255d80ae1411e8ebb2aa6...5c9b25deabfe5aeb51ca1dbe4'), version_id=TypedId(kind='petri_token_version', value='f27a3422be985035968a2cf1d10cc655'))))
+E        +    where (VersionRef(entity_type='petri_token/v1', entity_id=TypedId(kind='petri_token', value='d8988643e3255d80ae1411e8ebb2aa6...5c9b25deabfe5aeb51ca1dbe4'), version_id=TypedId(kind='petri_token_version', value='f27a3422be985035968a2cf1d10cc655'))) = TransitionFiringAuthority(transition_firing_ref=VersionRef(entity_type='transition_firing/v1', entity_id=TypedId(kind=...f52549a1f069c42c1de94': 1, 'transition-firing:transition_firing:f561d7c2b8f05621b8cf443b004bf657': 1}), agent_ref=None).claimed_input_refs
+E        +      where TransitionFiringAuthority(transition_firing_ref=VersionRef(entity_type='transition_firing/v1', entity_id=TypedId(kind=...f52549a1f069c42c1de94': 1, 'transition-firing:transition_firing:f561d7c2b8f05621b8cf443b004bf657': 1}), agent_ref=None) = RegisteredOperationAuthority(input_plan=RegisteredOperationInputPlanAuthority(canonical=CanonicalInvocationAuthority(c...tion:f67b768bfccf52549a1f069c42c1de94': 1, 'transition-firing:transition_firing:f561d7c2b8f05621b8cf443b004bf657': 1})).firing
+E        +        where RegisteredOperationAuthority(input_plan=RegisteredOperationInputPlanAuthority(canonical=CanonicalInvocationAuthority(c...tion:f67b768bfccf52549a1f069c42c1de94': 1, 'transition-firing:transition_firing:f561d7c2b8f05621b8cf443b004bf657': 1})) = OperationExecutionAuthority(operation=RegisteredOperationAuthority(input_plan=RegisteredOperationInputPlanAuthority(ca...tion:f67b768bfccf52549a1f069c42c1de94': 1, 'transition-firing:transition_firing:f561d7c2b8f05621b8cf443b004bf657': 1})).operation
+E        +  and   2 = len({VersionRef(entity_type='petri_token/v1', entity_id=TypedId(kind='petri_token', value='0eb625d3f17359d99549fb0f2b1ad9b...56a8d8ca38'), version_id=TypedId(kind='resource_version', value='eb07bc28076b5d86bfff4d96269d1786')), lease_claims=())})
+
+rpnh-static-lease-read-review/test_independent_static_lease.py:92: AssertionError
+_____________ test_cold_completion_recovery_preserves_exact_lease ______________
+
+tmp_path = PosixPath('/tmp/pytest-of-agent/pytest-141/test_cold_completion_recovery_0')
+
+    def test_cold_completion_recovery_preserves_exact_lease(tmp_path):
+        owner=independent_owner(tmp_path/'run')
+        original=leases(owner)
+        a=owner.admit('step.run',logical_tau=0,command_id='review:admit')
+        e=owner.start(a,command_id='review:start')
+        outputs=product(owner,e,'recover')
+        k,r=owner.operation_repository()
+        record_registered_operation_completion(owner._core,k,r,outputs,idempotency_key='review:completion')
+        resumed=resume_run(owner.registration,run_dir=tmp_path/'run',model_condition='offline-review')
+        assert leases(resumed)==original
+        assert resumed.snapshot()['active_firings']==[]
+        settled=[x for x in resumed._core.event_store.list_events() if x.event_type=='transition_firing_settled/v1']
+        assert len(settled)==1
+>       again=resume_run(owner.registration,run_dir=tmp_path/'run',model_condition='offline-review')
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+rpnh-static-lease-read-review/test_independent_static_lease.py:110: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+rpnh-static-lease-read-fix/source/cpn/rpnh/run.py:752: in resume_run
+    recovery = classify_registered_operation_recovery(
+rpnh-static-lease-read-fix/source/cpn/rpnh/registry/firing_recovery.py:520: in classify_registered_operation_recovery
+    firing, event, stale_epoch = _validate_recovery_shape(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+core = <cpn.rpnh.registry._registry._RegistryCore object at 0x7fb7f405caa0>
+kernel = <cpn.rpnh.registry.resource_service._ResourceServiceKernel object at 0x7fb7f4a0a7c0>
+
+    def _validate_recovery_shape(
+            core: _RegistryCore, kernel: _ResourceServiceKernel, *,
+            current_run: Mapping[str, object], expected_event_payload=None,
+            expected_firing=None, completion_required: bool = True,
+            allow_owner_interruption: bool = False,
+            checkpoint_reentry: bool = False,
+    ) -> tuple[object, EventEnvelope | None, int]:
+        from .module_execution import active_module_firings
+        from .module_runtime import hydrate_module_runtime
+    
+        executable, _structure, marking = hydrate_module_runtime(core)
+        all_active = active_module_firings(
+            core, executable.net_ref, require_current_writer=False)
+        if expected_firing is None:
+            active = all_active
+        else:
+            matches = tuple(
+                firing for firing in all_active
+                if firing.transition_firing_ref
+                == expected_firing.transition_firing_ref)
+            active = (
+                (expected_firing,)
+                if (len(matches) == 1
+                    and replace(
+                        expected_firing,
+                        verified_at_head=matches[0].verified_at_head)
+                    == matches[0])
+                else ())
+        if len(active) != 1:
+>           raise ResourceIntegrityFault(
+                "running run recovery lacks the selected active firing"
+                if checkpoint_reentry else
+                "running run recovery requires exactly one active firing")
+E           cpn.rpnh.registry.errors.ResourceIntegrityFault: running run recovery requires exactly one active firing
+
+rpnh-static-lease-read-fix/source/cpn/rpnh/registry/firing_recovery.py:297: ResourceIntegrityFault
+=========================== short test summary info ============================
+FAILED rpnh-static-lease-read-review/test_independent_static_lease.py::test_variable_read_coexists_without_extra_carrier[same]
+FAILED rpnh-static-lease-read-review/test_independent_static_lease.py::test_variable_read_coexists_without_extra_carrier[separate]
+FAILED rpnh-static-lease-read-review/test_independent_static_lease.py::test_cold_completion_recovery_preserves_exact_lease
+3 failed, 2 passed in 13.63s

@@ -1,0 +1,36 @@
+{
+  "command": [
+    "<WORKSPACE>/.p26/v/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "-p",
+    "no:cacheprovider",
+    "-o",
+    "junit_family=xunit1",
+    "tests/test_codex_history.py",
+    "tests/test_codex_compat.py",
+    "tests/test_main_thread_history.py",
+    "tests/test_frontend_session_access.py",
+    "tests/test_frontend_boundary.py",
+    "-k",
+    "not test_codex_frontend_uses_external_socket_for_absent_long_root",
+    "--tb=short",
+    "--basetemp=<WORKSPACE>/.v26/uxho",
+    "--junitxml=<WORKSPACE>/task-complete-v5-20261009/stages/codex/resume-history-offline.xml"
+  ],
+  "cwd": "<WORKSPACE>/.v26/x3",
+  "pid": 21294,
+  "started_at_utc": "2026-10-09T04:01:09.245770+00:00",
+  "finished_at_utc": "2026-10-09T04:03:57.591119+00:00",
+  "elapsed_seconds": 170.46034093299932,
+  "exit_code": 0,
+  "environment": {
+    "PYTHONPATH": "<WORKSPACE>/.v26/x3:<WORKSPACE>/.v26/x3/tests",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1",
+    "TMPDIR": "<WORKSPACE>/.v26/tmp",
+    "PYTEST_ADDOPTS": null,
+    "PYTEST_PLUGINS": null
+  }
+}

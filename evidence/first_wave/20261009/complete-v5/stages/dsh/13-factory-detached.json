@@ -1,0 +1,21 @@
+{
+  "command": [
+    "<WORKSPACE>/.p26/v/bin/python",
+    "-c",
+    "from pathlib import Path; import importlib.util,json; p=Path(\"<WORKSPACE>/task-complete-v5-20261009/stages/dsh/package/rpnh-dsh-session-codec/scripts/run_pure_gates.py\"); spec=importlib.util.spec_from_file_location(\"frozen_dsh_factory_checks\",p); m=importlib.util.module_from_spec(spec); spec.loader.exec_module(m); print(json.dumps({\"boundary\":\"detached source transformations only; no Node/native/typecheck\", \"checks\":m.factory_checks()},indent=2))"
+  ],
+  "cwd": "<WORKSPACE>/.v26/d",
+  "pid": 14342,
+  "started_at_utc": "2026-10-09T01:20:50.889461+00:00",
+  "finished_at_utc": "2026-10-09T01:20:50.945384+00:00",
+  "elapsed_seconds": 0.05594804699649103,
+  "exit_code": 0,
+  "environment": {
+    "PYTHONPATH": "<WORKSPACE>/.v26/d",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1",
+    "TMPDIR": "<WORKSPACE>/.v26/tmp",
+    "PYTEST_ADDOPTS": null,
+    "PYTEST_PLUGINS": null
+  }
+}

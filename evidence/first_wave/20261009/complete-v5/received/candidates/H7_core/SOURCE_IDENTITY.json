@@ -1,0 +1,209 @@
+{
+  "repository": "Deng-0119/RPNH",
+  "baseline_commit": "1f191645c4d60c8b190d42e9fad99c85e8981c03",
+  "product_commit": "d92ff3704b6002bf5ecbccb3e6a3d1489809a805",
+  "source_kind": "pinned curated S1 candidate plus H7 offline core overlay; no remote state assertion",
+  "S1_file_count": 979,
+  "S1_patch_sha256": "bd0e2a8d362179fd68bd5451a932449f059b7038db16ca627eb84843f809bd4d",
+  "S1_source_identity_sha256": "b65249d3771c306773c6930d39323d019450f7c668e0f7d778c798b70278f753",
+  "H7_patch_sha256": "7746881935e0d35e85cb71b2e08bab82ab3f844d52771212b39b3a7728448ed3",
+  "source_manifest_sha256": "ac68327e442b7bda8a6aa2ba93c0cd20ad72181a661b0497627b08713334907e",
+  "source_file_count": 992,
+  "changed_files": [
+    {
+      "path": "cpn/rpnh/registry/_event_store/backend.py",
+      "S1_sha256": "2d4178d60c290f4f3206d7a4ecbe970465ecf3c6b54cf836b458ff2b040a5fb3",
+      "candidate_sha256": "5c45fe53832a5de18d97a056d72a05afcf59b862b2b5ab7dc223a7b44754f047",
+      "size": 23097
+    },
+    {
+      "path": "cpn/rpnh/registry/_event_store/commit.py",
+      "S1_sha256": "a43b0e923525ea625d74f0214cdf9bd7bd1181dc3bdd751f07f85b8a4e8e05d9",
+      "candidate_sha256": "2a49abc0035d79fc86b9c49a8b545a70431abfdfec11110ebeb6602f5ececd73",
+      "size": 95144
+    },
+    {
+      "path": "cpn/rpnh/registry/_event_store/validation/operation.py",
+      "S1_sha256": "98e6371a86d635399b3eec3fc3b27b3186e61f8ae193adb3abe547b978835cd8",
+      "candidate_sha256": "0e1d8d6482b7316f99f26d4c7e4589444d313fd71e683b8e396b2290fa016b92",
+      "size": 105022
+    },
+    {
+      "path": "cpn/rpnh/registry/_invocation/admission.py",
+      "S1_sha256": "5fc6b09ec5a1776b394d491b36923c8d98d1c3e16b1c18ae89446d7dd239c17a",
+      "candidate_sha256": "7ba926b81b103338b7430d7f515596497949ffb5ba397ea07488c2d5869991f5",
+      "size": 32872
+    },
+    {
+      "path": "cpn/rpnh/registry/_invocation/execution.py",
+      "S1_sha256": "cb87304c1189170b7e4e59b4a496e2f07c79d7e697d2744a4a9fab9d04464dec",
+      "candidate_sha256": "69983bef21adc35ebb9aa1f5de55c3a6bb71e9f532cab60a71525def6a1192c6",
+      "size": 12022
+    },
+    {
+      "path": "cpn/rpnh/registry/_module_resource_projection.py",
+      "S1_sha256": "9d7ff574ca08777471904795abd50e2cb188e8151f100e321d6e86499cf4dab1",
+      "candidate_sha256": "a1a2ad82fdf6049b343899f56e3c566ac251e0e5680308d11ae658d8e5a64d6b",
+      "size": 15297
+    },
+    {
+      "path": "cpn/rpnh/registry/_registry.py",
+      "S1_sha256": "f2d5f021c69732d292b2a96f2f19e9d05059dda15d3d36e5b94f55eb9fc25f0a",
+      "candidate_sha256": "e21d71715fbcd4ef76b04bdbf24a7038fcc5c0bd3b7e2ebf267da9756b0d2ca9",
+      "size": 31157
+    },
+    {
+      "path": "cpn/rpnh/registry/bootstrap.py",
+      "S1_sha256": "928e5513a5f139e4ebc83f6e5506f15c113c167d9a45a2a85916759e70720a9d",
+      "candidate_sha256": "b81e881443c1717e06427ae726f9c109966ea06500295f88decdcf56e02c1a65",
+      "size": 7459
+    },
+    {
+      "path": "cpn/rpnh/registry/checkpoint_reentry.py",
+      "S1_sha256": "0803ae61e49615794a48be25a1b957e77620f0225175c5da2ce70bc117ebf160",
+      "candidate_sha256": "5049f847a7465c81a19a73be533b1f6f034d3929586ad887ad18543169bf4dd8",
+      "size": 31745
+    },
+    {
+      "path": "cpn/rpnh/registry/event_store.py",
+      "S1_sha256": "d92301edc90a236f0da6b1332fc990dee275481d4213cc10815571d6db15d72c",
+      "candidate_sha256": "475afa215fd5a593ae7d4081fdaa27d00fb6017e0ff9e1cc63eb49867ddb8322",
+      "size": 114159
+    },
+    {
+      "path": "cpn/rpnh/registry/module_binding_authority.py",
+      "S1_sha256": "8f81f52c4cc95c553bf5980f3cf6ee675b54f3fa44bd4281d264bac451c61475",
+      "candidate_sha256": "6e37dc56e011c6d7682eb555905b5385ffa63156feca9101ca176aa9290038e6",
+      "size": 7060
+    },
+    {
+      "path": "cpn/rpnh/registry/module_execution.py",
+      "S1_sha256": "82114d588212bcddeeb0c6982f88782be8f4efc4aec65df7362fa12897657536",
+      "candidate_sha256": "1437aa8de32ef7d5cf4254a352598b673ee975a016ca6a62013e3b8396d48202",
+      "size": 12118
+    },
+    {
+      "path": "cpn/rpnh/registry/module_nets.py",
+      "S1_sha256": "26c18947bfad824d768325677d6f684c0e14440a1bc0fd1f9874853eecdb9437",
+      "candidate_sha256": "ef5e6ad782eb07eaa9f34734f89d4edbbe94227bc1e58b45f9594b2f765be635",
+      "size": 21209
+    },
+    {
+      "path": "cpn/rpnh/registry/operation_execution.py",
+      "S1_sha256": "81f60672de80e49cc8c817310a0931ca59565983d5c4571c67a7398bd2dbb45b",
+      "candidate_sha256": "892f580a153dd0dee6d9f97f847e9c2d9b3bfe76f742b65ae32ff0fe6b6402a2",
+      "size": 13797
+    },
+    {
+      "path": "cpn/rpnh/registry/parent_bound.py",
+      "S1_sha256": null,
+      "candidate_sha256": "c35fc2586e7e9dd4002b7dbab468f428ab9342d346470c230bc127171155fc15",
+      "size": 34493
+    },
+    {
+      "path": "cpn/rpnh/registry/parent_child.py",
+      "S1_sha256": null,
+      "candidate_sha256": "05a497556daf80deccfe5e3b041b85550f1f7ce7cad6f343079a8a7cb3b67857",
+      "size": 37275
+    },
+    {
+      "path": "cpn/rpnh/registry/run_authority.py",
+      "S1_sha256": "7475c2d5403dea49dc0a45796a3f84beab6c7516f18466bc8e1338bf0be684e3",
+      "candidate_sha256": "21f41cb875ac4f129c823e186fc826d816e93516a0d886ec4502696e2afa51da",
+      "size": 28805
+    },
+    {
+      "path": "cpn/rpnh/registry/schema_catalog.py",
+      "S1_sha256": "dac00f898cf019f38a486a0c99e42a7f6e217f8b4f709f010adb8256f26eaa3a",
+      "candidate_sha256": "1671e94d13e2b4cb7fa4fc7503f89bcb5f1711f75a1793bfea53f676b23a64a8",
+      "size": 23954
+    },
+    {
+      "path": "cpn/rpnh/registry/task_ledger.py",
+      "S1_sha256": "3884b46d00ceb233e4f995e3f70dd09ba7735e92c3ac73b4c84c6f6f071e2e17",
+      "candidate_sha256": "16d5834c3363ea86071245326c7b7bf384a75c4a51b0a77df6873a30f467e455",
+      "size": 6665
+    },
+    {
+      "path": "cpn/schemas/INDEX.json",
+      "S1_sha256": "04190069316addfe08c6e3ba0d44b93b99485a34906432d3a512a36f7bc2a758",
+      "candidate_sha256": "6601391e278b68ceab8aa90631bc2e17d58abd028ce14055fc80222fec480b99",
+      "size": 25205
+    },
+    {
+      "path": "cpn/schemas/registry_v1/fact_event_envelope.v1.schema.json",
+      "S1_sha256": "67627855cea83e92f3558526d938cf7eaec2040eec119d9c43f9bc215f600572",
+      "candidate_sha256": "4b197ec9e0d04aa2439a7f9407168c76b65f71f97af574bf6d4ec1e66f721895",
+      "size": 5856
+    },
+    {
+      "path": "cpn/schemas/registry_v1/parent_bound_bootstrap.v1.schema.json",
+      "S1_sha256": null,
+      "candidate_sha256": "7a15d356cfbbc17b476e6c429ffc4da5c066b86e302cb6b803ecd7350430a00c",
+      "size": 4923
+    },
+    {
+      "path": "cpn/schemas/registry_v1/parent_bound_origin.v1.schema.json",
+      "S1_sha256": null,
+      "candidate_sha256": "902d909b8110c883b4a2f7785f146f149e6e6a8bcc20ca11684a32a0acb423a8",
+      "size": 3813
+    },
+    {
+      "path": "cpn/schemas/registry_v1/parent_child_acceptance.v1.schema.json",
+      "S1_sha256": null,
+      "candidate_sha256": "56b46e3f4fe74b3b2e4d1176765ff3c563be6c4496b84593cf352099139374e6",
+      "size": 11622
+    },
+    {
+      "path": "cpn/schemas/registry_v1/parent_child_dispatch.v1.schema.json",
+      "S1_sha256": null,
+      "candidate_sha256": "fdd60b5fbe3e21a10eb7b187e04c625e45b4b73dafe313d9412a3d6aac38d660",
+      "size": 8817
+    },
+    {
+      "path": "cpn/schemas/registry_v1/parent_child_intent.v1.schema.json",
+      "S1_sha256": null,
+      "candidate_sha256": "7b8143b6c2f38b75cfd17de42121ec39b0e6aa059394a95723d8442067152d37",
+      "size": 11770
+    },
+    {
+      "path": "cpn/schemas/registry_v1/parent_child_recorded.v1.schema.json",
+      "S1_sha256": null,
+      "candidate_sha256": "13b2573afe492810b99a3ed0e852846b65d71c0902de19be4013f67dd9008915",
+      "size": 1411
+    },
+    {
+      "path": "cpn/schemas/registry_v1/parent_child_worker.v1.schema.json",
+      "S1_sha256": null,
+      "candidate_sha256": "aea2f5e45578b2a522c6fdb54c233c62704ad845cf7db93b0664542190065bb3",
+      "size": 9823
+    },
+    {
+      "path": "cpn/schemas/rpnh/parent_child_request.v1.schema.json",
+      "S1_sha256": null,
+      "candidate_sha256": "ee66cda49c3a1dc06eeb2d4d0fd1ec8a78b8808c75a270d74c4b46a6c1254360",
+      "size": 670
+    },
+    {
+      "path": "cpn/schemas/rpnh/parent_origin_capability.v1.schema.json",
+      "S1_sha256": null,
+      "candidate_sha256": "60ce36c8c64e567ea2e0a715d8a6391348686717c00783f1042d696eb470e097",
+      "size": 3909
+    },
+    {
+      "path": "tests/parent_child_fixtures.py",
+      "S1_sha256": null,
+      "candidate_sha256": "1cf0af1e7e1a163726ae2245c937ade0f9640d1e4ffe4b485c150e4ed813868e",
+      "size": 11818
+    },
+    {
+      "path": "tests/test_parent_child_core.py",
+      "S1_sha256": null,
+      "candidate_sha256": "1c9c7f8df92a3ab49279a7742cdf606912456d814382adbbab2251fd7bbf8614",
+      "size": 16391
+    }
+  ],
+  "source_manifest": "evidence/final21-source-after.json",
+  "source_unchanged_during_final21": true,
+  "native_status": "NOT_RUN / production transport issuer and bound writable entry not installed"
+}

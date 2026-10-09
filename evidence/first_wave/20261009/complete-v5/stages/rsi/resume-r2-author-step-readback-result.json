@@ -1,0 +1,618 @@
+{
+  "reader_file": "<WORKSPACE>/.v26/r2/cpn/rpnh/registry/run_authority.py",
+  "python": "<WORKSPACE>/.p26/v/bin/python",
+  "registry_count": 10,
+  "rows": [
+    {
+      "fixture": "test_exact_lineage_and_stale_p0",
+      "head": 478,
+      "writer_epoch": 2,
+      "status": "running",
+      "run_outcome": null,
+      "terminal_version": null,
+      "result": null,
+      "task_control_status": {
+        "task_ref": "task:c1c5b99a3ce74c2dae86bb7482c86ed8",
+        "execution_status": "running",
+        "checkpoint_ref": {
+          "entity_type": "marking_checkpoint/v1",
+          "logical_id": "marking_checkpoint:76d6ac7856d5543e97255ec9e547cdc7",
+          "version_id": "marking_checkpoint_version:d32d4720e178596d8ff54b1ef3590dcf"
+        },
+        "execution_generation": 0,
+        "terminal_evidence_count": 0,
+        "final_result_index_count": 0,
+        "actual_model_call_counts": [
+          0,
+          0
+        ]
+      },
+      "canonical_unchanged": true,
+      "sqlite_connection_sidecar_changes": [
+        {
+          "path": ".registry_v1/registry.sqlite3-shm",
+          "before": null,
+          "after": {
+            "sha256": "fd4c9fda9cd3f9ae7c962b0ddf37232294d55580e1aa165aa06129b8549389eb",
+            "bytes": 32768
+          }
+        },
+        {
+          "path": ".registry_v1/registry.sqlite3-wal",
+          "before": null,
+          "after": {
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "bytes": 0
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "test_explicit_failed_terminal_0",
+      "head": 379,
+      "writer_epoch": 2,
+      "status": "terminal",
+      "run_outcome": "failed",
+      "terminal_version": "terminal_evidence_version:c1c0a952548f4d06888a9672bab11422",
+      "result": {
+        "decision": {
+          "candidate_ref": {
+            "resource_id": "resource:d02521eb700f522591923d14790962c4",
+            "resource_version_id": "resource_version:ae950cb5d17f51f88748a3d85cb51fa4"
+          },
+          "candidate_selected": false,
+          "evaluation_ref": {
+            "resource_id": "resource:03036611b4b15a0ca3b1a708ff457f46",
+            "resource_version_id": "resource_version:69f02c2bc5b85ed3a7242c2a9396bc7c"
+          },
+          "incumbent_ref": {
+            "resource_id": "resource:7c73e47b4a115d06bf6b740bd0d11a91",
+            "resource_version_id": "resource_version:481688281bc7579aaf1f0d1d8ba0b42e"
+          },
+          "outcome": "retain",
+          "request_ref": {
+            "resource_id": "resource:f95b5f956f9d50af90bf75ea1dd0c9c1",
+            "resource_version_id": "resource_version:afc8ff2e853b533eafa0070f8cf601e0"
+          },
+          "scorer_binding_ref": {
+            "entity_type": "operation_binding/v1",
+            "logical_id": "operation_binding:d8778037f14054a094f1671508a40992",
+            "version_id": "operation_binding_version:7c4627c6e3d85053979829afeb95e777"
+          }
+        },
+        "parent_state_ref": {
+          "resource_id": "resource:7c73e47b4a115d06bf6b740bd0d11a91",
+          "resource_version_id": "resource_version:481688281bc7579aaf1f0d1d8ba0b42e"
+        },
+        "round": 1,
+        "selected_candidate_ref": null,
+        "value": 0
+      },
+      "task_control_status": {
+        "task_ref": "task:3aeaef62d4bf4e54bb86a2018aae7dbf",
+        "execution_status": "terminal",
+        "checkpoint_ref": {
+          "entity_type": "marking_checkpoint/v1",
+          "logical_id": "marking_checkpoint:6b57de429c6956c7a473a4970597f01d",
+          "version_id": "marking_checkpoint_version:0eedf1d0dcb758ec95f0622f814e4995"
+        },
+        "execution_generation": 0,
+        "terminal_evidence_count": 1,
+        "final_result_index_count": 1,
+        "actual_model_call_counts": [
+          0,
+          0
+        ]
+      },
+      "canonical_unchanged": true,
+      "sqlite_connection_sidecar_changes": [
+        {
+          "path": ".registry_v1/registry.sqlite3-shm",
+          "before": null,
+          "after": {
+            "sha256": "fd4c9fda9cd3f9ae7c962b0ddf37232294d55580e1aa165aa06129b8549389eb",
+            "bytes": 32768
+          }
+        },
+        {
+          "path": ".registry_v1/registry.sqlite3-wal",
+          "before": null,
+          "after": {
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "bytes": 0
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "test_mismatched_evaluation_is_0",
+      "head": 347,
+      "writer_epoch": 2,
+      "status": "running",
+      "run_outcome": null,
+      "terminal_version": null,
+      "result": null,
+      "task_control_status": {
+        "task_ref": "task:a8124bc62cb24a6b9eceb98fd8b48e1c",
+        "execution_status": "running",
+        "checkpoint_ref": {
+          "entity_type": "marking_checkpoint/v1",
+          "logical_id": "marking_checkpoint:20a26e25ba935ca49745130a42005196",
+          "version_id": "marking_checkpoint_version:71af0ba287d3589bbc8ac3eae76a37c8"
+        },
+        "execution_generation": 0,
+        "terminal_evidence_count": 0,
+        "final_result_index_count": 0,
+        "actual_model_call_counts": [
+          0,
+          0
+        ]
+      },
+      "canonical_unchanged": true,
+      "sqlite_connection_sidecar_changes": [
+        {
+          "path": ".registry_v1/registry.sqlite3-shm",
+          "before": null,
+          "after": {
+            "sha256": "fd4c9fda9cd3f9ae7c962b0ddf37232294d55580e1aa165aa06129b8549389eb",
+            "bytes": 32768
+          }
+        },
+        {
+          "path": ".registry_v1/registry.sqlite3-wal",
+          "before": null,
+          "after": {
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "bytes": 0
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "test_mismatched_evaluation_is_1",
+      "head": 347,
+      "writer_epoch": 2,
+      "status": "running",
+      "run_outcome": null,
+      "terminal_version": null,
+      "result": null,
+      "task_control_status": {
+        "task_ref": "task:0e860cce3e8c49948e918ef714da9380",
+        "execution_status": "running",
+        "checkpoint_ref": {
+          "entity_type": "marking_checkpoint/v1",
+          "logical_id": "marking_checkpoint:20a26e25ba935ca49745130a42005196",
+          "version_id": "marking_checkpoint_version:71af0ba287d3589bbc8ac3eae76a37c8"
+        },
+        "execution_generation": 0,
+        "terminal_evidence_count": 0,
+        "final_result_index_count": 0,
+        "actual_model_call_counts": [
+          0,
+          0
+        ]
+      },
+      "canonical_unchanged": true,
+      "sqlite_connection_sidecar_changes": [
+        {
+          "path": ".registry_v1/registry.sqlite3-shm",
+          "before": null,
+          "after": {
+            "sha256": "fd4c9fda9cd3f9ae7c962b0ddf37232294d55580e1aa165aa06129b8549389eb",
+            "bytes": 32768
+          }
+        },
+        {
+          "path": ".registry_v1/registry.sqlite3-wal",
+          "before": null,
+          "after": {
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "bytes": 0
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "test_mismatched_evaluation_is_2",
+      "head": 347,
+      "writer_epoch": 2,
+      "status": "running",
+      "run_outcome": null,
+      "terminal_version": null,
+      "result": null,
+      "task_control_status": {
+        "task_ref": "task:ae56379d6d7a4c4db1192ea2c539dae2",
+        "execution_status": "running",
+        "checkpoint_ref": {
+          "entity_type": "marking_checkpoint/v1",
+          "logical_id": "marking_checkpoint:20a26e25ba935ca49745130a42005196",
+          "version_id": "marking_checkpoint_version:71af0ba287d3589bbc8ac3eae76a37c8"
+        },
+        "execution_generation": 0,
+        "terminal_evidence_count": 0,
+        "final_result_index_count": 0,
+        "actual_model_call_counts": [
+          0,
+          0
+        ]
+      },
+      "canonical_unchanged": true,
+      "sqlite_connection_sidecar_changes": [
+        {
+          "path": ".registry_v1/registry.sqlite3-shm",
+          "before": null,
+          "after": {
+            "sha256": "fd4c9fda9cd3f9ae7c962b0ddf37232294d55580e1aa165aa06129b8549389eb",
+            "bytes": 32768
+          }
+        },
+        {
+          "path": ".registry_v1/registry.sqlite3-wal",
+          "before": null,
+          "after": {
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "bytes": 0
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "test_missing_unsettled_or_repo0",
+      "head": 326,
+      "writer_epoch": 2,
+      "status": "running",
+      "run_outcome": null,
+      "terminal_version": null,
+      "result": null,
+      "task_control_status": {
+        "task_ref": "task:217e02b0d48544a282647903e69eb254",
+        "execution_status": "running",
+        "checkpoint_ref": {
+          "entity_type": "marking_checkpoint/v1",
+          "logical_id": "marking_checkpoint:581ff5b8d0ed5288926b7d3e6fac13c5",
+          "version_id": "marking_checkpoint_version:9c31483184fa5e56825e3742f52d53c4"
+        },
+        "execution_generation": 0,
+        "terminal_evidence_count": 0,
+        "final_result_index_count": 0,
+        "actual_model_call_counts": [
+          0,
+          0
+        ]
+      },
+      "canonical_unchanged": true,
+      "sqlite_connection_sidecar_changes": [
+        {
+          "path": ".registry_v1/registry.sqlite3-shm",
+          "before": null,
+          "after": {
+            "sha256": "fd4c9fda9cd3f9ae7c962b0ddf37232294d55580e1aa165aa06129b8549389eb",
+            "bytes": 32768
+          }
+        },
+        {
+          "path": ".registry_v1/registry.sqlite3-wal",
+          "before": null,
+          "after": {
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "bytes": 0
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "test_select_retain_unknown_and0",
+      "head": 379,
+      "writer_epoch": 2,
+      "status": "terminal",
+      "run_outcome": "complete",
+      "terminal_version": "terminal_evidence_version:9ca793920b8c4a5f97d2a48d49c67f1c",
+      "result": {
+        "decision": {
+          "candidate_ref": {
+            "resource_id": "resource:b02f051c302256a994d634148ca68275",
+            "resource_version_id": "resource_version:c4caee52084c581ca0ef05689767a4d7"
+          },
+          "candidate_selected": true,
+          "evaluation_ref": {
+            "resource_id": "resource:aa31634515aa5983a30a834289f235f3",
+            "resource_version_id": "resource_version:38eb42bf95f55c2c9a2e25c000c4c6da"
+          },
+          "incumbent_ref": {
+            "resource_id": "resource:5d16bff1893d567d946af9a18148b335",
+            "resource_version_id": "resource_version:5db7830f625656ff8e06e5cec925bf48"
+          },
+          "outcome": "select",
+          "request_ref": {
+            "resource_id": "resource:b69b3739f4d853729ad28f7e9990f4e6",
+            "resource_version_id": "resource_version:2b03b04a10e353d29807c65449c05b32"
+          },
+          "scorer_binding_ref": {
+            "entity_type": "operation_binding/v1",
+            "logical_id": "operation_binding:d8778037f14054a094f1671508a40992",
+            "version_id": "operation_binding_version:7c4627c6e3d85053979829afeb95e777"
+          }
+        },
+        "parent_state_ref": {
+          "resource_id": "resource:5d16bff1893d567d946af9a18148b335",
+          "resource_version_id": "resource_version:5db7830f625656ff8e06e5cec925bf48"
+        },
+        "round": 1,
+        "selected_candidate_ref": {
+          "resource_id": "resource:b02f051c302256a994d634148ca68275",
+          "resource_version_id": "resource_version:c4caee52084c581ca0ef05689767a4d7"
+        },
+        "value": 1
+      },
+      "task_control_status": {
+        "task_ref": "task:f49f151924bf47fe90a454e3652e021e",
+        "execution_status": "terminal",
+        "checkpoint_ref": {
+          "entity_type": "marking_checkpoint/v1",
+          "logical_id": "marking_checkpoint:6b57de429c6956c7a473a4970597f01d",
+          "version_id": "marking_checkpoint_version:0eedf1d0dcb758ec95f0622f814e4995"
+        },
+        "execution_generation": 0,
+        "terminal_evidence_count": 1,
+        "final_result_index_count": 1,
+        "actual_model_call_counts": [
+          0,
+          0
+        ]
+      },
+      "canonical_unchanged": true,
+      "sqlite_connection_sidecar_changes": [
+        {
+          "path": ".registry_v1/registry.sqlite3-shm",
+          "before": null,
+          "after": {
+            "sha256": "fd4c9fda9cd3f9ae7c962b0ddf37232294d55580e1aa165aa06129b8549389eb",
+            "bytes": 32768
+          }
+        },
+        {
+          "path": ".registry_v1/registry.sqlite3-wal",
+          "before": null,
+          "after": {
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "bytes": 0
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "test_select_retain_unknown_and1",
+      "head": 379,
+      "writer_epoch": 2,
+      "status": "terminal",
+      "run_outcome": "complete",
+      "terminal_version": "terminal_evidence_version:4d60abae3392425cac2ba55fd083ef1d",
+      "result": {
+        "decision": {
+          "candidate_ref": {
+            "resource_id": "resource:d3434a7ed88a5067ae0ef78154e52bf3",
+            "resource_version_id": "resource_version:aeafa25857875119b11d106a338e591c"
+          },
+          "candidate_selected": false,
+          "evaluation_ref": {
+            "resource_id": "resource:177e03b476b254c48c116d93449a3810",
+            "resource_version_id": "resource_version:816b660e38d4560cb7489397f71ba421"
+          },
+          "incumbent_ref": {
+            "resource_id": "resource:11ace5d4f2f6556bbe1a9a87289c203e",
+            "resource_version_id": "resource_version:15384806a84e583b80131a29984448bf"
+          },
+          "outcome": "retain",
+          "request_ref": {
+            "resource_id": "resource:ca46a99ffe835c429b3ad4612a28d70f",
+            "resource_version_id": "resource_version:fee1495d62465cf7a1a9c5799a6de28c"
+          },
+          "scorer_binding_ref": {
+            "entity_type": "operation_binding/v1",
+            "logical_id": "operation_binding:d8778037f14054a094f1671508a40992",
+            "version_id": "operation_binding_version:7c4627c6e3d85053979829afeb95e777"
+          }
+        },
+        "parent_state_ref": {
+          "resource_id": "resource:11ace5d4f2f6556bbe1a9a87289c203e",
+          "resource_version_id": "resource_version:15384806a84e583b80131a29984448bf"
+        },
+        "round": 1,
+        "selected_candidate_ref": null,
+        "value": 0
+      },
+      "task_control_status": {
+        "task_ref": "task:6d04f40efdb14309a4c499ca4cca304e",
+        "execution_status": "terminal",
+        "checkpoint_ref": {
+          "entity_type": "marking_checkpoint/v1",
+          "logical_id": "marking_checkpoint:6b57de429c6956c7a473a4970597f01d",
+          "version_id": "marking_checkpoint_version:0eedf1d0dcb758ec95f0622f814e4995"
+        },
+        "execution_generation": 0,
+        "terminal_evidence_count": 1,
+        "final_result_index_count": 1,
+        "actual_model_call_counts": [
+          0,
+          0
+        ]
+      },
+      "canonical_unchanged": true,
+      "sqlite_connection_sidecar_changes": [
+        {
+          "path": ".registry_v1/registry.sqlite3-shm",
+          "before": null,
+          "after": {
+            "sha256": "fd4c9fda9cd3f9ae7c962b0ddf37232294d55580e1aa165aa06129b8549389eb",
+            "bytes": 32768
+          }
+        },
+        {
+          "path": ".registry_v1/registry.sqlite3-wal",
+          "before": null,
+          "after": {
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "bytes": 0
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "test_select_retain_unknown_and2",
+      "head": 379,
+      "writer_epoch": 2,
+      "status": "terminal",
+      "run_outcome": "complete",
+      "terminal_version": "terminal_evidence_version:e2748e78792c480187d4435feabf48d2",
+      "result": {
+        "decision": {
+          "candidate_ref": {
+            "resource_id": "resource:1a796b0d7b345adea11852545d99d4e5",
+            "resource_version_id": "resource_version:6fe2cce1c1725c5caebba3531111d263"
+          },
+          "candidate_selected": false,
+          "evaluation_ref": {
+            "resource_id": "resource:c4f05a17ffc85ad6acec3fad3542fcbc",
+            "resource_version_id": "resource_version:107037d08ecc5544b0b69af1007f8917"
+          },
+          "incumbent_ref": {
+            "resource_id": "resource:452a303bd90851579db77454cb90564c",
+            "resource_version_id": "resource_version:f9d890d8c7385d01ba48ad96a479855d"
+          },
+          "outcome": "retain",
+          "request_ref": {
+            "resource_id": "resource:f07ee379f1d45954882ca21bead7e93d",
+            "resource_version_id": "resource_version:f7f728539a5856dbb6e3f9fe2c25cf04"
+          },
+          "scorer_binding_ref": {
+            "entity_type": "operation_binding/v1",
+            "logical_id": "operation_binding:d8778037f14054a094f1671508a40992",
+            "version_id": "operation_binding_version:7c4627c6e3d85053979829afeb95e777"
+          }
+        },
+        "parent_state_ref": {
+          "resource_id": "resource:452a303bd90851579db77454cb90564c",
+          "resource_version_id": "resource_version:f9d890d8c7385d01ba48ad96a479855d"
+        },
+        "round": 1,
+        "selected_candidate_ref": null,
+        "value": 0
+      },
+      "task_control_status": {
+        "task_ref": "task:be77fd99990c4cc19a2ff28172f376b7",
+        "execution_status": "terminal",
+        "checkpoint_ref": {
+          "entity_type": "marking_checkpoint/v1",
+          "logical_id": "marking_checkpoint:6b57de429c6956c7a473a4970597f01d",
+          "version_id": "marking_checkpoint_version:0eedf1d0dcb758ec95f0622f814e4995"
+        },
+        "execution_generation": 0,
+        "terminal_evidence_count": 1,
+        "final_result_index_count": 1,
+        "actual_model_call_counts": [
+          0,
+          0
+        ]
+      },
+      "canonical_unchanged": true,
+      "sqlite_connection_sidecar_changes": [
+        {
+          "path": ".registry_v1/registry.sqlite3-shm",
+          "before": null,
+          "after": {
+            "sha256": "fd4c9fda9cd3f9ae7c962b0ddf37232294d55580e1aa165aa06129b8549389eb",
+            "bytes": 32768
+          }
+        },
+        {
+          "path": ".registry_v1/registry.sqlite3-wal",
+          "before": null,
+          "after": {
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "bytes": 0
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "test_stop_outcome_prevents_lat0",
+      "head": 473,
+      "writer_epoch": 2,
+      "status": "terminal",
+      "run_outcome": "complete",
+      "terminal_version": "terminal_evidence_version:2d5899c6e08d4bb4a4ac729c333e19cd",
+      "result": {
+        "decision": {
+          "candidate_ref": {
+            "resource_id": "resource:8406cd32def1586bb136f4f4027f5531",
+            "resource_version_id": "resource_version:d1d0a9636f515e63a2f3d7d0f2abadfa"
+          },
+          "candidate_selected": true,
+          "evaluation_ref": {
+            "resource_id": "resource:77c29314f11251d7ae455d6bafe106d7",
+            "resource_version_id": "resource_version:18ebf3273b1e5981ad06de8cffa8d322"
+          },
+          "incumbent_ref": {
+            "resource_id": "resource:aee668bdce77518aa69bd99772de10c4",
+            "resource_version_id": "resource_version:f628013178555064b5076b7a2c8303c8"
+          },
+          "outcome": "stop",
+          "request_ref": {
+            "resource_id": "resource:1a997ed4eeb951fe82b1b4232f490d54",
+            "resource_version_id": "resource_version:245dc3afe43052b9910e1fa92b4ec51b"
+          },
+          "scorer_binding_ref": {
+            "entity_type": "operation_binding/v1",
+            "logical_id": "operation_binding:d8778037f14054a094f1671508a40992",
+            "version_id": "operation_binding_version:7c4627c6e3d85053979829afeb95e777"
+          }
+        },
+        "parent_state_ref": {
+          "resource_id": "resource:aee668bdce77518aa69bd99772de10c4",
+          "resource_version_id": "resource_version:f628013178555064b5076b7a2c8303c8"
+        },
+        "round": 1,
+        "selected_candidate_ref": {
+          "resource_id": "resource:8406cd32def1586bb136f4f4027f5531",
+          "resource_version_id": "resource_version:d1d0a9636f515e63a2f3d7d0f2abadfa"
+        },
+        "value": 1
+      },
+      "task_control_status": {
+        "task_ref": "task:bd0534d5116b412fbbcfc94db7f2838b",
+        "execution_status": "terminal",
+        "checkpoint_ref": {
+          "entity_type": "marking_checkpoint/v1",
+          "logical_id": "marking_checkpoint:6b57de429c6956c7a473a4970597f01d",
+          "version_id": "marking_checkpoint_version:0eedf1d0dcb758ec95f0622f814e4995"
+        },
+        "execution_generation": 0,
+        "terminal_evidence_count": 1,
+        "final_result_index_count": 1,
+        "actual_model_call_counts": [
+          0,
+          0
+        ]
+      },
+      "canonical_unchanged": true,
+      "sqlite_connection_sidecar_changes": [
+        {
+          "path": ".registry_v1/registry.sqlite3-shm",
+          "before": null,
+          "after": {
+            "sha256": "fd4c9fda9cd3f9ae7c962b0ddf37232294d55580e1aa165aa06129b8549389eb",
+            "bytes": 32768
+          }
+        },
+        {
+          "path": ".registry_v1/registry.sqlite3-wal",
+          "before": null,
+          "after": {
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "bytes": 0
+          }
+        }
+      ]
+    }
+  ]
+}

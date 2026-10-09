@@ -1,0 +1,13 @@
+{
+  "main_commit": "715468dab0b1bea07d7e94a7aa0606eaf194365c",
+  "reader_patch_sha256": "f4726d7c1a230c8935b22310bb1d29f7c8e68342ef9b660cabb6430b8a3d4654",
+  "codec_patch_sha256": "3be0de65edb5a4f68579f115f5072bacc3e4fe4ffefeba96b226e45cbcab8a8d",
+  "patch_sha256": "c1d5665c4955b0c129cc7b0b89b456a55307597bd0febae0ea1f76290b089fcb",
+  "manifest_files": 21,
+  "manifest_hash_mismatches": [],
+  "apply_check": true,
+  "apply": true,
+  "full_applied_tree_equals_frozen_source": true,
+  "tree_differences": [],
+  "global_object_store_unchanged": true
+}

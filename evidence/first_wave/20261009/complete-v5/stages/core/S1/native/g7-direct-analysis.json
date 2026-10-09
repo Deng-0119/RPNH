@@ -1,0 +1,106 @@
+{
+  "classification": "DIRECT_RECORDED_EVIDENCE_ANALYSIS_NOT_NATIVE_PASS",
+  "native_gate_status": "FAIL",
+  "pending_replacement_before_settlement": [
+    {
+      "command_id": "native:replace",
+      "status": "DRAINING",
+      "candidate_ref": {
+        "entity_type": "resource_version/v1",
+        "logical_id": "resource:2a25b03c4d215545aa9436d986f9cdaa",
+        "version_id": "resource_version:24b3f6e287eb591e86c2fa29ef260ba2"
+      }
+    }
+  ],
+  "adoption_event_ordinal": 283,
+  "adopted_net_ref": {
+    "entity_type": "net_instance/v1",
+    "logical_id": "net_instance:d4df1b352bd95ca09fdcd39253e592ad",
+    "version_id": "net_instance_version:44874c6a649b5a509a217f73cdcdd5ad"
+  },
+  "superseded_net_ref": {
+    "entity_type": "net_instance/v1",
+    "logical_id": "net_instance:3895548d97d85c3f9d3d1386a095641d",
+    "version_id": "net_instance_version:622b6c43b8b658aa88ba72b86f021f17"
+  },
+  "terminal_producing_net_ref": {
+    "entity_type": "net_instance/v1",
+    "logical_id": "net_instance:3895548d97d85c3f9d3d1386a095641d",
+    "version_id": "net_instance_version:622b6c43b8b658aa88ba72b86f021f17"
+  },
+  "terminal_product_ref": {
+    "resource_id": {
+      "kind": "resource",
+      "value": "5821df8d2f295609ba35488e2eafc40f"
+    },
+    "resource_version_id": {
+      "kind": "resource_version",
+      "value": "79471a56c5fd5c2289169f325710c07d"
+    }
+  },
+  "run_terminal_evidence_count": 0,
+  "token_mapping_count": 3,
+  "lease_mapping_checks": [
+    {
+      "place": "step.static",
+      "old_token_ref": {
+        "entity_type": "petri_token/v1",
+        "entity_id": {
+          "kind": "petri_token",
+          "value": "421e2944425055f6a74fbb4527241b8e"
+        },
+        "version_id": {
+          "kind": "petri_token_version",
+          "value": "f3a8fbd7c5505998b8a74e81801354b9"
+        }
+      },
+      "new_token_ref": {
+        "entity_type": "petri_token/v1",
+        "entity_id": {
+          "kind": "petri_token",
+          "value": "d81edef4913d430ca46ba1653e42d104"
+        },
+        "version_id": {
+          "kind": "petri_token_version",
+          "value": "401e165c07474dc99fd64a91e06e37c1"
+        }
+      },
+      "exact_adoption_mapping": true,
+      "identity_preserved": true,
+      "resource_preserved": true
+    },
+    {
+      "place": "step.variable",
+      "old_token_ref": {
+        "entity_type": "petri_token/v1",
+        "entity_id": {
+          "kind": "petri_token",
+          "value": "6c361a2b4ddc57c0af80d23499c757d1"
+        },
+        "version_id": {
+          "kind": "petri_token_version",
+          "value": "29afa0920d5e5f749c2f74364cdbce4e"
+        }
+      },
+      "new_token_ref": {
+        "entity_type": "petri_token/v1",
+        "entity_id": {
+          "kind": "petri_token",
+          "value": "d88c789a7443421bb8b841e9cd29946b"
+        },
+        "version_id": {
+          "kind": "petri_token_version",
+          "value": "fd649df0789b4b39a7c802a89149ec71"
+        }
+      },
+      "exact_adoption_mapping": true,
+      "identity_preserved": true,
+      "resource_preserved": true
+    }
+  ],
+  "ordinary_retirements": [],
+  "terminal_binding_unchanged": true,
+  "cause": "Native Harness calls terminal after RunOwner.succeed automatically adopts the pending replacement; exact producing-firing provenance is still bound to the superseded net, and terminal material rejects current-net mismatch.",
+  "causal_scope": "Observed supported original replacement/terminal workflow on exact 1f191645 + S1. No baseline comparison; not attributed specifically to S1 code changes.",
+  "observer_limitation": "Post-completion AF_UNIX snapshot returned ERROR; probe assertion masked the caught completion error. Original a002 records ResourceIntegrityFault; this independent read-only inspection supplies current exact provenance and a full direct traceback. No additional native pass claimed."
+}

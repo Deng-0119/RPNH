@@ -1,0 +1,40 @@
+{
+  "delivery_revision": 2,
+  "tested_base": "715468dab0b1bea07d7e94a7aa0606eaf194365c",
+  "final_author_suite": {
+    "total": 150,
+    "passed": 150,
+    "failed": 0,
+    "skipped": 0,
+    "deselected": 0,
+    "pure_compiler_schema": 141,
+    "real_registry_step": 9
+  },
+  "registry_case_breakdown": {
+    "three_mappings_times_complete_failed": 6,
+    "historical_empty_config_stays_running": 1,
+    "provisional_unsettled_no_terminal": 1,
+    "owner_stop_no_terminal": 1
+  },
+  "earlier_targeted_suite": {
+    "total": 16,
+    "compiler": 7,
+    "real_registry_step": 9,
+    "subset_of_final_suite": true
+  },
+  "independent_successor_suite": {
+    "pure_compiler": 33,
+    "real_registry_step": 3,
+    "reported_separately": true
+  },
+  "independent_old_candidate_negative_checks": 6,
+  "native_transport": false,
+  "physical_outcome_unknown_persisted_record_tested": false,
+  "model_calls": 0,
+  "actions": false,
+  "remote_write": false,
+  "old_archive_and_source_preserved": true,
+  "final_remote_head_observed": "d92ff3704b6002bf5ecbccb3e6a3d1489809a805",
+  "final_remote_head_retested": false,
+  "integration_gate": "Run the same suite on actual latest main, which changed native reader after this tested source was frozen."
+}

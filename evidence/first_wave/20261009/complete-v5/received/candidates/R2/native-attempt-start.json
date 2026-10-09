@@ -1,0 +1,1 @@
+{"start_utc":"2026-10-08T17:15:51Z","command":"python -m pytest -q examples/rsi_workflows/tests/test_runtime.py::test_original_orchestrator_owns_multiround_execution[1-0-False-3-0] -o junit_family=xunit1 --junitxml=../native-attempt.xml"}

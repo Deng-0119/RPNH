@@ -1,0 +1,69 @@
+...................................F.                                    [100%]
+=================================== FAILURES ===================================
+________ test_codex_frontend_uses_external_socket_for_absent_long_root _________
+
+tmp_path = PosixPath('[PYTEST_TMP]/pytest-44/test_codex_frontend_uses_exter0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7fc8978ac650>
+
+    def test_codex_frontend_uses_external_socket_for_absent_long_root(
+            tmp_path, monkeypatch,
+    ):
+        execution = _local_profile(tmp_path / "profiles")
+        root = tmp_path / ("long-session-segment-" + "x" * 80)
+        direct = root / "codex-app-server.sock"
+        assert len(str(direct).encode()) >= 108
+        monkeypatch.setattr(
+            frontend, "resolve_codex_binary", lambda _binary: "/bin/true")
+    
+>       result = asyncio.run(frontend._run_codex_frontend_async(
+            root, execution, codex_binary="ignored"))
+
+tests/test_frontend_boundary.py:210: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+[PYTHON_RUNTIME]/lib/python3.12/asyncio/runners.py:195: in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+[PYTHON_RUNTIME]/lib/python3.12/asyncio/runners.py:118: in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[PYTHON_RUNTIME]/lib/python3.12/asyncio/base_events.py:691: in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+cpn/frontend/codex_app_server.py:1417: in _run_codex_frontend_async
+    async with websockets.unix_serve(server.handle, address):
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[PYTHON_ENV]/lib/python3.12/site-packages/websockets/asyncio/server.py:813: in __aenter__
+    return await self
+           ^^^^^^^^^^
+[PYTHON_ENV]/lib/python3.12/site-packages/websockets/asyncio/server.py:831: in __await_impl__
+    server = await self.create_server
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+[PYTHON_RUNTIME]/lib/python3.12/asyncio/unix_events.py:304: in create_unix_server
+    sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <socket.socket fd=-1, family=0, type=0, proto=0>
+family = <AddressFamily.AF_UNIX: 1>, type = <SocketKind.SOCK_STREAM: 1>
+proto = 0, fileno = None
+
+    def __init__(self, family=-1, type=-1, proto=-1, fileno=None):
+        # For user code address family and type values are IntEnum members, but
+        # for the underlying _socket.socket they're just integers. The
+        # constructor of _socket.socket converts the given argument to an
+        # integer automatically.
+        if fileno is None:
+            if family == -1:
+                family = AF_INET
+            if type == -1:
+                type = SOCK_STREAM
+            if proto == -1:
+                proto = 0
+>       _socket.socket.__init__(self, family, type, proto, fileno)
+E       PermissionError: [Errno 1] Operation not permitted
+
+[PYTHON_RUNTIME]/lib/python3.12/socket.py:233: PermissionError
+- generated xml file: [WORKSPACE]/rpnh-codex-contract-fix/existing-tests.xml -
+=========================== short test summary info ============================
+FAILED tests/test_frontend_boundary.py::test_codex_frontend_uses_external_socket_for_absent_long_root
+1 failed, 36 passed in 4.78s

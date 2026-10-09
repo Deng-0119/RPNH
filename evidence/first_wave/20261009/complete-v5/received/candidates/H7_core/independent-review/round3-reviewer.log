@@ -1,0 +1,54 @@
+......F.............F..........                                          [100%]
+=================================== FAILURES ===================================
+________ test_bound_first_business_start_after_durable_stop_is_rejected ________
+rpnh-parent-child-core-boundary-review/round3-source/cpn/rpnh/registry/_resource_service/references.py:1089: in _revalidate_invocation
+    InvocationLifecycle(self._ResourceServiceKernel__core).revalidate_io(context, boundary=boundary)
+rpnh-parent-child-core-boundary-review/round3-source/cpn/rpnh/registry/invocations.py:388: in revalidate_io
+    return implementation(self, context, boundary=boundary)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+rpnh-parent-child-core-boundary-review/round3-source/cpn/rpnh/registry/_invocation/execution.py:36: in revalidate_io
+    assert_bound_integrity(lifecycle.service, for_execution=True)
+rpnh-parent-child-core-boundary-review/round3-source/cpn/rpnh/registry/parent_bound.py:191: in assert_bound_integrity
+    return bound_integrity_at(core.event_store,db,core.task_id,core.writer_epoch,
+rpnh-parent-child-core-boundary-review/round3-source/cpn/rpnh/registry/parent_bound.py:94: in bound_integrity_at
+    raise RegistryConflict('H7 bound execution authority is stopped, terminal, or foreign')
+E   cpn.rpnh.registry.event_store.RegistryConflict: H7 bound execution authority is stopped, terminal, or foreign
+
+The above exception was the direct cause of the following exception:
+rpnh-parent-child-core-boundary-review/tests/test_boundary_child.py:99: in test_bound_first_business_start_after_durable_stop_is_rejected
+    owner.start(admitted,command_id='review:start-after-stop')
+rpnh-parent-child-core-boundary-review/round3-source/cpn/rpnh/run.py:290: in start
+    return start_module_firing(
+rpnh-parent-child-core-boundary-review/round3-source/cpn/rpnh/registry/module_gateway.py:34: in start_module_firing
+    canonical = canonical_invocation(core, kernel, invocation_ref)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+rpnh-parent-child-core-boundary-review/round3-source/cpn/rpnh/registry/firing_authority.py:48: in canonical_invocation
+    kernel._revalidate_invocation(
+rpnh-parent-child-core-boundary-review/round3-source/cpn/rpnh/registry/resource_service.py:141: in _revalidate_invocation
+    return _references._revalidate_invocation(**locals())
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+rpnh-parent-child-core-boundary-review/round3-source/cpn/rpnh/registry/_resource_service/references.py:1093: in _revalidate_invocation
+    raise StaleInvocationContext(str(exc)) from exc
+E   cpn.rpnh.registry.errors.StaleInvocationContext: H7 bound execution authority is stopped, terminal, or foreign
+______________ test_intent_helper_replay_after_success_is_closed _______________
+rpnh-parent-child-core-boundary-review/tests/test_boundary_parent.py:62: in test_intent_helper_replay_after_success_is_closed
+    owner.succeed(outputs, command_id='review:success')
+rpnh-parent-child-core-boundary-review/round3-source/cpn/rpnh/run.py:328: in succeed
+    result = succeed_module_operation(self._core, kernel, repository, outputs,
+rpnh-parent-child-core-boundary-review/round3-source/cpn/rpnh/registry/firing_success.py:217: in succeed_module_operation
+    return _succeed_verified_module_operation(
+rpnh-parent-child-core-boundary-review/round3-source/cpn/rpnh/registry/firing_success.py:374: in _succeed_verified_module_operation
+    tx.commit()
+rpnh-parent-child-core-boundary-review/round3-source/cpn/rpnh/registry/transaction.py:387: in commit
+    result = self.event_store.publish_batch(
+rpnh-parent-child-core-boundary-review/round3-source/cpn/rpnh/registry/event_store.py:1879: in publish_batch
+    return commit.publish_batch(
+rpnh-parent-child-core-boundary-review/round3-source/cpn/rpnh/registry/_event_store/commit.py:495: in publish_batch
+    validate_parent_child_commit(event_store, db,
+rpnh-parent-child-core-boundary-review/round3-source/cpn/rpnh/registry/parent_child.py:449: in validate_parent_child_commit
+    raise ParentChildUnsupported('H7 native child observation/completion adapter is not wired')
+E   cpn.rpnh.registry.parent_child.ParentChildUnsupported: H7 native child observation/completion adapter is not wired
+=========================== short test summary info ============================
+FAILED rpnh-parent-child-core-boundary-review/tests/test_boundary_child.py::test_bound_first_business_start_after_durable_stop_is_rejected
+FAILED rpnh-parent-child-core-boundary-review/tests/test_boundary_parent.py::test_intent_helper_replay_after_success_is_closed
+2 failed, 29 passed in 76.88s (0:01:16)

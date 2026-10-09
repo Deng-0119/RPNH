@@ -1,0 +1,684 @@
+diff --git a/cpn/frontend/codex_app_server.py b/cpn/frontend/codex_app_server.py
+--- a/cpn/frontend/codex_app_server.py
++++ b/cpn/frontend/codex_app_server.py
+@@ -1,4 +1,4 @@
+-"""Codex CLI 0.155.0 TUI compatibility surface backed only by RPNH.
++"""Exact-profile Codex TUI compatibility surface backed only by RPNH.
+ 
+ The stock Codex TUI is a remote JSON-RPC client.  This module implements the
+ small current protocol slice required by that client over WebSocket frames on
+@@ -16,6 +16,7 @@
+ import subprocess
+ import tempfile
+ import time
++from types import MappingProxyType
+ from typing import Any, Callable, Mapping
+ from uuid import NAMESPACE_URL, uuid5
+ 
+@@ -38,6 +39,7 @@
+ from cpn.rpnh.unix_transport import unix_socket_address
+ from cpn.frontend.codex_history import (
+     HistoryCursor, INITIAL_VIEW, codex_thread_id, entry_anchor, page_limit, public_id,
++    object_item_anchor, object_item_cursor_id,
+ )
+ from cpn.rpnh.user_config import (
+     ExecutionProfile,
+@@ -48,14 +50,51 @@
+ )
+ 
+ 
+-CODEX_FRONTEND_VERSION = "0.155.0"
+-CODEX_CLI_VERSION_TEXT = f"codex-cli {CODEX_FRONTEND_VERSION}"
+ CODEX_DISABLED_FEATURES = ("goals", "personality", "plugins")
+ CODEX_CONFIG_OVERRIDES = ("check_for_update_on_startup=false",)
+ 
+ 
+ class CodexCompatibilityError(RuntimeError):
+     """The pinned frontend or protocol contract cannot be satisfied."""
++
++
++@dataclass(frozen=True, slots=True)
++class _CodexCompatibilityProfile:
++    name: str
++    version: str
++    reported_cli_version: str
++    object_item_cursor: bool
++    explicit_history_defaults: bool
++    status: str
++
++
++def _load_compatibility_profiles():
++    manifest = json.loads(Path(__file__).with_name(
++        "codex_compatibility.v1.json").read_text(encoding="utf-8"))
++    table = manifest["compatibility_profiles"]
++    profiles = MappingProxyType({
++        name: _CodexCompatibilityProfile(name=name, **fields)
++        for name, fields in table["profiles"].items()
++    })
++    default = profiles[table["default"]]
++    if (default.version != manifest["frontend"]["version"]
++            or default.reported_cli_version != manifest["frontend"]["reported_cli_version"]):
++        raise CodexCompatibilityError("Codex default profile and frontend pin differ")
++    return profiles, default
++
++
++_CODEX_PROFILES, _DEFAULT_CODEX_PROFILE = _load_compatibility_profiles()
++# Preserve the published default and existing caller constants.
++CODEX_FRONTEND_VERSION = _DEFAULT_CODEX_PROFILE.version
++CODEX_CLI_VERSION_TEXT = _DEFAULT_CODEX_PROFILE.reported_cli_version
++
++
++def _compatibility_profile(name: str | None = None) -> _CodexCompatibilityProfile:
++    if name is None:
++        return _DEFAULT_CODEX_PROFILE
++    if not isinstance(name, str) or name not in _CODEX_PROFILES:
++        raise CodexCompatibilityError("unknown Codex compatibility profile")
++    return _CODEX_PROFILES[name]
+ 
+ 
+ @dataclass(slots=True)
+@@ -152,9 +191,11 @@
+     def __init__(
+             self, root: Path, execution_config_path: Path, *,
+             profile_name: str | None = None,
++            compatibility_profile: str | None = None,
+             history_object_max_bytes: int | None = None,
+             history_response_max_bytes: int | None = None,
+     ) -> None:
++        self._compatibility_profile = _compatibility_profile(compatibility_profile)
+         for budget in (history_object_max_bytes, history_response_max_bytes):
+             if budget is not None and (type(budget) is not int or budget < 0):
+                 raise ValueError("history byte budget must be a nonnegative integer")
+@@ -225,6 +266,11 @@
+         except Exception:
+             self.close()
+             raise
++
++    @property
++    def compatibility_profile(self) -> _CodexCompatibilityProfile:
++        """Fixed at construction; client input cannot upgrade this profile."""
++        return self._compatibility_profile
+ 
+     @staticmethod
+     def _thread_state_path(root: Path) -> Path:
+@@ -583,7 +629,7 @@
+             "updatedAt": now,
+             "recencyAt": now,
+             "cwd": str(state.cwd),
+-            "cliVersion": CODEX_FRONTEND_VERSION,
++            "cliVersion": self.compatibility_profile.version,
+             "source": "appServer",
+             "status": status,
+             # Persisted history is hydrated through native fixed-cut pages.
+@@ -679,13 +725,18 @@
+             raise ValueError("history itemsView is invalid")
+         limit = page_limit(params.get("limit"))
+         token = params.get("cursor")
+-        cursor = None if token is None else HistoryCursor.decode(token)
++        requested_turn = params.get("turnId") if query == "items" else None
++        item_id = None
++        if isinstance(token, dict):
++            if query != "items" or not self.compatibility_profile.object_item_cursor:
++                raise ValueError("invalid history cursor")
++            item_id = object_item_cursor_id(token, requested_turn)
++        cursor = None if token is None or item_id is not None else HistoryCursor.decode(token)
+         if cursor is not None:
+             cursor.bind(thread_id=state.thread_id, query=query, order=order, items_view=view)
+         cut = self._history_cut(state) if cursor is None else cursor.cut
+         native = state.session.history_registry
+         turn_filter = None
+-        requested_turn = params.get("turnId") if query == "items" else None
+         # Ordinary pages are validated by the native page/hydration seams.
+         # Only filter resolution or a special initial edge needs an extra
+         # refs projection; do not eagerly replay all lineages one more time.
+@@ -697,10 +748,16 @@
+         if requested_turn is not None:
+             if not isinstance(requested_turn, str) or not requested_turn:
+                 raise ValueError("history turnId must identify a committed turn")
+-            turn_filter = next((turn.turn_ref for turn in projection.turns
+-                                if public_id(state.thread_id, turn.ordinal, "turn") == requested_turn), None)
+-            if turn_filter is None:
++            matches = [turn for turn in projection.turns
++                       if public_id(state.thread_id, turn.ordinal, "turn") == requested_turn]
++            if len(matches) != 1:
+                 raise ValueError("history turnId is not present at this cut")
++            turn_filter = matches[0].turn_ref
++            if item_id is not None:
++                # Object anchors are fresh queries. Capture above exactly once,
++                # then normalize into the existing native/string-cursor seam.
++                cursor = HistoryCursor(state.thread_id, cut, query, order, view, turn_filter,
++                    object_item_anchor(cut, matches[0], state.thread_id, item_id, order=order))
+         if cursor is not None and cursor.turn_filter != turn_filter:
+             raise ValueError("history cursor filter differs")
+         if cursor is not None and cursor.items_view == INITIAL_VIEW:
+@@ -730,7 +787,9 @@
+                              "startedAt": None, "completedAt": None, "durationMs": None})
+             else:
+                 item = self._history_items(state.thread_id, displays[entry.turn_ref])[entry.item_index]
+-                data.append({"turnId": turn_id, "item": item})
++                data.append({"turnId": turn_id, "item": item,
++                             **({"startedAtMs": None, "completedAtMs": None}
++                                if self.compatibility_profile.explicit_history_defaults else {})})
+         next_cursor = None if page.next_anchor is None else HistoryCursor(
+             state.thread_id, cut, query, order, view, turn_filter, page.next_anchor).encode()
+         reverse_order = "asc" if order == "desc" else "desc"
+@@ -1311,12 +1370,12 @@
+             client = params.get("clientInfo")
+             if (not isinstance(client, Mapping)
+                     or client.get("name") != "codex-tui"
+-                    or client.get("version") != CODEX_FRONTEND_VERSION):
++                    or client.get("version") != self.compatibility_profile.version):
+                 raise ValueError(
+                     "RPNH requires codex-tui "
+-                    f"{CODEX_FRONTEND_VERSION} exactly")
++                    f"{self.compatibility_profile.version} exactly")
+             await self._result(websocket, request_id, {
+-                "userAgent": f"rpnh/codex-compat-{CODEX_FRONTEND_VERSION}",
++                "userAgent": f"rpnh/codex-compat-{self.compatibility_profile.version}",
+                 "codexHome": str(self.root),
+                 "platformFamily": "unix",
+                 "platformOs": "linux",
+@@ -1409,6 +1468,8 @@
+             await self._history_result(websocket, request_id, state, {
+                 "thread": document,
+                 **cursors,
++                **({"collaborationMode": None, "disabledPluginIds": []}
++                   if self.compatibility_profile.explicit_history_defaults else {}),
+                 "model": state.model_id,
+                 "modelProvider": "rpnh",
+                 "cwd": str(state.cwd),
+@@ -1542,13 +1603,16 @@
+             await self._refresh_active_turn(None, state)
+ 
+ 
+-def resolve_codex_binary(value: str | None = None) -> str:
++def resolve_codex_binary(
++        value: str | None = None, *, compatibility_profile: str | None = None,
++) -> str:
++    profile = _compatibility_profile(compatibility_profile)
+     selected = value or os.environ.get("RPNH_CODEX_BIN") or "codex"
+     resolved = shutil.which(selected)
+     if resolved is None:
+         raise CodexCompatibilityError(
+             "Codex frontend is not installed; install "
+-            f"@openai/codex@{CODEX_FRONTEND_VERSION}")
++            f"@openai/codex@{profile.version}")
+     try:
+         completed = subprocess.run(
+             [resolved, "--version"], check=False, text=True,
+@@ -1556,9 +1620,9 @@
+     except subprocess.TimeoutExpired as exc:
+         raise CodexCompatibilityError("Codex version check timed out") from exc
+     reported = completed.stdout.strip()
+-    if completed.returncode != 0 or reported != CODEX_CLI_VERSION_TEXT:
++    if completed.returncode != 0 or reported != profile.reported_cli_version:
+         raise CodexCompatibilityError(
+-            f"RPNH requires {CODEX_CLI_VERSION_TEXT}; got "
++            f"RPNH requires {profile.reported_cli_version}; got "
+             f"{reported or completed.stderr.strip() or 'unknown'}")
+     return resolved
+ 
+@@ -1580,19 +1644,22 @@
+ async def _run_codex_frontend_async(
+         root: Path, execution_config_path: Path, *,
+         codex_binary: str | None = None, resume: bool = False,
++        compatibility_profile: str | None = None,
+ ) -> int:
+     try:
+         import websockets
+     except ImportError as exc:
+         raise CodexCompatibilityError(
+             "Codex frontend requires the Python `websockets` package") from exc
+-    binary = resolve_codex_binary(codex_binary)
++    profile = _compatibility_profile(compatibility_profile)
++    binary = (resolve_codex_binary(codex_binary) if compatibility_profile is None else
++              resolve_codex_binary(codex_binary, compatibility_profile=profile.name))
+     root = root.resolve()
+     if resume and not root.is_dir():
+         raise CodexCompatibilityError(
+             "RPNH Codex resume requires an existing session directory")
+     try:
+-        server = CodexAppServer(root, execution_config_path)
++        server = CodexAppServer(root, execution_config_path, compatibility_profile=profile.name)
+     except (OSError, RuntimeError, TypeError, ValueError) as exc:
+         raise CodexCompatibilityError(str(exc)) from exc
+     if resume and not server._threads:
+@@ -1620,10 +1687,11 @@
+ def run_codex_frontend(
+         root: Path, execution_config_path: Path, *,
+         codex_binary: str | None = None, resume: bool = False,
++        compatibility_profile: str | None = None,
+ ) -> int:
+     return asyncio.run(_run_codex_frontend_async(
+         root, execution_config_path, codex_binary=codex_binary,
+-        resume=resume))
++        resume=resume, compatibility_profile=compatibility_profile))
+ 
+ 
+ __all__ = (
+diff --git a/cpn/frontend/codex_compatibility.v1.json b/cpn/frontend/codex_compatibility.v1.json
+--- a/cpn/frontend/codex_compatibility.v1.json
++++ b/cpn/frontend/codex_compatibility.v1.json
+@@ -73,7 +73,7 @@
+     "Codex_backend_execution",
+     "Codex_owned_provider_credentials",
+     "direct_model_dispatch_by_the_frontend",
+-    "multi_version_compatibility"
++    "automatic_or_unbounded_multi_version_compatibility"
+   ],
+   "verification": {
+     "policy": "Validation results belong to fixed commits and CI artifacts, not static status claims.",
+@@ -81,7 +81,8 @@
+     "tests": [
+       "tests/test_codex_compat.py",
+       "tests/test_frontend_boundary.py",
+-      "tests/test_codex_history.py"
++      "tests/test_codex_history.py",
++      "tests/test_codex_0161_candidate.py"
+     ],
+     "live_provider_calls": false
+   },
+@@ -107,5 +108,25 @@
+     "wire_thread_id": "UUID rendering of the unchanged stable session identity",
+     "safe_items": "committed original user text and safe main decision text only",
+     "native_client_certification": "separate version-pinned runtime gate"
++  },
++  "compatibility_profiles": {
++    "default": "pinned-0.155.0",
++    "selection": "Explicit local keyword only. No environment, version-range, initialize-selected or automatic candidate selection.",
++    "profiles": {
++      "pinned-0.155.0": {
++        "version": "0.155.0",
++        "reported_cli_version": "codex-cli 0.155.0",
++        "object_item_cursor": false,
++        "explicit_history_defaults": false,
++        "status": "PINNED_PARTIAL_COMPATIBILITY"
++      },
++      "candidate-0.161.0": {
++        "version": "0.161.0",
++        "reported_cli_version": "codex-cli 0.161.0",
++        "object_item_cursor": true,
++        "explicit_history_defaults": true,
++        "status": "CANDIDATE_NATIVE_CERTIFICATION_PENDING"
++      }
++    }
+   }
+ }
+diff --git a/cpn/frontend/codex_history.py b/cpn/frontend/codex_history.py
+--- a/cpn/frontend/codex_history.py
++++ b/cpn/frontend/codex_history.py
+@@ -1,4 +1,4 @@
+-"""Bounded Codex 0.155 location cursors over native main-thread history.
++"""Bounded Codex location cursors over native main-thread history.
+ 
+ Cursors are not signed credentials or grants. The bound owner session is
+ rechecked separately, and every decoded native cut/position is revalidated.
+@@ -184,3 +184,23 @@
+         cut, query, order, turn_filter, entry.turn_ref,
+         entry.ordinal if query == "turns" else entry.turn_ordinal,
+         None if query == "turns" else entry.item_index, inclusive)
++
++
++def object_item_cursor_id(value: object, turn_id: object) -> str:
++    """Validate the 0.161 new-query anchor, not an opaque continuation."""
++    raw = _fields(value, {"type", "itemId"})
++    if raw["type"] != "item":
++        raise ValueError("invalid history cursor")
++    _text(turn_id)
++    return _text(raw["itemId"])
++
++
++def object_item_anchor(cut, turn, thread_id, item_id, *, order):
++    """Resolve only existing committed safe slots; no body read or new store."""
++    matches = [entry for entry in turn.items
++               if entry.item_index in (0, 1) and public_id(
++                   thread_id, turn.ordinal, ("user", "agent")[entry.item_index]) == item_id]
++    if len(matches) != 1:
++        raise ValueError("history itemId is not present in this committed turn")
++    return entry_anchor(cut, matches[0], query="items", order=order,
++                        turn_filter=turn.turn_ref, inclusive=False)
+diff --git a/docs/CODEX_0161_CANDIDATE.md b/docs/CODEX_0161_CANDIDATE.md
+new file mode 100644
+--- /dev/null
++++ b/docs/CODEX_0161_CANDIDATE.md
+@@ -0,0 +1,51 @@
++# Codex 0.161 protocol candidate
++
++This is a source/schema-qualified candidate, with native certification pending.
++The normal RPNH CLI and all existing callers keep the exact Codex 0.155.0 default.
++No installed client, Registry identity, runtime authority or product release is changed.
++
++The existing `cpn/frontend/codex_compatibility.v1.json` is the only capability table.
++Its `pinned-0.155.0` default and explicit `candidate-0.161.0` profile are selected
++by the optional `compatibility_profile` keyword on `CodexAppServer`,
++`resolve_codex_binary`, and `run_codex_frontend`. This is a controlled candidate
++gate entry, not a new ordinary CLI flag or an environment-based automatic upgrade.
++Unknown selectors, arbitrary version strings and mismatched CLI/initialize versions
++are rejected. The launcher verifies only the selected binary; it never installs,
++downloads, tries another client, or changes global configuration. A server holds
++one immutable profile; a client's self-reported version cannot select capabilities.
++
++The 0.161 profile supports the new `thread/items/list` object anchor
++`{"type":"item","itemId":"..."}` only with a bounded, nonempty `turnId`.
++The exact committed turn and one of its two existing safe slots must belong to
++one newly captured cut. The adapter uses a refs-only lookup and converts the
++position to the existing exclusive native anchor. Output continuation cursors
++remain the same `rpnh-history-v1` strings. Existing strings preserve their original
++cut and remain revalidatable across either exact profile at the same source/root.
++An object contains no old cut and therefore cannot inherit a previous resume cut.
++
++Each committed turn has exactly two safe items: original user text and the
++safe main-decision reply. After an exclusive object anchor at most one remains;
++`nextCursor` is null. A nonempty result has the existing reverse/inclusive string
++cursor. There are no new slots, cross-turn anchor searches, Registry stores,
++body readers, grants, aliases, or persistent cursor tables. Failed/pending/active,
++tool/child items, extra object fields and nonexistent IDs fail closed.
++
++0.161 history entries explicitly return `startedAtMs: null` and
++`completedAtMs: null`. Resume returns `collaborationMode: null` and
++`disabledPluginIds: []`. These represent absent timing/default-only mode/empty
++plugin scope; they are not fabricated historical facts or claims of Plan-mode
++or plugin-state restoration. Existing 0.155 wire output remains unchanged.
++Required live-notification integer timestamps are unchanged and cannot be omitted.
++
++The native handoff is separate. Use already installed, individually verified
++0.155 and 0.161 binaries against the same canonical synthetic cold/pending roots,
++sequentially. Missing versions are BLOCKED, never automatically installed.
++The 0.161 TUI may use viewport-sized initial item pages and dynamic metadata
++limits; check complete ID/cut/continuation coverage instead of requiring every
++item page to contain 100 or every metadata page to request 5. Stock history
++normally uses opaque strings; the additional object RPC probe must be labeled
++separately and never represented as a stock TUI request.
++
++Pure JSON/Registry tests and official Rust/TS source audits are not native-client
++certification, a Rust build, real-provider validation, or complete API coverage.
++The base composition and test/patch hashes belong to the separate handoff package.
+diff --git a/docs/CODEX_0161_CANDIDATE_ZH.md b/docs/CODEX_0161_CANDIDATE_ZH.md
+new file mode 100644
+--- /dev/null
++++ b/docs/CODEX_0161_CANDIDATE_ZH.md
+@@ -0,0 +1,15 @@
++# Codex 0.161 协议候选
++
++本增量是经源码/schema核对的候选，原生认证仍待完成。普通 RPNH CLI 与既有调用方保持精确 Codex 0.155.0 默认值；不更改安装客户端、Registry 身份、执行权限或产品发布状态。
++
++既有 `cpn/frontend/codex_compatibility.v1.json` 是唯一能力表。默认 `pinned-0.155.0` 与显式 `candidate-0.161.0` 由 `CodexAppServer`、`resolve_codex_binary`、`run_codex_frontend` 的可选 `compatibility_profile` keyword 选择。它是受控候选 gate 入口，不是普通 CLI 新参数，也不会经环境变量自动升级。未知 selector、任意 version 字符串和 CLI/initialize 版本不一致均拒绝。launcher 只核指定 binary，不下载、安装、寻找替代版本或改全局配置。server 持有单个不可变 profile，客户端自报版本不能选择能力。
++
++0.161 profile 为 `thread/items/list` 增加 object anchor `{"type":"item","itemId":"..."}`，必须带有界非空 `turnId`。精确 committed turn 与现有两个安全 slot 之一须属于同一个新捕获 cut。adapter 做 refs-only 定位后转入既有 exclusive native anchor，所有输出续页仍为既有 `rpnh-history-v1` string。旧 string 保持原 cut，在同 source/root 的两个精确 profile 下重开都重新校验。object 不含旧 cut，不能假装继承上次 resume 的 cut。
++
++每个 committed turn 恰有两个安全 item：原始用户文本和安全 main-decision 回复。exclusive object anchor 后最多剩一个，所以 `nextCursor` 为 null；非空结果仍有原 reverse/inclusive string cursor。不增加 slot、跨 turn 搜索、新 Registry/store、正文 reader、grant、身份别名或持久 cursor 表。failed/pending/active、tool/child item、多余 object 字段和不存在的 ID 均 fail closed。
++
++0.161 history entry 明确返回 `startedAtMs: null`、`completedAtMs: null`；resume 明确返回 `collaborationMode: null`、`disabledPluginIds: []`。它们表示未记录时间、default-only模式和空插件范围，不编造历史事实，不宣称恢复 Plan mode 或插件状态。0.155 wire 输出保持原样。live 通知既有必需整数时间戳不变，不能按历史 optional 规则省略。
++
++原生交接独立进行：用已经安装、分别核验的 0.155/0.161 binary，顺序打开同 canonical 合成 cold/pending roots。缺版记 BLOCKED，不自动安装。0.161 TUI 初始 item 页可能随 viewport 缩小，metadata 补页 limit 动态；验 ID/cut/continuation 全覆盖，不要求 item 每页100或 metadata 每页5。stock history 通常仍发 opaque string；额外 object RPC probe 必须单列，不能冒充 stock TUI 请求。
++
++纯 JSON/Registry 测试与官方 Rust/TS 源码审核不等于原生客户端认证、Rust 编译、真实 provider 验证或完整 API 覆盖。精确组合 base 与测试/补丁 hashes 另见交接包。
+diff --git a/tests/test_codex_0161_candidate.py b/tests/test_codex_0161_candidate.py
+new file mode 100644
+--- /dev/null
++++ b/tests/test_codex_0161_candidate.py
+@@ -0,0 +1,264 @@
++"""Exact 0.161 candidate JSON/Registry delta; no binary, socket or model execution."""
++from __future__ import annotations
++
++import asyncio
++from dataclasses import FrozenInstanceError
++import json
++from pathlib import Path
++from types import SimpleNamespace
++
++from jsonschema import Draft7Validator
++import pytest
++
++import cpn.frontend.codex_app_server as frontend
++from cpn.frontend.codex_history import HistoryCursor, public_id
++from cpn.rpnh.main_session import MainSession
++from test_codex_compat import _FakeWebSocket, _local_profile
++from test_codex_history import _append, _request, _walk
++
++CANDIDATE = "candidate-0.161.0"
++PINNED = "pinned-0.155.0"
++
++
++@pytest.fixture
++def candidate(tmp_path, monkeypatch):
++    execution = _local_profile(tmp_path / "profiles")
++    original = MainSession(tmp_path / "session", execution, task_control=object())
++    for ordinal in range(1, 5):
++        _append(original._main_thread, monkeypatch, ordinal,
++                outcome="running" if ordinal == 2 else "terminal", private=ordinal == 1)
++    server = frontend.CodexAppServer(original.root, execution, compatibility_profile=CANDIDATE)
++    state = next(iter(server._threads.values()))
++    socket = _FakeWebSocket([])
++    server._initialized_connections.add(id(socket))
++    yield server, state, socket, state.session._main_thread
++    server.close()
++
++
++def _object_request(owner, ordinal=3, kind="user", **params):
++    server, state, socket, _ = owner
++    return _request(server, state, socket, "thread/items/list",
++                    turnId=public_id(state.thread_id, ordinal, "turn"),
++                    cursor={"type": "item", "itemId": public_id(state.thread_id, ordinal, kind)}, **params)
++
++
++def test_manifest_is_single_exact_table_and_profiles_are_immutable(candidate, monkeypatch):
++    server, _, _, _ = candidate
++    manifest = json.loads(Path(frontend.__file__).with_name("codex_compatibility.v1.json").read_text())
++    table = manifest["compatibility_profiles"]
++    assert set(table["profiles"]) == {PINNED, CANDIDATE}
++    assert table["default"] == PINNED
++    assert frontend.CODEX_FRONTEND_VERSION == manifest["frontend"]["version"] == "0.155.0"
++    assert frontend.CODEX_CLI_VERSION_TEXT == "codex-cli 0.155.0"
++    assert server.compatibility_profile is frontend._compatibility_profile(CANDIDATE)
++    assert server.compatibility_profile.status == "CANDIDATE_NATIVE_CERTIFICATION_PENDING"
++    with pytest.raises(FrozenInstanceError):
++        server.compatibility_profile.version = "0.999.0"
++    with pytest.raises(AttributeError):
++        server.compatibility_profile = frontend._compatibility_profile(PINNED)
++    with pytest.raises(TypeError):
++        frontend._CODEX_PROFILES["candidate-0.999.0"] = server.compatibility_profile
++    monkeypatch.setenv("RPNH_CODEX_COMPATIBILITY_PROFILE", CANDIDATE)
++    assert frontend._compatibility_profile().version == "0.155.0"
++
++
++@pytest.mark.parametrize("bad", ["0.161.0", "candidate-0.162.0", "latest", "", True, [], {}, 161])
++def test_unknown_selector_rejected_before_binary_or_state_access(tmp_path, monkeypatch, bad):
++    monkeypatch.setattr(frontend.shutil, "which", lambda *_: pytest.fail("binary lookup attempted"))
++    with pytest.raises(frontend.CodexCompatibilityError, match="unknown Codex"):
++        frontend.resolve_codex_binary("synthetic", compatibility_profile=bad)
++    with pytest.raises(frontend.CodexCompatibilityError, match="unknown Codex"):
++        frontend.CodexAppServer(tmp_path / "absent", tmp_path / "missing.json", compatibility_profile=bad)
++    assert not (tmp_path / "absent").exists()
++
++
++@pytest.mark.parametrize("selector,reported,ok", [
++    (None, "codex-cli 0.155.0", True), (None, "codex-cli 0.161.0", False),
++    (PINNED, "codex-cli 0.155.0", True), (CANDIDATE, "codex-cli 0.161.0", True),
++    (CANDIDATE, "codex-cli 0.155.0", False), (CANDIDATE, "codex-cli 0.162.0", False),
++    (CANDIDATE, "codex-cli 0.161.0-alpha", False), (CANDIDATE, "0.161.0", False),
++])
++def test_resolver_checks_only_selected_binary_exact_version(monkeypatch, selector, reported, ok):
++    calls = []
++    monkeypatch.setattr(frontend.shutil, "which", lambda path: calls.append(("which", path)) or "/selected/codex")
++    def run(argv, **kwargs):
++        calls.append(("run", argv))
++        return SimpleNamespace(stdout=reported + "\n", stderr="", returncode=0)
++    monkeypatch.setattr(frontend.subprocess, "run", run)
++    if ok:
++        assert frontend.resolve_codex_binary("/requested/codex", compatibility_profile=selector) == "/selected/codex"
++    else:
++        with pytest.raises(frontend.CodexCompatibilityError, match="RPNH requires"):
++            frontend.resolve_codex_binary("/requested/codex", compatibility_profile=selector)
++    assert calls == [("which", "/requested/codex"), ("run", ["/selected/codex", "--version"])]
++
++
++@pytest.mark.parametrize("selector,version", [(None, "0.155.0"), (CANDIDATE, "0.161.0")])
++def test_launcher_binds_verified_profile_before_transport(tmp_path, monkeypatch, selector, version):
++    calls = []
++    monkeypatch.setattr(frontend.shutil, "which", lambda _: "/selected/codex")
++    monkeypatch.setattr(frontend.subprocess, "run", lambda *a, **kw:
++                        SimpleNamespace(stdout=f"codex-cli {version}", stderr="", returncode=0))
++    class StopBeforeTransport(Exception):
++        pass
++    def construct(root, execution, **kwargs):
++        calls.append(frontend._compatibility_profile(kwargs["compatibility_profile"]))
++        raise StopBeforeTransport
++    monkeypatch.setattr(frontend, "CodexAppServer", construct)
++    with pytest.raises(StopBeforeTransport):
++        asyncio.run(frontend._run_codex_frontend_async(tmp_path, tmp_path / "unused.json",
++                    codex_binary="/requested/codex", compatibility_profile=selector))
++    assert calls == [frontend._compatibility_profile(selector)]
++    assert calls[0].version == version
++
++
++@pytest.mark.parametrize("selector,version,wrong", [(PINNED, "0.155.0", "0.161.0"),
++                                                    (CANDIDATE, "0.161.0", "0.155.0")])
++def test_initialize_exact_profile_and_failed_handshake_has_no_history(tmp_path, selector, version, wrong):
++    execution = _local_profile(tmp_path / "profiles")
++    original = MainSession(tmp_path / "session", execution, task_control=object())
++    server = frontend.CodexAppServer(original.root, execution, compatibility_profile=selector)
++    try:
++        state = next(iter(server._threads.values()))
++        socket = _FakeWebSocket([
++            {"id": 1, "method": "initialize", "params": {"clientInfo": {"name": "codex-tui", "version": wrong}}},
++            {"method": "initialized", "params": {}},
++            {"id": 2, "method": "thread/items/list", "params": {"threadId": state.thread_id}},
++        ])
++        asyncio.run(server.handle(socket))
++        assert all("result" not in reply for reply in socket.sent)
++        assert server.compatibility_profile.version == version
++        good = _FakeWebSocket([])
++        asyncio.run(server._handle_request(good, 3, "initialize", {"clientInfo": {"name": "codex-tui", "version": version}}))
++        assert good.sent[0]["result"]["userAgent"] == f"rpnh/codex-compat-{version}"
++        assert server._thread_document(state)["cliVersion"] == version
++    finally:
++        server.close()
++
++
++def test_candidate_response_defaults_match_schema_without_invented_facts(candidate):
++    server, state, socket, _ = candidate
++    fixture = Path(__file__).parent / "fixtures/codex/0.161.0"
++    resume = _request(server, state, socket, "thread/resume")
++    assert resume["collaborationMode"] is None and resume["disabledPluginIds"] == []
++    assert resume["thread"]["cliVersion"] == "0.161.0"
++    Draft7Validator(json.loads((fixture / "ThreadResumeResponse.json").read_text())).validate(resume)
++    page = _object_request(candidate)
++    assert page["data"][0]["startedAtMs"] is None and page["data"][0]["completedAtMs"] is None
++    Draft7Validator(json.loads((fixture / "ThreadItemsListResponse.json").read_text())).validate(page)
++    assert "PRIVATE_" not in json.dumps(page)
++
++
++@pytest.mark.parametrize("order,kind,expected", [("asc", "user", "agent"), ("desc", "agent", "user"),
++                                                 ("asc", "agent", None), ("desc", "user", None)])
++@pytest.mark.parametrize("limit", [None, 0, 1, 100, 0xFFFFFFFF])
++def test_two_safe_slots_exclusive_boundaries_no_fake_next_page(candidate, order, kind, expected, limit):
++    server, state, socket, _ = candidate
++    page = _object_request(candidate, kind=kind, sortDirection=order, limit=limit)
++    assert page["nextCursor"] is None  # Exactly two slots: never manufacture a third item.
++    if expected is None:
++        assert page == {"data": [], "nextCursor": None, "backwardsCursor": None}
++    else:
++        assert len(page["data"]) == 1
++        assert page["data"][0]["item"]["id"] == public_id(state.thread_id, 3, expected)
++        token = page["backwardsCursor"]
++        decoded = HistoryCursor.decode(token)
++        assert decoded.anchor.inclusive and decoded.turn_filter == decoded.anchor.turn_ref
++        reverse = _request(server, state, socket, "thread/items/list", turnId=public_id(state.thread_id, 3, "turn"),
++                           cursor=token, sortDirection="desc" if order == "asc" else "asc")
++        assert reverse["data"][0] == page["data"][0]
++        assert all(e["turnId"] == public_id(state.thread_id, 3, "turn") for e in reverse["data"])
++
++
++@pytest.mark.parametrize("cursor,turn", [
++    ({"type": "item", "itemId": "x"}, None), ({"type": "item", "itemId": "x"}, ""),
++    ({"type": "item", "itemId": "x"}, True), ({"type": "item", "itemId": "x"}, []),
++    ({"type": "item", "itemId": "x"}, "x" * 257),
++    ({"type": "item", "itemId": ""}, "x"), ({"type": "item", "itemId": True}, "x"),
++    ({"type": "item", "itemId": 1}, "x"), ({"type": "item", "itemId": []}, "x"),
++    ({"type": "item", "itemId": "x" * 257}, "x"), ({"type": "other", "itemId": "x"}, "x"),
++    ({"itemId": "x"}, "x"), ({"type": "item"}, "x"),
++    ({"type": "item", "itemId": "x", "root": "/private"}, "x"),
++    ({"type": "item", "itemId": "x", "cut": {}}, "x"),
++    ({"type": "item", "itemId": "x", "order": "asc"}, "x"),
++    (True, "x"), ([], "x"), (1, "x"),
++])
++def test_bad_object_parser_rejects_before_cut_or_body(candidate, monkeypatch, cursor, turn):
++    server, state, socket, _ = candidate
++    monkeypatch.setattr(server, "_history_cut", lambda *_: pytest.fail("cut captured before validation"))
++    with pytest.raises(ValueError, match="invalid history cursor"):
++        _request(server, state, socket, "thread/items/list", cursor=cursor, turnId=turn)
++    assert not socket.sent
++
++
++@pytest.mark.parametrize("turn,kind,anchor_turn", [(2, "user", 2), (5, "user", 5), (3, "user", 4),
++                                                  (3, "tool", 3), (3, "unknown", 3)])
++def test_failed_pending_cross_turn_nonmember_rejected_without_hydration(candidate, monkeypatch, turn, kind, anchor_turn):
++    server, state, socket, service = candidate
++    accepted = service.accept_turn(thread_ref=service.capture_read_cut().thread_ref,
++        expected_ordinal=5, idempotency_key="pending5", user_input={"text": "PRIVATE_PENDING", "required_task_kind": None})
++    service.attach_attempt(thread_ref=accepted.thread_ref, turn_ref=accepted.turn_ref, idempotency_key="pending-attempt5")
++    monkeypatch.setattr(state.session, "display_history_at", lambda *a, **kw: pytest.fail("bad anchor read body"))
++    with pytest.raises(ValueError, match="not present"):
++        _request(server, state, socket, "thread/items/list", turnId=public_id(state.thread_id, turn, "turn"),
++                 cursor={"type": "item", "itemId": public_id(state.thread_id, anchor_turn, kind)})
++    assert not socket.sent
++
++
++def test_object_captures_once_after_old_resume_and_append_does_not_move_cut(candidate, monkeypatch):
++    server, state, socket, service = candidate
++    old = _request(server, state, socket, "thread/resume")
++    old_cut = HistoryCursor.decode(old["itemsBackwardsCursor"]).cut
++    _append(service, monkeypatch, 5)
++    capture = server._history_cut
++    calls = []
++    def capture_then_append(bound):
++        cut = capture(bound)
++        calls.append(cut)
++        _append(service, monkeypatch, 6)
++        return cut
++    monkeypatch.setattr(server, "_history_cut", capture_then_append)
++    page = _object_request(candidate, ordinal=5)
++    assert len(calls) == 1
++    token = page["backwardsCursor"]
++    assert HistoryCursor.decode(token).cut == calls[0] != old_cut
++    assert page["data"][0]["item"]["id"] == public_id(state.thread_id, 5, "agent")
++    monkeypatch.setattr(server, "_history_cut", lambda *_: pytest.fail("string recaptured head"))
++    assert len(_walk(server, state, socket, "items", cursor=old["itemsBackwardsCursor"], sortDirection="desc", limit=1)) == 6
++    assert len(_request(server, state, socket, "thread/items/list", turnId=public_id(state.thread_id, 5, "turn"),
++                        cursor=token, sortDirection="desc")["data"]) == 2
++
++
++def test_shared_string_cursor_and_ids_survive_same_root_reopen_across_profiles(candidate):
++    server, state, socket, _ = candidate
++    root, execution, thread_id = server.root, server.execution_config_path, state.thread_id
++    token = _object_request(candidate)["backwardsCursor"]
++    original = HistoryCursor.decode(token)
++    server.close()
++    for selector in (PINNED, CANDIDATE):
++        reopened = frontend.CodexAppServer(root, execution, compatibility_profile=selector)
++        try:
++            rebound = next(iter(reopened._threads.values()))
++            ws = _FakeWebSocket([])
++            reopened._initialized_connections.add(id(ws))
++            assert rebound.thread_id == thread_id
++            page = _request(reopened, rebound, ws, "thread/items/list", cursor=token,
++                            turnId=public_id(thread_id, 3, "turn"), sortDirection="desc")
++            assert [e["item"]["id"] for e in page["data"]] == [public_id(thread_id, 3, k) for k in ("agent", "user")]
++            assert HistoryCursor.decode(page["backwardsCursor"]).cut == original.cut
++            if selector == PINNED:
++                assert all(set(e) == {"turnId", "item"} for e in page["data"])
++                resume = _request(reopened, rebound, ws, "thread/resume")
++                assert "collaborationMode" not in resume and "disabledPluginIds" not in resume
++                with pytest.raises(ValueError):
++                    _object_request((reopened, rebound, ws, None))
++        finally:
++            reopened.close()
++
++
++def test_turns_query_and_extra_root_fields_stay_rejected(candidate):
++    server, state, socket, _ = candidate
++    for method, extra in [("thread/turns/list", {}), ("thread/items/list", {"root": "/private"})]:
++        with pytest.raises(ValueError):
++            _request(server, state, socket, method, cursor={"type": "item", "itemId": "x"}, **extra)
++    assert not socket.sent

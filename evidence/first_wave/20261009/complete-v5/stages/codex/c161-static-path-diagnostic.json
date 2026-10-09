@@ -1,0 +1,44 @@
+{
+  "discovered_git_root": {
+    "exit": 0,
+    "stdout": "<WORKSPACE>\n",
+    "stderr": ""
+  },
+  "original_apply": {
+    "exit": 0,
+    "stdout": "",
+    "stderr": "Skipped patch 'cpn/frontend/codex_app_server.py'.\nSkipped patch 'cpn/frontend/codex_compatibility.v1.json'.\nSkipped patch 'cpn/frontend/codex_history.py'.\nSkipped patch 'docs/CODEX_0161_CANDIDATE.md'.\nSkipped patch 'docs/CODEX_0161_CANDIDATE_ZH.md'.\nSkipped patch 'tests/test_codex_0161_candidate.py'.\n"
+  },
+  "files": [
+    {
+      "path": "cpn/frontend/codex_app_server.py",
+      "expected": "a07296fbc32e6529d3acf8d5e3e6a3c69ccacebda7faeb72a1ce02abd6995815",
+      "actual": "5826e5c0945d22b8063fe46d10b58d3a79f682d26ed50176a08f7588b6f843ff"
+    },
+    {
+      "path": "cpn/frontend/codex_compatibility.v1.json",
+      "expected": "a58032e59bc1a249bfdef526d77b6208486fbf9633d33e46cb0903d41a87f10e",
+      "actual": "e4295b4a4cae5e859566142d95b022d46b8459367bd8c19b28660d9b7c3b59f7"
+    },
+    {
+      "path": "cpn/frontend/codex_history.py",
+      "expected": "4b1cd88ed82651194271d8544a94eb2ffb8cb2b8b0f225703e777f0c6e3b23a6",
+      "actual": "bac9cdde5c9810dd29b0d1e0cf60a5952ac6e5715f9a61af9b35bcb1b238beba"
+    },
+    {
+      "path": "docs/CODEX_0161_CANDIDATE.md",
+      "expected": "2c32f278bb16770ec59881203bc7ac7fdfc144b6ec7a042f9fade83e507f574b",
+      "actual": null
+    },
+    {
+      "path": "docs/CODEX_0161_CANDIDATE_ZH.md",
+      "expected": "5e55020f78a1dfaad08605f2221dbbad89b72b61d86602ec31f4fe7ebf77b51f",
+      "actual": null
+    },
+    {
+      "path": "tests/test_codex_0161_candidate.py",
+      "expected": "ec9e4c78831a551925475853be343b08de32bff50d4f60641fc457543dbe4eea",
+      "actual": null
+    }
+  ]
+}

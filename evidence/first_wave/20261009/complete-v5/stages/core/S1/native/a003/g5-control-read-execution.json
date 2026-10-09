@@ -1,0 +1,59 @@
+{
+  "scene": "g5-control-read",
+  "node_id": "<WORKSPACE>/task-complete-v5-20261009/stages/core/S1/native/a003/test_native_s1.py::test_g5_coexistence[control-read]",
+  "command": [
+    "<WORKSPACE>/.p26/v/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "-p",
+    "no:cacheprovider",
+    "--confcutdir=<WORKSPACE>/task-complete-v5-20261009/stages/core/S1/native/a003",
+    "--rootdir=<WORKSPACE>/task-complete-v5-20261009/stages/core/S1/native/a003",
+    "--basetemp=<WORKSPACE>/.v26/unS1-a003-7",
+    "--junitxml=<WORKSPACE>/task-complete-v5-20261009/stages/core/S1/native/a003/g5-control-read.xml",
+    "<WORKSPACE>/task-complete-v5-20261009/stages/core/S1/native/a003/test_native_s1.py::test_g5_coexistence[control-read]"
+  ],
+  "cwd": "<WORKSPACE>/.v26/c1",
+  "started_utc": "2026-10-09T03:44:00.521065+00:00",
+  "resources_before": {
+    "utc": "2026-10-09T03:44:00.520795+00:00",
+    "windows_D_free_bytes": 54021922816,
+    "task_plus_v26_bytes": 5082980352,
+    "native_runtime_bytes": 121724928,
+    "memory_available_bytes": 15120404480,
+    "allowed": true
+  },
+  "env": {
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1",
+    "PYTEST_ADDOPTS": "",
+    "PYTHONPATH": "<WORKSPACE>/.v26/c1:<WORKSPACE>/.v26/c1/tests",
+    "TMPDIR": "<WORKSPACE>/.v26/unS1-a003-7",
+    "TMP": "<WORKSPACE>/.v26/unS1-a003-7",
+    "TEMP": "<WORKSPACE>/.v26/unS1-a003-7"
+  },
+  "pid": 20752,
+  "exit_code": 4,
+  "finished_utc": "2026-10-09T03:44:03.167824+00:00",
+  "interruption": null,
+  "status": "FAIL",
+  "junit": "<WORKSPACE>/task-complete-v5-20261009/stages/core/S1/native/a003/g5-control-read.xml",
+  "junit_cases": [
+    {
+      "name": "test_native_s1",
+      "outcome": "FAIL"
+    }
+  ],
+  "resources_after": {
+    "utc": "2026-10-09T03:44:03.800472+00:00",
+    "windows_D_free_bytes": 54021922816,
+    "task_plus_v26_bytes": 5082189824,
+    "native_runtime_bytes": 121724928,
+    "memory_available_bytes": 15120609280,
+    "allowed": true
+  },
+  "residual_sockets": [],
+  "process_reaped": true,
+  "evidence": []
+}

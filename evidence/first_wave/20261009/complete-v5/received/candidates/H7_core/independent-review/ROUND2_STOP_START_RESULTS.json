@@ -1,0 +1,16 @@
+{
+  "source": "/workspace/scratch/18c810e6dd59/rpnh-parent-child-core-boundary-review/round2-source",
+  "exit_status": 1,
+  "collected": [
+    "rpnh-parent-child-core-boundary-review/tests/test_boundary_child.py::test_bound_first_business_start_after_durable_stop_is_rejected"
+  ],
+  "outcomes": [
+    {
+      "nodeid": "rpnh-parent-child-core-boundary-review/tests/test_boundary_child.py::test_bound_first_business_start_after_durable_stop_is_rejected",
+      "when": "call",
+      "outcome": "failed",
+      "duration": 4.841024704001029
+    }
+  ],
+  "sentinel_blocked_events": []
+}

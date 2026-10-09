@@ -1,0 +1,39 @@
+{
+  "source_file": "/workspace/scratch/18c810e6dd59/rpnh-rsi-profile-fix/source/cpn/rpnh/iteration_profile.py",
+  "source_sha256": "87bae6a32c96c5902dec06dd69ce2da70df5dd76520c2f425a9fbf62772ead2f",
+  "schema_sha256": "684d0bb6f6bff7951189512549a578f5eb157f5e2b69d5cb3355e75872f03a7c",
+  "profile_without_terminal_outcomes": {
+    "schema_version": "rpnh/iteration_profile/v1",
+    "template": "propose_evaluate_select/v1",
+    "name": "BoundedIteration",
+    "rounds": 1,
+    "schemas": {
+      "state": "application/iteration_state/v1",
+      "candidate": "application/iteration_candidate/v1",
+      "evaluation_request": "application/iteration_evaluation_request/v1",
+      "evaluation": "application/iteration_evaluation/v1"
+    },
+    "roles": {
+      "proposer": {
+        "executor_key": "example/iteration_proposer/v1",
+        "model_profile_ref": null
+      },
+      "evaluator": {
+        "executor_key": "example/iteration_evaluator/v1",
+        "model_profile_ref": null
+      },
+      "selector": {
+        "executor_key": "example/iteration_selector/v1",
+        "model_profile_ref": null
+      }
+    },
+    "terminal_key": "example/iteration_terminal/v1",
+    "native_model_call_budget": {
+      "unit": "registered_model_call",
+      "maximum": 1
+    }
+  },
+  "canonical_module_sha256": "f5c3bac53c4b18ee7c42b7d8fdd946275775f89d5a31c51d9b58718cd9a2e66b",
+  "control_group_host_terminal_config": "closed empty object; required in original experiment",
+  "runtime_executed": false
+}

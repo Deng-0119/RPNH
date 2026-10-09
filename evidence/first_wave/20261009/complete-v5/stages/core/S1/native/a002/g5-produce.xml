@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="10.027" timestamp="2026-10-09T11:41:17.416276+08:00" hostname="DYK1"><testcase classname="test_native_s1" name="test_g5_coexistence[produce]" time="9.566"><failure message="AssertionError: assert PetriTokenAut...2ba7e0f': 1})) == PetriTokenAut...af177ec': 1}))&#10;  &#10;  Omitting 2 identical items, use -vv to show&#10;  Differing attributes:&#10;  ['published_at_head']&#10;  &#10;  Drill down into differing attribute published_at_head:&#10;    published_at_head: RegistryHead(ordinal=235, writer_fencing_epoch=2, task_control_sequence=18, stream_heads={'execution-children:transition_firing_version:5ca5b58f04e951ac806aa91022287695': 1, 'execution-children:transition_firing_version:ceb819f086105a6480a1c351a966d041': 1, 'firing-claims:net_instance_version:622b6c43b8b658aa88ba72b86f021f17': 4, 'invocation:invocation:8cd851fe6a805a2bad728b40099a824a': 2, 'invocation:invocation:...&#10;  &#10;  ...Full output truncated (85 lines hidden), use '-vv' to show">tmp_path = PosixPath('&lt;WORKSPACE&gt;/.v26/unS1-a002-5/test_g5_coexistence_produce_0')
+mode = 'produce'
+
+    @pytest.mark.parametrize('mode', ['union', 'produce', 'data-read', 'control-read'])
+    def test_g5_coexistence(tmp_path, mode):
+        owner = (_world(tmp_path / 'r', variable_mode='produce' if mode == 'produce' else 'read')
+                 if mode in ('union', 'produce') else lease_owner(tmp_path / 'r',
+                    ordinary_read=True, control_read=mode == 'control-read'))
+        before = current(owner)[2]
+        leases = _fresh_leases(before)
+        with Native(owner, 'g5-' + mode) as n:
+            assert len(n.harness.schedule_ready()) == 1
+            assert n.snapshot('live')['active'] == 1
+            net, structure, marking = current(owner)
+            local = TeamNetMarking.from_authority(structure, marking)
+            install_active_module_claims(owner._core, local, net.net_ref)
+            refs = local.claimed_operation_tokens('step.run', local.epoch)
+            assert len({t.token_ref for t in refs}) == len(refs)
+            if mode == 'union':
+                assert len(refs) == 2  # carrier + deduplicated static/variable lease
+            if mode.endswith('read'):
+                assert n.harness.schedule_ready() == ()
+            n.release(0)
+            n.snapshot('settled')
+            assert n.body_count == 1
+            after = current(owner)[2]
+            now = _fresh_leases(after)
+            if mode == 'produce':
+&gt;               assert now['step.static'] == leases['step.static']
+E               AssertionError: assert PetriTokenAut...2ba7e0f': 1})) == PetriTokenAut...af177ec': 1}))
+E                 
+E                 Omitting 2 identical items, use -vv to show
+E                 Differing attributes:
+E                 ['published_at_head']
+E                 
+E                 Drill down into differing attribute published_at_head:
+E                   published_at_head: RegistryHead(ordinal=235, writer_fencing_epoch=2, task_control_sequence=18, stream_heads={'execution-children:transition_firing_version:5ca5b58f04e951ac806aa91022287695': 1, 'execution-children:transition_firing_version:ceb819f086105a6480a1c351a966d041': 1, 'firing-claims:net_instance_version:622b6c43b8b658aa88ba72b86f021f17': 4, 'invocation:invocation:8cd851fe6a805a2bad728b40099a824a': 2, 'invocation:invocation:...
+E                 
+E                 ...Full output truncated (85 lines hidden), use '-vv' to show
+
+../../task-complete-v5-20261009/stages/core/S1/native/a002/test_native_s1.py:312: AssertionError</failure></testcase></testsuite></testsuites>

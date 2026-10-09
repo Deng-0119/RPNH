@@ -1,0 +1,21 @@
+{
+  "command": [
+    "<WORKSPACE>/.p26/v/bin/python",
+    "-c",
+    "import sys,platform,importlib.metadata as m,cpn; print(sys.version); print(platform.platform()); print(cpn.__file__); print({k:m.version(k) for k in (\"pytest\",\"jsonschema\",\"websockets\",\"packaging\")})"
+  ],
+  "cwd": "<WORKSPACE>/.v26/x3",
+  "pid": 14268,
+  "started_at_utc": "2026-10-09T01:20:06.630608+00:00",
+  "finished_at_utc": "2026-10-09T01:20:06.715413+00:00",
+  "elapsed_seconds": 0.08482482899853494,
+  "exit_code": 0,
+  "environment": {
+    "PYTHONPATH": "<WORKSPACE>/.v26/x3",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1",
+    "TMPDIR": "<WORKSPACE>/.v26/tmp",
+    "PYTEST_ADDOPTS": null,
+    "PYTEST_PLUGINS": null
+  }
+}

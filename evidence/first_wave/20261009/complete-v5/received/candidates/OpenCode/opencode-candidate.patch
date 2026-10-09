@@ -1,0 +1,1964 @@
+--- a/cpn/frontend/opencode_compatibility.v1.json
++++ b/cpn/frontend/opencode_compatibility.v1.json
+@@ -13,6 +13,28 @@
+             "packages/tui/src/component/prompt/index.tsx"
+         ]
+     },
++    "certification_candidates": [
++        {
++            "package_version": "1.18.35",
++            "commit": "53d1eabb61e21162157817bf677da0a4ad3332e3",
++            "status": "certification-only",
++            "production_enabled": false,
++            "contract_source_commit": "545f51d26cc39a907d2867492d498d9607ea5fa4",
++            "shared_contract_evidence": {
++                "kind": "complete-git-subtree-blob-equality",
++                "scope": "packages/sdk/js/src/",
++                "files_compared": 39,
++                "identical_blobs": 39,
++                "default_tree_url": "https://github.com/anomalyco/opencode/tree/545f51d26cc39a907d2867492d498d9607ea5fa4/packages/sdk/js/src",
++                "candidate_tree_url": "https://github.com/anomalyco/opencode/tree/53d1eabb61e21162157817bf677da0a4ad3332e3/packages/sdk/js/src",
++                "sdk_gen_blob": "a2bcd4252c6d8a185469dcda23a8cccc819218f0",
++                "types_gen_blob": "f06c20cc413e95c79f397a34d8d9d3e8871b6ab4",
++                "limits": "Source equality only; not compiled SDK validation or native certification."
++            },
++            "native_g2": "not-run",
++            "native_g3": "not-run"
++        }
++    ],
+     "permission": "unavailable",
+     "attachments": "unavailable",
+     "catalog": "all selectable RPNH profiles; exact provider/model remains RPNH-owned",
+--- a/cpn/frontend/opencode_launcher.py
++++ b/cpn/frontend/opencode_launcher.py
+@@ -13,7 +13,10 @@
+ 
+ from cpn.rpnh.frontend_application import FrontendGateway, RegistryFrontendApplication
+ from .opencode_http import OpenCodeHTTPServer
+-from .opencode_protocol import OPENCODE_VERSION, OpenCodeProtocol
++from .opencode_protocol import (
++    DEFAULT_PROFILE, OPENCODE_VERSION, OpenCodeCompatibilityProfile,
++    OpenCodeProtocol, require_opencode_profile,
++)
+ 
+ 
+ def isolated_environment(root: Path, inherited: Mapping[str, str]) -> dict[str, str]:
+@@ -38,7 +41,9 @@
+     return env
+ 
+ 
+-def check_version(binary: str, env: Mapping[str, str], cwd: Path) -> None:
++def check_version(binary: str, env: Mapping[str, str], cwd: Path, *,
++                  profile: OpenCodeCompatibilityProfile = DEFAULT_PROFILE) -> None:
++    require_opencode_profile(profile)
+     try:
+         result = subprocess.run([binary, "--version"], env=dict(env), cwd=cwd,
+                                 stdin=subprocess.DEVNULL, capture_output=True, text=True,
+@@ -46,8 +51,8 @@
+     except subprocess.TimeoutExpired:
+         raise RuntimeError("OpenCode version probe timed out") from None
+     value = result.stdout.strip()
+-    if result.returncode != 0 or not re.fullmatch(r"(?:opencode\s+)?" + re.escape(OPENCODE_VERSION), value):
+-        raise RuntimeError(f"RPNH requires exactly OpenCode {OPENCODE_VERSION}; version probe was rejected")
++    if result.returncode != 0 or not re.fullmatch(r"(?:opencode[ \t]+)?" + re.escape(profile.version), value):
++        raise RuntimeError(f"RPNH requires exactly OpenCode {profile.version}; version probe was rejected")
+ 
+ 
+ def run_opencode_frontend(root: Path, execution: Path, *, resume: bool = False) -> int:
+@@ -61,13 +66,15 @@
+         scratch = Path(name)
+         env = isolated_environment(scratch, os.environ)
+         display = scratch / "display"
+-        check_version(binary, env, display)  # Fail before constructing any RPNH owner.
++        # Production never resolves a certification candidate from CLI or env.
++        profile = DEFAULT_PROFILE
++        check_version(binary, env, display, profile=profile)  # Before any owner.
+         holder: list[OpenCodeProtocol] = []
+         gateway = FrontendGateway(lambda: RegistryFrontendApplication(root, execution, resume=resume),
+                                   on_change=lambda: holder[0].notify() if holder else None)
+         server = None
+         try:
+-            protocol = OpenCodeProtocol(gateway, str(display))
++            protocol = OpenCodeProtocol(gateway, str(display), profile=profile)
+             holder.append(protocol)
+             server = OpenCodeHTTPServer(protocol)
+             server.start()
+--- a/cpn/frontend/opencode_protocol.py
++++ b/cpn/frontend/opencode_protocol.py
+@@ -4,6 +4,7 @@
+ from collections import defaultdict, deque
+ from dataclasses import dataclass, field
+ import json
++from pathlib import Path
+ import re
+ import threading
+ import time
+@@ -13,8 +14,77 @@
+ 
+ from cpn.rpnh.frontend_application import FrontendError, canonical, request_identity, stable_id
+ 
+-OPENCODE_VERSION = "1.18.32"
+-OPENCODE_COMMIT = "545f51d26cc39a907d2867492d498d9607ea5fa4"
++@dataclass(frozen=True)
++class OpenCodeCompatibilityProfile:
++    """An exact presentation target, not a declaration of native certification."""
++
++    version: str
++    commit: str
++    certification_only: bool
++
++
++def _load_opencode_profiles() -> tuple[OpenCodeCompatibilityProfile, ...]:
++    # This packaged manifest is the only version/commit source. No environment,
++    # user config, binary output, or caller-provided manifest changes the set.
++    manifest = json.loads(Path(__file__).with_name(
++        "opencode_compatibility.v1.json").read_text(encoding="utf-8"))
++    if manifest.get("schema_version") != "rpnh/opencode_compatibility/v1":
++        raise ValueError("Unsupported OpenCode compatibility manifest")
++    upstream = manifest["upstream"]
++    profiles = [OpenCodeCompatibilityProfile(
++        upstream["package_version"], upstream["commit"], False)]
++    for candidate in manifest.get("certification_candidates", []):
++        if (candidate["status"] != "certification-only"
++                or candidate["production_enabled"] is not False
++                or candidate["contract_source_commit"] != upstream["commit"]
++                or candidate["native_g2"] != "not-run"
++                or candidate["native_g3"] != "not-run"):
++            raise ValueError("Invalid OpenCode certification-only metadata")
++        profiles.append(OpenCodeCompatibilityProfile(
++            candidate["package_version"], candidate["commit"], True))
++    for profile in profiles:
++        if (not isinstance(profile.version, str)
++                or re.fullmatch(r"[0-9]+\.[0-9]+\.[0-9]+", profile.version) is None
++                or not isinstance(profile.commit, str)
++                or re.fullmatch(r"[0-9a-f]{40}", profile.commit) is None):
++            raise ValueError("OpenCode profiles require exact versions and commits")
++    if len({profile.version for profile in profiles}) != len(profiles):
++        raise ValueError("Duplicate OpenCode compatibility version")
++    return tuple(profiles)
++
++
++_OPENCODE_PROFILES = _load_opencode_profiles()
++DEFAULT_PROFILE = _OPENCODE_PROFILES[0]
++# Backwards-compatible aliases retain the production pin; never monkeypatch
++# them to exercise a different client. Tests explicitly resolve a profile.
++OPENCODE_VERSION = DEFAULT_PROFILE.version
++OPENCODE_COMMIT = DEFAULT_PROFILE.commit
++
++
++def get_opencode_profile(
++        *, certification_version: str | None = None,
++) -> OpenCodeCompatibilityProfile:
++    if certification_version is None:
++        return DEFAULT_PROFILE
++    for profile in _OPENCODE_PROFILES[1:]:
++        if type(certification_version) is str and certification_version == profile.version:
++            return profile
++    raise ValueError("Unknown exact OpenCode certification candidate")
++
++
++def require_opencode_profile(
++        profile: OpenCodeCompatibilityProfile,
++) -> OpenCodeCompatibilityProfile:
++    """Reject forged/mixed targets before a process or application is touched."""
++    if (type(profile) is not OpenCodeCompatibilityProfile
++            or type(profile.certification_only) is not bool
++            or type(profile.version) is not str
++            or type(profile.commit) is not str
++            or profile not in _OPENCODE_PROFILES):
++        raise ValueError("Unregistered OpenCode compatibility profile")
++    return profile
++
++
+ COMMANDS = {
+     "rpnh-help": "RPNH controls and limitations",
+     "rpnh-tasks": "List independent RPNH tasks/workflows",
+@@ -44,7 +114,9 @@
+ class OpenCodeProtocol:
+     """Exact active-model projection and a fail-closed HTTP route allowlist."""
+ 
+-    def __init__(self, gateway: Any, directory: str) -> None:
++    def __init__(self, gateway: Any, directory: str, *,
++                 profile: OpenCodeCompatibilityProfile = DEFAULT_PROFILE) -> None:
++        self._profile = require_opencode_profile(profile)
+         self.gateway, self.directory = gateway, directory
+         configuration = gateway.call("configuration")
+         if (not isinstance(configuration, Mapping)
+@@ -92,6 +164,10 @@
+         self._epoch = uuid4().hex
+         self._closed = False
+         self._observations: dict[str, deque[dict[str, Any]]] = defaultdict(lambda: deque(maxlen=20))
++
++    @property
++    def profile(self) -> OpenCodeCompatibilityProfile:
++        return self._profile
+ 
+     def notify(self) -> None:
+         with self._condition:
+@@ -209,7 +285,7 @@
+         first = view["turns"][0]["text"] if view["turns"] else "RPNH session"
+         selection = view["model"]["selection"]
+         return {"id": view["id"], "slug": view["id"], "projectID": "rpnh", "directory": self.directory,
+-                "title": first[:120], "agent": "rpnh", "version": OPENCODE_VERSION,
++                "title": first[:120], "agent": "rpnh", "version": self.profile.version,
+                 "model": {"providerID": "rpnh", "id": selection},
+                 "time": {"created": view["created"], "updated": view["updated"]},
+                 "metadata": {"rpnh_authority": "Registry", "rpnh_metrics": "unavailable",
+@@ -507,7 +583,7 @@
+         if path == "/global/event":
+             return Reply(200)  # The HTTP transport handles this as SSE.
+         if path in {"/global/health", "/health"}:
+-            return Reply(200, {"healthy": True, "version": OPENCODE_VERSION})
++            return Reply(200, {"healthy": True, "version": self.profile.version})
+         if path == "/experimental/capabilities":
+             return Reply(200, {"backgroundSubagents": False})
+         if path == "/path":
+--- a/docs/guides/opencode.md
++++ b/docs/guides/opencode.md
+@@ -6,7 +6,7 @@
+   audience: operator-and-developer
+   language: en
+   counterpart: opencode_ZH.md
+-  revision: "2026-09-29.2"
++  revision: "2026-10-08.1"
+   status: locally-validated-integration-candidate
+   upstream-version: "1.18.32"
+ ---
+@@ -171,6 +171,66 @@
+ URLs. Unknown outcomes, profile drift, missing owners and unsupported requests
+ are explicit errors; none asserts successful execution.
+ 
++## Explicit candidate certification (test-only)
++
++Production remains pinned to **1.18.32**. The manifest additionally records
++**1.18.35** (`53d1eabb61e21162157817bf677da0a4ad3332e3`) as
++`certification-only`, with production disabled and native G2/G3 `not-run`.
++There is no product CLI, environment-variable or config switch for the candidate.
++The exact immutable profile is explicitly shared by the test's binary probe and
++protocol instance. It changes declared version metadata only; DTOs, execution,
++Registry, provider/model ownership and Petri-net projection are unchanged.
++
++Run the candidate's pure G1 checks without a client, socket, PTY or provider:
++
++```bash
++python -m pytest -q tests/test_opencode_candidate_profiles.py
++```
++
++The packaged schema remains the reviewed source-extracted subset for 1.18.32.
++Both profiles share its DTO checks. Its health response has an old-version
++constant: candidate tests separately check the exact candidate version and bind
++only that version metadata for structural validation. This is not an unchanged
++old health-constant pass, official SDK compilation or stock-client acceptance.
++
++Only after separately authorizing native execution, using an already obtained
++trusted, unmodified Linux binary and preinstalled test dependencies:
++
++```bash
++python -m pytest -q tests/test_opencode_candidate_native.py \
++  --opencode-certify-version=1.18.35 \
++  --opencode-certify-binary=/absolute/path/to/opencode \
++  --opencode-certify-lane=contract
++# Run separately for the synthetic committed-Registry read smoke:
++python -m pytest -q tests/test_opencode_candidate_native.py \
++  --opencode-certify-version=1.18.35 \
++  --opencode-certify-binary=/absolute/path/to/opencode \
++  --opencode-certify-lane=registry-read
++```
++
++These are limited smoke scenarios, not complete G2/G3 certification. Without
++explicit options the candidate native cases do not run. Partial options,
++unsupported versions/platforms, missing binaries/dependencies, wrong probe
++output or a deselected requested lane fail rather than silently passing a skip.
++The gates never install, log in, contact a real model or accept a user Registry
++path. Record binary provenance separately: a local hash and version output alone
++do not prove an official release artifact. For the production control, repeat either explicit smoke command with
++`--opencode-certify-version=1.18.32` and the corresponding stock binary. Both
++exact targets are test-only selections; this does not alter the legacy pinned
++PTY test or the production launcher.
++
++G2 uses the original HTTP/SSE protocol and `ApplicationDouble`. G3 prepares two
++committed turns using the existing deterministic fake port, then measures the
++original `FrontendGateway`/`RegistryFrontendApplication` read path with zero new
++fake-port/model/submit/spawn effects. Preparation calls are reported separately.
++Normal gateway ticks and exclusive owner-lease acquire/release remain real.
++Read-only net checks use `/rpnh-net` and the existing projection/filter;
++`/rpnh-tasks` can reconcile links and is excluded from strict read-only measures.
++Picker coverage, forced SSE reconnect and long-history page boundaries remain
++uncovered by these smoke gates. Linux and WSL2 are separately measured targets;
++no native Windows or macOS support is added. Passing evidence never updates the
++manifest's certification state or promotes the default pin.
++
+ ## Verification and implementation map
+ 
+ ```bash
+--- a/docs/guides/opencode_ZH.md
++++ b/docs/guides/opencode_ZH.md
+@@ -6,7 +6,7 @@
+   audience: operator-and-developer
+   language: zh-CN
+   counterpart: opencode.md
+-  revision: "2026-09-29.2"
++  revision: "2026-10-08.1"
+   status: locally-validated-integration-candidate
+   upstream-version: "1.18.32"
+ ---
+@@ -93,6 +93,53 @@
+ 
+ 服务限制为 32 个连接、8 个 SSE 连接、256 KiB 请求体、128 个排队应用请求和 4 MiB 响应/快照。慢客户端合并接收当前投影，不累积无限 delta 队列。大历史可能超出 v1 展示上限并明确报错。诊断只记录有界 route 形状和状态，不保存问题正文、请求头或任意 URL。未知结果、profile 漂移、缺失 owner 和不支持的请求都不能被解释为执行成功。
+ 
++## 显式候选认证（仅测试）
++
++生产仍固定 **1.18.32**。同一 manifest 另登记 **1.18.35**
++（`53d1eabb61e21162157817bf677da0a4ad3332e3`）为 `certification-only`，
++production 禁用，native G2/G3 为 `not-run`。没有产品 CLI、环境变量或配置候选开关。
++测试显式把同一 immutable profile 传给 binary probe 和 protocol；只参数化所声明的
++版本 metadata，DTO、执行、Registry、provider/model 权威和 Petri-net 投影保持不变。
++
++无需客户端、socket、PTY 或 provider 的 G1 检查：
++
++```bash
++python -m pytest -q tests/test_opencode_candidate_profiles.py
++```
++
++包内 schema 仍为人工核对的 1.18.32 source-extracted 子集，两 profile 共享 DTO 验证。
++其中 health response 含旧版本 const；候选测试独立断言候选精确版本，只将此版本 metadata
++绑定后做结构验证。不把它说成通过未变的旧 health const、官方 SDK 编译或 stock client 验收。
++
++仅在另行授权 native 执行、已有可信且未修改的 Linux binary 和预置测试依赖之后：
++
++```bash
++python -m pytest -q tests/test_opencode_candidate_native.py \
++  --opencode-certify-version=1.18.35 \
++  --opencode-certify-binary=/absolute/path/to/opencode \
++  --opencode-certify-lane=contract
++# 合成已提交 Registry 的只读 smoke 单独运行：
++python -m pytest -q tests/test_opencode_candidate_native.py \
++  --opencode-certify-version=1.18.35 \
++  --opencode-certify-binary=/absolute/path/to/opencode \
++  --opencode-certify-lane=registry-read
++```
++
++这些是有限 smoke 场景，不是完整 G2/G3 认证。未显式选择时不运行候选 native 测试。
++缺参数、未知版本/平台、缺 binary/依赖、probe 不符或请求 lane 被过滤掉都会失败，不能 skip
++后默默全绿。入口不安装、不登录、不调用真实模型，也不接受用户 Registry 路径。
++本地 hash 与 version stdout 不足以证明官方发行物，须另记录 binary 来源。1.18.32 对照可将同一测试命令改为
++`--opencode-certify-version=1.18.32` 并提供对应 stock binary。两个精确版本均只在
++专用测试中选择，不改变既有 pinned PTY 测试、生产入口或默认 PATH/pin。
++
++G2 使用原 HTTP/SSE protocol 和 `ApplicationDouble`。G3 准备阶段用既有 deterministic
++fake port 产生两个 committed turn，再对原 `FrontendGateway`/`RegistryFrontendApplication`
++读取路径测量零新增 fake-port/model/submit/spawn effects，准备调用单列。保留正常 gateway
++tick 和独占 owner lease 获取/释放。只读网核对用 `/rpnh-net` 和原 projection/filter；
++`/rpnh-tasks` 可能 reconcile links，不作为严格只读测点。Picker、强制 SSE 重连、长历史
++页边界尚未由这组 smoke 覆盖。Linux 与 WSL2 分别实测，不增加原生 Windows/macOS 支持。
++测试证据不自动更新 manifest 认证状态，也不提升默认 pin。
++
+ ## 验证与代码定位
+ 
+ ```bash
+--- /dev/null
++++ b/tests/conftest.py
+@@ -0,0 +1,111 @@
++"""Explicit, test-only OpenCode candidate lane selection.
++
++No options changes the existing pinned PTY test's selection or behavior.
++"""
++from __future__ import annotations
++
++import pytest
++
++
++def pytest_addoption(parser):
++    group = parser.getgroup("opencode-certification")
++    group.addoption("--opencode-certify-version", default=None,
++                    help="Exact registered version; no production pin change")
++    group.addoption("--opencode-certify-binary", default=None,
++                    help="Absolute path to a pre-provisioned stock Linux ELF executable")
++    group.addoption("--opencode-certify-lane", default=None,
++                    choices=("contract", "registry-read"),
++                    help="Run one limited native smoke lane, never the full certification matrix")
++
++
++def pytest_configure(config):
++    config.addinivalue_line("markers", "opencode_candidate(lane): explicit native certification smoke")
++    values = [config.getoption("opencode_certify_" + suffix)
++              for suffix in ("version", "binary", "lane")]
++    if any(value is not None for value in values) and not all(values):
++        raise pytest.UsageError(
++            "BLOCKED: certification requires all three --opencode-certify- options")
++    config._opencode_candidate_request = tuple(values) if all(values) else None
++    config._opencode_candidate_completed = False
++
++
++@pytest.hookimpl(trylast=True)
++def pytest_collection_modifyitems(config, items):
++    request = config._opencode_candidate_request
++    if request is None:
++        for item in items:
++            if item.get_closest_marker("opencode_candidate"):
++                item.add_marker(pytest.mark.skip(reason="Native candidate lane not requested"))
++        return
++    lane = request[2]
++    chosen = [item for item in items
++              if item.get_closest_marker("opencode_candidate") is not None
++              and item.get_closest_marker("opencode_candidate").args == (lane,)]
++    if len(chosen) != 1:
++        raise pytest.UsageError(
++            "BLOCKED: explicitly requested lane must select exactly its one smoke test; "
++            "run tests/test_opencode_candidate_native.py without -k/-m exclusions")
++    # A certification invocation runs exactly this native scenario, even if the
++    # operator accidentally selected the whole repository. Never launch another
++    # native test, a PATH-selected binary, or unrelated work as a side effect.
++    removed = [item for item in items if item not in chosen]
++    items[:] = [item for item in items if item not in removed]
++    if removed:
++        config.hook.pytest_deselected(items=removed)
++
++
++@pytest.hookimpl(hookwrapper=True)
++def pytest_runtest_makereport(item, call):
++    outcome = yield
++    report = outcome.get_result()
++    if (item.config._opencode_candidate_request is not None
++            and item.get_closest_marker("opencode_candidate") is not None):
++        run = item.funcargs.get("opencode_candidate")
++        if report.failed or report.skipped:
++            item.config._opencode_candidate_completed = False
++            if report.skipped:
++                report.outcome = "failed"
++                report.longrepr = "BLOCKED: an explicitly requested native lane cannot pass by skipping"
++            if run is not None:
++                run.fail(call.excinfo.value if call.excinfo is not None else AssertionError())
++                # A teardown report can arrive after the yield-fixture finalizer
++                # has already written its evidence. Never leave a stale PASS.
++                run.write_evidence()
++            return
++        if report.when == "call" and report.passed:
++            if run is None or run.evidence["status"] != "passed-limited-smoke":
++                report.outcome = "failed"
++                report.longrepr = "BLOCKED: requested lane did not establish terminal smoke evidence"
++                item.config._opencode_candidate_completed = False
++                if run is not None:
++                    run.fail(AssertionError())
++                    run.write_evidence()
++            else:
++                item.config._opencode_candidate_completed = True
++
++
++def pytest_sessionfinish(session, exitstatus):
++    if (session.config._opencode_candidate_request is not None
++            and not session.config._opencode_candidate_completed and exitstatus == 0):
++        # --collect-only and a post-collection deselection are not evidence.
++        session.exitstatus = pytest.ExitCode.TESTS_FAILED
++
++
++@pytest.fixture
++def opencode_candidate(request, tmp_path):
++    from opencode_candidate_support import CandidateRun
++    selected = request.config._opencode_candidate_request
++    if selected is None:
++        pytest.skip("Native candidate lane not requested")
++    run = CandidateRun(tmp_path, *selected)
++    try:
++        run.prepare()
++        yield run
++    except BaseException as exc:
++        run.fail(exc)
++        raise
++    finally:
++        if run.evidence["status"] == "running":
++            run.fail(AssertionError("Scenario did not establish all smoke assertions"))
++        run.write_evidence()
++        request.node.user_properties.append(("opencode_evidence", str(run.evidence_path)))
+--- /dev/null
++++ b/tests/opencode_candidate_support.py
+@@ -0,0 +1,343 @@
++"""Test-only native smoke support. Importing this module executes no process.
++
++The upstream stock binary is executed only by an explicitly selected fixture.
++No provider, install, login, user Registry path or production candidate switch.
++"""
++from __future__ import annotations
++
++from collections import Counter
++import hashlib
++import importlib
++import json
++import os
++from pathlib import Path
++import platform
++import re
++import subprocess
++import sys
++import time
++
++
++OUTPUT_LIMIT = 131072
++BOOTSTRAP = {"/config/providers", "/provider", "/agent", "/config", "/path",
++             "/project/current", "/command"}
++UNIMPLEMENTED = ["picker selection/effort matrix", "forced SSE reconnect/retry",
++                 "failure/abort presentation", "simultaneous session isolation",
++                 "long-history pagination", "active-worker recovery", "live providers",
++                 "upstream plugins/tools", "OS-enforced outbound-network isolation"]
++
++
++def sha256_file(path):
++    digest = hashlib.sha256()
++    with Path(path).open("rb") as stream:
++        for chunk in iter(lambda: stream.read(1024 * 1024), b""):
++            digest.update(chunk)
++    return digest.hexdigest()
++
++
++def json_digest(value):
++    return hashlib.sha256(json.dumps(value, sort_keys=True, ensure_ascii=True,
++                                    separators=(",", ":")).encode()).hexdigest()
++
++
++def validate_binary(path):
++    """Pure filesystem preflight; no PATH fallback, shebang, or execution."""
++    supplied = Path(path)
++    if not supplied.is_absolute():
++        raise RuntimeError("BLOCKED: --opencode-certify-binary must be absolute")
++    try:
++        resolved = supplied.resolve(strict=True)
++    except (OSError, RuntimeError):
++        raise RuntimeError("BLOCKED: requested stock binary is missing or unreadable") from None
++    if not resolved.is_file() or not os.access(resolved, os.X_OK):
++        raise RuntimeError("BLOCKED: stock binary must be a readable executable file")
++    with resolved.open("rb") as stream:
++        if stream.read(4) != b"\x7fELF":
++            raise RuntimeError("BLOCKED: provide the actual stock Linux ELF binary, not a wrapper")
++    return resolved
++
++
++def terminal_text(raw):
++    """Bounded diagnostic text, not a terminal emulator or screenshot."""
++    text = raw.decode("utf-8", "replace")
++    text = re.sub(r"\x1b\][^\x07]*(?:\x07|\x1b\\)", "", text)
++    text = re.sub(r"\x1b\[[0-?]*[ -/]*[@-~]", "", text)
++    text = re.sub(r"\x1b[ -/]*[@-~]", "", text)
++    return "".join(c for c in text if c in "\n\r\t" or ord(c) >= 32)
++
++
++def select_profile(version):
++    from cpn.frontend.opencode_protocol import DEFAULT_PROFILE, get_opencode_profile
++    if type(version) is not str:
++        raise ValueError("Gate version must be an exact registered string")
++    return (DEFAULT_PROFILE if type(version) is str and version == DEFAULT_PROFILE.version
++            else get_opencode_profile(certification_version=version))
++
++
++def valid_probe_stdout(raw, version):
++    return (len(raw) <= 4096 and re.fullmatch(
++        r"(?:opencode[ \t]+)?" + re.escape(version),
++        raw.decode("utf-8", "replace").strip()) is not None)
++
++
++class CandidateRun:
++    def __init__(self, root, version, binary, lane):
++        self.root = root
++        self.version, self.binary, self.lane = version, binary, lane
++        self.evidence_path = root / ("opencode-" + lane + "-evidence.json")
++        self.secrets = [str(root)]
++        self.evidence = {
++            "schema": "rpnh/opencode-native-smoke/v1", "status": "not-run",
++            "requested_version": version, "lane": lane,
++            "backend": "ApplicationDouble" if lane == "contract" else "RegistryFrontendApplication",
++            "scope": "limited smoke only; not the complete G2/G3 design",
++            "unimplemented": UNIMPLEMENTED,
++            "network_isolation": "isolated client config/environment; no OS network guarantee",
++            "stock_provenance": "caller-provisioned ELF; official release digest not independently verified",
++            "scenarios": [], "terminal": [], "routes": [],
++        }
++
++    def sanitize(self, value):
++        text = json.dumps(value, ensure_ascii=True, default=str)
++        # Both the password and HTTP Basic token are registered before any attach.
++        for secret in sorted(set(self.secrets), key=len, reverse=True):
++            if secret:
++                text = text.replace(secret, "<REDACTED>")
++        return json.loads(text)
++
++    def prepare(self):
++        self.evidence["status"] = "blocked"
++        if not sys.platform.startswith("linux"):
++            raise RuntimeError("BLOCKED: native smoke supports Linux/WSL2 only")
++        for name in ("pty", "fcntl", "termios", "jsonschema", "numpy", "scipy"):
++            try:
++                importlib.import_module(name)
++            except ImportError:
++                raise RuntimeError("BLOCKED: required preinstalled dependency missing: " + name) from None
++        from cpn.frontend.opencode_launcher import check_version, isolated_environment
++        from cpn.frontend.opencode_protocol import DEFAULT_PROFILE
++        self.profile = select_profile(self.version)
++        self.binary = validate_binary(self.binary)
++        self.evidence["binary_sha256"] = sha256_file(self.binary)
++        self.evidence["binary_file"] = self.binary.name
++        self.evidence["profile"] = {
++            "version": self.profile.version, "commit": self.profile.commit,
++            "certification_only": self.profile.certification_only,
++            "production_default": DEFAULT_PROFILE.version,
++        }
++        self.evidence["platform"] = {
++            "system": platform.system(), "release": platform.release(),
++            "architecture": platform.machine(), "libc": platform.libc_ver(),
++            "distribution": platform.freedesktop_os_release().get("PRETTY_NAME", "unknown"),
++            "wsl": "microsoft" in platform.release().lower(),
++            "term": "xterm-256color", "pty_rows": 36, "pty_columns": 120,
++        }
++        source = Path(__file__).resolve().parents[1]
++        # Require an actual checkout rather than claiming a nearby ancestor's SHA.
++        top = subprocess.run(["git", "-C", str(source), "rev-parse", "--show-toplevel"],
++                             capture_output=True, text=True, timeout=5, check=False)
++        if top.returncode or Path(top.stdout.strip()).resolve() != source:
++            raise RuntimeError("BLOCKED: native evidence requires an exact RPNH Git checkout")
++        revision = subprocess.run(["git", "-C", str(source), "rev-parse", "HEAD"],
++                                  capture_output=True, text=True, timeout=5, check=False)
++        if revision.returncode or not re.fullmatch(r"[0-9a-f]{40}\n?", revision.stdout):
++            raise RuntimeError("BLOCKED: cannot establish exact RPNH revision")
++        dirty = subprocess.run(["git", "-C", str(source), "status", "--porcelain"],
++                               capture_output=True, text=True, timeout=5, check=False)
++        if dirty.returncode:
++            raise RuntimeError("BLOCKED: cannot establish RPNH worktree state")
++        self.evidence["rpnh_revision"] = revision.stdout.strip()
++        self.evidence["rpnh_worktree_dirty"] = bool(dirty.stdout)
++        sources = {str(path.relative_to(source)): sha256_file(path)
++            for directory in (source / "cpn", source / "tests")
++            for path in sorted(directory.rglob("*"))
++            if path.is_file() and path.suffix in {".py", ".json"}}
++        self.evidence["source_tree_sha256"] = json_digest(sources)
++        self.evidence["source_file_count"] = len(sources)
++        self.evidence["gate_source_sha256"] = {name: value for name, value in sources.items()
++            if "opencode" in name or name == "tests/conftest.py"}
++        (self.root / "client").mkdir(mode=0o700)
++        self.env = isolated_environment(self.root / "client", {"PATH": os.defpath, "TERM": "xterm-256color"})
++        self.display = self.root / "client" / "display"
++        self.evidence["probe"] = {"status": "not-run"}
++        # Original strict version probe; never monkeypatch or bypass it.
++        check_version(str(self.binary), self.env, self.display, profile=self.profile)
++        self.evidence["probe"]["status"] = "passed"
++        # A second, independently bounded *stored* probe captures actual stdout.
++        # It must agree with the original check; no fake/wrapped version string.
++        capture = subprocess.run([str(self.binary), "--version"], env=self.env,
++            cwd=self.display, stdin=subprocess.DEVNULL, capture_output=True,
++            timeout=10, check=False)
++        self.evidence["probe"].update({"evidence_returncode": capture.returncode,
++            "stdout": capture.stdout[:4096].decode("utf-8", "replace"),
++            "stderr": capture.stderr[:4096].decode("utf-8", "replace"),
++            "truncated": len(capture.stdout) > 4096 or len(capture.stderr) > 4096})
++        if capture.returncode or not valid_probe_stdout(capture.stdout, self.profile.version):
++            raise RuntimeError("BLOCKED: evidence probe disagrees with exact profile")
++        self.assert_binary_unchanged()
++        self.evidence["status"] = "running"
++
++    def assert_binary_unchanged(self):
++        if sha256_file(self.binary) != self.evidence["binary_sha256"]:
++            raise RuntimeError("FAIL: binary changed between probe and attach")
++
++    def fail(self, exc):
++        if self.evidence["status"] == "passed-limited-smoke":
++            self.evidence["status"] = "failed"
++        elif self.evidence["status"] != "blocked":
++            self.evidence["status"] = "failed"
++        # Avoid arbitrary exception messages that may contain private paths/data.
++        self.evidence.setdefault("first_failure", {"type": type(exc).__name__,
++            "stage": self.evidence.get("stage", "preflight")})
++
++    def write_evidence(self):
++        self.evidence_path.write_text(json.dumps(self.sanitize(self.evidence),
++            ensure_ascii=True, indent=2) + "\n", encoding="utf-8")
++        self.evidence_path.chmod(0o600)
++
++    def passed(self):
++        self.assert_binary_unchanged()
++        self.evidence["status"] = "passed-limited-smoke"
++
++
++class NativePTY:
++    """Bounded real PTY, with all lifecycle failures propagated to the lane."""
++    def __init__(self, run, server, session_id, *, continue_last=False):
++        self.run, self.server = run, server
++        self.output = bytearray()
++        self.master = self.slave = -1
++        self.process = None
++        self.command = [str(run.binary), "attach", server.url, "--dir", str(run.display),
++                        "--username", "rpnh"]
++        self.command += ["--continue"] if continue_last else ["--session", session_id]
++        self.mode = "--continue" if continue_last else "--session"
++
++    def __enter__(self):
++        import base64
++        import fcntl
++        import pty
++        import struct
++        import termios
++        self.run.assert_binary_unchanged()
++        password = self.server.password
++        self.run.secrets.extend([password, base64.b64encode(("rpnh:" + password).encode()).decode()])
++        env = {**self.run.env, "OPENCODE_SERVER_USERNAME": "rpnh",
++               "OPENCODE_SERVER_PASSWORD": password}
++        try:
++            self.master, self.slave = pty.openpty()
++            fcntl.ioctl(self.slave, termios.TIOCSWINSZ, struct.pack("HHHH", 36, 120, 0, 0))
++            self.process = subprocess.Popen(self.command, cwd=self.run.display, env=env,
++                stdin=self.slave, stdout=self.slave, stderr=self.slave, start_new_session=True)
++            os.close(self.slave)
++            self.slave = -1
++            return self
++        except BaseException:
++            self.close()
++            raise
++
++    def poll(self, duration=0.1):
++        import select
++        ready, _, _ = select.select([self.master], [], [], duration)
++        if ready:
++            try:
++                data = os.read(self.master, 16384)
++            except OSError:
++                data = b""
++            if len(self.output) < OUTPUT_LIMIT:
++                self.output.extend(data[:OUTPUT_LIMIT - len(self.output)])
++        if self.process.poll() is not None:
++            raise AssertionError("Stock TUI exited before the smoke scenario completed")
++
++    def wait(self, condition, *, timeout=25, check=lambda: None):
++        deadline = time.monotonic() + timeout
++        while time.monotonic() < deadline:
++            self.poll()
++            check()
++            if condition():
++                return
++        raise AssertionError("Stock TUI smoke condition timed out")
++
++    def settle(self, duration=0.75, *, check=lambda: None):
++        deadline = time.monotonic() + duration
++        while time.monotonic() < deadline:
++            self.poll(min(0.1, max(0, deadline - time.monotonic())))
++            check()
++
++    def send_line(self, text, *, slash=False, check=lambda: None):
++        self.settle(check=check)
++        os.write(self.master, text.encode("utf-8"))
++        self.settle(0.35, check=check)
++        before = sum(d["method"] == "POST" and d["route"] == "/session/:session/command"
++                     for d in self.server.diagnostics())
++        os.write(self.master, b"\r")
++        if slash:
++            self.settle(1.0, check=check)
++            after = sum(d["method"] == "POST" and d["route"] == "/session/:session/command"
++                        for d in self.server.diagnostics())
++            if after == before:
++                os.write(self.master, b"\r")
++
++    def contains(self, text):
++        return text in terminal_text(bytes(self.output))
++
++    def close(self):
++        forced = False
++        try:
++            if self.process is not None and self.process.poll() is None:
++                self.process.terminate()  # Only the owned stock TUI, never a Registry worker.
++                try:
++                    self.process.wait(timeout=5)
++                except subprocess.TimeoutExpired:
++                    forced = True
++                    self.process.kill()
++                    self.process.wait(timeout=3)
++        finally:
++            for descriptor in (self.slave, self.master):
++                if descriptor >= 0:
++                    os.close(descriptor)
++            self.slave = self.master = -1
++            self.run.evidence["terminal"].append({"mode": self.mode,
++                "diagnostic_text": terminal_text(bytes(self.output)),
++                "captured_bytes": len(self.output), "capture_limit": OUTPUT_LIMIT,
++                "returncode": self.process.poll() if self.process else None,
++                "exit_method": "test-owned SIGTERM", "forced_kill": forced})
++        if forced:
++            raise AssertionError("Stock TUI required SIGKILL during bounded cleanup")
++
++    def __exit__(self, _kind, _value, _traceback):
++        self.close()
++
++
++def observed_bootstrap(server):
++    return BOOTSTRAP <= {d["route"] for d in server.diagnostics() if d["status"] == 200}
++
++
++def assert_routes(server, *, registry_read=False):
++    for row in server.diagnostics():
++        if row["status"] >= 400:
++            raise AssertionError("Unexpected stock request: " + json.dumps(row, sort_keys=True))
++        if registry_read and row["method"] not in {"GET", "HEAD"} and row["route"] != "/session/:session/command":
++            raise AssertionError("Unexpected write request in read lane: " + json.dumps(row, sort_keys=True))
++
++
++def close_server(run, server):
++    run.evidence["routes"].extend(server.diagnostics())
++    run.evidence["routes"] = run.evidence["routes"][-128:]
++    server.close()
++    assert server._server.socket.fileno() == -1
++    assert server._thread is None or not server._thread.is_alive()
++
++
++class EffectGuard:
++    def __init__(self):
++        self.calls = Counter()
++        self.observations = Counter()
++
++    def deny(self, name):
++        def blocked(*_args, **_kwargs):
++            self.calls[name] += 1
++            raise AssertionError("Forbidden measured effect: " + name)
++        return blocked
++
++    def assert_zero(self):
++        assert not self.calls, "Measured effect boundary was called: " + repr(dict(self.calls))
+--- /dev/null
++++ b/tests/test_opencode_candidate_gate_support.py
+@@ -0,0 +1,284 @@
++"""Pure opt-in/evidence guard regressions. Never execute a binary or native lane."""
++from __future__ import annotations
++
++import base64
++import json
++from pathlib import Path
++from types import SimpleNamespace as NS
++
++import pytest
++
++import conftest as gate
++from opencode_candidate_support import (
++    CandidateRun, EffectGuard, select_profile, terminal_text, valid_probe_stdout,
++    validate_binary,
++)
++
++
++class Config:
++    def __init__(self, *, version=None, binary=None, lane=None):
++        self.values = dict(version=version, binary=binary, lane=lane)
++        self.removed = []
++        self.hook = NS(pytest_deselected=lambda items: self.removed.extend(items))
++
++    def getoption(self, name):
++        return self.values[name.removeprefix("opencode_certify_")]
++
++    def addinivalue_line(self, *_args):
++        pass
++
++
++class Item:
++    def __init__(self, config, lane=None, name="test_opencode_candidate_native.py"):
++        self.config = config
++        self.marker = NS(args=(lane,)) if lane is not None else None
++        self.path = Path(name)
++        self.marks = []
++        self.funcargs = {}
++
++    def get_closest_marker(self, _name):
++        return self.marker
++
++    def add_marker(self, value):
++        self.marks.append(value)
++
++
++def configured(**options):
++    config = Config(**options)
++    gate.pytest_configure(config)
++    return config
++
++
++def explicit_config():
++    return configured(version="1.18.35", binary="/not-executed/opencode", lane="contract")
++
++
++def report_hook(item, report, exc=None):
++    call = NS(excinfo=NS(value=exc) if exc is not None else None)
++    generator = gate.pytest_runtest_makereport(item, call)
++    next(generator)
++    with pytest.raises(StopIteration):
++        generator.send(NS(get_result=lambda: report))
++
++
++@pytest.mark.parametrize("options", [
++    {"version": "1.18.35"}, {"binary": "/opencode"}, {"lane": "contract"},
++    {"version": "1.18.35", "binary": "/opencode"},
++    {"version": "", "binary": "/opencode", "lane": "contract"},
++])
++def test_partial_options_are_blocked(options):
++    with pytest.raises(pytest.UsageError, match="all three"):
++        configured(**options)
++
++
++def test_default_only_skips_new_candidates_and_preserves_original_selection():
++    config = configured()
++    candidate = Item(config, "contract")
++    original = Item(config, name="test_opencode_pty.py")
++    ordinary = Item(config, name="test_other.py")
++    items = [candidate, original, ordinary]
++    gate.pytest_collection_modifyitems(config, items)
++    assert items == [candidate, original, ordinary]
++    assert len(candidate.marks) == 1
++    assert original.marks == ordinary.marks == []
++    assert config.removed == []
++
++
++def test_explicit_lane_selects_exactly_one_test():
++    config = explicit_config()
++    selected = Item(config, "contract")
++    other = Item(config, "registry-read")
++    original = Item(config, name="test_opencode_pty.py")
++    ordinary = Item(config, name="test_other.py")
++    items = [selected, other, original, ordinary]
++    gate.pytest_collection_modifyitems(config, items)
++    assert items == [selected]
++    assert config.removed == [other, original, ordinary]
++
++
++@pytest.mark.parametrize("lanes", [[], ["registry-read"], ["contract", "contract"]])
++def test_missing_or_ambiguous_selected_lane_blocks(lanes):
++    config = explicit_config()
++    with pytest.raises(pytest.UsageError, match="exactly"):
++        gate.pytest_collection_modifyitems(config, [Item(config, lane) for lane in lanes])
++
++
++def test_explicit_skip_is_a_failure():
++    config = explicit_config()
++    report = NS(skipped=True, failed=False, passed=False, when="setup", outcome="skipped")
++    report_hook(Item(config, "contract"), report)
++    assert report.outcome == "failed"
++    assert "cannot pass by skipping" in report.longrepr
++    assert config._opencode_candidate_completed is False
++
++
++def test_collect_only_or_deselected_request_cannot_exit_successfully():
++    config = explicit_config()
++    session = NS(config=config, exitstatus=0)
++    gate.pytest_sessionfinish(session, 0)
++    assert session.exitstatus == pytest.ExitCode.TESTS_FAILED
++    # Already nonzero statuses retain their meaning; no native was invoked.
++    session.exitstatus = 4
++    gate.pytest_sessionfinish(session, 4)
++    assert session.exitstatus == 4
++
++
++def test_only_passed_call_marks_requested_scenario_completed():
++    config = explicit_config()
++    item = Item(config, "contract")
++    report_hook(item, NS(skipped=False, failed=False, passed=True, when="setup"))
++    assert not config._opencode_candidate_completed
++    item.funcargs["opencode_candidate"] = NS(evidence={"status": "passed-limited-smoke"})
++    report_hook(item, NS(skipped=False, failed=False, passed=True, when="call"))
++    session = NS(config=config, exitstatus=0)
++    gate.pytest_sessionfinish(session, 0)
++    assert session.exitstatus == 0
++
++
++def test_successful_call_without_terminal_evidence_is_not_a_pass(tmp_path):
++    config = explicit_config()
++    item = Item(config, "contract")
++    run = CandidateRun(tmp_path, "1.18.35", "/not-executed/opencode", "contract")
++    run.evidence["status"] = "running"
++    item.funcargs["opencode_candidate"] = run
++    report = NS(skipped=False, failed=False, passed=True, when="call", outcome="passed")
++    report_hook(item, report)
++    assert report.outcome == "failed"
++    assert run.evidence["status"] == "failed"
++    assert not config._opencode_candidate_completed
++
++
++def test_failed_call_phase_evidence_is_terminal_and_sanitized(tmp_path):
++    config = explicit_config()
++    item = Item(config, "contract")
++    run = CandidateRun(tmp_path, "1.18.35", "/not-executed/opencode", "contract")
++    run.evidence["status"] = "running"
++    run.evidence["stage"] = "fake-call-phase"
++    password = "session-password-example"
++    basic = base64.b64encode(("rpnh:" + password).encode()).decode()
++    run.secrets += [password, basic]
++    run.evidence["terminal"] = [str(tmp_path), password, basic]
++    item.funcargs["opencode_candidate"] = run
++    report_hook(item, NS(skipped=False, failed=True, passed=False, when="call"),
++                AssertionError("do not persist exception body: " + password))
++    run.write_evidence()
++    raw = run.evidence_path.read_text()
++    evidence = json.loads(raw)
++    assert evidence["status"] == "failed"
++    assert evidence["first_failure"] == {"type": "AssertionError", "stage": "fake-call-phase"}
++    assert password not in raw and basic not in raw and str(tmp_path) not in raw
++    assert "do not persist" not in raw
++    assert run.evidence_path.stat().st_mode & 0o777 == 0o600
++
++
++@pytest.mark.parametrize("phase,skipped", [("teardown", False), ("call", True)])
++def test_late_failure_or_skip_overwrites_already_written_pass(tmp_path, phase, skipped):
++    config = explicit_config()
++    config._opencode_candidate_completed = True
++    item = Item(config, "contract")
++    run = CandidateRun(tmp_path, "1.18.35", "/not-executed/opencode", "contract")
++    run.evidence["status"] = "passed-limited-smoke"
++    run.evidence["stage"] = "fake-late-report"
++    run.write_evidence()
++    assert json.loads(run.evidence_path.read_text())["status"] == "passed-limited-smoke"
++    item.funcargs["opencode_candidate"] = run
++    report = NS(skipped=skipped, failed=not skipped, passed=False, when=phase,
++                outcome="skipped" if skipped else "failed")
++    report_hook(item, report, RuntimeError("do not retain late failure body"))
++    assert report.outcome == "failed"
++    assert not config._opencode_candidate_completed
++    evidence = json.loads(run.evidence_path.read_text())
++    assert evidence["status"] == "failed"
++    assert evidence["first_failure"] == {"type": "RuntimeError", "stage": "fake-late-report"}
++    assert "do not retain" not in run.evidence_path.read_text()
++
++
++def test_finalizer_cannot_leave_unfinished_evidence_running(tmp_path, monkeypatch):
++    monkeypatch.setattr(CandidateRun, "prepare", lambda run: run.evidence.update(status="running"))
++    config = explicit_config()
++    request = NS(config=config, node=NS(user_properties=[]))
++    generator = gate.opencode_candidate.__wrapped__(request, tmp_path)
++    run = next(generator)
++    with pytest.raises(StopIteration):
++        next(generator)
++    assert json.loads(run.evidence_path.read_text())["status"] == "failed"
++
++
++@pytest.mark.parametrize("value", ["relative", "./opencode"])
++def test_relative_binary_is_rejected(value):
++    with pytest.raises(RuntimeError, match="absolute"):
++        validate_binary(value)
++
++
++def test_missing_preinstalled_dependency_blocks_before_any_execution(tmp_path, monkeypatch):
++    def forbidden(*_args, **_kwargs):
++        raise AssertionError("No subprocess is allowed in this pure test")
++
++    def dependency(name):
++        if name == "numpy":
++            raise ImportError("fixture missing dependency")
++        return object()
++
++    monkeypatch.setattr("opencode_candidate_support.subprocess.run", forbidden)
++    monkeypatch.setattr("opencode_candidate_support.subprocess.Popen", forbidden)
++    monkeypatch.setattr("opencode_candidate_support.importlib.import_module", dependency)
++    monkeypatch.setattr("opencode_candidate_support.sys.platform", "linux")
++    run = CandidateRun(tmp_path, "1.18.35", "/not-executed/opencode", "contract")
++    with pytest.raises(RuntimeError, match="BLOCKED.*numpy"):
++        run.prepare()
++    assert run.evidence["status"] == "blocked"
++
++
++def test_missing_binary_and_wrapper_are_blocked(tmp_path):
++    with pytest.raises(RuntimeError, match="missing"):
++        validate_binary(tmp_path / "missing")
++    wrapper = tmp_path / "opencode"
++    wrapper.write_text("#!/bin/sh\nprintf 1.18.35")
++    wrapper.chmod(0o700)
++    with pytest.raises(RuntimeError, match="wrapper"):
++        validate_binary(wrapper)
++
++
++def test_elf_identity_check_reads_but_never_executes_file(tmp_path, monkeypatch):
++    def forbidden(*_args, **_kwargs):
++        raise AssertionError("No subprocess is allowed in this pure test")
++    monkeypatch.setattr("opencode_candidate_support.subprocess.run", forbidden)
++    monkeypatch.setattr("opencode_candidate_support.subprocess.Popen", forbidden)
++    fake = tmp_path / "never-execute-this-fixture"
++    fake.write_bytes(b"\x7fELFnot-a-real-executable")
++    fake.chmod(0o700)
++    assert validate_binary(fake) == fake
++
++
++@pytest.mark.parametrize("version", [None, False, "1.18.34", "latest", ">=1.18.35", "1.18.35-x", "1.18.35\n"])
++def test_only_exact_registered_gate_versions(version):
++    with pytest.raises(ValueError):
++        select_profile(version)
++
++
++def test_gate_control_does_not_become_certification_candidate():
++    from cpn.frontend.opencode_protocol import DEFAULT_PROFILE
++    assert select_profile("1.18.32") is DEFAULT_PROFILE
++    assert select_profile("1.18.35").certification_only is True
++
++
++@pytest.mark.parametrize("raw", [b"1.18.32", b"1.18.35-beta", b"opencode\n1.18.35",
++                                 b"1.18.35\nextra", b"\xff1.18.35", b"x" * 4097])
++def test_stored_probe_rejects_forged_or_ambiguous_output(raw):
++    assert not valid_probe_stdout(raw, "1.18.35")
++
++
++@pytest.mark.parametrize("raw", [b"1.18.35\n", b"opencode 1.18.35\n", b"opencode\t1.18.35"])
++def test_stored_probe_accepts_only_exact_single_line_version(raw):
++    assert valid_probe_stdout(raw, "1.18.35")
++
++
++def test_effect_guard_and_diagnostic_terminal_text_are_pure():
++    guard = EffectGuard()
++    guard.assert_zero()
++    with pytest.raises(AssertionError, match="submit"):
++        guard.deny("submit")()
++    with pytest.raises(AssertionError, match="submit"):
++        guard.assert_zero()
++    assert guard.calls == {"submit": 1}
++    assert terminal_text(b"\x1b[31mfixture answer\x1b[0m") == "fixture answer"
+--- /dev/null
++++ b/tests/test_opencode_candidate_native.py
+@@ -0,0 +1,288 @@
++"""Opt-in LIMITED native smoke lanes; neither test is full G2/G3 certification.
++
++This module has no import-time native, Registry, socket or provider activity.
++The ordinary pinned test_opencode_pty.py is intentionally unchanged.
++"""
++from __future__ import annotations
++
++import json
++import os
++
++import pytest
++
++from opencode_candidate_support import (
++    EffectGuard, NativePTY, assert_routes, close_server, json_digest,
++    observed_bootstrap, sha256_file,
++)
++
++
++@pytest.mark.opencode_candidate("contract")
++def test_candidate_contract_smoke(opencode_candidate):
++    """G2 subset: stock bootstrap, help, one prompt, fixture-committed reply."""
++    from cpn.frontend.opencode_http import OpenCodeHTTPServer
++    from cpn.frontend.opencode_protocol import OpenCodeProtocol
++    from test_opencode_frontend import ApplicationDouble, LocalGateway, SID
++
++    run = opencode_candidate
++    app = ApplicationDouble()
++    app.create_session()
++    protocol = OpenCodeProtocol(LocalGateway(app), str(run.display), profile=run.profile)
++    server = OpenCodeHTTPServer(protocol)
++    committed = False
++    answer = "candidate contract answer"
++    run.evidence["stage"] = "contract-attach"
++    try:
++        server.start()
++        with NativePTY(run, server, SID) as tui:
++            tui.wait(lambda: observed_bootstrap(server), check=lambda: assert_routes(server))
++            tui.send_line("/rpnh-help", slash=True, check=lambda: assert_routes(server))
++            tui.wait(lambda: any(d["method"] == "POST" and d["route"] == "/session/:session/command"
++                                 and d["status"] == 200 for d in server.diagnostics()),
++                     check=lambda: assert_routes(server))
++            tui.wait(lambda: tui.contains("observation"), check=lambda: assert_routes(server))
++            tui.send_line("candidate offline prompt", check=lambda: assert_routes(server))
++            tui.wait(lambda: app.calls.count("submit") == 1 and bool(app.views[0]["turns"]),
++                     check=lambda: assert_routes(server))
++            app.commit(answer)
++            committed = True
++            protocol.notify()
++            tui.wait(lambda: tui.contains(answer), check=lambda: assert_routes(server))
++            assert app.calls.count("submit") == 1
++            assert app.physical_calls == 0
++            assert len(app.views[0]["turns"]) == 1
++            assert app.views[0]["turns"][0]["state"] == "committed"
++            messages = protocol.route("GET", f"/session/{SID}/message").body
++            durable = [m for m in messages if m["info"].get("mode") != "rpnh-observation"]
++            assert [m["info"]["role"] for m in durable] == ["user", "assistant"]
++            assert durable[-1]["parts"][0]["text"] == answer
++            run.evidence["scenarios"] = [
++                "stock bootstrap routes", "stock /rpnh-help observation",
++                "one stock ordinary prompt / one double submit",
++                "fixture-committed answer observed in bounded terminal output",
++            ]
++        assert_routes(server)
++    finally:
++        run.evidence["counters"] = {"double_submit_calls": app.calls.count("submit"),
++            "double_physical_calls": app.physical_calls, "fixture_commit": committed}
++        try:
++            close_server(run, server)
++        finally:
++            app.close()
++    run.passed()
++
++
++def _prepare_committed_registry(run, monkeypatch):
++    """Canonical original setup, explicitly outside the zero-effect interval."""
++    from cpn.rpnh.agent_tasks import run_agent_task
++    from cpn.rpnh.main_session import MainSession
++    from cpn.rpnh.session_access import MainSessionOwnerLease, stable_frontend_session_id
++    from test_main_session_registry import _TerminalPort, _write_execution_profile
++
++    class CountingPort(_TerminalPort):
++        calls = 0
++
++        def request_once(self, attempt):
++            self.calls += 1
++            return super().request_once(attempt)
++
++    # Isolate the Python fixture owner as well as the separately spawned TUI.
++    # In particular, do not discover the operator's RPNH profiles/plugins.
++    for name in list(os.environ):
++        if name not in run.env and name != "PYTEST_CURRENT_TEST":
++            monkeypatch.delenv(name, raising=False)
++    for name, value in run.env.items():
++        monkeypatch.setenv(name, value)
++    execution = _write_execution_profile(run.root)
++    root = run.root / "synthetic-registry"
++    port = CountingPort({"reply": "candidate first answer", "task": None})
++    run.evidence["stage"] = "synthetic-fixture-setup"
++    # This is an original fixture fake port, not an installed provider or model.
++    monkeypatch.setattr("cpn.rpnh.agent_tasks.build_llm_input_port", lambda *_a, **_kw: port)
++    attempts = []
++    lease = MainSessionOwnerLease.reserve_for_creation(root)
++    try:
++        basic = MainSession(root, execution, owner_root_reserved=True)
++        for prompt, reply in (("candidate first question", "candidate first answer"),
++                              ("candidate second question", "candidate second answer")):
++            port.output = {"reply": reply, "task": None}
++            spec = basic.prepare_turn(prompt)
++            attempts.append(spec.run_dir)
++            run_agent_task(spec)
++            assert basic.reconcile_active_turn().state == "committed"
++        assert port.calls == 2
++        assert basic.active_turn_snapshot() is None
++        assert len(basic._main_thread.recover_thread()["committed_history"]) == 2
++    finally:
++        lease.close()
++        run.evidence["setup"] = {"fake_port_calls": port.calls,
++            "provider_transport": "deterministic _TerminalPort only",
++            "setup_owner_released": lease._fd is None}
++    return basic, root, execution, stable_frontend_session_id(root), attempts, port
++
++
++def _install_measured_guards(monkeypatch, port):
++    """Deny effects only; leave original readers, snapshots, tick and PN intact."""
++    from cpn.rpnh.frontend_application import RegistryFrontendApplication
++    from cpn.rpnh.main_session import MainSession
++    from cpn.rpnh.task_control import TaskControl
++
++    guard = EffectGuard()
++    monkeypatch.setattr("cpn.llm_adapters.build_llm_input_port", guard.deny("provider_factory"))
++    monkeypatch.setattr("cpn.rpnh.agent_tasks.build_llm_input_port", guard.deny("agent_provider_factory"))
++    monkeypatch.setattr("cpn.rpnh.main_session.run_agent_task", guard.deny("run_agent_task"))
++    monkeypatch.setattr("cpn.rpnh.main_session.resume_agent_task", guard.deny("resume_agent_task"))
++    monkeypatch.setattr(port, "request_once", guard.deny("fake_port"))
++    for name in ("_spawn", "start", "resume", "reopen", "stop", "message"):
++        monkeypatch.setattr(TaskControl, name, guard.deny("task_control_" + name))
++    for name in ("prepare_turn", "set_execution_config", "reconcile_active_turn",
++                 "reconcile_committed_launches", "reconcile_child_registry_links",
++                 "activate_for_execution", "rollback_paused_turn", "launch"):
++        monkeypatch.setattr(MainSession, name, guard.deny("main_session_" + name))
++    for name in ("submit", "create_session", "abort", "launch_agent"):
++        monkeypatch.setattr(RegistryFrontendApplication, name, guard.deny("application_" + name))
++    original_tick = RegistryFrontendApplication.tick
++
++    def counted_tick(self):
++        guard.observations["original_tick_calls"] += 1
++        return original_tick(self)
++
++    monkeypatch.setattr(RegistryFrontendApplication, "tick", counted_tick)
++    original_command = RegistryFrontendApplication.command
++
++    def checked_command(self, sid, name, *args, **kwargs):
++        # /rpnh-tasks reconciles child links and is intentionally excluded.
++        if name not in {"rpnh-help", "rpnh-net"}:
++            return guard.deny("command_" + name)()
++        return original_command(self, sid, name, *args, **kwargs)
++
++    monkeypatch.setattr(RegistryFrontendApplication, "command", checked_command)
++    return guard
++
++
++def _logical_registry(basic, attempts, execution):
++    """Original authority reader + logical ordinals; no whole-directory hash."""
++    from cpn.rpnh.registry._registry import _RegistryCore
++    projection = basic._main_thread.recover_thread()
++    profile = basic._persisted_execution_profile(basic.root)
++    revision = {"main": basic._registry_core.event_store.max_ordinal()}
++    for index, attempt in enumerate(attempts, 1):
++        core = _RegistryCore(attempt, create=False, read_only=True)
++        revision["turn-" + str(index)] = core.event_store.max_ordinal()
++    return {"logical_revisions": revision,
++            "thread_projection_sha256": json_digest(projection),
++            "committed_history": projection["committed_history"],
++            "persisted_execution_identity": profile,
++            "execution_config_sha256": sha256_file(execution),
++            "adapter_config_sha256": sha256_file(execution.parent / "adapter.json")}
++
++
++def _observation_payload(message):
++    part = next(part for part in message["parts"] if part["type"] == "text")
++    assert part["metadata"]["rpnh_observation"] == "rpnh-net"
++    _notice, text = part["text"].split("\n", 1)
++    return json.loads(text)
++
++
++@pytest.mark.opencode_candidate("registry-read")
++def test_candidate_registry_read_smoke(opencode_candidate, monkeypatch):
++    """G3 subset: two committed turns, two cold attaches and exact net views."""
++    from cpn.cli import _filter_projection
++    from cpn.frontend.opencode_http import OpenCodeHTTPServer
++    from cpn.frontend.opencode_protocol import OpenCodeProtocol
++    from cpn.rpnh.agent_tasks import agent_task_catalog
++    from cpn.rpnh.frontend_application import FrontendGateway, RegistryFrontendApplication
++    from cpn.rpnh.inspection import project_registry_net
++    from cpn.rpnh.session_access import MainSessionOwnerLease
++
++    run = opencode_candidate
++    basic, root, execution, sid, attempts, port = _prepare_committed_registry(run, monkeypatch)
++    expected = {flag: _filter_projection(project_registry_net(attempts[-1], catalog=agent_task_catalog()),
++                show_resources=show, resources_only=only, node_id=None)
++                for flag, show, only in (("", False, False), ("--show-resources", True, False),
++                                         ("--resources-only", False, True))}
++    baseline = _logical_registry(basic, attempts, execution)
++    run.evidence["registry_before"] = baseline
++    guard = _install_measured_guards(monkeypatch, port)
++    run.evidence["stage"] = "registry-read-measurement"
++    snapshots = []
++    messages_by_attach = []
++    owner_results = []
++    try:
++        for continue_last in (False, True):
++            holder = []
++            gateway = FrontendGateway(
++                lambda: RegistryFrontendApplication(root, execution, resume=True),
++                on_change=lambda: holder[0].notify() if holder else None)
++            server = None
++            try:
++                # Check an actual conflicting lease without constructing a second
++                # Application or hiding the original owner's lease behavior.
++                with pytest.raises(RuntimeError, match="owner lease"):
++                    with MainSessionOwnerLease.acquire(root):
++                        pass
++                protocol = OpenCodeProtocol(gateway, str(run.display), profile=run.profile)
++                holder.append(protocol)
++                snapshots.append(gateway.call("snapshot"))
++                assert all(t["state"] == "committed" for t in snapshots[-1][0]["turns"])
++                assert [t["text"] for t in snapshots[-1][0]["turns"]] == [
++                    "candidate first question", "candidate second question"]
++                server = OpenCodeHTTPServer(protocol)
++                server.start()
++
++                def check():
++                    guard.assert_zero()
++                    assert_routes(server, registry_read=True)
++
++                with NativePTY(run, server, sid, continue_last=continue_last) as tui:
++                    tui.wait(lambda: observed_bootstrap(server), check=check)
++                    tui.wait(lambda: all(tui.contains(text) for text in (
++                        "candidate first question", "candidate first answer",
++                        "candidate second question", "candidate second answer")), check=check)
++                    messages = protocol.route("GET", f"/session/{sid}/message").body
++                    messages_by_attach.append(messages)
++                    assert [m["info"]["role"] for m in messages] == ["user", "assistant", "user", "assistant"]
++                    assert [m["parts"][0]["text"] for m in messages] == [
++                        "candidate first question", "candidate first answer",
++                        "candidate second question", "candidate second answer"]
++                    # One real stock slash command each variant; observe the
++                    # original protocol's transient response, then compare exact
++                    # PN data against the original inspection implementation.
++                    if not continue_last:
++                        for flag, expected_view in expected.items():
++                            previous = len(protocol._observations.get(sid, ()))
++                            tui.send_line("/rpnh-net" + (" " + flag if flag else ""), slash=True, check=check)
++                            tui.wait(lambda: len(protocol._observations.get(sid, ())) == previous + 1, check=check)
++                            observation = list(protocol._observations[sid])[-1]
++                            assert _observation_payload(observation) == expected_view
++                            tui.wait(lambda: tui.contains("command observation"), check=check)
++                            assert _logical_registry(basic, attempts, execution) == baseline
++                            run.evidence["scenarios"].append("stock /rpnh-net " + (flag or "default") + " exact projection")
++                    check()
++                    assert gateway.call("snapshot") == snapshots[-1]
++                    assert _logical_registry(basic, attempts, execution) == baseline
++            finally:
++                try:
++                    if server is not None:
++                        close_server(run, server)
++                finally:
++                    gateway.close()
++                assert not gateway._thread.is_alive()
++            with MainSessionOwnerLease.acquire(root):
++                owner_results.append({"mode": "--continue" if continue_last else "--session",
++                                      "second_owner_rejected": True, "owner_released_after_close": True})
++            assert _logical_registry(basic, attempts, execution) == baseline
++        assert snapshots[0] == snapshots[1]
++        assert messages_by_attach[0] == messages_by_attach[1]
++        guard.assert_zero()
++        assert port.calls == 2
++        assert guard.observations["original_tick_calls"] > 0
++        run.evidence["scenarios"] += ["two-turn --session cold attach",
++            "two-turn --continue cold attach", "stable history IDs across restart",
++            "logical Registry state and execution identity unchanged", "owner exclusion and release"]
++    finally:
++        run.evidence["registry_after"] = _logical_registry(basic, attempts, execution)
++        run.evidence["measured"] = {"effect_boundary_calls": dict(guard.calls),
++            "original_tick_calls": guard.observations["original_tick_calls"],
++            "fake_port_calls": port.calls - 2, "owner_checks": owner_results,
++            "lease_note": "normal lock and writer-epoch acquisition/release are not Registry logical revisions"}
++    run.passed()
+--- /dev/null
++++ b/tests/test_opencode_candidate_profiles.py
+@@ -0,0 +1,565 @@
++"""Pure G1 checks for explicit, certification-only OpenCode profiles.
++
++These are Python projection tests with ApplicationDouble/LocalGateway and mocked
++version-process results. They open no socket, PTY, native client, or model port.
++The shared manifest is an RPNH source-extracted SDK subset, not an upstream
++SDK-generated validator or evidence of native G2/G3 certification.
++"""
++from __future__ import annotations
++
++import copy
++from dataclasses import FrozenInstanceError, fields
++import importlib.resources
++import inspect
++import json
++import os
++from pathlib import Path
++import socket
++import subprocess
++import threading
++from types import SimpleNamespace
++
++import jsonschema
++import pytest
++
++from cpn.frontend import opencode_launcher as launcher
++from cpn.frontend import opencode_protocol as protocol_module
++from cpn.frontend.opencode_protocol import (
++    DEFAULT_PROFILE, OPENCODE_COMMIT, OPENCODE_VERSION,
++    OpenCodeCompatibilityProfile, OpenCodeProtocol, encode_sse,
++    get_opencode_profile, require_opencode_profile,
++)
++from cpn.rpnh.frontend_application import FrontendError
++from test_opencode_frontend import (
++    ApplicationDouble, LocalGateway, MODEL, MODEL_TWO, SID, prompt,
++)
++
++DEFAULT_VERSION = "1.18.32"
++DEFAULT_COMMIT = "545f51d26cc39a907d2867492d498d9607ea5fa4"
++CANDIDATE_VERSION = "1.18.35"
++CANDIDATE_COMMIT = "53d1eabb61e21162157817bf677da0a4ad3332e3"
++EFFECTS = {"create_session", "submit", "command", "abort"}
++
++
++def _manifest():
++    return json.loads(importlib.resources.files("cpn.frontend").joinpath(
++        "opencode_compatibility.v1.json").read_text(encoding="utf-8"))
++
++
++def _forbid_process(*_args, **_kwargs):
++    pytest.fail("Pure G1 must not launch a real subprocess")
++
++
++@pytest.fixture(autouse=True)
++def no_native_effects(monkeypatch):
++    # Individual probe tests replace run with fixed outputs or a timeout.
++    # Keep the same boundaries closed when this file is run on its own.
++    monkeypatch.setattr(subprocess, "run", _forbid_process)
++    monkeypatch.setattr(subprocess, "Popen", _forbid_process)
++    def forbidden_boundary(*_args, **_kwargs):
++        pytest.fail("Pure G1 must not open sockets, PTYs, processes, or threads")
++    monkeypatch.setattr(socket, "socket", forbidden_boundary)
++    monkeypatch.setattr(threading.Thread, "start", forbidden_boundary)
++    for name in ("openpty", "fork"):
++        if hasattr(os, name):
++            monkeypatch.setattr(os, name, forbidden_boundary)
++
++
++@pytest.fixture(params=[None, CANDIDATE_VERSION], ids=["production", "candidate"])
++def profile(request):
++    return get_opencode_profile(certification_version=request.param)
++
++
++@pytest.fixture
++def context(tmp_path, profile):
++    app = ApplicationDouble()
++    protocol = OpenCodeProtocol(LocalGateway(app), str(tmp_path), profile=profile)
++    protocol.route("POST", "/session", {})
++    try:
++        yield app, protocol
++    finally:
++        protocol.close()
++
++
++def test_manifest_is_authoritative_and_default_pin_is_unchanged():
++    manifest = _manifest()
++    assert manifest["status"] == "source-extracted-subset-not-upstream-generator-output"
++    assert get_opencode_profile() is DEFAULT_PROFILE
++    assert DEFAULT_PROFILE == OpenCodeCompatibilityProfile(
++        DEFAULT_VERSION, DEFAULT_COMMIT, False)
++    assert OPENCODE_VERSION == DEFAULT_VERSION == manifest["upstream"]["package_version"]
++    assert OPENCODE_COMMIT == DEFAULT_COMMIT == manifest["upstream"]["commit"]
++    assert launcher.DEFAULT_PROFILE is DEFAULT_PROFILE
++    assert launcher.OPENCODE_VERSION == DEFAULT_VERSION
++    assert inspect.signature(launcher.check_version).parameters["profile"].default is DEFAULT_PROFILE
++    assert inspect.signature(OpenCodeProtocol).parameters["profile"].default is DEFAULT_PROFILE
++    candidates = manifest["certification_candidates"]
++    assert len(candidates) == 1
++    candidate = candidates[0]
++    assert candidate["package_version"] == CANDIDATE_VERSION
++    assert candidate["commit"] == CANDIDATE_COMMIT
++    assert candidate["status"] == "certification-only"
++    assert candidate["production_enabled"] is False
++    assert candidate["contract_source_commit"] == DEFAULT_COMMIT
++    assert candidate["native_g2"] == candidate["native_g3"] == "not-run"
++    assert candidate["shared_contract_evidence"]
++    selected = get_opencode_profile(certification_version=CANDIDATE_VERSION)
++    assert selected == OpenCodeCompatibilityProfile(CANDIDATE_VERSION, CANDIDATE_COMMIT, True)
++    assert require_opencode_profile(selected) is selected
++
++
++def test_profile_is_frozen_and_protocol_binding_is_read_only(context, profile):
++    _, protocol = context
++    assert [field.name for field in fields(profile)] == ["version", "commit", "certification_only"]
++    for name, replacement in [
++        ("version", "9.9.9"), ("commit", "0" * 40),
++        ("certification_only", not profile.certification_only),
++    ]:
++        with pytest.raises(FrozenInstanceError):
++            setattr(profile, name, replacement)
++    assert protocol.profile is profile
++    with pytest.raises(AttributeError):
++        protocol.profile = DEFAULT_PROFILE
++
++
++@pytest.mark.parametrize("version", [
++    "", DEFAULT_VERSION, "1.18.33", "1.18.36", "latest", "next",
++    ">=1.18.35", "^1.18.35", "~1.18.35", "1.18.x", "v1.18.35",
++    "1.18.35+local", "1.18.35-rc.1", "1.18.35 ", " 1.18.35",
++    "1.18.35\n", "opencode 1.18.35", "/tmp/opencode", CANDIDATE_COMMIT,
++    11835, True, {}, [CANDIDATE_VERSION], Path("1.18.35"),
++])
++def test_resolver_rejects_every_unregistered_exact_target(version):
++    with pytest.raises(ValueError):
++        get_opencode_profile(certification_version=version)
++
++
++@pytest.mark.parametrize("forged", [
++    OpenCodeCompatibilityProfile(CANDIDATE_VERSION, DEFAULT_COMMIT, True),
++    OpenCodeCompatibilityProfile(DEFAULT_VERSION, CANDIDATE_COMMIT, False),
++    OpenCodeCompatibilityProfile(CANDIDATE_VERSION, CANDIDATE_COMMIT, False),
++    OpenCodeCompatibilityProfile(DEFAULT_VERSION, DEFAULT_COMMIT, True),
++    OpenCodeCompatibilityProfile(CANDIDATE_VERSION, CANDIDATE_COMMIT, 1),
++    OpenCodeCompatibilityProfile(DEFAULT_VERSION, DEFAULT_COMMIT, 0),
++    OpenCodeCompatibilityProfile(CANDIDATE_VERSION, "0" * 40, True),
++    OpenCodeCompatibilityProfile("1.18.36", CANDIDATE_COMMIT, True),
++    OpenCodeCompatibilityProfile("1.18.35+local", CANDIDATE_COMMIT, True),
++    SimpleNamespace(version=CANDIDATE_VERSION, commit=CANDIDATE_COMMIT, certification_only=True),
++    {"version": CANDIDATE_VERSION, "commit": CANDIDATE_COMMIT, "certification_only": True},
++    None,
++])
++def test_forged_profile_fails_before_probe_or_application(tmp_path, forged):
++    app = ApplicationDouble()
++    with pytest.raises(ValueError):
++        require_opencode_profile(forged)
++    with pytest.raises(ValueError):
++        launcher.check_version("never-executed", {}, tmp_path, profile=forged)
++    with pytest.raises(ValueError):
++        OpenCodeProtocol(LocalGateway(app), str(tmp_path), profile=forged)
++    assert app.calls == []
++
++
++@pytest.mark.parametrize("prefix", ["", "opencode "])
++def test_probe_uses_exact_selected_profile_and_restricted_arguments(
++        tmp_path, monkeypatch, profile, prefix):
++    calls = []
++    env = {"PATH": "/fixture/bin", "TERM": "xterm"}
++    def fixed_probe(args, **kwargs):
++        calls.append((args, kwargs))
++        return SimpleNamespace(stdout=prefix + profile.version + "\n", returncode=0)
++    monkeypatch.setattr(subprocess, "run", fixed_probe)
++    launcher.check_version("/fixture/opencode", env, tmp_path, profile=profile)
++    assert calls == [(["/fixture/opencode", "--version"], {
++        "env": env, "cwd": tmp_path, "stdin": subprocess.DEVNULL,
++        "capture_output": True, "text": True, "timeout": 10, "check": False,
++    })]
++    assert calls[0][1]["env"] is not env
++    protocol = OpenCodeProtocol(LocalGateway(ApplicationDouble()), str(tmp_path), profile=profile)
++    assert protocol.profile is profile
++    assert protocol.route("GET", "/health").body["version"] == profile.version
++    protocol.close()
++
++
++@pytest.mark.parametrize("output", [
++    "{version}+modified", "{version}-rc.1", "v{version}",
++    "OpenCode {version}", "{version}\nextra text", "warning\n{version}",
++    "opencode {version} trailing", "opencode\n{version}", "", "latest", "1.18.36",
++])
++def test_probe_rejects_suffixes_extra_output_and_unknown_versions(
++        tmp_path, monkeypatch, profile, output):
++    monkeypatch.setattr(subprocess, "run", lambda *_a, **_k: SimpleNamespace(
++        stdout=output.format(version=profile.version), returncode=0))
++    with pytest.raises(RuntimeError, match="exactly"):
++        launcher.check_version("/fixture/opencode", {}, tmp_path, profile=profile)
++
++
++def test_probe_rejects_other_registered_version(tmp_path, monkeypatch, profile):
++    other = CANDIDATE_VERSION if profile is DEFAULT_PROFILE else DEFAULT_VERSION
++    monkeypatch.setattr(subprocess, "run", lambda *_a, **_k: SimpleNamespace(
++        stdout=other, returncode=0))
++    with pytest.raises(RuntimeError, match="exactly"):
++        launcher.check_version("/fixture/opencode", {}, tmp_path, profile=profile)
++
++
++@pytest.mark.parametrize("returncode", [1, 127, -15])
++def test_probe_rejects_nonzero_even_when_version_matches(tmp_path, monkeypatch, profile, returncode):
++    monkeypatch.setattr(subprocess, "run", lambda *_a, **_k: SimpleNamespace(
++        stdout=profile.version, returncode=returncode))
++    with pytest.raises(RuntimeError, match="exactly"):
++        launcher.check_version("/fixture/opencode", {}, tmp_path, profile=profile)
++
++
++def test_probe_timeout_is_not_an_acceptance(tmp_path, monkeypatch, profile):
++    def timeout(args, **kwargs):
++        raise subprocess.TimeoutExpired(args, kwargs["timeout"])
++    monkeypatch.setattr(subprocess, "run", timeout)
++    with pytest.raises(RuntimeError, match="timed out"):
++        launcher.check_version("/fixture/opencode", {}, tmp_path, profile=profile)
++
++
++def test_default_probe_rejects_candidate_without_explicit_profile(tmp_path, monkeypatch):
++    monkeypatch.setattr(subprocess, "run", lambda *_a, **_k: SimpleNamespace(
++        stdout=CANDIDATE_VERSION, returncode=0))
++    with pytest.raises(RuntimeError, match=DEFAULT_VERSION):
++        launcher.check_version("/fixture/opencode", {}, tmp_path)
++
++
++def _forbid_owner(monkeypatch):
++    def forbidden(*_args, **_kwargs):
++        pytest.fail("RPNH owner must not be constructed")
++    monkeypatch.setattr(launcher, "FrontendGateway", forbidden)
++    monkeypatch.setattr(launcher, "RegistryFrontendApplication", forbidden)
++    monkeypatch.setattr(launcher, "OpenCodeHTTPServer", forbidden)
++
++
++def test_production_rejects_candidate_before_owner_despite_environment(tmp_path, monkeypatch):
++    _forbid_owner(monkeypatch)
++    monkeypatch.setattr(launcher, "sys", SimpleNamespace(platform="linux"))
++    monkeypatch.setattr(launcher.shutil, "which", lambda _name: "/fixture/opencode")
++    attempted_overrides = {
++        "OPENCODE_VERSION": CANDIDATE_VERSION,
++        "OPENCODE_CERTIFY_VERSION": CANDIDATE_VERSION,
++        "OPENCODE_CERTIFICATION_VERSION": CANDIDATE_VERSION,
++        "RPNH_OPENCODE_VERSION": CANDIDATE_VERSION,
++        "RPNH_OPENCODE_CERTIFY_VERSION": CANDIDATE_VERSION,
++        "OPENCODE_CONFIG": "/fixture/candidate-config.json",
++    }
++    for name, value in attempted_overrides.items():
++        monkeypatch.setenv(name, value)
++    calls = []
++    def fixed_probe(args, **kwargs):
++        calls.append((args, kwargs))
++        return SimpleNamespace(stdout=CANDIDATE_VERSION, returncode=0)
++    monkeypatch.setattr(subprocess, "run", fixed_probe)
++    with pytest.raises(RuntimeError, match=DEFAULT_VERSION):
++        launcher.run_opencode_frontend(tmp_path / "root", tmp_path / "execution.json")
++    assert len(calls) == 1 and calls[0][0] == ["/fixture/opencode", "--version"]
++    actual_env = calls[0][1]["env"]
++    assert not (set(attempted_overrides) - {"OPENCODE_CONFIG"}) & set(actual_env)
++    assert actual_env["OPENCODE_CONFIG"] != attempted_overrides["OPENCODE_CONFIG"]
++    assert "profile" not in inspect.signature(launcher.run_opencode_frontend).parameters
++    assert "certification_version" not in inspect.signature(launcher.run_opencode_frontend).parameters
++
++
++def test_production_success_uses_default_profile_after_real_probe_logic(tmp_path, monkeypatch):
++    # All execution/transport endpoints are doubles; the real check_version and
++    # OpenCodeProtocol run unchanged, so this cannot conceal a skipped probe.
++    timeline = []
++    observed = []
++    monkeypatch.setattr(launcher, "sys", SimpleNamespace(platform="linux"))
++    monkeypatch.setattr(launcher.shutil, "which", lambda _name: "/fixture/opencode")
++    monkeypatch.setattr(launcher, "RegistryFrontendApplication", _forbid_process)
++    class FakeGateway(LocalGateway):
++        def __init__(self, _factory, **_kwargs):
++            timeline.append("owner")
++            super().__init__(ApplicationDouble())
++        def close(self):
++            timeline.append("owner-close")
++            self.app.close()
++    class FakeServer:
++        url = "http://127.0.0.1:1"
++        password = "fixture-only"
++        def __init__(self, protocol):
++            observed.append(protocol)
++            timeline.append("server")
++        def start(self):
++            timeline.append("start")
++        def close(self):
++            timeline.append("server-close")
++    def fixed_process(args, **_kwargs):
++        if args[1] == "--version":
++            timeline.append("probe")
++            return SimpleNamespace(stdout=DEFAULT_VERSION, returncode=0)
++        assert args[1] == "attach"
++        timeline.append("attach")
++        return SimpleNamespace(returncode=0)
++    monkeypatch.setattr(launcher, "FrontendGateway", FakeGateway)
++    monkeypatch.setattr(launcher, "OpenCodeHTTPServer", FakeServer)
++    monkeypatch.setattr(subprocess, "run", fixed_process)
++    assert launcher.run_opencode_frontend(tmp_path / "root", tmp_path / "execution.json") == 0
++    assert timeline == ["probe", "owner", "server", "start", "attach", "server-close", "owner-close"]
++    assert len(observed) == 1
++    assert observed[0].profile is DEFAULT_PROFILE
++    assert observed[0].route("GET", "/health").body["version"] == DEFAULT_VERSION
++
++
++@pytest.mark.parametrize("platform", ["win32", "darwin"])
++def test_non_linux_platform_rejected_before_probe_and_owner(tmp_path, monkeypatch, platform):
++    _forbid_owner(monkeypatch)
++    monkeypatch.setattr(launcher, "sys", SimpleNamespace(platform=platform))
++    monkeypatch.setattr(launcher.shutil, "which", lambda _name: pytest.fail("No binary lookup on unsupported OS"))
++    with pytest.raises(RuntimeError, match="Linux/WSL2 only"):
++        launcher.run_opencode_frontend(tmp_path / "root", tmp_path / "execution.json")
++
++
++def test_default_and_candidate_instances_are_isolated_without_global_mutation(tmp_path):
++    before = (protocol_module.OPENCODE_VERSION, protocol_module.OPENCODE_COMMIT, launcher.OPENCODE_VERSION)
++    selected = get_opencode_profile(certification_version=CANDIDATE_VERSION)
++    default = OpenCodeProtocol(LocalGateway(ApplicationDouble()), str(tmp_path / "default"))
++    candidate = OpenCodeProtocol(LocalGateway(ApplicationDouble()), str(tmp_path / "candidate"), profile=selected)
++    for instance, expected in [(default, DEFAULT_PROFILE), (candidate, selected)]:
++        created = instance.route("POST", "/session", {}).body
++        assert instance.profile is expected
++        assert created["version"] == expected.version
++        assert instance.route("GET", f"/session/{SID}").body["version"] == expected.version
++        assert instance.route("GET", "/session").body[0]["version"] == expected.version
++        for route in ("/health", "/global/health"):
++            assert instance.route("GET", route).body == {"healthy": True, "version": expected.version}
++    candidate.close()
++    assert default.route("GET", "/health").body["version"] == DEFAULT_VERSION
++    assert default.profile is get_opencode_profile()
++    assert (protocol_module.OPENCODE_VERSION, protocol_module.OPENCODE_COMMIT, launcher.OPENCODE_VERSION) == before
++    assert before == (DEFAULT_VERSION, DEFAULT_COMMIT, DEFAULT_VERSION)
++    default.close()
++
++
++def test_shared_source_extracted_subset_validates_both_profile_projections(context, profile):
++    app, protocol = context
++    manifest = _manifest()
++    assert manifest["status"] == "source-extracted-subset-not-upstream-generator-output"
++    for path, original_schema in manifest["responses"].items():
++        schema = copy.deepcopy(original_schema)
++        response = protocol.route("GET", path).body
++        if path == "/global/health":
++            # The manifest's production const is intentional. Only profile
++            # metadata varies; the DTO structure and $defs remain shared.
++            assert schema["properties"]["version"] == {"const": DEFAULT_VERSION}
++            assert response["version"] == profile.version
++            if profile.certification_only:
++                with pytest.raises(jsonschema.ValidationError):
++                    jsonschema.Draft202012Validator(original_schema).validate(response)
++                schema["properties"]["version"] = {"const": profile.version}
++        jsonschema.Draft202012Validator({**schema, "$defs": manifest["$defs"]}).validate(response)
++    receipt = protocol.route("POST", f"/session/{SID}/message", prompt(messageID="msg_schema_candidate"))
++    jsonschema.Draft202012Validator({
++        **manifest["post_responses"]["/session/:session/message"], "$defs": manifest["$defs"],
++    }).validate(receipt.body)
++    app.commit()
++    message_validator = jsonschema.Draft202012Validator({
++        "$ref": "#/$defs/MessageWithParts", "$defs": manifest["$defs"],
++    })
++    for message in protocol.route("GET", f"/session/{SID}/message").body:
++        message_validator.validate(message)
++    event_validator = jsonschema.Draft202012Validator({
++        **manifest["events"]["message.part.updated"], "$defs": manifest["$defs"],
++    })
++    part_events = [event for event in protocol.events() if event["payload"]["type"] == "message.part.updated"]
++    assert part_events
++    for event in part_events:
++        event_validator.validate(event["payload"])
++    assert app.physical_calls == 0
++
++
++@pytest.mark.parametrize("shape", ["create", "prompt", "command"])
++def test_three_model_shapes_round_trip_exact_selection_and_variant(tmp_path, profile, shape):
++    app = ApplicationDouble()
++    gateway = LocalGateway(app)
++    calls = []
++    original_call = gateway.call
++    def record(name, *args, **kwargs):
++        calls.append((name, args, kwargs))
++        return original_call(name, *args, **kwargs)
++    gateway.call = record
++    protocol = OpenCodeProtocol(gateway, str(tmp_path), profile=profile)
++    if shape != "create":
++        protocol.route("POST", "/session", {})
++    if shape == "create":
++        reply = protocol.route("POST", "/session", {
++            "model": {"providerID": "rpnh", "id": MODEL_TWO["selection"], "variant": "high"},
++        })
++        assert reply.body["model"] == {"providerID": "rpnh", "id": MODEL_TWO["selection"]}
++        assert reply.body["metadata"]["rpnh_provider"] == MODEL_TWO["provider"]
++        assert reply.body["metadata"]["rpnh_exact_model"] == MODEL_TWO["model"]
++        assert reply.body["metadata"]["rpnh_reasoning_effort"] == "high"
++        effect = [call for call in calls if call[0] == "create_session"][-1]
++        assert effect[1] == (MODEL_TWO["selection"],)
++    elif shape == "prompt":
++        reply = protocol.route("POST", f"/session/{SID}/message", prompt(
++            model={"providerID": "rpnh", "modelID": MODEL_TWO["selection"]}, variant="high"))
++        assert reply.body["info"]["modelID"] == MODEL_TWO["selection"]
++        assert app.views[0]["turns"][0]["model"]["model"] == MODEL_TWO["model"]
++        effect = [call for call in calls if call[0] == "submit"][-1]
++        assert effect[2]["selection_id"] == MODEL_TWO["selection"]
++    else:
++        protocol.route("POST", f"/session/{SID}/command", {
++            "command": "rpnh-help", "arguments": "", "model": "rpnh/" + MODEL_TWO["selection"], "variant": "high",
++        })
++        effect = [call for call in calls if call[0] == "command"][-1]
++        assert effect[2]["selection_id"] == MODEL_TWO["selection"]
++    assert effect[2]["reasoning_effort"] == "high"
++    assert app.physical_calls == 0
++    protocol.close()
++
++
++@pytest.mark.parametrize("shape,model", [
++    ("create", {"providerID": "rpnh", "modelID": MODEL["selection"]}),
++    ("create", "rpnh/" + MODEL["selection"]),
++    ("prompt", {"providerID": "rpnh", "id": MODEL["selection"]}),
++    ("prompt", "rpnh/" + MODEL["selection"]),
++    ("command", {"providerID": "rpnh", "modelID": MODEL["selection"]}),
++    ("command", MODEL["selection"]),
++    ("command", "other/" + MODEL["selection"]),
++    ("prompt", {"providerID": "other", "modelID": MODEL["selection"]}),
++    ("prompt", {"providerID": "rpnh", "modelID": "unknown"}),
++    ("prompt", {"providerID": "rpnh", "modelID": MODEL["selection"], "variant": "high"}),
++    ("command", "rpnh/unknown"),
++])
++def test_invalid_model_shapes_never_fallback_or_reach_effect(context, shape, model):
++    app, protocol = context
++    before = len(app.calls)
++    target = "/session" if shape == "create" else f"/session/{SID}/{'message' if shape == 'prompt' else 'command'}"
++    body = {"model": model}
++    if shape == "prompt":
++        body = prompt(model=model)
++    elif shape == "command":
++        body.update(command="rpnh-help", arguments="")
++    with pytest.raises(FrontendError):
++        protocol.route("POST", target, body)
++    assert not EFFECTS & set(app.calls[before:])
++    assert app.views[0]["turns"] == []
++
++
++def test_variants_are_scoped_to_exact_model_and_not_injected(tmp_path, profile):
++    class DistinctVariants(ApplicationDouble):
++        def configuration(self):
++            configuration = super().configuration()
++            configuration["profiles"][1].update(
++                reasoning_effort="low", supported_reasoning_efforts=["low"], default_reasoning_effort="low")
++            return configuration
++    app = DistinctVariants()
++    protocol = OpenCodeProtocol(LocalGateway(app), str(tmp_path), profile=profile)
++    protocol.route("POST", "/session", {})
++    catalog = protocol.route("GET", "/provider").body["all"][0]["models"]
++    assert set(catalog[MODEL["selection"]]["variants"]) == {"low", "medium", "high"}
++    assert set(catalog[MODEL_TWO["selection"]]["variants"]) == {"low"}
++    second_model = {"providerID": "rpnh", "modelID": MODEL_TWO["selection"]}
++    with pytest.raises(FrontendError, match="reasoning effort"):
++        protocol.route("POST", f"/session/{SID}/message", prompt(model=second_model, variant="high"))
++    assert app.views[0]["turns"] == []
++    protocol.route("POST", f"/session/{SID}/message", prompt(model=second_model))
++    assert app.views[0]["turns"][0]["model"]["reasoning_effort"] == "low"
++    assert app.views[0]["turns"][0]["model"]["model"] == MODEL_TWO["model"]
++    protocol.close()
++
++
++@pytest.mark.parametrize("method,target", [
++    ("POST", f"/session/{SID}/{operation}")
++    for operation in ["shell", "fork", "revert", "share", "summarize", "init", "permissions/id"]
++] + [("PUT", "/auth/provider"), ("PATCH", "/config"), ("PATCH", "/global/config"),
++     ("POST", "/mcp"), ("POST", "/auth/provider"), ("POST", "/config")])
++def test_unsupported_routes_remain_zero_effect_for_both_profiles(context, method, target):
++    app, protocol = context
++    before = list(app.calls)
++    with pytest.raises(FrontendError):
++        protocol.route(method, target, {"command": "forbidden"})
++    assert app.calls == before
++    assert app.physical_calls == 0
++
++
++@pytest.mark.parametrize("changes", [
++    {"agent": "build"}, {"variant": "ultra"}, {"variant": {"effort": "high"}},
++    {"system": "override"}, {"tools": {}}, {"reasoning_effort": "high"},
++    {"parts": [{"type": "file", "url": "file:///unavailable"}]},
++    {"parts": [{"type": "text", "text": "question", "synthetic": True}]},
++])
++def test_unsupported_prompt_overrides_do_not_reach_effect(context, changes):
++    app, protocol = context
++    before = len(app.calls)
++    with pytest.raises(FrontendError):
++        protocol.route("POST", f"/session/{SID}/message", prompt(**changes))
++    assert not EFFECTS & set(app.calls[before:])
++
++
++@pytest.mark.parametrize("target,headers", [
++    ("/session?workspace=elsewhere", {}),
++    ("/session?directory=/foreign", {}),
++    ("/session", {"X-OpenCode-Directory": "/foreign"}),
++    ("/session", {"X-OpenCode-Workspace": "elsewhere"}),
++    ("https://elsewhere.invalid/session", {}),
++])
++def test_foreign_location_rejected_without_application_access(context, target, headers):
++    app, protocol = context
++    before = list(app.calls)
++    with pytest.raises(FrontendError):
++        protocol.route("GET", target, headers=headers)
++    assert app.calls == before
++
++
++def test_stable_messages_parts_sse_and_read_only_replay(context, profile):
++    app, protocol = context
++    path = f"/session/{SID}/message"
++    protocol.route("POST", path, prompt(messageID="msg_g1_stable"))
++    app.commit()
++    protocol.notify()
++    expected = protocol.route("GET", path).body
++    assert [message["info"]["role"] for message in expected] == ["user", "assistant"]
++    stable_ids = [(message["info"]["id"], [part["id"] for part in message["parts"]]) for message in expected]
++    calls_before = {effect: app.calls.count(effect) for effect in EFFECTS}
++    first_events = protocol.events()
++    assert first_events == protocol.events()
++    seen = set()
++    for event in first_events + protocol.events():
++        assert set(event) == {"directory", "payload"}
++        assert event["directory"] == protocol.directory
++        assert event["payload"]["id"].startswith("evt_")
++        assert event["payload"]["properties"]["sessionID"] == SID
++        encoded = encode_sse(event)
++        assert encoded.startswith(b"id: ") and encoded.endswith(b"\n\n")
++        assert encoded.count(b"\ndata: ") == 1
++        assert json.loads(encoded.split(b"\ndata: ")[1]) == event
++        seen.add(event["payload"]["id"])
++    assert len(seen) == len(first_events)
++    recreated = OpenCodeProtocol(LocalGateway(app), protocol.directory, profile=profile)
++    for _ in range(3):
++        assert recreated.route("GET", path).body == expected
++        assert [(message["info"]["id"], [part["id"] for part in message["parts"]])
++                for message in recreated.route("GET", path).body] == stable_ids
++        recreated.route("GET", "/session")
++        recreated.route("GET", "/session/status")
++        recreated.events()
++    assert {effect: app.calls.count(effect) for effect in EFFECTS} == calls_before
++    assert app.physical_calls == 0
++    recreated.close()
++
++
++def test_retries_and_conflicting_idempotency_keys_preserve_single_turn(context):
++    app, protocol = context
++    path = f"/session/{SID}/message"
++    body = prompt(messageID="msg_g1_retry")
++    headers = {"Idempotency-Key": "msg_g1_retry"}
++    first = protocol.route("POST", path, body, headers)
++    assert protocol.route("POST", path, body, headers).headers == first.headers
++    assert len(app.views[0]["turns"]) == 1
++    before = app.calls.count("submit")
++    with pytest.raises(FrontendError, match="agree"):
++        protocol.route("POST", path, body, {"Idempotency-Key": "other"})
++    assert app.calls.count("submit") == before
++    with pytest.raises(FrontendError, match="Conflict"):
++        protocol.route("POST", path, prompt("different text", messageID="msg_g1_retry"), headers)
++    assert len(app.views[0]["turns"]) == 1
++    app.commit()
++    assert protocol.route("POST", path, body, headers).headers == first.headers
++    assert len(app.views[0]["turns"]) == 1
++    protocol.route("POST", path, prompt(messageID="msg_g1_new"))
++    assert len(app.views[0]["turns"]) == 2
++    assert app.physical_calls == 0

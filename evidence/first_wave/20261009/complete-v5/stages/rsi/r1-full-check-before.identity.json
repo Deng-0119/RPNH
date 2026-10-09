@@ -1,0 +1,126 @@
+{
+  "utc": "2026-10-09T01:18:04.822828+00:00",
+  "git": {
+    "repo": "<WORKSPACE>/.v26/r1",
+    "head": "1f191645c4d60c8b190d42e9fad99c85e8981c03",
+    "status": "",
+    "raw_commands": [
+      {
+        "command": [
+          "git",
+          "-C",
+          "<WORKSPACE>/.v26/r1",
+          "rev-parse",
+          "HEAD"
+        ],
+        "started_at_utc": "2026-10-09T01:18:04.822849+00:00",
+        "finished_at_utc": "2026-10-09T01:18:04.825124+00:00",
+        "exit_code": 0,
+        "stdout": "1f191645c4d60c8b190d42e9fad99c85e8981c03\n",
+        "stderr": ""
+      },
+      {
+        "command": [
+          "git",
+          "-C",
+          "<WORKSPACE>/.v26/r1",
+          "branch",
+          "--show-current"
+        ],
+        "started_at_utc": "2026-10-09T01:18:04.825141+00:00",
+        "finished_at_utc": "2026-10-09T01:18:04.827036+00:00",
+        "exit_code": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "command": [
+          "git",
+          "-C",
+          "<WORKSPACE>/.v26/r1",
+          "rev-parse",
+          "origin/main"
+        ],
+        "started_at_utc": "2026-10-09T01:18:04.827052+00:00",
+        "finished_at_utc": "2026-10-09T01:18:04.828971+00:00",
+        "exit_code": 0,
+        "stdout": "1f191645c4d60c8b190d42e9fad99c85e8981c03\n",
+        "stderr": ""
+      },
+      {
+        "command": [
+          "git",
+          "-C",
+          "<WORKSPACE>/.v26/r1",
+          "status",
+          "--porcelain=v1",
+          "--untracked-files=all"
+        ],
+        "started_at_utc": "2026-10-09T01:18:04.828994+00:00",
+        "finished_at_utc": "2026-10-09T01:18:04.841725+00:00",
+        "exit_code": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "command": [
+          "git",
+          "-C",
+          "<WORKSPACE>/.v26/r1",
+          "diff",
+          "--binary",
+          "HEAD"
+        ],
+        "started_at_utc": "2026-10-09T01:18:04.841742+00:00",
+        "finished_at_utc": "2026-10-09T01:18:04.849134+00:00",
+        "exit_code": 0,
+        "stdout": "",
+        "stderr": ""
+      }
+    ]
+  },
+  "changed_files": [
+    {
+      "path": "cpn/examples/iteration_profile/README.md",
+      "exists": false,
+      "sha256": null,
+      "bytes": null,
+      "mode": null
+    },
+    {
+      "path": "cpn/examples/iteration_profile/README_ZH.md",
+      "exists": false,
+      "sha256": null,
+      "bytes": null,
+      "mode": null
+    },
+    {
+      "path": "cpn/examples/iteration_profile/propose_evaluate_select.json",
+      "exists": false,
+      "sha256": null,
+      "bytes": null,
+      "mode": null
+    },
+    {
+      "path": "cpn/rpnh/iteration_profile.py",
+      "exists": false,
+      "sha256": null,
+      "bytes": null,
+      "mode": null
+    },
+    {
+      "path": "cpn/schemas/rpnh/iteration_profile.v1.schema.json",
+      "exists": false,
+      "sha256": null,
+      "bytes": null,
+      "mode": null
+    },
+    {
+      "path": "tests/test_iteration_profile.py",
+      "exists": false,
+      "sha256": null,
+      "bytes": null,
+      "mode": null
+    }
+  ]
+}

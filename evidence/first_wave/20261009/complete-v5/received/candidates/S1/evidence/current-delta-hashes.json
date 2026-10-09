@@ -1,0 +1,68 @@
+[
+  {
+    "path": "cpn/rpnh/_marking/claims.py",
+    "baseline_sha256": "b7bd0f059621c953a5e6667d520defbda9f8904c7aa9606da740a7ef170034a3",
+    "candidate_sha256": "857cf114a64f31ce8f60392e26c738045f9ba0a687e6df62b470741722fa2227",
+    "size": 44549
+  },
+  {
+    "path": "cpn/rpnh/_marking/selection.py",
+    "baseline_sha256": "f73828613c0f1850605419caa5cd98bc973f091efc6373b7e5b1a39b41a09282",
+    "candidate_sha256": "1acd6bd57e8d2d1168f8ac49b6d545d85a6f7717baa74fa414326d74b84ce425",
+    "size": 20462
+  },
+  {
+    "path": "cpn/rpnh/registry/_event_store/validation/firing.py",
+    "baseline_sha256": "6b31c9f705e166af9fecc1e150335905cb42fb4202165d348ae760c9080f4916",
+    "candidate_sha256": "02f62abef868a2f594e55c9b5a63d872131ce740a8277f8564466869bbc39338",
+    "size": 99470
+  },
+  {
+    "path": "cpn/rpnh/registry/declared_effect_validation.py",
+    "baseline_sha256": "b9ceb7a27f0599a391f6b4e21dd13d83d40d09885439601de7a0e6a9d9bddcde",
+    "candidate_sha256": "36df155bb2fbecbe68080984e4e9e6a288e46e8b79547ada876e4b8bfac28ba4",
+    "size": 35819
+  },
+  {
+    "path": "cpn/rpnh/registry/module_effects.py",
+    "baseline_sha256": "9f8b525d8627e28bd4d09e22530bec11d0d831e0f437e74a953bd3563e67ad40",
+    "candidate_sha256": "ba6e920dcb8c3b660e6e08fefef0fbc44a4601357ef00dd12c9daec7be996390",
+    "size": 24904
+  },
+  {
+    "path": "cpn/rpnh/registry/static_lease_claims.py",
+    "baseline_sha256": null,
+    "candidate_sha256": "993ab395df9ab4b12bac3bc8845617945a636ddc724cd00747f2fa19b00d167d",
+    "size": 4651
+  },
+  {
+    "path": "cpn/rpnh/runtime_net.py",
+    "baseline_sha256": "02e380721364bacdf36b31aa3cfb20d3f7fb638a2a5d687ce39cb4668689bb87",
+    "candidate_sha256": "d255ea3e8ab0d87474bd28e077b3eab2b9e3489a19177c8ec76143f77a438917",
+    "size": 19122
+  },
+  {
+    "path": "docs/guides/static-lease-reads.md",
+    "baseline_sha256": null,
+    "candidate_sha256": "eae9499308ad61e3da6895e862dd5caec9667ba7908e75f14d54e448d3173139",
+    "size": 5045
+  },
+  {
+    "path": "docs/guides/static-lease-reads_ZH.md",
+    "baseline_sha256": null,
+    "candidate_sha256": "d612c8381c99004dd95404c5a0420a514ae7b4c1919aac42fd3d356ed9d2e053",
+    "size": 4392
+  },
+  {
+    "path": "tests/test_static_lease_interactions.py",
+    "baseline_sha256": null,
+    "candidate_sha256": "5e046a9b2a8a1cbfeac20b4ac7ae4fe3342dc2c7bb302f3743f821d3a7157118",
+    "size": 29297
+  },
+  {
+    "path": "tests/test_static_lease_reads.py",
+    "baseline_sha256": null,
+    "candidate_sha256": "b8b46b840b49258b8b2e551b8ee170e9dfdd433b3542b354f65ff51c289c91a1",
+    "size": 25376
+  }
+]

@@ -1,0 +1,26 @@
+{
+  "final-tests": {
+    "passed": 57,
+    "failed": 0,
+    "skipped": 0,
+    "deselected": 9
+  },
+  "latest-main-tests": {
+    "passed": 57,
+    "failed": 0,
+    "skipped": 0,
+    "deselected": 9
+  },
+  "unique_focused_cases": 57,
+  "new_native_history_cases": 14,
+  "baseline_commit": "ec9077e95b830d09e7252c6d5d8ebcdbb9eb4ac4",
+  "latest_main_dependency_overlay": "715468dab0b1bea07d7e94a7aa0606eaf194365c",
+  "real_provider_calls": 0,
+  "native_frontend": "NOT_RUN",
+  "stock_codex_cold_resume": "NOT_RUN",
+  "adapter_rpc": "NOT_IMPLEMENTED",
+  "typed_public_body_reader": "NOT_IMPLEMENTED; existing catalog permissions not expanded",
+  "full_documentation_site_check": "NOT_RUN: isolated source omits site files",
+  "targeted_documentation_parse": "PASS: 4 pages",
+  "read_scope": "trusted-host refs-only native canonical cut; each page validates full history; no claimed aggregate allocation bound"
+}

@@ -1,0 +1,89 @@
+{
+  "status": "PASS",
+  "core_file_count": 992,
+  "core_manifest_sha256": "ac68327e442b7bda8a6aa2ba93c0cd20ad72181a661b0497627b08713334907e",
+  "design_file_count": 20,
+  "design_files": [
+    {
+      "path": "ACCEPTANCE.md",
+      "sha256": "e4734b3ca26bd3339ca607fd93a2f035e43b989a1a90b1424d0c835f693b4eaf"
+    },
+    {
+      "path": "BOOTSTRAP_GATE.md",
+      "sha256": "fdbe8dbf71b85fcc2513dc38dd3077df0f2af761240361a7cb1ad44684843c5b"
+    },
+    {
+      "path": "COUNTEREXAMPLES.md",
+      "sha256": "d737df2bb7999d134e68424cef89ed2744ed2b5029b2af61989a617dbb0209b4"
+    },
+    {
+      "path": "DECISIONS_AND_SCOPE.md",
+      "sha256": "dbce154792bd3e55449c42f9f676e65b32ecbb473fb55e98b83d19e0ae5c5d4a"
+    },
+    {
+      "path": "DEPENDENCY_S1_SNAPSHOT.json",
+      "sha256": "ff2c77fc7337c34345c3f769b4f6fbe25b016bf53a1cb9c96af3311a912e0214"
+    },
+    {
+      "path": "H7_PARENT_CHILD_SEAM_DESIGN.md",
+      "sha256": "9b78223fab8eb945e7b9253615181c30c3454628c17ec0da932ea1b0fefd9cb2"
+    },
+    {
+      "path": "INPUT_V2_SHA256.json",
+      "sha256": "f9d821b27a6ec2dfee608534b3c67f3ba3f197446c69434ddc08f01d3aa3e151"
+    },
+    {
+      "path": "README.md",
+      "sha256": "ca132235cdc23848a0dde37ac156d6212e47fde43655b6ef44f9ee46a6c5f622"
+    },
+    {
+      "path": "REFERENCE_DEPENDENCY.md",
+      "sha256": "017dd257430bc1dbd8c4767f5241732cc854323359fa8538e53d31818cdaab3e"
+    },
+    {
+      "path": "SOURCE_MAP.md",
+      "sha256": "959d980181655b037442830bb4fac4da3777b64fe8f759bc2c74df1d905b9ee8"
+    },
+    {
+      "path": "STATIC_EVIDENCE.json",
+      "sha256": "baf204f786702fad4d90aa531a6389dda81f6790e826e68ffd91e7db858b3d6f"
+    },
+    {
+      "path": "TARGET_RESERVATION.md",
+      "sha256": "e0bffee3722adef71b6d7be83156a727a3f5fa224fa31e187dd1f7df4392cd71"
+    },
+    {
+      "path": "V3_REVIEW_RESPONSE.md",
+      "sha256": "5525dcfba59712ed628d4abbf51a55a628f313b1bfb7b8502ac46bc1e0336059"
+    },
+    {
+      "path": "inputs/ABC_ANALYSIS_ZH.md",
+      "sha256": "834c68b5b2158143a83b421b6a470e8830046b8ec05ea7421530dba82c7b4155"
+    },
+    {
+      "path": "inputs/ABC_SOURCE_VERIFICATION.json",
+      "sha256": "d5583fd3df098703ce1a8a37dc1b7bcaa9526475a26d413070645472bab7f0bd"
+    },
+    {
+      "path": "inputs/S1_REVIEW.md",
+      "sha256": "06ff9528663ee3629f6ea5214e3cb12bb480030fa4841990a6c1509e53adc25e"
+    },
+    {
+      "path": "inputs/S1_SOURCE_IDENTITY.json",
+      "sha256": "b65249d3771c306773c6930d39323d019450f7c668e0f7d778c798b70278f753"
+    },
+    {
+      "path": "inputs/S1_TEST_COUNTS.json",
+      "sha256": "bdc1af368c9b63949ef367fc90f45dfb865fd32d4b63b154e282ae3c6ca4bbff"
+    },
+    {
+      "path": "inputs/S1_VALIDATION.md",
+      "sha256": "345ae9487df1c2b09ae8ed0fa9d49539f5a2efe5238bf893268b38b6ad70f114"
+    },
+    {
+      "path": "inputs/V2_REVIEW.md",
+      "sha256": "ff702d9b802287abace04283d7095dbc10d233ec47ecea3d76e9ede36ea7e8e1"
+    }
+  ],
+  "note": "Original frozen packages read only and unchanged; no current remote HEAD assertion"
+}

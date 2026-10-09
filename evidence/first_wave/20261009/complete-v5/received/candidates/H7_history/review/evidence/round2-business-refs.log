@@ -1,0 +1,91 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.14, pytest-8.4.2, pluggy-1.6.0 -- /workspace/scratch/18c810e6dd59/rpnh-acceptance-history-review/round2-source/../../rpnh-recovery-20261003/source/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /workspace/scratch/18c810e6dd59/rpnh-acceptance-history-review
+collecting ... collected 2 items
+
+../tests/test_history_business_refs.py::test_user_configuration_reference_shape_does_not_create_dependency[version_ref] FAILED [ 50%]
+../tests/test_history_business_refs.py::test_user_configuration_reference_shape_does_not_create_dependency[resource_ref] FAILED [100%]
+
+=================================== FAILURES ===================================
+_ test_user_configuration_reference_shape_does_not_create_dependency[version_ref] _
+
+tmp_path = PosixPath('/tmp/pytest-of-agent/pytest-205/test_user_configuration_refere0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7faef9dbc2f0>
+shape = 'version_ref'
+
+    @pytest.mark.parametrize('shape', ['version_ref', 'resource_ref'])
+    def test_user_configuration_reference_shape_does_not_create_dependency(tmp_path, monkeypatch, shape):
+        original = fixtures.canonical_json
+        value = ({'entity_type':'task/v1', 'logical_id':str(new_id('task')), 'version_id':str(new_id('task_version'))}
+            if shape == 'version_ref' else {'resource_id':str(new_id('resource')), 'resource_version_id':str(new_id('resource_version'))})
+        def encoded(body):
+            if isinstance(body, dict) and body.get('schema_version') == fixtures.h7.REQUEST_SCHEMA:
+                body = {**body, 'public_configuration':{**body['public_configuration'], 'opaque_example':value}}
+            return original(body)
+        monkeypatch.setattr(fixtures, 'canonical_json', encoded)
+        owner,*_,acceptance = fixtures.accepted_parent(tmp_path / 'parent')
+        store = owner._core.event_store
+        query = assertion_for(owner, acceptance)
+        body = owner._core.get_version(acceptance.version_id).metadata
+        intent = owner._core.get_version(fixtures._version_from_payload(body['intent_ref']).version_id).metadata
+        assert intent['request']['public_configuration']['opaque_example'] == value
+        before = database_contents(store)
+        result = store.classify_child_acceptance_history(query)
+>       assert result.status == VALID, result
+E       AssertionError: ChildAcceptanceHistoryResult(status='HISTORICAL_ACCEPTANCE_INVALID', reason='original_evidence_or_assertion_invalid', proof=None)
+E       assert 'HISTORICAL_ACCEPTANCE_INVALID' == 'HISTORICAL_ACCEPTANCE_VALID'
+E         
+E         - HISTORICAL_ACCEPTANCE_VALID
+E         + HISTORICAL_ACCEPTANCE_INVALID
+E         ?                       ++
+
+../tests/test_history_business_refs.py:28: AssertionError
+_ test_user_configuration_reference_shape_does_not_create_dependency[resource_ref] _
+
+tmp_path = PosixPath('/tmp/pytest-of-agent/pytest-205/test_user_configuration_refere1')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7faefa781b80>
+shape = 'resource_ref'
+
+    @pytest.mark.parametrize('shape', ['version_ref', 'resource_ref'])
+    def test_user_configuration_reference_shape_does_not_create_dependency(tmp_path, monkeypatch, shape):
+        original = fixtures.canonical_json
+        value = ({'entity_type':'task/v1', 'logical_id':str(new_id('task')), 'version_id':str(new_id('task_version'))}
+            if shape == 'version_ref' else {'resource_id':str(new_id('resource')), 'resource_version_id':str(new_id('resource_version'))})
+        def encoded(body):
+            if isinstance(body, dict) and body.get('schema_version') == fixtures.h7.REQUEST_SCHEMA:
+                body = {**body, 'public_configuration':{**body['public_configuration'], 'opaque_example':value}}
+            return original(body)
+        monkeypatch.setattr(fixtures, 'canonical_json', encoded)
+        owner,*_,acceptance = fixtures.accepted_parent(tmp_path / 'parent')
+        store = owner._core.event_store
+        query = assertion_for(owner, acceptance)
+        body = owner._core.get_version(acceptance.version_id).metadata
+        intent = owner._core.get_version(fixtures._version_from_payload(body['intent_ref']).version_id).metadata
+        assert intent['request']['public_configuration']['opaque_example'] == value
+        before = database_contents(store)
+        result = store.classify_child_acceptance_history(query)
+>       assert result.status == VALID, result
+E       AssertionError: ChildAcceptanceHistoryResult(status='HISTORICAL_ACCEPTANCE_INVALID', reason='original_evidence_or_assertion_invalid', proof=None)
+E       assert 'HISTORICAL_ACCEPTANCE_INVALID' == 'HISTORICAL_ACCEPTANCE_VALID'
+E         
+E         - HISTORICAL_ACCEPTANCE_VALID
+E         + HISTORICAL_ACCEPTANCE_INVALID
+E         ?                       ++
+
+../tests/test_history_business_refs.py:28: AssertionError
+- generated xml file: /workspace/scratch/18c810e6dd59/rpnh-acceptance-history-review/evidence/round2-business-refs.xml -
+=========================== short test summary info ============================
+FAILED ../tests/test_history_business_refs.py::test_user_configuration_reference_shape_does_not_create_dependency[version_ref] - AssertionError: ChildAcceptanceHistoryResult(status='HISTORICAL_ACCEPTANCE_INVALID', reason='original_evidence_or_assertion_invalid', proof=None)
+assert 'HISTORICAL_ACCEPTANCE_INVALID' == 'HISTORICAL_ACCEPTANCE_VALID'
+  
+  - HISTORICAL_ACCEPTANCE_VALID
+  + HISTORICAL_ACCEPTANCE_INVALID
+  ?                       ++
+FAILED ../tests/test_history_business_refs.py::test_user_configuration_reference_shape_does_not_create_dependency[resource_ref] - AssertionError: ChildAcceptanceHistoryResult(status='HISTORICAL_ACCEPTANCE_INVALID', reason='original_evidence_or_assertion_invalid', proof=None)
+assert 'HISTORICAL_ACCEPTANCE_INVALID' == 'HISTORICAL_ACCEPTANCE_VALID'
+  
+  - HISTORICAL_ACCEPTANCE_VALID
+  + HISTORICAL_ACCEPTANCE_INVALID
+  ?                       ++
+============================== 2 failed in 5.39s ===============================

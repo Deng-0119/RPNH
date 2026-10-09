@@ -1,0 +1,226 @@
+{
+  "source": "/workspace/scratch/18c810e6dd59/rpnh-parent-child-core-boundary-review/round3-source",
+  "exit_status": 1,
+  "collected": [
+    "rpnh-parent-child-core-boundary-review/tests/test_boundary_child.py::test_bound_writable_core_reentry_fails_before_eventstore_construction",
+    "rpnh-parent-child-core-boundary-review/tests/test_boundary_child.py::test_bound_direct_acquire_writer_cannot_fence_original_owner",
+    "rpnh-parent-child-core-boundary-review/tests/test_boundary_child.py::test_bound_readonly_core_preserves_writer_and_exact_origin",
+    "rpnh-parent-child-core-boundary-review/tests/test_boundary_child.py::test_protected_catalog_bridge_is_exact_original_source",
+    "rpnh-parent-child-core-boundary-review/tests/test_boundary_child.py::test_direct_same_writer_stopped_to_running_authority_is_rejected",
+    "rpnh-parent-child-core-boundary-review/tests/test_boundary_child.py::test_required_bound_protocol_cannot_commit_without_atomic_marker",
+    "rpnh-parent-child-core-boundary-review/tests/test_boundary_child.py::test_bound_first_business_start_after_durable_stop_is_rejected",
+    "rpnh-parent-child-core-boundary-review/tests/test_boundary_child.py::test_origin_integrity_rejects_catalog_or_producer_source_substitution[content_schema_authority_ref]",
+    "rpnh-parent-child-core-boundary-review/tests/test_boundary_child.py::test_origin_integrity_rejects_catalog_or_producer_source_substitution[producer_ref]",
+    "rpnh-parent-child-core-boundary-review/tests/test_boundary_child.py::test_origin_integrity_rejects_catalog_or_producer_source_substitution[lifetime_ref]",
+    "rpnh-parent-child-core-boundary-review/tests/test_boundary_child.py::test_direct_second_adoption_transaction_is_rejected",
+    "rpnh-parent-child-core-boundary-review/tests/test_boundary_child.py::test_memory_stop_request_allows_already_started_completion_drain",
+    "rpnh-parent-child-core-boundary-review/tests/test_boundary_parent.py::test_live_exact_raw_replay_has_no_new_commit[parent_child_intent/v1]",
+    "rpnh-parent-child-core-boundary-review/tests/test_boundary_parent.py::test_live_exact_raw_replay_has_no_new_commit[parent_child_dispatch/v1]",
+    "rpnh-parent-child-core-boundary-review/tests/test_boundary_parent.py::test_live_exact_raw_replay_has_no_new_commit[parent_child_worker/v1]",
+    "rpnh-parent-child-core-boundary-review/tests/test_boundary_parent.py::test_live_exact_raw_replay_has_no_new_commit[parent_child_acceptance/v1]",
+    "rpnh-parent-child-core-boundary-review/tests/test_boundary_parent.py::test_exact_raw_replay_after_owner_stop_revalidates_live_authority[parent_child_intent/v1]",
+    "rpnh-parent-child-core-boundary-review/tests/test_boundary_parent.py::test_exact_raw_replay_after_owner_stop_revalidates_live_authority[parent_child_dispatch/v1]",
+    "rpnh-parent-child-core-boundary-review/tests/test_boundary_parent.py::test_exact_raw_replay_after_owner_stop_revalidates_live_authority[parent_child_worker/v1]",
+    "rpnh-parent-child-core-boundary-review/tests/test_boundary_parent.py::test_exact_raw_replay_after_owner_stop_revalidates_live_authority[parent_child_acceptance/v1]",
+    "rpnh-parent-child-core-boundary-review/tests/test_boundary_parent.py::test_intent_helper_replay_after_success_is_closed",
+    "rpnh-parent-child-core-boundary-review/tests/test_boundary_parent.py::test_intent_helper_replay_after_parent_writer_fence_is_closed",
+    "rpnh-parent-child-core-boundary-review/tests/test_boundary_parent.py::test_started_ordinary_operation_cannot_substitute_launcher_pn_contract[two-slot-capacity]",
+    "rpnh-parent-child-core-boundary-review/tests/test_boundary_parent.py::test_started_ordinary_operation_cannot_substitute_launcher_pn_contract[no-launch-capability]",
+    "rpnh-parent-child-core-boundary-review/tests/test_boundary_parent.py::test_started_ordinary_operation_cannot_substitute_launcher_pn_contract[interrupted-outcome]",
+    "rpnh-parent-child-core-boundary-review/tests/test_boundary_parent.py::test_started_ordinary_operation_cannot_substitute_launcher_pn_contract[missing-failed-outcome]",
+    "rpnh-parent-child-core-boundary-review/tests/test_boundary_parent.py::test_started_ordinary_operation_cannot_substitute_launcher_pn_contract[ordinary-executor]",
+    "rpnh-parent-child-core-boundary-review/tests/test_boundary_parent.py::test_public_dispatch_cannot_use_self_asserted_native_evidence[None]",
+    "rpnh-parent-child-core-boundary-review/tests/test_boundary_parent.py::test_public_dispatch_cannot_use_self_asserted_native_evidence[proof1]",
+    "rpnh-parent-child-core-boundary-review/tests/test_boundary_parent.py::test_public_dispatch_cannot_use_self_asserted_native_evidence[proof2]",
+    "rpnh-parent-child-core-boundary-review/tests/test_boundary_parent.py::test_native_evidence_has_no_production_constructor"
+  ],
+  "outcomes": [
+    {
+      "nodeid": "rpnh-parent-child-core-boundary-review/tests/test_boundary_child.py::test_bound_writable_core_reentry_fails_before_eventstore_construction",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 3.9105876679968787
+    },
+    {
+      "nodeid": "rpnh-parent-child-core-boundary-review/tests/test_boundary_child.py::test_bound_direct_acquire_writer_cannot_fence_original_owner",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 3.2424746489996323
+    },
+    {
+      "nodeid": "rpnh-parent-child-core-boundary-review/tests/test_boundary_child.py::test_bound_readonly_core_preserves_writer_and_exact_origin",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 3.066747403005138
+    },
+    {
+      "nodeid": "rpnh-parent-child-core-boundary-review/tests/test_boundary_child.py::test_protected_catalog_bridge_is_exact_original_source",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 3.0310239669997827
+    },
+    {
+      "nodeid": "rpnh-parent-child-core-boundary-review/tests/test_boundary_child.py::test_direct_same_writer_stopped_to_running_authority_is_rejected",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 2.9070380620032665
+    },
+    {
+      "nodeid": "rpnh-parent-child-core-boundary-review/tests/test_boundary_child.py::test_required_bound_protocol_cannot_commit_without_atomic_marker",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.15931050699873595
+    },
+    {
+      "nodeid": "rpnh-parent-child-core-boundary-review/tests/test_boundary_child.py::test_bound_first_business_start_after_durable_stop_is_rejected",
+      "when": "call",
+      "outcome": "failed",
+      "duration": 4.310260949001531
+    },
+    {
+      "nodeid": "rpnh-parent-child-core-boundary-review/tests/test_boundary_child.py::test_origin_integrity_rejects_catalog_or_producer_source_substitution[content_schema_authority_ref]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 2.9422117639987846
+    },
+    {
+      "nodeid": "rpnh-parent-child-core-boundary-review/tests/test_boundary_child.py::test_origin_integrity_rejects_catalog_or_producer_source_substitution[producer_ref]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 3.070277836995956
+    },
+    {
+      "nodeid": "rpnh-parent-child-core-boundary-review/tests/test_boundary_child.py::test_origin_integrity_rejects_catalog_or_producer_source_substitution[lifetime_ref]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 3.165981552003359
+    },
+    {
+      "nodeid": "rpnh-parent-child-core-boundary-review/tests/test_boundary_child.py::test_direct_second_adoption_transaction_is_rejected",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 3.10288747499726
+    },
+    {
+      "nodeid": "rpnh-parent-child-core-boundary-review/tests/test_boundary_child.py::test_memory_stop_request_allows_already_started_completion_drain",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 7.9726526490048855
+    },
+    {
+      "nodeid": "rpnh-parent-child-core-boundary-review/tests/test_boundary_parent.py::test_live_exact_raw_replay_has_no_new_commit[parent_child_intent/v1]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 1.9423502380013815
+    },
+    {
+      "nodeid": "rpnh-parent-child-core-boundary-review/tests/test_boundary_parent.py::test_live_exact_raw_replay_has_no_new_commit[parent_child_dispatch/v1]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 1.9685009809982148
+    },
+    {
+      "nodeid": "rpnh-parent-child-core-boundary-review/tests/test_boundary_parent.py::test_live_exact_raw_replay_has_no_new_commit[parent_child_worker/v1]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 2.01484186900052
+    },
+    {
+      "nodeid": "rpnh-parent-child-core-boundary-review/tests/test_boundary_parent.py::test_live_exact_raw_replay_has_no_new_commit[parent_child_acceptance/v1]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 2.0531924509996315
+    },
+    {
+      "nodeid": "rpnh-parent-child-core-boundary-review/tests/test_boundary_parent.py::test_exact_raw_replay_after_owner_stop_revalidates_live_authority[parent_child_intent/v1]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 2.157781999994768
+    },
+    {
+      "nodeid": "rpnh-parent-child-core-boundary-review/tests/test_boundary_parent.py::test_exact_raw_replay_after_owner_stop_revalidates_live_authority[parent_child_dispatch/v1]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 2.0665995569943334
+    },
+    {
+      "nodeid": "rpnh-parent-child-core-boundary-review/tests/test_boundary_parent.py::test_exact_raw_replay_after_owner_stop_revalidates_live_authority[parent_child_worker/v1]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 2.068479732995911
+    },
+    {
+      "nodeid": "rpnh-parent-child-core-boundary-review/tests/test_boundary_parent.py::test_exact_raw_replay_after_owner_stop_revalidates_live_authority[parent_child_acceptance/v1]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 2.0548765920029837
+    },
+    {
+      "nodeid": "rpnh-parent-child-core-boundary-review/tests/test_boundary_parent.py::test_intent_helper_replay_after_success_is_closed",
+      "when": "call",
+      "outcome": "failed",
+      "duration": 2.8170837639991078
+    },
+    {
+      "nodeid": "rpnh-parent-child-core-boundary-review/tests/test_boundary_parent.py::test_intent_helper_replay_after_parent_writer_fence_is_closed",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 1.8768141850014217
+    },
+    {
+      "nodeid": "rpnh-parent-child-core-boundary-review/tests/test_boundary_parent.py::test_started_ordinary_operation_cannot_substitute_launcher_pn_contract[two-slot-capacity]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 1.7701972459981334
+    },
+    {
+      "nodeid": "rpnh-parent-child-core-boundary-review/tests/test_boundary_parent.py::test_started_ordinary_operation_cannot_substitute_launcher_pn_contract[no-launch-capability]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 1.6336250719978125
+    },
+    {
+      "nodeid": "rpnh-parent-child-core-boundary-review/tests/test_boundary_parent.py::test_started_ordinary_operation_cannot_substitute_launcher_pn_contract[interrupted-outcome]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 1.8687504300032742
+    },
+    {
+      "nodeid": "rpnh-parent-child-core-boundary-review/tests/test_boundary_parent.py::test_started_ordinary_operation_cannot_substitute_launcher_pn_contract[missing-failed-outcome]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 1.7375668379972922
+    },
+    {
+      "nodeid": "rpnh-parent-child-core-boundary-review/tests/test_boundary_parent.py::test_started_ordinary_operation_cannot_substitute_launcher_pn_contract[ordinary-executor]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 1.7348846620006952
+    },
+    {
+      "nodeid": "rpnh-parent-child-core-boundary-review/tests/test_boundary_parent.py::test_public_dispatch_cannot_use_self_asserted_native_evidence[None]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 1.792563399001665
+    },
+    {
+      "nodeid": "rpnh-parent-child-core-boundary-review/tests/test_boundary_parent.py::test_public_dispatch_cannot_use_self_asserted_native_evidence[proof1]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 1.7315545449964702
+    },
+    {
+      "nodeid": "rpnh-parent-child-core-boundary-review/tests/test_boundary_parent.py::test_public_dispatch_cannot_use_self_asserted_native_evidence[proof2]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 1.6882750629956718
+    },
+    {
+      "nodeid": "rpnh-parent-child-core-boundary-review/tests/test_boundary_parent.py::test_native_evidence_has_no_production_constructor",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 6.603800284210593e-05
+    }
+  ],
+  "sentinel_blocked_events": []
+}

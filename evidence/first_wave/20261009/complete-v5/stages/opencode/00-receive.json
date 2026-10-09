@@ -1,0 +1,21 @@
+{
+  "command": [
+    "<WORKSPACE>/.p26/v/bin/python",
+    "-c",
+    "from pathlib import Path; import subprocess,json,shutil; r=Path.cwd(); assert r.resolve()==Path(\"<WORKSPACE>/.v26/o\"); print(json.dumps({\"root\":str(r),\"head\":subprocess.check_output([\"git\",\"rev-parse\",\"HEAD\"],text=True).strip(),\"status\":subprocess.check_output([\"git\",\"status\",\"--porcelain=v1\",\"--untracked-files=all\"],text=True),\"opencode_path\":shutil.which(\"opencode\")},indent=2)); print((r/\"AGENTS.md\").read_text() if (r/\"AGENTS.md\").exists() else \"NO_WORKTREE_AGENTS\")"
+  ],
+  "cwd": "<WORKSPACE>/.v26/o",
+  "pid": 13496,
+  "started_at_utc": "2026-10-09T01:16:40.338437+00:00",
+  "finished_at_utc": "2026-10-09T01:16:40.900334+00:00",
+  "elapsed_seconds": 0.5619154919986613,
+  "exit_code": 0,
+  "environment": {
+    "PYTHONPATH": "<WORKSPACE>/.v26/o",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1",
+    "TMPDIR": "<WORKSPACE>/.v26/tmp",
+    "PYTEST_ADDOPTS": null,
+    "PYTEST_PLUGINS": null
+  }
+}

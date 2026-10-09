@@ -1,0 +1,12 @@
+{
+  "pytest_exit": null,
+  "pytest_terminal_summary": "68 passed, 3 deselected",
+  "pytest_xml_complete": true,
+  "wrapper_exit": 2,
+  "wrapper_status": "INVALID_FOR_FINAL_RUN",
+  "reason": "The portable runner was edited while this earlier Bash invocation was active; its trailer failed to parse. The source was not changed. Complete XML/log are historical only; final21 repeats these cases with the frozen runner.",
+  "source_unchanged": true,
+  "source_after_capture": "Captured explicitly after the wrapper error.",
+  "wrapper_stderr": "rpnh-parent-child-core-implementation/tools/run_offline.sh: line 18: unexpected EOF while looking for matching `\"'",
+  "stderr_source": "Exact stderr returned by the completed tool session; stored after the failure."
+}

@@ -1,0 +1,26 @@
+{
+  "runs": [
+    {
+      "command": [
+        "git",
+        "apply",
+        "--check",
+        "../rsi-runtime-validation.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "apply",
+        "../rsi-runtime-validation.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "applied_bytes_equal_final_source": true
+}

@@ -1,0 +1,62 @@
+{
+  "scene": "g5-produce",
+  "node_id": "<WORKSPACE>/task-complete-v5-20261009/stages/core/S1/native/a004/test_native_s1.py::test_g5_coexistence[produce]",
+  "command": [
+    "<WORKSPACE>/.p26/v/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "-p",
+    "no:cacheprovider",
+    "--confcutdir=<WORKSPACE>/task-complete-v5-20261009/stages/core/S1/native/a004",
+    "--rootdir=<WORKSPACE>/task-complete-v5-20261009/stages/core/S1/native/a004",
+    "--basetemp=<WORKSPACE>/.v26/unS1-a004-5",
+    "--junitxml=<WORKSPACE>/task-complete-v5-20261009/stages/core/S1/native/a004/g5-produce.xml",
+    "<WORKSPACE>/task-complete-v5-20261009/stages/core/S1/native/a004/test_native_s1.py::test_g5_coexistence[produce]"
+  ],
+  "cwd": "<WORKSPACE>/.v26/c1",
+  "started_utc": "2026-10-09T03:45:39.490171+00:00",
+  "resources_before": {
+    "utc": "2026-10-09T03:45:39.489910+00:00",
+    "windows_D_free_bytes": 54021922816,
+    "task_plus_v26_bytes": 5307764736,
+    "native_runtime_bytes": 157736960,
+    "memory_available_bytes": 15123292160,
+    "allowed": true
+  },
+  "env": {
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1",
+    "PYTEST_ADDOPTS": "",
+    "PYTHONPATH": "<WORKSPACE>/.v26/c1:<WORKSPACE>/.v26/c1/tests",
+    "TMPDIR": "<WORKSPACE>/.v26/unS1-a004-5",
+    "TMP": "<WORKSPACE>/.v26/unS1-a004-5",
+    "TEMP": "<WORKSPACE>/.v26/unS1-a004-5"
+  },
+  "pid": 20809,
+  "exit_code": 0,
+  "finished_utc": "2026-10-09T03:45:52.826140+00:00",
+  "interruption": null,
+  "status": "PASS",
+  "junit": "<WORKSPACE>/task-complete-v5-20261009/stages/core/S1/native/a004/g5-produce.xml",
+  "junit_cases": [
+    {
+      "name": "test_g5_coexistence[produce]",
+      "outcome": "PASS"
+    }
+  ],
+  "resources_after": {
+    "utc": "2026-10-09T03:45:53.491010+00:00",
+    "windows_D_free_bytes": 54021922816,
+    "task_plus_v26_bytes": 5328707584,
+    "native_runtime_bytes": 164147200,
+    "memory_available_bytes": 15126499328,
+    "allowed": true
+  },
+  "residual_sockets": [],
+  "process_reaped": true,
+  "evidence": [
+    "g5-produce-cleanup.json",
+    "g5-produce.json"
+  ]
+}

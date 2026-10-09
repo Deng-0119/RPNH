@@ -1,0 +1,44 @@
+{
+  "source": "/workspace/scratch/18c810e6dd59/rpnh-parent-child-core-boundary-review/round3-source",
+  "exit_status": 0,
+  "collected": [
+    "rpnh-parent-child-core-boundary-review/tests/test_boundary_child.py::test_bound_admission_replay_after_stop_is_closed_at_original_boundary[helper]",
+    "rpnh-parent-child-core-boundary-review/tests/test_boundary_child.py::test_bound_admission_replay_after_stop_is_closed_at_original_boundary[raw-commit]",
+    "rpnh-parent-child-core-boundary-review/tests/test_boundary_child.py::test_bound_admission_replay_cannot_forge_reference_claim[omit-origin]",
+    "rpnh-parent-child-core-boundary-review/tests/test_boundary_child.py::test_bound_admission_replay_cannot_forge_reference_claim[consume-origin]",
+    "rpnh-parent-child-core-boundary-review/tests/test_boundary_child.py::test_bound_start_raw_transaction_replay_after_stop_is_closed"
+  ],
+  "outcomes": [
+    {
+      "nodeid": "rpnh-parent-child-core-boundary-review/tests/test_boundary_child.py::test_bound_admission_replay_after_stop_is_closed_at_original_boundary[helper]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 3.953263392999361
+    },
+    {
+      "nodeid": "rpnh-parent-child-core-boundary-review/tests/test_boundary_child.py::test_bound_admission_replay_after_stop_is_closed_at_original_boundary[raw-commit]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 3.730034455002169
+    },
+    {
+      "nodeid": "rpnh-parent-child-core-boundary-review/tests/test_boundary_child.py::test_bound_admission_replay_cannot_forge_reference_claim[omit-origin]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 3.773565884999698
+    },
+    {
+      "nodeid": "rpnh-parent-child-core-boundary-review/tests/test_boundary_child.py::test_bound_admission_replay_cannot_forge_reference_claim[consume-origin]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 3.7162818270007847
+    },
+    {
+      "nodeid": "rpnh-parent-child-core-boundary-review/tests/test_boundary_child.py::test_bound_start_raw_transaction_replay_after_stop_is_closed",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 5.645772301999386
+    }
+  ],
+  "sentinel_blocked_events": []
+}

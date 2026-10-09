@@ -1,0 +1,150 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+________________________ test_static_lease_read_admits _________________________
+
+context = TransactionValidationContext(db=<sqlite3.Connection object at 0x7ff48227ed40>, objects=(PreparedObject(object_type='in...version:8707db3f365e5361a6a23e4a0b95e53a'): True}, native_resume_superseded_firing_ids=set(), pending_firing_claims=[])
+firing = {'activation_ref': None, 'admission_marking_checkpoint_ref': {'entity_type': 'marking_checkpoint/v1', 'logical_id': 'm...ersion_id': 'marking_checkpoint_version:862d6a81382e575baf8a5f28ac503e4a'}, 'agent_ref': None, 'attempt_index': 1, ...}
+checkpoint = {'attempts': [], 'epoch': 0, 'marking_checkpoint_ref': {'entity_type': 'marking_checkpoint/v1', 'logical_id': 'marking...nstance:35af1695eb175dbe9df3a87645fe9a68', 'version_id': 'net_instance_version:0ae2542746d45e6f8306dac5f7b2cb3b'}, ...}
+
+    def validate_static_lease_claim(context, firing, checkpoint):
+        """Derive references from the adopted PN, never caller-supplied modes.
+    
+        Legacy declarations without static lease reads retain their admission
+        contract. No new publication, index, capability or scheduler is involved.
+        """
+        def obj(ref, kind=None):
+            if not context.exact_ref_exists(ref, kind):
+                raise RegistryConflict('static lease claim lacks an exact registered reference')
+            value = context.version_metadata(ref['version_id'], ref['entity_type'])
+            if value is None:
+                raise RegistryConflict('static lease claim reference is not visible')
+            return value
+    
+        net = obj(firing['net_instance_ref'], 'net_instance/v1')
+        declaration = net['team_net_declaration_resource_ref']
+        declaration_ref = {'entity_type': 'resource_version/v1',
+            'logical_id': declaration['resource_id'], 'version_id': declaration['resource_version_id']}
+        metadata = obj(declaration_ref, 'resource_version/v1')
+        if metadata.get('content_schema_ref') != 'rpnh/executable_net/v1':
+            return
+        version = TypedId.parse(declaration_ref['version_id'], expected='resource_version')
+        payload = (context.event_store.path.parent / 'objects' / version.kind / version.value).read_bytes()
+        if len(payload) != metadata['size']:
+            raise RegistryConflict('static lease claim declaration byte size differs')
+        compiled = load_compiled_net(json.loads(payload))
+        lease_places = {place.name for place in compiled.symbolic.places
+                        if place.token_kind == 'resource_lease'}
+        if not any(arc.transition == firing['transition_id'] and arc.direction == 'input'
+                   and arc.mode == 'read' and arc.place in lease_places for arc in compiled.symbolic.arcs):
+            return
+        try:
+            root = obj(net['team_design_root_ref'], 'team_design_root/v1')
+            structure = RuntimeNet(compiled, net_ref=_version_from_payload(firing['net_instance_ref']),
+                resource_plan=_resource_plan(net, root, compiled, obj))
+            refs = firing['claimed_input_refs']
+            if ([ref['version_id'] for ref in refs] != firing['claimed_input_version_ids']
+                    or len({canonical_json(ref) for ref in refs}) != len(refs)):
+>               raise ValueError('claim ref/index identity differs')
+E               ValueError: claim ref/index identity differs
+
+cpn/rpnh/registry/static_lease_claims.py:54: ValueError
+
+The above exception was the direct cause of the following exception:
+
+tmp_path = PosixPath('/tmp/pytest-of-agent/pytest-137/test_static_lease_read_admits0')
+
+    def test_static_lease_read_admits(tmp_path):
+        owner = lease_owner(tmp_path / "run")
+>       admitted = owner.admit("step.run", logical_tau=0, command_id="test:admit")
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_static_lease_reads.py:105: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+cpn/rpnh/run.py:476: in admit
+    return admit_module_firing(self._core, transition_id=transition_id,
+cpn/rpnh/registry/module_execution.py:210: in admit_module_firing
+    admission = InvocationLifecycle(core).admit_firing(claim, idempotency_key=idempotency_key)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+cpn/rpnh/registry/invocations.py:384: in admit_firing
+    return implementation(self, claim, idempotency_key=idempotency_key)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+cpn/rpnh/registry/_invocation/admission.py:622: in admit_firing
+    committed = tx.commit()
+                ^^^^^^^^^^^
+cpn/rpnh/registry/transaction.py:387: in commit
+    result = self.event_store.publish_batch(
+cpn/rpnh/registry/event_store.py:1876: in publish_batch
+    return commit.publish_batch(
+cpn/rpnh/registry/_event_store/commit.py:816: in publish_batch
+    event_store._validate_authoritative_references(
+cpn/rpnh/registry/event_store.py:1913: in _validate_authoritative_references
+    firing.validate_authoritative_references(
+cpn/rpnh/registry/_event_store/validation/firing.py:1724: in validate_authoritative_references
+    validate_firing_event(context, pending)
+cpn/rpnh/registry/_event_store/validation/firing.py:273: in validate_firing_event
+    validate_static_lease_claim(context, firing, checkpoint_metadata)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+context = TransactionValidationContext(db=<sqlite3.Connection object at 0x7ff48227ed40>, objects=(PreparedObject(object_type='in...version:8707db3f365e5361a6a23e4a0b95e53a'): True}, native_resume_superseded_firing_ids=set(), pending_firing_claims=[])
+firing = {'activation_ref': None, 'admission_marking_checkpoint_ref': {'entity_type': 'marking_checkpoint/v1', 'logical_id': 'm...ersion_id': 'marking_checkpoint_version:862d6a81382e575baf8a5f28ac503e4a'}, 'agent_ref': None, 'attempt_index': 1, ...}
+checkpoint = {'attempts': [], 'epoch': 0, 'marking_checkpoint_ref': {'entity_type': 'marking_checkpoint/v1', 'logical_id': 'marking...nstance:35af1695eb175dbe9df3a87645fe9a68', 'version_id': 'net_instance_version:0ae2542746d45e6f8306dac5f7b2cb3b'}, ...}
+
+    def validate_static_lease_claim(context, firing, checkpoint):
+        """Derive references from the adopted PN, never caller-supplied modes.
+    
+        Legacy declarations without static lease reads retain their admission
+        contract. No new publication, index, capability or scheduler is involved.
+        """
+        def obj(ref, kind=None):
+            if not context.exact_ref_exists(ref, kind):
+                raise RegistryConflict('static lease claim lacks an exact registered reference')
+            value = context.version_metadata(ref['version_id'], ref['entity_type'])
+            if value is None:
+                raise RegistryConflict('static lease claim reference is not visible')
+            return value
+    
+        net = obj(firing['net_instance_ref'], 'net_instance/v1')
+        declaration = net['team_net_declaration_resource_ref']
+        declaration_ref = {'entity_type': 'resource_version/v1',
+            'logical_id': declaration['resource_id'], 'version_id': declaration['resource_version_id']}
+        metadata = obj(declaration_ref, 'resource_version/v1')
+        if metadata.get('content_schema_ref') != 'rpnh/executable_net/v1':
+            return
+        version = TypedId.parse(declaration_ref['version_id'], expected='resource_version')
+        payload = (context.event_store.path.parent / 'objects' / version.kind / version.value).read_bytes()
+        if len(payload) != metadata['size']:
+            raise RegistryConflict('static lease claim declaration byte size differs')
+        compiled = load_compiled_net(json.loads(payload))
+        lease_places = {place.name for place in compiled.symbolic.places
+                        if place.token_kind == 'resource_lease'}
+        if not any(arc.transition == firing['transition_id'] and arc.direction == 'input'
+                   and arc.mode == 'read' and arc.place in lease_places for arc in compiled.symbolic.arcs):
+            return
+        try:
+            root = obj(net['team_design_root_ref'], 'team_design_root/v1')
+            structure = RuntimeNet(compiled, net_ref=_version_from_payload(firing['net_instance_ref']),
+                resource_plan=_resource_plan(net, root, compiled, obj))
+            refs = firing['claimed_input_refs']
+            if ([ref['version_id'] for ref in refs] != firing['claimed_input_version_ids']
+                    or len({canonical_json(ref) for ref in refs}) != len(refs)):
+                raise ValueError('claim ref/index identity differs')
+            tokens = {canonical_json(ref): obj(ref, 'petri_token/v1') for ref in checkpoint['token_refs']}
+            if any(state['petri_token_ref'] != json.loads(key)
+                   or state['net_instance_ref'] != firing['net_instance_ref'] for key, state in tokens.items()):
+                raise ValueError('checkpoint token self/net identity differs')
+            local = TeamNetMarking.from_authority(structure, _marking(checkpoint, tokens, set()))
+            exact = tuple(_version_from_payload(ref) for ref in refs)
+            epoch = local.claim_exact_registered_firing(firing['transition_id'], exact)
+            consumed = {token.token_ref for token in local.claimed_tokens(firing['transition_id'], epoch)}
+            references = set(exact) - consumed
+            delta = obj(firing['claim_marking_delta_ref'], 'marking_delta/v1')
+            if references & {_version_from_payload(ref) for ref in delta['consumed_refs']}:
+                raise ValueError('read reference was declared consumed')
+        except (KeyError, TypeError, ValueError) as exc:
+>           raise RegistryConflict('static lease claim differs from adopted PN/marking: ' + str(exc)) from exc
+E           cpn.rpnh.registry.event_store.RegistryConflict: static lease claim differs from adopted PN/marking: claim ref/index identity differs
+
+cpn/rpnh/registry/static_lease_claims.py:68: RegistryConflict
+=========================== short test summary info ============================
+FAILED tests/test_static_lease_reads.py::test_static_lease_read_admits - cpn....
+1 failed in 2.08s

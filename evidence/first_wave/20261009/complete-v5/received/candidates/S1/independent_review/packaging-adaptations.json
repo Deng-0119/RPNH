@@ -1,0 +1,32 @@
+[
+  {
+    "path": "probe_empty_consume.py",
+    "original_sha256": "3b19f7ce1980f36e8f7c367db7a52d51ee6d6c5ad2764ec4dc3379ffbfee5a32",
+    "portable_sha256": "3b19f7ce1980f36e8f7c367db7a52d51ee6d6c5ad2764ec4dc3379ffbfee5a32",
+    "change": "byte-identical"
+  },
+  {
+    "path": "probe_indices.py",
+    "original_sha256": "163c4897053eb8d5584b16f684ab43febd46d17306b8ba757a04c709942b3c71",
+    "portable_sha256": "163c4897053eb8d5584b16f684ab43febd46d17306b8ba757a04c709942b3c71",
+    "change": "byte-identical"
+  },
+  {
+    "path": "probe_lowlevel.py",
+    "original_sha256": "bbcfa1a31a4ff10f697a6d63a12af20d727854187e76a0e1518f6d26b5d5ea8b",
+    "portable_sha256": "6d7c7a36f43c41f5582fc4e0c070a22220b1b6460ba934760da84617ba17bede",
+    "change": "only explicit checkout locator replaces workspace-sibling fixture lookup"
+  },
+  {
+    "path": "probe_read_edit.py",
+    "original_sha256": "2d12021b01c3ea58cf22273e4122a03f506f5aa072ecf796c21620ec0871ca59",
+    "portable_sha256": "2fb6790fe0c7f05bb64af98292ed653da983677d081f4b324bf70225cdcb2ab7",
+    "change": "only explicit checkout locator replaces workspace-sibling fixture lookup"
+  },
+  {
+    "path": "test_independent_static_lease.py",
+    "original_sha256": "fc61c468a9023c758c531124729810aec4caf812fdfc97975d9daf9cacb93b39",
+    "portable_sha256": "c54b15cc335104fe4470767ec3fcee012dd9747cde2c654e22dbcff4194f3a19",
+    "change": "only explicit checkout locator replaces workspace-sibling fixture lookup"
+  }
+]

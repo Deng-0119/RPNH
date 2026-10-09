@@ -1,0 +1,29 @@
+{
+  "command": [
+    "<WORKSPACE>/.p26/v/bin/python",
+    "-m",
+    "pytest",
+    "-p",
+    "no:cacheprovider",
+    "-q",
+    "examples/rsi_workflows/tests/test_runtime.py",
+    "-k",
+    "original_orchestrator",
+    "-o",
+    "junit_family=xunit1",
+    "--basetemp=<WORKSPACE>/.v26/ur2n",
+    "--junitxml=<WORKSPACE>/task-complete-v5-20261009/stages/rsi/resume-r2-native.xml"
+  ],
+  "cwd": "<WORKSPACE>/.v26/r2",
+  "pid": 19999,
+  "started_at_utc": "2026-10-09T03:31:28.899879+00:00",
+  "finished_at_utc": "2026-10-09T03:35:02.306745+00:00",
+  "elapsed_seconds": 216.6264599040005,
+  "exit_code": 0,
+  "environment": {
+    "PYTHONPATH": "<WORKSPACE>/.v26/r2",
+    "TMPDIR": "<WORKSPACE>/.v26/urtmp",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1"
+  }
+}

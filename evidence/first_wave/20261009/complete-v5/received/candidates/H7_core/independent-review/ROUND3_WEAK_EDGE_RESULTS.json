@@ -1,0 +1,23 @@
+{
+  "source": "/workspace/scratch/18c810e6dd59/rpnh-parent-child-core-boundary-review/round3-source",
+  "exit_status": 1,
+  "collected": [
+    "rpnh-parent-child-core-boundary-review/tests/test_boundary_child.py::test_prospective_protected_weak_edges_fail_before_commit[parent_bound_bootstrap/v1]",
+    "rpnh-parent-child-core-boundary-review/tests/test_boundary_child.py::test_prospective_protected_weak_edges_fail_before_commit[parent_bound_origin/v1]"
+  ],
+  "outcomes": [
+    {
+      "nodeid": "rpnh-parent-child-core-boundary-review/tests/test_boundary_child.py::test_prospective_protected_weak_edges_fail_before_commit[parent_bound_bootstrap/v1]",
+      "when": "call",
+      "outcome": "failed",
+      "duration": 3.0602948279993143
+    },
+    {
+      "nodeid": "rpnh-parent-child-core-boundary-review/tests/test_boundary_child.py::test_prospective_protected_weak_edges_fail_before_commit[parent_bound_origin/v1]",
+      "when": "call",
+      "outcome": "failed",
+      "duration": 3.197647622997465
+    }
+  ],
+  "sentinel_blocked_events": []
+}

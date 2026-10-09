@@ -1,0 +1,234 @@
+F
+=================================== FAILURES ===================================
+____ test_exact_valid_later_carrier_is_not_rejected_by_dead_default_binding ____
+
+context = TransactionValidationContext(db=<sqlite3.Connection object at 0x7f09f812cd60>, objects=(PreparedObject(object_type='in...version:89b59a51e5f55039aabec6876c59650d'): True}, native_resume_superseded_firing_ids=set(), pending_firing_claims=[])
+firing = {'activation_ref': None, 'admission_marking_checkpoint_ref': {'entity_type': 'marking_checkpoint/v1', 'logical_id': 'm...ersion_id': 'marking_checkpoint_version:f81965e029315ae38245b43ca537d2e1'}, 'agent_ref': None, 'attempt_index': 1, ...}
+checkpoint = {'attempts': [{'highest_issued': 1, 'transition_id': 'step.bad'}, {'highest_issued': 1, 'transition_id': 'step.good'}]...nstance:6d8f69d49d2357c1ba62880837733027', 'version_id': 'net_instance_version:7c66527a8af85b0ebb203a2dd89bad58'}, ...}
+
+    def validate_static_lease_claim(context, firing, checkpoint):
+        """Derive references from the adopted PN, never caller-supplied modes.
+    
+        Legacy declarations without static lease reads retain their admission
+        contract. No new publication, index, capability or scheduler is involved.
+        """
+        def obj(ref, kind=None):
+            if not context.exact_ref_exists(ref, kind):
+                raise RegistryConflict('static lease claim lacks an exact registered reference')
+            value = context.version_metadata(ref['version_id'], ref['entity_type'])
+            if value is None:
+                raise RegistryConflict('static lease claim reference is not visible')
+            return value
+    
+        net = obj(firing['net_instance_ref'], 'net_instance/v1')
+        declaration = net['team_net_declaration_resource_ref']
+        declaration_ref = {'entity_type': 'resource_version/v1',
+            'logical_id': declaration['resource_id'], 'version_id': declaration['resource_version_id']}
+        metadata = obj(declaration_ref, 'resource_version/v1')
+        if metadata.get('content_schema_ref') != 'rpnh/executable_net/v1':
+            return
+        version = TypedId.parse(declaration_ref['version_id'], expected='resource_version')
+        payload = (context.event_store.path.parent / 'objects' / version.kind / version.value).read_bytes()
+        if len(payload) != metadata['size']:
+            raise RegistryConflict('static lease claim declaration byte size differs')
+        compiled = load_compiled_net(json.loads(payload))
+        lease_places = {place.name for place in compiled.symbolic.places
+                        if place.token_kind == 'resource_lease'}
+        if not any(arc.transition == firing['transition_id'] and arc.direction == 'input'
+                   and arc.mode == 'read' and arc.place in lease_places for arc in compiled.symbolic.arcs):
+            return
+        try:
+            root = obj(net['team_design_root_ref'], 'team_design_root/v1')
+            structure = RuntimeNet(compiled, net_ref=_version_from_payload(firing['net_instance_ref']),
+                resource_plan=_resource_plan(net, root, compiled, obj))
+            refs = firing['claimed_input_refs']
+            if (sorted(ref['version_id'] for ref in refs) != firing['claimed_input_version_ids']
+                    or len({canonical_json(ref) for ref in refs}) != len(refs)):
+                raise ValueError('claim ref/index identity differs')
+            tokens = {canonical_json(ref): obj(ref, 'petri_token/v1') for ref in checkpoint['token_refs']}
+            if any(state['petri_token_ref'] != json.loads(key)
+                   or state['net_instance_ref'] != firing['net_instance_ref'] for key, state in tokens.items()):
+                raise ValueError('checkpoint token self/net identity differs')
+            local = TeamNetMarking.from_authority(structure, _marking(checkpoint, tokens, set()))
+            exact = tuple(_version_from_payload(ref) for ref in refs)
+>           epoch = local.claim_exact_registered_firing(firing['transition_id'], exact)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+source/cpn/rpnh/registry/static_lease_claims.py:61: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+source/cpn/rpnh/marking.py:1132: in claim_exact_registered_firing
+    return _claims.claim_exact_registered_firing(self, transition_id, claimed_token_refs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+source/cpn/rpnh/_marking/claims.py:164: in claim_exact_registered_firing
+    return self._install_exact_registered_claim_locked(transition_id, expected_refs=expected_refs, verify_enabled=True)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+source/cpn/rpnh/marking.py:1128: in _install_exact_registered_claim_locked
+    return _claims._install_exact_registered_claim_locked(self, transition_id, expected_refs, verify_enabled=verify_enabled, allow_siblings=allow_siblings)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <cpn.rpnh.marking.TeamNetMarking object at 0x7f09f8148e60>
+transition_id = 'step.use'
+expected_refs = (VersionRef(entity_type='petri_token/v1', entity_id=TypedId(kind='petri_token', value='1ec60e7b53735491a3bfa0b9fee5b6f...d4110598bad28452206caea59'), version_id=TypedId(kind='petri_token_version', value='f388bd15b76755b3a5a0b2a2a37be9b0')))
+
+    def _install_exact_registered_claim_locked(self, transition_id: str, expected_refs: tuple[VersionRef, ...], *, verify_enabled: bool, allow_siblings: bool=False) -> int:
+        """Install a Registry-selected occurrence without replaying settlement.
+    
+            ``verify_enabled=True`` is the scheduler's initial exact-claim path.
+            ``verify_enabled=False`` is only for a pure successor projection whose
+            Registry firing and predecessor checkpoint were already admitted.  That
+            path reconstructs the local consume/read split needed by
+            ``deposit_outputs``; it does not run the enabledness or reservation
+            algorithm a second time.
+            """
+        with self._lock:
+            if self._timed_active_claims or (self._active_claims and (not allow_siblings)):
+                raise MarkingStateError('exact registered firing projection requires no sibling claim')
+            claim_epoch = self._epoch
+            by_ref = {token.token_ref: token for token in self._tokens if isinstance(token.token_ref, VersionRef)}
+            if len(by_ref) != sum((isinstance(token.token_ref, VersionRef) for token in self._tokens)):
+                raise MarkingStateError('exact registered firing projector repeats a token ref')
+            selected = tuple((by_ref.get(ref) for ref in expected_refs))
+            if any((token is None for token in selected)):
+                raise MarkingStateError('exact registered firing ref is absent from the projector')
+            selected = tuple((token for token in selected if token is not None))
+            selected_ids = {token.token_id for token in selected}
+            if verify_enabled:
+                if not self._is_enabled_locked(transition_id):
+>                   raise MarkingStateError('exact registered firing is not currently enabled')
+E                   cpn.rpnh.marking.MarkingStateError: exact registered firing is not currently enabled
+
+source/cpn/rpnh/_marking/claims.py:81: MarkingStateError
+
+The above exception was the direct cause of the following exception:
+
+tmp_path = PosixPath('/tmp/pytest-of-agent/pytest-168/test_exact_valid_later_carrier0')
+
+    def test_exact_valid_later_carrier_is_not_rejected_by_dead_default_binding(tmp_path):
+        owner = _owner_with_dead_then_live_carrier(tmp_path / "exact")
+        executable, structure, before = hydrate_module_runtime(owner._core)
+        carriers = sorted((token for token in before.tokens if token.state.place == "step.carrier"),
+                          key=lambda token: token.state.token_id)
+        assert len(carriers) == 2
+        bad, good = carriers
+        pool_a = next(token for token in before.tokens if token.state.place == "step.pool_a")
+        pool_b = next(token for token in before.tokens if token.state.place == "step.pool_b")
+        assert bad.state.producer == "step.bad" and good.state.producer == "step.good"
+        assert len(bad.state.lease_claims) == len(good.state.lease_claims) == 1
+        assert bad.state.lease_claims[0].lease_identity_ref == pool_a.state.lease_identity_ref
+        assert good.state.lease_claims[0].lease_identity_ref == pool_a.state.lease_identity_ref
+        assert bad.state.lease_claims[0].expected_resource_ref == pool_b.state.resource_ref
+        assert good.state.lease_claims[0].expected_resource_ref == pool_a.state.resource_ref
+        assert pool_a.state.resource_ref != pool_b.state.resource_ref
+        assert bad.state.lease_claims[0].access_mode == good.state.lease_claims[0].access_mode == "read"
+    
+        local = TeamNetMarking.from_authority(structure, before)
+        # Preserve the existing default first-binding behavior; it need not search
+        # past the dead carrier. The explicit exact selection must stand on its own.
+        assert local.is_enabled("step.use") is False
+        assert owner.admit("step.use", logical_tau=2, command_id="test:default:admit") is None
+        selected_ids = {good.state.token_id, pool_a.state.token_id}
+        reserved = local._try_reserve("step.use", set(), allowed_token_ids=selected_ids)
+        assert reserved is not None
+        assert reserved.token_ids == (good.state.token_id,)
+        assert reserved.reference_token_ids == (pool_a.state.token_id,)
+    
+        claim = _claim(owner, executable, before, (good.token_ref, pool_a.token_ref), (good.token_ref,))
+>       admitted = InvocationLifecycle(owner._core).admit_firing(claim, idempotency_key="test:exact:admit")
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+source/tests/test_static_lease_exact_selection.py:145: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+source/cpn/rpnh/registry/invocations.py:384: in admit_firing
+    return implementation(self, claim, idempotency_key=idempotency_key)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+source/cpn/rpnh/registry/_invocation/admission.py:622: in admit_firing
+    committed = tx.commit()
+                ^^^^^^^^^^^
+source/cpn/rpnh/registry/transaction.py:387: in commit
+    result = self.event_store.publish_batch(
+source/cpn/rpnh/registry/event_store.py:1876: in publish_batch
+    return commit.publish_batch(
+source/cpn/rpnh/registry/_event_store/commit.py:816: in publish_batch
+    event_store._validate_authoritative_references(
+source/cpn/rpnh/registry/event_store.py:1913: in _validate_authoritative_references
+    firing.validate_authoritative_references(
+source/cpn/rpnh/registry/_event_store/validation/firing.py:1724: in validate_authoritative_references
+    validate_firing_event(context, pending)
+source/cpn/rpnh/registry/_event_store/validation/firing.py:273: in validate_firing_event
+    validate_static_lease_claim(context, firing, checkpoint_metadata)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+context = TransactionValidationContext(db=<sqlite3.Connection object at 0x7f09f812cd60>, objects=(PreparedObject(object_type='in...version:89b59a51e5f55039aabec6876c59650d'): True}, native_resume_superseded_firing_ids=set(), pending_firing_claims=[])
+firing = {'activation_ref': None, 'admission_marking_checkpoint_ref': {'entity_type': 'marking_checkpoint/v1', 'logical_id': 'm...ersion_id': 'marking_checkpoint_version:f81965e029315ae38245b43ca537d2e1'}, 'agent_ref': None, 'attempt_index': 1, ...}
+checkpoint = {'attempts': [{'highest_issued': 1, 'transition_id': 'step.bad'}, {'highest_issued': 1, 'transition_id': 'step.good'}]...nstance:6d8f69d49d2357c1ba62880837733027', 'version_id': 'net_instance_version:7c66527a8af85b0ebb203a2dd89bad58'}, ...}
+
+    def validate_static_lease_claim(context, firing, checkpoint):
+        """Derive references from the adopted PN, never caller-supplied modes.
+    
+        Legacy declarations without static lease reads retain their admission
+        contract. No new publication, index, capability or scheduler is involved.
+        """
+        def obj(ref, kind=None):
+            if not context.exact_ref_exists(ref, kind):
+                raise RegistryConflict('static lease claim lacks an exact registered reference')
+            value = context.version_metadata(ref['version_id'], ref['entity_type'])
+            if value is None:
+                raise RegistryConflict('static lease claim reference is not visible')
+            return value
+    
+        net = obj(firing['net_instance_ref'], 'net_instance/v1')
+        declaration = net['team_net_declaration_resource_ref']
+        declaration_ref = {'entity_type': 'resource_version/v1',
+            'logical_id': declaration['resource_id'], 'version_id': declaration['resource_version_id']}
+        metadata = obj(declaration_ref, 'resource_version/v1')
+        if metadata.get('content_schema_ref') != 'rpnh/executable_net/v1':
+            return
+        version = TypedId.parse(declaration_ref['version_id'], expected='resource_version')
+        payload = (context.event_store.path.parent / 'objects' / version.kind / version.value).read_bytes()
+        if len(payload) != metadata['size']:
+            raise RegistryConflict('static lease claim declaration byte size differs')
+        compiled = load_compiled_net(json.loads(payload))
+        lease_places = {place.name for place in compiled.symbolic.places
+                        if place.token_kind == 'resource_lease'}
+        if not any(arc.transition == firing['transition_id'] and arc.direction == 'input'
+                   and arc.mode == 'read' and arc.place in lease_places for arc in compiled.symbolic.arcs):
+            return
+        try:
+            root = obj(net['team_design_root_ref'], 'team_design_root/v1')
+            structure = RuntimeNet(compiled, net_ref=_version_from_payload(firing['net_instance_ref']),
+                resource_plan=_resource_plan(net, root, compiled, obj))
+            refs = firing['claimed_input_refs']
+            if (sorted(ref['version_id'] for ref in refs) != firing['claimed_input_version_ids']
+                    or len({canonical_json(ref) for ref in refs}) != len(refs)):
+                raise ValueError('claim ref/index identity differs')
+            tokens = {canonical_json(ref): obj(ref, 'petri_token/v1') for ref in checkpoint['token_refs']}
+            if any(state['petri_token_ref'] != json.loads(key)
+                   or state['net_instance_ref'] != firing['net_instance_ref'] for key, state in tokens.items()):
+                raise ValueError('checkpoint token self/net identity differs')
+            local = TeamNetMarking.from_authority(structure, _marking(checkpoint, tokens, set()))
+            exact = tuple(_version_from_payload(ref) for ref in refs)
+            epoch = local.claim_exact_registered_firing(firing['transition_id'], exact)
+            consumed = {token.token_ref for token in local.claimed_tokens(firing['transition_id'], epoch)}
+            references = set(exact) - consumed
+            delta = obj(firing['claim_marking_delta_ref'], 'marking_delta/v1')
+            declared_consumed = {_version_from_payload(ref) for ref in delta['consumed_refs']}
+            if references & declared_consumed:
+                raise ValueError('read reference was declared consumed')
+            # Keep the existing Module admission index contract, including legacy
+            # ordinary read behavior; callers cannot erase its consume exclusions.
+            consumed_places = {place for place, target, _weight in structure.token_input_arcs
+                               if target == firing['transition_id']}
+            expected_consumed = {_version_from_payload(ref) for ref in refs
+                                 if tokens[canonical_json(ref)]['place'] in consumed_places}
+            if declared_consumed != expected_consumed:
+                raise ValueError('consume index differs from declared Module input modes')
+        except (KeyError, TypeError, ValueError) as exc:
+>           raise RegistryConflict('static lease claim differs from adopted PN/marking: ' + str(exc)) from exc
+E           cpn.rpnh.registry.event_store.RegistryConflict: static lease claim differs from adopted PN/marking: exact registered firing is not currently enabled
+
+source/cpn/rpnh/registry/static_lease_claims.py:77: RegistryConflict
+=========================== short test summary info ============================
+FAILED source/tests/test_static_lease_exact_selection.py::test_exact_valid_later_carrier_is_not_rejected_by_dead_default_binding
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!
+1 failed in 5.08s

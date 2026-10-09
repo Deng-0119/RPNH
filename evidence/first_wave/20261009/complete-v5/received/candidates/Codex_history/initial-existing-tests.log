@@ -1,0 +1,58 @@
+..............F.....................................                     [100%]
+=================================== FAILURES ===================================
+_______ test_codex_live_launch_cache_is_separate_from_paginated_history ________
+
+tmp_path = PosixPath('/tmp/pytest-of-agent/pytest-88/test_codex_live_launch_cache_i0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7fdffb3ac500>
+
+    def test_codex_live_launch_cache_is_separate_from_paginated_history(
+            tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
+        execution = _local_profile(tmp_path / "profiles")
+        root = tmp_path / "session"
+        _write_thread_projection(root, execution=execution)
+        child = SimpleNamespace(task_id="task-durable", kind="single_agent")
+        decision = MainDecision(
+            "delegated", MainTaskDecision(
+                "single_agent", "do it", (AgentStage("worker", "Do it."),)))
+        live_text = CodexAppServer._decision_output(
+            MainTurnReconciliation("committed", None, decision, child))
+        session = _RecoverySession(
+            root, execution,
+            MainTurnReconciliation("idle", None),
+            history=[("user", "do it"), ("assistant", "delegated")],
+        )
+        session.display_history = [
+            ("user", "do it"), ("assistant", live_text)]
+        monkeypatch.setattr(
+            "cpn.frontend.codex_app_server.MainSession.resume",
+            lambda _root, _execution=None, **_kwargs: session,
+        )
+        server = CodexAppServer(root, execution)
+        thread_id = next(iter(server._threads))
+        socket = _FakeWebSocket([{
+            "id": "initialize",
+            "method": "initialize",
+            "params": {
+                "clientInfo": {"name": "codex-tui", "version": "0.155.0"},
+            },
+        }, {
+            "method": "initialized",
+        }, {
+            "id": 1,
+            "method": "thread/read",
+            "params": {"threadId": thread_id},
+        }])
+    
+        asyncio.run(server.handle(socket))
+    
+        response = next(item for item in socket.sent if item.get("id") == 1)
+>       transcript_text = response["result"]["thread"]["turns"][0][
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+            "items"][1]["text"]
+E       IndexError: list index out of range
+
+tests/test_codex_compat.py:750: IndexError
+=========================== short test summary info ============================
+FAILED tests/test_codex_compat.py::test_codex_live_launch_cache_is_separate_from_paginated_history
+1 failed, 51 passed in 24.26s

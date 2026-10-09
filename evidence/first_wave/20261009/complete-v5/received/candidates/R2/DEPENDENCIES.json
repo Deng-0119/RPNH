@@ -1,0 +1,11 @@
+{
+  "r1_delivery_revision": 2,
+  "r1_full_patch_sha256": "67466bfc13a685dd79dc26d0c0c2f0a33b7016553ccf53728b57906cc2f10ac3",
+  "r1_old_to_v2_delta_sha256": "40da4de0316e5fcb07276fcc159c7277403eef942df4769ad361e5f40804e72d",
+  "choose_one_r1_apply_path": true,
+  "r1_already_applied_do_not_reapply": true,
+  "r2_patch_sha256": "5054c53cc61bb03fdc58a1da6f7e56b41decc0ccb78124478effc38b2bf93e52",
+  "tested_main": "715468dab0b1bea07d7e94a7aa0606eaf194365c",
+  "head_drift_focused_overlay": "d92ff3704b6002bf5ecbccb3e6a3d1489809a805",
+  "plan_sha256": "ba16dcef6a32721e0083fc49f6b77cdc5688430c776824baaae7f9648941c004"
+}

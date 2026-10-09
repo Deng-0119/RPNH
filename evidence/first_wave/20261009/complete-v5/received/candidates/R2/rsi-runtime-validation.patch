@@ -1,0 +1,673 @@
+diff --git a/examples/rsi_workflows/deterministic.py b/examples/rsi_workflows/deterministic.py
+new file mode 100644
+index 0000000..164c46a
+--- /dev/null
++++ b/examples/rsi_workflows/deterministic.py
+@@ -0,0 +1,188 @@
++"""Synthetic pure HOSTs for the existing bounded iteration Module.
++
++No run, scheduler, admission, provider, mutable winner or external state lives
++here. Only the existing owner may publish/settle the returned product bytes.
++The integer-distance condition is an example, unrelated to frozen RRSI scores.
++"""
++from __future__ import annotations
++
++import json
++
++from cpn.components.basic import register_basic_components
++from cpn.rpnh.iteration_profile import IterationProfile
++from cpn.rpnh.registration import Registration
++from cpn.rpnh.registry.schema_catalog import canonical_json
++
++
++STATE = "application/synthetic_iteration_state/v1"
++CANDIDATE = "application/synthetic_iteration_candidate/v1"
++REQUEST = "application/synthetic_iteration_request/v1"
++EVALUATION = "application/synthetic_iteration_evaluation/v1"
++CONFIG = "application/synthetic_iteration_config/v1"
++TERMINAL_CONFIG = "application/synthetic_iteration_terminal_config/v1"
++TERMINAL = "example/synthetic_iteration_terminal/v1"
++SCORER = "integer_absolute_distance/v1"
++
++
++def _object(properties):
++    return {"type": "object", "properties": properties,
++            "required": list(properties), "additionalProperties": False}
++
++
++def _nullable(schema):
++    return {"anyOf": [schema, {"type": "null"}]}
++
++
++_STRING = {"type": "string", "minLength": 1}
++_INTEGER = {"type": "integer"}
++_ROUND = {"type": "integer", "minimum": 1, "maximum": 32}
++_RESOURCE = _object({"resource_id": _STRING, "resource_version_id": _STRING})
++_BINDING = _object({"entity_type": {"const": "operation_binding/v1"},
++                    "logical_id": _STRING, "version_id": _STRING})
++_DECISION = _object({
++    "outcome": {"enum": ["select", "retain", "stop"]},
++    "candidate_selected": {"type": "boolean"},
++    "incumbent_ref": _RESOURCE, "candidate_ref": _RESOURCE,
++    "evaluation_ref": _RESOURCE, "request_ref": _RESOURCE,
++    "scorer_binding_ref": _BINDING,
++})
++SCHEMAS = {
++    STATE: _object({"round": {"type": "integer", "minimum": 0, "maximum": 32},
++        "value": _INTEGER, "selected_candidate_ref": _nullable(_RESOURCE),
++        "parent_state_ref": _nullable(_RESOURCE), "decision": _nullable(_DECISION)}),
++    CANDIDATE: _object({"round": _ROUND, "value": _INTEGER,
++        "incumbent_value": _INTEGER, "parent_state_ref": _RESOURCE}),
++    REQUEST: _object({"round": _ROUND, "target": _INTEGER,
++        "scorer": {"const": SCORER}, "status": {"enum": ["known", "unknown"]},
++        "stop": {"type": "boolean"}}),
++    EVALUATION: _object({"round": _ROUND, "candidate_ref": _RESOURCE,
++        "parent_state_ref": _RESOURCE, "request_ref": _RESOURCE,
++        "scorer_binding_ref": _BINDING, "scorer": {"const": SCORER},
++        "status": {"enum": ["known", "unknown"]},
++        "candidate_score": _nullable(_INTEGER), "incumbent_score": _nullable(_INTEGER),
++        "stop": {"type": "boolean"}}),
++    CONFIG: _object({}),
++    TERMINAL_CONFIG: {"type": "object", "properties": {
++        "run_outcome": {"enum": ["complete", "failed"]}}, "additionalProperties": False},
++}
++
++
++def resource_ref(ref):
++    return {"resource_id": str(ref.resource_id),
++            "resource_version_id": str(ref.resource_version_id)}
++
++
++def _version_ref(ref):
++    return {"entity_type": ref.entity_type, "logical_id": str(ref.entity_id),
++            "version_id": str(ref.version_id)}
++
++
++def _input(execution, schema):
++    """Resolve the sole declared port of this example's chosen content schema."""
++    ports = {port.port_id for port in execution.operation.spec.input_ports
++             if port.content_schema_id == schema}
++    matches = [item for item in execution.operation.inputs if item.port_id in ports]
++    if len(matches) != 1:
++        raise ValueError("synthetic HOST requires one exact claimed input per schema")
++    item = matches[0]
++    return json.loads(item.consumer_payload), resource_ref(item.resource_ref)
++
++
++def _component(execution):
++    component = execution.operation.firing.transition_id.rsplit(".", 1)[0]
++    return component, int(component.split("_")[1])
++
++
++def propose(*, execution):
++    state, state_ref = _input(execution, STATE)
++    component, round_number = _component(execution)
++    if state["round"] + 1 != round_number:
++        raise ValueError("state does not belong to this declared round")
++    return "proposed", {
++        component + ".incumbent": (canonical_json({**state, "parent_state_ref": state_ref}),),
++        component + ".candidate": (canonical_json({"round": round_number,
++            "value": state["value"] + 1, "incumbent_value": state["value"],
++            "parent_state_ref": state_ref}),),
++    }
++
++
++def evaluate(*, execution):
++    candidate, candidate_ref = _input(execution, CANDIDATE)
++    request, request_ref = _input(execution, REQUEST)
++    component, round_number = _component(execution)
++    if not candidate["round"] == request["round"] == round_number:
++        raise ValueError("evaluation inputs do not belong to the same declared round")
++    known = request["status"] == "known"
++    value = {"round": round_number, "candidate_ref": candidate_ref,
++        "parent_state_ref": candidate["parent_state_ref"], "request_ref": request_ref,
++        "scorer_binding_ref": _version_ref(execution.operation.operation_binding.operation_binding_ref),
++        "scorer": SCORER, "status": request["status"], "stop": request["stop"],
++        "candidate_score": abs(candidate["value"] - request["target"]) if known else None,
++        "incumbent_score": abs(candidate["incumbent_value"] - request["target"]) if known else None}
++    return "evaluated", {component + ".evaluation": (canonical_json(value),)}
++
++
++def select(*, execution):
++    incumbent, incumbent_ref = _input(execution, STATE)
++    candidate, candidate_ref = _input(execution, CANDIDATE)
++    evaluation, evaluation_ref = _input(execution, EVALUATION)
++    component, round_number = _component(execution)
++    # Business consistency checks after native admission, never admission rules.
++    if (not candidate["round"] == evaluation["round"] == round_number
++            or incumbent["round"] + 1 != round_number
++            or evaluation["candidate_ref"] != candidate_ref
++            or not candidate["parent_state_ref"] == incumbent["parent_state_ref"]
++                    == evaluation["parent_state_ref"]
++            or candidate["incumbent_value"] != incumbent["value"]):
++        raise ValueError("selection inputs lack exact same-round candidate/evaluation lineage")
++    scores = (evaluation["candidate_score"], evaluation["incumbent_score"])
++    if ((evaluation["status"] == "known" and any(type(s) is not int for s in scores))
++            or (evaluation["status"] == "unknown" and scores != (None, None))):
++        raise ValueError("evaluation status does not match its score evidence")
++    selected = evaluation["status"] == "known" and scores[0] < scores[1]
++    outcome = "stop" if evaluation["stop"] else "select" if selected else "retain"
++    state = {"round": round_number,
++        "value": candidate["value"] if selected else incumbent["value"],
++        "selected_candidate_ref": candidate_ref if selected else incumbent["selected_candidate_ref"],
++        "parent_state_ref": incumbent_ref,
++        "decision": {"outcome": outcome, "candidate_selected": selected,
++            "incumbent_ref": incumbent_ref, "candidate_ref": candidate_ref,
++            "evaluation_ref": evaluation_ref, "request_ref": evaluation["request_ref"],
++            "scorer_binding_ref": evaluation["scorer_binding_ref"]}}
++    return outcome, {component + (".stop" if outcome == "stop" else ".next"):
++                     (canonical_json(state),)}
++
++
++def _terminal_not_callable(*args, **kwargs):
++    raise AssertionError("the existing terminal binding is publication authority, not a callback")
++
++
++def registration():
++    """Explicit trusted HOST installation; no Registry or run is created."""
++    result = Registration()
++    register_basic_components(result)
++    for name, body in SCHEMAS.items():
++        result.register_schema(name, {"$id": name,
++            "$schema": "http://json-schema.org/draft-07/schema#", **body})
++    for role, function in (("proposer", propose), ("evaluator", evaluate), ("selector", select)):
++        result.register_executor("example/synthetic_iteration_" + role + "/v1", function,
++            identity={"implementation_id": "synthetic_iteration_" + role, "revision": "v1"},
++            contracts={"transport": "deterministic", "input_ports": None,
++                       "output_ports": None, "config_schema": CONFIG})
++    result.register_tool(TERMINAL, _terminal_not_callable,
++        identity={"implementation_id": "synthetic_iteration_terminal", "revision": "v1"},
++        contracts={"binding_protocol": "rpnh/module_terminal/v1", "config_schema": TERMINAL_CONFIG})
++    return result
++
++
++def profile(rounds=2):
++    """Inert R1 author data, with native model-call cap independent of rounds."""
++    return IterationProfile.from_dict({"schema_version": "rpnh/iteration_profile/v1",
++        "template": "propose_evaluate_select/v1", "name": "SyntheticIteration", "rounds": rounds,
++        "schemas": {"state": STATE, "candidate": CANDIDATE,
++                    "evaluation_request": REQUEST, "evaluation": EVALUATION},
++        "roles": {role: {"executor_key": "example/synthetic_iteration_" + role + "/v1",
++                         "model_profile_ref": None} for role in ("proposer", "evaluator", "selector")},
++        "terminal_key": TERMINAL,
++        "terminal_outcomes": {"stop": "complete", "final_select": "complete", "final_retain": "complete"},
++        "native_model_call_budget": {"unit": "registered_model_call", "maximum": 1}})
+diff --git a/examples/rsi_workflows/README.md b/examples/rsi_workflows/README.md
+new file mode 100644
+index 0000000..a4f3a7d
+--- /dev/null
++++ b/examples/rsi_workflows/README.md
+@@ -0,0 +1,90 @@
++[English](README.md) | [中文](README_ZH.md)
++
++# Single-Registry synthetic iteration (R2)
++
++This finite example supplies pure proposer, evaluator and selector HOSTs to the
++existing iteration-profile compiler. It adds no runner, scheduler, provider,
++budget counter, Registry type or mutable winner store. It requires the R1
++terminal-outcome correction with the explicit `terminal_outcomes` profile field.
++The earlier frozen R1 profile did not produce usable native terminal bindings.
++
++## Condition and provenance
++
++The synthetic candidate is an integer, proposed as incumbent + 1. Evaluation
++computes candidate and incumbent absolute distance from the same registered
++request's integer target. Lower is better; ties and worse scores retain the
++incumbent. A domain-level `unknown` evaluation has null scores and cannot promote
++the candidate. This toy condition does not alter RRSI v0.6, its scorer, limits,
++heldout handling or research protocol, and proves no model improvement.
++
++- The proposer receives only its claimed state, never the request body.
++- Candidate products name the exact input state resource.
++- Evaluation names the exact candidate, request (including synthetic dataset),
++  parent state and evaluator operation binding, whose registered identity fixes
++  the synthetic scoring implementation.
++- Selection consumes this round's incumbent, candidate and evaluation through
++  the original PN. Its state product names all three exact input resources and
++  preserves the request and scorer binding. Content checks reject inconsistent
++  round, candidate or parent-state pairings after native admission.
++- Every subsequent proposer consumes the previous selector's registered `next`.
++  All iteration bounds and readiness come from R1's finite Module, never a Python
++  controller. The test's one-step helper requests an explicitly named firing;
++  only `RunOwner.admit` can authorize it.
++
++These are trusted pure HOSTs, not a sandbox for malicious Python scorers.
++Registry origin/claim provenance and application content checks have different
++responsibilities. The tests establish this example's exact data flow, not general
++training/test leakage isolation, malicious-HOST resistance or arbitrary scoring.
++
++## Completion is explicit
++
++The profile maps `stop`, `final_select` and `final_retain` explicitly to native
++`complete`. Here `stop` means a normal early protocol conclusion after this
++round's evaluation, not user interruption. Final select/retain mean the bounded
++process concluded, not that the candidate improved. A separate regression maps
++final retain to `failed` and verifies the native reader preserves that outcome.
++The example does not patch terminal config after profile compilation.
++
++Domain `unknown` is distinct from physical outcome uncertainty or an unsettled
++firing. Missing evaluation, mere publication without settlement, wrong pairing
++and role exceptions cannot produce a successful selection. Provider submission
++uncertainty, owner-stop/resume and transport loss remain separate native gates.
++
++The native model-call cap is 1 regardless of rounds. All HOSTs are deterministic,
++so native returned-model-call counts remain zero even when 12 operations execute.
++This retains the existing `actual_returned_calls` accounting meaning; it is not a
++limit on all dispatches or all physical attempts. No model binding is resolved.
++
++## Tests and execution boundary
++
++From the repository root in its already prepared Python test environment:
++
++```bash
++python -m pytest -q examples/rsi_workflows/tests/test_runtime.py -k 'not original_orchestrator'
++python -m pytest -q examples/rsi_workflows/tests/test_runtime.py -k original_orchestrator
++```
++
++The first set is socket-free D0 using original
++`start_run → RunOwner.admit/start/products/succeed → terminal`. It blocks socket
++and subprocess APIs. Results are reconstructed by the original read-only
++`read_run_execution/read_run_terminal_bytes`, with a final unchanged-cut check.
++Forged/deleted report files cannot change enablement or Registry state.
++
++The second set defaults to actual `OwnerEventLoop` AF_UNIX (D1) and the existing
++`Orchestrator.run → Harness.exact_execute`. HOST submission uses an immediate
++Future. If the environment disallows AF_UNIX, preserve the failure; do not change
++permissions or report a native pass. An explicitly labelled, test-only D0
++transport-double run is available:
++
++```bash
++python -m pytest -q examples/rsi_workflows/tests/test_runtime.py --rsi-transport=pipe
++```
++
++That reuses the unchanged existing
++`examples/tool_pipeline/tests/pipe_transport.py`; it replaces only the wake
++transport and is never an automatic production fallback. It is not socket,
++multi-process, external-provider, registered-model-port or R3 acceptance.
++
++No CLI, author-revision-to-run shortcut, automatic branch promotion, child
++orchestration, retry, training or publishing is introduced. Pure Registry tests
++do not establish the still-separate author/CAS or complete R2/R3 roadmap gates.
+diff --git a/examples/rsi_workflows/README_ZH.md b/examples/rsi_workflows/README_ZH.md
+new file mode 100644
+index 0000000..90284d2
+--- /dev/null
++++ b/examples/rsi_workflows/README_ZH.md
+@@ -0,0 +1,73 @@
++[English](README.md) | [中文](README_ZH.md)
++
++# 单 Registry 合成迭代（R2）
++
++这个有限示例把纯 proposer/evaluator/selector HOST 接到原 iteration-profile compiler。
++不新增 runner、scheduler、provider、预算计数器、Registry 类型或外部 winner 状态。
++依赖 R1 后继修订的显式 terminal_outcomes 字段；原冻结 R1 未生成可用的 native
++terminal binding，本示例不在运行前偷偷补 config。
++
++## 条件与精确谱系
++
++候选是 incumbent + 1 的整数，evaluation 对同一 registered request 中的整数 target
++计算候选与 incumbent 的绝对误差；越低越好，平分或退化 retain。domain-level unknown
++输出空分数，只保留有效 incumbent，不能晋升。这是独立合成条件，不改变 RRSI v0.6 的
++scorer、限制、heldout 或研究协议，也不证明模型改善。
++
++- proposer 只接收本次 claimed state，不接收 request 正文。
++- candidate 绑定父 state 的 exact resource ref。
++- evaluation 绑定本轮 candidate、request（包含合成 dataset）、父 state 和 evaluator
++  operation binding 的 exact refs；已注册 HOST identity 固定本例 scoring implementation。
++- selector 通过原 PN consume 同轮 incumbent/candidate/evaluation；输出 state 保留三者
++  exact refs，以及 request/scorer binding。admission 后的业务一致性检查拒绝错误轮次、
++  候选或父 state 配对。
++- 后轮 proposer 只消费前轮 selector 的 registered next。轮数和 readiness 均来自 R1
++  有限 Module，没有 Python 外部 controller。测试 step 仅提出一个明确 firing，准入由
++  原 RunOwner.admit 决定。
++
++这些是可信纯 HOST，不是针对恶意 Python scorer 的沙箱。Registry origin/claim 谱系与
++业务内容配对各司其职。测试只证明本例精确数据流，不等于通用训练/test 无泄漏隔离、
++恶意 HOST 防护或任意 scoring 正确性。
++
++## 终态语义必须明确
++
++本例 profile 把 stop、final_select、final_retain 显式映射为 native complete：stop
++表示本轮正常评估后提前结束协议，不是用户中断；最后轮 select/retain 表示有限过程结束，
++不保证候选改善。另有回归测试显式把 final_retain 设为 failed，核原 native reader 原样
++保留该分类。profile 编译之后不再修改 terminal config。
++
++domain unknown 与物理执行结果未知/未settled不同。缺 evaluation、仅发布未settle、
++错误配对或角色异常不能产生正常 selection。provider submission uncertainty、
++owner-stop/resume、transport loss 仍是独立 native gate，不把它们映射为成功。
++
++native model-call cap 固定为1，与 rounds 独立。纯HOST运行12个 operation，原
++returned-model-call 计数仍为0。保持原 actual_returned_calls 语义，不能把它叫作总
++dispatch或所有physical attempt的上限；没有解析任何 model binding。
++
++## 验证与执行边界
++
++在仓库根目录使用已经准备好的 Python 测试环境：
++
++```bash
++python -m pytest -q examples/rsi_workflows/tests/test_runtime.py -k 'not original_orchestrator'
++python -m pytest -q examples/rsi_workflows/tests/test_runtime.py -k original_orchestrator
++```
++
++第一组是无socket D0：直接调用原 start_run → RunOwner.admit/start/products/succeed
++→ terminal，测试封锁socket/subprocess。通过原 read_run_execution/read_run_terminal_bytes
++以只读Core重建结果，输出后重验cut。伪造/删除report不改变准入或Registry状态。
++
++第二组默认使用真正 OwnerEventLoop AF_UNIX（D1）与既有 Orchestrator.run →
++Harness.exact_execute，HOST用立即完成的Future。环境拒绝AF_UNIX时保留原失败，不改
++权限、不冒称native通过。可明确运行测试专用D0 transport double：
++
++```bash
++python -m pytest -q examples/rsi_workflows/tests/test_runtime.py --rsi-transport=pipe
++```
++
++这里只复用原样 examples/tool_pipeline/tests/pipe_transport.py，替换wake transport，
++不是自动production fallback，也不是socket、多进程、外部provider、registered-model
++port或R3验收。
++
++不新增CLI、author-revision到run的捷径、自动branch晋升、child编排、retry、训练或发布。
++纯Registry测试不表示author/CAS或完整R2/R3路线图门槛已经完成。
+diff --git a/examples/rsi_workflows/tests/conftest.py b/examples/rsi_workflows/tests/conftest.py
+new file mode 100644
+index 0000000..b3d7a93
+--- /dev/null
++++ b/examples/rsi_workflows/tests/conftest.py
+@@ -0,0 +1,15 @@
++import pytest
++
++from cpn.rpnh.control_server import OwnerEventLoop
++from examples.tool_pipeline.tests.pipe_transport import PipeOwnerEventLoop
++
++
++def pytest_addoption(parser):
++    parser.addoption("--rsi-transport", choices=("native", "pipe"), default="native",
++        help="explicit test-only pipe wake transport; never native AF_UNIX acceptance")
++
++
++@pytest.fixture(scope="session")
++def rsi_loop_factory(pytestconfig):
++    return (OwnerEventLoop if pytestconfig.getoption("--rsi-transport") == "native"
++            else PipeOwnerEventLoop)
+diff --git a/examples/rsi_workflows/tests/test_runtime.py b/examples/rsi_workflows/tests/test_runtime.py
+new file mode 100644
+index 0000000..83c3075
+--- /dev/null
++++ b/examples/rsi_workflows/tests/test_runtime.py
+@@ -0,0 +1,277 @@
++"""R2 real Registry steps plus the original Orchestrator with explicit transport.
++
++The named step helper is a test probe, not a loop, scheduler or permission rule.
++Native tests default to genuine AF_UNIX. --rsi-transport=pipe is a labelled D0
++transport double reused unchanged from the existing tool_pipeline test fixture.
++"""
++from concurrent.futures import Future
++import json
++import socket
++import subprocess
++
++import pytest
++
++from cpn.orchestrator.runner import Orchestrator
++from cpn.rpnh.harness import OperationDispatch, OperationProducts
++from cpn.rpnh.iteration_profile import IterationProfile, compile_iteration_profile
++from cpn.rpnh.marking import TeamNetMarking
++from cpn.rpnh.registry._registry import _RegistryCore
++from cpn.rpnh.registry.module_runtime import hydrate_module_runtime
++from cpn.rpnh.registry.resource_service import _ResourceServiceKernel
++from cpn.rpnh.registry.run_authority import read_run_execution, read_run_terminal_bytes
++from cpn.rpnh.registry.schema_catalog import canonical_json
++from cpn.rpnh.run import OwnerInput, start_run
++from examples.rsi_workflows import deterministic as example
++
++
++def owner(tmp_path, rounds=2, *, target=3, unknown=False, stop=False, terminal_outcomes=None):
++    registration = example.registration()
++    profile = example.profile(rounds)
++    if terminal_outcomes is not None:
++        value = profile.to_dict()
++        value["terminal_outcomes"] = terminal_outcomes
++        profile = IterationProfile.from_dict(value)
++    prepared = compile_iteration_profile(profile, registration=registration)
++    state = OwnerInput(example.STATE, canonical_json({"round": 0, "value": 0,
++        "selected_candidate_ref": None, "parent_state_ref": None, "decision": None}), "Synthetic initial state")
++    inputs = {"initial_state": state}
++    for n in range(1, rounds + 1):
++        inputs[f"round_{n}_evaluation_request"] = OwnerInput(example.REQUEST,
++            canonical_json({"round": n, "target": target, "scorer": example.SCORER,
++                            "status": "unknown" if unknown else "known", "stop": stop}),
++            "Synthetic validation data; no model or external service")
++    run = start_run(prepared.module,
++        registration, run_dir=tmp_path / "run", task_input=state, entry_inputs=inputs,
++        budgets=prepared.budgets, model_condition="synthetic-pure-integer-distance-v1",
++        owner_statement="Deterministic offline fixture; no provider or external actions",
++        command_id="rsi:test:start")
++    return run, prepared
++
++
++def enabled(run):
++    _, structure, marking = hydrate_module_runtime(run._core)
++    return set(TeamNetMarking.from_authority(structure, marking).enabled_transitions())
++
++
++def start(run, transition):
++    admission = run.admit(transition, logical_tau=0, command_id="admit:" + transition)
++    assert admission is not None
++    return run.start(admission, command_id="start:" + transition)
++
++
++def products(run, execution):
++    executor = run.registration.resolve("executor", execution.operation.spec.executor_key)
++    outcome, values = executor(execution=execution)
++    return run.products(execution, outcome_id=outcome, products=values,
++                        command_id="products:" + execution.operation.firing.transition_id)
++
++
++def step(run, transition):
++    execution = start(run, transition)
++    outputs = products(run, execution)
++    run.succeed(outputs, command_id="success:" + transition)
++    return execution, outputs
++
++
++def body(run, output):
++    return json.loads(run._core.object_store.read_registered(
++        run._core.get_version(output.resource_ref.resource_version_id)))
++
++
++def by_schema(execution, schema):
++    ports = {p.port_id for p in execution.operation.spec.input_ports if p.content_schema_id == schema}
++    item, = (i for i in execution.operation.inputs if i.port_id in ports)
++    return item
++
++
++def snapshot(run):
++    return run._core.event_store.max_ordinal(), hydrate_module_runtime(run._core)[2].checkpoint_ref
++
++
++@pytest.fixture
++def deny_external(monkeypatch):
++    def forbidden(*args, **kwargs):
++        raise AssertionError("pure Registry-step test must not use socket or subprocess")
++    monkeypatch.setattr(socket, "socket", forbidden)
++    monkeypatch.setattr(socket, "socketpair", forbidden)
++    monkeypatch.setattr(subprocess, "Popen", forbidden)
++
++
++def test_missing_unsettled_or_report_evaluation_cannot_admit_selector(tmp_path, deny_external):
++    run, _ = owner(tmp_path)
++    assert enabled(run) == {"round_1_proposer.run"}
++    before = snapshot(run)
++    assert run.admit("round_1_selector.run", logical_tau=0, command_id="missing:all") is None
++    assert snapshot(run) == before
++    step(run, "round_1_proposer.run")
++    report = tmp_path / "untrusted-report.json"
++    report.write_text('{"round": 1, "evaluated": true, "winner": "candidate", "status": "terminal"}')
++    before = snapshot(run)
++    assert run.admit("round_1_selector.run", logical_tau=0, command_id="missing:evaluation") is None
++    report.unlink()
++    assert snapshot(run) == before
++    execution = start(run, "round_1_evaluator.run")
++    outputs = products(run, execution)
++    before = snapshot(run)
++    assert run.admit("round_1_selector.run", logical_tau=0, command_id="unsettled:evaluation") is None
++    assert snapshot(run) == before
++    assert run.terminal() is None
++    read = read_run_execution(run._core, _ResourceServiceKernel(run._core))
++    assert read.status == "running" and read.terminal is None
++    run.succeed(outputs, command_id="settle:evaluation")
++    assert enabled(run) == {"round_1_selector.run"}
++    assert run._core.event_store.actual_model_call_counts() == (0, 0)
++
++
++def test_exact_lineage_and_stale_previous_round_do_not_enable_next_selector(tmp_path, deny_external, record_property):
++    run, _ = owner(tmp_path)
++    proposer, proposed = step(run, "round_1_proposer.run")
++    evaluator, evaluated = step(run, "round_1_evaluator.run")
++    selector, selected = step(run, "round_1_selector.run")
++    candidate = by_schema(evaluator, example.CANDIDATE)
++    assert by_schema(selector, example.CANDIDATE).resource_ref == candidate.resource_ref
++    assert by_schema(selector, example.EVALUATION).resource_ref == evaluated.outputs[0].resource_ref
++    assert body(run, evaluated.outputs[0])["candidate_ref"] == example.resource_ref(candidate.resource_ref)
++    assert body(run, evaluated.outputs[0])["request_ref"] == example.resource_ref(by_schema(evaluator, example.REQUEST).resource_ref)
++    assert body(run, evaluated.outputs[0])["scorer_binding_ref"]["version_id"] == str(evaluator.operation.operation_binding.operation_binding_ref.version_id)
++    final = body(run, selected.outputs[0])
++    assert final["decision"]["evaluation_ref"] == example.resource_ref(evaluated.outputs[0].resource_ref)
++    assert final["decision"]["candidate_ref"] == example.resource_ref(candidate.resource_ref)
++    proposer2, _ = step(run, "round_2_proposer.run")
++    assert by_schema(proposer2, example.STATE).resource_ref == selected.outputs[0].resource_ref
++    before = snapshot(run)
++    assert run.admit("round_2_selector.run", logical_tau=0, command_id="stale:previous-round") is None
++    assert snapshot(run) == before
++    # The old evaluation exists in this Registry, but no token occupies round 2's input place.
++    assert enabled(run) == {"round_2_evaluator.run"}
++    assert {p.content_schema_id for p in proposer.operation.spec.input_ports} == {example.STATE}
++    assert {p.content_schema_id for p in proposer2.operation.spec.input_ports} == {example.STATE}
++    record_property("exact_lineage", json.dumps({
++        "evaluation": body(run, evaluated.outputs[0]),
++        "selection": final, "selection_ref": example.resource_ref(selected.outputs[0].resource_ref),
++        "round_2_state_ref": example.resource_ref(by_schema(proposer2, example.STATE).resource_ref)}, sort_keys=True))
++
++
++@pytest.mark.parametrize("target,unknown,expected", [(3, False, "select"), (0, False, "retain"), (3, True, "retain")])
++def test_select_retain_unknown_and_native_terminal_read(tmp_path, deny_external, target, unknown, expected):
++    run, _ = owner(tmp_path, rounds=1, target=target, unknown=unknown)
++    step(run, "round_1_proposer.run")
++    step(run, "round_1_evaluator.run")
++    _, outputs = step(run, "round_1_selector.run")
++    assert outputs.selected_outcome_id == expected
++    assert body(run, outputs.outputs[0])["value"] == (1 if expected == "select" else 0)
++    assert run.terminal() is not None
++    before = snapshot(run)
++    observer = _RegistryCore(run._core.run_dir, create=False, read_only=True)
++    read = read_run_execution(observer, _ResourceServiceKernel(observer),
++        expected_run_ref=run.identity.run_ref, expected_net_ref=run.publication.net_ref)
++    assert read.status == "terminal" and read.terminal.run_outcome == "complete"
++    assert json.loads(read_run_terminal_bytes(observer, read)) == body(run, outputs.outputs[0])
++    read.cut.assert_unchanged(observer)
++    assert snapshot(run) == before
++    assert run._core.writer_epoch == observer.writer_epoch
++
++
++def test_stop_outcome_prevents_later_round_and_is_not_owner_stop(tmp_path, deny_external):
++    run, _ = owner(tmp_path, rounds=3, stop=True)
++    step(run, "round_1_proposer.run")
++    step(run, "round_1_evaluator.run")
++    _, outputs = step(run, "round_1_selector.run")
++    assert outputs.selected_outcome_id == "stop"
++    assert enabled(run) == set()
++    before = snapshot(run)
++    assert run.admit("round_2_proposer.run", logical_tau=0, command_id="after:stop") is None
++    assert snapshot(run) == before
++    assert run.terminal() is not None
++    read = read_run_execution(run._core, _ResourceServiceKernel(run._core))
++    assert read.status == "terminal" and read.terminal.run_outcome == "complete"
++    assert len(run._core.event_store.object_rows_by_type("operation_result/v1")) == 3
++
++
++def test_r1_supplies_terminal_bindings_without_runtime_overlay():
++    registration = example.registration()
++    prepared = compile_iteration_profile(example.profile(2), registration=registration)
++    assert prepared.profile.to_dict()["terminal_outcomes"] == {
++        "stop": "complete", "final_select": "complete", "final_retain": "complete"}
++    assert all(t.config == {"run_outcome": "complete"}
++               for t in (prepared.module.terminal, *prepared.module.terminal_alternatives))
++
++
++def test_explicit_failed_terminal_is_never_relabelled_complete(tmp_path, deny_external):
++    run, _ = owner(tmp_path, rounds=1, target=0, terminal_outcomes={
++        "stop": "complete", "final_select": "complete", "final_retain": "failed"})
++    step(run, "round_1_proposer.run")
++    step(run, "round_1_evaluator.run")
++    _, outputs = step(run, "round_1_selector.run")
++    assert outputs.selected_outcome_id == "retain"
++    assert run.terminal() is not None
++    read = read_run_execution(run._core, _ResourceServiceKernel(run._core))
++    assert read.status == "terminal" and read.terminal.run_outcome == "failed"
++
++
++@pytest.mark.parametrize("field", ["candidate_ref", "parent_state_ref", "round"])
++def test_mismatched_evaluation_is_not_selected(tmp_path, monkeypatch, deny_external, field):
++    real_evaluate = example.evaluate
++    def wrong_evaluate(*, execution):
++        outcome, values = real_evaluate(execution=execution)
++        port, = values
++        value = json.loads(values[port][0])
++        value[field] = (2 if field == "round" else
++                        example.resource_ref(by_schema(execution, example.REQUEST).resource_ref))
++        return outcome, {port: (canonical_json(value),)}
++    monkeypatch.setattr(example, "evaluate", wrong_evaluate)
++    run, _ = owner(tmp_path, rounds=1)
++    step(run, "round_1_proposer.run")
++    step(run, "round_1_evaluator.run")
++    execution = start(run, "round_1_selector.run")
++    before = snapshot(run)
++    with pytest.raises(ValueError, match="same-round"):
++        products(run, execution)
++    assert snapshot(run) == before
++    assert len(run._core.event_store.object_rows_by_type("operation_result/v1")) == 2
++    assert run.terminal() is None
++
++
++def _immediate(callback):
++    future = Future()
++    try:
++        future.set_result(callback())
++    except BaseException as exc:
++        future.set_exception(exc)
++    return future
++
++
++@pytest.mark.parametrize("rounds,target,stop,expected_count,expected_value", [
++    (1, 0, False, 3, 0), (2, 3, False, 6, 2),
++    (4, 3, False, 12, 3), (3, 3, True, 3, 1),
++])
++def test_original_orchestrator_owns_multiround_execution(tmp_path, rsi_loop_factory,
++        rounds, target, stop, expected_count, expected_value, record_property):
++    run, prepared = owner(tmp_path, rounds, target=target, stop=stop)
++    loop = rsi_loop_factory(run, tmp_path / "owner.sock")
++    def prepare(*, execution, **kwargs):
++        return OperationDispatch(execution, lambda: OperationProducts(products(run, execution)))
++    try:
++        result = Orchestrator(owner=run, event_loop=loop,
++            prepare_dispatcher=prepare, submit_operation=_immediate).run()
++    finally:
++        loop.close()
++    assert result.stop_reason == "terminal" and result.terminal_evidence_ref is not None
++    assert len(result.operation_execution_trace) == expected_count
++    assert [t.transition_id for t in result.operation_execution_trace] == [
++        f"round_{n}_{role}.run" for n in range(1, (1 if stop else rounds) + 1)
++        for role in ("proposer", "evaluator", "selector")]
++    assert run._core.event_store.actual_model_call_counts() == (0, 0)
++    assert prepared.budgets.ordinary_global_cap == prepared.budgets.task_total_hard_cap == 1
++    assert all(bucket.max_attempts is None for bucket in prepared.module.budget_buckets)
++    read = read_run_execution(run._core, _ResourceServiceKernel(run._core),
++        expected_terminal_evidence_ref=result.terminal_evidence_ref)
++    value = json.loads(read_run_terminal_bytes(run._core, read))
++    assert value["value"] == expected_value
++    assert value["round"] == (1 if stop else rounds)
++    read.cut.assert_unchanged(run._core)
++    record_property("runtime_evidence", json.dumps({
++        "transport": rsi_loop_factory.__name__, "operations": len(result.operation_execution_trace),
++        "returned_model_calls": list(run._core.event_store.actual_model_call_counts()),
++        "terminal_evidence_version": str(result.terminal_evidence_ref.version_id),
++        "terminal_result_version": str(read.terminal.result_ref.version_id), "state": value}, sort_keys=True))

@@ -1,0 +1,33 @@
+{
+  "command": [
+    "<WORKSPACE>/.p26/v/bin/python",
+    "<WORKSPACE>/task-complete-v5-20261009/raw/rpnh-bound-child-material-lowering/rpnh-bound-child-material-lowering/tools/offline_recorded.py",
+    "<WORKSPACE>/.v26/c4",
+    "<WORKSPACE>/task-complete-v5-20261009/stages/core/H7_lowering/restored-six-results.json",
+    "-q",
+    "-p",
+    "no:cacheprovider",
+    "tests/test_native_net_operations.py::test_extract_whole_and_component_boundary_round_trip",
+    "tests/test_native_net_operations.py::test_serial_parallel_and_instance_are_explicit_and_lowerable",
+    "tests/test_native_net_operations.py::test_compose_rejects_implicit_broadcast_and_incompatible_link",
+    "tests/test_native_net_operations.py::test_compose_rejects_ambiguous_qualified_public_names",
+    "tests/test_native_net_operations.py::test_branch_definition_and_instance_keep_source_inert",
+    "tests/test_native_net_operations.py::test_replacement_plan_uses_existing_owner_adoption_path",
+    "--basetemp=<WORKSPACE>/.v26/ul6",
+    "--junitxml=<WORKSPACE>/task-complete-v5-20261009/stages/core/H7_lowering/restored-six.xml"
+  ],
+  "cwd": "<WORKSPACE>/.v26/c4",
+  "pid": 21698,
+  "started_at_utc": "2026-10-09T04:08:07.991760+00:00",
+  "finished_at_utc": "2026-10-09T04:08:12.461373+00:00",
+  "elapsed_seconds": 4.469630292998772,
+  "exit_code": 0,
+  "environment": {
+    "PYTHONPATH": "<WORKSPACE>/.v26/c4:<WORKSPACE>/.v26/c4/tests",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1",
+    "TMPDIR": "<WORKSPACE>/.v26/tmp",
+    "PYTEST_ADDOPTS": null,
+    "PYTEST_PLUGINS": null
+  }
+}

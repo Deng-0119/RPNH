@@ -1,0 +1,4548 @@
+{
+  "executions": [
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_profile_roundtrip_uses_optional_existing_catalog",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_profile_roundtrip_uses_optional_existing_catalog",
+        "file": "tests/test_iteration_profile.py",
+        "line": "82",
+        "time": "0.256"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_unrolled_materials_match_original_compiler_deterministically[1]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_unrolled_materials_match_original_compiler_deterministically[1]",
+        "file": "tests/test_iteration_profile.py",
+        "line": "96",
+        "time": "0.268"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_unrolled_materials_match_original_compiler_deterministically[2]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_unrolled_materials_match_original_compiler_deterministically[2]",
+        "file": "tests/test_iteration_profile.py",
+        "line": "96",
+        "time": "0.407"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_unrolled_materials_match_original_compiler_deterministically[4]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_unrolled_materials_match_original_compiler_deterministically[4]",
+        "file": "tests/test_iteration_profile.py",
+        "line": "96",
+        "time": "0.681"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_unrolled_materials_match_original_compiler_deterministically[32]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_unrolled_materials_match_original_compiler_deterministically[32]",
+        "file": "tests/test_iteration_profile.py",
+        "line": "96",
+        "time": "4.784"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_declared_ports_and_arcs_carry_all_stage_dependencies",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_declared_ports_and_arcs_carry_all_stage_dependencies",
+        "file": "tests/test_iteration_profile.py",
+        "line": "121",
+        "time": "0.129"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_stop_and_final_selection_are_existing_terminal_outcomes",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_stop_and_final_selection_are_existing_terminal_outcomes",
+        "file": "tests/test_iteration_profile.py",
+        "line": "142",
+        "time": "0.135"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>0]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>0]",
+        "file": "tests/test_iteration_profile.py",
+        "line": "161",
+        "time": "0.034"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>1]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>1]",
+        "file": "tests/test_iteration_profile.py",
+        "line": "161",
+        "time": "0.032"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>2]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>2]",
+        "file": "tests/test_iteration_profile.py",
+        "line": "161",
+        "time": "0.030"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>3]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>3]",
+        "file": "tests/test_iteration_profile.py",
+        "line": "161",
+        "time": "0.031"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>4]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>4]",
+        "file": "tests/test_iteration_profile.py",
+        "line": "161",
+        "time": "0.030"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>5]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>5]",
+        "file": "tests/test_iteration_profile.py",
+        "line": "161",
+        "time": "0.030"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>6]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>6]",
+        "file": "tests/test_iteration_profile.py",
+        "line": "161",
+        "time": "0.030"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>7]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>7]",
+        "file": "tests/test_iteration_profile.py",
+        "line": "161",
+        "time": "0.034"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>8]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>8]",
+        "file": "tests/test_iteration_profile.py",
+        "line": "161",
+        "time": "0.029"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>9]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>9]",
+        "file": "tests/test_iteration_profile.py",
+        "line": "161",
+        "time": "0.032"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>10]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>10]",
+        "file": "tests/test_iteration_profile.py",
+        "line": "161",
+        "time": "0.033"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>11]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>11]",
+        "file": "tests/test_iteration_profile.py",
+        "line": "161",
+        "time": "0.029"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>12]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>12]",
+        "file": "tests/test_iteration_profile.py",
+        "line": "161",
+        "time": "0.030"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>13]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>13]",
+        "file": "tests/test_iteration_profile.py",
+        "line": "161",
+        "time": "0.034"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>14]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>14]",
+        "file": "tests/test_iteration_profile.py",
+        "line": "161",
+        "time": "0.030"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>15]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>15]",
+        "file": "tests/test_iteration_profile.py",
+        "line": "161",
+        "time": "0.031"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>16]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>16]",
+        "file": "tests/test_iteration_profile.py",
+        "line": "161",
+        "time": "0.033"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>17]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>17]",
+        "file": "tests/test_iteration_profile.py",
+        "line": "161",
+        "time": "0.029"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>18]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>18]",
+        "file": "tests/test_iteration_profile.py",
+        "line": "161",
+        "time": "0.029"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>19]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>19]",
+        "file": "tests/test_iteration_profile.py",
+        "line": "161",
+        "time": "0.031"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>20]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>20]",
+        "file": "tests/test_iteration_profile.py",
+        "line": "161",
+        "time": "0.029"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>21]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>21]",
+        "file": "tests/test_iteration_profile.py",
+        "line": "161",
+        "time": "0.030"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>22]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>22]",
+        "file": "tests/test_iteration_profile.py",
+        "line": "161",
+        "time": "0.000"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>23]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>23]",
+        "file": "tests/test_iteration_profile.py",
+        "line": "161",
+        "time": "0.000"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>24]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>24]",
+        "file": "tests/test_iteration_profile.py",
+        "line": "161",
+        "time": "0.030"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>25]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>25]",
+        "file": "tests/test_iteration_profile.py",
+        "line": "161",
+        "time": "0.031"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>26]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>26]",
+        "file": "tests/test_iteration_profile.py",
+        "line": "161",
+        "time": "0.030"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>27]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>27]",
+        "file": "tests/test_iteration_profile.py",
+        "line": "161",
+        "time": "0.031"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>28]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>28]",
+        "file": "tests/test_iteration_profile.py",
+        "line": "161",
+        "time": "0.030"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>29]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>29]",
+        "file": "tests/test_iteration_profile.py",
+        "line": "161",
+        "time": "0.030"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>30]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>30]",
+        "file": "tests/test_iteration_profile.py",
+        "line": "161",
+        "time": "0.031"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>31]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>31]",
+        "file": "tests/test_iteration_profile.py",
+        "line": "161",
+        "time": "0.030"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_profile_rejects_duplicate_nonjson_oversized_and_invalid_text",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_profile_rejects_duplicate_nonjson_oversized_and_invalid_text",
+        "file": "tests/test_iteration_profile.py",
+        "line": "199",
+        "time": "0.001"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_registration_and_original_compiler_remain_contract_authority[schema]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_registration_and_original_compiler_remain_contract_authority[schema]",
+        "file": "tests/test_iteration_profile.py",
+        "line": "217",
+        "time": "0.061"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_registration_and_original_compiler_remain_contract_authority[executor]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_registration_and_original_compiler_remain_contract_authority[executor]",
+        "file": "tests/test_iteration_profile.py",
+        "line": "217",
+        "time": "0.064"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_registration_and_original_compiler_remain_contract_authority[terminal]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_registration_and_original_compiler_remain_contract_authority[terminal]",
+        "file": "tests/test_iteration_profile.py",
+        "line": "217",
+        "time": "0.066"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_original_compiler_rejects_incompatible_host_config",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_original_compiler_rejects_incompatible_host_config",
+        "file": "tests/test_iteration_profile.py",
+        "line": "226",
+        "time": "0.080"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_compilation_revalidates_direct_constructor",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_compilation_revalidates_direct_constructor",
+        "file": "tests/test_iteration_profile.py",
+        "line": "233",
+        "time": "0.035"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_standard_lowerer_is_required_before_any_custom_lowering",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_standard_lowerer_is_required_before_any_custom_lowering",
+        "file": "tests/test_iteration_profile.py",
+        "line": "240",
+        "time": "0.064"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_external_schema_references_fail_closed_without_retrieval",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_external_schema_references_fail_closed_without_retrieval",
+        "file": "tests/test_iteration_profile.py",
+        "line": "249",
+        "time": "0.065"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_local_schema_references_are_supported",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_local_schema_references_are_supported",
+        "file": "tests/test_iteration_profile.py",
+        "line": "257",
+        "time": "0.136"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_compilation_has_no_runtime_writes_or_reference_reads",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_compilation_has_no_runtime_writes_or_reference_reads",
+        "file": "tests/test_iteration_profile.py",
+        "line": "263",
+        "time": "0.144"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_different_role_model_refs_remain_distinct_unresolved_obligations",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_different_role_model_refs_remain_distinct_unresolved_obligations",
+        "file": "tests/test_iteration_profile.py",
+        "line": "310",
+        "time": "0.104"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_native_model_call_budget_is_independent_of_operation_count",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_native_model_call_budget_is_independent_of_operation_count",
+        "file": "tests/test_iteration_profile.py",
+        "line": "322",
+        "time": "0.136"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_explicit_native_terminal_mapping_is_compiled_without_inference[complete-stop]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_explicit_native_terminal_mapping_is_compiled_without_inference[complete-stop]",
+        "file": "tests/test_iteration_profile.py",
+        "line": "331",
+        "time": "0.135"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_explicit_native_terminal_mapping_is_compiled_without_inference[complete-final_select]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_explicit_native_terminal_mapping_is_compiled_without_inference[complete-final_select]",
+        "file": "tests/test_iteration_profile.py",
+        "line": "331",
+        "time": "0.135"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_explicit_native_terminal_mapping_is_compiled_without_inference[complete-final_retain]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_explicit_native_terminal_mapping_is_compiled_without_inference[complete-final_retain]",
+        "file": "tests/test_iteration_profile.py",
+        "line": "331",
+        "time": "0.134"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_explicit_native_terminal_mapping_is_compiled_without_inference[failed-stop]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_explicit_native_terminal_mapping_is_compiled_without_inference[failed-stop]",
+        "file": "tests/test_iteration_profile.py",
+        "line": "331",
+        "time": "0.133"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_explicit_native_terminal_mapping_is_compiled_without_inference[failed-final_select]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_explicit_native_terminal_mapping_is_compiled_without_inference[failed-final_select]",
+        "file": "tests/test_iteration_profile.py",
+        "line": "331",
+        "time": "0.139"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_explicit_native_terminal_mapping_is_compiled_without_inference[failed-final_retain]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_explicit_native_terminal_mapping_is_compiled_without_inference[failed-final_retain]",
+        "file": "tests/test_iteration_profile.py",
+        "line": "331",
+        "time": "0.139"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_native_terminal_host_rejecting_run_outcome_fails_at_compile",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_native_terminal_host_rejecting_run_outcome_fails_at_compile",
+        "file": "tests/test_iteration_profile.py",
+        "line": "343",
+        "time": "0.080"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_real_registry_publishes_each_explicit_terminal_mapping[complete-stop-stop-2]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_real_registry_publishes_each_explicit_terminal_mapping[complete-stop-stop-2]",
+        "file": "tests/test_iteration_profile.py",
+        "line": "411",
+        "time": "23.000"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_real_registry_publishes_each_explicit_terminal_mapping[complete-final_select-select-1]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_real_registry_publishes_each_explicit_terminal_mapping[complete-final_select-select-1]",
+        "file": "tests/test_iteration_profile.py",
+        "line": "411",
+        "time": "17.523"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_real_registry_publishes_each_explicit_terminal_mapping[complete-final_retain-retain-1]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_real_registry_publishes_each_explicit_terminal_mapping[complete-final_retain-retain-1]",
+        "file": "tests/test_iteration_profile.py",
+        "line": "411",
+        "time": "17.665"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_real_registry_publishes_each_explicit_terminal_mapping[failed-stop-stop-2]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_real_registry_publishes_each_explicit_terminal_mapping[failed-stop-stop-2]",
+        "file": "tests/test_iteration_profile.py",
+        "line": "411",
+        "time": "22.243"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_real_registry_publishes_each_explicit_terminal_mapping[failed-final_select-select-1]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_real_registry_publishes_each_explicit_terminal_mapping[failed-final_select-select-1]",
+        "file": "tests/test_iteration_profile.py",
+        "line": "411",
+        "time": "17.619"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_real_registry_publishes_each_explicit_terminal_mapping[failed-final_retain-retain-1]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_real_registry_publishes_each_explicit_terminal_mapping[failed-final_retain-retain-1]",
+        "file": "tests/test_iteration_profile.py",
+        "line": "411",
+        "time": "17.660"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_historical_empty_terminal_material_stays_running_after_settlement",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_historical_empty_terminal_material_stays_running_after_settlement",
+        "file": "tests/test_iteration_profile.py",
+        "line": "447",
+        "time": "15.557"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_provisional_outputs_cannot_be_washed_into_terminal_by_complete_mapping",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_provisional_outputs_cannot_be_washed_into_terminal_by_complete_mapping",
+        "file": "tests/test_iteration_profile.py",
+        "line": "466",
+        "time": "16.126"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_owner_interruption_is_not_the_domain_stop_outcome",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_owner_interruption_is_not_the_domain_stop_outcome",
+        "file": "tests/test_iteration_profile.py",
+        "line": "488",
+        "time": "4.085"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_host_lower_cannot_change_json_boolean_number_type[operation-1-True]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_host_lower_cannot_change_json_boolean_number_type[operation-1-True]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "110",
+        "time": "0.005"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_host_lower_cannot_change_json_boolean_number_type[operation-True-1]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_host_lower_cannot_change_json_boolean_number_type[operation-True-1]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "110",
+        "time": "0.005"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_host_lower_cannot_change_json_boolean_number_type[operation-0-False]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_host_lower_cannot_change_json_boolean_number_type[operation-0-False]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "110",
+        "time": "0.005"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_host_lower_cannot_change_json_boolean_number_type[operation-False-0]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_host_lower_cannot_change_json_boolean_number_type[operation-False-0]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "110",
+        "time": "0.004"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_host_lower_cannot_change_json_boolean_number_type[operation-1.0-True]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_host_lower_cannot_change_json_boolean_number_type[operation-1.0-True]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "110",
+        "time": "0.005"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_host_lower_cannot_change_json_boolean_number_type[operation-0.0-False]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_host_lower_cannot_change_json_boolean_number_type[operation-0.0-False]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "110",
+        "time": "0.004"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_host_lower_cannot_change_json_boolean_number_type[effect-1-True]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_host_lower_cannot_change_json_boolean_number_type[effect-1-True]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "110",
+        "time": "0.004"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_host_lower_cannot_change_json_boolean_number_type[effect-True-1]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_host_lower_cannot_change_json_boolean_number_type[effect-True-1]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "110",
+        "time": "0.004"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_host_lower_cannot_change_json_boolean_number_type[effect-0-False]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_host_lower_cannot_change_json_boolean_number_type[effect-0-False]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "110",
+        "time": "0.005"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_host_lower_cannot_change_json_boolean_number_type[effect-False-0]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_host_lower_cannot_change_json_boolean_number_type[effect-False-0]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "110",
+        "time": "0.005"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_host_lower_cannot_change_json_boolean_number_type[effect-1.0-True]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_host_lower_cannot_change_json_boolean_number_type[effect-1.0-True]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "110",
+        "time": "0.004"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_host_lower_cannot_change_json_boolean_number_type[effect-0.0-False]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_host_lower_cannot_change_json_boolean_number_type[effect-0.0-False]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "110",
+        "time": "0.005"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_wire_rejects_json_boolean_number_substitution[fragment-operation-1-True]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_wire_rejects_json_boolean_number_substitution[fragment-operation-1-True]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "121",
+        "time": "0.022"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_wire_rejects_json_boolean_number_substitution[fragment-operation-0-False]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_wire_rejects_json_boolean_number_substitution[fragment-operation-0-False]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "121",
+        "time": "0.018"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_wire_rejects_json_boolean_number_substitution[fragment-operation-True-1]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_wire_rejects_json_boolean_number_substitution[fragment-operation-True-1]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "121",
+        "time": "0.019"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_wire_rejects_json_boolean_number_substitution[fragment-operation-False-0]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_wire_rejects_json_boolean_number_substitution[fragment-operation-False-0]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "121",
+        "time": "0.018"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_wire_rejects_json_boolean_number_substitution[fragment-effect-1-True]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_wire_rejects_json_boolean_number_substitution[fragment-effect-1-True]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "121",
+        "time": "0.020"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_wire_rejects_json_boolean_number_substitution[fragment-effect-0-False]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_wire_rejects_json_boolean_number_substitution[fragment-effect-0-False]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "121",
+        "time": "0.018"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_wire_rejects_json_boolean_number_substitution[fragment-effect-True-1]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_wire_rejects_json_boolean_number_substitution[fragment-effect-True-1]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "121",
+        "time": "0.019"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_wire_rejects_json_boolean_number_substitution[fragment-effect-False-0]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_wire_rejects_json_boolean_number_substitution[fragment-effect-False-0]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "121",
+        "time": "0.019"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_wire_rejects_json_boolean_number_substitution[symbolic-operation-1-True]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_wire_rejects_json_boolean_number_substitution[symbolic-operation-1-True]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "121",
+        "time": "0.019"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_wire_rejects_json_boolean_number_substitution[symbolic-operation-0-False]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_wire_rejects_json_boolean_number_substitution[symbolic-operation-0-False]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "121",
+        "time": "0.018"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_wire_rejects_json_boolean_number_substitution[symbolic-operation-True-1]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_wire_rejects_json_boolean_number_substitution[symbolic-operation-True-1]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "121",
+        "time": "0.019"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_wire_rejects_json_boolean_number_substitution[symbolic-operation-False-0]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_wire_rejects_json_boolean_number_substitution[symbolic-operation-False-0]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "121",
+        "time": "0.018"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_wire_rejects_json_boolean_number_substitution[symbolic-effect-1-True]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_wire_rejects_json_boolean_number_substitution[symbolic-effect-1-True]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "121",
+        "time": "0.019"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_wire_rejects_json_boolean_number_substitution[symbolic-effect-0-False]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_wire_rejects_json_boolean_number_substitution[symbolic-effect-0-False]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "121",
+        "time": "0.020"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_wire_rejects_json_boolean_number_substitution[symbolic-effect-True-1]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_wire_rejects_json_boolean_number_substitution[symbolic-effect-True-1]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "121",
+        "time": "0.020"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_wire_rejects_json_boolean_number_substitution[symbolic-effect-False-0]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_wire_rejects_json_boolean_number_substitution[symbolic-effect-False-0]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "121",
+        "time": "0.020"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_normal_json_config_compiles_and_round_trips[operation-None]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_normal_json_config_compiles_and_round_trips[operation-None]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "137",
+        "time": "0.021"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_normal_json_config_compiles_and_round_trips[operation-True]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_normal_json_config_compiles_and_round_trips[operation-True]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "137",
+        "time": "0.021"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_normal_json_config_compiles_and_round_trips[operation-False]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_normal_json_config_compiles_and_round_trips[operation-False]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "137",
+        "time": "0.063"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_normal_json_config_compiles_and_round_trips[operation-1_0]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_normal_json_config_compiles_and_round_trips[operation-1_0]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "137",
+        "time": "0.023"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_normal_json_config_compiles_and_round_trips[operation-0]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_normal_json_config_compiles_and_round_trips[operation-0]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "137",
+        "time": "0.021"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_normal_json_config_compiles_and_round_trips[operation-1.25]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_normal_json_config_compiles_and_round_trips[operation-1.25]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "137",
+        "time": "0.022"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_normal_json_config_compiles_and_round_trips[operation-1_1]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_normal_json_config_compiles_and_round_trips[operation-1_1]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "137",
+        "time": "0.022"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_normal_json_config_compiles_and_round_trips[operation-value7]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_normal_json_config_compiles_and_round_trips[operation-value7]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "137",
+        "time": "0.022"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_normal_json_config_compiles_and_round_trips[effect-None]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_normal_json_config_compiles_and_round_trips[effect-None]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "137",
+        "time": "0.022"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_normal_json_config_compiles_and_round_trips[effect-True]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_normal_json_config_compiles_and_round_trips[effect-True]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "137",
+        "time": "0.021"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_normal_json_config_compiles_and_round_trips[effect-False]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_normal_json_config_compiles_and_round_trips[effect-False]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "137",
+        "time": "0.022"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_normal_json_config_compiles_and_round_trips[effect-1_0]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_normal_json_config_compiles_and_round_trips[effect-1_0]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "137",
+        "time": "0.021"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_normal_json_config_compiles_and_round_trips[effect-0]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_normal_json_config_compiles_and_round_trips[effect-0]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "137",
+        "time": "0.021"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_normal_json_config_compiles_and_round_trips[effect-1.25]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_normal_json_config_compiles_and_round_trips[effect-1.25]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "137",
+        "time": "0.023"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_normal_json_config_compiles_and_round_trips[effect-1_1]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_normal_json_config_compiles_and_round_trips[effect-1_1]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "137",
+        "time": "0.022"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_normal_json_config_compiles_and_round_trips[effect-value7]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_normal_json_config_compiles_and_round_trips[effect-value7]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "137",
+        "time": "0.021"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_existing_numeric_equality_survives_lowering_and_wire[operation-1-1.0]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_existing_numeric_equality_survives_lowering_and_wire[operation-1-1.0]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "147",
+        "time": "0.019"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_existing_numeric_equality_survives_lowering_and_wire[operation-0--0.0]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_existing_numeric_equality_survives_lowering_and_wire[operation-0--0.0]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "147",
+        "time": "0.020"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_existing_numeric_equality_survives_lowering_and_wire[operation-1.0-1]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_existing_numeric_equality_survives_lowering_and_wire[operation-1.0-1]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "147",
+        "time": "0.019"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_existing_numeric_equality_survives_lowering_and_wire[effect-1-1.0]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_existing_numeric_equality_survives_lowering_and_wire[effect-1-1.0]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "147",
+        "time": "0.020"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_existing_numeric_equality_survives_lowering_and_wire[effect-0--0.0]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_existing_numeric_equality_survives_lowering_and_wire[effect-0--0.0]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "147",
+        "time": "0.019"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_existing_numeric_equality_survives_lowering_and_wire[effect-1.0-1]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_existing_numeric_equality_survives_lowering_and_wire[effect-1.0-1]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "147",
+        "time": "0.019"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_declared_bundle_order_remains_incidental",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_declared_bundle_order_remains_incidental",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "170",
+        "time": "0.000"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_ordered_abi_config_arrays_and_effect_multiplicity_stay_exact[inputs]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_ordered_abi_config_arrays_and_effect_multiplicity_stay_exact[inputs]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "180",
+        "time": "0.000"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_ordered_abi_config_arrays_and_effect_multiplicity_stay_exact[outputs]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_ordered_abi_config_arrays_and_effect_multiplicity_stay_exact[outputs]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "180",
+        "time": "0.000"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_ordered_abi_config_arrays_and_effect_multiplicity_stay_exact[config]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_ordered_abi_config_arrays_and_effect_multiplicity_stay_exact[config]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "180",
+        "time": "0.000"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_ordered_abi_config_arrays_and_effect_multiplicity_stay_exact[effect_config]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_ordered_abi_config_arrays_and_effect_multiplicity_stay_exact[effect_config]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "180",
+        "time": "0.000"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_ordered_abi_config_arrays_and_effect_multiplicity_stay_exact[multiplicity]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_ordered_abi_config_arrays_and_effect_multiplicity_stay_exact[multiplicity]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "180",
+        "time": "0.000"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_existing_unequal_numbers_and_container_shapes_stay_unequal[1-1.5]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_existing_unequal_numbers_and_container_shapes_stay_unequal[1-1.5]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "197",
+        "time": "0.001"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_existing_unequal_numbers_and_container_shapes_stay_unequal[9007199254740993-9007199254740992.0]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_existing_unequal_numbers_and_container_shapes_stay_unequal[9007199254740993-9007199254740992.0]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "197",
+        "time": "0.001"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_existing_unequal_numbers_and_container_shapes_stay_unequal[1-1]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_existing_unequal_numbers_and_container_shapes_stay_unequal[1-1]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "197",
+        "time": "0.001"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_existing_unequal_numbers_and_container_shapes_stay_unequal[None-False]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_existing_unequal_numbers_and_container_shapes_stay_unequal[None-False]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "197",
+        "time": "0.001"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_existing_unequal_numbers_and_container_shapes_stay_unequal[left4-right4]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_existing_unequal_numbers_and_container_shapes_stay_unequal[left4-right4]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "197",
+        "time": "0.001"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_existing_unequal_numbers_and_container_shapes_stay_unequal[left5-right5]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_existing_unequal_numbers_and_container_shapes_stay_unequal[left5-right5]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "197",
+        "time": "0.001"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_wire_inventory_reordering_preserves_config_array_order",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_wire_inventory_reordering_preserves_config_array_order",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "206",
+        "time": "0.025"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_fusion_rejects_boolean_number_change_in_initial_payload[lower-1-True]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_fusion_rejects_boolean_number_change_in_initial_payload[lower-1-True]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "235",
+        "time": "0.009"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_fusion_rejects_boolean_number_change_in_initial_payload[lower-0-False]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_fusion_rejects_boolean_number_change_in_initial_payload[lower-0-False]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "235",
+        "time": "0.008"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_fusion_rejects_boolean_number_change_in_initial_payload[lower-True-1]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_fusion_rejects_boolean_number_change_in_initial_payload[lower-True-1]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "235",
+        "time": "0.009"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_fusion_rejects_boolean_number_change_in_initial_payload[lower-False-0]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_fusion_rejects_boolean_number_change_in_initial_payload[lower-False-0]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "235",
+        "time": "0.008"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_fusion_rejects_boolean_number_change_in_initial_payload[lower-source4-changed4]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_fusion_rejects_boolean_number_change_in_initial_payload[lower-source4-changed4]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "235",
+        "time": "0.009"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_fusion_rejects_boolean_number_change_in_initial_payload[lower-source5-changed5]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_fusion_rejects_boolean_number_change_in_initial_payload[lower-source5-changed5]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "235",
+        "time": "0.007"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_fusion_rejects_boolean_number_change_in_initial_payload[wire-1-True]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_fusion_rejects_boolean_number_change_in_initial_payload[wire-1-True]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "235",
+        "time": "0.032"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_fusion_rejects_boolean_number_change_in_initial_payload[wire-0-False]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_fusion_rejects_boolean_number_change_in_initial_payload[wire-0-False]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "235",
+        "time": "0.032"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_fusion_rejects_boolean_number_change_in_initial_payload[wire-True-1]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_fusion_rejects_boolean_number_change_in_initial_payload[wire-True-1]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "235",
+        "time": "0.032"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_fusion_rejects_boolean_number_change_in_initial_payload[wire-False-0]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_fusion_rejects_boolean_number_change_in_initial_payload[wire-False-0]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "235",
+        "time": "0.031"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_fusion_rejects_boolean_number_change_in_initial_payload[wire-source4-changed4]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_fusion_rejects_boolean_number_change_in_initial_payload[wire-source4-changed4]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "235",
+        "time": "0.031"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_fusion_rejects_boolean_number_change_in_initial_payload[wire-source5-changed5]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_fusion_rejects_boolean_number_change_in_initial_payload[wire-source5-changed5]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "235",
+        "time": "0.032"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_fusion_keeps_initial_token_multiset_and_numeric_equivalence[left0-right0]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_fusion_keeps_initial_token_multiset_and_numeric_equivalence[left0-right0]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "257",
+        "time": "0.034"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_fusion_keeps_initial_token_multiset_and_numeric_equivalence[left1-right1]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_fusion_keeps_initial_token_multiset_and_numeric_equivalence[left1-right1]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "257",
+        "time": "0.034"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_fusion_keeps_initial_token_multiset_and_numeric_equivalence[left2-right2]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_fusion_keeps_initial_token_multiset_and_numeric_equivalence[left2-right2]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "257",
+        "time": "0.034"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_fusion_keeps_initial_token_multiset_and_numeric_equivalence[left3-right3]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_fusion_keeps_initial_token_multiset_and_numeric_equivalence[left3-right3]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "257",
+        "time": "0.035"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_fusion_keeps_multiplicity_payload_order_and_container_mismatches[left0-right0]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_fusion_keeps_multiplicity_payload_order_and_container_mismatches[left0-right0]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "270",
+        "time": "0.008"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_fusion_keeps_multiplicity_payload_order_and_container_mismatches[left1-right1]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_fusion_keeps_multiplicity_payload_order_and_container_mismatches[left1-right1]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "270",
+        "time": "0.009"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_fusion_keeps_multiplicity_payload_order_and_container_mismatches[left2-right2]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_fusion_keeps_multiplicity_payload_order_and_container_mismatches[left2-right2]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "270",
+        "time": "0.008"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-author",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_fusion_keeps_multiplicity_payload_order_and_container_mismatches[left3-right3]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_fusion_keeps_multiplicity_payload_order_and_container_mismatches[left3-right3]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "270",
+        "time": "0.008"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-independent-registry",
+      "scope": "package_independent",
+      "id": "R1_v2_full/review/test_terminal_registry_independent.py::test_last_round_stop_uses_explicit_failed_mapping_after_nonterminal_retain",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "task-complete-v5-20261009.stages.rsi.packages.R1_v2_full.review.test_terminal_registry_independent",
+        "name": "test_last_round_stop_uses_explicit_failed_mapping_after_nonterminal_retain",
+        "file": "task-complete-v5-20261009/stages/rsi/packages/R1_v2_full/review/test_terminal_registry_independent.py",
+        "line": "28",
+        "time": "37.197"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-independent-registry",
+      "scope": "package_independent",
+      "id": "R1_v2_full/review/test_terminal_registry_independent.py::test_last_selector_provisional_product_cannot_publish_complete",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "task-complete-v5-20261009.stages.rsi.packages.R1_v2_full.review.test_terminal_registry_independent",
+        "name": "test_last_selector_provisional_product_cannot_publish_complete",
+        "file": "task-complete-v5-20261009/stages/rsi/packages/R1_v2_full/review/test_terminal_registry_independent.py",
+        "line": "55",
+        "time": "15.050"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r1-independent-registry",
+      "scope": "package_independent",
+      "id": "R1_v2_full/review/test_terminal_registry_independent.py::test_owner_stop_after_settled_terminal_product_cannot_be_overwritten",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "task-complete-v5-20261009.stages.rsi.packages.R1_v2_full.review.test_terminal_registry_independent",
+        "name": "test_owner_stop_after_settled_terminal_product_cannot_be_overwritten",
+        "file": "task-complete-v5-20261009/stages/rsi/packages/R1_v2_full/review/test_terminal_registry_independent.py",
+        "line": "75",
+        "time": "16.718"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-author-step",
+      "scope": "repository",
+      "id": "examples/rsi_workflows/tests/test_runtime.py::test_missing_unsettled_or_report_evaluation_cannot_admit_selector",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "examples.rsi_workflows.tests.test_runtime",
+        "name": "test_missing_unsettled_or_report_evaluation_cannot_admit_selector",
+        "file": "examples/rsi_workflows/tests/test_runtime.py",
+        "line": "99",
+        "time": "14.894"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-author-step",
+      "scope": "repository",
+      "id": "examples/rsi_workflows/tests/test_runtime.py::test_exact_lineage_and_stale_previous_round_do_not_enable_next_selector",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "examples.rsi_workflows.tests.test_runtime",
+        "name": "test_exact_lineage_and_stale_previous_round_do_not_enable_next_selector",
+        "file": "examples/rsi_workflows/tests/test_runtime.py",
+        "line": "125",
+        "time": "23.382"
+      },
+      "properties": {
+        "exact_lineage": "{\"evaluation\": {\"candidate_ref\": {\"resource_id\": \"resource:1dc0e01d99965a448dac02a9470b9008\", \"resource_version_id\": \"resource_version:a574651429225fd595e9365864e8dce3\"}, \"candidate_score\": 2, \"incumbent_score\": 3, \"parent_state_ref\": {\"resource_id\": \"resource:5b24791ddbe35491a026c68034a62b8c\", \"resource_version_id\": \"resource_version:bc9792ac81065bcca1602f2361dd7a49\"}, \"request_ref\": {\"resource_id\": \"resource:4fbe9b020a585fa3b5119210140aaaf9\", \"resource_version_id\": \"resource_version:37f76e84e1185eb8b5a8258d658499ba\"}, \"round\": 1, \"scorer\": \"integer_absolute_distance/v1\", \"scorer_binding_ref\": {\"entity_type\": \"operation_binding/v1\", \"logical_id\": \"operation_binding:d8778037f14054a094f1671508a40992\", \"version_id\": \"operation_binding_version:7c4627c6e3d85053979829afeb95e777\"}, \"status\": \"known\", \"stop\": false}, \"round_2_state_ref\": {\"resource_id\": \"resource:55f4188d6c2257ad8e06ab78feec5b28\", \"resource_version_id\": \"resource_version:74f6266b67955db19147e22891542e69\"}, \"selection\": {\"decision\": {\"candidate_ref\": {\"resource_id\": \"resource:1dc0e01d99965a448dac02a9470b9008\", \"resource_version_id\": \"resource_version:a574651429225fd595e9365864e8dce3\"}, \"candidate_selected\": true, \"evaluation_ref\": {\"resource_id\": \"resource:96aaab6b181b53fab1fe4af53991d0a6\", \"resource_version_id\": \"resource_version:22aebc5457855ea7b72f2faf1c34eb6d\"}, \"incumbent_ref\": {\"resource_id\": \"resource:a6c1d940b71359cf8d96a541cfe4db42\", \"resource_version_id\": \"resource_version:bf3ea9c9dc045b9dafcaa3dd0d848235\"}, \"outcome\": \"select\", \"request_ref\": {\"resource_id\": \"resource:4fbe9b020a585fa3b5119210140aaaf9\", \"resource_version_id\": \"resource_version:37f76e84e1185eb8b5a8258d658499ba\"}, \"scorer_binding_ref\": {\"entity_type\": \"operation_binding/v1\", \"logical_id\": \"operation_binding:d8778037f14054a094f1671508a40992\", \"version_id\": \"operation_binding_version:7c4627c6e3d85053979829afeb95e777\"}}, \"parent_state_ref\": {\"resource_id\": \"resource:a6c1d940b71359cf8d96a541cfe4db42\", \"resource_version_id\": \"resource_version:bf3ea9c9dc045b9dafcaa3dd0d848235\"}, \"round\": 1, \"selected_candidate_ref\": {\"resource_id\": \"resource:1dc0e01d99965a448dac02a9470b9008\", \"resource_version_id\": \"resource_version:a574651429225fd595e9365864e8dce3\"}, \"value\": 1}, \"selection_ref\": {\"resource_id\": \"resource:55f4188d6c2257ad8e06ab78feec5b28\", \"resource_version_id\": \"resource_version:74f6266b67955db19147e22891542e69\"}}"
+      }
+    },
+    {
+      "gate": "resume-r2-author-step",
+      "scope": "repository",
+      "id": "examples/rsi_workflows/tests/test_runtime.py::test_select_retain_unknown_and_native_terminal_read[3-False-select]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "examples.rsi_workflows.tests.test_runtime",
+        "name": "test_select_retain_unknown_and_native_terminal_read[3-False-select]",
+        "file": "examples/rsi_workflows/tests/test_runtime.py",
+        "line": "154",
+        "time": "16.566"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-author-step",
+      "scope": "repository",
+      "id": "examples/rsi_workflows/tests/test_runtime.py::test_select_retain_unknown_and_native_terminal_read[0-False-retain]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "examples.rsi_workflows.tests.test_runtime",
+        "name": "test_select_retain_unknown_and_native_terminal_read[0-False-retain]",
+        "file": "examples/rsi_workflows/tests/test_runtime.py",
+        "line": "154",
+        "time": "15.924"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-author-step",
+      "scope": "repository",
+      "id": "examples/rsi_workflows/tests/test_runtime.py::test_select_retain_unknown_and_native_terminal_read[3-True-retain]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "examples.rsi_workflows.tests.test_runtime",
+        "name": "test_select_retain_unknown_and_native_terminal_read[3-True-retain]",
+        "file": "examples/rsi_workflows/tests/test_runtime.py",
+        "line": "154",
+        "time": "15.935"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-author-step",
+      "scope": "repository",
+      "id": "examples/rsi_workflows/tests/test_runtime.py::test_stop_outcome_prevents_later_round_and_is_not_owner_stop",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "examples.rsi_workflows.tests.test_runtime",
+        "name": "test_stop_outcome_prevents_later_round_and_is_not_owner_stop",
+        "file": "examples/rsi_workflows/tests/test_runtime.py",
+        "line": "174",
+        "time": "23.411"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-author-step",
+      "scope": "repository",
+      "id": "examples/rsi_workflows/tests/test_runtime.py::test_r1_supplies_terminal_bindings_without_runtime_overlay",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "examples.rsi_workflows.tests.test_runtime",
+        "name": "test_r1_supplies_terminal_bindings_without_runtime_overlay",
+        "file": "examples/rsi_workflows/tests/test_runtime.py",
+        "line": "190",
+        "time": "0.152"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-author-step",
+      "scope": "repository",
+      "id": "examples/rsi_workflows/tests/test_runtime.py::test_explicit_failed_terminal_is_never_relabelled_complete",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "examples.rsi_workflows.tests.test_runtime",
+        "name": "test_explicit_failed_terminal_is_never_relabelled_complete",
+        "file": "examples/rsi_workflows/tests/test_runtime.py",
+        "line": "199",
+        "time": "15.965"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-author-step",
+      "scope": "repository",
+      "id": "examples/rsi_workflows/tests/test_runtime.py::test_mismatched_evaluation_is_not_selected[candidate_ref]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "examples.rsi_workflows.tests.test_runtime",
+        "name": "test_mismatched_evaluation_is_not_selected[candidate_ref]",
+        "file": "examples/rsi_workflows/tests/test_runtime.py",
+        "line": "211",
+        "time": "14.297"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-author-step",
+      "scope": "repository",
+      "id": "examples/rsi_workflows/tests/test_runtime.py::test_mismatched_evaluation_is_not_selected[parent_state_ref]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "examples.rsi_workflows.tests.test_runtime",
+        "name": "test_mismatched_evaluation_is_not_selected[parent_state_ref]",
+        "file": "examples/rsi_workflows/tests/test_runtime.py",
+        "line": "211",
+        "time": "14.225"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-author-step",
+      "scope": "repository",
+      "id": "examples/rsi_workflows/tests/test_runtime.py::test_mismatched_evaluation_is_not_selected[round]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "examples.rsi_workflows.tests.test_runtime",
+        "name": "test_mismatched_evaluation_is_not_selected[round]",
+        "file": "examples/rsi_workflows/tests/test_runtime.py",
+        "line": "211",
+        "time": "14.419"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-independent",
+      "scope": "package_independent",
+      "id": "R2/review/test_reviewer_boundaries.py::test_mixed_unknown_select_retain_exact_lineage_and_terminal",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "task-complete-v5-20261009.stages.rsi.packages.R2.review.independent_probes.test_reviewer_boundaries",
+        "name": "test_mixed_unknown_select_retain_exact_lineage_and_terminal",
+        "file": "task-complete-v5-20261009/stages/rsi/packages/R2/review/independent_probes/test_reviewer_boundaries.py",
+        "line": "41",
+        "time": "64.230"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-independent",
+      "scope": "package_independent",
+      "id": "R2/review/test_reviewer_boundaries.py::test_selector_published_product_requires_settlement",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "task-complete-v5-20261009.stages.rsi.packages.R2.review.independent_probes.test_reviewer_boundaries",
+        "name": "test_selector_published_product_requires_settlement",
+        "file": "task-complete-v5-20261009/stages/rsi/packages/R2/review/independent_probes/test_reviewer_boundaries.py",
+        "line": "87",
+        "time": "17.806"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-independent",
+      "scope": "package_independent",
+      "id": "R2/review/test_reviewer_boundaries.py::test_inconsistent_domain_status_scores_cannot_create_selection[True-scores0]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "task-complete-v5-20261009.stages.rsi.packages.R2.review.independent_probes.test_reviewer_boundaries",
+        "name": "test_inconsistent_domain_status_scores_cannot_create_selection[True-scores0]",
+        "file": "task-complete-v5-20261009/stages/rsi/packages/R2/review/independent_probes/test_reviewer_boundaries.py",
+        "line": "104",
+        "time": "14.510"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-independent",
+      "scope": "package_independent",
+      "id": "R2/review/test_reviewer_boundaries.py::test_inconsistent_domain_status_scores_cannot_create_selection[False-scores1]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "task-complete-v5-20261009.stages.rsi.packages.R2.review.independent_probes.test_reviewer_boundaries",
+        "name": "test_inconsistent_domain_status_scores_cannot_create_selection[False-scores1]",
+        "file": "task-complete-v5-20261009/stages/rsi/packages/R2/review/independent_probes/test_reviewer_boundaries.py",
+        "line": "104",
+        "time": "14.536"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-independent",
+      "scope": "package_independent",
+      "id": "R2/review/test_reviewer_boundaries.py::test_raising_evaluator_leaves_physical_unknown_unsettled",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "task-complete-v5-20261009.stages.rsi.packages.R2.review.independent_probes.test_reviewer_boundaries",
+        "name": "test_raising_evaluator_leaves_physical_unknown_unsettled",
+        "file": "task-complete-v5-20261009/stages/rsi/packages/R2/review/independent_probes/test_reviewer_boundaries.py",
+        "line": "125",
+        "time": "9.747"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-native",
+      "scope": "repository",
+      "id": "examples/rsi_workflows/tests/test_runtime.py::test_original_orchestrator_owns_multiround_execution[1-0-False-3-0]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "examples.rsi_workflows.tests.test_runtime",
+        "name": "test_original_orchestrator_owns_multiround_execution[1-0-False-3-0]",
+        "file": "examples/rsi_workflows/tests/test_runtime.py",
+        "line": "243",
+        "time": "18.823"
+      },
+      "properties": {
+        "runtime_evidence": "{\"operations\": 3, \"returned_model_calls\": [0, 0], \"state\": {\"decision\": {\"candidate_ref\": {\"resource_id\": \"resource:d79f1457d47551169b00b1788cf455cd\", \"resource_version_id\": \"resource_version:2a145ca6922d584391e333147f1a4693\"}, \"candidate_selected\": false, \"evaluation_ref\": {\"resource_id\": \"resource:226cbf7d14e85cf882524b04fae10976\", \"resource_version_id\": \"resource_version:919d3e9e5c77582bb48b24f345a65d33\"}, \"incumbent_ref\": {\"resource_id\": \"resource:ecb0ff52059d5e9aa92eafc77b89fe7e\", \"resource_version_id\": \"resource_version:60e267cc99af516fa180e0ee334e2cb4\"}, \"outcome\": \"retain\", \"request_ref\": {\"resource_id\": \"resource:44a50656401352e68eda1a58a514ba0f\", \"resource_version_id\": \"resource_version:b80b8d76f45c5744802cbe8ab3ee4499\"}, \"scorer_binding_ref\": {\"entity_type\": \"operation_binding/v1\", \"logical_id\": \"operation_binding:d8778037f14054a094f1671508a40992\", \"version_id\": \"operation_binding_version:7c4627c6e3d85053979829afeb95e777\"}}, \"parent_state_ref\": {\"resource_id\": \"resource:ecb0ff52059d5e9aa92eafc77b89fe7e\", \"resource_version_id\": \"resource_version:60e267cc99af516fa180e0ee334e2cb4\"}, \"round\": 1, \"selected_candidate_ref\": null, \"value\": 0}, \"terminal_evidence_version\": \"terminal_evidence_version:b8dc46f3df194ba39cdf5d95c955994f\", \"terminal_result_version\": \"resource_version:11c2a152671459b79601ee2347644603\", \"transport\": \"OwnerEventLoop\"}"
+      }
+    },
+    {
+      "gate": "resume-r2-native",
+      "scope": "repository",
+      "id": "examples/rsi_workflows/tests/test_runtime.py::test_original_orchestrator_owns_multiround_execution[2-3-False-6-2]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "examples.rsi_workflows.tests.test_runtime",
+        "name": "test_original_orchestrator_owns_multiround_execution[2-3-False-6-2]",
+        "file": "examples/rsi_workflows/tests/test_runtime.py",
+        "line": "243",
+        "time": "43.354"
+      },
+      "properties": {
+        "runtime_evidence": "{\"operations\": 6, \"returned_model_calls\": [0, 0], \"state\": {\"decision\": {\"candidate_ref\": {\"resource_id\": \"resource:9247048ab9625c8ea705d13fd7c3cddf\", \"resource_version_id\": \"resource_version:c8148e1a67655f3d8b5eaf05a14d04f7\"}, \"candidate_selected\": true, \"evaluation_ref\": {\"resource_id\": \"resource:ab41ce9102f55002ac6d5aa29e9c8cb3\", \"resource_version_id\": \"resource_version:dd2fd26884995c8f9035e1bcfe7d22d6\"}, \"incumbent_ref\": {\"resource_id\": \"resource:f051600cefe85bd99bfd1956160c81cf\", \"resource_version_id\": \"resource_version:9332d289fbaf5893af53366b36d45244\"}, \"outcome\": \"select\", \"request_ref\": {\"resource_id\": \"resource:714066daeeb95e66a2c77d0de00844aa\", \"resource_version_id\": \"resource_version:913f9529ded45989b33fec63a9393460\"}, \"scorer_binding_ref\": {\"entity_type\": \"operation_binding/v1\", \"logical_id\": \"operation_binding:62c35ba4f98f52e9bf629218f17b88ec\", \"version_id\": \"operation_binding_version:d54c7df4c29750428c753c2d440865f6\"}}, \"parent_state_ref\": {\"resource_id\": \"resource:f051600cefe85bd99bfd1956160c81cf\", \"resource_version_id\": \"resource_version:9332d289fbaf5893af53366b36d45244\"}, \"round\": 2, \"selected_candidate_ref\": {\"resource_id\": \"resource:9247048ab9625c8ea705d13fd7c3cddf\", \"resource_version_id\": \"resource_version:c8148e1a67655f3d8b5eaf05a14d04f7\"}, \"value\": 2}, \"terminal_evidence_version\": \"terminal_evidence_version:5aefe18ea7164bd98f0efc099499b7eb\", \"terminal_result_version\": \"resource_version:8a8bbf74e4e55fb9b8f8d0ad168d2233\", \"transport\": \"OwnerEventLoop\"}"
+      }
+    },
+    {
+      "gate": "resume-r2-native",
+      "scope": "repository",
+      "id": "examples/rsi_workflows/tests/test_runtime.py::test_original_orchestrator_owns_multiround_execution[4-3-False-12-3]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "examples.rsi_workflows.tests.test_runtime",
+        "name": "test_original_orchestrator_owns_multiround_execution[4-3-False-12-3]",
+        "file": "examples/rsi_workflows/tests/test_runtime.py",
+        "line": "243",
+        "time": "123.469"
+      },
+      "properties": {
+        "runtime_evidence": "{\"operations\": 12, \"returned_model_calls\": [0, 0], \"state\": {\"decision\": {\"candidate_ref\": {\"resource_id\": \"resource:108db457e5765bfb858ddd0a7c32d77f\", \"resource_version_id\": \"resource_version:7a53a6832c5f5b3e9e2c55d361129e51\"}, \"candidate_selected\": false, \"evaluation_ref\": {\"resource_id\": \"resource:da80edf239be5e85a2419fc7a0b46f65\", \"resource_version_id\": \"resource_version:1b6c2e809b235191b7eb9f05350c017e\"}, \"incumbent_ref\": {\"resource_id\": \"resource:bc3a5adb1e84536cb845cb9d361bb7ea\", \"resource_version_id\": \"resource_version:d3a3508197755c5cb717c55bea83c2d6\"}, \"outcome\": \"retain\", \"request_ref\": {\"resource_id\": \"resource:91d68f5b53ff524a8e5398b4bf19fa4b\", \"resource_version_id\": \"resource_version:26474343874651369bdd3e7d734810c1\"}, \"scorer_binding_ref\": {\"entity_type\": \"operation_binding/v1\", \"logical_id\": \"operation_binding:fdb0318d7b17512e9ddd698b9417981a\", \"version_id\": \"operation_binding_version:c945fab1c2225566a1f19acdb921ee86\"}}, \"parent_state_ref\": {\"resource_id\": \"resource:bc3a5adb1e84536cb845cb9d361bb7ea\", \"resource_version_id\": \"resource_version:d3a3508197755c5cb717c55bea83c2d6\"}, \"round\": 4, \"selected_candidate_ref\": {\"resource_id\": \"resource:46d59d09fa065d65b57077ff5119d007\", \"resource_version_id\": \"resource_version:01d6976a201450f1b79c43c70edea6e6\"}, \"value\": 3}, \"terminal_evidence_version\": \"terminal_evidence_version:15475017b9fa4ca88fbf9b8e0c01b7c3\", \"terminal_result_version\": \"resource_version:f2a4bdf146c05ec1b644198f14c0a1d7\", \"transport\": \"OwnerEventLoop\"}"
+      }
+    },
+    {
+      "gate": "resume-r2-native",
+      "scope": "repository",
+      "id": "examples/rsi_workflows/tests/test_runtime.py::test_original_orchestrator_owns_multiround_execution[3-3-True-3-1]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "examples.rsi_workflows.tests.test_runtime",
+        "name": "test_original_orchestrator_owns_multiround_execution[3-3-True-3-1]",
+        "file": "examples/rsi_workflows/tests/test_runtime.py",
+        "line": "243",
+        "time": "30.176"
+      },
+      "properties": {
+        "runtime_evidence": "{\"operations\": 3, \"returned_model_calls\": [0, 0], \"state\": {\"decision\": {\"candidate_ref\": {\"resource_id\": \"resource:088cb5d05c78546d91078181173bf16d\", \"resource_version_id\": \"resource_version:70531fec7e8d5c3aa1396c017c6d779d\"}, \"candidate_selected\": true, \"evaluation_ref\": {\"resource_id\": \"resource:0d499d4d23905182bd8f9b7fc2cf262a\", \"resource_version_id\": \"resource_version:71cf4d397e0257eda1f2739af0f82ae2\"}, \"incumbent_ref\": {\"resource_id\": \"resource:ecff6cd006df5ed8b1e62c8d982a5882\", \"resource_version_id\": \"resource_version:8e7fb24bf88a592fb1d6b7ccd3d33147\"}, \"outcome\": \"stop\", \"request_ref\": {\"resource_id\": \"resource:b1d3995d656b53fdac9548e2bd1df8b5\", \"resource_version_id\": \"resource_version:4de00538f58252cba4336291b7e1eaa9\"}, \"scorer_binding_ref\": {\"entity_type\": \"operation_binding/v1\", \"logical_id\": \"operation_binding:d8778037f14054a094f1671508a40992\", \"version_id\": \"operation_binding_version:7c4627c6e3d85053979829afeb95e777\"}}, \"parent_state_ref\": {\"resource_id\": \"resource:ecff6cd006df5ed8b1e62c8d982a5882\", \"resource_version_id\": \"resource_version:8e7fb24bf88a592fb1d6b7ccd3d33147\"}, \"round\": 1, \"selected_candidate_ref\": {\"resource_id\": \"resource:088cb5d05c78546d91078181173bf16d\", \"resource_version_id\": \"resource_version:70531fec7e8d5c3aa1396c017c6d779d\"}, \"value\": 1}, \"terminal_evidence_version\": \"terminal_evidence_version:421a925741ae41ed973ee007e2108c60\", \"terminal_result_version\": \"resource_version:3288e4503096500ca811fab2bfab4eec\", \"transport\": \"OwnerEventLoop\"}"
+      }
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_profile_roundtrip_uses_optional_existing_catalog",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_profile_roundtrip_uses_optional_existing_catalog",
+        "file": "tests/test_iteration_profile.py",
+        "line": "82",
+        "time": "0.263"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_unrolled_materials_match_original_compiler_deterministically[1]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_unrolled_materials_match_original_compiler_deterministically[1]",
+        "file": "tests/test_iteration_profile.py",
+        "line": "96",
+        "time": "0.290"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_unrolled_materials_match_original_compiler_deterministically[2]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_unrolled_materials_match_original_compiler_deterministically[2]",
+        "file": "tests/test_iteration_profile.py",
+        "line": "96",
+        "time": "0.438"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_unrolled_materials_match_original_compiler_deterministically[4]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_unrolled_materials_match_original_compiler_deterministically[4]",
+        "file": "tests/test_iteration_profile.py",
+        "line": "96",
+        "time": "0.712"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_unrolled_materials_match_original_compiler_deterministically[32]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_unrolled_materials_match_original_compiler_deterministically[32]",
+        "file": "tests/test_iteration_profile.py",
+        "line": "96",
+        "time": "4.767"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_declared_ports_and_arcs_carry_all_stage_dependencies",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_declared_ports_and_arcs_carry_all_stage_dependencies",
+        "file": "tests/test_iteration_profile.py",
+        "line": "121",
+        "time": "0.134"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_stop_and_final_selection_are_existing_terminal_outcomes",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_stop_and_final_selection_are_existing_terminal_outcomes",
+        "file": "tests/test_iteration_profile.py",
+        "line": "142",
+        "time": "0.132"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>0]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>0]",
+        "file": "tests/test_iteration_profile.py",
+        "line": "161",
+        "time": "0.029"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>1]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>1]",
+        "file": "tests/test_iteration_profile.py",
+        "line": "161",
+        "time": "0.030"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>2]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>2]",
+        "file": "tests/test_iteration_profile.py",
+        "line": "161",
+        "time": "0.030"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>3]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>3]",
+        "file": "tests/test_iteration_profile.py",
+        "line": "161",
+        "time": "0.029"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>4]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>4]",
+        "file": "tests/test_iteration_profile.py",
+        "line": "161",
+        "time": "0.029"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>5]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>5]",
+        "file": "tests/test_iteration_profile.py",
+        "line": "161",
+        "time": "0.030"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>6]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>6]",
+        "file": "tests/test_iteration_profile.py",
+        "line": "161",
+        "time": "0.030"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>7]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>7]",
+        "file": "tests/test_iteration_profile.py",
+        "line": "161",
+        "time": "0.041"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>8]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>8]",
+        "file": "tests/test_iteration_profile.py",
+        "line": "161",
+        "time": "0.032"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>9]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>9]",
+        "file": "tests/test_iteration_profile.py",
+        "line": "161",
+        "time": "0.029"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>10]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>10]",
+        "file": "tests/test_iteration_profile.py",
+        "line": "161",
+        "time": "0.033"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>11]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>11]",
+        "file": "tests/test_iteration_profile.py",
+        "line": "161",
+        "time": "0.030"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>12]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>12]",
+        "file": "tests/test_iteration_profile.py",
+        "line": "161",
+        "time": "0.030"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>13]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>13]",
+        "file": "tests/test_iteration_profile.py",
+        "line": "161",
+        "time": "0.031"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>14]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>14]",
+        "file": "tests/test_iteration_profile.py",
+        "line": "161",
+        "time": "0.030"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>15]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>15]",
+        "file": "tests/test_iteration_profile.py",
+        "line": "161",
+        "time": "0.031"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>16]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>16]",
+        "file": "tests/test_iteration_profile.py",
+        "line": "161",
+        "time": "0.030"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>17]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>17]",
+        "file": "tests/test_iteration_profile.py",
+        "line": "161",
+        "time": "0.032"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>18]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>18]",
+        "file": "tests/test_iteration_profile.py",
+        "line": "161",
+        "time": "0.031"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>19]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>19]",
+        "file": "tests/test_iteration_profile.py",
+        "line": "161",
+        "time": "0.029"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>20]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>20]",
+        "file": "tests/test_iteration_profile.py",
+        "line": "161",
+        "time": "0.030"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>21]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>21]",
+        "file": "tests/test_iteration_profile.py",
+        "line": "161",
+        "time": "0.030"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>22]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>22]",
+        "file": "tests/test_iteration_profile.py",
+        "line": "161",
+        "time": "0.000"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>23]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>23]",
+        "file": "tests/test_iteration_profile.py",
+        "line": "161",
+        "time": "0.000"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>24]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>24]",
+        "file": "tests/test_iteration_profile.py",
+        "line": "161",
+        "time": "0.029"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>25]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>25]",
+        "file": "tests/test_iteration_profile.py",
+        "line": "161",
+        "time": "0.031"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>26]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>26]",
+        "file": "tests/test_iteration_profile.py",
+        "line": "161",
+        "time": "0.031"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>27]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>27]",
+        "file": "tests/test_iteration_profile.py",
+        "line": "161",
+        "time": "0.031"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>28]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>28]",
+        "file": "tests/test_iteration_profile.py",
+        "line": "161",
+        "time": "0.031"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>29]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>29]",
+        "file": "tests/test_iteration_profile.py",
+        "line": "161",
+        "time": "0.032"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>30]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>30]",
+        "file": "tests/test_iteration_profile.py",
+        "line": "161",
+        "time": "0.029"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>31]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>31]",
+        "file": "tests/test_iteration_profile.py",
+        "line": "161",
+        "time": "0.029"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_profile_rejects_duplicate_nonjson_oversized_and_invalid_text",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_profile_rejects_duplicate_nonjson_oversized_and_invalid_text",
+        "file": "tests/test_iteration_profile.py",
+        "line": "199",
+        "time": "0.001"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_registration_and_original_compiler_remain_contract_authority[schema]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_registration_and_original_compiler_remain_contract_authority[schema]",
+        "file": "tests/test_iteration_profile.py",
+        "line": "217",
+        "time": "0.063"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_registration_and_original_compiler_remain_contract_authority[executor]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_registration_and_original_compiler_remain_contract_authority[executor]",
+        "file": "tests/test_iteration_profile.py",
+        "line": "217",
+        "time": "0.061"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_registration_and_original_compiler_remain_contract_authority[terminal]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_registration_and_original_compiler_remain_contract_authority[terminal]",
+        "file": "tests/test_iteration_profile.py",
+        "line": "217",
+        "time": "0.063"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_original_compiler_rejects_incompatible_host_config",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_original_compiler_rejects_incompatible_host_config",
+        "file": "tests/test_iteration_profile.py",
+        "line": "226",
+        "time": "0.079"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_compilation_revalidates_direct_constructor",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_compilation_revalidates_direct_constructor",
+        "file": "tests/test_iteration_profile.py",
+        "line": "233",
+        "time": "0.033"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_standard_lowerer_is_required_before_any_custom_lowering",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_standard_lowerer_is_required_before_any_custom_lowering",
+        "file": "tests/test_iteration_profile.py",
+        "line": "240",
+        "time": "0.059"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_external_schema_references_fail_closed_without_retrieval",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_external_schema_references_fail_closed_without_retrieval",
+        "file": "tests/test_iteration_profile.py",
+        "line": "249",
+        "time": "0.062"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_local_schema_references_are_supported",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_local_schema_references_are_supported",
+        "file": "tests/test_iteration_profile.py",
+        "line": "257",
+        "time": "0.135"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_compilation_has_no_runtime_writes_or_reference_reads",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_compilation_has_no_runtime_writes_or_reference_reads",
+        "file": "tests/test_iteration_profile.py",
+        "line": "263",
+        "time": "0.139"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_different_role_model_refs_remain_distinct_unresolved_obligations",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_different_role_model_refs_remain_distinct_unresolved_obligations",
+        "file": "tests/test_iteration_profile.py",
+        "line": "310",
+        "time": "0.098"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_native_model_call_budget_is_independent_of_operation_count",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_native_model_call_budget_is_independent_of_operation_count",
+        "file": "tests/test_iteration_profile.py",
+        "line": "322",
+        "time": "0.131"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_explicit_native_terminal_mapping_is_compiled_without_inference[complete-stop]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_explicit_native_terminal_mapping_is_compiled_without_inference[complete-stop]",
+        "file": "tests/test_iteration_profile.py",
+        "line": "331",
+        "time": "0.134"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_explicit_native_terminal_mapping_is_compiled_without_inference[complete-final_select]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_explicit_native_terminal_mapping_is_compiled_without_inference[complete-final_select]",
+        "file": "tests/test_iteration_profile.py",
+        "line": "331",
+        "time": "0.129"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_explicit_native_terminal_mapping_is_compiled_without_inference[complete-final_retain]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_explicit_native_terminal_mapping_is_compiled_without_inference[complete-final_retain]",
+        "file": "tests/test_iteration_profile.py",
+        "line": "331",
+        "time": "0.133"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_explicit_native_terminal_mapping_is_compiled_without_inference[failed-stop]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_explicit_native_terminal_mapping_is_compiled_without_inference[failed-stop]",
+        "file": "tests/test_iteration_profile.py",
+        "line": "331",
+        "time": "0.130"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_explicit_native_terminal_mapping_is_compiled_without_inference[failed-final_select]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_explicit_native_terminal_mapping_is_compiled_without_inference[failed-final_select]",
+        "file": "tests/test_iteration_profile.py",
+        "line": "331",
+        "time": "0.130"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_explicit_native_terminal_mapping_is_compiled_without_inference[failed-final_retain]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_explicit_native_terminal_mapping_is_compiled_without_inference[failed-final_retain]",
+        "file": "tests/test_iteration_profile.py",
+        "line": "331",
+        "time": "0.132"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_native_terminal_host_rejecting_run_outcome_fails_at_compile",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_native_terminal_host_rejecting_run_outcome_fails_at_compile",
+        "file": "tests/test_iteration_profile.py",
+        "line": "343",
+        "time": "0.078"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_real_registry_publishes_each_explicit_terminal_mapping[complete-stop-stop-2]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_real_registry_publishes_each_explicit_terminal_mapping[complete-stop-stop-2]",
+        "file": "tests/test_iteration_profile.py",
+        "line": "411",
+        "time": "22.279"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_real_registry_publishes_each_explicit_terminal_mapping[complete-final_select-select-1]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_real_registry_publishes_each_explicit_terminal_mapping[complete-final_select-select-1]",
+        "file": "tests/test_iteration_profile.py",
+        "line": "411",
+        "time": "17.893"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_real_registry_publishes_each_explicit_terminal_mapping[complete-final_retain-retain-1]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_real_registry_publishes_each_explicit_terminal_mapping[complete-final_retain-retain-1]",
+        "file": "tests/test_iteration_profile.py",
+        "line": "411",
+        "time": "17.643"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_real_registry_publishes_each_explicit_terminal_mapping[failed-stop-stop-2]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_real_registry_publishes_each_explicit_terminal_mapping[failed-stop-stop-2]",
+        "file": "tests/test_iteration_profile.py",
+        "line": "411",
+        "time": "22.608"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_real_registry_publishes_each_explicit_terminal_mapping[failed-final_select-select-1]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_real_registry_publishes_each_explicit_terminal_mapping[failed-final_select-select-1]",
+        "file": "tests/test_iteration_profile.py",
+        "line": "411",
+        "time": "18.209"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_real_registry_publishes_each_explicit_terminal_mapping[failed-final_retain-retain-1]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_real_registry_publishes_each_explicit_terminal_mapping[failed-final_retain-retain-1]",
+        "file": "tests/test_iteration_profile.py",
+        "line": "411",
+        "time": "17.262"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_historical_empty_terminal_material_stays_running_after_settlement",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_historical_empty_terminal_material_stays_running_after_settlement",
+        "file": "tests/test_iteration_profile.py",
+        "line": "447",
+        "time": "15.136"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_provisional_outputs_cannot_be_washed_into_terminal_by_complete_mapping",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_provisional_outputs_cannot_be_washed_into_terminal_by_complete_mapping",
+        "file": "tests/test_iteration_profile.py",
+        "line": "466",
+        "time": "15.342"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_iteration_profile.py::test_owner_interruption_is_not_the_domain_stop_outcome",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_iteration_profile",
+        "name": "test_owner_interruption_is_not_the_domain_stop_outcome",
+        "file": "tests/test_iteration_profile.py",
+        "line": "488",
+        "time": "3.451"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_host_lower_cannot_change_json_boolean_number_type[operation-1-True]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_host_lower_cannot_change_json_boolean_number_type[operation-1-True]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "110",
+        "time": "0.005"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_host_lower_cannot_change_json_boolean_number_type[operation-True-1]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_host_lower_cannot_change_json_boolean_number_type[operation-True-1]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "110",
+        "time": "0.004"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_host_lower_cannot_change_json_boolean_number_type[operation-0-False]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_host_lower_cannot_change_json_boolean_number_type[operation-0-False]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "110",
+        "time": "0.004"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_host_lower_cannot_change_json_boolean_number_type[operation-False-0]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_host_lower_cannot_change_json_boolean_number_type[operation-False-0]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "110",
+        "time": "0.005"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_host_lower_cannot_change_json_boolean_number_type[operation-1.0-True]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_host_lower_cannot_change_json_boolean_number_type[operation-1.0-True]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "110",
+        "time": "0.004"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_host_lower_cannot_change_json_boolean_number_type[operation-0.0-False]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_host_lower_cannot_change_json_boolean_number_type[operation-0.0-False]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "110",
+        "time": "0.004"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_host_lower_cannot_change_json_boolean_number_type[effect-1-True]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_host_lower_cannot_change_json_boolean_number_type[effect-1-True]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "110",
+        "time": "0.004"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_host_lower_cannot_change_json_boolean_number_type[effect-True-1]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_host_lower_cannot_change_json_boolean_number_type[effect-True-1]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "110",
+        "time": "0.004"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_host_lower_cannot_change_json_boolean_number_type[effect-0-False]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_host_lower_cannot_change_json_boolean_number_type[effect-0-False]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "110",
+        "time": "0.004"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_host_lower_cannot_change_json_boolean_number_type[effect-False-0]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_host_lower_cannot_change_json_boolean_number_type[effect-False-0]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "110",
+        "time": "0.004"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_host_lower_cannot_change_json_boolean_number_type[effect-1.0-True]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_host_lower_cannot_change_json_boolean_number_type[effect-1.0-True]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "110",
+        "time": "0.004"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_host_lower_cannot_change_json_boolean_number_type[effect-0.0-False]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_host_lower_cannot_change_json_boolean_number_type[effect-0.0-False]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "110",
+        "time": "0.004"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_wire_rejects_json_boolean_number_substitution[fragment-operation-1-True]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_wire_rejects_json_boolean_number_substitution[fragment-operation-1-True]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "121",
+        "time": "0.021"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_wire_rejects_json_boolean_number_substitution[fragment-operation-0-False]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_wire_rejects_json_boolean_number_substitution[fragment-operation-0-False]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "121",
+        "time": "0.019"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_wire_rejects_json_boolean_number_substitution[fragment-operation-True-1]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_wire_rejects_json_boolean_number_substitution[fragment-operation-True-1]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "121",
+        "time": "0.018"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_wire_rejects_json_boolean_number_substitution[fragment-operation-False-0]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_wire_rejects_json_boolean_number_substitution[fragment-operation-False-0]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "121",
+        "time": "0.018"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_wire_rejects_json_boolean_number_substitution[fragment-effect-1-True]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_wire_rejects_json_boolean_number_substitution[fragment-effect-1-True]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "121",
+        "time": "0.018"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_wire_rejects_json_boolean_number_substitution[fragment-effect-0-False]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_wire_rejects_json_boolean_number_substitution[fragment-effect-0-False]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "121",
+        "time": "0.018"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_wire_rejects_json_boolean_number_substitution[fragment-effect-True-1]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_wire_rejects_json_boolean_number_substitution[fragment-effect-True-1]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "121",
+        "time": "0.018"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_wire_rejects_json_boolean_number_substitution[fragment-effect-False-0]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_wire_rejects_json_boolean_number_substitution[fragment-effect-False-0]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "121",
+        "time": "0.018"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_wire_rejects_json_boolean_number_substitution[symbolic-operation-1-True]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_wire_rejects_json_boolean_number_substitution[symbolic-operation-1-True]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "121",
+        "time": "0.019"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_wire_rejects_json_boolean_number_substitution[symbolic-operation-0-False]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_wire_rejects_json_boolean_number_substitution[symbolic-operation-0-False]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "121",
+        "time": "0.019"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_wire_rejects_json_boolean_number_substitution[symbolic-operation-True-1]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_wire_rejects_json_boolean_number_substitution[symbolic-operation-True-1]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "121",
+        "time": "0.018"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_wire_rejects_json_boolean_number_substitution[symbolic-operation-False-0]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_wire_rejects_json_boolean_number_substitution[symbolic-operation-False-0]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "121",
+        "time": "0.018"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_wire_rejects_json_boolean_number_substitution[symbolic-effect-1-True]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_wire_rejects_json_boolean_number_substitution[symbolic-effect-1-True]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "121",
+        "time": "0.019"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_wire_rejects_json_boolean_number_substitution[symbolic-effect-0-False]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_wire_rejects_json_boolean_number_substitution[symbolic-effect-0-False]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "121",
+        "time": "0.019"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_wire_rejects_json_boolean_number_substitution[symbolic-effect-True-1]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_wire_rejects_json_boolean_number_substitution[symbolic-effect-True-1]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "121",
+        "time": "0.019"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_wire_rejects_json_boolean_number_substitution[symbolic-effect-False-0]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_wire_rejects_json_boolean_number_substitution[symbolic-effect-False-0]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "121",
+        "time": "0.019"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_normal_json_config_compiles_and_round_trips[operation-None]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_normal_json_config_compiles_and_round_trips[operation-None]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "137",
+        "time": "0.021"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_normal_json_config_compiles_and_round_trips[operation-True]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_normal_json_config_compiles_and_round_trips[operation-True]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "137",
+        "time": "0.022"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_normal_json_config_compiles_and_round_trips[operation-False]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_normal_json_config_compiles_and_round_trips[operation-False]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "137",
+        "time": "0.066"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_normal_json_config_compiles_and_round_trips[operation-1_0]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_normal_json_config_compiles_and_round_trips[operation-1_0]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "137",
+        "time": "0.021"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_normal_json_config_compiles_and_round_trips[operation-0]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_normal_json_config_compiles_and_round_trips[operation-0]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "137",
+        "time": "0.021"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_normal_json_config_compiles_and_round_trips[operation-1.25]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_normal_json_config_compiles_and_round_trips[operation-1.25]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "137",
+        "time": "0.020"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_normal_json_config_compiles_and_round_trips[operation-1_1]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_normal_json_config_compiles_and_round_trips[operation-1_1]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "137",
+        "time": "0.021"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_normal_json_config_compiles_and_round_trips[operation-value7]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_normal_json_config_compiles_and_round_trips[operation-value7]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "137",
+        "time": "0.021"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_normal_json_config_compiles_and_round_trips[effect-None]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_normal_json_config_compiles_and_round_trips[effect-None]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "137",
+        "time": "0.022"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_normal_json_config_compiles_and_round_trips[effect-True]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_normal_json_config_compiles_and_round_trips[effect-True]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "137",
+        "time": "0.020"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_normal_json_config_compiles_and_round_trips[effect-False]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_normal_json_config_compiles_and_round_trips[effect-False]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "137",
+        "time": "0.021"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_normal_json_config_compiles_and_round_trips[effect-1_0]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_normal_json_config_compiles_and_round_trips[effect-1_0]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "137",
+        "time": "0.022"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_normal_json_config_compiles_and_round_trips[effect-0]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_normal_json_config_compiles_and_round_trips[effect-0]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "137",
+        "time": "0.020"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_normal_json_config_compiles_and_round_trips[effect-1.25]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_normal_json_config_compiles_and_round_trips[effect-1.25]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "137",
+        "time": "0.020"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_normal_json_config_compiles_and_round_trips[effect-1_1]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_normal_json_config_compiles_and_round_trips[effect-1_1]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "137",
+        "time": "0.021"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_normal_json_config_compiles_and_round_trips[effect-value7]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_normal_json_config_compiles_and_round_trips[effect-value7]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "137",
+        "time": "0.021"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_existing_numeric_equality_survives_lowering_and_wire[operation-1-1.0]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_existing_numeric_equality_survives_lowering_and_wire[operation-1-1.0]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "147",
+        "time": "0.020"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_existing_numeric_equality_survives_lowering_and_wire[operation-0--0.0]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_existing_numeric_equality_survives_lowering_and_wire[operation-0--0.0]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "147",
+        "time": "0.019"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_existing_numeric_equality_survives_lowering_and_wire[operation-1.0-1]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_existing_numeric_equality_survives_lowering_and_wire[operation-1.0-1]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "147",
+        "time": "0.019"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_existing_numeric_equality_survives_lowering_and_wire[effect-1-1.0]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_existing_numeric_equality_survives_lowering_and_wire[effect-1-1.0]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "147",
+        "time": "0.019"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_existing_numeric_equality_survives_lowering_and_wire[effect-0--0.0]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_existing_numeric_equality_survives_lowering_and_wire[effect-0--0.0]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "147",
+        "time": "0.019"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_existing_numeric_equality_survives_lowering_and_wire[effect-1.0-1]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_existing_numeric_equality_survives_lowering_and_wire[effect-1.0-1]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "147",
+        "time": "0.019"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_declared_bundle_order_remains_incidental",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_declared_bundle_order_remains_incidental",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "170",
+        "time": "0.000"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_ordered_abi_config_arrays_and_effect_multiplicity_stay_exact[inputs]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_ordered_abi_config_arrays_and_effect_multiplicity_stay_exact[inputs]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "180",
+        "time": "0.000"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_ordered_abi_config_arrays_and_effect_multiplicity_stay_exact[outputs]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_ordered_abi_config_arrays_and_effect_multiplicity_stay_exact[outputs]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "180",
+        "time": "0.000"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_ordered_abi_config_arrays_and_effect_multiplicity_stay_exact[config]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_ordered_abi_config_arrays_and_effect_multiplicity_stay_exact[config]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "180",
+        "time": "0.000"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_ordered_abi_config_arrays_and_effect_multiplicity_stay_exact[effect_config]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_ordered_abi_config_arrays_and_effect_multiplicity_stay_exact[effect_config]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "180",
+        "time": "0.000"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_ordered_abi_config_arrays_and_effect_multiplicity_stay_exact[multiplicity]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_ordered_abi_config_arrays_and_effect_multiplicity_stay_exact[multiplicity]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "180",
+        "time": "0.000"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_existing_unequal_numbers_and_container_shapes_stay_unequal[1-1.5]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_existing_unequal_numbers_and_container_shapes_stay_unequal[1-1.5]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "197",
+        "time": "0.001"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_existing_unequal_numbers_and_container_shapes_stay_unequal[9007199254740993-9007199254740992.0]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_existing_unequal_numbers_and_container_shapes_stay_unequal[9007199254740993-9007199254740992.0]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "197",
+        "time": "0.001"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_existing_unequal_numbers_and_container_shapes_stay_unequal[1-1]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_existing_unequal_numbers_and_container_shapes_stay_unequal[1-1]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "197",
+        "time": "0.001"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_existing_unequal_numbers_and_container_shapes_stay_unequal[None-False]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_existing_unequal_numbers_and_container_shapes_stay_unequal[None-False]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "197",
+        "time": "0.001"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_existing_unequal_numbers_and_container_shapes_stay_unequal[left4-right4]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_existing_unequal_numbers_and_container_shapes_stay_unequal[left4-right4]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "197",
+        "time": "0.001"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_existing_unequal_numbers_and_container_shapes_stay_unequal[left5-right5]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_existing_unequal_numbers_and_container_shapes_stay_unequal[left5-right5]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "197",
+        "time": "0.001"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_wire_inventory_reordering_preserves_config_array_order",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_wire_inventory_reordering_preserves_config_array_order",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "206",
+        "time": "0.026"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_fusion_rejects_boolean_number_change_in_initial_payload[lower-1-True]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_fusion_rejects_boolean_number_change_in_initial_payload[lower-1-True]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "235",
+        "time": "0.008"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_fusion_rejects_boolean_number_change_in_initial_payload[lower-0-False]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_fusion_rejects_boolean_number_change_in_initial_payload[lower-0-False]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "235",
+        "time": "0.008"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_fusion_rejects_boolean_number_change_in_initial_payload[lower-True-1]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_fusion_rejects_boolean_number_change_in_initial_payload[lower-True-1]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "235",
+        "time": "0.008"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_fusion_rejects_boolean_number_change_in_initial_payload[lower-False-0]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_fusion_rejects_boolean_number_change_in_initial_payload[lower-False-0]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "235",
+        "time": "0.008"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_fusion_rejects_boolean_number_change_in_initial_payload[lower-source4-changed4]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_fusion_rejects_boolean_number_change_in_initial_payload[lower-source4-changed4]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "235",
+        "time": "0.008"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_fusion_rejects_boolean_number_change_in_initial_payload[lower-source5-changed5]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_fusion_rejects_boolean_number_change_in_initial_payload[lower-source5-changed5]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "235",
+        "time": "0.008"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_fusion_rejects_boolean_number_change_in_initial_payload[wire-1-True]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_fusion_rejects_boolean_number_change_in_initial_payload[wire-1-True]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "235",
+        "time": "0.031"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_fusion_rejects_boolean_number_change_in_initial_payload[wire-0-False]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_fusion_rejects_boolean_number_change_in_initial_payload[wire-0-False]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "235",
+        "time": "0.032"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_fusion_rejects_boolean_number_change_in_initial_payload[wire-True-1]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_fusion_rejects_boolean_number_change_in_initial_payload[wire-True-1]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "235",
+        "time": "0.032"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_fusion_rejects_boolean_number_change_in_initial_payload[wire-False-0]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_fusion_rejects_boolean_number_change_in_initial_payload[wire-False-0]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "235",
+        "time": "0.032"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_fusion_rejects_boolean_number_change_in_initial_payload[wire-source4-changed4]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_fusion_rejects_boolean_number_change_in_initial_payload[wire-source4-changed4]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "235",
+        "time": "0.031"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_fusion_rejects_boolean_number_change_in_initial_payload[wire-source5-changed5]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_fusion_rejects_boolean_number_change_in_initial_payload[wire-source5-changed5]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "235",
+        "time": "0.031"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_fusion_keeps_initial_token_multiset_and_numeric_equivalence[left0-right0]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_fusion_keeps_initial_token_multiset_and_numeric_equivalence[left0-right0]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "257",
+        "time": "0.032"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_fusion_keeps_initial_token_multiset_and_numeric_equivalence[left1-right1]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_fusion_keeps_initial_token_multiset_and_numeric_equivalence[left1-right1]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "257",
+        "time": "0.033"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_fusion_keeps_initial_token_multiset_and_numeric_equivalence[left2-right2]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_fusion_keeps_initial_token_multiset_and_numeric_equivalence[left2-right2]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "257",
+        "time": "0.032"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_fusion_keeps_initial_token_multiset_and_numeric_equivalence[left3-right3]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_fusion_keeps_initial_token_multiset_and_numeric_equivalence[left3-right3]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "257",
+        "time": "0.033"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_fusion_keeps_multiplicity_payload_order_and_container_mismatches[left0-right0]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_fusion_keeps_multiplicity_payload_order_and_container_mismatches[left0-right0]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "270",
+        "time": "0.009"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_fusion_keeps_multiplicity_payload_order_and_container_mismatches[left1-right1]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_fusion_keeps_multiplicity_payload_order_and_container_mismatches[left1-right1]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "270",
+        "time": "0.008"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_fusion_keeps_multiplicity_payload_order_and_container_mismatches[left2-right2]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_fusion_keeps_multiplicity_payload_order_and_container_mismatches[left2-right2]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "270",
+        "time": "0.008"
+      },
+      "properties": {}
+    },
+    {
+      "gate": "resume-r2-r1-compiler",
+      "scope": "repository",
+      "id": "tests/test_compiler_json_contract.py::test_fusion_keeps_multiplicity_payload_order_and_container_mismatches[left3-right3]",
+      "verdict": "PASS",
+      "attributes": {
+        "classname": "tests.test_compiler_json_contract",
+        "name": "test_fusion_keeps_multiplicity_payload_order_and_container_mismatches[left3-right3]",
+        "file": "tests/test_compiler_json_contract.py",
+        "line": "270",
+        "time": "0.009"
+      },
+      "properties": {}
+    }
+  ],
+  "collection_errors": [
+    {
+      "gate": "resume-r1-independent-compiler",
+      "attributes": {
+        "classname": "",
+        "name": "task-complete-v5-20261009.stages.rsi.packages.R1_v2_full.review.test_terminal_revision_independent",
+        "file": "task-complete-v5-20261009/stages/rsi/packages/R1_v2_full/review/test_terminal_revision_independent.py",
+        "time": "0.000"
+      },
+      "error": "ImportError while importing test module '<WORKSPACE>/task-complete-v5-20261009/stages/rsi/packages/R1_v2_full/review/test_terminal_revision_independent.py'.\nHint: make sure your test modules/packages have valid Python names.\nTraceback:\n../../../miniforge3/lib/python3.13/importlib/__init__.py:88: in import_module\n    return _bootstrap._gcd_import(name[level:], package, level)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n../../task-complete-v5-20261009/stages/rsi/packages/R1_v2_full/review/test_terminal_revision_independent.py:8: in <module>\n    from test_inert_profile_independent import document, registration\nE   ModuleNotFoundError: No module named 'test_inert_profile_independent'"
+    }
+  ]
+}

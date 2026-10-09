@@ -1,0 +1,577 @@
+FFF.FFFFFFFFFFFFFFFFFFF..F.                                              [100%]
+=================================== FAILURES ===================================
+__________ test_actual_source_head_damage_is_not_rebuilt_from_cut[0] ___________
+
+tmp_path = PosixPath('/tmp/pytest-of-agent/pytest-196/test_actual_source_head_damage0')
+phase = 0
+
+    @pytest.mark.parametrize('phase', range(4))
+    def test_actual_source_head_damage_is_not_rebuilt_from_cut(tmp_path, phase):
+        values, store, query = fixture(tmp_path)
+        ref = values[4 + phase]
+        with store.connect() as db:
+            db.execute('UPDATE stream_heads SET sequence=sequence+1 WHERE stream_id=?', ('h7:' + str(ref.entity_id),))
+        result = store.classify_child_acceptance_history(query)
+>       assert result.status == INVALID, (phase, result)
+E       AssertionError: (0, ChildAcceptanceHistoryResult(status='HISTORICAL_ACCEPTANCE_VALID', reason='original_committed_mechanical_acceptanc...b7c39a716f43e3c58538', initial_declaration_digest='8091c770e50f424d8ce7a71cc6cdc33db60df1ee1ffbd2359165042a284d575e')))
+E       assert 'HISTORICAL_ACCEPTANCE_VALID' == 'HISTORICAL_A...TANCE_INVALID'
+E         
+E         - HISTORICAL_ACCEPTANCE_INVALID
+E         ?                       --
+E         + HISTORICAL_ACCEPTANCE_VALID
+
+../tests/test_history_independent.py:33: AssertionError
+__________ test_actual_source_head_damage_is_not_rebuilt_from_cut[1] ___________
+
+tmp_path = PosixPath('/tmp/pytest-of-agent/pytest-196/test_actual_source_head_damage1')
+phase = 1
+
+    @pytest.mark.parametrize('phase', range(4))
+    def test_actual_source_head_damage_is_not_rebuilt_from_cut(tmp_path, phase):
+        values, store, query = fixture(tmp_path)
+        ref = values[4 + phase]
+        with store.connect() as db:
+            db.execute('UPDATE stream_heads SET sequence=sequence+1 WHERE stream_id=?', ('h7:' + str(ref.entity_id),))
+        result = store.classify_child_acceptance_history(query)
+>       assert result.status == INVALID, (phase, result)
+E       AssertionError: (1, ChildAcceptanceHistoryResult(status='HISTORICAL_ACCEPTANCE_VALID', reason='original_committed_mechanical_acceptanc...9eef0ddedf7a7fbcc810', initial_declaration_digest='8091c770e50f424d8ce7a71cc6cdc33db60df1ee1ffbd2359165042a284d575e')))
+E       assert 'HISTORICAL_ACCEPTANCE_VALID' == 'HISTORICAL_A...TANCE_INVALID'
+E         
+E         - HISTORICAL_ACCEPTANCE_INVALID
+E         ?                       --
+E         + HISTORICAL_ACCEPTANCE_VALID
+
+../tests/test_history_independent.py:33: AssertionError
+__________ test_actual_source_head_damage_is_not_rebuilt_from_cut[2] ___________
+
+tmp_path = PosixPath('/tmp/pytest-of-agent/pytest-196/test_actual_source_head_damage2')
+phase = 2
+
+    @pytest.mark.parametrize('phase', range(4))
+    def test_actual_source_head_damage_is_not_rebuilt_from_cut(tmp_path, phase):
+        values, store, query = fixture(tmp_path)
+        ref = values[4 + phase]
+        with store.connect() as db:
+            db.execute('UPDATE stream_heads SET sequence=sequence+1 WHERE stream_id=?', ('h7:' + str(ref.entity_id),))
+        result = store.classify_child_acceptance_history(query)
+>       assert result.status == INVALID, (phase, result)
+E       AssertionError: (2, ChildAcceptanceHistoryResult(status='HISTORICAL_ACCEPTANCE_VALID', reason='original_committed_mechanical_acceptanc...95b262a1de3f9405d6cd', initial_declaration_digest='8091c770e50f424d8ce7a71cc6cdc33db60df1ee1ffbd2359165042a284d575e')))
+E       assert 'HISTORICAL_ACCEPTANCE_VALID' == 'HISTORICAL_A...TANCE_INVALID'
+E         
+E         - HISTORICAL_ACCEPTANCE_INVALID
+E         ?                       --
+E         + HISTORICAL_ACCEPTANCE_VALID
+
+../tests/test_history_independent.py:33: AssertionError
+________________ test_each_phase_original_epoch_is_validated[0] ________________
+
+tmp_path = PosixPath('/tmp/pytest-of-agent/pytest-196/test_each_phase_original_epoch0')
+phase = 0
+
+    @pytest.mark.parametrize('phase', range(3))
+    def test_each_phase_original_epoch_is_validated(tmp_path, phase):
+        values, store, query = fixture(tmp_path)
+        ref = values[4 + phase]
+        with store.connect() as db:
+            tx = db.execute('SELECT transaction_id FROM objects WHERE version_id=?', (str(ref.version_id),)).fetchone()[0]
+            db.execute('UPDATE transactions SET writer_epoch=writer_epoch+1 WHERE transaction_id=?', (tx,))
+            db.execute('UPDATE events SET writer_fencing_epoch=writer_fencing_epoch+1 WHERE transaction_id=?', (tx,))
+            db.execute('UPDATE outbox SET writer_epoch=writer_epoch+1 WHERE transaction_id=?', (tx,))
+        result = store.classify_child_acceptance_history(query)
+>       assert result.status == INVALID, (phase, result)
+E       AssertionError: (0, ChildAcceptanceHistoryResult(status='HISTORICAL_ACCEPTANCE_VALID', reason='original_committed_mechanical_acceptanc...6d5fe1f582e6e0e0278d', initial_declaration_digest='8091c770e50f424d8ce7a71cc6cdc33db60df1ee1ffbd2359165042a284d575e')))
+E       assert 'HISTORICAL_ACCEPTANCE_VALID' == 'HISTORICAL_A...TANCE_INVALID'
+E         
+E         - HISTORICAL_ACCEPTANCE_INVALID
+E         ?                       --
+E         + HISTORICAL_ACCEPTANCE_VALID
+
+../tests/test_history_independent.py:46: AssertionError
+________________ test_each_phase_original_epoch_is_validated[1] ________________
+
+tmp_path = PosixPath('/tmp/pytest-of-agent/pytest-196/test_each_phase_original_epoch1')
+phase = 1
+
+    @pytest.mark.parametrize('phase', range(3))
+    def test_each_phase_original_epoch_is_validated(tmp_path, phase):
+        values, store, query = fixture(tmp_path)
+        ref = values[4 + phase]
+        with store.connect() as db:
+            tx = db.execute('SELECT transaction_id FROM objects WHERE version_id=?', (str(ref.version_id),)).fetchone()[0]
+            db.execute('UPDATE transactions SET writer_epoch=writer_epoch+1 WHERE transaction_id=?', (tx,))
+            db.execute('UPDATE events SET writer_fencing_epoch=writer_fencing_epoch+1 WHERE transaction_id=?', (tx,))
+            db.execute('UPDATE outbox SET writer_epoch=writer_epoch+1 WHERE transaction_id=?', (tx,))
+        result = store.classify_child_acceptance_history(query)
+>       assert result.status == INVALID, (phase, result)
+E       AssertionError: (1, ChildAcceptanceHistoryResult(status='HISTORICAL_ACCEPTANCE_VALID', reason='original_committed_mechanical_acceptanc...eccc8284cd1be942af57', initial_declaration_digest='8091c770e50f424d8ce7a71cc6cdc33db60df1ee1ffbd2359165042a284d575e')))
+E       assert 'HISTORICAL_ACCEPTANCE_VALID' == 'HISTORICAL_A...TANCE_INVALID'
+E         
+E         - HISTORICAL_ACCEPTANCE_INVALID
+E         ?                       --
+E         + HISTORICAL_ACCEPTANCE_VALID
+
+../tests/test_history_independent.py:46: AssertionError
+________________ test_each_phase_original_epoch_is_validated[2] ________________
+
+tmp_path = PosixPath('/tmp/pytest-of-agent/pytest-196/test_each_phase_original_epoch2')
+phase = 2
+
+    @pytest.mark.parametrize('phase', range(3))
+    def test_each_phase_original_epoch_is_validated(tmp_path, phase):
+        values, store, query = fixture(tmp_path)
+        ref = values[4 + phase]
+        with store.connect() as db:
+            tx = db.execute('SELECT transaction_id FROM objects WHERE version_id=?', (str(ref.version_id),)).fetchone()[0]
+            db.execute('UPDATE transactions SET writer_epoch=writer_epoch+1 WHERE transaction_id=?', (tx,))
+            db.execute('UPDATE events SET writer_fencing_epoch=writer_fencing_epoch+1 WHERE transaction_id=?', (tx,))
+            db.execute('UPDATE outbox SET writer_epoch=writer_epoch+1 WHERE transaction_id=?', (tx,))
+        result = store.classify_child_acceptance_history(query)
+>       assert result.status == INVALID, (phase, result)
+E       AssertionError: (2, ChildAcceptanceHistoryResult(status='HISTORICAL_ACCEPTANCE_VALID', reason='original_committed_mechanical_acceptanc...24aaaf7e014c4933e7af', initial_declaration_digest='8091c770e50f424d8ce7a71cc6cdc33db60df1ee1ffbd2359165042a284d575e')))
+E       assert 'HISTORICAL_ACCEPTANCE_VALID' == 'HISTORICAL_A...TANCE_INVALID'
+E         
+E         - HISTORICAL_ACCEPTANCE_INVALID
+E         ?                       --
+E         + HISTORICAL_ACCEPTANCE_VALID
+
+../tests/test_history_independent.py:46: AssertionError
+_ test_complete_phase_event_envelope_is_checked[command_id-object_version_published/v1] _
+
+tmp_path = PosixPath('/tmp/pytest-of-agent/pytest-196/test_complete_phase_event_enve0')
+event_type = 'object_version_published/v1', field = 'command_id'
+
+    @pytest.mark.parametrize('event_type', ['object_version_published/v1', 'relation_published/v1', 'transaction_committed/v1'])
+    @pytest.mark.parametrize('field', ['command_id', 'idempotency_key', 'causation_event_id', 'parent_event_ids_json'])
+    def test_complete_phase_event_envelope_is_checked(tmp_path, event_type, field):
+        _, store, query = fixture(tmp_path)
+        value = str(new_id('event')) if field == 'causation_event_id' else (json.dumps([str(new_id('event'))]) if field == 'parent_event_ids_json' else 'foreign-history-command')
+        with store.connect() as db:
+            db.execute('UPDATE events SET ' + field + '=? WHERE transaction_id=? AND event_type=?', (value, str(query.transaction_id), event_type))
+        result = store.classify_child_acceptance_history(query)
+>       assert result.status == INVALID, (event_type, field, result)
+E       AssertionError: ('object_version_published/v1', 'command_id', ChildAcceptanceHistoryResult(status='HISTORICAL_ACCEPTANCE_VALID', reaso...7873b48b254830a34b89', initial_declaration_digest='8091c770e50f424d8ce7a71cc6cdc33db60df1ee1ffbd2359165042a284d575e')))
+E       assert 'HISTORICAL_ACCEPTANCE_VALID' == 'HISTORICAL_A...TANCE_INVALID'
+E         
+E         - HISTORICAL_ACCEPTANCE_INVALID
+E         ?                       --
+E         + HISTORICAL_ACCEPTANCE_VALID
+
+../tests/test_history_independent.py:57: AssertionError
+_ test_complete_phase_event_envelope_is_checked[command_id-relation_published/v1] _
+
+tmp_path = PosixPath('/tmp/pytest-of-agent/pytest-196/test_complete_phase_event_enve1')
+event_type = 'relation_published/v1', field = 'command_id'
+
+    @pytest.mark.parametrize('event_type', ['object_version_published/v1', 'relation_published/v1', 'transaction_committed/v1'])
+    @pytest.mark.parametrize('field', ['command_id', 'idempotency_key', 'causation_event_id', 'parent_event_ids_json'])
+    def test_complete_phase_event_envelope_is_checked(tmp_path, event_type, field):
+        _, store, query = fixture(tmp_path)
+        value = str(new_id('event')) if field == 'causation_event_id' else (json.dumps([str(new_id('event'))]) if field == 'parent_event_ids_json' else 'foreign-history-command')
+        with store.connect() as db:
+            db.execute('UPDATE events SET ' + field + '=? WHERE transaction_id=? AND event_type=?', (value, str(query.transaction_id), event_type))
+        result = store.classify_child_acceptance_history(query)
+>       assert result.status == INVALID, (event_type, field, result)
+E       AssertionError: ('relation_published/v1', 'command_id', ChildAcceptanceHistoryResult(status='HISTORICAL_ACCEPTANCE_VALID', reason='ori...90842665e898cf652ea2', initial_declaration_digest='8091c770e50f424d8ce7a71cc6cdc33db60df1ee1ffbd2359165042a284d575e')))
+E       assert 'HISTORICAL_ACCEPTANCE_VALID' == 'HISTORICAL_A...TANCE_INVALID'
+E         
+E         - HISTORICAL_ACCEPTANCE_INVALID
+E         ?                       --
+E         + HISTORICAL_ACCEPTANCE_VALID
+
+../tests/test_history_independent.py:57: AssertionError
+_ test_complete_phase_event_envelope_is_checked[command_id-transaction_committed/v1] _
+
+tmp_path = PosixPath('/tmp/pytest-of-agent/pytest-196/test_complete_phase_event_enve2')
+event_type = 'transaction_committed/v1', field = 'command_id'
+
+    @pytest.mark.parametrize('event_type', ['object_version_published/v1', 'relation_published/v1', 'transaction_committed/v1'])
+    @pytest.mark.parametrize('field', ['command_id', 'idempotency_key', 'causation_event_id', 'parent_event_ids_json'])
+    def test_complete_phase_event_envelope_is_checked(tmp_path, event_type, field):
+        _, store, query = fixture(tmp_path)
+        value = str(new_id('event')) if field == 'causation_event_id' else (json.dumps([str(new_id('event'))]) if field == 'parent_event_ids_json' else 'foreign-history-command')
+        with store.connect() as db:
+            db.execute('UPDATE events SET ' + field + '=? WHERE transaction_id=? AND event_type=?', (value, str(query.transaction_id), event_type))
+        result = store.classify_child_acceptance_history(query)
+>       assert result.status == INVALID, (event_type, field, result)
+E       AssertionError: ('transaction_committed/v1', 'command_id', ChildAcceptanceHistoryResult(status='HISTORICAL_ACCEPTANCE_VALID', reason='...a2b48a55a346c131f332', initial_declaration_digest='8091c770e50f424d8ce7a71cc6cdc33db60df1ee1ffbd2359165042a284d575e')))
+E       assert 'HISTORICAL_ACCEPTANCE_VALID' == 'HISTORICAL_A...TANCE_INVALID'
+E         
+E         - HISTORICAL_ACCEPTANCE_INVALID
+E         ?                       --
+E         + HISTORICAL_ACCEPTANCE_VALID
+
+../tests/test_history_independent.py:57: AssertionError
+_ test_complete_phase_event_envelope_is_checked[idempotency_key-object_version_published/v1] _
+
+tmp_path = PosixPath('/tmp/pytest-of-agent/pytest-196/test_complete_phase_event_enve3')
+event_type = 'object_version_published/v1', field = 'idempotency_key'
+
+    @pytest.mark.parametrize('event_type', ['object_version_published/v1', 'relation_published/v1', 'transaction_committed/v1'])
+    @pytest.mark.parametrize('field', ['command_id', 'idempotency_key', 'causation_event_id', 'parent_event_ids_json'])
+    def test_complete_phase_event_envelope_is_checked(tmp_path, event_type, field):
+        _, store, query = fixture(tmp_path)
+        value = str(new_id('event')) if field == 'causation_event_id' else (json.dumps([str(new_id('event'))]) if field == 'parent_event_ids_json' else 'foreign-history-command')
+        with store.connect() as db:
+            db.execute('UPDATE events SET ' + field + '=? WHERE transaction_id=? AND event_type=?', (value, str(query.transaction_id), event_type))
+        result = store.classify_child_acceptance_history(query)
+>       assert result.status == INVALID, (event_type, field, result)
+E       AssertionError: ('object_version_published/v1', 'idempotency_key', ChildAcceptanceHistoryResult(status='HISTORICAL_ACCEPTANCE_VALID', ...5eb7b5b37efd41cecb9d', initial_declaration_digest='8091c770e50f424d8ce7a71cc6cdc33db60df1ee1ffbd2359165042a284d575e')))
+E       assert 'HISTORICAL_ACCEPTANCE_VALID' == 'HISTORICAL_A...TANCE_INVALID'
+E         
+E         - HISTORICAL_ACCEPTANCE_INVALID
+E         ?                       --
+E         + HISTORICAL_ACCEPTANCE_VALID
+
+../tests/test_history_independent.py:57: AssertionError
+_ test_complete_phase_event_envelope_is_checked[idempotency_key-relation_published/v1] _
+
+tmp_path = PosixPath('/tmp/pytest-of-agent/pytest-196/test_complete_phase_event_enve4')
+event_type = 'relation_published/v1', field = 'idempotency_key'
+
+    @pytest.mark.parametrize('event_type', ['object_version_published/v1', 'relation_published/v1', 'transaction_committed/v1'])
+    @pytest.mark.parametrize('field', ['command_id', 'idempotency_key', 'causation_event_id', 'parent_event_ids_json'])
+    def test_complete_phase_event_envelope_is_checked(tmp_path, event_type, field):
+        _, store, query = fixture(tmp_path)
+        value = str(new_id('event')) if field == 'causation_event_id' else (json.dumps([str(new_id('event'))]) if field == 'parent_event_ids_json' else 'foreign-history-command')
+        with store.connect() as db:
+            db.execute('UPDATE events SET ' + field + '=? WHERE transaction_id=? AND event_type=?', (value, str(query.transaction_id), event_type))
+        result = store.classify_child_acceptance_history(query)
+>       assert result.status == INVALID, (event_type, field, result)
+E       AssertionError: ('relation_published/v1', 'idempotency_key', ChildAcceptanceHistoryResult(status='HISTORICAL_ACCEPTANCE_VALID', reason...b089f7916d8ab466064c', initial_declaration_digest='8091c770e50f424d8ce7a71cc6cdc33db60df1ee1ffbd2359165042a284d575e')))
+E       assert 'HISTORICAL_ACCEPTANCE_VALID' == 'HISTORICAL_A...TANCE_INVALID'
+E         
+E         - HISTORICAL_ACCEPTANCE_INVALID
+E         ?                       --
+E         + HISTORICAL_ACCEPTANCE_VALID
+
+../tests/test_history_independent.py:57: AssertionError
+_ test_complete_phase_event_envelope_is_checked[idempotency_key-transaction_committed/v1] _
+
+tmp_path = PosixPath('/tmp/pytest-of-agent/pytest-196/test_complete_phase_event_enve5')
+event_type = 'transaction_committed/v1', field = 'idempotency_key'
+
+    @pytest.mark.parametrize('event_type', ['object_version_published/v1', 'relation_published/v1', 'transaction_committed/v1'])
+    @pytest.mark.parametrize('field', ['command_id', 'idempotency_key', 'causation_event_id', 'parent_event_ids_json'])
+    def test_complete_phase_event_envelope_is_checked(tmp_path, event_type, field):
+        _, store, query = fixture(tmp_path)
+        value = str(new_id('event')) if field == 'causation_event_id' else (json.dumps([str(new_id('event'))]) if field == 'parent_event_ids_json' else 'foreign-history-command')
+        with store.connect() as db:
+            db.execute('UPDATE events SET ' + field + '=? WHERE transaction_id=? AND event_type=?', (value, str(query.transaction_id), event_type))
+        result = store.classify_child_acceptance_history(query)
+>       assert result.status == INVALID, (event_type, field, result)
+E       AssertionError: ('transaction_committed/v1', 'idempotency_key', ChildAcceptanceHistoryResult(status='HISTORICAL_ACCEPTANCE_VALID', rea...9ede5360f7dc1cf3a5d6', initial_declaration_digest='8091c770e50f424d8ce7a71cc6cdc33db60df1ee1ffbd2359165042a284d575e')))
+E       assert 'HISTORICAL_ACCEPTANCE_VALID' == 'HISTORICAL_A...TANCE_INVALID'
+E         
+E         - HISTORICAL_ACCEPTANCE_INVALID
+E         ?                       --
+E         + HISTORICAL_ACCEPTANCE_VALID
+
+../tests/test_history_independent.py:57: AssertionError
+_ test_complete_phase_event_envelope_is_checked[causation_event_id-object_version_published/v1] _
+
+tmp_path = PosixPath('/tmp/pytest-of-agent/pytest-196/test_complete_phase_event_enve6')
+event_type = 'object_version_published/v1', field = 'causation_event_id'
+
+    @pytest.mark.parametrize('event_type', ['object_version_published/v1', 'relation_published/v1', 'transaction_committed/v1'])
+    @pytest.mark.parametrize('field', ['command_id', 'idempotency_key', 'causation_event_id', 'parent_event_ids_json'])
+    def test_complete_phase_event_envelope_is_checked(tmp_path, event_type, field):
+        _, store, query = fixture(tmp_path)
+        value = str(new_id('event')) if field == 'causation_event_id' else (json.dumps([str(new_id('event'))]) if field == 'parent_event_ids_json' else 'foreign-history-command')
+        with store.connect() as db:
+            db.execute('UPDATE events SET ' + field + '=? WHERE transaction_id=? AND event_type=?', (value, str(query.transaction_id), event_type))
+        result = store.classify_child_acceptance_history(query)
+>       assert result.status == INVALID, (event_type, field, result)
+E       AssertionError: ('object_version_published/v1', 'causation_event_id', ChildAcceptanceHistoryResult(status='HISTORICAL_ACCEPTANCE_VALID...8c3e0b32effcbca713df', initial_declaration_digest='8091c770e50f424d8ce7a71cc6cdc33db60df1ee1ffbd2359165042a284d575e')))
+E       assert 'HISTORICAL_ACCEPTANCE_VALID' == 'HISTORICAL_A...TANCE_INVALID'
+E         
+E         - HISTORICAL_ACCEPTANCE_INVALID
+E         ?                       --
+E         + HISTORICAL_ACCEPTANCE_VALID
+
+../tests/test_history_independent.py:57: AssertionError
+_ test_complete_phase_event_envelope_is_checked[causation_event_id-relation_published/v1] _
+
+tmp_path = PosixPath('/tmp/pytest-of-agent/pytest-196/test_complete_phase_event_enve7')
+event_type = 'relation_published/v1', field = 'causation_event_id'
+
+    @pytest.mark.parametrize('event_type', ['object_version_published/v1', 'relation_published/v1', 'transaction_committed/v1'])
+    @pytest.mark.parametrize('field', ['command_id', 'idempotency_key', 'causation_event_id', 'parent_event_ids_json'])
+    def test_complete_phase_event_envelope_is_checked(tmp_path, event_type, field):
+        _, store, query = fixture(tmp_path)
+        value = str(new_id('event')) if field == 'causation_event_id' else (json.dumps([str(new_id('event'))]) if field == 'parent_event_ids_json' else 'foreign-history-command')
+        with store.connect() as db:
+            db.execute('UPDATE events SET ' + field + '=? WHERE transaction_id=? AND event_type=?', (value, str(query.transaction_id), event_type))
+        result = store.classify_child_acceptance_history(query)
+>       assert result.status == INVALID, (event_type, field, result)
+E       AssertionError: ('relation_published/v1', 'causation_event_id', ChildAcceptanceHistoryResult(status='HISTORICAL_ACCEPTANCE_VALID', rea...d14f13daa19947d3a69e', initial_declaration_digest='8091c770e50f424d8ce7a71cc6cdc33db60df1ee1ffbd2359165042a284d575e')))
+E       assert 'HISTORICAL_ACCEPTANCE_VALID' == 'HISTORICAL_A...TANCE_INVALID'
+E         
+E         - HISTORICAL_ACCEPTANCE_INVALID
+E         ?                       --
+E         + HISTORICAL_ACCEPTANCE_VALID
+
+../tests/test_history_independent.py:57: AssertionError
+_ test_complete_phase_event_envelope_is_checked[causation_event_id-transaction_committed/v1] _
+
+tmp_path = PosixPath('/tmp/pytest-of-agent/pytest-196/test_complete_phase_event_enve8')
+event_type = 'transaction_committed/v1', field = 'causation_event_id'
+
+    @pytest.mark.parametrize('event_type', ['object_version_published/v1', 'relation_published/v1', 'transaction_committed/v1'])
+    @pytest.mark.parametrize('field', ['command_id', 'idempotency_key', 'causation_event_id', 'parent_event_ids_json'])
+    def test_complete_phase_event_envelope_is_checked(tmp_path, event_type, field):
+        _, store, query = fixture(tmp_path)
+        value = str(new_id('event')) if field == 'causation_event_id' else (json.dumps([str(new_id('event'))]) if field == 'parent_event_ids_json' else 'foreign-history-command')
+        with store.connect() as db:
+            db.execute('UPDATE events SET ' + field + '=? WHERE transaction_id=? AND event_type=?', (value, str(query.transaction_id), event_type))
+        result = store.classify_child_acceptance_history(query)
+>       assert result.status == INVALID, (event_type, field, result)
+E       AssertionError: ('transaction_committed/v1', 'causation_event_id', ChildAcceptanceHistoryResult(status='HISTORICAL_ACCEPTANCE_VALID', ...a8645665b16434390676', initial_declaration_digest='8091c770e50f424d8ce7a71cc6cdc33db60df1ee1ffbd2359165042a284d575e')))
+E       assert 'HISTORICAL_ACCEPTANCE_VALID' == 'HISTORICAL_A...TANCE_INVALID'
+E         
+E         - HISTORICAL_ACCEPTANCE_INVALID
+E         ?                       --
+E         + HISTORICAL_ACCEPTANCE_VALID
+
+../tests/test_history_independent.py:57: AssertionError
+_ test_complete_phase_event_envelope_is_checked[parent_event_ids_json-object_version_published/v1] _
+
+tmp_path = PosixPath('/tmp/pytest-of-agent/pytest-196/test_complete_phase_event_enve9')
+event_type = 'object_version_published/v1', field = 'parent_event_ids_json'
+
+    @pytest.mark.parametrize('event_type', ['object_version_published/v1', 'relation_published/v1', 'transaction_committed/v1'])
+    @pytest.mark.parametrize('field', ['command_id', 'idempotency_key', 'causation_event_id', 'parent_event_ids_json'])
+    def test_complete_phase_event_envelope_is_checked(tmp_path, event_type, field):
+        _, store, query = fixture(tmp_path)
+        value = str(new_id('event')) if field == 'causation_event_id' else (json.dumps([str(new_id('event'))]) if field == 'parent_event_ids_json' else 'foreign-history-command')
+        with store.connect() as db:
+            db.execute('UPDATE events SET ' + field + '=? WHERE transaction_id=? AND event_type=?', (value, str(query.transaction_id), event_type))
+        result = store.classify_child_acceptance_history(query)
+>       assert result.status == INVALID, (event_type, field, result)
+E       AssertionError: ('object_version_published/v1', 'parent_event_ids_json', ChildAcceptanceHistoryResult(status='HISTORICAL_ACCEPTANCE_VA...d954875e44bcef86602b', initial_declaration_digest='8091c770e50f424d8ce7a71cc6cdc33db60df1ee1ffbd2359165042a284d575e')))
+E       assert 'HISTORICAL_ACCEPTANCE_VALID' == 'HISTORICAL_A...TANCE_INVALID'
+E         
+E         - HISTORICAL_ACCEPTANCE_INVALID
+E         ?                       --
+E         + HISTORICAL_ACCEPTANCE_VALID
+
+../tests/test_history_independent.py:57: AssertionError
+_ test_complete_phase_event_envelope_is_checked[parent_event_ids_json-relation_published/v1] _
+
+tmp_path = PosixPath('/tmp/pytest-of-agent/pytest-196/test_complete_phase_event_enve10')
+event_type = 'relation_published/v1', field = 'parent_event_ids_json'
+
+    @pytest.mark.parametrize('event_type', ['object_version_published/v1', 'relation_published/v1', 'transaction_committed/v1'])
+    @pytest.mark.parametrize('field', ['command_id', 'idempotency_key', 'causation_event_id', 'parent_event_ids_json'])
+    def test_complete_phase_event_envelope_is_checked(tmp_path, event_type, field):
+        _, store, query = fixture(tmp_path)
+        value = str(new_id('event')) if field == 'causation_event_id' else (json.dumps([str(new_id('event'))]) if field == 'parent_event_ids_json' else 'foreign-history-command')
+        with store.connect() as db:
+            db.execute('UPDATE events SET ' + field + '=? WHERE transaction_id=? AND event_type=?', (value, str(query.transaction_id), event_type))
+        result = store.classify_child_acceptance_history(query)
+>       assert result.status == INVALID, (event_type, field, result)
+E       AssertionError: ('relation_published/v1', 'parent_event_ids_json', ChildAcceptanceHistoryResult(status='HISTORICAL_ACCEPTANCE_VALID', ...2ba2c4664ebacf950a7f', initial_declaration_digest='8091c770e50f424d8ce7a71cc6cdc33db60df1ee1ffbd2359165042a284d575e')))
+E       assert 'HISTORICAL_ACCEPTANCE_VALID' == 'HISTORICAL_A...TANCE_INVALID'
+E         
+E         - HISTORICAL_ACCEPTANCE_INVALID
+E         ?                       --
+E         + HISTORICAL_ACCEPTANCE_VALID
+
+../tests/test_history_independent.py:57: AssertionError
+_ test_complete_phase_event_envelope_is_checked[parent_event_ids_json-transaction_committed/v1] _
+
+tmp_path = PosixPath('/tmp/pytest-of-agent/pytest-196/test_complete_phase_event_enve11')
+event_type = 'transaction_committed/v1', field = 'parent_event_ids_json'
+
+    @pytest.mark.parametrize('event_type', ['object_version_published/v1', 'relation_published/v1', 'transaction_committed/v1'])
+    @pytest.mark.parametrize('field', ['command_id', 'idempotency_key', 'causation_event_id', 'parent_event_ids_json'])
+    def test_complete_phase_event_envelope_is_checked(tmp_path, event_type, field):
+        _, store, query = fixture(tmp_path)
+        value = str(new_id('event')) if field == 'causation_event_id' else (json.dumps([str(new_id('event'))]) if field == 'parent_event_ids_json' else 'foreign-history-command')
+        with store.connect() as db:
+            db.execute('UPDATE events SET ' + field + '=? WHERE transaction_id=? AND event_type=?', (value, str(query.transaction_id), event_type))
+        result = store.classify_child_acceptance_history(query)
+>       assert result.status == INVALID, (event_type, field, result)
+E       AssertionError: ('transaction_committed/v1', 'parent_event_ids_json', ChildAcceptanceHistoryResult(status='HISTORICAL_ACCEPTANCE_VALID...5b2f303bbe8e99caacb3', initial_declaration_digest='8091c770e50f424d8ce7a71cc6cdc33db60df1ee1ffbd2359165042a284d575e')))
+E       assert 'HISTORICAL_ACCEPTANCE_VALID' == 'HISTORICAL_A...TANCE_INVALID'
+E         
+E         - HISTORICAL_ACCEPTANCE_INVALID
+E         ?                       --
+E         + HISTORICAL_ACCEPTANCE_VALID
+
+../tests/test_history_independent.py:57: AssertionError
+_____ test_unsupported_lifecycle_does_not_mask_corruption[published_flag] ______
+
+tmp_path = PosixPath('/tmp/pytest-of-agent/pytest-196/test_unsupported_lifecycle_doe0')
+damage = 'published_flag'
+
+    @pytest.mark.parametrize('damage', ['published_flag', 'published_and_digest', 'published_and_member'])
+    def test_unsupported_lifecycle_does_not_mask_corruption(tmp_path, damage):
+        _, store, query = fixture(tmp_path)
+        with store.connect() as db:
+            # Intentionally corrupt state, not a claim that H7 can really settle.
+>           db.execute("UPDATE firing_publications SET state='PUBLISHED'")
+E           sqlite3.IntegrityError: CHECK constraint failed: (state='PROVISIONAL'
+E                                AND published_transaction_id IS NULL
+E                                AND operation_result_version_id IS NULL
+E                                AND workspace_lineage_id IS NULL
+E                                AND workspace_revision_version_id IS NULL
+E                                AND marking_checkpoint_version_id IS NULL)
+E                               OR
+E                               (state='PUBLISHED'
+E                                AND published_transaction_id IS NOT NULL
+E                                AND operation_result_version_id IS NOT NULL
+E                                AND ((workspace_lineage_id IS NULL
+E                                      AND workspace_revision_version_id IS NULL)
+E                                     OR
+E                                     (workspace_lineage_id IS NOT NULL
+E                                      AND workspace_revision_version_id IS NOT NULL))
+E                                AND marking_checkpoint_version_id IS NOT NULL)
+
+../tests/test_history_independent.py:65: IntegrityError
+__ test_unsupported_lifecycle_does_not_mask_corruption[published_and_digest] ___
+
+tmp_path = PosixPath('/tmp/pytest-of-agent/pytest-196/test_unsupported_lifecycle_doe1')
+damage = 'published_and_digest'
+
+    @pytest.mark.parametrize('damage', ['published_flag', 'published_and_digest', 'published_and_member'])
+    def test_unsupported_lifecycle_does_not_mask_corruption(tmp_path, damage):
+        _, store, query = fixture(tmp_path)
+        with store.connect() as db:
+            # Intentionally corrupt state, not a claim that H7 can really settle.
+>           db.execute("UPDATE firing_publications SET state='PUBLISHED'")
+E           sqlite3.IntegrityError: CHECK constraint failed: (state='PROVISIONAL'
+E                                AND published_transaction_id IS NULL
+E                                AND operation_result_version_id IS NULL
+E                                AND workspace_lineage_id IS NULL
+E                                AND workspace_revision_version_id IS NULL
+E                                AND marking_checkpoint_version_id IS NULL)
+E                               OR
+E                               (state='PUBLISHED'
+E                                AND published_transaction_id IS NOT NULL
+E                                AND operation_result_version_id IS NOT NULL
+E                                AND ((workspace_lineage_id IS NULL
+E                                      AND workspace_revision_version_id IS NULL)
+E                                     OR
+E                                     (workspace_lineage_id IS NOT NULL
+E                                      AND workspace_revision_version_id IS NOT NULL))
+E                                AND marking_checkpoint_version_id IS NOT NULL)
+
+../tests/test_history_independent.py:65: IntegrityError
+__ test_unsupported_lifecycle_does_not_mask_corruption[published_and_member] ___
+
+tmp_path = PosixPath('/tmp/pytest-of-agent/pytest-196/test_unsupported_lifecycle_doe2')
+damage = 'published_and_member'
+
+    @pytest.mark.parametrize('damage', ['published_flag', 'published_and_digest', 'published_and_member'])
+    def test_unsupported_lifecycle_does_not_mask_corruption(tmp_path, damage):
+        _, store, query = fixture(tmp_path)
+        with store.connect() as db:
+            # Intentionally corrupt state, not a claim that H7 can really settle.
+>           db.execute("UPDATE firing_publications SET state='PUBLISHED'")
+E           sqlite3.IntegrityError: CHECK constraint failed: (state='PROVISIONAL'
+E                                AND published_transaction_id IS NULL
+E                                AND operation_result_version_id IS NULL
+E                                AND workspace_lineage_id IS NULL
+E                                AND workspace_revision_version_id IS NULL
+E                                AND marking_checkpoint_version_id IS NULL)
+E                               OR
+E                               (state='PUBLISHED'
+E                                AND published_transaction_id IS NOT NULL
+E                                AND operation_result_version_id IS NOT NULL
+E                                AND ((workspace_lineage_id IS NULL
+E                                      AND workspace_revision_version_id IS NULL)
+E                                     OR
+E                                     (workspace_lineage_id IS NOT NULL
+E                                      AND workspace_revision_version_id IS NOT NULL))
+E                                AND marking_checkpoint_version_id IS NOT NULL)
+
+../tests/test_history_independent.py:65: IntegrityError
+__________ test_foreign_original_registry_cannot_use_copied_assertion __________
+
+tmp_path = PosixPath('/tmp/pytest-of-agent/pytest-196/test_foreign_original_registry0')
+
+    def test_foreign_original_registry_cannot_use_copied_assertion(tmp_path):
+        _, _, query = fixture(tmp_path)
+        other, *_ = accepted_parent(tmp_path / 'foreign')
+>       assert other._core.event_store.classify_child_acceptance_history(query).status == INVALID
+E       AssertionError: assert 'HISTORICAL_A...E_UNAVAILABLE' == 'HISTORICAL_A...TANCE_INVALID'
+E         
+E         - HISTORICAL_ACCEPTANCE_INVALID
+E         ?                       ^    ^^
+E         + HISTORICAL_ACCEPTANCE_UNAVAILABLE
+E         ?                       ^ +  + ^^^^
+
+../tests/test_history_independent.py:77: AssertionError
+_ test_real_later_authority_change_keeps_same_scope_proof_read_only[terminal_ready] _
+
+tmp_path = PosixPath('/tmp/pytest-of-agent/pytest-196/test_real_later_authority_chan2')
+later = 'terminal_ready'
+
+    @pytest.mark.parametrize('later', ['writer_only', 'durable_stop', 'terminal_ready'])
+    def test_real_later_authority_change_keeps_same_scope_proof_read_only(tmp_path, later):
+        values, store, query = fixture(tmp_path)
+        owner, admitted, execution = values[:3]
+        if later == 'writer_only':
+            store.acquire_writer()
+        elif later == 'durable_stop':
+            owner.record_owner_stop(idempotency_key='independent:stop')
+        else:
+            from cpn.rpnh.registry.invocations import InvocationLifecycle, TerminalResultPackage
+            outputs = owner.products(execution, outcome_id='complete', products={'step.result': (b'"provisional secret result"',)}, command_id='independent:products')
+>           InvocationLifecycle(owner._core).mark_operation_terminal_ready(execution.operation.canonical.context,
+                TerminalResultPackage('completed', tuple(o.resource_ref.as_version_ref() for o in outputs.outputs)), idempotency_key='independent:ready')
+
+../tests/test_history_independent.py:91: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+cpn/rpnh/registry/invocations.py:460: in mark_operation_terminal_ready
+    return implementation(self, context, package, idempotency_key=idempotency_key, recovering_committed_agent_actions=recovering_committed_agent_actions)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+cpn/rpnh/registry/_invocation/terminal.py:681: in mark_operation_terminal_ready
+    return lifecycle._mark_operation_terminal_ready(
+cpn/rpnh/registry/invocations.py:476: in _mark_operation_terminal_ready
+    return implementation(self, context, package, idempotency_key=idempotency_key, recovering_committed_agent_actions=recovering_committed_agent_actions, historical_request=historical_request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+cpn/rpnh/registry/_invocation/terminal.py:754: in _mark_operation_terminal_ready
+    output_resource_refs = lifecycle._validate_terminal_output_refs(
+cpn/rpnh/registry/invocations.py:452: in _validate_terminal_output_refs
+    return implementation(self, context, values, enforce_normal_cardinality=enforce_normal_cardinality, recovering_committed_agent_actions=recovering_committed_agent_actions)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+cpn/rpnh/registry/_invocation/terminal.py:592: in _validate_terminal_output_refs
+    activation_ref = _ref_from_payload(origin.get("secondary_ref", {}))
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+value = None
+
+    def _ref_from_payload(value: Mapping[str, Any]) -> VersionRef:
+        if not isinstance(value, Mapping):
+>           raise TypeError("exact version reference must be an object")
+E           TypeError: exact version reference must be an object
+
+cpn/rpnh/registry/invocations.py:60: TypeError
+- generated xml file: /workspace/scratch/18c810e6dd59/rpnh-acceptance-history-review/evidence/round1.xml -
+=========================== short test summary info ============================
+FAILED ../tests/test_history_independent.py::test_actual_source_head_damage_is_not_rebuilt_from_cut[0]
+FAILED ../tests/test_history_independent.py::test_actual_source_head_damage_is_not_rebuilt_from_cut[1]
+FAILED ../tests/test_history_independent.py::test_actual_source_head_damage_is_not_rebuilt_from_cut[2]
+FAILED ../tests/test_history_independent.py::test_each_phase_original_epoch_is_validated[0]
+FAILED ../tests/test_history_independent.py::test_each_phase_original_epoch_is_validated[1]
+FAILED ../tests/test_history_independent.py::test_each_phase_original_epoch_is_validated[2]
+FAILED ../tests/test_history_independent.py::test_complete_phase_event_envelope_is_checked[command_id-object_version_published/v1]
+FAILED ../tests/test_history_independent.py::test_complete_phase_event_envelope_is_checked[command_id-relation_published/v1]
+FAILED ../tests/test_history_independent.py::test_complete_phase_event_envelope_is_checked[command_id-transaction_committed/v1]
+FAILED ../tests/test_history_independent.py::test_complete_phase_event_envelope_is_checked[idempotency_key-object_version_published/v1]
+FAILED ../tests/test_history_independent.py::test_complete_phase_event_envelope_is_checked[idempotency_key-relation_published/v1]
+FAILED ../tests/test_history_independent.py::test_complete_phase_event_envelope_is_checked[idempotency_key-transaction_committed/v1]
+FAILED ../tests/test_history_independent.py::test_complete_phase_event_envelope_is_checked[causation_event_id-object_version_published/v1]
+FAILED ../tests/test_history_independent.py::test_complete_phase_event_envelope_is_checked[causation_event_id-relation_published/v1]
+FAILED ../tests/test_history_independent.py::test_complete_phase_event_envelope_is_checked[causation_event_id-transaction_committed/v1]
+FAILED ../tests/test_history_independent.py::test_complete_phase_event_envelope_is_checked[parent_event_ids_json-object_version_published/v1]
+FAILED ../tests/test_history_independent.py::test_complete_phase_event_envelope_is_checked[parent_event_ids_json-relation_published/v1]
+FAILED ../tests/test_history_independent.py::test_complete_phase_event_envelope_is_checked[parent_event_ids_json-transaction_committed/v1]
+FAILED ../tests/test_history_independent.py::test_unsupported_lifecycle_does_not_mask_corruption[published_flag]
+FAILED ../tests/test_history_independent.py::test_unsupported_lifecycle_does_not_mask_corruption[published_and_digest]
+FAILED ../tests/test_history_independent.py::test_unsupported_lifecycle_does_not_mask_corruption[published_and_member]
+FAILED ../tests/test_history_independent.py::test_foreign_original_registry_cannot_use_copied_assertion
+FAILED ../tests/test_history_independent.py::test_real_later_authority_change_keeps_same_scope_proof_read_only[terminal_ready]
+23 failed, 4 passed in 56.77s

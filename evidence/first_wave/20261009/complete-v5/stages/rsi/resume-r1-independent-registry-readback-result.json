@@ -1,0 +1,136 @@
+{
+  "reader_file": "<WORKSPACE>/.v26/r1/cpn/rpnh/registry/run_authority.py",
+  "python": "<WORKSPACE>/.p26/v/bin/python",
+  "registry_count": 3,
+  "rows": [
+    {
+      "fixture": "test_last_round_stop_uses_expl0",
+      "head": 652,
+      "writer_epoch": 2,
+      "status": "terminal",
+      "run_outcome": "failed",
+      "terminal_version": "terminal_evidence_version:33f0de75753c4da5894236948ac5e1d2",
+      "result": {
+        "ref": "round_2_selector.stop"
+      },
+      "task_control_status": {
+        "task_ref": "task:402a9f05d4a447dfb7cb088a2deb09db",
+        "execution_status": "terminal",
+        "checkpoint_ref": {
+          "entity_type": "marking_checkpoint/v1",
+          "logical_id": "marking_checkpoint:ced86c294e3b58d29da7f2d1fde61db3",
+          "version_id": "marking_checkpoint_version:fd3c1616ee01501e8b6600945ec66ecc"
+        },
+        "execution_generation": 0,
+        "terminal_evidence_count": 1,
+        "final_result_index_count": 1,
+        "actual_model_call_counts": [
+          0,
+          0
+        ]
+      },
+      "canonical_unchanged": true,
+      "sqlite_connection_sidecar_changes": [
+        {
+          "path": ".registry_v1/registry.sqlite3-shm",
+          "before": null,
+          "after": {
+            "sha256": "fd4c9fda9cd3f9ae7c962b0ddf37232294d55580e1aa165aa06129b8549389eb",
+            "bytes": 32768
+          }
+        },
+        {
+          "path": ".registry_v1/registry.sqlite3-wal",
+          "before": null,
+          "after": {
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "bytes": 0
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "test_last_selector_provisional0",
+      "head": 350,
+      "writer_epoch": 2,
+      "status": "running",
+      "run_outcome": null,
+      "terminal_version": null,
+      "result": null,
+      "task_control_status": {
+        "task_ref": "task:096c31a5ad604fd8aaf8e4fa8cbeeedd",
+        "execution_status": "running",
+        "checkpoint_ref": {
+          "entity_type": "marking_checkpoint/v1",
+          "logical_id": "marking_checkpoint:20a26e25ba935ca49745130a42005196",
+          "version_id": "marking_checkpoint_version:71af0ba287d3589bbc8ac3eae76a37c8"
+        },
+        "execution_generation": 0,
+        "terminal_evidence_count": 0,
+        "final_result_index_count": 0,
+        "actual_model_call_counts": [
+          0,
+          0
+        ]
+      },
+      "canonical_unchanged": true,
+      "sqlite_connection_sidecar_changes": [
+        {
+          "path": ".registry_v1/registry.sqlite3-shm",
+          "before": null,
+          "after": {
+            "sha256": "fd4c9fda9cd3f9ae7c962b0ddf37232294d55580e1aa165aa06129b8549389eb",
+            "bytes": 32768
+          }
+        },
+        {
+          "path": ".registry_v1/registry.sqlite3-wal",
+          "before": null,
+          "after": {
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "bytes": 0
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "test_owner_stop_after_settled_0",
+      "head": 370,
+      "writer_epoch": 2,
+      "status": "stopped_by_owner",
+      "run_outcome": null,
+      "terminal_version": null,
+      "result": null,
+      "task_control_status": {
+        "task_ref": "task:95e6395bf3014ae0b2da0e6f0bb1a975",
+        "execution_status": "stopped_by_owner",
+        "checkpoint_ref": {
+          "entity_type": "marking_checkpoint/v1",
+          "logical_id": "marking_checkpoint:6b57de429c6956c7a473a4970597f01d",
+          "version_id": "marking_checkpoint_version:0eedf1d0dcb758ec95f0622f814e4995"
+        },
+        "execution_generation": 0,
+        "terminal_evidence_count": 0,
+        "final_result_index_count": 0,
+        "actual_model_call_counts": [
+          0,
+          0
+        ]
+      },
+      "canonical_unchanged": true,
+      "sqlite_connection_sidecar_changes": [
+        {
+          "path": ".registry_v1/registry.sqlite3-shm",
+          "before": {
+            "sha256": "bb0972cf4563bb8b8e0d4d8cfd3f97b4b7d4adc64bb909fce2208ac7ba213988",
+            "bytes": 32768
+          },
+          "after": {
+            "sha256": "07dfc9317061d36e231bcbbf6fa76f1beeafaf2b93aa06604f8d421c0759ae04",
+            "bytes": 32768
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1 @@
+{"path": "<USER_HOME>/.local/bin/codex", "sha256": "f95212e98f3603d9c2e062730aa39f9fd57548c37f3a056787dae9659a553bda", "type": "script", "line_count": 81, "exec_lines": [41], "references_nvm": true, "references_state_home": false, "writes_mkdir": false}

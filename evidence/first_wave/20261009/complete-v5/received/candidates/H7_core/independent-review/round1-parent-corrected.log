@@ -1,0 +1,33 @@
+........F..........                                                      [100%]
+=================================== FAILURES ===================================
+______________ test_intent_helper_replay_after_success_is_closed _______________
+rpnh-parent-child-core-boundary-review/tests/test_boundary_parent.py:65: in test_intent_helper_replay_after_success_is_closed
+    h7.register_child_intent(owner._core, execution, prepared)
+rpnh-parent-child-core-boundary-review/round1-source/cpn/rpnh/registry/parent_child.py:370: in register_child_intent
+    return _record(core,PARENT_KINDS[0],body,predecessors=(body['request_ref'],scope['firing_ref'],scope['lease_ref']))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+rpnh-parent-child-core-boundary-review/round1-source/cpn/rpnh/registry/parent_child.py:351: in _record
+    tx.commit()
+rpnh-parent-child-core-boundary-review/round1-source/cpn/rpnh/registry/transaction.py:387: in commit
+    result = self.event_store.publish_batch(
+rpnh-parent-child-core-boundary-review/round1-source/cpn/rpnh/registry/event_store.py:1879: in publish_batch
+    return commit.publish_batch(
+rpnh-parent-child-core-boundary-review/round1-source/cpn/rpnh/registry/_event_store/commit.py:495: in publish_batch
+    validate_parent_child_commit(self_store := event_store, db,
+rpnh-parent-child-core-boundary-review/round1-source/cpn/rpnh/registry/parent_child.py:455: in validate_parent_child_commit
+    firing,invocation,start=_execution_at(snap,scope,body['parent'])
+                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+rpnh-parent-child-core-boundary-review/round1-source/cpn/rpnh/registry/parent_child.py:261: in _execution_at
+    raise RegistryConflict('H7 requires its exact open provisional firing')
+E   cpn.rpnh.registry.event_store.RegistryConflict: H7 requires its exact open provisional firing
+
+During handling of the above exception, another exception occurred:
+rpnh-parent-child-core-boundary-review/tests/test_boundary_parent.py:64: in test_intent_helper_replay_after_success_is_closed
+    with pytest.raises(RegistryConflict, match='closed'):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: Regex pattern did not match.
+E    Regex: 'closed'
+E    Input: 'H7 requires its exact open provisional firing'
+=========================== short test summary info ============================
+FAILED rpnh-parent-child-core-boundary-review/tests/test_boundary_parent.py::test_intent_helper_replay_after_success_is_closed
+1 failed, 18 passed in 36.24s

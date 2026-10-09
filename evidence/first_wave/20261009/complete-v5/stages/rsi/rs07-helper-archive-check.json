@@ -1,0 +1,21 @@
+{
+  "command": [
+    "<WORKSPACE>/.p26/v/bin/python",
+    "-c",
+    "from pathlib import Path; import zipfile; p=Path(\"<WORKSPACE>/task-complete-v5-20261009/rpnh-complete-local-bundle-v5/archives/RPNH_R1_Inert_Iteration_Profile_v2_Terminal_Fix_20261008.zip\"); z=zipfile.ZipFile(p); names=z.namelist(); print({\"archive\":str(p),\"members\":len(names),\"missing_helper_matches\":[n for n in names if \"test_inert_profile_independent\" in n],\"review_python_members\":[n for n in names if \"/review/\" in n and n.endswith(\".py\")]})"
+  ],
+  "cwd": "<WORKSPACE>/.v26/r1",
+  "pid": 14327,
+  "started_at_utc": "2026-10-09T01:20:40.638923+00:00",
+  "finished_at_utc": "2026-10-09T01:20:40.670005+00:00",
+  "elapsed_seconds": 0.031100476000574417,
+  "exit_code": 0,
+  "environment": {
+    "PYTHONPATH": null,
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1",
+    "TMPDIR": "<WORKSPACE>/.v26/tmp",
+    "PYTEST_ADDOPTS": null,
+    "PYTEST_PLUGINS": null
+  }
+}

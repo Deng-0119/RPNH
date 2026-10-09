@@ -1,0 +1,11 @@
+{
+  "frozen_utc": "2026-10-08T22:43:14.913324+00:00",
+  "author_manifest": "core19-source-after.json",
+  "author_manifest_file_sha256": "602be670153d7b18cd08d28ec62464d786ae7d334645ae399f0937329a878075",
+  "author_source_aggregate_sha256": "61421bd9fd2f389a164c54fbe6fc92086e3a9ff571367c888174782a51a3ca9d",
+  "computed_aggregate_candidate": "61421bd9fd2f389a164c54fbe6fc92086e3a9ff571367c888174782a51a3ca9d",
+  "files_checked": 992,
+  "file_mismatches": [],
+  "extra_files": [],
+  "missing_files": []
+}

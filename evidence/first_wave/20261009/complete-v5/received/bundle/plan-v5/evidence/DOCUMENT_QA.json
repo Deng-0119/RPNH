@@ -1,0 +1,53 @@
+{
+  "checked_at_utc": "2026-10-09T00:19:18.572220+00:00",
+  "result": "PASS_DOCUMENT_ONLY",
+  "internal_links_checked": 13,
+  "frozen_patch_identities_checked": 12,
+  "unique_final_patch_member_for_every_zip": true,
+  "v4_preserved": true,
+  "source_aggregates": [
+    {
+      "id": "S1",
+      "count": 979,
+      "manifest_sha256": "4a7841ac16432aeb173562ec797bc062839a006fdb684d5ea1e3b161c6c49fbc"
+    },
+    {
+      "id": "H7_core",
+      "count": 992,
+      "manifest_sha256": "ac68327e442b7bda8a6aa2ba93c0cd20ad72181a661b0497627b08713334907e"
+    },
+    {
+      "id": "H7_history",
+      "count": 994,
+      "manifest_sha256": "a3af1d85ffbc8acac72e719fed316ed3c848229fce92026c62e571cb77a913a2"
+    },
+    {
+      "id": "H7_lowering",
+      "count": 999,
+      "manifest_sha256": "7867bec81c0830f19cfd6f8a58b0d1598d5efc8220c69e6cfdd02604f98f1a0e"
+    }
+  ],
+  "pairwise_patch_header_audit": {
+    "all_pairs": 66,
+    "cross_lane_pairs": 53,
+    "cross_lane_intersections": 0,
+    "nonempty_same_lane_pairs": 5
+  },
+  "codex_1044_lock_actual_candidate_hash_mismatches": {
+    "S1": 7,
+    "H7_core": 19,
+    "H7_history": 1,
+    "H7_lowering": 3,
+    "core_distinct_union": 29,
+    "DSH": 6,
+    "OpenCode": 5,
+    "R1_v2_full": 0,
+    "R2": 0
+  },
+  "lowering_review_and_archive": "limited D0 accepted and exact final archive bytes verified; full inventory/native remain unsupported",
+  "product_source_changed": false,
+  "product_imports_or_tests_run": false,
+  "patches_applied": false,
+  "native_or_remote_actions": false,
+  "errors": []
+}

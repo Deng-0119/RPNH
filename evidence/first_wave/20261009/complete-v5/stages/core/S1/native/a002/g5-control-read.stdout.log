@@ -1,0 +1,49 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+______________________ test_g5_coexistence[control-read] _______________________
+
+tmp_path = PosixPath('<WORKSPACE>/.v26/unS1-a002-7/test_g5_coexistence_control_re0')
+mode = 'control-read'
+
+    @pytest.mark.parametrize('mode', ['union', 'produce', 'data-read', 'control-read'])
+    def test_g5_coexistence(tmp_path, mode):
+        owner = (_world(tmp_path / 'r', variable_mode='produce' if mode == 'produce' else 'read')
+                 if mode in ('union', 'produce') else lease_owner(tmp_path / 'r',
+                    ordinary_read=True, control_read=mode == 'control-read'))
+        before = current(owner)[2]
+        leases = _fresh_leases(before)
+        with Native(owner, 'g5-' + mode) as n:
+            assert len(n.harness.schedule_ready()) == 1
+            assert n.snapshot('live')['active'] == 1
+            net, structure, marking = current(owner)
+            local = TeamNetMarking.from_authority(structure, marking)
+            install_active_module_claims(owner._core, local, net.net_ref)
+            refs = local.claimed_operation_tokens('step.run', local.epoch)
+            assert len({t.token_ref for t in refs}) == len(refs)
+            if mode == 'union':
+                assert len(refs) == 2  # carrier + deduplicated static/variable lease
+            if mode.endswith('read'):
+                assert n.harness.schedule_ready() == ()
+            n.release(0)
+            n.snapshot('settled')
+            assert n.body_count == 1
+            after = current(owner)[2]
+            now = _fresh_leases(after)
+            if mode == 'produce':
+                assert now['step.static'] == leases['step.static']
+                assert now['step.variable'].token_ref != leases['step.variable'].token_ref
+                assert now['step.variable'].state.lease_identity_ref == leases['step.variable'].state.lease_identity_ref
+                assert now['step.variable'].state.resource_ref is not None
+            else:
+>               assert now == leases
+E               AssertionError: assert {'step.lease'...920f33': 1}))} == {'step.lease'...318f4d': 1}))}
+E                 
+E                 Differing items:
+E                 {'step.lease': PetriTokenAuthority(token_ref=VersionRef(entity_type='petri_token/v1', entity_id=TypedId(kind='petri_to...ion:ff381f38649e53d29e77b5ec42358a45': 1, 'transition-firing:transition_firing:717f9c82260e5bc38c6b6cb080920f33': 1}))} != {'step.lease': PetriTokenAuthority(token_ref=VersionRef(entity_type='petri_token/v1', entity_id=TypedId(kind='petri_to...ion:transaction:c74b9f0bae525e5e875dd3bcdb51cb43': 1, 'transaction:transaction:c7f6ccf5eda251b6bbba8c91fc318f4d': 1}))}
+E                 Use -v to get more diff
+
+../../task-complete-v5-20261009/stages/core/S1/native/a002/test_native_s1.py:317: AssertionError
+- generated xml file: <WORKSPACE>/task-complete-v5-20261009/stages/core/S1/native/a002/g5-control-read.xml -
+=========================== short test summary info ============================
+FAILED ../../task-complete-v5-20261009/stages/core/S1/native/a002/test_native_s1.py::test_g5_coexistence[control-read]
+1 failed in 6.40s

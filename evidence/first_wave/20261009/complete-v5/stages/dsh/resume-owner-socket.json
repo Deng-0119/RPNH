@@ -1,0 +1,32 @@
+{
+  "command": [
+    "<WORKSPACE>/.p26/v/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "-p",
+    "no:cacheprovider",
+    "-o",
+    "junit_family=xunit1",
+    "tests/test_dsh_backend.py",
+    "tests/test_dsh_long_path.py",
+    "tests/test_net_view_dsh_adapter_integration.py",
+    "--tb=short",
+    "--basetemp=<WORKSPACE>/.v26/udn",
+    "--junitxml=<WORKSPACE>/task-complete-v5-20261009/stages/dsh/resume-owner-socket.xml"
+  ],
+  "cwd": "<WORKSPACE>/.v26/d",
+  "pid": 21599,
+  "started_at_utc": "2026-10-09T04:05:15.968459+00:00",
+  "finished_at_utc": "2026-10-09T04:19:47.724629+00:00",
+  "elapsed_seconds": 872.1687607240001,
+  "exit_code": 0,
+  "environment": {
+    "PYTHONPATH": "<WORKSPACE>/.v26/d:<WORKSPACE>/.v26/d/tests",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1",
+    "TMPDIR": "<WORKSPACE>/.v26/tmp",
+    "PYTEST_ADDOPTS": null,
+    "PYTEST_PLUGINS": null
+  }
+}

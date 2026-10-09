@@ -1,0 +1,37 @@
+.........................F.............................................. [ 81%]
+................                                                         [100%]
+=================================== FAILURES ===================================
+_____ test_history_read_is_pure_with_source_rechecks_and_optional_budgets ______
+
+owner = (<cpn.frontend.codex_app_server.CodexAppServer object at 0x7f8ef0f21b80>, ThreadState(thread_id='ses_cd4a0d037ce050bea...._FakeWebSocket object at 0x7f8ef2260230>, <cpn.rpnh.registry.main_thread.MainThreadRegistry object at 0x7f8ef0842660>)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f8ef20a13d0>
+
+    def test_history_read_is_pure_with_source_rechecks_and_optional_budgets(owner, monkeypatch):
+        server, state, socket, _ = owner
+        core = state.session._registry_core
+        before = _fingerprint(state.session.root)
+        counters = (core.event_store.max_ordinal(), core.event_store.writer_epoch)
+        def forbidden(*a, **kw):
+            pytest.fail("pure history attempted execution, mutation, live observation or refresh")
+        for name in ("_refresh_from_authority", "_persist_state", "_persist_profile", "activate_for_execution",
+                     "active_turn_snapshot", "reconcile_active_turn", "prepare_turn"):
+            monkeypatch.setattr(state.session, name, forbidden)
+        monkeypatch.setattr(core, "begin", forbidden)
+        monkeypatch.setattr(server, "_observe_active_turn", forbidden)
+        for query in ("turns", "items"):
+            assert _walk(server, state, socket, query, limit=1)
+        full = _request(server, state, socket, "thread/read", includeTurns=True)
+        assert len(full["thread"]["turns"]) == 3
+>       assert _fingerprint(state.session.root) == before
+E       AssertionError: assert {'.main-sessi...3b7281d', ...} == {'.main-sessi...3b7281d', ...}
+E         
+E         Omitting 33 identical items, use -vv to show
+E         Differing items:
+E         {'main/.registry_v1/registry.sqlite3': 'a5fe12ea17eef552b8002f2f30e4f34370585d239a90339ed39d665b862836ed'} != {'main/.registry_v1/registry.sqlite3': 'd84ea8254c85f38275d252db0f00b9371dbfe3706d0713bdabccf2b1e9d7183d'}
+E         {'main/.registry_v1/registry.sqlite3-wal': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'} != {'main/.registry_v1/registry.sqlite3-wal': 'dc843157bedaa6a114bb537b96fc253b0ae61bc51e2abd77336134c29ab812f5'}
+E         Use -v to get more diff
+
+tests/test_codex_history.py:261: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_codex_history.py::test_history_read_is_pure_with_source_rechecks_and_optional_budgets
+1 failed, 87 passed in 64.20s (0:01:04)

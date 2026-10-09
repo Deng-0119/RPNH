@@ -1,0 +1,1117 @@
+{
+  "review_utc": "2026-10-08T23:08:05.195940+00:00",
+  "decision": "APPROVE_NARROW_REGISTRY_CORE_D0_ONLY",
+  "product": "rpnh-parent-child-core-implementation",
+  "source_file_count": 992,
+  "source_manifest_sha256": "ac68327e442b7bda8a6aa2ba93c0cd20ad72181a661b0497627b08713334907e",
+  "candidate_matches_independent_snapshot": true,
+  "source_unchanged_during_final_run": true,
+  "changed_from_superseded_61421_snapshot": [
+    "cpn/rpnh/registry/parent_bound.py"
+  ],
+  "tests": {
+    "reviewer_authored": 40,
+    "author_case_reruns": 31,
+    "existing_S1_controls": 5,
+    "existing_Module_recovery_controls": 9,
+    "total_collected": 85,
+    "total_passed": 85,
+    "total_failed": 0,
+    "total_error": 0,
+    "total_skipped": 0,
+    "unique_normalized_pytest_nodeids": 85,
+    "sentinel_blocked_events": [],
+    "counts_by_file": {
+      "test_boundary_child.py": 19,
+      "test_boundary_finalize.py": 2,
+      "test_boundary_parent.py": 19,
+      "test_parent_child_core.py": 31,
+      "test_static_lease_reads.py": 5,
+      "test_registered_operation_recovery.py": 9
+    },
+    "reviewer_authored_ids": [
+      "test_boundary_child.py::test_bound_writable_core_reentry_fails_before_eventstore_construction",
+      "test_boundary_child.py::test_bound_direct_acquire_writer_cannot_fence_original_owner",
+      "test_boundary_child.py::test_bound_readonly_core_preserves_writer_and_exact_origin",
+      "test_boundary_child.py::test_protected_catalog_bridge_is_exact_original_source",
+      "test_boundary_child.py::test_direct_same_writer_stopped_to_running_authority_is_rejected",
+      "test_boundary_child.py::test_required_bound_protocol_cannot_commit_without_atomic_marker",
+      "test_boundary_child.py::test_bound_first_business_start_after_durable_stop_is_rejected",
+      "test_boundary_child.py::test_origin_integrity_rejects_catalog_or_producer_source_substitution[content_schema_authority_ref]",
+      "test_boundary_child.py::test_origin_integrity_rejects_catalog_or_producer_source_substitution[producer_ref]",
+      "test_boundary_child.py::test_origin_integrity_rejects_catalog_or_producer_source_substitution[lifetime_ref]",
+      "test_boundary_child.py::test_direct_second_adoption_transaction_is_rejected",
+      "test_boundary_child.py::test_memory_stop_request_allows_already_started_completion_drain",
+      "test_boundary_child.py::test_bound_admission_replay_after_stop_is_closed_at_original_boundary[helper]",
+      "test_boundary_child.py::test_bound_admission_replay_after_stop_is_closed_at_original_boundary[raw-commit]",
+      "test_boundary_child.py::test_bound_admission_replay_cannot_forge_reference_claim[omit-origin]",
+      "test_boundary_child.py::test_bound_admission_replay_cannot_forge_reference_claim[consume-origin]",
+      "test_boundary_child.py::test_bound_start_raw_transaction_replay_after_stop_is_closed",
+      "test_boundary_child.py::test_prospective_protected_weak_edges_fail_before_commit[parent_bound_bootstrap/v1]",
+      "test_boundary_child.py::test_prospective_protected_weak_edges_fail_before_commit[parent_bound_origin/v1]",
+      "test_boundary_finalize.py::test_prospective_protected_lifetime_fails_before_commit",
+      "test_boundary_finalize.py::test_prospective_protected_extra_capability_edge_fails_before_commit",
+      "test_boundary_parent.py::test_live_exact_raw_replay_has_no_new_commit[parent_child_intent/v1]",
+      "test_boundary_parent.py::test_live_exact_raw_replay_has_no_new_commit[parent_child_dispatch/v1]",
+      "test_boundary_parent.py::test_live_exact_raw_replay_has_no_new_commit[parent_child_worker/v1]",
+      "test_boundary_parent.py::test_live_exact_raw_replay_has_no_new_commit[parent_child_acceptance/v1]",
+      "test_boundary_parent.py::test_exact_raw_replay_after_owner_stop_revalidates_live_authority[parent_child_intent/v1]",
+      "test_boundary_parent.py::test_exact_raw_replay_after_owner_stop_revalidates_live_authority[parent_child_dispatch/v1]",
+      "test_boundary_parent.py::test_exact_raw_replay_after_owner_stop_revalidates_live_authority[parent_child_worker/v1]",
+      "test_boundary_parent.py::test_exact_raw_replay_after_owner_stop_revalidates_live_authority[parent_child_acceptance/v1]",
+      "test_boundary_parent.py::test_parent_cannot_complete_from_self_asserted_products_without_native_observation",
+      "test_boundary_parent.py::test_intent_helper_replay_after_parent_writer_fence_is_closed",
+      "test_boundary_parent.py::test_started_ordinary_operation_cannot_substitute_launcher_pn_contract[two-slot-capacity]",
+      "test_boundary_parent.py::test_started_ordinary_operation_cannot_substitute_launcher_pn_contract[no-launch-capability]",
+      "test_boundary_parent.py::test_started_ordinary_operation_cannot_substitute_launcher_pn_contract[interrupted-outcome]",
+      "test_boundary_parent.py::test_started_ordinary_operation_cannot_substitute_launcher_pn_contract[missing-failed-outcome]",
+      "test_boundary_parent.py::test_started_ordinary_operation_cannot_substitute_launcher_pn_contract[ordinary-executor]",
+      "test_boundary_parent.py::test_public_dispatch_cannot_use_self_asserted_native_evidence[None]",
+      "test_boundary_parent.py::test_public_dispatch_cannot_use_self_asserted_native_evidence[proof1]",
+      "test_boundary_parent.py::test_public_dispatch_cannot_use_self_asserted_native_evidence[proof2]",
+      "test_boundary_parent.py::test_native_evidence_has_no_production_constructor"
+    ],
+    "rerun_ids": [
+      "test_parent_child_core.py::test_real_parent_causal_chain_is_provisional",
+      "test_parent_child_core.py::test_bound_origin_true_admission_start_success",
+      "test_parent_child_core.py::test_parent_pn_declared_prerequisites_not_host_flags[values0]",
+      "test_parent_child_core.py::test_parent_pn_declared_prerequisites_not_host_flags[values1]",
+      "test_parent_child_core.py::test_parent_pn_declared_prerequisites_not_host_flags[values2]",
+      "test_parent_child_core.py::test_parent_pn_declared_prerequisites_not_host_flags[values3]",
+      "test_parent_child_core.py::test_no_native_evidence_constructor_or_json_permission",
+      "test_parent_child_core.py::test_parent_commit_rejects_mutated_native_closure[start_id]",
+      "test_parent_child_core.py::test_parent_commit_rejects_mutated_native_closure[generation]",
+      "test_parent_child_core.py::test_parent_commit_rejects_mutated_native_closure[lease]",
+      "test_parent_child_core.py::test_parent_commit_rejects_mutated_native_closure[parent_run]",
+      "test_parent_child_core.py::test_parent_commit_rejects_mutated_native_closure[slot]",
+      "test_parent_child_core.py::test_parent_commit_rejects_mutated_native_closure[target]",
+      "test_parent_child_core.py::test_parent_commit_rejects_mutated_native_closure[material]",
+      "test_parent_child_core.py::test_intent_replay_rechecks_live_entry_before_exact_replay[stop]",
+      "test_parent_child_core.py::test_intent_replay_rechecks_live_entry_before_exact_replay[new_writer]",
+      "test_parent_child_core.py::test_acceptance_direct_exact_replay_requires_native_boundary",
+      "test_parent_child_core.py::test_parent_unknown_completion_cannot_release_slot",
+      "test_parent_child_core.py::test_parent_start_payload_is_fully_rechecked",
+      "test_parent_child_core.py::test_child_no_writable_reentry_zero_epoch_change",
+      "test_parent_child_core.py::test_child_direct_closed_authority_cannot_revive",
+      "test_parent_child_core.py::test_child_origin_cannot_be_cloned_by_raw_transaction",
+      "test_parent_child_core.py::test_child_missing_origin_arc_rejected_at_original_adoption",
+      "test_parent_child_core.py::test_child_initial_adoption_replay_and_successor_rejection",
+      "test_parent_child_core.py::test_protocol_marker_pair_required_and_bound_schema_not_public",
+      "test_parent_child_core.py::test_child_first_start_and_admission_replay_after_durable_stop_rejected",
+      "test_parent_child_core.py::test_child_started_completion_keeps_draining_without_durable_stop",
+      "test_parent_child_core.py::test_generic_raw_transaction_cannot_mint_protected_capability",
+      "test_parent_child_core.py::test_bound_registered_completion_then_one_success_without_remint",
+      "test_parent_child_core.py::test_protected_weak_edges_rejected_before_commit[parent_bound_bootstrap/v1]",
+      "test_parent_child_core.py::test_protected_weak_edges_rejected_before_commit[parent_bound_origin/v1]",
+      "test_static_lease_reads.py::test_static_read_full_lifecycle_preserves_exact_token[False]",
+      "test_static_lease_reads.py::test_static_read_full_lifecycle_preserves_exact_token[True]",
+      "test_static_lease_reads.py::test_parallel_same_transition_and_successor_reconstruction",
+      "test_static_lease_reads.py::test_ordinary_read_still_consumes_and_returns[False]",
+      "test_static_lease_reads.py::test_ordinary_read_still_consumes_and_returns[True]",
+      "test_registered_operation_recovery.py::test_resume_rejects_active_firing_without_completion_before_writer_bump",
+      "test_registered_operation_recovery.py::test_registration_mismatch_fails_before_writer_and_correct_retry_recovers",
+      "test_registered_operation_recovery.py::test_empty_writer_epoch_gap_does_not_strand_exact_completion",
+      "test_registered_operation_recovery.py::test_later_writer_fact_invalidates_stale_completion",
+      "test_registered_operation_recovery.py::test_stale_empty_interruption_requires_one_use_reopen_authorization",
+      "test_registered_operation_recovery.py::test_nested_host_failure_is_not_a_parent_operation_terminal_conflict",
+      "test_registered_operation_recovery.py::test_declared_host_effect_completion_fails_closed_before_writer",
+      "test_registered_operation_recovery.py::test_exact_completion_recovers_once_without_executor_and_fences_old_writer",
+      "test_registered_operation_recovery.py::test_completion_record_is_idempotent_and_rejects_changed_output_material"
+    ],
+    "deduplication_rule": "Normalize path prefixes to filename::testcase[param]. Repeated execution does not create a new testcase. Semantic overlap is not claimed absent."
+  },
+  "final_run": {
+    "json": "FINAL_V2_RESULTS.json",
+    "junit": "final-v2.xml",
+    "log": "final-v2.log",
+    "source_before": "FINAL_V2_SOURCE_BEFORE.json",
+    "source_after": "FINAL_V2_SOURCE_AFTER.json"
+  },
+  "scope": {
+    "native_production_execution": "UNSUPPORTED",
+    "full_H7_O66_D0": "NOT_VERIFIED",
+    "H7_N36_D1": "NOT_RUN",
+    "H7b_R10": "NOT_RUN",
+    "full_repository": "NOT_VERIFIED"
+  },
+  "joint_final_counts": {
+    "source_manifest_sha256": "ac68327e442b7bda8a6aa2ba93c0cd20ad72181a661b0497627b08713334907e",
+    "author_final_executions": 99,
+    "independent_final_executions": 85,
+    "total_final_executions": 184,
+    "overlapping_case_ids": 45,
+    "unique_case_ids": 139,
+    "author_original_core": 31,
+    "author_existing_adjacent": 68,
+    "reviewer_original": 40,
+    "author_deselected_not_run": 3,
+    "overlap_ids": [
+      "test_parent_child_core.py::test_acceptance_direct_exact_replay_requires_native_boundary",
+      "test_parent_child_core.py::test_bound_origin_true_admission_start_success",
+      "test_parent_child_core.py::test_bound_registered_completion_then_one_success_without_remint",
+      "test_parent_child_core.py::test_child_direct_closed_authority_cannot_revive",
+      "test_parent_child_core.py::test_child_first_start_and_admission_replay_after_durable_stop_rejected",
+      "test_parent_child_core.py::test_child_initial_adoption_replay_and_successor_rejection",
+      "test_parent_child_core.py::test_child_missing_origin_arc_rejected_at_original_adoption",
+      "test_parent_child_core.py::test_child_no_writable_reentry_zero_epoch_change",
+      "test_parent_child_core.py::test_child_origin_cannot_be_cloned_by_raw_transaction",
+      "test_parent_child_core.py::test_child_started_completion_keeps_draining_without_durable_stop",
+      "test_parent_child_core.py::test_generic_raw_transaction_cannot_mint_protected_capability",
+      "test_parent_child_core.py::test_intent_replay_rechecks_live_entry_before_exact_replay[new_writer]",
+      "test_parent_child_core.py::test_intent_replay_rechecks_live_entry_before_exact_replay[stop]",
+      "test_parent_child_core.py::test_no_native_evidence_constructor_or_json_permission",
+      "test_parent_child_core.py::test_parent_commit_rejects_mutated_native_closure[generation]",
+      "test_parent_child_core.py::test_parent_commit_rejects_mutated_native_closure[lease]",
+      "test_parent_child_core.py::test_parent_commit_rejects_mutated_native_closure[material]",
+      "test_parent_child_core.py::test_parent_commit_rejects_mutated_native_closure[parent_run]",
+      "test_parent_child_core.py::test_parent_commit_rejects_mutated_native_closure[slot]",
+      "test_parent_child_core.py::test_parent_commit_rejects_mutated_native_closure[start_id]",
+      "test_parent_child_core.py::test_parent_commit_rejects_mutated_native_closure[target]",
+      "test_parent_child_core.py::test_parent_pn_declared_prerequisites_not_host_flags[values0]",
+      "test_parent_child_core.py::test_parent_pn_declared_prerequisites_not_host_flags[values1]",
+      "test_parent_child_core.py::test_parent_pn_declared_prerequisites_not_host_flags[values2]",
+      "test_parent_child_core.py::test_parent_pn_declared_prerequisites_not_host_flags[values3]",
+      "test_parent_child_core.py::test_parent_start_payload_is_fully_rechecked",
+      "test_parent_child_core.py::test_parent_unknown_completion_cannot_release_slot",
+      "test_parent_child_core.py::test_protected_weak_edges_rejected_before_commit[parent_bound_bootstrap/v1]",
+      "test_parent_child_core.py::test_protected_weak_edges_rejected_before_commit[parent_bound_origin/v1]",
+      "test_parent_child_core.py::test_protocol_marker_pair_required_and_bound_schema_not_public",
+      "test_parent_child_core.py::test_real_parent_causal_chain_is_provisional",
+      "test_registered_operation_recovery.py::test_completion_record_is_idempotent_and_rejects_changed_output_material",
+      "test_registered_operation_recovery.py::test_declared_host_effect_completion_fails_closed_before_writer",
+      "test_registered_operation_recovery.py::test_empty_writer_epoch_gap_does_not_strand_exact_completion",
+      "test_registered_operation_recovery.py::test_exact_completion_recovers_once_without_executor_and_fences_old_writer",
+      "test_registered_operation_recovery.py::test_later_writer_fact_invalidates_stale_completion",
+      "test_registered_operation_recovery.py::test_nested_host_failure_is_not_a_parent_operation_terminal_conflict",
+      "test_registered_operation_recovery.py::test_registration_mismatch_fails_before_writer_and_correct_retry_recovers",
+      "test_registered_operation_recovery.py::test_resume_rejects_active_firing_without_completion_before_writer_bump",
+      "test_registered_operation_recovery.py::test_stale_empty_interruption_requires_one_use_reopen_authorization",
+      "test_static_lease_reads.py::test_ordinary_read_still_consumes_and_returns[False]",
+      "test_static_lease_reads.py::test_ordinary_read_still_consumes_and_returns[True]",
+      "test_static_lease_reads.py::test_parallel_same_transition_and_successor_reconstruction",
+      "test_static_lease_reads.py::test_static_read_full_lifecycle_preserves_exact_token[False]",
+      "test_static_lease_reads.py::test_static_read_full_lifecycle_preserves_exact_token[True]"
+    ],
+    "unique_ids": [
+      "test_boundary_child.py::test_bound_admission_replay_after_stop_is_closed_at_original_boundary[helper]",
+      "test_boundary_child.py::test_bound_admission_replay_after_stop_is_closed_at_original_boundary[raw-commit]",
+      "test_boundary_child.py::test_bound_admission_replay_cannot_forge_reference_claim[consume-origin]",
+      "test_boundary_child.py::test_bound_admission_replay_cannot_forge_reference_claim[omit-origin]",
+      "test_boundary_child.py::test_bound_direct_acquire_writer_cannot_fence_original_owner",
+      "test_boundary_child.py::test_bound_first_business_start_after_durable_stop_is_rejected",
+      "test_boundary_child.py::test_bound_readonly_core_preserves_writer_and_exact_origin",
+      "test_boundary_child.py::test_bound_start_raw_transaction_replay_after_stop_is_closed",
+      "test_boundary_child.py::test_bound_writable_core_reentry_fails_before_eventstore_construction",
+      "test_boundary_child.py::test_direct_same_writer_stopped_to_running_authority_is_rejected",
+      "test_boundary_child.py::test_direct_second_adoption_transaction_is_rejected",
+      "test_boundary_child.py::test_memory_stop_request_allows_already_started_completion_drain",
+      "test_boundary_child.py::test_origin_integrity_rejects_catalog_or_producer_source_substitution[content_schema_authority_ref]",
+      "test_boundary_child.py::test_origin_integrity_rejects_catalog_or_producer_source_substitution[lifetime_ref]",
+      "test_boundary_child.py::test_origin_integrity_rejects_catalog_or_producer_source_substitution[producer_ref]",
+      "test_boundary_child.py::test_prospective_protected_weak_edges_fail_before_commit[parent_bound_bootstrap/v1]",
+      "test_boundary_child.py::test_prospective_protected_weak_edges_fail_before_commit[parent_bound_origin/v1]",
+      "test_boundary_child.py::test_protected_catalog_bridge_is_exact_original_source",
+      "test_boundary_child.py::test_required_bound_protocol_cannot_commit_without_atomic_marker",
+      "test_boundary_finalize.py::test_prospective_protected_extra_capability_edge_fails_before_commit",
+      "test_boundary_finalize.py::test_prospective_protected_lifetime_fails_before_commit",
+      "test_boundary_parent.py::test_exact_raw_replay_after_owner_stop_revalidates_live_authority[parent_child_acceptance/v1]",
+      "test_boundary_parent.py::test_exact_raw_replay_after_owner_stop_revalidates_live_authority[parent_child_dispatch/v1]",
+      "test_boundary_parent.py::test_exact_raw_replay_after_owner_stop_revalidates_live_authority[parent_child_intent/v1]",
+      "test_boundary_parent.py::test_exact_raw_replay_after_owner_stop_revalidates_live_authority[parent_child_worker/v1]",
+      "test_boundary_parent.py::test_intent_helper_replay_after_parent_writer_fence_is_closed",
+      "test_boundary_parent.py::test_live_exact_raw_replay_has_no_new_commit[parent_child_acceptance/v1]",
+      "test_boundary_parent.py::test_live_exact_raw_replay_has_no_new_commit[parent_child_dispatch/v1]",
+      "test_boundary_parent.py::test_live_exact_raw_replay_has_no_new_commit[parent_child_intent/v1]",
+      "test_boundary_parent.py::test_live_exact_raw_replay_has_no_new_commit[parent_child_worker/v1]",
+      "test_boundary_parent.py::test_native_evidence_has_no_production_constructor",
+      "test_boundary_parent.py::test_parent_cannot_complete_from_self_asserted_products_without_native_observation",
+      "test_boundary_parent.py::test_public_dispatch_cannot_use_self_asserted_native_evidence[None]",
+      "test_boundary_parent.py::test_public_dispatch_cannot_use_self_asserted_native_evidence[proof1]",
+      "test_boundary_parent.py::test_public_dispatch_cannot_use_self_asserted_native_evidence[proof2]",
+      "test_boundary_parent.py::test_started_ordinary_operation_cannot_substitute_launcher_pn_contract[interrupted-outcome]",
+      "test_boundary_parent.py::test_started_ordinary_operation_cannot_substitute_launcher_pn_contract[missing-failed-outcome]",
+      "test_boundary_parent.py::test_started_ordinary_operation_cannot_substitute_launcher_pn_contract[no-launch-capability]",
+      "test_boundary_parent.py::test_started_ordinary_operation_cannot_substitute_launcher_pn_contract[ordinary-executor]",
+      "test_boundary_parent.py::test_started_ordinary_operation_cannot_substitute_launcher_pn_contract[two-slot-capacity]",
+      "test_event_store_functional_split.py::test_agent_loop_delegation_preserves_existing_callbacks",
+      "test_event_store_functional_split.py::test_authoritative_coordinator_preserves_domain_and_event_order",
+      "test_event_store_functional_split.py::test_authoritative_domain_functions_are_real_owners",
+      "test_event_store_functional_split.py::test_commit_uses_one_connection_and_preserves_validator_order",
+      "test_event_store_functional_split.py::test_domain_validator_facade_hooks_delegate_without_new_snapshot",
+      "test_event_store_functional_split.py::test_event_store_facade_delegates_with_the_same_store",
+      "test_event_store_functional_split.py::test_extracted_backend_and_empty_views_keep_existing_behavior",
+      "test_event_store_functional_split.py::test_extracted_domain_failure_rolls_back_commit",
+      "test_event_store_functional_split.py::test_indexed_event_bounds_and_idempotency_prefix_preserve_facts",
+      "test_event_store_functional_split.py::test_net_lineage_facade_preserves_explicit_sqlite_snapshot",
+      "test_event_store_functional_split.py::test_proposal_context_reuses_one_snapshot_local_visibility_cache",
+      "test_event_store_functional_split.py::test_publish_batch_facade_delegates_complete_command",
+      "test_event_store_functional_split.py::test_transaction_validation_context_has_snapshot_state_only",
+      "test_event_store_functional_split.py::test_validator_failure_rolls_back_transaction_and_outbox",
+      "test_event_store_functional_split.py::test_view_types_keep_one_identity_across_compatibility_paths",
+      "test_invocation_functional_boundary.py::test_context_dto_decoders_delegate_without_changing_type_identity",
+      "test_invocation_functional_boundary.py::test_functional_modules_reject_dynamic_facade_global_loading",
+      "test_invocation_functional_boundary.py::test_invocation_facade_preserves_type_identity_and_delegates",
+      "test_invocation_functional_boundary.py::test_terminal_facade_does_not_take_transaction_ownership",
+      "test_invocation_functional_boundary.py::test_transaction_ownership_stays_in_functional_implementations",
+      "test_operation_functional_split.py::test_operation_components_keep_transaction_ownership_with_callers",
+      "test_parent_child_core.py::test_acceptance_direct_exact_replay_requires_native_boundary",
+      "test_parent_child_core.py::test_bound_origin_true_admission_start_success",
+      "test_parent_child_core.py::test_bound_registered_completion_then_one_success_without_remint",
+      "test_parent_child_core.py::test_child_direct_closed_authority_cannot_revive",
+      "test_parent_child_core.py::test_child_first_start_and_admission_replay_after_durable_stop_rejected",
+      "test_parent_child_core.py::test_child_initial_adoption_replay_and_successor_rejection",
+      "test_parent_child_core.py::test_child_missing_origin_arc_rejected_at_original_adoption",
+      "test_parent_child_core.py::test_child_no_writable_reentry_zero_epoch_change",
+      "test_parent_child_core.py::test_child_origin_cannot_be_cloned_by_raw_transaction",
+      "test_parent_child_core.py::test_child_started_completion_keeps_draining_without_durable_stop",
+      "test_parent_child_core.py::test_generic_raw_transaction_cannot_mint_protected_capability",
+      "test_parent_child_core.py::test_intent_replay_rechecks_live_entry_before_exact_replay[new_writer]",
+      "test_parent_child_core.py::test_intent_replay_rechecks_live_entry_before_exact_replay[stop]",
+      "test_parent_child_core.py::test_no_native_evidence_constructor_or_json_permission",
+      "test_parent_child_core.py::test_parent_commit_rejects_mutated_native_closure[generation]",
+      "test_parent_child_core.py::test_parent_commit_rejects_mutated_native_closure[lease]",
+      "test_parent_child_core.py::test_parent_commit_rejects_mutated_native_closure[material]",
+      "test_parent_child_core.py::test_parent_commit_rejects_mutated_native_closure[parent_run]",
+      "test_parent_child_core.py::test_parent_commit_rejects_mutated_native_closure[slot]",
+      "test_parent_child_core.py::test_parent_commit_rejects_mutated_native_closure[start_id]",
+      "test_parent_child_core.py::test_parent_commit_rejects_mutated_native_closure[target]",
+      "test_parent_child_core.py::test_parent_pn_declared_prerequisites_not_host_flags[values0]",
+      "test_parent_child_core.py::test_parent_pn_declared_prerequisites_not_host_flags[values1]",
+      "test_parent_child_core.py::test_parent_pn_declared_prerequisites_not_host_flags[values2]",
+      "test_parent_child_core.py::test_parent_pn_declared_prerequisites_not_host_flags[values3]",
+      "test_parent_child_core.py::test_parent_start_payload_is_fully_rechecked",
+      "test_parent_child_core.py::test_parent_unknown_completion_cannot_release_slot",
+      "test_parent_child_core.py::test_protected_weak_edges_rejected_before_commit[parent_bound_bootstrap/v1]",
+      "test_parent_child_core.py::test_protected_weak_edges_rejected_before_commit[parent_bound_origin/v1]",
+      "test_parent_child_core.py::test_protocol_marker_pair_required_and_bound_schema_not_public",
+      "test_parent_child_core.py::test_real_parent_causal_chain_is_provisional",
+      "test_registered_operation_recovery.py::test_completion_record_is_idempotent_and_rejects_changed_output_material",
+      "test_registered_operation_recovery.py::test_declared_host_effect_completion_fails_closed_before_writer",
+      "test_registered_operation_recovery.py::test_empty_writer_epoch_gap_does_not_strand_exact_completion",
+      "test_registered_operation_recovery.py::test_exact_completion_recovers_once_without_executor_and_fences_old_writer",
+      "test_registered_operation_recovery.py::test_later_writer_fact_invalidates_stale_completion",
+      "test_registered_operation_recovery.py::test_nested_host_failure_is_not_a_parent_operation_terminal_conflict",
+      "test_registered_operation_recovery.py::test_registration_mismatch_fails_before_writer_and_correct_retry_recovers",
+      "test_registered_operation_recovery.py::test_resume_rejects_active_firing_without_completion_before_writer_bump",
+      "test_registered_operation_recovery.py::test_stale_empty_interruption_requires_one_use_reopen_authorization",
+      "test_static_lease_exact_selection.py::test_exact_valid_later_carrier_is_not_rejected_by_dead_default_binding",
+      "test_static_lease_interactions.py::test_ordinary_read_without_any_lease_arc_keeps_consume_return[control]",
+      "test_static_lease_interactions.py::test_ordinary_read_without_any_lease_arc_keeps_consume_return[data]",
+      "test_static_lease_interactions.py::test_removing_static_arc_adopts_after_drain_and_maps_lease_authority",
+      "test_static_lease_interactions.py::test_static_and_variable_reads_share_exact_reference_union[different-pools-legacy-variable-only]",
+      "test_static_lease_interactions.py::test_static_and_variable_reads_share_exact_reference_union[different-pools-static-and-variable]",
+      "test_static_lease_interactions.py::test_static_and_variable_reads_share_exact_reference_union[same-token-deduplicated-legacy-variable-only]",
+      "test_static_lease_interactions.py::test_static_and_variable_reads_share_exact_reference_union[same-token-deduplicated-static-and-variable]",
+      "test_static_lease_interactions.py::test_static_read_can_select_another_token_beside_same_pool_variable_read",
+      "test_static_lease_interactions.py::test_static_read_does_not_authorize_reset_of_lease_pool",
+      "test_static_lease_interactions.py::test_static_read_does_not_change_legal_variable_edit_consume_return[legacy-variable-only]",
+      "test_static_lease_interactions.py::test_static_read_does_not_change_legal_variable_edit_consume_return[static-and-variable]",
+      "test_static_lease_interactions.py::test_static_read_does_not_change_variable_produce_consume_return[legacy-variable-only]",
+      "test_static_lease_interactions.py::test_static_read_does_not_change_variable_produce_consume_return[static-and-variable]",
+      "test_static_lease_interactions.py::test_static_reference_still_blocks_immediate_graph_replacement",
+      "test_static_lease_interactions.py::test_static_reference_survives_declared_reset_effect_settlement",
+      "test_static_lease_interactions.py::test_static_weight_one_rejects_two_unrelated_same_pool_references",
+      "test_static_lease_reads.py::test_completion_recovery_preserves_static_reference",
+      "test_static_lease_reads.py::test_direct_admission_rejects_invalid_reference_claim[consume_reference]",
+      "test_static_lease_reads.py::test_direct_admission_rejects_invalid_reference_claim[duplicate]",
+      "test_static_lease_reads.py::test_direct_admission_rejects_invalid_reference_claim[foreign]",
+      "test_static_lease_reads.py::test_direct_admission_rejects_invalid_reference_claim[missing]",
+      "test_static_lease_reads.py::test_direct_admission_rejects_invalid_reference_claim[missing_consume]",
+      "test_static_lease_reads.py::test_direct_admission_rejects_invalid_reference_claim[wrong_logical]",
+      "test_static_lease_reads.py::test_extra_static_reference_is_rejected_instead_of_widening_read",
+      "test_static_lease_reads.py::test_ordinary_read_still_consumes_and_returns[False]",
+      "test_static_lease_reads.py::test_ordinary_read_still_consumes_and_returns[True]",
+      "test_static_lease_reads.py::test_parallel_same_transition_and_successor_reconstruction",
+      "test_static_lease_reads.py::test_reference_alone_does_not_authorize_dynamic_resource_access",
+      "test_static_lease_reads.py::test_reference_only_transition_is_finite_and_retained",
+      "test_static_lease_reads.py::test_static_lease_read_admits",
+      "test_static_lease_reads.py::test_static_read_full_lifecycle_preserves_exact_token[False]",
+      "test_static_lease_reads.py::test_static_read_full_lifecycle_preserves_exact_token[True]",
+      "test_static_lease_reads.py::test_transaction_revalidates_claim_beyond_public_api[empty_consumed]",
+      "test_static_lease_reads.py::test_transaction_revalidates_claim_beyond_public_api[missing_reference_index]",
+      "test_static_lease_reads.py::test_transaction_revalidates_claim_beyond_public_api[wrong_logical]",
+      "test_static_lease_reads.py::test_two_transitions_share_reference_with_independent_control_inputs",
+      "test_static_lease_reads.py::test_weighted_references_require_exact_declared_quantity"
+    ],
+    "author_evidence": [
+      {
+        "path": "evidence/final21.xml",
+        "sha256": "b523be777524a5f7237a6d42ba71b85fef83488351a43d453604427590b245ee"
+      },
+      {
+        "path": "evidence/final21.log",
+        "sha256": "4892d0d802306f7f14efbaeba79fb8f79aa6b7850de8318a71f6896c31f70664"
+      },
+      {
+        "path": "evidence/final21-result.json",
+        "sha256": "95d45e699cbd6f12600d94b1e636bc805531c5e1aecf13cf95f55fb5c4d9aa20"
+      },
+      {
+        "path": "evidence/final21-source-before.json",
+        "sha256": "91e1960d47882d049002aff5ecedeeac4c81a11b96eb38ae38ff09658702b1e0"
+      },
+      {
+        "path": "evidence/final21-source-after.json",
+        "sha256": "91e1960d47882d049002aff5ecedeeac4c81a11b96eb38ae38ff09658702b1e0"
+      }
+    ],
+    "independent_evidence": [
+      {
+        "path": "FINAL_V2_RESULTS.json",
+        "sha256": "ed3b51ad4fac469934d09de785d00163b9930c14b22fed3273cf102cf949fc31"
+      },
+      {
+        "path": "final-v2.xml",
+        "sha256": "80cd881d15b13496992728fbd6980b03465fd940baa78829e104df93b2ad250b"
+      },
+      {
+        "path": "final-v2.log",
+        "sha256": "3775220402e892ed30d5f5e8b728053ea7d9c6fb187a7cd39cb7367d6d25df76"
+      },
+      {
+        "path": "FINAL_V2_SOURCE_BEFORE.json",
+        "sha256": "91e1960d47882d049002aff5ecedeeac4c81a11b96eb38ae38ff09658702b1e0"
+      },
+      {
+        "path": "FINAL_V2_SOURCE_AFTER.json",
+        "sha256": "91e1960d47882d049002aff5ecedeeac4c81a11b96eb38ae38ff09658702b1e0"
+      }
+    ]
+  },
+  "historical_result_windows": [
+    {
+      "path": "FINAL_EXTRA_EDGE_RESULTS.json",
+      "sha256": "4cdb1d85988ba8cf703df3749bdde57074acc3e7f91a349f71e6691e62c5856c",
+      "source": "/workspace/scratch/18c810e6dd59/rpnh-parent-child-core-boundary-review/final-source",
+      "exit_status": 0,
+      "collected": 1,
+      "distinct_collected": 1,
+      "passed_call": 1,
+      "failed_reports": [],
+      "sentinel_blocked_events": [],
+      "credited_as_final": false
+    },
+    {
+      "path": "FINAL_PROSPECTIVE_RESULTS.json",
+      "sha256": "39dc41b10eba378b88833e84eb0110de2145cf99c101cd16000a8ade5bc2dce3",
+      "source": "/workspace/scratch/18c810e6dd59/rpnh-parent-child-core-boundary-review/final-source",
+      "exit_status": 1,
+      "collected": 1,
+      "distinct_collected": 1,
+      "passed_call": 0,
+      "failed_reports": [
+        {
+          "nodeid": "rpnh-parent-child-core-boundary-review/tests/test_boundary_finalize.py::test_prospective_protected_lifetime_fails_before_commit",
+          "when": "call",
+          "outcome": "failed",
+          "duration": 3.4477547030037385
+        }
+      ],
+      "sentinel_blocked_events": [],
+      "credited_as_final": false
+    },
+    {
+      "path": "FINAL_RERUN_RESULTS.json",
+      "sha256": "2b0f672f4ff818a9c0496c75c3d3da1efabac0ed5fa1f0ad42ff2b48435ab209",
+      "source": "/workspace/scratch/18c810e6dd59/rpnh-parent-child-core-boundary-review/final-source",
+      "exit_status": 0,
+      "collected": 45,
+      "distinct_collected": 45,
+      "passed_call": 45,
+      "failed_reports": [],
+      "sentinel_blocked_events": [],
+      "credited_as_final": false
+    },
+    {
+      "path": "FINAL_REVIEWER_RESULTS.json",
+      "sha256": "2fbfc8618fdc4890786946d3cc384922fdf9428388db4d4b4ef22ac917503e55",
+      "source": "/workspace/scratch/18c810e6dd59/rpnh-parent-child-core-boundary-review/final-source",
+      "exit_status": 0,
+      "collected": 38,
+      "distinct_collected": 38,
+      "passed_call": 38,
+      "failed_reports": [],
+      "sentinel_blocked_events": [],
+      "credited_as_final": false
+    },
+    {
+      "path": "FINAL_V2_RESULTS.json",
+      "sha256": "ed3b51ad4fac469934d09de785d00163b9930c14b22fed3273cf102cf949fc31",
+      "source": "/workspace/scratch/18c810e6dd59/rpnh-parent-child-core-boundary-review/final-source-v2",
+      "exit_status": 0,
+      "collected": 85,
+      "distinct_collected": 85,
+      "passed_call": 85,
+      "failed_reports": [],
+      "sentinel_blocked_events": [],
+      "credited_as_final": true
+    },
+    {
+      "path": "ROUND1_PARENT_CORRECTED_RESULTS.json",
+      "sha256": "eb39bc2b8592c4760b570c25e38752bf9aa9184d3527620aca7ded86f9c4f116",
+      "source": "/workspace/scratch/18c810e6dd59/rpnh-parent-child-core-boundary-review/round1-source",
+      "exit_status": 1,
+      "collected": 19,
+      "distinct_collected": 19,
+      "passed_call": 18,
+      "failed_reports": [
+        {
+          "nodeid": "rpnh-parent-child-core-boundary-review/tests/test_boundary_parent.py::test_intent_helper_replay_after_success_is_closed",
+          "when": "call",
+          "outcome": "failed",
+          "duration": 2.903552761003084
+        }
+      ],
+      "sentinel_blocked_events": [],
+      "credited_as_final": false
+    },
+    {
+      "path": "ROUND1_PARENT_RESULTS.json",
+      "sha256": "19643a0d3a8aa796f4b95bbca68a084bc85e68237a40d5ad98e20b744db9d370",
+      "source": "/workspace/scratch/18c810e6dd59/rpnh-parent-child-core-boundary-review/round1-source",
+      "exit_status": 1,
+      "collected": 19,
+      "distinct_collected": 19,
+      "passed_call": 17,
+      "failed_reports": [
+        {
+          "nodeid": "rpnh-parent-child-core-boundary-review/tests/test_boundary_parent.py::test_intent_helper_replay_after_products_is_closed",
+          "when": "call",
+          "outcome": "failed",
+          "duration": 2.3209401159983827
+        },
+        {
+          "nodeid": "rpnh-parent-child-core-boundary-review/tests/test_boundary_parent.py::test_started_ordinary_operation_cannot_substitute_launcher_pn_contract[two-slot-capacity]",
+          "when": "call",
+          "outcome": "failed",
+          "duration": 0.06274263399973279
+        }
+      ],
+      "sentinel_blocked_events": [],
+      "credited_as_final": false
+    },
+    {
+      "path": "ROUND2_CHILD_RESULTS.json",
+      "sha256": "e6406a7af55cc0f57f7aa80fc1812bfe7367dcc21a5eeb8e3b06f1026afec888",
+      "source": "/workspace/scratch/18c810e6dd59/rpnh-parent-child-core-boundary-review/round2-source",
+      "exit_status": 1,
+      "collected": 6,
+      "distinct_collected": 6,
+      "passed_call": 5,
+      "failed_reports": [
+        {
+          "nodeid": "rpnh-parent-child-core-boundary-review/tests/test_boundary_child.py::test_direct_same_writer_stopped_to_running_authority_is_rejected",
+          "when": "call",
+          "outcome": "failed",
+          "duration": 3.1714546250004787
+        }
+      ],
+      "sentinel_blocked_events": [],
+      "credited_as_final": false
+    },
+    {
+      "path": "ROUND2_STOP_START_RESULTS.json",
+      "sha256": "4b72d16cac362f5e76ff079e8193ea9a2dcff53f626488caed8ee4624552eadf",
+      "source": "/workspace/scratch/18c810e6dd59/rpnh-parent-child-core-boundary-review/round2-source",
+      "exit_status": 1,
+      "collected": 1,
+      "distinct_collected": 1,
+      "passed_call": 0,
+      "failed_reports": [
+        {
+          "nodeid": "rpnh-parent-child-core-boundary-review/tests/test_boundary_child.py::test_bound_first_business_start_after_durable_stop_is_rejected",
+          "when": "call",
+          "outcome": "failed",
+          "duration": 4.841024704001029
+        }
+      ],
+      "sentinel_blocked_events": [],
+      "credited_as_final": false
+    },
+    {
+      "path": "ROUND3_REPLAY_EXTRA_RESULTS.json",
+      "sha256": "eaf129e31dbc7cc90be74bac26c7e8b520fa42d6846b6797be10807bc1e59c91",
+      "source": "/workspace/scratch/18c810e6dd59/rpnh-parent-child-core-boundary-review/round3-source",
+      "exit_status": 0,
+      "collected": 5,
+      "distinct_collected": 5,
+      "passed_call": 5,
+      "failed_reports": [],
+      "sentinel_blocked_events": [],
+      "credited_as_final": false
+    },
+    {
+      "path": "ROUND3_REVIEWER_RESULTS.json",
+      "sha256": "26511481ee11374da8554d8b561be1b4ffc5cc2662621803e230b831209e766c",
+      "source": "/workspace/scratch/18c810e6dd59/rpnh-parent-child-core-boundary-review/round3-source",
+      "exit_status": 1,
+      "collected": 31,
+      "distinct_collected": 31,
+      "passed_call": 29,
+      "failed_reports": [
+        {
+          "nodeid": "rpnh-parent-child-core-boundary-review/tests/test_boundary_child.py::test_bound_first_business_start_after_durable_stop_is_rejected",
+          "when": "call",
+          "outcome": "failed",
+          "duration": 4.310260949001531
+        },
+        {
+          "nodeid": "rpnh-parent-child-core-boundary-review/tests/test_boundary_parent.py::test_intent_helper_replay_after_success_is_closed",
+          "when": "call",
+          "outcome": "failed",
+          "duration": 2.8170837639991078
+        }
+      ],
+      "sentinel_blocked_events": [],
+      "credited_as_final": false
+    },
+    {
+      "path": "ROUND3_WEAK_EDGE_CORRECTED_RESULTS.json",
+      "sha256": "65c05159b8298bc122c7efe27baf657d753cebea1e9212cc5337088371f2b8d0",
+      "source": "/workspace/scratch/18c810e6dd59/rpnh-parent-child-core-boundary-review/round3-source",
+      "exit_status": 1,
+      "collected": 2,
+      "distinct_collected": 2,
+      "passed_call": 0,
+      "failed_reports": [
+        {
+          "nodeid": "rpnh-parent-child-core-boundary-review/tests/test_boundary_child.py::test_prospective_protected_weak_edges_fail_before_commit[parent_bound_bootstrap/v1]",
+          "when": "call",
+          "outcome": "failed",
+          "duration": 2.6726585169963073
+        },
+        {
+          "nodeid": "rpnh-parent-child-core-boundary-review/tests/test_boundary_child.py::test_prospective_protected_weak_edges_fail_before_commit[parent_bound_origin/v1]",
+          "when": "call",
+          "outcome": "failed",
+          "duration": 2.7796215179987485
+        }
+      ],
+      "sentinel_blocked_events": [],
+      "credited_as_final": false
+    },
+    {
+      "path": "ROUND3_WEAK_EDGE_RESULTS.json",
+      "sha256": "90b993b271ef8a7bb3f5b625118e1988bc63c5565954d03cfd3a81e88f4e1909",
+      "source": "/workspace/scratch/18c810e6dd59/rpnh-parent-child-core-boundary-review/round3-source",
+      "exit_status": 1,
+      "collected": 2,
+      "distinct_collected": 2,
+      "passed_call": 0,
+      "failed_reports": [
+        {
+          "nodeid": "rpnh-parent-child-core-boundary-review/tests/test_boundary_child.py::test_prospective_protected_weak_edges_fail_before_commit[parent_bound_bootstrap/v1]",
+          "when": "call",
+          "outcome": "failed",
+          "duration": 3.0602948279993143
+        },
+        {
+          "nodeid": "rpnh-parent-child-core-boundary-review/tests/test_boundary_child.py::test_prospective_protected_weak_edges_fail_before_commit[parent_bound_origin/v1]",
+          "when": "call",
+          "outcome": "failed",
+          "duration": 3.197647622997465
+        }
+      ],
+      "sentinel_blocked_events": [],
+      "credited_as_final": false
+    }
+  ],
+  "snapshot_audit": [
+    {
+      "source": "round1-source",
+      "manifest": "ROUND1_SOURCE_MANIFEST.json",
+      "file_count": 992,
+      "aggregate_sha256": "12f6fd6106c1ac87336f0575e6c5618da25fd5c0f44c785cfc108bed060c03c7",
+      "mismatches": []
+    },
+    {
+      "source": "round2-source",
+      "manifest": "ROUND2_SOURCE_MANIFEST.json",
+      "file_count": 992,
+      "aggregate_sha256": "d51605369d9d04a8a9a6a995c5d0c05e496dd664c762d914f780d49c243004e3",
+      "mismatches": []
+    },
+    {
+      "source": "round3-source",
+      "manifest": "ROUND3_SOURCE_MANIFEST.json",
+      "file_count": 992,
+      "aggregate_sha256": "ebbe134e5b4b612a19c60cd0b99a382e4bf4d042b8df3d33956bda6b4534c6b2",
+      "mismatches": []
+    },
+    {
+      "source": "final-source",
+      "manifest": "FINAL_SOURCE_MANIFEST.json",
+      "file_count": 992,
+      "aggregate_sha256": "61421bd9fd2f389a164c54fbe6fc92086e3a9ff571367c888174782a51a3ca9d",
+      "mismatches": []
+    },
+    {
+      "source": "final-source-v2",
+      "manifest": "FINAL_V2_SOURCE_MANIFEST.json",
+      "file_count": 992,
+      "aggregate_sha256": "ac68327e442b7bda8a6aa2ba93c0cd20ad72181a661b0497627b08713334907e",
+      "mismatches": []
+    }
+  ],
+  "S1_input_recheck": {
+    "files_checked": 979,
+    "mismatches": [],
+    "source_identity_file_sha256": "b65249d3771c306773c6930d39323d019450f7c668e0f7d778c798b70278f753",
+    "patch_sha256": "bd0e2a8d362179fd68bd5451a932449f059b7038db16ca627eb84843f809bd4d"
+  },
+  "incomplete_windows": [
+    {
+      "path": "final-rerun.log",
+      "sha256": "3c2ba573911f514041a2ce1305997c3c2bdb52640281129eaec51c7c01ed02d8",
+      "status": "INTERRUPTED_WITHOUT_TERMINAL_RESULT",
+      "credited_pass_count": 0
+    }
+  ],
+  "evidence_files": [
+    {
+      "path": "FINAL_EXTRA_EDGE_RESULTS.json",
+      "size": 603,
+      "sha256": "4cdb1d85988ba8cf703df3749bdde57074acc3e7f91a349f71e6691e62c5856c"
+    },
+    {
+      "path": "FINAL_PROSPECTIVE_RESULTS.json",
+      "size": 577,
+      "sha256": "39dc41b10eba378b88833e84eb0110de2145cf99c101cd16000a8ade5bc2dce3"
+    },
+    {
+      "path": "FINAL_RERUN_RESULTS.json",
+      "size": 14483,
+      "sha256": "2b0f672f4ff818a9c0496c75c3d3da1efabac0ed5fa1f0ad42ff2b48435ab209"
+    },
+    {
+      "path": "FINAL_RERUN_SOURCE_AFTER.json",
+      "size": 178554,
+      "sha256": "602be670153d7b18cd08d28ec62464d786ae7d334645ae399f0937329a878075"
+    },
+    {
+      "path": "FINAL_RERUN_SOURCE_BEFORE.json",
+      "size": 178554,
+      "sha256": "602be670153d7b18cd08d28ec62464d786ae7d334645ae399f0937329a878075"
+    },
+    {
+      "path": "FINAL_REVIEWER_RESULTS.json",
+      "size": 15943,
+      "sha256": "2fbfc8618fdc4890786946d3cc384922fdf9428388db4d4b4ef22ac917503e55"
+    },
+    {
+      "path": "FINAL_SOURCE_MANIFEST.json",
+      "size": 178554,
+      "sha256": "602be670153d7b18cd08d28ec62464d786ae7d334645ae399f0937329a878075"
+    },
+    {
+      "path": "FINAL_SOURCE_VERIFICATION.json",
+      "size": 504,
+      "sha256": "96c2ed001a9df7e2632fd4739235e7f302f4420e4e1453bfdebc3e6e86b57479"
+    },
+    {
+      "path": "FINAL_V2_RESULTS.json",
+      "size": 35967,
+      "sha256": "ed3b51ad4fac469934d09de785d00163b9930c14b22fed3273cf102cf949fc31"
+    },
+    {
+      "path": "FINAL_V2_SOURCE_AFTER.json",
+      "size": 178554,
+      "sha256": "91e1960d47882d049002aff5ecedeeac4c81a11b96eb38ae38ff09658702b1e0"
+    },
+    {
+      "path": "FINAL_V2_SOURCE_BEFORE.json",
+      "size": 178554,
+      "sha256": "91e1960d47882d049002aff5ecedeeac4c81a11b96eb38ae38ff09658702b1e0"
+    },
+    {
+      "path": "FINAL_V2_SOURCE_MANIFEST.json",
+      "size": 178554,
+      "sha256": "91e1960d47882d049002aff5ecedeeac4c81a11b96eb38ae38ff09658702b1e0"
+    },
+    {
+      "path": "FINAL_V2_SOURCE_VERIFICATION.json",
+      "size": 524,
+      "sha256": "c8a5730829293846117a57c984dc6f8dadf95657ed97de77055565d690351170"
+    },
+    {
+      "path": "INPUT_AUDIT.json",
+      "size": 539,
+      "sha256": "63d85d27c1d91afdee1d0334adf3af73ad4dd97131d2951aa0b5a0744b4984e6"
+    },
+    {
+      "path": "JOINT_FINAL_COUNTS.json",
+      "size": 20742,
+      "sha256": "2402e6c003169469b58cecfee3acf052591f5aa2b999cb5c072b91381d793348"
+    },
+    {
+      "path": "REVIEW_PLAN.md",
+      "size": 4377,
+      "sha256": "da538afba986eb31cca85157ca342efd7549b10e9d25428ea72adf740c111c05"
+    },
+    {
+      "path": "ROUND1_PARENT_CORRECTED_RESULTS.json",
+      "size": 8189,
+      "sha256": "eb39bc2b8592c4760b570c25e38752bf9aa9184d3527620aca7ded86f9c4f116"
+    },
+    {
+      "path": "ROUND1_PARENT_RESULTS.json",
+      "size": 8196,
+      "sha256": "19643a0d3a8aa796f4b95bbca68a084bc85e68237a40d5ad98e20b744db9d370"
+    },
+    {
+      "path": "ROUND1_SOURCE_MANIFEST.json",
+      "size": 178567,
+      "sha256": "a06c511da7f7d4e91638377f46a902befa3d81e96225a8edee37fb49915fa077"
+    },
+    {
+      "path": "ROUND2_CHILD_RESULTS.json",
+      "size": 2524,
+      "sha256": "e6406a7af55cc0f57f7aa80fc1812bfe7367dcc21a5eeb8e3b06f1026afec888"
+    },
+    {
+      "path": "ROUND2_SOURCE_MANIFEST.json",
+      "size": 178567,
+      "sha256": "7e9f265650271b7d6d1883d78baf6d5bbbc97aec865a7ce41fa754fb2a93413b"
+    },
+    {
+      "path": "ROUND2_STOP_START_RESULTS.json",
+      "size": 585,
+      "sha256": "4b72d16cac362f5e76ff079e8193ea9a2dcff53f626488caed8ee4624552eadf"
+    },
+    {
+      "path": "ROUND3_REPLAY_EXTRA_RESULTS.json",
+      "size": 2236,
+      "sha256": "eaf129e31dbc7cc90be74bac26c7e8b520fa42d6846b6797be10807bc1e59c91"
+    },
+    {
+      "path": "ROUND3_REVIEWER_RESULTS.json",
+      "size": 12985,
+      "sha256": "26511481ee11374da8554d8b561be1b4ffc5cc2662621803e230b831209e766c"
+    },
+    {
+      "path": "ROUND3_SOURCE_MANIFEST.json",
+      "size": 178568,
+      "sha256": "3b2b6766fb77c1b3d83c20a47eac110754ed429f2e26b3608a7b9b0230ff01c6"
+    },
+    {
+      "path": "ROUND3_WEAK_EDGE_CORRECTED_RESULTS.json",
+      "size": 1053,
+      "sha256": "65c05159b8298bc122c7efe27baf657d753cebea1e9212cc5337088371f2b8d0"
+    },
+    {
+      "path": "ROUND3_WEAK_EDGE_RESULTS.json",
+      "size": 1052,
+      "sha256": "90b993b271ef8a7bb3f5b625118e1988bc63c5565954d03cfd3a81e88f4e1909"
+    },
+    {
+      "path": "build_final_audit.py",
+      "size": 8927,
+      "sha256": "4a49cae227251e27f8614213975f13500779961bb3295792b581367ad338059b"
+    },
+    {
+      "path": "final-extra-edge.log",
+      "size": 651,
+      "sha256": "d97e858cb9baf7adb731a9e6ee147ff445172a6048138aa658d353e1aeae1f11"
+    },
+    {
+      "path": "final-extra-edge.xml",
+      "size": 429,
+      "sha256": "e0b5c723dfb09a5438031cc7af3b1ccefad54831549be0b99c7e72d1cd8ae833"
+    },
+    {
+      "path": "final-prospective.log",
+      "size": 2886,
+      "sha256": "c11b5adac4e8fb864c6a58bffd05b70bf0f820f7ae460161d877605973ff8fb9"
+    },
+    {
+      "path": "final-prospective.xml",
+      "size": 2618,
+      "sha256": "e4c833435857f881e5af0dbfda280d4a47f65579a12399797af90a28bb858766"
+    },
+    {
+      "path": "final-rerun-completed.log",
+      "size": 7867,
+      "sha256": "f49fcc62127809520d982df2e10f2d5a7b99fb4ebc3a0c8458f7f8d598bb4f15"
+    },
+    {
+      "path": "final-rerun-completed.xml",
+      "size": 6394,
+      "sha256": "59db68f0a932d906f951b081cb9830faf53b52668b0e9e45a9d2548a74bb366a"
+    },
+    {
+      "path": "final-rerun.log",
+      "size": 18,
+      "sha256": "3c2ba573911f514041a2ce1305997c3c2bdb52640281129eaec51c7c01ed02d8"
+    },
+    {
+      "path": "final-reviewer.log",
+      "size": 111,
+      "sha256": "f160c96208588258a381163ed7ade1cee3ac778a3a6edf9033a157ac08255648"
+    },
+    {
+      "path": "final-v2.log",
+      "size": 14271,
+      "sha256": "3775220402e892ed30d5f5e8b728053ea7d9c6fb187a7cd39cb7367d6d25df76"
+    },
+    {
+      "path": "final-v2.xml",
+      "size": 16243,
+      "sha256": "80cd881d15b13496992728fbd6980b03465fd940baa78829e104df93b2ad250b"
+    },
+    {
+      "path": "round1-parent-corrected.log",
+      "size": 2598,
+      "sha256": "ce8ba1a0edc7962cfee590805a4509472046e653bd8218967919febfdd3d2fdc"
+    },
+    {
+      "path": "round1-parent.log",
+      "size": 2593,
+      "sha256": "b54d04ab07aa1cb978fdf02cefd01d1eb3ab6beb168b8f09d1d526f648f96884"
+    },
+    {
+      "path": "round2-child.log",
+      "size": 799,
+      "sha256": "001b93aee50171857e0a90bfba1c6a81147c22ba8741f6da579ddbd1a838b7fd"
+    },
+    {
+      "path": "round2-stop-start.log",
+      "size": 843,
+      "sha256": "a7ec70097376718cb0eea68165a4d45e4a10fb01c039bd07f0e0a1606bbdeb8e"
+    },
+    {
+      "path": "round3-replay-extra.log",
+      "size": 114,
+      "sha256": "d1f90b7d429dc8d4c1805e8221e87924be62c46ef16ac25918b2bdeaa3b173a0"
+    },
+    {
+      "path": "round3-reviewer.log",
+      "size": 4662,
+      "sha256": "f7f789deae23969ee45d1e9796e5b5c8801b7d1c4dff8821843c7f80e4949b00"
+    },
+    {
+      "path": "round3-weak-edge-corrected.log",
+      "size": 1703,
+      "sha256": "b4c8b04630f6ce7e25858e6e225a0d1476d9ef133205acc620d731c22827aa54"
+    },
+    {
+      "path": "round3-weak-edge.log",
+      "size": 4327,
+      "sha256": "26fdaf89d7abdf9003f312aa63a804651530d00ed21adff740a2f5bb714f6a83"
+    },
+    {
+      "path": "run_d0.py",
+      "size": 2177,
+      "sha256": "1f6f4ffaca177220c42cc51a8b3468656786733ac0bf4500712b9e9769087bbc"
+    },
+    {
+      "path": "tests/test_boundary_child.py",
+      "size": 14761,
+      "sha256": "e6164951a5a4046fd69aa7a56d772c60dc00c5589c2a959cb6d652917b6de4b2"
+    },
+    {
+      "path": "tests/test_boundary_finalize.py",
+      "size": 3579,
+      "sha256": "7d54eac82d7790bf00d9162c92efb9606a39df8220ee156eea3bf175c5f5ce2f"
+    },
+    {
+      "path": "tests/test_boundary_parent.py",
+      "size": 5755,
+      "sha256": "2d2913f0a6528b42f09926050eb4c39f6ae4eb805ccdd673c36a4e28246f44c1"
+    },
+    {
+      "path": "historical-source-deltas/README.md",
+      "size": 467,
+      "sha256": "bbcf0b51e3933049294cef72fba7bb019c526b6b6f6173f9262a31645cddd391"
+    },
+    {
+      "path": "historical-source-deltas/final-source/RESTORE.json",
+      "size": 374,
+      "sha256": "32d312526a473604e21956a964ca1ec0c47254f874d6aaa0f20cb10feddbdfb4"
+    },
+    {
+      "path": "historical-source-deltas/final-source/overlay/cpn/rpnh/registry/parent_bound.py",
+      "size": 32704,
+      "sha256": "f4187e749a84053243ccab2f851fbabecd3259c0e0b67f4c0ff1638b4e30efa6"
+    },
+    {
+      "path": "historical-source-deltas/round1-source/RESTORE.json",
+      "size": 1078,
+      "sha256": "4e790c5e4babea8486c7c179058c3f67f37c81969680eafe521421b537ff6ecd"
+    },
+    {
+      "path": "historical-source-deltas/round1-source/overlay/cpn/rpnh/registry/_event_store/commit.py",
+      "size": 95158,
+      "sha256": "54435c76645e1dbd93da04ca9a615a7c77ec8e334a18ff17dcdd2fef2d389fa2"
+    },
+    {
+      "path": "historical-source-deltas/round1-source/overlay/cpn/rpnh/registry/_event_store/validation/operation.py",
+      "size": 103752,
+      "sha256": "98e6371a86d635399b3eec3fc3b27b3186e61f8ae193adb3abe547b978835cd8"
+    },
+    {
+      "path": "historical-source-deltas/round1-source/overlay/cpn/rpnh/registry/_invocation/admission.py",
+      "size": 32852,
+      "sha256": "b3c077d6ee3deb6d8942c871fa9c226c1a840a5dffb14a1020c0df7375c66615"
+    },
+    {
+      "path": "historical-source-deltas/round1-source/overlay/cpn/rpnh/registry/_invocation/execution.py",
+      "size": 12002,
+      "sha256": "641feec9ba101e8f22cdcac46c87d2d6b3073d9e9d4f368bbcb5167df4778f14"
+    },
+    {
+      "path": "historical-source-deltas/round1-source/overlay/cpn/rpnh/registry/_module_resource_projection.py",
+      "size": 14363,
+      "sha256": "9d7ff574ca08777471904795abd50e2cb188e8151f100e321d6e86499cf4dab1"
+    },
+    {
+      "path": "historical-source-deltas/round1-source/overlay/cpn/rpnh/registry/module_binding_authority.py",
+      "size": 6612,
+      "sha256": "8f81f52c4cc95c553bf5980f3cf6ee675b54f3fa44bd4281d264bac451c61475"
+    },
+    {
+      "path": "historical-source-deltas/round1-source/overlay/cpn/rpnh/registry/module_execution.py",
+      "size": 12098,
+      "sha256": "d15b49bc534b96749e24ef1daf9fec9cee731598033ea63dc8186fc76372ceaf"
+    },
+    {
+      "path": "historical-source-deltas/round1-source/overlay/cpn/rpnh/registry/module_nets.py",
+      "size": 20368,
+      "sha256": "26c18947bfad824d768325677d6f684c0e14440a1bc0fd1f9874853eecdb9437"
+    },
+    {
+      "path": "historical-source-deltas/round1-source/overlay/cpn/rpnh/registry/operation_execution.py",
+      "size": 11915,
+      "sha256": "81f60672de80e49cc8c817310a0931ca59565983d5c4571c67a7398bd2dbb45b"
+    },
+    {
+      "path": "historical-source-deltas/round1-source/overlay/cpn/rpnh/registry/parent_bound.py",
+      "size": 24261,
+      "sha256": "ad4c567f7f72279e6b1d69776a6cb10ac7a327286ac414e3b1ac9686c0601e08"
+    },
+    {
+      "path": "historical-source-deltas/round1-source/overlay/cpn/rpnh/registry/parent_child.py",
+      "size": 34234,
+      "sha256": "0af74a028674ce4ca109bcaaafed83b50f1645e214c6cb160feffb7f9e0a9d51"
+    },
+    {
+      "path": "historical-source-deltas/round1-source/overlay/cpn/schemas/registry_v1/parent_bound_bootstrap.v1.schema.json",
+      "size": 3868,
+      "sha256": "8d5aaf49d90ef13d99a8bb2b6bbd40e2b6a297713a8d78006b0082cd17a25bb3"
+    },
+    {
+      "path": "historical-source-deltas/round1-source/overlay/cpn/schemas/rpnh/parent_origin_capability.v1.schema.json",
+      "size": 2854,
+      "sha256": "606359275e5bce4225e63f13ed85459652aa0a8f3dc8e2dd09a60607f38366fb"
+    },
+    {
+      "path": "historical-source-deltas/round1-source/overlay/tests/parent_child_fixtures.py",
+      "size": 10994,
+      "sha256": "d21834e7550acda593565b7ab817e0a0138a06d4a0897cb1ed3f031925043e61"
+    },
+    {
+      "path": "historical-source-deltas/round1-source/overlay/tests/test_parent_child_core.py",
+      "size": 1815,
+      "sha256": "1e1451e6f00cba613f30955841d40cf0342c1864986cf48cb0d301d068b7dec6"
+    },
+    {
+      "path": "historical-source-deltas/round2-source/RESTORE.json",
+      "size": 929,
+      "sha256": "b1ed3d3492204522fb619121ab93c28ff92315484580e2dd79d80b6dd0bb44a2"
+    },
+    {
+      "path": "historical-source-deltas/round2-source/overlay/cpn/rpnh/registry/_event_store/commit.py",
+      "size": 95158,
+      "sha256": "54435c76645e1dbd93da04ca9a615a7c77ec8e334a18ff17dcdd2fef2d389fa2"
+    },
+    {
+      "path": "historical-source-deltas/round2-source/overlay/cpn/rpnh/registry/_event_store/validation/operation.py",
+      "size": 103752,
+      "sha256": "98e6371a86d635399b3eec3fc3b27b3186e61f8ae193adb3abe547b978835cd8"
+    },
+    {
+      "path": "historical-source-deltas/round2-source/overlay/cpn/rpnh/registry/_invocation/admission.py",
+      "size": 32852,
+      "sha256": "b3c077d6ee3deb6d8942c871fa9c226c1a840a5dffb14a1020c0df7375c66615"
+    },
+    {
+      "path": "historical-source-deltas/round2-source/overlay/cpn/rpnh/registry/_invocation/execution.py",
+      "size": 12002,
+      "sha256": "641feec9ba101e8f22cdcac46c87d2d6b3073d9e9d4f368bbcb5167df4778f14"
+    },
+    {
+      "path": "historical-source-deltas/round2-source/overlay/cpn/rpnh/registry/module_execution.py",
+      "size": 12098,
+      "sha256": "d15b49bc534b96749e24ef1daf9fec9cee731598033ea63dc8186fc76372ceaf"
+    },
+    {
+      "path": "historical-source-deltas/round2-source/overlay/cpn/rpnh/registry/operation_execution.py",
+      "size": 11915,
+      "sha256": "81f60672de80e49cc8c817310a0931ca59565983d5c4571c67a7398bd2dbb45b"
+    },
+    {
+      "path": "historical-source-deltas/round2-source/overlay/cpn/rpnh/registry/parent_bound.py",
+      "size": 24057,
+      "sha256": "0b1c5c1209a851afc11f4c76f85b0e17d77a31c991d4b2ff427a6bff68e678e3"
+    },
+    {
+      "path": "historical-source-deltas/round2-source/overlay/cpn/rpnh/registry/parent_child.py",
+      "size": 34234,
+      "sha256": "0af74a028674ce4ca109bcaaafed83b50f1645e214c6cb160feffb7f9e0a9d51"
+    },
+    {
+      "path": "historical-source-deltas/round2-source/overlay/cpn/schemas/registry_v1/parent_bound_bootstrap.v1.schema.json",
+      "size": 3868,
+      "sha256": "8d5aaf49d90ef13d99a8bb2b6bbd40e2b6a297713a8d78006b0082cd17a25bb3"
+    },
+    {
+      "path": "historical-source-deltas/round2-source/overlay/cpn/schemas/rpnh/parent_origin_capability.v1.schema.json",
+      "size": 2854,
+      "sha256": "606359275e5bce4225e63f13ed85459652aa0a8f3dc8e2dd09a60607f38366fb"
+    },
+    {
+      "path": "historical-source-deltas/round2-source/overlay/tests/parent_child_fixtures.py",
+      "size": 10994,
+      "sha256": "d21834e7550acda593565b7ab817e0a0138a06d4a0897cb1ed3f031925043e61"
+    },
+    {
+      "path": "historical-source-deltas/round2-source/overlay/tests/test_parent_child_core.py",
+      "size": 1815,
+      "sha256": "1e1451e6f00cba613f30955841d40cf0342c1864986cf48cb0d301d068b7dec6"
+    },
+    {
+      "path": "historical-source-deltas/round3-source/RESTORE.json",
+      "size": 626,
+      "sha256": "850f3ca05e04a5bc7359cc5913f2442bfc2fc628193db84badd0270fda7ada1d"
+    },
+    {
+      "path": "historical-source-deltas/round3-source/overlay/cpn/rpnh/registry/parent_bound.py",
+      "size": 27026,
+      "sha256": "aeb36fe26169e0be2ebbc4653efd4b3cc9915ef278e4cdd18d2a3fbddd55a35a"
+    },
+    {
+      "path": "historical-source-deltas/round3-source/overlay/cpn/rpnh/registry/parent_child.py",
+      "size": 35929,
+      "sha256": "4d869624d8053f6898a2c5cd86266fcbb71955244042a7a7ede8e3507a828863"
+    },
+    {
+      "path": "historical-source-deltas/round3-source/overlay/cpn/schemas/registry_v1/parent_bound_bootstrap.v1.schema.json",
+      "size": 3868,
+      "sha256": "8d5aaf49d90ef13d99a8bb2b6bbd40e2b6a297713a8d78006b0082cd17a25bb3"
+    },
+    {
+      "path": "historical-source-deltas/round3-source/overlay/cpn/schemas/rpnh/parent_origin_capability.v1.schema.json",
+      "size": 2854,
+      "sha256": "606359275e5bce4225e63f13ed85459652aa0a8f3dc8e2dd09a60607f38366fb"
+    },
+    {
+      "path": "historical-source-deltas/round3-source/overlay/tests/parent_child_fixtures.py",
+      "size": 11149,
+      "sha256": "de17441fdfd2fd5531c06a094df2be00305b168580c8adb58f6a1ac6b2ef4408"
+    },
+    {
+      "path": "historical-source-deltas/round3-source/overlay/tests/test_parent_child_core.py",
+      "size": 13323,
+      "sha256": "a7e56dc32a59ad7104dc05d6bd905777899cb5a523f616ed8e5cceb42cbd49f2"
+    }
+  ]
+}

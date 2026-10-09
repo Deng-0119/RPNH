@@ -1,0 +1,25 @@
+{
+  "label": "resume-r1-independent-compiler",
+  "category": "offline",
+  "status": "FAIL",
+  "exit_code": 2,
+  "record": "<WORKSPACE>/task-complete-v5-20261009/stages/rsi/resume-r1-independent-compiler.json",
+  "before_identity": "<WORKSPACE>/task-complete-v5-20261009/stages/rsi/resume-r1-independent-compiler-before.identity.json",
+  "after_identity": "<WORKSPACE>/task-complete-v5-20261009/stages/rsi/resume-r1-independent-compiler-after.identity.json",
+  "source_before": {
+    "files": 3656,
+    "fingerprint": "f90a363b5e5677921b0f4de1dfe2c139388021f30b7801f72c292f142e6ed401"
+  },
+  "source_after": {
+    "files": 3656,
+    "fingerprint": "f90a363b5e5677921b0f4de1dfe2c139388021f30b7801f72c292f142e6ed401"
+  },
+  "source_unchanged": true,
+  "junit": "<WORKSPACE>/task-complete-v5-20261009/stages/rsi/resume-r1-independent-compiler.xml",
+  "junit_counts": {
+    "tests": 1,
+    "failures": 0,
+    "errors": 1,
+    "skipped": 0
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "command": [
+    "<WORKSPACE>/.p26/v/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "-p",
+    "no:cacheprovider",
+    "-o",
+    "junit_family=xunit1",
+    "--basetemp=<WORKSPACE>/.v26/txeffort-offline",
+    "--junitxml=<WORKSPACE>/task-complete-v5-20261009/stages/codex/effort-offline.xml",
+    "tests/test_codex_compat.py",
+    "tests/test_frontend_boundary.py",
+    "--deselect=tests/test_frontend_boundary.py::test_codex_frontend_uses_external_socket_for_absent_long_root",
+    "--deselect=tests/test_frontend_boundary.py::test_bridge_process_loads_rpnh_instructions_without_altering_registered_request"
+  ],
+  "cwd": "<WORKSPACE>/.v26/x2",
+  "pid": 14082,
+  "started_at_utc": "2026-10-09T01:18:51.884155+00:00",
+  "finished_at_utc": "2026-10-09T01:19:17.024674+00:00",
+  "elapsed_seconds": 24.48056990999612,
+  "exit_code": 0,
+  "environment": {
+    "PYTHONPATH": "<WORKSPACE>/.v26/x2",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1",
+    "TMPDIR": "<WORKSPACE>/.v26/tmp",
+    "PYTEST_ADDOPTS": null,
+    "PYTEST_PLUGINS": null
+  }
+}

@@ -1,0 +1,1056 @@
+{
+  "correct": [
+    {
+      "phase": "start",
+      "fixture": {
+        "turns": 2,
+        "pending_start": false
+      },
+      "profile": "candidate-0.161.0",
+      "source_fingerprint": "synthetic-fingerprint"
+    },
+    {
+      "phase": "request",
+      "id": 1,
+      "method": "thread/resume"
+    },
+    {
+      "phase": "response",
+      "id": 1,
+      "method": "thread/resume",
+      "thread_id": "77ed9d1a-0de8-59cb-8619-e0bf1f8d89c3",
+      "thread_status": {
+        "type": "idle"
+      },
+      "itemsBackwardsCursor": {
+        "token_sha256": "initial",
+        "cut_ordinal": 9,
+        "boundary_event": "event9",
+        "query": "items",
+        "order": "desc",
+        "view": null,
+        "position": [
+          2,
+          1,
+          true
+        ]
+      },
+      "turnsBackwardsCursor": {
+        "token_sha256": "turns",
+        "cut_ordinal": 9,
+        "boundary_event": "event9",
+        "query": "turns",
+        "order": "desc",
+        "view": "initial-unbound",
+        "position": [
+          2,
+          null,
+          true
+        ]
+      }
+    },
+    {
+      "phase": "request",
+      "id": 2,
+      "method": "thread/turns/list",
+      "limit": 5,
+      "order": "desc",
+      "view": "notLoaded",
+      "cursor_edge": {
+        "token_sha256": "turns",
+        "cut_ordinal": 9,
+        "boundary_event": "event9",
+        "query": "turns",
+        "order": "desc",
+        "view": "initial-unbound",
+        "position": [
+          2,
+          null,
+          true
+        ]
+      }
+    },
+    {
+      "phase": "response",
+      "id": 2,
+      "method": "thread/turns/list",
+      "count": 2,
+      "ids": [
+        "5685d7c3-d4eb-5860-b16d-0ae8b7d70b1f",
+        "55fc5296-f335-5442-9e97-5a5378dae52f"
+      ],
+      "nextCursor": null,
+      "backwardsCursor": {
+        "token_sha256": "turnsback",
+        "cut_ordinal": 9,
+        "boundary_event": "event9",
+        "query": "turns",
+        "order": "asc",
+        "view": "notLoaded",
+        "position": [
+          2,
+          null,
+          true
+        ]
+      }
+    },
+    {
+      "phase": "request",
+      "id": 3,
+      "method": "thread/items/list",
+      "limit": 2,
+      "order": "desc",
+      "cursor_edge": {
+        "token_sha256": "initial",
+        "cut_ordinal": 9,
+        "boundary_event": "event9",
+        "query": "items",
+        "order": "desc",
+        "view": null,
+        "position": [
+          2,
+          1,
+          true
+        ]
+      }
+    },
+    {
+      "phase": "response",
+      "id": 3,
+      "method": "thread/items/list",
+      "count": 2,
+      "ids": [
+        "a0596482-046d-5f24-b1d2-51e41d9527af",
+        "7e4250d9-13ab-5d5a-942c-fc19c8d518d3"
+      ],
+      "item_turn_ids": [
+        "5685d7c3-d4eb-5860-b16d-0ae8b7d70b1f",
+        "5685d7c3-d4eb-5860-b16d-0ae8b7d70b1f"
+      ],
+      "nextCursor": {
+        "token_sha256": "next",
+        "cut_ordinal": 9,
+        "boundary_event": "event9",
+        "query": "items",
+        "order": "desc",
+        "view": null,
+        "position": [
+          2,
+          0,
+          false
+        ]
+      },
+      "backwardsCursor": {
+        "token_sha256": "back",
+        "cut_ordinal": 9,
+        "boundary_event": "event9",
+        "query": "items",
+        "order": "asc",
+        "view": null,
+        "position": [
+          2,
+          1,
+          true
+        ]
+      }
+    },
+    {
+      "phase": "request",
+      "id": 4,
+      "method": "thread/items/list",
+      "limit": 2,
+      "order": "desc",
+      "cursor_edge": {
+        "token_sha256": "next",
+        "cut_ordinal": 9,
+        "boundary_event": "event9",
+        "query": "items",
+        "order": "desc",
+        "view": null,
+        "position": [
+          2,
+          0,
+          false
+        ]
+      }
+    },
+    {
+      "phase": "response",
+      "id": 4,
+      "method": "thread/items/list",
+      "count": 2,
+      "ids": [
+        "971b42a5-d078-5890-b071-9b829d101ed6",
+        "eb0f5e42-3c95-5ffb-b671-c63adcefdf0c"
+      ],
+      "item_turn_ids": [
+        "55fc5296-f335-5442-9e97-5a5378dae52f",
+        "55fc5296-f335-5442-9e97-5a5378dae52f"
+      ],
+      "nextCursor": null,
+      "backwardsCursor": {
+        "token_sha256": "back2",
+        "cut_ordinal": 9,
+        "boundary_event": "event9",
+        "query": "items",
+        "order": "asc",
+        "view": null,
+        "position": [
+          1,
+          1,
+          true
+        ]
+      }
+    },
+    {
+      "phase": "exit",
+      "exit_code": 0
+    }
+  ],
+  "wrong_request_cut_and_token": [
+    {
+      "phase": "start",
+      "fixture": {
+        "turns": 2,
+        "pending_start": false
+      },
+      "profile": "candidate-0.161.0",
+      "source_fingerprint": "synthetic-fingerprint"
+    },
+    {
+      "phase": "request",
+      "id": 1,
+      "method": "thread/resume"
+    },
+    {
+      "phase": "response",
+      "id": 1,
+      "method": "thread/resume",
+      "thread_id": "77ed9d1a-0de8-59cb-8619-e0bf1f8d89c3",
+      "thread_status": {
+        "type": "idle"
+      },
+      "itemsBackwardsCursor": {
+        "token_sha256": "initial",
+        "cut_ordinal": 9,
+        "boundary_event": "event9",
+        "query": "items",
+        "order": "desc",
+        "view": null,
+        "position": [
+          2,
+          1,
+          true
+        ]
+      },
+      "turnsBackwardsCursor": {
+        "token_sha256": "turns",
+        "cut_ordinal": 9,
+        "boundary_event": "event9",
+        "query": "turns",
+        "order": "desc",
+        "view": "initial-unbound",
+        "position": [
+          2,
+          null,
+          true
+        ]
+      }
+    },
+    {
+      "phase": "request",
+      "id": 2,
+      "method": "thread/turns/list",
+      "limit": 5,
+      "order": "desc",
+      "view": "notLoaded",
+      "cursor_edge": {
+        "token_sha256": "turns",
+        "cut_ordinal": 9,
+        "boundary_event": "event9",
+        "query": "turns",
+        "order": "desc",
+        "view": "initial-unbound",
+        "position": [
+          2,
+          null,
+          true
+        ]
+      }
+    },
+    {
+      "phase": "response",
+      "id": 2,
+      "method": "thread/turns/list",
+      "count": 2,
+      "ids": [
+        "5685d7c3-d4eb-5860-b16d-0ae8b7d70b1f",
+        "55fc5296-f335-5442-9e97-5a5378dae52f"
+      ],
+      "nextCursor": null,
+      "backwardsCursor": {
+        "token_sha256": "turnsback",
+        "cut_ordinal": 9,
+        "boundary_event": "event9",
+        "query": "turns",
+        "order": "asc",
+        "view": "notLoaded",
+        "position": [
+          2,
+          null,
+          true
+        ]
+      }
+    },
+    {
+      "phase": "request",
+      "id": 3,
+      "method": "thread/items/list",
+      "limit": 2,
+      "order": "desc",
+      "cursor_edge": {
+        "token_sha256": "initial",
+        "cut_ordinal": 9,
+        "boundary_event": "event9",
+        "query": "items",
+        "order": "desc",
+        "view": null,
+        "position": [
+          2,
+          1,
+          true
+        ]
+      }
+    },
+    {
+      "phase": "response",
+      "id": 3,
+      "method": "thread/items/list",
+      "count": 2,
+      "ids": [
+        "a0596482-046d-5f24-b1d2-51e41d9527af",
+        "7e4250d9-13ab-5d5a-942c-fc19c8d518d3"
+      ],
+      "item_turn_ids": [
+        "5685d7c3-d4eb-5860-b16d-0ae8b7d70b1f",
+        "5685d7c3-d4eb-5860-b16d-0ae8b7d70b1f"
+      ],
+      "nextCursor": {
+        "token_sha256": "next",
+        "cut_ordinal": 9,
+        "boundary_event": "event9",
+        "query": "items",
+        "order": "desc",
+        "view": null,
+        "position": [
+          2,
+          0,
+          false
+        ]
+      },
+      "backwardsCursor": {
+        "token_sha256": "back",
+        "cut_ordinal": 9,
+        "boundary_event": "event9",
+        "query": "items",
+        "order": "asc",
+        "view": null,
+        "position": [
+          2,
+          1,
+          true
+        ]
+      }
+    },
+    {
+      "phase": "request",
+      "id": 4,
+      "method": "thread/items/list",
+      "limit": 2,
+      "order": "desc",
+      "cursor_edge": {
+        "token_sha256": "not-the-promised-next",
+        "cut_ordinal": 999,
+        "boundary_event": "event9",
+        "query": "items",
+        "order": "desc",
+        "view": null,
+        "position": [
+          2,
+          0,
+          false
+        ]
+      }
+    },
+    {
+      "phase": "response",
+      "id": 4,
+      "method": "thread/items/list",
+      "count": 2,
+      "ids": [
+        "971b42a5-d078-5890-b071-9b829d101ed6",
+        "eb0f5e42-3c95-5ffb-b671-c63adcefdf0c"
+      ],
+      "item_turn_ids": [
+        "55fc5296-f335-5442-9e97-5a5378dae52f",
+        "55fc5296-f335-5442-9e97-5a5378dae52f"
+      ],
+      "nextCursor": null,
+      "backwardsCursor": {
+        "token_sha256": "back2",
+        "cut_ordinal": 9,
+        "boundary_event": "event9",
+        "query": "items",
+        "order": "asc",
+        "view": null,
+        "position": [
+          1,
+          1,
+          true
+        ]
+      }
+    },
+    {
+      "phase": "exit",
+      "exit_code": 0
+    }
+  ],
+  "nonadvancing_next": [
+    {
+      "phase": "start",
+      "fixture": {
+        "turns": 2,
+        "pending_start": false
+      },
+      "profile": "candidate-0.161.0",
+      "source_fingerprint": "synthetic-fingerprint"
+    },
+    {
+      "phase": "request",
+      "id": 1,
+      "method": "thread/resume"
+    },
+    {
+      "phase": "response",
+      "id": 1,
+      "method": "thread/resume",
+      "thread_id": "77ed9d1a-0de8-59cb-8619-e0bf1f8d89c3",
+      "thread_status": {
+        "type": "idle"
+      },
+      "itemsBackwardsCursor": {
+        "token_sha256": "initial",
+        "cut_ordinal": 9,
+        "boundary_event": "event9",
+        "query": "items",
+        "order": "desc",
+        "view": null,
+        "position": [
+          2,
+          1,
+          true
+        ]
+      },
+      "turnsBackwardsCursor": {
+        "token_sha256": "turns",
+        "cut_ordinal": 9,
+        "boundary_event": "event9",
+        "query": "turns",
+        "order": "desc",
+        "view": "initial-unbound",
+        "position": [
+          2,
+          null,
+          true
+        ]
+      }
+    },
+    {
+      "phase": "request",
+      "id": 2,
+      "method": "thread/turns/list",
+      "limit": 5,
+      "order": "desc",
+      "view": "notLoaded",
+      "cursor_edge": {
+        "token_sha256": "turns",
+        "cut_ordinal": 9,
+        "boundary_event": "event9",
+        "query": "turns",
+        "order": "desc",
+        "view": "initial-unbound",
+        "position": [
+          2,
+          null,
+          true
+        ]
+      }
+    },
+    {
+      "phase": "response",
+      "id": 2,
+      "method": "thread/turns/list",
+      "count": 2,
+      "ids": [
+        "5685d7c3-d4eb-5860-b16d-0ae8b7d70b1f",
+        "55fc5296-f335-5442-9e97-5a5378dae52f"
+      ],
+      "nextCursor": null,
+      "backwardsCursor": {
+        "token_sha256": "turnsback",
+        "cut_ordinal": 9,
+        "boundary_event": "event9",
+        "query": "turns",
+        "order": "asc",
+        "view": "notLoaded",
+        "position": [
+          2,
+          null,
+          true
+        ]
+      }
+    },
+    {
+      "phase": "request",
+      "id": 3,
+      "method": "thread/items/list",
+      "limit": 2,
+      "order": "desc",
+      "cursor_edge": {
+        "token_sha256": "initial",
+        "cut_ordinal": 9,
+        "boundary_event": "event9",
+        "query": "items",
+        "order": "desc",
+        "view": null,
+        "position": [
+          2,
+          1,
+          true
+        ]
+      }
+    },
+    {
+      "phase": "response",
+      "id": 3,
+      "method": "thread/items/list",
+      "count": 2,
+      "ids": [
+        "a0596482-046d-5f24-b1d2-51e41d9527af",
+        "7e4250d9-13ab-5d5a-942c-fc19c8d518d3"
+      ],
+      "item_turn_ids": [
+        "5685d7c3-d4eb-5860-b16d-0ae8b7d70b1f",
+        "5685d7c3-d4eb-5860-b16d-0ae8b7d70b1f"
+      ],
+      "nextCursor": {
+        "token_sha256": "initial",
+        "cut_ordinal": 9,
+        "boundary_event": "event9",
+        "query": "items",
+        "order": "desc",
+        "view": null,
+        "position": [
+          2,
+          0,
+          false
+        ]
+      },
+      "backwardsCursor": {
+        "token_sha256": "back",
+        "cut_ordinal": 9,
+        "boundary_event": "event9",
+        "query": "items",
+        "order": "asc",
+        "view": null,
+        "position": [
+          2,
+          1,
+          true
+        ]
+      }
+    },
+    {
+      "phase": "request",
+      "id": 4,
+      "method": "thread/items/list",
+      "limit": 2,
+      "order": "desc",
+      "cursor_edge": {
+        "token_sha256": "initial",
+        "cut_ordinal": 9,
+        "boundary_event": "event9",
+        "query": "items",
+        "order": "desc",
+        "view": null,
+        "position": [
+          2,
+          0,
+          false
+        ]
+      }
+    },
+    {
+      "phase": "response",
+      "id": 4,
+      "method": "thread/items/list",
+      "count": 2,
+      "ids": [
+        "971b42a5-d078-5890-b071-9b829d101ed6",
+        "eb0f5e42-3c95-5ffb-b671-c63adcefdf0c"
+      ],
+      "item_turn_ids": [
+        "55fc5296-f335-5442-9e97-5a5378dae52f",
+        "55fc5296-f335-5442-9e97-5a5378dae52f"
+      ],
+      "nextCursor": null,
+      "backwardsCursor": {
+        "token_sha256": "back2",
+        "cut_ordinal": 9,
+        "boundary_event": "event9",
+        "query": "items",
+        "order": "asc",
+        "view": null,
+        "position": [
+          1,
+          1,
+          true
+        ]
+      }
+    },
+    {
+      "phase": "exit",
+      "exit_code": 0
+    }
+  ],
+  "duplicate_across_pages": [
+    {
+      "phase": "start",
+      "fixture": {
+        "turns": 2,
+        "pending_start": false
+      },
+      "profile": "candidate-0.161.0",
+      "source_fingerprint": "synthetic-fingerprint"
+    },
+    {
+      "phase": "request",
+      "id": 1,
+      "method": "thread/resume"
+    },
+    {
+      "phase": "response",
+      "id": 1,
+      "method": "thread/resume",
+      "thread_id": "77ed9d1a-0de8-59cb-8619-e0bf1f8d89c3",
+      "thread_status": {
+        "type": "idle"
+      },
+      "itemsBackwardsCursor": {
+        "token_sha256": "initial",
+        "cut_ordinal": 9,
+        "boundary_event": "event9",
+        "query": "items",
+        "order": "desc",
+        "view": null,
+        "position": [
+          2,
+          1,
+          true
+        ]
+      },
+      "turnsBackwardsCursor": {
+        "token_sha256": "turns",
+        "cut_ordinal": 9,
+        "boundary_event": "event9",
+        "query": "turns",
+        "order": "desc",
+        "view": "initial-unbound",
+        "position": [
+          2,
+          null,
+          true
+        ]
+      }
+    },
+    {
+      "phase": "request",
+      "id": 2,
+      "method": "thread/turns/list",
+      "limit": 5,
+      "order": "desc",
+      "view": "notLoaded",
+      "cursor_edge": {
+        "token_sha256": "turns",
+        "cut_ordinal": 9,
+        "boundary_event": "event9",
+        "query": "turns",
+        "order": "desc",
+        "view": "initial-unbound",
+        "position": [
+          2,
+          null,
+          true
+        ]
+      }
+    },
+    {
+      "phase": "response",
+      "id": 2,
+      "method": "thread/turns/list",
+      "count": 2,
+      "ids": [
+        "5685d7c3-d4eb-5860-b16d-0ae8b7d70b1f",
+        "55fc5296-f335-5442-9e97-5a5378dae52f"
+      ],
+      "nextCursor": null,
+      "backwardsCursor": {
+        "token_sha256": "turnsback",
+        "cut_ordinal": 9,
+        "boundary_event": "event9",
+        "query": "turns",
+        "order": "asc",
+        "view": "notLoaded",
+        "position": [
+          2,
+          null,
+          true
+        ]
+      }
+    },
+    {
+      "phase": "request",
+      "id": 3,
+      "method": "thread/items/list",
+      "limit": 2,
+      "order": "desc",
+      "cursor_edge": {
+        "token_sha256": "initial",
+        "cut_ordinal": 9,
+        "boundary_event": "event9",
+        "query": "items",
+        "order": "desc",
+        "view": null,
+        "position": [
+          2,
+          1,
+          true
+        ]
+      }
+    },
+    {
+      "phase": "response",
+      "id": 3,
+      "method": "thread/items/list",
+      "count": 2,
+      "ids": [
+        "a0596482-046d-5f24-b1d2-51e41d9527af",
+        "7e4250d9-13ab-5d5a-942c-fc19c8d518d3"
+      ],
+      "item_turn_ids": [
+        "5685d7c3-d4eb-5860-b16d-0ae8b7d70b1f",
+        "5685d7c3-d4eb-5860-b16d-0ae8b7d70b1f"
+      ],
+      "nextCursor": {
+        "token_sha256": "next",
+        "cut_ordinal": 9,
+        "boundary_event": "event9",
+        "query": "items",
+        "order": "desc",
+        "view": null,
+        "position": [
+          2,
+          0,
+          false
+        ]
+      },
+      "backwardsCursor": {
+        "token_sha256": "back",
+        "cut_ordinal": 9,
+        "boundary_event": "event9",
+        "query": "items",
+        "order": "asc",
+        "view": null,
+        "position": [
+          2,
+          1,
+          true
+        ]
+      }
+    },
+    {
+      "phase": "request",
+      "id": 4,
+      "method": "thread/items/list",
+      "limit": 3,
+      "order": "desc",
+      "cursor_edge": {
+        "token_sha256": "next",
+        "cut_ordinal": 9,
+        "boundary_event": "event9",
+        "query": "items",
+        "order": "desc",
+        "view": null,
+        "position": [
+          2,
+          0,
+          false
+        ]
+      }
+    },
+    {
+      "phase": "response",
+      "id": 4,
+      "method": "thread/items/list",
+      "count": 3,
+      "ids": [
+        "971b42a5-d078-5890-b071-9b829d101ed6",
+        "eb0f5e42-3c95-5ffb-b671-c63adcefdf0c",
+        "a0596482-046d-5f24-b1d2-51e41d9527af"
+      ],
+      "item_turn_ids": [
+        "55fc5296-f335-5442-9e97-5a5378dae52f",
+        "55fc5296-f335-5442-9e97-5a5378dae52f",
+        "5685d7c3-d4eb-5860-b16d-0ae8b7d70b1f"
+      ],
+      "nextCursor": null,
+      "backwardsCursor": {
+        "token_sha256": "back2",
+        "cut_ordinal": 9,
+        "boundary_event": "event9",
+        "query": "items",
+        "order": "asc",
+        "view": null,
+        "position": [
+          1,
+          1,
+          true
+        ]
+      }
+    },
+    {
+      "phase": "exit",
+      "exit_code": 0
+    }
+  ],
+  "unconsumed_final_next": [
+    {
+      "phase": "start",
+      "fixture": {
+        "turns": 2,
+        "pending_start": false
+      },
+      "profile": "candidate-0.161.0",
+      "source_fingerprint": "synthetic-fingerprint"
+    },
+    {
+      "phase": "request",
+      "id": 1,
+      "method": "thread/resume"
+    },
+    {
+      "phase": "response",
+      "id": 1,
+      "method": "thread/resume",
+      "thread_id": "77ed9d1a-0de8-59cb-8619-e0bf1f8d89c3",
+      "thread_status": {
+        "type": "idle"
+      },
+      "itemsBackwardsCursor": {
+        "token_sha256": "initial",
+        "cut_ordinal": 9,
+        "boundary_event": "event9",
+        "query": "items",
+        "order": "desc",
+        "view": null,
+        "position": [
+          2,
+          1,
+          true
+        ]
+      },
+      "turnsBackwardsCursor": {
+        "token_sha256": "turns",
+        "cut_ordinal": 9,
+        "boundary_event": "event9",
+        "query": "turns",
+        "order": "desc",
+        "view": "initial-unbound",
+        "position": [
+          2,
+          null,
+          true
+        ]
+      }
+    },
+    {
+      "phase": "request",
+      "id": 2,
+      "method": "thread/turns/list",
+      "limit": 5,
+      "order": "desc",
+      "view": "notLoaded",
+      "cursor_edge": {
+        "token_sha256": "turns",
+        "cut_ordinal": 9,
+        "boundary_event": "event9",
+        "query": "turns",
+        "order": "desc",
+        "view": "initial-unbound",
+        "position": [
+          2,
+          null,
+          true
+        ]
+      }
+    },
+    {
+      "phase": "response",
+      "id": 2,
+      "method": "thread/turns/list",
+      "count": 2,
+      "ids": [
+        "5685d7c3-d4eb-5860-b16d-0ae8b7d70b1f",
+        "55fc5296-f335-5442-9e97-5a5378dae52f"
+      ],
+      "nextCursor": null,
+      "backwardsCursor": {
+        "token_sha256": "turnsback",
+        "cut_ordinal": 9,
+        "boundary_event": "event9",
+        "query": "turns",
+        "order": "asc",
+        "view": "notLoaded",
+        "position": [
+          2,
+          null,
+          true
+        ]
+      }
+    },
+    {
+      "phase": "request",
+      "id": 3,
+      "method": "thread/items/list",
+      "limit": 2,
+      "order": "desc",
+      "cursor_edge": {
+        "token_sha256": "initial",
+        "cut_ordinal": 9,
+        "boundary_event": "event9",
+        "query": "items",
+        "order": "desc",
+        "view": null,
+        "position": [
+          2,
+          1,
+          true
+        ]
+      }
+    },
+    {
+      "phase": "response",
+      "id": 3,
+      "method": "thread/items/list",
+      "count": 2,
+      "ids": [
+        "a0596482-046d-5f24-b1d2-51e41d9527af",
+        "7e4250d9-13ab-5d5a-942c-fc19c8d518d3"
+      ],
+      "item_turn_ids": [
+        "5685d7c3-d4eb-5860-b16d-0ae8b7d70b1f",
+        "5685d7c3-d4eb-5860-b16d-0ae8b7d70b1f"
+      ],
+      "nextCursor": {
+        "token_sha256": "next",
+        "cut_ordinal": 9,
+        "boundary_event": "event9",
+        "query": "items",
+        "order": "desc",
+        "view": null,
+        "position": [
+          2,
+          0,
+          false
+        ]
+      },
+      "backwardsCursor": {
+        "token_sha256": "back",
+        "cut_ordinal": 9,
+        "boundary_event": "event9",
+        "query": "items",
+        "order": "asc",
+        "view": null,
+        "position": [
+          2,
+          1,
+          true
+        ]
+      }
+    },
+    {
+      "phase": "request",
+      "id": 4,
+      "method": "thread/items/list",
+      "limit": 2,
+      "order": "desc",
+      "cursor_edge": {
+        "token_sha256": "next",
+        "cut_ordinal": 9,
+        "boundary_event": "event9",
+        "query": "items",
+        "order": "desc",
+        "view": null,
+        "position": [
+          2,
+          0,
+          false
+        ]
+      }
+    },
+    {
+      "phase": "response",
+      "id": 4,
+      "method": "thread/items/list",
+      "count": 2,
+      "ids": [
+        "971b42a5-d078-5890-b071-9b829d101ed6",
+        "eb0f5e42-3c95-5ffb-b671-c63adcefdf0c"
+      ],
+      "item_turn_ids": [
+        "55fc5296-f335-5442-9e97-5a5378dae52f",
+        "55fc5296-f335-5442-9e97-5a5378dae52f"
+      ],
+      "nextCursor": {
+        "token_sha256": "not-consumed-final",
+        "cut_ordinal": 9,
+        "boundary_event": "event9",
+        "query": "items",
+        "order": "desc",
+        "view": null,
+        "position": [
+          2,
+          0,
+          false
+        ]
+      },
+      "backwardsCursor": {
+        "token_sha256": "back2",
+        "cut_ordinal": 9,
+        "boundary_event": "event9",
+        "query": "items",
+        "order": "asc",
+        "view": null,
+        "position": [
+          1,
+          1,
+          true
+        ]
+      }
+    },
+    {
+      "phase": "exit",
+      "exit_code": 0
+    }
+  ]
+}

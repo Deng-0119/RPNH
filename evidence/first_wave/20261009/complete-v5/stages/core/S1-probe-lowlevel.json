@@ -1,0 +1,24 @@
+{
+  "command": [
+    "<WORKSPACE>/.p26/v/bin/python",
+    "<WORKSPACE>/task-complete-v5-20261009/raw/RPNH_Static_Lease_Reads_Offline_Candidate_20261008/RPNH_Static_Lease_Reads_Offline_Candidate_20261008/tools/run_independent_review.py",
+    "--source",
+    "<WORKSPACE>/.v26/c1",
+    "--mode",
+    "lowlevel"
+  ],
+  "cwd": "<WORKSPACE>/.v26/c1",
+  "pid": 14290,
+  "started_at_utc": "2026-10-09T01:20:17.842591+00:00",
+  "finished_at_utc": "2026-10-09T01:20:32.727204+00:00",
+  "elapsed_seconds": 14.88463490200229,
+  "exit_code": 0,
+  "environment": {
+    "PYTHONPATH": "<WORKSPACE>/.v26/c1:<WORKSPACE>/.v26/c1/tests",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1",
+    "TMPDIR": "<WORKSPACE>/.v26/tmp",
+    "PYTEST_ADDOPTS": null,
+    "PYTEST_PLUGINS": null
+  }
+}

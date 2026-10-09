@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="2" skipped="0" tests="15" time="32.757" timestamp="2026-10-08T19:25:32.491064-04:00" hostname="54cb1abdc64d"><testcase classname="tests.test_history_independent" name="test_foreign_original_registry_cannot_use_copied_assertion" time="3.856" /><testcase classname="tests.test_history_independent" name="test_real_later_authority_change_keeps_same_scope_proof_read_only[writer_only]" time="2.039" /><testcase classname="tests.test_history_independent" name="test_real_later_authority_change_keeps_same_scope_proof_read_only[durable_stop]" time="2.094" /><testcase classname="tests.test_history_independent" name="test_real_later_authority_change_keeps_same_scope_proof_read_only[provisional_products]" time="2.495" /><testcase classname="tests.test_history_independent" name="test_original_each_phase_cut_requires_prior_native_facts[intent_before_start]" time="1.824" /><testcase classname="tests.test_history_independent" name="test_original_each_phase_cut_requires_prior_native_facts[dispatch_before_intent]" time="1.919" /><testcase classname="tests.test_history_independent" name="test_original_each_phase_cut_requires_prior_native_facts[worker_before_dispatch]" time="2.183" /><testcase classname="tests.test_history_independent" name="test_source_root_start_and_schema_closure[root_invocation]" time="1.762" /><testcase classname="tests.test_history_independent" name="test_source_root_start_and_schema_closure[root_admission]" time="2.020" /><testcase classname="tests.test_history_independent" name="test_source_root_start_and_schema_closure[root_foreign_member]" time="1.936"><failure message="sqlite3.IntegrityError: FOREIGN KEY constraint failed">tmp_path = PosixPath('/tmp/pytest-of-agent/pytest-197/test_source_root_start_and_sch2')
+damage = 'root_foreign_member'
+
+    @pytest.mark.parametrize('damage', ['root_invocation', 'root_admission', 'root_foreign_member', 'extra_transaction_member', 'missing_start_member', 'start_wrong_transaction', 'missing_source_bytes', 'content_schema_bytes'])
+    def test_source_root_start_and_schema_closure(tmp_path, damage):
+        values, store, query = fixture(tmp_path)
+        core = values[0]._core
+        body = core.get_version(query.acceptance_ref.version_id).metadata
+        with store.connect() as db:
+            firing = body['execution']['firing_ref']['version_id']
+            if damage == 'root_invocation':
+                db.execute('UPDATE firing_publications SET invocation_logical_id=? WHERE firing_version_id=?', (str(new_id('invocation')), firing))
+            elif damage == 'root_admission':
+                db.execute('UPDATE firing_publications SET admission_checkpoint_version_id=? WHERE firing_version_id=?', (str(new_id('resource_version')), firing))
+            elif damage == 'root_foreign_member':
+&gt;               db.execute('UPDATE firing_temporary_members SET firing_version_id=? WHERE member_identity=?', (str(new_id('resource_version')), str(query.acceptance_ref.version_id)))
+E               sqlite3.IntegrityError: FOREIGN KEY constraint failed
+
+../tests/test_history_independent.py:149: IntegrityError</failure></testcase><testcase classname="tests.test_history_independent" name="test_source_root_start_and_schema_closure[extra_transaction_member]" time="2.145" /><testcase classname="tests.test_history_independent" name="test_source_root_start_and_schema_closure[missing_start_member]" time="2.080"><failure message="AssertionError: ('missing_start_member', ChildAcceptanceHistoryResult(status='HISTORICAL_ACCEPTANCE_VALID', reason='original_committed...44d1cfe8b3451dc092b1', initial_declaration_digest='8091c770e50f424d8ce7a71cc6cdc33db60df1ee1ffbd2359165042a284d575e')))&#10;assert 'HISTORICAL_ACCEPTANCE_VALID' == 'HISTORICAL_A...TANCE_INVALID'&#10;  &#10;  - HISTORICAL_ACCEPTANCE_INVALID&#10;  ?                       --&#10;  + HISTORICAL_ACCEPTANCE_VALID">tmp_path = PosixPath('/tmp/pytest-of-agent/pytest-197/test_source_root_start_and_sch4')
+damage = 'missing_start_member'
+
+    @pytest.mark.parametrize('damage', ['root_invocation', 'root_admission', 'root_foreign_member', 'extra_transaction_member', 'missing_start_member', 'start_wrong_transaction', 'missing_source_bytes', 'content_schema_bytes'])
+    def test_source_root_start_and_schema_closure(tmp_path, damage):
+        values, store, query = fixture(tmp_path)
+        core = values[0]._core
+        body = core.get_version(query.acceptance_ref.version_id).metadata
+        with store.connect() as db:
+            firing = body['execution']['firing_ref']['version_id']
+            if damage == 'root_invocation':
+                db.execute('UPDATE firing_publications SET invocation_logical_id=? WHERE firing_version_id=?', (str(new_id('invocation')), firing))
+            elif damage == 'root_admission':
+                db.execute('UPDATE firing_publications SET admission_checkpoint_version_id=? WHERE firing_version_id=?', (str(new_id('resource_version')), firing))
+            elif damage == 'root_foreign_member':
+                db.execute('UPDATE firing_temporary_members SET firing_version_id=? WHERE member_identity=?', (str(new_id('resource_version')), str(query.acceptance_ref.version_id)))
+            elif damage == 'extra_transaction_member':
+                # The canonical source binding must never be folded into this firing.
+                tx = db.execute('SELECT transaction_id FROM objects WHERE version_id=?', (str(query.binding_ref.version_id),)).fetchone()[0]
+                db.execute('INSERT INTO firing_temporary_members VALUES (?,?,?,?)', (firing, 'transaction', tx, tx))
+            elif damage == 'missing_start_member':
+                db.execute("DELETE FROM firing_temporary_members WHERE member_kind='event' AND member_identity=?", (body['execution']['start_event_id'],))
+            elif damage == 'start_wrong_transaction':
+                db.execute('UPDATE events SET transaction_id=? WHERE event_id=?', (str(query.transaction_id), body['execution']['start_event_id']))
+            elif damage == 'missing_source_bytes':
+                core.object_store.path_for_version(query.binding_ref.version_id).unlink()
+            else:
+                item = db.execute("SELECT version_id FROM objects WHERE object_type='registry_type_catalog/v1' ORDER BY rowid LIMIT 1").fetchone()
+                from cpn.rpnh.registry.identities import TypedId
+                path = core.object_store.path_for_version(TypedId.parse(item[0]))
+                raw = path.read_bytes()
+                path.write_bytes(b'?' + raw[1:])
+        result = store.classify_child_acceptance_history(query)
+&gt;       assert result.status == INVALID, (damage, result)
+E       AssertionError: ('missing_start_member', ChildAcceptanceHistoryResult(status='HISTORICAL_ACCEPTANCE_VALID', reason='original_committed...44d1cfe8b3451dc092b1', initial_declaration_digest='8091c770e50f424d8ce7a71cc6cdc33db60df1ee1ffbd2359165042a284d575e')))
+E       assert 'HISTORICAL_ACCEPTANCE_VALID' == 'HISTORICAL_A...TANCE_INVALID'
+E         
+E         - HISTORICAL_ACCEPTANCE_INVALID
+E         ?                       --
+E         + HISTORICAL_ACCEPTANCE_VALID
+
+../tests/test_history_independent.py:167: AssertionError</failure></testcase><testcase classname="tests.test_history_independent" name="test_source_root_start_and_schema_closure[start_wrong_transaction]" time="1.797" /><testcase classname="tests.test_history_independent" name="test_source_root_start_and_schema_closure[missing_source_bytes]" time="1.896" /><testcase classname="tests.test_history_independent" name="test_source_root_start_and_schema_closure[content_schema_bytes]" time="2.021" /></testsuite></testsuites>

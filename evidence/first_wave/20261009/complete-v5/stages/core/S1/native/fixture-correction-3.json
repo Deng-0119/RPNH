@@ -1,0 +1,11 @@
+{
+  "utc": "2026-10-09T03:44:37.377624+00:00",
+  "preserved_attempt": "a003",
+  "class": "probe collection IndentationError",
+  "actual_test_bodies_executed": 0,
+  "pytest_command_attempts": 10,
+  "source": "a003/test_native_s1.py",
+  "observations": [],
+  "raw_logs_and_junit": "a003/g*.stdout.log, g*.stderr.log, g*.xml",
+  "correction": "Indent only; compile before a004; no product edits."
+}

@@ -1,0 +1,59 @@
+{
+  "schema": "rpnh/codex_0161_candidate_delivery/v1",
+  "status": "EXPLICIT_CANDIDATE_ONLY_NATIVE_PENDING",
+  "candidate_patch_sha256": "720bcf2bd95886a26425e00caec80eab0fbcf0eec0481202ca54ce88a5f8a3c8",
+  "source_fingerprint": "316a06aad41653e890d16a19519d07b09042c54c4961586b54cf2842b10d8658",
+  "inherited_dependencies": [
+    {
+      "package": "rpnh-codex-history-projection",
+      "path": "codex-owner-history-projection.patch",
+      "bytes": 476277,
+      "sha256": "df0c3090e84f532d158dd02d7b65489323563a470843e4bd4e2688ffcc25900b"
+    },
+    {
+      "package": "rpnh-thread-history-read-fix",
+      "path": "native-main-thread-history.patch",
+      "bytes": 62842,
+      "sha256": "f4726d7c1a230c8935b22310bb1d29f7c8e68342ef9b660cabb6430b8a3d4654"
+    },
+    {
+      "package": "rpnh-codex-contract-fix",
+      "path": "codex-effort-wire-codec.patch",
+      "bytes": 49359,
+      "sha256": "3be0de65edb5a4f68579f115f5072bacc3e4fe4ffefeba96b226e45cbcab8a8d"
+    }
+  ],
+  "d92_product_overlay": {
+    "commit": "d92ff3704b6002bf5ecbccb3e6a3d1489809a805",
+    "cpn/rpnh/task_control.py": "b8658b6c19d64eb4bc34a9c320c84a9140cab624e236ffe8c8edfcc7bd026729",
+    "cpn/rpnh/registry/run_authority.py": "7475c2d5403dea49dc0a45796a3f84beab6c7516f18466bc8e1338bf0be684e3"
+  },
+  "default_profile": "pinned-0.155.0",
+  "candidate_profile": "candidate-0.161.0; explicit local keyword only",
+  "verification_sets": {
+    "author_product_history_profile": 122,
+    "author_selected_default_regression": 8,
+    "author_handoff_fake": 16,
+    "independent_product": 34,
+    "independent_log_fixtures": 5,
+    "warning": "Sets overlap in intent; independent reruns and pre-d92 runs must not be added as new test coverage"
+  },
+  "unperformed": [
+    "stock Codex 0.155 runtime",
+    "stock Codex 0.161 runtime",
+    "native object WebSocket probe",
+    "Rust compilation",
+    "real provider/model/API calls",
+    "installation",
+    "login",
+    "push",
+    "Actions",
+    "publication"
+  ],
+  "license_paths": [
+    "source/LICENSE",
+    "source/THIRD_PARTY_NOTICES.md",
+    "design/upstream/UPSTREAM_LICENSE",
+    "design/upstream/UPSTREAM_NOTICE"
+  ]
+}

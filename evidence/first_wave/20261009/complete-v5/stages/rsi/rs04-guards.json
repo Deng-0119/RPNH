@@ -1,0 +1,21 @@
+{
+  "command": [
+    "<WORKSPACE>/.p26/v/bin/python",
+    "-c",
+    "from pathlib import Path; import json; t=Path(\"<WORKSPACE>/task-complete-v5-20261009\"); ix=json.loads((t/\"rpnh-complete-local-bundle-v5/CANDIDATE_INDEX.json\").read_text()); c=next(c for c in ix[\"candidates\"] if c[\"id\"]==\"R1_v2_full\"); p=t/\"raw\"/Path(c[\"archive_path\"]).stem/c[\"root_member\"]; print((p/\"source/tests/test_iteration_profile.py\").read_text()[:8000]); print((p/\"review/successor-review-manifest.json\").read_text()); print(\"HELPER_MATCHES\",list(p.rglob(\"*inert_profile*\"))); print(\"LOCAL_AGENTS\",[(str(q),q.read_text()) for q in [Path(\"AGENTS.md\"),Path(\"<WORKSPACE>/.v26/AGENTS.md\")] if q.exists()]); print(\"PATHS\",[(str(q),str(q.resolve()),q.is_symlink()) for q in [Path(\"<WORKSPACE>/.v26/r1\"),Path(\"<WORKSPACE>/.v26/r2\"),t/\"stages/rsi\"]])"
+  ],
+  "cwd": "<WORKSPACE>/.v26/r1",
+  "pid": 13509,
+  "started_at_utc": "2026-10-09T01:16:44.173084+00:00",
+  "finished_at_utc": "2026-10-09T01:16:44.197775+00:00",
+  "elapsed_seconds": 0.024705064002773724,
+  "exit_code": 0,
+  "environment": {
+    "PYTHONPATH": null,
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1",
+    "TMPDIR": "<WORKSPACE>/.v26/tmp",
+    "PYTEST_ADDOPTS": null,
+    "PYTEST_PLUGINS": null
+  }
+}

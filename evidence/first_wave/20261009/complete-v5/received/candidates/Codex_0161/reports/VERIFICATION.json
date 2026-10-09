@@ -1,0 +1,53 @@
+{
+  "schema": "rpnh/codex_0161_candidate_verification/v1",
+  "patch_sha256": "720bcf2bd95886a26425e00caec80eab0fbcf0eec0481202ca54ce88a5f8a3c8",
+  "source_fingerprint": "316a06aad41653e890d16a19519d07b09042c54c4961586b54cf2842b10d8658",
+  "changed_files": 6,
+  "source_files": 1044,
+  "clean_patch_check": true,
+  "clean_patch_apply": true,
+  "all_reconstructed_source_bytes_match": true,
+  "tests": [
+    {
+      "file": "reports/composed-history-junit.xml",
+      "sha256": "c4c4c2f44ab11562916b9f98dbcb4223f2a16d843fd81b2e751263830bb066e6",
+      "count": 122,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "classes": {
+        "tests.test_codex_0161_candidate": 69,
+        "tests.test_codex_history": 53
+      }
+    },
+    {
+      "file": "reports/default-regression-junit.xml",
+      "sha256": "2c88b5d2437e7398a72ae53ae705ac009940566cddaef5ce1d7aae4dd7e5d381",
+      "count": 8,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "classes": {
+        "tests.test_codex_compat": 6,
+        "tests.test_frontend_boundary": 2
+      }
+    },
+    {
+      "file": "reports/handoff-fake-junit.xml",
+      "sha256": "ccc7ee4f45459cf9a445a2b60bf562b3bfaf7a390ccd09518436cd1c1e701d3c",
+      "count": 16,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "classes": {
+        "rpnh-codex-0161-implementation.native-gate.test_handoff_offline": 16
+      }
+    }
+  ],
+  "native_runs": 0,
+  "model_calls": 0,
+  "pushes": 0,
+  "installations": 0,
+  "prior_69_pre_d92_tests": "Historical exploratory run only; not added to final counts",
+  "independent_tests": "Separate overlapping review; never add to author count"
+}

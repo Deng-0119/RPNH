@@ -1,0 +1,36 @@
+.........................F.                                              [100%]
+=================================== FAILURES ===================================
+___ test_child_first_start_and_admission_replay_after_durable_stop_rejected ____
+cpn/rpnh/registry/_resource_service/references.py:1089: in _revalidate_invocation
+    InvocationLifecycle(self._ResourceServiceKernel__core).revalidate_io(context, boundary=boundary)
+cpn/rpnh/registry/invocations.py:388: in revalidate_io
+    return implementation(self, context, boundary=boundary)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+cpn/rpnh/registry/_invocation/execution.py:36: in revalidate_io
+    assert_bound_integrity(lifecycle.service, for_execution=True)
+cpn/rpnh/registry/parent_bound.py:192: in assert_bound_integrity
+    return bound_integrity_at(core.event_store,db,core.task_id,core.writer_epoch,
+cpn/rpnh/registry/parent_bound.py:95: in bound_integrity_at
+    raise RegistryConflict('H7 bound execution authority is stopped, terminal, or foreign')
+E   cpn.rpnh.registry.event_store.RegistryConflict: H7 bound execution authority is stopped, terminal, or foreign
+
+The above exception was the direct cause of the following exception:
+tests/test_parent_child_core.py:202: in test_child_first_start_and_admission_replay_after_durable_stop_rejected
+    child.start(admitted,command_id='late:start')
+cpn/rpnh/run.py:290: in start
+    return start_module_firing(
+cpn/rpnh/registry/module_gateway.py:34: in start_module_firing
+    canonical = canonical_invocation(core, kernel, invocation_ref)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+cpn/rpnh/registry/firing_authority.py:48: in canonical_invocation
+    kernel._revalidate_invocation(
+cpn/rpnh/registry/resource_service.py:141: in _revalidate_invocation
+    return _references._revalidate_invocation(**locals())
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+cpn/rpnh/registry/_resource_service/references.py:1093: in _revalidate_invocation
+    raise StaleInvocationContext(str(exc)) from exc
+E   cpn.rpnh.registry.errors.StaleInvocationContext: H7 bound execution authority is stopped, terminal, or foreign
+- generated xml file: /workspace/scratch/18c810e6dd59/rpnh-parent-child-core-implementation/evidence/core17.xml -
+=========================== short test summary info ============================
+FAILED tests/test_parent_child_core.py::test_child_first_start_and_admission_replay_after_durable_stop_rejected
+1 failed, 26 passed in 74.27s (0:01:14)

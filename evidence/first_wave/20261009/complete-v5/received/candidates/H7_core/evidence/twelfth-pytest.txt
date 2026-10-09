@@ -1,0 +1,43 @@
+.F                                                                       [100%]
+=================================== FAILURES ===================================
+________________ test_bound_origin_true_admission_start_success ________________
+tests/test_parent_child_core.py:28: in test_bound_origin_true_admission_start_success
+    finish(owner,first,'first');finish(owner,second,'second')
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_static_lease_reads.py:148: in finish
+    execution = owner.start(admitted, command_id=key + ":start")
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+cpn/rpnh/run.py:290: in start
+    return start_module_firing(
+cpn/rpnh/registry/module_gateway.py:66: in start_module_firing
+    return start_registered_operation_execution(core, kernel, repository, operation,
+cpn/rpnh/registry/operation_execution.py:175: in start_registered_operation_execution
+    core)._begin_registered_operation_execution(
+cpn/rpnh/registry/invocations.py:405: in _begin_registered_operation_execution
+    return implementation(self, context, operation_spec_ref=operation_spec_ref, transition_firing_ref=transition_firing_ref, executable_transition_binding_ref=executable_transition_binding_ref, declaration_terminal_delivery_ref=declaration_terminal_delivery_ref, input_binding_refs=input_binding_refs, input_resource_refs=input_resource_refs, claimed_input_refs=claimed_input_refs, admission_registry_ordinal=admission_registry_ordinal, admission_writer_fencing_epoch=admission_writer_fencing_epoch, admission_task_control_sequence=admission_task_control_sequence, idempotency_key=idempotency_key)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+cpn/rpnh/registry/_invocation/execution.py:224: in _begin_registered_operation_execution
+    committed = tx.commit()
+                ^^^^^^^^^^^
+cpn/rpnh/registry/transaction.py:387: in commit
+    result = self.event_store.publish_batch(
+cpn/rpnh/registry/event_store.py:1879: in publish_batch
+    return commit.publish_batch(
+cpn/rpnh/registry/_event_store/commit.py:495: in publish_batch
+    validate_parent_child_commit(self_store := event_store, db,
+cpn/rpnh/registry/parent_child.py:435: in validate_parent_child_commit
+    validate_bound_commit(store,db,task_id=task_id,writer_epoch=writer_epoch,objects=objects,events=events,
+cpn/rpnh/registry/parent_bound.py:200: in validate_bound_commit
+    firing=snap.obj(firing_ref)
+           ^^^^^^^^^^^^^^^^^^^^
+cpn/rpnh/registry/parent_child.py:207: in obj
+    item = _prepared(self.row(ref))
+                     ^^^^^^^^^^^^^
+cpn/rpnh/registry/parent_child.py:190: in row
+    self.member('object', row['version_id'])
+cpn/rpnh/registry/parent_child.py:176: in member
+    raise RegistryConflict('H7 evidence is outside its exact firing view')
+E   cpn.rpnh.registry.event_store.RegistryConflict: H7 evidence is outside its exact firing view
+=========================== short test summary info ============================
+FAILED tests/test_parent_child_core.py::test_bound_origin_true_admission_start_success
+1 failed, 1 passed in 8.90s

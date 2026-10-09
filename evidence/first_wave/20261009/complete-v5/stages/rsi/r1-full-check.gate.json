@@ -1,0 +1,11 @@
+{
+  "label": "r1-full-check",
+  "category": "patch",
+  "status": "PASS",
+  "exit_code": 0,
+  "record": "<WORKSPACE>/task-complete-v5-20261009/stages/rsi/r1-full-check.json",
+  "before_identity": "<WORKSPACE>/task-complete-v5-20261009/stages/rsi/r1-full-check-before.identity.json",
+  "after_identity": "<WORKSPACE>/task-complete-v5-20261009/stages/rsi/r1-full-check-after.identity.json",
+  "source_unchanged": true,
+  "junit": null
+}

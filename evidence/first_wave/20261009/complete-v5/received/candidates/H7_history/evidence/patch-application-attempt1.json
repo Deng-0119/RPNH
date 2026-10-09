@@ -1,0 +1,1 @@
+{"status":"FAIL","stage":"git apply --check","detail":"error: dev/null: No such file or directory (two new files)","cause":"Generated overlay omitted new file mode headers","effect":"No candidate or frozen input modification; disposable reconstruction only","resolution":"Corrected patch generator and repeated exact reconstruction"}

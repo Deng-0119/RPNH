@@ -1,0 +1,5 @@
+{
+  "scope": "69 candidate tests on pre-d92 owner-history subset only; superseded by final composed rerun",
+  "baseline_lock": "design/PRE_D92_BASE_SOURCE_LOCK.json",
+  "native_runs": 0
+}

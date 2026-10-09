@@ -1,0 +1,31 @@
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+_________________ test_real_parent_causal_chain_is_provisional _________________
+tests/test_parent_child_core.py:12: in test_real_parent_causal_chain_is_provisional
+    owner,admitted,execution,prepared,intent,dispatch,worker,acceptance=accepted_parent(tmp_path/'parent')
+                                                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/parent_child_fixtures.py:110: in accepted_parent
+    owner,admitted,execution,prepared=parent_owner(path,child_compiled=child_compiled)
+                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/parent_child_fixtures.py:83: in parent_owner
+    owner.gateway.bind_source_identity(source_id='parent-source',command_id='parent:source')
+    ^^^^^^^^^^^^^
+E   AttributeError: 'RunOwner' object has no attribute 'gateway'
+________________ test_bound_origin_true_admission_start_success ________________
+tests/test_parent_child_core.py:23: in test_bound_origin_true_admission_start_success
+    owner,parent=bound_owner(tmp_path/'child',monkeypatch)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/parent_child_fixtures.py:121: in bound_owner
+    values=accepted_parent(path.parent/'parent',compiled);parent=values[0];accepted=values[-1]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/parent_child_fixtures.py:110: in accepted_parent
+    owner,admitted,execution,prepared=parent_owner(path,child_compiled=child_compiled)
+                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/parent_child_fixtures.py:83: in parent_owner
+    owner.gateway.bind_source_identity(source_id='parent-source',command_id='parent:source')
+    ^^^^^^^^^^^^^
+E   AttributeError: 'RunOwner' object has no attribute 'gateway'
+=========================== short test summary info ============================
+FAILED tests/test_parent_child_core.py::test_real_parent_causal_chain_is_provisional
+FAILED tests/test_parent_child_core.py::test_bound_origin_true_admission_start_success
+2 failed in 2.03s

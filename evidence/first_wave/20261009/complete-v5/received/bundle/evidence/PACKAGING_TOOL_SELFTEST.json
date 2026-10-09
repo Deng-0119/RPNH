@@ -1,0 +1,52 @@
+{
+  "status": "PASS_PACKAGING_TOOLS_ONLY",
+  "cases": [
+    {
+      "case": "safe ZIP accepted",
+      "status": "PASS"
+    },
+    {
+      "case": "traversal rejected",
+      "status": "PASS"
+    },
+    {
+      "case": "absolute rejected",
+      "status": "PASS"
+    },
+    {
+      "case": "backslash rejected",
+      "status": "PASS"
+    },
+    {
+      "case": "drive rejected",
+      "status": "PASS"
+    },
+    {
+      "case": "noncanonical rejected",
+      "status": "PASS"
+    },
+    {
+      "case": "symlink rejected",
+      "status": "PASS"
+    },
+    {
+      "case": "case collision rejected",
+      "status": "PASS"
+    },
+    {
+      "case": "duplicate rejected",
+      "status": "PASS"
+    },
+    {
+      "case": "preflight clean synthetic Git-read contract",
+      "status": "PASS"
+    },
+    {
+      "case": "preflight blocks external filters before status",
+      "status": "PASS"
+    }
+  ],
+  "product_tests_run": false,
+  "native_tests_run": false,
+  "git_execution": "mocked read-only response contract, not a real product checkout"
+}

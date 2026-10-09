@@ -1,0 +1,13 @@
+checking file cpn/rpnh/_marking/claims.py
+checking file cpn/rpnh/_marking/selection.py
+checking file cpn/rpnh/marking.py
+checking file cpn/rpnh/registry/_event_store/validation/firing.py
+checking file cpn/rpnh/registry/declared_effect_validation.py
+checking file cpn/rpnh/registry/module_effects.py
+checking file cpn/rpnh/registry/static_lease_claims.py
+checking file cpn/rpnh/runtime_net.py
+checking file docs/guides/static-lease-reads.md
+checking file docs/guides/static-lease-reads_ZH.md
+checking file tests/test_static_lease_exact_selection.py
+checking file tests/test_static_lease_interactions.py
+checking file tests/test_static_lease_reads.py

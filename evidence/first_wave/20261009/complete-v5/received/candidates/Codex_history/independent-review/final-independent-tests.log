@@ -1,0 +1,5 @@
+...................................................{"scenario": "three_committed_one_failed_items_limit_1", "connections": 178, "writable_connections": 0, "elapsed_seconds": 0.263004, "claim": "one-fixture measurement, not a scalability bound"}
+..................... [ 56%]
+........................................................                 [100%]
+- generated xml file: /workspace/scratch/18c810e6dd59/rpnh-codex-history-projection/independent-review/final-independent-tests.xml -
+128 passed in 105.65s (0:01:45)

@@ -1,0 +1,16 @@
+{
+  "head": "d92ff3704b6002bf5ecbccb3e6a3d1489809a805",
+  "kind": "focused cpn overlay; not full HEAD checkout",
+  "files": [
+    {
+      "path": "cpn/rpnh/registry/run_authority.py",
+      "git_blob": "6acb261942626238e88e5949b2ce87b35e4450f5",
+      "sha256": "7475c2d5403dea49dc0a45796a3f84beab6c7516f18466bc8e1338bf0be684e3"
+    },
+    {
+      "path": "cpn/rpnh/task_control.py",
+      "git_blob": "265610e6b96bef0f3d1c452f532afeab3d3caeb8",
+      "sha256": "b8658b6c19d64eb4bc34a9c320c84a9140cab624e236ffe8c8edfcc7bd026729"
+    }
+  ]
+}

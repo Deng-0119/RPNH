@@ -1,0 +1,51 @@
+{
+  "status": "READY",
+  "utc": "2026-10-09T03:30:48.627844+00:00",
+  "execution": "NOT_RUN awaiting explicit SLOT_GRANTED",
+  "product_imports": 0,
+  "pytest_executions": 0,
+  "native_executions": 0,
+  "files": [
+    {
+      "path": "<WORKSPACE>/task-complete-v5-20261009/stages/core/S1/native/test_native_s1.py",
+      "bytes": 24025,
+      "compile": "PASS"
+    },
+    {
+      "path": "<WORKSPACE>/task-complete-v5-20261009/stages/core/S1/native/run_batch.py",
+      "bytes": 10350,
+      "compile": "PASS"
+    }
+  ],
+  "source": ".v26/c1 (1f191645 + S1); readonly",
+  "runtime": ".v26/unS1-aNNN-0 through .v26/unS1-aNNN-9; fresh attempt and basetemp only",
+  "seven_scene_mapping": {
+    "g1": "test_g1_shared_transitions: two Harness firings sharing exact lease; settle 2->1->0",
+    "g2": "test_g2_same_transition: two consuming occurrences, same exact lease",
+    "g3": "test_g3_stop_retains_unresolved: stop admissions, retain two declared execution_block claims; no invented Success",
+    "g4": "test_g4_durable_reentry: HOST durable completion before Success, transport close, supported resume and repeat",
+    "g5": "test_g5_coexistence: union / variable produce consume-return / ordinary data read / ordinary control read",
+    "g6": "test_g6_exact_selection: direct bad/default reject + direct exact admission + native HOST settlement",
+    "g7": "test_g7_dynamic_drain_adoption: active DRAINING, settled exact mapping, lease retirement rejection; direct reset compiler rejection"
+  },
+  "gaps": [
+    "No OS crash or external worker-process proof: original deterministic HOST Future in owner process.",
+    "G6 exact admission is direct Registry, not native selector search; default dead-first liveness unchanged.",
+    "G7 reset rejection is direct compiler, not runtime/native reset.",
+    "H7 full future is unimplemented and excluded.",
+    "Runtime behavior has not been tested; static compilation only.",
+    "Two live claims do not prove parallel HOST threads or worker Popen."
+  ],
+  "planned_command": [
+    "<WORKSPACE>/.p26/v/bin/python",
+    "<WORKSPACE>/task-complete-v5-20261009/stages/core/S1/native/run_batch.py",
+    "--slot-granted"
+  ],
+  "expected_finite_cases": 10,
+  "runtime_budget_bytes": 536870912,
+  "minimum_windows_D_free_bytes": 26843545600,
+  "task_plus_v26_ceiling_bytes": 8589934592,
+  "next": "Parent sends SLOT_GRANTED; then execute one sequential batch, retain local DBs, extract evidence and report PASS/FAIL/NOT_RUN.",
+  "attempt_evidence": "native/aNNN: frozen probe/runner source, g*.json, stdout/stderr, JUnit and result; previous attempts never overwritten. native/result.json is latest aggregate.",
+  "source_final_identity": "final observed inventory SHA256 + baseline comparison + pre/post equality"
+}

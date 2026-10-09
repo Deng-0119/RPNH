@@ -1,0 +1,5 @@
+...................................................{"scenario": "three_committed_one_failed_items_limit_1", "connections": 178, "writable_connections": 0, "elapsed_seconds": 0.141918, "claim": "one-fixture measurement, not a scalability bound"}
+..................... [ 60%]
+...............................................                          [100%]
+- generated xml file: <WORKSPACE>/task-complete-v5-20261009/stages/codex/resume-history-offline.xml -
+119 passed, 1 deselected in 170.07s (0:02:50)

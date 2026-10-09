@@ -1,0 +1,677 @@
+FILE <WORKSPACE>/task-complete-v5-20261009/raw/RPNH_R1_Inert_Iteration_Profile_v2_Terminal_Fix_20261008/RPNH_R1_Inert_Iteration_Profile_v2/REPLACEMENT_NOTICE_ZH.md
+# R1 交付修订 v2：替换旧包，勿合入 v1
+
+本包替换 `RPNH_R1_Inert_Iteration_Profile_20261008.zip`。旧包 SHA-256：
+
+`aa210453d56af6ae3ed1658b48edb490db9ee61ce0c1566a0633670dbee912cc`
+
+旧补丁 SHA-256：
+
+`cad3873f4225c326c1dc4ebff2a382c8de9b9ffb0e8d372fbb296f07200f9a45`
+
+旧冻结目录、源码、ZIP 和先前测试记录均保持原样；本修订不覆盖它们，也不改写旧测试事实。旧包曾通过纯 compiler/schema 检查，但输出的 terminal `config={}` 缺少既有 native `run_outcome`。实际 Registry 可以完成三个操作而保持 running，不能据旧纯测试结论宣称能发布 run terminal。因此旧包撤回合入建议，由此 v2 替换。
+
+## 两条补丁路径只能选一条
+
+- 没有应用旧 R1：使用 `inert-iteration-profile-v2-full.patch`，从主线增加全部六个修订文件。SHA-256：`67466bfc13a685dd79dc26d0c0c2f0a33b7016553ccf53728b57906cc2f10ac3`。
+- 已应用旧 R1 且六文件逐字匹配旧 hash：只使用 `r1-v1-to-v2-terminal.delta.patch`。SHA-256：`40da4de0316e5fcb07276fcc159c7277403eef942df4769ad361e5f40804e72d`。
+
+不要先后应用两个补丁。两条路径均已 fresh apply/check，并验证产生同样的六文件 final hash。发生重叠或旧文件不匹配时停止，不强行 apply、不覆盖用户改动。
+
+## 接口修订义务
+
+profile 新增必填 `terminal_outcomes`，三项 `stop`、`final_select`、`final_retain` 均必须显式填写 `complete` 或 `failed`。compiler 原样写入已有 `TerminalBinding.config.run_outcome`。旧 profile 缺少该字段会 fail closed；不再通过 example/HOST 修改 Module 补配置。
+
+v2 指交付包修订号。旧 R1 尚未主线发布，本次保留候选 schema `rpnh/iteration_profile/v1` 和模板 `propose_evaluate_select/v1` 的名称，但明确是未发布接口的内容修订，**不宣称旧 profile wire 向后兼容**。已实例化/注册过的实验产物不应静默替换其 schema authority 或 runtime net。
+
+预算修正保持不变：`native_model_call_budget` 保留原 registered returned-model-call 单位，与轮数独立；不重新引入 operation-attempt 计数器。模型绑定仍 inert；无 campaign、模型、训练、socket、登录、付费、Actions、安装或 push。
+
+FILE <WORKSPACE>/task-complete-v5-20261009/raw/RPNH_R1_Inert_Iteration_Profile_v2_Terminal_Fix_20261008/RPNH_R1_Inert_Iteration_Profile_v2/COMMANDS.md
+# Executed checks for delivery revision 2
+
+The previous frozen R1 directory and ZIP were not overwritten. Current environment catalog was empty, so this assigned repair continued in an isolated cloud workspace using the already available test venv; no dependency installation.
+
+1. Read current main/root AGENTS and native `TerminalBinding`, `module_terminal`, `RunOwner` and reader sources. Current main was 715468d. Created a separate source/baseline directory with only the two previously verified committed H1 cpn overlays, not unmerged work.
+2. `PYTHON -m pytest -q tests/test_iteration_profile.py -k 'terminal_mapping or terminal_host or real_registry or historical_empty or provisional_outputs or owner_interruption' --junitxml=../terminal-first.xml` → 16 passed, 51 deselected. This is 7 compiler cases and 9 real Registry-step cases, not 16 Registry tests.
+3. Ran the untouched frozen old R1 compile API with an explicit old-compatible HOST registration to produce historical-r1-module.json. The revised negative control exactly matches its canonical digest; no old profile was accepted by the new schema.
+4. Final source: `PYTHON -m pytest -q tests/test_iteration_profile.py tests/test_compiler_json_contract.py --junitxml=../final-tests.xml` → 150 passed, 0 failed, 0 skipped, 0 deselected in 174.42s. Of these, 141 are pure compiler/schema checks and 9 actual Registry terminal-step integrations. This set includes the earlier targeted cases; do not add them again.
+5. `PYTHON -m py_compile cpn/rpnh/iteration_profile.py tests/test_iteration_profile.py` → pass.
+6. `python freeze.py` generated two alternative patches. Full and predecessor-delta routes each passed fresh `git apply --check` and `git apply`; both yielded exactly the same six final SHA-256 files. All unchanged baseline source files and all old frozen source hashes were preserved.
+7. Independent review separately ran 33 successor compiler tests plus 3 Registry integrations, including a settled final product followed by owner stop, which still prevents terminal publication. The old candidate's 6 negative checks are evidence about its defect, not passes of the successor. See review artifacts for exact commands and identities.
+
+`PYTHON` was the existing rpnh-recovery-20261003/source/.venv/bin/python, with imports resolved from this revision's source. The Registry integrations use original start_run/RunOwner steps and actual temporary SQLite/resource persistence; socket/socketpair/subprocess and HOST business callbacks are prohibited in those test probes. No Orchestrator/event-loop transport, provider/model, campaign, training, login, payment, installation, Actions, push or external publication was performed. Actual persisted physical outcome_unknown/recovery remains untested.
+
+Final read-only remote check found main advanced to d92ff370, parent 715468d, containing H2a changes to run_authority.py/task_control.py. This is recorded in final-head-drift.json; the frozen source/tests remained based on 715468d and were not retested against d92ff370 in this package. No patch paths conflict, but a latest-main native-reader compatibility gate is still required before integration.
+
+FILE <WORKSPACE>/task-complete-v5-20261009/raw/RPNH_R1_Inert_Iteration_Profile_v2_Terminal_Fix_20261008/RPNH_R1_Inert_Iteration_Profile_v2/review/test_terminal_revision_independent.py
+"""Successor mapping checks; no Registry, callback, socket or model execution."""
+from itertools import product
+import json
+from pathlib import Path
+import pytest
+from cpn.rpnh.iteration_profile import IterationProfile, compile_iteration_profile
+from cpn.rpnh.executable_net import load_compiled_net
+from test_inert_profile_independent import document, registration
+
+
+@pytest.mark.parametrize('rounds', [1, 2, 32])
+@pytest.mark.parametrize('values', list(product(('complete', 'failed'), repeat=3)))
+def test_all_explicit_classification_combinations(rounds, values):
+    data = document(rounds)
+    mapping = dict(zip(('stop', 'final_select', 'final_retain'), values))
+    data['terminal_outcomes'] = mapping.copy()
+    prepared = compile_iteration_profile(IterationProfile.from_dict(data), registration=registration(data))
+    terminals = (prepared.module.terminal, *prepared.module.terminal_alternatives)
+    assert len(terminals) == rounds + 2
+    for terminal in terminals:
+        key = 'stop' if terminal.outcome == 'stop' else 'final_' + terminal.outcome
+        assert terminal.config == {'run_outcome': mapping[key]}
+    assert next(t for t in terminals if t.source.component == f'round_{rounds}_selector' and t.outcome == 'stop').config == {'run_outcome': mapping['stop']}
+    assert load_compiled_net(prepared.compiled.to_json()).to_dict() == prepared.compiled.to_dict()
+    data['terminal_outcomes']['stop'] = 'invalid-after-construction'
+    assert prepared.profile.to_dict()['terminal_outcomes'] == mapping
+
+
+@pytest.mark.parametrize('mapping', [None, {}, {'stop': 'complete'},
+    {'stop': 'complete', 'final_select': 'complete', 'final_retain': 'unknown'},
+    {'stop': 'complete', 'final_select': 'complete', 'final_retain': True},
+    {'stop': 'complete', 'final_select': 'complete', 'final_retain': 'complete', 'owner_stop': 'complete'},
+])
+def test_missing_or_ambiguous_classification_is_rejected(mapping):
+    data = document()
+    if mapping is None: data.pop('terminal_outcomes')
+    else: data['terminal_outcomes'] = mapping
+    with pytest.raises((ValueError, RuntimeError)):
+        IterationProfile.from_dict(data)
+
+
+@pytest.mark.parametrize('rounds', [1, 2, 3])
+def test_successor_topology_preserves_exact_frozen_source_except_declared_terminal_config(rounds):
+    data = document(rounds)
+    prepared = compile_iteration_profile(IterationProfile.from_dict(data), registration=registration(data))
+    old = json.loads((Path(__file__).parent / f'frozen-module-rounds-{rounds}.json').read_text())
+    updated = prepared.module.to_dict()
+    for terminal in (updated['terminal'], *updated['terminal_alternatives']):
+        terminal['config'] = {}
+    assert updated == old
+
+FILE <WORKSPACE>/task-complete-v5-20261009/raw/RPNH_R2_Single_Registry_Validation_20261008/RPNH_R2_Single_Registry_Validation_20261008/LOCAL_RETURN_TASK_ZH.md
+# R2 本地零模型验收与证据回传任务书
+
+## 目标与输入
+
+在用户已有授权且支持AF_UNIX的正常Linux/WSL2环境验证R2五文件补丁。依赖已交付R1v2，
+不能沿用旧R1的空terminal config，也不能在runtime补config绕过编译器。
+
+- R2 patch SHA256：5054c53cc61bb03fdc58a1da6f7e56b41decc0ccb78124478effc38b2bf93e52。
+- R1v2 full patch：67466bfc13a685dd79dc26d0c0c2f0a33b7016553ccf53728b57906cc2f10ac3。
+- 若工作区已应用旧R1，后继delta为40da4de0316e5fcb07276fcc159c7277403eef942df4769ad361e5f40804e72d。
+  full与delta是替代路径，不能同时apply。已经修订的工作区不重复apply。
+- 作者主测试base715468d＋明确R1v2；后来d92ff370(H2a)仅做独立小范围reader组合检查。
+  本地记录实际HEAD和全部existing diff，不继承作者的base标签。
+
+## 安全与停止线
+
+仅使用现有Python测试环境；不安装、不登录、不调用模型/API、不跑真实campaign、不触发
+Actions、不自动push/merge。遇socket、权限、ownership、安全守卫失败，保留原始失败，
+不要换权限、放宽guard、改socket实现或用pipe结果冒称native。保留用户已有改动。
+如果路径重叠或R1/R2 hashes不符，先报告具体差异，不强行覆盖。
+
+## 验收步骤
+
+1. 记录UTC开始、repo/HEAD、git status --short、已有diff/untracked、Python可执行文件/
+   版本、pytest/jsonschema及cpn/iteration_profile实际import路径。核对root AGENTS.md。
+2. 确认R1v2与file-manifest五R2文件一致；仅在未应用时git apply --check后apply。
+3. 运行原依赖与无socket集，输出原stdout/stderr和合法JUnit：
+
+```bash
+python -m pytest -q tests/test_iteration_profile.py tests/test_compiler_json_contract.py -o junit_family=xunit1 --junitxml="$OUT/r1-compiler.xml"
+python -m pytest -q examples/rsi_workflows/tests/test_runtime.py -k 'not original_orchestrator' -o junit_family=xunit1 --basetemp="$OUT/rsi-step-runs" --junitxml="$OUT/rsi-step.xml"
+```
+
+4. 用默认真实OwnerEventLoop跑完整四项；不得传--rsi-transport=pipe：
+
+```bash
+python -m pytest -q examples/rsi_workflows/tests/test_runtime.py -k original_orchestrator -o junit_family=xunit1 --basetemp="$OUT/rsi-native-runs" --junitxml="$OUT/rsi-native.xml"
+```
+
+5. 如需重現作者D0 pipe结果，单列日志/XML及D0标签，不能覆盖native窗口。作者已有
+   AF_UNIX EPERM日志应保留在历史证据中，新通过不倒写旧窗口。
+6. 对固定basetemp生成的Registry进行只读reader/status复核，可使用本包h2a_readback.py
+   （在actual repo中，PYTHONPATH指向该repo，传固定basetemp与输出JSON）。此脚本只读，
+   不创建owner、writer或调用operation。先核其来源和import路径，不混到其他安装态。
+
+## 必须回传的事实
+
+- 原生transport确为OwnerEventLoop/AF_UNIX，四项各自verdict、process exit和UTC窗口；
+  1/2/4轮分别3/6/12次operation；正常stop仅3次。不得把fake模型等同真实provider。
+- 缺本轮evaluation、已products未settled均不启用selector；wrong candidate/父state/round
+  不产生选择；修改/删除report不改变PN准入。返回确切失败/未执行项，不仅总数。
+- candidate/evaluation/selection、跨轮state和terminal资源的精确refs；JUnit中的
+  exact_lineage/runtime_evidence可作为轻量证据，不回传凭据或全部原始Registry DB。
+- domain UNKNOWN正常retain有效incumbent；角色异常、未settled不终态。explicit failed
+  回读仍failed；正常协议stop与owner interruption分清。原R1v2另有owner-stop回归。
+- reader使用同一个cut，输出后assert_unchanged；检查读前后event head、checkpoint、
+  writer epoch及canonical DB/immutable objects/非空WAL不变。SQLite只读连接可能创建
+  SHM/空WAL，应单独记录，不能称目录物理零写；不得用immutable=1绕过WAL核验。
+  若authority并发变化，应拒绝旧结果，不补写终态。
+- 原actual_model_call_counts为(0,0)，cap1不解释成一个operation。无额外模型/网络调用。
+- 最终源码SHA、补丁apply结果、实际HEAD与既有diff、环境import证据、独立审查报告。
+
+## 不宣称通过的范围
+
+本任务不覆盖真实provider、registered-model scripted port、训练、正式physical
+outcome_unknown记录、owner-stop/resume的完整竞态、author/CAS、跨child预算或RRSI
+campaign PN迁移。它只补本例真实AF_UNIX及相应只读结果闭包。若后续获授权提交推送，
+另核远端exact commit和相关checks；本任务书本身不新增发布授权。
+
+FILE <WORKSPACE>/task-complete-v5-20261009/raw/RPNH_R2_Single_Registry_Validation_20261008/RPNH_R2_Single_Registry_Validation_20261008/r1-successor-overlay.json
+{
+  "source": "rpnh-rsi-profile-terminal-revision/source",
+  "frozen_old_r1_unmodified": true,
+  "files": [
+    {
+      "path": "cpn/rpnh/iteration_profile.py",
+      "sha256": "4c0fb7c2bc93543b037614a3813c50b34172cf1f9942c8c22e20a3772efa3a5a",
+      "bytes": 12798
+    },
+    {
+      "path": "cpn/schemas/rpnh/iteration_profile.v1.schema.json",
+      "sha256": "35eb384b7258be35dd3e617396fd74341c3ab8dbc63cd58430d4959193160e15",
+      "bytes": 4908
+    },
+    {
+      "path": "cpn/examples/iteration_profile/propose_evaluate_select.json",
+      "sha256": "05f1340c45fad7d27db654a197c9a920530b0b9a4ae5e0747705f0604e1c9231",
+      "bytes": 1006
+    },
+    {
+      "path": "cpn/examples/iteration_profile/README.md",
+      "sha256": "9f545a4f2672b7ed119cb108686a45eb2064c54f32b2b40bd62e039f8c765cb0",
+      "bytes": 12004
+    },
+    {
+      "path": "cpn/examples/iteration_profile/README_ZH.md",
+      "sha256": "7e1835b3bc1c0b112a7dca0e8c7fd97700d4a8a79759e8cf691afe2e72a78af5",
+      "bytes": 10500
+    },
+    {
+      "path": "tests/test_iteration_profile.py",
+      "sha256": "17fe93f40830912043a406dd28684451748baf36fdb37e6b6774d0a146118eaa",
+      "bytes": 26383
+    }
+  ]
+}
+
+FILE <WORKSPACE>/task-complete-v5-20261009/raw/RPNH_R2_Single_Registry_Validation_20261008/RPNH_R2_Single_Registry_Validation_20261008/source/examples/rsi_workflows/deterministic.py
+"""Synthetic pure HOSTs for the existing bounded iteration Module.
+
+No run, scheduler, admission, provider, mutable winner or external state lives
+here. Only the existing owner may publish/settle the returned product bytes.
+The integer-distance condition is an example, unrelated to frozen RRSI scores.
+"""
+from __future__ import annotations
+
+import json
+
+from cpn.components.basic import register_basic_components
+from cpn.rpnh.iteration_profile import IterationProfile
+from cpn.rpnh.registration import Registration
+from cpn.rpnh.registry.schema_catalog import canonical_json
+
+
+STATE = "application/synthetic_iteration_state/v1"
+CANDIDATE = "application/synthetic_iteration_candidate/v1"
+REQUEST = "application/synthetic_iteration_request/v1"
+EVALUATION = "application/synthetic_iteration_evaluation/v1"
+CONFIG = "application/synthetic_iteration_config/v1"
+TERMINAL_CONFIG = "application/synthetic_iteration_terminal_config/v1"
+TERMINAL = "example/synthetic_iteration_terminal/v1"
+SCORER = "integer_absolute_distance/v1"
+
+
+def _object(properties):
+    return {"type": "object", "properties": properties,
+            "required": list(properties), "additionalProperties": False}
+
+
+def _nullable(schema):
+    return {"anyOf": [schema, {"type": "null"}]}
+
+
+_STRING = {"type": "string", "minLength": 1}
+_INTEGER = {"type": "integer"}
+_ROUND = {"type": "integer", "minimum": 1, "maximum": 32}
+_RESOURCE = _object({"resource_id": _STRING, "resource_version_id": _STRING})
+_BINDING = _object({"entity_type": {"const": "operation_binding/v1"},
+                    "logical_id": _STRING, "version_id": _STRING})
+_DECISION = _object({
+    "outcome": {"enum": ["select", "retain", "stop"]},
+    "candidate_selected": {"type": "boolean"},
+    "incumbent_ref": _RESOURCE, "candidate_ref": _RESOURCE,
+    "evaluation_ref": _RESOURCE, "request_ref": _RESOURCE,
+    "scorer_binding_ref": _BINDING,
+})
+SCHEMAS = {
+    STATE: _object({"round": {"type": "integer", "minimum": 0, "maximum": 32},
+        "value": _INTEGER, "selected_candidate_ref": _nullable(_RESOURCE),
+        "parent_state_ref": _nullable(_RESOURCE), "decision": _nullable(_DECISION)}),
+    CANDIDATE: _object({"round": _ROUND, "value": _INTEGER,
+        "incumbent_value": _INTEGER, "parent_state_ref": _RESOURCE}),
+    REQUEST: _object({"round": _ROUND, "target": _INTEGER,
+        "scorer": {"const": SCORER}, "status": {"enum": ["known", "unknown"]},
+        "stop": {"type": "boolean"}}),
+    EVALUATION: _object({"round": _ROUND, "candidate_ref": _RESOURCE,
+        "parent_state_ref": _RESOURCE, "request_ref": _RESOURCE,
+        "scorer_binding_ref": _BINDING, "scorer": {"const": SCORER},
+        "status": {"enum": ["known", "unknown"]},
+        "candidate_score": _nullable(_INTEGER), "incumbent_score": _nullable(_INTEGER),
+        "stop": {"type": "boolean"}}),
+    CONFIG: _object({}),
+    TERMINAL_CONFIG: {"type": "object", "properties": {
+        "run_outcome": {"enum": ["complete", "failed"]}}, "additionalProperties": False},
+}
+
+
+def resource_ref(ref):
+    return {"resource_id": str(ref.resource_id),
+            "resource_version_id": str(ref.resource_version_id)}
+
+
+def _version_ref(ref):
+    return {"entity_type": ref.entity_type, "logical_id": str(ref.entity_id),
+            "version_id": str(ref.version_id)}
+
+
+def _input(execution, schema):
+    """Resolve the sole declared port of this example's chosen content schema."""
+    ports = {port.port_id for port in execution.operation.spec.input_ports
+             if port.content_schema_id == schema}
+    matches = [item for item in execution.operation.inputs if item.port_id in ports]
+    if len(matches) != 1:
+        raise ValueError("synthetic HOST requires one exact claimed input per schema")
+    item = matches[0]
+    return json.loads(item.consumer_payload), resource_ref(item.resource_ref)
+
+
+def _component(execution):
+    component = execution.operation.firing.transition_id.rsplit(".", 1)[0]
+    return component, int(component.split("_")[1])
+
+
+def propose(*, execution):
+    state, state_ref = _input(execution, STATE)
+    component, round_number = _component(execution)
+    if state["round"] + 1 != round_number:
+        raise ValueError("state does not belong to this declared round")
+    return "proposed", {
+        component + ".incumbent": (canonical_json({**state, "parent_state_ref": state_ref}),),
+        component + ".candidate": (canonical_json({"round": round_number,
+            "value": state["value"] + 1, "incumbent_value": state["value"],
+            "parent_state_ref": state_ref}),),
+    }
+
+
+def evaluate(*, execution):
+    candidate, candidate_ref = _input(execution, CANDIDATE)
+    request, request_ref = _input(execution, REQUEST)
+    component, round_number = _component(execution)
+    if not candidate["round"] == request["round"] == round_number:
+        raise ValueError("evaluation inputs do not belong to the same declared round")
+    known = request["status"] == "known"
+    value = {"round": round_number, "candidate_ref": candidate_ref,
+        "parent_state_ref": candidate["parent_state_ref"], "request_ref": request_ref,
+        "scorer_binding_ref": _version_ref(execution.operation.operation_binding.operation_binding_ref),
+        "scorer": SCORER, "status": request["status"], "stop": request["stop"],
+        "candidate_score": abs(candidate["value"] - request["target"]) if known else None,
+        "incumbent_score": abs(candidate["incumbent_value"] - request["target"]) if known else None}
+    return "evaluated", {component + ".evaluation": (canonical_json(value),)}
+
+
+def select(*, execution):
+    incumbent, incumbent_ref = _input(execution, STATE)
+    candidate, candidate_ref = _input(execution, CANDIDATE)
+    evaluation, evaluation_ref = _input(execution, EVALUATION)
+    component, round_number = _component(execution)
+    # Business consistency checks after native admission, never admission rules.
+    if (not candidate["round"] == evaluation["round"] == round_number
+            or incumbent["round"] + 1 != round_number
+            or evaluation["candidate_ref"] != candidate_ref
+            or not candidate["parent_state_ref"] == incumbent["parent_state_ref"]
+                    == evaluation["parent_state_ref"]
+            or candidate["incumbent_value"] != incumbent["value"]):
+        raise ValueError("selection inputs lack exact same-round candidate/evaluation lineage")
+    scores = (evaluation["candidate_score"], evaluation["incumbent_score"])
+    if ((evaluation["status"] == "known" and any(type(s) is not int for s in scores))
+            or (evaluation["status"] == "unknown" and scores != (None, None))):
+        raise ValueError("evaluation status does not match its score evidence")
+    selected = evaluation["status"] == "known" and scores[0] < scores[1]
+    outcome = "stop" if evaluation["stop"] else "select" if selected else "retain"
+    state = {"round": round_number,
+        "value": candidate["value"] if selected else incumbent["value"],
+        "selected_candidate_ref": candidate_ref if selected else incumbent["selected_candidate_ref"],
+        "parent_state_ref": incumbent_ref,
+        "decision": {"outcome": outcome, "candidate_selected": selected,
+            "incumbent_ref": incumbent_ref, "candidate_ref": candidate_ref,
+            "evaluation_ref": evaluation_ref, "request_ref": evaluation["request_ref"],
+            "scorer_binding_ref": evaluation["scorer_binding_ref"]}}
+    return outcome, {component + (".stop" if outcome == "stop" else ".next"):
+                     (canonical_json(state),)}
+
+
+def _terminal_not_callable(*args, **kwargs):
+    raise AssertionError("the existing terminal binding is publication authority, not a callback")
+
+
+def registration():
+    """Explicit trusted HOST installation; no Registry or run is created."""
+    result = Registration()
+    register_basic_components(result)
+    for name, body in SCHEMAS.items():
+        result.register_schema(name, {"$id": name,
+            "$schema": "http://json-schema.org/draft-07/schema#", **body})
+    for role, function in (("proposer", propose), ("evaluator", evaluate), ("selector", select)):
+        result.register_executor("example/synthetic_iteration_" + role + "/v1", function,
+            identity={"implementation_id": "synthetic_iteration_" + role, "revision": "v1"},
+            contracts={"transport": "deterministic", "input_ports": None,
+                       "output_ports": None, "config_schema": CONFIG})
+    result.register_tool(TERMINAL, _terminal_not_callable,
+        identity={"implementation_id": "synthetic_iteration_terminal", "revision": "v1"},
+        contracts={"binding_protocol": "rpnh/module_terminal/v1", "config_schema": TERMINAL_CONFIG})
+    return result
+
+
+def profile(rounds=2):
+    """Inert R1 author data, with native model-call cap independent of rounds."""
+    return IterationProfile.from_dict({"schema_version": "rpnh/iteration_profile/v1",
+        "template": "propose_evaluate_select/v1", "name": "SyntheticIteration", "rounds": rounds,
+        "schemas": {"state": STATE, "candidate": CANDIDATE,
+                    "evaluation_request": REQUEST, "evaluation": EVALUATION},
+        "roles": {role: {"executor_key": "example/synthetic_iteration_" + role + "/v1",
+                         "model_profile_ref": None} for role in ("proposer", "evaluator", "selector")},
+        "terminal_key": TERMINAL,
+        "terminal_outcomes": {"stop": "complete", "final_select": "complete", "final_retain": "complete"},
+        "native_model_call_budget": {"unit": "registered_model_call", "maximum": 1}})
+
+FILE <WORKSPACE>/task-complete-v5-20261009/raw/RPNH_R2_Single_Registry_Validation_20261008/RPNH_R2_Single_Registry_Validation_20261008/source/examples/rsi_workflows/tests/test_runtime.py
+"""R2 real Registry steps plus the original Orchestrator with explicit transport.
+
+The named step helper is a test probe, not a loop, scheduler or permission rule.
+Native tests default to genuine AF_UNIX. --rsi-transport=pipe is a labelled D0
+transport double reused unchanged from the existing tool_pipeline test fixture.
+"""
+from concurrent.futures import Future
+import json
+import socket
+import subprocess
+
+import pytest
+
+from cpn.orchestrator.runner import Orchestrator
+from cpn.rpnh.harness import OperationDispatch, OperationProducts
+from cpn.rpnh.iteration_profile import IterationProfile, compile_iteration_profile
+from cpn.rpnh.marking import TeamNetMarking
+from cpn.rpnh.registry._registry import _RegistryCore
+from cpn.rpnh.registry.module_runtime import hydrate_module_runtime
+from cpn.rpnh.registry.resource_service import _ResourceServiceKernel
+from cpn.rpnh.registry.run_authority import read_run_execution, read_run_terminal_bytes
+from cpn.rpnh.registry.schema_catalog import canonical_json
+from cpn.rpnh.run import OwnerInput, start_run
+from examples.rsi_workflows import deterministic as example
+
+
+def owner(tmp_path, rounds=2, *, target=3, unknown=False, stop=False, terminal_outcomes=None):
+    registration = example.registration()
+    profile = example.profile(rounds)
+    if terminal_outcomes is not None:
+        value = profile.to_dict()
+        value["terminal_outcomes"] = terminal_outcomes
+        profile = IterationProfile.from_dict(value)
+    prepared = compile_iteration_profile(profile, registration=registration)
+    state = OwnerInput(example.STATE, canonical_json({"round": 0, "value": 0,
+        "selected_candidate_ref": None, "parent_state_ref": None, "decision": None}), "Synthetic initial state")
+    inputs = {"initial_state": state}
+    for n in range(1, rounds + 1):
+        inputs[f"round_{n}_evaluation_request"] = OwnerInput(example.REQUEST,
+            canonical_json({"round": n, "target": target, "scorer": example.SCORER,
+                            "status": "unknown" if unknown else "known", "stop": stop}),
+            "Synthetic validation data; no model or external service")
+    run = start_run(prepared.module,
+        registration, run_dir=tmp_path / "run", task_input=state, entry_inputs=inputs,
+        budgets=prepared.budgets, model_condition="synthetic-pure-integer-distance-v1",
+        owner_statement="Deterministic offline fixture; no provider or external actions",
+        command_id="rsi:test:start")
+    return run, prepared
+
+
+def enabled(run):
+    _, structure, marking = hydrate_module_runtime(run._core)
+    return set(TeamNetMarking.from_authority(structure, marking).enabled_transitions())
+
+
+def start(run, transition):
+    admission = run.admit(transition, logical_tau=0, command_id="admit:" + transition)
+    assert admission is not None
+    return run.start(admission, command_id="start:" + transition)
+
+
+def products(run, execution):
+    executor = run.registration.resolve("executor", execution.operation.spec.executor_key)
+    outcome, values = executor(execution=execution)
+    return run.products(execution, outcome_id=outcome, products=values,
+                        command_id="products:" + execution.operation.firing.transition_id)
+
+
+def step(run, transition):
+    execution = start(run, transition)
+    outputs = products(run, execution)
+    run.succeed(outputs, command_id="success:" + transition)
+    return execution, outputs
+
+
+def body(run, output):
+    return json.loads(run._core.object_store.read_registered(
+        run._core.get_version(output.resource_ref.resource_version_id)))
+
+
+def by_schema(execution, schema):
+    ports = {p.port_id for p in execution.operation.spec.input_ports if p.content_schema_id == schema}
+    item, = (i for i in execution.operation.inputs if i.port_id in ports)
+    return item
+
+
+def snapshot(run):
+    return run._core.event_store.max_ordinal(), hydrate_module_runtime(run._core)[2].checkpoint_ref
+
+
+@pytest.fixture
+def deny_external(monkeypatch):
+    def forbidden(*args, **kwargs):
+        raise AssertionError("pure Registry-step test must not use socket or subprocess")
+    monkeypatch.setattr(socket, "socket", forbidden)
+    monkeypatch.setattr(socket, "socketpair", forbidden)
+    monkeypatch.setattr(subprocess, "Popen", forbidden)
+
+
+def test_missing_unsettled_or_report_evaluation_cannot_admit_selector(tmp_path, deny_external):
+    run, _ = owner(tmp_path)
+    assert enabled(run) == {"round_1_proposer.run"}
+    before = snapshot(run)
+    assert run.admit("round_1_selector.run", logical_tau=0, command_id="missing:all") is None
+    assert snapshot(run) == before
+    step(run, "round_1_proposer.run")
+    report = tmp_path / "untrusted-report.json"
+    report.write_text('{"round": 1, "evaluated": true, "winner": "candidate", "status": "terminal"}')
+    before = snapshot(run)
+    assert run.admit("round_1_selector.run", logical_tau=0, command_id="missing:evaluation") is None
+    report.unlink()
+    assert snapshot(run) == before
+    execution = start(run, "round_1_evaluator.run")
+    outputs = products(run, execution)
+    before = snapshot(run)
+    assert run.admit("round_1_selector.run", logical_tau=0, command_id="unsettled:evaluation") is None
+    assert snapshot(run) == before
+    assert run.terminal() is None
+    read = read_run_execution(run._core, _ResourceServiceKernel(run._core))
+    assert read.status == "running" and read.terminal is None
+    run.succeed(outputs, command_id="settle:evaluation")
+    assert enabled(run) == {"round_1_selector.run"}
+    assert run._core.event_store.actual_model_call_counts() == (0, 0)
+
+
+def test_exact_lineage_and_stale_previous_round_do_not_enable_next_selector(tmp_path, deny_external, record_property):
+    run, _ = owner(tmp_path)
+    proposer, proposed = step(run, "round_1_proposer.run")
+    evaluator, evaluated = step(run, "round_1_evaluator.run")
+    selector, selected = step(run, "round_1_selector.run")
+    candidate = by_schema(evaluator, example.CANDIDATE)
+    assert by_schema(selector, example.CANDIDATE).resource_ref == candidate.resource_ref
+    assert by_schema(selector, example.EVALUATION).resource_ref == evaluated.outputs[0].resource_ref
+    assert body(run, evaluated.outputs[0])["candidate_ref"] == example.resource_ref(candidate.resource_ref)
+    assert body(run, evaluated.outputs[0])["request_ref"] == example.resource_ref(by_schema(evaluator, example.REQUEST).resource_ref)
+    assert body(run, evaluated.outputs[0])["scorer_binding_ref"]["version_id"] == str(evaluator.operation.operation_binding.operation_binding_ref.version_id)
+    final = body(run, selected.outputs[0])
+    assert final["decision"]["evaluation_ref"] == example.resource_ref(evaluated.outputs[0].resource_ref)
+    assert final["decision"]["candidate_ref"] == example.resource_ref(candidate.resource_ref)
+    proposer2, _ = step(run, "round_2_proposer.run")
+    assert by_schema(proposer2, example.STATE).resource_ref == selected.outputs[0].resource_ref
+    before = snapshot(run)
+    assert run.admit("round_2_selector.run", logical_tau=0, command_id="stale:previous-round") is None
+    assert snapshot(run) == before
+    # The old evaluation exists in this Registry, but no token occupies round 2's input place.
+    assert enabled(run) == {"round_2_evaluator.run"}
+    assert {p.content_schema_id for p in proposer.operation.spec.input_ports} == {example.STATE}
+    assert {p.content_schema_id for p in proposer2.operation.spec.input_ports} == {example.STATE}
+    record_property("exact_lineage", json.dumps({
+        "evaluation": body(run, evaluated.outputs[0]),
+        "selection": final, "selection_ref": example.resource_ref(selected.outputs[0].resource_ref),
+        "round_2_state_ref": example.resource_ref(by_schema(proposer2, example.STATE).resource_ref)}, sort_keys=True))
+
+
+@pytest.mark.parametrize("target,unknown,expected", [(3, False, "select"), (0, False, "retain"), (3, True, "retain")])
+def test_select_retain_unknown_and_native_terminal_read(tmp_path, deny_external, target, unknown, expected):
+    run, _ = owner(tmp_path, rounds=1, target=target, unknown=unknown)
+    step(run, "round_1_proposer.run")
+    step(run, "round_1_evaluator.run")
+    _, outputs = step(run, "round_1_selector.run")
+    assert outputs.selected_outcome_id == expected
+    assert body(run, outputs.outputs[0])["value"] == (1 if expected == "select" else 0)
+    assert run.terminal() is not None
+    before = snapshot(run)
+    observer = _RegistryCore(run._core.run_dir, create=False, read_only=True)
+    read = read_run_execution(observer, _ResourceServiceKernel(observer),
+        expected_run_ref=run.identity.run_ref, expected_net_ref=run.publication.net_ref)
+    assert read.status == "terminal" and read.terminal.run_outcome == "complete"
+    assert json.loads(read_run_terminal_bytes(observer, read)) == body(run, outputs.outputs[0])
+    read.cut.assert_unchanged(observer)
+    assert snapshot(run) == before
+    assert run._core.writer_epoch == observer.writer_epoch
+
+
+def test_stop_outcome_prevents_later_round_and_is_not_owner_stop(tmp_path, deny_external):
+    run, _ = owner(tmp_path, rounds=3, stop=True)
+    step(run, "round_1_proposer.run")
+    step(run, "round_1_evaluator.run")
+    _, outputs = step(run, "round_1_selector.run")
+    assert outputs.selected_outcome_id == "stop"
+    assert enabled(run) == set()
+    before = snapshot(run)
+    assert run.admit("round_2_proposer.run", logical_tau=0, command_id="after:stop") is None
+    assert snapshot(run) == before
+    assert run.terminal() is not None
+    read = read_run_execution(run._core, _ResourceServiceKernel(run._core))
+    assert read.status == "terminal" and read.terminal.run_outcome == "complete"
+    assert len(run._core.event_store.object_rows_by_type("operation_result/v1")) == 3
+
+
+def test_r1_supplies_terminal_bindings_without_runtime_overlay():
+    registration = example.registration()
+    prepared = compile_iteration_profile(example.profile(2), registration=registration)
+    assert prepared.profile.to_dict()["terminal_outcomes"] == {
+        "stop": "complete", "final_select": "complete", "final_retain": "complete"}
+    assert all(t.config == {"run_outcome": "complete"}
+               for t in (prepared.module.terminal, *prepared.module.terminal_alternatives))
+
+
+def test_explicit_failed_terminal_is_never_relabelled_complete(tmp_path, deny_external):
+    run, _ = owner(tmp_path, rounds=1, target=0, terminal_outcomes={
+        "stop": "complete", "final_select": "complete", "final_retain": "failed"})
+    step(run, "round_1_proposer.run")
+    step(run, "round_1_evaluator.run")
+    _, outputs = step(run, "round_1_selector.run")
+    assert outputs.selected_outcome_id == "retain"
+    assert run.terminal() is not None
+    read = read_run_execution(run._core, _ResourceServiceKernel(run._core))
+    assert read.status == "terminal" and read.terminal.run_outcome == "failed"
+
+
+@pytest.mark.parametrize("field", ["candidate_ref", "parent_state_ref", "round"])
+def test_mismatched_evaluation_is_not_selected(tmp_path, monkeypatch, deny_external, field):
+    real_evaluate = example.evaluate
+    def wrong_evaluate(*, execution):
+        outcome, values = real_evaluate(execution=execution)
+        port, = values
+        value = json.loads(values[port][0])
+        value[field] = (2 if field == "round" else
+                        example.resource_ref(by_schema(execution, example.REQUEST).resource_ref))
+        return outcome, {port: (canonical_json(value),)}
+    monkeypatch.setattr(example, "evaluate", wrong_evaluate)
+    run, _ = owner(tmp_path, rounds=1)
+    step(run, "round_1_proposer.run")
+    step(run, "round_1_evaluator.run")
+    execution = start(run, "round_1_selector.run")
+    before = snapshot(run)
+    with pytest.raises(ValueError, match="same-round"):
+        products(run, execution)
+    assert snapshot(run) == before
+    assert len(run._core.event_store.object_rows_by_type("operation_result/v1")) == 2
+    assert run.terminal() is None
+
+
+def _immediate(callback):
+    future = Future()
+    try:
+        future.set_result(callback())
+    except BaseException as exc:
+        future.set_exception(exc)
+    return future
+
+
+@pytest.mark.parametrize("rounds,target,stop,expected_count,expected_value", [
+    (1, 0, False, 3, 0), (2, 3, False, 6, 2),
+    (4, 3, False, 12, 3), (3, 3, True, 3, 1),
+])
+def test_original_orchestrator_owns_multiround_execution(tmp_path, rsi_loop_factory,
+        rounds, target, stop, expected_count, expected_value, record_property):
+    run, prepared = owner(tmp_path, rounds, target=target, stop=stop)
+    loop = rsi_loop_factory(run, tmp_path / "owner.sock")
+    def prepare(*, execution, **kwargs):
+        return OperationDispatch(execution, lambda: OperationProducts(products(run, execution)))
+    try:
+        result = Orchestrator(owner=run, event_loop=loop,
+            prepare_dispatcher=prepare, submit_operation=_immediate).run()
+    finally:
+        loop.close()
+    assert result.stop_reason == "terminal" and result.terminal_evidence_ref is not None
+    assert len(result.operation_execution_trace) == expected_count
+    assert [t.transition_id for t in result.operation_execution_trace] == [
+        f"round_{n}_{role}.run" for n in range(1, (1 if stop else rounds) + 1)
+        for role in ("proposer", "evaluator", "selector")]
+    assert run._core.event_store.actual_model_call_counts() == (0, 0)
+    assert prepared.budgets.ordinary_global_cap == prepared.budgets.task_total_hard_cap == 1
+    assert all(bucket.max_attempts is None for bucket in prepared.module.budget_buckets)
+    read = read_run_execution(run._core, _ResourceServiceKernel(run._core),
+        expected_terminal_evidence_ref=result.terminal_evidence_ref)
+    value = json.loads(read_run_terminal_bytes(run._core, read))
+    assert value["value"] == expected_value
+    assert value["round"] == (1 if stop else rounds)
+    read.cut.assert_unchanged(run._core)
+    record_property("runtime_evidence", json.dumps({
+        "transport": rsi_loop_factory.__name__, "operations": len(result.operation_execution_trace),
+        "returned_model_calls": list(run._core.event_store.actual_model_call_counts()),
+        "terminal_evidence_version": str(result.terminal_evidence_ref.version_id),
+        "terminal_result_version": str(read.terminal.result_ref.version_id), "state": value}, sort_keys=True))
+
+REVIEW_FILES R1_v2_full ['raw/RPNH_R1_Inert_Iteration_Profile_v2_Terminal_Fix_20261008/RPNH_R1_Inert_Iteration_Profile_v2/review/negative-evidence.xml', 'raw/RPNH_R1_Inert_Iteration_Profile_v2_Terminal_Fix_20261008/RPNH_R1_Inert_Iteration_Profile_v2/review/negative-evidence.log', 'raw/RPNH_R1_Inert_Iteration_Profile_v2_Terminal_Fix_20261008/RPNH_R1_Inert_Iteration_Profile_v2/review/test_terminal_registry_independent.py', 'raw/RPNH_R1_Inert_Iteration_Profile_v2_Terminal_Fix_20261008/RPNH_R1_Inert_Iteration_Profile_v2/review/test_terminal_gap.py', 'raw/RPNH_R1_Inert_Iteration_Profile_v2_Terminal_Fix_20261008/RPNH_R1_Inert_Iteration_Profile_v2/review/successor-independent.xml', 'raw/RPNH_R1_Inert_Iteration_Profile_v2_Terminal_Fix_20261008/RPNH_R1_Inert_Iteration_Profile_v2/review/registry-independent.log', 'raw/RPNH_R1_Inert_Iteration_Profile_v2_Terminal_Fix_20261008/RPNH_R1_Inert_Iteration_Profile_v2/review/frozen-module-rounds-3.json', 'raw/RPNH_R1_Inert_Iteration_Profile_v2_Terminal_Fix_20261008/RPNH_R1_Inert_Iteration_Profile_v2/review/successor-review-manifest.json', 'raw/RPNH_R1_Inert_Iteration_Profile_v2_Terminal_Fix_20261008/RPNH_R1_Inert_Iteration_Profile_v2/review/TERMINAL_GAP_REVIEW.md', 'raw/RPNH_R1_Inert_Iteration_Profile_v2_Terminal_Fix_20261008/RPNH_R1_Inert_Iteration_Profile_v2/review/frozen-module-rounds-2.json', 'raw/RPNH_R1_Inert_Iteration_Profile_v2_Terminal_Fix_20261008/RPNH_R1_Inert_Iteration_Profile_v2/review/registry-independent.xml', 'raw/RPNH_R1_Inert_Iteration_Profile_v2_Terminal_Fix_20261008/RPNH_R1_Inert_Iteration_Profile_v2/review/frozen-source-verification.json', 'raw/RPNH_R1_Inert_Iteration_Profile_v2_Terminal_Fix_20261008/RPNH_R1_Inert_Iteration_Profile_v2/review/registry-owner-stop-independent.xml', 'raw/RPNH_R1_Inert_Iteration_Profile_v2_Terminal_Fix_20261008/RPNH_R1_Inert_Iteration_Profile_v2/review/frozen-module-rounds-1.json', 'raw/RPNH_R1_Inert_Iteration_Profile_v2_Terminal_Fix_20261008/RPNH_R1_Inert_Iteration_Profile_v2/review/successor-independent.log', 'raw/RPNH_R1_Inert_Iteration_Profile_v2_Terminal_Fix_20261008/RPNH_R1_Inert_Iteration_Profile_v2/review/registry-owner-stop-independent.log', 'raw/RPNH_R1_Inert_Iteration_Profile_v2_Terminal_Fix_20261008/RPNH_R1_Inert_Iteration_Profile_v2/review/test_terminal_revision_independent.py']
+REVIEW_FILES R2 ['raw/RPNH_R2_Single_Registry_Validation_20261008/RPNH_R2_Single_Registry_Validation_20261008/review/review-evidence-manifest.json', 'raw/RPNH_R2_Single_Registry_Validation_20261008/RPNH_R2_Single_Registry_Validation_20261008/review/independent-d0.xml', 'raw/RPNH_R2_Single_Registry_Validation_20261008/RPNH_R2_Single_Registry_Validation_20261008/review/independent-probes.xml', 'raw/RPNH_R2_Single_Registry_Validation_20261008/RPNH_R2_Single_Registry_Validation_20261008/review/independent-harness-pipe.log', 'raw/RPNH_R2_Single_Registry_Validation_20261008/RPNH_R2_Single_Registry_Validation_20261008/review/review-result.json', 'raw/RPNH_R2_Single_Registry_Validation_20261008/RPNH_R2_Single_Registry_Validation_20261008/review/independent-probes.log', 'raw/RPNH_R2_Single_Registry_Validation_20261008/RPNH_R2_Single_Registry_Validation_20261008/review/r2-freeze-compare.json', 'raw/RPNH_R2_Single_Registry_Validation_20261008/RPNH_R2_Single_Registry_Validation_20261008/review/old-r1-preserved-audit.json', 'raw/RPNH_R2_Single_Registry_Validation_20261008/RPNH_R2_Single_Registry_Validation_20261008/review/source-provenance.json', 'raw/RPNH_R2_Single_Registry_Validation_20261008/RPNH_R2_Single_Registry_Validation_20261008/review/independent-runtime-provenance.json', 'raw/RPNH_R2_Single_Registry_Validation_20261008/RPNH_R2_Single_Registry_Validation_20261008/review/DESIGN_ZH.md', 'raw/RPNH_R2_Single_Registry_Validation_20261008/RPNH_R2_Single_Registry_Validation_20261008/review/r1-successor-overlay.json', 'raw/RPNH_R2_Single_Registry_Validation_20261008/RPNH_R2_Single_Registry_Validation_20261008/review/REVIEW_ZH.md', 'raw/RPNH_R2_Single_Registry_Validation_20261008/RPNH_R2_Single_Registry_Validation_20261008/review/independent-d0.log', 'raw/RPNH_R2_Single_Registry_Validation_20261008/RPNH_R2_Single_Registry_Validation_20261008/review/independent-harness-pipe.xml', 'raw/RPNH_R2_Single_Registry_Validation_20261008/RPNH_R2_Single_Registry_Validation_20261008/review/source-hash-audit.json', 'raw/RPNH_R2_Single_Registry_Validation_20261008/RPNH_R2_Single_Registry_Validation_20261008/review/independent-patch-replay.json', 'raw/RPNH_R2_Single_Registry_Validation_20261008/RPNH_R2_Single_Registry_Validation_20261008/review/independent_probes/test_reviewer_boundaries.py', 'raw/RPNH_R2_Single_Registry_Validation_20261008/RPNH_R2_Single_Registry_Validation_20261008/review/author-evidence/native-attempt-start.json', 'raw/RPNH_R2_Single_Registry_Validation_20261008/RPNH_R2_Single_Registry_Validation_20261008/review/author-evidence/r1-patch-apply.json', 'raw/RPNH_R2_Single_Registry_Validation_20261008/RPNH_R2_Single_Registry_Validation_20261008/review/author-evidence/native-attempt-end.json', 'raw/RPNH_R2_Single_Registry_Validation_20261008/RPNH_R2_Single_Registry_Validation_20261008/review/author-evidence/r1-supersession.json', 'raw/RPNH_R2_Single_Registry_Validation_20261008/RPNH_R2_Single_Registry_Validation_20261008/review/author-evidence/step-first.log', 'raw/RPNH_R2_Single_Registry_Validation_20261008/RPNH_R2_Single_Registry_Validation_20261008/review/author-evidence/step-first.xml', 'raw/RPNH_R2_Single_Registry_Validation_20261008/RPNH_R2_Single_Registry_Validation_20261008/review/author-evidence/native-attempt.log', 'raw/RPNH_R2_Single_Registry_Validation_20261008/RPNH_R2_Single_Registry_Validation_20261008/review/author-evidence/native-attempt.xml']
+CONFTEXT

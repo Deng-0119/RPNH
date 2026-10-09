@@ -1,0 +1,35 @@
+{
+  "commit": "d92ff3704b6002bf5ecbccb3e6a3d1489809a805",
+  "message": "Converge TaskControl reads on native Registry execution snapshots",
+  "parents": [
+    "715468dab0b1bea07d7e94a7aa0606eaf194365c"
+  ],
+  "product_files": [
+    {
+      "path": "cpn/rpnh/registry/run_authority.py",
+      "status": "modified",
+      "git_blob": "6acb261942626238e88e5949b2ce87b35e4450f5"
+    },
+    {
+      "path": "cpn/rpnh/task_control.py",
+      "status": "modified",
+      "git_blob": "265610e6b96bef0f3d1c452f532afeab3d3caeb8"
+    },
+    {
+      "path": "docs/ARCHITECTURE.md",
+      "status": "modified",
+      "git_blob": "4eeb1c8a9749d55300d4c585f5f3d9efc034f800"
+    },
+    {
+      "path": "docs/ARCHITECTURE_ZH.md",
+      "status": "modified",
+      "git_blob": "e69083b935b3a43f71649231126633573d2260eb"
+    },
+    {
+      "path": "tests/test_task_control_registry_reads.py",
+      "status": "added",
+      "git_blob": "4cbb336125c66285f5d78e5a5048fb040dca87df"
+    }
+  ],
+  "all_file_count": 162
+}

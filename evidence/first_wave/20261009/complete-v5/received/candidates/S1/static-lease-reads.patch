@@ -1,0 +1,1672 @@
+diff --git a/cpn/rpnh/_marking/claims.py b/cpn/rpnh/_marking/claims.py
+--- a/cpn/rpnh/_marking/claims.py
++++ b/cpn/rpnh/_marking/claims.py
+@@ -77,7 +77,10 @@
+         selected = tuple((token for token in selected if token is not None))
+         selected_ids = {token.token_id for token in selected}
+         if verify_enabled:
+-            if not self._is_enabled_locked(transition_id):
++            # Exact authorization checks the supplied occurrence, not the
++            # scheduler's unrelated first/default carrier. Guards are shared;
++            # ordinary scheduling still uses its unchanged unrestricted path.
++            if not self._is_enabled_locked(transition_id, allowed_token_ids=selected_ids):
+                 raise MarkingStateError('exact registered firing is not currently enabled')
+             matched = self._try_reserve(transition_id, set(), allowed_token_ids=selected_ids)
+             matched_ids = set((*matched.token_ids, *matched.reference_token_ids)) if matched is not None else set()
+@@ -89,6 +92,7 @@
+         else:
+             variable = self._net.variable_resource_arc_for(transition_id)
+             reference_ids: set[int] = set()
++            variable_ids: set[int] = set()
+             lease_accesses: tuple[tuple[VersionRef, str], ...] = ()
+             if variable is not None:
+                 claim_tokens = [token for token in selected if token.place == variable.claim_token_place]
+@@ -96,14 +100,39 @@
+                     raise MarkingStateError('registered firing claim lacks its variable lease token')
+                 lease_accesses = tuple(((claim['lease_identity_ref'], claim['access_mode']) for claim in claim_tokens[0].lease_claims))
+                 pool_tokens = [token for token in selected if token.place == variable.lease_pool_place]
+-                if len(pool_tokens) != len(lease_accesses):
+-                    raise MarkingStateError('registered firing claim lacks its exact lease colours')
+                 for claim in claim_tokens[0].lease_claims:
+                     matches = [token for token in pool_tokens if token.lease_identity_ref == claim['lease_identity_ref'] and (claim['expected_resource_ref'] is None or token.resource_ref == claim['expected_resource_ref']) and (claim['access_mode'] == 'produce' or token.resource_ref is not None)]
+                     if len(matches) != 1:
+                         raise MarkingStateError('registered firing claim has a mismatched lease colour')
++                    variable_ids.add(matches[0].token_id)
+                     if claim['access_mode'] == 'read':
+                         reference_ids.add(matches[0].token_id)
++            # Static lease reads use the existing reference union. In a shared
++            # pool a variable read may satisfy the same static arc occurrence.
++            static_places: set[str] = set()
++            variable_references = set(reference_ids)
++            for place, target, weight in getattr(self._net, 'lease_reference_arcs', ()):
++                if target != transition_id:
++                    continue
++                static_places.add(place)
++                candidates = sorted((token for token in selected if token.place == place
++                    and token.token_id not in variable_ids - variable_references),
++                    key=lambda token: (token.token_id not in variable_references, token.token_id))
++                if len(candidates) < weight:
++                    raise MarkingStateError('registered firing claim lacks its exact static lease read')
++                static_only = {token.token_id for token in candidates if token.token_id not in variable_ids}
++                if len(static_only) > weight:
++                    raise MarkingStateError('registered firing claim exceeds its static lease read weight')
++                # Every additional selected ref must be accounted for by this
++                # arc, but overlap with variable reads need not be maximal.
++                reference_ids.update(static_only)
++            if variable is not None and any(token.token_id not in variable_ids | reference_ids for token in pool_tokens):
++                raise MarkingStateError('registered firing claim lacks its exact lease colours')
++            lease_accesses = tuple(sorted(set(lease_accesses) | {
++                (token.lease_identity_ref, 'read') for token in selected
++                if token.token_id in reference_ids and token.place in static_places
++                and token.lease_identity_ref is not None},
++                key=lambda item: (_version_ref_key(item[0]), item[1])))
+             consumed_ids = tuple((token.token_id for token in selected if token.token_id not in reference_ids))
+             expected_places = sorted((place for place, _target, weight in self._claim_input_arcs(transition_id) for _ in range(weight)))
+             ordinary_places = sorted((token.place for token in selected if token.token_id not in reference_ids and (variable is None or token.place != variable.lease_pool_place)))
+@@ -158,7 +187,8 @@
+         queue is randomized before greedy allocation.  Declaration position and
+         transition id therefore have no rivalry priority.  Distinct bindings of
+         one transition may be selected together when their exact token occurrences
+-        do not overlap.  Every selected token is consumed before a body launches.
++        do not overlap. Consuming inputs are reserved before a body launches;
++        exact read references remain in the shared marking.
+ 
+         ``max_count`` caps the set size (the executor passes the remaining F1
+         budget, so a pass never commits more firings than the budget allows).
+@@ -201,13 +231,15 @@
+                 local_reserved.update(candidate.token_ids)
+         random.SystemRandom().shuffle(candidates)
+         reserved: set[int] = set()
++        referenced: set[int] = set()
+         selected_lease_accesses: list[tuple[VersionRef, str]] = []
+         firing_set: list[str] = []
+         claims: list[tuple[int, str, _PendingClaim]] = []
+         for tid, claim in candidates:
+             if max_count is not None and len(firing_set) >= max_count:
+                 break
+-            if reserved.intersection(claim.token_ids):
++            if ((reserved | referenced).intersection(claim.token_ids)
++                    or reserved.intersection(claim.reference_token_ids)):
+                 continue
+             if not self._lease_accesses_compatible(claim.lease_accesses, selected_lease_accesses):
+                 continue
+@@ -215,6 +247,7 @@
+             claim_id = self._next_claim_id + len(claims)
+             claims.append((claim_id, tid, claim))
+             reserved.update(claim.token_ids)
++            referenced.update(claim.reference_token_ids)
+             selected_lease_accesses.extend(claim.lease_accesses)
+         by_id = {tok.token_id: tok for tok in self._tokens}
+         claimed_token_refs: dict[int, tuple[VersionRef, ...]] = {}
+@@ -407,11 +440,13 @@
+     if registered_fault is not None:
+         raise MarkingStateError('retired registered fault transition cannot reserve tokens')
+     guard_colors = dict(self._net.verdict_guards_of(t_id))
++    active_references = {token_id for active in self._active_claims.values()
++                         for token_id in active.reference_token_ids}
+     picked: list[int] = []
+     consumed_place_counts: dict[str, int] = {}
+     for p, _t, w in self._claim_input_arcs(t_id):
+         consumed_place_counts[p] = consumed_place_counts.get(p, 0) + w
+-        avail = [tok for tok in self._fresh_on(p, t_id) if tok.token_id not in reserved and tok.token_id not in picked and (allowed_token_ids is None or tok.token_id in allowed_token_ids)]
++        avail = [tok for tok in self._fresh_on(p, t_id) if tok.token_id not in reserved and tok.token_id not in active_references and tok.token_id not in picked and (allowed_token_ids is None or tok.token_id in allowed_token_ids)]
+         if p in guard_colors:
+             avail = [tok for tok in avail if _verdict_color_matches(tok.verdict, guard_colors[p])]
+         if len(avail) < w:
+@@ -433,7 +468,29 @@
+         if variable_ids:
+             consumed_place_counts[variable_binding.lease_pool_place] = consumed_place_counts.get(variable_binding.lease_pool_place, 0) + len(variable_ids)
+     picked.extend(variable_ids)
+-    if picked:
++    if active_references.intersection(variable_ids):
++        return None
++    for place, target, weight in getattr(self._net, 'lease_reference_arcs', ()):
++        if target != t_id:
++            continue
++        available = sorted((token for token in self._fresh_on(place, t_id)
++            if token.token_id not in reserved and token.token_id not in picked
++            and (allowed_token_ids is None or token.token_id in allowed_token_ids)
++            and (place not in guard_colors or _verdict_color_matches(token.verdict, guard_colors[place]))),
++            key=lambda token: ((token.token_id in reference_ids) if allowed_token_ids is not None
++                               else (token.token_id not in reference_ids), token.token_id))
++        if len(available) < weight:
++            return None
++        for token in available[:weight]:
++            if token.token_id not in reference_ids:
++                reference_ids.append(token.token_id)
++            if token.lease_identity_ref is not None:
++                lease_accesses = tuple(set(lease_accesses) | {(token.lease_identity_ref, 'read')})
++    active_accesses = tuple(access for active in self._active_claims.values() for access in active.lease_accesses)
++    if not self._lease_accesses_compatible(lease_accesses, active_accesses):
++        return None
++    lease_accesses = tuple(sorted(lease_accesses, key=lambda item: (_version_ref_key(item[0]), item[1])))
++    if picked or reference_ids:
+         return _PendingClaim(token_ids=tuple(picked), consumed_place_counts=consumed_place_counts, reference_token_ids=tuple(reference_ids), lease_accesses=lease_accesses)
+     if self._net.is_guard_only_transition(t_id):
+         return _PendingClaim(token_ids=(), consumed_place_counts={})
+diff --git a/cpn/rpnh/_marking/selection.py b/cpn/rpnh/_marking/selection.py
+--- a/cpn/rpnh/_marking/selection.py
++++ b/cpn/rpnh/_marking/selection.py
+@@ -93,7 +93,9 @@
+         A Registry-bound born-D1 net carries its declared file inputs as
+         separately registered ``petri_token/v1`` records.  Those source-place
+         tokens are therefore genuine, auditable Petri inputs: enabling and
+-        consume-on-fire must include ``registry_read_arcs``.  The legacy
++        consume-on-fire includes ordinary ``registry_read_arcs``. Static
++        resource-lease reads instead use the existing exact reference claim.
++        The legacy
+         process-local ignition token is excluded in that mode because it has no
+         counterpart in the Registry firing admission.
+ 
+@@ -106,10 +108,11 @@
+         return tuple((arc for arc in net.token_input_arcs if arc[1] == t_id))
+     ignition = set(net.synthetic_ignition_arcs)
+     arcs = [arc for arc in net.token_input_arcs if arc[1] == t_id and arc not in ignition]
+-    arcs.extend((arc for arc in net.registry_read_arcs if arc[1] == t_id))
++    references = set(getattr(net, 'lease_reference_arcs', ()))
++    arcs.extend((arc for arc in net.registry_read_arcs if arc[1] == t_id and arc not in references))
+     return tuple(arcs)
+ 
+-def _is_enabled_locked(self, t_id: str, timed_wait_guard_states: Sequence[TimedWaitGuardState]=(), *, _timed_wait_guard_state_map: Optional[Mapping[str, TimedWaitGuardState]]=None) -> bool:
++def _is_enabled_locked(self, t_id: str, timed_wait_guard_states: Sequence[TimedWaitGuardState]=(), *, _timed_wait_guard_state_map: Optional[Mapping[str, TimedWaitGuardState]]=None, allowed_token_ids: Optional[set[int]]=None) -> bool:
+     net = self._net
+     timed_wait_guard_state_map = self._timed_wait_guard_state_map(timed_wait_guard_states) if _timed_wait_guard_state_map is None else _timed_wait_guard_state_map
+     if net.registered_fault_transition(t_id) is not None:
+@@ -130,10 +133,14 @@
+         state = timed_wait_guard_state_map.get(t_id)
+         if state is None or not state.expired:
+             return False
+-    structurally_enabled = bool(claim_arcs) or net.is_guard_only_transition(t_id)
++    structurally_enabled = (bool(claim_arcs)
++        or any(arc[1] == t_id for arc in getattr(net, 'lease_reference_arcs', ()))
++        or net.is_guard_only_transition(t_id))
+     if not structurally_enabled:
+         return False
+-    return self._try_reserve(t_id, set()) is not None
++    if allowed_token_ids is None:
++        return self._try_reserve(t_id, set()) is not None
++    return self._try_reserve(t_id, set(), allowed_token_ids=allowed_token_ids) is not None
+ 
+ def _version_ref_from_exact(value: object) -> VersionRef:
+     try:
+diff --git a/cpn/rpnh/marking.py b/cpn/rpnh/marking.py
+--- a/cpn/rpnh/marking.py
++++ b/cpn/rpnh/marking.py
+@@ -773,9 +773,9 @@
+         from ._marking import selection as _selection
+         return _selection._claim_input_arcs(self, t_id)
+ 
+-    def _is_enabled_locked(self, t_id: str, timed_wait_guard_states: Sequence[TimedWaitGuardState]=(), *, _timed_wait_guard_state_map: Optional[Mapping[str, TimedWaitGuardState]]=None) -> bool:
+-        from ._marking import selection as _selection
+-        return _selection._is_enabled_locked(self, t_id, timed_wait_guard_states, _timed_wait_guard_state_map=_timed_wait_guard_state_map)
++    def _is_enabled_locked(self, t_id: str, timed_wait_guard_states: Sequence[TimedWaitGuardState]=(), *, _timed_wait_guard_state_map: Optional[Mapping[str, TimedWaitGuardState]]=None, allowed_token_ids: Optional[set[int]]=None) -> bool:
++        from ._marking import selection as _selection
++        return _selection._is_enabled_locked(self, t_id, timed_wait_guard_states, _timed_wait_guard_state_map=_timed_wait_guard_state_map, allowed_token_ids=allowed_token_ids)
+ 
+     @staticmethod
+     def _version_ref_from_exact(value: object) -> VersionRef:
+diff --git a/cpn/rpnh/registry/_event_store/validation/firing.py b/cpn/rpnh/registry/_event_store/validation/firing.py
+--- a/cpn/rpnh/registry/_event_store/validation/firing.py
++++ b/cpn/rpnh/registry/_event_store/validation/firing.py
+@@ -269,6 +269,8 @@
+                 or not requested.issubset(present)):
+             raise RegistryConflict(
+                 "firing admission does not claim the current live marking")
++        from ...static_lease_claims import validate_static_lease_claim
++        validate_static_lease_claim(context, firing, checkpoint_metadata)
+         settled_rows = db.execute(
+             "SELECT o.metadata_json,e.payload_json FROM objects o JOIN events e "
+             "ON e.aggregate_id=o.logical_id "
+diff --git a/cpn/rpnh/registry/declared_effect_validation.py b/cpn/rpnh/registry/declared_effect_validation.py
+--- a/cpn/rpnh/registry/declared_effect_validation.py
++++ b/cpn/rpnh/registry/declared_effect_validation.py
+@@ -286,8 +286,10 @@
+     claimed_colours = tuple((tokens[ref]["place"], tokens[ref]["verdict"]) for ref in claimed)
+     view = view.for_claimed_inputs(firing["transition_id"], claimed_colours)
+     places = {p.name: p for p in compiled.symbolic.places}
+-    consumed_places = set(view.inputs_of(firing["transition_id"]))
+-    # Core read is exact consume-return: it also retires its predecessor ref.
++    consumed_places = {a.place for a in view._arcs if a.transition == firing["transition_id"]
++        and a.direction == "input" and a.mode in {"consume", "borrow", "read"}
++        and not (a.mode == "read" and a.place in view.resource_lease_places())}
++    # Ordinary read is consume-return; static lease references retain their ref.
+     consumed = {ref for ref in claimed if tokens[ref]["place"] in consumed_places}
+     other_claims = set()
+     if published_transaction_id is None:
+diff --git a/cpn/rpnh/registry/module_effects.py b/cpn/rpnh/registry/module_effects.py
+--- a/cpn/rpnh/registry/module_effects.py
++++ b/cpn/rpnh/registry/module_effects.py
+@@ -236,7 +236,8 @@
+         firing.transition_id, tuple((tokens[r].place, tokens[r].verdict) for r in firing.claimed_input_refs))
+     places = {p.name: p for p in compiled.symbolic.places}
+     consumed_places = {a.place for a in view._arcs if a.transition == firing.transition_id
+-                       and a.direction == "input" and a.mode in {"consume", "borrow", "read"}}
++                       and a.direction == "input" and a.mode in {"consume", "borrow", "read"}
++                       and not (a.mode == "read" and a.place in view.resource_lease_places())}
+     consumed = {r for r in firing.claimed_input_refs if tokens[r].place in consumed_places}
+     routes, resets, selected_outputs, witnesses, revisions = [], set(), [], [], []
+     for effect_index, effect in enumerate(selected.effects):
+diff --git a/cpn/rpnh/registry/static_lease_claims.py b/cpn/rpnh/registry/static_lease_claims.py
+new file mode 100644
+--- /dev/null
++++ b/cpn/rpnh/registry/static_lease_claims.py
+@@ -0,0 +1,80 @@
++"""Exact static lease-read claims at the original admission transaction cut."""
++from __future__ import annotations
++
++import json
++
++from ..executable_net import load_compiled_net
++from ..marking import TeamNetMarking
++from ..runtime_net import RuntimeNet
++from .declared_effect_validation import _marking, _resource_plan
++from .event_store import RegistryConflict
++from .identities import TypedId
++from .publication import _version_from_payload
++from .schema_catalog import canonical_json
++
++
++def validate_static_lease_claim(context, firing, checkpoint):
++    """Derive references from the adopted PN, never caller-supplied modes.
++
++    Legacy declarations without static lease reads retain their admission
++    contract. No new publication, index, capability or scheduler is involved.
++    """
++    def obj(ref, kind=None):
++        if not context.exact_ref_exists(ref, kind):
++            raise RegistryConflict('static lease claim lacks an exact registered reference')
++        value = context.version_metadata(ref['version_id'], ref['entity_type'])
++        if value is None:
++            raise RegistryConflict('static lease claim reference is not visible')
++        return value
++
++    net = obj(firing['net_instance_ref'], 'net_instance/v1')
++    declaration = net['team_net_declaration_resource_ref']
++    declaration_ref = {'entity_type': 'resource_version/v1',
++        'logical_id': declaration['resource_id'], 'version_id': declaration['resource_version_id']}
++    metadata = obj(declaration_ref, 'resource_version/v1')
++    if metadata.get('content_schema_ref') != 'rpnh/executable_net/v1':
++        return
++    version = TypedId.parse(declaration_ref['version_id'], expected='resource_version')
++    payload = (context.event_store.path.parent / 'objects' / version.kind / version.value).read_bytes()
++    if len(payload) != metadata['size']:
++        raise RegistryConflict('static lease claim declaration byte size differs')
++    compiled = load_compiled_net(json.loads(payload))
++    lease_places = {place.name for place in compiled.symbolic.places
++                    if place.token_kind == 'resource_lease'}
++    if not any(arc.transition == firing['transition_id'] and arc.direction == 'input'
++               and arc.mode == 'read' and arc.place in lease_places for arc in compiled.symbolic.arcs):
++        return
++    try:
++        root = obj(net['team_design_root_ref'], 'team_design_root/v1')
++        structure = RuntimeNet(compiled, net_ref=_version_from_payload(firing['net_instance_ref']),
++            resource_plan=_resource_plan(net, root, compiled, obj))
++        refs = firing['claimed_input_refs']
++        if (sorted(ref['version_id'] for ref in refs) != firing['claimed_input_version_ids']
++                or len({canonical_json(ref) for ref in refs}) != len(refs)):
++            raise ValueError('claim ref/index identity differs')
++        tokens = {canonical_json(ref): obj(ref, 'petri_token/v1') for ref in checkpoint['token_refs']}
++        if any(state['petri_token_ref'] != json.loads(key)
++               or state['net_instance_ref'] != firing['net_instance_ref'] for key, state in tokens.items()):
++            raise ValueError('checkpoint token self/net identity differs')
++        local = TeamNetMarking.from_authority(structure, _marking(checkpoint, tokens, set()))
++        exact = tuple(_version_from_payload(ref) for ref in refs)
++        epoch = local.claim_exact_registered_firing(firing['transition_id'], exact)
++        consumed = {token.token_ref for token in local.claimed_tokens(firing['transition_id'], epoch)}
++        references = set(exact) - consumed
++        delta = obj(firing['claim_marking_delta_ref'], 'marking_delta/v1')
++        declared_consumed = {_version_from_payload(ref) for ref in delta['consumed_refs']}
++        if references & declared_consumed:
++            raise ValueError('read reference was declared consumed')
++        # Keep the existing Module admission index contract, including legacy
++        # ordinary read behavior; callers cannot erase its consume exclusions.
++        consumed_places = {place for place, target, _weight in structure.token_input_arcs
++                           if target == firing['transition_id']}
++        expected_consumed = {_version_from_payload(ref) for ref in refs
++                             if tokens[canonical_json(ref)]['place'] in consumed_places}
++        if declared_consumed != expected_consumed:
++            raise ValueError('consume index differs from declared Module input modes')
++    except (KeyError, TypeError, ValueError) as exc:
++        raise RegistryConflict('static lease claim differs from adopted PN/marking: ' + str(exc)) from exc
++
++
++__all__ = ('validate_static_lease_claim',)
+diff --git a/cpn/rpnh/runtime_net.py b/cpn/rpnh/runtime_net.py
+--- a/cpn/rpnh/runtime_net.py
++++ b/cpn/rpnh/runtime_net.py
+@@ -46,6 +46,8 @@
+         self.sources = tuple(place for place in self.places if not self.producers_of(place))
+         self.registry_read_arcs = tuple((arc.place, arc.transition, arc.weight)
+             for arc in self._arcs if arc.direction == "input" and arc.mode == "read")
++        self.lease_reference_arcs = tuple(arc for arc in self.registry_read_arcs
++            if self._places[arc[0]].token_kind == "resource_lease")
+         self.token_input_arcs = tuple((arc.place, arc.transition, arc.weight)
+             for arc in self._arcs if arc.direction == "input" and arc.mode in {"consume", "borrow"})
+         self.output_arcs = tuple((arc.transition, arc.place, arc.weight)
+diff --git a/docs/guides/static-lease-reads.md b/docs/guides/static-lease-reads.md
+new file mode 100644
+--- /dev/null
++++ b/docs/guides/static-lease-reads.md
+@@ -0,0 +1,100 @@
++# Static resource-lease read arcs
++
++A declared input arc with `mode="read"` on a `resource_lease` place is a
++non-consuming reference to an exact token in the adopted Petri marking.
++It uses the same claim/reference fields as variable lease reads. There is no
++second marking, reader table, scheduler or lock policy.
++
++## What a reference means
++
++- The exact token must be present, fresh, in the adopted net, and satisfy the
++  declared read weight. The Registry verifies the immutable PN and checkpoint;
++  a caller-supplied claim or consume index cannot replace that contract.
++- The token remains unconsumed while the firing is active. Concurrent legal
++  firings can reference the same token. An independent consuming control/input
++  token, the existing budget, or other declared structure bounds occurrences.
++  A read prerequisite by itself does not limit firing count or concurrency.
++- Success retains the original token identity and state. It does not return,
++  duplicate or mint the reference token. The same reference survives a sibling
++  Success, active-claim reconstruction, and normal completion recovery.
++- This is a Petri read prerequisite and resource reference, not a borrow or an
++  authorization to use a physical resource. Existing exact-resource byte-read
++  provenance remains unchanged. Dynamic resource access still requires its
++  existing variable resource arc and access checks.
++
++## Compatibility
++
++Ordinary data/control read arcs keep their existing local consume-and-return
++behavior. Their predecessor occurrence is consumed and a successor occurrence
++carries the same resource. Static lease reads retain the original occurrence.
++
++Existing `VariableResourceArc` declarations remain supported. A static read and
++variable read may reference the same token once, or select different tokens in
++one pool. The exact claim is their union, not the sum of duplicate references.
++Every extra token must be explained by a declared arc; an over-wide claim is
++rejected. A variable consuming claim and a static reference cannot own the same
++occurrence concurrently. Legal variable `produce`/`edit` consume-return remains
++unchanged.
++
++A transition with only static references is structurally enabled while its
++references are available. One candidate is enumerated per selection pass; the
++read does not create an infinite local enumeration or act as a one-shot gate.
++
++No schema migration is required. Existing `claimed_input_refs`, claim delta
++`consumed_refs`, marking references and publication/index structures are reused.
++The Module admission consume index and the local consume-return projection are
++not interchangeable: ordinary reads retain their existing index semantics.
++
++## Admission and recovery boundary
++
++For transitions declaring static lease reads, the existing Registry admission
++transaction additionally reconstructs the selected claim against the exact
++adopted PN and checkpoint. It verifies claimed references and their version
++index, preserves the Module's existing consume-index convention, and rejects
++missing, foreign, malformed, surplus, or falsely consumed references. This
++check also covers direct low-level admission and transaction proposals.
++
++The additional check is limited to this static-read shape. It is not a claim
++that every historical low-level invocation shape has received a new global
++claim/index audit. Legal declarations without static lease reads retain their
++existing behavior.
++
++Exact-ref validation checks enabledness using the same explicitly selected
++occurrence. A dead default/first variable carrier cannot veto a different valid
++exact claim. Count/verdict/timed guards still apply. The default owner scheduler
++is unchanged; this is not a new binding-search or liveness guarantee.
++
++Selection, exact claim reconstruction, capacity preflight, declared-effect
++projection and Success validation use the same static lease-read classification.
++Registry hydration and settled-state reconstruction retain their original
++exact-identity and state-equation checks.
++
++## Graph changes and scope
++
++The existing rules continue to apply: lease/reusable tokens cannot be reset or
++ordinarily retired; owner replacement drains active firings, and operation net
++replacement requires its existing exclusive active firing. This capability does
++not make a particular application prerequisite undeletable after those rules
++are satisfied. Application-specific origin protection is separate work.
++
++This change does not implement child launch, transport ownership, bootstrap
++acceptance, origin guards, H7, or physical-resource permission policy. Passing
++these offline tests is not H7 or native-transport acceptance.
++
++## Focused verification
++
++`tests/test_static_lease_reads.py`, `tests/test_static_lease_interactions.py`,
++and `tests/test_static_lease_exact_selection.py`
++exercise real temporary Registries with direct admission, Start, products and
++Success. They include concurrent readers with independent consuming inputs,
++exact-reference negative tests, genuine nonempty variable claims, ordinary
++read regressions, declared effects, cold reconstruction in a separate Python
++process, completion recovery and existing graph-change restrictions.
++
++Run with the project's existing supported environment:
++
++```sh
++python -m pytest -q tests/test_static_lease_reads.py tests/test_static_lease_interactions.py tests/test_static_lease_exact_selection.py
++```
++
++These cases need no socket, external provider/model, native client, or network.
+diff --git a/docs/guides/static-lease-reads_ZH.md b/docs/guides/static-lease-reads_ZH.md
+new file mode 100644
+--- /dev/null
++++ b/docs/guides/static-lease-reads_ZH.md
+@@ -0,0 +1,87 @@
++# 静态 resource-lease read 弧
++
++当 adopted PN 的输入弧声明 `mode="read"`，且 place 的 `token_kind` 为
++`resource_lease` 时，该弧引用原 marking 中的准确 token，不消费它。
++引用复用 variable lease read 已有的 claim/reference 字段；不增加第二份
++marking、reader 表、scheduler 或锁策略。
++
++## 引用的含义
++
++- 准确 token 必须存在、新鲜、属于 adopted net，并满足声明的 read 权重。
++  Registry 从不可变 PN 和 checkpoint 核验；调用方填写的 claim 或 consume
++  索引不能替代这个契约。
++- Firing 活跃期间不消费该 token。多个合法 firing 可以引用同一个 token。
++  Firing 次数由独立的 consume 控制/输入 token、原预算或其他声明结构限制；
++  read 前置本身不限制 firing 次数或并发。
++- Success 保留原 token 的准确身份与状态，不 return、复制或 mint 引用 token。
++  兄弟 firing 的 Success、active claim 重建和正常 completion recovery 后，
++  这个引用仍然存在。
++- 这是 PN read 前置和资源引用，不是 borrow，也不授予物理资源使用许可。
++  既有 exact-resource 字节读取 provenance 不变；动态资源访问仍需要原
++  variable resource arc 和访问检查。
++
++## 兼容性
++
++普通 data/control read 弧保持原本的局部消费归还行为：消费前驱 occurrence，
++  后继 occurrence 携带同一资源。静态 lease read 则保留原 occurrence。
++
++支持已有 `VariableResourceArc`。同一静态 read 与 variable read 可共用同一个
++  token，也可在同池选取不同 token；准确 claim 是两者的并集，不重复计算同一
++  引用。每个额外 token 都必须由声明弧解释，超量 claim 会拒绝。Variable 的
++  消费 claim 和静态引用不能同时占有同一个 occurrence；合法 `produce`/`edit`
++  的 consume-return 行为不变。
++
++仅含静态引用的 transition，在引用可用时可结构启用。每轮 selection 有限地
++  枚举一个候选；read 不引入无限本地枚举，也不是一次性开关。
++
++不需要 schema 迁移。复用已有 `claimed_input_refs`、claim delta 的
++  `consumed_refs`、marking reference 和 publication/index 结构。Module 准入
++  的 consume 索引与局部 consume-return 投影不是同一个概念；普通 read 的
++  既有索引语义保留。
++
++## 准入与恢复边界
++
++对声明静态 lease read 的 transition，原 Registry admission transaction 会
++  从准确 adopted PN/checkpoint 重建所选 claim，核对 claimed refs 与 version
++  index，保留 Module 原 consume-index 约定，拒绝缺失、跨 net、伪造、超量或
++  被虚报为 consumed 的引用。Direct 低层准入和 transaction proposal 也经过
++  这项检查。
++
++新增检查仅守此静态 read 形状，不代表全部历史低层 invocation 形状已经完成
++  全局 claim/index 审计。没有静态 lease read 的合法声明保持原行为。
++
++准确 ref 验证对同一显式选择的 occurrence 检查 enabledness。默认首个 variable
++  carrier 不可满足，不应否决另一个可满足的 exact claim；原 count/verdict/timed
++  guard 仍保留。默认 owner 调度策略不变，不代表新增 binding 搜索或活性保证。
++
++Selection、准确 claim 重建、capacity preflight、declared-effect 投影和
++  Success 验证采用同一静态 lease-read 分类。Registry hydration 与 settled
++  state 重建继续使用原准确身份和状态方程检查。
++
++## 动态改网与范围
++
++继续沿原规则：lease/reusable token 不能 reset 或普通 retirement；owner
++  replacement 等待活跃 firing 收束；operation net replacement 保留原独占
++  active firing 条件。满足这些规则后，本通用能力不会把某个应用前置变成
++  永远不可删除。应用特定的 origin 保护属于后续工作。
++
++本修改不实现 child launch、transport 目标占有、bootstrap acceptance、origin
++  guard、H7 或物理资源权限策略。这些离线用例通过不等于 H7 或原生 transport
++  验收通过。
++
++## 定向验证
++
++`tests/test_static_lease_reads.py`、`tests/test_static_lease_interactions.py`
++  和 `tests/test_static_lease_exact_selection.py`
++  使用真实临时 Registry，直接执行 admission、Start、products 与 Success。
++  覆盖独立消费输入的并行 reader、准确引用负测、真正非空 variable claims、
++  普通 read 回归、declared effects、独立 Python 进程冷重建、completion
++  recovery 和既有动态改网约束。
++
++在项目已有支持环境中运行：
++
++```sh
++python -m pytest -q tests/test_static_lease_reads.py tests/test_static_lease_interactions.py tests/test_static_lease_exact_selection.py
++```
++
++这些用例不需要 socket、外部 provider/model、native client 或网络。
+diff --git a/tests/test_static_lease_exact_selection.py b/tests/test_static_lease_exact_selection.py
+new file mode 100644
+--- /dev/null
++++ b/tests/test_static_lease_exact_selection.py
+@@ -0,0 +1,181 @@
++"""Exact selection may bypass a dead first carrier without changing scheduling.
++
++All carriers are published by real Registry firings. The default selector is
++intentionally left unchanged: this is exact-ref validity, not binding liveness.
++"""
++from dataclasses import replace
++
++import pytest
++
++from cpn.components.basic import CONFIG_SCHEMA_ID, lower_operation
++from cpn.rpnh.marking import TeamNetMarking
++from cpn.rpnh.module import ModuleDeclaration
++from cpn.rpnh.petri_contracts import (
++    ArcDeclaration, InitialTokenDeclaration, LeaseClaimExpression,
++    LeaseIdentityDeclaration, OutcomeDeclaration, PlaceDeclaration,
++    PortBinding, PortDeclaration, ProductDeclaration, ResourceLeasePoolBinding,
++    TransitionDeclaration, VariableResourceArc,
++)
++from cpn.rpnh.registry.event_store import RegistryConflict
++from cpn.rpnh.registry.invocations import FiringClaim, InvocationAdmissionError, InvocationLifecycle
++from cpn.rpnh.registry.module_budgets import ModuleBudgetDeclaration
++from cpn.rpnh.registry.module_execution import install_active_module_claims
++from cpn.rpnh.registry.module_gateway import start_module_firing
++from cpn.rpnh.registry.module_runtime import hydrate_module_runtime
++from cpn.rpnh.registry.publication import _version_from_payload
++from cpn.rpnh.registry.schema_catalog import canonical_json
++from cpn.rpnh.run import OwnerInput, start_run
++from cpn.rpnh.firing_preflight import preflight_module_firing
++from test_static_lease_reads import ALT_TEXT, TEXT, _registration, _simple_module
++
++
++def _owner_with_dead_then_live_carrier(path):
++    registration = _registration()
++
++    def lower(config, context):
++        fragment = lower_operation(config, context)
++        template = fragment.operations[0]
++        places = (*fragment.places,
++            PlaceDeclaration("carrier", TEXT), PlaceDeclaration("used", TEXT),
++            PlaceDeclaration("bad_kick", TEXT, channel="control",
++                initial_tokens=(InitialTokenDeclaration(),)),
++            PlaceDeclaration("good_kick", TEXT, channel="control",
++                initial_tokens=(InitialTokenDeclaration(),)),
++            PlaceDeclaration("pool_a", ALT_TEXT, token_kind="resource_lease", capacity=1, reusable=True),
++            PlaceDeclaration("pool_b", ALT_TEXT, token_kind="resource_lease", capacity=1, reusable=True))
++        operations = tuple(replace(template, name=name, inputs=inputs,
++            outputs=(output,), request_port=None,
++            outcomes=(OutcomeDeclaration("complete", (ProductDeclaration(output),)),))
++            for name, inputs, output in (("bad", (), "bad_out"),
++                ("good", (), "good_out"), ("use", ("use_in",), "use_out")))
++        arcs = list(fragment.arcs)
++        for name, source in (("bad", "pool_b"), ("good", "pool_a")):
++            arcs.extend((ArcDeclaration(name + "_kick", name, "input"),
++                ArcDeclaration(source, name, "input", mode="read"),
++                ArcDeclaration("carrier", name, "output", mode="produce", outcome="complete",
++                    lease_claims=(LeaseClaimExpression("asset_a", expected_resource_source=source, access_mode="read"),))))
++        arcs.extend((ArcDeclaration("carrier", "use", "input"),
++            ArcDeclaration("pool_a", "use", "input", mode="read"),
++            ArcDeclaration("used", "use", "output", mode="produce", outcome="complete")))
++        return replace(fragment, places=places, arcs=tuple(arcs),
++            transitions=(*fragment.transitions,
++                *(TransitionDeclaration(name, name) for name in ("bad", "good", "use"))),
++            operations=(*fragment.operations, *operations),
++            internal_ports=(PortDeclaration("bad_out", "output", TEXT),
++                PortDeclaration("good_out", "output", TEXT),
++                PortDeclaration("use_in", "input", TEXT),
++                PortDeclaration("use_out", "output", TEXT)),
++            internal_bindings=(PortBinding("bad_out", "carrier"),
++                PortBinding("good_out", "carrier"), PortBinding("use_in", "carrier"),
++                PortBinding("use_out", "used")),
++            lease_identities=(LeaseIdentityDeclaration("asset_a"), LeaseIdentityDeclaration("asset_b")),
++            lease_pools=(ResourceLeasePoolBinding("pool_a", "pool_a", ("asset_a",)),
++                ResourceLeasePoolBinding("pool_b", "pool_b", ("asset_b",))),
++            variable_resource_arcs=(VariableResourceArc("use", "carrier", "pool_a"),))
++
++    registration.register_component("exact_selection", lower,
++        identity={"implementation_id": "test.static_lease_exact_selection", "revision": "v1"},
++        contracts={"config_schema": CONFIG_SCHEMA_ID})
++    document = _simple_module("ExactSelection").to_dict()
++    document["components"][0]["key"] = "exact_selection"
++    document["required_schemas"].append(ALT_TEXT)
++    task = OwnerInput(TEXT, canonical_json("task"), "Task")
++    owner = start_run(ModuleDeclaration.from_dict(document), registration,
++        run_dir=path, task_input=task, entry_inputs={"request": task},
++        resource_inputs={"step.asset_a": OwnerInput(ALT_TEXT, canonical_json("A"), "A"),
++                         "step.asset_b": OwnerInput(ALT_TEXT, canonical_json("B"), "B")},
++        budgets=ModuleBudgetDeclaration(tuple(document["budget_buckets"]), (TEXT,), 3, 0, 3, 0),
++        model_condition="offline-exact-selection",
++        owner_statement="Offline exact selection regression", command_id="test:exact:fresh")
++    for tau, name in enumerate(("bad", "good")):
++        admitted = owner.admit("step." + name, logical_tau=tau, command_id="test:" + name + ":admit")
++        assert admitted is not None
++        execution = owner.start(admitted, command_id="test:" + name + ":start")
++        outputs = owner.products(execution, outcome_id="complete",
++            products={"step." + name + "_out": (canonical_json(name),)},
++            command_id="test:" + name + ":products")
++        owner.succeed(outputs, command_id="test:" + name + ":success")
++    return owner
++
++
++def _claim(owner, executable, marking, selected_refs, consumed_refs):
++    transition = next(item for item in executable.transitions if item.transition_id == "step.use")
++    root = owner._core.get_version(executable.team_design_root_ref.version_id).metadata
++    round_ref = _version_from_payload(root["task_round_ref"])
++    round_data = owner._core.get_version(round_ref.version_id).metadata
++    net = owner._core.get_version(executable.net_ref.version_id).metadata
++    refs = tuple(sorted(selected_refs,
++        key=lambda ref: (ref.entity_type, str(ref.entity_id), str(ref.version_id))))
++    return FiringClaim(task_ref=_version_from_payload(root["task_ref"]),
++        task_branch_ref=_version_from_payload(round_data["task_branch_ref"]), task_round_ref=round_ref,
++        net_instance_ref=executable.net_ref, plan_ref=_version_from_payload(net["plan_ref"]),
++        node_ref=transition.node_ref, operation_binding_ref=transition.operation_binding_ref,
++        marking_checkpoint_ref=marking.checkpoint_ref, principal_ref=transition.principal_ref,
++        logical_tau=2, attempt_index=1, claimed_input_refs=refs,
++        consumed_input_refs=consumed_refs, activation_ref=transition.activation_ref, agent_ref=transition.agent_ref)
++
++
++def test_exact_valid_later_carrier_is_not_rejected_by_dead_default_binding(tmp_path):
++    owner = _owner_with_dead_then_live_carrier(tmp_path / "exact")
++    executable, structure, before = hydrate_module_runtime(owner._core)
++    carriers = sorted((token for token in before.tokens if token.state.place == "step.carrier"),
++                      key=lambda token: token.state.token_id)
++    assert len(carriers) == 2
++    bad, good = carriers
++    pool_a = next(token for token in before.tokens if token.state.place == "step.pool_a")
++    pool_b = next(token for token in before.tokens if token.state.place == "step.pool_b")
++    assert bad.state.producer == "step.bad" and good.state.producer == "step.good"
++    assert len(bad.state.lease_claims) == len(good.state.lease_claims) == 1
++    assert bad.state.lease_claims[0].lease_identity_ref == pool_a.state.lease_identity_ref
++    assert good.state.lease_claims[0].lease_identity_ref == pool_a.state.lease_identity_ref
++    assert bad.state.lease_claims[0].expected_resource_ref == pool_b.state.resource_ref
++    assert good.state.lease_claims[0].expected_resource_ref == pool_a.state.resource_ref
++    assert pool_a.state.resource_ref != pool_b.state.resource_ref
++    assert bad.state.lease_claims[0].access_mode == good.state.lease_claims[0].access_mode == "read"
++
++    local = TeamNetMarking.from_authority(structure, before)
++    # Preserve the existing default first-binding behavior; it need not search
++    # past the dead carrier. The explicit exact selection must stand on its own.
++    assert local.is_enabled("step.use") is False
++    assert owner.admit("step.use", logical_tau=2, command_id="test:default:admit") is None
++    assert local._try_reserve("step.use", set(), allowed_token_ids={
++        bad.state.token_id, pool_a.state.token_id}) is None
++    selected_ids = {good.state.token_id, pool_a.state.token_id}
++    reserved = local._try_reserve("step.use", set(), allowed_token_ids=selected_ids)
++    assert reserved is not None
++    assert reserved.token_ids == (good.state.token_id,)
++    assert reserved.reference_token_ids == (pool_a.state.token_id,)
++
++    # Exact selection must still reject a genuinely mismatched carrier.
++    bad_claim = _claim(owner, executable, before,
++        (bad.token_ref, pool_a.token_ref), (bad.token_ref,))
++    event_count = len(owner._core.event_store.list_events())
++    firing_count = len(owner._core.event_store.object_rows_by_type("transition_firing/v1"))
++    with pytest.raises((RegistryConflict, InvocationAdmissionError)):
++        InvocationLifecycle(owner._core).admit_firing(bad_claim,
++            idempotency_key="test:exact-bad:admit")
++    assert len(owner._core.event_store.list_events()) == event_count
++    assert len(owner._core.event_store.object_rows_by_type("transition_firing/v1")) == firing_count
++    assert hydrate_module_runtime(owner._core)[2].checkpoint_ref == before.checkpoint_ref
++
++    claim = _claim(owner, executable, before, (good.token_ref, pool_a.token_ref), (good.token_ref,))
++    admitted = InvocationLifecycle(owner._core).admit_firing(claim, idempotency_key="test:exact:admit")
++    preflight = preflight_module_firing(structure, before, transition_id="step.use",
++        claimed_token_refs=claim.claimed_input_refs)
++    projected = TeamNetMarking.from_authority(structure, before)
++    install_active_module_claims(owner._core, projected, executable.net_ref)
++    assert [token.token_ref for token in projected.claimed_tokens("step.use", projected.epoch)] == [good.token_ref]
++    assert {token.token_ref for token in projected.claimed_operation_tokens("step.use", projected.epoch)} == set(claim.claimed_input_refs)
++    kernel, repository = owner.operation_repository()
++    execution = start_module_firing(owner._core, kernel, repository,
++        admitted.context.invocation_ref, preflight=preflight, idempotency_key="test:exact:start")
++    outputs = owner.products(execution, outcome_id="complete",
++        products={"step.use_out": (canonical_json("used good carrier"),)}, command_id="test:exact:products")
++    owner.succeed(outputs, command_id="test:exact:success")
++    _, _, after = hydrate_module_runtime(owner._core)
++    remaining = {token.token_ref: token.state for token in after.tokens}
++    assert good.token_ref not in remaining
++    assert remaining[bad.token_ref] == bad.state
++    assert remaining[pool_a.token_ref] == pool_a.state
++    assert remaining[pool_b.token_ref] == pool_b.state
++    assert sum(token.state.place == "step.used" for token in after.tokens) == 1
+diff --git a/tests/test_static_lease_interactions.py b/tests/test_static_lease_interactions.py
+new file mode 100644
+--- /dev/null
++++ b/tests/test_static_lease_interactions.py
+@@ -0,0 +1,489 @@
++"""Offline coexistence of static lease references and existing Petri mechanisms."""
++from dataclasses import replace
++from copy import deepcopy
++
++import pytest
++
++from cpn.components.basic import CONFIG_SCHEMA_ID, lower_operation
++from cpn.rpnh.compiler import compile_module
++from cpn.rpnh.marking import TeamNetMarking
++from cpn.rpnh.module import ModuleDeclaration
++from cpn.rpnh.net_operations import apply_replacement, prepare_replacement
++from cpn.rpnh.petri_contracts import (
++    ArcDeclaration, DeclarationError, InitialTokenDeclaration,
++    LeaseClaimTemplate, LeaseIdentityDeclaration, LogicalSlotBinding,
++    OutcomeDeclaration, PlaceDeclaration, PortBinding, PortDeclaration,
++    ResetArcDeclaration, ResourceLeasePoolBinding, TransitionDeclaration,
++    VariableResourceArc,
++)
++from cpn.rpnh.registry.module_budgets import ModuleBudgetDeclaration
++from cpn.rpnh.registry.module_effects import DeclaredEffectInstruction
++from cpn.rpnh.registry.module_execution import install_active_module_claims
++from cpn.rpnh.registry.module_runtime import hydrate_module_runtime
++from cpn.rpnh.registry.schema_catalog import canonical_json
++from cpn.rpnh.run import OwnerInput, start_run
++from test_static_lease_reads import ALT_TEXT, TEXT, _registration, _simple_module, lease_owner
++
++
++EFFECT = "test/static-lease-reset/v1"
++
++
++def _world(path, *, same_pool=True, variable_mode="read", effect=False,
++           reset_lease=False, with_edit=False, static_read=True, extra_static_resources=0):
++    registration = _registration()
++    if effect:
++        registration.register_tool(EFFECT,
++            lambda _context: DeclaredEffectInstruction(reset_references=("clear",)),
++            identity={"implementation_id": "test.static_lease_reset", "revision": "v1"},
++            contracts={"config_schema": CONFIG_SCHEMA_ID})
++
++    def lower(config, context):
++        fragment = lower_operation(config, context)
++        # Lease-only authority uses a different schema from operation bytes.
++        # This keeps the fixture independent of explicit byte-input lease ports.
++        static_names = ("asset", *("spare" + str(index) for index in range(extra_static_resources)))
++        places = [*fragment.places, PlaceDeclaration("static", ALT_TEXT,
++            token_kind="resource_lease", capacity=len(static_names), reusable=True)]
++        identities = [LeaseIdentityDeclaration(name) for name in static_names]
++        pools = [ResourceLeasePoolBinding("static", "static", static_names)]
++        slots = []
++        if variable_mode == "read":
++            pool = "static" if same_pool else "variable"
++            claim = LeaseClaimTemplate("asset" if same_pool else "other",
++                "asset" if same_pool else "other", "read")
++            if not same_pool:
++                places.append(PlaceDeclaration("variable", ALT_TEXT,
++                    token_kind="resource_lease", capacity=1, reusable=True))
++                identities.append(LeaseIdentityDeclaration("other"))
++                pools.append(ResourceLeasePoolBinding("variable", "variable", ("other",)))
++        else:
++            pool = "variable"
++            places.append(PlaceDeclaration("variable", TEXT,
++                token_kind="resource_lease", capacity=1, reusable=True))
++            identities.append(LeaseIdentityDeclaration("document", kind="slot", slot="document"))
++            pools.append(ResourceLeasePoolBinding("variable", "variable", initial_slots=("document",)))
++            slots.append(LogicalSlotBinding("document", "run", "result", "result", "result", TEXT))
++            claim = LeaseClaimTemplate("document", access_mode=variable_mode)
++        resets = []
++        if effect or reset_lease:
++            if not reset_lease:
++                places.append(PlaceDeclaration("scratch", TEXT,
++                    initial_tokens=(InitialTokenDeclaration(),)))
++            resets.append(ResetArcDeclaration("static" if reset_lease else "scratch",
++                "run", "clear", "complete"))
++        transitions = fragment.transitions
++        operations = fragment.operations
++        arcs = fragment.arcs
++        if static_read:
++            arcs = (*arcs, ArcDeclaration("static", "run", "input", mode="read"))
++        variables = (VariableResourceArc("run", "request", pool, (claim,)),)
++        internal_ports = ()
++        internal_bindings = ()
++        if with_edit:
++            transitions = (*transitions, TransitionDeclaration("edit", "edit"))
++            operations = (*operations, replace(operations[0], name="edit",
++                inputs=("edit_request",), outputs=(), request_port=None,
++                outcomes=(OutcomeDeclaration("complete", ()),)))
++            internal_ports = (PortDeclaration("edit_request", "input", TEXT),)
++            internal_bindings = (PortBinding("edit_request", "result"),)
++            arcs = (*arcs, ArcDeclaration("result", "edit", "input"))
++            if static_read:
++                arcs = (*arcs, ArcDeclaration("static", "edit", "input", mode="read"))
++            variables = (*variables, VariableResourceArc("edit", "result", "variable",
++                (LeaseClaimTemplate("document", access_mode="edit"),)))
++        return replace(fragment,
++            places=tuple(places), transitions=transitions, operations=operations,
++            internal_ports=internal_ports, internal_bindings=internal_bindings,
++            arcs=arcs,
++            lease_identities=tuple(identities), lease_pools=tuple(pools),
++            logical_slots=tuple(slots), reset_arcs=tuple(resets),
++            variable_resource_arcs=variables)
++
++    registration.register_component("interactions", lower,
++        identity={"implementation_id": "test.static_lease_interactions", "revision": "v1"},
++        contracts={"config_schema": CONFIG_SCHEMA_ID})
++    document = _simple_module("LeaseInteractions").to_dict()
++    document["components"][0]["key"] = "interactions"
++    document["required_schemas"].append(ALT_TEXT)
++    if effect:
++        document["components"][0]["operations"][0]["outcomes"][0]["effects"] = [{
++            "key": EFFECT, "bindings": {}, "config": {},
++            "references": {"clear": {"kind": "place", "name": "scratch"}},
++        }]
++    seed = deepcopy(_simple_module("Seed").to_dict()["components"][0])
++    seed["name"] = "seed"
++    document["components"].insert(0, seed)
++    document["entry"]["request"]["component"] = "seed"
++    document["links"] = [{"source": {"component": "seed", "port": "result"},
++                           "target": {"component": "step", "port": "request"}}]
++    module = ModuleDeclaration.from_dict(document)
++    if reset_lease:
++        return module, registration
++    task = OwnerInput(TEXT, canonical_json("task"), "Task")
++    resources = {"step.asset": OwnerInput(ALT_TEXT, canonical_json("asset"), "Asset")}
++    resources.update({"step.spare" + str(index): OwnerInput(ALT_TEXT,
++        canonical_json("spare" + str(index)), "Spare") for index in range(extra_static_resources)})
++    if not same_pool and variable_mode == "read":
++        resources["step.other"] = OwnerInput(ALT_TEXT, canonical_json("other"), "Other")
++    owner = start_run(module, registration, run_dir=path, task_input=task,
++        entry_inputs={"request": task}, resource_inputs=resources,
++        budgets=ModuleBudgetDeclaration(tuple(document["budget_buckets"]), (TEXT,), 3, 0, 3, 0),
++        model_condition="offline-static-lease-interactions",
++        owner_statement="Offline static lease interaction test",
++        command_id="test:interactions:fresh")
++    # Initial entry tokens intentionally carry no variable claim colours.
++    # A real predecessor firing creates the destination's declared claim set.
++    seed_admission = owner.admit("seed.run", logical_tau=0, command_id="test:seed:admit")
++    assert seed_admission is not None
++    seed_execution = owner.start(seed_admission, command_id="test:seed:start")
++    seed_outputs = owner.products(seed_execution, outcome_id="complete",
++        products={"seed.result": (canonical_json("seeded"),)}, command_id="test:seed:products")
++    owner.succeed(seed_outputs, command_id="test:seed:success")
++    return owner
++
++
++def _fresh_leases(marking):
++    tokens = tuple(token for token in marking.tokens
++        if token.state.lease_identity_ref is not None
++        and token.state.consumed_by is None and token.state.epoch == marking.epoch)
++    assert len({token.state.place for token in tokens}) == len(tokens)
++    return {token.state.place: token for token in tokens}
++
++
++def _settle(owner, admitted):
++    execution = owner.start(admitted, command_id="test:interactions:start")
++    outputs = owner.products(execution, outcome_id="complete",
++        products={"step.result": (canonical_json("done"),)},
++        command_id="test:interactions:products")
++    owner.succeed(outputs, command_id="test:interactions:success")
++    return outputs
++
++
++@pytest.mark.parametrize("static_read", [True, False], ids=["static-and-variable", "legacy-variable-only"])
++@pytest.mark.parametrize("same_pool", [True, False], ids=["same-token-deduplicated", "different-pools"])
++def test_static_and_variable_reads_share_exact_reference_union(tmp_path, same_pool, static_read):
++    owner = _world(tmp_path / "reads", same_pool=same_pool, static_read=static_read)
++    executable, structure, before = hydrate_module_runtime(owner._core)
++    leases = _fresh_leases(before)
++    admitted = owner.admit("step.run", logical_tau=0, command_id="test:interactions:admit")
++    assert admitted is not None
++    exact = admitted.preflight.claimed_token_refs
++    variable_place = structure.variable_resource_arc_for("step.run").lease_pool_place
++    expected_references = {leases[variable_place].token_ref}
++    if static_read:
++        expected_references.add(leases["step.static"].token_ref)
++    else:
++        assert structure.lease_reference_arcs == ()
++    assert len(exact) == len(set(exact)) == 1 + len(expected_references)
++    assert expected_references <= set(exact)
++
++    # Reconstructing live claims exercises the original registered-active path,
++    # separately from the scheduler's initial read/consume split.
++    local = TeamNetMarking.from_authority(structure, before)
++    install_active_module_claims(owner._core, local, executable.net_ref)
++    consumed = local.claimed_tokens("step.run", local.epoch)
++    operation = local.claimed_operation_tokens("step.run", local.epoch)
++    assert [token.place for token in consumed] == [structure.variable_resource_arc_for("step.run").claim_token_place]
++    assert len(operation) == len(exact)
++    assert len(consumed[0].lease_claims) == 1
++    assert consumed[0].lease_claims[0]["access_mode"] == "read"
++    variable_place = structure.variable_resource_arc_for("step.run").lease_pool_place
++    assert leases[variable_place].token_ref in exact
++    assert all(token.consumed_by is None for token in operation
++               if token.lease_identity_ref is not None)
++    _settle(owner, admitted)
++    _, _, after = hydrate_module_runtime(owner._core)
++    assert {name: (token.token_ref, token.state) for name, token in _fresh_leases(after).items()} == {
++        name: (token.token_ref, token.state) for name, token in leases.items()}
++
++
++@pytest.mark.parametrize("static_read", [True, False], ids=["static-and-variable", "legacy-variable-only"])
++def test_static_read_does_not_change_variable_produce_consume_return(tmp_path, static_read):
++    owner = _world(tmp_path / "produce", variable_mode="produce", static_read=static_read)
++    executable, structure, before = hydrate_module_runtime(owner._core)
++    leases = _fresh_leases(before)
++    assert leases["step.variable"].state.resource_ref is None
++    admitted = owner.admit("step.run", logical_tau=0, command_id="test:interactions:admit")
++    assert admitted is not None
++    local = TeamNetMarking.from_authority(structure, before)
++    install_active_module_claims(owner._core, local, executable.net_ref)
++    assert {token.place for token in local.claimed_tokens("step.run", local.epoch)} == {
++        structure.variable_resource_arc_for("step.run").claim_token_place, "step.variable"}
++    claim_carrier = next(token for token in local.claimed_tokens("step.run", local.epoch)
++                         if token.place != "step.variable")
++    assert len(claim_carrier.lease_claims) == 1
++    assert claim_carrier.lease_claims[0]["access_mode"] == "produce"
++    expected_claims = {claim_carrier.token_ref, leases["step.variable"].token_ref}
++    if static_read:
++        expected_claims.add(leases["step.static"].token_ref)
++    else:
++        assert structure.lease_reference_arcs == ()
++    assert set(admitted.preflight.claimed_token_refs) == expected_claims
++    assert {token.token_ref for token in local.claimed_operation_tokens("step.run", local.epoch)} == expected_claims
++    outputs = _settle(owner, admitted)
++    _, _, after = hydrate_module_runtime(owner._core)
++    current = _fresh_leases(after)
++    assert current["step.static"].token_ref == leases["step.static"].token_ref
++    assert current["step.variable"].token_ref != leases["step.variable"].token_ref
++    assert current["step.variable"].state.lease_identity_ref == leases["step.variable"].state.lease_identity_ref
++    assert current["step.variable"].state.resource_ref == outputs.outputs[0].resource_ref
++    assert leases["step.variable"].token_ref not in after.token_refs
++
++
++
++def test_static_reference_survives_declared_reset_effect_settlement(tmp_path):
++    owner = _world(tmp_path / "effect", effect=True)
++    _, _, before = hydrate_module_runtime(owner._core)
++    leases = _fresh_leases(before)
++    scratch = next(token for token in before.tokens if token.state.place == "step.scratch")
++    admitted = owner.admit("step.run", logical_tau=0, command_id="test:interactions:admit")
++    assert admitted is not None
++    _settle(owner, admitted)
++    _, _, after = hydrate_module_runtime(owner._core)
++    assert {name: (token.token_ref, token.state) for name, token in _fresh_leases(after).items()} == {
++        name: (token.token_ref, token.state) for name, token in leases.items()}
++    assert scratch.token_ref not in after.token_refs
++    assert after.previous_checkpoint_ref == before.checkpoint_ref
++
++
++def test_static_read_does_not_authorize_reset_of_lease_pool(tmp_path):
++    module, registration = _world(tmp_path / "unused", reset_lease=True)
++    with pytest.raises(DeclarationError, match="Reset arc cannot retire reusable capacity or lease authority"):
++        compile_module(module, registration)
++
++
++def test_static_reference_still_blocks_immediate_graph_replacement(tmp_path):
++    owner = lease_owner(tmp_path / "replacement")
++    original_net = owner.snapshot()["net_ref"]
++    admitted = owner.admit("step.run", logical_tau=0, command_id="test:interactions:admit")
++    assert admitted is not None
++    plan = prepare_replacement(owner, _simple_module("Replacement"))
++    result = apply_replacement(owner, plan, command_id="test:interactions:replace")
++    assert result["status"] == "DRAINING"
++    assert owner.snapshot()["net_ref"] == original_net
++    with pytest.raises(RuntimeError, match="replacement is pending"):
++        owner.record_owner_stop(idempotency_key="test:interactions:stop")
++
++
++@pytest.mark.parametrize("static_read", [True, False], ids=["static-and-variable", "legacy-variable-only"])
++def test_static_read_does_not_change_legal_variable_edit_consume_return(tmp_path, static_read):
++    owner = _world(tmp_path / "edit", variable_mode="produce", with_edit=True, static_read=static_read)
++    produce = owner.admit("step.run", logical_tau=1, command_id="test:interactions:admit")
++    assert produce is not None
++    products = _settle(owner, produce)
++    executable, structure, before = hydrate_module_runtime(owner._core)
++    leases = _fresh_leases(before)
++    document = next(token for token in before.tokens if token.state.place == "step.result")
++    assert len(document.state.lease_claims) == 1
++    assert document.state.lease_claims[0].access_mode == "edit"
++    assert document.state.lease_claims[0].lease_identity_ref == leases["step.variable"].state.lease_identity_ref
++    assert leases["step.variable"].state.resource_ref == products.outputs[0].resource_ref
++    admitted = owner.admit("step.edit", logical_tau=2, command_id="test:edit:admit")
++    assert admitted is not None
++    local = TeamNetMarking.from_authority(structure, before)
++    install_active_module_claims(owner._core, local, executable.net_ref)
++    assert {token.place for token in local.claimed_tokens("step.edit", local.epoch)} == {
++        "step.result", "step.variable"}
++    expected_claims = {document.token_ref, leases["step.variable"].token_ref}
++    if static_read:
++        expected_claims.add(leases["step.static"].token_ref)
++    else:
++        assert structure.lease_reference_arcs == ()
++    assert set(admitted.preflight.claimed_token_refs) == expected_claims
++    assert {token.token_ref for token in local.claimed_operation_tokens("step.edit", local.epoch)} == expected_claims
++    execution = owner.start(admitted, command_id="test:edit:start")
++    outputs = owner.products(execution, outcome_id="complete", products={},
++        command_id="test:edit:products")
++    owner.succeed(outputs, command_id="test:edit:success")
++    _, _, after = hydrate_module_runtime(owner._core)
++    current = _fresh_leases(after)
++    assert current["step.static"].token_ref == leases["step.static"].token_ref
++    assert current["step.variable"].token_ref != leases["step.variable"].token_ref
++    assert current["step.variable"].state.lease_identity_ref == leases["step.variable"].state.lease_identity_ref
++    assert current["step.variable"].state.resource_ref == leases["step.variable"].state.resource_ref
++    assert leases["step.variable"].token_ref not in after.token_refs
++
++
++@pytest.mark.parametrize("channel", ["data", "control"])
++def test_ordinary_read_without_any_lease_arc_keeps_consume_return(tmp_path, channel):
++    registration = _registration()
++    document = _simple_module("OrdinaryRead").to_dict()
++    document["components"][0]["ports"][0]["channel"] = channel
++    document["components"][0]["config"] = {
++        "input_modes": {"request": "read"}, "capacities": {"request": 1}}
++    module = ModuleDeclaration.from_dict(document)
++    task = OwnerInput(TEXT, canonical_json("ordinary input"), "Task")
++    owner = start_run(module, registration, run_dir=tmp_path / channel,
++        task_input=task, entry_inputs={"request": task},
++        budgets=ModuleBudgetDeclaration(tuple(document["budget_buckets"]), (TEXT,), 3, 0, 3, 0),
++        model_condition="offline-ordinary-read-regression",
++        owner_statement="Offline ordinary data/control read regression",
++        command_id="test:ordinary:fresh")
++    executable, structure, before = hydrate_module_runtime(owner._core)
++    assert structure.lease_reference_arcs == ()
++    assert structure.variable_resource_arcs == ()
++    assert structure.resource_lease_pool_bindings == ()
++    original = next(token for token in before.tokens if token.state.place == "step.request")
++    admitted = owner.admit("step.run", logical_tau=0, command_id="test:ordinary:admit")
++    assert admitted is not None
++    assert admitted.preflight.claimed_token_refs == (original.token_ref,)
++    local = TeamNetMarking.from_authority(structure, before)
++    install_active_module_claims(owner._core, local, executable.net_ref)
++    consumed = local.claimed_tokens("step.run", local.epoch)
++    assert len(consumed) == 1
++    assert consumed[0].token_ref == original.token_ref
++    assert consumed[0].consumed_by == "step.run"
++    assert local.claimed_operation_tokens("step.run", local.epoch) == consumed
++    projection = next(place for place in admitted.preflight.outcomes[0].places
++                      if place.place == "step.request")
++    assert (projection.consumed_count, projection.returned_count) == (1, 1)
++    _settle(owner, admitted)
++    _, _, after = hydrate_module_runtime(owner._core)
++    returned = tuple(token for token in after.tokens if token.state.place == "step.request")
++    assert len(returned) == 1
++    assert returned[0].token_ref != original.token_ref
++    assert returned[0].state.resource_ref == original.state.resource_ref
++    assert returned[0].state.consumed_by is None
++    assert returned[0].state.lease_identity_ref is None
++    assert returned[0].state.lease_claims == ()
++    assert original.token_ref not in after.token_refs
++
++
++def test_removing_static_arc_adopts_after_drain_and_maps_lease_authority(tmp_path):
++    owner = _world(tmp_path / "remove-static", same_pool=False)
++    executable, structure, before = hydrate_module_runtime(owner._core)
++    original_leases = _fresh_leases(before)
++    original_lower = owner.registration.resolve("component", "interactions")
++
++    def without_static(config, context):
++        fragment = original_lower(config, context)
++        return replace(fragment, arcs=tuple(arc for arc in fragment.arcs
++            if not (arc.place == "static" and arc.direction == "input" and arc.mode == "read")))
++
++    owner.registration.register_component("interactions_without_static", without_static,
++        identity={"implementation_id": "test.static_lease_interactions_without_static", "revision": "v1"},
++        contracts={"config_schema": CONFIG_SCHEMA_ID})
++    document = structure.compiled.source.to_dict()
++    next(component for component in document["components"]
++         if component["name"] == "step")["key"] = "interactions_without_static"
++    candidate = ModuleDeclaration.from_dict(document)
++    candidate_compiled = compile_module(candidate, owner.registration)
++    assert candidate_compiled.symbolic.places == structure.compiled.symbolic.places
++    assert candidate_compiled.symbolic.lease_pools == structure.compiled.symbolic.lease_pools
++    assert candidate_compiled.symbolic.lease_identities == structure.compiled.symbolic.lease_identities
++    assert tuple(arc for arc in structure.compiled.symbolic.arcs
++        if not (arc.place == "step.static" and arc.direction == "input" and arc.mode == "read")) == candidate_compiled.symbolic.arcs
++
++    admitted = owner.admit("step.run", logical_tau=1, command_id="test:interactions:admit")
++    assert admitted is not None
++    assert original_leases["step.static"].token_ref in admitted.preflight.claimed_token_refs
++    plan = prepare_replacement(owner, candidate)
++    result = apply_replacement(owner, plan, command_id="test:remove-static:replace")
++    assert result["status"] == "DRAINING"
++    assert hydrate_module_runtime(owner._core)[0].net_ref == executable.net_ref
++    _settle(owner, admitted)
++
++    current_executable, current_structure, after = hydrate_module_runtime(owner._core)
++    assert current_executable.net_ref != executable.net_ref
++    assert current_structure.lease_reference_arcs == ()
++    assert current_structure.variable_resource_arcs == structure.variable_resource_arcs
++    current_leases = _fresh_leases(after)
++    assert set(current_leases) == set(original_leases)
++    result = apply_replacement(owner, plan, command_id="test:remove-static:replace")
++    assert result["status"] == "ADOPTED"
++    assert result["ordinary_retirements"] == []
++    assert result["owner_input_mappings"] == []
++    from cpn.rpnh.registry.publication import _version_from_payload
++    mappings = {_version_from_payload(mapping["old_token_ref"]):
++                _version_from_payload(mapping["new_token_ref"])
++                for mapping in result["token_mappings"]}
++    for place, original in original_leases.items():
++        current = current_leases[place]
++        assert mappings[original.token_ref] == current.token_ref
++        assert current.token_ref != original.token_ref
++        assert current.state.resource_ref == original.state.resource_ref
++        assert current.state.lease_identity_ref == original.state.lease_identity_ref
++        assert current.state.consumed_by is None
++
++
++
++def _direct_step_claim(owner):
++    """Select a legal exact union without invoking the scheduler's preference."""
++    from cpn.rpnh.registry.invocations import FiringClaim
++    from cpn.rpnh.registry.publication import _version_from_payload
++    executable, structure, marking = hydrate_module_runtime(owner._core)
++    transition = next(item for item in executable.transitions if item.transition_id == "step.run")
++    root = owner._core.get_version(executable.team_design_root_ref.version_id).metadata
++    round_ref = _version_from_payload(root["task_round_ref"])
++    round_data = owner._core.get_version(round_ref.version_id).metadata
++    net = owner._core.get_version(executable.net_ref.version_id).metadata
++    refs = tuple(sorted(marking.token_refs,
++        key=lambda ref: (ref.entity_type, str(ref.entity_id), str(ref.version_id))))
++    consumed_places = {place for place, target, _ in structure.token_input_arcs if target == "step.run"}
++    consumed = tuple(ref for ref in refs if any(token.token_ref == ref
++        and token.state.place in consumed_places for token in marking.tokens))
++    return FiringClaim(task_ref=_version_from_payload(root["task_ref"]),
++        task_branch_ref=_version_from_payload(round_data["task_branch_ref"]), task_round_ref=round_ref,
++        net_instance_ref=executable.net_ref, plan_ref=_version_from_payload(net["plan_ref"]),
++        node_ref=transition.node_ref, operation_binding_ref=transition.operation_binding_ref,
++        marking_checkpoint_ref=marking.checkpoint_ref, principal_ref=transition.principal_ref,
++        logical_tau=1, attempt_index=1, claimed_input_refs=refs, consumed_input_refs=consumed,
++        activation_ref=transition.activation_ref, agent_ref=transition.agent_ref)
++
++
++def test_static_read_can_select_another_token_beside_same_pool_variable_read(tmp_path):
++    from cpn.rpnh.firing_preflight import preflight_module_firing
++    from cpn.rpnh.registry.invocations import InvocationLifecycle
++    from cpn.rpnh.registry.module_gateway import start_module_firing
++    owner = _world(tmp_path / "explicit-union", extra_static_resources=1)
++    executable, structure, before = hydrate_module_runtime(owner._core)
++    leases = tuple(token for token in before.tokens if token.state.place == "step.static")
++    carrier = next(token for token in before.tokens if token.state.lease_claims)
++    assert len(leases) == 2 and len(carrier.state.lease_claims) == 1
++    assert carrier.state.lease_claims[0].access_mode == "read"
++    variable_identity = carrier.state.lease_claims[0].lease_identity_ref
++    assert sum(token.state.lease_identity_ref == variable_identity for token in leases) == 1
++    claim = _direct_step_claim(owner)
++    assert set(claim.claimed_input_refs) == {carrier.token_ref, *(token.token_ref for token in leases)}
++    assert claim.consumed_input_refs == (carrier.token_ref,)
++    preflight = preflight_module_firing(structure, before, transition_id="step.run",
++        claimed_token_refs=claim.claimed_input_refs)
++    admitted = InvocationLifecycle(owner._core).admit_firing(claim,
++        idempotency_key="test:explicit-union:admit")
++    local = TeamNetMarking.from_authority(structure, before)
++    install_active_module_claims(owner._core, local, executable.net_ref)
++    assert [token.token_ref for token in local.claimed_tokens("step.run", local.epoch)] == [carrier.token_ref]
++    assert {token.token_ref for token in local.claimed_operation_tokens("step.run", local.epoch)} == set(claim.claimed_input_refs)
++    kernel, repository = owner.operation_repository()
++    execution = start_module_firing(owner._core, kernel, repository,
++        admitted.context.invocation_ref, preflight=preflight,
++        idempotency_key="test:explicit-union:start")
++    outputs = owner.products(execution, outcome_id="complete",
++        products={"step.result": (canonical_json("done"),)}, command_id="test:explicit-union:products")
++    owner.succeed(outputs, command_id="test:explicit-union:success")
++    _, _, after = hydrate_module_runtime(owner._core)
++    current = tuple(token for token in after.tokens if token.state.place == "step.static")
++    assert {(token.token_ref, token.state) for token in current} == {
++        (token.token_ref, token.state) for token in leases}
++
++
++def test_static_weight_one_rejects_two_unrelated_same_pool_references(tmp_path):
++    from cpn.rpnh.registry.event_store import RegistryConflict
++    from cpn.rpnh.registry.invocations import InvocationAdmissionError, InvocationLifecycle
++    owner = _world(tmp_path / "oversized-union", extra_static_resources=2)
++    _, _, before = hydrate_module_runtime(owner._core)
++    leases = tuple(token for token in before.tokens if token.state.place == "step.static")
++    carrier = next(token for token in before.tokens if token.state.lease_claims)
++    assert len(leases) == 3 and len(carrier.state.lease_claims) == 1
++    assert carrier.state.lease_claims[0].access_mode == "read"
++    claim = _direct_step_claim(owner)
++    assert len(claim.claimed_input_refs) == 4
++    assert claim.consumed_input_refs == (carrier.token_ref,)
++    event_count = len(owner._core.event_store.list_events())
++    firing_count = len(owner._core.event_store.object_rows_by_type("transition_firing/v1"))
++    with pytest.raises((InvocationAdmissionError, RegistryConflict)):
++        InvocationLifecycle(owner._core).admit_firing(claim,
++            idempotency_key="test:oversized-union:admit")
++    assert len(owner._core.event_store.list_events()) == event_count
++    assert len(owner._core.event_store.object_rows_by_type("transition_firing/v1")) == firing_count
++    assert hydrate_module_runtime(owner._core)[2].checkpoint_ref == before.checkpoint_ref
+diff --git a/tests/test_static_lease_reads.py b/tests/test_static_lease_reads.py
+new file mode 100644
+--- /dev/null
++++ b/tests/test_static_lease_reads.py
+@@ -0,0 +1,445 @@
++"""Static lease references through real Registry; no process/model transport."""
++from dataclasses import replace
++
++import pytest
++
++
++@pytest.fixture(autouse=True)
++def no_external_transport(monkeypatch):
++    import socket
++    import urllib.request
++    def forbidden(*args, **kwargs):
++        raise AssertionError("static lease verification is offline and cannot open sockets or retrieve URLs")
++    monkeypatch.setattr(socket, "socket", forbidden)
++    monkeypatch.setattr(urllib.request, "urlopen", forbidden)
++
++from cpn.components.basic import CONFIG_SCHEMA_ID, lower_operation, register_basic_components
++from cpn.rpnh.registration import Registration
++from cpn.rpnh.petri_contracts import (
++    ArcDeclaration, InitialTokenDeclaration, LeaseIdentityDeclaration, PlaceDeclaration,
++    ResourceLeasePoolBinding,
++)
++from cpn.rpnh.module import ModuleDeclaration
++from cpn.rpnh.registry.module_budgets import ModuleBudgetDeclaration
++from cpn.rpnh.registry.schema_catalog import canonical_json
++from cpn.rpnh.run import OwnerInput, start_run
++TEXT = "application/net_operation_test_text/v1"
++ALT_TEXT = "application/net_operation_test_alt_text/v1"
++EXECUTOR = "test/net-operation-business/v1"
++TERMINAL = "test/net-operation-terminal/v1"
++
++
++def _schema(schema_id):
++    return {"$id": schema_id, "$schema": "http://json-schema.org/draft-07/schema#",
++            "type": "string"}
++
++
++def _registration():
++    registration = Registration()
++    register_basic_components(registration)
++    registration.register_schema(TEXT, _schema(TEXT))
++    registration.register_schema(ALT_TEXT, _schema(ALT_TEXT))
++    registration.register_executor(EXECUTOR, lambda **_kwargs: None,
++        identity={"implementation_id": "test.net_operation_business", "revision": "v1"},
++        contracts={"transport": "deterministic", "input_ports": None,
++                   "output_ports": None, "config_schema": CONFIG_SCHEMA_ID})
++    registration.register_tool(TERMINAL, dict,
++        identity={"implementation_id": "test.net_operation_terminal", "revision": "v1"},
++        contracts={"binding_protocol": "rpnh/module_terminal/v1"})
++    return registration
++
++
++def _simple_module(name="Simple", *, input_schema=TEXT, output_schema=TEXT):
++    binding = {"bucket_id": "work", "budget_scope": "module",
++               "finalization_scope": None}
++    return ModuleDeclaration.from_dict({
++        "schema_version": "rpnh/module_declaration/v1",
++        "name": name,
++        "components": [{
++            "name": "step", "key": "operation",
++            "config_schema": CONFIG_SCHEMA_ID, "config": {},
++            "ports": [
++                {"name": "request", "direction": "input", "schema": input_schema},
++                {"name": "result", "direction": "output", "schema": output_schema},
++            ],
++            "operations": [{
++                "name": "run", "executor": EXECUTOR,
++                "inputs": ["request"], "outputs": ["result"],
++                "request_port": None, "tools": [], "config": {},
++                "budget_binding": binding,
++                "outcomes": [{"name": "complete",
++                              "products": [{"port": "result"}]}],
++            }],
++        }],
++        "links": [],
++        "entry": {"request": {"component": "step", "port": "request"}},
++        "exit": {"result": {"component": "step", "port": "result"}},
++        "terminal": {"key": TERMINAL,
++                     "source": {"component": "step", "port": "result"},
++                     "operation": "run", "outcome": "complete",
++                     "config": {"run_outcome": "complete"}},
++        "required_schemas": sorted({CONFIG_SCHEMA_ID, input_schema, output_schema}),
++        "budgets": {},
++        "budget_buckets": [{**binding, "max_attempts": 3}],
++    })
++
++
++
++
++def lease_owner(path, *, occurrences=1, pure_reference=False, ordinary_read=False,
++                distinct_resource=False, control_read=False, lease_count=1, read_weight=1,
++                command_id="test:static-lease:fresh"):
++    registration = _registration()
++    def lower(config, context):
++        fragment = lower_operation(config, context)
++        if occurrences != 1:
++            fragment = replace(fragment, places=tuple(replace(place,
++                initial_tokens=(InitialTokenDeclaration(count=occurrences - 1, value="work", schema=TEXT),))
++                if place.name == "request" else place for place in fragment.places))
++        return replace(fragment,
++            places=(*fragment.places, PlaceDeclaration("lease", TEXT,
++                token_kind="resource_lease", capacity=lease_count, reusable=True)),
++            arcs=(*fragment.arcs, ArcDeclaration("lease", "run", "input", weight=read_weight, mode="read")),
++            lease_identities=tuple(LeaseIdentityDeclaration("asset" + (str(i) if i else "")) for i in range(lease_count)),
++            lease_pools=(ResourceLeasePoolBinding("lease", "lease", tuple("asset" + (str(i) if i else "") for i in range(lease_count))),))
++    registration.register_component("lease_operation", lower,
++        identity={"implementation_id": "test.static_lease", "revision": "v1"},
++        contracts={"config_schema": CONFIG_SCHEMA_ID})
++    document = _simple_module("StaticLease").to_dict()
++    document["components"][0]["key"] = "lease_operation"
++    if ordinary_read:
++        document["components"][0]["config"] = {"input_modes": {"request": "read"}}
++    if control_read:
++        document["components"][0]["ports"][0]["channel"] = "control"
++    if pure_reference:
++        document["entry"] = {}
++    if pure_reference:
++        document["components"][0]["ports"] = [port for port in document["components"][0]["ports"]
++                                                if port["name"] != "request"]
++        document["components"][0]["operations"][0]["inputs"] = []
++    module = ModuleDeclaration.from_dict(document)
++    task = OwnerInput(TEXT, canonical_json("task"), "Task")
++    return start_run(module, registration, run_dir=path, task_input=task,
++        entry_inputs={"request": task} if document["entry"] else {},
++        resource_inputs={"step.asset" + (str(i) if i else ""):
++            OwnerInput(TEXT, canonical_json("lease" + str(i)), "Lease") if distinct_resource or i else task
++            for i in range(lease_count)},
++        budgets=ModuleBudgetDeclaration(tuple(document["budget_buckets"]), (TEXT,), 3, 0, 3, 0),
++        model_condition="offline-static-lease", owner_statement="Offline static lease test",
++        command_id=command_id)
++
++
++def test_static_lease_read_admits(tmp_path):
++    owner = lease_owner(tmp_path / "run")
++    admitted = owner.admit("step.run", logical_tau=0, command_id="test:admit")
++    assert admitted is not None
++
++
++def current(owner):
++    from cpn.rpnh.registry.module_runtime import hydrate_module_runtime
++    return hydrate_module_runtime(owner._core)
++
++
++def lease_state(marking):
++    return next(token.state for token in marking.tokens if token.state.place == "step.lease")
++
++
++def finish(owner, admitted, key):
++    execution = owner.start(admitted, command_id=key + ":start")
++    outputs = owner.products(execution, outcome_id="complete",
++        products={"step.result": (canonical_json("result"),)}, command_id=key + ":products")
++    return owner.succeed(outputs, command_id=key + ":success")
++
++
++@pytest.mark.parametrize("distinct_resource", [False, True])
++def test_static_read_full_lifecycle_preserves_exact_token(tmp_path, distinct_resource):
++    owner = lease_owner(tmp_path / "run", distinct_resource=distinct_resource)
++    initial = lease_state(current(owner)[2])
++    admitted = owner.admit("step.run", logical_tau=0, command_id="test:admit")
++    finish(owner, admitted, "first")
++    assert lease_state(current(owner)[2]) == initial
++    tokens = owner._core.event_store.object_rows_by_type("petri_token/v1")
++    import json
++    assert sum(json.loads(row["metadata_json"])["place"] == "step.lease" for row in tokens) == 1
++
++
++def test_parallel_same_transition_and_successor_reconstruction(tmp_path):
++    from cpn.rpnh.marking import TeamNetMarking
++    from cpn.rpnh.registry.module_execution import install_active_module_claims
++    owner = lease_owner(tmp_path / "run", occurrences=2)
++    initial = lease_state(current(owner)[2])
++    first = owner.admit("step.run", logical_tau=0, command_id="first:admit")
++    second = owner.admit("step.run", logical_tau=0, command_id="second:admit")
++    assert first is not None and second is not None
++    assert initial.token_ref in first.preflight.claimed_token_refs
++    assert initial.token_ref in second.preflight.claimed_token_refs
++    finish(owner, first, "first")
++    executable, structure, marking = current(owner)
++    local = TeamNetMarking.from_authority(structure, marking)
++    assert len(install_active_module_claims(owner._core, local, executable.net_ref)) == 1
++    assert lease_state(marking) == initial
++    finish(owner, second, "second")
++    assert lease_state(current(owner)[2]) == initial
++
++
++def test_reference_only_transition_is_finite_and_retained(tmp_path):
++    from cpn.rpnh.marking import TeamNetMarking
++    owner = lease_owner(tmp_path / "run", pure_reference=True)
++    _executable, structure, marking = current(owner)
++    local = TeamNetMarking.from_authority(structure, marking)
++    selected, epoch = local.claim_firing_set()
++    assert selected == ["step.run"]
++    assert local.claimed_tokens("step.run", epoch) == []
++    assert local.claimed_token_refs("step.run", epoch) == (lease_state(marking).token_ref,)
++    for index in range(2):
++        admitted = owner.admit("step.run", logical_tau=index, command_id=f"admit:{index}")
++        finish(owner, admitted, f"done:{index}")
++    assert lease_state(current(owner)[2]) == lease_state(marking)
++
++
++@pytest.mark.parametrize("control_read", [False, True])
++def test_ordinary_read_still_consumes_and_returns(tmp_path, control_read):
++    owner = lease_owner(tmp_path / "run", ordinary_read=True, control_read=control_read)
++    before = current(owner)[2]
++    original = next(token.state for token in before.tokens if token.state.place == "step.request")
++    first = owner.admit("step.run", logical_tau=0, command_id="first:admit")
++    assert owner.admit("step.run", logical_tau=0, command_id="blocked:admit") is None
++    finish(owner, first, "first")
++    after = current(owner)[2]
++    returned = next(token.state for token in after.tokens if token.state.place == "step.request")
++    assert returned.token_ref != original.token_ref and returned.resource_ref == original.resource_ref
++    assert lease_state(before) == lease_state(after)
++
++
++def direct_claim(owner):
++    """Use the existing low-level claim API, bypassing the owner's selector."""
++    from cpn.rpnh.registry.invocations import FiringClaim
++    from cpn.rpnh.registry.publication import _version_from_payload
++    executable, structure, marking = current(owner)
++    transition = executable.transitions[0]
++    root = owner._core.get_version(executable.team_design_root_ref.version_id).metadata
++    round_ref = _version_from_payload(root["task_round_ref"])
++    round_data = owner._core.get_version(round_ref.version_id).metadata
++    net = owner._core.get_version(executable.net_ref.version_id).metadata
++    refs = tuple(sorted(marking.token_refs, key=lambda ref: (ref.entity_type, str(ref.entity_id), str(ref.version_id))))
++    consumed_places = {place for place, target, _ in structure.token_input_arcs if target == "step.run"}
++    consumed = tuple(token.token_ref for token in marking.tokens if token.state.place in consumed_places)
++    return FiringClaim(task_ref=_version_from_payload(root["task_ref"]),
++        task_branch_ref=_version_from_payload(round_data["task_branch_ref"]), task_round_ref=round_ref,
++        net_instance_ref=executable.net_ref, plan_ref=_version_from_payload(net["plan_ref"]),
++        node_ref=transition.node_ref, operation_binding_ref=transition.operation_binding_ref,
++        marking_checkpoint_ref=marking.checkpoint_ref, principal_ref=transition.principal_ref,
++        logical_tau=0, attempt_index=1, claimed_input_refs=refs, consumed_input_refs=consumed,
++        activation_ref=transition.activation_ref, agent_ref=transition.agent_ref)
++
++
++@pytest.mark.parametrize("damage", ["missing", "consume_reference", "missing_consume", "wrong_logical", "foreign", "duplicate"])
++def test_direct_admission_rejects_invalid_reference_claim(tmp_path, damage):
++    from cpn.rpnh.registry.invocations import InvocationLifecycle, InvocationAdmissionError
++    from cpn.rpnh.registry.event_store import RegistryConflict
++    from cpn.rpnh.registry.identities import new_id
++    from cpn.rpnh.registry.schema_catalog import SchemaGovernanceError
++    owner = lease_owner(tmp_path / "run")
++    claim = direct_claim(owner)
++    lease = lease_state(current(owner)[2]).token_ref
++    if damage == "missing":
++        claim = replace(claim, claimed_input_refs=tuple(ref for ref in claim.claimed_input_refs if ref != lease))
++    elif damage == "consume_reference":
++        claim = replace(claim, consumed_input_refs=claim.claimed_input_refs)
++    elif damage == "missing_consume":
++        claim = replace(claim, consumed_input_refs=())
++    elif damage == "wrong_logical":
++        claim = replace(claim, claimed_input_refs=tuple(replace(ref, entity_id=new_id("petri_token")) if ref == lease else ref for ref in claim.claimed_input_refs))
++    elif damage == "foreign":
++        other = lease_owner(tmp_path / "foreign", command_id="foreign:fresh")
++        foreign = lease_state(current(other)[2]).token_ref
++        assert foreign != lease
++        claim = replace(claim, claimed_input_refs=tuple(foreign if ref == lease else ref for ref in claim.claimed_input_refs))
++    else:
++        claim = replace(claim, claimed_input_refs=(*claim.claimed_input_refs, lease))
++    before = len(owner._core.event_store.list_events())
++    with pytest.raises((RegistryConflict, InvocationAdmissionError, SchemaGovernanceError, ValueError)):
++        InvocationLifecycle(owner._core).admit_firing(claim, idempotency_key="invalid:admit")
++    assert len(owner._core.event_store.list_events()) == before
++    assert not owner._core.event_store.object_rows_by_type("transition_firing/v1")
++
++
++@pytest.mark.parametrize("damage", ["missing_reference_index", "wrong_logical", "empty_consumed"])
++def test_transaction_revalidates_claim_beyond_public_api(tmp_path, monkeypatch, damage):
++    from cpn.rpnh.registry.invocations import InvocationLifecycle
++    from cpn.rpnh.registry.event_store import RegistryConflict
++    from cpn.rpnh.registry.identities import new_id
++    owner = lease_owner(tmp_path / "run")
++    claim = direct_claim(owner)
++    original = owner._core.begin
++    def begin(**kwargs):
++        tx = original(**kwargs)
++        write = tx.prewrite
++        def prewrite(**values):
++            metadata = dict(values["metadata"])
++            if values["object_type"] == "transition_firing/v1" and damage != "empty_consumed":
++                if damage == "missing_reference_index":
++                    metadata["claimed_input_version_ids"] = sorted(str(ref.version_id) for ref in claim.consumed_input_refs)
++                else:
++                    metadata["claimed_input_refs"] = [dict(ref) for ref in metadata["claimed_input_refs"]]
++                    metadata["claimed_input_refs"][0]["logical_id"] = str(new_id("petri_token"))
++            elif values["object_type"] == "marking_delta/v1" and damage == "empty_consumed":
++                metadata["consumed_refs"] = []
++            return write(**dict(values, metadata=metadata, payload=canonical_json(metadata)))
++        tx.prewrite = prewrite
++        return tx
++    monkeypatch.setattr(owner._core, "begin", begin)
++    with pytest.raises(RegistryConflict):
++        InvocationLifecycle(owner._core).admit_firing(claim, idempotency_key="invalid:raw")
++    assert not owner._core.event_store.object_rows_by_type("transition_firing/v1")
++
++
++def test_weighted_references_require_exact_declared_quantity(tmp_path):
++    from cpn.rpnh.marking import TeamNetMarking, MarkingStateError
++    owner = lease_owner(tmp_path / "run", lease_count=2, read_weight=2)
++    _, structure, marking = current(owner)
++    lease_refs = {token.token_ref for token in marking.tokens if token.state.place == "step.lease"}
++    admitted = owner.admit("step.run", logical_tau=0, command_id="weighted:admit")
++    assert lease_refs <= set(admitted.preflight.claimed_token_refs)
++    local = TeamNetMarking.from_authority(structure, marking)
++    with pytest.raises(MarkingStateError, match="static lease read"):
++        local.install_registered_firing_claim("step.run", tuple(ref for ref in admitted.preflight.claimed_token_refs if ref != next(iter(lease_refs))))
++    finish(owner, admitted, "weighted")
++    assert lease_refs == {token.token_ref for token in current(owner)[2].tokens if token.state.place == "step.lease"}
++
++
++def test_extra_static_reference_is_rejected_instead_of_widening_read(tmp_path):
++    from cpn.rpnh.registry.invocations import InvocationLifecycle
++    from cpn.rpnh.registry.event_store import RegistryConflict
++    owner = lease_owner(tmp_path / "run", lease_count=2, read_weight=1)
++    with pytest.raises(RegistryConflict, match="static lease claim"):
++        InvocationLifecycle(owner._core).admit_firing(direct_claim(owner), idempotency_key="extra:admit")
++    admitted = owner.admit("step.run", logical_tau=0, command_id="correct:admit")
++    assert len(admitted.preflight.claimed_token_refs) == 2
++
++
++def test_two_transitions_share_reference_with_independent_control_inputs(tmp_path):
++    from copy import deepcopy
++    from cpn.rpnh.petri_contracts import PNFragment, PortBinding, TransitionDeclaration
++    registration = _registration()
++    def lower(config, context):
++        places = tuple(PlaceDeclaration(port.name, port.schema, channel=port.channel) for port in context.ports)
++        arcs = []
++        for operation in context.operations:
++            arcs.extend((ArcDeclaration(operation.inputs[0], operation.name, "input"),
++                ArcDeclaration("lease", operation.name, "input", mode="read"),
++                ArcDeclaration(operation.outputs[0], operation.name, "output", mode="produce", outcome="complete")))
++        return PNFragment((*places, PlaceDeclaration("lease", TEXT, token_kind="resource_lease", capacity=1, reusable=True)),
++            tuple(TransitionDeclaration(operation.name, operation.name) for operation in context.operations), tuple(arcs),
++            tuple(PortBinding(port.name, port.name) for port in context.ports), context.operations,
++            lease_identities=(LeaseIdentityDeclaration("asset"),),
++            lease_pools=(ResourceLeasePoolBinding("lease", "lease", ("asset",)),))
++    registration.register_component("readers", lower,
++        identity={"implementation_id": "test.static_readers", "revision": "v1"}, contracts={"config_schema": CONFIG_SCHEMA_ID})
++    document = _simple_module("TwoReaders").to_dict()
++    base = document["components"][0]
++    base["key"] = "readers"
++    prototype = base["operations"][0]
++    base["ports"] = []
++    base["operations"] = []
++    for name in ("left", "right"):
++        base["ports"].extend((dict(name=name + "_request", direction="input", schema=TEXT, channel="control"),
++                              dict(name=name + "_result", direction="output", schema=TEXT)))
++        operation = deepcopy(prototype)
++        operation.update(name=name, inputs=[name + "_request"], outputs=[name + "_result"])
++        operation["outcomes"][0]["products"][0]["port"] = name + "_result"
++        base["operations"].append(operation)
++    document["entry"] = {name: {"component": "step", "port": name + "_request"} for name in ("left", "right")}
++    document["exit"] = {name: {"component": "step", "port": name + "_result"} for name in ("left", "right")}
++    document["terminal"].update(source=document["exit"]["right"], operation="right")
++    task = OwnerInput(TEXT, canonical_json("task"), "Task")
++    owner = start_run(ModuleDeclaration.from_dict(document), registration, run_dir=tmp_path / "run",
++        task_input=task, entry_inputs={"left": task, "right": task}, resource_inputs={"step.asset": task},
++        budgets=ModuleBudgetDeclaration(tuple(document["budget_buckets"]), (TEXT,), 3, 0, 3, 0),
++        model_condition="offline-static-lease", owner_statement="Two readers", command_id="readers:fresh")
++    initial = lease_state(current(owner)[2])
++    firings = [owner.admit("step." + name, logical_tau=0, command_id=name + ":admit") for name in ("left", "right")]
++    assert all(firing is not None for firing in firings)
++    assert set(firings[0].preflight.claimed_token_refs) & set(firings[1].preflight.claimed_token_refs) == {initial.token_ref}
++    for name, firing in zip(("left", "right"), firings):
++        execution = owner.start(firing, command_id=name + ":start")
++        outputs = owner.products(execution, outcome_id="complete",
++            products={"step." + name + "_result": (canonical_json(name),)}, command_id=name + ":products")
++        owner.succeed(outputs, command_id=name + ":success")
++        assert lease_state(current(owner)[2]) == initial
++
++
++def test_reference_alone_does_not_authorize_dynamic_resource_access(tmp_path):
++    from cpn.rpnh.marking import TeamNetMarking, MarkingStateError
++    from cpn.rpnh.registry.module_execution import install_active_module_claims
++    owner = lease_owner(tmp_path / "run")
++    admitted = owner.admit("step.run", logical_tau=0, command_id="read:admit")
++    executable, structure, marking = current(owner)
++    local = TeamNetMarking.from_authority(structure, marking)
++    install_active_module_claims(owner._core, local, executable.net_ref)
++    with pytest.raises(MarkingStateError, match="no variable resource-access arc"):
++        local.derive_firing_resource_access("step.run", marking.epoch,
++            admitted.admission.context.own_transition_firing_ref, lease_state(marking).resource_ref, "edit")
++
++
++def test_new_process_cold_registry_reconstructs_active_and_settled_refs(tmp_path):
++    import json
++    import os
++    from pathlib import Path
++    import subprocess
++    import sys
++    owner = lease_owner(tmp_path / "run", occurrences=2)
++    initial = lease_state(current(owner)[2])
++    first = owner.admit("step.run", logical_tau=0, command_id="first:admit")
++    second = owner.admit("step.run", logical_tau=0, command_id="second:admit")
++    script = """
++import json,sys,socket
++def forbidden(*args,**kwargs): raise AssertionError('offline cold reconstruction cannot use sockets')
++socket.socket=forbidden
++from cpn.rpnh.registry._registry import _RegistryCore
++from cpn.rpnh.registry.module_runtime import hydrate_module_runtime
++from cpn.rpnh.registry.module_execution import install_active_module_claims
++from cpn.rpnh.marking import TeamNetMarking
++core=_RegistryCore(sys.argv[1],create=False,read_only=True)
++net,structure,marking=hydrate_module_runtime(core)
++local=TeamNetMarking.from_authority(structure,marking)
++active=install_active_module_claims(core,local,net.net_ref)
++lease=next(t.state for t in marking.tokens if t.state.place=='step.lease')
++for row in core.event_store.object_rows_by_type('transition_firing/v1'):
++    publication=core.event_store.firing_publication_row(row['version_id'])
++    if publication['state']=='PUBLISHED': core.event_store.reconstruct_firing_state(row['version_id'])
++print(json.dumps({'lease':str(lease.token_ref.version_id),'active':len(active),
++ 'references':[str(t.token_ref.version_id) for a in local.active_claim_occurrences(local.epoch)
++ for t in local.claimed_operation_tokens(a.transition_id,a.claim_epoch,instance_key=a.local_key)
++ if t.place=='step.lease'],'events':len(core.event_store.list_events())}))
++"""
++    for expected_active in (2, 1, 0):
++        events = len(owner._core.event_store.list_events())
++        result = subprocess.run([sys.executable, "-c", script, str(owner._core.run_dir)],
++            env={**os.environ, "PYTHONPATH": str(Path(__file__).resolve().parents[1]), "PYTHONDONTWRITEBYTECODE": "1"},
++            capture_output=True, text=True, timeout=30, check=True)
++        observed = json.loads(result.stdout)
++        assert observed["lease"] == str(initial.token_ref.version_id)
++        assert observed["active"] == expected_active
++        assert observed["references"] == [str(initial.token_ref.version_id)] * expected_active
++        assert observed["events"] == events == len(owner._core.event_store.list_events())
++        if expected_active:
++            finish(owner, first if expected_active == 2 else second, "first" if expected_active == 2 else "second")
++
++
++def test_completion_recovery_preserves_static_reference(tmp_path):
++    from cpn.rpnh.registry.firing_recovery import record_registered_operation_completion
++    from cpn.rpnh.run import resume_run
++    owner = lease_owner(tmp_path / "run")
++    initial = lease_state(current(owner)[2])
++    admitted = owner.admit("step.run", logical_tau=0, command_id="recover:admit")
++    execution = owner.start(admitted, command_id="recover:start")
++    outputs = owner.products(execution, outcome_id="complete",
++        products={"step.result": (canonical_json("result"),)}, command_id="recover:products")
++    kernel, repository = owner.operation_repository()
++    record_registered_operation_completion(owner._core, kernel, repository, outputs,
++        idempotency_key="recover:completion")
++    recovered = resume_run(owner.registration, run_dir=owner._core.run_dir,
++        model_condition="offline-static-lease")
++    assert recovered.snapshot()["active_firings"] == []
++    assert lease_state(current(recovered)[2]) == initial

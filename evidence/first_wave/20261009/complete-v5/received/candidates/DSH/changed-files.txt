@@ -1,0 +1,13 @@
+modify cpn/dsh/backend.py
+add cpn/dsh/message_codec.py
+add integrations/dsh/fixtures/message-codec.v1.json
+modify integrations/dsh/src/agent.ts
+modify integrations/dsh/src/capabilities.ts
+add integrations/dsh/src/history-codec.ts
+add integrations/dsh/src/message-codec.test.ts
+add integrations/dsh/src/message-codec.ts
+modify integrations/dsh/src/projection.ts
+add integrations/dsh/src/provider-message-codec.ts
+modify pyproject.toml
+modify tests/test_dsh_distribution.py
+add tests/test_dsh_message_codec.py

@@ -1,0 +1,16 @@
+{
+  "source": "/workspace/scratch/18c810e6dd59/rpnh-bound-child-material-lowering/source",
+  "exit_status": 1,
+  "collected": [
+    "tests/test_typed_author_interoperation.py::test_legacy_direct_python_numeric_constraint_keys_still_normalize"
+  ],
+  "outcomes": [
+    {
+      "nodeid": "tests/test_typed_author_interoperation.py::test_legacy_direct_python_numeric_constraint_keys_still_normalize",
+      "when": "call",
+      "outcome": "failed",
+      "duration": 0.004975682000804227
+    }
+  ],
+  "sentinel_blocked_events": []
+}

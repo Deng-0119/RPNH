@@ -1,0 +1,13 @@
+{
+  "classification": "LOCAL_EVIDENCE_FORMAT_DIAGNOSTIC",
+  "original_gate": "resume-r2-native-extract",
+  "corrected_by": "resume-r2-native-export",
+  "original_path": "<WORKSPACE>/task-complete-v5-20261009/stages/rsi/resume_extract_v1.py",
+  "new_path": "<WORKSPACE>/task-complete-v5-20261009/stages/rsi/resume_extract.py",
+  "original_sha256": "f78a5078975851c9d970caa1a6eedc17f9919381094f916b19e8480b0722ad1e",
+  "new_sha256": "0d25497c5ed6c65eda26bd16eb5455031445a0efd158a3712792911104b2e620",
+  "diff": "--- resume_extract_v1.py\n+++ resume_extract.py\n@@ -7,6 +7,7 @@\n import sys\n import xml.etree.ElementTree as ET\n from datetime import datetime, timezone\n+from dataclasses import asdict\n from cpn.rpnh.registry._registry import _RegistryCore\n from cpn.rpnh.registry.resource_service import _ResourceServiceKernel\n from cpn.rpnh.registry.run_authority import read_run_execution, read_run_terminal_bytes\n@@ -64,7 +65,7 @@\n             assert projection['execution']['head_ordinal']==head\n             assert projection['source']['verified_head_ordinal']==head\n             assert projection['source']['writer_fencing_epoch']==epoch\n-            assert projection['marking']['checkpoint_ref']['version_id']==str(checkpoint.version_id)\n+            assert projection['marking']['checkpoint_ref']==asdict(checkpoint)\n             assert projection['execution']['firing_count']==len(core.event_store.object_rows_by_type('operation_result/v1'))\n             cli['verified_head_ordinal']=head\n             cli['verified_checkpoint_version']=str(checkpoint.version_id)\n",
+  "reason": "CLI serializes the complete checkpoint VersionRef as a nested dataclass kind/value object. Compare that full object to asdict(checkpoint), rather than comparing a dict to a colon-form string. Product and test source unchanged; failed attempt and first CLI output retained.",
+  "test_source_adapted": false,
+  "heavy_tests_rerun": false
+}

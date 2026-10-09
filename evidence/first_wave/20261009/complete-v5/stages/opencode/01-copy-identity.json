@@ -1,0 +1,22 @@
+{
+  "command": [
+    "<WORKSPACE>/.p26/v/bin/python",
+    "<WORKSPACE>/task-complete-v5-20261009/stages/dsh/lane_tools.py",
+    "opencode",
+    "copy"
+  ],
+  "cwd": "<WORKSPACE>/.v26/o",
+  "pid": 13694,
+  "started_at_utc": "2026-10-09T01:17:43.780972+00:00",
+  "finished_at_utc": "2026-10-09T01:17:45.862911+00:00",
+  "elapsed_seconds": 2.081957654998405,
+  "exit_code": 0,
+  "environment": {
+    "PYTHONPATH": "<WORKSPACE>/.v26/o",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1",
+    "TMPDIR": "<WORKSPACE>/.v26/tmp",
+    "PYTEST_ADDOPTS": null,
+    "PYTEST_PLUGINS": null
+  }
+}

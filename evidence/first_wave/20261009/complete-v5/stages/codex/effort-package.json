@@ -1,0 +1,20 @@
+{
+  "command": [
+    "<WORKSPACE>/.p26/v/bin/python",
+    "<WORKSPACE>/task-complete-v5-20261009/stages/codex/package2/verify_package.py"
+  ],
+  "cwd": "<WORKSPACE>/.v26/x2",
+  "pid": 14063,
+  "started_at_utc": "2026-10-09T01:18:51.115056+00:00",
+  "finished_at_utc": "2026-10-09T01:18:51.174008+00:00",
+  "elapsed_seconds": 0.05897109599754913,
+  "exit_code": 0,
+  "environment": {
+    "PYTHONPATH": "<WORKSPACE>/.v26/x2",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1",
+    "TMPDIR": "<WORKSPACE>/.v26/tmp",
+    "PYTEST_ADDOPTS": null,
+    "PYTEST_PLUGINS": null
+  }
+}

@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="5" skipped="0" tests="27" time="66.166" timestamp="2026-10-08T18:34:28.568948-04:00" hostname="54cb1abdc64d"><testcase classname="tests.test_parent_child_core" name="test_real_parent_causal_chain_is_provisional" time="2.147" /><testcase classname="tests.test_parent_child_core" name="test_bound_origin_true_admission_start_success" time="12.334" /><testcase classname="tests.test_parent_child_core" name="test_parent_pn_declared_prerequisites_not_host_flags[values0]" time="1.836" /><testcase classname="tests.test_parent_child_core" name="test_parent_pn_declared_prerequisites_not_host_flags[values1]" time="1.658" /><testcase classname="tests.test_parent_child_core" name="test_parent_pn_declared_prerequisites_not_host_flags[values2]" time="1.850" /><testcase classname="tests.test_parent_child_core" name="test_parent_pn_declared_prerequisites_not_host_flags[values3]" time="1.678" /><testcase classname="tests.test_parent_child_core" name="test_no_native_evidence_constructor_or_json_permission" time="1.896" /><testcase classname="tests.test_parent_child_core" name="test_parent_commit_rejects_mutated_native_closure[start_id]" time="1.861" /><testcase classname="tests.test_parent_child_core" name="test_parent_commit_rejects_mutated_native_closure[generation]" time="1.722" /><testcase classname="tests.test_parent_child_core" name="test_parent_commit_rejects_mutated_native_closure[lease]" time="1.877" /><testcase classname="tests.test_parent_child_core" name="test_parent_commit_rejects_mutated_native_closure[parent_run]" time="1.909" /><testcase classname="tests.test_parent_child_core" name="test_parent_commit_rejects_mutated_native_closure[slot]" time="2.160" /><testcase classname="tests.test_parent_child_core" name="test_parent_commit_rejects_mutated_native_closure[target]" time="2.081" /><testcase classname="tests.test_parent_child_core" name="test_parent_commit_rejects_mutated_native_closure[material]" time="2.077" /><testcase classname="tests.test_parent_child_core" name="test_intent_replay_rechecks_live_entry_before_exact_replay[stop]" time="2.116" /><testcase classname="tests.test_parent_child_core" name="test_intent_replay_rechecks_live_entry_before_exact_replay[new_writer]" time="1.918" /><testcase classname="tests.test_parent_child_core" name="test_acceptance_direct_exact_replay_requires_native_boundary" time="1.920" /><testcase classname="tests.test_parent_child_core" name="test_parent_unknown_completion_cannot_release_slot" time="2.847" /><testcase classname="tests.test_parent_child_core" name="test_parent_start_payload_is_fully_rechecked" time="1.680" /><testcase classname="tests.test_parent_child_core" name="test_child_no_writable_reentry_zero_epoch_change" time="3.113" /><testcase classname="tests.test_parent_child_core" name="test_child_direct_closed_authority_cannot_revive" time="3.481" /><testcase classname="tests.test_parent_child_core" name="test_child_origin_cannot_be_cloned_by_raw_transaction" time="2.134"><failure message="cpn.rpnh.registry.schema_catalog.SchemaGovernanceError: instance violates current schema 'registry_v1/parent_bound_bootstrap/v1': acceptance: 'acceptance_commit_ordinal' is a required property; acceptance: 'acceptance_event_id' is a required property; acceptance: 'acceptance_transaction_id' is a required property; acceptance: 'intent_json' is a required property">tests/test_parent_child_core.py:158: in test_child_origin_cannot_be_cloned_by_raw_transaction
+    child,_=bound_owner(tmp_path/'child',monkeypatch)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/parent_child_fixtures.py:145: in bound_owner
+    task=OwnerInput(TEXT,canonical_json('task'),'Task')
+cpn/rpnh/run.py:554: in start_run
+    identity = _bootstrap_identity(core, NativeBootstrapManifest(tuple(budgets.protocol_versions)))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/parent_child_fixtures.py:130: in bootstrap
+    'acceptance_transaction_id':row[0],'acceptance_event_id':fact[0],'acceptance_commit_ordinal':committed[0],
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+cpn/rpnh/registry/bootstrap.py:151: in _bootstrap_identity
+    stage_bound_bootstrap(core, tx, run_ref=run_ref, task_ref=task_ref,
+cpn/rpnh/registry/parent_bound.py:259: in stage_bound_bootstrap
+    _require_evidence(core.event_store,'bound_bootstrap',acceptance)
+cpn/rpnh/registry/transaction.py:75: in prewrite
+    prepared = self.object_store.prewrite(
+cpn/rpnh/registry/object_store.py:78: in prewrite
+    self.catalog.validate_instance(
+cpn/rpnh/registry/schema_catalog.py:590: in validate_instance
+    self.validate_schema_ref(definition.schema_ref, instance)
+cpn/rpnh/registry/schema_catalog.py:573: in validate_schema_ref
+    raise SchemaGovernanceError(
+E   cpn.rpnh.registry.schema_catalog.SchemaGovernanceError: instance violates current schema 'registry_v1/parent_bound_bootstrap/v1': acceptance: 'acceptance_commit_ordinal' is a required property; acceptance: 'acceptance_event_id' is a required property; acceptance: 'acceptance_transaction_id' is a required property; acceptance: 'intent_json' is a required property</failure></testcase><testcase classname="tests.test_parent_child_core" name="test_child_missing_origin_arc_rejected_at_original_adoption" time="2.294"><failure message="cpn.rpnh.registry.schema_catalog.SchemaGovernanceError: instance violates current schema 'registry_v1/parent_bound_bootstrap/v1': acceptance: 'acceptance_commit_ordinal' is a required property; acceptance: 'acceptance_event_id' is a required property; acceptance: 'acceptance_transaction_id' is a required property; acceptance: 'intent_json' is a required property">tests/test_parent_child_core.py:172: in test_child_missing_origin_arc_rejected_at_original_adoption
+    bound_owner(tmp_path/'child',monkeypatch,missing_arc=True)
+tests/parent_child_fixtures.py:145: in bound_owner
+    task=OwnerInput(TEXT,canonical_json('task'),'Task')
+cpn/rpnh/run.py:554: in start_run
+    identity = _bootstrap_identity(core, NativeBootstrapManifest(tuple(budgets.protocol_versions)))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/parent_child_fixtures.py:130: in bootstrap
+    'acceptance_transaction_id':row[0],'acceptance_event_id':fact[0],'acceptance_commit_ordinal':committed[0],
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+cpn/rpnh/registry/bootstrap.py:151: in _bootstrap_identity
+    stage_bound_bootstrap(core, tx, run_ref=run_ref, task_ref=task_ref,
+cpn/rpnh/registry/parent_bound.py:259: in stage_bound_bootstrap
+    _require_evidence(core.event_store,'bound_bootstrap',acceptance)
+cpn/rpnh/registry/transaction.py:75: in prewrite
+    prepared = self.object_store.prewrite(
+cpn/rpnh/registry/object_store.py:78: in prewrite
+    self.catalog.validate_instance(
+cpn/rpnh/registry/schema_catalog.py:590: in validate_instance
+    self.validate_schema_ref(definition.schema_ref, instance)
+cpn/rpnh/registry/schema_catalog.py:573: in validate_schema_ref
+    raise SchemaGovernanceError(
+E   cpn.rpnh.registry.schema_catalog.SchemaGovernanceError: instance violates current schema 'registry_v1/parent_bound_bootstrap/v1': acceptance: 'acceptance_commit_ordinal' is a required property; acceptance: 'acceptance_event_id' is a required property; acceptance: 'acceptance_transaction_id' is a required property; acceptance: 'intent_json' is a required property</failure></testcase><testcase classname="tests.test_parent_child_core" name="test_child_initial_adoption_replay_and_successor_rejection" time="2.136"><failure message="cpn.rpnh.registry.schema_catalog.SchemaGovernanceError: instance violates current schema 'registry_v1/parent_bound_bootstrap/v1': acceptance: 'acceptance_commit_ordinal' is a required property; acceptance: 'acceptance_event_id' is a required property; acceptance: 'acceptance_transaction_id' is a required property; acceptance: 'intent_json' is a required property">tests/test_parent_child_core.py:177: in test_child_initial_adoption_replay_and_successor_rejection
+    child,_=bound_owner(tmp_path/'child',monkeypatch)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/parent_child_fixtures.py:145: in bound_owner
+    task=OwnerInput(TEXT,canonical_json('task'),'Task')
+cpn/rpnh/run.py:554: in start_run
+    identity = _bootstrap_identity(core, NativeBootstrapManifest(tuple(budgets.protocol_versions)))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/parent_child_fixtures.py:130: in bootstrap
+    'acceptance_transaction_id':row[0],'acceptance_event_id':fact[0],'acceptance_commit_ordinal':committed[0],
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+cpn/rpnh/registry/bootstrap.py:151: in _bootstrap_identity
+    stage_bound_bootstrap(core, tx, run_ref=run_ref, task_ref=task_ref,
+cpn/rpnh/registry/parent_bound.py:259: in stage_bound_bootstrap
+    _require_evidence(core.event_store,'bound_bootstrap',acceptance)
+cpn/rpnh/registry/transaction.py:75: in prewrite
+    prepared = self.object_store.prewrite(
+cpn/rpnh/registry/object_store.py:78: in prewrite
+    self.catalog.validate_instance(
+cpn/rpnh/registry/schema_catalog.py:590: in validate_instance
+    self.validate_schema_ref(definition.schema_ref, instance)
+cpn/rpnh/registry/schema_catalog.py:573: in validate_schema_ref
+    raise SchemaGovernanceError(
+E   cpn.rpnh.registry.schema_catalog.SchemaGovernanceError: instance violates current schema 'registry_v1/parent_bound_bootstrap/v1': acceptance: 'acceptance_commit_ordinal' is a required property; acceptance: 'acceptance_event_id' is a required property; acceptance: 'acceptance_transaction_id' is a required property; acceptance: 'intent_json' is a required property</failure></testcase><testcase classname="tests.test_parent_child_core" name="test_protocol_marker_pair_required_and_bound_schema_not_public" time="0.141" /><testcase classname="tests.test_parent_child_core" name="test_child_first_start_and_admission_replay_after_durable_stop_rejected" time="2.283"><failure message="cpn.rpnh.registry.schema_catalog.SchemaGovernanceError: instance violates current schema 'registry_v1/parent_bound_bootstrap/v1': acceptance: 'acceptance_commit_ordinal' is a required property; acceptance: 'acceptance_event_id' is a required property; acceptance: 'acceptance_transaction_id' is a required property; acceptance: 'intent_json' is a required property">tests/test_parent_child_core.py:197: in test_child_first_start_and_admission_replay_after_durable_stop_rejected
+    child,_=bound_owner(tmp_path/'child',monkeypatch)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/parent_child_fixtures.py:145: in bound_owner
+    task=OwnerInput(TEXT,canonical_json('task'),'Task')
+cpn/rpnh/run.py:554: in start_run
+    identity = _bootstrap_identity(core, NativeBootstrapManifest(tuple(budgets.protocol_versions)))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/parent_child_fixtures.py:130: in bootstrap
+    'acceptance_transaction_id':row[0],'acceptance_event_id':fact[0],'acceptance_commit_ordinal':committed[0],
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+cpn/rpnh/registry/bootstrap.py:151: in _bootstrap_identity
+    stage_bound_bootstrap(core, tx, run_ref=run_ref, task_ref=task_ref,
+cpn/rpnh/registry/parent_bound.py:259: in stage_bound_bootstrap
+    _require_evidence(core.event_store,'bound_bootstrap',acceptance)
+cpn/rpnh/registry/transaction.py:75: in prewrite
+    prepared = self.object_store.prewrite(
+cpn/rpnh/registry/object_store.py:78: in prewrite
+    self.catalog.validate_instance(
+cpn/rpnh/registry/schema_catalog.py:590: in validate_instance
+    self.validate_schema_ref(definition.schema_ref, instance)
+cpn/rpnh/registry/schema_catalog.py:573: in validate_schema_ref
+    raise SchemaGovernanceError(
+E   cpn.rpnh.registry.schema_catalog.SchemaGovernanceError: instance violates current schema 'registry_v1/parent_bound_bootstrap/v1': acceptance: 'acceptance_commit_ordinal' is a required property; acceptance: 'acceptance_event_id' is a required property; acceptance: 'acceptance_transaction_id' is a required property; acceptance: 'intent_json' is a required property</failure></testcase><testcase classname="tests.test_parent_child_core" name="test_child_started_completion_keeps_draining_without_durable_stop" time="2.180"><failure message="cpn.rpnh.registry.schema_catalog.SchemaGovernanceError: instance violates current schema 'registry_v1/parent_bound_bootstrap/v1': acceptance: 'acceptance_commit_ordinal' is a required property; acceptance: 'acceptance_event_id' is a required property; acceptance: 'acceptance_transaction_id' is a required property; acceptance: 'intent_json' is a required property">tests/test_parent_child_core.py:212: in test_child_started_completion_keeps_draining_without_durable_stop
+    child,_=bound_owner(tmp_path/'child',monkeypatch)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/parent_child_fixtures.py:145: in bound_owner
+    task=OwnerInput(TEXT,canonical_json('task'),'Task')
+cpn/rpnh/run.py:554: in start_run
+    identity = _bootstrap_identity(core, NativeBootstrapManifest(tuple(budgets.protocol_versions)))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/parent_child_fixtures.py:130: in bootstrap
+    'acceptance_transaction_id':row[0],'acceptance_event_id':fact[0],'acceptance_commit_ordinal':committed[0],
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+cpn/rpnh/registry/bootstrap.py:151: in _bootstrap_identity
+    stage_bound_bootstrap(core, tx, run_ref=run_ref, task_ref=task_ref,
+cpn/rpnh/registry/parent_bound.py:259: in stage_bound_bootstrap
+    _require_evidence(core.event_store,'bound_bootstrap',acceptance)
+cpn/rpnh/registry/transaction.py:75: in prewrite
+    prepared = self.object_store.prewrite(
+cpn/rpnh/registry/object_store.py:78: in prewrite
+    self.catalog.validate_instance(
+cpn/rpnh/registry/schema_catalog.py:590: in validate_instance
+    self.validate_schema_ref(definition.schema_ref, instance)
+cpn/rpnh/registry/schema_catalog.py:573: in validate_schema_ref
+    raise SchemaGovernanceError(
+E   cpn.rpnh.registry.schema_catalog.SchemaGovernanceError: instance violates current schema 'registry_v1/parent_bound_bootstrap/v1': acceptance: 'acceptance_commit_ordinal' is a required property; acceptance: 'acceptance_event_id' is a required property; acceptance: 'acceptance_transaction_id' is a required property; acceptance: 'intent_json' is a required property</failure></testcase></testsuite></testsuites>

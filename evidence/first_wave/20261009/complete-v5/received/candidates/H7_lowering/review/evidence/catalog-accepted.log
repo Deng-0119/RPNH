@@ -1,0 +1,12 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.14, pytest-8.4.2, pluggy-1.6.0 -- /workspace/scratch/18c810e6dd59/rpnh-recovery-20261003/source/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /workspace/scratch/18c810e6dd59/rpnh-bound-child-lowering-review
+collecting ... collected 2 items
+
+../tests/test_independent_bound_catalog.py::test_protected_origin_requires_exact_installed_catalog[same_schema_foreign_catalog_ref] PASSED [ 50%]
+../tests/test_independent_bound_catalog.py::test_protected_origin_requires_exact_installed_catalog[catalog_schema_body] PASSED [100%]
+
+- generated xml file: /workspace/scratch/18c810e6dd59/rpnh-bound-child-lowering-review/evidence/catalog-accepted.xml -
+============================== 2 passed in 7.57s ===============================
+OFFLINE_SENTINEL_ATTEMPTS=0

@@ -1,0 +1,19 @@
+{
+  "label": "resume-r2-prerequisite-r1-full-apply",
+  "category": "patch",
+  "status": "PASS",
+  "exit_code": 0,
+  "record": "<WORKSPACE>/task-complete-v5-20261009/stages/rsi/resume-r2-prerequisite-r1-full-apply.json",
+  "before_identity": "<WORKSPACE>/task-complete-v5-20261009/stages/rsi/resume-r2-prerequisite-r1-full-apply-before.identity.json",
+  "after_identity": "<WORKSPACE>/task-complete-v5-20261009/stages/rsi/resume-r2-prerequisite-r1-full-apply-after.identity.json",
+  "source_before": {
+    "files": 3650,
+    "fingerprint": "f75ff0338d21ff9ba3b9fa720d1439c6e9fd6969097e872e23d6fe5f92324687"
+  },
+  "source_after": {
+    "files": 3656,
+    "fingerprint": "f90a363b5e5677921b0f4de1dfe2c139388021f30b7801f72c292f142e6ed401"
+  },
+  "source_unchanged": false,
+  "junit": null
+}

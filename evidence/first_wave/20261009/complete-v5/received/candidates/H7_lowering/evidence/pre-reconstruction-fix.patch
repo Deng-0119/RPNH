@@ -1,0 +1,661 @@
+diff --git a/cpn/rpnh/bound_child_declarations.py b/cpn/rpnh/bound_child_declarations.py
+--- /dev/null
++++ b/cpn/rpnh/bound_child_declarations.py
+@@ -0,0 +1,145 @@
++"""Freeze the enumerable declaration subset, not an H7 execution inventory.
++
++No provider/profile/private configuration file is opened. No HOST factory,
++entry-point selector, executor or tool is invoked. Module preparation uses the
++original compiler and its explicitly trusted registered component lowerers.
++Such lowerers retain the existing HOST trust boundary, not a Python sandbox.
++
++These bytes intentionally cannot be passed to register_child_intent. Complete
++installed implementation/configuration/opaque credential-binding inventories
++need an additional registered material contract; a profile name cannot supply
++that missing proof. Native issuance/reservation/execution remains unavailable.
++"""
++from __future__ import annotations
++
++from dataclasses import dataclass
++import json
++from pathlib import Path
++
++from .bound_child_lowering import with_bound_origin
++from .compiler import compile_module
++from .module import ModuleDeclaration
++from .registration import Registration
++from .registry.parent_child import ParentChildUnsupported, _target, digest
++from .registry.runtime_binding_contracts import freeze_candidate_document, _copy_record_ref
++
++
++def _bytes(value):
++    return freeze_candidate_document(value).encode("ascii")
++
++
++@dataclass(frozen=True, slots=True)
++class FrozenBoundChildDeclarations:
++    """Detached exact declaration bytes; never a complete launch material DTO."""
++    child_kind: str
++    payloads: tuple[tuple[str, bytes], ...]
++
++    def __post_init__(self):
++        if (self.child_kind not in ("module", "agent_task")
++                or type(self.payloads) is not tuple
++                or any(type(row) is not tuple or len(row) != 2
++                       or type(row[0]) is not str or type(row[1]) is not bytes
++                       for row in self.payloads)
++                or tuple(sorted(self.payloads)) != self.payloads
++                or len(dict(self.payloads)) != len(self.payloads)):
++            raise TypeError("declaration inventory requires unique sorted immutable bytes")
++
++    @property
++    def inventory(self):
++        return [{"name": name, "size": len(value), "sha256": digest(value)}
++                for name, value in self.payloads]
++
++    @property
++    def declaration_digest(self):
++        return digest(_bytes({"child_kind": self.child_kind, "inventory": self.inventory}))
++
++    def assert_unchanged(self, current):
++        if type(current) is not type(self) or current != self:
++            raise ValueError("bound child declarations changed after freeze")
++
++    def require_execution_materials(self):
++        raise ParentChildUnsupported(
++            "declarations are incomplete: registered installed implementation, public "
++            "configuration and opaque secret-binding inventory contract is unavailable")
++
++
++def _module_materials(module, registration):
++    if type(module) is not ModuleDeclaration or type(registration) is not Registration:
++        raise TypeError("declaration preparation requires the original Module and Registration")
++    # Detach author data before invoking its selected registered lowerers.
++    source = _bytes(module.to_dict())
++    module = ModuleDeclaration.from_dict(json.loads(source))
++    before = _bytes({"declarations": list(registration.declarations())})
++    bound = with_bound_origin(module)
++    compiled = compile_module(bound, registration)
++    if _bytes({"declarations": list(registration.declarations())}) != before:
++        raise ValueError("HOST Registration mutated during declaration-only lowering")
++    return {
++        "application_declaration": source,
++        "module": _bytes(bound.to_dict()),
++        "lowered_net": _bytes(compiled.to_dict()),
++        "registration": _bytes(compiled.registrations),
++        "budgets": _bytes({"budgets": bound.to_dict()["budgets"],
++                          "budget_buckets": bound.to_dict()["budget_buckets"]}),
++    }
++
++
++def freeze_bound_module_declarations(module, registration):
++    """Freeze exact referenced Registration/schema bodies and actual lowering.
++
++    Caller supplies the original trusted, already selected Registration. This
++    function does not load a HostProfile or infer installed-code completeness.
++    Arbitrary schema/config/ref-shaped business data is retained as inert data.
++    """
++    return FrozenBoundChildDeclarations("module", tuple(sorted(
++        _module_materials(module, registration).items())))
++
++
++def freeze_bound_agent_declarations(spec, *, parent, request_ref, root_binding,
++                                    control_root, target_root, slot_id):
++    """Normalize the existing plugin-free single-agent declaration at final T.
++
++    This intentionally stops before execution-selection loading. It preserves
++    AgentTaskSpec's original relative-path serializer, including legal sibling
++    paths. It reads no referenced file. Path resolution is the original Spec's
++    behavior; it is not an OS-independent lexical path proof or reservation.
++    No caller path is silently rewritten, before or after freezing.
++    """
++    from .agent_tasks import AgentTaskSpec, agent_task_registration, build_agent_task_module
++    if type(spec) is not AgentTaskSpec:
++        raise TypeError("agent declaration preparation requires AgentTaskSpec")
++    if (spec.workflow_graph is not None or len(spec.stages) != 1
++            or spec.plugin_configuration is not None or spec.plugin_catalog_digest is not None
++            or spec.managed_bindings or spec.managed_tool_policy is not None
++            or spec.tool_program_policy is not None or spec.execution_profiles):
++        raise ParentChildUnsupported("agent declaration slice supports one unmanaged plugin-free stage")
++    ref = _copy_record_ref(request_ref, "resource_version/v1")
++    parent = json.loads(_bytes(parent))
++    # This slice uses the same one static slot as the original H7 request.
++    # Its caller must supply that explicit identity, not a generated fallback.
++    import re
++    if type(slot_id) is not str or re.fullmatch(r"[A-Za-z][A-Za-z0-9_-]{0,63}", slot_id) is None:
++        raise ValueError("explicit canonical static slot is required")
++    target = _target(parent, slot_id, root_binding, str(control_root))
++    target_root = Path(target_root)
++    if not target_root.is_absolute():
++        raise ValueError("trusted target root must be absolute")
++    expected = (target_root / target["relative_path"]).resolve()
++    if spec.run_dir != expected or spec.owner_socket_path != expected / "owner.sock":
++        raise ValueError("AgentTaskSpec transport paths differ from the already derived target")
++    document_root = Path(target["document_root"])
++    worker = spec.as_worker_document(document_root=document_root)
++    if AgentTaskSpec.from_worker_document(worker, document_root=document_root) != spec:
++        raise ValueError("AgentTaskSpec is not stable at its final sealed document root")
++    module = build_agent_task_module(spec.stages, max_attempts_per_stage=spec.max_attempts_per_stage)
++    materials = _module_materials(module, agent_task_registration())
++    materials["normalized_worker_document"] = _bytes(worker)
++    from .registry.publication import _ref_payload
++    materials["target_context"] = _bytes({"parent": parent, "request_ref": _ref_payload(ref), "target": target})
++    materials["inputs"] = _bytes({"prompt": spec.prompt, "owner_statement": spec.owner_statement,
++                                "max_parallel_nodes": spec.max_parallel_nodes})
++    return FrozenBoundChildDeclarations("agent_task", tuple(sorted(materials.items())))
++
++
++__all__ = ("FrozenBoundChildDeclarations", "freeze_bound_module_declarations",
++           "freeze_bound_agent_declarations")
+diff --git a/cpn/rpnh/bound_child_lowering.py b/cpn/rpnh/bound_child_lowering.py
+--- /dev/null
++++ b/cpn/rpnh/bound_child_lowering.py
+@@ -0,0 +1,85 @@
++"""Mechanical H7 origin composition in the ordinary Module compiler.
++
++This declaration adds a required PN resource, never permission or a token.
++Only the existing protected Registry producer may supply that exact resource.
++Ordinary Modules without this opt-in keep their original composition.
++"""
++from __future__ import annotations
++
++from dataclasses import replace
++
++from .module import ModuleDeclaration
++from .petri_contracts import (
++    ArcDeclaration, DeclarationError, LeaseIdentityDeclaration,
++    PlaceDeclaration, ResourceLeasePoolBinding,
++)
++
++
++ORIGIN_CONSTRAINT = "rpnh_parent_bound_origin_v1"
++ORIGIN_SYMBOL = "rpnhOrigin"
++ORIGIN_SCHEMA = "rpnh/parent_origin_capability/v1"
++
++
++def has_bound_origin(source):
++    # Preserve the ordinary Module JSON normalization boundary (e.g. numeric
++    # legacy Python constraint keys), rather than inspecting raw Python keys.
++    constraints = source.to_dict()["designer_constraints"]
++    keys = [key for key in constraints if key.startswith("rpnh_parent_bound_origin_")]
++    if not keys:
++        return False
++    if (keys != [ORIGIN_CONSTRAINT]
++            or constraints[ORIGIN_CONSTRAINT] != {"resource_input": ORIGIN_SYMBOL}):
++        raise DeclarationError("unsupported protected-origin lowering contract")
++    if ORIGIN_SCHEMA not in source.required_schemas:
++        raise DeclarationError("protected-origin lowering requires its registered schema")
++    if any(key.startswith("rpnh_control_ir_") for key in constraints):
++        raise DeclarationError("bound ControlIR lowering needs a separate proof contract")
++    return True
++
++
++def with_bound_origin(module):
++    """Return a detached Module requesting one compiler-owned origin input.
++
++    No Registration changes, files, factories, Registry writes or code imports
++    from declaration strings. An existing compatible request is idempotent.
++    """
++    if type(module) is not ModuleDeclaration:
++        raise TypeError("bound lowering requires an ordinary ModuleDeclaration")
++    document = module.to_dict()
++    constraints = document["designer_constraints"]
++    if any(key.startswith("rpnh_parent_bound_origin_") for key in constraints):
++        has_bound_origin(module)
++    else:
++        constraints[ORIGIN_CONSTRAINT] = {"resource_input": ORIGIN_SYMBOL}
++    document["required_schemas"] = sorted(set(document["required_schemas"]) | {ORIGIN_SCHEMA})
++    result = ModuleDeclaration.from_dict(document)
++    has_bound_origin(result)
++    return result
++
++
++def compose_bound_origin(source, symbolic, aliases):
++    """Apply the same fixed structural transform in compiler and wire reader."""
++    if not has_bound_origin(source):
++        return symbolic, aliases
++    if any(op.executor == "rpnh/parent_child_launch/v1" for op in symbolic.operations):
++        raise DeclarationError("H7a child does not support recursive native launch")
++    if (not symbolic.transitions
++            or any(p.schema == ORIGIN_SCHEMA for p in symbolic.places)
++            or any(item.name == ORIGIN_SYMBOL for items in (
++                symbolic.places, symbolic.transitions, symbolic.operations,
++                symbolic.lease_identities, symbolic.lease_pools, symbolic.logical_slots)
++                for item in items)
++            or ORIGIN_SYMBOL in aliases or ORIGIN_SYMBOL in symbolic.port_places):
++        raise DeclarationError("protected-origin mechanical namespace is already occupied")
++    origin = PlaceDeclaration(ORIGIN_SYMBOL, ORIGIN_SCHEMA,
++        token_kind="resource_lease", capacity=1, reusable=True)
++    return replace(symbolic,
++        places=(*symbolic.places, origin),
++        arcs=(*symbolic.arcs, *(ArcDeclaration(ORIGIN_SYMBOL, t.name,
++            "input", mode="read") for t in symbolic.transitions)),
++        lease_identities=(*symbolic.lease_identities, LeaseIdentityDeclaration(ORIGIN_SYMBOL)),
++        lease_pools=(*symbolic.lease_pools, ResourceLeasePoolBinding(
++            ORIGIN_SYMBOL, ORIGIN_SYMBOL, (ORIGIN_SYMBOL,)))), {**aliases, ORIGIN_SYMBOL: ORIGIN_SYMBOL}
++
++
++__all__ = ("with_bound_origin", "ORIGIN_SYMBOL", "ORIGIN_SCHEMA")
+diff --git a/cpn/rpnh/compiler.py b/cpn/rpnh/compiler.py
+--- a/cpn/rpnh/compiler.py
++++ b/cpn/rpnh/compiler.py
+@@ -64,6 +64,8 @@
+     # Prepared typed Modules re-enter through author publication/full readers.
+     # Use the existing Module JSON view so legacy Python key normalization stays intact.
+     typed = author is not None or control_proof_key(module.to_dict()["designer_constraints"]) is not None
++    from .bound_child_lowering import has_bound_origin
++    offline = offline or has_bound_origin(module)
+     if not typed and not offline:
+         symbolic = module.lower(observed)
+     else:
+diff --git a/cpn/rpnh/composition.py b/cpn/rpnh/composition.py
+--- a/cpn/rpnh/composition.py
++++ b/cpn/rpnh/composition.py
+@@ -158,7 +158,7 @@
+                     counts[arc.place] = counts.get(arc.place, 0) + arc.weight
+             if any(capacities[k] is not None and count > capacities[k] for k, count in counts.items()):
+                 raise DeclarationError("Outcome quantity exceeds place capacity")
+-    return SymbolicNet(
++    symbolic = SymbolicNet(
+         name=source.name, places=tuple(places[k] for k in sorted(places) if root(k) == k),
+         transitions=tuple(transitions), arcs=tuple(arcs), operations=tuple(operations),
+         port_places={k: root(v) for k, v in port_places.items()}, entry=entry, exit=exit,
+@@ -168,4 +168,6 @@
+         variable_resource_arcs=tuple(variable), logical_slots=tuple(slots),
+         terminal_alternatives=source.terminal_alternatives, budget_buckets=source.budget_buckets,
+         reset_arcs=tuple(reset_arcs),
+-    ), {k: root(k) for k in places}
++    )
++    from .bound_child_lowering import compose_bound_origin
++    return compose_bound_origin(source, symbolic, {k: root(k) for k in places})
+diff --git a/cpn/rpnh/executable_net.py b/cpn/rpnh/executable_net.py
+--- a/cpn/rpnh/executable_net.py
++++ b/cpn/rpnh/executable_net.py
+@@ -163,6 +163,9 @@
+         aliases.update({f"{name}.{p.name}": f"{name}.{p.name}" for p in fragment.places})
+         for binding in fragment.ports + fragment.internal_bindings:
+             aliases[f"{name}.{binding.place}"] = symbolic["port_places"][f"{name}.{binding.name}"]
++    from .bound_child_lowering import has_bound_origin, ORIGIN_SYMBOL
++    if has_bound_origin(ModuleDeclaration.from_dict(source)):
++        aliases[ORIGIN_SYMBOL] = ORIGIN_SYMBOL
+     return {
+         "schema_version": "rpnh/executable_net/v1", "source": source,
+         "fragments": {k: asdict(v) for k, v in fragments.items()},
+@@ -417,7 +420,8 @@
+         # A typed author proof opts into offline validation. Legacy v1 sources
+         # without this reserved proof keep their existing validator behavior.
+         from .control_ir import control_proof_key
+-        if control_proof_key(source.designer_constraints or {}) is not None:
++        from .bound_child_lowering import has_bound_origin
++        if control_proof_key(source.designer_constraints or {}) is not None or has_bound_origin(source):
+             offline_schema_validation = True
+         fragments = {k: _fragment(v) for k, v in value["fragments"].items()}
+         symbolic = _verify(value, source, fragments, offline_schema_validation=offline_schema_validation)
+diff --git a/tests/bound_lowering_fixtures.py b/tests/bound_lowering_fixtures.py
+--- /dev/null
++++ b/tests/bound_lowering_fixtures.py
+@@ -0,0 +1,58 @@
++"""D0-only bootstrap injection. Origin PN comes from the product compiler."""
++from dataclasses import replace
++import json
++from cpn.rpnh.bound_child_lowering import with_bound_origin, ORIGIN_SYMBOL
++from cpn.rpnh.compiler import compile_module
++from cpn.rpnh.registry import parent_child as h7, parent_bound as bound
++from cpn.rpnh.registry.publication import _ref_payload
++from cpn.rpnh.registry.module_budgets import ModuleBudgetDeclaration
++from cpn.rpnh.registry.schema_catalog import canonical_json
++from cpn.rpnh.run import OwnerInput, start_run
++from parent_child_fixtures import evidence, accepted_parent, catalog
++from test_static_lease_reads import TEXT
++
++
++def compiled_bound_owner(path, monkeypatch, registration, module, *, entries=None, resources=None, task=None):
++    import cpn.rpnh.run as run
++    module = with_bound_origin(module)
++    compiled = compile_module(module, registration)
++    values = accepted_parent(path.parent / 'parent', compiled)
++    parent = values[0]; accepted = values[-1]
++    body = parent._core.get_version(accepted.version_id).metadata
++    with parent._core.event_store.connect() as db:
++        row = db.execute('SELECT transaction_id FROM objects WHERE version_id=?', (str(accepted.version_id),)).fetchone()
++        fact = db.execute("SELECT event_id FROM events WHERE transaction_id=? AND event_type='parent_child_recorded/v1'", (row[0],)).fetchone()
++        committed = db.execute("SELECT ordinal FROM events WHERE transaction_id=? AND event_type='transaction_committed/v1'", (row[0],)).fetchone()
++    external = {'parent_source_id': body['parent']['source_id'], 'acceptance_json': h7._json(body).decode(),
++        'intent_json': h7._json(parent._core.get_version(values[4].version_id).metadata).decode(),
++        'acceptance_transaction_id': row[0], 'acceptance_event_id': fact[0], 'acceptance_commit_ordinal': committed[0],
++        'initial_declaration_digest': values[3].materials['initial_declaration_digest']}
++    original_bootstrap = run._bootstrap_identity; original_publish = run._publish_private_system
++    def bootstrap(core, manifest, **kwargs):
++        marker_manifest = replace(manifest, protocol_versions=(*manifest.protocol_versions, h7.BOUND_PROTOCOL))
++        with h7._native_boundary(evidence(core.event_store, 'bound_bootstrap', external), core.event_store, 'bound_bootstrap', external):
++            return original_bootstrap(core, marker_manifest, _parent_bound_acceptance=external, **kwargs)
++    def publish(core, task_ref, command, **kwargs):
++        if command.content_schema_ref != h7.CAPABILITY_SCHEMA:
++            return original_publish(core, task_ref, command, **kwargs)
++        from cpn.rpnh.registry.registration_gateway import RegistryRegistrationGateway
++        RegistryRegistrationGateway(core, task_ref, command.origin.bootstrap_command_ref).bind_source_identity(
++            source_id='child-source', command_id='child:source')
++        marker = json.loads(core.event_store.object_rows_by_type(h7.BOUND_KINDS[0])[0]['metadata_json'])
++        return bound.close_bound_origin(core, evidence=evidence(core.event_store, 'bound_origin', marker))
++    placeholder = {'schema_version': h7.CAPABILITY_SCHEMA, 'origin_ref': _ref_payload(accepted),
++        'marker_ref': _ref_payload(accepted), 'child_run_ref': _ref_payload(parent.identity.run_ref),
++        'child_task_ref': _ref_payload(parent.identity.task_ref), 'parent_acceptance': external,
++        'initial_writer_epoch': 1, 'initial_declaration_digest': external['initial_declaration_digest']}
++    task = task or OwnerInput(TEXT, canonical_json('task'), 'Task')
++    resource_inputs = {**(resources or {}), ORIGIN_SYMBOL: OwnerInput(h7.CAPABILITY_SCHEMA, canonical_json(placeholder), 'D0 protected origin injection')}
++    # Only transport/native issuance is injected. No component supplies an origin arc.
++    with monkeypatch.context() as patch:
++        patch.setattr(run, '_bootstrap_identity', bootstrap)
++        patch.setattr(run, '_publish_private_system', publish)
++        child = start_run(module, registration, run_dir=path, task_input=task,
++            entry_inputs=entries or {'request': task}, resource_inputs=resource_inputs,
++            budgets=ModuleBudgetDeclaration(tuple(module.to_dict()['budget_buckets']), (TEXT,), 20, 0, 20, 0),
++            model_condition='offline-h7', owner_statement='Offline mechanical lowering',
++            command_id='child:fresh', catalog=catalog())
++    return child, values
+diff --git a/tests/test_bound_child_declarations.py b/tests/test_bound_child_declarations.py
+--- /dev/null
++++ b/tests/test_bound_child_declarations.py
+@@ -0,0 +1,115 @@
++"""Finite declaration subset; no execution profile/provider file is read."""
++from dataclasses import replace
++import json
++from pathlib import Path
++import pytest
++from cpn.rpnh.bound_child_declarations import freeze_bound_module_declarations, freeze_bound_agent_declarations
++from cpn.rpnh.registry import parent_child as h7
++from cpn.rpnh.registry.models import VersionRef
++from cpn.rpnh.registry.identities import TypedId
++from cpn.rpnh.module import ModuleDeclaration
++from cpn.rpnh.bound_child_lowering import ORIGIN_SYMBOL
++from test_static_lease_reads import _registration, _simple_module
++
++
++def test_module_materials_are_actual_compilation_and_detached():
++    module = _simple_module(); reg = _registration()
++    frozen = freeze_bound_module_declarations(module, reg)
++    baseline = frozen.declaration_digest
++    data = json.loads(dict(frozen.payloads)['lowered_net'])
++    assert data['source'] == json.loads(dict(frozen.payloads)['module'])
++    assert data['registrations'] == json.loads(dict(frozen.payloads)['registration'])
++    assert ORIGIN_SYMBOL in data['place_aliases']
++    module.budgets['business'] = 1
++    assert frozen.declaration_digest == baseline
++    changed = freeze_bound_module_declarations(module, reg)
++    with pytest.raises(ValueError): frozen.assert_unchanged(changed)
++    with pytest.raises(h7.ParentChildUnsupported): frozen.require_execution_materials()
++    with pytest.raises(TypeError): h7.register_child_intent(None, None, frozen)
++
++
++def test_business_ref_shaped_json_and_schema_are_preserved_not_resolved():
++    document = _simple_module().to_dict()
++    value = {'entity_type': 'resource_version/v1', 'logical_id': 'not-a-ref', 'version_id': 'also-not-a-ref',
++             'payload': {'schema': {'$ref': 'https://example.invalid/do-not-fetch'}, 'ready': True}}
++    document['designer_constraints']['business'] = value
++    frozen = freeze_bound_module_declarations(ModuleDeclaration.from_dict(document), _registration())
++    assert json.loads(dict(frozen.payloads)['module'])['designer_constraints']['business'] == value
++
++
++def agent_inputs(tmp_path):
++    from cpn.rpnh.agent_tasks import AgentStage, AgentTaskSpec
++    def ref(kind):
++        return {'entity_type': kind + '/v1', 'logical_id': kind + ':00000000000000000000000000000001',
++                'version_id': kind + '_version:00000000000000000000000000000002'}
++    parent = {'source_id': 'synthetic-parent', 'run_ref': ref('run'), 'task_ref': ref('task')}
++    request_ref = VersionRef('resource_version/v1', TypedId('resource', '00000000000000000000000000000003'),
++        TypedId('resource_version', '00000000000000000000000000000004'))
++    kwargs = dict(parent=parent, request_ref=request_ref, root_binding='synthetic-root',
++        control_root=tmp_path / 'control', target_root=tmp_path / 'targets', slot_id='child')
++    target = h7._target(parent, 'child', 'synthetic-root', str(kwargs['control_root']))
++    run = kwargs['target_root'] / target['relative_path']
++    spec = AgentTaskSpec(run_dir=run, prompt='Synthetic declaration only', stages=(AgentStage('main', 'Return a result'),),
++        execution_config_path=tmp_path / 'private-unread.json', owner_socket_path=run / 'owner.sock')
++    return spec, kwargs, target
++
++
++def test_agent_declaration_normalization_uses_final_root_and_never_reads_profile(tmp_path, monkeypatch):
++    spec, kwargs, target = agent_inputs(tmp_path)
++    original_read = Path.read_bytes
++    def read(path):
++        if path == spec.execution_config_path: raise AssertionError('private profile read')
++        return original_read(path)
++    monkeypatch.setattr(Path, 'read_bytes', read)
++    frozen = freeze_bound_agent_declarations(spec, **kwargs)
++    document = json.loads(dict(frozen.payloads)['normalized_worker_document'])
++    assert document == spec.as_worker_document(document_root=Path(target['document_root']))
++    assert document['run_relative_path'].startswith('../')
++    assert not spec.run_dir.exists() and not kwargs['control_root'].exists()
++    other = tmp_path / 'other'; other.mkdir(); monkeypatch.chdir(other)
++    frozen.assert_unchanged(freeze_bound_agent_declarations(spec, **kwargs))
++    with pytest.raises(h7.ParentChildUnsupported): frozen.require_execution_materials()
++    with pytest.raises(ValueError): frozen.assert_unchanged(freeze_bound_agent_declarations(replace(spec, prompt='Changed'), **kwargs))
++
++
++@pytest.mark.parametrize('field', ['run_dir', 'owner_socket_path'])
++def test_agent_postfreeze_transport_paths_are_rejected(tmp_path, field):
++    spec, kwargs, target = agent_inputs(tmp_path)
++    frozen = freeze_bound_agent_declarations(spec, **kwargs)
++    changed = replace(spec, **{field: tmp_path / 'wrong'})
++    with pytest.raises(ValueError): freeze_bound_agent_declarations(changed, **kwargs)
++    assert frozen.declaration_digest
++
++
++def test_agent_extra_profile_and_plugin_are_explicitly_unsupported(tmp_path):
++    spec, kwargs, _ = agent_inputs(tmp_path)
++    cases = [replace(spec, execution_profiles=(('other', tmp_path / 'not-read'),)),
++             replace(spec, plugin_configuration={}, plugin_catalog_digest='0' * 64)]
++    for value in cases:
++        with pytest.raises(h7.ParentChildUnsupported): freeze_bound_agent_declarations(value, **kwargs)
++
++
++def test_reference_profile_mutation_cannot_be_mistaken_for_execution_inventory(tmp_path):
++    spec, kwargs, _ = agent_inputs(tmp_path)
++    before = freeze_bound_agent_declarations(spec, **kwargs)
++    spec.execution_config_path.write_text('synthetic unread configuration')
++    after = freeze_bound_agent_declarations(spec, **kwargs)
++    assert before == after  # Deliberate declaration-only boundary, not a completeness claim.
++    with pytest.raises(h7.ParentChildUnsupported): after.require_execution_materials()
++
++
++def test_registered_schema_changes_frozen_digest():
++    from test_static_lease_reads import TEXT
++    module = _simple_module(); reg = _registration()
++    frozen = freeze_bound_module_declarations(module, reg)
++    # Fault injection into the existing Registration; production keys are immutable.
++    reg._declarations['schema'][TEXT]['schema']['description'] = 'Changed actual source body'
++    with pytest.raises(ValueError): frozen.assert_unchanged(freeze_bound_module_declarations(module, reg))
++
++
++def test_unknown_host_profile_object_is_not_a_material_provider():
++    from cpn.rpnh.collaboration.environment_host import HostProfile
++    called = []
++    profile = HostProfile('unproven', lambda: called.append('factory'))
++    with pytest.raises(TypeError): freeze_bound_module_declarations(_simple_module(), profile)
++    assert not called
+diff --git a/tests/test_bound_child_lowering.py b/tests/test_bound_child_lowering.py
+--- /dev/null
++++ b/tests/test_bound_child_lowering.py
+@@ -0,0 +1,183 @@
++"""Pure compiler and real Registry tests. Native evidence remains explicit D0 injection."""
++from dataclasses import replace
++import json
++import pytest
++from cpn.rpnh.bound_child_lowering import with_bound_origin, ORIGIN_SYMBOL, ORIGIN_SCHEMA
++from cpn.rpnh.compiler import compile_module
++from cpn.rpnh.executable_net import load_compiled_net
++from cpn.rpnh.module import ModuleDeclaration
++from cpn.rpnh.petri_contracts import DeclarationError
++from test_static_lease_reads import _registration, _simple_module
++
++
++def test_generic_origin_compiler_roundtrip():
++    reg = _registration(); original = _simple_module()
++    plain = compile_module(original, reg)
++    module = with_bound_origin(original)
++    bound = compile_module(module, reg)
++    assert with_bound_origin(module) == module
++    assert compile_module(original, reg) == plain
++    assert all(p.schema != ORIGIN_SCHEMA for p in plain.symbolic.places)
++    assert bound.symbolic.variable_resource_arcs == plain.symbolic.variable_resource_arcs
++    assert len(bound.symbolic.places) == len(plain.symbolic.places) + 1
++    assert load_compiled_net(bound.to_dict()) == bound
++    assert bound.place_aliases[ORIGIN_SYMBOL] == ORIGIN_SYMBOL
++    assert {a.transition for a in bound.symbolic.arcs if a.place == ORIGIN_SYMBOL} == {t.name for t in bound.symbolic.transitions}
++
++
++@pytest.mark.parametrize('damage', ['missing_arc', 'consume', 'duplicate', 'schema', 'constraint', 'alias'])
++def test_bound_wire_cannot_rewrite_mechanical_structure(damage):
++    doc = compile_module(with_bound_origin(_simple_module()), _registration()).to_dict()
++    origin = next(a for a in doc['symbolic']['arcs'] if a['place'] == ORIGIN_SYMBOL)
++    if damage == 'missing_arc': doc['symbolic']['arcs'].remove(origin)
++    elif damage == 'consume': origin['mode'] = 'consume'
++    elif damage == 'duplicate': doc['symbolic']['arcs'].append(origin)
++    elif damage == 'schema': doc['source']['required_schemas'].remove(ORIGIN_SCHEMA)
++    elif damage == 'constraint': doc['source']['designer_constraints']['rpnh_parent_bound_origin_v1']['resource_input'] = 'elsewhere'
++    else: del doc['place_aliases'][ORIGIN_SYMBOL]
++    with pytest.raises((DeclarationError, ValueError)): load_compiled_net(doc)
++
++
++def test_mechanical_origin_real_registry_start_success(tmp_path, monkeypatch):
++    from bound_lowering_fixtures import compiled_bound_owner
++    from test_static_lease_reads import current, finish
++    from cpn.rpnh.registry.parent_bound import assert_bound_integrity
++    owner, _ = compiled_bound_owner(tmp_path / 'child', monkeypatch, _registration(), _simple_module())
++    initial = next(t.state for t in current(owner)[2].tokens if t.state.place == ORIGIN_SYMBOL)
++    admission = owner.admit('step.run', logical_tau=0, command_id='actual:admit')
++    assert initial.token_ref in admission.preflight.claimed_token_refs
++    finish(owner, admission, 'actual')
++    assert next(t.state for t in current(owner)[2].tokens if t.state.place == ORIGIN_SYMBOL) == initial
++    assert_bound_integrity(owner._core)
++
++
++def test_fanout_branches_share_one_origin_without_serialization(tmp_path, monkeypatch):
++    from copy import deepcopy
++    from bound_lowering_fixtures import compiled_bound_owner
++    from test_static_lease_reads import current
++    from cpn.rpnh.registry.schema_catalog import canonical_json
++    from cpn.rpnh.registry.module_execution import install_active_module_claims
++    from cpn.rpnh.marking import TeamNetMarking
++    document = _simple_module('Fanout').to_dict()
++    seed = document['components'][0]; seed['name'] = 'seed'
++    seed['ports'][1]['name'] = 'left'
++    seed['ports'].append({**seed['ports'][1], 'name': 'right'})
++    op = seed['operations'][0]; op['outputs'] = ['left', 'right']
++    op['outcomes'][0]['products'] = [{'port': 'left'}, {'port': 'right'}]
++    for name in ('left', 'right'):
++        component = deepcopy(_simple_module().to_dict()['components'][0]); component['name'] = name
++        document['components'].append(component)
++    document['entry'] = {'request': {'component': 'seed', 'port': 'request'}}
++    document['links'] = [{'source': {'component': 'seed', 'port': name},
++                          'target': {'component': name, 'port': 'request'}} for name in ('left', 'right')]
++    document['exit'] = {name: {'component': name, 'port': 'result'} for name in ('left', 'right')}
++    document['terminal']['source']['component'] = 'right'
++    owner, _ = compiled_bound_owner(tmp_path / 'child', monkeypatch, _registration(), ModuleDeclaration.from_dict(document))
++    initial = next(t.state for t in current(owner)[2].tokens if t.state.place == ORIGIN_SYMBOL)
++    seed = owner.admit('seed.run', logical_tau=0, command_id='seed:admit')
++    execution = owner.start(seed, command_id='seed:start')
++    products = owner.products(execution, outcome_id='complete',
++        products={'seed.left': (canonical_json('left'),), 'seed.right': (canonical_json('right'),)}, command_id='seed:products')
++    owner.succeed(products, command_id='seed:success')
++    claims = [owner.admit(name + '.run', logical_tau=1, command_id=name + ':admit') for name in ('left', 'right')]
++    assert all(initial.token_ref in claim.preflight.claimed_token_refs for claim in claims)
++    assert len(set(claims[0].preflight.claimed_token_refs) & set(claims[1].preflight.claimed_token_refs)) == 1
++    for name, claim in zip(('left', 'right'), claims):
++        execution = owner.start(claim, command_id=name + ':start')
++        products = owner.products(execution, outcome_id='complete', products={name + '.result': (canonical_json('done'),)}, command_id=name + ':products')
++        owner.succeed(products, command_id=name + ':success')
++        executable, structure, marking = current(owner)
++        assert next(t.state for t in marking.tokens if t.state.place == ORIGIN_SYMBOL) == initial
++        remaining = install_active_module_claims(owner._core, TeamNetMarking.from_authority(structure, marking), executable.net_ref)
++        assert len(remaining) == (1 if name == 'left' else 0)
++
++
++@pytest.mark.parametrize('mode', ['read', 'produce'])
++def test_existing_variable_arcs_survive_compiler_origin_and_registry_success(tmp_path, monkeypatch, mode):
++    import test_static_lease_interactions as interactions
++    from bound_lowering_fixtures import compiled_bound_owner
++    from test_static_lease_reads import current
++    from cpn.rpnh.registry.parent_bound import assert_bound_integrity
++    def start(module, registration, **kwargs):
++        return compiled_bound_owner(kwargs['run_dir'], monkeypatch, registration, module,
++            entries=kwargs['entry_inputs'], resources=kwargs['resource_inputs'], task=kwargs['task_input'])[0]
++    monkeypatch.setattr(interactions, 'start_run', start)
++    owner = interactions._world(tmp_path / 'child', variable_mode=mode, static_read=True)
++    executable, structure, marking = current(owner)
++    assert len(structure.compiled.symbolic.variable_resource_arcs) == 1
++    initial = next(t.state for t in marking.tokens if t.state.place == ORIGIN_SYMBOL)
++    admission = owner.admit('step.run', logical_tau=1, command_id='step:admit')
++    assert initial.token_ref in admission.preflight.claimed_token_refs
++    interactions._settle(owner, admission)
++    assert next(t.state for t in current(owner)[2].tokens if t.state.place == ORIGIN_SYMBOL) == initial
++    assert_bound_integrity(owner._core)
++
++
++def test_origin_does_not_override_business_pn_guard(tmp_path, monkeypatch):
++    from cpn.components.basic import lower_operation, CONFIG_SCHEMA_ID
++    from cpn.rpnh.petri_contracts import CountGuard
++    from bound_lowering_fixtures import compiled_bound_owner
++    reg = _registration()
++    def lower(config, context):
++        fragment = lower_operation(config, context)
++        return replace(fragment, transitions=tuple(replace(t,
++            count_guards=(CountGuard('request', 'ge', 2),)) for t in fragment.transitions))
++    reg.register_component('guarded', lower, identity={'implementation_id': 'test.guarded', 'revision': 'v1'},
++        contracts={'config_schema': CONFIG_SCHEMA_ID})
++    document = _simple_module().to_dict(); document['components'][0]['key'] = 'guarded'
++    owner, _ = compiled_bound_owner(tmp_path / 'child', monkeypatch, reg, ModuleDeclaration.from_dict(document))
++    before = owner._core.event_store.max_ordinal()
++    assert owner.admit('step.run', logical_tau=0, command_id='guarded:admit') is None
++    assert owner._core.event_store.max_ordinal() == before
++
++
++def test_ref_shaped_business_payload_roundtrips_real_registry(tmp_path, monkeypatch):
++    from bound_lowering_fixtures import compiled_bound_owner
++    from cpn.rpnh.run import OwnerInput
++    from cpn.rpnh.registry.schema_catalog import canonical_json
++    schema_id = 'application/h7_business_object/v1'
++    reg = _registration()
++    reg.register_schema(schema_id, {'$id': schema_id, '$schema': 'http://json-schema.org/draft-07/schema#', 'type': 'object'})
++    payload = {'entity_type': 'resource_version/v1', 'logical_id': 'business-id', 'version_id': 'business-version',
++        'schema': {'$ref': 'https://example.invalid/not-a-schema-lookup'}, 'payload': ['two', 'one'], 'ready': True}
++    task = OwnerInput(schema_id, canonical_json(payload), 'Synthetic structured payload')
++    owner, _ = compiled_bound_owner(tmp_path / 'child', monkeypatch, reg,
++        _simple_module(input_schema=schema_id, output_schema=schema_id), task=task)
++    admission = owner.admit('step.run', logical_tau=0, command_id='object:admit')
++    execution = owner.start(admission, command_id='object:start')
++    result = owner.products(execution, outcome_id='complete', products={'step.result': (canonical_json(payload),)}, command_id='object:products')
++    owner.succeed(result, command_id='object:success')
++    ref = result.outputs[0].resource_ref
++    assert json.loads(owner._core.object_store.read_verified(owner._core.get_version(ref.resource_version_id))) == payload
++
++
++def test_compiler_origin_cold_readonly_hydration(tmp_path, monkeypatch):
++    from bound_lowering_fixtures import compiled_bound_owner
++    from test_static_lease_reads import current, finish
++    from cpn.rpnh.registry._registry import _RegistryCore
++    from cpn.rpnh.registry.module_runtime import hydrate_module_runtime
++    from cpn.rpnh.registry.module_execution import install_active_module_claims
++    from cpn.rpnh.registry.parent_bound import assert_bound_integrity
++    from cpn.rpnh.marking import TeamNetMarking
++    owner, _ = compiled_bound_owner(tmp_path / 'child', monkeypatch, _registration(), _simple_module())
++    admission = owner.admit('step.run', logical_tau=0, command_id='cold:admit')
++    cold = _RegistryCore(owner._core.run_dir, create=False, read_only=True, catalog=owner._core.catalog)
++    executable, structure, marking = hydrate_module_runtime(cold)
++    assert len(install_active_module_claims(cold, TeamNetMarking.from_authority(structure, marking), executable.net_ref)) == 1
++    assert_bound_integrity(cold)
++    finish(owner, admission, 'cold')
++    _, _, after = hydrate_module_runtime(cold)
++    assert next(t.state for t in after.tokens if t.state.place == ORIGIN_SYMBOL) == next(t.state for t in marking.tokens if t.state.place == ORIGIN_SYMBOL)
++
++
++@pytest.mark.parametrize('constraint', [None, {}, {'resource_input': 'other'}, {'resource_input': ORIGIN_SYMBOL, 'allow': True}])
++def test_reserved_origin_constraint_rejects_wrong_shape(constraint):
++    document = with_bound_origin(_simple_module()).to_dict()
++    document['designer_constraints']['rpnh_parent_bound_origin_v1'] = constraint
++    with pytest.raises(DeclarationError): compile_module(ModuleDeclaration.from_dict(document), _registration())
++
++
++def test_reserved_origin_schema_cannot_be_supplied_by_business_component():
++    from parent_child_fixtures import child_definition
++    reg, module, _ = child_definition()
++    with pytest.raises(DeclarationError): compile_module(with_bound_origin(module), reg)

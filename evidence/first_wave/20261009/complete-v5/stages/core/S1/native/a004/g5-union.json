@@ -1,0 +1,799 @@
+[
+  {
+    "reader": "direct read-only Registry",
+    "head": 198,
+    "active": 1,
+    "active_refs": [
+      {
+        "entity_type": "transition_firing/v1",
+        "entity_id": {
+          "kind": "transition_firing",
+          "value": "9b3b28f04e60511088c7953e7247ff73"
+        },
+        "version_id": {
+          "kind": "transition_firing_version",
+          "value": "9be6eec63503598981a377fe04447da2"
+        }
+      }
+    ],
+    "active_claims": [
+      {
+        "transition": "step.run",
+        "firing": {
+          "entity_type": "transition_firing/v1",
+          "entity_id": {
+            "kind": "transition_firing",
+            "value": "9b3b28f04e60511088c7953e7247ff73"
+          },
+          "version_id": {
+            "kind": "transition_firing_version",
+            "value": "9be6eec63503598981a377fe04447da2"
+          }
+        },
+        "claimed_input_refs": [
+          {
+            "entity_type": "petri_token/v1",
+            "entity_id": {
+              "kind": "petri_token",
+              "value": "421e2944425055f6a74fbb4527241b8e"
+            },
+            "version_id": {
+              "kind": "petri_token_version",
+              "value": "f3a8fbd7c5505998b8a74e81801354b9"
+            }
+          },
+          {
+            "entity_type": "petri_token/v1",
+            "entity_id": {
+              "kind": "petri_token",
+              "value": "6c361a2b4ddc57c0af80d23499c757d1"
+            },
+            "version_id": {
+              "kind": "petri_token_version",
+              "value": "29afa0920d5e5f749c2f74364cdbce4e"
+            }
+          }
+        ]
+      }
+    ],
+    "marking_checkpoint": {
+      "entity_type": "marking_checkpoint/v1",
+      "entity_id": {
+        "kind": "marking_checkpoint",
+        "value": "572c80f13f7a5fceb9f836427a6c15ed"
+      },
+      "version_id": {
+        "kind": "marking_checkpoint_version",
+        "value": "65a2fe058e6d51289fe4a32010c996d6"
+      }
+    },
+    "leases": [
+      {
+        "token_ref": {
+          "entity_type": "petri_token/v1",
+          "entity_id": {
+            "kind": "petri_token",
+            "value": "421e2944425055f6a74fbb4527241b8e"
+          },
+          "version_id": {
+            "kind": "petri_token_version",
+            "value": "f3a8fbd7c5505998b8a74e81801354b9"
+          }
+        },
+        "token_id": 1,
+        "place": "step.static",
+        "epoch": 0,
+        "producer": null,
+        "consumer": null,
+        "resource_ref": {
+          "resource_id": {
+            "kind": "resource",
+            "value": "babc238d0cdb5a828310781b612a7310"
+          },
+          "resource_version_id": {
+            "kind": "resource_version",
+            "value": "27b55c167b055281b3cbcdda402fc33b"
+          }
+        },
+        "work_resource_ref": null,
+        "kind": null,
+        "consumed_by": null,
+        "override_warning": null,
+        "verdict": null,
+        "continuation": null,
+        "lease_identity_ref": {
+          "entity_type": "resource_version/v1",
+          "entity_id": {
+            "kind": "resource",
+            "value": "babc238d0cdb5a828310781b612a7310"
+          },
+          "version_id": {
+            "kind": "resource_version",
+            "value": "27b55c167b055281b3cbcdda402fc33b"
+          }
+        },
+        "lease_claims": []
+      }
+    ],
+    "lease_count": 1,
+    "lease_minted_count": 1,
+    "token_minted_count": 3,
+    "firing_count": 2,
+    "publications": [
+      {
+        "firing_version_id": "transition_firing_version:3157f1daca3d5bf28efc0cdbc82f3f5d",
+        "firing_logical_id": "transition_firing:b5a6c0bd9e4053a18458c672c62e204d",
+        "invocation_version_id": "invocation_version:bccf41f2a85c5901afbc4e3c6044d771",
+        "invocation_logical_id": "invocation:77c7a62739d0567ab9cc748a4cb51631",
+        "net_version_id": "net_instance_version:622b6c43b8b658aa88ba72b86f021f17",
+        "operation_binding_version_id": "operation_binding_version:27b8f13c6c7b5a918d443142b7d652ee",
+        "admission_checkpoint_version_id": "marking_checkpoint_version:1cb13b11101f5a968ea5624475adf683",
+        "state": "PUBLISHED",
+        "opened_transaction_id": "transaction:2fc8c5f5068055b1a91646cb579079cb",
+        "published_transaction_id": "transaction:9786a673a904515ea9de8df35e851636",
+        "operation_result_version_id": "operation_result_version:b2da84a5351d5963b260f3a4ae36033a",
+        "workspace_lineage_id": null,
+        "workspace_revision_version_id": null,
+        "marking_checkpoint_version_id": "marking_checkpoint_version:65a2fe058e6d51289fe4a32010c996d6"
+      },
+      {
+        "firing_version_id": "transition_firing_version:9be6eec63503598981a377fe04447da2",
+        "firing_logical_id": "transition_firing:9b3b28f04e60511088c7953e7247ff73",
+        "invocation_version_id": "invocation_version:f12dcd464c8050d59f7ba46f8b76b26a",
+        "invocation_logical_id": "invocation:4d3ac3acc6d957af9ea7ead14b6ecee3",
+        "net_version_id": "net_instance_version:622b6c43b8b658aa88ba72b86f021f17",
+        "operation_binding_version_id": "operation_binding_version:c951d9c2356c5ef094d21872b4baedc8",
+        "admission_checkpoint_version_id": "marking_checkpoint_version:65a2fe058e6d51289fe4a32010c996d6",
+        "state": "PROVISIONAL",
+        "opened_transaction_id": "transaction:55098f96ccf65a0ca3c0176a7fad5f01",
+        "published_transaction_id": null,
+        "operation_result_version_id": null,
+        "workspace_lineage_id": null,
+        "workspace_revision_version_id": null,
+        "marking_checkpoint_version_id": null
+      }
+    ],
+    "settlements": 1,
+    "completions": 0,
+    "model_counts": [
+      0,
+      0
+    ],
+    "label": "live",
+    "af_unix_response": {
+      "command_id": "live",
+      "status": "OK",
+      "result": {
+        "run_ref": {
+          "entity_type": "native_run_identity/v1",
+          "logical_id": "run:e9d769f97810406197634e029b9156b8",
+          "version_id": "run_version:65e1f77787874d7999e18bbe0c8f7597"
+        },
+        "task_ref": {
+          "entity_type": "task/v1",
+          "logical_id": "task:0538f66fd35b4e64afc1ea2e947961d7",
+          "version_id": "task_version:a2c6d8662e3642eaa9756fa9e13111f1"
+        },
+        "net_ref": {
+          "entity_type": "net_instance/v1",
+          "logical_id": "net_instance:3895548d97d85c3f9d3d1386a095641d",
+          "version_id": "net_instance_version:622b6c43b8b658aa88ba72b86f021f17"
+        },
+        "checkpoint_ref": {
+          "entity_type": "marking_checkpoint/v1",
+          "logical_id": "marking_checkpoint:572c80f13f7a5fceb9f836427a6c15ed",
+          "version_id": "marking_checkpoint_version:65a2fe058e6d51289fe4a32010c996d6"
+        },
+        "declaration": {
+          "name": "LeaseInteractions",
+          "components": [
+            {
+              "name": "seed",
+              "key": "operation",
+              "config_schema": "application/operation_component_config/v1",
+              "config": {},
+              "ports": [
+                {
+                  "name": "request",
+                  "direction": "input",
+                  "schema": "application/net_operation_test_text/v1",
+                  "channel": "data",
+                  "cardinality": 1,
+                  "cardinality_minimum": null,
+                  "cardinality_maximum": null
+                },
+                {
+                  "name": "result",
+                  "direction": "output",
+                  "schema": "application/net_operation_test_text/v1",
+                  "channel": "data",
+                  "cardinality": 1,
+                  "cardinality_minimum": null,
+                  "cardinality_maximum": null
+                }
+              ],
+              "operations": [
+                {
+                  "name": "run",
+                  "executor": "test/net-operation-business/v1",
+                  "inputs": [
+                    "request"
+                  ],
+                  "outputs": [
+                    "result"
+                  ],
+                  "outcomes": [
+                    {
+                      "name": "complete",
+                      "products": [
+                        {
+                          "port": "result",
+                          "minimum": 1,
+                          "maximum": 1
+                        }
+                      ],
+                      "effects": []
+                    }
+                  ],
+                  "tools": [],
+                  "config": {},
+                  "request_port": null,
+                  "budget_binding": {
+                    "bucket_id": "work",
+                    "budget_scope": "module",
+                    "finalization_scope": null
+                  }
+                }
+              ]
+            },
+            {
+              "name": "step",
+              "key": "interactions",
+              "config_schema": "application/operation_component_config/v1",
+              "config": {},
+              "ports": [
+                {
+                  "name": "request",
+                  "direction": "input",
+                  "schema": "application/net_operation_test_text/v1",
+                  "channel": "data",
+                  "cardinality": 1,
+                  "cardinality_minimum": null,
+                  "cardinality_maximum": null
+                },
+                {
+                  "name": "result",
+                  "direction": "output",
+                  "schema": "application/net_operation_test_text/v1",
+                  "channel": "data",
+                  "cardinality": 1,
+                  "cardinality_minimum": null,
+                  "cardinality_maximum": null
+                }
+              ],
+              "operations": [
+                {
+                  "name": "run",
+                  "executor": "test/net-operation-business/v1",
+                  "inputs": [
+                    "request"
+                  ],
+                  "outputs": [
+                    "result"
+                  ],
+                  "outcomes": [
+                    {
+                      "name": "complete",
+                      "products": [
+                        {
+                          "port": "result",
+                          "minimum": 1,
+                          "maximum": 1
+                        }
+                      ],
+                      "effects": []
+                    }
+                  ],
+                  "tools": [],
+                  "config": {},
+                  "request_port": null,
+                  "budget_binding": {
+                    "bucket_id": "work",
+                    "budget_scope": "module",
+                    "finalization_scope": null
+                  }
+                }
+              ]
+            }
+          ],
+          "links": [
+            {
+              "source": {
+                "component": "seed",
+                "port": "result"
+              },
+              "target": {
+                "component": "step",
+                "port": "request"
+              }
+            }
+          ],
+          "entry": {
+            "request": {
+              "component": "seed",
+              "port": "request"
+            }
+          },
+          "exit": {
+            "result": {
+              "component": "step",
+              "port": "result"
+            }
+          },
+          "terminal": {
+            "key": "test/net-operation-terminal/v1",
+            "source": {
+              "component": "step",
+              "port": "result"
+            },
+            "operation": "run",
+            "outcome": "complete",
+            "config": {
+              "run_outcome": "complete"
+            }
+          },
+          "required_schemas": [
+            "application/net_operation_test_text/v1",
+            "application/operation_component_config/v1",
+            "application/net_operation_test_alt_text/v1"
+          ],
+          "budgets": {},
+          "designer_constraints": {},
+          "analyzers": [],
+          "schema_version": "rpnh/module_declaration/v1",
+          "terminal_alternatives": [],
+          "budget_buckets": [
+            {
+              "bucket_id": "work",
+              "budget_scope": "module",
+              "finalization_scope": null,
+              "max_attempts": 3
+            }
+          ]
+        },
+        "admission_paused": false,
+        "pending_edits": [],
+        "pending_messages": [],
+        "active_firings": [
+          {
+            "entity_type": "transition_firing/v1",
+            "logical_id": "transition_firing:9b3b28f04e60511088c7953e7247ff73",
+            "version_id": "transition_firing_version:9be6eec63503598981a377fe04447da2"
+          }
+        ],
+        "resource_wait": {
+          "status": "AVAILABLE",
+          "writer_fencing_epoch": 2,
+          "task_ref": {
+            "entity_type": "task/v1",
+            "logical_id": "task:0538f66fd35b4e64afc1ea2e947961d7",
+            "version_id": "task_version:a2c6d8662e3642eaa9756fa9e13111f1"
+          },
+          "net_ref": {
+            "entity_type": "net_instance/v1",
+            "logical_id": "net_instance:3895548d97d85c3f9d3d1386a095641d",
+            "version_id": "net_instance_version:622b6c43b8b658aa88ba72b86f021f17"
+          },
+          "lifecycles": [],
+          "live_documents": [],
+          "global_liveness": "UNKNOWN"
+        },
+        "marking": [
+          {
+            "token_ref": {
+              "entity_type": "petri_token/v1",
+              "logical_id": "petri_token:421e2944425055f6a74fbb4527241b8e",
+              "version_id": "petri_token_version:f3a8fbd7c5505998b8a74e81801354b9"
+            },
+            "place": "step.static",
+            "kind": null,
+            "verdict": null,
+            "resource_ref": {
+              "entity_type": "resource_version/v1",
+              "logical_id": "resource:babc238d0cdb5a828310781b612a7310",
+              "version_id": "resource_version:27b55c167b055281b3cbcdda402fc33b"
+            }
+          },
+          {
+            "token_ref": {
+              "entity_type": "petri_token/v1",
+              "logical_id": "petri_token:6c361a2b4ddc57c0af80d23499c757d1",
+              "version_id": "petri_token_version:29afa0920d5e5f749c2f74364cdbce4e"
+            },
+            "place": "seed.result",
+            "kind": null,
+            "verdict": "complete",
+            "resource_ref": {
+              "entity_type": "resource_version/v1",
+              "logical_id": "resource:2c55074207945f8e95932ac280c71fb4",
+              "version_id": "resource_version:ede6edcb7a8d542886fe692c3820518c"
+            }
+          }
+        ],
+        "enabled_transitions": [],
+        "global_liveness": "UNKNOWN"
+      }
+    },
+    "deterministic_host_body_count": 0
+  },
+  {
+    "reader": "direct read-only Registry",
+    "head": 232,
+    "active": 0,
+    "active_refs": [],
+    "active_claims": [],
+    "marking_checkpoint": {
+      "entity_type": "marking_checkpoint/v1",
+      "entity_id": {
+        "kind": "marking_checkpoint",
+        "value": "c83d41e3fee8518389540d8178ff34a7"
+      },
+      "version_id": {
+        "kind": "marking_checkpoint_version",
+        "value": "b2eabcd661785991a8ace8faedfe162a"
+      }
+    },
+    "leases": [
+      {
+        "token_ref": {
+          "entity_type": "petri_token/v1",
+          "entity_id": {
+            "kind": "petri_token",
+            "value": "421e2944425055f6a74fbb4527241b8e"
+          },
+          "version_id": {
+            "kind": "petri_token_version",
+            "value": "f3a8fbd7c5505998b8a74e81801354b9"
+          }
+        },
+        "token_id": 1,
+        "place": "step.static",
+        "epoch": 0,
+        "producer": null,
+        "consumer": null,
+        "resource_ref": {
+          "resource_id": {
+            "kind": "resource",
+            "value": "babc238d0cdb5a828310781b612a7310"
+          },
+          "resource_version_id": {
+            "kind": "resource_version",
+            "value": "27b55c167b055281b3cbcdda402fc33b"
+          }
+        },
+        "work_resource_ref": null,
+        "kind": null,
+        "consumed_by": null,
+        "override_warning": null,
+        "verdict": null,
+        "continuation": null,
+        "lease_identity_ref": {
+          "entity_type": "resource_version/v1",
+          "entity_id": {
+            "kind": "resource",
+            "value": "babc238d0cdb5a828310781b612a7310"
+          },
+          "version_id": {
+            "kind": "resource_version",
+            "value": "27b55c167b055281b3cbcdda402fc33b"
+          }
+        },
+        "lease_claims": []
+      }
+    ],
+    "lease_count": 1,
+    "lease_minted_count": 1,
+    "token_minted_count": 4,
+    "firing_count": 2,
+    "publications": [
+      {
+        "firing_version_id": "transition_firing_version:3157f1daca3d5bf28efc0cdbc82f3f5d",
+        "firing_logical_id": "transition_firing:b5a6c0bd9e4053a18458c672c62e204d",
+        "invocation_version_id": "invocation_version:bccf41f2a85c5901afbc4e3c6044d771",
+        "invocation_logical_id": "invocation:77c7a62739d0567ab9cc748a4cb51631",
+        "net_version_id": "net_instance_version:622b6c43b8b658aa88ba72b86f021f17",
+        "operation_binding_version_id": "operation_binding_version:27b8f13c6c7b5a918d443142b7d652ee",
+        "admission_checkpoint_version_id": "marking_checkpoint_version:1cb13b11101f5a968ea5624475adf683",
+        "state": "PUBLISHED",
+        "opened_transaction_id": "transaction:2fc8c5f5068055b1a91646cb579079cb",
+        "published_transaction_id": "transaction:9786a673a904515ea9de8df35e851636",
+        "operation_result_version_id": "operation_result_version:b2da84a5351d5963b260f3a4ae36033a",
+        "workspace_lineage_id": null,
+        "workspace_revision_version_id": null,
+        "marking_checkpoint_version_id": "marking_checkpoint_version:65a2fe058e6d51289fe4a32010c996d6"
+      },
+      {
+        "firing_version_id": "transition_firing_version:9be6eec63503598981a377fe04447da2",
+        "firing_logical_id": "transition_firing:9b3b28f04e60511088c7953e7247ff73",
+        "invocation_version_id": "invocation_version:f12dcd464c8050d59f7ba46f8b76b26a",
+        "invocation_logical_id": "invocation:4d3ac3acc6d957af9ea7ead14b6ecee3",
+        "net_version_id": "net_instance_version:622b6c43b8b658aa88ba72b86f021f17",
+        "operation_binding_version_id": "operation_binding_version:c951d9c2356c5ef094d21872b4baedc8",
+        "admission_checkpoint_version_id": "marking_checkpoint_version:65a2fe058e6d51289fe4a32010c996d6",
+        "state": "PUBLISHED",
+        "opened_transaction_id": "transaction:55098f96ccf65a0ca3c0176a7fad5f01",
+        "published_transaction_id": "transaction:8075d617ead2539cbc8ea469a7389489",
+        "operation_result_version_id": "operation_result_version:d14d41912342580f8f828acd54f5f177",
+        "workspace_lineage_id": null,
+        "workspace_revision_version_id": null,
+        "marking_checkpoint_version_id": "marking_checkpoint_version:b2eabcd661785991a8ace8faedfe162a"
+      }
+    ],
+    "settlements": 2,
+    "completions": 1,
+    "model_counts": [
+      0,
+      0
+    ],
+    "label": "settled",
+    "af_unix_response": {
+      "command_id": "settled",
+      "status": "OK",
+      "result": {
+        "run_ref": {
+          "entity_type": "native_run_identity/v1",
+          "logical_id": "run:e9d769f97810406197634e029b9156b8",
+          "version_id": "run_version:65e1f77787874d7999e18bbe0c8f7597"
+        },
+        "task_ref": {
+          "entity_type": "task/v1",
+          "logical_id": "task:0538f66fd35b4e64afc1ea2e947961d7",
+          "version_id": "task_version:a2c6d8662e3642eaa9756fa9e13111f1"
+        },
+        "net_ref": {
+          "entity_type": "net_instance/v1",
+          "logical_id": "net_instance:3895548d97d85c3f9d3d1386a095641d",
+          "version_id": "net_instance_version:622b6c43b8b658aa88ba72b86f021f17"
+        },
+        "checkpoint_ref": {
+          "entity_type": "marking_checkpoint/v1",
+          "logical_id": "marking_checkpoint:c83d41e3fee8518389540d8178ff34a7",
+          "version_id": "marking_checkpoint_version:b2eabcd661785991a8ace8faedfe162a"
+        },
+        "declaration": {
+          "name": "LeaseInteractions",
+          "components": [
+            {
+              "name": "seed",
+              "key": "operation",
+              "config_schema": "application/operation_component_config/v1",
+              "config": {},
+              "ports": [
+                {
+                  "name": "request",
+                  "direction": "input",
+                  "schema": "application/net_operation_test_text/v1",
+                  "channel": "data",
+                  "cardinality": 1,
+                  "cardinality_minimum": null,
+                  "cardinality_maximum": null
+                },
+                {
+                  "name": "result",
+                  "direction": "output",
+                  "schema": "application/net_operation_test_text/v1",
+                  "channel": "data",
+                  "cardinality": 1,
+                  "cardinality_minimum": null,
+                  "cardinality_maximum": null
+                }
+              ],
+              "operations": [
+                {
+                  "name": "run",
+                  "executor": "test/net-operation-business/v1",
+                  "inputs": [
+                    "request"
+                  ],
+                  "outputs": [
+                    "result"
+                  ],
+                  "outcomes": [
+                    {
+                      "name": "complete",
+                      "products": [
+                        {
+                          "port": "result",
+                          "minimum": 1,
+                          "maximum": 1
+                        }
+                      ],
+                      "effects": []
+                    }
+                  ],
+                  "tools": [],
+                  "config": {},
+                  "request_port": null,
+                  "budget_binding": {
+                    "bucket_id": "work",
+                    "budget_scope": "module",
+                    "finalization_scope": null
+                  }
+                }
+              ]
+            },
+            {
+              "name": "step",
+              "key": "interactions",
+              "config_schema": "application/operation_component_config/v1",
+              "config": {},
+              "ports": [
+                {
+                  "name": "request",
+                  "direction": "input",
+                  "schema": "application/net_operation_test_text/v1",
+                  "channel": "data",
+                  "cardinality": 1,
+                  "cardinality_minimum": null,
+                  "cardinality_maximum": null
+                },
+                {
+                  "name": "result",
+                  "direction": "output",
+                  "schema": "application/net_operation_test_text/v1",
+                  "channel": "data",
+                  "cardinality": 1,
+                  "cardinality_minimum": null,
+                  "cardinality_maximum": null
+                }
+              ],
+              "operations": [
+                {
+                  "name": "run",
+                  "executor": "test/net-operation-business/v1",
+                  "inputs": [
+                    "request"
+                  ],
+                  "outputs": [
+                    "result"
+                  ],
+                  "outcomes": [
+                    {
+                      "name": "complete",
+                      "products": [
+                        {
+                          "port": "result",
+                          "minimum": 1,
+                          "maximum": 1
+                        }
+                      ],
+                      "effects": []
+                    }
+                  ],
+                  "tools": [],
+                  "config": {},
+                  "request_port": null,
+                  "budget_binding": {
+                    "bucket_id": "work",
+                    "budget_scope": "module",
+                    "finalization_scope": null
+                  }
+                }
+              ]
+            }
+          ],
+          "links": [
+            {
+              "source": {
+                "component": "seed",
+                "port": "result"
+              },
+              "target": {
+                "component": "step",
+                "port": "request"
+              }
+            }
+          ],
+          "entry": {
+            "request": {
+              "component": "seed",
+              "port": "request"
+            }
+          },
+          "exit": {
+            "result": {
+              "component": "step",
+              "port": "result"
+            }
+          },
+          "terminal": {
+            "key": "test/net-operation-terminal/v1",
+            "source": {
+              "component": "step",
+              "port": "result"
+            },
+            "operation": "run",
+            "outcome": "complete",
+            "config": {
+              "run_outcome": "complete"
+            }
+          },
+          "required_schemas": [
+            "application/net_operation_test_text/v1",
+            "application/operation_component_config/v1",
+            "application/net_operation_test_alt_text/v1"
+          ],
+          "budgets": {},
+          "designer_constraints": {},
+          "analyzers": [],
+          "schema_version": "rpnh/module_declaration/v1",
+          "terminal_alternatives": [],
+          "budget_buckets": [
+            {
+              "bucket_id": "work",
+              "budget_scope": "module",
+              "finalization_scope": null,
+              "max_attempts": 3
+            }
+          ]
+        },
+        "admission_paused": false,
+        "pending_edits": [],
+        "pending_messages": [],
+        "active_firings": [],
+        "resource_wait": {
+          "status": "AVAILABLE",
+          "writer_fencing_epoch": 2,
+          "task_ref": {
+            "entity_type": "task/v1",
+            "logical_id": "task:0538f66fd35b4e64afc1ea2e947961d7",
+            "version_id": "task_version:a2c6d8662e3642eaa9756fa9e13111f1"
+          },
+          "net_ref": {
+            "entity_type": "net_instance/v1",
+            "logical_id": "net_instance:3895548d97d85c3f9d3d1386a095641d",
+            "version_id": "net_instance_version:622b6c43b8b658aa88ba72b86f021f17"
+          },
+          "lifecycles": [],
+          "live_documents": [],
+          "global_liveness": "UNKNOWN"
+        },
+        "marking": [
+          {
+            "token_ref": {
+              "entity_type": "petri_token/v1",
+              "logical_id": "petri_token:421e2944425055f6a74fbb4527241b8e",
+              "version_id": "petri_token_version:f3a8fbd7c5505998b8a74e81801354b9"
+            },
+            "place": "step.static",
+            "kind": null,
+            "verdict": null,
+            "resource_ref": {
+              "entity_type": "resource_version/v1",
+              "logical_id": "resource:babc238d0cdb5a828310781b612a7310",
+              "version_id": "resource_version:27b55c167b055281b3cbcdda402fc33b"
+            }
+          },
+          {
+            "token_ref": {
+              "entity_type": "petri_token/v1",
+              "logical_id": "petri_token:30c1d1d6ce765618ac7df53506a6a07a",
+              "version_id": "petri_token_version:e95602f0d8b3521fb9760714f3f4a9cd"
+            },
+            "place": "step.result",
+            "kind": null,
+            "verdict": "complete",
+            "resource_ref": {
+              "entity_type": "resource_version/v1",
+              "logical_id": "resource:ad64954312125966bfa50fc4a2e1eeda",
+              "version_id": "resource_version:4c7875ccdcbb538a8ba11cc192b7e9a7"
+            }
+          }
+        ],
+        "enabled_transitions": [],
+        "global_liveness": "UNKNOWN"
+      }
+    },
+    "deterministic_host_body_count": 1
+  }
+]

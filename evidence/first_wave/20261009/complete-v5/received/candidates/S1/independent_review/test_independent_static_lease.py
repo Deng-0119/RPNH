@@ -1,0 +1,257 @@
+"""Independent pure Registry tests, intentionally separate from patch tests."""
+from dataclasses import replace
+from pathlib import Path
+from _source import SOURCE
+import runpy
+import pytest
+from cpn.components.basic import lower_operation, CONFIG_SCHEMA_ID
+from cpn.rpnh.petri_contracts import (PlaceDeclaration, ArcDeclaration, LeaseIdentityDeclaration,
+    ResourceLeasePoolBinding,VariableResourceArc,LeaseClaimTemplate,PNFragment,PortDeclaration,PortBinding,TransitionDeclaration,LeaseClaimExpression)
+from cpn.rpnh.module import ModuleDeclaration
+from cpn.rpnh.run import OwnerInput,start_run,resume_run
+from cpn.rpnh.registry.module_budgets import ModuleBudgetDeclaration
+from cpn.rpnh.registry.schema_catalog import canonical_json
+from cpn.rpnh.registry.module_runtime import hydrate_module_runtime
+from cpn.rpnh.registry.module_execution import install_active_module_claims
+from cpn.rpnh.registry.firing_recovery import record_registered_operation_completion
+from cpn.rpnh.registry._registry import _RegistryCore
+from cpn.rpnh.marking import TeamNetMarking
+SCOPE=runpy.run_path(str(SOURCE/'tests/test_static_lease_reads.py'))
+TEXT=SCOPE['TEXT']
+
+def independent_owner(path, *, inputless=False, variable=None):
+    reg=SCOPE['_registration']()
+    def lower(config,context):
+        original=lower_operation(config,context)
+        lease_names=('asset','business') if variable=='separate' else ('asset',)
+        lease_places=[PlaceDeclaration('lease',TEXT,token_kind='resource_lease',capacity=1,reusable=True)]
+        pools=[ResourceLeasePoolBinding('lease','lease',('asset',))]
+        if variable=='separate':
+            lease_places.append(PlaceDeclaration('business_lease',TEXT,token_kind='resource_lease',capacity=1,reusable=True))
+            pools.append(ResourceLeasePoolBinding('business_lease','business_lease',('business',)))
+        variables=()
+        if variable:
+            identity='business' if variable=='separate' else 'asset'
+            pool='business_lease' if variable=='separate' else 'lease'
+            variables=(VariableResourceArc('run','request',pool,(LeaseClaimTemplate(identity,identity,'read'),)),)
+        return replace(original,places=(*original.places,*lease_places),
+            arcs=(*original.arcs,ArcDeclaration('lease','run','input',mode='read')),
+            lease_identities=tuple(LeaseIdentityDeclaration(n) for n in lease_names),
+            lease_pools=tuple(pools),variable_resource_arcs=variables)
+    reg.register_component('review_lease',lower,identity={'implementation_id':'review.static_lease','revision':'v1'},contracts={'config_schema':CONFIG_SCHEMA_ID})
+    doc=SCOPE['_simple_module']('IndependentStaticLease').to_dict()
+    doc['components'][0]['key']='review_lease'
+    if inputless:
+        doc['components'][0]['ports']=[p for p in doc['components'][0]['ports'] if p['direction']=='output']
+        doc['components'][0]['operations'][0]['inputs']=[]
+        doc['entry']={}
+    module=ModuleDeclaration.from_dict(doc)
+    task=OwnerInput(TEXT,canonical_json('review synthetic input'),'Synthetic offline review')
+    resources={'step.asset':OwnerInput(TEXT,canonical_json('review static asset'),'Synthetic read-only asset')}
+    if variable=='separate':resources['step.business']=OwnerInput(TEXT,canonical_json('review second asset'),'Synthetic offline review')
+    return start_run(module,reg,run_dir=path,task_input=task,entry_inputs={} if inputless else {'request':task},resource_inputs=resources,
+        budgets=ModuleBudgetDeclaration(tuple(doc['budget_buckets']),(TEXT,),3,0,3,0),model_condition='offline-review',owner_statement='Independent pure Registry review',command_id='review:fresh')
+
+def leases(owner):
+    _,structure,marking=hydrate_module_runtime(owner._core)
+    return {t.token_ref:t.state for t in marking.tokens if t.state.place in structure.resource_lease_places()}
+
+def product(owner,execution,key):
+    return owner.products(execution,outcome_id='complete',products={'step.result':(canonical_json(key),)},command_id=key+':products')
+
+def test_two_active_inputless_readers_same_transition(tmp_path):
+    owner=independent_owner(tmp_path/'run',inputless=True)
+    original=leases(owner)
+    admissions=[owner.admit('step.run',logical_tau=i,command_id=f'review:admit:{i}') for i in range(2)]
+    assert all(a is not None for a in admissions)
+    assert admissions[0].admission.context.own_transition_firing_ref!=admissions[1].admission.context.own_transition_firing_ref
+    executions=[owner.start(a,command_id=f'review:start:{i}') for i,a in enumerate(admissions)]
+    for a in admissions:
+        delta=owner._core.get_version(a.admission.marking_delta_ref.version_id) if hasattr(a.admission,'marking_delta_ref') else owner._core.get_version(a.admission.claim_marking_delta_ref.version_id)
+        assert delta.metadata['consumed_refs']==[]
+    owner.succeed(product(owner,executions[0],'first'),command_id='first:success')
+    assert leases(owner)==original
+    cold=_RegistryCore(tmp_path/'run',create=False,read_only=True)
+    executable,structure,marking=hydrate_module_runtime(cold)
+    local=TeamNetMarking.from_authority(structure,marking)
+    active=install_active_module_claims(cold,local,executable.net_ref)
+    assert len(active)==1
+    assert set(local.claimed_token_refs('step.run',local.epoch))==set(original)
+    owner.succeed(product(owner,executions[1],'second'),command_id='second:success')
+    assert leases(owner)==original
+    for a in admissions:
+        record=owner._core.event_store.ordered_firing_record(a.admission.context.own_transition_firing_ref.version_id)
+        assert record['state']=='PUBLISHED'
+
+def staged_variable_owner(path,variable,*,extra_static=False):
+    reg=SCOPE['_registration']()
+    separate=variable=='separate'
+    def lower(_config,context):
+        places=[PlaceDeclaration('request',TEXT),PlaceDeclaration('carrier',TEXT),PlaceDeclaration('result',TEXT),PlaceDeclaration('lease',TEXT,token_kind='resource_lease',capacity=1,reusable=True)]
+        identities=[LeaseIdentityDeclaration('asset')]
+        pools=[ResourceLeasePoolBinding('lease','lease',('asset',))]
+        if extra_static:
+            places[-1]=replace(places[-1],capacity=2)
+            identities.append(LeaseIdentityDeclaration('alternative'))
+            pools[0]=ResourceLeasePoolBinding('lease','lease',('asset','alternative'))
+        pool='business_lease' if separate else 'lease'
+        identity='business' if separate else 'asset'
+        if separate:
+            places.append(PlaceDeclaration(pool,TEXT,token_kind='resource_lease',capacity=1,reusable=True))
+            identities.append(LeaseIdentityDeclaration(identity))
+            pools.append(ResourceLeasePoolBinding(pool,pool,(identity,)))
+        arcs=[ArcDeclaration('request','prepare','input'),ArcDeclaration(pool,'prepare','input',mode='read'),
+              ArcDeclaration('carrier','prepare','output',mode='produce',outcome='complete',lease_claims=(LeaseClaimExpression(identity,'read',pool),)),
+              ArcDeclaration('carrier','run','input'),ArcDeclaration('lease','run','input',mode='read'),
+              ArcDeclaration('result','run','output',mode='produce',outcome='complete')]
+        return PNFragment(tuple(places),(TransitionDeclaration('prepare','prepare'),TransitionDeclaration('run','run')),tuple(arcs),
+            (PortBinding('request','request'),PortBinding('result','result')),context.operations,
+            internal_ports=(PortDeclaration('carrier_out','output',TEXT),PortDeclaration('carrier_in','input',TEXT)),
+            internal_bindings=(PortBinding('carrier_out','carrier'),PortBinding('carrier_in','carrier')),
+            lease_identities=tuple(identities),lease_pools=tuple(pools),
+            variable_resource_arcs=(VariableResourceArc('run','carrier',pool),))
+    reg.register_component('review_staged',lower,identity={'implementation_id':'review.static_variable','revision':'v1'},contracts={'config_schema':CONFIG_SCHEMA_ID})
+    doc=SCOPE['_simple_module']('IndependentMixedLease').to_dict()
+    component=doc['components'][0]
+    component['key']='review_staged'
+    original=component['operations'][0]
+    prepare={**original,'name':'prepare','outputs':['carrier_out'],'outcomes':[{'name':'complete','products':[{'port':'carrier_out'}]}]}
+    run={**original,'inputs':['carrier_in']}
+    component['operations']=[prepare,run]
+    task=OwnerInput(TEXT,canonical_json('review request'),'Synthetic request')
+    resources={'step.asset':OwnerInput(TEXT,canonical_json('review static asset'),'Synthetic static asset')}
+    if separate:resources['step.business']=OwnerInput(TEXT,canonical_json('review business asset'),'Synthetic business asset')
+    if extra_static:resources['step.alternative']=OwnerInput(TEXT,canonical_json('review alternative asset'),'Synthetic alternative asset')
+    return start_run(ModuleDeclaration.from_dict(doc),reg,run_dir=path,task_input=task,entry_inputs={'request':task},resource_inputs=resources,
+        budgets=ModuleBudgetDeclaration(tuple(doc['budget_buckets']),(TEXT,),3,0,3,0),model_condition='offline-review',owner_statement='Independent variable reference review',command_id='review:fresh')
+
+@pytest.mark.parametrize('variable',['same','separate'])
+def test_variable_read_coexists_without_extra_carrier(tmp_path,variable):
+    owner=staged_variable_owner(tmp_path/'run',variable)
+    original=leases(owner)
+    prep=owner.admit('step.prepare',logical_tau=0,command_id='review:prepare:admit')
+    pe=owner.start(prep,command_id='review:prepare:start')
+    pp=owner.products(pe,outcome_id='complete',products={'step.carrier_out':(canonical_json('carrier with exact formal claim'),)},command_id='review:prepare:products')
+    owner.succeed(pp,command_id='review:prepare:success')
+    _,_,marking=hydrate_module_runtime(owner._core)
+    carriers=[t for t in marking.tokens if t.state.place=='step.carrier']
+    assert len(carriers)==1 and len(carriers[0].state.lease_claims)==1
+    a=owner.admit('step.run',logical_tau=1,command_id='review:admit')
+    assert a is not None
+    e=owner.start(a,command_id='review:start')
+    assert len(e.operation.firing.claimed_input_refs)==1+len(original)
+    owner.succeed(product(owner,e,'variable'),command_id='variable:success')
+    assert leases(owner)==original
+
+
+def test_cold_completion_recovery_preserves_exact_lease(tmp_path):
+    owner=independent_owner(tmp_path/'run')
+    original=leases(owner)
+    a=owner.admit('step.run',logical_tau=0,command_id='review:admit')
+    e=owner.start(a,command_id='review:start')
+    outputs=product(owner,e,'recover')
+    k,r=owner.operation_repository()
+    record_registered_operation_completion(owner._core,k,r,outputs,idempotency_key='review:completion')
+    resumed=resume_run(owner.registration,run_dir=tmp_path/'run',model_condition='offline-review')
+    assert leases(resumed)==original
+    assert resumed.snapshot()['active_firings']==[]
+    settled=[x for x in resumed._core.event_store.list_events() if x.event_type=='transition_firing_settled/v1']
+    assert len(settled)==1
+    with pytest.raises(Exception,match='requires exactly one active firing'):
+        resume_run(owner.registration,run_dir=tmp_path/'run',model_condition='offline-review')
+    assert leases(resumed)==original
+    assert len([x for x in resumed._core.event_store.list_events() if x.event_type=='transition_firing_settled/v1'])==1
+
+
+def test_static_read_not_physical_access_authority(tmp_path):
+    owner=independent_owner(tmp_path/'run')
+    original=leases(owner)
+    lease=next(iter(original.values()))
+    a=owner.admit('step.run',logical_tau=0,command_id='review:admit')
+    e=owner.start(a,command_id='review:start')
+    k,_=owner.operation_repository()
+    context=e.operation.canonical.context
+    assert k._claimed_petri_input_allows(context,context.operation_binding_ref,lease.resource_ref)
+    for mode in ('read','edit'):
+        with pytest.raises(Exception,match='formal Petri access arc'):
+            owner.access_resource(e,lease.resource_ref,access_mode=mode,command_id='review:access:'+mode)
+
+
+def test_direct_nondefault_valid_reference_selection(tmp_path):
+    """A valid caller may select the higher token_id, not the default choice."""
+    from cpn.rpnh.registry.invocations import InvocationLifecycle
+    from cpn.rpnh.firing_preflight import preflight_module_firing
+    from cpn.rpnh.registry.module_gateway import start_module_firing
+    owner=SCOPE['lease_owner'](tmp_path/'run',lease_count=2,read_weight=1,distinct_resource=True)
+    executable,structure,marking=hydrate_module_runtime(owner._core)
+    pool=sorted((t for t in marking.tokens if t.state.place=='step.lease'),key=lambda t:t.state.token_id)
+    assert len(pool)==2
+    default=TeamNetMarking.from_authority(structure,marking)
+    selected,epoch=default.claim_firing_set(max_count=1,allowed={'step.run'})
+    assert selected==['step.run']
+    assert pool[0].token_ref in default.claimed_token_refs('step.run',epoch)
+    assert pool[1].token_ref not in default.claimed_token_refs('step.run',epoch)
+    claim=SCOPE['direct_claim'](owner)
+    claim=replace(claim,claimed_input_refs=tuple(r for r in claim.claimed_input_refs if r!=pool[0].token_ref))
+    preflight=preflight_module_firing(structure,marking,transition_id='step.run',claimed_token_refs=claim.claimed_input_refs)
+    admission=InvocationLifecycle(owner._core).admit_firing(claim,idempotency_key='review:nondefault:admit')
+    kernel,repository=owner.operation_repository()
+    execution=start_module_firing(owner._core,kernel,repository,admission.context.invocation_ref,preflight=preflight,idempotency_key='review:nondefault:start')
+    assert pool[1].token_ref in execution.operation.firing.claimed_input_refs
+    original=leases(owner)
+    owner.succeed(product(owner,execution,'nondefault'),command_id='nondefault:success')
+    assert leases(owner)==original
+
+
+def test_semantic_token_kind_cannot_reclassify_declared_data_read(tmp_path):
+    owner=SCOPE['lease_owner'](tmp_path/'run',ordinary_read=True,distinct_resource=True)
+    _,structure,marking=hydrate_module_runtime(owner._core)
+    local=TeamNetMarking.from_authority(structure,marking)
+    request=next(t for t in local._tokens if t.place=='step.request')
+    request.kind='resource_lease'
+    selected,epoch=local.claim_firing_set(max_count=1,allowed={'step.run'})
+    assert selected==['step.run']
+    assert [t.place for t in local.claimed_tokens('step.run',epoch)]==['step.request']
+    assert request.consumed_by=='step.run'
+    lease=next(t for t in local._tokens if t.place=='step.lease')
+    assert lease.consumed_by is None
+
+
+def test_direct_stale_checkpoint_cannot_reclaim_reference(tmp_path):
+    from cpn.rpnh.registry.invocations import InvocationLifecycle
+    owner=SCOPE['lease_owner'](tmp_path/'run',distinct_resource=True)
+    old=SCOPE['direct_claim'](owner)
+    admitted=owner.admit('step.run',logical_tau=0,command_id='review:fresh:admit')
+    execution=owner.start(admitted,command_id='review:fresh:start')
+    owner.succeed(product(owner,execution,'stale'),command_id='stale:success')
+    prior=len(owner._core.event_store.list_events())
+    with pytest.raises(Exception,match='current marking head'):
+        InvocationLifecycle(owner._core).admit_firing(replace(old,attempt_index=2),idempotency_key='review:stale:admit')
+    assert len(owner._core.event_store.list_events())==prior
+
+
+def test_nondefault_static_and_variable_read_union(tmp_path):
+    from probe_lowlevel import make_claim
+    from cpn.rpnh.registry.invocations import InvocationLifecycle
+    from cpn.rpnh.firing_preflight import preflight_module_firing
+    from cpn.rpnh.registry.module_gateway import start_module_firing
+    owner=staged_variable_owner(tmp_path/'run','same',extra_static=True)
+    prep=owner.admit('step.prepare',logical_tau=0,command_id='review:prepare:admit')
+    pe=owner.start(prep,command_id='review:prepare:start')
+    pp=owner.products(pe,outcome_id='complete',products={'step.carrier_out':(canonical_json('carrier'),)},command_id='review:prepare:products')
+    owner.succeed(pp,command_id='review:prepare:success')
+    _,structure,marking=hydrate_module_runtime(owner._core)
+    original=leases(owner)
+    assert len(original)==2
+    default=TeamNetMarking.from_authority(structure,marking)
+    _,epoch=default.claim_firing_set(max_count=1,allowed={'step.run'})
+    assert len(default.claimed_token_refs('step.run',epoch))==2
+    # Variable read claims A; static weight 1 may read B instead of reusing A.
+    claim=make_claim(owner,'correct')
+    assert len(claim.claimed_input_refs)==3
+    preflight=preflight_module_firing(structure,marking,transition_id='step.run',claimed_token_refs=claim.claimed_input_refs)
+    adm=InvocationLifecycle(owner._core).admit_firing(claim,idempotency_key='review:union:admit')
+    k,r=owner.operation_repository()
+    execution=start_module_firing(owner._core,k,r,adm.context.invocation_ref,preflight=preflight,idempotency_key='review:union:start')
+    owner.succeed(product(owner,execution,'union'),command_id='review:union:success')
+    assert leases(owner)==original

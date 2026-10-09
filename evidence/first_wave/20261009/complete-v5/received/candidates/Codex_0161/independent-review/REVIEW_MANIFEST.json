@@ -1,0 +1,79 @@
+{
+  "status": "APPROVED_EXPLICIT_CANDIDATE_HANDOFF_NATIVE_PENDING",
+  "files": [
+    {
+      "path": "DESIGN_REVIEW_ZH.md",
+      "bytes": 3578,
+      "sha256": "db60c3aa7aee9d3c72bbb5e1faf21ddc9ed3342861a4782258d58ec7b0f29cef"
+    },
+    {
+      "path": "IMPLEMENTATION_REVIEW_ZH.md",
+      "bytes": 7428,
+      "sha256": "5eb417777718d657f929b14b3cb9d7132f6c3e01ce8aa81f5ca50e151e2b137a"
+    },
+    {
+      "path": "test_delta_independent.py",
+      "bytes": 10685,
+      "sha256": "16a6ed23b3586a34d42454e4819c7412a175c40284b5485d88167e19bfa1eefe"
+    },
+    {
+      "path": "design-integrity.json",
+      "bytes": 26253,
+      "sha256": "10989f526315f9a9981972bb01e0dd8b01076280f458f80f31f8925878f952d0"
+    },
+    {
+      "path": "completed-design-integrity.json",
+      "bytes": 13142,
+      "sha256": "d674617354b5ff58f344087653eed294145ea56ff5ec208a9b36078df55dccda"
+    },
+    {
+      "path": "final-composite-before.json",
+      "bytes": 532,
+      "sha256": "5fe23dbb17ad0190ab4c3bfa911b3832b63b71d5b16fecdcf28e6efd1170bbc7"
+    },
+    {
+      "path": "final-composite-stability.json",
+      "bytes": 1141,
+      "sha256": "0444a2277632d0fa7541c7c0b72435bcbd44296a62eaeb46a16fd798b7ad9beb"
+    },
+    {
+      "path": "final-composite-tests.log",
+      "bytes": 217,
+      "sha256": "7f37be699ba661c80939bf7d072c2efcdf26ae6ce338a2e8f59fd31327f12716"
+    },
+    {
+      "path": "final-composite-tests.xml",
+      "bytes": 5869,
+      "sha256": "4bbfabb70aa0eb664d795a43adf76b4703c4c45148d9450da6b6434c485e46aa"
+    },
+    {
+      "path": "analyzer-final-probes.json",
+      "bytes": 1902,
+      "sha256": "0d8555899e9f551df022a9d43c9c8e3f42f6db0cc7de89ae8d1f68a06b616bfa"
+    },
+    {
+      "path": "analyzer-probe-rows.json",
+      "bytes": 23028,
+      "sha256": "19cda3270132e63f417e2e382c2496fd9fa9c123a63ecc3918b86713ba816701"
+    },
+    {
+      "path": "handoff-offline-review.log",
+      "bytes": 217,
+      "sha256": "a2135e0414979573c04b560f4599513e59ed91eb56c9cf1bb27e575d1ec48ebf"
+    },
+    {
+      "path": "handoff-offline-review.xml",
+      "bytes": 2869,
+      "sha256": "5075deeb947ee2d3968a8b325539ddc3380f14a6eff852d895e553d613f3d48d"
+    },
+    {
+      "path": "final-patch-verification.json",
+      "bytes": 792,
+      "sha256": "6552e21995090083cf98d4eefb9706924f8a94b62121441fa7e1d810fe437e87"
+    }
+  ],
+  "native_runs": 0,
+  "model_calls": 0,
+  "installations": 0,
+  "pushes": 0
+}

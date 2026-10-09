@@ -1,0 +1,29 @@
+{
+  "correct": {
+    "status": "RPC_COVERAGE_COMPLETE_UI_REVIEW_REQUIRED",
+    "thread_id": "77ed9d1a-0de8-59cb-8619-e0bf1f8d89c3",
+    "observed_turns": 2,
+    "observed_items": 4,
+    "problems": [],
+    "native_certification": "NOT_ESTABLISHED_BY_THIS_ANALYZER"
+  },
+  "wrong_request_cut_and_token": {
+    "status": "RPC_COVERAGE_COMPLETE_UI_REVIEW_REQUIRED",
+    "thread_id": "77ed9d1a-0de8-59cb-8619-e0bf1f8d89c3",
+    "observed_turns": 2,
+    "observed_items": 4,
+    "problems": [],
+    "native_certification": "NOT_ESTABLISHED_BY_THIS_ANALYZER"
+  },
+  "nonadvancing_next": {
+    "status": "INCOMPLETE",
+    "thread_id": "77ed9d1a-0de8-59cb-8619-e0bf1f8d89c3",
+    "observed_turns": 2,
+    "observed_items": 4,
+    "problems": [
+      "Item continuation did not advance"
+    ],
+    "native_certification": "NOT_ESTABLISHED_BY_THIS_ANALYZER"
+  },
+  "scope": "Synthetic body-free log analyzer only, no native execution."
+}

@@ -1,0 +1,71 @@
+{
+  "base": "715468dab0b1bea07d7e94a7aa0606eaf194365c",
+  "overlay": "d92ff3704b6002bf5ecbccb3e6a3d1489809a805",
+  "registry_count": 3,
+  "semantic_results_equal": true,
+  "canonical_db_immutable_objects_nonempty_wal_unchanged": true,
+  "statuses": [
+    {
+      "status": "terminal",
+      "run_outcome": "failed"
+    },
+    {
+      "status": "running",
+      "run_outcome": null
+    },
+    {
+      "status": "terminal",
+      "run_outcome": "complete"
+    }
+  ],
+  "sqlite_connection_bookkeeping": {
+    "base": [
+      {
+        "fixture": "test_explicit_failed_terminal_0",
+        "changes": []
+      },
+      {
+        "fixture": "test_missing_unsettled_or_repo0",
+        "changes": []
+      },
+      {
+        "fixture": "test_select_retain_unknown_and0",
+        "changes": [
+          {
+            "path": ".registry_v1/registry.sqlite3-shm",
+            "before": null,
+            "after": {
+              "sha256": "fd4c9fda9cd3f9ae7c962b0ddf37232294d55580e1aa165aa06129b8549389eb",
+              "bytes": 32768
+            }
+          },
+          {
+            "path": ".registry_v1/registry.sqlite3-wal",
+            "before": null,
+            "after": {
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "bytes": 0
+            }
+          }
+        ]
+      }
+    ],
+    "d92_overlay": [
+      {
+        "fixture": "test_explicit_failed_terminal_0",
+        "changes": []
+      },
+      {
+        "fixture": "test_missing_unsettled_or_repo0",
+        "changes": []
+      },
+      {
+        "fixture": "test_select_retain_unknown_and0",
+        "changes": []
+      }
+    ]
+  },
+  "not_entire_directory_physical_zero_write": true,
+  "not_full_head_suite": true,
+  "source_file": "h2a-overlay-files.json"
+}

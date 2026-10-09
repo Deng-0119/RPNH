@@ -1,0 +1,24 @@
+HISTORY DIAGNOSTIC 234 RegistryConflict('history relation differs from its publication')
+HISTORY DIAGNOSTIC 311 RegistryConflict('history relation differs from its publication')
+HISTORY DIAGNOSTIC 432 RegistryConflict('history relation differs from its publication')
+F
+=================================== FAILURES ===================================
+_________________ test_history_of_live_provisional_acceptance __________________
+
+tmp_path = PosixPath('/tmp/rpnh-history-debug/test_history_of_live_provision0')
+
+    def test_history_of_live_provisional_acceptance(tmp_path):
+        owner,*_,acceptance=accepted_parent(tmp_path/'parent')
+        query=assertion_for(owner,acceptance)
+        result=owner._core.event_store.classify_child_acceptance_history(query)
+>       assert result.status==VALID
+E       AssertionError: assert 'HISTORICAL_A...TANCE_INVALID' == 'HISTORICAL_ACCEPTANCE_VALID'
+E         
+E         - HISTORICAL_ACCEPTANCE_VALID
+E         + HISTORICAL_ACCEPTANCE_INVALID
+E         ?                       ++
+
+tests/test_acceptance_history.py:32: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_acceptance_history.py::test_history_of_live_provisional_acceptance
+1 failed in 6.98s

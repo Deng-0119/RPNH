@@ -1,0 +1,28 @@
+{
+  "command": [
+    "<WORKSPACE>/.p26/v/bin/python",
+    "-m",
+    "pytest",
+    "-p",
+    "no:cacheprovider",
+    "-q",
+    "tests/test_iteration_profile.py",
+    "tests/test_compiler_json_contract.py",
+    "-o",
+    "junit_family=xunit1",
+    "--basetemp=<WORKSPACE>/.v26/ur1a",
+    "--junitxml=<WORKSPACE>/task-complete-v5-20261009/stages/rsi/resume-r1-author.xml"
+  ],
+  "cwd": "<WORKSPACE>/.v26/r1",
+  "pid": 18075,
+  "started_at_utc": "2026-10-09T03:17:14.763262+00:00",
+  "finished_at_utc": "2026-10-09T03:19:55.273817+00:00",
+  "elapsed_seconds": 163.04489035700044,
+  "exit_code": 0,
+  "environment": {
+    "PYTHONPATH": "<WORKSPACE>/.v26/r1",
+    "TMPDIR": "<WORKSPACE>/.v26/urtmp",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1"
+  }
+}

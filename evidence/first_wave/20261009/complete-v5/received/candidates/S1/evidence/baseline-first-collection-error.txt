@@ -1,0 +1,28 @@
+
+==================================== ERRORS ====================================
+______________ ERROR collecting tests/test_static_lease_reads.py _______________
+tests/test_static_lease_reads.py:15: in <module>
+    from test_native_net_operations import TEXT, _registration, _simple_module
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1331: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:935: in _load_unlocked
+    ???
+../../rpnh-recovery-20261003/source/.venv/lib/python3.12/site-packages/_pytest/assertion/rewrite.py:186: in exec_module
+    exec(co, module.__dict__)
+tests/test_native_net_operations.py:58: in <module>
+    live_agent_replacement = _load_source_module(
+tests/test_native_net_operations.py:54: in _load_source_module
+    spec.loader.exec_module(module)
+<frozen importlib._bootstrap_external>:995: in exec_module
+    ???
+<frozen importlib._bootstrap_external>:1132: in get_code
+    ???
+<frozen importlib._bootstrap_external>:1190: in get_data
+    ???
+E   FileNotFoundError: [Errno 2] No such file or directory: '/workspace/scratch/18c810e6dd59/rpnh-static-lease-read-fix/source/examples/net_operations/live_agent_replacement.py'
+=========================== short test summary info ============================
+ERROR tests/test_static_lease_reads.py - FileNotFoundError: [Errno 2] No such...
+!!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!
+1 error in 0.82s

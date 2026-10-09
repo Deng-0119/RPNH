@@ -1,0 +1,1 @@
+<testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="0" skipped="0" tests="1" time="1.126" timestamp="2026-10-08T12:45:18.825597-04:00"><testcase classname="tests.test_main_thread_history" name="test_future_and_provisional_objects_cannot_enter_fixed_history" time="0.784" /></testsuite></testsuites>

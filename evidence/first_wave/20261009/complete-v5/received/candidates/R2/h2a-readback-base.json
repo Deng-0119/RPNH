@@ -1,0 +1,171 @@
+{
+  "reader_file": "/workspace/scratch/18c810e6dd59/rpnh-rsi-runtime-validation/source/cpn/rpnh/registry/run_authority.py",
+  "python": "/workspace/scratch/18c810e6dd59/rpnh-rsi-runtime-validation/source/../../rpnh-recovery-20261003/source/.venv/bin/python",
+  "registry_count": 3,
+  "rows": [
+    {
+      "fixture": "test_explicit_failed_terminal_0",
+      "head": 379,
+      "writer_epoch": 2,
+      "status": "terminal",
+      "run_outcome": "failed",
+      "terminal_version": "terminal_evidence_version:10b2ab03e08345faa3fe85d37df09dd2",
+      "result": {
+        "decision": {
+          "candidate_ref": {
+            "resource_id": "resource:33b00bf17a5a5d82a04d98c0bc47b37c",
+            "resource_version_id": "resource_version:b799e476fc8e5cc7944172bc70e351bf"
+          },
+          "candidate_selected": false,
+          "evaluation_ref": {
+            "resource_id": "resource:090a22796b8356498e0d729bbb5ab3db",
+            "resource_version_id": "resource_version:a604ee4ca3415f0f947eb8a968f7d944"
+          },
+          "incumbent_ref": {
+            "resource_id": "resource:93cdc8b655c15fa088909357d2f40433",
+            "resource_version_id": "resource_version:9f458c9fcd9e5a02a3dd75c4a8b5a861"
+          },
+          "outcome": "retain",
+          "request_ref": {
+            "resource_id": "resource:a86307de85c85131959af53729d9a37f",
+            "resource_version_id": "resource_version:5e8a72f9868c5672b9662580aa00f117"
+          },
+          "scorer_binding_ref": {
+            "entity_type": "operation_binding/v1",
+            "logical_id": "operation_binding:d8778037f14054a094f1671508a40992",
+            "version_id": "operation_binding_version:7c4627c6e3d85053979829afeb95e777"
+          }
+        },
+        "parent_state_ref": {
+          "resource_id": "resource:93cdc8b655c15fa088909357d2f40433",
+          "resource_version_id": "resource_version:9f458c9fcd9e5a02a3dd75c4a8b5a861"
+        },
+        "round": 1,
+        "selected_candidate_ref": null,
+        "value": 0
+      },
+      "task_control_status": {
+        "task_ref": "task:1d4b97c4747f4e7096aaa2d1d09d3847",
+        "execution_status": "terminal",
+        "checkpoint_ref": {
+          "entity_type": "marking_checkpoint/v1",
+          "logical_id": "marking_checkpoint:6b57de429c6956c7a473a4970597f01d",
+          "version_id": "marking_checkpoint_version:0eedf1d0dcb758ec95f0622f814e4995"
+        },
+        "execution_generation": 0,
+        "terminal_evidence_count": 1,
+        "final_result_index_count": 1,
+        "actual_model_call_counts": [
+          0,
+          0
+        ]
+      },
+      "canonical_unchanged": true,
+      "sqlite_connection_sidecar_changes": []
+    },
+    {
+      "fixture": "test_missing_unsettled_or_repo0",
+      "head": 326,
+      "writer_epoch": 2,
+      "status": "running",
+      "run_outcome": null,
+      "terminal_version": null,
+      "result": null,
+      "task_control_status": {
+        "task_ref": "task:e91b436bd4334bc39931e1854084ab2d",
+        "execution_status": "running",
+        "checkpoint_ref": {
+          "entity_type": "marking_checkpoint/v1",
+          "logical_id": "marking_checkpoint:581ff5b8d0ed5288926b7d3e6fac13c5",
+          "version_id": "marking_checkpoint_version:9c31483184fa5e56825e3742f52d53c4"
+        },
+        "execution_generation": 0,
+        "terminal_evidence_count": 0,
+        "final_result_index_count": 0,
+        "actual_model_call_counts": [
+          0,
+          0
+        ]
+      },
+      "canonical_unchanged": true,
+      "sqlite_connection_sidecar_changes": []
+    },
+    {
+      "fixture": "test_select_retain_unknown_and0",
+      "head": 379,
+      "writer_epoch": 2,
+      "status": "terminal",
+      "run_outcome": "complete",
+      "terminal_version": "terminal_evidence_version:1dca42b70d984f92b1bcb0f5855e571f",
+      "result": {
+        "decision": {
+          "candidate_ref": {
+            "resource_id": "resource:90346e1f917956fe94ea020a25b4cf09",
+            "resource_version_id": "resource_version:dc0c5dba9cdb5c3cabb525184d059b1a"
+          },
+          "candidate_selected": false,
+          "evaluation_ref": {
+            "resource_id": "resource:90f0173466be503f8e6d2e0eda63c1fa",
+            "resource_version_id": "resource_version:cf5cd4a11bec57d5bbb573b303f03499"
+          },
+          "incumbent_ref": {
+            "resource_id": "resource:b27cc165decd5efb9891291730e363b1",
+            "resource_version_id": "resource_version:be4269195674581696a3b31cd00dbd63"
+          },
+          "outcome": "retain",
+          "request_ref": {
+            "resource_id": "resource:6c1bcacb9acf5796b66038eadebd6947",
+            "resource_version_id": "resource_version:1417be1f66bc57a3b11ec6ec1e8fd090"
+          },
+          "scorer_binding_ref": {
+            "entity_type": "operation_binding/v1",
+            "logical_id": "operation_binding:d8778037f14054a094f1671508a40992",
+            "version_id": "operation_binding_version:7c4627c6e3d85053979829afeb95e777"
+          }
+        },
+        "parent_state_ref": {
+          "resource_id": "resource:b27cc165decd5efb9891291730e363b1",
+          "resource_version_id": "resource_version:be4269195674581696a3b31cd00dbd63"
+        },
+        "round": 1,
+        "selected_candidate_ref": null,
+        "value": 0
+      },
+      "task_control_status": {
+        "task_ref": "task:9531a76605b6459da8fdc428f54e4cbf",
+        "execution_status": "terminal",
+        "checkpoint_ref": {
+          "entity_type": "marking_checkpoint/v1",
+          "logical_id": "marking_checkpoint:6b57de429c6956c7a473a4970597f01d",
+          "version_id": "marking_checkpoint_version:0eedf1d0dcb758ec95f0622f814e4995"
+        },
+        "execution_generation": 0,
+        "terminal_evidence_count": 1,
+        "final_result_index_count": 1,
+        "actual_model_call_counts": [
+          0,
+          0
+        ]
+      },
+      "canonical_unchanged": true,
+      "sqlite_connection_sidecar_changes": [
+        {
+          "path": ".registry_v1/registry.sqlite3-shm",
+          "before": null,
+          "after": {
+            "sha256": "fd4c9fda9cd3f9ae7c962b0ddf37232294d55580e1aa165aa06129b8549389eb",
+            "bytes": 32768
+          }
+        },
+        {
+          "path": ".registry_v1/registry.sqlite3-wal",
+          "before": null,
+          "after": {
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "bytes": 0
+          }
+        }
+      ]
+    }
+  ]
+}

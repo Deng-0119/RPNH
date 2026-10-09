@@ -1,0 +1,1 @@
+{"start_utc":"2026-10-08T17:15:27Z", "command":"python -m pytest -q examples/rsi_workflows/tests/test_runtime.py --rsi-transport=pipe -o junit_family=xunit1 --junitxml=../runtime-final.xml"}

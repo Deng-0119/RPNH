@@ -1,0 +1,72 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.14, pytest-8.4.2, pluggy-1.6.0 -- /workspace/scratch/18c810e6dd59/rpnh-recovery-20261003/source/.venv/bin/python
+rootdir: /workspace/scratch/18c810e6dd59/rpnh-bound-child-material-lowering
+collecting ... collected 47 items
+
+<Dir rpnh-bound-child-material-lowering>
+  <Dir review>
+    <Dir tests>
+      <Module test_independent_bound_lowering.py>
+        Independent finite D0 probes; native evidence injection never establishes OS facts.
+        <Function test_exact_business_projection_is_unchanged[simple]>
+        <Function test_exact_business_projection_is_unchanged[json-effect]>
+        <Function test_exact_business_projection_is_unchanged[single-agent]>
+        <Function test_reserved_contract_variants_reject[rpnh_parent_bound_origin_v2-value0]>
+        <Function test_reserved_contract_variants_reject[rpnh_parent_bound_origin_v1-value1]>
+        <Function test_reserved_contract_variants_reject[rpnh_parent_bound_origin_v1-value2]>
+        <Function test_reserved_contract_variants_reject[rpnh_parent_bound_origin_v1-True]>
+        <Function test_duplicate_application_and_protected_schema_collision_reject>
+        <Function test_public_business_name_same_spelling_is_not_origin_identity>
+        <Function test_wire_rejects_protected_shape_mutations[origin_output]>
+        <Function test_wire_rejects_protected_shape_mutations[origin_reset]>
+        <Function test_wire_rejects_protected_shape_mutations[origin_pool]>
+        <Function test_wire_rejects_protected_shape_mutations[initial_token]>
+        <Function test_wire_rejects_protected_shape_mutations[source_unbound]>
+        <Function test_wire_rejects_protected_shape_mutations[forged_fragment]>
+        <Function test_exact_origin_claim_rechecked_in_registry[missing]>
+        <Function test_exact_origin_claim_rechecked_in_registry[consume]>
+        <Function test_exact_origin_claim_rechecked_in_registry[duplicate]>
+        <Function test_exact_origin_claim_rechecked_in_registry[same_version_other_logical]>
+        <Function test_same_transition_parallel_claims_and_cold_read_exact_origin>
+        <Function test_origin_raw_token_write_is_fail_closed[consume]>
+        <Function test_origin_raw_token_write_is_fail_closed[cloned_ref]>
+        <Function test_origin_raw_token_write_is_fail_closed[wrong_resource]>
+        <Function test_origin_raw_token_write_is_fail_closed[wrong_lease]>
+        <Function test_owner_replacement_and_direct_adoption_leave_origin_unchanged>
+        <Function test_freezing_preserves_business_arrays_and_detaches_all_inventories>
+        <Function test_handcrafted_declarations_cannot_be_intent_authority[module]>
+        <Function test_handcrafted_declarations_cannot_be_intent_authority[agent_task]>
+        <Function test_registration_change_during_lowering_is_reported>
+        <Function test_agent_static_slot_is_explicit_canonical_data[]>
+        <Function test_agent_static_slot_is_explicit_canonical_data[child/a]>
+        <Function test_agent_static_slot_is_explicit_canonical_data[../child]>
+        <Function test_agent_static_slot_is_explicit_canonical_data[aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa]>
+        <Function test_agent_static_slot_is_explicit_canonical_data[1]>
+        <Function test_agent_final_target_context_and_digest_have_no_postfreeze_path_rewrite>
+        <Function test_protected_schema_freezes_installed_body_and_public_override_rejects>
+        <Function test_recursive_launch_and_control_proof_are_explicitly_rejected>
+        <Function test_bound_external_config_schema_ref_fails_without_retrieval>
+        <Function test_declaration_dto_requires_immutable_unique_sorted_rows[payloads0]>
+        <Function test_declaration_dto_requires_immutable_unique_sorted_rows[payloads1]>
+        <Function test_declaration_dto_requires_immutable_unique_sorted_rows[payloads2]>
+        <Function test_declaration_dto_requires_immutable_unique_sorted_rows[payloads3]>
+        <Function test_multistage_agent_declaration_slice_remains_unsupported>
+      <Module test_independent_bound_revision.py>
+        Independent original structural-revision gate probe on mechanical bound PN.
+        <Function test_actual_operation_revision_cannot_change_bound_initial_net>
+      <Module test_independent_bound_catalog.py>
+        Protected catalog/origin exact-ref integrity under deterministic DB damage.
+        <Function test_protected_origin_requires_exact_installed_catalog[same_schema_foreign_catalog_ref]>
+        <Function test_protected_origin_requires_exact_installed_catalog[catalog_schema_body]>
+  <Dir source>
+    <Dir tests>
+      <Module test_local_takeover_ordinary_revision.py>
+        Actual ordinary structural revision Success, entirely in-process Registry.
+        
+        The only HOST callback returns one fixed typed Module declaration. No provider,
+        worker, workspace, process or external effect is used.
+        <Function test_ordinary_revision_success_has_legacy_unmarked_delta>
+
+- generated xml file: /workspace/scratch/18c810e6dd59/rpnh-bound-child-material-lowering/evidence/packaged-review-collection.xml -
+========================= 47 tests collected in 0.71s ==========================
+OFFLINE_SENTINEL_ATTEMPTS=0

@@ -1,0 +1,481 @@
+{
+  "base": "<WORKSPACE>/.v26/ur1a",
+  "registry_count": 9,
+  "rows": [
+    {
+      "fixture": "test_historical_empty_terminal0",
+      "head_before": 366,
+      "head_after": 366,
+      "writer_epoch_before": 2,
+      "writer_epoch_after": 2,
+      "checkpoint_before": {
+        "entity_type": "marking_checkpoint/v1",
+        "logical_id": "marking_checkpoint:6b57de429c6956c7a473a4970597f01d",
+        "version_id": "marking_checkpoint_version:0eedf1d0dcb758ec95f0622f814e4995"
+      },
+      "checkpoint_after": {
+        "entity_type": "marking_checkpoint/v1",
+        "logical_id": "marking_checkpoint:6b57de429c6956c7a473a4970597f01d",
+        "version_id": "marking_checkpoint_version:0eedf1d0dcb758ec95f0622f814e4995"
+      },
+      "status": "running",
+      "task_control_status": {
+        "task_ref": "task:25999773f7d74341b17c5b91151fce67",
+        "execution_status": "running",
+        "checkpoint_ref": {
+          "entity_type": "marking_checkpoint/v1",
+          "logical_id": "marking_checkpoint:6b57de429c6956c7a473a4970597f01d",
+          "version_id": "marking_checkpoint_version:0eedf1d0dcb758ec95f0622f814e4995"
+        },
+        "execution_generation": 0,
+        "terminal_evidence_count": 0,
+        "final_result_index_count": 0,
+        "actual_model_call_counts": [
+          0,
+          0
+        ]
+      },
+      "result": null,
+      "run_ref": {
+        "entity_type": "native_run_identity/v1",
+        "logical_id": "run:ae1d260c5256499f8932c2455dfff227",
+        "version_id": "run_version:4c9c37d9f43d4368898319f221f3a4ab"
+      },
+      "terminal_ref": null,
+      "model_calls": [
+        0,
+        0
+      ],
+      "canonical_unchanged": true,
+      "sidecar_changes": [],
+      "cli": null
+    },
+    {
+      "fixture": "test_owner_interruption_is_not0",
+      "head_before": 144,
+      "head_after": 144,
+      "writer_epoch_before": 2,
+      "writer_epoch_after": 2,
+      "checkpoint_before": {
+        "entity_type": "marking_checkpoint/v1",
+        "logical_id": "marking_checkpoint:3ac76f5dfe495ab2b933af0c4093a85e",
+        "version_id": "marking_checkpoint_version:41f5086f275c5281bbf2fee6bc3da52b"
+      },
+      "checkpoint_after": {
+        "entity_type": "marking_checkpoint/v1",
+        "logical_id": "marking_checkpoint:3ac76f5dfe495ab2b933af0c4093a85e",
+        "version_id": "marking_checkpoint_version:41f5086f275c5281bbf2fee6bc3da52b"
+      },
+      "status": "stopped_by_owner",
+      "task_control_status": {
+        "task_ref": "task:76179da4cbd04c9cb333766027243075",
+        "execution_status": "stopped_by_owner",
+        "checkpoint_ref": {
+          "entity_type": "marking_checkpoint/v1",
+          "logical_id": "marking_checkpoint:3ac76f5dfe495ab2b933af0c4093a85e",
+          "version_id": "marking_checkpoint_version:41f5086f275c5281bbf2fee6bc3da52b"
+        },
+        "execution_generation": 0,
+        "terminal_evidence_count": 0,
+        "final_result_index_count": 0,
+        "actual_model_call_counts": [
+          0,
+          0
+        ]
+      },
+      "result": null,
+      "run_ref": {
+        "entity_type": "native_run_identity/v1",
+        "logical_id": "run:72fe0e4d55344f748c7a176be8b581fd",
+        "version_id": "run_version:94e9a8113a74478a81165ebb79eac3ae"
+      },
+      "terminal_ref": null,
+      "model_calls": [
+        0,
+        0
+      ],
+      "canonical_unchanged": true,
+      "sidecar_changes": [],
+      "cli": null
+    },
+    {
+      "fixture": "test_provisional_outputs_canno0",
+      "head_before": 350,
+      "head_after": 350,
+      "writer_epoch_before": 2,
+      "writer_epoch_after": 2,
+      "checkpoint_before": {
+        "entity_type": "marking_checkpoint/v1",
+        "logical_id": "marking_checkpoint:20a26e25ba935ca49745130a42005196",
+        "version_id": "marking_checkpoint_version:71af0ba287d3589bbc8ac3eae76a37c8"
+      },
+      "checkpoint_after": {
+        "entity_type": "marking_checkpoint/v1",
+        "logical_id": "marking_checkpoint:20a26e25ba935ca49745130a42005196",
+        "version_id": "marking_checkpoint_version:71af0ba287d3589bbc8ac3eae76a37c8"
+      },
+      "status": "running",
+      "task_control_status": {
+        "task_ref": "task:7cd31c6dac6349f3b0a884c3931aded0",
+        "execution_status": "running",
+        "checkpoint_ref": {
+          "entity_type": "marking_checkpoint/v1",
+          "logical_id": "marking_checkpoint:20a26e25ba935ca49745130a42005196",
+          "version_id": "marking_checkpoint_version:71af0ba287d3589bbc8ac3eae76a37c8"
+        },
+        "execution_generation": 0,
+        "terminal_evidence_count": 0,
+        "final_result_index_count": 0,
+        "actual_model_call_counts": [
+          0,
+          0
+        ]
+      },
+      "result": null,
+      "run_ref": {
+        "entity_type": "native_run_identity/v1",
+        "logical_id": "run:26f8e8ce16b9482f9f6fa508dd067f9e",
+        "version_id": "run_version:dab9044cda6949abaa95d8bb7c5a4f7d"
+      },
+      "terminal_ref": null,
+      "model_calls": [
+        0,
+        0
+      ],
+      "canonical_unchanged": true,
+      "sidecar_changes": [],
+      "cli": null
+    },
+    {
+      "fixture": "test_real_registry_publishes_e0",
+      "head_before": 426,
+      "head_after": 426,
+      "writer_epoch_before": 2,
+      "writer_epoch_after": 2,
+      "checkpoint_before": {
+        "entity_type": "marking_checkpoint/v1",
+        "logical_id": "marking_checkpoint:6b57de429c6956c7a473a4970597f01d",
+        "version_id": "marking_checkpoint_version:0eedf1d0dcb758ec95f0622f814e4995"
+      },
+      "checkpoint_after": {
+        "entity_type": "marking_checkpoint/v1",
+        "logical_id": "marking_checkpoint:6b57de429c6956c7a473a4970597f01d",
+        "version_id": "marking_checkpoint_version:0eedf1d0dcb758ec95f0622f814e4995"
+      },
+      "status": "terminal",
+      "task_control_status": {
+        "task_ref": "task:1d3533fdc8ac45c2b6e25fb99ed6be05",
+        "execution_status": "terminal",
+        "checkpoint_ref": {
+          "entity_type": "marking_checkpoint/v1",
+          "logical_id": "marking_checkpoint:6b57de429c6956c7a473a4970597f01d",
+          "version_id": "marking_checkpoint_version:0eedf1d0dcb758ec95f0622f814e4995"
+        },
+        "execution_generation": 0,
+        "terminal_evidence_count": 1,
+        "final_result_index_count": 1,
+        "actual_model_call_counts": [
+          0,
+          0
+        ]
+      },
+      "result": {
+        "ref": "round_1_selector.stop"
+      },
+      "run_ref": {
+        "entity_type": "native_run_identity/v1",
+        "logical_id": "run:47a1b09ff5954536863623fe973b1d8f",
+        "version_id": "run_version:6ec7a4b485f94673854e9f94c553a882"
+      },
+      "terminal_ref": {
+        "entity_type": "run_terminal_evidence/v1",
+        "logical_id": "terminal_evidence:f63f45c00da84bbbaaf7b6807439e19b",
+        "version_id": "terminal_evidence_version:f2cecbbaef53488c9aaa2ea5f17bda1f"
+      },
+      "model_calls": [
+        0,
+        0
+      ],
+      "canonical_unchanged": true,
+      "sidecar_changes": [],
+      "cli": null
+    },
+    {
+      "fixture": "test_real_registry_publishes_e1",
+      "head_before": 379,
+      "head_after": 379,
+      "writer_epoch_before": 2,
+      "writer_epoch_after": 2,
+      "checkpoint_before": {
+        "entity_type": "marking_checkpoint/v1",
+        "logical_id": "marking_checkpoint:6b57de429c6956c7a473a4970597f01d",
+        "version_id": "marking_checkpoint_version:0eedf1d0dcb758ec95f0622f814e4995"
+      },
+      "checkpoint_after": {
+        "entity_type": "marking_checkpoint/v1",
+        "logical_id": "marking_checkpoint:6b57de429c6956c7a473a4970597f01d",
+        "version_id": "marking_checkpoint_version:0eedf1d0dcb758ec95f0622f814e4995"
+      },
+      "status": "terminal",
+      "task_control_status": {
+        "task_ref": "task:18cdcad49641402195a207ae9a478aad",
+        "execution_status": "terminal",
+        "checkpoint_ref": {
+          "entity_type": "marking_checkpoint/v1",
+          "logical_id": "marking_checkpoint:6b57de429c6956c7a473a4970597f01d",
+          "version_id": "marking_checkpoint_version:0eedf1d0dcb758ec95f0622f814e4995"
+        },
+        "execution_generation": 0,
+        "terminal_evidence_count": 1,
+        "final_result_index_count": 1,
+        "actual_model_call_counts": [
+          0,
+          0
+        ]
+      },
+      "result": {
+        "ref": "round_1_selector.next"
+      },
+      "run_ref": {
+        "entity_type": "native_run_identity/v1",
+        "logical_id": "run:74148d0e1a844157a01e696431b722d3",
+        "version_id": "run_version:6499de99909244899ad345b72d7603a9"
+      },
+      "terminal_ref": {
+        "entity_type": "run_terminal_evidence/v1",
+        "logical_id": "terminal_evidence:0910af9f77114b90bdd6a553d6b75cda",
+        "version_id": "terminal_evidence_version:b15cfcdb5e9f4a788590253539ec8493"
+      },
+      "model_calls": [
+        0,
+        0
+      ],
+      "canonical_unchanged": true,
+      "sidecar_changes": [],
+      "cli": null
+    },
+    {
+      "fixture": "test_real_registry_publishes_e2",
+      "head_before": 379,
+      "head_after": 379,
+      "writer_epoch_before": 2,
+      "writer_epoch_after": 2,
+      "checkpoint_before": {
+        "entity_type": "marking_checkpoint/v1",
+        "logical_id": "marking_checkpoint:6b57de429c6956c7a473a4970597f01d",
+        "version_id": "marking_checkpoint_version:0eedf1d0dcb758ec95f0622f814e4995"
+      },
+      "checkpoint_after": {
+        "entity_type": "marking_checkpoint/v1",
+        "logical_id": "marking_checkpoint:6b57de429c6956c7a473a4970597f01d",
+        "version_id": "marking_checkpoint_version:0eedf1d0dcb758ec95f0622f814e4995"
+      },
+      "status": "terminal",
+      "task_control_status": {
+        "task_ref": "task:2c8119a5094d420e9bac2a065eadb715",
+        "execution_status": "terminal",
+        "checkpoint_ref": {
+          "entity_type": "marking_checkpoint/v1",
+          "logical_id": "marking_checkpoint:6b57de429c6956c7a473a4970597f01d",
+          "version_id": "marking_checkpoint_version:0eedf1d0dcb758ec95f0622f814e4995"
+        },
+        "execution_generation": 0,
+        "terminal_evidence_count": 1,
+        "final_result_index_count": 1,
+        "actual_model_call_counts": [
+          0,
+          0
+        ]
+      },
+      "result": {
+        "ref": "round_1_selector.next"
+      },
+      "run_ref": {
+        "entity_type": "native_run_identity/v1",
+        "logical_id": "run:35ba3f0f7dfb42bcab06bb4539b983b7",
+        "version_id": "run_version:ed06688dd3e64ca38877362b7e131eee"
+      },
+      "terminal_ref": {
+        "entity_type": "run_terminal_evidence/v1",
+        "logical_id": "terminal_evidence:6e07d91e49634f96995b9d5fbf4f1b88",
+        "version_id": "terminal_evidence_version:4c7b7457379d4bd2a60a9856842e7d4b"
+      },
+      "model_calls": [
+        0,
+        0
+      ],
+      "canonical_unchanged": true,
+      "sidecar_changes": [],
+      "cli": null
+    },
+    {
+      "fixture": "test_real_registry_publishes_e3",
+      "head_before": 426,
+      "head_after": 426,
+      "writer_epoch_before": 2,
+      "writer_epoch_after": 2,
+      "checkpoint_before": {
+        "entity_type": "marking_checkpoint/v1",
+        "logical_id": "marking_checkpoint:6b57de429c6956c7a473a4970597f01d",
+        "version_id": "marking_checkpoint_version:0eedf1d0dcb758ec95f0622f814e4995"
+      },
+      "checkpoint_after": {
+        "entity_type": "marking_checkpoint/v1",
+        "logical_id": "marking_checkpoint:6b57de429c6956c7a473a4970597f01d",
+        "version_id": "marking_checkpoint_version:0eedf1d0dcb758ec95f0622f814e4995"
+      },
+      "status": "terminal",
+      "task_control_status": {
+        "task_ref": "task:02a0021b3e1f4383806d9e2b38033753",
+        "execution_status": "terminal",
+        "checkpoint_ref": {
+          "entity_type": "marking_checkpoint/v1",
+          "logical_id": "marking_checkpoint:6b57de429c6956c7a473a4970597f01d",
+          "version_id": "marking_checkpoint_version:0eedf1d0dcb758ec95f0622f814e4995"
+        },
+        "execution_generation": 0,
+        "terminal_evidence_count": 1,
+        "final_result_index_count": 1,
+        "actual_model_call_counts": [
+          0,
+          0
+        ]
+      },
+      "result": {
+        "ref": "round_1_selector.stop"
+      },
+      "run_ref": {
+        "entity_type": "native_run_identity/v1",
+        "logical_id": "run:6d5383b04e7a4140ae98cf17c12c5ae3",
+        "version_id": "run_version:1a6fd75c9daa4802b58d79b84253bde9"
+      },
+      "terminal_ref": {
+        "entity_type": "run_terminal_evidence/v1",
+        "logical_id": "terminal_evidence:fc6b625085674f779e1e8dc66503aa8b",
+        "version_id": "terminal_evidence_version:6df82a7ad238488c8ed8c72ea6943169"
+      },
+      "model_calls": [
+        0,
+        0
+      ],
+      "canonical_unchanged": true,
+      "sidecar_changes": [],
+      "cli": null
+    },
+    {
+      "fixture": "test_real_registry_publishes_e4",
+      "head_before": 379,
+      "head_after": 379,
+      "writer_epoch_before": 2,
+      "writer_epoch_after": 2,
+      "checkpoint_before": {
+        "entity_type": "marking_checkpoint/v1",
+        "logical_id": "marking_checkpoint:6b57de429c6956c7a473a4970597f01d",
+        "version_id": "marking_checkpoint_version:0eedf1d0dcb758ec95f0622f814e4995"
+      },
+      "checkpoint_after": {
+        "entity_type": "marking_checkpoint/v1",
+        "logical_id": "marking_checkpoint:6b57de429c6956c7a473a4970597f01d",
+        "version_id": "marking_checkpoint_version:0eedf1d0dcb758ec95f0622f814e4995"
+      },
+      "status": "terminal",
+      "task_control_status": {
+        "task_ref": "task:f4cff0d0fd8b4143b028c431f80c2a58",
+        "execution_status": "terminal",
+        "checkpoint_ref": {
+          "entity_type": "marking_checkpoint/v1",
+          "logical_id": "marking_checkpoint:6b57de429c6956c7a473a4970597f01d",
+          "version_id": "marking_checkpoint_version:0eedf1d0dcb758ec95f0622f814e4995"
+        },
+        "execution_generation": 0,
+        "terminal_evidence_count": 1,
+        "final_result_index_count": 1,
+        "actual_model_call_counts": [
+          0,
+          0
+        ]
+      },
+      "result": {
+        "ref": "round_1_selector.next"
+      },
+      "run_ref": {
+        "entity_type": "native_run_identity/v1",
+        "logical_id": "run:1ecdfa8f6e814e8d950582447130eacb",
+        "version_id": "run_version:adad79e4d07b4af6800c6a05441e348f"
+      },
+      "terminal_ref": {
+        "entity_type": "run_terminal_evidence/v1",
+        "logical_id": "terminal_evidence:bbe59c4f32b44fd889472398ed026d8e",
+        "version_id": "terminal_evidence_version:d1ae7c707e0b4f8ca4f4af755184d459"
+      },
+      "model_calls": [
+        0,
+        0
+      ],
+      "canonical_unchanged": true,
+      "sidecar_changes": [],
+      "cli": null
+    },
+    {
+      "fixture": "test_real_registry_publishes_e5",
+      "head_before": 379,
+      "head_after": 379,
+      "writer_epoch_before": 2,
+      "writer_epoch_after": 2,
+      "checkpoint_before": {
+        "entity_type": "marking_checkpoint/v1",
+        "logical_id": "marking_checkpoint:6b57de429c6956c7a473a4970597f01d",
+        "version_id": "marking_checkpoint_version:0eedf1d0dcb758ec95f0622f814e4995"
+      },
+      "checkpoint_after": {
+        "entity_type": "marking_checkpoint/v1",
+        "logical_id": "marking_checkpoint:6b57de429c6956c7a473a4970597f01d",
+        "version_id": "marking_checkpoint_version:0eedf1d0dcb758ec95f0622f814e4995"
+      },
+      "status": "terminal",
+      "task_control_status": {
+        "task_ref": "task:c939d9827e20409b97a6dabd3db6694b",
+        "execution_status": "terminal",
+        "checkpoint_ref": {
+          "entity_type": "marking_checkpoint/v1",
+          "logical_id": "marking_checkpoint:6b57de429c6956c7a473a4970597f01d",
+          "version_id": "marking_checkpoint_version:0eedf1d0dcb758ec95f0622f814e4995"
+        },
+        "execution_generation": 0,
+        "terminal_evidence_count": 1,
+        "final_result_index_count": 1,
+        "actual_model_call_counts": [
+          0,
+          0
+        ]
+      },
+      "result": {
+        "ref": "round_1_selector.next"
+      },
+      "run_ref": {
+        "entity_type": "native_run_identity/v1",
+        "logical_id": "run:5bdfb5d720c14865911c63f6c35e597c",
+        "version_id": "run_version:ded0601d9a1c4867aa7e967357f54130"
+      },
+      "terminal_ref": {
+        "entity_type": "run_terminal_evidence/v1",
+        "logical_id": "terminal_evidence:873da6a684b34169a02116b99cfbd1e3",
+        "version_id": "terminal_evidence_version:f71d075e8137400cba9b8eb3bfc925a8"
+      },
+      "model_calls": [
+        0,
+        0
+      ],
+      "canonical_unchanged": true,
+      "sidecar_changes": [],
+      "cli": null
+    }
+  ],
+  "junit_properties": [],
+  "cli_status": "PASS",
+  "readback_status": "PASS",
+  "model_calls": [
+    0,
+    0
+  ]
+}

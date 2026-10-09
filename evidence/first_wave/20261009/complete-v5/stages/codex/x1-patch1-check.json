@@ -1,0 +1,23 @@
+{
+  "command": [
+    "git",
+    "apply",
+    "--check",
+    "--whitespace=error",
+    "<WORKSPACE>/task-complete-v5-20261009/stages/codex/package1/native-main-thread-history.patch"
+  ],
+  "cwd": "<WORKSPACE>/.v26/x1",
+  "pid": 13633,
+  "started_at_utc": "2026-10-09T01:17:15.108471+00:00",
+  "finished_at_utc": "2026-10-09T01:17:15.110799+00:00",
+  "elapsed_seconds": 0.00233854100224562,
+  "exit_code": 0,
+  "environment": {
+    "PYTHONPATH": "<WORKSPACE>/.v26/x1",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1",
+    "TMPDIR": "<WORKSPACE>/.v26/tmp",
+    "PYTEST_ADDOPTS": null,
+    "PYTEST_PLUGINS": null
+  }
+}

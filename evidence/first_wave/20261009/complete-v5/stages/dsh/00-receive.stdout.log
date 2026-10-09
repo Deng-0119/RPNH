@@ -1,0 +1,51 @@
+{
+  "root": "<WORKSPACE>/.v26/d",
+  "head": "1f191645c4d60c8b190d42e9fad99c85e8981c03",
+  "status": "",
+  "node": "<USER_HOME>/.nvm/versions/node/v22.22.1/bin/node",
+  "pnpm": null,
+  "nvm_entries": [
+    "<USER_HOME>/.nvm/versions/node/v22.22.1",
+    "<USER_HOME>/.nvm/versions/node/v20.20.1"
+  ]
+}
+# Repository working agreement
+
+## Authoritative project
+
+This repository, `Deng-0119/RPNH`, and its `main` branch are the authoritative
+RPNH product line. By default, perform future inspection, implementation,
+testing, documentation, and release work here. Verify the live `origin/main`
+before work that depends on the latest state because this project is actively
+updated.
+
+Do not use `Deng-0119/rpnh-harness`, its historical feature branches, or local
+worktrees derived from that repository as implementation or audit sources
+unless the user explicitly names them. If the current worktree is not this
+repository, stop and select the authoritative RPNH worktree before proceeding.
+
+This repository contains the reusable RPNH harness. Keep it independent of
+paper-specific workflows, private experiments, credentials, provider account
+details, local absolute paths, and historical development-branch handoffs.
+
+The product has one main line. Core Registry/PetriNet execution, the read-only
+net viewer, and optional host adapters must coexist without duplicating provider,
+workspace, permission, recovery, or Registry authority.
+
+The supported user entry is the installed `rpnh` command. Preserve the basic
+main session, independent task/workflow Registries, user-owned provider/exact-
+model configuration, interruption/checkpoint semantics, and resource-aware
+read-only PetriNet views.
+
+Keep English and Chinese user documentation aligned. Select tests by the changed
+boundary: run focused deterministic offline tests for a local repair, and run a
+broader or complete offline suite only when a release-wide change can actually
+affect those additional modules. Do not run unrelated tests merely because a
+change is about to be committed. Real provider calls always require separate
+explicit authorization and are never part of the automated test suite.
+
+Do not add GitHub Actions `push` triggers. Do not commit generated provider
+profiles, Registry databases, run directories, raw provider transcripts, build
+environments, package caches, or viewer build dependencies.
+
+REVIEW_FILES ['final-freeze', 'probe-history.mjs', 'upstream', 'factory-pure-review.json', 'FREEZE_REVIEW_ZH.md', 'probe-codec.mjs', 'REVIEW_ZH.md']

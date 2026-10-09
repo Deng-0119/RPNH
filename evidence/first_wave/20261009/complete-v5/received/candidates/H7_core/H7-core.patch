@@ -1,0 +1,4554 @@
+--- a/cpn/rpnh/registry/_event_store/backend.py
++++ b/cpn/rpnh/registry/_event_store/backend.py
+@@ -330,6 +330,8 @@
+ def rotate_writer(store, *, expected_epoch: int) -> int:
+     with store.connect() as db:
+         db.execute("BEGIN IMMEDIATE")
++        from ..parent_bound import reject_bound_writer_at
++        reject_bound_writer_at(db)
+         current = int(db.execute(
+             "SELECT value FROM registry_meta WHERE key='writer_epoch'").fetchone()[0])
+         if current != expected_epoch:
+@@ -345,6 +347,8 @@
+     """Atomically acquire the sole production-writer epoch."""
+     with store.connect() as db:
+         db.execute("BEGIN IMMEDIATE")
++        from ..parent_bound import reject_bound_writer_at
++        reject_bound_writer_at(db)
+         current = int(db.execute(
+             "SELECT value FROM registry_meta WHERE key='writer_epoch'").fetchone()[0])
+         replacement = current + 1
+--- a/cpn/rpnh/registry/_event_store/commit.py
++++ b/cpn/rpnh/registry/_event_store/commit.py
+@@ -491,6 +491,14 @@
+             command_material=command_material, existing=existing,
+             extra_commands=bool(snapshot_predecessors or dependency_root_predecessor
+                 or publication_commands or workspace_head_commands))
++        from ..parent_child import validate_parent_child_commit
++        validate_parent_child_commit(event_store, db,
++            task_id=task_id, branch_id=branch_id, task_round_id=task_round_id,
++            net_instance_id=net_instance_id, transaction_id=transaction_id,
++            idempotency_key=idempotency_key, writer_epoch=writer_epoch,
++            objects=objects, events=events, relations=relations, existing=existing,
++            extra_commands=bool(snapshot_predecessors or dependency_root_predecessor
++                or publication_commands or workspace_head_commands))
+         if existing is not None:
+             if existing["status"] not in {"committed", "aborted"}:
+                 db.rollback()
+--- a/cpn/rpnh/registry/_event_store/validation/operation.py
++++ b/cpn/rpnh/registry/_event_store/validation/operation.py
+@@ -1450,7 +1450,7 @@
+                 raise RegistryConflict(
+                     "generic fault terminal evidence is outside its route")
+ 
+-def validate_operation_event(context, pending):
++def validate_operation_event(context, pending, *, started_event_id=None):
+     db = context.db
+     event_store = context.event_store
+     payload = pending.payload
+@@ -1972,6 +1972,21 @@
+         writer_epoch_row = db.execute(
+             "SELECT value FROM registry_meta WHERE key='writer_epoch'",
+         ).fetchone()
++        if started_event_id is not None:
++            stored = db.execute("SELECT * FROM events WHERE event_id=? AND event_type='operation_execution_started/v1'",
++                (started_event_id,)).fetchone()
++            if (stored is None or json.loads(stored['payload_json']) != dict(payload)
++                    or stored['producer_invocation_id'] != str(pending.producer_invocation_id)
++                    or stored['task_id'] != str(task_id)
++                    or db.execute("SELECT status FROM transactions WHERE transaction_id=?",
++                        (stored['transaction_id'],)).fetchone()[0] != 'committed'):
++                raise RegistryConflict("ordinary Start recheck lacks its original committed fact")
++            first = db.execute("SELECT MIN(ordinal) FROM events WHERE transaction_id=?",
++                (stored['transaction_id'],)).fetchone()[0]
++            current_ordinal_row = db.execute("SELECT MAX(ordinal) FROM events WHERE ordinal<?", (first,)).fetchone()
++            current_task_row = db.execute("SELECT MAX(task_control_sequence) AS sequence FROM events WHERE task_id=? AND ordinal<?",
++                (str(task_id), first)).fetchone()
++            writer_epoch_row = {'value': stored['writer_fencing_epoch']}
+         if (payload.get("admission_registry_ordinal")
+                 != int(current_ordinal_row[0] or 0)
+                 or payload.get("admission_task_control_sequence")
+--- a/cpn/rpnh/registry/_invocation/admission.py
++++ b/cpn/rpnh/registry/_invocation/admission.py
+@@ -267,6 +267,12 @@
+ 
+ def admit_firing(lifecycle, claim: FiringClaim, *, idempotency_key: str) -> FiringAdmission:
+     """Atomically claim and start one independently-settled real firing."""
++    from ..parent_bound import assert_bound_integrity
++    assert_bound_integrity(lifecycle.service, for_execution=True, claim={
++        'net_instance_ref': _ref_payload(claim.net_instance_ref),
++        'claimed_input_refs': [_ref_payload(ref) for ref in claim.claimed_input_refs],
++        'consumed_input_refs': [_ref_payload(ref) for ref in (
++            claim.claimed_input_refs if claim.consumed_input_refs is None else claim.consumed_input_refs)]})
+     caller_idempotency_key = idempotency_key
+     idempotency_key = lifecycle._scoped_firing_idempotency_key(
+         caller_idempotency_key)
+--- a/cpn/rpnh/registry/_invocation/execution.py
++++ b/cpn/rpnh/registry/_invocation/execution.py
+@@ -32,6 +32,8 @@
+ 
+ def revalidate_io(lifecycle, context: InvocationContext, *, boundary: str) -> None:
+     """Re-authorize an immutable DTO from current D1-C heads before I/O."""
++    from ..parent_bound import assert_bound_integrity
++    assert_bound_integrity(lifecycle.service, for_execution=True)
+     if not isinstance(context, InvocationContext):
+         raise TypeError("governed I/O requires an explicit InvocationContext")
+     if lifecycle.service.writer_epoch != lifecycle.service.event_store.writer_epoch:
+--- a/cpn/rpnh/registry/_module_resource_projection.py
++++ b/cpn/rpnh/registry/_module_resource_projection.py
+@@ -182,8 +182,23 @@
+                 or schema_id not in compiled.source.required_schemas):
+             raise ValueError("resource binding lacks exact task/schema/root membership")
+         source = metadata["content_schema_authority_ref"]
+-        authority = _resource_from_payload(source)
+-        verified_id, schema_document = reads.owner_schema(authority, schema_id)
++        from .parent_child import CAPABILITY_SCHEMA
++        if (schema_id == CAPABILITY_SCHEMA
++                and source.get("entity_type") == "registry_type_catalog/v1"):
++            if source not in root["resource_refs"]:
++                raise ValueError("H7 protected schema source is outside its exact root")
++            authority = _version_from_payload(source)
++            catalog = reads.metadata(authority, "registry_type_catalog/v1")
++            if type(reads) is _LegacyResourceReads:
++                prepared = reads.core.get_version(authority.version_id)
++                actual = json.loads(reads.core.object_store.read_registered(prepared))
++                if actual != catalog:
++                    raise ValueError("H7 catalog bytes differ from recorded authority")
++            schema_document = json.loads(catalog["schemas"][schema_id]["source"])
++            verified_id = schema_document["$id"]
++        else:
++            authority = _resource_from_payload(source)
++            verified_id, schema_document = reads.owner_schema(authority, schema_id)
+         if (verified_id != schema_id
+                 or schema_document != compiled.registrations["schema"][schema_id]["schema"]):
+             raise ValueError("bound resource schema differs from exact registered declaration")
+--- a/cpn/rpnh/registry/_registry.py
++++ b/cpn/rpnh/registry/_registry.py
+@@ -39,6 +39,9 @@
+         self.run_dir = Path(run_dir)
+         self.root = self.run_dir / ".registry_v1"
+         database_path = self.root / "registry.sqlite3"
++        if not self.read_only:
++            from .parent_bound import preflight_bound_writer
++            preflight_bound_writer(database_path)
+         if create:
+             if database_path.exists():
+                 raise RuntimeError("native registry already exists")
+--- a/cpn/rpnh/registry/bootstrap.py
++++ b/cpn/rpnh/registry/bootstrap.py
+@@ -44,6 +44,7 @@
+         exact_task_ref: VersionRef | None = None,
+         exact_task_branch_ref: VersionRef | None = None,
+         project_identity_objects: tuple[object, ...] = (),
++    _parent_bound_acceptance: dict | None = None,
+ ) -> NativeRunIdentity:
+     catalog_rows = [
+         row for row in core.event_store.object_rows()
+@@ -145,6 +146,11 @@
+             object_type=object_type, logical_id=logical_id, version_id=version_id,
+             payload=canonical_json(metadata), metadata=metadata,
+             media_type="application/json", schema_ref=f"registry_v1/{object_type}")
++    if _parent_bound_acceptance is not None:
++        from .parent_bound import stage_bound_bootstrap
++        stage_bound_bootstrap(core, tx, run_ref=run_ref, task_ref=task_ref,
++            branch_ref=branch_ref, genesis_ref=genesis_ref, bootstrap_ref=bootstrap_ref,
++            acceptance=_parent_bound_acceptance)
+     tx.commit()
+     core.event_store.get_or_create_meta("native_run_ref", json.dumps(_ref_payload(run_ref)))
+     core.event_store.get_or_create_meta(
+--- a/cpn/rpnh/registry/checkpoint_reentry.py
++++ b/cpn/rpnh/registry/checkpoint_reentry.py
+@@ -284,6 +284,8 @@
+         source_checkpoint_ref: VersionRef, command_id: str, reason: str,
+ ) -> VersionRef:
+     """Atomically append one owner-selected execution generation."""
++    from .parent_bound import reject_bound_reentry
++    reject_bound_reentry(core)
+     if (not isinstance(core, _RegistryCore) or core.read_only
+             or not isinstance(kernel, _ResourceServiceKernel)
+             or kernel._ResourceServiceKernel__core is not core
+--- a/cpn/rpnh/registry/event_store.py
++++ b/cpn/rpnh/registry/event_store.py
+@@ -1061,6 +1061,9 @@
+                  read_only: bool = False) -> None:
+         self.path = Path(path)
+         self.read_only = bool(read_only)
++        if not self.read_only:
++            from .parent_bound import preflight_bound_writer
++            preflight_bound_writer(self.path)
+         if self.read_only:
+             if not self.path.is_file():
+                 raise RegistryCorruptError("read-only Registry database is missing")
+--- a/cpn/rpnh/registry/module_binding_authority.py
++++ b/cpn/rpnh/registry/module_binding_authority.py
+@@ -22,7 +22,14 @@
+         source_ref = ({"entity_type": "resource_version/v1", "logical_id": source["resource_id"],
+                        "version_id": source["resource_version_id"]}
+                       if "resource_id" in source else source)
+-        exact(source_ref, "resource_version/v1")
++        from .parent_child import CAPABILITY_SCHEMA
++        if (metadata.get("content_schema_ref") == CAPABILITY_SCHEMA
++                and source_ref.get("entity_type") == "registry_type_catalog/v1"):
++            catalog = exact(source_ref, "registry_type_catalog/v1")
++            if CAPABILITY_SCHEMA not in catalog.get("schemas", {}):
++                raise corrupt("H7 capability source lacks its protected mechanical schema")
++        else:
++            exact(source_ref, "resource_version/v1")
+         if (metadata["task_ref"] != root["task_ref"] or value not in root_resources
+                 or source_ref not in root_resources):
+             raise corrupt("Module owner resource/source is outside exact task/root membership")
+--- a/cpn/rpnh/registry/module_execution.py
++++ b/cpn/rpnh/registry/module_execution.py
+@@ -136,6 +136,8 @@
+             or authority.get("terminal_evidence_ref") is not None):
+         raise ValueError(
+             "Module admission requires the current running execution authority")
++    from .parent_bound import assert_bound_integrity
++    assert_bound_integrity(core, for_execution=True)
+     executable, structure, marking = hydrate_module_runtime(core)
+     if transition_id not in structure.transitions:
+         raise ValueError("Module admission names an undeclared symbolic transition")
+--- a/cpn/rpnh/registry/module_nets.py
++++ b/cpn/rpnh/registry/module_nets.py
+@@ -292,6 +292,18 @@
+         host_bindings=host_bindings, host_resources=host_resources,
+         host_artifacts=host_artifacts, idempotency_key=idempotency_key)
+     objects, resource_plan, resource_bindings = graph.objects, graph.resource_plan, graph.resource_bindings
++    # H7's protected resource retains the original catalog schema authority.
++    # Include that exact source in the same root, rather than disguising it as
++    # an application schema resource. Other owner resources are unchanged.
++    from .parent_child import CAPABILITY_SCHEMA
++    if any(core.get_version(ref.resource_version_id).metadata.get("content_schema_ref")
++           == CAPABILITY_SCHEMA for ref in owner_resource_inputs.values()):
++        from .publication import _registry_type_catalog_ref
++        catalog_source = ref_payload(_registry_type_catalog_ref(core))
++        objects = tuple((ref, {**metadata, "resource_refs": sorted(
++            [*metadata["resource_refs"], catalog_source], key=canonical_json)})
++            if ref.entity_type == "team_design_root/v1" else (ref, metadata)
++            for ref, metadata in objects)
+     for ref, metadata in objects:
+         core.catalog.validate_instance(ref.entity_type, category="object", instance=metadata)
+     for ref, metadata in objects:
+--- a/cpn/rpnh/registry/operation_execution.py
++++ b/cpn/rpnh/registry/operation_execution.py
+@@ -230,3 +230,32 @@
+ 
+ __all__ = ('start_registered_operation_execution', 'verify_operation_execution', 'operation_start_payload',
+            'declaration_terminal_delivery_authority')
++
++
++def revalidate_started_operation_at(store, db, *, task_id, start_event_id):
++    """Recheck ordinary Start in one existing exact-producer snapshot.
++
++    This is a shared Registry helper for durable causal consumers. It does not
++    compare admission to today's head: unrelated legitimate settlements may
++    have advanced marking since Start. The caller must check current claims.
++    """
++    import json
++    from .identities import TypedId
++    from .models import PendingEvent
++    from .event_store import RegistryConflict
++    from ._event_store.proposal import TransactionValidationContext
++    from ._event_store.validation.operation import validate_operation_event
++    row = db.execute("SELECT * FROM events WHERE event_id=? AND event_type='operation_execution_started/v1'",
++                     (str(start_event_id),)).fetchone()
++    if row is None or row['task_id'] != str(task_id):
++        raise RegistryConflict('ordinary Start is absent or belongs to another task')
++    pending = PendingEvent(row['event_type'], row['criticality'], row['stream_id'], row['aggregate_id'],
++        row['aggregate_type'], row['idempotency_key'], row['command_id'], json.loads(row['payload_json']),
++        row['payload_schema_ref'], producer_principal=row['producer_principal'],
++        producer_invocation_id=TypedId.parse(row['producer_invocation_id']))
++    context = TransactionValidationContext(db, (), (pending,), (), event_store=store, task_id=task_id,
++        branch_id=row['branch_id'], task_round_id=TypedId.parse(row['task_round_id']),
++        net_instance_id=TypedId.parse(row['net_instance_id']), transaction_id=TypedId.parse(row['transaction_id']),
++        idempotency_key=row['idempotency_key'], transaction_writer_epoch=row['writer_fencing_epoch'])
++    context.validate_reference_visibility()
++    validate_operation_event(context, pending, started_event_id=str(start_event_id))
+--- /dev/null
++++ b/cpn/rpnh/registry/parent_bound.py
+@@ -0,0 +1,484 @@
++"""H7 protected child provenance in the original Registry/PN boundaries.
++
++This module provides transaction staging and integrity checks, not a production
++bound-create entry. Until authenticated receipt + physical reservation adapters
++are installed there is deliberately no normal constructor of native evidence.
++"""
++from __future__ import annotations
++
++import json
++import sqlite3
++from pathlib import Path
++from .event_store import RegistryConflict
++from .models import TypedRelation, VersionRef
++from .identities import TypedId
++from .publication import _ref_payload, _version_from_payload, _stable_id
++from .parent_child import (BOUND_KINDS,BOUND_PROTOCOL,CAPABILITY_SCHEMA,PARENT_KINDS,
++    _Snapshot,_ref,_json,digest,_require_evidence,_native_boundary,ParentChildUnsupported)
++
++
++def _candidate_signal(kind, body):
++    return (kind in BOUND_KINDS or kind=='resource_version/v1' and body.get('content_schema_ref')==CAPABILITY_SCHEMA
++            or kind=='native_run_identity/v1' and BOUND_PROTOCOL in body.get('protocol_versions',()))
++
++
++def _bound_signal(db):
++    rows=db.execute("SELECT object_type,metadata_json FROM objects WHERE object_type IN "
++        "('native_run_identity/v1','parent_bound_bootstrap/v1','parent_bound_origin/v1','resource_version/v1')")
++    return any(_candidate_signal(row['object_type'],json.loads(row['metadata_json'])) for row in rows)
++
++
++def preflight_bound_writer(path):
++    """Read-only rejection before Core/EventStore writable construction."""
++    path=Path(path)
++    if not path.is_file():return
++    with sqlite3.connect(path.resolve().as_uri()+'?mode=ro',uri=True) as db:
++        db.row_factory=sqlite3.Row
++        if db.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='objects'").fetchone() is None:
++            return  # Preserve ordinary fresh empty-store initialization.
++        if _bound_signal(db):
++            raise ParentChildUnsupported('H7 bound child cannot reopen or acquire a new writer')
++
++
++def reject_bound_writer_at(db):
++    if _bound_signal(db):
++        raise ParentChildUnsupported('H7 bound child writer entry is immutable')
++
++
++def _one(snap,kind):
++    rows=snap.db.execute('SELECT logical_id,version_id FROM objects WHERE object_type=?',(kind,)).fetchall()
++    if len(rows)!=1:raise RegistryConflict('H7 bound identity is incomplete or duplicated: '+kind)
++    ref={'entity_type':kind,'logical_id':rows[0]['logical_id'],'version_id':rows[0]['version_id']}
++    return ref,snap.obj(ref)
++
++
++def _marker(snap):
++    ref,marker=_one(snap,BOUND_KINDS[0])
++    _validate_acceptance_copy(snap.store,marker['acceptance'])
++    run=snap.obj(marker['child_run_ref']);genesis=snap.obj(marker['genesis_ref'])
++    run_row=snap.row(marker['child_run_ref']);mark_row=snap.row(ref);gen_row=snap.row(marker['genesis_ref'])
++    if (BOUND_PROTOCOL not in run['protocol_versions'] or marker['record_ref']!=ref
++            or run['task_ref']!=marker['child_task_ref'] or run['task_branch_ref']!=marker['child_branch_ref']
++            or genesis['run_identity_ref']!=marker['child_run_ref']
++            or run_row['transaction_id']!=mark_row['transaction_id'] or gen_row['transaction_id']!=mark_row['transaction_id']
++            or genesis['bootstrap_transaction_id']!=mark_row['transaction_id']):
++        raise RegistryConflict('H7 bound marker/protocol/native genesis closure differs')
++    expected=[('derived_from',marker['genesis_ref']),('derived_from',marker['child_run_ref']),
++              ('produced_by',marker['bootstrap_ref'])]
++    _edges_at(snap,ref,expected,mark_row['transaction_id'])
++    return ref,marker
++
++
++def _edges_at(snap,ref,expected,transaction):
++    rows=snap.db.execute("SELECT * FROM relations WHERE json_extract(source_json,'$.version_id')=?",
++                         (ref['version_id'],)).fetchall()
++    actual=[]
++    for row in rows:
++        target=json.loads(row['target_json'])
++        target['logical_id']=target.pop('entity_id')
++        actual.append((row['relation_type'],target))
++    if (sorted(_json(v) for v in actual)!=sorted(_json(v) for v in expected)
++            or any(r['transaction_id']!=transaction or r['strength']!='strong' for r in rows)):
++        raise RegistryConflict('H7 protected relation closure differs')
++
++
++def bound_integrity_at(store,db,task_id,writer_epoch,*,require_origin=True,require_net=True,claim=None,for_execution=False):
++    if not _bound_signal(db):return None
++    snap=_Snapshot(store,db,task_id)
++    marker_ref,marker=_marker(snap)
++    epoch=int(db.execute("SELECT value FROM registry_meta WHERE key='writer_epoch'").fetchone()[0])
++    if writer_epoch!=marker['initial_writer_epoch'] or epoch!=marker['initial_writer_epoch']:
++        raise RegistryConflict('H7 bound execution requires its original child writer entry')
++    if for_execution:
++        authority_ref,authority=snap.canonical_latest('run_execution_authority/v1')
++        if (authority['run_ref']!=marker['child_run_ref'] or authority['task_ref']!=marker['child_task_ref']
++                or authority.get('execution_generation',0)!=0 or authority['status'] in ('stopped_by_owner','terminal')
++                or authority.get('terminal_evidence_ref') is not None):
++            raise RegistryConflict('H7 bound execution authority is stopped, terminal, or foreign')
++    if not require_origin:return marker
++    origin_ref,origin=_one(snap,BOUND_KINDS[1]);cap_ref=origin['capability_ref'];cap=snap.obj(cap_ref)
++    body=json.loads(snap.payload(cap_ref))
++    binding=__import__('cpn.rpnh.registry._event_store.source_identity',fromlist=['read_source_binding']).read_source_binding(db,store.catalog,task_id)
++    if (origin['record_ref']!=origin_ref or origin['marker_ref']!=marker_ref
++            or origin['child_run_ref']!=marker['child_run_ref'] or origin['child_task_ref']!=marker['child_task_ref']
++            or origin['initial_writer_epoch']!=marker['initial_writer_epoch']
++            or origin['initial_declaration_digest']!=marker['initial_declaration_digest']
++            or binding is None or json.loads(binding['binding_metadata_json'])['binding_ref']!=origin['child_source_binding_ref']
++            or cap.get('content_schema_ref')!=CAPABILITY_SCHEMA or cap['task_ref']!=marker['child_task_ref']
++            or cap['origin_kind']!='private_system' or cap['producer_ref']!=marker['bootstrap_ref']
++            or cap['lifetime_ref']!=marker['bootstrap_ref']
++            or body!={'schema_version':CAPABILITY_SCHEMA,'origin_ref':origin_ref,'marker_ref':marker_ref,
++                'child_run_ref':marker['child_run_ref'],'child_task_ref':marker['child_task_ref'],
++                'parent_acceptance':marker['acceptance'],'initial_writer_epoch':marker['initial_writer_epoch'],
++                'initial_declaration_digest':marker['initial_declaration_digest']}
++            or snap.row(origin_ref)['transaction_id']!=snap.row(cap_ref)['transaction_id']):
++        raise RegistryConflict('H7 origin/capability is not its exact protected native provenance')
++    _edges_at(snap,origin_ref,[('produced_by',marker['bootstrap_ref']),('derived_from',marker_ref),
++        ('derived_from',origin['child_source_binding_ref']),('derived_from',cap_ref)],snap.row(origin_ref)['transaction_id'])
++    genesis=snap.obj(marker['genesis_ref'])
++    catalog_ref=genesis['type_catalog_ref']
++    if cap['content_schema_authority_ref']!=catalog_ref:
++        raise RegistryConflict('H7 capability requires its original exact native catalog source')
++    catalog=snap.obj(catalog_ref)
++    from .schema_catalog import SchemaCatalog
++    if (catalog.get('catalog_identity')!='rpnh-v1'
++            or json.loads(catalog['schemas'][CAPABILITY_SCHEMA]['source']) !=
++                json.loads(SchemaCatalog._mechanical_schema_path(CAPABILITY_SCHEMA).read_bytes())):
++        raise RegistryConflict('H7 capability catalog source differs from installed protected schema')
++    if not require_net:return origin
++    adoptions=db.execute("SELECT * FROM events WHERE event_type='net_adopted/v1' ORDER BY ordinal").fetchall()
++    if len(adoptions)!=1:raise RegistryConflict('H7 child requires its sole initial adoption')
++    net_ref=json.loads(adoptions[0]['payload_json'])['net_instance_ref']
++    place=_check_bound_net(snap,net_ref,marker,cap_ref)
++    tokens=[]
++    for row in db.execute("SELECT logical_id,version_id,metadata_json FROM objects WHERE object_type='petri_token/v1'"):
++        value=json.loads(row['metadata_json'])
++        if value['place']==place:
++            tokens.append(value)
++    if len(tokens)!=1:
++        raise RegistryConflict('H7 origin token is absent, duplicated, or reminted')
++    token=tokens[0]
++    resource={'resource_id':cap_ref['logical_id'],'resource_version_id':cap_ref['version_id']}
++    if (token['net_instance_ref']!=net_ref or token['resource_ref']!=resource or token['lease_identity_ref']!=cap_ref
++            or token['consumed_by'] is not None or token['epoch']!=0 or token['producer'] is not None):
++        raise RegistryConflict('H7 origin token lacks exact resource/lease provenance')
++    if claim is not None:
++        refs=claim.get('claimed_input_refs',[])
++        if refs.count(token['petri_token_ref'])!=1 or claim.get('net_instance_ref')!=net_ref:
++            raise RegistryConflict('H7 admission omits the exact protected origin reference')
++        if token['petri_token_ref'] in claim.get('consumed_input_refs',[]):
++            raise RegistryConflict('H7 origin reference cannot be consumed')
++    return origin
++
++
++def _check_bound_net(snap,net_ref,marker,cap_ref):
++    from ..executable_net import load_compiled_net
++    net=snap.obj(net_ref);rr=net['team_net_declaration_resource_ref']
++    ref={'entity_type':'resource_version/v1','logical_id':rr['resource_id'],'version_id':rr['resource_version_id']}
++    raw=snap.payload(ref)
++    if digest(raw)!=marker['initial_declaration_digest']:
++        raise RegistryConflict('H7 initial declaration differs from accepted frozen bytes')
++    compiled=load_compiled_net(json.loads(raw));pn=compiled.symbolic
++    from .parent_child import NATIVE_LAUNCH_EXECUTOR
++    if any(op.executor==NATIVE_LAUNCH_EXECUTOR for op in pn.operations):
++        raise ParentChildUnsupported('H7a child does not support recursive native launch')
++    places=[p for p in pn.places if p.schema==CAPABILITY_SCHEMA]
++    if len(places)!=1:raise RegistryConflict('H7 bound net requires one reserved origin place')
++    place=places[0]
++    if any(p.place==place.name for p in compiled.ports):
++        raise RegistryConflict('H7 origin is an internal structural place, not a public operation port')
++    pools=[p for p in pn.lease_pools if p.place==place.name]
++    arcs=[a for a in pn.arcs if a.place==place.name]
++    if (place.token_kind!='resource_lease' or not place.reusable or place.capacity!=1 or place.initial_tokens
++            or len(pools)!=1 or len(pools[0].initial_resources)!=1 or pools[0].initial_slots
++            or len(arcs)!=len(pn.transitions)
++            or {(a.transition,a.direction,a.mode,a.weight) for a in arcs} !=
++                {(t.name,'input','read',1) for t in pn.transitions}
++            or any(a.lease_pool==pools[0].name for a in pn.variable_resource_arcs)
++            or any(getattr(a,'place',None)==place.name for a in pn.reset_arcs)):
++        raise RegistryConflict('H7 protected origin structure is not one non-consuming read on every transition')
++    root=snap.obj(net['team_design_root_ref'])
++    from .static_lease_claims import _resource_plan
++    # The ordinary registered net resource plan must bind the protected exact ref.
++    plan=_resource_plan(net,root,compiled,lambda ref,kind=None:snap.obj(ref))
++    selected=[p for p in plan.lease_pools if p.lease_pool_place==place.name]
++    if len(selected)!=1 or len(selected[0].initial_resource_refs)!=1:
++        raise RegistryConflict('H7 origin M0 binding differs')
++    exact=selected[0].initial_resource_refs[0]
++    if {'entity_type':exact.entity_type,'logical_id':exact.logical_id,'version_id':exact.version_id}!=cap_ref:
++        raise RegistryConflict('H7 initial pool does not bind the exact protected origin capability')
++    return place.name
++
++
++def assert_bound_integrity(core,*,claim=None,require_net=True,for_execution=False):
++    with core.event_store.connect() as db:
++        db.execute('BEGIN')
++        return bound_integrity_at(core.event_store,db,core.task_id,core.writer_epoch,
++                                 require_net=require_net,claim=claim,for_execution=for_execution)
++
++
++def validate_bound_commit(store,db,*,task_id,writer_epoch,objects,events,relations,existing,transaction_id):
++    if not _bound_signal(db):return
++    snap=_Snapshot(store,db,task_id,proposal=objects)
++    _,marker=_marker(snap)
++    if any(o.object_type in ('native_run_identity/v1','native_genesis_manifest/v1','bootstrap_command/v1') for o in objects):
++        raise RegistryConflict('H7 bound native genesis cannot be relabelled or replayed')
++    if marker['initial_writer_epoch']!=writer_epoch:
++        raise RegistryConflict('H7 bound write belongs to another writer entry')
++    forbidden={'native_resume_refenced/v1','run_reopened/v1','run_reopen_authorization/v1',
++               'transition_firing_superseded_by_native_resume/v1'}
++    if any(e.event_type in forbidden for e in events) or any(o.object_type=='run_reopen_authorization/v1' for o in objects):
++        raise ParentChildUnsupported('H7 bound child restart is outside this contract')
++    if any(o.object_type=='run_execution_authority/v1' and o.metadata.get('execution_generation',0)!=0 for o in objects):
++        raise ParentChildUnsupported('H7 bound child generation cannot change')
++    authority_rows=db.execute("SELECT o.metadata_json FROM objects o JOIN events e ON e.event_id=o.published_event_id WHERE o.object_type='run_execution_authority/v1' ORDER BY e.ordinal DESC").fetchall()
++    if authority_rows:
++        current_authority=json.loads(authority_rows[0][0])
++        for item in objects:
++            if (item.object_type=='run_execution_authority/v1'
++                    and current_authority['status'] in ('stopped_by_owner','terminal')
++                    and item.metadata['status']!=current_authority['status']):
++                raise ParentChildUnsupported('H7 bound child cannot revive closed execution authority')
++    for event in events:
++        if event.event_type=='net_adopted/v1':
++            previous=db.execute("SELECT transaction_id,payload_json FROM events WHERE event_type='net_adopted/v1'").fetchall()
++            if previous and (len(previous)!=1 or existing is None or previous[0]['transaction_id']!=existing['transaction_id']
++                              or json.loads(previous[0]['payload_json'])!=dict(event.payload)):
++                raise RegistryConflict('H7 bound child cannot adopt a successor net')
++            if event.payload.get('supersedes_net_ref') is not None:
++                raise RegistryConflict('H7 initial adoption cannot supersede another net')
++            origin=bound_integrity_at(store,db,task_id,writer_epoch,require_net=False)
++            _check_bound_net(snap,event.payload['net_instance_ref'],marker,origin['capability_ref'])
++        if event.event_type in ('firing_admitted/v1','operation_execution_started/v1'):
++            firing_ref=event.payload['transition_firing_ref']
++            firing_snap=_Snapshot(store,db,task_id,firing=firing_ref['version_id'],proposal=objects)
++            firing=firing_snap.obj(firing_ref)
++            delta=firing_snap.obj(firing['claim_marking_delta_ref'])
++            bound_integrity_at(store,db,task_id,writer_epoch,claim={**firing,'consumed_input_refs':delta['consumed_refs']},for_execution=True)
++    # Settlement/effects cannot replace, consume or reset the protected token.
++    origin_rows=db.execute("SELECT metadata_json FROM objects WHERE object_type='parent_bound_origin/v1'").fetchall()
++    if origin_rows:
++        origin=json.loads(origin_rows[0][0]);cap=origin['capability_ref']
++        protected=[]
++        for row in db.execute("SELECT metadata_json FROM objects WHERE object_type='petri_token/v1'"):
++            token=json.loads(row[0])
++            if token.get('lease_identity_ref')==cap:protected.append(token['petri_token_ref'])
++        origin_resource={'resource_id':cap['logical_id'],'resource_version_id':cap['version_id']}
++        proposed_origin=[]
++        for item in objects:
++            if item.object_type=='petri_token/v1':
++                token=item.metadata
++                # Check the adopted/frozen native origin place as well as refs;
++                # a caller cannot evade protection by changing lease_identity.
++                place=_check_bound_net(snap,token['net_instance_ref'],marker,cap)
++                if (token['place']==place or token.get('lease_identity_ref')==cap
++                        or token.get('resource_ref')==origin_resource):
++                    proposed_origin.append(token)
++                    if (token['place']!=place or token['resource_ref']!=origin_resource
++                            or token['lease_identity_ref']!=cap or token['epoch']!=0
++                            or token['consumed_by'] is not None or token['producer'] is not None):
++                        raise RegistryConflict('H7 prospective origin token lacks exact native provenance')
++            if item.object_type=='petri_token/v1' and item.metadata.get('lease_identity_ref')==cap and protected:
++                if item.metadata.get('petri_token_ref') not in protected:
++                    raise RegistryConflict('H7 origin token cannot be cloned or reminted')
++            if item.object_type=='marking_delta/v1' and any(ref in protected for ref in item.metadata.get('consumed_refs',())):
++                raise RegistryConflict('H7 origin token cannot be consumed or reset')
++            if item.object_type=='marking_checkpoint/v1' and protected and not all(ref in item.metadata['token_refs'] for ref in protected):
++                raise RegistryConflict('H7 checkpoint cannot drop protected origin reference')
++        if len(proposed_origin)>1:
++            raise RegistryConflict('H7 M0 cannot duplicate the protected origin token')
++
++
++def stage_bound_bootstrap(core,tx,*,run_ref,task_ref,branch_ref,genesis_ref,bootstrap_ref,acceptance):
++    """Internal staging only; authenticated create/reservation issuer is absent."""
++    ref=_ref(BOUND_KINDS[0],str(run_ref.version_id))
++    body={'record_ref':_ref_payload(ref),'child_run_ref':_ref_payload(run_ref),'child_task_ref':_ref_payload(task_ref),
++        'child_branch_ref':_ref_payload(branch_ref),'genesis_ref':_ref_payload(genesis_ref),
++        'bootstrap_ref':_ref_payload(bootstrap_ref),'initial_writer_epoch':core.writer_epoch,
++        'acceptance':acceptance,'initial_declaration_digest':acceptance['initial_declaration_digest']}
++    _require_evidence(core.event_store,'bound_bootstrap',acceptance)
++    _validate_acceptance_copy(core.event_store,acceptance)
++    tx.prewrite(object_type=ref.entity_type,logical_id=ref.entity_id,version_id=ref.version_id,payload=_json(body),
++        metadata=body,media_type='application/json',schema_ref='registry_v1/'+ref.entity_type)
++    for index,(relation,target) in enumerate((('derived_from',genesis_ref),('derived_from',run_ref),('produced_by',bootstrap_ref))):
++        tx.relate(TypedRelation(_stable_id('relation',str(ref.version_id),index),relation,ref,target),system_owned=True)
++    return ref
++
++
++def close_bound_origin(core,*,evidence):
++    """Protected child-local origin + capability in one original transaction."""
++    from .resource_service import _publish_private_system
++    from .resources import PrivateSystemOrigin,PublishResource
++    from ._event_store.source_identity import read_source_binding
++    with core.event_store.connect() as db:
++        db.execute('BEGIN');snap=_Snapshot(core.event_store,db,core.task_id)
++        marker_ref,marker=_marker(snap)
++        binding=read_source_binding(db,core.catalog,core.task_id)
++        if binding is None:raise RegistryConflict('H7 origin requires exact native child source binding')
++        binding_ref=json.loads(binding['binding_metadata_json'])['binding_ref']
++    ref=_ref(BOUND_KINDS[1],marker_ref['version_id'])
++    cap_body={'schema_version':CAPABILITY_SCHEMA,'origin_ref':_ref_payload(ref),'marker_ref':marker_ref,
++        'child_run_ref':marker['child_run_ref'],'child_task_ref':marker['child_task_ref'],
++        'parent_acceptance':marker['acceptance'],'initial_writer_epoch':marker['initial_writer_epoch'],
++        'initial_declaration_digest':marker['initial_declaration_digest']}
++    key='h7-origin:'+str(ref.version_id);tx=core.begin(idempotency_key=key)
++    with _native_boundary(evidence,core.event_store,'bound_origin',marker):
++        bootstrap=_version_from_payload(marker['bootstrap_ref'])
++        capability=_publish_private_system(core,_version_from_payload(marker['child_task_ref']),PublishResource(
++            origin=PrivateSystemOrigin(bootstrap),payload=_json(cap_body),media_type='application/json',
++            content_schema_ref=CAPABILITY_SCHEMA,summary='Protected parent-bound origin',lifetime_ref=bootstrap,
++            idempotency_key=key),transaction=tx)
++        body={'record_ref':_ref_payload(ref),'marker_ref':marker_ref,'child_run_ref':marker['child_run_ref'],
++            'child_task_ref':marker['child_task_ref'],'child_source_binding_ref':binding_ref,
++            'capability_ref':_ref_payload(capability.as_version_ref()),'initial_writer_epoch':marker['initial_writer_epoch'],
++            'initial_declaration_digest':marker['initial_declaration_digest']}
++        tx.prewrite(object_type=ref.entity_type,logical_id=ref.entity_id,version_id=ref.version_id,payload=_json(body),
++            metadata=body,media_type='application/json',schema_ref='registry_v1/'+ref.entity_type)
++        for index,(relation,target) in enumerate((('produced_by',marker['bootstrap_ref']),('derived_from',marker_ref),
++            ('derived_from',binding_ref),('derived_from',body['capability_ref']))):
++            tx.relate(TypedRelation(_stable_id('relation',str(ref.version_id),index),relation,ref,_version_from_payload(target)),system_owned=True)
++        tx.commit()
++    return capability
++
++
++def validate_bound_publication(store,db,*,task_id,writer_epoch,objects,events,relations,transaction_id,idempotency_key,existing):
++    snap=_Snapshot(store,db,task_id,proposal=objects)
++    if (any(o.producer_invocation_id is not None for o in objects)
++            or any(e.producer_invocation_id is not None or e.producer_principal!='framework' or e.task_control
++                   or e.event_type not in ('object_version_published/v1','relation_published/v1','transaction_committed/v1')
++                   for e in events)
++            or len(events)!=len(objects)+len(relations)+1
++            or any(r.strength!='strong' or not r.system_owned or r.producer_invocation_id is not None or r.metadata
++                   for r in relations)):
++        raise RegistryConflict('H7 protected bootstrap/origin requires exact strong system-owned transaction closure')
++    markers=[o for o in objects if o.object_type==BOUND_KINDS[0]]
++    origins=[o for o in objects if o.object_type==BOUND_KINDS[1]]
++    capabilities=[o for o in objects if o.object_type=='resource_version/v1' and o.metadata.get('content_schema_ref')==CAPABILITY_SCHEMA]
++    if markers:
++        if len(markers)!=1 or origins or capabilities or existing is not None:
++            raise RegistryConflict('H7 bound bootstrap is one fresh native identity transaction')
++        actual_marker=_ref_payload(VersionRef(markers[0].object_type,markers[0].logical_id,markers[0].version_id))
++        body=snap.obj(actual_marker)
++        expected_marker=_ref(BOUND_KINDS[0],body['child_run_ref']['version_id'])
++        if body['record_ref']!=actual_marker or actual_marker!=_ref_payload(expected_marker):
++            raise RegistryConflict('H7 marker self identity is not its unique native bootstrap identity')
++        _require_evidence(store,'bound_bootstrap',body['acceptance'])
++        _validate_acceptance_copy(store,body['acceptance'])
++        expected_types={'task/v1','task_branch/v1','bootstrap_command/v1','native_run_identity/v1','native_genesis_manifest/v1',BOUND_KINDS[0]}
++        if len(objects)!=6 or {o.object_type for o in objects}!=expected_types:
++            raise RegistryConflict('H7 bound marker must share exact fresh native identity/genesis transaction')
++        # Every protected native identity must be the exact object in this
++        # bootstrap transaction, not a locally valid object from another cut.
++        native_fields={
++            'task/v1':('child_task_ref','task_id','task_version_id'),
++            'task_branch/v1':('child_branch_ref','task_branch_id','task_branch_version_id'),
++            'bootstrap_command/v1':('bootstrap_ref','bootstrap_command_id','bootstrap_command_version_id'),
++            'native_run_identity/v1':('child_run_ref','run_id','run_version_id'),
++            'native_genesis_manifest/v1':('genesis_ref','genesis_id','genesis_version_id')}
++        for item in objects:
++            if item.object_type not in native_fields:continue
++            field,logical,version=native_fields[item.object_type]
++            exact=_ref_payload(VersionRef(item.object_type,item.logical_id,item.version_id))
++            if (body[field]!=exact or item.metadata.get(logical)!=str(item.logical_id)
++                    or item.metadata.get(version)!=str(item.version_id)):
++                raise RegistryConflict('H7 marker native self/exact identities differ')
++        run=snap.obj(body['child_run_ref']);genesis=snap.obj(body['genesis_ref'])
++        branch=snap.obj(body['child_branch_ref'])
++        catalog_ref,_=_one(snap,'registry_type_catalog/v1')
++        if (body['child_task_ref']['logical_id']!=str(task_id)
++                or branch['task_ref']!=body['child_task_ref'] or branch['branch_name']!=run['branch_id']
++                or genesis['type_catalog_ref']!=catalog_ref
++                or BOUND_PROTOCOL not in run['protocol_versions'] or run['task_ref']!=body['child_task_ref']
++                or run['task_branch_ref']!=body['child_branch_ref'] or genesis['run_identity_ref']!=body['child_run_ref']
++                or genesis['bootstrap_transaction_id']!=str(transaction_id) or body['initial_writer_epoch']!=writer_epoch
++                or body['initial_declaration_digest']!=body['acceptance']['initial_declaration_digest']):
++            raise RegistryConflict('H7 bootstrap marker differs from native transaction identities')
++        if db.execute("SELECT 1 FROM objects WHERE object_type='native_run_identity/v1'").fetchone():
++            raise RegistryConflict('H7 cannot relabel an existing standalone run')
++        expected=[('derived_from',body['genesis_ref']),('derived_from',body['child_run_ref']),('produced_by',body['bootstrap_ref'])]
++        if len(relations)!=3 or sorted(_json((r.relation_type,_ref_payload(r.target))) for r in relations)!=sorted(_json(v) for v in expected):
++            raise RegistryConflict('H7 marker causal edges missing')
++        if any(_ref_payload(r.source)!=body['record_ref'] or not r.system_owned or r.producer_invocation_id is not None for r in relations):
++            raise RegistryConflict('H7 marker producer scope differs')
++        return
++    if len(origins)!=1 or len(capabilities)!=1 or len(objects)!=2:
++        raise RegistryConflict('H7 origin capability can only be minted by its one atomic protected origin producer')
++    _,marker=_marker(snap);_require_evidence(store,'bound_origin',marker)
++    if db.execute("SELECT 1 FROM objects WHERE object_type='parent_bound_origin/v1'").fetchone():
++        raise RegistryConflict('H7 protected origin is one-time, never reminted/replayed')
++    body=dict(origins[0].metadata);cap=capabilities[0]
++    actual_origin=_ref_payload(VersionRef(origins[0].object_type,origins[0].logical_id,origins[0].version_id))
++    if body['record_ref']!=actual_origin or actual_origin!=_ref_payload(_ref(BOUND_KINDS[1],marker['record_ref']['version_id'])):
++        raise RegistryConflict('H7 origin self identity differs from its unique marker')
++    genesis=snap.obj(marker['genesis_ref'])
++    if cap.metadata.get('content_schema_authority_ref')!=genesis['type_catalog_ref']:
++        raise RegistryConflict('H7 prospective capability lacks original native catalog authority')
++    catalog=snap.obj(genesis['type_catalog_ref'])
++    from .schema_catalog import SchemaCatalog
++    if (catalog.get('catalog_identity')!='rpnh-v1' or
++            json.loads(catalog['schemas'][CAPABILITY_SCHEMA]['source']) !=
++                json.loads(SchemaCatalog._mechanical_schema_path(CAPABILITY_SCHEMA).read_bytes())):
++        raise RegistryConflict('H7 prospective capability catalog schema differs')
++    cap_ref=_ref_payload(VersionRef(cap.object_type,cap.logical_id,cap.version_id))
++    expected_cap={'schema_version':CAPABILITY_SCHEMA,'origin_ref':body['record_ref'],'marker_ref':body['marker_ref'],
++        'child_run_ref':marker['child_run_ref'],'child_task_ref':marker['child_task_ref'],
++        'parent_acceptance':marker['acceptance'],'initial_writer_epoch':marker['initial_writer_epoch'],
++        'initial_declaration_digest':marker['initial_declaration_digest']}
++    if (body['marker_ref']!=marker['record_ref'] or body['capability_ref']!=cap_ref
++            or body['child_run_ref']!=marker['child_run_ref'] or body['child_task_ref']!=marker['child_task_ref']
++            or body['initial_writer_epoch']!=writer_epoch or body['initial_declaration_digest']!=marker['initial_declaration_digest']
++            or json.loads(snap.object_store.read_verified(cap))!=expected_cap
++            or cap.metadata.get('origin_kind')!='private_system'
++            or cap.metadata.get('producer_ref')!=marker['bootstrap_ref']
++            or cap.metadata.get('lifetime_ref')!=marker['bootstrap_ref']
++            or cap.metadata.get('task_ref')!=marker['child_task_ref']):
++        raise RegistryConflict('H7 origin/capability atomic material differs')
++    binding=__import__('cpn.rpnh.registry._event_store.source_identity',fromlist=['read_source_binding']).read_source_binding(db,store.catalog,task_id)
++    if binding is None or body['child_source_binding_ref']!=json.loads(binding['binding_metadata_json'])['binding_ref']:
++        raise RegistryConflict('H7 origin child native source differs')
++    expected=[('produced_by',marker['bootstrap_ref']),('derived_from',marker['record_ref']),
++              ('derived_from',body['child_source_binding_ref']),('derived_from',cap_ref)]
++    expected=[(body['record_ref'],kind,target) for kind,target in expected]
++    expected.append((cap_ref,'produced_by',marker['bootstrap_ref']))
++    actual=[(_ref_payload(r.source),r.relation_type,_ref_payload(r.target)) for r in relations]
++    if sorted(_json(v) for v in actual)!=sorted(_json(v) for v in expected):
++        raise RegistryConflict('H7 origin/capability complete causal relations differ')
++
++
++def reject_bound_reentry(core):
++    with core.event_store.connect() as db:
++        db.execute('BEGIN')
++        if _bound_signal(db):
++            raise ParentChildUnsupported('H7 bound child cannot resume, reopen, or reenter')
++
++
++def assert_bound_adoption(core,net_ref,key):
++    with core.event_store.connect() as db:
++        db.execute('BEGIN')
++        if not _bound_signal(db):return
++        rows=db.execute("SELECT * FROM events WHERE event_type='net_adopted/v1'").fetchall()
++        if rows and (len(rows)!=1 or rows[0]['idempotency_key']!=key or json.loads(rows[0]['payload_json'])['net_instance_ref']!=_ref_payload(net_ref)):
++            raise RegistryConflict('H7 bound child cannot adopt a successor net')
++        assert_origin=bound_integrity_at(core.event_store,db,core.task_id,core.writer_epoch,require_net=False)
++        snap=_Snapshot(core.event_store,db,core.task_id);_,marker=_marker(snap)
++        _check_bound_net(snap,_ref_payload(net_ref),marker,assert_origin['capability_ref'])
++
++
++def _validate_acceptance_copy(store, value):
++    """Check a detached source-qualified receipt copy, never authenticate it.
++
++    Authentication/delivery are exclusively the missing native evidence issuer.
++    JSON copies alone never enter bound bootstrap. External native refs stay in
++    canonical serialized records, explicitly scoped by parent_source_id; no
++    parent ref is inserted as a child-local strong relation.
++    """
++    expected={'parent_source_id','acceptance_json','intent_json','acceptance_transaction_id',
++              'acceptance_event_id','acceptance_commit_ordinal','initial_declaration_digest'}
++    if type(value) is not dict or set(value)!=expected:
++        raise RegistryConflict('H7 external acceptance evidence shape differs')
++    acceptance=json.loads(value['acceptance_json']);intent=json.loads(value['intent_json'])
++    if h7_json(acceptance)!=value['acceptance_json'] or h7_json(intent)!=value['intent_json']:
++        raise RegistryConflict('H7 external evidence must preserve canonical exact bytes')
++    store.catalog.validate_instance(PARENT_KINDS[3],category='object',instance=acceptance)
++    store.catalog.validate_instance(PARENT_KINDS[0],category='object',instance=intent)
++    from .parent_child import bootstrap_request_material
++    if (value['parent_source_id']!=acceptance['parent']['source_id']
++            or acceptance['parent']!=intent['parent'] or acceptance['slot_id']!=intent['slot_id']
++            or acceptance['execution']!=intent['execution'] or acceptance['intent_ref']!=intent['record_ref']
++            or acceptance['target']!=intent['target'] or acceptance['envelope_digest']!=digest(_json(intent['envelope']))
++            or acceptance['envelope_digest']!=intent['envelope_digest']
++            or acceptance['public_material_digest']!=intent['materials']['public_material_digest']
++            or acceptance['public_material_digest']!=digest(_json(intent['materials']['inventory']))
++            or value['initial_declaration_digest']!=intent['materials']['initial_declaration_digest']
++            or acceptance['request_digest']!=digest(_json(bootstrap_request_material(intent,acceptance['dispatch_ref'])))
++            or acceptance['allowed_action']!='fresh_bound_bootstrap_once'):
++        raise RegistryConflict('H7 external acceptance/intent/material source closure differs')
++    TypedId.parse(value['acceptance_transaction_id'],expected='transaction')
++    TypedId.parse(value['acceptance_event_id'],expected='event')
++    if type(value['acceptance_commit_ordinal']) is not int or value['acceptance_commit_ordinal']<1:
++        raise RegistryConflict('H7 external acceptance commit cut differs')
++    return acceptance
++
++
++def h7_json(value):
++    return _json(value).decode('ascii')
+--- /dev/null
++++ b/cpn/rpnh/registry/parent_child.py
+@@ -0,0 +1,580 @@
++"""H7's Registry-native, single-slot causal records (offline core slice).
++
++No scheduler, transport, worker launcher, receipt issuer or child constructor is
++provided here. Native evidence is an internal non-serializable boundary whose
++production issuer is intentionally absent until the original transport is wired.
++Tests may allocate that boundary explicitly; this never certifies OS identity.
++"""
++from __future__ import annotations
++
++from contextlib import contextmanager
++from contextvars import ContextVar
++from dataclasses import dataclass
++import hashlib
++import json
++from pathlib import PurePosixPath
++
++from .event_store import RegistryConflict
++from .identities import TypedId
++from .models import PreparedObject, PendingEvent, TypedRelation, VersionRef
++from .publication import _ref_payload, _version_from_payload, _stable_id
++from .schema_catalog import canonical_json
++from ._event_store.collaboration_descriptors import descriptor_store, readable_descriptor
++from ._event_store.source_identity import read_source_binding
++from ._event_store.proposal import TransactionValidationContext
++from ._event_store.accounting import _CANONICAL_EVENT_SQL
++
++REQUEST_SCHEMA = 'rpnh/parent_child_request/v1'
++CAPABILITY_SCHEMA = 'rpnh/parent_origin_capability/v1'
++BOUND_PROTOCOL = 'rpnh/parent-bound-child/v1'
++PARENT_KINDS = tuple('parent_child_' + name + '/v1' for name in (
++    'intent', 'dispatch', 'worker', 'acceptance'))
++BOUND_KINDS = ('parent_bound_bootstrap/v1', 'parent_bound_origin/v1')
++KINDS = PARENT_KINDS + BOUND_KINDS
++MATERIAL_SECTIONS = frozenset(('normalized_request', 'lowered_net', 'registration',
++    'host', 'implementation', 'inputs', 'budgets'))
++
++
++class ParentChildUnsupported(RegistryConflict):
++    """The required original native transport boundary is not installed."""
++
++
++def _json(value):
++    # Unlike generic canonical_json, never coerce arbitrary Python objects.
++    return json.dumps(value, sort_keys=True, separators=(',', ':'),
++                      ensure_ascii=True, allow_nan=False).encode('ascii')
++
++
++def digest(value: bytes) -> str:
++    if type(value) is not bytes:
++        raise TypeError('H7 digests require frozen bytes')
++    return hashlib.sha256(value).hexdigest()
++
++
++def _ref(kind, *scope):
++    return VersionRef(kind, _stable_id('resource', 'h7', kind, *scope),
++                      _stable_id('resource_version', 'h7', kind, *scope))
++
++
++def _target(parent, slot_id, root_binding, control_root):
++    if (not isinstance(root_binding, str) or not root_binding
++            or not isinstance(control_root, str) or not PurePosixPath(control_root).is_absolute()
++            or '..' in PurePosixPath(control_root).parts):
++        raise ValueError('H7 preparation requires an exact trusted root binding/control root')
++    key = {'protocol': 'rpnh/parent-bound-target/v1', 'parent_source': parent['source_id'],
++        'parent_run_ref': parent['run_ref'], 'parent_task_ref': parent['task_ref'],
++        'slot_id': slot_id, 'root_binding': root_binding}
++    key_digest = digest(_json(key))
++    task_id = 'task-h7-' + key_digest
++    return {'key_digest': key_digest, 'root_binding': root_binding,
++        'relative_path': 'h7-runs/' + key_digest + '/run', 'transport_task_id': task_id,
++        'document_root': str(PurePosixPath(control_root) / 'bound_tasks' / task_id)}
++
++
++@dataclass(frozen=True, slots=True)
++class PreparedChildMaterials:
++    """Detached immutable bytes; a preparation result grants no execution."""
++    request_ref: VersionRef
++    request_bytes: bytes
++    parent_bytes: bytes
++    target_bytes: bytes
++    payloads: tuple[tuple[str, bytes], ...]
++
++    @property
++    def materials(self):
++        payloads = dict(self.payloads)
++        inventory = [{'name': name, 'size': len(payload), 'sha256': digest(payload)}
++                     for name, payload in self.payloads]
++        return {'request_sha256': digest(self.request_bytes),
++            'normalized_request': json.loads(payloads['normalized_request']),
++            'inventory': inventory, 'public_material_digest': digest(_json(inventory)),
++            'initial_declaration_digest': digest(payloads['lowered_net'])}
++
++
++def prepare_child_materials(*, parent, request_ref, request_bytes, root_binding,
++                            control_root, public_payloads):
++    """Pure K -> T -> normalized D. Does not read files, write, or select PN work.
++
++    Full installed HOST inventory collection remains the native composition's
++    responsibility; this function only freezes exact supplied public bytes.
++    """
++    if type(request_ref) is not VersionRef or request_ref.entity_type != 'resource_version/v1':
++        raise TypeError('H7 request must be an exact native resource ref')
++    if type(request_bytes) is not bytes:
++        raise TypeError('H7 request must have immutable exact bytes')
++    request = json.loads(request_bytes)
++    from .schema_catalog import SchemaCatalog
++    SchemaCatalog().validate_schema_ref(REQUEST_SCHEMA, request)
++    if _json(request) != request_bytes:
++        raise ValueError('H7 request must use exact canonical JSON bytes')
++    target = _target(parent, request['slot_id'], root_binding, control_root)
++    normalized = {'request': request, 'target': target}
++    payloads = dict(public_payloads)
++    if set(payloads) != MATERIAL_SECTIONS - {'normalized_request'}:
++        raise ValueError('H7 material inventory is incomplete or has unknown sections')
++    if any(type(value) is not bytes for value in payloads.values()):
++        raise TypeError('H7 public materials must be immutable bytes')
++    payloads['normalized_request'] = _json(normalized)
++    return PreparedChildMaterials(request_ref, request_bytes, _json(parent), _json(target),
++                                  tuple(sorted(payloads.items())))
++
++
++class _NativeBoundaryEvidence:
++    """Opaque internal evidence, with NO production issuer in this slice.
++
++    It is not a JSON DTO or caller flag. It records a transport observation,
++    not PN authority. Python-private boundaries are not hostile-code sandboxes.
++    """
++    __slots__ = ('store', 'action', 'body', 'consumed')
++    def __new__(cls, *args, **kwargs):
++        raise ParentChildUnsupported('H7 native peer/receipt/reservation adapter is not wired')
++
++
++_EVIDENCE = ContextVar('h7_native_boundary_evidence', default=None)
++
++
++@contextmanager
++def _native_boundary(evidence, store, action, body):
++    if (type(evidence) is not _NativeBoundaryEvidence or evidence.store is not store
++            or evidence.action != action or evidence.body != _json(body) or evidence.consumed):
++        raise ParentChildUnsupported('H7 needs exact original native boundary evidence')
++    evidence.consumed = True
++    token = _EVIDENCE.set(evidence)
++    try:
++        yield
++    finally:
++        _EVIDENCE.reset(token)
++
++
++def _require_evidence(store, action, body):
++    value = _EVIDENCE.get()
++    if (type(value) is not _NativeBoundaryEvidence or value.store is not store
++            or value.action != action or value.body != _json(body) or not value.consumed):
++        raise ParentChildUnsupported('H7 native evidence is absent; JSON is not transport authority')
++
++
++def _prepared(row):
++    return PreparedObject(row['object_type'], TypedId.parse(row['logical_id']),
++        TypedId.parse(row['version_id']), row['size'], row['media_type'], row['schema_ref'],
++        TypedId.parse(row['producer_invocation_id']) if row['producer_invocation_id'] else None,
++        row['storage_locator'], json.loads(row['metadata_json']))
++
++
++class _Snapshot:
++    """View-aware evidence inside the existing transaction, no second reader."""
++    def __init__(self, store, db, task_id, *, firing=None, proposal=()):
++        self.store, self.db, self.task_id = store, db, task_id
++        self.firing = firing
++        self.object_store = descriptor_store(store)
++        self.proposal = {str(item.version_id): item for item in proposal}
++
++    def member(self, kind, identity):
++        roots = self.db.execute('SELECT p.* FROM firing_temporary_members m '
++            'JOIN firing_publications p ON p.firing_version_id=m.firing_version_id '
++            'WHERE m.member_kind=? AND m.member_identity=?', (kind, identity)).fetchall()
++        if any(row['state'] != 'PUBLISHED' and row['firing_version_id'] != self.firing for row in roots):
++            raise RegistryConflict('H7 evidence is outside its exact firing view')
++        return roots
++
++    def row(self, ref):
++        if type(ref) is not dict or set(ref) != {'entity_type', 'logical_id', 'version_id'}:
++            raise RegistryConflict('H7 requires exact native refs, never transport paths')
++        row = self.db.execute('SELECT o.*,e.task_id AS publication_task,e.payload_json AS publication,'
++            'e.ordinal AS publication_ordinal,t.status AS tx_status FROM objects o '
++            'JOIN events e ON e.event_id=o.published_event_id '
++            'JOIN transactions t ON t.transaction_id=o.transaction_id '
++            'WHERE o.object_type=? AND o.logical_id=? AND o.version_id=?',
++            (ref['entity_type'], ref['logical_id'], ref['version_id'])).fetchone()
++        if row is None or row['tx_status'] != 'committed' or row['publication_task'] != str(self.task_id):
++            raise RegistryConflict('H7 exact object lacks committed local authority')
++        self.member('object', row['version_id'])
++        self.member('event', row['published_event_id'])
++        publication = json.loads(row['publication'])
++        if (publication.get('metadata') != json.loads(row['metadata_json'])
++                or publication.get('logical_id') != row['logical_id']
++                or publication.get('version_id') != row['version_id']):
++            raise RegistryConflict('H7 registered publication differs from object')
++        commits = self.db.execute("SELECT event_id FROM events WHERE transaction_id=? "
++            "AND event_type='transaction_committed/v1'", (row['transaction_id'],)).fetchall()
++        if len(commits) != 1:
++            raise RegistryConflict('H7 object lacks unique committed transaction')
++        self.member('event', commits[0]['event_id'])
++        return row
++
++    def obj(self, ref):
++        item = self.proposal.get(ref['version_id'])
++        if item is None:
++            item = _prepared(self.row(ref))
++        if _ref_payload(VersionRef(item.object_type, item.logical_id, item.version_id)) != ref:
++            raise RegistryConflict('H7 object exact ref differs')
++        if item.object_type == 'resource_version/v1':
++            self.object_store.read_verified(item)
++            return dict(item.metadata)
++        return readable_descriptor(self.object_store, item, strict=True)
++
++    def payload(self, ref):
++        return self.object_store.read_verified(_prepared(self.row(ref)))
++
++    def events(self, aggregate, types):
++        result=[]
++        for row in self.db.execute('SELECT * FROM events WHERE aggregate_id=? ORDER BY ordinal', (aggregate,)):
++            if row['event_type'] in types:
++                self.member('event', row['event_id']);result.append(row)
++        return result
++
++    def canonical_latest(self, kind):
++        rows=self.db.execute('SELECT o.* FROM objects o JOIN events e ON e.event_id=o.published_event_id '
++            'WHERE o.object_type=? AND e.task_id=? AND '+_CANONICAL_EVENT_SQL+' ORDER BY e.ordinal DESC',
++            (kind,str(self.task_id))).fetchall()
++        if not rows or len({r['logical_id'] for r in rows}) != 1:
++            raise RegistryConflict('H7 lacks unique current ' + kind)
++        ref={'entity_type':kind,'logical_id':rows[0]['logical_id'],'version_id':rows[0]['version_id']}
++        return ref,self.obj(ref)
++
++
++def _parent_at(snap):
++    binding=read_source_binding(snap.db,snap.store.catalog,snap.task_id)
++    if binding is None:
++        raise RegistryConflict('H7 requires an existing exact local source binding')
++    body=json.loads(binding['binding_metadata_json'])
++    run=snap.obj(body['native_run_ref'])
++    return {'source_id':body['source_id'],'binding_ref':body['binding_ref'],
++        'run_ref':body['native_run_ref'],'task_ref':body['task_ref'],'branch_ref':run['task_branch_ref']}
++
++
++def parent_identity(core):
++    with core.event_store.connect() as db:
++        db.execute('BEGIN')
++        return _parent_at(_Snapshot(core.event_store,db,core.task_id))
++
++
++def _execution_at(snap, locator, parent):
++    """Original PN claim/ordinary Start/current authority at the same view cut."""
++    db=snap.db
++    firing=snap.obj(locator['firing_ref']); invocation=snap.obj(locator['invocation_ref'])
++    lease=snap.obj(locator['lease_ref'])
++    root=db.execute('SELECT * FROM firing_publications WHERE firing_version_id=?',
++                    (locator['firing_ref']['version_id'],)).fetchone()
++    if (root is None or root['state']!='PROVISIONAL'
++            or root['invocation_version_id']!=locator['invocation_ref']['version_id']
++            or snap.firing!=root['firing_version_id']):
++        raise RegistryConflict('H7 requires its exact open provisional firing')
++    pairs={'task_ref':parent['task_ref'],'task_branch_ref':parent['branch_ref'],
++        'net_instance_ref':locator['net_ref'],'task_round_ref':locator['round_ref']}
++    if (any(firing.get(k)!=v or invocation.get(k)!=v for k,v in pairs.items())
++            or invocation.get('own_transition_firing_ref')!=locator['firing_ref']
++            or invocation.get('operation_execution_lease_ref')!=locator['lease_ref']
++            or lease.get('invocation_ref')!=locator['invocation_ref']):
++        raise RegistryConflict('H7 cross-firing execution closure')
++    epoch=int(db.execute("SELECT value FROM registry_meta WHERE key='writer_epoch'").fetchone()[0])
++    native_row=snap.row(parent['run_ref'])
++    original=db.execute('SELECT writer_fencing_epoch FROM events WHERE event_id=?',
++                        (native_row['published_event_id'],)).fetchone()[0]
++    if epoch!=original or epoch!=locator['original_writer_epoch'] or lease['writer_fencing_epoch']!=epoch:
++        raise RegistryConflict('H7 fresh entry requires original native writer, not generation alone')
++    current_ref,current=snap.canonical_latest('run_execution_authority/v1')
++    admitted=snap.obj(locator['run_authority_ref'])
++    if (current['run_ref']!=parent['run_ref'] or current['task_ref']!=parent['task_ref']
++            or current.get('execution_generation',0)!=0 or locator['execution_generation']!=0
++            or admitted.get('execution_generation',0)!=0 or current_ref['logical_id']!=locator['run_authority_ref']['logical_id']
++            or current['status'] in ('terminal','stopped_by_owner')
++            or admitted['run_ref']!=parent['run_ref']):
++        raise RegistryConflict('H7 run authority is closed, foreign, or not fresh')
++    relations=db.execute("SELECT * FROM relations WHERE relation_type='derived_from' "
++        "AND json_extract(source_json,'$.version_id')=? AND json_extract(target_json,'$.version_id')=?",
++        (locator['invocation_ref']['version_id'],locator['run_authority_ref']['version_id'])).fetchall()
++    if len(relations)!=1:
++        raise RegistryConflict('H7 invocation lacks exact admission run authority')
++    snap.member('relation',relations[0]['relation_id'])
++    starts=snap.events(locator['lease_ref']['logical_id'],('operation_execution_started/v1',))
++    if len(starts)!=1 or starts[0]['event_id']!=locator['start_event_id']:
++        raise RegistryConflict('H7 requires ordinary operation Start, not invocation-start')
++    start=json.loads(starts[0]['payload_json'])
++    from .operation_execution import revalidate_started_operation_at
++    revalidate_started_operation_at(snap.store,db,task_id=snap.task_id,start_event_id=locator['start_event_id'])
++    required={'invocation_ref':locator['invocation_ref'],
++        'operation_execution_lease_ref':locator['lease_ref'],
++        'transition_firing_ref':locator['firing_ref'],'claimed_input_refs':firing['claimed_input_refs'],
++        'operation_binding_ref':invocation['operation_binding_ref'],
++        'admission_writer_fencing_epoch':epoch}
++    if any(start.get(k)!=v for k,v in required.items()) or starts[0]['producer_invocation_id']!=locator['invocation_ref']['logical_id']:
++        raise RegistryConflict('H7 Start differs from exact admitted operation')
++    terminal=snap.events(locator['invocation_ref']['logical_id'],('operation_terminal_ready/v1',))
++    settled=snap.events(locator['firing_ref']['logical_id'],('transition_firing_settled/v1',))
++    if terminal or settled:
++        raise RegistryConflict('H7 execution is closed')
++    adoption=db.execute("SELECT e.payload_json FROM events e WHERE e.task_id=? "
++        "AND e.event_type='net_adopted/v1' AND "+_CANONICAL_EVENT_SQL+' ORDER BY e.ordinal DESC LIMIT 1',
++        (str(snap.task_id),)).fetchone()
++    if adoption is None or json.loads(adoption[0])['net_instance_ref']!=locator['net_ref']:
++        raise RegistryConflict('H7 execution net is no longer adopted')
++    checkpoint=snap.obj(current['latest_checkpoint_ref'])
++    present={v['version_id'] for v in checkpoint['token_refs']}
++    if not set(firing['claimed_input_version_ids'])<=present:
++        raise RegistryConflict('H7 current marking no longer contains exact claims')
++    return firing,invocation,start
++
++
++def _locator(core, execution):
++    from .operations import OperationExecutionAuthority
++    if type(execution) is not OperationExecutionAuthority:
++        raise TypeError('H7 needs a real ordinary operation execution authority')
++    ctx=execution.operation.canonical.context
++    with core.event_store.connect() as db:
++        db.execute('BEGIN')
++        rows=db.execute("SELECT json_extract(r.target_json,'$.version_id') FROM relations r JOIN objects o ON o.version_id=json_extract(r.target_json,'$.version_id') "
++            "WHERE r.relation_type='derived_from' AND json_extract(r.source_json,'$.version_id')=? AND o.object_type='run_execution_authority/v1'",
++            (str(ctx.invocation_ref.version_id),)).fetchall()
++        if len(rows)!=1:raise RegistryConflict('H7 lacks exact admission authority relation')
++        row=db.execute('SELECT * FROM objects WHERE version_id=?',(rows[0][0],)).fetchone()
++        authority={'entity_type':row['object_type'],'logical_id':row['logical_id'],'version_id':row['version_id']}
++    return {'firing_ref':_ref_payload(ctx.own_transition_firing_ref),'invocation_ref':_ref_payload(ctx.invocation_ref),
++        'lease_ref':_ref_payload(ctx.operation_execution_lease_ref),'start_event_id':str(execution.start_event_id),
++        'net_ref':_ref_payload(ctx.net_instance_ref),'round_ref':_ref_payload(ctx.task_round_ref),
++        'run_authority_ref':authority,'execution_generation':0,'original_writer_epoch':core.writer_epoch}
++
++
++def _record(core, kind, body, *, predecessors, evidence=None):
++    ref=_version_from_payload(body['record_ref']); scope=body['execution']; producer=TypedId.parse(scope['invocation_ref']['logical_id'])
++    key='h7:'+str(ref.version_id)
++    tx=core.begin(idempotency_key=key,task_round_id=TypedId.parse(scope['round_ref']['logical_id']),
++                  net_instance_id=TypedId.parse(scope['net_ref']['logical_id']))
++    tx.expect_registry_ordinal(core.event_store.max_ordinal())
++    tx.prewrite(object_type=kind,logical_id=ref.entity_id,version_id=ref.version_id,payload=_json(body),metadata=body,
++        media_type='application/json',schema_ref='registry_v1/'+kind,producer_invocation_id=producer)
++    edges=[('produced_by',scope['invocation_ref']), *[('derived_from',value) for value in predecessors]]
++    for index,(relation,target) in enumerate(edges):
++        tx.relate(TypedRelation(_stable_id('relation',key,index),relation,ref,_version_from_payload(target)),
++                  producer_invocation_id=producer)
++    tx.append(PendingEvent('parent_child_recorded/v1','authoritative','h7:'+str(ref.entity_id),str(ref.entity_id),kind,
++        key,key,{'record_ref':body['record_ref'],'predecessor_refs':list(predecessors)},
++        'registry_v1/parent_child_recorded/v1',producer_invocation_id=producer))
++    if kind==PARENT_KINDS[0]:
++        tx.commit()
++    else:
++        with _native_boundary(evidence,core.event_store,kind,body):tx.commit()
++    return ref
++
++
++def register_child_intent(core, execution, prepared):
++    """Register frozen preparation in the existing started firing; no launch."""
++    if type(prepared) is not PreparedChildMaterials:
++        raise TypeError('H7 intent requires immutable prepared materials')
++    parent=json.loads(prepared.parent_bytes);request=json.loads(prepared.request_bytes)
++    target=json.loads(prepared.target_bytes);scope=_locator(core,execution)
++    ref=_ref(PARENT_KINDS[0],canonical_json(parent['run_ref']).decode(),request['slot_id'])
++    envelope={'protocol':'rpnh/parent-bound-child-envelope/v1','intent_ref':_ref_payload(ref),
++        'parent':parent,'slot_id':request['slot_id'],'target':target,
++        'public_material_digest':prepared.materials['public_material_digest']}
++    body={'record_ref':_ref_payload(ref),'parent':parent,'slot_id':request['slot_id'],'execution':scope,
++        'request_ref':_ref_payload(prepared.request_ref),'request':request,'materials':prepared.materials,
++        'target':target,'envelope':envelope,'envelope_digest':digest(_json(envelope))}
++    return _record(core,PARENT_KINDS[0],body,predecessors=(body['request_ref'],scope['firing_ref'],scope['lease_ref']))
++
++
++def _advance_record(core, kind, previous_ref, *, details, evidence):
++    """Internal original-transport seam; no public evidence issuer is wired."""
++    if kind not in PARENT_KINDS[1:]:raise TypeError('unsupported H7 phase')
++    prior=core.get_version(previous_ref.version_id)
++    prior_body=json.loads(core.object_store.read_verified(prior))
++    base={key:prior_body[key] for key in ('parent','slot_id','execution')}
++    ref=_ref(kind,canonical_json(base['parent']['run_ref']).decode(),base['slot_id'])
++    body={'record_ref':_ref_payload(ref),**base,**details}
++    if kind==PARENT_KINDS[1]:body['intent_ref']=_ref_payload(previous_ref)
++    elif kind==PARENT_KINDS[2]:
++        body['intent_ref']=prior_body['intent_ref'];body['dispatch_ref']=_ref_payload(previous_ref)
++    else:
++        intent=core.get_version(_version_from_payload(prior_body['intent_ref']).version_id).metadata
++        body.update(intent_ref=prior_body['intent_ref'],dispatch_ref=prior_body['dispatch_ref'],
++            worker_ref=_ref_payload(previous_ref),worker=prior_body['worker'],target=intent['target'],
++            public_material_digest=intent['materials']['public_material_digest'],
++            envelope_digest=intent['envelope_digest'],allowed_action='fresh_bound_bootstrap_once')
++    return _record(core,kind,body,predecessors=(_ref_payload(previous_ref),),evidence=evidence)
++
++
++def _validate_intent(snap, body, start):
++    request_ref=body['request_ref']; request_meta=snap.obj(request_ref);raw=snap.payload(request_ref)
++    if (request_meta.get('content_schema_ref')!=REQUEST_SCHEMA or json.loads(raw)!=body['request']
++            or digest(raw)!=body['materials']['request_sha256']
++            or request_ref not in [{'entity_type':'resource_version/v1','logical_id':v['resource_id'],
++                'version_id':v['resource_version_id']} for v in start['input_resource_refs']]):
++        raise RegistryConflict('H7 request is not an exact claimed registered operation input')
++    if body['slot_id']!=body['request']['slot_id']:
++        raise RegistryConflict('H7 slot differs from registered request')
++    target=body['target'];path=PurePosixPath(target['document_root'])
++    if path.name!=target['transport_task_id'] or path.parent.name!='bound_tasks':
++        raise RegistryConflict('H7 sealed document root differs')
++    wanted=_target(body['parent'],body['slot_id'],target['root_binding'],str(path.parent.parent))
++    materials=body['materials'];inventory=materials['inventory']
++    if (target!=wanted or materials['normalized_request']!={'request':body['request'],'target':target}
++            or [v['name'] for v in inventory]!=sorted(MATERIAL_SECTIONS)
++            or digest(_json(inventory))!=materials['public_material_digest']
++            or next(v for v in inventory if v['name']=='normalized_request')!={
++                'name':'normalized_request','size':len(_json(materials['normalized_request'])),
++                'sha256':digest(_json(materials['normalized_request']))}
++            or next(v for v in inventory if v['name']=='lowered_net')['sha256']!=materials['initial_declaration_digest']):
++        raise RegistryConflict('H7 target/normalized material/inventory digest differs')
++    expected={'protocol':'rpnh/parent-bound-child-envelope/v1','intent_ref':body['record_ref'],
++        'parent':body['parent'],'slot_id':body['slot_id'],'target':target,
++        'public_material_digest':materials['public_material_digest']}
++    if body['envelope']!=expected or body['envelope_digest']!=digest(_json(expected)):
++        raise RegistryConflict('H7 envelope is not acyclic exact frozen material')
++
++
++def validate_parent_child_commit(store,db,*,task_id,branch_id,task_round_id,net_instance_id,
++        transaction_id,idempotency_key,writer_epoch,objects,events,relations,existing,extra_commands):
++    """First AND replay guard under the original BEGIN IMMEDIATE snapshot."""
++    previous=() if existing is None else tuple(db.execute('SELECT object_type,metadata_json FROM objects WHERE transaction_id=?',
++                                                         (existing['transaction_id'],)))
++    def protected(kind,body):return kind in KINDS or kind=='resource_version/v1' and body.get('content_schema_ref')==CAPABILITY_SCHEMA
++    selected=[o for o in objects if protected(o.object_type,o.metadata)]
++    intercepted=bool(selected or str.startswith(idempotency_key,'h7:')
++        or any(protected(r['object_type'],json.loads(r['metadata_json'])) for r in previous)
++        or any(o.object_type=='native_run_identity/v1' and BOUND_PROTOCOL in o.metadata.get('protocol_versions',()) for o in objects)
++        or any(e.event_type=='parent_child_recorded/v1' or e.event_type=='object_version_published/v1'
++            and protected(e.payload.get('object_type'),e.payload.get('metadata',{})) for e in events))
++    from .parent_bound import validate_bound_commit
++    validate_bound_commit(store,db,task_id=task_id,writer_epoch=writer_epoch,objects=objects,events=events,
++        relations=relations,existing=existing,transaction_id=transaction_id)
++    # Native observation/completion is outside this slice; do not release a
++    # parent slot via an unrelated generic Success before that adapter exists.
++    for event in events:
++        if event.event_type == 'transition_firing_settled/v1':
++            firing_ref=event.payload['transition_firing_ref']
++            check=_Snapshot(store,db,task_id,firing=firing_ref['version_id'],proposal=objects)
++            firing=check.obj(firing_ref)
++            binding=check.obj(firing['operation_binding_ref'])
++            spec=check.obj(binding['operation_spec_ref'])
++            if spec.get('executor_key')==NATIVE_LAUNCH_EXECUTOR:
++                raise ParentChildUnsupported('H7 native child observation/completion adapter is not wired')
++    if not intercepted:return
++    if not selected or any(o.object_type not in PARENT_KINDS for o in selected):
++        # Child producer validation is a separate native bootstrap/origin phase.
++        from .parent_bound import validate_bound_publication
++        return validate_bound_publication(store,db,task_id=task_id,writer_epoch=writer_epoch,objects=objects,
++            events=events,relations=relations,transaction_id=transaction_id,idempotency_key=idempotency_key,existing=existing)
++    if len(objects)!=1 or len(selected)!=1 or extra_commands:
++        raise RegistryConflict('H7 parent record must be one isolated causal transaction')
++    item=selected[0];kind=item.object_type
++    from .parent_bound import _bound_signal
++    if _bound_signal(db):raise ParentChildUnsupported('H7a bound child cannot recursively launch another child')
++    body=readable_descriptor(descriptor_store(store),item,strict=True)
++    producer=body['execution']['invocation_ref']['logical_id'];scope=body['execution']
++    snap=_Snapshot(store,db,task_id,firing=scope['firing_ref']['version_id'])
++    if (body['record_ref']!=_ref_payload(VersionRef(kind,item.logical_id,item.version_id))
++            or item.producer_invocation_id!=TypedId.parse(producer)
++            or body['parent']!=_parent_at(snap) or task_round_id!=TypedId.parse(scope['round_ref']['logical_id'])
++            or net_instance_id!=TypedId.parse(scope['net_ref']['logical_id'])
++            or idempotency_key!='h7:'+str(item.version_id)):
++        raise RegistryConflict('H7 record is outside original native identity/producer scope')
++    firing,invocation,start=_execution_at(snap,scope,body['parent'])
++    expected_ref=_ref(kind,canonical_json(body['parent']['run_ref']).decode(),body['slot_id'])
++    if body['record_ref']!=_ref_payload(expected_ref):raise RegistryConflict('H7 whole-run slot key differs')
++    # A single static slot for the complete native run, across all provisional/history roots.
++    for row in db.execute('SELECT * FROM objects WHERE object_type IN (?,?,?,?)',PARENT_KINDS):
++        prior=json.loads(row['metadata_json'])
++        if (prior['parent']!=body['parent'] or prior['slot_id']!=body['slot_id']
++                or prior['execution']!=scope):
++            raise RegistryConflict('H7 whole-run slot is already used by another material/execution/slot')
++    if kind==PARENT_KINDS[0]:
++        _validate_intent(snap,body,start)
++        _validate_launcher_pn(snap,firing,start,body["request"])
++        predecessors=(body['request_ref'],scope['firing_ref'],scope['lease_ref'])
++    else:
++        _require_evidence(store,kind,body)
++        intent_for_pn=snap.obj(body['intent_ref'])
++        _validate_launcher_pn(snap,firing,start,intent_for_pn['request'])
++        field={PARENT_KINDS[1]:'intent_ref',PARENT_KINDS[2]:'dispatch_ref',PARENT_KINDS[3]:'worker_ref'}[kind]
++        prior=snap.obj(body[field]);predecessors=(body[field],)
++        if any(prior[k]!=body[k] for k in ('parent','slot_id','execution')):
++            raise RegistryConflict('H7 predecessor comes from another execution')
++        if kind==PARENT_KINDS[2] and body['intent_ref']!=prior['intent_ref']:
++            raise RegistryConflict('H7 worker registration differs from exact dispatch')
++        if kind==PARENT_KINDS[3]:
++            intent=snap.obj(body['intent_ref']);dispatch=snap.obj(body['dispatch_ref'])
++            if (prior['intent_ref']!=body['intent_ref'] or prior['dispatch_ref']!=body['dispatch_ref']
++                    or prior['worker']!=body['worker'] or dispatch['intent_ref']!=body['intent_ref']
++                    or body['target']!=intent['target'] or body['envelope_digest']!=intent['envelope_digest']
++                    or body['public_material_digest']!=intent['materials']['public_material_digest']
++                    or body['request_digest']!=digest(_json(bootstrap_request_material(intent,body['dispatch_ref'])))):
++                raise RegistryConflict('H7 acceptance is not its exact intent/dispatch/worker/material closure')
++    expected_edges=[('produced_by',scope['invocation_ref']),*[('derived_from',v) for v in predecessors]]
++    if len(relations)!=len(expected_edges):raise RegistryConflict('H7 record causal edges incomplete')
++    for index,(relation,(edge,target)) in enumerate(zip(relations,expected_edges)):
++        if (relation.relation_id!=_stable_id('relation',idempotency_key,index) or relation.relation_type!=edge
++                or _ref_payload(relation.source)!=body['record_ref'] or _ref_payload(relation.target)!=target
++                or relation.strength!='strong' or relation.producer_invocation_id!=item.producer_invocation_id
++                or relation.system_owned or relation.metadata):
++            raise RegistryConflict('H7 record causal edge/producer differs')
++    records=[e for e in events if e.event_type=='parent_child_recorded/v1']
++    if (len(records)!=1 or records[0].payload!={'record_ref':body['record_ref'],'predecessor_refs':list(predecessors)}
++            or records[0].producer_invocation_id!=item.producer_invocation_id
++            or len(events)!=len(relations)+3
++            or any(e.event_type not in ('parent_child_recorded/v1','object_version_published/v1',
++                        'relation_published/v1','transaction_committed/v1') for e in events)):
++        raise RegistryConflict('H7 record lacks exact same-transaction fact closure')
++    record=records[0]
++    if (record.stream_id!='h7:'+str(item.logical_id) or record.aggregate_id!=str(item.logical_id)
++            or record.aggregate_type!=kind or record.idempotency_key!=idempotency_key
++            or record.command_id!=idempotency_key or record.criticality!='authoritative'
++            or record.payload_schema_ref!='registry_v1/parent_child_recorded/v1'
++            or record.task_control or record.producer_principal!='framework'
++            or record.causation_event_id is not None or record.parent_event_ids or record.occurred_at is not None):
++        raise RegistryConflict('H7 record event identity/producer contract differs')
++    commits=[e for e in events if e.event_type=='transaction_committed/v1']
++    publications=[e for e in events if e.event_type=='object_version_published/v1']
++    if (len(commits)!=1 or len(publications)!=1 or commits[0].producer_invocation_id is not None
++            or commits[0].payload!={'object_count':1,'relation_count':len(relations),'fact_count':len(events)-1}
++            or publications[0].producer_invocation_id!=item.producer_invocation_id
++            or publications[0].payload.get('metadata')!=body
++            or publications[0].payload.get('version_id')!=str(item.version_id)):
++        raise RegistryConflict('H7 publication/commit envelope differs from its exact producer')
++    prior=db.execute('SELECT transaction_id FROM objects WHERE version_id=?',(str(item.version_id),)).fetchone()
++    if prior is not None and (existing is None or prior['transaction_id']!=existing['transaction_id']):
++        raise RegistryConflict('H7 historical record cannot be reused as a new command')
++
++
++NATIVE_LAUNCH_EXECUTOR='rpnh/parent_child_launch/v1'
++
++
++def _validate_launcher_pn(snap,firing,start,request):
++    """No host Boolean may supply the request/launch/one-slot PN prerequisites."""
++    from ..executable_net import load_compiled_net
++    net=snap.obj(firing['net_instance_ref']);rr=net['team_net_declaration_resource_ref']
++    ref={'entity_type':'resource_version/v1','logical_id':rr['resource_id'],'version_id':rr['resource_version_id']}
++    compiled=load_compiled_net(json.loads(snap.payload(ref)));pn=compiled.symbolic
++    launchers=[op for op in pn.operations if op.executor==NATIVE_LAUNCH_EXECUTOR]
++    if len(launchers)!=1 or launchers[0].name!=firing['transition_id']:
++        raise RegistryConflict('H7a requires exactly one declared native launcher operation')
++    op=launchers[0]
++    if {o.name for o in op.outcomes}!={'complete','failed'}:
++        raise RegistryConflict('H7 launcher has unsupported stopped/interrupted/unknown outcome')
++    prefix=firing['transition_id'].rsplit('.',1)[0]
++    capacity=prefix+'.h7capacity';launch=prefix+'.h7launch'
++    places={p.name:p for p in pn.places}
++    if (capacity not in places or launch not in places or places[capacity].capacity!=1
++            or not places[capacity].reusable or places[capacity].token_kind=='resource_lease'
++            or places[launch].token_kind!='resource_lease' or not places[launch].reusable):
++        raise RegistryConflict('H7 launcher lacks single reusable capacity and exact launch lease')
++    arcs=[a for a in pn.arcs if a.transition==op.name]
++    if (len([a for a in arcs if a.place==capacity and a.direction=='input' and a.mode=='borrow' and a.weight==1])!=1
++            or len([a for a in arcs if a.place==launch and a.direction=='input' and a.mode=='read' and a.weight==1])!=1
++            or any(len([a for a in arcs if a.place==capacity and a.direction=='output' and a.mode=='return'
++                        and a.weight==1 and a.outcome==outcome])!=1 for outcome in ('complete','failed'))):
++        raise RegistryConflict('H7 launcher PN capacity/launch arcs differ')
++    claims=[snap.obj(ref) for ref in firing['claimed_input_refs']]
++    if any(sum(token['place']==place for token in claims)!=1 for place in (capacity,launch)):
++        raise RegistryConflict('H7 exact firing claim lacks capacity or launch capability')
++    delta=snap.obj(firing['claim_marking_delta_ref'])
++    for token in claims:
++        if token['place']==capacity and token['petri_token_ref'] not in delta['consumed_refs']:
++            raise RegistryConflict('H7 capacity must stay claimed until original Success')
++        if token['place']==launch and token['petri_token_ref'] in delta['consumed_refs']:
++            raise RegistryConflict('H7 launch lease must use S1 reference semantics')
++
++def bootstrap_request_material(intent,dispatch_ref):
++    """Pure exact request material, with no peer identity or permission."""
++    return {'protocol':'rpnh/parent-child-bootstrap/v1','parent':intent['parent'],
++        'slot_id':intent['slot_id'],'intent_ref':intent['record_ref'],'dispatch_ref':dispatch_ref,
++        'execution':intent['execution'],'target':intent['target'],
++        'envelope_digest':intent['envelope_digest'],'public_material_digest':intent['materials']['public_material_digest']}
+--- a/cpn/rpnh/registry/run_authority.py
++++ b/cpn/rpnh/registry/run_authority.py
+@@ -434,6 +434,8 @@
+         idempotency_key: str,
+ ) -> VersionRef:
+     """Reauthorize one drained owner-stop checkpoint for this writer entry."""
++    from .parent_bound import reject_bound_reentry
++    reject_bound_reentry(core)
+     from .resources import ResourceVersionRef
+     if (not isinstance(immutable_input_ref, ResourceVersionRef)
+             or not isinstance(mutable_stage_ref, ResourceVersionRef)
+@@ -515,6 +517,8 @@
+         immutable_input_ref, mutable_stage_ref, recovery_manifest_ref,
+ ) -> VersionRef:
+     """Bind a recovered running checkpoint to the immediate new writer."""
++    from .parent_bound import reject_bound_reentry
++    reject_bound_reentry(core)
+     from .resources import ResourceVersionRef
+     if (not isinstance(immutable_input_ref, ResourceVersionRef)
+             or not isinstance(mutable_stage_ref, ResourceVersionRef)
+--- a/cpn/rpnh/registry/schema_catalog.py
++++ b/cpn/rpnh/registry/schema_catalog.py
+@@ -89,6 +89,13 @@
+ 
+ 
+ CURRENT_OBJECT_TYPES = (
++    "parent_child_intent/v1",
++    "parent_child_dispatch/v1",
++    "parent_child_worker/v1",
++    "parent_child_acceptance/v1",
++    "parent_bound_bootstrap/v1",
++    "parent_bound_origin/v1",
++
+     "agent/v1",
+     "agent_loop_resource_grant_authority/v1",
+     "bootstrap_command/v1",
+@@ -168,6 +175,7 @@
+ )
+ 
+ CURRENT_EVENT_TYPES = (
++    "parent_child_recorded/v1",
+     "agent_turn_recorded/v2",
+     "capability_activated/v1",
+     "capability_allowed/v1",
+@@ -265,6 +273,8 @@
+ )
+ 
+ CURRENT_CONTENT_SCHEMA_REFS = (
++    "rpnh/parent_child_request/v1",
++    "rpnh/parent_origin_capability/v1",
+     "registry_v1/fact_event_envelope/v1",
+     "registry_v1/llm_input_target/v1",
+     "registry_v1/mechanical_transition_receipt/v1",
+--- a/cpn/rpnh/registry/task_ledger.py
++++ b/cpn/rpnh/registry/task_ledger.py
+@@ -96,6 +96,8 @@
+             "output_binding_refs": closure["output_binding_refs"],
+             "supersedes_net_ref": _exact_ref_payload(supersedes_net_ref),
+         }
++        from .parent_bound import assert_bound_adoption
++        assert_bound_adoption(self.service, net_instance_ref, idempotency_key)
+         existing = self.service.event_store.list_events_by_idempotency_key(
+             idempotency_key)
+         if existing:
+--- a/cpn/schemas/INDEX.json
++++ b/cpn/schemas/INDEX.json
+@@ -397,6 +397,34 @@
+       "path": "registry_v1/output_binding.v1.schema.json"
+     },
+     {
++      "schema_id": "registry_v1/parent_bound_bootstrap/v1",
++      "path": "registry_v1/parent_bound_bootstrap.v1.schema.json"
++    },
++    {
++      "schema_id": "registry_v1/parent_bound_origin/v1",
++      "path": "registry_v1/parent_bound_origin.v1.schema.json"
++    },
++    {
++      "schema_id": "registry_v1/parent_child_acceptance/v1",
++      "path": "registry_v1/parent_child_acceptance.v1.schema.json"
++    },
++    {
++      "schema_id": "registry_v1/parent_child_dispatch/v1",
++      "path": "registry_v1/parent_child_dispatch.v1.schema.json"
++    },
++    {
++      "schema_id": "registry_v1/parent_child_intent/v1",
++      "path": "registry_v1/parent_child_intent.v1.schema.json"
++    },
++    {
++      "schema_id": "registry_v1/parent_child_recorded/v1",
++      "path": "registry_v1/parent_child_recorded.v1.schema.json"
++    },
++    {
++      "schema_id": "registry_v1/parent_child_worker/v1",
++      "path": "registry_v1/parent_child_worker.v1.schema.json"
++    },
++    {
+       "schema_id": "registry_v1/petri_firing_resource_accessed/v1",
+       "path": "registry_v1/petri_firing_resource_accessed.v1.schema.json"
+     },
+@@ -679,6 +707,14 @@
+     {
+       "schema_id": "rpnh/owner_control/v1",
+       "path": "rpnh/owner_control.v1.schema.json"
++    },
++    {
++      "schema_id": "rpnh/parent_child_request/v1",
++      "path": "rpnh/parent_child_request.v1.schema.json"
++    },
++    {
++      "schema_id": "rpnh/parent_origin_capability/v1",
++      "path": "rpnh/parent_origin_capability.v1.schema.json"
+     },
+     {
+       "schema_id": "rpnh/resource_access_contract/v1",
+--- a/cpn/schemas/registry_v1/fact_event_envelope.v1.schema.json
++++ b/cpn/schemas/registry_v1/fact_event_envelope.v1.schema.json
+@@ -5,106 +5,227 @@
+   "type": "object",
+   "additionalProperties": false,
+   "properties": {
+-    "envelope_version": {"const": "v1"},
+-    "event_id": {"type": "string", "pattern": "^event:[a-f0-9]{32}$"},
+-    "event_type": {"enum": [
+-      "agent_action_settled/v1",
+-      "agent_loop_started/v1",
+-      "agent_loop_terminal/v1",
+-      "agent_turn_recorded/v2",
+-      "capability_activated/v1",
+-      "capability_allowed/v1",
+-      "capability_denied/v1",
+-      "capability_issued/v1",
+-      "capability_revoked/v1",
+-      "checkpoint_repair_committed/v1",
+-      "execution_children_sealed/v1",
+-      "execution_instance_attached/v1",
+-      "firing_admitted/v1",
+-      "firing_external_kb_read_recorded/v2",
+-      "firing_resource_transaction_committed/v1",
+-      "invocation_started/v1",
+-      "llm_call_owner_interrupted/v1",
+-      "llm_invocation_attempt_reserved/v1",
+-      "llm_invocation_failed/v1",
+-      "llm_invocation_interrupted/v1",
+-      "llm_invocation_owner_interrupted/v1",
+-      "llm_invocation_succeeded/v1",
+-      "llm_invocation_succeeded/v2",
+-      "llm_call_registered_host_closed/v1",
+-      "llm_response_registered/v1",
+-      "llm_response_registered/v2",
+-      "live_firing_resource_extension/v1",
+-      "marking_checkpoint_committed/v1",
+-      "net_adopted/v1",
+-      "object_version_published/v1",
+-      "observed_read/v1",
+-      "operation_dispatch_reserved/v1",
+-      "operation_execution_started/v1",
+-      "operation_terminal_ready/v1",
+-      "petri_firing_resource_accessed/v1",
+-      "module_assembly_recorded/v1",
+-      "provider_attempt_completed/v1",
+-      "provider_attempt_host_closed/v1",
+-      "provider_attempt_reserved/v1",
+-      "provider_attempt_dispatch_started/v2",
+-      "provider_attempt_owner_interrupted/v1",
+-      "provider_attempt_submission_permitted/v2",
+-      "provider_attempt_submission_observed/v1",
+-      "provider_payload_materialization_recorded/v1",
+-      "relation_published/v1",
+-      "registered_operation_completion_recorded/v1",
+-      "registered_host_llm_attempt_closed/v1",
+-      "registered_host_llm_attempt_reserved/v1",
+-      "resource_address_bound/v1",
+-      "resource_address_unbound/v1",
+-      "resource_delivery_acknowledged/v1",
+-      "resource_delivery_failed/v1",
+-      "resource_delivery_prepared/v1",
+-      "resource_delivery_unknown/v1",
+-      "resource_release_authorized/v1",
+-      "run_reopened/v1",
+-      "structural_growth_adopted/v1",
+-      "transaction_aborted/v1",
+-      "transaction_committed/v1",
+-      "transition_firing_settled/v1",
+-      "transition_firing_started/v1"
+-    ]},
+-    "event_schema_version": {"enum": ["v1", "v2"]},
+-    "criticality": {"const": "authoritative"},
+-    "task_id": {"type": "string", "pattern": "^task:[a-f0-9]{32}$"},
+-    "branch_id": {"type": "string", "minLength": 1},
+-    "task_round_id": {"type": ["string", "null"], "pattern": "^task_round:[a-f0-9]{32}$"},
+-    "net_instance_id": {"type": ["string", "null"], "pattern": "^net_instance:[a-f0-9]{32}$"},
+-    "stream_id": {"type": "string", "minLength": 1},
+-    "aggregate_id": {"type": "string", "minLength": 1},
+-    "aggregate_type": {"type": "string", "minLength": 1},
+-    "stream_sequence": {"type": "integer", "minimum": 1},
+-    "aggregate_version": {"type": "integer", "minimum": 1},
+-    "task_control_sequence": {"type": ["integer", "null"], "minimum": 1},
+-    "idempotency_key": {"type": "string", "minLength": 1},
+-    "command_id": {"type": "string", "minLength": 1},
+-    "correlation_id": {"type": "string", "minLength": 1},
+-    "causation_event_id": {"type": ["string", "null"], "pattern": "^event:[a-f0-9]{32}$"},
+-    "parent_event_ids": {"type": "array", "uniqueItems": true, "items": {"type": "string", "pattern": "^event:[a-f0-9]{32}$"}},
+-    "producer_principal": {"type": "string", "minLength": 1},
+-    "producer_invocation_id": {"type": ["string", "null"], "pattern": "^invocation:[a-f0-9]{32}$"},
+-    "transaction_id": {"type": "string", "pattern": "^transaction:[a-f0-9]{32}$"},
+-    "occurred_at": {"type": "string", "format": "date-time"},
+-    "recorded_at": {"type": "string", "format": "date-time"},
+-    "payload_schema_ref": {"type": "string", "pattern": "^registry_v1/.+/v[1-9][0-9]*$"},
+-    "payload": {"type": "object"},
+-    "writer_fencing_epoch": {"type": "integer", "minimum": 1}
++    "envelope_version": {
++      "const": "v1"
++    },
++    "event_id": {
++      "type": "string",
++      "pattern": "^event:[a-f0-9]{32}$"
++    },
++    "event_type": {
++      "enum": [
++        "agent_action_settled/v1",
++        "agent_loop_started/v1",
++        "agent_loop_terminal/v1",
++        "agent_turn_recorded/v2",
++        "capability_activated/v1",
++        "capability_allowed/v1",
++        "capability_denied/v1",
++        "capability_issued/v1",
++        "capability_revoked/v1",
++        "checkpoint_repair_committed/v1",
++        "execution_children_sealed/v1",
++        "execution_instance_attached/v1",
++        "firing_admitted/v1",
++        "firing_external_kb_read_recorded/v2",
++        "firing_resource_transaction_committed/v1",
++        "invocation_started/v1",
++        "llm_call_owner_interrupted/v1",
++        "llm_invocation_attempt_reserved/v1",
++        "llm_invocation_failed/v1",
++        "llm_invocation_interrupted/v1",
++        "llm_invocation_owner_interrupted/v1",
++        "llm_invocation_succeeded/v1",
++        "llm_invocation_succeeded/v2",
++        "llm_call_registered_host_closed/v1",
++        "llm_response_registered/v1",
++        "llm_response_registered/v2",
++        "live_firing_resource_extension/v1",
++        "marking_checkpoint_committed/v1",
++        "net_adopted/v1",
++        "object_version_published/v1",
++        "observed_read/v1",
++        "operation_dispatch_reserved/v1",
++        "operation_execution_started/v1",
++        "operation_terminal_ready/v1",
++        "petri_firing_resource_accessed/v1",
++        "module_assembly_recorded/v1",
++        "provider_attempt_completed/v1",
++        "provider_attempt_host_closed/v1",
++        "provider_attempt_reserved/v1",
++        "provider_attempt_dispatch_started/v2",
++        "provider_attempt_owner_interrupted/v1",
++        "provider_attempt_submission_permitted/v2",
++        "provider_attempt_submission_observed/v1",
++        "provider_payload_materialization_recorded/v1",
++        "relation_published/v1",
++        "registered_operation_completion_recorded/v1",
++        "registered_host_llm_attempt_closed/v1",
++        "registered_host_llm_attempt_reserved/v1",
++        "resource_address_bound/v1",
++        "resource_address_unbound/v1",
++        "resource_delivery_acknowledged/v1",
++        "resource_delivery_failed/v1",
++        "resource_delivery_prepared/v1",
++        "resource_delivery_unknown/v1",
++        "resource_release_authorized/v1",
++        "run_reopened/v1",
++        "structural_growth_adopted/v1",
++        "transaction_aborted/v1",
++        "transaction_committed/v1",
++        "transition_firing_settled/v1",
++        "transition_firing_started/v1",
++        "parent_child_recorded/v1"
++      ]
++    },
++    "event_schema_version": {
++      "enum": [
++        "v1",
++        "v2"
++      ]
++    },
++    "criticality": {
++      "const": "authoritative"
++    },
++    "task_id": {
++      "type": "string",
++      "pattern": "^task:[a-f0-9]{32}$"
++    },
++    "branch_id": {
++      "type": "string",
++      "minLength": 1
++    },
++    "task_round_id": {
++      "type": [
++        "string",
++        "null"
++      ],
++      "pattern": "^task_round:[a-f0-9]{32}$"
++    },
++    "net_instance_id": {
++      "type": [
++        "string",
++        "null"
++      ],
++      "pattern": "^net_instance:[a-f0-9]{32}$"
++    },
++    "stream_id": {
++      "type": "string",
++      "minLength": 1
++    },
++    "aggregate_id": {
++      "type": "string",
++      "minLength": 1
++    },
++    "aggregate_type": {
++      "type": "string",
++      "minLength": 1
++    },
++    "stream_sequence": {
++      "type": "integer",
++      "minimum": 1
++    },
++    "aggregate_version": {
++      "type": "integer",
++      "minimum": 1
++    },
++    "task_control_sequence": {
++      "type": [
++        "integer",
++        "null"
++      ],
++      "minimum": 1
++    },
++    "idempotency_key": {
++      "type": "string",
++      "minLength": 1
++    },
++    "command_id": {
++      "type": "string",
++      "minLength": 1
++    },
++    "correlation_id": {
++      "type": "string",
++      "minLength": 1
++    },
++    "causation_event_id": {
++      "type": [
++        "string",
++        "null"
++      ],
++      "pattern": "^event:[a-f0-9]{32}$"
++    },
++    "parent_event_ids": {
++      "type": "array",
++      "uniqueItems": true,
++      "items": {
++        "type": "string",
++        "pattern": "^event:[a-f0-9]{32}$"
++      }
++    },
++    "producer_principal": {
++      "type": "string",
++      "minLength": 1
++    },
++    "producer_invocation_id": {
++      "type": [
++        "string",
++        "null"
++      ],
++      "pattern": "^invocation:[a-f0-9]{32}$"
++    },
++    "transaction_id": {
++      "type": "string",
++      "pattern": "^transaction:[a-f0-9]{32}$"
++    },
++    "occurred_at": {
++      "type": "string",
++      "format": "date-time"
++    },
++    "recorded_at": {
++      "type": "string",
++      "format": "date-time"
++    },
++    "payload_schema_ref": {
++      "type": "string",
++      "pattern": "^registry_v1/.+/v[1-9][0-9]*$"
++    },
++    "payload": {
++      "type": "object"
++    },
++    "writer_fencing_epoch": {
++      "type": "integer",
++      "minimum": 1
++    }
+   },
+   "required": [
+-    "envelope_version", "event_id", "event_type", "event_schema_version",
+-    "criticality", "task_id", "branch_id", "task_round_id",
+-    "net_instance_id", "stream_id", "aggregate_id", "aggregate_type",
+-    "stream_sequence", "aggregate_version", "task_control_sequence",
+-    "idempotency_key", "command_id", "correlation_id",
+-    "causation_event_id", "parent_event_ids", "producer_principal",
+-    "producer_invocation_id", "transaction_id", "occurred_at",
+-    "recorded_at", "payload_schema_ref", "payload",
++    "envelope_version",
++    "event_id",
++    "event_type",
++    "event_schema_version",
++    "criticality",
++    "task_id",
++    "branch_id",
++    "task_round_id",
++    "net_instance_id",
++    "stream_id",
++    "aggregate_id",
++    "aggregate_type",
++    "stream_sequence",
++    "aggregate_version",
++    "task_control_sequence",
++    "idempotency_key",
++    "command_id",
++    "correlation_id",
++    "causation_event_id",
++    "parent_event_ids",
++    "producer_principal",
++    "producer_invocation_id",
++    "transaction_id",
++    "occurred_at",
++    "recorded_at",
++    "payload_schema_ref",
++    "payload",
+     "writer_fencing_epoch"
+   ]
+ }
+--- /dev/null
++++ b/cpn/schemas/registry_v1/parent_bound_bootstrap.v1.schema.json
+@@ -0,0 +1,208 @@
++{
++  "$schema": "http://json-schema.org/draft-07/schema#",
++  "$id": "registry_v1/parent_bound_bootstrap/v1",
++  "type": "object",
++  "additionalProperties": false,
++  "properties": {
++    "record_ref": {
++      "type": "object",
++      "additionalProperties": false,
++      "properties": {
++        "entity_type": {
++          "type": "string",
++          "minLength": 1
++        },
++        "logical_id": {
++          "type": "string",
++          "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++        },
++        "version_id": {
++          "type": "string",
++          "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++        }
++      },
++      "required": [
++        "entity_type",
++        "logical_id",
++        "version_id"
++      ]
++    },
++    "child_run_ref": {
++      "type": "object",
++      "additionalProperties": false,
++      "properties": {
++        "entity_type": {
++          "type": "string",
++          "minLength": 1
++        },
++        "logical_id": {
++          "type": "string",
++          "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++        },
++        "version_id": {
++          "type": "string",
++          "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++        }
++      },
++      "required": [
++        "entity_type",
++        "logical_id",
++        "version_id"
++      ]
++    },
++    "child_task_ref": {
++      "type": "object",
++      "additionalProperties": false,
++      "properties": {
++        "entity_type": {
++          "type": "string",
++          "minLength": 1
++        },
++        "logical_id": {
++          "type": "string",
++          "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++        },
++        "version_id": {
++          "type": "string",
++          "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++        }
++      },
++      "required": [
++        "entity_type",
++        "logical_id",
++        "version_id"
++      ]
++    },
++    "child_branch_ref": {
++      "type": "object",
++      "additionalProperties": false,
++      "properties": {
++        "entity_type": {
++          "type": "string",
++          "minLength": 1
++        },
++        "logical_id": {
++          "type": "string",
++          "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++        },
++        "version_id": {
++          "type": "string",
++          "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++        }
++      },
++      "required": [
++        "entity_type",
++        "logical_id",
++        "version_id"
++      ]
++    },
++    "genesis_ref": {
++      "type": "object",
++      "additionalProperties": false,
++      "properties": {
++        "entity_type": {
++          "type": "string",
++          "minLength": 1
++        },
++        "logical_id": {
++          "type": "string",
++          "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++        },
++        "version_id": {
++          "type": "string",
++          "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++        }
++      },
++      "required": [
++        "entity_type",
++        "logical_id",
++        "version_id"
++      ]
++    },
++    "bootstrap_ref": {
++      "type": "object",
++      "additionalProperties": false,
++      "properties": {
++        "entity_type": {
++          "type": "string",
++          "minLength": 1
++        },
++        "logical_id": {
++          "type": "string",
++          "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++        },
++        "version_id": {
++          "type": "string",
++          "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++        }
++      },
++      "required": [
++        "entity_type",
++        "logical_id",
++        "version_id"
++      ]
++    },
++    "initial_writer_epoch": {
++      "type": "integer",
++      "minimum": 0
++    },
++    "acceptance": {
++      "type": "object",
++      "additionalProperties": false,
++      "properties": {
++        "parent_source_id": {
++          "type": "string",
++          "minLength": 1
++        },
++        "acceptance_json": {
++          "type": "string",
++          "minLength": 1
++        },
++        "intent_json": {
++          "type": "string",
++          "minLength": 1
++        },
++        "acceptance_transaction_id": {
++          "type": "string",
++          "pattern": "^transaction:[a-f0-9]{32}$"
++        },
++        "acceptance_event_id": {
++          "type": "string",
++          "pattern": "^event:[a-f0-9]{32}$"
++        },
++        "acceptance_commit_ordinal": {
++          "type": "integer",
++          "minimum": 1
++        },
++        "initial_declaration_digest": {
++          "type": "string",
++          "pattern": "^[a-f0-9]{64}$"
++        }
++      },
++      "required": [
++        "parent_source_id",
++        "acceptance_json",
++        "intent_json",
++        "acceptance_transaction_id",
++        "acceptance_event_id",
++        "acceptance_commit_ordinal",
++        "initial_declaration_digest"
++      ]
++    },
++    "initial_declaration_digest": {
++      "type": "string",
++      "pattern": "^[a-f0-9]{64}$"
++    }
++  },
++  "required": [
++    "record_ref",
++    "child_run_ref",
++    "child_task_ref",
++    "child_branch_ref",
++    "genesis_ref",
++    "bootstrap_ref",
++    "initial_writer_epoch",
++    "acceptance",
++    "initial_declaration_digest"
++  ]
++}
+--- /dev/null
++++ b/cpn/schemas/registry_v1/parent_bound_origin.v1.schema.json
+@@ -0,0 +1,164 @@
++{
++  "$schema": "http://json-schema.org/draft-07/schema#",
++  "$id": "registry_v1/parent_bound_origin/v1",
++  "type": "object",
++  "additionalProperties": false,
++  "properties": {
++    "record_ref": {
++      "type": "object",
++      "additionalProperties": false,
++      "properties": {
++        "entity_type": {
++          "type": "string",
++          "minLength": 1
++        },
++        "logical_id": {
++          "type": "string",
++          "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++        },
++        "version_id": {
++          "type": "string",
++          "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++        }
++      },
++      "required": [
++        "entity_type",
++        "logical_id",
++        "version_id"
++      ]
++    },
++    "marker_ref": {
++      "type": "object",
++      "additionalProperties": false,
++      "properties": {
++        "entity_type": {
++          "type": "string",
++          "minLength": 1
++        },
++        "logical_id": {
++          "type": "string",
++          "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++        },
++        "version_id": {
++          "type": "string",
++          "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++        }
++      },
++      "required": [
++        "entity_type",
++        "logical_id",
++        "version_id"
++      ]
++    },
++    "child_run_ref": {
++      "type": "object",
++      "additionalProperties": false,
++      "properties": {
++        "entity_type": {
++          "type": "string",
++          "minLength": 1
++        },
++        "logical_id": {
++          "type": "string",
++          "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++        },
++        "version_id": {
++          "type": "string",
++          "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++        }
++      },
++      "required": [
++        "entity_type",
++        "logical_id",
++        "version_id"
++      ]
++    },
++    "child_task_ref": {
++      "type": "object",
++      "additionalProperties": false,
++      "properties": {
++        "entity_type": {
++          "type": "string",
++          "minLength": 1
++        },
++        "logical_id": {
++          "type": "string",
++          "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++        },
++        "version_id": {
++          "type": "string",
++          "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++        }
++      },
++      "required": [
++        "entity_type",
++        "logical_id",
++        "version_id"
++      ]
++    },
++    "child_source_binding_ref": {
++      "type": "object",
++      "additionalProperties": false,
++      "properties": {
++        "entity_type": {
++          "type": "string",
++          "minLength": 1
++        },
++        "logical_id": {
++          "type": "string",
++          "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++        },
++        "version_id": {
++          "type": "string",
++          "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++        }
++      },
++      "required": [
++        "entity_type",
++        "logical_id",
++        "version_id"
++      ]
++    },
++    "capability_ref": {
++      "type": "object",
++      "additionalProperties": false,
++      "properties": {
++        "entity_type": {
++          "type": "string",
++          "minLength": 1
++        },
++        "logical_id": {
++          "type": "string",
++          "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++        },
++        "version_id": {
++          "type": "string",
++          "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++        }
++      },
++      "required": [
++        "entity_type",
++        "logical_id",
++        "version_id"
++      ]
++    },
++    "initial_writer_epoch": {
++      "type": "integer",
++      "minimum": 0
++    },
++    "initial_declaration_digest": {
++      "type": "string",
++      "pattern": "^[a-f0-9]{64}$"
++    }
++  },
++  "required": [
++    "record_ref",
++    "marker_ref",
++    "child_run_ref",
++    "child_task_ref",
++    "child_source_binding_ref",
++    "capability_ref",
++    "initial_writer_epoch",
++    "initial_declaration_digest"
++  ]
++}
+--- /dev/null
++++ b/cpn/schemas/registry_v1/parent_child_acceptance.v1.schema.json
+@@ -0,0 +1,471 @@
++{
++  "$schema": "http://json-schema.org/draft-07/schema#",
++  "$id": "registry_v1/parent_child_acceptance/v1",
++  "type": "object",
++  "additionalProperties": false,
++  "properties": {
++    "record_ref": {
++      "type": "object",
++      "additionalProperties": false,
++      "properties": {
++        "entity_type": {
++          "type": "string",
++          "minLength": 1
++        },
++        "logical_id": {
++          "type": "string",
++          "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++        },
++        "version_id": {
++          "type": "string",
++          "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++        }
++      },
++      "required": [
++        "entity_type",
++        "logical_id",
++        "version_id"
++      ]
++    },
++    "parent": {
++      "type": "object",
++      "additionalProperties": false,
++      "properties": {
++        "source_id": {
++          "type": "string",
++          "minLength": 1
++        },
++        "binding_ref": {
++          "type": "object",
++          "additionalProperties": false,
++          "properties": {
++            "entity_type": {
++              "type": "string",
++              "minLength": 1
++            },
++            "logical_id": {
++              "type": "string",
++              "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++            },
++            "version_id": {
++              "type": "string",
++              "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++            }
++          },
++          "required": [
++            "entity_type",
++            "logical_id",
++            "version_id"
++          ]
++        },
++        "run_ref": {
++          "type": "object",
++          "additionalProperties": false,
++          "properties": {
++            "entity_type": {
++              "type": "string",
++              "minLength": 1
++            },
++            "logical_id": {
++              "type": "string",
++              "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++            },
++            "version_id": {
++              "type": "string",
++              "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++            }
++          },
++          "required": [
++            "entity_type",
++            "logical_id",
++            "version_id"
++          ]
++        },
++        "task_ref": {
++          "type": "object",
++          "additionalProperties": false,
++          "properties": {
++            "entity_type": {
++              "type": "string",
++              "minLength": 1
++            },
++            "logical_id": {
++              "type": "string",
++              "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++            },
++            "version_id": {
++              "type": "string",
++              "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++            }
++          },
++          "required": [
++            "entity_type",
++            "logical_id",
++            "version_id"
++          ]
++        },
++        "branch_ref": {
++          "type": "object",
++          "additionalProperties": false,
++          "properties": {
++            "entity_type": {
++              "type": "string",
++              "minLength": 1
++            },
++            "logical_id": {
++              "type": "string",
++              "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++            },
++            "version_id": {
++              "type": "string",
++              "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++            }
++          },
++          "required": [
++            "entity_type",
++            "logical_id",
++            "version_id"
++          ]
++        }
++      },
++      "required": [
++        "source_id",
++        "binding_ref",
++        "run_ref",
++        "task_ref",
++        "branch_ref"
++      ]
++    },
++    "slot_id": {
++      "type": "string",
++      "minLength": 1
++    },
++    "execution": {
++      "type": "object",
++      "additionalProperties": false,
++      "properties": {
++        "firing_ref": {
++          "type": "object",
++          "additionalProperties": false,
++          "properties": {
++            "entity_type": {
++              "type": "string",
++              "minLength": 1
++            },
++            "logical_id": {
++              "type": "string",
++              "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++            },
++            "version_id": {
++              "type": "string",
++              "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++            }
++          },
++          "required": [
++            "entity_type",
++            "logical_id",
++            "version_id"
++          ]
++        },
++        "invocation_ref": {
++          "type": "object",
++          "additionalProperties": false,
++          "properties": {
++            "entity_type": {
++              "type": "string",
++              "minLength": 1
++            },
++            "logical_id": {
++              "type": "string",
++              "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++            },
++            "version_id": {
++              "type": "string",
++              "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++            }
++          },
++          "required": [
++            "entity_type",
++            "logical_id",
++            "version_id"
++          ]
++        },
++        "lease_ref": {
++          "type": "object",
++          "additionalProperties": false,
++          "properties": {
++            "entity_type": {
++              "type": "string",
++              "minLength": 1
++            },
++            "logical_id": {
++              "type": "string",
++              "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++            },
++            "version_id": {
++              "type": "string",
++              "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++            }
++          },
++          "required": [
++            "entity_type",
++            "logical_id",
++            "version_id"
++          ]
++        },
++        "start_event_id": {
++          "type": "string",
++          "pattern": "^event:[a-f0-9]{32}$"
++        },
++        "net_ref": {
++          "type": "object",
++          "additionalProperties": false,
++          "properties": {
++            "entity_type": {
++              "type": "string",
++              "minLength": 1
++            },
++            "logical_id": {
++              "type": "string",
++              "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++            },
++            "version_id": {
++              "type": "string",
++              "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++            }
++          },
++          "required": [
++            "entity_type",
++            "logical_id",
++            "version_id"
++          ]
++        },
++        "round_ref": {
++          "type": "object",
++          "additionalProperties": false,
++          "properties": {
++            "entity_type": {
++              "type": "string",
++              "minLength": 1
++            },
++            "logical_id": {
++              "type": "string",
++              "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++            },
++            "version_id": {
++              "type": "string",
++              "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++            }
++          },
++          "required": [
++            "entity_type",
++            "logical_id",
++            "version_id"
++          ]
++        },
++        "run_authority_ref": {
++          "type": "object",
++          "additionalProperties": false,
++          "properties": {
++            "entity_type": {
++              "type": "string",
++              "minLength": 1
++            },
++            "logical_id": {
++              "type": "string",
++              "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++            },
++            "version_id": {
++              "type": "string",
++              "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++            }
++          },
++          "required": [
++            "entity_type",
++            "logical_id",
++            "version_id"
++          ]
++        },
++        "execution_generation": {
++          "type": "integer",
++          "minimum": 0
++        },
++        "original_writer_epoch": {
++          "type": "integer",
++          "minimum": 0
++        }
++      },
++      "required": [
++        "firing_ref",
++        "invocation_ref",
++        "lease_ref",
++        "start_event_id",
++        "net_ref",
++        "round_ref",
++        "run_authority_ref",
++        "execution_generation",
++        "original_writer_epoch"
++      ]
++    },
++    "intent_ref": {
++      "type": "object",
++      "additionalProperties": false,
++      "properties": {
++        "entity_type": {
++          "type": "string",
++          "minLength": 1
++        },
++        "logical_id": {
++          "type": "string",
++          "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++        },
++        "version_id": {
++          "type": "string",
++          "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++        }
++      },
++      "required": [
++        "entity_type",
++        "logical_id",
++        "version_id"
++      ]
++    },
++    "dispatch_ref": {
++      "type": "object",
++      "additionalProperties": false,
++      "properties": {
++        "entity_type": {
++          "type": "string",
++          "minLength": 1
++        },
++        "logical_id": {
++          "type": "string",
++          "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++        },
++        "version_id": {
++          "type": "string",
++          "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++        }
++      },
++      "required": [
++        "entity_type",
++        "logical_id",
++        "version_id"
++      ]
++    },
++    "worker_ref": {
++      "type": "object",
++      "additionalProperties": false,
++      "properties": {
++        "entity_type": {
++          "type": "string",
++          "minLength": 1
++        },
++        "logical_id": {
++          "type": "string",
++          "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++        },
++        "version_id": {
++          "type": "string",
++          "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++        }
++      },
++      "required": [
++        "entity_type",
++        "logical_id",
++        "version_id"
++      ]
++    },
++    "worker": {
++      "type": "object",
++      "additionalProperties": false,
++      "properties": {
++        "uid": {
++          "type": "integer",
++          "minimum": 0
++        },
++        "pid": {
++          "type": "integer",
++          "minimum": 1
++        },
++        "start_ticks": {
++          "type": "integer",
++          "minimum": 1
++        },
++        "boot_id": {
++          "type": "string",
++          "minLength": 1
++        }
++      },
++      "required": [
++        "uid",
++        "pid",
++        "start_ticks",
++        "boot_id"
++      ]
++    },
++    "request_digest": {
++      "type": "string",
++      "pattern": "^[a-f0-9]{64}$"
++    },
++    "target": {
++      "type": "object",
++      "additionalProperties": false,
++      "properties": {
++        "key_digest": {
++          "type": "string",
++          "pattern": "^[a-f0-9]{64}$"
++        },
++        "root_binding": {
++          "type": "string",
++          "minLength": 1
++        },
++        "relative_path": {
++          "type": "string",
++          "pattern": "^h7-runs/[a-f0-9]{64}/run$"
++        },
++        "transport_task_id": {
++          "type": "string",
++          "pattern": "^task-h7-[a-f0-9]{64}$"
++        },
++        "document_root": {
++          "type": "string",
++          "minLength": 1
++        }
++      },
++      "required": [
++        "key_digest",
++        "root_binding",
++        "relative_path",
++        "transport_task_id",
++        "document_root"
++      ]
++    },
++    "public_material_digest": {
++      "type": "string",
++      "pattern": "^[a-f0-9]{64}$"
++    },
++    "envelope_digest": {
++      "type": "string",
++      "pattern": "^[a-f0-9]{64}$"
++    },
++    "allowed_action": {
++      "const": "fresh_bound_bootstrap_once"
++    }
++  },
++  "required": [
++    "record_ref",
++    "parent",
++    "slot_id",
++    "execution",
++    "intent_ref",
++    "dispatch_ref",
++    "worker_ref",
++    "worker",
++    "request_digest",
++    "target",
++    "public_material_digest",
++    "envelope_digest",
++    "allowed_action"
++  ]
++}
+--- /dev/null
++++ b/cpn/schemas/registry_v1/parent_child_dispatch.v1.schema.json
+@@ -0,0 +1,346 @@
++{
++  "$schema": "http://json-schema.org/draft-07/schema#",
++  "$id": "registry_v1/parent_child_dispatch/v1",
++  "type": "object",
++  "additionalProperties": false,
++  "properties": {
++    "record_ref": {
++      "type": "object",
++      "additionalProperties": false,
++      "properties": {
++        "entity_type": {
++          "type": "string",
++          "minLength": 1
++        },
++        "logical_id": {
++          "type": "string",
++          "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++        },
++        "version_id": {
++          "type": "string",
++          "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++        }
++      },
++      "required": [
++        "entity_type",
++        "logical_id",
++        "version_id"
++      ]
++    },
++    "parent": {
++      "type": "object",
++      "additionalProperties": false,
++      "properties": {
++        "source_id": {
++          "type": "string",
++          "minLength": 1
++        },
++        "binding_ref": {
++          "type": "object",
++          "additionalProperties": false,
++          "properties": {
++            "entity_type": {
++              "type": "string",
++              "minLength": 1
++            },
++            "logical_id": {
++              "type": "string",
++              "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++            },
++            "version_id": {
++              "type": "string",
++              "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++            }
++          },
++          "required": [
++            "entity_type",
++            "logical_id",
++            "version_id"
++          ]
++        },
++        "run_ref": {
++          "type": "object",
++          "additionalProperties": false,
++          "properties": {
++            "entity_type": {
++              "type": "string",
++              "minLength": 1
++            },
++            "logical_id": {
++              "type": "string",
++              "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++            },
++            "version_id": {
++              "type": "string",
++              "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++            }
++          },
++          "required": [
++            "entity_type",
++            "logical_id",
++            "version_id"
++          ]
++        },
++        "task_ref": {
++          "type": "object",
++          "additionalProperties": false,
++          "properties": {
++            "entity_type": {
++              "type": "string",
++              "minLength": 1
++            },
++            "logical_id": {
++              "type": "string",
++              "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++            },
++            "version_id": {
++              "type": "string",
++              "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++            }
++          },
++          "required": [
++            "entity_type",
++            "logical_id",
++            "version_id"
++          ]
++        },
++        "branch_ref": {
++          "type": "object",
++          "additionalProperties": false,
++          "properties": {
++            "entity_type": {
++              "type": "string",
++              "minLength": 1
++            },
++            "logical_id": {
++              "type": "string",
++              "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++            },
++            "version_id": {
++              "type": "string",
++              "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++            }
++          },
++          "required": [
++            "entity_type",
++            "logical_id",
++            "version_id"
++          ]
++        }
++      },
++      "required": [
++        "source_id",
++        "binding_ref",
++        "run_ref",
++        "task_ref",
++        "branch_ref"
++      ]
++    },
++    "slot_id": {
++      "type": "string",
++      "minLength": 1
++    },
++    "execution": {
++      "type": "object",
++      "additionalProperties": false,
++      "properties": {
++        "firing_ref": {
++          "type": "object",
++          "additionalProperties": false,
++          "properties": {
++            "entity_type": {
++              "type": "string",
++              "minLength": 1
++            },
++            "logical_id": {
++              "type": "string",
++              "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++            },
++            "version_id": {
++              "type": "string",
++              "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++            }
++          },
++          "required": [
++            "entity_type",
++            "logical_id",
++            "version_id"
++          ]
++        },
++        "invocation_ref": {
++          "type": "object",
++          "additionalProperties": false,
++          "properties": {
++            "entity_type": {
++              "type": "string",
++              "minLength": 1
++            },
++            "logical_id": {
++              "type": "string",
++              "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++            },
++            "version_id": {
++              "type": "string",
++              "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++            }
++          },
++          "required": [
++            "entity_type",
++            "logical_id",
++            "version_id"
++          ]
++        },
++        "lease_ref": {
++          "type": "object",
++          "additionalProperties": false,
++          "properties": {
++            "entity_type": {
++              "type": "string",
++              "minLength": 1
++            },
++            "logical_id": {
++              "type": "string",
++              "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++            },
++            "version_id": {
++              "type": "string",
++              "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++            }
++          },
++          "required": [
++            "entity_type",
++            "logical_id",
++            "version_id"
++          ]
++        },
++        "start_event_id": {
++          "type": "string",
++          "pattern": "^event:[a-f0-9]{32}$"
++        },
++        "net_ref": {
++          "type": "object",
++          "additionalProperties": false,
++          "properties": {
++            "entity_type": {
++              "type": "string",
++              "minLength": 1
++            },
++            "logical_id": {
++              "type": "string",
++              "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++            },
++            "version_id": {
++              "type": "string",
++              "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++            }
++          },
++          "required": [
++            "entity_type",
++            "logical_id",
++            "version_id"
++          ]
++        },
++        "round_ref": {
++          "type": "object",
++          "additionalProperties": false,
++          "properties": {
++            "entity_type": {
++              "type": "string",
++              "minLength": 1
++            },
++            "logical_id": {
++              "type": "string",
++              "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++            },
++            "version_id": {
++              "type": "string",
++              "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++            }
++          },
++          "required": [
++            "entity_type",
++            "logical_id",
++            "version_id"
++          ]
++        },
++        "run_authority_ref": {
++          "type": "object",
++          "additionalProperties": false,
++          "properties": {
++            "entity_type": {
++              "type": "string",
++              "minLength": 1
++            },
++            "logical_id": {
++              "type": "string",
++              "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++            },
++            "version_id": {
++              "type": "string",
++              "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++            }
++          },
++          "required": [
++            "entity_type",
++            "logical_id",
++            "version_id"
++          ]
++        },
++        "execution_generation": {
++          "type": "integer",
++          "minimum": 0
++        },
++        "original_writer_epoch": {
++          "type": "integer",
++          "minimum": 0
++        }
++      },
++      "required": [
++        "firing_ref",
++        "invocation_ref",
++        "lease_ref",
++        "start_event_id",
++        "net_ref",
++        "round_ref",
++        "run_authority_ref",
++        "execution_generation",
++        "original_writer_epoch"
++      ]
++    },
++    "intent_ref": {
++      "type": "object",
++      "additionalProperties": false,
++      "properties": {
++        "entity_type": {
++          "type": "string",
++          "minLength": 1
++        },
++        "logical_id": {
++          "type": "string",
++          "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++        },
++        "version_id": {
++          "type": "string",
++          "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++        }
++      },
++      "required": [
++        "entity_type",
++        "logical_id",
++        "version_id"
++      ]
++    },
++    "bundle_digest": {
++      "type": "string",
++      "pattern": "^[a-f0-9]{64}$"
++    }
++  },
++  "required": [
++    "record_ref",
++    "parent",
++    "slot_id",
++    "execution",
++    "intent_ref",
++    "bundle_digest"
++  ]
++}
+--- /dev/null
++++ b/cpn/schemas/registry_v1/parent_child_intent.v1.schema.json
+@@ -0,0 +1,472 @@
++{
++  "$schema": "http://json-schema.org/draft-07/schema#",
++  "$id": "registry_v1/parent_child_intent/v1",
++  "type": "object",
++  "additionalProperties": false,
++  "properties": {
++    "record_ref": {
++      "type": "object",
++      "additionalProperties": false,
++      "properties": {
++        "entity_type": {
++          "type": "string",
++          "minLength": 1
++        },
++        "logical_id": {
++          "type": "string",
++          "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++        },
++        "version_id": {
++          "type": "string",
++          "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++        }
++      },
++      "required": [
++        "entity_type",
++        "logical_id",
++        "version_id"
++      ]
++    },
++    "parent": {
++      "type": "object",
++      "additionalProperties": false,
++      "properties": {
++        "source_id": {
++          "type": "string",
++          "minLength": 1
++        },
++        "binding_ref": {
++          "type": "object",
++          "additionalProperties": false,
++          "properties": {
++            "entity_type": {
++              "type": "string",
++              "minLength": 1
++            },
++            "logical_id": {
++              "type": "string",
++              "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++            },
++            "version_id": {
++              "type": "string",
++              "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++            }
++          },
++          "required": [
++            "entity_type",
++            "logical_id",
++            "version_id"
++          ]
++        },
++        "run_ref": {
++          "type": "object",
++          "additionalProperties": false,
++          "properties": {
++            "entity_type": {
++              "type": "string",
++              "minLength": 1
++            },
++            "logical_id": {
++              "type": "string",
++              "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++            },
++            "version_id": {
++              "type": "string",
++              "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++            }
++          },
++          "required": [
++            "entity_type",
++            "logical_id",
++            "version_id"
++          ]
++        },
++        "task_ref": {
++          "type": "object",
++          "additionalProperties": false,
++          "properties": {
++            "entity_type": {
++              "type": "string",
++              "minLength": 1
++            },
++            "logical_id": {
++              "type": "string",
++              "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++            },
++            "version_id": {
++              "type": "string",
++              "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++            }
++          },
++          "required": [
++            "entity_type",
++            "logical_id",
++            "version_id"
++          ]
++        },
++        "branch_ref": {
++          "type": "object",
++          "additionalProperties": false,
++          "properties": {
++            "entity_type": {
++              "type": "string",
++              "minLength": 1
++            },
++            "logical_id": {
++              "type": "string",
++              "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++            },
++            "version_id": {
++              "type": "string",
++              "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++            }
++          },
++          "required": [
++            "entity_type",
++            "logical_id",
++            "version_id"
++          ]
++        }
++      },
++      "required": [
++        "source_id",
++        "binding_ref",
++        "run_ref",
++        "task_ref",
++        "branch_ref"
++      ]
++    },
++    "slot_id": {
++      "type": "string",
++      "minLength": 1
++    },
++    "execution": {
++      "type": "object",
++      "additionalProperties": false,
++      "properties": {
++        "firing_ref": {
++          "type": "object",
++          "additionalProperties": false,
++          "properties": {
++            "entity_type": {
++              "type": "string",
++              "minLength": 1
++            },
++            "logical_id": {
++              "type": "string",
++              "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++            },
++            "version_id": {
++              "type": "string",
++              "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++            }
++          },
++          "required": [
++            "entity_type",
++            "logical_id",
++            "version_id"
++          ]
++        },
++        "invocation_ref": {
++          "type": "object",
++          "additionalProperties": false,
++          "properties": {
++            "entity_type": {
++              "type": "string",
++              "minLength": 1
++            },
++            "logical_id": {
++              "type": "string",
++              "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++            },
++            "version_id": {
++              "type": "string",
++              "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++            }
++          },
++          "required": [
++            "entity_type",
++            "logical_id",
++            "version_id"
++          ]
++        },
++        "lease_ref": {
++          "type": "object",
++          "additionalProperties": false,
++          "properties": {
++            "entity_type": {
++              "type": "string",
++              "minLength": 1
++            },
++            "logical_id": {
++              "type": "string",
++              "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++            },
++            "version_id": {
++              "type": "string",
++              "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++            }
++          },
++          "required": [
++            "entity_type",
++            "logical_id",
++            "version_id"
++          ]
++        },
++        "start_event_id": {
++          "type": "string",
++          "pattern": "^event:[a-f0-9]{32}$"
++        },
++        "net_ref": {
++          "type": "object",
++          "additionalProperties": false,
++          "properties": {
++            "entity_type": {
++              "type": "string",
++              "minLength": 1
++            },
++            "logical_id": {
++              "type": "string",
++              "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++            },
++            "version_id": {
++              "type": "string",
++              "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++            }
++          },
++          "required": [
++            "entity_type",
++            "logical_id",
++            "version_id"
++          ]
++        },
++        "round_ref": {
++          "type": "object",
++          "additionalProperties": false,
++          "properties": {
++            "entity_type": {
++              "type": "string",
++              "minLength": 1
++            },
++            "logical_id": {
++              "type": "string",
++              "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++            },
++            "version_id": {
++              "type": "string",
++              "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++            }
++          },
++          "required": [
++            "entity_type",
++            "logical_id",
++            "version_id"
++          ]
++        },
++        "run_authority_ref": {
++          "type": "object",
++          "additionalProperties": false,
++          "properties": {
++            "entity_type": {
++              "type": "string",
++              "minLength": 1
++            },
++            "logical_id": {
++              "type": "string",
++              "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++            },
++            "version_id": {
++              "type": "string",
++              "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++            }
++          },
++          "required": [
++            "entity_type",
++            "logical_id",
++            "version_id"
++          ]
++        },
++        "execution_generation": {
++          "type": "integer",
++          "minimum": 0
++        },
++        "original_writer_epoch": {
++          "type": "integer",
++          "minimum": 0
++        }
++      },
++      "required": [
++        "firing_ref",
++        "invocation_ref",
++        "lease_ref",
++        "start_event_id",
++        "net_ref",
++        "round_ref",
++        "run_authority_ref",
++        "execution_generation",
++        "original_writer_epoch"
++      ]
++    },
++    "request_ref": {
++      "type": "object",
++      "additionalProperties": false,
++      "properties": {
++        "entity_type": {
++          "type": "string",
++          "minLength": 1
++        },
++        "logical_id": {
++          "type": "string",
++          "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++        },
++        "version_id": {
++          "type": "string",
++          "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++        }
++      },
++      "required": [
++        "entity_type",
++        "logical_id",
++        "version_id"
++      ]
++    },
++    "request": {
++      "type": "object",
++      "additionalProperties": false,
++      "properties": {
++        "schema_version": {
++          "const": "rpnh/parent_child_request/v1"
++        },
++        "slot_id": {
++          "type": "string",
++          "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
++        },
++        "child_kind": {
++          "enum": [
++            "agent_task",
++            "module"
++          ]
++        },
++        "definition": {
++          "type": "object"
++        },
++        "public_configuration": {
++          "type": "object"
++        }
++      },
++      "required": [
++        "schema_version",
++        "slot_id",
++        "child_kind",
++        "definition",
++        "public_configuration"
++      ]
++    },
++    "materials": {
++      "type": "object",
++      "additionalProperties": false,
++      "properties": {
++        "request_sha256": {
++          "type": "string",
++          "pattern": "^[a-f0-9]{64}$"
++        },
++        "normalized_request": {
++          "type": "object"
++        },
++        "inventory": {
++          "type": "array",
++          "items": {
++            "type": "object",
++            "additionalProperties": false,
++            "properties": {
++              "name": {
++                "type": "string",
++                "minLength": 1
++              },
++              "size": {
++                "type": "integer",
++                "minimum": 0
++              },
++              "sha256": {
++                "type": "string",
++                "pattern": "^[a-f0-9]{64}$"
++              }
++            },
++            "required": [
++              "name",
++              "size",
++              "sha256"
++            ]
++          }
++        },
++        "public_material_digest": {
++          "type": "string",
++          "pattern": "^[a-f0-9]{64}$"
++        },
++        "initial_declaration_digest": {
++          "type": "string",
++          "pattern": "^[a-f0-9]{64}$"
++        }
++      },
++      "required": [
++        "request_sha256",
++        "normalized_request",
++        "inventory",
++        "public_material_digest",
++        "initial_declaration_digest"
++      ]
++    },
++    "target": {
++      "type": "object",
++      "additionalProperties": false,
++      "properties": {
++        "key_digest": {
++          "type": "string",
++          "pattern": "^[a-f0-9]{64}$"
++        },
++        "root_binding": {
++          "type": "string",
++          "minLength": 1
++        },
++        "relative_path": {
++          "type": "string",
++          "pattern": "^h7-runs/[a-f0-9]{64}/run$"
++        },
++        "transport_task_id": {
++          "type": "string",
++          "pattern": "^task-h7-[a-f0-9]{64}$"
++        },
++        "document_root": {
++          "type": "string",
++          "minLength": 1
++        }
++      },
++      "required": [
++        "key_digest",
++        "root_binding",
++        "relative_path",
++        "transport_task_id",
++        "document_root"
++      ]
++    },
++    "envelope": {
++      "type": "object"
++    },
++    "envelope_digest": {
++      "type": "string",
++      "pattern": "^[a-f0-9]{64}$"
++    }
++  },
++  "required": [
++    "record_ref",
++    "parent",
++    "slot_id",
++    "execution",
++    "request_ref",
++    "request",
++    "materials",
++    "target",
++    "envelope",
++    "envelope_digest"
++  ]
++}
+--- /dev/null
++++ b/cpn/schemas/registry_v1/parent_child_recorded.v1.schema.json
+@@ -0,0 +1,61 @@
++{
++  "$schema": "http://json-schema.org/draft-07/schema#",
++  "$id": "registry_v1/parent_child_recorded/v1",
++  "type": "object",
++  "additionalProperties": false,
++  "properties": {
++    "record_ref": {
++      "type": "object",
++      "additionalProperties": false,
++      "properties": {
++        "entity_type": {
++          "type": "string",
++          "minLength": 1
++        },
++        "logical_id": {
++          "type": "string",
++          "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++        },
++        "version_id": {
++          "type": "string",
++          "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++        }
++      },
++      "required": [
++        "entity_type",
++        "logical_id",
++        "version_id"
++      ]
++    },
++    "predecessor_refs": {
++      "type": "array",
++      "items": {
++        "type": "object",
++        "additionalProperties": false,
++        "properties": {
++          "entity_type": {
++            "type": "string",
++            "minLength": 1
++          },
++          "logical_id": {
++            "type": "string",
++            "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++          },
++          "version_id": {
++            "type": "string",
++            "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++          }
++        },
++        "required": [
++          "entity_type",
++          "logical_id",
++          "version_id"
++        ]
++      }
++    }
++  },
++  "required": [
++    "record_ref",
++    "predecessor_refs"
++  ]
++}
+--- /dev/null
++++ b/cpn/schemas/registry_v1/parent_child_worker.v1.schema.json
+@@ -0,0 +1,394 @@
++{
++  "$schema": "http://json-schema.org/draft-07/schema#",
++  "$id": "registry_v1/parent_child_worker/v1",
++  "type": "object",
++  "additionalProperties": false,
++  "properties": {
++    "record_ref": {
++      "type": "object",
++      "additionalProperties": false,
++      "properties": {
++        "entity_type": {
++          "type": "string",
++          "minLength": 1
++        },
++        "logical_id": {
++          "type": "string",
++          "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++        },
++        "version_id": {
++          "type": "string",
++          "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++        }
++      },
++      "required": [
++        "entity_type",
++        "logical_id",
++        "version_id"
++      ]
++    },
++    "parent": {
++      "type": "object",
++      "additionalProperties": false,
++      "properties": {
++        "source_id": {
++          "type": "string",
++          "minLength": 1
++        },
++        "binding_ref": {
++          "type": "object",
++          "additionalProperties": false,
++          "properties": {
++            "entity_type": {
++              "type": "string",
++              "minLength": 1
++            },
++            "logical_id": {
++              "type": "string",
++              "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++            },
++            "version_id": {
++              "type": "string",
++              "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++            }
++          },
++          "required": [
++            "entity_type",
++            "logical_id",
++            "version_id"
++          ]
++        },
++        "run_ref": {
++          "type": "object",
++          "additionalProperties": false,
++          "properties": {
++            "entity_type": {
++              "type": "string",
++              "minLength": 1
++            },
++            "logical_id": {
++              "type": "string",
++              "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++            },
++            "version_id": {
++              "type": "string",
++              "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++            }
++          },
++          "required": [
++            "entity_type",
++            "logical_id",
++            "version_id"
++          ]
++        },
++        "task_ref": {
++          "type": "object",
++          "additionalProperties": false,
++          "properties": {
++            "entity_type": {
++              "type": "string",
++              "minLength": 1
++            },
++            "logical_id": {
++              "type": "string",
++              "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++            },
++            "version_id": {
++              "type": "string",
++              "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++            }
++          },
++          "required": [
++            "entity_type",
++            "logical_id",
++            "version_id"
++          ]
++        },
++        "branch_ref": {
++          "type": "object",
++          "additionalProperties": false,
++          "properties": {
++            "entity_type": {
++              "type": "string",
++              "minLength": 1
++            },
++            "logical_id": {
++              "type": "string",
++              "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++            },
++            "version_id": {
++              "type": "string",
++              "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++            }
++          },
++          "required": [
++            "entity_type",
++            "logical_id",
++            "version_id"
++          ]
++        }
++      },
++      "required": [
++        "source_id",
++        "binding_ref",
++        "run_ref",
++        "task_ref",
++        "branch_ref"
++      ]
++    },
++    "slot_id": {
++      "type": "string",
++      "minLength": 1
++    },
++    "execution": {
++      "type": "object",
++      "additionalProperties": false,
++      "properties": {
++        "firing_ref": {
++          "type": "object",
++          "additionalProperties": false,
++          "properties": {
++            "entity_type": {
++              "type": "string",
++              "minLength": 1
++            },
++            "logical_id": {
++              "type": "string",
++              "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++            },
++            "version_id": {
++              "type": "string",
++              "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++            }
++          },
++          "required": [
++            "entity_type",
++            "logical_id",
++            "version_id"
++          ]
++        },
++        "invocation_ref": {
++          "type": "object",
++          "additionalProperties": false,
++          "properties": {
++            "entity_type": {
++              "type": "string",
++              "minLength": 1
++            },
++            "logical_id": {
++              "type": "string",
++              "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++            },
++            "version_id": {
++              "type": "string",
++              "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++            }
++          },
++          "required": [
++            "entity_type",
++            "logical_id",
++            "version_id"
++          ]
++        },
++        "lease_ref": {
++          "type": "object",
++          "additionalProperties": false,
++          "properties": {
++            "entity_type": {
++              "type": "string",
++              "minLength": 1
++            },
++            "logical_id": {
++              "type": "string",
++              "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++            },
++            "version_id": {
++              "type": "string",
++              "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++            }
++          },
++          "required": [
++            "entity_type",
++            "logical_id",
++            "version_id"
++          ]
++        },
++        "start_event_id": {
++          "type": "string",
++          "pattern": "^event:[a-f0-9]{32}$"
++        },
++        "net_ref": {
++          "type": "object",
++          "additionalProperties": false,
++          "properties": {
++            "entity_type": {
++              "type": "string",
++              "minLength": 1
++            },
++            "logical_id": {
++              "type": "string",
++              "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++            },
++            "version_id": {
++              "type": "string",
++              "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++            }
++          },
++          "required": [
++            "entity_type",
++            "logical_id",
++            "version_id"
++          ]
++        },
++        "round_ref": {
++          "type": "object",
++          "additionalProperties": false,
++          "properties": {
++            "entity_type": {
++              "type": "string",
++              "minLength": 1
++            },
++            "logical_id": {
++              "type": "string",
++              "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++            },
++            "version_id": {
++              "type": "string",
++              "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++            }
++          },
++          "required": [
++            "entity_type",
++            "logical_id",
++            "version_id"
++          ]
++        },
++        "run_authority_ref": {
++          "type": "object",
++          "additionalProperties": false,
++          "properties": {
++            "entity_type": {
++              "type": "string",
++              "minLength": 1
++            },
++            "logical_id": {
++              "type": "string",
++              "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++            },
++            "version_id": {
++              "type": "string",
++              "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++            }
++          },
++          "required": [
++            "entity_type",
++            "logical_id",
++            "version_id"
++          ]
++        },
++        "execution_generation": {
++          "type": "integer",
++          "minimum": 0
++        },
++        "original_writer_epoch": {
++          "type": "integer",
++          "minimum": 0
++        }
++      },
++      "required": [
++        "firing_ref",
++        "invocation_ref",
++        "lease_ref",
++        "start_event_id",
++        "net_ref",
++        "round_ref",
++        "run_authority_ref",
++        "execution_generation",
++        "original_writer_epoch"
++      ]
++    },
++    "intent_ref": {
++      "type": "object",
++      "additionalProperties": false,
++      "properties": {
++        "entity_type": {
++          "type": "string",
++          "minLength": 1
++        },
++        "logical_id": {
++          "type": "string",
++          "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++        },
++        "version_id": {
++          "type": "string",
++          "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++        }
++      },
++      "required": [
++        "entity_type",
++        "logical_id",
++        "version_id"
++      ]
++    },
++    "dispatch_ref": {
++      "type": "object",
++      "additionalProperties": false,
++      "properties": {
++        "entity_type": {
++          "type": "string",
++          "minLength": 1
++        },
++        "logical_id": {
++          "type": "string",
++          "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++        },
++        "version_id": {
++          "type": "string",
++          "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++        }
++      },
++      "required": [
++        "entity_type",
++        "logical_id",
++        "version_id"
++      ]
++    },
++    "worker": {
++      "type": "object",
++      "additionalProperties": false,
++      "properties": {
++        "uid": {
++          "type": "integer",
++          "minimum": 0
++        },
++        "pid": {
++          "type": "integer",
++          "minimum": 1
++        },
++        "start_ticks": {
++          "type": "integer",
++          "minimum": 1
++        },
++        "boot_id": {
++          "type": "string",
++          "minLength": 1
++        }
++      },
++      "required": [
++        "uid",
++        "pid",
++        "start_ticks",
++        "boot_id"
++      ]
++    }
++  },
++  "required": [
++    "record_ref",
++    "parent",
++    "slot_id",
++    "execution",
++    "intent_ref",
++    "dispatch_ref",
++    "worker"
++  ]
++}
+--- /dev/null
++++ b/cpn/schemas/rpnh/parent_child_request.v1.schema.json
+@@ -0,0 +1,34 @@
++{
++  "$schema": "http://json-schema.org/draft-07/schema#",
++  "$id": "rpnh/parent_child_request/v1",
++  "type": "object",
++  "additionalProperties": false,
++  "properties": {
++    "schema_version": {
++      "const": "rpnh/parent_child_request/v1"
++    },
++    "slot_id": {
++      "type": "string",
++      "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
++    },
++    "child_kind": {
++      "enum": [
++        "agent_task",
++        "module"
++      ]
++    },
++    "definition": {
++      "type": "object"
++    },
++    "public_configuration": {
++      "type": "object"
++    }
++  },
++  "required": [
++    "schema_version",
++    "slot_id",
++    "child_kind",
++    "definition",
++    "public_configuration"
++  ]
++}
+--- /dev/null
++++ b/cpn/schemas/rpnh/parent_origin_capability.v1.schema.json
+@@ -0,0 +1,164 @@
++{
++  "$schema": "http://json-schema.org/draft-07/schema#",
++  "$id": "rpnh/parent_origin_capability/v1",
++  "type": "object",
++  "additionalProperties": false,
++  "properties": {
++    "schema_version": {
++      "const": "rpnh/parent_origin_capability/v1"
++    },
++    "origin_ref": {
++      "type": "object",
++      "additionalProperties": false,
++      "properties": {
++        "entity_type": {
++          "type": "string",
++          "minLength": 1
++        },
++        "logical_id": {
++          "type": "string",
++          "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++        },
++        "version_id": {
++          "type": "string",
++          "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++        }
++      },
++      "required": [
++        "entity_type",
++        "logical_id",
++        "version_id"
++      ]
++    },
++    "marker_ref": {
++      "type": "object",
++      "additionalProperties": false,
++      "properties": {
++        "entity_type": {
++          "type": "string",
++          "minLength": 1
++        },
++        "logical_id": {
++          "type": "string",
++          "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++        },
++        "version_id": {
++          "type": "string",
++          "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++        }
++      },
++      "required": [
++        "entity_type",
++        "logical_id",
++        "version_id"
++      ]
++    },
++    "child_run_ref": {
++      "type": "object",
++      "additionalProperties": false,
++      "properties": {
++        "entity_type": {
++          "type": "string",
++          "minLength": 1
++        },
++        "logical_id": {
++          "type": "string",
++          "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++        },
++        "version_id": {
++          "type": "string",
++          "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++        }
++      },
++      "required": [
++        "entity_type",
++        "logical_id",
++        "version_id"
++      ]
++    },
++    "child_task_ref": {
++      "type": "object",
++      "additionalProperties": false,
++      "properties": {
++        "entity_type": {
++          "type": "string",
++          "minLength": 1
++        },
++        "logical_id": {
++          "type": "string",
++          "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++        },
++        "version_id": {
++          "type": "string",
++          "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
++        }
++      },
++      "required": [
++        "entity_type",
++        "logical_id",
++        "version_id"
++      ]
++    },
++    "parent_acceptance": {
++      "type": "object",
++      "additionalProperties": false,
++      "properties": {
++        "parent_source_id": {
++          "type": "string",
++          "minLength": 1
++        },
++        "acceptance_json": {
++          "type": "string",
++          "minLength": 1
++        },
++        "intent_json": {
++          "type": "string",
++          "minLength": 1
++        },
++        "acceptance_transaction_id": {
++          "type": "string",
++          "pattern": "^transaction:[a-f0-9]{32}$"
++        },
++        "acceptance_event_id": {
++          "type": "string",
++          "pattern": "^event:[a-f0-9]{32}$"
++        },
++        "acceptance_commit_ordinal": {
++          "type": "integer",
++          "minimum": 1
++        },
++        "initial_declaration_digest": {
++          "type": "string",
++          "pattern": "^[a-f0-9]{64}$"
++        }
++      },
++      "required": [
++        "parent_source_id",
++        "acceptance_json",
++        "intent_json",
++        "acceptance_transaction_id",
++        "acceptance_event_id",
++        "acceptance_commit_ordinal",
++        "initial_declaration_digest"
++      ]
++    },
++    "initial_writer_epoch": {
++      "type": "integer",
++      "minimum": 0
++    },
++    "initial_declaration_digest": {
++      "type": "string",
++      "pattern": "^[a-f0-9]{64}$"
++    }
++  },
++  "required": [
++    "schema_version",
++    "origin_ref",
++    "marker_ref",
++    "child_run_ref",
++    "child_task_ref",
++    "parent_acceptance",
++    "initial_writer_epoch",
++    "initial_declaration_digest"
++  ]
++}
+--- /dev/null
++++ b/tests/parent_child_fixtures.py
+@@ -0,0 +1,156 @@
++"""Explicit D0-only native observation injection; never an OS/transport proof.
++
++The product has no evidence issuer. This test module deliberately allocates its
++private class via object.__new__, after real temporary Registry/PN setup. It
++never starts a worker or reserves a production target. Native D1 remains NOT_RUN.
++"""
++from dataclasses import replace
++import json
++from pathlib import Path
++from cpn.rpnh.registry import parent_child as h7
++from cpn.rpnh.registry import parent_bound as bound
++from cpn.rpnh.registry.schema_catalog import canonical_json,SchemaCatalog
++from cpn.rpnh.registry.publication import _ref_payload,_version_from_payload
++from cpn.rpnh.registry.module_budgets import ModuleBudgetDeclaration
++from cpn.rpnh.petri_contracts import ArcDeclaration,PlaceDeclaration,InitialTokenDeclaration,LeaseIdentityDeclaration,ResourceLeasePoolBinding
++from cpn.rpnh.module import ModuleDeclaration
++from cpn.rpnh.compiler import compile_module
++from cpn.rpnh.run import OwnerInput,start_run
++from cpn.rpnh.collaboration import source_identity_schema_data
++from test_static_lease_reads import _registration,_simple_module,TEXT,EXECUTOR,CONFIG_SCHEMA_ID,lower_operation
++
++
++def evidence(store,action,body):
++    value=object.__new__(h7._NativeBoundaryEvidence)
++    value.store=store;value.action=action;value.body=h7._json(body);value.consumed=False
++    return value
++
++
++def catalog():
++    schemas,types,paths=source_identity_schema_data()
++    return SchemaCatalog(schemas=schemas,types=types,schema_paths=paths)
++
++
++def child_definition(*,occurrences=2,missing_arc=False):
++    reg=_registration()
++    def lower(config,context):
++        fragment=lower_operation(config,context)
++        if occurrences>1:
++            fragment=replace(fragment,places=tuple(replace(p,initial_tokens=(InitialTokenDeclaration(count=occurrences-1,value='work',schema=TEXT),))
++                if p.name=='request' else p for p in fragment.places))
++        return replace(fragment,
++            places=(*fragment.places,PlaceDeclaration('h7origin',h7.CAPABILITY_SCHEMA,token_kind='resource_lease',capacity=1,reusable=True)),
++            arcs=fragment.arcs if missing_arc else (*fragment.arcs,ArcDeclaration('h7origin','run','input',mode='read')),
++            lease_identities=(*fragment.lease_identities,LeaseIdentityDeclaration('h7origin')),
++            lease_pools=(*fragment.lease_pools,ResourceLeasePoolBinding('h7origin','h7origin',('h7origin',))))
++    reg.register_component('test_h7_child',lower,identity={'implementation_id':'test.h7.child','revision':'v1'},contracts={'config_schema':CONFIG_SCHEMA_ID})
++    doc=_simple_module('H7Child').to_dict();doc['components'][0]['key']='test_h7_child'
++    doc['required_schemas'].append(h7.CAPABILITY_SCHEMA)
++    module=ModuleDeclaration.from_dict(doc)
++    return reg,module,compile_module(module,reg)
++
++
++def parent_owner(path,*,child_compiled=None,outcomes=('complete','failed'),capacity=1,with_launch=True,executor=h7.NATIVE_LAUNCH_EXECUTOR):
++    reg=_registration()
++    reg.register_executor(h7.NATIVE_LAUNCH_EXECUTOR,lambda **kwargs: None,
++        identity={'implementation_id':'test.h7.native_observer','revision':'v1'},
++        contracts={'transport':'deterministic','input_ports':None,'output_ports':None,'config_schema':CONFIG_SCHEMA_ID})
++    def lower(config,context):
++        f=lower_operation(config,context)
++        extra=[PlaceDeclaration('h7capacity',TEXT,channel='control',token_kind='agent_resource',capacity=capacity,reusable=True,
++            initial_tokens=(InitialTokenDeclaration(count=capacity),))]
++        arcs=[ArcDeclaration('h7capacity','run','input',mode='borrow')]
++        arcs += [ArcDeclaration('h7capacity','run','output',mode='return',outcome=outcome,emit='content_less') for outcome in outcomes]
++        leases=();pools=()
++        if with_launch:
++            extra.append(PlaceDeclaration('h7launch',TEXT,token_kind='resource_lease',capacity=1,reusable=True))
++            arcs.append(ArcDeclaration('h7launch','run','input',mode='read'))
++            leases=(LeaseIdentityDeclaration('h7launch'),);pools=(ResourceLeasePoolBinding('h7launch','h7launch',('h7launch',)),)
++        return replace(f,places=(*f.places,*extra),arcs=(*f.arcs,*arcs),lease_identities=leases,lease_pools=pools)
++    reg.register_component('test_h7_parent',lower,identity={'implementation_id':'test.h7.parent','revision':'v1'},contracts={'config_schema':CONFIG_SCHEMA_ID})
++    doc=_simple_module('H7Parent',input_schema=h7.REQUEST_SCHEMA).to_dict();doc['components'][0]['key']='test_h7_parent'
++    operation=doc['components'][0]['operations'][0];operation['executor']=executor
++    operation['outcomes']=[{'name':outcome,'products':[{'port':'result'}]} for outcome in outcomes]
++    doc['required_schemas']=sorted(set(doc['required_schemas'])|{TEXT})
++    module=ModuleDeclaration.from_dict(doc)
++    request={'schema_version':h7.REQUEST_SCHEMA,'slot_id':'child','child_kind':'module',
++        'definition':{} if child_compiled is None else child_compiled.source.to_dict(),'public_configuration':{'mode':'offline'}}
++    task=OwnerInput(h7.REQUEST_SCHEMA,canonical_json(request),'Typed child request')
++    owner=start_run(module,reg,run_dir=path,task_input=task,entry_inputs={'request':task},
++        resource_inputs={'step.h7launch':OwnerInput(TEXT,canonical_json('launch'),'Launch lease')} if with_launch else {},
++        budgets=ModuleBudgetDeclaration(tuple(doc['budget_buckets']),(TEXT,),3,0,3,0),
++        model_condition='offline-h7',owner_statement='Offline Registry H7 test',command_id='parent:fresh',catalog=catalog())
++    owner.schema_gateway.bind_source_identity(source_id='parent-source',command_id='parent:source')
++    admitted=owner.admit('step.run',logical_tau=0,command_id='parent:admit')
++    execution=owner.start(admitted,command_id='parent:start')
++    request_ref=execution.operation.inputs[0].resource_ref.as_version_ref()
++    prepared=h7.prepare_child_materials(parent=h7.parent_identity(owner._core),request_ref=request_ref,
++        request_bytes=canonical_json(request),root_binding='test-root-binding',control_root=str(path.parent/'control'),
++        public_payloads={name:canonical_json(child_compiled.to_dict()) if name=='lowered_net' and child_compiled else canonical_json({'section':name})
++            for name in h7.MATERIAL_SECTIONS-{'normalized_request'}})
++    return owner,admitted,execution,prepared
++
++
++def phase(owner,kind,prior_ref,details):
++    core=owner._core;prior=core.get_version(prior_ref.version_id).metadata
++    base={k:prior[k] for k in ('parent','slot_id','execution')}
++    ref=h7._ref(kind,canonical_json(base['parent']['run_ref']).decode(),base['slot_id'])
++    body={'record_ref':_ref_payload(ref),**base,**details}
++    if kind==h7.PARENT_KINDS[1]:body['intent_ref']=_ref_payload(prior_ref)
++    elif kind==h7.PARENT_KINDS[2]:body.update(intent_ref=prior['intent_ref'],dispatch_ref=_ref_payload(prior_ref))
++    else:
++        intent=core.get_version(_version_from_payload(prior['intent_ref']).version_id).metadata
++        body.update(intent_ref=prior['intent_ref'],dispatch_ref=prior['dispatch_ref'],worker_ref=_ref_payload(prior_ref),
++            worker=prior['worker'],target=intent['target'],public_material_digest=intent['materials']['public_material_digest'],
++            envelope_digest=intent['envelope_digest'],allowed_action='fresh_bound_bootstrap_once')
++    return h7._advance_record(core,kind,prior_ref,details=details,evidence=evidence(core.event_store,kind,body))
++
++
++def accepted_parent(path,child_compiled=None):
++    owner,admitted,execution,prepared=parent_owner(path,child_compiled=child_compiled)
++    intent=h7.register_child_intent(owner._core,execution,prepared)
++    dispatch=phase(owner,h7.PARENT_KINDS[1],intent,{'bundle_digest':'a'*64})
++    worker=phase(owner,h7.PARENT_KINDS[2],dispatch,{'worker':{'uid':1000,'pid':12345,'start_ticks':100,'boot_id':'offline-only'}})
++    intent_body=owner._core.get_version(intent.version_id).metadata
++    acceptance=phase(owner,h7.PARENT_KINDS[3],worker,{'request_digest':h7.digest(h7._json(h7.bootstrap_request_material(intent_body,_ref_payload(dispatch))))})
++    return owner,admitted,execution,prepared,intent,dispatch,worker,acceptance
++
++
++def bound_owner(path,monkeypatch,*,occurrences=2,missing_arc=False):
++    import cpn.rpnh.run as run
++    reg,module,compiled=child_definition(occurrences=occurrences,missing_arc=missing_arc)
++    values=accepted_parent(path.parent/'parent',compiled);parent=values[0];accepted=values[-1]
++    body=parent._core.get_version(accepted.version_id).metadata
++    with parent._core.event_store.connect() as db:
++        row=db.execute('SELECT transaction_id FROM objects WHERE version_id=?',(str(accepted.version_id),)).fetchone()
++        fact=db.execute("SELECT event_id FROM events WHERE transaction_id=? AND event_type='parent_child_recorded/v1'",(row[0],)).fetchone()
++        committed=db.execute("SELECT ordinal FROM events WHERE transaction_id=? AND event_type='transaction_committed/v1'",(row[0],)).fetchone()
++    external={'parent_source_id':body['parent']['source_id'],'acceptance_json':h7._json(body).decode(),
++        'intent_json':h7._json(parent._core.get_version(values[4].version_id).metadata).decode(),
++        'acceptance_transaction_id':row[0],'acceptance_event_id':fact[0],'acceptance_commit_ordinal':committed[0],
++        'initial_declaration_digest':values[3].materials['initial_declaration_digest']}
++    original_bootstrap=run._bootstrap_identity;original_publish=run._publish_private_system
++    def bootstrap(core,manifest,**kwargs):
++        marker_manifest=replace(manifest,protocol_versions=(*manifest.protocol_versions,h7.BOUND_PROTOCOL))
++        with h7._native_boundary(evidence(core.event_store,'bound_bootstrap',external),core.event_store,'bound_bootstrap',external):
++            return original_bootstrap(core,marker_manifest,_parent_bound_acceptance=external,**kwargs)
++    def publish(core,task_ref,command,**kwargs):
++        if command.content_schema_ref!=h7.CAPABILITY_SCHEMA:return original_publish(core,task_ref,command,**kwargs)
++        from cpn.rpnh.registry.registration_gateway import RegistryRegistrationGateway
++        gateway=RegistryRegistrationGateway(core,task_ref,command.origin.bootstrap_command_ref)
++        gateway.bind_source_identity(source_id='child-source',command_id='child:source')
++        row=core.event_store.object_rows_by_type(h7.BOUND_KINDS[0])[0];marker=json.loads(row['metadata_json'])
++        return bound.close_bound_origin(core,evidence=evidence(core.event_store,'bound_origin',marker))
++    monkeypatch.setattr(run,'_bootstrap_identity',bootstrap);monkeypatch.setattr(run,'_publish_private_system',publish)
++    task=OwnerInput(TEXT,canonical_json('task'),'Task')
++    # The existing owner input validator requires a schema-valid placeholder;
++    # interception above replaces it with the protected exact native producer.
++    placeholder={'schema_version':h7.CAPABILITY_SCHEMA,'origin_ref':_ref_payload(accepted),'marker_ref':_ref_payload(accepted),
++        'child_run_ref':_ref_payload(parent.identity.run_ref),'child_task_ref':_ref_payload(parent.identity.task_ref),
++        'parent_acceptance':external,'initial_writer_epoch':1,'initial_declaration_digest':external['initial_declaration_digest']}
++    child=start_run(module,reg,run_dir=path,task_input=task,entry_inputs={'request':task},
++        resource_inputs={'step.h7origin':OwnerInput(h7.CAPABILITY_SCHEMA,canonical_json(placeholder),'Protected origin placeholder')},
++        budgets=ModuleBudgetDeclaration(tuple(module.to_dict()['budget_buckets']),(TEXT,),3,0,3,0),
++        model_condition='offline-h7',owner_statement='Offline protected origin',command_id='child:fresh',catalog=catalog())
++    monkeypatch.setattr(run,'_bootstrap_identity',original_bootstrap);monkeypatch.setattr(run,'_publish_private_system',original_publish)
++    return child,values
+--- /dev/null
++++ b/tests/test_parent_child_core.py
+@@ -0,0 +1,271 @@
++"""H7 original Registry/PN D0; no transport proof or production create path."""
++import json
++import pytest
++from dataclasses import replace
++from parent_child_fixtures import *
++from cpn.rpnh.registry.publication import _ref_payload, _version_from_payload
++from cpn.rpnh.registry.event_store import RegistryConflict
++from cpn.rpnh.registry.errors import StaleInvocationContext
++from cpn.rpnh.registry._registry import _RegistryCore
++from test_static_lease_reads import finish,current
++
++
++def test_real_parent_causal_chain_is_provisional(tmp_path):
++    owner,admitted,execution,prepared,intent,dispatch,worker,acceptance=accepted_parent(tmp_path/'parent')
++    core=owner._core
++    assert h7.register_child_intent(core,execution,prepared)==intent
++    view=core.event_store.canonical_view()
++    assert core.event_store.object_row_for_view(view,version_id=acceptance.version_id) is None
++    firing_view=core.event_store.firing_view(firing_version_id=execution.operation.firing.transition_firing_ref.version_id,
++        invocation_version_id=execution.operation.canonical.context.invocation_ref.version_id)
++    assert core.event_store.object_row_for_view(firing_view,version_id=acceptance.version_id) is not None
++
++
++def test_bound_origin_true_admission_start_success(tmp_path,monkeypatch):
++    owner,parent=bound_owner(tmp_path/'child',monkeypatch)
++    initial=next(t.state for t in current(owner)[2].tokens if t.state.place=='step.h7origin')
++    first=owner.admit('step.run',logical_tau=0,command_id='first:admit')
++    second=owner.admit('step.run',logical_tau=0,command_id='second:admit')
++    assert first is not None and second is not None
++    finish(owner,first,'first');finish(owner,second,'second')
++    assert next(t.state for t in current(owner)[2].tokens if t.state.place=='step.h7origin')==initial
++    assert len([r for r in owner._core.event_store.object_rows_by_type('petri_token/v1')
++        if json.loads(r['metadata_json'])['place']=='step.h7origin'])==1
++
++@pytest.mark.parametrize('values', [
++    {'capacity':2}, {'with_launch':False}, {'executor':EXECUTOR},
++    {'outcomes':('complete','interrupted')},
++])
++def test_parent_pn_declared_prerequisites_not_host_flags(tmp_path,values):
++    owner,admitted,execution,prepared=parent_owner(tmp_path/'parent',**values)
++    before=owner._core.event_store.max_ordinal()
++    with pytest.raises(RegistryConflict):
++        h7.register_child_intent(owner._core,execution,prepared)
++    assert owner._core.event_store.max_ordinal()==before
++
++
++def test_no_native_evidence_constructor_or_json_permission(tmp_path):
++    with pytest.raises(h7.ParentChildUnsupported):
++        h7._NativeBoundaryEvidence(store='fake',action='accepted',body={})
++    owner,admitted,execution,prepared=parent_owner(tmp_path/'parent')
++    intent=h7.register_child_intent(owner._core,execution,prepared)
++    before=owner._core.event_store.max_ordinal()
++    with pytest.raises(h7.ParentChildUnsupported):
++        h7._advance_record(owner._core,h7.PARENT_KINDS[1],intent,details={'bundle_digest':'a'*64},evidence={'accepted':True})
++    assert owner._core.event_store.max_ordinal()==before
++
++
++@pytest.mark.parametrize('damage',['start_id','generation','lease','parent_run','slot','target','material'])
++def test_parent_commit_rejects_mutated_native_closure(tmp_path,damage):
++    from copy import deepcopy
++    from cpn.rpnh.registry.identities import new_id
++    owner,admitted,execution,prepared=parent_owner(tmp_path/'parent')
++    intent=h7.register_child_intent(owner._core,execution,prepared)
++    body=deepcopy(dict(owner._core.get_version(intent.version_id).metadata))
++    if damage=='start_id': body['execution']['start_event_id']=str(new_id('event'))
++    elif damage=='generation':body['execution']['execution_generation']=1
++    elif damage=='lease':body['execution']['lease_ref']['version_id']=str(new_id('operation_execution_lease_version'))
++    elif damage=='parent_run':body['parent']['run_ref']['version_id']=str(new_id('run_version'))
++    elif damage=='slot':body['slot_id']='another'
++    elif damage=='target':body['target']['relative_path']='h7-runs/'+'f'*64+'/run'
++    else:body['materials']['public_material_digest']='c'*64
++    before=owner._core.event_store.max_ordinal()
++    with pytest.raises((RegistryConflict,ValueError,RuntimeError)):
++        h7._record(owner._core,h7.PARENT_KINDS[0],body,predecessors=(body['request_ref'],body['execution']['firing_ref'],body['execution']['lease_ref']))
++    assert owner._core.event_store.max_ordinal()==before
++
++
++@pytest.mark.parametrize('closed',['stop','new_writer'])
++def test_intent_replay_rechecks_live_entry_before_exact_replay(tmp_path,closed):
++    owner,admitted,execution,prepared=parent_owner(tmp_path/'parent')
++    intent=h7.register_child_intent(owner._core,execution,prepared)
++    if closed=='stop':owner.record_owner_stop(idempotency_key='parent:stop')
++    else:owner._core.event_store.acquire_writer()
++    before=owner._core.event_store.max_ordinal()
++    with pytest.raises((RegistryConflict,RuntimeError)):
++        h7.register_child_intent(owner._core,execution,prepared)
++    assert owner._core.event_store.max_ordinal()==before
++
++
++def test_acceptance_direct_exact_replay_requires_native_boundary(tmp_path,monkeypatch):
++    owner,admitted,execution,prepared=parent_owner(tmp_path/'parent')
++    intent=h7.register_child_intent(owner._core,execution,prepared)
++    dispatch=phase(owner,h7.PARENT_KINDS[1],intent,{'bundle_digest':'a'*64})
++    worker=phase(owner,h7.PARENT_KINDS[2],dispatch,{'worker':{'uid':1000,'pid':12345,'start_ticks':100,'boot_id':'offline'}})
++    saved=[];original=owner._core.event_store.publish_batch
++    def capture(**kwargs):
++        saved.append(kwargs);return original(**kwargs)
++    monkeypatch.setattr(owner._core.event_store,'publish_batch',capture)
++    intent_body=owner._core.get_version(intent.version_id).metadata
++    receipt=phase(owner,h7.PARENT_KINDS[3],worker,{'request_digest':h7.digest(h7._json(h7.bootstrap_request_material(intent_body,_ref_payload(dispatch))))})
++    before=owner._core.event_store.max_ordinal()
++    with pytest.raises(h7.ParentChildUnsupported):original(**saved[-1])
++    assert owner._core.event_store.max_ordinal()==before
++
++
++def test_parent_unknown_completion_cannot_release_slot(tmp_path):
++    owner,admitted,execution,prepared,*_=accepted_parent(tmp_path/'parent')
++    outputs=owner.products(execution,outcome_id='complete',products={'step.result':(canonical_json('fake child terminal'),)},command_id='fake:products')
++    before=owner._core.event_store.max_ordinal()
++    with pytest.raises(h7.ParentChildUnsupported):owner.succeed(outputs,command_id='fake:success')
++    assert owner._core.event_store.max_ordinal()==before
++    assert len(owner._core.event_store.list_events_by_type(('transition_firing_settled/v1',)))==0
++
++
++def test_parent_start_payload_is_fully_rechecked(tmp_path):
++    owner,admitted,execution,prepared=parent_owner(tmp_path/'parent')
++    with owner._core.event_store.connect() as db:
++        row=db.execute("SELECT event_id,payload_json FROM events WHERE event_type='operation_execution_started/v1'").fetchone()
++        body=json.loads(row['payload_json']);body['input_resource_refs']=[]
++        db.execute('UPDATE events SET payload_json=? WHERE event_id=?',(json.dumps(body),row['event_id']))
++    with pytest.raises(RegistryConflict):h7.register_child_intent(owner._core,execution,prepared)
++
++
++def test_child_no_writable_reentry_zero_epoch_change(tmp_path,monkeypatch):
++    child,_=bound_owner(tmp_path/'child',monkeypatch)
++    core=child._core;epoch=core.event_store.writer_epoch;head=core.event_store.max_ordinal()
++    for action in (
++        lambda:_RegistryCore(core.run_dir,create=False,catalog=core.catalog),
++        lambda:core.event_store.acquire_writer(),
++        lambda:core.event_store.rotate_writer(expected_epoch=epoch),
++        lambda:bound.reject_bound_reentry(core)):
++        with pytest.raises(h7.ParentChildUnsupported):action()
++    assert core.event_store.writer_epoch==epoch and core.event_store.max_ordinal()==head
++    cold=_RegistryCore(core.run_dir,create=False,read_only=True,catalog=core.catalog)
++    assert bound.assert_bound_integrity(cold)['child_run_ref']==_ref_payload(child.identity.run_ref)
++
++
++def test_child_direct_closed_authority_cannot_revive(tmp_path,monkeypatch):
++    from cpn.rpnh.registry.resource_service import _ResourceServiceKernel
++    from cpn.rpnh.registry.run_authority import current_run_execution_authority
++    from cpn.rpnh.registry.identities import new_id
++    from cpn.rpnh.registry.models import VersionRef,TypedRelation
++    child,_=bound_owner(tmp_path/'child',monkeypatch)
++    child.record_owner_stop(idempotency_key='stop')
++    core=child._core;prior,body=current_run_execution_authority(core,_ResourceServiceKernel(core))
++    ref=VersionRef(prior.entity_type,prior.entity_id,new_id('run_execution_authority_version'))
++    value={**body,'run_execution_authority_ref':_ref_payload(ref),'status':'running'}
++    tx=core.begin(idempotency_key='direct:revive')
++    tx.prewrite(object_type=ref.entity_type,logical_id=ref.entity_id,version_id=ref.version_id,
++        payload=canonical_json(value),metadata=value,media_type='application/json',schema_ref='registry_v1/'+ref.entity_type)
++    tx.relate(TypedRelation(new_id('relation'),'derived_from',ref,prior),system_owned=True)
++    head=core.event_store.max_ordinal()
++    with pytest.raises(h7.ParentChildUnsupported):tx.commit()
++    assert core.event_store.max_ordinal()==head
++
++
++def test_child_origin_cannot_be_cloned_by_raw_transaction(tmp_path,monkeypatch):
++    from cpn.rpnh.registry.identities import new_id
++    child,_=bound_owner(tmp_path/'child',monkeypatch)
++    core=child._core
++    row=next(r for r in core.event_store.object_rows_by_type('petri_token/v1') if json.loads(r['metadata_json'])['place']=='step.h7origin')
++    value=json.loads(row['metadata_json']);ref=replace(_version_from_payload(value['petri_token_ref']),entity_id=new_id('petri_token'),version_id=new_id('petri_token_version'))
++    value['petri_token_ref']=_ref_payload(ref);value['token_id']=999
++    before=core.event_store.max_ordinal()
++    with pytest.raises(RegistryConflict):
++        core.publish_bytes(object_type=ref.entity_type,logical_id=ref.entity_id,version_id=ref.version_id,
++            payload=canonical_json(value),metadata=value,media_type='application/json',schema_ref='registry_v1/'+ref.entity_type,idempotency_key='clone:origin')
++    assert core.event_store.max_ordinal()==before
++
++
++def test_child_missing_origin_arc_rejected_at_original_adoption(tmp_path,monkeypatch):
++    with pytest.raises(RegistryConflict,match='origin structure'):
++        bound_owner(tmp_path/'child',monkeypatch,missing_arc=True)
++
++
++def test_child_initial_adoption_replay_and_successor_rejection(tmp_path,monkeypatch):
++    from cpn.rpnh.registry.identities import new_id
++    child,_=bound_owner(tmp_path/'child',monkeypatch)
++    core=child._core;net=child.publication.net_ref;head=core.event_store.max_ordinal()
++    core.task_control.adopt_net(net_instance_ref=net,idempotency_key='child:fresh:initial-adopt')
++    assert core.event_store.max_ordinal()==head
++    with pytest.raises(RegistryConflict):
++        core.task_control.adopt_net(net_instance_ref=net,supersedes_net_ref=net,idempotency_key='new:adopt')
++    assert core.event_store.max_ordinal()==head
++
++
++def test_protocol_marker_pair_required_and_bound_schema_not_public(tmp_path):
++    from cpn.rpnh.registry.bootstrap import _bootstrap_identity,NativeBootstrapManifest
++    core=_RegistryCore(tmp_path/'unwired',create=True,catalog=catalog())
++    before=core.event_store.max_ordinal()
++    with pytest.raises(RegistryConflict):
++        _bootstrap_identity(core,NativeBootstrapManifest((h7.BOUND_PROTOCOL,)))
++    assert core.event_store.max_ordinal()==before
++    assert not core.event_store.object_rows_by_type('native_run_identity/v1')
++
++
++def test_child_first_start_and_admission_replay_after_durable_stop_rejected(tmp_path,monkeypatch):
++    child,_=bound_owner(tmp_path/'child',monkeypatch)
++    admitted=child.admit('step.run',logical_tau=0,command_id='admit')
++    child.record_owner_stop(idempotency_key='stop')
++    head=child._core.event_store.max_ordinal()
++    with pytest.raises(StaleInvocationContext,match='stopped'):
++        child.start(admitted,command_id='late:start')
++    from cpn.rpnh.registry.invocations import InvocationLifecycle
++    from test_static_lease_reads import direct_claim
++    with pytest.raises((RegistryConflict,ValueError)):
++        InvocationLifecycle(child._core).admit_firing(direct_claim(child),idempotency_key='late:direct-admit')
++    assert child._core.event_store.max_ordinal()==head
++
++
++def test_child_started_completion_keeps_draining_without_durable_stop(tmp_path,monkeypatch):
++    from threading import Event
++    child,_=bound_owner(tmp_path/'child',monkeypatch)
++    admitted=child.admit('step.run',logical_tau=0,command_id='admit')
++    execution=child.start(admitted,command_id='start')
++    # A local negative request is not a durable authority rewrite. No native
++    # SIGINT/owner-loop timing is certified by this deterministic control.
++    requested=Event();requested.set()
++    outputs=child.products(execution,outcome_id='complete',products={'step.result':(canonical_json('done'),)},command_id='products')
++    child.succeed(outputs,command_id='success')
++    assert requested.is_set()
++    assert len(child._core.event_store.list_events_by_type(('transition_firing_settled/v1',)))==1
++
++
++def test_generic_raw_transaction_cannot_mint_protected_capability(tmp_path,monkeypatch):
++    from cpn.rpnh.registry.identities import new_id
++    child,_=bound_owner(tmp_path/'child',monkeypatch)
++    core=child._core
++    origin=json.loads(core.event_store.object_rows_by_type(h7.BOUND_KINDS[1])[0]['metadata_json'])
++    old=core.get_version(_version_from_payload(origin['capability_ref']).version_id)
++    ref=replace(_version_from_payload(origin['capability_ref']),entity_id=new_id('resource'),version_id=new_id('resource_version'))
++    metadata={**old.metadata,'resource_id':str(ref.entity_id),'resource_version_id':str(ref.version_id)}
++    head=core.event_store.max_ordinal()
++    with pytest.raises(RegistryConflict):
++        core.publish_bytes(object_type='resource_version/v1',logical_id=ref.entity_id,version_id=ref.version_id,
++            payload=core.object_store.read_verified(old),metadata=metadata,media_type=old.media_type,
++            schema_ref=old.schema_ref,idempotency_key='generic:mint')
++    assert core.event_store.max_ordinal()==head
++
++
++def test_bound_registered_completion_then_one_success_without_remint(tmp_path,monkeypatch):
++    from cpn.rpnh.registry.firing_recovery import record_registered_operation_completion
++    child,_=bound_owner(tmp_path/'child',monkeypatch)
++    admitted=child.admit('step.run',logical_tau=0,command_id='admit')
++    execution=child.start(admitted,command_id='start')
++    outputs=child.products(execution,outcome_id='complete',products={'step.result':(canonical_json('done'),)},command_id='products')
++    kernel,repository=child.operation_repository()
++    record_registered_operation_completion(child._core,kernel,repository,outputs,idempotency_key='completion')
++    # Same original writer: replay the retained registered completion, not HOST.
++    first=child.succeed(outputs,command_id='success')
++    with pytest.raises(StaleInvocationContext):
++        child.succeed(outputs,command_id='success')
++    assert len(child._core.event_store.list_events_by_type(('transition_firing_settled/v1',)))==1
++    assert len([r for r in child._core.event_store.object_rows_by_type('petri_token/v1')
++        if json.loads(r['metadata_json'])['place']=='step.h7origin'])==1
++
++
++@pytest.mark.parametrize('kind',h7.BOUND_KINDS)
++def test_protected_weak_edges_rejected_before_commit(tmp_path,monkeypatch,kind):
++    from cpn.rpnh.registry.transaction import RegistryTransaction
++    original=RegistryTransaction.relate
++    def weak(self,relation,**kwargs):
++        if relation.source.entity_type==kind:
++            relation=replace(relation,strength='weak')
++        return original(self,relation,**kwargs)
++    monkeypatch.setattr(RegistryTransaction,'relate',weak)
++    with pytest.raises(RegistryConflict,match='strong'):
++        bound_owner(tmp_path/'child',monkeypatch)
++    import sqlite3
++    with sqlite3.connect(tmp_path/'child'/'.registry_v1'/'registry.sqlite3') as db:
++        assert db.execute('SELECT COUNT(*) FROM objects WHERE object_type=?',(kind,)).fetchone()[0]==0

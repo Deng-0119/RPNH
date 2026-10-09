@@ -1,0 +1,184 @@
+{
+  "baseline_file_count": 1339,
+  "baseline_git_blob_mismatches": [],
+  "source_before_after_equal": true,
+  "source_sha256_manifest": "7d992360b923beae00429c9af932da93c98b5d93618cef02dd1ab06ac6fb4d6e",
+  "upstream_source_files": [
+    {
+      "label": "latest",
+      "path": "packages/session/session-format-v3-to-v4/src/sources.ts",
+      "git_blob_sha": "3c6a2886132701fed5b5db980f66386d585dde15",
+      "bytes": 5184,
+      "sha256": "3848aeb9c12e5c962c882405d88173956483103d4b53670b5f25f3185018e004"
+    },
+    {
+      "label": "latest",
+      "path": "packages/session/session-format-v3-to-v4/src/message-sources.ts",
+      "git_blob_sha": "9cf580b265f60113bf52c7bd4b0a72477c1c5ca7",
+      "bytes": 1954,
+      "sha256": "880cf946c56416cabb3aba30a17be32d39f60961ff6568460567442b8fba28d0"
+    },
+    {
+      "label": "latest",
+      "path": "packages/session/session-format-v3-to-v4/src/codec.ts",
+      "git_blob_sha": "b7cf4e7a2b2eda3f2d514a1b57157188352545c2",
+      "bytes": 3418,
+      "sha256": "2e82811f3a805c3985b6ad56ab5129a3c656a2712357e02da1e9653679f384f0"
+    },
+    {
+      "label": "latest",
+      "path": "packages/session/session-format-v3-to-v4/src/tool-role.ts",
+      "git_blob_sha": "239a299fdc25e2134b50d2388beb9e410aa20473",
+      "bytes": 5898,
+      "sha256": "867aded1027588ffa65439efc2eb18748db5255370b65552b1c05130ecb6fa9d"
+    },
+    {
+      "label": "latest",
+      "path": "packages/core/session/src/index.ts",
+      "git_blob_sha": "c3b783bf38adb69a692de677072929177221b1c4",
+      "bytes": 60227,
+      "sha256": "0ae1db3a5153f9a50e7aaec547c0e0f50af17528ddc5c50aceb8a8bbc34af9f4"
+    },
+    {
+      "label": "latest",
+      "path": "packages/core/session/src/types.ts",
+      "git_blob_sha": "84581376591eedb6ba9b3961b3c1f584c14bb9ba",
+      "bytes": 23124,
+      "sha256": "67ff2491ae8284ab61c2c1a57e346fd4d12effb1e82a42aa654bcc90f067215c"
+    },
+    {
+      "label": "latest",
+      "path": "packages/core/agent-loop/src/index.ts",
+      "git_blob_sha": "7541a5c4bf928f8f159900bb41a58ca04e4dc6da",
+      "bytes": 37946,
+      "sha256": "853e76aef2eecafe5526a5267c3d386780b5c59e3c79c2448532fada7285a605"
+    },
+    {
+      "label": "latest",
+      "path": "packages/llm/llm/src/message.ts",
+      "git_blob_sha": "d96a63edb6d78d64508875ebc1cc6a1cc5a824b6",
+      "bytes": 11275,
+      "sha256": "5826fb32bc3d6e2221a7a39cc8b4fecc57282540a332417bb9f2ac3522b5c7da"
+    },
+    {
+      "label": "latest",
+      "path": "packages/llm/llm/src/assembler.ts",
+      "git_blob_sha": "917dd11e2cfc13646ef17f037f30b5c95bd00d19",
+      "bytes": 7998,
+      "sha256": "a2d065645058a70195a504b101e9eed23df3eaced3def868d602f3a863b03887"
+    },
+    {
+      "label": "pin",
+      "path": "packages/core/session/src/index.ts",
+      "git_blob_sha": "548603f61342c51d3b3417fc2432d9cb172ce3e2",
+      "bytes": 59861,
+      "sha256": "c6ded93fde2c64e87a313f27877bbf37390e280ff90c3012ef575181e553e1fe"
+    },
+    {
+      "label": "pin",
+      "path": "packages/core/session/src/types.ts",
+      "git_blob_sha": "0b946bd17ac353ff7644a1bfa5422a94d2f06cb6",
+      "bytes": 22153,
+      "sha256": "312580d4e2ab568eeec466dbbcff5117cff84a932aeee5d10214bc6a087812eb"
+    },
+    {
+      "label": "pin",
+      "path": "packages/core/agent-loop/src/index.ts",
+      "git_blob_sha": "d39a26a6e90d99f101cfeb8a739dd581f4d5b5b0",
+      "bytes": 40155,
+      "sha256": "c112ecabe3711092821cefd76f285a185fcf7bcf6be7b5599ff8b86bf28e1b4a"
+    },
+    {
+      "label": "pin",
+      "path": "packages/llm/llm/src/message.ts",
+      "git_blob_sha": "05af6bae3e4ccb81328b8f2a929e008dbe86b046",
+      "bytes": 9818,
+      "sha256": "0e19944d71cce8172c640c801da6e9256c8940dff5906ec0e28aaf8a9c4ef130"
+    },
+    {
+      "label": "pin",
+      "path": "packages/llm/llm/src/assembler.ts",
+      "git_blob_sha": "88ae77d80b63b5860367f51bc066f533e6a821b3",
+      "bytes": 7976,
+      "sha256": "ff30f5ca346015bfffeffb5ee3398901d03eb3429fda5d0d4e0c40e8638dfe58"
+    }
+  ],
+  "official_licenses": [
+    {
+      "label": "pin",
+      "path": "LICENSE",
+      "git_blob_sha": "c1f7a78e89e4e4dc7b86664c3b3c76eb5eee1785",
+      "sha256": "ebb4f09972aee8608be255debaf78451a68e95c290f55c240dec2ecfa16ea6be",
+      "url": "https://github.com/deepseek-ai/deepseek-harness/blob/ddefc45fbc7f8e46dd73185e68295696d1297887/LICENSE"
+    },
+    {
+      "label": "latest",
+      "path": "LICENSE",
+      "git_blob_sha": "c1f7a78e89e4e4dc7b86664c3b3c76eb5eee1785",
+      "sha256": "ebb4f09972aee8608be255debaf78451a68e95c290f55c240dec2ecfa16ea6be",
+      "url": "https://github.com/deepseek-ai/deepseek-harness/blob/5badb15009ae1756c3afe0ae0cef1faafc290ccc/LICENSE"
+    }
+  ],
+  "protected_files": [
+    {
+      "path": "integrations/dsh/UPSTREAM.json",
+      "sha256": "b2d6a10b0376aa081cc0f7c924971032d0a7379c9f088d08f8d84bfc34eb3160",
+      "git_blob_sha": "73f99a27727936e3d36a65d80339d77d8626bba2"
+    },
+    {
+      "path": "integrations/dsh/UPSTREAM_LICENSE",
+      "sha256": "ebb4f09972aee8608be255debaf78451a68e95c290f55c240dec2ecfa16ea6be",
+      "git_blob_sha": "c1f7a78e89e4e4dc7b86664c3b3c76eb5eee1785"
+    },
+    {
+      "path": "integrations/dsh/prepare.sh",
+      "sha256": "fac01820b01e07a14a257753fd8622d07ab243e2c3d9b063eed5d6a8d85fd9f1",
+      "git_blob_sha": "8c54c11a4ada80b5e2522363221ddb251986c9e7"
+    },
+    {
+      "path": "integrations/dsh/verify.sh",
+      "sha256": "382d167434a2bdc3219ed88a9f0610470a1ff38cd71bb6dd47d8dfe653e0fc84",
+      "git_blob_sha": "d0c350e0fc4e3854779c0f4d2c2b57878b591eb3"
+    },
+    {
+      "path": "integrations/dsh/patch_upstream.py",
+      "sha256": "d87b82e828571c882926fa8c0236680a6c179cf0c57d6737aa6378f24e9c97b9",
+      "git_blob_sha": "ac8ab8e9a664e7dc9b303b65ee3fe5c1209b4244"
+    },
+    {
+      "path": "integrations/dsh/run.sh",
+      "sha256": "0b1cf321668b5373a993344e19733df1d201d297387c79279e1bda46e637b318",
+      "git_blob_sha": "8064442b53a524069f7a476347ab40376e24a5a4"
+    },
+    {
+      "path": "integrations/dsh/src/bridge.ts",
+      "sha256": "6792bb545bb89674df43ace598afcfc2b2dac7cedc3886f01bd591346be6bbf7",
+      "git_blob_sha": "4397c58e2cf5506d67b65a77741c8b2b104aaace"
+    },
+    {
+      "path": "integrations/dsh/src/app.ts",
+      "sha256": "66a657323b68b82a2cefe2cc9db344ff462ce855a5b7862a74ebc4b392ae1149",
+      "git_blob_sha": "368fd847afaf3368237c959a822c8db91f31d493"
+    },
+    {
+      "path": "integrations/dsh/src/integration.spec.ts",
+      "sha256": "a6ad5fe05f530b61d4fcc91380c3b31072c67f483fa04ecfb9bac5387dca0ec6",
+      "git_blob_sha": "95e6bbeef16da4bd0a2311934e023c1fa776e02c"
+    },
+    {
+      "path": "integrations/dsh/src/lifecycle.spec.ts",
+      "sha256": "c7bb88f3ecd2002ce72e46611da3fb05e2a6d86569d9b5689d24ce7c5f0cb250",
+      "git_blob_sha": "79d9b1562af593ca79de01b07e9bb7a697d22e50"
+    },
+    {
+      "path": "cpn/dsh/launcher.py",
+      "sha256": "e08ab5f714bda741eee3d6815cfd41780464833f411db1883f77d3d5a19858b6",
+      "git_blob_sha": "c8bab78d3c5520e4726983f7a11edc4ae5f33345"
+    },
+    {
+      "path": "cpn/dsh/server.py",
+      "sha256": "1aabd0fc2ddea651f67760e44fa975695efa05f3834875de231dff4ec840fb35",
+      "git_blob_sha": "1bd394552a4e9849d43b060cad4be9c915fc2fb7"
+    }
+  ]
+}

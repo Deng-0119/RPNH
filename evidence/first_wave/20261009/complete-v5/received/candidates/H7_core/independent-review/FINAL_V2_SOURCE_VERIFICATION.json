@@ -1,0 +1,12 @@
+{
+  "frozen_utc": "2026-10-08T23:00:24.218194+00:00",
+  "author_manifest": "evidence/core20-source-before.json",
+  "author_manifest_file_sha256": "91e1960d47882d049002aff5ecedeeac4c81a11b96eb38ae38ff09658702b1e0",
+  "source_manifest_sha256": "ac68327e442b7bda8a6aa2ba93c0cd20ad72181a661b0497627b08713334907e",
+  "file_count": 992,
+  "file_mismatches": [],
+  "changed_from_v1": [
+    "cpn/rpnh/registry/parent_bound.py"
+  ],
+  "v1_source_manifest_sha256": "61421bd9fd2f389a164c54fbe6fc92086e3a9ff571367c888174782a51a3ca9d"
+}

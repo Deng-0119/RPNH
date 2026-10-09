@@ -1,0 +1,7 @@
+{
+  "git_apply_check": true,
+  "git_apply": true,
+  "exact_final_bytes": true,
+  "files": 12,
+  "patch_sha256": "3be0de65edb5a4f68579f115f5072bacc3e4fe4ffefeba96b226e45cbcab8a8d"
+}

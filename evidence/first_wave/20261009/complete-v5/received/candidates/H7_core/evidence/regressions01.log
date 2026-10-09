@@ -1,0 +1,22 @@
+ERROR: found no collectors for /workspace/scratch/18c810e6dd59/rpnh-parent-child-core-implementation/source/tests/test_native_net_operations.py::test_replacement_plan_uses_existing_owner_adoption_path
+
+ERROR: found no collectors for /workspace/scratch/18c810e6dd59/rpnh-parent-child-core-implementation/source/tests/test_native_net_operations.py::test_registered_extract_uses_real_success_without_adoption_or_model
+
+
+==================================== ERRORS ====================================
+_____________ ERROR collecting tests/test_native_net_operations.py _____________
+tests/test_native_net_operations.py:58: in <module>
+    live_agent_replacement = _load_source_module(
+tests/test_native_net_operations.py:54: in _load_source_module
+    spec.loader.exec_module(module)
+<frozen importlib._bootstrap_external>:995: in exec_module
+    ???
+<frozen importlib._bootstrap_external>:1132: in get_code
+    ???
+<frozen importlib._bootstrap_external>:1190: in get_data
+    ???
+E   FileNotFoundError: [Errno 2] No such file or directory: '/workspace/scratch/18c810e6dd59/rpnh-parent-child-core-implementation/source/examples/net_operations/live_agent_replacement.py'
+- generated xml file: /workspace/scratch/18c810e6dd59/rpnh-parent-child-core-implementation/evidence/regressions01.xml -
+=========================== short test summary info ============================
+ERROR tests/test_native_net_operations.py - FileNotFoundError: [Errno 2] No s...
+1 error in 0.64s

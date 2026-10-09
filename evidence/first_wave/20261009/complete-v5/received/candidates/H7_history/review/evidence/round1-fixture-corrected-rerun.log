@@ -1,0 +1,120 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.14, pytest-8.4.2, pluggy-1.6.0 -- /workspace/scratch/18c810e6dd59/rpnh-acceptance-history-review/round1-source/../../rpnh-recovery-20261003/source/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /workspace/scratch/18c810e6dd59/rpnh-acceptance-history-review
+collecting ... collected 38 items / 34 deselected / 4 selected
+
+../tests/test_history_independent.py::test_unsupported_lifecycle_does_not_mask_corruption[published_flag] FAILED [ 25%]
+../tests/test_history_independent.py::test_unsupported_lifecycle_does_not_mask_corruption[published_and_digest] FAILED [ 50%]
+../tests/test_history_independent.py::test_unsupported_lifecycle_does_not_mask_corruption[published_and_member] FAILED [ 75%]
+../tests/test_history_independent.py::test_source_root_start_and_schema_closure[root_foreign_member] PASSED [100%]
+
+=================================== FAILURES ===================================
+_____ test_unsupported_lifecycle_does_not_mask_corruption[published_flag] ______
+
+tmp_path = PosixPath('/tmp/pytest-of-agent/pytest-204/test_unsupported_lifecycle_doe0')
+damage = 'published_flag'
+
+    @pytest.mark.parametrize('damage', ['published_flag', 'published_and_digest', 'published_and_member'])
+    def test_unsupported_lifecycle_does_not_mask_corruption(tmp_path, damage):
+        _, store, query = fixture(tmp_path)
+        with store.connect() as db:
+            # Explicit corruption-only bypass; the normal SQLite CHECK rejects this.
+            # This is never a legal H7 lifecycle or an API positive.
+            db.execute('PRAGMA ignore_check_constraints=ON')
+            db.execute("UPDATE firing_publications SET state='PUBLISHED'")
+            if damage == 'published_and_member':
+                db.execute("DELETE FROM firing_temporary_members WHERE member_kind='object' AND member_identity=?", (str(query.acceptance_ref.version_id),))
+        if damage == 'published_and_digest':
+            query = replace(query, acceptance_sha256='f' * 64)
+        result = store.classify_child_acceptance_history(query)
+>       assert result.status == INVALID, (damage, result)
+E       AssertionError: ('published_flag', ChildAcceptanceHistoryResult(status='HISTORICAL_ACCEPTANCE_UNAVAILABLE', reason='original_evidence_or_supported_lifecycle_unavailable', proof=None))
+E       assert 'HISTORICAL_ACCEPTANCE_UNAVAILABLE' == 'HISTORICAL_ACCEPTANCE_INVALID'
+E         
+E         - HISTORICAL_ACCEPTANCE_INVALID
+E         ?                       ^    ^^
+E         + HISTORICAL_ACCEPTANCE_UNAVAILABLE
+E         ?                       ^ +  + ^^^^
+
+../tests/test_history_independent.py:73: AssertionError
+__ test_unsupported_lifecycle_does_not_mask_corruption[published_and_digest] ___
+
+tmp_path = PosixPath('/tmp/pytest-of-agent/pytest-204/test_unsupported_lifecycle_doe1')
+damage = 'published_and_digest'
+
+    @pytest.mark.parametrize('damage', ['published_flag', 'published_and_digest', 'published_and_member'])
+    def test_unsupported_lifecycle_does_not_mask_corruption(tmp_path, damage):
+        _, store, query = fixture(tmp_path)
+        with store.connect() as db:
+            # Explicit corruption-only bypass; the normal SQLite CHECK rejects this.
+            # This is never a legal H7 lifecycle or an API positive.
+            db.execute('PRAGMA ignore_check_constraints=ON')
+            db.execute("UPDATE firing_publications SET state='PUBLISHED'")
+            if damage == 'published_and_member':
+                db.execute("DELETE FROM firing_temporary_members WHERE member_kind='object' AND member_identity=?", (str(query.acceptance_ref.version_id),))
+        if damage == 'published_and_digest':
+            query = replace(query, acceptance_sha256='f' * 64)
+        result = store.classify_child_acceptance_history(query)
+>       assert result.status == INVALID, (damage, result)
+E       AssertionError: ('published_and_digest', ChildAcceptanceHistoryResult(status='HISTORICAL_ACCEPTANCE_UNAVAILABLE', reason='original_evidence_or_supported_lifecycle_unavailable', proof=None))
+E       assert 'HISTORICAL_ACCEPTANCE_UNAVAILABLE' == 'HISTORICAL_ACCEPTANCE_INVALID'
+E         
+E         - HISTORICAL_ACCEPTANCE_INVALID
+E         ?                       ^    ^^
+E         + HISTORICAL_ACCEPTANCE_UNAVAILABLE
+E         ?                       ^ +  + ^^^^
+
+../tests/test_history_independent.py:73: AssertionError
+__ test_unsupported_lifecycle_does_not_mask_corruption[published_and_member] ___
+
+tmp_path = PosixPath('/tmp/pytest-of-agent/pytest-204/test_unsupported_lifecycle_doe2')
+damage = 'published_and_member'
+
+    @pytest.mark.parametrize('damage', ['published_flag', 'published_and_digest', 'published_and_member'])
+    def test_unsupported_lifecycle_does_not_mask_corruption(tmp_path, damage):
+        _, store, query = fixture(tmp_path)
+        with store.connect() as db:
+            # Explicit corruption-only bypass; the normal SQLite CHECK rejects this.
+            # This is never a legal H7 lifecycle or an API positive.
+            db.execute('PRAGMA ignore_check_constraints=ON')
+            db.execute("UPDATE firing_publications SET state='PUBLISHED'")
+            if damage == 'published_and_member':
+                db.execute("DELETE FROM firing_temporary_members WHERE member_kind='object' AND member_identity=?", (str(query.acceptance_ref.version_id),))
+        if damage == 'published_and_digest':
+            query = replace(query, acceptance_sha256='f' * 64)
+        result = store.classify_child_acceptance_history(query)
+>       assert result.status == INVALID, (damage, result)
+E       AssertionError: ('published_and_member', ChildAcceptanceHistoryResult(status='HISTORICAL_ACCEPTANCE_UNAVAILABLE', reason='original_evidence_or_supported_lifecycle_unavailable', proof=None))
+E       assert 'HISTORICAL_ACCEPTANCE_UNAVAILABLE' == 'HISTORICAL_ACCEPTANCE_INVALID'
+E         
+E         - HISTORICAL_ACCEPTANCE_INVALID
+E         ?                       ^    ^^
+E         + HISTORICAL_ACCEPTANCE_UNAVAILABLE
+E         ?                       ^ +  + ^^^^
+
+../tests/test_history_independent.py:73: AssertionError
+- generated xml file: /workspace/scratch/18c810e6dd59/rpnh-acceptance-history-review/evidence/round1-fixture-corrected-rerun.xml -
+=========================== short test summary info ============================
+FAILED ../tests/test_history_independent.py::test_unsupported_lifecycle_does_not_mask_corruption[published_flag] - AssertionError: ('published_flag', ChildAcceptanceHistoryResult(status='HISTORICAL_ACCEPTANCE_UNAVAILABLE', reason='original_evidence_or_supported_lifecycle_unavailable', proof=None))
+assert 'HISTORICAL_ACCEPTANCE_UNAVAILABLE' == 'HISTORICAL_ACCEPTANCE_INVALID'
+  
+  - HISTORICAL_ACCEPTANCE_INVALID
+  ?                       ^    ^^
+  + HISTORICAL_ACCEPTANCE_UNAVAILABLE
+  ?                       ^ +  + ^^^^
+FAILED ../tests/test_history_independent.py::test_unsupported_lifecycle_does_not_mask_corruption[published_and_digest] - AssertionError: ('published_and_digest', ChildAcceptanceHistoryResult(status='HISTORICAL_ACCEPTANCE_UNAVAILABLE', reason='original_evidence_or_supported_lifecycle_unavailable', proof=None))
+assert 'HISTORICAL_ACCEPTANCE_UNAVAILABLE' == 'HISTORICAL_ACCEPTANCE_INVALID'
+  
+  - HISTORICAL_ACCEPTANCE_INVALID
+  ?                       ^    ^^
+  + HISTORICAL_ACCEPTANCE_UNAVAILABLE
+  ?                       ^ +  + ^^^^
+FAILED ../tests/test_history_independent.py::test_unsupported_lifecycle_does_not_mask_corruption[published_and_member] - AssertionError: ('published_and_member', ChildAcceptanceHistoryResult(status='HISTORICAL_ACCEPTANCE_UNAVAILABLE', reason='original_evidence_or_supported_lifecycle_unavailable', proof=None))
+assert 'HISTORICAL_ACCEPTANCE_UNAVAILABLE' == 'HISTORICAL_ACCEPTANCE_INVALID'
+  
+  - HISTORICAL_ACCEPTANCE_INVALID
+  ?                       ^    ^^
+  + HISTORICAL_ACCEPTANCE_UNAVAILABLE
+  ?                       ^ +  + ^^^^
+================== 3 failed, 1 passed, 34 deselected in 8.44s ==================

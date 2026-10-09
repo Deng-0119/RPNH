@@ -1,0 +1,15 @@
+{
+  "final_command_exit": 0,
+  "passed": 43,
+  "failed": 0,
+  "skipped": 0,
+  "deselected": 1,
+  "deselected_case": "tests/test_frontend_boundary.py::test_codex_frontend_uses_external_socket_for_absent_long_root",
+  "native_gate": "BLOCKED_ENV: AF_UNIX errno 1 on actual initial attempt",
+  "model_calls": 0,
+  "rpc_transport": "in-memory FakeWebSocket",
+  "turn_start_scope": "decoded profile at prepare_turn spy; no turn execution",
+  "upstream_0155": "schema/source reviewed; native pending",
+  "upstream_0161": "schema/source reviewed only; still rejected by version pin",
+  "history_pagination": "known gap deferred, no implementation or capability downgrade"
+}

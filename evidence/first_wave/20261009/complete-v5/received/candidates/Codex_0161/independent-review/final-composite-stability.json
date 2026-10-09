@@ -1,0 +1,17 @@
+{
+  "all_unchanged": true,
+  "before": {
+    "cpn/frontend/codex_app_server.py": "a07296fbc32e6529d3acf8d5e3e6a3c69ccacebda7faeb72a1ce02abd6995815",
+    "cpn/frontend/codex_history.py": "4b1cd88ed82651194271d8544a94eb2ffb8cb2b8b0f225703e777f0c6e3b23a6",
+    "cpn/frontend/codex_compatibility.v1.json": "a58032e59bc1a249bfdef526d77b6208486fbf9633d33e46cb0903d41a87f10e",
+    "cpn/rpnh/task_control.py": "b8658b6c19d64eb4bc34a9c320c84a9140cab624e236ffe8c8edfcc7bd026729",
+    "cpn/rpnh/registry/run_authority.py": "7475c2d5403dea49dc0a45796a3f84beab6c7516f18466bc8e1338bf0be684e3"
+  },
+  "after": {
+    "cpn/frontend/codex_app_server.py": "a07296fbc32e6529d3acf8d5e3e6a3c69ccacebda7faeb72a1ce02abd6995815",
+    "cpn/frontend/codex_history.py": "4b1cd88ed82651194271d8544a94eb2ffb8cb2b8b0f225703e777f0c6e3b23a6",
+    "cpn/frontend/codex_compatibility.v1.json": "a58032e59bc1a249bfdef526d77b6208486fbf9633d33e46cb0903d41a87f10e",
+    "cpn/rpnh/task_control.py": "b8658b6c19d64eb4bc34a9c320c84a9140cab624e236ffe8c8edfcc7bd026729",
+    "cpn/rpnh/registry/run_authority.py": "7475c2d5403dea49dc0a45796a3f84beab6c7516f18466bc8e1338bf0be684e3"
+  }
+}

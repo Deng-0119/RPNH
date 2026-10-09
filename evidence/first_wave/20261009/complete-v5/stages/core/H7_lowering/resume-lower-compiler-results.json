@@ -1,0 +1,3621 @@
+{
+  "source": "<WORKSPACE>/.v26/c4",
+  "exit_status": 0,
+  "collected": [
+    "tests/test_typed_author_interoperation.py::test_prepared_typed_author_publishes_reopens_and_tracks_exact_branch_head",
+    "tests/test_typed_author_interoperation.py::test_invalid_prepared_proof_fails_before_revision_publication",
+    "tests/test_typed_author_interoperation.py::test_required_typed_boundary_rejects_stripped_and_unsupported_proofs",
+    "tests/test_typed_author_interoperation.py::test_real_assembly_publish_rejects_typed_member_without_erasing_proof",
+    "tests/test_typed_author_interoperation.py::test_prepared_typed_module_recompile_matches_direct_author",
+    "tests/test_typed_author_interoperation.py::test_prepared_typed_remote_schema_rejects_without_retrieval",
+    "tests/test_typed_author_interoperation.py::test_legacy_direct_python_numeric_constraint_keys_still_normalize",
+    "tests/test_compiler_json_contract.py::test_host_lower_cannot_change_json_boolean_number_type[operation-1-True]",
+    "tests/test_compiler_json_contract.py::test_host_lower_cannot_change_json_boolean_number_type[operation-True-1]",
+    "tests/test_compiler_json_contract.py::test_host_lower_cannot_change_json_boolean_number_type[operation-0-False]",
+    "tests/test_compiler_json_contract.py::test_host_lower_cannot_change_json_boolean_number_type[operation-False-0]",
+    "tests/test_compiler_json_contract.py::test_host_lower_cannot_change_json_boolean_number_type[operation-1.0-True]",
+    "tests/test_compiler_json_contract.py::test_host_lower_cannot_change_json_boolean_number_type[operation-0.0-False]",
+    "tests/test_compiler_json_contract.py::test_host_lower_cannot_change_json_boolean_number_type[effect-1-True]",
+    "tests/test_compiler_json_contract.py::test_host_lower_cannot_change_json_boolean_number_type[effect-True-1]",
+    "tests/test_compiler_json_contract.py::test_host_lower_cannot_change_json_boolean_number_type[effect-0-False]",
+    "tests/test_compiler_json_contract.py::test_host_lower_cannot_change_json_boolean_number_type[effect-False-0]",
+    "tests/test_compiler_json_contract.py::test_host_lower_cannot_change_json_boolean_number_type[effect-1.0-True]",
+    "tests/test_compiler_json_contract.py::test_host_lower_cannot_change_json_boolean_number_type[effect-0.0-False]",
+    "tests/test_compiler_json_contract.py::test_wire_rejects_json_boolean_number_substitution[fragment-operation-1-True]",
+    "tests/test_compiler_json_contract.py::test_wire_rejects_json_boolean_number_substitution[fragment-operation-0-False]",
+    "tests/test_compiler_json_contract.py::test_wire_rejects_json_boolean_number_substitution[fragment-operation-True-1]",
+    "tests/test_compiler_json_contract.py::test_wire_rejects_json_boolean_number_substitution[fragment-operation-False-0]",
+    "tests/test_compiler_json_contract.py::test_wire_rejects_json_boolean_number_substitution[fragment-effect-1-True]",
+    "tests/test_compiler_json_contract.py::test_wire_rejects_json_boolean_number_substitution[fragment-effect-0-False]",
+    "tests/test_compiler_json_contract.py::test_wire_rejects_json_boolean_number_substitution[fragment-effect-True-1]",
+    "tests/test_compiler_json_contract.py::test_wire_rejects_json_boolean_number_substitution[fragment-effect-False-0]",
+    "tests/test_compiler_json_contract.py::test_wire_rejects_json_boolean_number_substitution[symbolic-operation-1-True]",
+    "tests/test_compiler_json_contract.py::test_wire_rejects_json_boolean_number_substitution[symbolic-operation-0-False]",
+    "tests/test_compiler_json_contract.py::test_wire_rejects_json_boolean_number_substitution[symbolic-operation-True-1]",
+    "tests/test_compiler_json_contract.py::test_wire_rejects_json_boolean_number_substitution[symbolic-operation-False-0]",
+    "tests/test_compiler_json_contract.py::test_wire_rejects_json_boolean_number_substitution[symbolic-effect-1-True]",
+    "tests/test_compiler_json_contract.py::test_wire_rejects_json_boolean_number_substitution[symbolic-effect-0-False]",
+    "tests/test_compiler_json_contract.py::test_wire_rejects_json_boolean_number_substitution[symbolic-effect-True-1]",
+    "tests/test_compiler_json_contract.py::test_wire_rejects_json_boolean_number_substitution[symbolic-effect-False-0]",
+    "tests/test_compiler_json_contract.py::test_normal_json_config_compiles_and_round_trips[operation-None]",
+    "tests/test_compiler_json_contract.py::test_normal_json_config_compiles_and_round_trips[operation-True]",
+    "tests/test_compiler_json_contract.py::test_normal_json_config_compiles_and_round_trips[operation-False]",
+    "tests/test_compiler_json_contract.py::test_normal_json_config_compiles_and_round_trips[operation-1_0]",
+    "tests/test_compiler_json_contract.py::test_normal_json_config_compiles_and_round_trips[operation-0]",
+    "tests/test_compiler_json_contract.py::test_normal_json_config_compiles_and_round_trips[operation-1.25]",
+    "tests/test_compiler_json_contract.py::test_normal_json_config_compiles_and_round_trips[operation-1_1]",
+    "tests/test_compiler_json_contract.py::test_normal_json_config_compiles_and_round_trips[operation-value7]",
+    "tests/test_compiler_json_contract.py::test_normal_json_config_compiles_and_round_trips[effect-None]",
+    "tests/test_compiler_json_contract.py::test_normal_json_config_compiles_and_round_trips[effect-True]",
+    "tests/test_compiler_json_contract.py::test_normal_json_config_compiles_and_round_trips[effect-False]",
+    "tests/test_compiler_json_contract.py::test_normal_json_config_compiles_and_round_trips[effect-1_0]",
+    "tests/test_compiler_json_contract.py::test_normal_json_config_compiles_and_round_trips[effect-0]",
+    "tests/test_compiler_json_contract.py::test_normal_json_config_compiles_and_round_trips[effect-1.25]",
+    "tests/test_compiler_json_contract.py::test_normal_json_config_compiles_and_round_trips[effect-1_1]",
+    "tests/test_compiler_json_contract.py::test_normal_json_config_compiles_and_round_trips[effect-value7]",
+    "tests/test_compiler_json_contract.py::test_existing_numeric_equality_survives_lowering_and_wire[operation-1-1.0]",
+    "tests/test_compiler_json_contract.py::test_existing_numeric_equality_survives_lowering_and_wire[operation-0--0.0]",
+    "tests/test_compiler_json_contract.py::test_existing_numeric_equality_survives_lowering_and_wire[operation-1.0-1]",
+    "tests/test_compiler_json_contract.py::test_existing_numeric_equality_survives_lowering_and_wire[effect-1-1.0]",
+    "tests/test_compiler_json_contract.py::test_existing_numeric_equality_survives_lowering_and_wire[effect-0--0.0]",
+    "tests/test_compiler_json_contract.py::test_existing_numeric_equality_survives_lowering_and_wire[effect-1.0-1]",
+    "tests/test_compiler_json_contract.py::test_declared_bundle_order_remains_incidental",
+    "tests/test_compiler_json_contract.py::test_ordered_abi_config_arrays_and_effect_multiplicity_stay_exact[inputs]",
+    "tests/test_compiler_json_contract.py::test_ordered_abi_config_arrays_and_effect_multiplicity_stay_exact[outputs]",
+    "tests/test_compiler_json_contract.py::test_ordered_abi_config_arrays_and_effect_multiplicity_stay_exact[config]",
+    "tests/test_compiler_json_contract.py::test_ordered_abi_config_arrays_and_effect_multiplicity_stay_exact[effect_config]",
+    "tests/test_compiler_json_contract.py::test_ordered_abi_config_arrays_and_effect_multiplicity_stay_exact[multiplicity]",
+    "tests/test_compiler_json_contract.py::test_existing_unequal_numbers_and_container_shapes_stay_unequal[1-1.5]",
+    "tests/test_compiler_json_contract.py::test_existing_unequal_numbers_and_container_shapes_stay_unequal[9007199254740993-9007199254740992.0]",
+    "tests/test_compiler_json_contract.py::test_existing_unequal_numbers_and_container_shapes_stay_unequal[1-1]",
+    "tests/test_compiler_json_contract.py::test_existing_unequal_numbers_and_container_shapes_stay_unequal[None-False]",
+    "tests/test_compiler_json_contract.py::test_existing_unequal_numbers_and_container_shapes_stay_unequal[left4-right4]",
+    "tests/test_compiler_json_contract.py::test_existing_unequal_numbers_and_container_shapes_stay_unequal[left5-right5]",
+    "tests/test_compiler_json_contract.py::test_wire_inventory_reordering_preserves_config_array_order",
+    "tests/test_compiler_json_contract.py::test_fusion_rejects_boolean_number_change_in_initial_payload[lower-1-True]",
+    "tests/test_compiler_json_contract.py::test_fusion_rejects_boolean_number_change_in_initial_payload[lower-0-False]",
+    "tests/test_compiler_json_contract.py::test_fusion_rejects_boolean_number_change_in_initial_payload[lower-True-1]",
+    "tests/test_compiler_json_contract.py::test_fusion_rejects_boolean_number_change_in_initial_payload[lower-False-0]",
+    "tests/test_compiler_json_contract.py::test_fusion_rejects_boolean_number_change_in_initial_payload[lower-source4-changed4]",
+    "tests/test_compiler_json_contract.py::test_fusion_rejects_boolean_number_change_in_initial_payload[lower-source5-changed5]",
+    "tests/test_compiler_json_contract.py::test_fusion_rejects_boolean_number_change_in_initial_payload[wire-1-True]",
+    "tests/test_compiler_json_contract.py::test_fusion_rejects_boolean_number_change_in_initial_payload[wire-0-False]",
+    "tests/test_compiler_json_contract.py::test_fusion_rejects_boolean_number_change_in_initial_payload[wire-True-1]",
+    "tests/test_compiler_json_contract.py::test_fusion_rejects_boolean_number_change_in_initial_payload[wire-False-0]",
+    "tests/test_compiler_json_contract.py::test_fusion_rejects_boolean_number_change_in_initial_payload[wire-source4-changed4]",
+    "tests/test_compiler_json_contract.py::test_fusion_rejects_boolean_number_change_in_initial_payload[wire-source5-changed5]",
+    "tests/test_compiler_json_contract.py::test_fusion_keeps_initial_token_multiset_and_numeric_equivalence[left0-right0]",
+    "tests/test_compiler_json_contract.py::test_fusion_keeps_initial_token_multiset_and_numeric_equivalence[left1-right1]",
+    "tests/test_compiler_json_contract.py::test_fusion_keeps_initial_token_multiset_and_numeric_equivalence[left2-right2]",
+    "tests/test_compiler_json_contract.py::test_fusion_keeps_initial_token_multiset_and_numeric_equivalence[left3-right3]",
+    "tests/test_compiler_json_contract.py::test_fusion_keeps_multiplicity_payload_order_and_container_mismatches[left0-right0]",
+    "tests/test_compiler_json_contract.py::test_fusion_keeps_multiplicity_payload_order_and_container_mismatches[left1-right1]",
+    "tests/test_compiler_json_contract.py::test_fusion_keeps_multiplicity_payload_order_and_container_mismatches[left2-right2]",
+    "tests/test_compiler_json_contract.py::test_fusion_keeps_multiplicity_payload_order_and_container_mismatches[left3-right3]",
+    "tests/test_worker_schema_compat.py::test_main_v4_imports_without_dropping_socket_or_profile[None]",
+    "tests/test_worker_schema_compat.py::test_main_v4_imports_without_dropping_socket_or_profile[/tmp/legacy-main.sock]",
+    "tests/test_worker_schema_compat.py::test_plugin_v4_keeps_pinned_catalog_and_migrates_to_v5",
+    "tests/test_worker_schema_compat.py::test_v4_hybrid_cannot_guess_between_independent_legacy_formats",
+    "tests/test_worker_schema_compat.py::test_both_socket_formats_reject_non_string_paths[1-v4]",
+    "tests/test_worker_schema_compat.py::test_both_socket_formats_reject_non_string_paths[1-v5]",
+    "tests/test_worker_schema_compat.py::test_both_socket_formats_reject_non_string_paths[True-v4]",
+    "tests/test_worker_schema_compat.py::test_both_socket_formats_reject_non_string_paths[True-v5]",
+    "tests/test_worker_schema_compat.py::test_both_socket_formats_reject_non_string_paths[invalid2-v4]",
+    "tests/test_worker_schema_compat.py::test_both_socket_formats_reject_non_string_paths[invalid2-v5]",
+    "tests/test_worker_schema_compat.py::test_incomplete_plugin_authority_is_rejected[v4]",
+    "tests/test_worker_schema_compat.py::test_incomplete_plugin_authority_is_rejected[v5]",
+    "tests/test_worker_schema_compat.py::test_unknown_main_v4_field_is_not_silently_dropped",
+    "tests/test_worker_schema_compat.py::test_v5_roundtrip_keeps_plugins_and_owner_identity_together",
+    "tests/test_worker_schema_compat.py::test_v6_roundtrip_uses_only_parent_relative_path_references",
+    "tests/test_worker_schema_compat.py::test_managed_bindings_use_additive_v7_v8_documents",
+    "tests/test_control_ir_compiler.py::test_public_compiler_consumes_typed_values_in_real_lowering_and_wire",
+    "tests/test_control_ir_compiler.py::test_author_input_is_detached_and_direct_constructor_rechecked",
+    "tests/test_control_ir_compiler.py::test_public_compiler_rejects_precise_author_errors[<lambda>-config_type_mismatch]",
+    "tests/test_control_ir_compiler.py::test_public_compiler_rejects_precise_author_errors[<lambda>-type_mismatch]",
+    "tests/test_control_ir_compiler.py::test_public_compiler_rejects_precise_author_errors[<lambda>-config_fields_mismatch]",
+    "tests/test_control_ir_compiler.py::test_public_compiler_rejects_precise_author_errors[<lambda>-outcome_routes_incomplete]",
+    "tests/test_control_ir_compiler.py::test_public_compiler_rejects_precise_author_errors[<lambda>-outcome_route_mismatch]",
+    "tests/test_control_ir_compiler.py::test_public_compiler_rejects_precise_author_errors[<lambda>-guard_bool_required]",
+    "tests/test_control_ir_compiler.py::test_public_compiler_rejects_precise_author_errors[<lambda>-invalid_arc_weight]",
+    "tests/test_control_ir_compiler.py::test_public_compiler_rejects_precise_author_errors[<lambda>-unknown_arc_semantics]",
+    "tests/test_control_ir_compiler.py::test_public_compiler_rejects_precise_author_errors[<lambda>-atomic_inventory_incomplete]",
+    "tests/test_control_ir_compiler.py::test_public_compiler_rejects_precise_author_errors[<lambda>-typed_config_placeholder_required]",
+    "tests/test_control_ir_compiler.py::test_public_compiler_rejects_precise_author_errors[<lambda>-division_by_zero]",
+    "tests/test_control_ir_compiler.py::test_public_compiler_rejects_precise_author_errors[<lambda>-unit_mismatch]",
+    "tests/test_control_ir_compiler.py::test_public_compiler_reports_capability_without_invoking_lower[<lambda>-mutable_read_set-NEW_VERSION_REQUIRED]",
+    "tests/test_control_ir_compiler.py::test_public_compiler_reports_capability_without_invoking_lower[<lambda>-runtime_guard-EXACT_ADAPTER_REQUIRED]",
+    "tests/test_control_ir_compiler.py::test_public_compiler_reports_capability_without_invoking_lower[<lambda>-author_module-UNSUPPORTED]",
+    "tests/test_control_ir_compiler.py::test_public_compiler_reports_capability_without_invoking_lower[<lambda>-observe_fact-EXACT_ADAPTER_REQUIRED]",
+    "tests/test_control_ir_compiler.py::test_public_compiler_reports_capability_without_invoking_lower[<lambda>-continuations-NEW_VERSION_REQUIRED]",
+    "tests/test_control_ir_compiler.py::test_public_compiler_reports_capability_without_invoking_lower[<lambda>-closures-NEW_VERSION_REQUIRED]",
+    "tests/test_control_ir_compiler.py::test_actual_host_lower_cannot_erase_occurrence_semantics[<lambda>0]",
+    "tests/test_control_ir_compiler.py::test_actual_host_lower_cannot_erase_occurrence_semantics[<lambda>1]",
+    "tests/test_control_ir_compiler.py::test_typed_lower_rejects_hidden_operation_and_transition",
+    "tests/test_control_ir_compiler.py::test_typed_int_config_never_inherits_legacy_numeric_coercion[lower]",
+    "tests/test_control_ir_compiler.py::test_typed_int_config_never_inherits_legacy_numeric_coercion[fragment]",
+    "tests/test_control_ir_compiler.py::test_typed_int_config_never_inherits_legacy_numeric_coercion[symbolic]",
+    "tests/test_control_ir_compiler.py::test_typed_wire_rejects_coercible_python_containers_before_callbacks[tuple]",
+    "tests/test_control_ir_compiler.py::test_typed_wire_rejects_coercible_python_containers_before_callbacks[subclass]",
+    "tests/test_control_ir_compiler.py::test_typed_wire_rejects_coercible_python_containers_before_callbacks[nested_subclass]",
+    "tests/test_control_ir_compiler.py::test_typed_compile_and_public_loader_preserve_local_recursive_schema_scopes",
+    "tests/test_control_ir_compiler.py::test_typed_remote_schema_references_reject_without_retrieval[compile]",
+    "tests/test_control_ir_compiler.py::test_typed_remote_schema_references_reject_without_retrieval[wire]",
+    "tests/test_control_ir_compiler.py::test_rehydration_checks_typed_proof_without_host_callbacks[author]",
+    "tests/test_control_ir_compiler.py::test_rehydration_checks_typed_proof_without_host_callbacks[evaluations]",
+    "tests/test_control_ir_compiler.py::test_rehydration_checks_typed_proof_without_host_callbacks[config]",
+    "tests/test_control_ir_compiler.py::test_rehydration_checks_typed_proof_without_host_callbacks[arc]",
+    "tests/test_control_ir_compiler.py::test_present_but_malformed_typed_proof_cannot_downgrade_to_legacy[None]",
+    "tests/test_control_ir_compiler.py::test_present_but_malformed_typed_proof_cannot_downgrade_to_legacy[proof1]",
+    "tests/test_control_ir_compiler.py::test_present_but_malformed_typed_proof_cannot_downgrade_to_legacy[proof2]",
+    "tests/test_control_ir_compiler.py::test_unknown_reserved_typed_family_version_never_falls_back[rpnh_control_ir_v2-load_compiled_net]",
+    "tests/test_control_ir_compiler.py::test_unknown_reserved_typed_family_version_never_falls_back[rpnh_control_ir_v2-load_compiled_control_net]",
+    "tests/test_control_ir_compiler.py::test_unknown_reserved_typed_family_version_never_falls_back[rpnh_control_ir_v1\\n-load_compiled_net]",
+    "tests/test_control_ir_compiler.py::test_unknown_reserved_typed_family_version_never_falls_back[rpnh_control_ir_v1\\n-load_compiled_control_net]",
+    "tests/test_control_ir_compiler.py::test_explicit_typed_reader_requires_proof_while_legacy_default_stays_usable",
+    "tests/test_control_ir_compiler.py::test_typed_detection_never_calls_nonstring_key_comparison[root-load_compiled_net]",
+    "tests/test_control_ir_compiler.py::test_typed_detection_never_calls_nonstring_key_comparison[root-load_compiled_control_net]",
+    "tests/test_control_ir_compiler.py::test_typed_detection_never_calls_nonstring_key_comparison[source-load_compiled_net]",
+    "tests/test_control_ir_compiler.py::test_typed_detection_never_calls_nonstring_key_comparison[source-load_compiled_control_net]",
+    "tests/test_control_ir_compiler.py::test_typed_detection_never_calls_nonstring_key_comparison[constraints-load_compiled_net]",
+    "tests/test_control_ir_compiler.py::test_typed_detection_never_calls_nonstring_key_comparison[constraints-load_compiled_control_net]",
+    "tests/test_control_ir_compiler.py::test_atomic_registration_rejects_before_gateway_or_executor",
+    "tests/test_control_ir_compiler.py::test_existing_module_v1_without_typed_opt_in_remains_usable",
+    "tests/test_control_ir_compiler.py::test_legacy_host_fragment_validator_keeps_original_call_signature",
+    "tests/test_control_ir_compiler.py::test_all_seven_complete_calls_reach_explicit_backend_rejection[Q.segment_compact]",
+    "tests/test_control_ir_compiler.py::test_all_seven_complete_calls_reach_explicit_backend_rejection[Q.length_call]",
+    "tests/test_control_ir_compiler.py::test_all_seven_complete_calls_reach_explicit_backend_rejection[Q.pressure_call]",
+    "tests/test_control_ir_compiler.py::test_all_seven_complete_calls_reach_explicit_backend_rejection[Q.normal_call]",
+    "tests/test_control_ir_compiler.py::test_all_seven_complete_calls_reach_explicit_backend_rejection[C.request_summary]",
+    "tests/test_control_ir_compiler.py::test_all_seven_complete_calls_reach_explicit_backend_rejection[N.adapter_call]",
+    "tests/test_control_ir_compiler.py::test_all_seven_complete_calls_reach_explicit_backend_rejection[M.observe_existing]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-Q.segment_compact-0]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-Q.segment_compact-1]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-Q.segment_compact-2]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-Q.segment_compact-3]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-Q.segment_compact-4]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-Q.segment_compact-5]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-Q.segment_compact-6]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-Q.length_call-0]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-Q.length_call-1]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-Q.length_call-2]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-Q.length_call-3]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-Q.length_call-4]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-Q.length_call-5]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-Q.length_call-6]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-Q.pressure_call-0]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-Q.pressure_call-1]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-Q.pressure_call-2]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-Q.pressure_call-3]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-Q.pressure_call-4]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-Q.pressure_call-5]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-Q.pressure_call-6]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-Q.normal_call-0]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-Q.normal_call-1]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-Q.normal_call-2]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-Q.normal_call-3]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-Q.normal_call-4]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-Q.normal_call-5]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-Q.normal_call-6]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-C.request_summary-0]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-C.request_summary-1]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-C.request_summary-2]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-C.request_summary-3]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-C.request_summary-4]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-C.request_summary-5]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-C.request_summary-6]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-N.adapter_call-0]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-N.adapter_call-1]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-N.adapter_call-2]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-N.adapter_call-3]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-N.adapter_call-4]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-N.adapter_call-5]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-M.observe_existing-0]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-M.observe_existing-1]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-M.observe_existing-2]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-M.observe_existing-3]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-M.observe_existing-4]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-Q.segment_compact-0]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-Q.segment_compact-1]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-Q.segment_compact-2]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-Q.segment_compact-3]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-Q.segment_compact-4]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-Q.segment_compact-5]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-Q.segment_compact-6]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-Q.length_call-0]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-Q.length_call-1]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-Q.length_call-2]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-Q.length_call-3]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-Q.length_call-4]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-Q.length_call-5]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-Q.length_call-6]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-Q.pressure_call-0]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-Q.pressure_call-1]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-Q.pressure_call-2]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-Q.pressure_call-3]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-Q.pressure_call-4]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-Q.pressure_call-5]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-Q.pressure_call-6]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-Q.normal_call-0]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-Q.normal_call-1]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-Q.normal_call-2]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-Q.normal_call-3]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-Q.normal_call-4]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-Q.normal_call-5]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-Q.normal_call-6]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-C.request_summary-0]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-C.request_summary-1]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-C.request_summary-2]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-C.request_summary-3]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-C.request_summary-4]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-C.request_summary-5]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-C.request_summary-6]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-N.adapter_call-0]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-N.adapter_call-1]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-N.adapter_call-2]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-N.adapter_call-3]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-N.adapter_call-4]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-N.adapter_call-5]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-M.observe_existing-0]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-M.observe_existing-1]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-M.observe_existing-2]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-M.observe_existing-3]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-M.observe_existing-4]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-Q.segment_compact-0]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-Q.segment_compact-1]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-Q.segment_compact-2]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-Q.segment_compact-3]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-Q.segment_compact-4]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-Q.segment_compact-5]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-Q.segment_compact-6]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-Q.length_call-0]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-Q.length_call-1]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-Q.length_call-2]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-Q.length_call-3]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-Q.length_call-4]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-Q.length_call-5]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-Q.length_call-6]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-Q.pressure_call-0]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-Q.pressure_call-1]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-Q.pressure_call-2]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-Q.pressure_call-3]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-Q.pressure_call-4]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-Q.pressure_call-5]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-Q.pressure_call-6]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-Q.normal_call-0]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-Q.normal_call-1]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-Q.normal_call-2]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-Q.normal_call-3]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-Q.normal_call-4]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-Q.normal_call-5]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-Q.normal_call-6]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-C.request_summary-0]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-C.request_summary-1]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-C.request_summary-2]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-C.request_summary-3]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-C.request_summary-4]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-C.request_summary-5]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-C.request_summary-6]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-N.adapter_call-0]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-N.adapter_call-1]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-N.adapter_call-2]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-N.adapter_call-3]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-N.adapter_call-4]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-N.adapter_call-5]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-M.observe_existing-0]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-M.observe_existing-1]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-M.observe_existing-2]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-M.observe_existing-3]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-M.observe_existing-4]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-Q.segment_compact-0]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-Q.segment_compact-1]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-Q.segment_compact-2]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-Q.segment_compact-3]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-Q.segment_compact-4]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-Q.segment_compact-5]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-Q.segment_compact-6]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-Q.length_call-0]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-Q.length_call-1]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-Q.length_call-2]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-Q.length_call-3]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-Q.length_call-4]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-Q.length_call-5]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-Q.length_call-6]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-Q.pressure_call-0]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-Q.pressure_call-1]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-Q.pressure_call-2]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-Q.pressure_call-3]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-Q.pressure_call-4]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-Q.pressure_call-5]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-Q.pressure_call-6]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-Q.normal_call-0]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-Q.normal_call-1]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-Q.normal_call-2]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-Q.normal_call-3]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-Q.normal_call-4]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-Q.normal_call-5]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-Q.normal_call-6]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-C.request_summary-0]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-C.request_summary-1]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-C.request_summary-2]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-C.request_summary-3]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-C.request_summary-4]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-C.request_summary-5]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-C.request_summary-6]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-N.adapter_call-0]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-N.adapter_call-1]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-N.adapter_call-2]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-N.adapter_call-3]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-N.adapter_call-4]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-N.adapter_call-5]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-M.observe_existing-0]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-M.observe_existing-1]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-M.observe_existing-2]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-M.observe_existing-3]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-M.observe_existing-4]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-Q.segment_compact-0]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-Q.segment_compact-1]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-Q.segment_compact-2]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-Q.segment_compact-3]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-Q.segment_compact-4]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-Q.segment_compact-5]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-Q.segment_compact-6]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-Q.length_call-0]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-Q.length_call-1]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-Q.length_call-2]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-Q.length_call-3]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-Q.length_call-4]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-Q.length_call-5]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-Q.length_call-6]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-Q.pressure_call-0]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-Q.pressure_call-1]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-Q.pressure_call-2]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-Q.pressure_call-3]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-Q.pressure_call-4]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-Q.pressure_call-5]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-Q.pressure_call-6]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-Q.normal_call-0]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-Q.normal_call-1]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-Q.normal_call-2]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-Q.normal_call-3]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-Q.normal_call-4]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-Q.normal_call-5]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-Q.normal_call-6]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-C.request_summary-0]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-C.request_summary-1]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-C.request_summary-2]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-C.request_summary-3]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-C.request_summary-4]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-C.request_summary-5]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-C.request_summary-6]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-N.adapter_call-0]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-N.adapter_call-1]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-N.adapter_call-2]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-N.adapter_call-3]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-N.adapter_call-4]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-N.adapter_call-5]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-M.observe_existing-0]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-M.observe_existing-1]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-M.observe_existing-2]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-M.observe_existing-3]",
+    "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-M.observe_existing-4]",
+    "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[required_payload_fields-Q.segment_compact-0]",
+    "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[required_payload_fields-Q.segment_compact-1]",
+    "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[required_payload_fields-Q.segment_compact-2]",
+    "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[required_payload_fields-Q.segment_compact-3]",
+    "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[required_payload_fields-Q.segment_compact-4]",
+    "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[required_payload_fields-Q.length_call-0]",
+    "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[required_payload_fields-Q.length_call-1]",
+    "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[required_payload_fields-Q.length_call-2]",
+    "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[required_payload_fields-Q.length_call-3]",
+    "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[required_payload_fields-Q.length_call-4]",
+    "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[required_payload_fields-Q.pressure_call-0]",
+    "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[required_payload_fields-Q.pressure_call-1]",
+    "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[required_payload_fields-Q.pressure_call-2]",
+    "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[required_payload_fields-Q.pressure_call-3]",
+    "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[required_payload_fields-Q.pressure_call-4]",
+    "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[required_payload_fields-Q.normal_call-0]",
+    "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[required_payload_fields-Q.normal_call-1]",
+    "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[required_payload_fields-Q.normal_call-2]",
+    "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[required_payload_fields-Q.normal_call-3]",
+    "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[required_payload_fields-Q.normal_call-4]",
+    "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[required_payload_fields-C.request_summary-0]",
+    "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[required_payload_fields-C.request_summary-1]",
+    "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[required_payload_fields-C.request_summary-2]",
+    "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[required_payload_fields-C.request_summary-3]",
+    "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[required_payload_fields-C.request_summary-4]",
+    "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[required_payload_fields-N.adapter_call-0]",
+    "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[required_payload_fields-N.adapter_call-1]",
+    "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[required_payload_fields-N.adapter_call-2]",
+    "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[required_payload_fields-N.adapter_call-3]",
+    "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[required_payload_fields-N.adapter_call-4]",
+    "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[required_payload_fields-M.observe_existing-0]",
+    "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[required_payload_fields-M.observe_existing-1]",
+    "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[required_payload_fields-M.observe_existing-2]",
+    "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[required_payload_fields-M.observe_existing-3]",
+    "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[required_payload_fields-M.observe_existing-4]",
+    "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_destination-Q.segment_compact-0]",
+    "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_destination-Q.segment_compact-1]",
+    "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_destination-Q.segment_compact-2]",
+    "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_destination-Q.segment_compact-3]",
+    "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_destination-Q.segment_compact-4]",
+    "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_destination-Q.length_call-0]",
+    "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_destination-Q.length_call-1]",
+    "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_destination-Q.length_call-2]",
+    "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_destination-Q.length_call-3]",
+    "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_destination-Q.length_call-4]",
+    "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_destination-Q.pressure_call-0]",
+    "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_destination-Q.pressure_call-1]",
+    "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_destination-Q.pressure_call-2]",
+    "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_destination-Q.pressure_call-3]",
+    "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_destination-Q.pressure_call-4]",
+    "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_destination-Q.normal_call-0]",
+    "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_destination-Q.normal_call-1]",
+    "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_destination-Q.normal_call-2]",
+    "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_destination-Q.normal_call-3]",
+    "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_destination-Q.normal_call-4]",
+    "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_destination-C.request_summary-0]",
+    "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_destination-C.request_summary-1]",
+    "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_destination-C.request_summary-2]",
+    "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_destination-C.request_summary-3]",
+    "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_destination-C.request_summary-4]",
+    "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_destination-N.adapter_call-0]",
+    "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_destination-N.adapter_call-1]",
+    "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_destination-N.adapter_call-2]",
+    "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_destination-N.adapter_call-3]",
+    "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_destination-N.adapter_call-4]",
+    "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_destination-M.observe_existing-0]",
+    "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_destination-M.observe_existing-1]",
+    "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_destination-M.observe_existing-2]",
+    "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_destination-M.observe_existing-3]",
+    "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_destination-M.observe_existing-4]",
+    "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_case_updates-Q.segment_compact-0]",
+    "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_case_updates-Q.segment_compact-1]",
+    "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_case_updates-Q.segment_compact-2]",
+    "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_case_updates-Q.segment_compact-3]",
+    "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_case_updates-Q.segment_compact-4]",
+    "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_case_updates-Q.length_call-0]",
+    "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_case_updates-Q.length_call-1]",
+    "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_case_updates-Q.length_call-2]",
+    "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_case_updates-Q.length_call-3]",
+    "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_case_updates-Q.length_call-4]",
+    "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_case_updates-Q.pressure_call-0]",
+    "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_case_updates-Q.pressure_call-1]",
+    "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_case_updates-Q.pressure_call-2]",
+    "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_case_updates-Q.pressure_call-3]",
+    "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_case_updates-Q.pressure_call-4]",
+    "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_case_updates-Q.normal_call-0]",
+    "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_case_updates-Q.normal_call-1]",
+    "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_case_updates-Q.normal_call-2]",
+    "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_case_updates-Q.normal_call-3]",
+    "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_case_updates-Q.normal_call-4]",
+    "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_case_updates-C.request_summary-0]",
+    "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_case_updates-C.request_summary-1]",
+    "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_case_updates-C.request_summary-2]",
+    "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_case_updates-C.request_summary-3]",
+    "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_case_updates-C.request_summary-4]",
+    "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_case_updates-N.adapter_call-0]",
+    "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_case_updates-N.adapter_call-1]",
+    "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_case_updates-N.adapter_call-2]",
+    "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_case_updates-N.adapter_call-3]",
+    "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_case_updates-N.adapter_call-4]",
+    "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_case_updates-M.observe_existing-0]",
+    "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_case_updates-M.observe_existing-1]",
+    "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_case_updates-M.observe_existing-2]",
+    "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_case_updates-M.observe_existing-3]",
+    "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_case_updates-M.observe_existing-4]",
+    "tests/test_control_ir_compiler.py::test_missing_call_port_or_return_never_becomes_backend_success[inputs-Q.segment_compact]",
+    "tests/test_control_ir_compiler.py::test_missing_call_port_or_return_never_becomes_backend_success[inputs-Q.length_call]",
+    "tests/test_control_ir_compiler.py::test_missing_call_port_or_return_never_becomes_backend_success[inputs-Q.pressure_call]",
+    "tests/test_control_ir_compiler.py::test_missing_call_port_or_return_never_becomes_backend_success[inputs-Q.normal_call]",
+    "tests/test_control_ir_compiler.py::test_missing_call_port_or_return_never_becomes_backend_success[inputs-C.request_summary]",
+    "tests/test_control_ir_compiler.py::test_missing_call_port_or_return_never_becomes_backend_success[inputs-N.adapter_call]",
+    "tests/test_control_ir_compiler.py::test_missing_call_port_or_return_never_becomes_backend_success[inputs-M.observe_existing]",
+    "tests/test_control_ir_compiler.py::test_missing_call_port_or_return_never_becomes_backend_success[returns-Q.segment_compact]",
+    "tests/test_control_ir_compiler.py::test_missing_call_port_or_return_never_becomes_backend_success[returns-Q.length_call]",
+    "tests/test_control_ir_compiler.py::test_missing_call_port_or_return_never_becomes_backend_success[returns-Q.pressure_call]",
+    "tests/test_control_ir_compiler.py::test_missing_call_port_or_return_never_becomes_backend_success[returns-Q.normal_call]",
+    "tests/test_control_ir_compiler.py::test_missing_call_port_or_return_never_becomes_backend_success[returns-C.request_summary]",
+    "tests/test_control_ir_compiler.py::test_missing_call_port_or_return_never_becomes_backend_success[returns-N.adapter_call]",
+    "tests/test_control_ir_compiler.py::test_missing_call_port_or_return_never_becomes_backend_success[returns-M.observe_existing]",
+    "tests/test_control_ir_compiler.py::test_catalog_carries_all_seven_46_35_and_exact_additional_context"
+  ],
+  "outcomes": [
+    {
+      "nodeid": "tests/test_typed_author_interoperation.py::test_prepared_typed_author_publishes_reopens_and_tracks_exact_branch_head",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 2.0524881310002456
+    },
+    {
+      "nodeid": "tests/test_typed_author_interoperation.py::test_invalid_prepared_proof_fails_before_revision_publication",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.05276960299943312
+    },
+    {
+      "nodeid": "tests/test_typed_author_interoperation.py::test_required_typed_boundary_rejects_stripped_and_unsupported_proofs",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.6109253140002693
+    },
+    {
+      "nodeid": "tests/test_typed_author_interoperation.py::test_real_assembly_publish_rejects_typed_member_without_erasing_proof",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 2.067731914000433
+    },
+    {
+      "nodeid": "tests/test_typed_author_interoperation.py::test_prepared_typed_module_recompile_matches_direct_author",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.08566122000047471
+    },
+    {
+      "nodeid": "tests/test_typed_author_interoperation.py::test_prepared_typed_remote_schema_rejects_without_retrieval",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.030000471000676043
+    },
+    {
+      "nodeid": "tests/test_typed_author_interoperation.py::test_legacy_direct_python_numeric_constraint_keys_still_normalize",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.0375055690001318
+    },
+    {
+      "nodeid": "tests/test_compiler_json_contract.py::test_host_lower_cannot_change_json_boolean_number_type[operation-1-True]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005753757000093174
+    },
+    {
+      "nodeid": "tests/test_compiler_json_contract.py::test_host_lower_cannot_change_json_boolean_number_type[operation-True-1]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.004527756000243244
+    },
+    {
+      "nodeid": "tests/test_compiler_json_contract.py::test_host_lower_cannot_change_json_boolean_number_type[operation-0-False]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.004807463000361167
+    },
+    {
+      "nodeid": "tests/test_compiler_json_contract.py::test_host_lower_cannot_change_json_boolean_number_type[operation-False-0]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005649267000080727
+    },
+    {
+      "nodeid": "tests/test_compiler_json_contract.py::test_host_lower_cannot_change_json_boolean_number_type[operation-1.0-True]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005319148999660683
+    },
+    {
+      "nodeid": "tests/test_compiler_json_contract.py::test_host_lower_cannot_change_json_boolean_number_type[operation-0.0-False]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.0047528280001643
+    },
+    {
+      "nodeid": "tests/test_compiler_json_contract.py::test_host_lower_cannot_change_json_boolean_number_type[effect-1-True]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005100606000269181
+    },
+    {
+      "nodeid": "tests/test_compiler_json_contract.py::test_host_lower_cannot_change_json_boolean_number_type[effect-True-1]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005067172999588365
+    },
+    {
+      "nodeid": "tests/test_compiler_json_contract.py::test_host_lower_cannot_change_json_boolean_number_type[effect-0-False]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.006376605000696145
+    },
+    {
+      "nodeid": "tests/test_compiler_json_contract.py::test_host_lower_cannot_change_json_boolean_number_type[effect-False-0]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005287534000672167
+    },
+    {
+      "nodeid": "tests/test_compiler_json_contract.py::test_host_lower_cannot_change_json_boolean_number_type[effect-1.0-True]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.004569482000079006
+    },
+    {
+      "nodeid": "tests/test_compiler_json_contract.py::test_host_lower_cannot_change_json_boolean_number_type[effect-0.0-False]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005732812000132981
+    },
+    {
+      "nodeid": "tests/test_compiler_json_contract.py::test_wire_rejects_json_boolean_number_substitution[fragment-operation-1-True]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.024893173000236857
+    },
+    {
+      "nodeid": "tests/test_compiler_json_contract.py::test_wire_rejects_json_boolean_number_substitution[fragment-operation-0-False]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.025483312000687874
+    },
+    {
+      "nodeid": "tests/test_compiler_json_contract.py::test_wire_rejects_json_boolean_number_substitution[fragment-operation-True-1]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.024389545999838447
+    },
+    {
+      "nodeid": "tests/test_compiler_json_contract.py::test_wire_rejects_json_boolean_number_substitution[fragment-operation-False-0]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.02400491400021565
+    },
+    {
+      "nodeid": "tests/test_compiler_json_contract.py::test_wire_rejects_json_boolean_number_substitution[fragment-effect-1-True]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.025217342000360077
+    },
+    {
+      "nodeid": "tests/test_compiler_json_contract.py::test_wire_rejects_json_boolean_number_substitution[fragment-effect-0-False]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.025647462000051746
+    },
+    {
+      "nodeid": "tests/test_compiler_json_contract.py::test_wire_rejects_json_boolean_number_substitution[fragment-effect-True-1]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.02465902299991285
+    },
+    {
+      "nodeid": "tests/test_compiler_json_contract.py::test_wire_rejects_json_boolean_number_substitution[fragment-effect-False-0]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.025469432000136294
+    },
+    {
+      "nodeid": "tests/test_compiler_json_contract.py::test_wire_rejects_json_boolean_number_substitution[symbolic-operation-1-True]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.024714208999284892
+    },
+    {
+      "nodeid": "tests/test_compiler_json_contract.py::test_wire_rejects_json_boolean_number_substitution[symbolic-operation-0-False]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.025919539000824443
+    },
+    {
+      "nodeid": "tests/test_compiler_json_contract.py::test_wire_rejects_json_boolean_number_substitution[symbolic-operation-True-1]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.027323240999976406
+    },
+    {
+      "nodeid": "tests/test_compiler_json_contract.py::test_wire_rejects_json_boolean_number_substitution[symbolic-operation-False-0]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.02572112100006052
+    },
+    {
+      "nodeid": "tests/test_compiler_json_contract.py::test_wire_rejects_json_boolean_number_substitution[symbolic-effect-1-True]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.02663981200021226
+    },
+    {
+      "nodeid": "tests/test_compiler_json_contract.py::test_wire_rejects_json_boolean_number_substitution[symbolic-effect-0-False]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.02503203600008419
+    },
+    {
+      "nodeid": "tests/test_compiler_json_contract.py::test_wire_rejects_json_boolean_number_substitution[symbolic-effect-True-1]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.025185489999785204
+    },
+    {
+      "nodeid": "tests/test_compiler_json_contract.py::test_wire_rejects_json_boolean_number_substitution[symbolic-effect-False-0]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.02628193799955625
+    },
+    {
+      "nodeid": "tests/test_compiler_json_contract.py::test_normal_json_config_compiles_and_round_trips[operation-None]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.029245503000311146
+    },
+    {
+      "nodeid": "tests/test_compiler_json_contract.py::test_normal_json_config_compiles_and_round_trips[operation-True]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.030678823000016564
+    },
+    {
+      "nodeid": "tests/test_compiler_json_contract.py::test_normal_json_config_compiles_and_round_trips[operation-False]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.029131049999705283
+    },
+    {
+      "nodeid": "tests/test_compiler_json_contract.py::test_normal_json_config_compiles_and_round_trips[operation-1_0]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.030056122999667423
+    },
+    {
+      "nodeid": "tests/test_compiler_json_contract.py::test_normal_json_config_compiles_and_round_trips[operation-0]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.02944299799946748
+    },
+    {
+      "nodeid": "tests/test_compiler_json_contract.py::test_normal_json_config_compiles_and_round_trips[operation-1.25]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.030462424999313953
+    },
+    {
+      "nodeid": "tests/test_compiler_json_contract.py::test_normal_json_config_compiles_and_round_trips[operation-1_1]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.0309701780006435
+    },
+    {
+      "nodeid": "tests/test_compiler_json_contract.py::test_normal_json_config_compiles_and_round_trips[operation-value7]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.029453221999574453
+    },
+    {
+      "nodeid": "tests/test_compiler_json_contract.py::test_normal_json_config_compiles_and_round_trips[effect-None]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.03299873400010256
+    },
+    {
+      "nodeid": "tests/test_compiler_json_contract.py::test_normal_json_config_compiles_and_round_trips[effect-True]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.03087326300010318
+    },
+    {
+      "nodeid": "tests/test_compiler_json_contract.py::test_normal_json_config_compiles_and_round_trips[effect-False]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.031792656000106945
+    },
+    {
+      "nodeid": "tests/test_compiler_json_contract.py::test_normal_json_config_compiles_and_round_trips[effect-1_0]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.029710441999668546
+    },
+    {
+      "nodeid": "tests/test_compiler_json_contract.py::test_normal_json_config_compiles_and_round_trips[effect-0]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.03049934699993173
+    },
+    {
+      "nodeid": "tests/test_compiler_json_contract.py::test_normal_json_config_compiles_and_round_trips[effect-1.25]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.028720376999444852
+    },
+    {
+      "nodeid": "tests/test_compiler_json_contract.py::test_normal_json_config_compiles_and_round_trips[effect-1_1]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.03165119900040736
+    },
+    {
+      "nodeid": "tests/test_compiler_json_contract.py::test_normal_json_config_compiles_and_round_trips[effect-value7]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.030632552000497526
+    },
+    {
+      "nodeid": "tests/test_compiler_json_contract.py::test_existing_numeric_equality_survives_lowering_and_wire[operation-1-1.0]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.027920591999645694
+    },
+    {
+      "nodeid": "tests/test_compiler_json_contract.py::test_existing_numeric_equality_survives_lowering_and_wire[operation-0--0.0]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.02724218900038977
+    },
+    {
+      "nodeid": "tests/test_compiler_json_contract.py::test_existing_numeric_equality_survives_lowering_and_wire[operation-1.0-1]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.0261493160005557
+    },
+    {
+      "nodeid": "tests/test_compiler_json_contract.py::test_existing_numeric_equality_survives_lowering_and_wire[effect-1-1.0]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.026994379999450757
+    },
+    {
+      "nodeid": "tests/test_compiler_json_contract.py::test_existing_numeric_equality_survives_lowering_and_wire[effect-0--0.0]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.026142122999772255
+    },
+    {
+      "nodeid": "tests/test_compiler_json_contract.py::test_existing_numeric_equality_survives_lowering_and_wire[effect-1.0-1]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.02592019499934395
+    },
+    {
+      "nodeid": "tests/test_compiler_json_contract.py::test_declared_bundle_order_remains_incidental",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.0002478380001775804
+    },
+    {
+      "nodeid": "tests/test_compiler_json_contract.py::test_ordered_abi_config_arrays_and_effect_multiplicity_stay_exact[inputs]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.0001594969999132445
+    },
+    {
+      "nodeid": "tests/test_compiler_json_contract.py::test_ordered_abi_config_arrays_and_effect_multiplicity_stay_exact[outputs]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.00011292799990769709
+    },
+    {
+      "nodeid": "tests/test_compiler_json_contract.py::test_ordered_abi_config_arrays_and_effect_multiplicity_stay_exact[config]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.00021771100000478327
+    },
+    {
+      "nodeid": "tests/test_compiler_json_contract.py::test_ordered_abi_config_arrays_and_effect_multiplicity_stay_exact[effect_config]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.00017557499995746184
+    },
+    {
+      "nodeid": "tests/test_compiler_json_contract.py::test_ordered_abi_config_arrays_and_effect_multiplicity_stay_exact[multiplicity]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.00010344700058340095
+    },
+    {
+      "nodeid": "tests/test_compiler_json_contract.py::test_existing_unequal_numbers_and_container_shapes_stay_unequal[1-1.5]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.0008734290004213108
+    },
+    {
+      "nodeid": "tests/test_compiler_json_contract.py::test_existing_unequal_numbers_and_container_shapes_stay_unequal[9007199254740993-9007199254740992.0]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.0006680120004602941
+    },
+    {
+      "nodeid": "tests/test_compiler_json_contract.py::test_existing_unequal_numbers_and_container_shapes_stay_unequal[1-1]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.0007125870006348123
+    },
+    {
+      "nodeid": "tests/test_compiler_json_contract.py::test_existing_unequal_numbers_and_container_shapes_stay_unequal[None-False]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.0006218099997568061
+    },
+    {
+      "nodeid": "tests/test_compiler_json_contract.py::test_existing_unequal_numbers_and_container_shapes_stay_unequal[left4-right4]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.0006568790004166658
+    },
+    {
+      "nodeid": "tests/test_compiler_json_contract.py::test_existing_unequal_numbers_and_container_shapes_stay_unequal[left5-right5]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.0006608590001633274
+    },
+    {
+      "nodeid": "tests/test_compiler_json_contract.py::test_wire_inventory_reordering_preserves_config_array_order",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.033309076000477944
+    },
+    {
+      "nodeid": "tests/test_compiler_json_contract.py::test_fusion_rejects_boolean_number_change_in_initial_payload[lower-1-True]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.009939680999195843
+    },
+    {
+      "nodeid": "tests/test_compiler_json_contract.py::test_fusion_rejects_boolean_number_change_in_initial_payload[lower-0-False]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.009205301999827498
+    },
+    {
+      "nodeid": "tests/test_compiler_json_contract.py::test_fusion_rejects_boolean_number_change_in_initial_payload[lower-True-1]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.009074499999769614
+    },
+    {
+      "nodeid": "tests/test_compiler_json_contract.py::test_fusion_rejects_boolean_number_change_in_initial_payload[lower-False-0]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.009452942999814695
+    },
+    {
+      "nodeid": "tests/test_compiler_json_contract.py::test_fusion_rejects_boolean_number_change_in_initial_payload[lower-source4-changed4]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.008664104999297706
+    },
+    {
+      "nodeid": "tests/test_compiler_json_contract.py::test_fusion_rejects_boolean_number_change_in_initial_payload[lower-source5-changed5]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.008945313999902282
+    },
+    {
+      "nodeid": "tests/test_compiler_json_contract.py::test_fusion_rejects_boolean_number_change_in_initial_payload[wire-1-True]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.042135804000281496
+    },
+    {
+      "nodeid": "tests/test_compiler_json_contract.py::test_fusion_rejects_boolean_number_change_in_initial_payload[wire-0-False]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.042126753999582434
+    },
+    {
+      "nodeid": "tests/test_compiler_json_contract.py::test_fusion_rejects_boolean_number_change_in_initial_payload[wire-True-1]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.04300445899934857
+    },
+    {
+      "nodeid": "tests/test_compiler_json_contract.py::test_fusion_rejects_boolean_number_change_in_initial_payload[wire-False-0]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.04357181200066407
+    },
+    {
+      "nodeid": "tests/test_compiler_json_contract.py::test_fusion_rejects_boolean_number_change_in_initial_payload[wire-source4-changed4]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.041402344999369234
+    },
+    {
+      "nodeid": "tests/test_compiler_json_contract.py::test_fusion_rejects_boolean_number_change_in_initial_payload[wire-source5-changed5]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.0427948260003177
+    },
+    {
+      "nodeid": "tests/test_compiler_json_contract.py::test_fusion_keeps_initial_token_multiset_and_numeric_equivalence[left0-right0]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.04520066300028702
+    },
+    {
+      "nodeid": "tests/test_compiler_json_contract.py::test_fusion_keeps_initial_token_multiset_and_numeric_equivalence[left1-right1]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.044084660000407894
+    },
+    {
+      "nodeid": "tests/test_compiler_json_contract.py::test_fusion_keeps_initial_token_multiset_and_numeric_equivalence[left2-right2]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.04636555000070075
+    },
+    {
+      "nodeid": "tests/test_compiler_json_contract.py::test_fusion_keeps_initial_token_multiset_and_numeric_equivalence[left3-right3]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.04376097899967135
+    },
+    {
+      "nodeid": "tests/test_compiler_json_contract.py::test_fusion_keeps_multiplicity_payload_order_and_container_mismatches[left0-right0]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.00929055899996456
+    },
+    {
+      "nodeid": "tests/test_compiler_json_contract.py::test_fusion_keeps_multiplicity_payload_order_and_container_mismatches[left1-right1]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.008923041999878478
+    },
+    {
+      "nodeid": "tests/test_compiler_json_contract.py::test_fusion_keeps_multiplicity_payload_order_and_container_mismatches[left2-right2]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.008727366000130132
+    },
+    {
+      "nodeid": "tests/test_compiler_json_contract.py::test_fusion_keeps_multiplicity_payload_order_and_container_mismatches[left3-right3]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.008733721999305999
+    },
+    {
+      "nodeid": "tests/test_worker_schema_compat.py::test_main_v4_imports_without_dropping_socket_or_profile[None]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.0002603249995445367
+    },
+    {
+      "nodeid": "tests/test_worker_schema_compat.py::test_main_v4_imports_without_dropping_socket_or_profile[/tmp/legacy-main.sock]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.0015869070002736407
+    },
+    {
+      "nodeid": "tests/test_worker_schema_compat.py::test_plugin_v4_keeps_pinned_catalog_and_migrates_to_v5",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.00032497800020792056
+    },
+    {
+      "nodeid": "tests/test_worker_schema_compat.py::test_v4_hybrid_cannot_guess_between_independent_legacy_formats",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.00017993200071941828
+    },
+    {
+      "nodeid": "tests/test_worker_schema_compat.py::test_both_socket_formats_reject_non_string_paths[1-v4]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.00017924999974638922
+    },
+    {
+      "nodeid": "tests/test_worker_schema_compat.py::test_both_socket_formats_reject_non_string_paths[1-v5]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.00017527899944980163
+    },
+    {
+      "nodeid": "tests/test_worker_schema_compat.py::test_both_socket_formats_reject_non_string_paths[True-v4]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.00014250399999582442
+    },
+    {
+      "nodeid": "tests/test_worker_schema_compat.py::test_both_socket_formats_reject_non_string_paths[True-v5]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.00014247099989006529
+    },
+    {
+      "nodeid": "tests/test_worker_schema_compat.py::test_both_socket_formats_reject_non_string_paths[invalid2-v4]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.00041705700004968094
+    },
+    {
+      "nodeid": "tests/test_worker_schema_compat.py::test_both_socket_formats_reject_non_string_paths[invalid2-v5]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.00015772300048411125
+    },
+    {
+      "nodeid": "tests/test_worker_schema_compat.py::test_incomplete_plugin_authority_is_rejected[v4]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.0001543870002933545
+    },
+    {
+      "nodeid": "tests/test_worker_schema_compat.py::test_incomplete_plugin_authority_is_rejected[v5]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.00018158100010623457
+    },
+    {
+      "nodeid": "tests/test_worker_schema_compat.py::test_unknown_main_v4_field_is_not_silently_dropped",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.0001795029993445496
+    },
+    {
+      "nodeid": "tests/test_worker_schema_compat.py::test_v5_roundtrip_keeps_plugins_and_owner_identity_together",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.00030165699990902795
+    },
+    {
+      "nodeid": "tests/test_worker_schema_compat.py::test_v6_roundtrip_uses_only_parent_relative_path_references",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.0008347080001840368
+    },
+    {
+      "nodeid": "tests/test_worker_schema_compat.py::test_managed_bindings_use_additive_v7_v8_documents",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.0020864210000581807
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_public_compiler_consumes_typed_values_in_real_lowering_and_wire",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.05147379699974408
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_author_input_is_detached_and_direct_constructor_rechecked",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.026167297000029066
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_public_compiler_rejects_precise_author_errors[<lambda>-config_type_mismatch]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.0023218809992613387
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_public_compiler_rejects_precise_author_errors[<lambda>-type_mismatch]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.0029252889999042964
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_public_compiler_rejects_precise_author_errors[<lambda>-config_fields_mismatch]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.0023950219992912025
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_public_compiler_rejects_precise_author_errors[<lambda>-outcome_routes_incomplete]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.002349599999433849
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_public_compiler_rejects_precise_author_errors[<lambda>-outcome_route_mismatch]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.002292952000061632
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_public_compiler_rejects_precise_author_errors[<lambda>-guard_bool_required]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.0026825370005099103
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_public_compiler_rejects_precise_author_errors[<lambda>-invalid_arc_weight]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.003100317999269464
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_public_compiler_rejects_precise_author_errors[<lambda>-unknown_arc_semantics]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.002636457000335213
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_public_compiler_rejects_precise_author_errors[<lambda>-atomic_inventory_incomplete]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.0021871839999221265
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_public_compiler_rejects_precise_author_errors[<lambda>-typed_config_placeholder_required]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.0027115139992019976
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_public_compiler_rejects_precise_author_errors[<lambda>-division_by_zero]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.002654042999893136
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_public_compiler_rejects_precise_author_errors[<lambda>-unit_mismatch]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.002403016999778629
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_public_compiler_reports_capability_without_invoking_lower[<lambda>-mutable_read_set-NEW_VERSION_REQUIRED]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.003005522000421479
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_public_compiler_reports_capability_without_invoking_lower[<lambda>-runtime_guard-EXACT_ADAPTER_REQUIRED]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.0024794330001896014
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_public_compiler_reports_capability_without_invoking_lower[<lambda>-author_module-UNSUPPORTED]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.0025007470003401977
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_public_compiler_reports_capability_without_invoking_lower[<lambda>-observe_fact-EXACT_ADAPTER_REQUIRED]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.003066400000534486
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_public_compiler_reports_capability_without_invoking_lower[<lambda>-continuations-NEW_VERSION_REQUIRED]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.003490535999844724
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_public_compiler_reports_capability_without_invoking_lower[<lambda>-closures-NEW_VERSION_REQUIRED]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.0038414309992731432
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_actual_host_lower_cannot_erase_occurrence_semantics[<lambda>0]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.007733043000371254
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_actual_host_lower_cannot_erase_occurrence_semantics[<lambda>1]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.008066594999945664
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_typed_lower_rejects_hidden_operation_and_transition",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.008453024000118603
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_typed_int_config_never_inherits_legacy_numeric_coercion[lower]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.007825491999938095
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_typed_int_config_never_inherits_legacy_numeric_coercion[fragment]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.03773315899979934
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_typed_int_config_never_inherits_legacy_numeric_coercion[symbolic]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.04237091499999224
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_typed_wire_rejects_coercible_python_containers_before_callbacks[tuple]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.029265817000123207
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_typed_wire_rejects_coercible_python_containers_before_callbacks[subclass]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.027958360999946308
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_typed_wire_rejects_coercible_python_containers_before_callbacks[nested_subclass]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.027981925999483792
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_typed_compile_and_public_loader_preserve_local_recursive_schema_scopes",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.042722743000013
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_typed_remote_schema_references_reject_without_retrieval[compile]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005711947999770928
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_typed_remote_schema_references_reject_without_retrieval[wire]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.03425114299989218
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_rehydration_checks_typed_proof_without_host_callbacks[author]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.040224182000201836
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_rehydration_checks_typed_proof_without_host_callbacks[evaluations]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.03873631599981309
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_rehydration_checks_typed_proof_without_host_callbacks[config]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.03512332799982687
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_rehydration_checks_typed_proof_without_host_callbacks[arc]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.04006800499973906
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_present_but_malformed_typed_proof_cannot_downgrade_to_legacy[None]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.03391336299955583
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_present_but_malformed_typed_proof_cannot_downgrade_to_legacy[proof1]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.03383344699977897
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_present_but_malformed_typed_proof_cannot_downgrade_to_legacy[proof2]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.03409211899997899
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_unknown_reserved_typed_family_version_never_falls_back[rpnh_control_ir_v2-load_compiled_net]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.035366723999686656
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_unknown_reserved_typed_family_version_never_falls_back[rpnh_control_ir_v2-load_compiled_control_net]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.029234303000521322
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_unknown_reserved_typed_family_version_never_falls_back[rpnh_control_ir_v1\\n-load_compiled_net]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.03533804099970439
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_unknown_reserved_typed_family_version_never_falls_back[rpnh_control_ir_v1\\n-load_compiled_control_net]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.029338021000512526
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_explicit_typed_reader_requires_proof_while_legacy_default_stays_usable",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.07571724700028426
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_typed_detection_never_calls_nonstring_key_comparison[root-load_compiled_net]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.00011056000039388891
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_typed_detection_never_calls_nonstring_key_comparison[root-load_compiled_control_net]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 9.863099967333255e-05
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_typed_detection_never_calls_nonstring_key_comparison[source-load_compiled_net]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 8.299699948111083e-05
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_typed_detection_never_calls_nonstring_key_comparison[source-load_compiled_control_net]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.00011014499978045933
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_typed_detection_never_calls_nonstring_key_comparison[constraints-load_compiled_net]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 6.985199979681056e-05
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_typed_detection_never_calls_nonstring_key_comparison[constraints-load_compiled_control_net]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 7.516599998780293e-05
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_atomic_registration_rejects_before_gateway_or_executor",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.000277633999758109
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_existing_module_v1_without_typed_opt_in_remains_usable",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.014899460000378895
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_legacy_host_fragment_validator_keeps_original_call_signature",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.01547946599930583
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_all_seven_complete_calls_reach_explicit_backend_rejection[Q.segment_compact]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.004672713999752887
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_all_seven_complete_calls_reach_explicit_backend_rejection[Q.length_call]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.004729420999865397
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_all_seven_complete_calls_reach_explicit_backend_rejection[Q.pressure_call]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.0054469609995067
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_all_seven_complete_calls_reach_explicit_backend_rejection[Q.normal_call]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.006021828000484675
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_all_seven_complete_calls_reach_explicit_backend_rejection[C.request_summary]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.004776830000082555
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_all_seven_complete_calls_reach_explicit_backend_rejection[N.adapter_call]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005367782000575971
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_all_seven_complete_calls_reach_explicit_backend_rejection[M.observe_existing]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005511258000296948
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-Q.segment_compact-0]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005705753000256664
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-Q.segment_compact-1]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.004987513999367366
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-Q.segment_compact-2]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.0048498859996470856
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-Q.segment_compact-3]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005612476999885985
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-Q.segment_compact-4]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.00456115100041643
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-Q.segment_compact-5]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.00495452999984991
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-Q.segment_compact-6]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.004853048000768467
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-Q.length_call-0]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005876006999642414
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-Q.length_call-1]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005453560000205471
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-Q.length_call-2]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005198951999773271
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-Q.length_call-3]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.004739126999993459
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-Q.length_call-4]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005879396999262099
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-Q.length_call-5]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005836094000187586
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-Q.length_call-6]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005056977999629453
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-Q.pressure_call-0]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005420602000413055
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-Q.pressure_call-1]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.006039542000507936
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-Q.pressure_call-2]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.004740142999253294
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-Q.pressure_call-3]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.004560051999760617
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-Q.pressure_call-4]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.0054314540002451395
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-Q.pressure_call-5]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005853572999512835
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-Q.pressure_call-6]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.004985999000382435
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-Q.normal_call-0]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005047909000495565
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-Q.normal_call-1]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.006001597000249603
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-Q.normal_call-2]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005192907000491687
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-Q.normal_call-3]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.004973590999725275
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-Q.normal_call-4]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005457776999719499
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-Q.normal_call-5]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.00494348899974284
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-Q.normal_call-6]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.004972305999217497
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-C.request_summary-0]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.004978423000466137
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-C.request_summary-1]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005960833999779425
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-C.request_summary-2]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005672987999787438
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-C.request_summary-3]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005186938999941049
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-C.request_summary-4]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005235145000369812
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-C.request_summary-5]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.006152568000288738
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-C.request_summary-6]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.004810679000001983
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-N.adapter_call-0]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005348935000256461
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-N.adapter_call-1]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.00520762299947819
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-N.adapter_call-2]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.004536768999969354
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-N.adapter_call-3]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.0051030410004386795
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-N.adapter_call-4]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.0049208589998670504
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-N.adapter_call-5]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.004773261999616807
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-M.observe_existing-0]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.004951517000336025
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-M.observe_existing-1]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005599621999863302
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-M.observe_existing-2]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005210398999224708
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-M.observe_existing-3]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005525478999516054
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-M.observe_existing-4]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.006239373000425985
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-Q.segment_compact-0]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.0051608069998110295
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-Q.segment_compact-1]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.006133631000011519
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-Q.segment_compact-2]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005034606000663189
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-Q.segment_compact-3]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005393746000663668
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-Q.segment_compact-4]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.004643049000151223
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-Q.segment_compact-5]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005258792000859103
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-Q.segment_compact-6]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.004940335999890522
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-Q.length_call-0]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.004873812999903748
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-Q.length_call-1]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.0052572650001820875
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-Q.length_call-2]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.0057546709995222045
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-Q.length_call-3]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.004972889999407926
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-Q.length_call-4]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005373194999265252
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-Q.length_call-5]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.0059874329999729525
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-Q.length_call-6]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.004774385999553488
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-Q.pressure_call-0]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.004982442999789782
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-Q.pressure_call-1]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005270704999929876
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-Q.pressure_call-2]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005385202999605099
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-Q.pressure_call-3]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.00494273999993311
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-Q.pressure_call-4]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005193904000407201
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-Q.pressure_call-5]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005251161999694887
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-Q.pressure_call-6]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005474710000271443
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-Q.normal_call-0]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.004950073000145494
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-Q.normal_call-1]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005068871999355906
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-Q.normal_call-2]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005273762000797433
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-Q.normal_call-3]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.00527913299993088
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-Q.normal_call-4]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005245432999799959
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-Q.normal_call-5]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005074640000202635
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-Q.normal_call-6]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005443678000119689
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-C.request_summary-0]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.004516357000284188
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-C.request_summary-1]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.004561974999887752
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-C.request_summary-2]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005590631999439211
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-C.request_summary-3]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005623466000542976
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-C.request_summary-4]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005187787000068056
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-C.request_summary-5]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005179029999453633
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-C.request_summary-6]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.006119119999311806
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-N.adapter_call-0]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.004867432000537519
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-N.adapter_call-1]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005280030999529117
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-N.adapter_call-2]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.004749904000163951
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-N.adapter_call-3]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.00517361600032018
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-N.adapter_call-4]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005153637999683269
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-N.adapter_call-5]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.004788135999660881
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-M.observe_existing-0]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.0047354580001410795
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-M.observe_existing-1]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005771610000010696
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-M.observe_existing-2]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005008750000342843
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-M.observe_existing-3]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005106861000058416
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-M.observe_existing-4]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005128699999659148
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-Q.segment_compact-0]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.006638541000029363
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-Q.segment_compact-1]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005103186999804166
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-Q.segment_compact-2]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.004705886000010651
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-Q.segment_compact-3]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005440932999590586
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-Q.segment_compact-4]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.0052600799999709125
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-Q.segment_compact-5]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.00486481999996613
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-Q.segment_compact-6]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.004772358000082022
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-Q.length_call-0]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005388618999859318
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-Q.length_call-1]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005042485000558372
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-Q.length_call-2]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.004896315000223694
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-Q.length_call-3]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005572840000240831
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-Q.length_call-4]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005566691000240098
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-Q.length_call-5]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.0052094060001763864
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-Q.length_call-6]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005069327999990492
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-Q.pressure_call-0]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005088679999971646
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-Q.pressure_call-1]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.004459998000129417
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-Q.pressure_call-2]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.00540772400017886
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-Q.pressure_call-3]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.00469402899943816
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-Q.pressure_call-4]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.0047852770003373735
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-Q.pressure_call-5]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005351690999304992
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-Q.pressure_call-6]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005589688000327442
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-Q.normal_call-0]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005017930999201781
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-Q.normal_call-1]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005849154000316048
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-Q.normal_call-2]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005607204000625643
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-Q.normal_call-3]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.004844873999900301
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-Q.normal_call-4]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005627251999612781
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-Q.normal_call-5]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005254501999843342
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-Q.normal_call-6]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.004612464999809163
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-C.request_summary-0]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005220203999670048
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-C.request_summary-1]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005291475000376522
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-C.request_summary-2]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.004871269000432221
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-C.request_summary-3]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005326161999619217
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-C.request_summary-4]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005057889000454452
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-C.request_summary-5]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005241928000032203
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-C.request_summary-6]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005039536999902339
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-N.adapter_call-0]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005106543000692909
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-N.adapter_call-1]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.00544005899973854
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-N.adapter_call-2]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.0048855100003493135
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-N.adapter_call-3]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.0046207649993448285
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-N.adapter_call-4]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005114054999467044
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-N.adapter_call-5]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005863903000317805
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-M.observe_existing-0]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.004608092000125907
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-M.observe_existing-1]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.0051840469996022875
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-M.observe_existing-2]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.00549242399938521
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-M.observe_existing-3]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.006445386000450526
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-M.observe_existing-4]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005755192999458814
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-Q.segment_compact-0]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005460016000142787
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-Q.segment_compact-1]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005098415999782446
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-Q.segment_compact-2]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.00520095299998502
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-Q.segment_compact-3]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.004671310000048834
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-Q.segment_compact-4]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.004419390999828465
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-Q.segment_compact-5]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005392129000028945
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-Q.segment_compact-6]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.0045749729997623945
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-Q.length_call-0]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.004502957000113383
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-Q.length_call-1]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.004770759000166436
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-Q.length_call-2]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.00573000599979423
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-Q.length_call-3]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005010019000110333
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-Q.length_call-4]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.004994284000531479
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-Q.length_call-5]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.006094443000620231
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-Q.length_call-6]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.004621187000338978
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-Q.pressure_call-0]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005256849999568658
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-Q.pressure_call-1]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.00459519400010322
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-Q.pressure_call-2]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005030882999562891
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-Q.pressure_call-3]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005090440999993007
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-Q.pressure_call-4]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.004981086000043433
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-Q.pressure_call-5]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.00490814099975978
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-Q.pressure_call-6]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005440790999273304
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-Q.normal_call-0]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.004913719999422028
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-Q.normal_call-1]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005047654000009061
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-Q.normal_call-2]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.006102002999796241
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-Q.normal_call-3]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005203489000450645
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-Q.normal_call-4]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005009194000194839
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-Q.normal_call-5]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005797853000331088
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-Q.normal_call-6]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.00528565999957209
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-C.request_summary-0]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.00450790800005052
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-C.request_summary-1]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005518963000213262
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-C.request_summary-2]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.004935040999953344
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-C.request_summary-3]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.0047551830002703355
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-C.request_summary-4]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.00534332600000198
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-C.request_summary-5]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005698569000742282
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-C.request_summary-6]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.0055710750002617715
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-N.adapter_call-0]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005129795000357262
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-N.adapter_call-1]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005281833000481129
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-N.adapter_call-2]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005589223000242782
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-N.adapter_call-3]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005380012999921746
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-N.adapter_call-4]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.004928379000375571
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-N.adapter_call-5]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005102940000142553
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-M.observe_existing-0]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.004611129999830155
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-M.observe_existing-1]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.00590188699970895
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-M.observe_existing-2]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.0046799530000498635
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-M.observe_existing-3]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.004757783999593812
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-M.observe_existing-4]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.00509915499969793
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-Q.segment_compact-0]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005228167000495887
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-Q.segment_compact-1]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.0060069080000175745
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-Q.segment_compact-2]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.004934712999784097
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-Q.segment_compact-3]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.0055019370001900825
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-Q.segment_compact-4]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.004807541000445781
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-Q.segment_compact-5]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.00492454000050202
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-Q.segment_compact-6]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.004564051999295771
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-Q.length_call-0]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005654474000039045
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-Q.length_call-1]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005180077000659367
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-Q.length_call-2]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.004812410999875283
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-Q.length_call-3]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005165411999769276
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-Q.length_call-4]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005951189000370505
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-Q.length_call-5]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.004937835000419
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-Q.length_call-6]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.0052355890002218075
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-Q.pressure_call-0]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.006242727999961062
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-Q.pressure_call-1]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005616978999569255
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-Q.pressure_call-2]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.004605267999977514
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-Q.pressure_call-3]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.004775078000420763
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-Q.pressure_call-4]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005588213999544678
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-Q.pressure_call-5]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.0048962030004986445
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-Q.pressure_call-6]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.004491810000217811
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-Q.normal_call-0]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005208205000599264
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-Q.normal_call-1]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005913220000365982
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-Q.normal_call-2]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.004796270999577246
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-Q.normal_call-3]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005823193000651372
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-Q.normal_call-4]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005959603000519564
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-Q.normal_call-5]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005066382000222802
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-Q.normal_call-6]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005683137999767496
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-C.request_summary-0]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.004849333000493061
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-C.request_summary-1]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005296688999806065
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-C.request_summary-2]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005256416000520403
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-C.request_summary-3]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005281875000036962
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-C.request_summary-4]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.004946965999806707
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-C.request_summary-5]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005920747000345727
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-C.request_summary-6]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005621158000394644
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-N.adapter_call-0]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.0050749479996738955
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-N.adapter_call-1]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.0059498689997781185
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-N.adapter_call-2]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005469129000630346
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-N.adapter_call-3]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.006386697000380082
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-N.adapter_call-4]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005052337000051921
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-N.adapter_call-5]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.006555158999617561
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-M.observe_existing-0]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.00490051399992808
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-M.observe_existing-1]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.004627818999324518
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-M.observe_existing-2]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005100629000480694
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-M.observe_existing-3]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005566079999880458
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-M.observe_existing-4]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.00497036799970374
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[required_payload_fields-Q.segment_compact-0]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.0056598729997858754
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[required_payload_fields-Q.segment_compact-1]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.006178032000207168
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[required_payload_fields-Q.segment_compact-2]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.004890637999778846
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[required_payload_fields-Q.segment_compact-3]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005080415000520588
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[required_payload_fields-Q.segment_compact-4]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005074544000308379
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[required_payload_fields-Q.length_call-0]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005554116999519465
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[required_payload_fields-Q.length_call-1]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.00482901600025798
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[required_payload_fields-Q.length_call-2]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005026638999879651
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[required_payload_fields-Q.length_call-3]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005372157999772753
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[required_payload_fields-Q.length_call-4]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005544466000173998
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[required_payload_fields-Q.pressure_call-0]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005166528000700055
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[required_payload_fields-Q.pressure_call-1]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005166082999494392
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[required_payload_fields-Q.pressure_call-2]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005472472999827005
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[required_payload_fields-Q.pressure_call-3]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005296292000821268
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[required_payload_fields-Q.pressure_call-4]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005490225999892573
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[required_payload_fields-Q.normal_call-0]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.0052268669996919925
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[required_payload_fields-Q.normal_call-1]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.0052460489996519755
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[required_payload_fields-Q.normal_call-2]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.004848540999773832
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[required_payload_fields-Q.normal_call-3]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005097705000480346
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[required_payload_fields-Q.normal_call-4]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.0049047849997805315
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[required_payload_fields-C.request_summary-0]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005206357999668398
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[required_payload_fields-C.request_summary-1]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005163838000044052
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[required_payload_fields-C.request_summary-2]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005206322000049113
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[required_payload_fields-C.request_summary-3]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005541946999983338
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[required_payload_fields-C.request_summary-4]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005436714000097709
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[required_payload_fields-N.adapter_call-0]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005206533999626117
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[required_payload_fields-N.adapter_call-1]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005496345000210567
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[required_payload_fields-N.adapter_call-2]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005554821000259835
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[required_payload_fields-N.adapter_call-3]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.004558285999337386
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[required_payload_fields-N.adapter_call-4]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.004835599999751139
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[required_payload_fields-M.observe_existing-0]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.0052560539998012246
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[required_payload_fields-M.observe_existing-1]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005269012000098883
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[required_payload_fields-M.observe_existing-2]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005417909999778203
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[required_payload_fields-M.observe_existing-3]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005281740000100399
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[required_payload_fields-M.observe_existing-4]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005145285000253352
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_destination-Q.segment_compact-0]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005910528000640625
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_destination-Q.segment_compact-1]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005415204999735579
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_destination-Q.segment_compact-2]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.00552158399932523
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_destination-Q.segment_compact-3]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.007053811000332644
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_destination-Q.segment_compact-4]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.004800971999429748
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_destination-Q.length_call-0]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.004550171999653685
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_destination-Q.length_call-1]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.004694434999692021
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_destination-Q.length_call-2]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.056725621000623505
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_destination-Q.length_call-3]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.00503621200005
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_destination-Q.length_call-4]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005012159000216343
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_destination-Q.pressure_call-0]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005511004999789293
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_destination-Q.pressure_call-1]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.004519277000326838
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_destination-Q.pressure_call-2]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005109592999360757
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_destination-Q.pressure_call-3]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.004892523999842524
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_destination-Q.pressure_call-4]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005347837000044819
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_destination-Q.normal_call-0]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.004861513999458111
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_destination-Q.normal_call-1]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.0053680319997511106
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_destination-Q.normal_call-2]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005059608999545162
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_destination-Q.normal_call-3]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005357764999644132
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_destination-Q.normal_call-4]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005063030000201252
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_destination-C.request_summary-0]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.0045612070007337024
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_destination-C.request_summary-1]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005355557999791927
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_destination-C.request_summary-2]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.004791147000105411
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_destination-C.request_summary-3]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.004732353999315819
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_destination-C.request_summary-4]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005039947999648575
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_destination-N.adapter_call-0]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005810718999782694
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_destination-N.adapter_call-1]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.00562416699995083
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_destination-N.adapter_call-2]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005123990000356571
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_destination-N.adapter_call-3]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.0054889909997655195
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_destination-N.adapter_call-4]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005773410000074364
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_destination-M.observe_existing-0]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.0051342510005270015
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_destination-M.observe_existing-1]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.004676020999795583
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_destination-M.observe_existing-2]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005461289999402652
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_destination-M.observe_existing-3]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.0051271980000819894
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_destination-M.observe_existing-4]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.004805677000149444
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_case_updates-Q.segment_compact-0]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005396974000177579
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_case_updates-Q.segment_compact-1]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005336705000445363
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_case_updates-Q.segment_compact-2]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005426261999673443
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_case_updates-Q.segment_compact-3]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005465144000481814
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_case_updates-Q.segment_compact-4]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005256493999695522
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_case_updates-Q.length_call-0]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.006416155999431794
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_case_updates-Q.length_call-1]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005402024000431993
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_case_updates-Q.length_call-2]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005861420000655926
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_case_updates-Q.length_call-3]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.0053221349999148515
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_case_updates-Q.length_call-4]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.004757505999805289
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_case_updates-Q.pressure_call-0]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005710955999347789
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_case_updates-Q.pressure_call-1]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.004759791999276786
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_case_updates-Q.pressure_call-2]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.0054152120001162984
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_case_updates-Q.pressure_call-3]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.006432604999645264
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_case_updates-Q.pressure_call-4]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005300384999827656
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_case_updates-Q.normal_call-0]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.00511023400031263
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_case_updates-Q.normal_call-1]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.007027390000075684
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_case_updates-Q.normal_call-2]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005232480999438849
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_case_updates-Q.normal_call-3]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005310518999976921
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_case_updates-Q.normal_call-4]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005514274999768531
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_case_updates-C.request_summary-0]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005263626999294502
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_case_updates-C.request_summary-1]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.004758158000186086
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_case_updates-C.request_summary-2]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005216726000071503
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_case_updates-C.request_summary-3]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005694043999938003
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_case_updates-C.request_summary-4]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005277956000099948
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_case_updates-N.adapter_call-0]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005200125000556
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_case_updates-N.adapter_call-1]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005758203999903344
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_case_updates-N.adapter_call-2]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.006178857999657339
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_case_updates-N.adapter_call-3]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.004883032999714487
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_case_updates-N.adapter_call-4]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005283837000206404
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_case_updates-M.observe_existing-0]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005171056000108365
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_case_updates-M.observe_existing-1]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.004652389000511903
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_case_updates-M.observe_existing-2]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.00513943200076028
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_case_updates-M.observe_existing-3]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005190670999581926
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_case_updates-M.observe_existing-4]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005363396000575449
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_missing_call_port_or_return_never_becomes_backend_success[inputs-Q.segment_compact]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.004523285000686883
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_missing_call_port_or_return_never_becomes_backend_success[inputs-Q.length_call]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005271070000162581
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_missing_call_port_or_return_never_becomes_backend_success[inputs-Q.pressure_call]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005129507999299676
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_missing_call_port_or_return_never_becomes_backend_success[inputs-Q.normal_call]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005227343999649747
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_missing_call_port_or_return_never_becomes_backend_success[inputs-C.request_summary]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005519798999557679
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_missing_call_port_or_return_never_becomes_backend_success[inputs-N.adapter_call]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005935522000072524
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_missing_call_port_or_return_never_becomes_backend_success[inputs-M.observe_existing]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005398031000368064
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_missing_call_port_or_return_never_becomes_backend_success[returns-Q.segment_compact]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.00475464600003761
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_missing_call_port_or_return_never_becomes_backend_success[returns-Q.length_call]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005306259999997565
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_missing_call_port_or_return_never_becomes_backend_success[returns-Q.pressure_call]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005020466999667406
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_missing_call_port_or_return_never_becomes_backend_success[returns-Q.normal_call]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005091507000543061
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_missing_call_port_or_return_never_becomes_backend_success[returns-C.request_summary]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.0052060039997741114
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_missing_call_port_or_return_never_becomes_backend_success[returns-N.adapter_call]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.0048323110004275804
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_missing_call_port_or_return_never_becomes_backend_success[returns-M.observe_existing]",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.005206219999308814
+    },
+    {
+      "nodeid": "tests/test_control_ir_compiler.py::test_catalog_carries_all_seven_46_35_and_exact_additional_context",
+      "when": "call",
+      "outcome": "passed",
+      "duration": 0.0029051920000711107
+    }
+  ],
+  "sentinel_blocked_events": []
+}

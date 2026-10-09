@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="2.954" timestamp="2026-10-08T19:17:31.069434-04:00" hostname="54cb1abdc64d"><testcase classname="tests.test_acceptance_history" name="test_history_of_live_provisional_acceptance" time="2.264"><failure message="AssertionError: assert 'HISTORICAL_A...TANCE_INVALID' == 'HISTORICAL_ACCEPTANCE_VALID'&#10;  &#10;  - HISTORICAL_ACCEPTANCE_VALID&#10;  + HISTORICAL_ACCEPTANCE_INVALID&#10;  ?                       ++">tests/test_acceptance_history.py:32: in test_history_of_live_provisional_acceptance
+    assert result.status==VALID
+E   AssertionError: assert 'HISTORICAL_A...TANCE_INVALID' == 'HISTORICAL_ACCEPTANCE_VALID'
+E     
+E     - HISTORICAL_ACCEPTANCE_VALID
+E     + HISTORICAL_ACCEPTANCE_INVALID
+E     ?                       ++</failure></testcase></testsuite></testsuites>

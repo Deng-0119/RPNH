@@ -1,0 +1,19 @@
+[
+  "tests/test_opencode_frontend.py::test_pinned_bootstrap_response_shapes",
+  "tests/test_opencode_frontend.py::test_exact_provider_allowlist_and_no_routes",
+  "tests/test_opencode_frontend.py::test_session_creation_and_turn_can_select_an_rpnh_profile",
+  "tests/test_opencode_frontend.py::test_reasoning_effort_variant_is_model_scoped_and_reaches_application",
+  "tests/test_opencode_frontend.py::test_registered_answer_only_and_stable_reconnect",
+  "tests/test_opencode_frontend.py::test_reject_uncommitted_answer",
+  "tests/test_opencode_frontend.py::test_response_loss_does_not_change_identity",
+  "tests/test_opencode_frontend.py::test_invalid_explicit_identity_does_not_fallback",
+  "tests/test_opencode_frontend.py::test_conflicting_id_headers",
+  "tests/test_opencode_frontend.py::test_unsupported_effects_do_not_reach_application",
+  "tests/test_opencode_frontend.py::test_prompt_overrides_rejected_before_submission",
+  "tests/test_opencode_frontend.py::test_abort_projects_error_not_success_and_command_allowlist",
+  "tests/test_opencode_frontend.py::test_sse_framing_and_revision",
+  "tests/test_opencode_frontend.py::test_environment_strips_provider_and_global_settings",
+  "tests/test_opencode_frontend.py::test_exact_version_probe",
+  "tests/test_opencode_frontend.py::test_resume_removes_exact_diagnostic_id",
+  "tests/test_opencode_frontend.py::test_source_extracted_sdk_subset_schemas"
+]

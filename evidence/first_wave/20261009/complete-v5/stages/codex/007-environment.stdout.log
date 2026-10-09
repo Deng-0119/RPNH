@@ -1,0 +1,4 @@
+3.13.12 | packaged by conda-forge | (main, Feb  5 2026, 05:53:46) [GCC 14.3.0]
+Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.39
+<WORKSPACE>/.v26/x3/cpn/__init__.py
+{'pytest': '8.4.2', 'jsonschema': '4.26.0', 'websockets': '15.0.1', 'packaging': '26.3'}

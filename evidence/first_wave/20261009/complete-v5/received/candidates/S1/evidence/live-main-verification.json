@@ -1,0 +1,9 @@
+{
+  "repository": "Deng-0119/RPNH",
+  "requested_ref": "main",
+  "observed_commit": "1f191645c4d60c8b190d42e9fad99c85e8981c03",
+  "html_url": "https://github.com/Deng-0119/RPNH/commit/1f191645c4d60c8b190d42e9fad99c85e8981c03",
+  "message": "docs: explain shared execution entry and exact Registry reads [skip ci]",
+  "observed_utc": "2026-10-08T21:50:40Z",
+  "route": "GitHub connector fetch_commit read-only"
+}

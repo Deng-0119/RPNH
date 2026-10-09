@@ -1,0 +1,62 @@
+{
+  "repository": "Deng-0119/RPNH",
+  "commit": "715468dab0b1bea07d7e94a7aa0606eaf194365c",
+  "base_materialization_proof": "../rpnh-rsi-profile-fix/baseline-provenance.json",
+  "committed_cpn_overlays": {
+    "head": "715468dab0b1bea07d7e94a7aa0606eaf194365c",
+    "parent": "ec9077e95b830d09e7252c6d5d8ebcdbb9eb4ac4",
+    "overlays": [
+      {
+        "path": "cpn/orchestrator/runner.py",
+        "git_blob": "3e6fcebe1a59a2a193572d6bc963f1949a8067f4"
+      },
+      {
+        "path": "cpn/rpnh/agent_tasks.py",
+        "git_blob": "e2283345a354124ae2861881dce0cfcafa47db67"
+      }
+    ],
+    "frozen_source_unmodified": true
+  },
+  "superseded_patch_sha256": "cad3873f4225c326c1dc4ebff2a382c8de9b9ffb0e8d372fbb296f07200f9a45",
+  "old_source_hashes": {
+    "baseline_commit": "ec9077e95b830d09e7252c6d5d8ebcdbb9eb4ac4",
+    "files": [
+      {
+        "path": "cpn/rpnh/iteration_profile.py",
+        "sha256": "87bae6a32c96c5902dec06dd69ce2da70df5dd76520c2f425a9fbf62772ead2f",
+        "bytes": 12632,
+        "status": "added"
+      },
+      {
+        "path": "cpn/schemas/rpnh/iteration_profile.v1.schema.json",
+        "sha256": "684d0bb6f6bff7951189512549a578f5eb157f5e2b69d5cb3355e75872f03a7c",
+        "bytes": 4333,
+        "status": "added"
+      },
+      {
+        "path": "cpn/examples/iteration_profile/propose_evaluate_select.json",
+        "sha256": "8b485aec8bb7c2a96627b90d15323a3e48d7421e99a64b62d666657c604946fc",
+        "bytes": 889,
+        "status": "added"
+      },
+      {
+        "path": "cpn/examples/iteration_profile/README.md",
+        "sha256": "3c91d3c776e0d2cc73215132af121fceb7bc27a3fbae6acc8dc8a56fa7f1c7a7",
+        "bytes": 9076,
+        "status": "added"
+      },
+      {
+        "path": "cpn/examples/iteration_profile/README_ZH.md",
+        "sha256": "2ec89538375e39b554ebb842ba1486cf5e8c95373ca0e70646a4dc2fd99d1d80",
+        "bytes": 8009,
+        "status": "added"
+      },
+      {
+        "path": "tests/test_iteration_profile.py",
+        "sha256": "7377773d56dbf10f4bb8fb2ed187767d732671dd09d29076c56d4f4b5583d96a",
+        "bytes": 16066,
+        "status": "added"
+      }
+    ]
+  }
+}

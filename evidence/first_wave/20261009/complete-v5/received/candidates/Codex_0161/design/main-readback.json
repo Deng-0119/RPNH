@@ -1,0 +1,10 @@
+{
+  "checked_at": "2026-10-08T17:57:26Z",
+  "url": "https://api.github.com/repos/Deng-0119/RPNH/branches/main",
+  "head": "8dd360e4848912a998dbd83220c3f0ce0a1caa86",
+  "parents": [
+    "d92ff3704b6002bf5ecbccb3e6a3d1489809a805"
+  ],
+  "tree": "bd545364f73c571468c8d8aafa29d6fee386bded",
+  "message": "docs: clarify H2 shared test paths in evidence README [skip ci]"
+}

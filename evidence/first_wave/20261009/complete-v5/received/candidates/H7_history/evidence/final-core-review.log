@@ -1,0 +1,48 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.14, pytest-8.4.2, pluggy-1.6.0 -- /workspace/scratch/18c810e6dd59/rpnh-acceptance-history-validator/../rpnh-recovery-20261003/source/.venv/bin/python
+rootdir: /workspace/scratch/18c810e6dd59/rpnh-acceptance-history-validator
+collecting ... collected 40 items
+
+inputs/H7-core-review-tests/test_boundary_child.py::test_bound_writable_core_reentry_fails_before_eventstore_construction PASSED [  2%]
+inputs/H7-core-review-tests/test_boundary_child.py::test_bound_direct_acquire_writer_cannot_fence_original_owner PASSED [  5%]
+inputs/H7-core-review-tests/test_boundary_child.py::test_bound_readonly_core_preserves_writer_and_exact_origin PASSED [  7%]
+inputs/H7-core-review-tests/test_boundary_child.py::test_protected_catalog_bridge_is_exact_original_source PASSED [ 10%]
+inputs/H7-core-review-tests/test_boundary_child.py::test_direct_same_writer_stopped_to_running_authority_is_rejected PASSED [ 12%]
+inputs/H7-core-review-tests/test_boundary_child.py::test_required_bound_protocol_cannot_commit_without_atomic_marker PASSED [ 15%]
+inputs/H7-core-review-tests/test_boundary_child.py::test_bound_first_business_start_after_durable_stop_is_rejected PASSED [ 17%]
+inputs/H7-core-review-tests/test_boundary_child.py::test_origin_integrity_rejects_catalog_or_producer_source_substitution[content_schema_authority_ref] PASSED [ 20%]
+inputs/H7-core-review-tests/test_boundary_child.py::test_origin_integrity_rejects_catalog_or_producer_source_substitution[producer_ref] PASSED [ 22%]
+inputs/H7-core-review-tests/test_boundary_child.py::test_origin_integrity_rejects_catalog_or_producer_source_substitution[lifetime_ref] PASSED [ 25%]
+inputs/H7-core-review-tests/test_boundary_child.py::test_direct_second_adoption_transaction_is_rejected PASSED [ 27%]
+inputs/H7-core-review-tests/test_boundary_child.py::test_memory_stop_request_allows_already_started_completion_drain PASSED [ 30%]
+inputs/H7-core-review-tests/test_boundary_child.py::test_bound_admission_replay_after_stop_is_closed_at_original_boundary[helper] PASSED [ 32%]
+inputs/H7-core-review-tests/test_boundary_child.py::test_bound_admission_replay_after_stop_is_closed_at_original_boundary[raw-commit] PASSED [ 35%]
+inputs/H7-core-review-tests/test_boundary_child.py::test_bound_admission_replay_cannot_forge_reference_claim[omit-origin] PASSED [ 37%]
+inputs/H7-core-review-tests/test_boundary_child.py::test_bound_admission_replay_cannot_forge_reference_claim[consume-origin] PASSED [ 40%]
+inputs/H7-core-review-tests/test_boundary_child.py::test_bound_start_raw_transaction_replay_after_stop_is_closed PASSED [ 42%]
+inputs/H7-core-review-tests/test_boundary_child.py::test_prospective_protected_weak_edges_fail_before_commit[parent_bound_bootstrap/v1] PASSED [ 45%]
+inputs/H7-core-review-tests/test_boundary_child.py::test_prospective_protected_weak_edges_fail_before_commit[parent_bound_origin/v1] PASSED [ 47%]
+inputs/H7-core-review-tests/test_boundary_finalize.py::test_prospective_protected_lifetime_fails_before_commit PASSED [ 50%]
+inputs/H7-core-review-tests/test_boundary_finalize.py::test_prospective_protected_extra_capability_edge_fails_before_commit PASSED [ 52%]
+inputs/H7-core-review-tests/test_boundary_parent.py::test_live_exact_raw_replay_has_no_new_commit[parent_child_intent/v1] PASSED [ 55%]
+inputs/H7-core-review-tests/test_boundary_parent.py::test_live_exact_raw_replay_has_no_new_commit[parent_child_dispatch/v1] PASSED [ 57%]
+inputs/H7-core-review-tests/test_boundary_parent.py::test_live_exact_raw_replay_has_no_new_commit[parent_child_worker/v1] PASSED [ 60%]
+inputs/H7-core-review-tests/test_boundary_parent.py::test_live_exact_raw_replay_has_no_new_commit[parent_child_acceptance/v1] PASSED [ 62%]
+inputs/H7-core-review-tests/test_boundary_parent.py::test_exact_raw_replay_after_owner_stop_revalidates_live_authority[parent_child_intent/v1] PASSED [ 65%]
+inputs/H7-core-review-tests/test_boundary_parent.py::test_exact_raw_replay_after_owner_stop_revalidates_live_authority[parent_child_dispatch/v1] PASSED [ 67%]
+inputs/H7-core-review-tests/test_boundary_parent.py::test_exact_raw_replay_after_owner_stop_revalidates_live_authority[parent_child_worker/v1] PASSED [ 70%]
+inputs/H7-core-review-tests/test_boundary_parent.py::test_exact_raw_replay_after_owner_stop_revalidates_live_authority[parent_child_acceptance/v1] PASSED [ 72%]
+inputs/H7-core-review-tests/test_boundary_parent.py::test_parent_cannot_complete_from_self_asserted_products_without_native_observation PASSED [ 75%]
+inputs/H7-core-review-tests/test_boundary_parent.py::test_intent_helper_replay_after_parent_writer_fence_is_closed PASSED [ 77%]
+inputs/H7-core-review-tests/test_boundary_parent.py::test_started_ordinary_operation_cannot_substitute_launcher_pn_contract[two-slot-capacity] PASSED [ 80%]
+inputs/H7-core-review-tests/test_boundary_parent.py::test_started_ordinary_operation_cannot_substitute_launcher_pn_contract[no-launch-capability] PASSED [ 82%]
+inputs/H7-core-review-tests/test_boundary_parent.py::test_started_ordinary_operation_cannot_substitute_launcher_pn_contract[interrupted-outcome] PASSED [ 85%]
+inputs/H7-core-review-tests/test_boundary_parent.py::test_started_ordinary_operation_cannot_substitute_launcher_pn_contract[missing-failed-outcome] PASSED [ 87%]
+inputs/H7-core-review-tests/test_boundary_parent.py::test_started_ordinary_operation_cannot_substitute_launcher_pn_contract[ordinary-executor] PASSED [ 90%]
+inputs/H7-core-review-tests/test_boundary_parent.py::test_public_dispatch_cannot_use_self_asserted_native_evidence[None] PASSED [ 92%]
+inputs/H7-core-review-tests/test_boundary_parent.py::test_public_dispatch_cannot_use_self_asserted_native_evidence[proof1] PASSED [ 95%]
+inputs/H7-core-review-tests/test_boundary_parent.py::test_public_dispatch_cannot_use_self_asserted_native_evidence[proof2] PASSED [ 97%]
+inputs/H7-core-review-tests/test_boundary_parent.py::test_native_evidence_has_no_production_constructor PASSED [100%]
+
+- generated xml file: /workspace/scratch/18c810e6dd59/rpnh-acceptance-history-validator/evidence/final-core-review.xml -
+======================== 40 passed in 107.76s (0:01:47) ========================

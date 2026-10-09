@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="4" skipped="0" tests="10" time="159.554" timestamp="2026-10-08T13:06:50.621892-04:00" hostname="54cb1abdc64d"><testcase classname="examples.rsi_workflows.tests.test_runtime" name="test_missing_unsettled_or_report_evaluation_cannot_admit_selector" time="14.411" /><testcase classname="examples.rsi_workflows.tests.test_runtime" name="test_exact_lineage_and_stale_previous_round_do_not_enable_next_selector" time="17.881"><failure message="AttributeError: 'VerifiedResourceArtifact' object has no attribute 'payload'">tmp_path = PosixPath('/tmp/pytest-of-agent/pytest-76/test_exact_lineage_and_stale_p0')
+deny_external = None
+
+    def test_exact_lineage_and_stale_previous_round_do_not_enable_next_selector(tmp_path, deny_external):
+        run, _ = owner(tmp_path)
+        proposer, proposed = step(run, "round_1_proposer.run")
+        evaluator, evaluated = step(run, "round_1_evaluator.run")
+        selector, selected = step(run, "round_1_selector.run")
+        candidate = by_schema(evaluator, example.CANDIDATE)
+        assert by_schema(selector, example.CANDIDATE).resource_ref == candidate.resource_ref
+        assert by_schema(selector, example.EVALUATION).resource_ref == evaluated.outputs[0].resource_ref
+&gt;       assert body(evaluated.outputs[0])["candidate_ref"] == example.resource_ref(candidate.resource_ref)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+examples/rsi_workflows/tests/test_runtime.py:126: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+output = RegisteredOperationOutputAuthority(port_id='port_1', place='round_1_evaluator.evaluation', place_ref=VersionRef(entity...dbf896b98279b70d043': 1})), work_resource_ref=None, kind=None, verdict='evaluated', continuation=None, lease_claims=())
+
+    def body(output):
+&gt;       return json.loads(output.artifact.payload)
+                          ^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: 'VerifiedResourceArtifact' object has no attribute 'payload'
+
+examples/rsi_workflows/tests/test_runtime.py:73: AttributeError</failure></testcase><testcase classname="examples.rsi_workflows.tests.test_runtime" name="test_select_retain_unknown_and_native_terminal_read[3-False-select]" time="14.240"><failure message="AttributeError: 'VerifiedResourceArtifact' object has no attribute 'payload'">tmp_path = PosixPath('/tmp/pytest-of-agent/pytest-76/test_select_retain_unknown_and0')
+deny_external = None, target = 3, unknown = False, expected = 'select'
+
+    @pytest.mark.parametrize("target,unknown,expected", [(3, False, "select"), (0, False, "retain"), (3, True, "retain")])
+    def test_select_retain_unknown_and_native_terminal_read(tmp_path, deny_external, target, unknown, expected):
+        run, _ = owner(tmp_path, rounds=1, target=target, unknown=unknown)
+        step(run, "round_1_proposer.run")
+        step(run, "round_1_evaluator.run")
+        _, outputs = step(run, "round_1_selector.run")
+        assert outputs.selected_outcome_id == expected
+&gt;       assert body(outputs.outputs[0])["value"] == (1 if expected == "select" else 0)
+               ^^^^^^^^^^^^^^^^^^^^^^^^
+
+examples/rsi_workflows/tests/test_runtime.py:150: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+output = RegisteredOperationOutputAuthority(port_id='port_9', place='round_1_selector.next', place_ref=VersionRef(entity_type='...c95cceadec178178631f30': 1})), work_resource_ref=None, kind=None, verdict='select', continuation=None, lease_claims=())
+
+    def body(output):
+&gt;       return json.loads(output.artifact.payload)
+                          ^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: 'VerifiedResourceArtifact' object has no attribute 'payload'
+
+examples/rsi_workflows/tests/test_runtime.py:73: AttributeError</failure></testcase><testcase classname="examples.rsi_workflows.tests.test_runtime" name="test_select_retain_unknown_and_native_terminal_read[0-False-retain]" time="16.009"><failure message="AttributeError: 'VerifiedResourceArtifact' object has no attribute 'payload'">tmp_path = PosixPath('/tmp/pytest-of-agent/pytest-76/test_select_retain_unknown_and1')
+deny_external = None, target = 0, unknown = False, expected = 'retain'
+
+    @pytest.mark.parametrize("target,unknown,expected", [(3, False, "select"), (0, False, "retain"), (3, True, "retain")])
+    def test_select_retain_unknown_and_native_terminal_read(tmp_path, deny_external, target, unknown, expected):
+        run, _ = owner(tmp_path, rounds=1, target=target, unknown=unknown)
+        step(run, "round_1_proposer.run")
+        step(run, "round_1_evaluator.run")
+        _, outputs = step(run, "round_1_selector.run")
+        assert outputs.selected_outcome_id == expected
+&gt;       assert body(outputs.outputs[0])["value"] == (1 if expected == "select" else 0)
+               ^^^^^^^^^^^^^^^^^^^^^^^^
+
+examples/rsi_workflows/tests/test_runtime.py:150: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+output = RegisteredOperationOutputAuthority(port_id='port_9', place='round_1_selector.next', place_ref=VersionRef(entity_type='...215a6cb950b91628c036a4': 1})), work_resource_ref=None, kind=None, verdict='retain', continuation=None, lease_claims=())
+
+    def body(output):
+&gt;       return json.loads(output.artifact.payload)
+                          ^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: 'VerifiedResourceArtifact' object has no attribute 'payload'
+
+examples/rsi_workflows/tests/test_runtime.py:73: AttributeError</failure></testcase><testcase classname="examples.rsi_workflows.tests.test_runtime" name="test_select_retain_unknown_and_native_terminal_read[3-True-retain]" time="14.581"><failure message="AttributeError: 'VerifiedResourceArtifact' object has no attribute 'payload'">tmp_path = PosixPath('/tmp/pytest-of-agent/pytest-76/test_select_retain_unknown_and2')
+deny_external = None, target = 3, unknown = True, expected = 'retain'
+
+    @pytest.mark.parametrize("target,unknown,expected", [(3, False, "select"), (0, False, "retain"), (3, True, "retain")])
+    def test_select_retain_unknown_and_native_terminal_read(tmp_path, deny_external, target, unknown, expected):
+        run, _ = owner(tmp_path, rounds=1, target=target, unknown=unknown)
+        step(run, "round_1_proposer.run")
+        step(run, "round_1_evaluator.run")
+        _, outputs = step(run, "round_1_selector.run")
+        assert outputs.selected_outcome_id == expected
+&gt;       assert body(outputs.outputs[0])["value"] == (1 if expected == "select" else 0)
+               ^^^^^^^^^^^^^^^^^^^^^^^^
+
+examples/rsi_workflows/tests/test_runtime.py:150: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+output = RegisteredOperationOutputAuthority(port_id='port_9', place='round_1_selector.next', place_ref=VersionRef(entity_type='...8159daa3690b8a180c0b41': 1})), work_resource_ref=None, kind=None, verdict='retain', continuation=None, lease_claims=())
+
+    def body(output):
+&gt;       return json.loads(output.artifact.payload)
+                          ^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: 'VerifiedResourceArtifact' object has no attribute 'payload'
+
+examples/rsi_workflows/tests/test_runtime.py:73: AttributeError</failure></testcase><testcase classname="examples.rsi_workflows.tests.test_runtime" name="test_stop_outcome_prevents_later_round_and_is_not_owner_stop" time="26.692" /><testcase classname="examples.rsi_workflows.tests.test_runtime" name="test_unbound_r1_has_no_runtime_terminal_and_overlay_does_not_mutate_it" time="16.614" /><testcase classname="examples.rsi_workflows.tests.test_runtime" name="test_mismatched_evaluation_is_not_selected[candidate_ref]" time="12.893" /><testcase classname="examples.rsi_workflows.tests.test_runtime" name="test_mismatched_evaluation_is_not_selected[parent_state_ref]" time="13.037" /><testcase classname="examples.rsi_workflows.tests.test_runtime" name="test_mismatched_evaluation_is_not_selected[round]" time="12.866" /></testsuite></testsuites>

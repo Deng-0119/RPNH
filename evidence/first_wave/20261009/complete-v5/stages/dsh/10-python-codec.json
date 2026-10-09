@@ -1,0 +1,27 @@
+{
+  "command": [
+    "<WORKSPACE>/.p26/v/bin/python",
+    "-m",
+    "pytest",
+    "-p",
+    "no:cacheprovider",
+    "-q",
+    "tests/test_dsh_message_codec.py",
+    "--basetemp=<WORKSPACE>/.v26/tdc",
+    "--junitxml=<WORKSPACE>/task-complete-v5-20261009/stages/dsh/10-python-codec.xml"
+  ],
+  "cwd": "<WORKSPACE>/.v26/d",
+  "pid": 14135,
+  "started_at_utc": "2026-10-09T01:19:28.902484+00:00",
+  "finished_at_utc": "2026-10-09T01:19:29.399908+00:00",
+  "elapsed_seconds": 0.497446786997898,
+  "exit_code": 0,
+  "environment": {
+    "PYTHONPATH": "<WORKSPACE>/.v26/d",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1",
+    "TMPDIR": "<WORKSPACE>/.v26/tmp",
+    "PYTEST_ADDOPTS": null,
+    "PYTEST_PLUGINS": null
+  }
+}

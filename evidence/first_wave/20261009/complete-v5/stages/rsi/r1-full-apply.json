@@ -1,0 +1,22 @@
+{
+  "command": [
+    "git",
+    "apply",
+    "--whitespace=error",
+    "<WORKSPACE>/task-complete-v5-20261009/stages/rsi/packages/R1_v2_full/inert-iteration-profile-v2-full.patch"
+  ],
+  "cwd": "<WORKSPACE>/.v26/r1",
+  "pid": 13851,
+  "started_at_utc": "2026-10-09T01:18:04.966185+00:00",
+  "finished_at_utc": "2026-10-09T01:18:04.969841+00:00",
+  "elapsed_seconds": 0.0036721420037792996,
+  "exit_code": 0,
+  "environment": {
+    "PYTHONPATH": "<WORKSPACE>/.v26/r1",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1",
+    "TMPDIR": "<WORKSPACE>/.v26/tmp",
+    "PYTEST_ADDOPTS": null,
+    "PYTEST_PLUGINS": null
+  }
+}

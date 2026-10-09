@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/workspace/scratch/18c810e6dd59/rpnh-rsi-runtime-validation/source/../h2a_readback.py", line 24, in <module>
+    for directory in sorted(root.iterdir()):
+                     ^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/pathlib.py", line 1056, in iterdir
+    for name in os.listdir(self):
+                ^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/tmp/pytest-of-agent/pytest-80'

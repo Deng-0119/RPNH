@@ -1,0 +1,40 @@
+{
+  "patch_sha256": "5054c53cc61bb03fdc58a1da6f7e56b41decc0ccb78124478effc38b2bf93e52",
+  "files": [
+    {
+      "path": "examples/rsi_workflows/deterministic.py",
+      "old_sha256": null,
+      "old_exists": false,
+      "manifest_new_sha256": "acc128a9e44f1e0ef4612aaaab4152e9d30375877c8e6ced5d6ada534df8242f",
+      "superseded_sha256_not_preimage": null
+    },
+    {
+      "path": "examples/rsi_workflows/README.md",
+      "old_sha256": null,
+      "old_exists": false,
+      "manifest_new_sha256": "8b4dfb18c32b79e731e65b5ebc4fe624ba1cf6588846662c375db1313474a7a1",
+      "superseded_sha256_not_preimage": null
+    },
+    {
+      "path": "examples/rsi_workflows/README_ZH.md",
+      "old_sha256": null,
+      "old_exists": false,
+      "manifest_new_sha256": "334c27df282500322d88692121f4c0d0c7e853b248b27b901b64ade68c3e235c",
+      "superseded_sha256_not_preimage": null
+    },
+    {
+      "path": "examples/rsi_workflows/tests/conftest.py",
+      "old_sha256": null,
+      "old_exists": false,
+      "manifest_new_sha256": "9320863ce187cc814bf58ae356d5c12a5dea7f0204c3bea1375380371fc3b9dd",
+      "superseded_sha256_not_preimage": null
+    },
+    {
+      "path": "examples/rsi_workflows/tests/test_runtime.py",
+      "old_sha256": null,
+      "old_exists": false,
+      "manifest_new_sha256": "65c5a41048aebca732a24364b26b045502f20bd113cf799d88278debfffcce09",
+      "superseded_sha256_not_preimage": null
+    }
+  ]
+}

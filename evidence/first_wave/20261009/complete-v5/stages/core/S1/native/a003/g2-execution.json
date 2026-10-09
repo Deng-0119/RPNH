@@ -1,0 +1,59 @@
+{
+  "scene": "g2",
+  "node_id": "<WORKSPACE>/task-complete-v5-20261009/stages/core/S1/native/a003/test_native_s1.py::test_g2_same_transition",
+  "command": [
+    "<WORKSPACE>/.p26/v/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "-p",
+    "no:cacheprovider",
+    "--confcutdir=<WORKSPACE>/task-complete-v5-20261009/stages/core/S1/native/a003",
+    "--rootdir=<WORKSPACE>/task-complete-v5-20261009/stages/core/S1/native/a003",
+    "--basetemp=<WORKSPACE>/.v26/unS1-a003-1",
+    "--junitxml=<WORKSPACE>/task-complete-v5-20261009/stages/core/S1/native/a003/g2.xml",
+    "<WORKSPACE>/task-complete-v5-20261009/stages/core/S1/native/a003/test_native_s1.py::test_g2_same_transition"
+  ],
+  "cwd": "<WORKSPACE>/.v26/c1",
+  "started_utc": "2026-10-09T03:43:37.979955+00:00",
+  "resources_before": {
+    "utc": "2026-10-09T03:43:37.979753+00:00",
+    "windows_D_free_bytes": 54021922816,
+    "task_plus_v26_bytes": 5045989376,
+    "native_runtime_bytes": 121724928,
+    "memory_available_bytes": 15118487552,
+    "allowed": true
+  },
+  "env": {
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1",
+    "PYTEST_ADDOPTS": "",
+    "PYTHONPATH": "<WORKSPACE>/.v26/c1:<WORKSPACE>/.v26/c1/tests",
+    "TMPDIR": "<WORKSPACE>/.v26/unS1-a003-1",
+    "TMP": "<WORKSPACE>/.v26/unS1-a003-1",
+    "TEMP": "<WORKSPACE>/.v26/unS1-a003-1"
+  },
+  "pid": 20724,
+  "exit_code": 4,
+  "finished_utc": "2026-10-09T03:43:40.627382+00:00",
+  "interruption": null,
+  "status": "FAIL",
+  "junit": "<WORKSPACE>/task-complete-v5-20261009/stages/core/S1/native/a003/g2.xml",
+  "junit_cases": [
+    {
+      "name": "test_native_s1",
+      "outcome": "FAIL"
+    }
+  ],
+  "resources_after": {
+    "utc": "2026-10-09T03:43:41.236260+00:00",
+    "windows_D_free_bytes": 54021922816,
+    "task_plus_v26_bytes": 5056991232,
+    "native_runtime_bytes": 121724928,
+    "memory_available_bytes": 15118049280,
+    "allowed": true
+  },
+  "residual_sockets": [],
+  "process_reaped": true,
+  "evidence": []
+}

@@ -1,0 +1,4 @@
+COPIED <WORKSPACE>/task-complete-v5-20261009/raw/RPNH_MainThread_History_Local_Validation_20261008/RPNH_MainThread_History_Local_Validation_20261008 <WORKSPACE>/task-complete-v5-20261009/stages/codex/package1
+COPIED <WORKSPACE>/task-complete-v5-20261009/raw/RPNH_Codex_Effort_Local_Validation_20261008/codex-effort-local-validation-20261008 <WORKSPACE>/task-complete-v5-20261009/stages/codex/package2
+COPIED <WORKSPACE>/task-complete-v5-20261009/raw/RPNH_Codex_History_Native_Gate_20261008/RPNH_Codex_History_Native_Gate_20261008 <WORKSPACE>/task-complete-v5-20261009/stages/codex/package3
+COPIED <WORKSPACE>/task-complete-v5-20261009/raw/RPNH_Codex_0161_Candidate_Local_Gate_20261008/RPNH_Codex_0161_Candidate_Local_Gate_20261008 <WORKSPACE>/task-complete-v5-20261009/stages/codex/package4

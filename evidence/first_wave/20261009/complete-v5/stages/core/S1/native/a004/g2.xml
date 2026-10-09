@@ -1,0 +1,1 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="0" skipped="0" tests="1" time="10.639" timestamp="2026-10-09T11:44:53.147149+08:00" hostname="DYK1"><testcase classname="test_native_s1" name="test_g2_same_transition" time="10.193" /></testsuite></testsuites>

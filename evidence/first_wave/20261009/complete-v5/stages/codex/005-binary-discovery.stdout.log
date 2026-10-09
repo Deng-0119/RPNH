@@ -1,0 +1,11 @@
+{"path": "<USER_HOME>/.local/bin/codex-file-link", "realpath": "<USER_HOME>/.local/bin/codex-file-link", "symlink": false, "size": 7135}
+{"path": "<USER_HOME>/.local/bin/codex-openrouter-haiku", "realpath": "<USER_HOME>/.local/bin/codex-openrouter-haiku", "symlink": false, "size": 183}
+{"path": "<USER_HOME>/.local/bin/codex-openrouter", "realpath": "<USER_HOME>/.local/bin/codex-openrouter", "symlink": false, "size": 15233}
+{"path": "<USER_HOME>/.local/bin/codex-openrouter-proxy.mjs", "realpath": "<USER_HOME>/.local/bin/codex-openrouter-proxy.mjs", "symlink": false, "size": 13825}
+{"path": "<USER_HOME>/.local/bin/codex", "realpath": "<USER_HOME>/.local/bin/codex", "symlink": false, "size": 3719}
+{"path": "<USER_HOME>/.local/bin/codex-openrouter-token", "realpath": "<USER_HOME>/.local/bin/codex-openrouter-token", "symlink": false, "size": 858}
+{"path": "<USER_HOME>/.nvm/versions/node/v22.22.1/bin/codex", "realpath": "<USER_HOME>/.nvm/versions/node/v22.22.1/lib/node_modules/@openai/codex/bin/codex.js", "symlink": true, "size": 8790}
+{"path": "<USER_HOME>/.nvm/versions/node/v22.22.1/lib/node_modules/@openai/codex/package.json", "realpath": "<USER_HOME>/.nvm/versions/node/v22.22.1/lib/node_modules/@openai/codex/package.json", "symlink": false, "size": 1082}
+{"name": "@openai/codex", "version": "0.160.0", "repository": {"type": "git", "url": "git+https://github.com/openai/codex.git", "directory": "codex-cli"}, "bin": {"codex": "bin/codex.js"}}
+{"path": "<USER_HOME>/.nvm/versions/node/v22.22.1/lib/node_modules/@openai/codex/node_modules/@openai/codex-linux-x64/package.json", "realpath": "<USER_HOME>/.nvm/versions/node/v22.22.1/lib/node_modules/@openai/codex/node_modules/@openai/codex-linux-x64/package.json", "symlink": false, "size": 511}
+{"name": "@openai/codex", "version": "0.160.0-linux-x64", "repository": {"type": "git", "url": "git+https://github.com/openai/codex.git", "directory": "codex-cli"}, "bin": null}

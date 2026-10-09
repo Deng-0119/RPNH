@@ -1,0 +1,56 @@
+{
+  "alternate_patches_not_cumulative": true,
+  "both_paths_yield_same_six_final_files": true,
+  "full_sha256": "67466bfc13a685dd79dc26d0c0c2f0a33b7016553ccf53728b57906cc2f10ac3",
+  "delta_sha256": "40da4de0316e5fcb07276fcc159c7277403eef942df4769ad361e5f40804e72d",
+  "old_source_six_files_unchanged": true,
+  "unchanged_base_files_preserved": true,
+  "checks": [
+    {
+      "kind": "full",
+      "command": [
+        "git",
+        "apply",
+        "--check",
+        "/workspace/scratch/18c810e6dd59/rpnh-rsi-profile-terminal-revision/inert-iteration-profile-v2-full.patch"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "kind": "full",
+      "command": [
+        "git",
+        "apply",
+        "/workspace/scratch/18c810e6dd59/rpnh-rsi-profile-terminal-revision/inert-iteration-profile-v2-full.patch"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "kind": "delta",
+      "command": [
+        "git",
+        "apply",
+        "--check",
+        "/workspace/scratch/18c810e6dd59/rpnh-rsi-profile-terminal-revision/r1-v1-to-v2-terminal.delta.patch"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "kind": "delta",
+      "command": [
+        "git",
+        "apply",
+        "/workspace/scratch/18c810e6dd59/rpnh-rsi-profile-terminal-revision/r1-v1-to-v2-terminal.delta.patch"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ]
+}

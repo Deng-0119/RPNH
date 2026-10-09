@@ -1,0 +1,676 @@
+{
+  "status": "FAIL",
+  "started_utc": "2026-10-09T03:38:13.546550+00:00",
+  "source": {
+    "status": "PASS",
+    "baseline_head": "1f191645c4d60c8b190d42e9fad99c85e8981c03",
+    "files": 3656,
+    "mismatches": [],
+    "observed_inventory_sha256": "3408d0367ac311f56918525bbb6c678c43ac43c4b69ffc574a7f6787a4df069d",
+    "inventory_hash_format": "UTF-8 canonical JSON sorted path records: path, sha256, executable; sort_keys=True, separators=(comma,colon)",
+    "added": [],
+    "missing": []
+  },
+  "attempt": "a001",
+  "attempt_dir": "<WORKSPACE>/task-complete-v5-20261009/stages/core/S1/native/a001",
+  "acceptance_scenes": 7,
+  "planned_test_cases": 10,
+  "scope": "S1 finite validation; H7 future NOT_RUN/out of scope",
+  "scenes": [
+    {
+      "scene": "g1",
+      "node_id": "<WORKSPACE>/task-complete-v5-20261009/stages/core/S1/native/a001/test_native_s1.py::test_g1_shared_transitions",
+      "command": [
+        "<WORKSPACE>/.p26/v/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "--confcutdir=<WORKSPACE>/task-complete-v5-20261009/stages/core/S1/native/a001",
+        "--rootdir=<WORKSPACE>/task-complete-v5-20261009/stages/core/S1/native/a001",
+        "--basetemp=<WORKSPACE>/.v26/unS1-a001-0",
+        "--junitxml=<WORKSPACE>/task-complete-v5-20261009/stages/core/S1/native/a001/g1.xml",
+        "<WORKSPACE>/task-complete-v5-20261009/stages/core/S1/native/a001/test_native_s1.py::test_g1_shared_transitions"
+      ],
+      "cwd": "<WORKSPACE>/.v26/c1",
+      "started_utc": "2026-10-09T03:38:14.130087+00:00",
+      "resources_before": {
+        "utc": "2026-10-09T03:38:14.129861+00:00",
+        "windows_D_free_bytes": 54021922816,
+        "task_plus_v26_bytes": 4758650880,
+        "native_runtime_bytes": 0,
+        "memory_available_bytes": 15120076800,
+        "allowed": true
+      },
+      "env": {
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1",
+        "PYTEST_ADDOPTS": "",
+        "PYTHONPATH": "<WORKSPACE>/.v26/c1:<WORKSPACE>/.v26/c1/tests",
+        "TMPDIR": "<WORKSPACE>/.v26/unS1-a001-0",
+        "TMP": "<WORKSPACE>/.v26/unS1-a001-0",
+        "TEMP": "<WORKSPACE>/.v26/unS1-a001-0"
+      },
+      "pid": 20527,
+      "exit_code": 1,
+      "finished_utc": "2026-10-09T03:38:21.930807+00:00",
+      "interruption": null,
+      "status": "FAIL",
+      "junit": "<WORKSPACE>/task-complete-v5-20261009/stages/core/S1/native/a001/g1.xml",
+      "junit_cases": [
+        {
+          "name": "test_g1_shared_transitions",
+          "outcome": "FAIL"
+        }
+      ],
+      "resources_after": {
+        "utc": "2026-10-09T03:38:22.510594+00:00",
+        "windows_D_free_bytes": 54021922816,
+        "task_plus_v26_bytes": 4771332096,
+        "native_runtime_bytes": 5902336,
+        "memory_available_bytes": 15119273984,
+        "allowed": true
+      },
+      "residual_sockets": [],
+      "process_reaped": true,
+      "evidence": [
+        "g1-cleanup.json",
+        "g1.json"
+      ]
+    },
+    {
+      "scene": "g2",
+      "node_id": "<WORKSPACE>/task-complete-v5-20261009/stages/core/S1/native/a001/test_native_s1.py::test_g2_same_transition",
+      "command": [
+        "<WORKSPACE>/.p26/v/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "--confcutdir=<WORKSPACE>/task-complete-v5-20261009/stages/core/S1/native/a001",
+        "--rootdir=<WORKSPACE>/task-complete-v5-20261009/stages/core/S1/native/a001",
+        "--basetemp=<WORKSPACE>/.v26/unS1-a001-1",
+        "--junitxml=<WORKSPACE>/task-complete-v5-20261009/stages/core/S1/native/a001/g2.xml",
+        "<WORKSPACE>/task-complete-v5-20261009/stages/core/S1/native/a001/test_native_s1.py::test_g2_same_transition"
+      ],
+      "cwd": "<WORKSPACE>/.v26/c1",
+      "started_utc": "2026-10-09T03:38:23.094212+00:00",
+      "resources_before": {
+        "utc": "2026-10-09T03:38:23.093866+00:00",
+        "windows_D_free_bytes": 54021922816,
+        "task_plus_v26_bytes": 4771753984,
+        "native_runtime_bytes": 5902336,
+        "memory_available_bytes": 15118839808,
+        "allowed": true
+      },
+      "env": {
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1",
+        "PYTEST_ADDOPTS": "",
+        "PYTHONPATH": "<WORKSPACE>/.v26/c1:<WORKSPACE>/.v26/c1/tests",
+        "TMPDIR": "<WORKSPACE>/.v26/unS1-a001-1",
+        "TMP": "<WORKSPACE>/.v26/unS1-a001-1",
+        "TEMP": "<WORKSPACE>/.v26/unS1-a001-1"
+      },
+      "pid": 20531,
+      "exit_code": 1,
+      "finished_utc": "2026-10-09T03:38:30.883070+00:00",
+      "interruption": null,
+      "status": "FAIL",
+      "junit": "<WORKSPACE>/task-complete-v5-20261009/stages/core/S1/native/a001/g2.xml",
+      "junit_cases": [
+        {
+          "name": "test_g2_same_transition",
+          "outcome": "FAIL"
+        }
+      ],
+      "resources_after": {
+        "utc": "2026-10-09T03:38:31.456910+00:00",
+        "windows_D_free_bytes": 54021922816,
+        "task_plus_v26_bytes": 4799676416,
+        "native_runtime_bytes": 11669504,
+        "memory_available_bytes": 15110127616,
+        "allowed": true
+      },
+      "residual_sockets": [],
+      "process_reaped": true,
+      "evidence": [
+        "g2-cleanup.json",
+        "g2.json"
+      ]
+    },
+    {
+      "scene": "g3",
+      "node_id": "<WORKSPACE>/task-complete-v5-20261009/stages/core/S1/native/a001/test_native_s1.py::test_g3_stop_retains_unresolved",
+      "command": [
+        "<WORKSPACE>/.p26/v/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "--confcutdir=<WORKSPACE>/task-complete-v5-20261009/stages/core/S1/native/a001",
+        "--rootdir=<WORKSPACE>/task-complete-v5-20261009/stages/core/S1/native/a001",
+        "--basetemp=<WORKSPACE>/.v26/unS1-a001-2",
+        "--junitxml=<WORKSPACE>/task-complete-v5-20261009/stages/core/S1/native/a001/g3.xml",
+        "<WORKSPACE>/task-complete-v5-20261009/stages/core/S1/native/a001/test_native_s1.py::test_g3_stop_retains_unresolved"
+      ],
+      "cwd": "<WORKSPACE>/.v26/c1",
+      "started_utc": "2026-10-09T03:38:31.530983+00:00",
+      "resources_before": {
+        "utc": "2026-10-09T03:38:31.530759+00:00",
+        "windows_D_free_bytes": 54021922816,
+        "task_plus_v26_bytes": 4798758912,
+        "native_runtime_bytes": 11669504,
+        "memory_available_bytes": 15109738496,
+        "allowed": true
+      },
+      "env": {
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1",
+        "PYTEST_ADDOPTS": "",
+        "PYTHONPATH": "<WORKSPACE>/.v26/c1:<WORKSPACE>/.v26/c1/tests",
+        "TMPDIR": "<WORKSPACE>/.v26/unS1-a001-2",
+        "TMP": "<WORKSPACE>/.v26/unS1-a001-2",
+        "TEMP": "<WORKSPACE>/.v26/unS1-a001-2"
+      },
+      "pid": 20544,
+      "exit_code": 0,
+      "finished_utc": "2026-10-09T03:38:41.941201+00:00",
+      "interruption": null,
+      "status": "PASS",
+      "junit": "<WORKSPACE>/task-complete-v5-20261009/stages/core/S1/native/a001/g3.xml",
+      "junit_cases": [
+        {
+          "name": "test_g3_stop_retains_unresolved",
+          "outcome": "PASS"
+        }
+      ],
+      "resources_after": {
+        "utc": "2026-10-09T03:38:42.535007+00:00",
+        "windows_D_free_bytes": 54021922816,
+        "task_plus_v26_bytes": 4820221952,
+        "native_runtime_bytes": 17481728,
+        "memory_available_bytes": 15112658944,
+        "allowed": true
+      },
+      "residual_sockets": [],
+      "process_reaped": true,
+      "evidence": [
+        "g3-cleanup.json",
+        "g3.json"
+      ]
+    },
+    {
+      "scene": "g4",
+      "node_id": "<WORKSPACE>/task-complete-v5-20261009/stages/core/S1/native/a001/test_native_s1.py::test_g4_durable_reentry",
+      "command": [
+        "<WORKSPACE>/.p26/v/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "--confcutdir=<WORKSPACE>/task-complete-v5-20261009/stages/core/S1/native/a001",
+        "--rootdir=<WORKSPACE>/task-complete-v5-20261009/stages/core/S1/native/a001",
+        "--basetemp=<WORKSPACE>/.v26/unS1-a001-3",
+        "--junitxml=<WORKSPACE>/task-complete-v5-20261009/stages/core/S1/native/a001/g4.xml",
+        "<WORKSPACE>/task-complete-v5-20261009/stages/core/S1/native/a001/test_native_s1.py::test_g4_durable_reentry"
+      ],
+      "cwd": "<WORKSPACE>/.v26/c1",
+      "started_utc": "2026-10-09T03:38:43.123501+00:00",
+      "resources_before": {
+        "utc": "2026-10-09T03:38:43.123227+00:00",
+        "windows_D_free_bytes": 54021922816,
+        "task_plus_v26_bytes": 4820553728,
+        "native_runtime_bytes": 17481728,
+        "memory_available_bytes": 15113764864,
+        "allowed": true
+      },
+      "env": {
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1",
+        "PYTEST_ADDOPTS": "",
+        "PYTHONPATH": "<WORKSPACE>/.v26/c1:<WORKSPACE>/.v26/c1/tests",
+        "TMPDIR": "<WORKSPACE>/.v26/unS1-a001-3",
+        "TMP": "<WORKSPACE>/.v26/unS1-a001-3",
+        "TEMP": "<WORKSPACE>/.v26/unS1-a001-3"
+      },
+      "pid": 20553,
+      "exit_code": 1,
+      "finished_utc": "2026-10-09T03:38:48.317890+00:00",
+      "interruption": null,
+      "status": "FAIL",
+      "junit": "<WORKSPACE>/task-complete-v5-20261009/stages/core/S1/native/a001/g4.xml",
+      "junit_cases": [
+        {
+          "name": "test_g4_durable_reentry",
+          "outcome": "FAIL"
+        }
+      ],
+      "resources_after": {
+        "utc": "2026-10-09T03:38:48.905146+00:00",
+        "windows_D_free_bytes": 54021922816,
+        "task_plus_v26_bytes": 4841345024,
+        "native_runtime_bytes": 23126016,
+        "memory_available_bytes": 15111405568,
+        "allowed": true
+      },
+      "residual_sockets": [],
+      "process_reaped": true,
+      "evidence": [
+        "g4-before-cleanup.json"
+      ]
+    },
+    {
+      "scene": "g5-union",
+      "node_id": "<WORKSPACE>/task-complete-v5-20261009/stages/core/S1/native/a001/test_native_s1.py::test_g5_coexistence[union]",
+      "command": [
+        "<WORKSPACE>/.p26/v/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "--confcutdir=<WORKSPACE>/task-complete-v5-20261009/stages/core/S1/native/a001",
+        "--rootdir=<WORKSPACE>/task-complete-v5-20261009/stages/core/S1/native/a001",
+        "--basetemp=<WORKSPACE>/.v26/unS1-a001-4",
+        "--junitxml=<WORKSPACE>/task-complete-v5-20261009/stages/core/S1/native/a001/g5-union.xml",
+        "<WORKSPACE>/task-complete-v5-20261009/stages/core/S1/native/a001/test_native_s1.py::test_g5_coexistence[union]"
+      ],
+      "cwd": "<WORKSPACE>/.v26/c1",
+      "started_utc": "2026-10-09T03:38:49.488802+00:00",
+      "resources_before": {
+        "utc": "2026-10-09T03:38:49.488522+00:00",
+        "windows_D_free_bytes": 54021922816,
+        "task_plus_v26_bytes": 4841172992,
+        "native_runtime_bytes": 23126016,
+        "memory_available_bytes": 15111376896,
+        "allowed": true
+      },
+      "env": {
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1",
+        "PYTEST_ADDOPTS": "",
+        "PYTHONPATH": "<WORKSPACE>/.v26/c1:<WORKSPACE>/.v26/c1/tests",
+        "TMPDIR": "<WORKSPACE>/.v26/unS1-a001-4",
+        "TMP": "<WORKSPACE>/.v26/unS1-a001-4",
+        "TEMP": "<WORKSPACE>/.v26/unS1-a001-4"
+      },
+      "pid": 20555,
+      "exit_code": 1,
+      "finished_utc": "2026-10-09T03:38:59.976894+00:00",
+      "interruption": null,
+      "status": "FAIL",
+      "junit": "<WORKSPACE>/task-complete-v5-20261009/stages/core/S1/native/a001/g5-union.xml",
+      "junit_cases": [
+        {
+          "name": "test_g5_coexistence[union]",
+          "outcome": "FAIL"
+        }
+      ],
+      "resources_after": {
+        "utc": "2026-10-09T03:39:00.576189+00:00",
+        "windows_D_free_bytes": 54021922816,
+        "task_plus_v26_bytes": 4863582208,
+        "native_runtime_bytes": 29155328,
+        "memory_available_bytes": 15119151104,
+        "allowed": true
+      },
+      "residual_sockets": [],
+      "process_reaped": true,
+      "evidence": [
+        "g5-union-cleanup.json",
+        "g5-union.json"
+      ]
+    },
+    {
+      "scene": "g5-produce",
+      "node_id": "<WORKSPACE>/task-complete-v5-20261009/stages/core/S1/native/a001/test_native_s1.py::test_g5_coexistence[produce]",
+      "command": [
+        "<WORKSPACE>/.p26/v/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "--confcutdir=<WORKSPACE>/task-complete-v5-20261009/stages/core/S1/native/a001",
+        "--rootdir=<WORKSPACE>/task-complete-v5-20261009/stages/core/S1/native/a001",
+        "--basetemp=<WORKSPACE>/.v26/unS1-a001-5",
+        "--junitxml=<WORKSPACE>/task-complete-v5-20261009/stages/core/S1/native/a001/g5-produce.xml",
+        "<WORKSPACE>/task-complete-v5-20261009/stages/core/S1/native/a001/test_native_s1.py::test_g5_coexistence[produce]"
+      ],
+      "cwd": "<WORKSPACE>/.v26/c1",
+      "started_utc": "2026-10-09T03:39:01.175453+00:00",
+      "resources_before": {
+        "utc": "2026-10-09T03:39:01.175216+00:00",
+        "windows_D_free_bytes": 54021922816,
+        "task_plus_v26_bytes": 4863434752,
+        "native_runtime_bytes": 29155328,
+        "memory_available_bytes": 15127007232,
+        "allowed": true
+      },
+      "env": {
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1",
+        "PYTEST_ADDOPTS": "",
+        "PYTHONPATH": "<WORKSPACE>/.v26/c1:<WORKSPACE>/.v26/c1/tests",
+        "TMPDIR": "<WORKSPACE>/.v26/unS1-a001-5",
+        "TMP": "<WORKSPACE>/.v26/unS1-a001-5",
+        "TEMP": "<WORKSPACE>/.v26/unS1-a001-5"
+      },
+      "pid": 20560,
+      "exit_code": 1,
+      "finished_utc": "2026-10-09T03:39:11.203227+00:00",
+      "interruption": null,
+      "status": "FAIL",
+      "junit": "<WORKSPACE>/task-complete-v5-20261009/stages/core/S1/native/a001/g5-produce.xml",
+      "junit_cases": [
+        {
+          "name": "test_g5_coexistence[produce]",
+          "outcome": "FAIL"
+        }
+      ],
+      "resources_after": {
+        "utc": "2026-10-09T03:39:11.794557+00:00",
+        "windows_D_free_bytes": 54021922816,
+        "task_plus_v26_bytes": 4892213248,
+        "native_runtime_bytes": 35213312,
+        "memory_available_bytes": 15131172864,
+        "allowed": true
+      },
+      "residual_sockets": [],
+      "process_reaped": true,
+      "evidence": [
+        "g5-produce-cleanup.json",
+        "g5-produce.json"
+      ]
+    },
+    {
+      "scene": "g5-data-read",
+      "node_id": "<WORKSPACE>/task-complete-v5-20261009/stages/core/S1/native/a001/test_native_s1.py::test_g5_coexistence[data-read]",
+      "command": [
+        "<WORKSPACE>/.p26/v/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "--confcutdir=<WORKSPACE>/task-complete-v5-20261009/stages/core/S1/native/a001",
+        "--rootdir=<WORKSPACE>/task-complete-v5-20261009/stages/core/S1/native/a001",
+        "--basetemp=<WORKSPACE>/.v26/unS1-a001-6",
+        "--junitxml=<WORKSPACE>/task-complete-v5-20261009/stages/core/S1/native/a001/g5-data-read.xml",
+        "<WORKSPACE>/task-complete-v5-20261009/stages/core/S1/native/a001/test_native_s1.py::test_g5_coexistence[data-read]"
+      ],
+      "cwd": "<WORKSPACE>/.v26/c1",
+      "started_utc": "2026-10-09T03:39:12.385865+00:00",
+      "resources_before": {
+        "utc": "2026-10-09T03:39:12.385580+00:00",
+        "windows_D_free_bytes": 54021922816,
+        "task_plus_v26_bytes": 4892303360,
+        "native_runtime_bytes": 35213312,
+        "memory_available_bytes": 15129317376,
+        "allowed": true
+      },
+      "env": {
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1",
+        "PYTEST_ADDOPTS": "",
+        "PYTHONPATH": "<WORKSPACE>/.v26/c1:<WORKSPACE>/.v26/c1/tests",
+        "TMPDIR": "<WORKSPACE>/.v26/unS1-a001-6",
+        "TMP": "<WORKSPACE>/.v26/unS1-a001-6",
+        "TEMP": "<WORKSPACE>/.v26/unS1-a001-6"
+      },
+      "pid": 20570,
+      "exit_code": 1,
+      "finished_utc": "2026-10-09T03:39:20.198520+00:00",
+      "interruption": null,
+      "status": "FAIL",
+      "junit": "<WORKSPACE>/task-complete-v5-20261009/stages/core/S1/native/a001/g5-data-read.xml",
+      "junit_cases": [
+        {
+          "name": "test_g5_coexistence[data-read]",
+          "outcome": "FAIL"
+        }
+      ],
+      "resources_after": {
+        "utc": "2026-10-09T03:39:20.792567+00:00",
+        "windows_D_free_bytes": 54021922816,
+        "task_plus_v26_bytes": 4926578688,
+        "native_runtime_bytes": 40857600,
+        "memory_available_bytes": 15122661376,
+        "allowed": true
+      },
+      "residual_sockets": [],
+      "process_reaped": true,
+      "evidence": [
+        "g5-data-read-cleanup.json",
+        "g5-data-read.json"
+      ]
+    },
+    {
+      "scene": "g5-control-read",
+      "node_id": "<WORKSPACE>/task-complete-v5-20261009/stages/core/S1/native/a001/test_native_s1.py::test_g5_coexistence[control-read]",
+      "command": [
+        "<WORKSPACE>/.p26/v/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "--confcutdir=<WORKSPACE>/task-complete-v5-20261009/stages/core/S1/native/a001",
+        "--rootdir=<WORKSPACE>/task-complete-v5-20261009/stages/core/S1/native/a001",
+        "--basetemp=<WORKSPACE>/.v26/unS1-a001-7",
+        "--junitxml=<WORKSPACE>/task-complete-v5-20261009/stages/core/S1/native/a001/g5-control-read.xml",
+        "<WORKSPACE>/task-complete-v5-20261009/stages/core/S1/native/a001/test_native_s1.py::test_g5_coexistence[control-read]"
+      ],
+      "cwd": "<WORKSPACE>/.v26/c1",
+      "started_utc": "2026-10-09T03:39:21.382585+00:00",
+      "resources_before": {
+        "utc": "2026-10-09T03:39:21.382384+00:00",
+        "windows_D_free_bytes": 54021922816,
+        "task_plus_v26_bytes": 4918951936,
+        "native_runtime_bytes": 40857600,
+        "memory_available_bytes": 15122264064,
+        "allowed": true
+      },
+      "env": {
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1",
+        "PYTEST_ADDOPTS": "",
+        "PYTHONPATH": "<WORKSPACE>/.v26/c1:<WORKSPACE>/.v26/c1/tests",
+        "TMPDIR": "<WORKSPACE>/.v26/unS1-a001-7",
+        "TMP": "<WORKSPACE>/.v26/unS1-a001-7",
+        "TEMP": "<WORKSPACE>/.v26/unS1-a001-7"
+      },
+      "pid": 20577,
+      "exit_code": 1,
+      "finished_utc": "2026-10-09T03:39:29.242697+00:00",
+      "interruption": null,
+      "status": "FAIL",
+      "junit": "<WORKSPACE>/task-complete-v5-20261009/stages/core/S1/native/a001/g5-control-read.xml",
+      "junit_cases": [
+        {
+          "name": "test_g5_coexistence[control-read]",
+          "outcome": "FAIL"
+        }
+      ],
+      "resources_after": {
+        "utc": "2026-10-09T03:39:29.838639+00:00",
+        "windows_D_free_bytes": 54021922816,
+        "task_plus_v26_bytes": 4939333632,
+        "native_runtime_bytes": 46501888,
+        "memory_available_bytes": 15123169280,
+        "allowed": true
+      },
+      "residual_sockets": [],
+      "process_reaped": true,
+      "evidence": [
+        "g5-control-read-cleanup.json",
+        "g5-control-read.json"
+      ]
+    },
+    {
+      "scene": "g6",
+      "node_id": "<WORKSPACE>/task-complete-v5-20261009/stages/core/S1/native/a001/test_native_s1.py::test_g6_exact_selection",
+      "command": [
+        "<WORKSPACE>/.p26/v/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "--confcutdir=<WORKSPACE>/task-complete-v5-20261009/stages/core/S1/native/a001",
+        "--rootdir=<WORKSPACE>/task-complete-v5-20261009/stages/core/S1/native/a001",
+        "--basetemp=<WORKSPACE>/.v26/unS1-a001-8",
+        "--junitxml=<WORKSPACE>/task-complete-v5-20261009/stages/core/S1/native/a001/g6.xml",
+        "<WORKSPACE>/task-complete-v5-20261009/stages/core/S1/native/a001/test_native_s1.py::test_g6_exact_selection"
+      ],
+      "cwd": "<WORKSPACE>/.v26/c1",
+      "started_utc": "2026-10-09T03:39:30.453610+00:00",
+      "resources_before": {
+        "utc": "2026-10-09T03:39:30.453338+00:00",
+        "windows_D_free_bytes": 54021922816,
+        "task_plus_v26_bytes": 4939988992,
+        "native_runtime_bytes": 46501888,
+        "memory_available_bytes": 15123251200,
+        "allowed": true
+      },
+      "env": {
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1",
+        "PYTEST_ADDOPTS": "",
+        "PYTHONPATH": "<WORKSPACE>/.v26/c1:<WORKSPACE>/.v26/c1/tests",
+        "TMPDIR": "<WORKSPACE>/.v26/unS1-a001-8",
+        "TMP": "<WORKSPACE>/.v26/unS1-a001-8",
+        "TEMP": "<WORKSPACE>/.v26/unS1-a001-8"
+      },
+      "pid": 20579,
+      "exit_code": 1,
+      "finished_utc": "2026-10-09T03:39:43.072920+00:00",
+      "interruption": null,
+      "status": "FAIL",
+      "junit": "<WORKSPACE>/task-complete-v5-20261009/stages/core/S1/native/a001/g6.xml",
+      "junit_cases": [
+        {
+          "name": "test_g6_exact_selection",
+          "outcome": "FAIL"
+        }
+      ],
+      "resources_after": {
+        "utc": "2026-10-09T03:39:43.669380+00:00",
+        "windows_D_free_bytes": 54021922816,
+        "task_plus_v26_bytes": 4991131648,
+        "native_runtime_bytes": 53088256,
+        "memory_available_bytes": 15119089664,
+        "allowed": true
+      },
+      "residual_sockets": [],
+      "process_reaped": true,
+      "evidence": [
+        "g6-cleanup.json",
+        "g6-direct-admission.json",
+        "g6.json"
+      ]
+    },
+    {
+      "scene": "g7",
+      "node_id": "<WORKSPACE>/task-complete-v5-20261009/stages/core/S1/native/a001/test_native_s1.py::test_g7_dynamic_drain_adoption",
+      "command": [
+        "<WORKSPACE>/.p26/v/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "--confcutdir=<WORKSPACE>/task-complete-v5-20261009/stages/core/S1/native/a001",
+        "--rootdir=<WORKSPACE>/task-complete-v5-20261009/stages/core/S1/native/a001",
+        "--basetemp=<WORKSPACE>/.v26/unS1-a001-9",
+        "--junitxml=<WORKSPACE>/task-complete-v5-20261009/stages/core/S1/native/a001/g7.xml",
+        "<WORKSPACE>/task-complete-v5-20261009/stages/core/S1/native/a001/test_native_s1.py::test_g7_dynamic_drain_adoption"
+      ],
+      "cwd": "<WORKSPACE>/.v26/c1",
+      "started_utc": "2026-10-09T03:39:44.265890+00:00",
+      "resources_before": {
+        "utc": "2026-10-09T03:39:44.265654+00:00",
+        "windows_D_free_bytes": 54021922816,
+        "task_plus_v26_bytes": 5003194368,
+        "native_runtime_bytes": 53088256,
+        "memory_available_bytes": 15119138816,
+        "allowed": true
+      },
+      "env": {
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1",
+        "PYTEST_ADDOPTS": "",
+        "PYTHONPATH": "<WORKSPACE>/.v26/c1:<WORKSPACE>/.v26/c1/tests",
+        "TMPDIR": "<WORKSPACE>/.v26/unS1-a001-9",
+        "TMP": "<WORKSPACE>/.v26/unS1-a001-9",
+        "TEMP": "<WORKSPACE>/.v26/unS1-a001-9"
+      },
+      "pid": 20583,
+      "exit_code": 1,
+      "finished_utc": "2026-10-09T03:39:54.778660+00:00",
+      "interruption": null,
+      "status": "FAIL",
+      "junit": "<WORKSPACE>/task-complete-v5-20261009/stages/core/S1/native/a001/g7.xml",
+      "junit_cases": [
+        {
+          "name": "test_g7_dynamic_drain_adoption",
+          "outcome": "FAIL"
+        }
+      ],
+      "resources_after": {
+        "utc": "2026-10-09T03:39:55.381351+00:00",
+        "windows_D_free_bytes": 54021922816,
+        "task_plus_v26_bytes": 5001392128,
+        "native_runtime_bytes": 59756544,
+        "memory_available_bytes": 15122440192,
+        "allowed": true
+      },
+      "residual_sockets": [],
+      "process_reaped": true,
+      "evidence": [
+        "g7-cleanup.json",
+        "g7.json"
+      ]
+    }
+  ],
+  "worker_subprocesses_started": 0,
+  "gaps": [
+    "Exact admission is direct Registry; native HOST settlement is separate.",
+    "Reset rejection is direct compiler evidence.",
+    "Recovery closes a live host transport; no OS crash is injected.",
+    "Two live claims do not prove parallel HOST threads or worker Popen.",
+    "Deterministic HOST Futures run in owner process; no external worker process."
+  ],
+  "finished_utc": "2026-10-09T03:39:55.697914+00:00",
+  "source_unchanged": {
+    "status": "PASS",
+    "baseline_head": "1f191645c4d60c8b190d42e9fad99c85e8981c03",
+    "files": 3656,
+    "mismatches": [],
+    "observed_inventory_sha256": "3408d0367ac311f56918525bbb6c678c43ac43c4b69ffc574a7f6787a4df069d",
+    "inventory_hash_format": "UTF-8 canonical JSON sorted path records: path, sha256, executable; sort_keys=True, separators=(comma,colon)",
+    "added": [],
+    "missing": []
+  },
+  "resources_after": {
+    "utc": "2026-10-09T03:39:56.323408+00:00",
+    "windows_D_free_bytes": 54021922816,
+    "task_plus_v26_bytes": 5002752000,
+    "native_runtime_bytes": 59756544,
+    "memory_available_bytes": 15122800640,
+    "allowed": true
+  },
+  "source_final_inventory_sha256": "3408d0367ac311f56918525bbb6c678c43ac43c4b69ffc574a7f6787a4df069d",
+  "source_pre_post_hash_equal": true,
+  "executed_junit_cases": 10,
+  "case_status_counts": {
+    "PASS": 1,
+    "FAIL": 9,
+    "NOT_RUN": 0
+  }
+}

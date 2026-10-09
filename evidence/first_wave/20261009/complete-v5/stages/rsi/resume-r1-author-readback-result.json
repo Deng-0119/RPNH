@@ -1,0 +1,415 @@
+{
+  "reader_file": "<WORKSPACE>/.v26/r1/cpn/rpnh/registry/run_authority.py",
+  "python": "<WORKSPACE>/.p26/v/bin/python",
+  "registry_count": 9,
+  "rows": [
+    {
+      "fixture": "test_historical_empty_terminal0",
+      "head": 366,
+      "writer_epoch": 2,
+      "status": "running",
+      "run_outcome": null,
+      "terminal_version": null,
+      "result": null,
+      "task_control_status": {
+        "task_ref": "task:25999773f7d74341b17c5b91151fce67",
+        "execution_status": "running",
+        "checkpoint_ref": {
+          "entity_type": "marking_checkpoint/v1",
+          "logical_id": "marking_checkpoint:6b57de429c6956c7a473a4970597f01d",
+          "version_id": "marking_checkpoint_version:0eedf1d0dcb758ec95f0622f814e4995"
+        },
+        "execution_generation": 0,
+        "terminal_evidence_count": 0,
+        "final_result_index_count": 0,
+        "actual_model_call_counts": [
+          0,
+          0
+        ]
+      },
+      "canonical_unchanged": true,
+      "sqlite_connection_sidecar_changes": [
+        {
+          "path": ".registry_v1/registry.sqlite3-shm",
+          "before": null,
+          "after": {
+            "sha256": "fd4c9fda9cd3f9ae7c962b0ddf37232294d55580e1aa165aa06129b8549389eb",
+            "bytes": 32768
+          }
+        },
+        {
+          "path": ".registry_v1/registry.sqlite3-wal",
+          "before": null,
+          "after": {
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "bytes": 0
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "test_owner_interruption_is_not0",
+      "head": 144,
+      "writer_epoch": 2,
+      "status": "stopped_by_owner",
+      "run_outcome": null,
+      "terminal_version": null,
+      "result": null,
+      "task_control_status": {
+        "task_ref": "task:76179da4cbd04c9cb333766027243075",
+        "execution_status": "stopped_by_owner",
+        "checkpoint_ref": {
+          "entity_type": "marking_checkpoint/v1",
+          "logical_id": "marking_checkpoint:3ac76f5dfe495ab2b933af0c4093a85e",
+          "version_id": "marking_checkpoint_version:41f5086f275c5281bbf2fee6bc3da52b"
+        },
+        "execution_generation": 0,
+        "terminal_evidence_count": 0,
+        "final_result_index_count": 0,
+        "actual_model_call_counts": [
+          0,
+          0
+        ]
+      },
+      "canonical_unchanged": true,
+      "sqlite_connection_sidecar_changes": [
+        {
+          "path": ".registry_v1/registry.sqlite3-shm",
+          "before": null,
+          "after": {
+            "sha256": "fd4c9fda9cd3f9ae7c962b0ddf37232294d55580e1aa165aa06129b8549389eb",
+            "bytes": 32768
+          }
+        },
+        {
+          "path": ".registry_v1/registry.sqlite3-wal",
+          "before": null,
+          "after": {
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "bytes": 0
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "test_provisional_outputs_canno0",
+      "head": 350,
+      "writer_epoch": 2,
+      "status": "running",
+      "run_outcome": null,
+      "terminal_version": null,
+      "result": null,
+      "task_control_status": {
+        "task_ref": "task:7cd31c6dac6349f3b0a884c3931aded0",
+        "execution_status": "running",
+        "checkpoint_ref": {
+          "entity_type": "marking_checkpoint/v1",
+          "logical_id": "marking_checkpoint:20a26e25ba935ca49745130a42005196",
+          "version_id": "marking_checkpoint_version:71af0ba287d3589bbc8ac3eae76a37c8"
+        },
+        "execution_generation": 0,
+        "terminal_evidence_count": 0,
+        "final_result_index_count": 0,
+        "actual_model_call_counts": [
+          0,
+          0
+        ]
+      },
+      "canonical_unchanged": true,
+      "sqlite_connection_sidecar_changes": [
+        {
+          "path": ".registry_v1/registry.sqlite3-shm",
+          "before": null,
+          "after": {
+            "sha256": "fd4c9fda9cd3f9ae7c962b0ddf37232294d55580e1aa165aa06129b8549389eb",
+            "bytes": 32768
+          }
+        },
+        {
+          "path": ".registry_v1/registry.sqlite3-wal",
+          "before": null,
+          "after": {
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "bytes": 0
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "test_real_registry_publishes_e0",
+      "head": 426,
+      "writer_epoch": 2,
+      "status": "terminal",
+      "run_outcome": "complete",
+      "terminal_version": "terminal_evidence_version:f2cecbbaef53488c9aaa2ea5f17bda1f",
+      "result": {
+        "ref": "round_1_selector.stop"
+      },
+      "task_control_status": {
+        "task_ref": "task:1d3533fdc8ac45c2b6e25fb99ed6be05",
+        "execution_status": "terminal",
+        "checkpoint_ref": {
+          "entity_type": "marking_checkpoint/v1",
+          "logical_id": "marking_checkpoint:6b57de429c6956c7a473a4970597f01d",
+          "version_id": "marking_checkpoint_version:0eedf1d0dcb758ec95f0622f814e4995"
+        },
+        "execution_generation": 0,
+        "terminal_evidence_count": 1,
+        "final_result_index_count": 1,
+        "actual_model_call_counts": [
+          0,
+          0
+        ]
+      },
+      "canonical_unchanged": true,
+      "sqlite_connection_sidecar_changes": [
+        {
+          "path": ".registry_v1/registry.sqlite3-shm",
+          "before": null,
+          "after": {
+            "sha256": "fd4c9fda9cd3f9ae7c962b0ddf37232294d55580e1aa165aa06129b8549389eb",
+            "bytes": 32768
+          }
+        },
+        {
+          "path": ".registry_v1/registry.sqlite3-wal",
+          "before": null,
+          "after": {
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "bytes": 0
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "test_real_registry_publishes_e1",
+      "head": 379,
+      "writer_epoch": 2,
+      "status": "terminal",
+      "run_outcome": "complete",
+      "terminal_version": "terminal_evidence_version:b15cfcdb5e9f4a788590253539ec8493",
+      "result": {
+        "ref": "round_1_selector.next"
+      },
+      "task_control_status": {
+        "task_ref": "task:18cdcad49641402195a207ae9a478aad",
+        "execution_status": "terminal",
+        "checkpoint_ref": {
+          "entity_type": "marking_checkpoint/v1",
+          "logical_id": "marking_checkpoint:6b57de429c6956c7a473a4970597f01d",
+          "version_id": "marking_checkpoint_version:0eedf1d0dcb758ec95f0622f814e4995"
+        },
+        "execution_generation": 0,
+        "terminal_evidence_count": 1,
+        "final_result_index_count": 1,
+        "actual_model_call_counts": [
+          0,
+          0
+        ]
+      },
+      "canonical_unchanged": true,
+      "sqlite_connection_sidecar_changes": [
+        {
+          "path": ".registry_v1/registry.sqlite3-shm",
+          "before": null,
+          "after": {
+            "sha256": "fd4c9fda9cd3f9ae7c962b0ddf37232294d55580e1aa165aa06129b8549389eb",
+            "bytes": 32768
+          }
+        },
+        {
+          "path": ".registry_v1/registry.sqlite3-wal",
+          "before": null,
+          "after": {
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "bytes": 0
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "test_real_registry_publishes_e2",
+      "head": 379,
+      "writer_epoch": 2,
+      "status": "terminal",
+      "run_outcome": "complete",
+      "terminal_version": "terminal_evidence_version:4c7b7457379d4bd2a60a9856842e7d4b",
+      "result": {
+        "ref": "round_1_selector.next"
+      },
+      "task_control_status": {
+        "task_ref": "task:2c8119a5094d420e9bac2a065eadb715",
+        "execution_status": "terminal",
+        "checkpoint_ref": {
+          "entity_type": "marking_checkpoint/v1",
+          "logical_id": "marking_checkpoint:6b57de429c6956c7a473a4970597f01d",
+          "version_id": "marking_checkpoint_version:0eedf1d0dcb758ec95f0622f814e4995"
+        },
+        "execution_generation": 0,
+        "terminal_evidence_count": 1,
+        "final_result_index_count": 1,
+        "actual_model_call_counts": [
+          0,
+          0
+        ]
+      },
+      "canonical_unchanged": true,
+      "sqlite_connection_sidecar_changes": [
+        {
+          "path": ".registry_v1/registry.sqlite3-shm",
+          "before": null,
+          "after": {
+            "sha256": "fd4c9fda9cd3f9ae7c962b0ddf37232294d55580e1aa165aa06129b8549389eb",
+            "bytes": 32768
+          }
+        },
+        {
+          "path": ".registry_v1/registry.sqlite3-wal",
+          "before": null,
+          "after": {
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "bytes": 0
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "test_real_registry_publishes_e3",
+      "head": 426,
+      "writer_epoch": 2,
+      "status": "terminal",
+      "run_outcome": "failed",
+      "terminal_version": "terminal_evidence_version:6df82a7ad238488c8ed8c72ea6943169",
+      "result": {
+        "ref": "round_1_selector.stop"
+      },
+      "task_control_status": {
+        "task_ref": "task:02a0021b3e1f4383806d9e2b38033753",
+        "execution_status": "terminal",
+        "checkpoint_ref": {
+          "entity_type": "marking_checkpoint/v1",
+          "logical_id": "marking_checkpoint:6b57de429c6956c7a473a4970597f01d",
+          "version_id": "marking_checkpoint_version:0eedf1d0dcb758ec95f0622f814e4995"
+        },
+        "execution_generation": 0,
+        "terminal_evidence_count": 1,
+        "final_result_index_count": 1,
+        "actual_model_call_counts": [
+          0,
+          0
+        ]
+      },
+      "canonical_unchanged": true,
+      "sqlite_connection_sidecar_changes": [
+        {
+          "path": ".registry_v1/registry.sqlite3-shm",
+          "before": null,
+          "after": {
+            "sha256": "fd4c9fda9cd3f9ae7c962b0ddf37232294d55580e1aa165aa06129b8549389eb",
+            "bytes": 32768
+          }
+        },
+        {
+          "path": ".registry_v1/registry.sqlite3-wal",
+          "before": null,
+          "after": {
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "bytes": 0
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "test_real_registry_publishes_e4",
+      "head": 379,
+      "writer_epoch": 2,
+      "status": "terminal",
+      "run_outcome": "failed",
+      "terminal_version": "terminal_evidence_version:d1ae7c707e0b4f8ca4f4af755184d459",
+      "result": {
+        "ref": "round_1_selector.next"
+      },
+      "task_control_status": {
+        "task_ref": "task:f4cff0d0fd8b4143b028c431f80c2a58",
+        "execution_status": "terminal",
+        "checkpoint_ref": {
+          "entity_type": "marking_checkpoint/v1",
+          "logical_id": "marking_checkpoint:6b57de429c6956c7a473a4970597f01d",
+          "version_id": "marking_checkpoint_version:0eedf1d0dcb758ec95f0622f814e4995"
+        },
+        "execution_generation": 0,
+        "terminal_evidence_count": 1,
+        "final_result_index_count": 1,
+        "actual_model_call_counts": [
+          0,
+          0
+        ]
+      },
+      "canonical_unchanged": true,
+      "sqlite_connection_sidecar_changes": [
+        {
+          "path": ".registry_v1/registry.sqlite3-shm",
+          "before": null,
+          "after": {
+            "sha256": "fd4c9fda9cd3f9ae7c962b0ddf37232294d55580e1aa165aa06129b8549389eb",
+            "bytes": 32768
+          }
+        },
+        {
+          "path": ".registry_v1/registry.sqlite3-wal",
+          "before": null,
+          "after": {
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "bytes": 0
+          }
+        }
+      ]
+    },
+    {
+      "fixture": "test_real_registry_publishes_e5",
+      "head": 379,
+      "writer_epoch": 2,
+      "status": "terminal",
+      "run_outcome": "failed",
+      "terminal_version": "terminal_evidence_version:f71d075e8137400cba9b8eb3bfc925a8",
+      "result": {
+        "ref": "round_1_selector.next"
+      },
+      "task_control_status": {
+        "task_ref": "task:c939d9827e20409b97a6dabd3db6694b",
+        "execution_status": "terminal",
+        "checkpoint_ref": {
+          "entity_type": "marking_checkpoint/v1",
+          "logical_id": "marking_checkpoint:6b57de429c6956c7a473a4970597f01d",
+          "version_id": "marking_checkpoint_version:0eedf1d0dcb758ec95f0622f814e4995"
+        },
+        "execution_generation": 0,
+        "terminal_evidence_count": 1,
+        "final_result_index_count": 1,
+        "actual_model_call_counts": [
+          0,
+          0
+        ]
+      },
+      "canonical_unchanged": true,
+      "sqlite_connection_sidecar_changes": [
+        {
+          "path": ".registry_v1/registry.sqlite3-shm",
+          "before": null,
+          "after": {
+            "sha256": "fd4c9fda9cd3f9ae7c962b0ddf37232294d55580e1aa165aa06129b8549389eb",
+            "bytes": 32768
+          }
+        },
+        {
+          "path": ".registry_v1/registry.sqlite3-wal",
+          "before": null,
+          "after": {
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "bytes": 0
+          }
+        }
+      ]
+    }
+  ]
+}

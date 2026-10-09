@@ -1,0 +1,904 @@
+{
+  "final_author_cases": [
+    {
+      "classname": "tests.test_iteration_profile",
+      "name": "test_profile_roundtrip_uses_optional_existing_catalog",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_iteration_profile",
+      "name": "test_unrolled_materials_match_original_compiler_deterministically[1]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_iteration_profile",
+      "name": "test_unrolled_materials_match_original_compiler_deterministically[2]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_iteration_profile",
+      "name": "test_unrolled_materials_match_original_compiler_deterministically[4]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_iteration_profile",
+      "name": "test_unrolled_materials_match_original_compiler_deterministically[32]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_iteration_profile",
+      "name": "test_declared_ports_and_arcs_carry_all_stage_dependencies",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_iteration_profile",
+      "name": "test_stop_and_final_selection_are_existing_terminal_outcomes",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_iteration_profile",
+      "name": "test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>0]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_iteration_profile",
+      "name": "test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>1]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_iteration_profile",
+      "name": "test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>2]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_iteration_profile",
+      "name": "test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>3]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_iteration_profile",
+      "name": "test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>4]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_iteration_profile",
+      "name": "test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>5]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_iteration_profile",
+      "name": "test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>6]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_iteration_profile",
+      "name": "test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>7]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_iteration_profile",
+      "name": "test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>8]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_iteration_profile",
+      "name": "test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>9]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_iteration_profile",
+      "name": "test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>10]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_iteration_profile",
+      "name": "test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>11]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_iteration_profile",
+      "name": "test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>12]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_iteration_profile",
+      "name": "test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>13]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_iteration_profile",
+      "name": "test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>14]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_iteration_profile",
+      "name": "test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>15]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_iteration_profile",
+      "name": "test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>16]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_iteration_profile",
+      "name": "test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>17]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_iteration_profile",
+      "name": "test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>18]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_iteration_profile",
+      "name": "test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>19]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_iteration_profile",
+      "name": "test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>20]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_iteration_profile",
+      "name": "test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>21]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_iteration_profile",
+      "name": "test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>22]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_iteration_profile",
+      "name": "test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>23]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_iteration_profile",
+      "name": "test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>24]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_iteration_profile",
+      "name": "test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>25]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_iteration_profile",
+      "name": "test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>26]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_iteration_profile",
+      "name": "test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>27]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_iteration_profile",
+      "name": "test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>28]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_iteration_profile",
+      "name": "test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>29]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_iteration_profile",
+      "name": "test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>30]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_iteration_profile",
+      "name": "test_closed_profile_rejects_unsupported_or_ambiguous_inputs[<lambda>31]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_iteration_profile",
+      "name": "test_profile_rejects_duplicate_nonjson_oversized_and_invalid_text",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_iteration_profile",
+      "name": "test_registration_and_original_compiler_remain_contract_authority[schema]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_iteration_profile",
+      "name": "test_registration_and_original_compiler_remain_contract_authority[executor]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_iteration_profile",
+      "name": "test_registration_and_original_compiler_remain_contract_authority[terminal]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_iteration_profile",
+      "name": "test_original_compiler_rejects_incompatible_host_config",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_iteration_profile",
+      "name": "test_compilation_revalidates_direct_constructor",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_iteration_profile",
+      "name": "test_standard_lowerer_is_required_before_any_custom_lowering",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_iteration_profile",
+      "name": "test_external_schema_references_fail_closed_without_retrieval",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_iteration_profile",
+      "name": "test_local_schema_references_are_supported",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_iteration_profile",
+      "name": "test_compilation_has_no_runtime_writes_or_reference_reads",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_iteration_profile",
+      "name": "test_different_role_model_refs_remain_distinct_unresolved_obligations",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_iteration_profile",
+      "name": "test_native_model_call_budget_is_independent_of_operation_count",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_iteration_profile",
+      "name": "test_explicit_native_terminal_mapping_is_compiled_without_inference[complete-stop]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_iteration_profile",
+      "name": "test_explicit_native_terminal_mapping_is_compiled_without_inference[complete-final_select]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_iteration_profile",
+      "name": "test_explicit_native_terminal_mapping_is_compiled_without_inference[complete-final_retain]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_iteration_profile",
+      "name": "test_explicit_native_terminal_mapping_is_compiled_without_inference[failed-stop]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_iteration_profile",
+      "name": "test_explicit_native_terminal_mapping_is_compiled_without_inference[failed-final_select]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_iteration_profile",
+      "name": "test_explicit_native_terminal_mapping_is_compiled_without_inference[failed-final_retain]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_iteration_profile",
+      "name": "test_native_terminal_host_rejecting_run_outcome_fails_at_compile",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_iteration_profile",
+      "name": "test_real_registry_publishes_each_explicit_terminal_mapping[complete-stop-stop-2]",
+      "status": "passed",
+      "layer": "registry_step"
+    },
+    {
+      "classname": "tests.test_iteration_profile",
+      "name": "test_real_registry_publishes_each_explicit_terminal_mapping[complete-final_select-select-1]",
+      "status": "passed",
+      "layer": "registry_step"
+    },
+    {
+      "classname": "tests.test_iteration_profile",
+      "name": "test_real_registry_publishes_each_explicit_terminal_mapping[complete-final_retain-retain-1]",
+      "status": "passed",
+      "layer": "registry_step"
+    },
+    {
+      "classname": "tests.test_iteration_profile",
+      "name": "test_real_registry_publishes_each_explicit_terminal_mapping[failed-stop-stop-2]",
+      "status": "passed",
+      "layer": "registry_step"
+    },
+    {
+      "classname": "tests.test_iteration_profile",
+      "name": "test_real_registry_publishes_each_explicit_terminal_mapping[failed-final_select-select-1]",
+      "status": "passed",
+      "layer": "registry_step"
+    },
+    {
+      "classname": "tests.test_iteration_profile",
+      "name": "test_real_registry_publishes_each_explicit_terminal_mapping[failed-final_retain-retain-1]",
+      "status": "passed",
+      "layer": "registry_step"
+    },
+    {
+      "classname": "tests.test_iteration_profile",
+      "name": "test_historical_empty_terminal_material_stays_running_after_settlement",
+      "status": "passed",
+      "layer": "registry_step"
+    },
+    {
+      "classname": "tests.test_iteration_profile",
+      "name": "test_provisional_outputs_cannot_be_washed_into_terminal_by_complete_mapping",
+      "status": "passed",
+      "layer": "registry_step"
+    },
+    {
+      "classname": "tests.test_iteration_profile",
+      "name": "test_owner_interruption_is_not_the_domain_stop_outcome",
+      "status": "passed",
+      "layer": "registry_step"
+    },
+    {
+      "classname": "tests.test_compiler_json_contract",
+      "name": "test_host_lower_cannot_change_json_boolean_number_type[operation-1-True]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_compiler_json_contract",
+      "name": "test_host_lower_cannot_change_json_boolean_number_type[operation-True-1]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_compiler_json_contract",
+      "name": "test_host_lower_cannot_change_json_boolean_number_type[operation-0-False]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_compiler_json_contract",
+      "name": "test_host_lower_cannot_change_json_boolean_number_type[operation-False-0]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_compiler_json_contract",
+      "name": "test_host_lower_cannot_change_json_boolean_number_type[operation-1.0-True]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_compiler_json_contract",
+      "name": "test_host_lower_cannot_change_json_boolean_number_type[operation-0.0-False]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_compiler_json_contract",
+      "name": "test_host_lower_cannot_change_json_boolean_number_type[effect-1-True]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_compiler_json_contract",
+      "name": "test_host_lower_cannot_change_json_boolean_number_type[effect-True-1]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_compiler_json_contract",
+      "name": "test_host_lower_cannot_change_json_boolean_number_type[effect-0-False]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_compiler_json_contract",
+      "name": "test_host_lower_cannot_change_json_boolean_number_type[effect-False-0]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_compiler_json_contract",
+      "name": "test_host_lower_cannot_change_json_boolean_number_type[effect-1.0-True]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_compiler_json_contract",
+      "name": "test_host_lower_cannot_change_json_boolean_number_type[effect-0.0-False]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_compiler_json_contract",
+      "name": "test_wire_rejects_json_boolean_number_substitution[fragment-operation-1-True]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_compiler_json_contract",
+      "name": "test_wire_rejects_json_boolean_number_substitution[fragment-operation-0-False]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_compiler_json_contract",
+      "name": "test_wire_rejects_json_boolean_number_substitution[fragment-operation-True-1]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_compiler_json_contract",
+      "name": "test_wire_rejects_json_boolean_number_substitution[fragment-operation-False-0]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_compiler_json_contract",
+      "name": "test_wire_rejects_json_boolean_number_substitution[fragment-effect-1-True]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_compiler_json_contract",
+      "name": "test_wire_rejects_json_boolean_number_substitution[fragment-effect-0-False]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_compiler_json_contract",
+      "name": "test_wire_rejects_json_boolean_number_substitution[fragment-effect-True-1]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_compiler_json_contract",
+      "name": "test_wire_rejects_json_boolean_number_substitution[fragment-effect-False-0]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_compiler_json_contract",
+      "name": "test_wire_rejects_json_boolean_number_substitution[symbolic-operation-1-True]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_compiler_json_contract",
+      "name": "test_wire_rejects_json_boolean_number_substitution[symbolic-operation-0-False]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_compiler_json_contract",
+      "name": "test_wire_rejects_json_boolean_number_substitution[symbolic-operation-True-1]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_compiler_json_contract",
+      "name": "test_wire_rejects_json_boolean_number_substitution[symbolic-operation-False-0]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_compiler_json_contract",
+      "name": "test_wire_rejects_json_boolean_number_substitution[symbolic-effect-1-True]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_compiler_json_contract",
+      "name": "test_wire_rejects_json_boolean_number_substitution[symbolic-effect-0-False]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_compiler_json_contract",
+      "name": "test_wire_rejects_json_boolean_number_substitution[symbolic-effect-True-1]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_compiler_json_contract",
+      "name": "test_wire_rejects_json_boolean_number_substitution[symbolic-effect-False-0]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_compiler_json_contract",
+      "name": "test_normal_json_config_compiles_and_round_trips[operation-None]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_compiler_json_contract",
+      "name": "test_normal_json_config_compiles_and_round_trips[operation-True]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_compiler_json_contract",
+      "name": "test_normal_json_config_compiles_and_round_trips[operation-False]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_compiler_json_contract",
+      "name": "test_normal_json_config_compiles_and_round_trips[operation-1_0]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_compiler_json_contract",
+      "name": "test_normal_json_config_compiles_and_round_trips[operation-0]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_compiler_json_contract",
+      "name": "test_normal_json_config_compiles_and_round_trips[operation-1.25]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_compiler_json_contract",
+      "name": "test_normal_json_config_compiles_and_round_trips[operation-1_1]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_compiler_json_contract",
+      "name": "test_normal_json_config_compiles_and_round_trips[operation-value7]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_compiler_json_contract",
+      "name": "test_normal_json_config_compiles_and_round_trips[effect-None]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_compiler_json_contract",
+      "name": "test_normal_json_config_compiles_and_round_trips[effect-True]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_compiler_json_contract",
+      "name": "test_normal_json_config_compiles_and_round_trips[effect-False]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_compiler_json_contract",
+      "name": "test_normal_json_config_compiles_and_round_trips[effect-1_0]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_compiler_json_contract",
+      "name": "test_normal_json_config_compiles_and_round_trips[effect-0]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_compiler_json_contract",
+      "name": "test_normal_json_config_compiles_and_round_trips[effect-1.25]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_compiler_json_contract",
+      "name": "test_normal_json_config_compiles_and_round_trips[effect-1_1]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_compiler_json_contract",
+      "name": "test_normal_json_config_compiles_and_round_trips[effect-value7]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_compiler_json_contract",
+      "name": "test_existing_numeric_equality_survives_lowering_and_wire[operation-1-1.0]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_compiler_json_contract",
+      "name": "test_existing_numeric_equality_survives_lowering_and_wire[operation-0--0.0]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_compiler_json_contract",
+      "name": "test_existing_numeric_equality_survives_lowering_and_wire[operation-1.0-1]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_compiler_json_contract",
+      "name": "test_existing_numeric_equality_survives_lowering_and_wire[effect-1-1.0]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_compiler_json_contract",
+      "name": "test_existing_numeric_equality_survives_lowering_and_wire[effect-0--0.0]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_compiler_json_contract",
+      "name": "test_existing_numeric_equality_survives_lowering_and_wire[effect-1.0-1]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_compiler_json_contract",
+      "name": "test_declared_bundle_order_remains_incidental",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_compiler_json_contract",
+      "name": "test_ordered_abi_config_arrays_and_effect_multiplicity_stay_exact[inputs]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_compiler_json_contract",
+      "name": "test_ordered_abi_config_arrays_and_effect_multiplicity_stay_exact[outputs]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_compiler_json_contract",
+      "name": "test_ordered_abi_config_arrays_and_effect_multiplicity_stay_exact[config]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_compiler_json_contract",
+      "name": "test_ordered_abi_config_arrays_and_effect_multiplicity_stay_exact[effect_config]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_compiler_json_contract",
+      "name": "test_ordered_abi_config_arrays_and_effect_multiplicity_stay_exact[multiplicity]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_compiler_json_contract",
+      "name": "test_existing_unequal_numbers_and_container_shapes_stay_unequal[1-1.5]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_compiler_json_contract",
+      "name": "test_existing_unequal_numbers_and_container_shapes_stay_unequal[9007199254740993-9007199254740992.0]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_compiler_json_contract",
+      "name": "test_existing_unequal_numbers_and_container_shapes_stay_unequal[1-1]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_compiler_json_contract",
+      "name": "test_existing_unequal_numbers_and_container_shapes_stay_unequal[None-False]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_compiler_json_contract",
+      "name": "test_existing_unequal_numbers_and_container_shapes_stay_unequal[left4-right4]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_compiler_json_contract",
+      "name": "test_existing_unequal_numbers_and_container_shapes_stay_unequal[left5-right5]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_compiler_json_contract",
+      "name": "test_wire_inventory_reordering_preserves_config_array_order",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_compiler_json_contract",
+      "name": "test_fusion_rejects_boolean_number_change_in_initial_payload[lower-1-True]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_compiler_json_contract",
+      "name": "test_fusion_rejects_boolean_number_change_in_initial_payload[lower-0-False]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_compiler_json_contract",
+      "name": "test_fusion_rejects_boolean_number_change_in_initial_payload[lower-True-1]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_compiler_json_contract",
+      "name": "test_fusion_rejects_boolean_number_change_in_initial_payload[lower-False-0]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_compiler_json_contract",
+      "name": "test_fusion_rejects_boolean_number_change_in_initial_payload[lower-source4-changed4]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_compiler_json_contract",
+      "name": "test_fusion_rejects_boolean_number_change_in_initial_payload[lower-source5-changed5]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_compiler_json_contract",
+      "name": "test_fusion_rejects_boolean_number_change_in_initial_payload[wire-1-True]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_compiler_json_contract",
+      "name": "test_fusion_rejects_boolean_number_change_in_initial_payload[wire-0-False]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_compiler_json_contract",
+      "name": "test_fusion_rejects_boolean_number_change_in_initial_payload[wire-True-1]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_compiler_json_contract",
+      "name": "test_fusion_rejects_boolean_number_change_in_initial_payload[wire-False-0]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_compiler_json_contract",
+      "name": "test_fusion_rejects_boolean_number_change_in_initial_payload[wire-source4-changed4]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_compiler_json_contract",
+      "name": "test_fusion_rejects_boolean_number_change_in_initial_payload[wire-source5-changed5]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_compiler_json_contract",
+      "name": "test_fusion_keeps_initial_token_multiset_and_numeric_equivalence[left0-right0]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_compiler_json_contract",
+      "name": "test_fusion_keeps_initial_token_multiset_and_numeric_equivalence[left1-right1]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_compiler_json_contract",
+      "name": "test_fusion_keeps_initial_token_multiset_and_numeric_equivalence[left2-right2]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_compiler_json_contract",
+      "name": "test_fusion_keeps_initial_token_multiset_and_numeric_equivalence[left3-right3]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_compiler_json_contract",
+      "name": "test_fusion_keeps_multiplicity_payload_order_and_container_mismatches[left0-right0]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_compiler_json_contract",
+      "name": "test_fusion_keeps_multiplicity_payload_order_and_container_mismatches[left1-right1]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_compiler_json_contract",
+      "name": "test_fusion_keeps_multiplicity_payload_order_and_container_mismatches[left2-right2]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    },
+    {
+      "classname": "tests.test_compiler_json_contract",
+      "name": "test_fusion_keeps_multiplicity_payload_order_and_container_mismatches[left3-right3]",
+      "status": "passed",
+      "layer": "pure_compiler_schema"
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "status": "NEEDS_MARKING_DECISION",
+  "owner_command_ref": {
+    "entity_type": "resource_version/v1",
+    "logical_id": "resource:00020b1ecacf5a2baaf1823410e0916f",
+    "version_id": "resource_version:8c966632c408513d9578117fa423bbf0"
+  },
+  "candidate_ref": {
+    "entity_type": "resource_version/v1",
+    "logical_id": "resource:0325532597405e629ef426b248a44352",
+    "version_id": "resource_version:b7fd7032ec7c5a258444d0e3f251296b"
+  },
+  "needs": [
+    {
+      "token_ref": {
+        "entity_type": "petri_token/v1",
+        "logical_id": "petri_token:f875a5d184865dd2bf707b04b456e570",
+        "version_id": "petri_token_version:009a22079c305ba2bf3adabe750f03a5"
+      },
+      "place": "step.lease",
+      "reason": "reusable/capacity/lease authority cannot retire"
+    }
+  ],
+  "result_ref": {
+    "entity_type": "resource_version/v1",
+    "logical_id": "resource:d54dfe6595b154208175117fb0b2bdc2",
+    "version_id": "resource_version:d5d8c2062a0c587a8939d51b4fdc5b91"
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "label": "resume-r2-native",
+  "category": "AF_UNIX_native",
+  "status": "PASS",
+  "exit_code": 0,
+  "record": "<WORKSPACE>/task-complete-v5-20261009/stages/rsi/resume-r2-native.json",
+  "before_identity": "<WORKSPACE>/task-complete-v5-20261009/stages/rsi/resume-r2-native-before.identity.json",
+  "after_identity": "<WORKSPACE>/task-complete-v5-20261009/stages/rsi/resume-r2-native-after.identity.json",
+  "source_before": {
+    "files": 3661,
+    "fingerprint": "a97bf284797d6dc6fb9be68e7b12db2aba6fd31ea3b351f2fd37c9dc2797fd17"
+  },
+  "source_after": {
+    "files": 3661,
+    "fingerprint": "a97bf284797d6dc6fb9be68e7b12db2aba6fd31ea3b351f2fd37c9dc2797fd17"
+  },
+  "source_unchanged": true,
+  "junit": "<WORKSPACE>/task-complete-v5-20261009/stages/rsi/resume-r2-native.xml",
+  "junit_counts": {
+    "tests": 4,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  }
+}

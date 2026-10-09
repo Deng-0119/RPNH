@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "<WORKSPACE>/task-complete-v5-20261009/stages/dsh/lane_tools.py", line 146, in <module>
+    manifest_check(args.lane, args.action)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<WORKSPACE>/task-complete-v5-20261009/stages/dsh/lane_tools.py", line 106, in manifest_check
+    assert not errors
+           ^^^^^^^^^^
+AssertionError

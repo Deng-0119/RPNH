@@ -1,0 +1,21 @@
+{
+  "command": [
+    "<WORKSPACE>/.p26/v/bin/python",
+    "-c",
+    "import subprocess; from pathlib import Path; print(subprocess.check_output(['git','rev-parse','HEAD'],text=True)); print(subprocess.check_output(['git','status','--porcelain=v1','--untracked-files=all'],text=True))"
+  ],
+  "cwd": "<WORKSPACE>/.v26/x1",
+  "pid": 13541,
+  "started_at_utc": "2026-10-09T01:17:09.676939+00:00",
+  "finished_at_utc": "2026-10-09T01:17:10.128986+00:00",
+  "elapsed_seconds": 0.4520631389968912,
+  "exit_code": 0,
+  "environment": {
+    "PYTHONPATH": "<WORKSPACE>/.v26/x1",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1",
+    "TMPDIR": "<WORKSPACE>/.v26/tmp",
+    "PYTEST_ADDOPTS": null,
+    "PYTEST_PLUGINS": null
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "command": [
+    "<WORKSPACE>/.p26/v/bin/python",
+    "-m",
+    "pytest",
+    "-p",
+    "no:cacheprovider",
+    "-q",
+    "tests/test_dsh_distribution.py",
+    "-k",
+    "not distribution_contains_runtime_and_public_source_assets and not console_help_works_from_installed_distribution",
+    "--basetemp=<WORKSPACE>/.v26/tdl",
+    "--junitxml=<WORKSPACE>/task-complete-v5-20261009/stages/dsh/11-launcher-source.xml"
+  ],
+  "cwd": "<WORKSPACE>/.v26/d",
+  "pid": 14136,
+  "started_at_utc": "2026-10-09T01:19:28.905236+00:00",
+  "finished_at_utc": "2026-10-09T01:19:29.366412+00:00",
+  "elapsed_seconds": 0.4611925310018705,
+  "exit_code": 0,
+  "environment": {
+    "PYTHONPATH": "<WORKSPACE>/.v26/d",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1",
+    "TMPDIR": "<WORKSPACE>/.v26/tmp",
+    "PYTEST_ADDOPTS": null,
+    "PYTEST_PLUGINS": null
+  }
+}

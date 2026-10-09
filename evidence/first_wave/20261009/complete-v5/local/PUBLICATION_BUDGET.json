@@ -1,0 +1,7 @@
+{
+  "source_preflight_bytes": 73802834,
+  "default_budget_bytes": 67108864,
+  "approved_budget_bytes": 134217728,
+  "reason": "Actual positive-listed evidence exceeds64MiB before companions/inventory. Retain original failures and full identity evidence; allow128MiB for this explicit selection, without adding source snapshots/archives/DBs/caches. Publication remains below existing host/task resource limits.",
+  "approval": "Parent execution choice within standing authorized evidence delivery; no new user permission required"
+}

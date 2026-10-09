@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="1" failures="0" skipped="0" tests="1" time="0.418" timestamp="2026-10-08T20:10:47.364419-04:00" hostname="54cb1abdc64d"><testcase classname="" name="tests.test_native_net_operations" time="0.000"><error message="collection failure">tests/test_native_net_operations.py:58: in &lt;module&gt;
+    live_agent_replacement = _load_source_module(
+tests/test_native_net_operations.py:54: in _load_source_module
+    spec.loader.exec_module(module)
+&lt;frozen importlib._bootstrap_external&gt;:995: in exec_module
+    ???
+&lt;frozen importlib._bootstrap_external&gt;:1132: in get_code
+    ???
+&lt;frozen importlib._bootstrap_external&gt;:1190: in get_data
+    ???
+E   FileNotFoundError: [Errno 2] No such file or directory: '/workspace/scratch/18c810e6dd59/rpnh-bound-child-lowering-review/reviewed-source/examples/net_operations/live_agent_replacement.py'</error></testcase></testsuite></testsuites>

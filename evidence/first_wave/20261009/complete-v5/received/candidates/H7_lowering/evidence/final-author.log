@@ -1,0 +1,36 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.14, pytest-8.4.2, pluggy-1.6.0 -- /workspace/scratch/18c810e6dd59/rpnh-recovery-20261003/source/.venv/bin/python
+rootdir: /workspace/scratch/18c810e6dd59/rpnh-bound-child-material-lowering/source
+collecting ... collected 28 items
+
+tests/test_bound_child_lowering.py::test_generic_origin_compiler_roundtrip PASSED [  3%]
+tests/test_bound_child_lowering.py::test_bound_wire_cannot_rewrite_mechanical_structure[missing_arc] PASSED [  7%]
+tests/test_bound_child_lowering.py::test_bound_wire_cannot_rewrite_mechanical_structure[consume] PASSED [ 10%]
+tests/test_bound_child_lowering.py::test_bound_wire_cannot_rewrite_mechanical_structure[duplicate] PASSED [ 14%]
+tests/test_bound_child_lowering.py::test_bound_wire_cannot_rewrite_mechanical_structure[schema] PASSED [ 17%]
+tests/test_bound_child_lowering.py::test_bound_wire_cannot_rewrite_mechanical_structure[constraint] PASSED [ 21%]
+tests/test_bound_child_lowering.py::test_bound_wire_cannot_rewrite_mechanical_structure[alias] PASSED [ 25%]
+tests/test_bound_child_lowering.py::test_mechanical_origin_real_registry_start_success PASSED [ 28%]
+tests/test_bound_child_lowering.py::test_fanout_branches_share_one_origin_without_serialization PASSED [ 32%]
+tests/test_bound_child_lowering.py::test_existing_variable_arcs_survive_compiler_origin_and_registry_success[read] PASSED [ 35%]
+tests/test_bound_child_lowering.py::test_existing_variable_arcs_survive_compiler_origin_and_registry_success[produce] PASSED [ 39%]
+tests/test_bound_child_lowering.py::test_origin_does_not_override_business_pn_guard PASSED [ 42%]
+tests/test_bound_child_lowering.py::test_ref_shaped_business_payload_roundtrips_real_registry PASSED [ 46%]
+tests/test_bound_child_lowering.py::test_compiler_origin_cold_readonly_hydration PASSED [ 50%]
+tests/test_bound_child_lowering.py::test_reserved_origin_constraint_rejects_wrong_shape[None] PASSED [ 53%]
+tests/test_bound_child_lowering.py::test_reserved_origin_constraint_rejects_wrong_shape[constraint1] PASSED [ 57%]
+tests/test_bound_child_lowering.py::test_reserved_origin_constraint_rejects_wrong_shape[constraint2] PASSED [ 60%]
+tests/test_bound_child_lowering.py::test_reserved_origin_constraint_rejects_wrong_shape[constraint3] PASSED [ 64%]
+tests/test_bound_child_lowering.py::test_reserved_origin_schema_cannot_be_supplied_by_business_component PASSED [ 67%]
+tests/test_bound_child_declarations.py::test_module_materials_are_actual_compilation_and_detached PASSED [ 71%]
+tests/test_bound_child_declarations.py::test_business_ref_shaped_json_and_schema_are_preserved_not_resolved PASSED [ 75%]
+tests/test_bound_child_declarations.py::test_agent_declaration_normalization_uses_final_root_and_never_reads_profile PASSED [ 78%]
+tests/test_bound_child_declarations.py::test_agent_postfreeze_transport_paths_are_rejected[run_dir] PASSED [ 82%]
+tests/test_bound_child_declarations.py::test_agent_postfreeze_transport_paths_are_rejected[owner_socket_path] PASSED [ 85%]
+tests/test_bound_child_declarations.py::test_agent_extra_profile_and_plugin_are_explicitly_unsupported PASSED [ 89%]
+tests/test_bound_child_declarations.py::test_reference_profile_mutation_cannot_be_mistaken_for_execution_inventory PASSED [ 92%]
+tests/test_bound_child_declarations.py::test_registered_schema_changes_frozen_digest PASSED [ 96%]
+tests/test_bound_child_declarations.py::test_unknown_host_profile_object_is_not_a_material_provider PASSED [100%]
+
+- generated xml file: /workspace/scratch/18c810e6dd59/rpnh-bound-child-material-lowering/evidence/final-author.xml -
+======================== 28 passed in 81.70s (0:01:21) =========================

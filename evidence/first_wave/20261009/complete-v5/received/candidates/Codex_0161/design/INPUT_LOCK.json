@@ -1,0 +1,188 @@
+[
+  {
+    "package": "rpnh-codex-history-projection",
+    "path": "HANDOFF.json",
+    "bytes": 2799,
+    "sha256": "c04b68027dc6e30ea1de29c63004d523df2935281a3db190086501a46b2e2f53"
+  },
+  {
+    "package": "rpnh-codex-history-projection",
+    "path": "DESIGN_REVIEW_ZH.md",
+    "bytes": 14105,
+    "sha256": "72b47fbee5393d4a179ddae66555201b6488bdd26b3ff82a540fa5eb7e0c5ffc"
+  },
+  {
+    "package": "rpnh-codex-history-projection",
+    "path": "IMPLEMENTATION_ZH.md",
+    "bytes": 6886,
+    "sha256": "a1c47ebcb510fbea9b47d696a3590fa9be84fe358286af8aa4d9a847b20cb9ba"
+  },
+  {
+    "package": "rpnh-codex-history-projection",
+    "path": "codex-owner-history-projection.patch",
+    "bytes": 476277,
+    "sha256": "df0c3090e84f532d158dd02d7b65489323563a470843e4bd4e2688ffcc25900b"
+  },
+  {
+    "package": "rpnh-codex-history-projection",
+    "path": "file-manifest.json",
+    "bytes": 7322,
+    "sha256": "70dcc1ff4625a99d4b301da7973418bfeb366626087fe2f5b47819eb282215ea"
+  },
+  {
+    "package": "rpnh-codex-history-projection",
+    "path": "independent-review/INDEPENDENT_REVIEW_ZH.md",
+    "bytes": 9560,
+    "sha256": "37453fb5719aa4609503bd9ce4fc74a961b7888dd6eaa86973257e8350da8197"
+  },
+  {
+    "package": "rpnh-codex-history-projection",
+    "path": "independent-review/DOC_ONLY_ADDENDUM_ZH.md",
+    "bytes": 1502,
+    "sha256": "903b618073a9db4123b7b3ed0f3d7a9f6e5fa79318b5a689df0e63e7e8abc364"
+  },
+  {
+    "package": "rpnh-codex-history-projection",
+    "path": "latest-main-overlay/provenance.json",
+    "bytes": 685,
+    "sha256": "5face90122ce0a48b180a32eb9a1139d16d32e1dab29ca074154aa9d123fdcf5"
+  },
+  {
+    "package": "rpnh-codex-history-projection",
+    "path": "source/cpn/frontend/codex_app_server.py",
+    "bytes": 73618,
+    "sha256": "5826e5c0945d22b8063fe46d10b58d3a79f682d26ed50176a08f7588b6f843ff"
+  },
+  {
+    "package": "rpnh-codex-history-projection",
+    "path": "source/cpn/frontend/codex_compatibility.v1.json",
+    "bytes": 3917,
+    "sha256": "e4295b4a4cae5e859566142d95b022d46b8459367bd8c19b28660d9b7c3b59f7"
+  },
+  {
+    "package": "rpnh-codex-history-projection",
+    "path": "source/cpn/frontend/codex_history.py",
+    "bytes": 8768,
+    "sha256": "bac9cdde5c9810dd29b0d1e0cf60a5952ac6e5715f9a61af9b35bcb1b238beba"
+  },
+  {
+    "package": "rpnh-codex-history-projection",
+    "path": "source/cpn/rpnh/main_session.py",
+    "bytes": 63983,
+    "sha256": "80ae8f0b06d6cf7dac83ea9e8d3ba612a3bda5f883c35a0d0306581e3b1422cf"
+  },
+  {
+    "package": "rpnh-codex-history-projection",
+    "path": "source/cpn/rpnh/registry/main_thread.py",
+    "bytes": 76586,
+    "sha256": "d29543a7c1a79197cf891312ef2c29789769c9198efc646b19adfd6ecf75d6ab"
+  },
+  {
+    "package": "rpnh-codex-history-projection",
+    "path": "source/cpn/rpnh/session_access.py",
+    "bytes": 11038,
+    "sha256": "964b465fab83596127d328edeb274ad5e46adc756a896eabf8fd08eae82592ea"
+  },
+  {
+    "package": "rpnh-codex-history-projection",
+    "path": "source/docs/reference/codex-history.md",
+    "bytes": 7110,
+    "sha256": "65210d806027babbc916a19175a5598981f3e96229a315218c7386eadfcd5abd"
+  },
+  {
+    "package": "rpnh-codex-history-projection",
+    "path": "source/docs/reference/codex-history_ZH.md",
+    "bytes": 5758,
+    "sha256": "5d807b8c6932c85fc347100296a14e18803786379d1848fc6e7b6233907c3d20"
+  },
+  {
+    "package": "rpnh-codex-history-projection",
+    "path": "source/tests/fixtures/codex/0.155.0/ThreadItemsListParams.json",
+    "bytes": 1138,
+    "sha256": "ff56040c327ecdd30ef02affac9bc71fab64031e8980f2b4fea9fd8a888160b4"
+  },
+  {
+    "package": "rpnh-codex-history-projection",
+    "path": "source/tests/fixtures/codex/0.155.0/ThreadItemsListResponse.json",
+    "bytes": 46506,
+    "sha256": "886369490fec07067597460301b3d5c1dc9aedc41ea42522cae397d8babe6156"
+  },
+  {
+    "package": "rpnh-codex-history-projection",
+    "path": "source/tests/fixtures/codex/0.155.0/ThreadResumeResponse.json",
+    "bytes": 76852,
+    "sha256": "fb1fac1fc4f7657736c1ab1a85efe7d71c8dde8fb5be7bf2b823d07367dab9b5"
+  },
+  {
+    "package": "rpnh-codex-history-projection",
+    "path": "source/tests/fixtures/codex/0.155.0/ThreadTurnsListParams.json",
+    "bytes": 1889,
+    "sha256": "2a8b93d7d4437cc25e16a1dde16d8db3c338d39e16c5eece2a56e943a21577d7"
+  },
+  {
+    "package": "rpnh-codex-history-projection",
+    "path": "source/tests/fixtures/codex/0.155.0/ThreadTurnsListResponse.json",
+    "bytes": 55347,
+    "sha256": "45bffd91efc358859a1a54b8165c0a8b1c21ebc2a312da9f25d05ff27af798ee"
+  },
+  {
+    "package": "rpnh-codex-history-projection",
+    "path": "source/tests/fixtures/codex/0.161.0/ThreadItemsListParams.json",
+    "bytes": 2291,
+    "sha256": "d5cf9784413f1d1abba756e04e48b273a9d12ab2c5675442e91b6a4ee55e19f0"
+  },
+  {
+    "package": "rpnh-codex-history-projection",
+    "path": "source/tests/fixtures/codex/0.161.0/ThreadItemsListResponse.json",
+    "bytes": 49071,
+    "sha256": "bc8a8dcb9a48d9ca38b0a5faa89b80ec2fd57398cd3a8dcc15097776153f6c74"
+  },
+  {
+    "package": "rpnh-codex-history-projection",
+    "path": "source/tests/fixtures/codex/0.161.0/ThreadResumeResponse.json",
+    "bytes": 80680,
+    "sha256": "65aa8b6aad04174627278345826321b1fa2a5d2befac529638980f4b10a90e18"
+  },
+  {
+    "package": "rpnh-codex-history-projection",
+    "path": "source/tests/fixtures/codex/0.161.0/ThreadTurnsListParams.json",
+    "bytes": 1889,
+    "sha256": "2a8b93d7d4437cc25e16a1dde16d8db3c338d39e16c5eece2a56e943a21577d7"
+  },
+  {
+    "package": "rpnh-codex-history-projection",
+    "path": "source/tests/fixtures/codex/0.161.0/ThreadTurnsListResponse.json",
+    "bytes": 57570,
+    "sha256": "db925b182c59b718e7164cf8a4297167a338fa0e6a0e8d62e3b839160ac74aea"
+  },
+  {
+    "package": "rpnh-codex-history-projection",
+    "path": "source/tests/fixtures/codex/HISTORY_PROVENANCE.json",
+    "bytes": 4497,
+    "sha256": "a9aa66bb9b94a328c74b2c80ee0e424f0c8cf376adb63b79f43a3f9a277ca4b9"
+  },
+  {
+    "package": "rpnh-codex-history-projection",
+    "path": "source/tests/test_codex_compat.py",
+    "bytes": 52598,
+    "sha256": "d3d80adbc7a3a1662327f4a77ff920e356933dcb334a3836cafcfaa5c5ea750e"
+  },
+  {
+    "package": "rpnh-codex-history-projection",
+    "path": "source/tests/test_codex_history.py",
+    "bytes": 26546,
+    "sha256": "bad73eec734095a27bf82257c6135d8bc2b641ba36709f08f12d8992aa58d495"
+  },
+  {
+    "package": "rpnh-thread-history-read-fix",
+    "path": "native-main-thread-history.patch",
+    "bytes": 62842,
+    "sha256": "f4726d7c1a230c8935b22310bb1d29f7c8e68342ef9b660cabb6430b8a3d4654"
+  },
+  {
+    "package": "rpnh-codex-contract-fix",
+    "path": "codex-effort-wire-codec.patch",
+    "bytes": 49359,
+    "sha256": "3be0de65edb5a4f68579f115f5072bacc3e4fe4ffefeba96b226e45cbcab8a8d"
+  }
+]

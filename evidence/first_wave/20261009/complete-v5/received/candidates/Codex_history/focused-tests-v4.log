@@ -1,0 +1,20 @@
+........................................................................ [ 61%]
+.....................................F.......                            [100%]
+=================================== FAILURES ===================================
+__ test_manifest_matches_actual_method_dispatch_and_has_no_static_pass_claim ___
+tests/test_frontend_boundary.py:93: in test_manifest_matches_actual_method_dispatch_and_has_no_static_pass_claim
+    assert set(manifest["implemented_methods"]) == actual
+E   AssertionError: assert {'account/rea...ts/read', ...} == set()
+E     
+E     Extra items in the left set:
+E     'turn/start'
+E     'thread/turns/list'
+E     'thread/loaded/list'
+E     'thread/settings/update'
+E     'permissionProfile/list'...
+E     
+E     ...Full output truncated (19 lines hidden), use '-vv' to show
+- generated xml file: /workspace/scratch/18c810e6dd59/rpnh-codex-history-projection/focused-tests-v4.xml -
+=========================== short test summary info ============================
+FAILED tests/test_frontend_boundary.py::test_manifest_matches_actual_method_dispatch_and_has_no_static_pass_claim
+1 failed, 116 passed, 1 deselected in 84.13s (0:01:24)

@@ -1,0 +1,9 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.14, pytest-8.4.2, pluggy-1.6.0 -- /workspace/scratch/18c810e6dd59/rpnh-recovery-20261003/source/.venv/bin/python
+rootdir: /workspace/scratch/18c810e6dd59
+collecting ... collected 1 item
+
+rpnh-parent-child-core-boundary-review/tests/test_boundary_finalize.py::test_prospective_protected_extra_capability_edge_fails_before_commit PASSED [100%]
+
+- generated xml file: /workspace/scratch/18c810e6dd59/rpnh-parent-child-core-boundary-review/final-extra-edge.xml -
+============================== 1 passed in 4.13s ===============================

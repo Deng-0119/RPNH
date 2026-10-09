@@ -1,0 +1,59 @@
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+_________________ test_real_parent_causal_chain_is_provisional _________________
+tests/test_parent_child_core.py:12: in test_real_parent_causal_chain_is_provisional
+    owner,admitted,execution,prepared,intent,dispatch,worker,acceptance=accepted_parent(tmp_path/'parent')
+                                                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/parent_child_fixtures.py:110: in accepted_parent
+    owner,admitted,execution,prepared=parent_owner(path,child_compiled=child_compiled)
+                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/parent_child_fixtures.py:79: in parent_owner
+    owner=start_run(module,reg,run_dir=path,task_input=task,entry_inputs={'request':task},
+cpn/rpnh/run.py:529: in start_run
+    compiled = compile_module(module, registration)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+cpn/rpnh/compiler.py:49: in compile_module
+    return _compile_module(module, registration, offline=False)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+cpn/rpnh/compiler.py:68: in _compile_module
+    symbolic = module.lower(observed)
+               ^^^^^^^^^^^^^^^^^^^^^^
+cpn/rpnh/module.py:260: in lower
+    fragment.validate(context, registration)
+cpn/rpnh/petri_contracts.py:728: in validate
+    self._validate_reusable(places, transitions, operations)
+cpn/rpnh/petri_contracts.py:859: in _validate_reusable
+    raise DeclarationError("Borrowed data/control token requires exact unchanged forwarding return")
+E   cpn.rpnh.petri_contracts.DeclarationError: Borrowed data/control token requires exact unchanged forwarding return
+________________ test_bound_origin_true_admission_start_success ________________
+tests/test_parent_child_core.py:23: in test_bound_origin_true_admission_start_success
+    owner,parent=bound_owner(tmp_path/'child',monkeypatch)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/parent_child_fixtures.py:121: in bound_owner
+    values=accepted_parent(path.parent/'parent',compiled);parent=values[0];accepted=values[-1]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/parent_child_fixtures.py:110: in accepted_parent
+    owner,admitted,execution,prepared=parent_owner(path,child_compiled=child_compiled)
+                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/parent_child_fixtures.py:79: in parent_owner
+    owner=start_run(module,reg,run_dir=path,task_input=task,entry_inputs={'request':task},
+cpn/rpnh/run.py:529: in start_run
+    compiled = compile_module(module, registration)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+cpn/rpnh/compiler.py:49: in compile_module
+    return _compile_module(module, registration, offline=False)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+cpn/rpnh/compiler.py:68: in _compile_module
+    symbolic = module.lower(observed)
+               ^^^^^^^^^^^^^^^^^^^^^^
+cpn/rpnh/module.py:260: in lower
+    fragment.validate(context, registration)
+cpn/rpnh/petri_contracts.py:728: in validate
+    self._validate_reusable(places, transitions, operations)
+cpn/rpnh/petri_contracts.py:859: in _validate_reusable
+    raise DeclarationError("Borrowed data/control token requires exact unchanged forwarding return")
+E   cpn.rpnh.petri_contracts.DeclarationError: Borrowed data/control token requires exact unchanged forwarding return
+=========================== short test summary info ============================
+FAILED tests/test_parent_child_core.py::test_real_parent_causal_chain_is_provisional
+FAILED tests/test_parent_child_core.py::test_bound_origin_true_admission_start_success
+2 failed in 1.10s

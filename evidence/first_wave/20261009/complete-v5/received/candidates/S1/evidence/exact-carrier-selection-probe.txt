@@ -1,0 +1,4 @@
+Synthetic typed checkpoint accepted. Registered resource refs are reused; added carrier is pure projection only.
+default enabled: False
+exact reservation exists: True
+exact install rejected: MarkingStateError exact registered firing is not currently enabled

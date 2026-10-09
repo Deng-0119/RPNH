@@ -1,0 +1,4 @@
+variable read-first PASS: concurrent opposite access rejected; later access admitted; read retains exact token; edit returns new token with same identity/RVR
+variable edit-first PASS: concurrent opposite access rejected; later access admitted; read retains exact token; edit returns new token with same identity/RVR
+static read-first PASS: concurrent opposite access rejected; later access admitted; read retains exact token; edit returns new token with same identity/RVR
+static edit-first PASS: concurrent opposite access rejected; later access admitted; read retains exact token; edit returns new token with same identity/RVR

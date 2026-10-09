@@ -1,0 +1,20 @@
+{
+  "command": [
+    "<WORKSPACE>/.p26/v/bin/python",
+    "<WORKSPACE>/task-complete-v5-20261009/stages/rsi/packages/R2/h2a_readback.py",
+    "<WORKSPACE>/.v26/ur2n",
+    "<WORKSPACE>/task-complete-v5-20261009/stages/rsi/resume-r2-native-readback-result.json"
+  ],
+  "cwd": "<WORKSPACE>/.v26/r2",
+  "pid": 20132,
+  "started_at_utc": "2026-10-09T03:35:06.330124+00:00",
+  "finished_at_utc": "2026-10-09T03:35:07.893165+00:00",
+  "elapsed_seconds": 1.5630415169998741,
+  "exit_code": 0,
+  "environment": {
+    "PYTHONPATH": "<WORKSPACE>/.v26/r2",
+    "TMPDIR": "<WORKSPACE>/.v26/urtmp",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1"
+  }
+}

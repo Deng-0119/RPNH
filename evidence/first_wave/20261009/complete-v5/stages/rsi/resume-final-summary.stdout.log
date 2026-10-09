@@ -1,0 +1,92 @@
+{
+  "status": "PARTIAL_PACKAGE_GAP",
+  "counts": {
+    "actual_executions": 323,
+    "unique_repository_ids": 165,
+    "unique_package_independent_ids": 8,
+    "unique_total_ids": 173,
+    "verdicts": {
+      "PASS": 323,
+      "FAIL": 0,
+      "ERROR": 0,
+      "SKIP": 0
+    },
+    "collection_errors": 1,
+    "collection_errors_are_executions": false,
+    "dedup_rule": "Repository-relative file::name including parameters; repeated R1 cases on R2 retain execution counts but add no unique coverage. Independent package paths have their own namespace."
+  },
+  "stage_tests": {
+    "resume-r1-author": {
+      "executions": 150,
+      "unique_ids": 150,
+      "verdicts": {
+        "PASS": 150,
+        "FAIL": 0,
+        "ERROR": 0,
+        "SKIP": 0
+      }
+    },
+    "resume-r1-independent-compiler": {
+      "executions": 0,
+      "unique_ids": 0,
+      "verdicts": {
+        "PASS": 0,
+        "FAIL": 0,
+        "ERROR": 0,
+        "SKIP": 0
+      }
+    },
+    "resume-r1-independent-registry": {
+      "executions": 3,
+      "unique_ids": 3,
+      "verdicts": {
+        "PASS": 3,
+        "FAIL": 0,
+        "ERROR": 0,
+        "SKIP": 0
+      }
+    },
+    "resume-r2-author-step": {
+      "executions": 11,
+      "unique_ids": 11,
+      "verdicts": {
+        "PASS": 11,
+        "FAIL": 0,
+        "ERROR": 0,
+        "SKIP": 0
+      }
+    },
+    "resume-r2-independent": {
+      "executions": 5,
+      "unique_ids": 5,
+      "verdicts": {
+        "PASS": 5,
+        "FAIL": 0,
+        "ERROR": 0,
+        "SKIP": 0
+      }
+    },
+    "resume-r2-native": {
+      "executions": 4,
+      "unique_ids": 4,
+      "verdicts": {
+        "PASS": 4,
+        "FAIL": 0,
+        "ERROR": 0,
+        "SKIP": 0
+      }
+    },
+    "resume-r2-r1-compiler": {
+      "executions": 150,
+      "unique_ids": 150,
+      "verdicts": {
+        "PASS": 150,
+        "FAIL": 0,
+        "ERROR": 0,
+        "SKIP": 0
+      }
+    }
+  },
+  "failed": [],
+  "artifact": "<WORKSPACE>/task-complete-v5-20261009/stages/rsi/lane.json"
+}

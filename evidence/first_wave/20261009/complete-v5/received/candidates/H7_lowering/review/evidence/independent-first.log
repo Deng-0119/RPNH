@@ -1,0 +1,55 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.14, pytest-8.4.2, pluggy-1.6.0 -- /workspace/scratch/18c810e6dd59/rpnh-recovery-20261003/source/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /workspace/scratch/18c810e6dd59/rpnh-bound-child-lowering-review
+collecting ... collected 35 items
+
+../tests/test_independent_bound_lowering.py::test_exact_business_projection_is_unchanged[simple] PASSED [  2%]
+../tests/test_independent_bound_lowering.py::test_exact_business_projection_is_unchanged[json-effect] PASSED [  5%]
+../tests/test_independent_bound_lowering.py::test_exact_business_projection_is_unchanged[single-agent] PASSED [  8%]
+../tests/test_independent_bound_lowering.py::test_reserved_contract_variants_reject[rpnh_parent_bound_origin_v2-value0] PASSED [ 11%]
+../tests/test_independent_bound_lowering.py::test_reserved_contract_variants_reject[rpnh_parent_bound_origin_v1-value1] PASSED [ 14%]
+../tests/test_independent_bound_lowering.py::test_reserved_contract_variants_reject[rpnh_parent_bound_origin_v1-value2] PASSED [ 17%]
+../tests/test_independent_bound_lowering.py::test_reserved_contract_variants_reject[rpnh_parent_bound_origin_v1-True] PASSED [ 20%]
+../tests/test_independent_bound_lowering.py::test_duplicate_application_and_protected_schema_collision_reject PASSED [ 22%]
+../tests/test_independent_bound_lowering.py::test_public_business_name_same_spelling_is_not_origin_identity PASSED [ 25%]
+../tests/test_independent_bound_lowering.py::test_wire_rejects_protected_shape_mutations[origin_output] PASSED [ 28%]
+../tests/test_independent_bound_lowering.py::test_wire_rejects_protected_shape_mutations[origin_reset] PASSED [ 31%]
+../tests/test_independent_bound_lowering.py::test_wire_rejects_protected_shape_mutations[origin_pool] PASSED [ 34%]
+../tests/test_independent_bound_lowering.py::test_wire_rejects_protected_shape_mutations[initial_token] PASSED [ 37%]
+../tests/test_independent_bound_lowering.py::test_wire_rejects_protected_shape_mutations[source_unbound] PASSED [ 40%]
+../tests/test_independent_bound_lowering.py::test_wire_rejects_protected_shape_mutations[forged_fragment] PASSED [ 42%]
+../tests/test_independent_bound_lowering.py::test_exact_origin_claim_rechecked_in_registry[missing] PASSED [ 45%]
+../tests/test_independent_bound_lowering.py::test_exact_origin_claim_rechecked_in_registry[consume] PASSED [ 48%]
+../tests/test_independent_bound_lowering.py::test_exact_origin_claim_rechecked_in_registry[duplicate] PASSED [ 51%]
+../tests/test_independent_bound_lowering.py::test_exact_origin_claim_rechecked_in_registry[same_version_other_logical] PASSED [ 54%]
+../tests/test_independent_bound_lowering.py::test_same_transition_parallel_claims_and_cold_read_exact_origin PASSED [ 57%]
+../tests/test_independent_bound_lowering.py::test_origin_raw_token_write_is_fail_closed[consume] PASSED [ 60%]
+../tests/test_independent_bound_lowering.py::test_origin_raw_token_write_is_fail_closed[cloned_ref] PASSED [ 62%]
+../tests/test_independent_bound_lowering.py::test_origin_raw_token_write_is_fail_closed[wrong_resource] PASSED [ 65%]
+../tests/test_independent_bound_lowering.py::test_origin_raw_token_write_is_fail_closed[wrong_lease] PASSED [ 68%]
+../tests/test_independent_bound_lowering.py::test_owner_replacement_and_direct_adoption_leave_origin_unchanged FAILED [ 71%]
+../tests/test_independent_bound_lowering.py::test_freezing_preserves_business_arrays_and_detaches_all_inventories PASSED [ 74%]
+../tests/test_independent_bound_lowering.py::test_handcrafted_declarations_cannot_be_intent_authority[module] PASSED [ 77%]
+../tests/test_independent_bound_lowering.py::test_handcrafted_declarations_cannot_be_intent_authority[agent_task] PASSED [ 80%]
+../tests/test_independent_bound_lowering.py::test_registration_change_during_lowering_is_reported PASSED [ 82%]
+../tests/test_independent_bound_lowering.py::test_agent_static_slot_is_explicit_canonical_data[] PASSED [ 85%]
+../tests/test_independent_bound_lowering.py::test_agent_static_slot_is_explicit_canonical_data[child/a] PASSED [ 88%]
+../tests/test_independent_bound_lowering.py::test_agent_static_slot_is_explicit_canonical_data[../child] PASSED [ 91%]
+../tests/test_independent_bound_lowering.py::test_agent_static_slot_is_explicit_canonical_data[aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa] PASSED [ 94%]
+../tests/test_independent_bound_lowering.py::test_agent_static_slot_is_explicit_canonical_data[1] PASSED [ 97%]
+../tests/test_independent_bound_lowering.py::test_agent_final_target_context_and_digest_have_no_postfreeze_path_rewrite PASSED [100%]
+
+=================================== FAILURES ===================================
+______ test_owner_replacement_and_direct_adoption_leave_origin_unchanged _______
+../tests/test_independent_bound_lowering.py:222: in test_owner_replacement_and_direct_adoption_leave_origin_unchanged
+    assert core.event_store.max_ordinal() == before
+E   assert 132 == 100
+E    +  where 132 = max_ordinal()
+E    +    where max_ordinal = <cpn.rpnh.registry.event_store.EventStore object at 0x7f77b1ac9400>.max_ordinal
+E    +      where <cpn.rpnh.registry.event_store.EventStore object at 0x7f77b1ac9400> = <cpn.rpnh.registry._registry._RegistryCore object at 0x7f77b2067110>.event_store
+- generated xml file: /workspace/scratch/18c810e6dd59/rpnh-bound-child-lowering-review/evidence/independent-first.xml -
+=========================== short test summary info ============================
+FAILED ../tests/test_independent_bound_lowering.py::test_owner_replacement_and_direct_adoption_leave_origin_unchanged
+======================== 1 failed, 34 passed in 54.50s =========================
+OFFLINE_SENTINEL_ATTEMPTS=0

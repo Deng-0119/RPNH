@@ -1,0 +1,3158 @@
+{
+  "runs": [
+    {
+      "name": "independent-accepted",
+      "counts": {
+        "passed": 44,
+        "failed": 0,
+        "error": 0,
+        "skipped": 0
+      },
+      "sentinel_attempts": 0,
+      "cases": [
+        {
+          "id": "tests.test_independent_bound_lowering::test_exact_business_projection_is_unchanged[simple]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_independent_bound_lowering::test_exact_business_projection_is_unchanged[json-effect]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_independent_bound_lowering::test_exact_business_projection_is_unchanged[single-agent]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_independent_bound_lowering::test_reserved_contract_variants_reject[rpnh_parent_bound_origin_v2-value0]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_independent_bound_lowering::test_reserved_contract_variants_reject[rpnh_parent_bound_origin_v1-value1]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_independent_bound_lowering::test_reserved_contract_variants_reject[rpnh_parent_bound_origin_v1-value2]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_independent_bound_lowering::test_reserved_contract_variants_reject[rpnh_parent_bound_origin_v1-True]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_independent_bound_lowering::test_duplicate_application_and_protected_schema_collision_reject",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_independent_bound_lowering::test_public_business_name_same_spelling_is_not_origin_identity",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_independent_bound_lowering::test_wire_rejects_protected_shape_mutations[origin_output]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_independent_bound_lowering::test_wire_rejects_protected_shape_mutations[origin_reset]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_independent_bound_lowering::test_wire_rejects_protected_shape_mutations[origin_pool]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_independent_bound_lowering::test_wire_rejects_protected_shape_mutations[initial_token]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_independent_bound_lowering::test_wire_rejects_protected_shape_mutations[source_unbound]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_independent_bound_lowering::test_wire_rejects_protected_shape_mutations[forged_fragment]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_independent_bound_lowering::test_exact_origin_claim_rechecked_in_registry[missing]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_independent_bound_lowering::test_exact_origin_claim_rechecked_in_registry[consume]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_independent_bound_lowering::test_exact_origin_claim_rechecked_in_registry[duplicate]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_independent_bound_lowering::test_exact_origin_claim_rechecked_in_registry[same_version_other_logical]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_independent_bound_lowering::test_same_transition_parallel_claims_and_cold_read_exact_origin",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_independent_bound_lowering::test_origin_raw_token_write_is_fail_closed[consume]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_independent_bound_lowering::test_origin_raw_token_write_is_fail_closed[cloned_ref]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_independent_bound_lowering::test_origin_raw_token_write_is_fail_closed[wrong_resource]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_independent_bound_lowering::test_origin_raw_token_write_is_fail_closed[wrong_lease]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_independent_bound_lowering::test_owner_replacement_and_direct_adoption_leave_origin_unchanged",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_independent_bound_lowering::test_freezing_preserves_business_arrays_and_detaches_all_inventories",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_independent_bound_lowering::test_handcrafted_declarations_cannot_be_intent_authority[module]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_independent_bound_lowering::test_handcrafted_declarations_cannot_be_intent_authority[agent_task]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_independent_bound_lowering::test_registration_change_during_lowering_is_reported",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_independent_bound_lowering::test_agent_static_slot_is_explicit_canonical_data[]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_independent_bound_lowering::test_agent_static_slot_is_explicit_canonical_data[child/a]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_independent_bound_lowering::test_agent_static_slot_is_explicit_canonical_data[../child]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_independent_bound_lowering::test_agent_static_slot_is_explicit_canonical_data[aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_independent_bound_lowering::test_agent_static_slot_is_explicit_canonical_data[1]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_independent_bound_lowering::test_agent_final_target_context_and_digest_have_no_postfreeze_path_rewrite",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_independent_bound_lowering::test_protected_schema_freezes_installed_body_and_public_override_rejects",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_independent_bound_lowering::test_recursive_launch_and_control_proof_are_explicitly_rejected",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_independent_bound_lowering::test_bound_external_config_schema_ref_fails_without_retrieval",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_independent_bound_lowering::test_declaration_dto_requires_immutable_unique_sorted_rows[payloads0]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_independent_bound_lowering::test_declaration_dto_requires_immutable_unique_sorted_rows[payloads1]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_independent_bound_lowering::test_declaration_dto_requires_immutable_unique_sorted_rows[payloads2]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_independent_bound_lowering::test_declaration_dto_requires_immutable_unique_sorted_rows[payloads3]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_independent_bound_lowering::test_multistage_agent_declaration_slice_remains_unsupported",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_independent_bound_revision::test_actual_operation_revision_cannot_change_bound_initial_net",
+          "outcome": "passed"
+        }
+      ]
+    },
+    {
+      "name": "catalog-accepted",
+      "counts": {
+        "passed": 2,
+        "failed": 0,
+        "error": 0,
+        "skipped": 0
+      },
+      "sentinel_attempts": 0,
+      "cases": [
+        {
+          "id": "tests.test_independent_bound_catalog::test_protected_origin_requires_exact_installed_catalog[same_schema_foreign_catalog_ref]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_independent_bound_catalog::test_protected_origin_requires_exact_installed_catalog[catalog_schema_body]",
+          "outcome": "passed"
+        }
+      ]
+    },
+    {
+      "name": "author-rerun",
+      "counts": {
+        "passed": 28,
+        "failed": 0,
+        "error": 0,
+        "skipped": 0
+      },
+      "sentinel_attempts": 0,
+      "cases": [
+        {
+          "id": "tests.test_bound_child_lowering::test_generic_origin_compiler_roundtrip",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_bound_child_lowering::test_bound_wire_cannot_rewrite_mechanical_structure[missing_arc]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_bound_child_lowering::test_bound_wire_cannot_rewrite_mechanical_structure[consume]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_bound_child_lowering::test_bound_wire_cannot_rewrite_mechanical_structure[duplicate]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_bound_child_lowering::test_bound_wire_cannot_rewrite_mechanical_structure[schema]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_bound_child_lowering::test_bound_wire_cannot_rewrite_mechanical_structure[constraint]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_bound_child_lowering::test_bound_wire_cannot_rewrite_mechanical_structure[alias]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_bound_child_lowering::test_mechanical_origin_real_registry_start_success",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_bound_child_lowering::test_fanout_branches_share_one_origin_without_serialization",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_bound_child_lowering::test_existing_variable_arcs_survive_compiler_origin_and_registry_success[read]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_bound_child_lowering::test_existing_variable_arcs_survive_compiler_origin_and_registry_success[produce]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_bound_child_lowering::test_origin_does_not_override_business_pn_guard",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_bound_child_lowering::test_ref_shaped_business_payload_roundtrips_real_registry",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_bound_child_lowering::test_compiler_origin_cold_readonly_hydration",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_bound_child_lowering::test_reserved_origin_constraint_rejects_wrong_shape[None]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_bound_child_lowering::test_reserved_origin_constraint_rejects_wrong_shape[constraint1]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_bound_child_lowering::test_reserved_origin_constraint_rejects_wrong_shape[constraint2]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_bound_child_lowering::test_reserved_origin_constraint_rejects_wrong_shape[constraint3]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_bound_child_lowering::test_reserved_origin_schema_cannot_be_supplied_by_business_component",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_bound_child_declarations::test_module_materials_are_actual_compilation_and_detached",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_bound_child_declarations::test_business_ref_shaped_json_and_schema_are_preserved_not_resolved",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_bound_child_declarations::test_agent_declaration_normalization_uses_final_root_and_never_reads_profile",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_bound_child_declarations::test_agent_postfreeze_transport_paths_are_rejected[run_dir]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_bound_child_declarations::test_agent_postfreeze_transport_paths_are_rejected[owner_socket_path]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_bound_child_declarations::test_agent_extra_profile_and_plugin_are_explicitly_unsupported",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_bound_child_declarations::test_reference_profile_mutation_cannot_be_mistaken_for_execution_inventory",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_bound_child_declarations::test_registered_schema_changes_frozen_digest",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_bound_child_declarations::test_unknown_host_profile_object_is_not_a_material_provider",
+          "outcome": "passed"
+        }
+      ]
+    },
+    {
+      "name": "compiler-regression",
+      "counts": {
+        "passed": 516,
+        "failed": 0,
+        "error": 0,
+        "skipped": 0
+      },
+      "sentinel_attempts": 0,
+      "cases": [
+        {
+          "id": "tests.test_typed_author_interoperation::test_prepared_typed_author_publishes_reopens_and_tracks_exact_branch_head",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_typed_author_interoperation::test_invalid_prepared_proof_fails_before_revision_publication",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_typed_author_interoperation::test_required_typed_boundary_rejects_stripped_and_unsupported_proofs",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_typed_author_interoperation::test_real_assembly_publish_rejects_typed_member_without_erasing_proof",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_typed_author_interoperation::test_prepared_typed_module_recompile_matches_direct_author",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_typed_author_interoperation::test_prepared_typed_remote_schema_rejects_without_retrieval",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_typed_author_interoperation::test_legacy_direct_python_numeric_constraint_keys_still_normalize",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_compiler_json_contract::test_host_lower_cannot_change_json_boolean_number_type[operation-1-True]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_compiler_json_contract::test_host_lower_cannot_change_json_boolean_number_type[operation-True-1]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_compiler_json_contract::test_host_lower_cannot_change_json_boolean_number_type[operation-0-False]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_compiler_json_contract::test_host_lower_cannot_change_json_boolean_number_type[operation-False-0]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_compiler_json_contract::test_host_lower_cannot_change_json_boolean_number_type[operation-1.0-True]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_compiler_json_contract::test_host_lower_cannot_change_json_boolean_number_type[operation-0.0-False]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_compiler_json_contract::test_host_lower_cannot_change_json_boolean_number_type[effect-1-True]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_compiler_json_contract::test_host_lower_cannot_change_json_boolean_number_type[effect-True-1]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_compiler_json_contract::test_host_lower_cannot_change_json_boolean_number_type[effect-0-False]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_compiler_json_contract::test_host_lower_cannot_change_json_boolean_number_type[effect-False-0]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_compiler_json_contract::test_host_lower_cannot_change_json_boolean_number_type[effect-1.0-True]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_compiler_json_contract::test_host_lower_cannot_change_json_boolean_number_type[effect-0.0-False]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_compiler_json_contract::test_wire_rejects_json_boolean_number_substitution[fragment-operation-1-True]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_compiler_json_contract::test_wire_rejects_json_boolean_number_substitution[fragment-operation-0-False]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_compiler_json_contract::test_wire_rejects_json_boolean_number_substitution[fragment-operation-True-1]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_compiler_json_contract::test_wire_rejects_json_boolean_number_substitution[fragment-operation-False-0]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_compiler_json_contract::test_wire_rejects_json_boolean_number_substitution[fragment-effect-1-True]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_compiler_json_contract::test_wire_rejects_json_boolean_number_substitution[fragment-effect-0-False]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_compiler_json_contract::test_wire_rejects_json_boolean_number_substitution[fragment-effect-True-1]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_compiler_json_contract::test_wire_rejects_json_boolean_number_substitution[fragment-effect-False-0]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_compiler_json_contract::test_wire_rejects_json_boolean_number_substitution[symbolic-operation-1-True]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_compiler_json_contract::test_wire_rejects_json_boolean_number_substitution[symbolic-operation-0-False]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_compiler_json_contract::test_wire_rejects_json_boolean_number_substitution[symbolic-operation-True-1]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_compiler_json_contract::test_wire_rejects_json_boolean_number_substitution[symbolic-operation-False-0]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_compiler_json_contract::test_wire_rejects_json_boolean_number_substitution[symbolic-effect-1-True]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_compiler_json_contract::test_wire_rejects_json_boolean_number_substitution[symbolic-effect-0-False]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_compiler_json_contract::test_wire_rejects_json_boolean_number_substitution[symbolic-effect-True-1]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_compiler_json_contract::test_wire_rejects_json_boolean_number_substitution[symbolic-effect-False-0]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_compiler_json_contract::test_normal_json_config_compiles_and_round_trips[operation-None]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_compiler_json_contract::test_normal_json_config_compiles_and_round_trips[operation-True]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_compiler_json_contract::test_normal_json_config_compiles_and_round_trips[operation-False]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_compiler_json_contract::test_normal_json_config_compiles_and_round_trips[operation-1_0]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_compiler_json_contract::test_normal_json_config_compiles_and_round_trips[operation-0]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_compiler_json_contract::test_normal_json_config_compiles_and_round_trips[operation-1.25]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_compiler_json_contract::test_normal_json_config_compiles_and_round_trips[operation-1_1]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_compiler_json_contract::test_normal_json_config_compiles_and_round_trips[operation-value7]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_compiler_json_contract::test_normal_json_config_compiles_and_round_trips[effect-None]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_compiler_json_contract::test_normal_json_config_compiles_and_round_trips[effect-True]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_compiler_json_contract::test_normal_json_config_compiles_and_round_trips[effect-False]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_compiler_json_contract::test_normal_json_config_compiles_and_round_trips[effect-1_0]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_compiler_json_contract::test_normal_json_config_compiles_and_round_trips[effect-0]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_compiler_json_contract::test_normal_json_config_compiles_and_round_trips[effect-1.25]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_compiler_json_contract::test_normal_json_config_compiles_and_round_trips[effect-1_1]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_compiler_json_contract::test_normal_json_config_compiles_and_round_trips[effect-value7]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_compiler_json_contract::test_existing_numeric_equality_survives_lowering_and_wire[operation-1-1.0]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_compiler_json_contract::test_existing_numeric_equality_survives_lowering_and_wire[operation-0--0.0]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_compiler_json_contract::test_existing_numeric_equality_survives_lowering_and_wire[operation-1.0-1]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_compiler_json_contract::test_existing_numeric_equality_survives_lowering_and_wire[effect-1-1.0]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_compiler_json_contract::test_existing_numeric_equality_survives_lowering_and_wire[effect-0--0.0]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_compiler_json_contract::test_existing_numeric_equality_survives_lowering_and_wire[effect-1.0-1]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_compiler_json_contract::test_declared_bundle_order_remains_incidental",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_compiler_json_contract::test_ordered_abi_config_arrays_and_effect_multiplicity_stay_exact[inputs]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_compiler_json_contract::test_ordered_abi_config_arrays_and_effect_multiplicity_stay_exact[outputs]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_compiler_json_contract::test_ordered_abi_config_arrays_and_effect_multiplicity_stay_exact[config]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_compiler_json_contract::test_ordered_abi_config_arrays_and_effect_multiplicity_stay_exact[effect_config]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_compiler_json_contract::test_ordered_abi_config_arrays_and_effect_multiplicity_stay_exact[multiplicity]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_compiler_json_contract::test_existing_unequal_numbers_and_container_shapes_stay_unequal[1-1.5]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_compiler_json_contract::test_existing_unequal_numbers_and_container_shapes_stay_unequal[9007199254740993-9007199254740992.0]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_compiler_json_contract::test_existing_unequal_numbers_and_container_shapes_stay_unequal[1-1]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_compiler_json_contract::test_existing_unequal_numbers_and_container_shapes_stay_unequal[None-False]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_compiler_json_contract::test_existing_unequal_numbers_and_container_shapes_stay_unequal[left4-right4]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_compiler_json_contract::test_existing_unequal_numbers_and_container_shapes_stay_unequal[left5-right5]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_compiler_json_contract::test_wire_inventory_reordering_preserves_config_array_order",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_compiler_json_contract::test_fusion_rejects_boolean_number_change_in_initial_payload[lower-1-True]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_compiler_json_contract::test_fusion_rejects_boolean_number_change_in_initial_payload[lower-0-False]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_compiler_json_contract::test_fusion_rejects_boolean_number_change_in_initial_payload[lower-True-1]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_compiler_json_contract::test_fusion_rejects_boolean_number_change_in_initial_payload[lower-False-0]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_compiler_json_contract::test_fusion_rejects_boolean_number_change_in_initial_payload[lower-source4-changed4]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_compiler_json_contract::test_fusion_rejects_boolean_number_change_in_initial_payload[lower-source5-changed5]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_compiler_json_contract::test_fusion_rejects_boolean_number_change_in_initial_payload[wire-1-True]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_compiler_json_contract::test_fusion_rejects_boolean_number_change_in_initial_payload[wire-0-False]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_compiler_json_contract::test_fusion_rejects_boolean_number_change_in_initial_payload[wire-True-1]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_compiler_json_contract::test_fusion_rejects_boolean_number_change_in_initial_payload[wire-False-0]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_compiler_json_contract::test_fusion_rejects_boolean_number_change_in_initial_payload[wire-source4-changed4]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_compiler_json_contract::test_fusion_rejects_boolean_number_change_in_initial_payload[wire-source5-changed5]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_compiler_json_contract::test_fusion_keeps_initial_token_multiset_and_numeric_equivalence[left0-right0]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_compiler_json_contract::test_fusion_keeps_initial_token_multiset_and_numeric_equivalence[left1-right1]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_compiler_json_contract::test_fusion_keeps_initial_token_multiset_and_numeric_equivalence[left2-right2]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_compiler_json_contract::test_fusion_keeps_initial_token_multiset_and_numeric_equivalence[left3-right3]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_compiler_json_contract::test_fusion_keeps_multiplicity_payload_order_and_container_mismatches[left0-right0]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_compiler_json_contract::test_fusion_keeps_multiplicity_payload_order_and_container_mismatches[left1-right1]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_compiler_json_contract::test_fusion_keeps_multiplicity_payload_order_and_container_mismatches[left2-right2]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_compiler_json_contract::test_fusion_keeps_multiplicity_payload_order_and_container_mismatches[left3-right3]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_worker_schema_compat::test_main_v4_imports_without_dropping_socket_or_profile[None]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_worker_schema_compat::test_main_v4_imports_without_dropping_socket_or_profile[/tmp/legacy-main.sock]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_worker_schema_compat::test_plugin_v4_keeps_pinned_catalog_and_migrates_to_v5",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_worker_schema_compat::test_v4_hybrid_cannot_guess_between_independent_legacy_formats",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_worker_schema_compat::test_both_socket_formats_reject_non_string_paths[1-v4]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_worker_schema_compat::test_both_socket_formats_reject_non_string_paths[1-v5]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_worker_schema_compat::test_both_socket_formats_reject_non_string_paths[True-v4]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_worker_schema_compat::test_both_socket_formats_reject_non_string_paths[True-v5]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_worker_schema_compat::test_both_socket_formats_reject_non_string_paths[invalid2-v4]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_worker_schema_compat::test_both_socket_formats_reject_non_string_paths[invalid2-v5]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_worker_schema_compat::test_incomplete_plugin_authority_is_rejected[v4]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_worker_schema_compat::test_incomplete_plugin_authority_is_rejected[v5]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_worker_schema_compat::test_unknown_main_v4_field_is_not_silently_dropped",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_worker_schema_compat::test_v5_roundtrip_keeps_plugins_and_owner_identity_together",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_worker_schema_compat::test_v6_roundtrip_uses_only_parent_relative_path_references",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_worker_schema_compat::test_managed_bindings_use_additive_v7_v8_documents",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_public_compiler_consumes_typed_values_in_real_lowering_and_wire",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_author_input_is_detached_and_direct_constructor_rechecked",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_public_compiler_rejects_precise_author_errors[<lambda>-config_type_mismatch]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_public_compiler_rejects_precise_author_errors[<lambda>-type_mismatch]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_public_compiler_rejects_precise_author_errors[<lambda>-config_fields_mismatch]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_public_compiler_rejects_precise_author_errors[<lambda>-outcome_routes_incomplete]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_public_compiler_rejects_precise_author_errors[<lambda>-outcome_route_mismatch]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_public_compiler_rejects_precise_author_errors[<lambda>-guard_bool_required]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_public_compiler_rejects_precise_author_errors[<lambda>-invalid_arc_weight]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_public_compiler_rejects_precise_author_errors[<lambda>-unknown_arc_semantics]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_public_compiler_rejects_precise_author_errors[<lambda>-atomic_inventory_incomplete]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_public_compiler_rejects_precise_author_errors[<lambda>-typed_config_placeholder_required]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_public_compiler_rejects_precise_author_errors[<lambda>-division_by_zero]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_public_compiler_rejects_precise_author_errors[<lambda>-unit_mismatch]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_public_compiler_reports_capability_without_invoking_lower[<lambda>-mutable_read_set-NEW_VERSION_REQUIRED]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_public_compiler_reports_capability_without_invoking_lower[<lambda>-runtime_guard-EXACT_ADAPTER_REQUIRED]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_public_compiler_reports_capability_without_invoking_lower[<lambda>-author_module-UNSUPPORTED]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_public_compiler_reports_capability_without_invoking_lower[<lambda>-observe_fact-EXACT_ADAPTER_REQUIRED]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_public_compiler_reports_capability_without_invoking_lower[<lambda>-continuations-NEW_VERSION_REQUIRED]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_public_compiler_reports_capability_without_invoking_lower[<lambda>-closures-NEW_VERSION_REQUIRED]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_actual_host_lower_cannot_erase_occurrence_semantics[<lambda>0]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_actual_host_lower_cannot_erase_occurrence_semantics[<lambda>1]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_typed_lower_rejects_hidden_operation_and_transition",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_typed_int_config_never_inherits_legacy_numeric_coercion[lower]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_typed_int_config_never_inherits_legacy_numeric_coercion[fragment]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_typed_int_config_never_inherits_legacy_numeric_coercion[symbolic]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_typed_wire_rejects_coercible_python_containers_before_callbacks[tuple]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_typed_wire_rejects_coercible_python_containers_before_callbacks[subclass]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_typed_wire_rejects_coercible_python_containers_before_callbacks[nested_subclass]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_typed_compile_and_public_loader_preserve_local_recursive_schema_scopes",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_typed_remote_schema_references_reject_without_retrieval[compile]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_typed_remote_schema_references_reject_without_retrieval[wire]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_rehydration_checks_typed_proof_without_host_callbacks[author]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_rehydration_checks_typed_proof_without_host_callbacks[evaluations]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_rehydration_checks_typed_proof_without_host_callbacks[config]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_rehydration_checks_typed_proof_without_host_callbacks[arc]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_present_but_malformed_typed_proof_cannot_downgrade_to_legacy[None]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_present_but_malformed_typed_proof_cannot_downgrade_to_legacy[proof1]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_present_but_malformed_typed_proof_cannot_downgrade_to_legacy[proof2]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_unknown_reserved_typed_family_version_never_falls_back[rpnh_control_ir_v2-load_compiled_net]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_unknown_reserved_typed_family_version_never_falls_back[rpnh_control_ir_v2-load_compiled_control_net]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_unknown_reserved_typed_family_version_never_falls_back[rpnh_control_ir_v1\\n-load_compiled_net]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_unknown_reserved_typed_family_version_never_falls_back[rpnh_control_ir_v1\\n-load_compiled_control_net]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_explicit_typed_reader_requires_proof_while_legacy_default_stays_usable",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_typed_detection_never_calls_nonstring_key_comparison[root-load_compiled_net]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_typed_detection_never_calls_nonstring_key_comparison[root-load_compiled_control_net]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_typed_detection_never_calls_nonstring_key_comparison[source-load_compiled_net]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_typed_detection_never_calls_nonstring_key_comparison[source-load_compiled_control_net]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_typed_detection_never_calls_nonstring_key_comparison[constraints-load_compiled_net]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_typed_detection_never_calls_nonstring_key_comparison[constraints-load_compiled_control_net]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_atomic_registration_rejects_before_gateway_or_executor",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_existing_module_v1_without_typed_opt_in_remains_usable",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_legacy_host_fragment_validator_keeps_original_call_signature",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_all_seven_complete_calls_reach_explicit_backend_rejection[Q.segment_compact]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_all_seven_complete_calls_reach_explicit_backend_rejection[Q.length_call]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_all_seven_complete_calls_reach_explicit_backend_rejection[Q.pressure_call]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_all_seven_complete_calls_reach_explicit_backend_rejection[Q.normal_call]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_all_seven_complete_calls_reach_explicit_backend_rejection[C.request_summary]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_all_seven_complete_calls_reach_explicit_backend_rejection[N.adapter_call]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_all_seven_complete_calls_reach_explicit_backend_rejection[M.observe_existing]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-Q.segment_compact-0]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-Q.segment_compact-1]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-Q.segment_compact-2]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-Q.segment_compact-3]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-Q.segment_compact-4]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-Q.segment_compact-5]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-Q.segment_compact-6]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-Q.length_call-0]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-Q.length_call-1]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-Q.length_call-2]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-Q.length_call-3]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-Q.length_call-4]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-Q.length_call-5]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-Q.length_call-6]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-Q.pressure_call-0]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-Q.pressure_call-1]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-Q.pressure_call-2]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-Q.pressure_call-3]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-Q.pressure_call-4]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-Q.pressure_call-5]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-Q.pressure_call-6]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-Q.normal_call-0]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-Q.normal_call-1]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-Q.normal_call-2]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-Q.normal_call-3]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-Q.normal_call-4]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-Q.normal_call-5]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-Q.normal_call-6]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-C.request_summary-0]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-C.request_summary-1]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-C.request_summary-2]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-C.request_summary-3]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-C.request_summary-4]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-C.request_summary-5]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-C.request_summary-6]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-N.adapter_call-0]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-N.adapter_call-1]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-N.adapter_call-2]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-N.adapter_call-3]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-N.adapter_call-4]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-N.adapter_call-5]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-M.observe_existing-0]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-M.observe_existing-1]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-M.observe_existing-2]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-M.observe_existing-3]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[type-M.observe_existing-4]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-Q.segment_compact-0]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-Q.segment_compact-1]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-Q.segment_compact-2]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-Q.segment_compact-3]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-Q.segment_compact-4]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-Q.segment_compact-5]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-Q.segment_compact-6]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-Q.length_call-0]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-Q.length_call-1]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-Q.length_call-2]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-Q.length_call-3]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-Q.length_call-4]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-Q.length_call-5]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-Q.length_call-6]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-Q.pressure_call-0]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-Q.pressure_call-1]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-Q.pressure_call-2]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-Q.pressure_call-3]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-Q.pressure_call-4]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-Q.pressure_call-5]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-Q.pressure_call-6]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-Q.normal_call-0]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-Q.normal_call-1]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-Q.normal_call-2]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-Q.normal_call-3]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-Q.normal_call-4]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-Q.normal_call-5]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-Q.normal_call-6]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-C.request_summary-0]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-C.request_summary-1]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-C.request_summary-2]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-C.request_summary-3]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-C.request_summary-4]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-C.request_summary-5]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-C.request_summary-6]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-N.adapter_call-0]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-N.adapter_call-1]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-N.adapter_call-2]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-N.adapter_call-3]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-N.adapter_call-4]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-N.adapter_call-5]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-M.observe_existing-0]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-M.observe_existing-1]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-M.observe_existing-2]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-M.observe_existing-3]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[mode-M.observe_existing-4]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-Q.segment_compact-0]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-Q.segment_compact-1]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-Q.segment_compact-2]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-Q.segment_compact-3]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-Q.segment_compact-4]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-Q.segment_compact-5]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-Q.segment_compact-6]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-Q.length_call-0]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-Q.length_call-1]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-Q.length_call-2]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-Q.length_call-3]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-Q.length_call-4]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-Q.length_call-5]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-Q.length_call-6]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-Q.pressure_call-0]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-Q.pressure_call-1]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-Q.pressure_call-2]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-Q.pressure_call-3]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-Q.pressure_call-4]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-Q.pressure_call-5]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-Q.pressure_call-6]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-Q.normal_call-0]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-Q.normal_call-1]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-Q.normal_call-2]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-Q.normal_call-3]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-Q.normal_call-4]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-Q.normal_call-5]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-Q.normal_call-6]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-C.request_summary-0]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-C.request_summary-1]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-C.request_summary-2]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-C.request_summary-3]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-C.request_summary-4]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-C.request_summary-5]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-C.request_summary-6]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-N.adapter_call-0]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-N.adapter_call-1]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-N.adapter_call-2]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-N.adapter_call-3]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-N.adapter_call-4]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-N.adapter_call-5]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-M.observe_existing-0]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-M.observe_existing-1]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-M.observe_existing-2]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-M.observe_existing-3]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[source_path-M.observe_existing-4]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-Q.segment_compact-0]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-Q.segment_compact-1]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-Q.segment_compact-2]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-Q.segment_compact-3]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-Q.segment_compact-4]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-Q.segment_compact-5]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-Q.segment_compact-6]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-Q.length_call-0]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-Q.length_call-1]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-Q.length_call-2]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-Q.length_call-3]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-Q.length_call-4]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-Q.length_call-5]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-Q.length_call-6]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-Q.pressure_call-0]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-Q.pressure_call-1]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-Q.pressure_call-2]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-Q.pressure_call-3]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-Q.pressure_call-4]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-Q.pressure_call-5]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-Q.pressure_call-6]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-Q.normal_call-0]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-Q.normal_call-1]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-Q.normal_call-2]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-Q.normal_call-3]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-Q.normal_call-4]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-Q.normal_call-5]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-Q.normal_call-6]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-C.request_summary-0]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-C.request_summary-1]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-C.request_summary-2]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-C.request_summary-3]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-C.request_summary-4]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-C.request_summary-5]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-C.request_summary-6]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-N.adapter_call-0]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-N.adapter_call-1]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-N.adapter_call-2]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-N.adapter_call-3]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-N.adapter_call-4]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-N.adapter_call-5]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-M.observe_existing-0]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-M.observe_existing-1]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-M.observe_existing-2]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-M.observe_existing-3]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[default-M.observe_existing-4]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-Q.segment_compact-0]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-Q.segment_compact-1]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-Q.segment_compact-2]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-Q.segment_compact-3]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-Q.segment_compact-4]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-Q.segment_compact-5]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-Q.segment_compact-6]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-Q.length_call-0]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-Q.length_call-1]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-Q.length_call-2]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-Q.length_call-3]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-Q.length_call-4]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-Q.length_call-5]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-Q.length_call-6]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-Q.pressure_call-0]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-Q.pressure_call-1]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-Q.pressure_call-2]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-Q.pressure_call-3]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-Q.pressure_call-4]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-Q.pressure_call-5]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-Q.pressure_call-6]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-Q.normal_call-0]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-Q.normal_call-1]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-Q.normal_call-2]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-Q.normal_call-3]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-Q.normal_call-4]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-Q.normal_call-5]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-Q.normal_call-6]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-C.request_summary-0]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-C.request_summary-1]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-C.request_summary-2]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-C.request_summary-3]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-C.request_summary-4]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-C.request_summary-5]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-C.request_summary-6]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-N.adapter_call-0]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-N.adapter_call-1]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-N.adapter_call-2]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-N.adapter_call-3]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-N.adapter_call-4]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-N.adapter_call-5]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-M.observe_existing-0]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-M.observe_existing-1]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-M.observe_existing-2]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-M.observe_existing-3]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_46_call_inputs_is_checked_by_real_compiler[omission_allowed-M.observe_existing-4]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_35_call_returns_is_checked_by_real_compiler[required_payload_fields-Q.segment_compact-0]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_35_call_returns_is_checked_by_real_compiler[required_payload_fields-Q.segment_compact-1]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_35_call_returns_is_checked_by_real_compiler[required_payload_fields-Q.segment_compact-2]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_35_call_returns_is_checked_by_real_compiler[required_payload_fields-Q.segment_compact-3]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_35_call_returns_is_checked_by_real_compiler[required_payload_fields-Q.segment_compact-4]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_35_call_returns_is_checked_by_real_compiler[required_payload_fields-Q.length_call-0]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_35_call_returns_is_checked_by_real_compiler[required_payload_fields-Q.length_call-1]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_35_call_returns_is_checked_by_real_compiler[required_payload_fields-Q.length_call-2]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_35_call_returns_is_checked_by_real_compiler[required_payload_fields-Q.length_call-3]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_35_call_returns_is_checked_by_real_compiler[required_payload_fields-Q.length_call-4]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_35_call_returns_is_checked_by_real_compiler[required_payload_fields-Q.pressure_call-0]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_35_call_returns_is_checked_by_real_compiler[required_payload_fields-Q.pressure_call-1]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_35_call_returns_is_checked_by_real_compiler[required_payload_fields-Q.pressure_call-2]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_35_call_returns_is_checked_by_real_compiler[required_payload_fields-Q.pressure_call-3]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_35_call_returns_is_checked_by_real_compiler[required_payload_fields-Q.pressure_call-4]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_35_call_returns_is_checked_by_real_compiler[required_payload_fields-Q.normal_call-0]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_35_call_returns_is_checked_by_real_compiler[required_payload_fields-Q.normal_call-1]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_35_call_returns_is_checked_by_real_compiler[required_payload_fields-Q.normal_call-2]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_35_call_returns_is_checked_by_real_compiler[required_payload_fields-Q.normal_call-3]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_35_call_returns_is_checked_by_real_compiler[required_payload_fields-Q.normal_call-4]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_35_call_returns_is_checked_by_real_compiler[required_payload_fields-C.request_summary-0]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_35_call_returns_is_checked_by_real_compiler[required_payload_fields-C.request_summary-1]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_35_call_returns_is_checked_by_real_compiler[required_payload_fields-C.request_summary-2]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_35_call_returns_is_checked_by_real_compiler[required_payload_fields-C.request_summary-3]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_35_call_returns_is_checked_by_real_compiler[required_payload_fields-C.request_summary-4]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_35_call_returns_is_checked_by_real_compiler[required_payload_fields-N.adapter_call-0]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_35_call_returns_is_checked_by_real_compiler[required_payload_fields-N.adapter_call-1]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_35_call_returns_is_checked_by_real_compiler[required_payload_fields-N.adapter_call-2]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_35_call_returns_is_checked_by_real_compiler[required_payload_fields-N.adapter_call-3]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_35_call_returns_is_checked_by_real_compiler[required_payload_fields-N.adapter_call-4]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_35_call_returns_is_checked_by_real_compiler[required_payload_fields-M.observe_existing-0]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_35_call_returns_is_checked_by_real_compiler[required_payload_fields-M.observe_existing-1]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_35_call_returns_is_checked_by_real_compiler[required_payload_fields-M.observe_existing-2]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_35_call_returns_is_checked_by_real_compiler[required_payload_fields-M.observe_existing-3]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_35_call_returns_is_checked_by_real_compiler[required_payload_fields-M.observe_existing-4]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_destination-Q.segment_compact-0]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_destination-Q.segment_compact-1]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_destination-Q.segment_compact-2]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_destination-Q.segment_compact-3]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_destination-Q.segment_compact-4]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_destination-Q.length_call-0]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_destination-Q.length_call-1]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_destination-Q.length_call-2]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_destination-Q.length_call-3]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_destination-Q.length_call-4]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_destination-Q.pressure_call-0]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_destination-Q.pressure_call-1]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_destination-Q.pressure_call-2]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_destination-Q.pressure_call-3]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_destination-Q.pressure_call-4]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_destination-Q.normal_call-0]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_destination-Q.normal_call-1]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_destination-Q.normal_call-2]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_destination-Q.normal_call-3]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_destination-Q.normal_call-4]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_destination-C.request_summary-0]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_destination-C.request_summary-1]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_destination-C.request_summary-2]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_destination-C.request_summary-3]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_destination-C.request_summary-4]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_destination-N.adapter_call-0]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_destination-N.adapter_call-1]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_destination-N.adapter_call-2]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_destination-N.adapter_call-3]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_destination-N.adapter_call-4]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_destination-M.observe_existing-0]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_destination-M.observe_existing-1]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_destination-M.observe_existing-2]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_destination-M.observe_existing-3]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_destination-M.observe_existing-4]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_case_updates-Q.segment_compact-0]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_case_updates-Q.segment_compact-1]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_case_updates-Q.segment_compact-2]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_case_updates-Q.segment_compact-3]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_case_updates-Q.segment_compact-4]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_case_updates-Q.length_call-0]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_case_updates-Q.length_call-1]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_case_updates-Q.length_call-2]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_case_updates-Q.length_call-3]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_case_updates-Q.length_call-4]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_case_updates-Q.pressure_call-0]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_case_updates-Q.pressure_call-1]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_case_updates-Q.pressure_call-2]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_case_updates-Q.pressure_call-3]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_case_updates-Q.pressure_call-4]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_case_updates-Q.normal_call-0]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_case_updates-Q.normal_call-1]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_case_updates-Q.normal_call-2]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_case_updates-Q.normal_call-3]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_case_updates-Q.normal_call-4]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_case_updates-C.request_summary-0]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_case_updates-C.request_summary-1]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_case_updates-C.request_summary-2]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_case_updates-C.request_summary-3]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_case_updates-C.request_summary-4]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_case_updates-N.adapter_call-0]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_case_updates-N.adapter_call-1]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_case_updates-N.adapter_call-2]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_case_updates-N.adapter_call-3]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_case_updates-N.adapter_call-4]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_case_updates-M.observe_existing-0]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_case_updates-M.observe_existing-1]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_case_updates-M.observe_existing-2]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_case_updates-M.observe_existing-3]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_each_of_35_call_returns_is_checked_by_real_compiler[parent_case_updates-M.observe_existing-4]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_missing_call_port_or_return_never_becomes_backend_success[inputs-Q.segment_compact]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_missing_call_port_or_return_never_becomes_backend_success[inputs-Q.length_call]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_missing_call_port_or_return_never_becomes_backend_success[inputs-Q.pressure_call]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_missing_call_port_or_return_never_becomes_backend_success[inputs-Q.normal_call]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_missing_call_port_or_return_never_becomes_backend_success[inputs-C.request_summary]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_missing_call_port_or_return_never_becomes_backend_success[inputs-N.adapter_call]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_missing_call_port_or_return_never_becomes_backend_success[inputs-M.observe_existing]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_missing_call_port_or_return_never_becomes_backend_success[returns-Q.segment_compact]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_missing_call_port_or_return_never_becomes_backend_success[returns-Q.length_call]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_missing_call_port_or_return_never_becomes_backend_success[returns-Q.pressure_call]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_missing_call_port_or_return_never_becomes_backend_success[returns-Q.normal_call]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_missing_call_port_or_return_never_becomes_backend_success[returns-C.request_summary]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_missing_call_port_or_return_never_becomes_backend_success[returns-N.adapter_call]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_missing_call_port_or_return_never_becomes_backend_success[returns-M.observe_existing]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_control_ir_compiler::test_catalog_carries_all_seven_46_35_and_exact_additional_context",
+          "outcome": "passed"
+        }
+      ]
+    },
+    {
+      "name": "ordinary-revision-accepted",
+      "counts": {
+        "passed": 1,
+        "failed": 0,
+        "error": 0,
+        "skipped": 0
+      },
+      "sentinel_attempts": 0,
+      "cases": [
+        {
+          "id": "tests.test_local_takeover_ordinary_revision::test_ordinary_revision_success_has_legacy_unmarked_delta",
+          "outcome": "passed"
+        }
+      ]
+    },
+    {
+      "name": "registry-regression",
+      "counts": {
+        "passed": 177,
+        "failed": 0,
+        "error": 0,
+        "skipped": 0
+      },
+      "sentinel_attempts": 0,
+      "cases": [
+        {
+          "id": "tests.test_parent_child_core::test_real_parent_causal_chain_is_provisional",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_parent_child_core::test_bound_origin_true_admission_start_success",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_parent_child_core::test_parent_pn_declared_prerequisites_not_host_flags[values0]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_parent_child_core::test_parent_pn_declared_prerequisites_not_host_flags[values1]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_parent_child_core::test_parent_pn_declared_prerequisites_not_host_flags[values2]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_parent_child_core::test_parent_pn_declared_prerequisites_not_host_flags[values3]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_parent_child_core::test_no_native_evidence_constructor_or_json_permission",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_parent_child_core::test_parent_commit_rejects_mutated_native_closure[start_id]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_parent_child_core::test_parent_commit_rejects_mutated_native_closure[generation]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_parent_child_core::test_parent_commit_rejects_mutated_native_closure[lease]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_parent_child_core::test_parent_commit_rejects_mutated_native_closure[parent_run]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_parent_child_core::test_parent_commit_rejects_mutated_native_closure[slot]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_parent_child_core::test_parent_commit_rejects_mutated_native_closure[target]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_parent_child_core::test_parent_commit_rejects_mutated_native_closure[material]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_parent_child_core::test_intent_replay_rechecks_live_entry_before_exact_replay[stop]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_parent_child_core::test_intent_replay_rechecks_live_entry_before_exact_replay[new_writer]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_parent_child_core::test_acceptance_direct_exact_replay_requires_native_boundary",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_parent_child_core::test_parent_unknown_completion_cannot_release_slot",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_parent_child_core::test_parent_start_payload_is_fully_rechecked",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_parent_child_core::test_child_no_writable_reentry_zero_epoch_change",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_parent_child_core::test_child_direct_closed_authority_cannot_revive",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_parent_child_core::test_child_origin_cannot_be_cloned_by_raw_transaction",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_parent_child_core::test_child_missing_origin_arc_rejected_at_original_adoption",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_parent_child_core::test_child_initial_adoption_replay_and_successor_rejection",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_parent_child_core::test_protocol_marker_pair_required_and_bound_schema_not_public",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_parent_child_core::test_child_first_start_and_admission_replay_after_durable_stop_rejected",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_parent_child_core::test_child_started_completion_keeps_draining_without_durable_stop",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_parent_child_core::test_generic_raw_transaction_cannot_mint_protected_capability",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_parent_child_core::test_bound_registered_completion_then_one_success_without_remint",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_parent_child_core::test_protected_weak_edges_rejected_before_commit[parent_bound_bootstrap/v1]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_parent_child_core::test_protected_weak_edges_rejected_before_commit[parent_bound_origin/v1]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_acceptance_history::test_history_of_live_provisional_acceptance",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_acceptance_history::test_real_later_lifecycle_preserves_history_without_live_permission[durable_stop]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_acceptance_history::test_real_later_lifecycle_preserves_history_without_live_permission[new_writer]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_acceptance_history::test_origin_assertions_do_not_replace_original_evidence[source_id]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_acceptance_history::test_origin_assertions_do_not_replace_original_evidence[binding_ref]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_acceptance_history::test_origin_assertions_do_not_replace_original_evidence[run_ref]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_acceptance_history::test_origin_assertions_do_not_replace_original_evidence[task_ref]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_acceptance_history::test_origin_assertions_do_not_replace_original_evidence[slot_id]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_acceptance_history::test_origin_assertions_do_not_replace_original_evidence[acceptance_ref]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_acceptance_history::test_origin_assertions_do_not_replace_original_evidence[transaction_id]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_acceptance_history::test_origin_assertions_do_not_replace_original_evidence[event_id]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_acceptance_history::test_origin_assertions_do_not_replace_original_evidence[commit_ordinal]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_acceptance_history::test_origin_assertions_do_not_replace_original_evidence[acceptance_sha256]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_acceptance_history::test_origin_assertions_do_not_replace_original_evidence[intent_sha256]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_acceptance_history::test_origin_assertions_do_not_replace_original_evidence[initial_declaration_digest]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_acceptance_history::test_copied_json_and_asserted_booleans_are_not_history_authority[value0]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_acceptance_history::test_copied_json_and_asserted_booleans_are_not_history_authority[True]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_acceptance_history::test_copied_json_and_asserted_booleans_are_not_history_authority[value2]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_acceptance_history::test_copied_json_and_asserted_booleans_are_not_history_authority[value3]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_acceptance_history::test_copied_json_and_asserted_booleans_are_not_history_authority[value4]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_acceptance_history::test_valid_history_never_becomes_receipt_native_evidence_or_body_export",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_acceptance_history::test_original_registry_damage_fails_closed[transaction_status]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_acceptance_history::test_original_registry_damage_fails_closed[transaction_command]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_acceptance_history::test_original_registry_damage_fails_closed[transaction_epoch]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_acceptance_history::test_original_registry_damage_fails_closed[outbox_order]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_acceptance_history::test_original_registry_damage_fails_closed[commit_count]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_acceptance_history::test_original_registry_damage_fails_closed[commit_schema]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_acceptance_history::test_original_registry_damage_fails_closed[record_schema]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_acceptance_history::test_original_registry_damage_fails_closed[record_payload]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_acceptance_history::test_original_registry_damage_fails_closed[record_producer]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_acceptance_history::test_original_registry_damage_fails_closed[record_command]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_acceptance_history::test_original_registry_damage_fails_closed[object_schema]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_acceptance_history::test_original_registry_damage_fails_closed[object_storage]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_acceptance_history::test_original_registry_damage_fails_closed[object_metadata]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_acceptance_history::test_original_registry_damage_fails_closed[member_object_missing]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_acceptance_history::test_original_registry_damage_fails_closed[member_event_missing]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_acceptance_history::test_original_registry_damage_fails_closed[member_relation_missing]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_acceptance_history::test_original_registry_damage_fails_closed[member_transaction_missing]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_acceptance_history::test_original_registry_damage_fails_closed[member_wrong_tx]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_acceptance_history::test_original_registry_damage_fails_closed[root_net]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_acceptance_history::test_original_registry_damage_fails_closed[root_opening]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_acceptance_history::test_original_registry_damage_fails_closed[relation_weak]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_acceptance_history::test_original_registry_damage_fails_closed[relation_source]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_acceptance_history::test_original_registry_damage_fails_closed[relation_target]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_acceptance_history::test_original_registry_damage_fails_closed[relation_producer]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_acceptance_history::test_original_registry_damage_fails_closed[start_payload]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_acceptance_history::test_original_registry_damage_fails_closed[start_producer]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_acceptance_history::test_original_registry_damage_fails_closed[source_metadata]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_acceptance_history::test_original_registry_damage_fails_closed[current_stream_head]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_acceptance_history::test_original_registry_damage_fails_closed[at_cut_authority]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_acceptance_history::test_original_registry_damage_fails_closed[later_slot_conflict]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_acceptance_history::test_original_immutable_bytes_are_required[acceptance]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_acceptance_history::test_original_immutable_bytes_are_required[intent]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_acceptance_history::test_original_immutable_bytes_are_required[request]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_acceptance_history::test_fresh_read_does_not_trust_prior_reader_memo",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_acceptance_history::test_generic_terminal_ready_is_not_a_fake_reachable_closed_h7_path",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_acceptance_history::test_every_h7_persisted_event_has_its_original_fixed_contract[command_id-object_version_published/v1]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_acceptance_history::test_every_h7_persisted_event_has_its_original_fixed_contract[command_id-relation_published/v1]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_acceptance_history::test_every_h7_persisted_event_has_its_original_fixed_contract[command_id-transaction_committed/v1]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_acceptance_history::test_every_h7_persisted_event_has_its_original_fixed_contract[idempotency_key-object_version_published/v1]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_acceptance_history::test_every_h7_persisted_event_has_its_original_fixed_contract[idempotency_key-relation_published/v1]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_acceptance_history::test_every_h7_persisted_event_has_its_original_fixed_contract[idempotency_key-transaction_committed/v1]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_acceptance_history::test_every_h7_persisted_event_has_its_original_fixed_contract[correlation_id-object_version_published/v1]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_acceptance_history::test_every_h7_persisted_event_has_its_original_fixed_contract[correlation_id-relation_published/v1]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_acceptance_history::test_every_h7_persisted_event_has_its_original_fixed_contract[correlation_id-transaction_committed/v1]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_acceptance_history::test_every_h7_persisted_event_has_its_original_fixed_contract[causation_event_id-object_version_published/v1]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_acceptance_history::test_every_h7_persisted_event_has_its_original_fixed_contract[causation_event_id-relation_published/v1]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_acceptance_history::test_every_h7_persisted_event_has_its_original_fixed_contract[causation_event_id-transaction_committed/v1]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_acceptance_history::test_every_h7_persisted_event_has_its_original_fixed_contract[parent_event_ids_json-object_version_published/v1]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_acceptance_history::test_every_h7_persisted_event_has_its_original_fixed_contract[parent_event_ids_json-relation_published/v1]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_acceptance_history::test_every_h7_persisted_event_has_its_original_fixed_contract[parent_event_ids_json-transaction_committed/v1]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_acceptance_history::test_every_h7_persisted_event_has_its_original_fixed_contract[producer_principal-object_version_published/v1]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_acceptance_history::test_every_h7_persisted_event_has_its_original_fixed_contract[producer_principal-relation_published/v1]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_acceptance_history::test_every_h7_persisted_event_has_its_original_fixed_contract[producer_principal-transaction_committed/v1]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_acceptance_history::test_original_start_transaction_cannot_be_replaced_by_payload_assertions[outbox]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_acceptance_history::test_original_start_transaction_cannot_be_replaced_by_payload_assertions[commit_count]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_acceptance_history::test_original_start_transaction_cannot_be_replaced_by_payload_assertions[schema]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_acceptance_history::test_original_start_transaction_cannot_be_replaced_by_payload_assertions[member]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_acceptance_history::test_original_start_transaction_cannot_be_replaced_by_payload_assertions[current_head]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_acceptance_history::test_historical_member_inventory_rejects_orphan_original_rows[object]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_acceptance_history::test_historical_member_inventory_rejects_orphan_original_rows[event]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_acceptance_history::test_historical_member_inventory_rejects_orphan_original_rows[relation]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_acceptance_history::test_historical_member_inventory_rejects_orphan_original_rows[transaction]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_acceptance_history::test_original_start_fixed_envelope_is_not_inferred_from_payload[command_id]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_acceptance_history::test_original_start_fixed_envelope_is_not_inferred_from_payload[idempotency_key]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_acceptance_history::test_original_start_fixed_envelope_is_not_inferred_from_payload[correlation_id]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_acceptance_history::test_original_start_fixed_envelope_is_not_inferred_from_payload[causation_event_id]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_acceptance_history::test_original_start_fixed_envelope_is_not_inferred_from_payload[parent_event_ids_json]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_acceptance_history::test_original_start_fixed_envelope_is_not_inferred_from_payload[stream_id]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_acceptance_history::test_original_start_fixed_envelope_is_not_inferred_from_payload[aggregate_type]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_acceptance_history::test_original_start_fixed_envelope_is_not_inferred_from_payload[producer_principal]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_acceptance_history::test_original_start_fixed_envelope_is_not_inferred_from_payload[task_control_sequence]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_acceptance_history::test_broken_sqlite_source_is_fail_closed_without_uncaught_exception",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_acceptance_history::test_opaque_business_reference_shapes_do_not_create_authority[version-direct-public_configuration]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_acceptance_history::test_opaque_business_reference_shapes_do_not_create_authority[version-direct-definition]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_acceptance_history::test_opaque_business_reference_shapes_do_not_create_authority[version-list-public_configuration]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_acceptance_history::test_opaque_business_reference_shapes_do_not_create_authority[version-list-definition]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_acceptance_history::test_opaque_business_reference_shapes_do_not_create_authority[version-map-public_configuration]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_acceptance_history::test_opaque_business_reference_shapes_do_not_create_authority[version-map-definition]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_acceptance_history::test_opaque_business_reference_shapes_do_not_create_authority[resource-direct-public_configuration]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_acceptance_history::test_opaque_business_reference_shapes_do_not_create_authority[resource-direct-definition]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_acceptance_history::test_opaque_business_reference_shapes_do_not_create_authority[resource-list-public_configuration]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_acceptance_history::test_opaque_business_reference_shapes_do_not_create_authority[resource-list-definition]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_acceptance_history::test_opaque_business_reference_shapes_do_not_create_authority[resource-map-public_configuration]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_acceptance_history::test_opaque_business_reference_shapes_do_not_create_authority[resource-map-definition]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_acceptance_history::test_schema_declared_real_authority_refs_still_require_original_bytes[claimed_input_refs]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_acceptance_history::test_schema_declared_real_authority_refs_still_require_original_bytes[content_schema_authority_ref]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_acceptance_history::test_schema_declared_array_and_map_refs_are_followed_but_free_data_is_not",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_static_lease_reads::test_static_lease_read_admits",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_static_lease_reads::test_static_read_full_lifecycle_preserves_exact_token[False]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_static_lease_reads::test_static_read_full_lifecycle_preserves_exact_token[True]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_static_lease_reads::test_parallel_same_transition_and_successor_reconstruction",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_static_lease_reads::test_reference_only_transition_is_finite_and_retained",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_static_lease_reads::test_ordinary_read_still_consumes_and_returns[False]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_static_lease_reads::test_ordinary_read_still_consumes_and_returns[True]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_static_lease_reads::test_direct_admission_rejects_invalid_reference_claim[missing]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_static_lease_reads::test_direct_admission_rejects_invalid_reference_claim[consume_reference]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_static_lease_reads::test_direct_admission_rejects_invalid_reference_claim[missing_consume]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_static_lease_reads::test_direct_admission_rejects_invalid_reference_claim[wrong_logical]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_static_lease_reads::test_direct_admission_rejects_invalid_reference_claim[foreign]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_static_lease_reads::test_direct_admission_rejects_invalid_reference_claim[duplicate]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_static_lease_reads::test_transaction_revalidates_claim_beyond_public_api[missing_reference_index]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_static_lease_reads::test_transaction_revalidates_claim_beyond_public_api[wrong_logical]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_static_lease_reads::test_transaction_revalidates_claim_beyond_public_api[empty_consumed]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_static_lease_reads::test_weighted_references_require_exact_declared_quantity",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_static_lease_reads::test_extra_static_reference_is_rejected_instead_of_widening_read",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_static_lease_reads::test_two_transitions_share_reference_with_independent_control_inputs",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_static_lease_reads::test_reference_alone_does_not_authorize_dynamic_resource_access",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_static_lease_reads::test_completion_recovery_preserves_static_reference",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_static_lease_interactions::test_static_and_variable_reads_share_exact_reference_union[same-token-deduplicated-static-and-variable]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_static_lease_interactions::test_static_and_variable_reads_share_exact_reference_union[same-token-deduplicated-legacy-variable-only]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_static_lease_interactions::test_static_and_variable_reads_share_exact_reference_union[different-pools-static-and-variable]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_static_lease_interactions::test_static_and_variable_reads_share_exact_reference_union[different-pools-legacy-variable-only]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_static_lease_interactions::test_static_read_does_not_change_variable_produce_consume_return[static-and-variable]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_static_lease_interactions::test_static_read_does_not_change_variable_produce_consume_return[legacy-variable-only]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_static_lease_interactions::test_static_reference_survives_declared_reset_effect_settlement",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_static_lease_interactions::test_static_read_does_not_authorize_reset_of_lease_pool",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_static_lease_interactions::test_static_reference_still_blocks_immediate_graph_replacement",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_static_lease_interactions::test_static_read_does_not_change_legal_variable_edit_consume_return[static-and-variable]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_static_lease_interactions::test_static_read_does_not_change_legal_variable_edit_consume_return[legacy-variable-only]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_static_lease_interactions::test_ordinary_read_without_any_lease_arc_keeps_consume_return[data]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_static_lease_interactions::test_ordinary_read_without_any_lease_arc_keeps_consume_return[control]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_static_lease_interactions::test_removing_static_arc_adopts_after_drain_and_maps_lease_authority",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_static_lease_interactions::test_static_read_can_select_another_token_beside_same_pool_variable_read",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_static_lease_interactions::test_static_weight_one_rejects_two_unrelated_same_pool_references",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_static_lease_exact_selection::test_exact_valid_later_carrier_is_not_rejected_by_dead_default_binding",
+          "outcome": "passed"
+        }
+      ]
+    }
+  ],
+  "final_unique_total": 768,
+  "final_unique_passed": 768,
+  "final_unique_failed": 0,
+  "final_unique_skipped": 0,
+  "independent_new_cases": 46,
+  "author_overlap_cases": 721,
+  "additional_ordinary_revision_case": 1,
+  "early_executions_added_to_final_count": false,
+  "deselected_native_subprocess_cases": 1,
+  "extra_native_net_operations_cases_not_collected": 6
+}

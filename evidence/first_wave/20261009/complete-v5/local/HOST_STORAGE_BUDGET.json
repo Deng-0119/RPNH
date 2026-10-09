@@ -1,0 +1,10 @@
+{
+  "limiting_filesystem": "Windows D: backing WSL virtual disk",
+  "host_df": "Filesystem        1B-blocks         Used   Available Use% Mounted on\nD:\\            807072165888 753049948160 54022217728  94% /mnt/d\n",
+  "do_not_use_virtual_ext4_available_as_host_budget": true,
+  "task_generated_peak_ceiling_bytes": 8589934592,
+  "new_allocations_goal_bytes": 2147483648,
+  "heavy_test_concurrency": 2,
+  "expanded_temp_policy": "Byte-verified local archives; preserve original bytes before removing only this task temp trees",
+  "host_disk_compaction": "NOT_RUN; virtual disk file untouched; releasing ext4 files does not claim equal Windows host space recovery"
+}

@@ -1,0 +1,20 @@
+{
+  "status": "PASS",
+  "source_files": 12,
+  "production_files": [
+    "cpn/frontend/codex_app_server.py"
+  ],
+  "old_blobs": 5,
+  "patch_sha256": "3be0de65edb5a4f68579f115f5072bacc3e4fe4ffefeba96b226e45cbcab8a8d",
+  "git_apply_check": true,
+  "fresh_git_apply": true,
+  "exact_final_bytes": true,
+  "h1_and_h2a_path_overlap": false,
+  "h1_target_old_blobs_match": true,
+  "all_junit_parse_and_outcome_preservation": true,
+  "product_tests_run_during_packaging": false,
+  "native_tests_run_during_packaging": false,
+  "combined_h1_h2a_codec_tests": "NOTRUN",
+  "model_calls_during_packaging": 0,
+  "contents_policy": "Whitelist sources, old blobs, minimal fixtures/licenses, prepared reports and evidence only; no DB, secrets, user config or private internal notes."
+}
