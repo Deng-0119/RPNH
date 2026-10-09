@@ -6,8 +6,8 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: independent-registry-reader.md
-  revision: "2026-10-07.1"
-  status: implementation-candidate
+  revision: "2026-10-09.1"
+  status: implemented
   basis: "explicit trusted local HOST; existing owner-issued authority"
 ---
 
@@ -65,6 +65,82 @@ CLI 从 OS 派生 caller 身份，不接受请求传入 principal、callback、�
 不会迁移页面。多源结果不是全局原子快照。源不可用、字段未披露、unknown
 和记录不存在保持区别。query 不发布 Observation，也不改变 Registry 事实；
 SQLite 只读 WAL sidecar 行为不冒充规范事实写入。
+
+## 用 Python 查询单个产物来源
+
+同一会话还提供固定的 `product_origin_v1` 查询，支持 canonical `petri_output`、
+`workspace_write` resource 根和精确 `operation_result/v1` 根。通过已有授权的引用或
+reader 取得带 source 身份的精确根；查询不按名称/路径查找，也不推断 source。
+Resource 根使用 `SourceQualifiedResourceRef` 包装原两字段 `ResourceVersionRef`；
+result 根使用 `SourceQualifiedVersionRef` 包装精确 typed `VersionRef`。
+
+以下应用函数接收已授权的 root 和可信配置路径。`consume_page` 是应用自己的 callback。
+示例请求默认三个 includes，保持已捕获 cut，并在每次续页时重复完整请求：
+
+```python
+from cpn.rpnh.collaboration import open_read_host_session
+
+
+def read_product_origin(host_config_path, root, consume_page):
+    with open_read_host_session(host_config_path) as session:
+        cut = session.capture_cut(root.source_id)
+        request = {
+            "root": root,
+            "at_cut": cut,
+            "include": None,
+            "page_size": 20,
+        }
+        cursor = None
+        while True:
+            page = session.query_product_origin_v1(**request, cursor=cursor)
+            consume_page(page)
+            cursor = page["continuation"]
+            if cursor is None:
+                break
+```
+
+`include=None` 按顺序包含 `producer_execution`、`start_inputs`、`claims`。显式页大小
+`20` 要求 session 最大值至少为 20；HOST 限制可能更严时，可用 `page_size=None`
+选择默认 `min(20, effective maximum)`。Profile 的有效最大值是
+`min(100, session.limits.max_page_size)`。循环中不得更改 page size 或重新捕获 cut。
+等价便捷函数为 `query_product_origin_v1(session, root, cut, include=None,
+page_size=None, cursor=None)`。
+
+仅需生产者证明时，使用已经打开的 session 和它签发的 cut：
+
+```python
+def read_producer_only(session, root, cut):
+    return session.query_product_origin_v1(
+        root, cut, include=("producer_execution",)
+    )
+```
+
+这会返回完整六字段 `root_proof`，不返回行或 continuation；也不查找 Start 或枚举
+claim token/消费情况。只有需要相应关系且现有 grant 允许其固定字段时，才另加
+`start_inputs` 或 `claims`。默认 includes 需要两组权限；查询不会静默丢弃未授权关系。
+所有请求字段权限在对象存在性或依赖完整性检查前预检。
+精确字段清单见[会话参考](../reference/registry-read-sessions_ZH.md)。
+
+生产者证明验证必需的 publication、admission、completion、settlement 闭包。
+Resource 的 `root_role="registered_output"` 还表示它是 canonical result 输出列表的精确
+成员。非成员只有在同样完整闭包成立后才能标记为 `invocation_produced_resource`；
+result 根的角色是 `operation_result`。Result 根不需要输出列表权限，也不展开 outputs。
+
+Start 行保留原始位置及实际输入 resource 版本，包括 substitution 和重复 resource。
+Claim 行区分 consumed 与 non-consuming claims，resource 可以为 null。披露 claim 的
+resource 引用不授权读取目标。这些行不读取业务正文，也不声称输入内容被实际阅读或影响
+了模型。
+
+第一页之前，全部请求 candidate 和 endpoint 已完成校验。Partial coverage 只表示已验证
+行尚未交付完，不表示证明缺失或扫描失败。每页都重复 proof。Cursor 仅在本 session 内
+有效，共用 index-query 槽预算，不能与 index cursor 互换或用于已变更请求。重放复用
+已验证 rows，但仍在序列化后检查当前权限和到期时间。
+
+本查询范围有限且为单 source，不枚举递归祖先、其他 outputs、工具调用因果或内容影响。
+不支持的 include 返回 `UNSUPPORTED_RELATION`；合法 changed-net settlement 返回
+`UNSUPPORTED_SETTLEMENT_SHAPE`。晚 promotion 不改写旧 cut，历史读取仍要求当前权限。
+必要 proof 或单行无法放入有界响应时返回 `LIMIT_EXCEEDED`，不先返回前半成功。
+此 Python API 不新增比较查看器路由、CLI origin 命令、owner 操作或 Registry 事实写入。
 
 ## 比较和验证边界
 

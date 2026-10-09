@@ -1,0 +1,948 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "rpnh/product_origin_page/v1",
+  "title": "Fixed product-origin page",
+  "description": "Finite authorized exact-root evidence at one session-issued SourceCut. Structural validation does not grant access, prove same-source identities, validate closure, or establish semantic influence. The session enforces those identity and delivery conditions.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "profile",
+    "contract_revision",
+    "root",
+    "source_cut",
+    "access_revision",
+    "root_proof",
+    "rows",
+    "coverage",
+    "continuation"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "rpnh/product_origin_page/v1"
+    },
+    "profile": {
+      "const": "product_origin_v1"
+    },
+    "contract_revision": {
+      "type": "integer",
+      "const": 2
+    },
+    "root": {
+      "oneOf": [
+        {
+          "$ref": "#/definitions/resource_ref"
+        },
+        {
+          "$ref": "#/definitions/operation_result_ref"
+        }
+      ]
+    },
+    "source_cut": {
+      "$ref": "#/definitions/source_cut"
+    },
+    "access_revision": {
+      "type": "string",
+      "minLength": 1
+    },
+    "root_proof": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "producer_invocation_ref",
+        "transition_firing_ref",
+        "firing_completion_ref",
+        "operation_result_ref",
+        "operation_binding_ref",
+        "root_role"
+      ],
+      "properties": {
+        "producer_invocation_ref": {
+          "$ref": "#/definitions/invocation_ref"
+        },
+        "transition_firing_ref": {
+          "$ref": "#/definitions/transition_firing_ref"
+        },
+        "firing_completion_ref": {
+          "$ref": "#/definitions/firing_completion_ref"
+        },
+        "operation_result_ref": {
+          "$ref": "#/definitions/operation_result_ref"
+        },
+        "operation_binding_ref": {
+          "$ref": "#/definitions/operation_binding_ref"
+        },
+        "root_role": {
+          "enum": [
+            "operation_result",
+            "registered_output",
+            "invocation_produced_resource"
+          ]
+        }
+      }
+    },
+    "rows": {
+      "type": "array",
+      "maxItems": 100,
+      "items": {
+        "oneOf": [
+          {
+            "$ref": "#/definitions/start_input"
+          },
+          {
+            "$ref": "#/definitions/claim"
+          }
+        ]
+      }
+    },
+    "coverage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "scope",
+        "state",
+        "relations"
+      ],
+      "properties": {
+        "scope": {
+          "const": "authorized_root_at_cut"
+        },
+        "state": {
+          "enum": [
+            "partial",
+            "complete"
+          ]
+        },
+        "relations": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "producer_execution",
+            "start_inputs",
+            "claims",
+            "direct_derivations",
+            "calls_in_execution",
+            "observed_reads",
+            "formal_access",
+            "declarations",
+            "parent_child",
+            "recursive_ancestors",
+            "content_influence"
+          ],
+          "properties": {
+            "producer_execution": {
+              "$ref": "#/definitions/complete_relation"
+            },
+            "start_inputs": {
+              "oneOf": [
+                {
+                  "$ref": "#/definitions/verified_relation"
+                },
+                {
+                  "$ref": "#/definitions/not_in_profile"
+                }
+              ]
+            },
+            "claims": {
+              "oneOf": [
+                {
+                  "$ref": "#/definitions/verified_relation"
+                },
+                {
+                  "$ref": "#/definitions/not_in_profile"
+                }
+              ]
+            },
+            "direct_derivations": {
+              "$ref": "#/definitions/not_in_profile"
+            },
+            "calls_in_execution": {
+              "$ref": "#/definitions/not_in_profile"
+            },
+            "observed_reads": {
+              "$ref": "#/definitions/not_in_profile"
+            },
+            "formal_access": {
+              "$ref": "#/definitions/not_in_profile"
+            },
+            "declarations": {
+              "$ref": "#/definitions/not_in_profile"
+            },
+            "parent_child": {
+              "$ref": "#/definitions/not_in_profile"
+            },
+            "recursive_ancestors": {
+              "$ref": "#/definitions/not_in_profile"
+            },
+            "content_influence": {
+              "$ref": "#/definitions/not_in_profile"
+            }
+          }
+        }
+      }
+    },
+    "continuation": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "string",
+          "minLength": 1
+        }
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "coverage": {
+            "properties": {
+              "state": {
+                "const": "partial"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "continuation": {
+            "type": "string",
+            "minLength": 1
+          },
+          "rows": {
+            "minItems": 1
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "continuation": {
+            "type": "null"
+          },
+          "coverage": {
+            "properties": {
+              "relations": {
+                "properties": {
+                  "start_inputs": {
+                    "properties": {
+                      "state": {
+                        "enum": [
+                          "complete",
+                          "not_in_profile"
+                        ]
+                      }
+                    }
+                  },
+                  "claims": {
+                    "properties": {
+                      "state": {
+                        "enum": [
+                          "complete",
+                          "not_in_profile"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "root": {
+            "$ref": "#/definitions/operation_result_ref"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "root_proof": {
+            "properties": {
+              "root_role": {
+                "const": "operation_result"
+              }
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "root_proof": {
+            "properties": {
+              "root_role": {
+                "enum": [
+                  "registered_output",
+                  "invocation_produced_resource"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "coverage": {
+            "properties": {
+              "relations": {
+                "properties": {
+                  "start_inputs": {
+                    "$ref": "#/definitions/not_in_profile"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "rows": {
+            "items": {
+              "not": {
+                "properties": {
+                  "role": {
+                    "const": "start_input"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "coverage": {
+            "properties": {
+              "relations": {
+                "properties": {
+                  "claims": {
+                    "$ref": "#/definitions/not_in_profile"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "rows": {
+            "items": {
+              "not": {
+                "properties": {
+                  "role": {
+                    "const": "claim"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "definitions": {
+    "source_id": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[^\\s\\u0000-\\u001f\\u007f](?:[^\\u0000-\\u001f\\u007f]*[^\\s\\u0000-\\u001f\\u007f])?(?![\\s\\S])"
+    },
+    "resource_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "source_id",
+        "ref"
+      ],
+      "properties": {
+        "schema_version": {
+          "const": "rpnh/collaboration/source_resource_ref/v1"
+        },
+        "source_id": {
+          "$ref": "#/definitions/source_id"
+        },
+        "ref": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "resource_id",
+            "resource_version_id"
+          ],
+          "properties": {
+            "resource_id": {
+              "type": "string",
+              "pattern": "^resource:[a-f0-9]{32}(?![\\s\\S])"
+            },
+            "resource_version_id": {
+              "type": "string",
+              "pattern": "^resource_version:[a-f0-9]{32}(?![\\s\\S])"
+            }
+          }
+        }
+      }
+    },
+    "source_cut": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_id",
+        "cut_id",
+        "head",
+        "reader_contract_version"
+      ],
+      "properties": {
+        "source_id": {
+          "$ref": "#/definitions/source_id"
+        },
+        "cut_id": {
+          "$ref": "#/definitions/source_id"
+        },
+        "head": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "ordinal",
+            "writer_fencing_epoch"
+          ],
+          "properties": {
+            "ordinal": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "writer_fencing_epoch": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        },
+        "reader_contract_version": {
+          "const": "rpnh/registry_read/v1"
+        }
+      }
+    },
+    "generic_resource_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "source_id",
+        "ref"
+      ],
+      "properties": {
+        "schema_version": {
+          "const": "rpnh/collaboration/source_version_ref/v1"
+        },
+        "source_id": {
+          "$ref": "#/definitions/source_id"
+        },
+        "ref": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "entity_type",
+            "logical_id",
+            "version_id"
+          ],
+          "properties": {
+            "entity_type": {
+              "const": "resource_version/v1"
+            },
+            "logical_id": {
+              "type": "string",
+              "pattern": "^resource:[a-f0-9]{32}(?![\\s\\S])"
+            },
+            "version_id": {
+              "type": "string",
+              "pattern": "^resource_version:[a-f0-9]{32}(?![\\s\\S])"
+            }
+          }
+        }
+      }
+    },
+    "invocation_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "source_id",
+        "ref"
+      ],
+      "properties": {
+        "schema_version": {
+          "const": "rpnh/collaboration/source_version_ref/v1"
+        },
+        "source_id": {
+          "$ref": "#/definitions/source_id"
+        },
+        "ref": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "entity_type",
+            "logical_id",
+            "version_id"
+          ],
+          "properties": {
+            "entity_type": {
+              "const": "invocation/v1"
+            },
+            "logical_id": {
+              "type": "string",
+              "pattern": "^invocation:[a-f0-9]{32}(?![\\s\\S])"
+            },
+            "version_id": {
+              "type": "string",
+              "pattern": "^invocation_version:[a-f0-9]{32}(?![\\s\\S])"
+            }
+          }
+        }
+      }
+    },
+    "transition_firing_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "source_id",
+        "ref"
+      ],
+      "properties": {
+        "schema_version": {
+          "const": "rpnh/collaboration/source_version_ref/v1"
+        },
+        "source_id": {
+          "$ref": "#/definitions/source_id"
+        },
+        "ref": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "entity_type",
+            "logical_id",
+            "version_id"
+          ],
+          "properties": {
+            "entity_type": {
+              "const": "transition_firing/v1"
+            },
+            "logical_id": {
+              "type": "string",
+              "pattern": "^transition_firing:[a-f0-9]{32}(?![\\s\\S])"
+            },
+            "version_id": {
+              "type": "string",
+              "pattern": "^transition_firing_version:[a-f0-9]{32}(?![\\s\\S])"
+            }
+          }
+        }
+      }
+    },
+    "firing_completion_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "source_id",
+        "ref"
+      ],
+      "properties": {
+        "schema_version": {
+          "const": "rpnh/collaboration/source_version_ref/v1"
+        },
+        "source_id": {
+          "$ref": "#/definitions/source_id"
+        },
+        "ref": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "entity_type",
+            "logical_id",
+            "version_id"
+          ],
+          "properties": {
+            "entity_type": {
+              "const": "firing_completion/v2"
+            },
+            "logical_id": {
+              "type": "string",
+              "pattern": "^firing_completion:[a-f0-9]{32}(?![\\s\\S])"
+            },
+            "version_id": {
+              "type": "string",
+              "pattern": "^firing_completion_version:[a-f0-9]{32}(?![\\s\\S])"
+            }
+          }
+        }
+      }
+    },
+    "operation_result_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "source_id",
+        "ref"
+      ],
+      "properties": {
+        "schema_version": {
+          "const": "rpnh/collaboration/source_version_ref/v1"
+        },
+        "source_id": {
+          "$ref": "#/definitions/source_id"
+        },
+        "ref": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "entity_type",
+            "logical_id",
+            "version_id"
+          ],
+          "properties": {
+            "entity_type": {
+              "const": "operation_result/v1"
+            },
+            "logical_id": {
+              "type": "string",
+              "pattern": "^operation_result:[a-f0-9]{32}(?![\\s\\S])"
+            },
+            "version_id": {
+              "type": "string",
+              "pattern": "^operation_result_version:[a-f0-9]{32}(?![\\s\\S])"
+            }
+          }
+        }
+      }
+    },
+    "operation_binding_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "source_id",
+        "ref"
+      ],
+      "properties": {
+        "schema_version": {
+          "const": "rpnh/collaboration/source_version_ref/v1"
+        },
+        "source_id": {
+          "$ref": "#/definitions/source_id"
+        },
+        "ref": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "entity_type",
+            "logical_id",
+            "version_id"
+          ],
+          "properties": {
+            "entity_type": {
+              "const": "operation_binding/v1"
+            },
+            "logical_id": {
+              "type": "string",
+              "pattern": "^operation_binding:[a-f0-9]{32}(?![\\s\\S])"
+            },
+            "version_id": {
+              "type": "string",
+              "pattern": "^operation_binding_version:[a-f0-9]{32}(?![\\s\\S])"
+            }
+          }
+        }
+      }
+    },
+    "petri_token_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "source_id",
+        "ref"
+      ],
+      "properties": {
+        "schema_version": {
+          "const": "rpnh/collaboration/source_version_ref/v1"
+        },
+        "source_id": {
+          "$ref": "#/definitions/source_id"
+        },
+        "ref": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "entity_type",
+            "logical_id",
+            "version_id"
+          ],
+          "properties": {
+            "entity_type": {
+              "const": "petri_token/v1"
+            },
+            "logical_id": {
+              "type": "string",
+              "pattern": "^petri_token:[a-f0-9]{32}(?![\\s\\S])"
+            },
+            "version_id": {
+              "type": "string",
+              "pattern": "^petri_token_version:[a-f0-9]{32}(?![\\s\\S])"
+            }
+          }
+        }
+      }
+    },
+    "marking_delta_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "source_id",
+        "ref"
+      ],
+      "properties": {
+        "schema_version": {
+          "const": "rpnh/collaboration/source_version_ref/v1"
+        },
+        "source_id": {
+          "$ref": "#/definitions/source_id"
+        },
+        "ref": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "entity_type",
+            "logical_id",
+            "version_id"
+          ],
+          "properties": {
+            "entity_type": {
+              "const": "marking_delta/v1"
+            },
+            "logical_id": {
+              "type": "string",
+              "pattern": "^marking_delta:[a-f0-9]{32}(?![\\s\\S])"
+            },
+            "version_id": {
+              "type": "string",
+              "pattern": "^marking_delta_version:[a-f0-9]{32}(?![\\s\\S])"
+            }
+          }
+        }
+      }
+    },
+    "not_in_profile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "state"
+      ],
+      "properties": {
+        "state": {
+          "const": "not_in_profile"
+        }
+      }
+    },
+    "verified_relation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "state",
+        "witness"
+      ],
+      "properties": {
+        "state": {
+          "enum": [
+            "partial",
+            "complete"
+          ]
+        },
+        "witness": {
+          "const": "verified_at_cut"
+        }
+      }
+    },
+    "complete_relation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "state",
+        "witness"
+      ],
+      "properties": {
+        "state": {
+          "const": "complete"
+        },
+        "witness": {
+          "const": "verified_at_cut"
+        }
+      }
+    },
+    "start_input": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "role",
+        "position",
+        "input_binding_ref",
+        "resource_ref",
+        "evidence",
+        "verification"
+      ],
+      "properties": {
+        "role": {
+          "const": "start_input"
+        },
+        "position": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "input_binding_ref": {
+          "oneOf": [
+            {
+              "$ref": "#/definitions/generic_resource_ref"
+            },
+            {
+              "$ref": "#/definitions/petri_token_ref"
+            }
+          ]
+        },
+        "resource_ref": {
+          "$ref": "#/definitions/resource_ref"
+        },
+        "evidence": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "start_event_id",
+            "start_transaction_id",
+            "start_ordinal"
+          ],
+          "properties": {
+            "start_event_id": {
+              "type": "string",
+              "pattern": "^event:[a-f0-9]{32}(?![\\s\\S])"
+            },
+            "start_transaction_id": {
+              "type": "string",
+              "pattern": "^transaction:[a-f0-9]{32}(?![\\s\\S])"
+            },
+            "start_ordinal": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        },
+        "verification": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "binding_identity",
+            "resource_identity",
+            "target_record",
+            "material"
+          ],
+          "properties": {
+            "binding_identity": {
+              "const": "exact_at_cut"
+            },
+            "resource_identity": {
+              "const": "exact_at_cut"
+            },
+            "target_record": {
+              "const": "not_requested"
+            },
+            "material": {
+              "const": "not_read"
+            }
+          }
+        }
+      }
+    },
+    "claim": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "role",
+        "token_ref",
+        "resource_ref",
+        "classification",
+        "evidence",
+        "verification"
+      ],
+      "properties": {
+        "role": {
+          "const": "claim"
+        },
+        "token_ref": {
+          "$ref": "#/definitions/petri_token_ref"
+        },
+        "resource_ref": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/resource_ref"
+            }
+          ]
+        },
+        "classification": {
+          "enum": [
+            "consumed_claim",
+            "non_consuming_claim"
+          ]
+        },
+        "evidence": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "transition_firing_ref",
+            "claim_marking_delta_ref"
+          ],
+          "properties": {
+            "transition_firing_ref": {
+              "$ref": "#/definitions/transition_firing_ref"
+            },
+            "claim_marking_delta_ref": {
+              "$ref": "#/definitions/marking_delta_ref"
+            }
+          }
+        },
+        "verification": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "token_record",
+            "resource_target",
+            "material"
+          ],
+          "properties": {
+            "token_record": {
+              "const": "verified_at_cut"
+            },
+            "resource_target": {
+              "const": "not_requested"
+            },
+            "material": {
+              "const": "not_read"
+            }
+          }
+        }
+      }
+    }
+  }
+}

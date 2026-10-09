@@ -6,13 +6,14 @@ SQLite live read-only WAL sidecars may change; canonical Registry facts do not.
 """
 from __future__ import annotations
 from dataclasses import asdict, dataclass, field
+from contextlib import nullcontext
 from datetime import datetime, timedelta, timezone
 import hashlib
 import json
 from pathlib import Path
 import secrets
 from types import MappingProxyType
-from typing import Callable, Mapping
+from typing import Callable, Mapping, ClassVar
 
 from ..registry._registry import _RegistryCore
 from ..registry.identities import TypedId
@@ -88,6 +89,39 @@ def _budget_preflight(core, limits, *, db=None, ordinal=None):
     return rows, size
 
 
+def _publication_key_capture_query(store):
+    """Select original publication keys and terminal witnesses at one cut.
+
+    EXISTS avoids copying all member identities into a Python set (or a SQL
+    UNION). The same statement is aggregated before any key rows are fetched.
+    Witness envelopes already belong to the event capture; their additional
+    verification work and identity bytes are nevertheless charged here.
+    """
+    objects = store._canonical_member_sql(member_kind='object',
+        member_identity_sql='o.version_id', published_event_sql='p.ordinal')
+    relations = store._canonical_member_sql(member_kind='relation',
+        member_identity_sql='r.relation_id', published_event_sql='p.ordinal')
+    columns = ('t.transaction_id', 't.idempotency_key', 't.task_id', 't.writer_epoch',
+        'e.event_id', 'e.event_type', 'e.criticality', 'e.task_id', 'e.transaction_id',
+        'e.stream_id', 'e.aggregate_id', 'e.aggregate_type', 'e.payload_schema_ref',
+        'e.producer_invocation_id', 'e.writer_fencing_epoch', 'e.idempotency_key',
+        'e.ordinal')
+    size = '+'.join(f'coalesce(length(CAST({column} AS BLOB)),0)' for column in columns)
+    # The retained JSON map may escape each raw key/identity byte (for example
+    # a control character) as six bytes. Reserve it separately before copying.
+    size += ('+6*length(CAST(t.transaction_id AS BLOB))'
+             '+6*length(CAST(t.idempotency_key AS BLOB))+8')
+    return ("SELECT t.transaction_id,t.idempotency_key,t.task_id,t.writer_epoch,"
+        f"e.event_id AS terminal_event_id,{size} AS capture_bytes "
+        "FROM transactions t LEFT JOIN events e ON e.transaction_id=t.transaction_id "
+        "AND e.event_type IN ('transaction_committed/v1','transaction_aborted/v1') "
+        "AND e.ordinal<=? WHERE t.status='committed' AND ("
+        "EXISTS (SELECT 1 FROM objects o JOIN events p ON p.event_id=o.published_event_id "
+        f"WHERE o.transaction_id=t.transaction_id AND {objects}) OR "
+        "EXISTS (SELECT 1 FROM relations r JOIN events p ON p.event_id=r.published_event_id "
+        f"WHERE r.transaction_id=t.transaction_id AND {relations}))")
+
+
 @dataclass(frozen=True, slots=True)
 class _VerifiedAuthority:
     context: object
@@ -95,6 +129,12 @@ class _VerifiedAuthority:
     revision: str
     expires_at: datetime | None
     kind: str
+
+
+# Legacy observer/invocation adapters retain only their original metadata grant.
+# Catalog growth requires an explicit ObserverReadScope; it grants no material.
+_LEGACY_RESOURCE_FIELDS = ('resource_id', 'resource_version_id', 'media_type',
+    'content_schema_ref', 'byte_count', 'summary', 'commit_ordinal')
 
 
 class ExistingReadAuthorityProvider:
@@ -134,7 +174,7 @@ class ExistingReadAuthorityProvider:
             else:
                 service = _ResourceServiceKernel(core)
                 service._query_authority(context, observer_fields=('headers', 'projection_head'))
-                fields = tuple(catalog.fields('resource_version/v1'))
+                fields = _LEGACY_RESOURCE_FIELDS
                 scope = ObserverReadScope({'resource_version/v1': fields}, {'resource_version/v1': fields})
                 facts = service._authority_facts(context)
                 expiry = timestamp(context.expires_at) if type(context) is RegistryObserverContext else None
@@ -183,16 +223,188 @@ class _Snapshot:
     check_authorized: Callable
     max_material_bytes: int
     publication_ordinals: Mapping
+    publication_transaction_keys: Mapping = field(repr=False)
     budget_bytes: int
+    _origin_context: object | None = field(default=None, repr=False, compare=False)
 
 
 @dataclass(slots=True)
 class _Query:
+    kind: ClassVar[str] = 'index'
     fingerprint: str
     entries: tuple
     cuts: dict
     source_ids: tuple
     failures: dict
+    entry_bytes_by_source: dict = field(default_factory=dict)
+
+
+def _requests_start(entry_type, fields):
+    from .registry_typed_readers import _START_FIELDS
+    return entry_type == 'transition_firing/v1' and any(field in _START_FIELDS for field in fields)
+
+
+class _StartReadOwners:
+    """Source-local validation owners retained through ordinary index delivery.
+
+    Prior owners remain alive: their descriptors, failed traceback buffers and
+    projected entries cannot disappear from the next source's byte ledger.
+    These owners never request Core completion validation or new permissions.
+    """
+    def __init__(self, session):
+        self.session = session
+        self.contexts = []
+        self.source_ids = []
+        self.created_cursors = []
+        self.error_reserved = False
+        self.pending_capture_bytes = 0
+        self._delivery_bytes = 0
+        self._capture_errors = []
+
+    @staticmethod
+    def bytes_bound(value):
+        from ._origin_query_context import _bytes_bound
+        return _bytes_bound(value)
+
+    def retained_baseline(self):
+        current = self.session._retained_bytes()
+        return max(current + self.missing_snapshot_bytes(),
+            max((context._initial_retained_bytes for context in self.contexts), default=current))
+
+    def check_retained(self, additional=0):
+        total = (self.retained_baseline() + self.pending_capture_bytes + self._delivery_bytes
+            + sum(context.reservation.scratch_bytes for context in self.contexts) + additional)
+        if total > self.session.limits.max_scan_bytes:
+            raise RegistryReadSessionError('LIMIT_EXCEEDED')
+
+    def reserve(self, *, size=0):
+        # Only the ordinary collection/page handoff needs this fallback when
+        # every capture failed before a source-local context could be created.
+        self.check_retained(size)
+        self._delivery_bytes += size
+
+    def prepare_capture(self, source_id):
+        if source_id not in self.source_ids:
+            self.source_ids.append(source_id)
+        if not self.error_reserved:
+            from ._product_origin_core import _ERROR_BUFFER_BYTES
+            self.reserve(size=_ERROR_BUFFER_BYTES + 4096 + 512 * len(self.session._sources))
+            self.error_reserved = True
+
+    def reserve_capture(self, size):
+        self.check_retained(size)
+        self.pending_capture_bytes += size
+
+    def retain_capture_error(self, error):
+        if self.error_reserved:
+            # The preowned group control allowance covers one failure slot per
+            # attempted source. Its hydrated bytes remain in pending_capture.
+            self._capture_errors.append(error)
+
+    def publish_capture(self, size):
+        # The session now owns the exact snapshot budget; transfer once.
+        self.pending_capture_bytes -= size
+
+    def begin(self, snapshot, spec):
+        from ._origin_query_context import _OriginQueryContext
+        from ._product_origin_core import _ERROR_BUFFER_BYTES
+        previous_work = self.contexts[-1].reservation.work if self.contexts else 0
+        context = None
+        def extra():
+            current = self.session._retained_bytes()
+            initial = current if context is None else context._initial_retained_bytes
+            return (sum(item.reservation.scratch_bytes for item in self.contexts if item is not context)
+                + self.pending_capture_bytes + self._delivery_bytes
+                + max(0, self.retained_baseline() - max(initial, current)))
+        if snapshot.source_id not in self.source_ids:
+            self.source_ids.append(snapshot.source_id)
+        context = _OriginQueryContext(self.session, snapshot, retained_extra=extra)
+        self.contexts.append(context)
+        # Subsequent sources continue W rather than resetting the logical cap.
+        context.reservation.work = previous_work
+        context.reserve(size=(0 if self.error_reserved else _ERROR_BUFFER_BYTES) + 4096
+            + 512 * (len(spec.source_ids) + len(spec.clauses))
+            + sum(context.bytes_bound(source) for source in spec.source_ids)
+            + sum(context.bytes_bound(clause.projection) + context.bytes_bound(clause.entry_type)
+                + sum(context.bytes_bound(predicate.value) + 256 for predicate in clause.predicates)
+                for clause in spec.clauses))
+        self.error_reserved = True
+        return context
+
+    def missing_snapshot_bytes(self):
+        # Invalidation removes cuts from session accounting before an earlier
+        # owner necessarily stops holding those original captured arrays.
+        missing = 0
+        for position, item in enumerate(self.contexts):
+            snapshot = item.snapshot
+            same = lambda other: (snapshot.objects is other.objects
+                and snapshot.events is other.events and snapshot.source_id == other.source_id)
+            if any(same(captured) for _cut, captured in self.session._cuts.values()):
+                continue
+            if any(same(self.contexts[index].snapshot) for index in range(position)):
+                continue
+            missing += snapshot.budget_bytes
+        return missing
+
+    def capture_retained_extra(self):
+        # Capture has no query-context floor: include all group-held bytes
+        # absent from the session before hydrating another source's history.
+        return (self.retained_baseline() - self.session._retained_bytes()
+            + self.pending_capture_bytes + self._delivery_bytes
+            + sum(item.reservation.scratch_bytes for item in self.contexts))
+
+    @property
+    def current(self):
+        return self.contexts[-1] if self.contexts else None
+
+    def check(self, source_ids, failures=None):
+        for source_id in source_ids:
+            try:
+                self.session.final_recheck((source_id,))
+            except RegistryReadSessionError as exc:
+                if (failures is None or source_id not in failures
+                        or exc.code in {'SESSION_CLOSED', 'SESSION_EXPIRED'}):
+                    raise
+                # An ordinary failed source remains a source-result failure;
+                # current authority takes precedence over its old data error.
+                failures[source_id] = exc.code
+        self.session._alive()
+        if self.error_reserved or self.contexts:
+            self.check_retained()
+        self.session._alive()
+
+    def fail(self, exc, source_ids):
+        from ._product_origin_core import _SAFE_ERROR_CODES
+        code = getattr(exc, 'code', 'INTEGRITY_FAILED')
+        error = RegistryReadSessionError(code if code in _SAFE_ERROR_CODES else 'INTEGRITY_FAILED')
+        if self.error_reserved:
+            if len(canonical_json(error.to_dict())) > self.session.limits.max_response_bytes:
+                error = RegistryReadSessionError('LIMIT_EXCEEDED')
+                canonical_json(error.to_dict())
+        # Keep the original exception and its charged traceback alive through
+        # both safe serialization and the authoritative final callback.
+        self.session.final_recheck(source_ids)
+        self.session._alive()
+        if self.error_reserved:
+            try:
+                self.check_retained()
+            except RegistryReadSessionError:
+                error = RegistryReadSessionError('LIMIT_EXCEEDED')
+                canonical_json(error.to_dict())
+                self.session.final_recheck(source_ids)
+                self.session._alive()
+        raise error from None
+
+    def close(self):
+        from ._product_origin_core import _clear_exception_frames
+        for error in self._capture_errors:
+            _clear_exception_frames(error)
+        self._capture_errors.clear()
+        for context in self.contexts:
+            context.close()
+        self.contexts.clear()
+        self.pending_capture_bytes = 0
+        self._delivery_bytes = 0
 
 
 class RegistryReadSession:
@@ -437,10 +649,33 @@ class RegistryReadSession:
 
     def _retained_bytes(self):
         total = sum(snapshot.budget_bytes for _cut, snapshot in self._cuts.values())
-        queries = {id(query.entries): query.entries for query, _offset in self._cursors.values()}
-        return total + sum(sum(len(canonical_json(entry)) for entry in entries) for entries in queries.values())
+        queries, origins = {}, {}
+        for token, (query, offset) in self._cursors.items():
+            if query.kind == 'index':
+                queries[id(query.entries)] = query
+            else:
+                from ._product_origin_query import _cursor_record_bytes
+                origins[id(query)] = query
+                total += _cursor_record_bytes(token, offset)
+        return (total + sum(sum(query.entry_bytes_by_source.values()) for query in queries.values())
+            + sum(query.budget_bytes for query in origins.values()))
 
     def capture_cut(self, source_id, *, ordinal=None):
+        return self._capture_cut(source_id, ordinal=ordinal)
+
+    def _capture_cut(self, source_id, *, ordinal=None, _retained_extra=None, _capture_owner=None):
+        if _capture_owner is None:
+            return self._capture_cut_impl(source_id, ordinal=ordinal, _retained_extra=_retained_extra)
+        try:
+            return self._capture_cut_impl(source_id, ordinal=ordinal,
+                _retained_extra=_retained_extra, _capture_owner=_capture_owner)
+        except Exception as exc:
+            _capture_owner.retain_capture_error(exc)
+            raise
+
+    def _capture_cut_impl(self, source_id, *, ordinal=None, _retained_extra=None, _capture_owner=None):
+        if _capture_owner is not None:
+            _capture_owner.prepare_capture(source_id)
         self.final_recheck((source_id,))
         source = self._sources[source_id]
         if not source.authority.scope.disclose_head:
@@ -457,9 +692,28 @@ class RegistryReadSession:
             if upper > maximum:
                 raise RegistryReadSessionError('INVALID_CUT')
             scan_rows, scan_bytes = _budget_preflight(core, self.limits, db=db, ordinal=upper)
-            budget_bytes = scan_bytes + scan_rows * 256
-            if self._retained_bytes() + budget_bytes > self.limits.max_scan_bytes:
+            key_sql = _publication_key_capture_query(store)
+            key_args = (upper,) * 9
+            key_budget = db.execute('SELECT count(*)+count(terminal_event_id),'
+                f'coalesce(sum(capture_bytes),0) FROM ({key_sql})', key_args).fetchone()
+            # One key row and each terminal inspected consume the existing
+            # capture row budget, including duplicate or rejected witnesses.
+            # Identities, keys, witness bytes and the original per-row allowance
+            # also remain charged for every retained cut.
+            scan_rows += int(key_budget[0]); scan_bytes += int(key_budget[1])
+            if scan_rows > self.limits.max_scan_rows or scan_bytes > self.limits.max_scan_bytes:
                 raise RegistryReadSessionError('LIMIT_EXCEEDED')
+            budget_bytes = scan_bytes + scan_rows * 256
+            if _capture_owner is not None:
+                # Establish ownership before the first history row is hydrated.
+                # On failure this charge outlives the pending capture traceback.
+                _capture_owner.reserve_capture(budget_bytes)
+            else:
+                extra = 0 if _retained_extra is None else _retained_extra()
+                if type(extra) is not int or extra < 0:
+                    raise RegistryReadSessionError('LIMIT_EXCEEDED')
+                if self._retained_bytes() + extra + budget_bytes > self.limits.max_scan_bytes:
+                    raise RegistryReadSessionError('LIMIT_EXCEEDED')
             writer = int(db.execute("SELECT value FROM registry_meta WHERE key='writer_epoch'").fetchone()[0])
             def canonical(alias, table, member, identity, published):
                 predicate = store._canonical_member_sql(member_kind=member, member_identity_sql=identity,
@@ -477,6 +731,29 @@ class RegistryReadSession:
             relations = canonical('r', "relations r JOIN events p ON p.event_id=r.published_event_id JOIN transactions t ON t.transaction_id=r.transaction_id AND t.status='committed'",
                                   'relation', 'r.relation_id', 'p.ordinal')
             event_map = {str(x.event_id): x for x in events}
+            publication_keys = {}
+            for key_row in db.execute(key_sql, key_args):
+                transaction_id, key = key_row['transaction_id'], key_row['idempotency_key']
+                terminal = event_map.get(key_row['terminal_event_id'])
+                if (type(transaction_id) is not str or type(key) is not str or not key
+                        or transaction_id in publication_keys or terminal is None
+                        or terminal.event_type != 'transaction_committed/v1'
+                        or terminal.transaction_id.kind != 'transaction'
+                        or str(terminal.transaction_id) != transaction_id
+                        or terminal.event_id.kind != 'event'
+                        or key_row['task_id'] != str(core.task_id) or terminal.task_id != core.task_id
+                        or terminal.criticality != 'authoritative'
+                        or terminal.stream_id != f'transaction:{transaction_id}'
+                        or terminal.aggregate_id != transaction_id or terminal.aggregate_type != 'transaction'
+                        or terminal.payload_schema_ref != 'registry_v1/transaction_committed/v1'
+                        or terminal.producer_invocation_id is not None
+                        or terminal.writer_fencing_epoch != key_row['writer_epoch']
+                        or terminal.idempotency_key != key):
+                    raise RegistryReadSessionError('INTEGRITY_FAILED')
+                publication_keys[transaction_id] = key
+            # These keys prove original publication, not subsequent canonical
+            # promotion. Never replace them with the promoting transaction key.
+            publication_keys = MappingProxyType(publication_keys)
             transaction_commits = {str(event.transaction_id): event.ordinal for event in events if event.event_type == 'transaction_committed/v1'}
             publication_ordinals = {row['version_id']: transaction_commits[row['transaction_id']] for row in objects if row['transaction_id'] in transaction_commits}
             promotions = db.execute("SELECT m.member_identity,MAX(e.ordinal) AS ordinal FROM firing_temporary_members m JOIN firing_publications p ON p.firing_version_id=m.firing_version_id JOIN events e ON e.transaction_id=p.published_transaction_id AND e.event_type='transaction_committed/v1' WHERE m.member_kind='object' AND p.state='PUBLISHED' AND e.ordinal<=? GROUP BY m.member_identity", (upper,))
@@ -510,9 +787,19 @@ class RegistryReadSession:
             MappingProxyType({r['version_id']: MappingProxyType(dict(r)) for r in objects}), events,
             tuple(MappingProxyType(dict(r)) for r in relations),
             check_authorized,
-            self.limits.max_material_bytes, MappingProxyType(publication_ordinals), budget_bytes)
+            self.limits.max_material_bytes, MappingProxyType(publication_ordinals), publication_keys, budget_bytes)
         self.final_recheck((source_id,))
+        if _capture_owner is not None:
+            # Pending bytes already include this candidate; do not add them twice.
+            _capture_owner.check_retained()
+        elif _retained_extra is not None:
+            extra = _retained_extra()
+            if (type(extra) is not int or extra < 0
+                    or self._retained_bytes() + extra + budget_bytes > self.limits.max_scan_bytes):
+                raise RegistryReadSessionError('LIMIT_EXCEEDED')
         self._cuts[cut.cut_id] = (cut, snapshot)
+        if _capture_owner is not None:
+            _capture_owner.publish_capture(budget_bytes)
         return cut
 
     def validate_cut(self, value):
@@ -545,6 +832,18 @@ class RegistryReadSession:
                 'access_revision': source.authority.revision}
 
     def read_exact(self, *, entry_ref, at_cut, projection=None):
+        if (type(entry_ref) is SourceQualifiedVersionRef and type(projection) in (tuple, list)
+                and _requests_start(entry_ref.ref.entity_type, projection)):
+            from ._product_origin_core import _clear_exception_frames
+            try:
+                return self._read_exact(entry_ref=entry_ref, at_cut=at_cut, projection=projection)
+            except Exception as exc:
+                code = getattr(exc, 'code', 'INTEGRITY_FAILED')
+                _clear_exception_frames(exc)
+            raise RegistryReadSessionError(code) from None
+        return self._read_exact(entry_ref=entry_ref, at_cut=at_cut, projection=projection)
+
+    def _read_exact(self, *, entry_ref, at_cut, projection=None):
         if projection == 'public_pn':
             return self.read_public_projection(entry_ref=entry_ref, at_cut=at_cut)
         local, cut, source, snapshot = self._read_setup(entry_ref, at_cut)
@@ -555,6 +854,8 @@ class RegistryReadSession:
             if len(set(fields)) != len(fields) or set(fields) - set(self._catalog.fields(local.entity_type)):
                 raise RegistryReadSessionError('INVALID_PROJECTION')
             self._authorize(cut.source_id, entry_ref, 'record', fields)
+            if _requests_start(local.entity_type, fields):
+                return self._read_start_exact(entry_ref, cut, source, snapshot, tuple(fields))
             result = self._catalog.read_exact(source.resolved.core, entry_ref, snapshot=snapshot, projection=tuple(fields))
             disclosure = {'projected_fields': list(fields), 'unprovided_fields': sorted(set(fields) - set(result))}
             envelope = self._envelope(entry_ref, cut, source, result, disclosure)
@@ -566,6 +867,60 @@ class RegistryReadSession:
             raise
         except Exception as exc:
             raise RegistryReadSessionError(getattr(exc, 'code', 'INTEGRITY_FAILED')) from exc
+
+    def _read_start_exact(self, entry_ref, cut, source, snapshot, fields):
+        from ._product_origin_core import _clear_exception_frames
+        try:
+            return self._read_start_exact_impl(entry_ref, cut, source, snapshot, fields)
+        except Exception as exc:
+            code = getattr(exc, 'code', 'INTEGRITY_FAILED')
+            _clear_exception_frames(exc)
+        del source, snapshot
+        raise RegistryReadSessionError(code) from None
+
+    def _read_start_exact_impl(self, entry_ref, cut, source, snapshot, fields):
+        from ._origin_query_context import _OriginQueryContext
+        from ._product_origin_core import _ERROR_BUFFER_BYTES, _SAFE_ERROR_CODES, _final_delivery_check
+        context = getattr(snapshot, '_origin_context', None)
+        owned = context is None
+        error_reserved = False
+        try:
+            try:
+                if owned:
+                    context = _OriginQueryContext(self, snapshot)
+                context.reserve(size=_ERROR_BUFFER_BYTES)
+                error_reserved = True
+                context.reserve(size=2048 + 2 * context.bytes_bound(fields)
+                    + 2 * context.bytes_bound(entry_ref.to_dict()) + 2 * context.bytes_bound(cut.to_dict()))
+                result = self._catalog.read_exact(source.resolved.core, entry_ref,
+                    snapshot=context.snapshot, projection=fields)
+                from ._product_origin_includes import _verify_start_projection
+                _verify_start_projection(context, entry_ref.to_dict()['ref'], result, fields)
+                context.reserve(size=context.bytes_bound(result) + 4096
+                    + context.bytes_bound(fields) + context.bytes_bound(cut.to_dict()))
+                disclosure = {'projected_fields': list(fields), 'unprovided_fields': sorted(set(fields) - set(result))}
+                envelope = self._envelope(entry_ref, cut, source, result, disclosure)
+                with context.scratch(envelope):
+                    encoded = canonical_json(envelope)
+                    if len(encoded) > self.limits.max_response_bytes:
+                        raise RegistryReadSessionError('LIMIT_EXCEEDED')
+                    del encoded
+            except Exception as exc:
+                code = getattr(exc, 'code', 'INTEGRITY_FAILED')
+                if code == 'NOT_PRESENT_AT_CUT' and str(entry_ref.ref.version_id) in snapshot.objects:
+                    code = 'INTEGRITY_FAILED'
+                error = RegistryReadSessionError(code if code in _SAFE_ERROR_CODES else 'INTEGRITY_FAILED')
+                if error_reserved:
+                    if len(canonical_json(error.to_dict())) > self.limits.max_response_bytes:
+                        error = RegistryReadSessionError('LIMIT_EXCEEDED')
+                        canonical_json(error.to_dict())
+                _final_delivery_check(self, cut, context if error_reserved else None)
+                raise error from None
+            _final_delivery_check(self, cut, context)
+            return envelope
+        finally:
+            if owned and context is not None:
+                context.close()
 
     def read_public_projection(self, *, entry_ref, at_cut):
         local, cut, source, snapshot = self._read_setup(entry_ref, at_cut)
@@ -726,84 +1081,290 @@ class RegistryReadSession:
                     return False
         return True
 
-    def query_index(self, spec, *, cursor=None):
+    def _collect_index(self, spec, *, _origin_context=None, _start_owners=None):
+        # A direct private ordinary collection also gets a safe handoff. Public
+        # IndexQuery supplies its owner group through final page serialization.
+        if _origin_context is None and _start_owners is None and self._query_requests_start(spec):
+            from ._product_origin_core import _clear_exception_frames
+            try:
+                return self._collect_start_index(spec)
+            except Exception as exc:
+                code = getattr(exc, 'code', 'INTEGRITY_FAILED')
+                _clear_exception_frames(exc)
+            raise RegistryReadSessionError(code) from None
+        return self._collect_index_owned(spec, _origin_context=_origin_context, _start_owners=_start_owners)
+
+    def _collect_start_index(self, spec):
+        owners = _StartReadOwners(self)
+        try:
+            try:
+                result = self._collect_index_owned(spec, _start_owners=owners)
+                while True:
+                    previous_failures = dict(result.failures)
+                    if owners.current is not None:
+                        with owners.current.scratch(size=owners.current.bytes_bound(result.entries)
+                                + owners.current.bytes_bound(result.failures) + 256):
+                            canonical_json({'entries': result.entries, 'failures': result.failures})
+                    else:
+                        owners.reserve(size=owners.bytes_bound(result.entries) + owners.bytes_bound(result.failures) + 256)
+                        canonical_json({'entries': result.entries, 'failures': result.failures})
+                    owners.check(tuple(owners.source_ids), result.failures)
+                    if result.failures == previous_failures:
+                        return result
+            except Exception as exc:
+                if not owners.error_reserved and not owners.contexts:
+                    raise
+                owners.fail(exc, tuple(owners.source_ids))
+        finally:
+            owners.close()
+
+    def _collect_index_owned(self, spec, *, _origin_context=None, _start_owners=None):
+        """Collect the complete legacy authorized index result without paging.
+
+        The private result retains exact cuts and per-source failures: empty
+        entries are readable-empty only for sources absent from failures. This
+        does not allocate a cursor or provide a delivery-time final recheck.
+        Consumers must retain the original final authorization/TTL checks.
+
+        An optional private query owner reserves built-in reader work and
+        allocations before construction. Trusted HOST callback signatures and
+        ordinary non-Start collection behavior remain unchanged.
+        """
         self._alive()
+        context = _origin_context
+        if context is not None:
+            if type(spec) is not IndexQuery:
+                raise TypeError('query requires a typed IndexQuery')
+            context.reserve(size=4096 + 512 * (len(spec.source_ids) + len(spec.clauses))
+                + sum(context.bytes_bound(predicate.value) + 256
+                    for clause in spec.clauses for predicate in clause.predicates))
         clauses = self._validate_query(spec)
         fingerprint = document_digest(spec.to_dict())
+        entries, cuts, failures = {}, {}, {}
+        entry_bytes_by_source = {}
+        entry_bytes = 0
+        for source_id in sorted(spec.source_ids):
+            context = _origin_context
+            source = self._sources.get(source_id)
+            if source is None or source.failure:
+                failures[source_id] = source.failure if source else self._failures[source_id]
+                continue
+            try:
+                if _start_owners is not None and source_id not in _start_owners.source_ids:
+                    _start_owners.source_ids.append(source_id)
+                value = None if spec.cuts is None else spec.cuts[source_id]
+                if type(value) is HistoricalCutRequest:
+                    if value.source_id != source_id:
+                        raise RegistryReadSessionError('CURSOR_MISMATCH')
+                    cut = (self.capture_cut(source_id, ordinal=value.ordinal) if _start_owners is None else
+                        self._capture_cut(source_id, ordinal=value.ordinal, _retained_extra=_start_owners.capture_retained_extra, _capture_owner=_start_owners))
+                elif value is None:
+                    cut = (self.capture_cut(source_id) if _start_owners is None else
+                        self._capture_cut(source_id, _retained_extra=_start_owners.capture_retained_extra, _capture_owner=_start_owners))
+                else:
+                    cut = self.validate_cut(value)
+                    if cut.source_id != source_id:
+                        raise RegistryReadSessionError('CURSOR_MISMATCH')
+                cuts[source_id] = cut
+                snapshot = self._cuts[cut.cut_id][1]
+                if context is None and _start_owners is not None:
+                    context = _start_owners.begin(snapshot, spec)
+                if context is not None:
+                    if (context.snapshot.source_id != source_id
+                            or context.snapshot.objects is not snapshot.objects
+                            or context.snapshot.events is not snapshot.events):
+                        raise RegistryReadSessionError('CURSOR_MISMATCH')
+                    snapshot = context.snapshot
+                retained_bytes = self._retained_bytes()
+                for row in snapshot.objects.values():
+                    selected = [(clause, projection) for clause, projection in clauses if clause.entry_type == row['object_type']]
+                    if not selected:
+                        continue
+                    if context is not None:
+                        context.reserve(size=1024 + sum(context.bytes_bound(row[key])
+                            for key in ('object_type', 'logical_id', 'version_id')))
+                    local = VersionRef(row['object_type'], TypedId.parse(row['logical_id']), TypedId.parse(row['version_id']))
+                    reference = (SourceQualifiedResourceRef(source_id, ResourceVersionRef(local.entity_id, local.version_id))
+                                 if row['object_type'] == 'resource_version/v1' else SourceQualifiedVersionRef(source_id, local))
+                    needed_fields = {field for clause, projection in selected
+                        for field in (*projection, *(predicate.field for predicate in clause.predicates))}
+                    # Per-object managed resource scope remains enforced.
+                    try:
+                        self._authorize(source_id, reference, 'index', needed_fields)
+                    except RegistryReadSessionError as exc:
+                        if exc.code == 'NOT_DISCLOSED':
+                            continue
+                        raise
+                    if _origin_context is not None and row['object_type'] == 'firing_completion/v2':
+                        # Every collected completion, including later predicate
+                        # nonmatches, gets the finite Core exact/publication
+                        # contract before configured projection callbacks run.
+                        from ._product_origin_core import _CoreProof
+                        context.reserve(size=1024 + sum(context.bytes_bound(row[key])
+                            for key in ('object_type', 'logical_id', 'version_id')))
+                        _CoreProof(self, cut, source, context).exact(
+                            reference.to_dict()['ref'], 'firing_completion/v2')
+                    values = self._catalog.read_index(source.resolved.core, reference, snapshot=snapshot,
+                        projection=tuple(sorted(needed_fields)))
+                    if _start_owners is not None and source.failure:
+                        raise RegistryReadSessionError(source.failure)
+                    if context is not None and _requests_start(row['object_type'], needed_fields):
+                        from ._product_origin_includes import _verify_start_projection
+                        _verify_start_projection(context, reference.to_dict()['ref'], values, needed_fields)
+                    if context is not None:
+                        context.reserve(size=context.bytes_bound(values) + 512
+                            + sum(context.bytes_bound(projection) for _clause, projection in selected))
+                    projected, requested = {}, set()
+                    for clause, projection in selected:
+                        guard = (context.scratch(size=context.bytes_bound(values)
+                            + sum(context.bytes_bound(predicate.value) for predicate in clause.predicates))
+                            if context is not None else nullcontext())
+                        with guard:
+                            matched = self._matches(values, clause.predicates)
+                        if matched:
+                            requested.update(projection)
+                            projected.update({k: values[k] for k in projection if k in values})
+                    if not requested:
+                        continue
+                    key = (source_id, row['object_type'], row['logical_id'], row['version_id'])
+                    if context is not None:
+                        context.reserve(size=2048 + context.bytes_bound(projected)
+                            + sum(context.bytes_bound(field) for field in requested)
+                            + sum(context.bytes_bound(row[key]) for key in
+                                ('object_type', 'logical_id', 'version_id', 'schema_ref')))
+                    entry = {'entry_ref': reference.to_dict(), 'entry_type': row['object_type'],
+                        'schema_ref': row['schema_ref'], 'fields': projected,
+                        'disclosure': {'projected_fields': sorted(requested), 'unprovided_fields': sorted(requested - set(projected))},
+                        'source_cut': cut.to_dict(), 'record_access': 'not_checked',
+                        'material_access': 'not_checked' if row['object_type'] == 'resource_version/v1' else 'not_applicable'}
+                    guard = context.scratch(entry) if context is not None else nullcontext()
+                    with guard:
+                        size = len(canonical_json(entry))
+                    entry_bytes += size
+                    entry_bytes_by_source[source_id] = entry_bytes_by_source.get(source_id, 0) + size
+                    if retained_bytes + entry_bytes > self.limits.max_scan_bytes:
+                        raise RegistryReadSessionError('LIMIT_EXCEEDED')
+                    entries[key] = entry
+            except RegistryReadSessionError as exc:
+                if exc.code in {'CURSOR_MISMATCH', 'INVALID_CUT', 'LIMIT_EXCEEDED', 'INVALID_PROJECTION'}:
+                    raise
+                code = exc.code
+                budget = context if context is not None else _start_owners
+                if budget is not None:
+                    from ._product_origin_core import _SAFE_ERROR_CODES
+                    code = code if code in _SAFE_ERROR_CODES else 'INTEGRITY_FAILED'
+                    budget.reserve(size=512 + 128 * len(entries))
+                    canonical_json(RegistryReadSessionError(code).to_dict())
+                failures[source_id] = code
+                entry_bytes_by_source.pop(source_id, None)
+                entries = {key: value for key, value in entries.items() if key[0] != source_id}
+            except Exception as exc:
+                if context is not None and getattr(exc, 'code', None) == 'LIMIT_EXCEEDED':
+                    raise RegistryReadSessionError('LIMIT_EXCEEDED') from None
+                code = getattr(exc, 'code', 'READ_FAILED')
+                budget = context if context is not None else _start_owners
+                if budget is not None:
+                    from ._product_origin_core import _SAFE_ERROR_CODES
+                    code = code if code in _SAFE_ERROR_CODES else 'INTEGRITY_FAILED'
+                    budget.reserve(size=512 + 128 * len(entries))
+                    canonical_json(RegistryReadSessionError(code).to_dict())
+                failures[source_id] = code
+                entry_bytes_by_source.pop(source_id, None)
+                entries = {key: value for key, value in entries.items() if key[0] != source_id}
+        if _start_owners is not None:
+            context = _start_owners.current or _start_owners
+        if context is not None:
+            context.reserve(size=512 + 128 * len(entries)
+                + sum(context.bytes_bound(key) for key in entries))
+        return _Query(fingerprint, tuple(entries[key] for key in sorted(entries)), cuts, spec.source_ids,
+            failures, entry_bytes_by_source)
+
+    def _query_requests_start(self, spec):
+        if type(spec) is not IndexQuery:
+            return False
+        return any(_requests_start(clause.entry_type, clause.projection)
+            or _requests_start(clause.entry_type, (predicate.field for predicate in clause.predicates))
+            for clause in spec.clauses)
+
+    def query_product_origin_v1(self, root, at_cut, include=None, page_size=None, cursor=None):
+        """Read one fixed, fully verified product-origin closure at an exact cut."""
+        from ._product_origin_query import query_product_origin_v1
+        return query_product_origin_v1(self, root, at_cut, include, page_size, cursor)
+
+    def query_index(self, spec, *, cursor=None):
+        # Reject the other pool domain before the ordinary Start dispatcher
+        # creates owners or interprets index-specific fields.
         if cursor is not None:
+            self._alive()
+            if (type(cursor) is str and cursor in self._cursors
+                    and self._cursors[cursor][0].kind != 'index'):
+                raise RegistryReadSessionError('CURSOR_MISMATCH')
+        if not self._query_requests_start(spec):
+            return self._query_index(spec, cursor=cursor)
+        from ._product_origin_core import _clear_exception_frames
+        try:
+            return self._query_start_index(spec, cursor=cursor)
+        except Exception as exc:
+            code = getattr(exc, 'code', 'INTEGRITY_FAILED')
+            _clear_exception_frames(exc)
+        raise RegistryReadSessionError(code) from None
+
+    def _query_start_index(self, spec, *, cursor=None):
+        owners = _StartReadOwners(self)
+        try:
+            try:
+                result = self._query_index(spec, cursor=cursor, _start_owners=owners)
+                # Include failed-source responses in protected final checks,
+                # preserving ordinary IndexQuery unavailable-source semantics.
+                while True:
+                    failures = {state['source_id']: state['access_state'] for state in result['source_results']
+                        if state['access_state'] != 'readable'}
+                    checked = dict(failures)
+                    owners.check(tuple(owners.source_ids), checked)
+                    if checked == failures:
+                        return result
+                    budget = owners.current or owners
+                    budget.reserve(size=3 * budget.bytes_bound(result))
+                    for state in result['source_results']:
+                        if state['source_id'] in checked:
+                            state['access_state'] = checked[state['source_id']]
+                    result = json.loads(canonical_json(result))
+            except Exception as exc:
+                for key in owners.created_cursors:
+                    self._cursors.pop(key, None)
+                if not owners.error_reserved and not owners.contexts:
+                    raise
+                owners.fail(exc, tuple(owners.source_ids))
+        finally:
+            owners.close()
+
+    def _query_index(self, spec, *, cursor=None, _start_owners=None):
+        if cursor is not None:
+            self._alive()
+            self._validate_query(spec)
+            fingerprint = document_digest(spec.to_dict())
             if type(cursor) is not str or cursor not in self._cursors:
                 raise RegistryReadSessionError('CURSOR_MISMATCH')
             query, offset = self._cursors[cursor]
+            if query.kind != 'index':
+                raise RegistryReadSessionError('CURSOR_MISMATCH')
             if query.fingerprint != fingerprint:
                 raise RegistryReadSessionError('CURSOR_MISMATCH')
+            if _start_owners is not None:
+                # A cached page has no relation work to repeat, but its copies,
+                # serialization and final handoff still need bounded ownership.
+                for source_id, cut in query.cuts.items():
+                    if source_id not in query.failures and cut.cut_id in self._cuts:
+                        _start_owners.begin(self._cuts[cut.cut_id][1], spec)
         else:
-            entries, cuts, failures = {}, {}, {}
-            entry_bytes = 0
-            for source_id in sorted(spec.source_ids):
-                source = self._sources.get(source_id)
-                if source is None or source.failure:
-                    failures[source_id] = source.failure if source else self._failures[source_id]
-                    continue
-                try:
-                    value = None if spec.cuts is None else spec.cuts[source_id]
-                    if type(value) is HistoricalCutRequest:
-                        if value.source_id != source_id:
-                            raise RegistryReadSessionError('CURSOR_MISMATCH')
-                        cut = self.capture_cut(source_id, ordinal=value.ordinal)
-                    elif value is None:
-                        cut = self.capture_cut(source_id)
-                    else:
-                        cut = self.validate_cut(value)
-                        if cut.source_id != source_id:
-                            raise RegistryReadSessionError('CURSOR_MISMATCH')
-                    cuts[source_id] = cut
-                    snapshot = self._cuts[cut.cut_id][1]
-                    retained_bytes = self._retained_bytes()
-                    for row in snapshot.objects.values():
-                        selected = [(clause, projection) for clause, projection in clauses if clause.entry_type == row['object_type']]
-                        if not selected:
-                            continue
-                        local = VersionRef(row['object_type'], TypedId.parse(row['logical_id']), TypedId.parse(row['version_id']))
-                        reference = (SourceQualifiedResourceRef(source_id, ResourceVersionRef(local.entity_id, local.version_id))
-                                     if row['object_type'] == 'resource_version/v1' else SourceQualifiedVersionRef(source_id, local))
-                        # Per-object managed resource scope remains enforced.
-                        try:
-                            self._authorize(source_id, reference, 'index')
-                        except RegistryReadSessionError as exc:
-                            if exc.code == 'NOT_DISCLOSED':
-                                continue
-                            raise
-                        needed_fields = {field for clause, projection in selected
-                            for field in (*projection, *(predicate.field for predicate in clause.predicates))}
-                        values = self._catalog.read_index(source.resolved.core, reference, snapshot=snapshot,
-                            projection=tuple(sorted(needed_fields)))
-                        projected, requested = {}, set()
-                        for clause, projection in selected:
-                            if self._matches(values, clause.predicates):
-                                requested.update(projection)
-                                projected.update({k: values[k] for k in projection if k in values})
-                        if not requested:
-                            continue
-                        key = (source_id, row['object_type'], row['logical_id'], row['version_id'])
-                        entry = {'entry_ref': reference.to_dict(), 'entry_type': row['object_type'],
-                            'schema_ref': row['schema_ref'], 'fields': projected,
-                            'disclosure': {'projected_fields': sorted(requested), 'unprovided_fields': sorted(requested - set(projected))},
-                            'source_cut': cut.to_dict(), 'record_access': 'not_checked',
-                            'material_access': 'not_checked' if row['object_type'] == 'resource_version/v1' else 'not_applicable'}
-                        entry_bytes += len(canonical_json(entry))
-                        if retained_bytes + entry_bytes > self.limits.max_scan_bytes:
-                            raise RegistryReadSessionError('LIMIT_EXCEEDED')
-                        entries[key] = entry
-                except RegistryReadSessionError as exc:
-                    if exc.code in {'CURSOR_MISMATCH', 'INVALID_CUT', 'LIMIT_EXCEEDED', 'INVALID_PROJECTION'}:
-                        raise
-                    failures[source_id] = exc.code
-                    entries = {key: value for key, value in entries.items() if key[0] != source_id}
-                except Exception as exc:
-                    failures[source_id] = getattr(exc, 'code', 'READ_FAILED')
-                    entries = {key: value for key, value in entries.items() if key[0] != source_id}
-            query = _Query(fingerprint, tuple(entries[key] for key in sorted(entries)), cuts, spec.source_ids, failures)
+            query = self._collect_index(spec, _start_owners=_start_owners)
+            fingerprint = query.fingerprint
             offset = 0
+        context = (_start_owners.current or _start_owners) if _start_owners is not None else None
+        if context is not None:
+            context.reserve(size=4096 + 3 * context.bytes_bound(query.entries)
+                + 2 * context.bytes_bound(query.failures) + 2 * context.bytes_bound(query.source_ids)
+                + sum(2 * context.bytes_bound(cut.to_dict()) for cut in query.cuts.values()))
         failures = dict(query.failures)
         for source_id in query.source_ids:
             if source_id in failures:
@@ -819,7 +1380,8 @@ class RegistryReadSession:
         if failures != query.failures:
             offset = sum(x['entry_ref']['source_id'] not in failures for x in query.entries[:offset])
             query = _Query(query.fingerprint, tuple(x for x in query.entries if x['entry_ref']['source_id'] not in failures),
-                           {k: v for k, v in query.cuts.items() if k not in failures}, query.source_ids, failures)
+                           {k: v for k, v in query.cuts.items() if k not in failures}, query.source_ids, failures,
+                           {k: v for k, v in query.entry_bytes_by_source.items() if k not in failures})
         page, position = [], offset
         response_bytes = 0
         while position < len(query.entries) and len(page) < spec.page_size:
@@ -842,7 +1404,15 @@ class RegistryReadSession:
                 'cuts': {k: v.to_dict() for k, v in query.cuts.items()}, 'offset': position})
             if continuation not in self._cursors and len(self._cursors) >= self.limits.max_cursors:
                 raise RegistryReadSessionError('LIMIT_EXCEEDED')
-            self._cursors[continuation] = (_Query(query.fingerprint, query.entries, query.cuts, query.source_ids, failures), position)
+            if _start_owners is not None and continuation not in self._cursors:
+                if context is not None:
+                    context.reserve(size=256 + context.bytes_bound(continuation))
+                _start_owners.created_cursors.append(continuation)
+            self._cursors[continuation] = (_Query(query.fingerprint, query.entries, query.cuts, query.source_ids,
+                failures, query.entry_bytes_by_source), position)
+        if context is not None:
+            context.reserve(size=8192 + 2 * context.bytes_bound(page)
+                + 2048 * len(query.source_ids) + 2 * context.bytes_bound(continuation))
         states = []
         for source_id in query.source_ids:
             if source_id in failures:
@@ -861,6 +1431,8 @@ class RegistryReadSession:
             'continuation': continuation, 'coverage': {'state': 'partial' if more or failures else 'complete',
                 'loaded_count': len(page), 'total_count': None if more or failures else len(query.entries)},
             'global_atomic_snapshot': False}
+        if context is not None:
+            context.reserve(size=3 * context.bytes_bound(result))
         if len(canonical_json(result)) > self.limits.max_response_bytes:
             raise RegistryReadSessionError('LIMIT_EXCEEDED')
         # The serialization and pagination work above is also inside the
@@ -878,6 +1450,10 @@ def open_registry_session(request: ReadSessionRequest, *, host: RegistryReadHost
 
 def query_index(session, spec, *, cursor=None):
     return session.query_index(spec, cursor=cursor)
+
+
+def query_product_origin_v1(session, root, at_cut, include=None, page_size=None, cursor=None):
+    return session.query_product_origin_v1(root, at_cut, include, page_size, cursor)
 
 
 def read_exact(session, **kwargs):

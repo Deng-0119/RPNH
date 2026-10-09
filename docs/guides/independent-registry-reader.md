@@ -6,8 +6,8 @@ metadata:
   audience: operator-and-developer
   language: en
   counterpart: independent-registry-reader_ZH.md
-  revision: "2026-10-07.1"
-  status: implementation-candidate
+  revision: "2026-10-09.1"
+  status: implemented
   basis: "explicit trusted local HOST; existing owner-issued authority"
 ---
 
@@ -75,6 +75,99 @@ result is not a globally atomic snapshot. Unavailable sources, denied fields,
 unknown values and absent records remain distinct. Querying does not publish an
 Observation or alter Registry facts; SQLite read-only WAL sidecar behavior is
 not confused with canonical fact writes.
+
+## Query one product's origin in Python
+
+The same session also offers the fixed `product_origin_v1` query. It supports
+canonical `petri_output` and `workspace_write` resource roots, and exact
+`operation_result/v1` roots. Obtain the exact source-qualified root through an
+already authorized reference or reader; no name/path lookup or source inference
+is performed. A resource root uses `SourceQualifiedResourceRef` around the
+original two-field `ResourceVersionRef`. A result root uses
+`SourceQualifiedVersionRef` around its exact typed `VersionRef`.
+
+The following application function takes a previously authorized root and the
+trusted configuration path. `consume_page` is your application callback. It uses
+the default three includes, keeps the captured cut fixed, and repeats the full
+request on every continuation:
+
+```python
+from cpn.rpnh.collaboration import open_read_host_session
+
+
+def read_product_origin(host_config_path, root, consume_page):
+    with open_read_host_session(host_config_path) as session:
+        cut = session.capture_cut(root.source_id)
+        request = {
+            "root": root,
+            "at_cut": cut,
+            "include": None,
+            "page_size": 20,
+        }
+        cursor = None
+        while True:
+            page = session.query_product_origin_v1(**request, cursor=cursor)
+            consume_page(page)
+            cursor = page["continuation"]
+            if cursor is None:
+                break
+```
+
+`include=None` means `producer_execution`, `start_inputs`, and `claims`, in that
+order. The explicit page size `20` requires a session maximum of at least 20;
+use `page_size=None` to select the default `min(20, effective maximum)` when HOST
+limits may be tighter. The profile's effective maximum is
+`min(100, session.limits.max_page_size)`. Do not change page size or recapture the
+cut halfway through this loop. The equivalent convenience function is
+`query_product_origin_v1(session, root, cut, include=None, page_size=None,
+cursor=None)`.
+
+For a strictly producer-only request, use an already open session and its cut:
+
+```python
+def read_producer_only(session, root, cut):
+    return session.query_product_origin_v1(
+        root, cut, include=("producer_execution",)
+    )
+```
+
+This returns the complete six-field `root_proof`, no rows, and no continuation.
+It does not look for Start or enumerate claim tokens/consumption. Add
+`start_inputs` or `claims` only when you want that relation and the existing
+grant allows its fixed fields. Default includes need both sets of permissions;
+the query never silently drops an unauthorized relation. All requested field
+permissions are checked before object existence or dependency integrity.
+The exact field list is in the
+[session reference](../reference/registry-read-sessions.md).
+
+The producer proof verifies the required publication, admission, completion, and
+settlement closure. A resource's `root_role="registered_output"` additionally
+means exact membership in the canonical result's output list. A nonmember may
+be `invocation_produced_resource` only after the same complete closure succeeds;
+a result root is `operation_result`. Result roots need no output-list permission
+and do not expand outputs.
+
+Start rows retain original positions and actual input resource versions, including
+substitution and repeated resources. Claim rows distinguish consumed from
+non-consuming claims and may have a null resource. A disclosed claim resource
+reference does not authorize reading its target. These rows never read business
+material or assert that input content was actually read or influenced a model.
+
+Every requested candidate and endpoint is validated before page one. A partial
+coverage state means only that validated rows remain to be delivered; it does
+not mean missing proof or a failed scan. The proof repeats on each page. Cursors
+are session-local, share the index-query slot budget, and cannot be exchanged
+with index cursors or used with a changed request. Replay reuses the verified
+rows but still checks current permission and expiry after serialization.
+
+The query is finite and single-source. It does not enumerate recursive ancestry,
+other outputs, tool-call causality, or content influence. Unsupported includes
+return `UNSUPPORTED_RELATION`. Legal changed-net settlement returns
+`UNSUPPORTED_SETTLEMENT_SHAPE`. Later promotion never rewrites an old cut;
+historical reads still require current authority. A necessary proof or row that
+cannot fit the bounded response returns `LIMIT_EXCEEDED`, without a partial
+success prefix. This Python API adds no comparison-viewer route, CLI origin
+command, owner action, or Registry fact write.
 
 ## Comparison and verification limits
 

@@ -13,6 +13,152 @@ from .references import SourceQualifiedResourceRef, SourceQualifiedVersionRef, _
 from ..registry.schema_catalog import canonical_json
 
 READER_CONTRACT_VERSION = 'rpnh/registry_read/v1'
+PRODUCT_ORIGIN_PROFILE = 'product_origin_v1'
+PRODUCT_ORIGIN_PAGE_SCHEMA = 'rpnh/product_origin_page/v1'
+PRODUCT_ORIGIN_CONTRACT_REVISION = 2
+
+
+def product_origin_delivery_contract():
+    """Complete fixed delivery facts used with the reader/dependency fingerprint.
+
+    This inert description conveys no authority and introduces no request wire
+    schema. Return fresh containers so callers cannot mutate later fingerprints.
+    The content schema enforces the page's structural types; session validation
+    additionally enforces source/cut equality and the requested closure.
+    """
+    return {
+        'profile': PRODUCT_ORIGIN_PROFILE,
+        'page_schema': PRODUCT_ORIGIN_PAGE_SCHEMA,
+        'contract_revision': PRODUCT_ORIGIN_CONTRACT_REVISION,
+        'request': {
+            'parameters': ('root', 'at_cut', 'include', 'page_size', 'cursor'),
+            'defaults': {'include': None, 'page_size': None, 'cursor': None},
+            'root': (
+                ('SourceQualifiedResourceRef', 'resource_version/v1',
+                    ('resource_id:resource', 'resource_version_id:resource_version')),
+                ('SourceQualifiedVersionRef', 'operation_result/v1',
+                    ('logical_id:operation_result', 'version_id:operation_result_version')),
+            ),
+            'resource_origins': ('petri_output', 'workspace_write'),
+            'resource_producer': 'invocation/v1',
+            'at_cut': 'unchanged session-issued SourceCut; root.source_id equals cut.source_id',
+            'include_order': ('producer_execution', 'start_inputs', 'claims'),
+            'include_default': ('producer_execution', 'start_inputs', 'claims'),
+            'include_required': 'producer_execution',
+            'include_explicit': 'nonempty unique list or tuple of strings; normalize in include_order',
+            'page_size_type': 'strict positive int; bool rejected',
+            'page_size_maximum': 'min(100, session.limits.max_page_size)',
+            'page_size_default': 'min(20, page_size_maximum)',
+            'cursor': 'None or nonempty opaque session-local string; unchanged complete request required',
+            'absent_parameters': ('fields', 'limits'),
+            'no_resolution': ('name', 'path', 'latest', 'bare_id', 'implicit_source',
+                'generic_resource_root', 'cross_source', 'implicit_current_cut'),
+            'static_errors': {
+                'include_type_duplicate_missing_required': 'INVALID_QUERY',
+                'unknown_relation': 'UNSUPPORTED_RELATION',
+                'page_size_type_or_nonpositive': 'INVALID_QUERY',
+                'page_size_above_maximum': 'LIMIT_EXCEEDED',
+                'root_shape': 'INVALID_ROOT',
+            },
+        },
+        'page': {
+            'exact_fields': ('schema_version', 'profile', 'contract_revision', 'root',
+                'source_cut', 'access_revision', 'root_proof', 'rows', 'coverage', 'continuation'),
+            'root': 'original exact source-qualified request wire',
+            'source_cut': ('source_id:string', 'cut_id:string',
+                ('head', ('ordinal:nonnegative_integer', 'writer_fencing_epoch:nonnegative_integer')),
+                ('reader_contract_version', READER_CONTRACT_VERSION)),
+            'access_revision': 'nonempty current verified authority revision string',
+            'root_proof': (
+                ('producer_invocation_ref', 'source-qualified invocation/v1'),
+                ('transition_firing_ref', 'source-qualified transition_firing/v1'),
+                ('firing_completion_ref', 'source-qualified firing_completion/v2'),
+                ('operation_result_ref', 'source-qualified operation_result/v1'),
+                ('operation_binding_ref', 'source-qualified operation_binding/v1'),
+                ('root_role', ('operation_result', 'registered_output', 'invocation_produced_resource')),
+            ),
+            'rows': (
+                ('start_input', (
+                    ('role', 'start_input'), ('position', 'original zero-based integer'),
+                    ('input_binding_ref', 'source-qualified generic resource_version/v1 or petri_token/v1'),
+                    ('resource_ref', 'source-qualified two-field ResourceVersionRef'),
+                    ('evidence', (('start_event_id', 'event TypedId string'),
+                        ('start_transaction_id', 'transaction TypedId string'),
+                        ('start_ordinal', 'nonnegative integer'))),
+                    ('verification', (('binding_identity', 'exact_at_cut'),
+                        ('resource_identity', 'exact_at_cut'), ('target_record', 'not_requested'),
+                        ('material', 'not_read'))),
+                )),
+                ('claim', (
+                    ('role', 'claim'), ('token_ref', 'source-qualified petri_token/v1'),
+                    ('resource_ref', 'null or source-qualified two-field ResourceVersionRef'),
+                    ('classification', ('consumed_claim', 'non_consuming_claim')),
+                    ('evidence', (('transition_firing_ref', 'source-qualified transition_firing/v1'),
+                        ('claim_marking_delta_ref', 'source-qualified marking_delta/v1'))),
+                    ('verification', (('token_record', 'verified_at_cut'),
+                        ('resource_target', 'not_requested'), ('material', 'not_read'))),
+                )),
+            ),
+            'ref_wire': {
+                'version': ('schema_version=rpnh/collaboration/source_version_ref/v1', 'source_id',
+                    ('ref', ('entity_type', 'logical_id', 'version_id'))),
+                'resource': ('schema_version=rpnh/collaboration/source_resource_ref/v1', 'source_id',
+                    ('ref', ('resource_id', 'resource_version_id'))),
+                'identity': 'exact entity-specific logical/version TypedId kinds; lowercase 32-hex payload',
+                'source': 'all output refs use the request source identity',
+            },
+            'row_order': ('start_input original position', 'claim source/entity/logical/version'),
+            'duplicates': 'preserve repeated resources at distinct positions and across roles',
+            'producer_only': {'rows': (), 'continuation': None},
+            'projection': 'fixed shapes only; no material, titles, outputs array, nodes, edges or private closure IDs',
+        },
+        'coverage': {
+            'exact_fields': ('scope', 'state', 'relations'),
+            'scope': 'authorized_root_at_cut',
+            'states': ('partial', 'complete'),
+            'producer_execution': {'state': 'complete', 'witness': 'verified_at_cut'},
+            'requested_relations': ('start_inputs', 'claims'),
+            'requested_shape': {'state': ('partial', 'complete'), 'witness': 'verified_at_cut'},
+            'requested_state': 'cumulative delivery through page end; empty complete; unreached nonempty partial',
+            'not_requested_shape': {'state': 'not_in_profile'},
+            'unsupported_relations': ('direct_derivations', 'calls_in_execution', 'observed_reads',
+                'formal_access', 'declarations', 'parent_child', 'recursive_ancestors', 'content_influence'),
+            'unsupported_shape': {'state': 'not_in_profile'},
+            'global_state': 'partial iff validated rows remain and continuation nonnull; else complete and null',
+            'no_counts': 'no total, hidden, scanned, candidate, endpoint or loaded counts',
+        },
+        'delivery': {
+            'before_first_page': 'complete requested P union authorization, Core and every requested candidate/endpoint closure',
+            'page_limit': 'at most resolved page_size rows; entire canonical envelope/proof/coverage/continuation bytes count',
+            'byte_fit': 'may reduce rows; necessary proof/envelope or one row not fitting gives LIMIT_EXCEEDED',
+            'progress': 'never empty rows with continuation; repeat the full six-field proof on every page',
+            'scope': 'finite exact authorized root at cut; no actual-read, delivery-ack or semantic-influence claim',
+            'history': 'promotion after cut stays absent; current authority still required for historical cuts',
+            'changed_net': 'legal changed-net Success is UNSUPPORTED_SETTLEMENT_SHAPE; no bridge/replay',
+            'budget': 'existing independent ReadLimits; capture and W=D+E+Rel+O+C+S+A each bounded; reserve before allocation',
+            'retention': 'all live state, pinned snapshot, rows/proof, response, scratch and serialization bytes counted',
+            'final_guard': 'after detachment and serialization/size check, final_recheck and TTL; no large copy afterward',
+            'errors': ('code', 'fixed safe message', 'reopen_session'),
+            'error_guard': 'protected-data errors serialized before current authority/source/schema/catalog/TTL checks',
+        },
+        'cursor': {
+            'kind': 'product_origin',
+            'pool': 'shared session IndexQuery cursor pool, max_cursors, lifecycle and retained accounting; disjoint kind',
+            'opposite_kind': 'CURSOR_MISMATCH before payload interpretation',
+            'fingerprint_values': ('kind', 'profile', 'contract_revision', 'root wire', 'normalized include',
+                'resolved page_size', 'complete delivery contract', 'complete reader fields/types/defaults',
+                'complete dependency table and predicate identity', 'complete SourceCut',
+                'selected exact task', 'access_path', 'binding_generation', 'authority identity/revision',
+                'schema fingerprint', 'configured catalog fingerprint', 'reader_contract_version'),
+            'token_binding': ('secret', 'session_id', 'kind', 'full fingerprint', 'complete cut', 'offset'),
+            'cache': 'only completed detached proof/ordered rows/compact relation boundaries/request/fingerprint/byte totals',
+            'replay': 'same normalized complete request/cursor reuses state and next token; no additional slot or closure evaluation',
+            'accounting': 'shared state once by identity; every unique token/offset/kind/reference record separately',
+            'rollback': 'only newly inserted record by actual identity; never delete or overwrite a pre-existing token',
+            'invalidation': 'current authority/source/schema/catalog/TTL changes reject delivery and clear sensitive cache',
+            'end': 'final page creates no new retained query; earlier continuations remain replayable until invalidation',
+        },
+    }
 
 
 class RegistryReadSessionError(ValueError):
@@ -259,9 +405,10 @@ def document_digest(value):
 
 
 def registry_read_contract_schema_data():
-    """Inert request/query/cut content schemas; no Registry object types."""
+    """Inert request/query/cut/page content schemas; no Registry object types."""
     from pathlib import Path
     root = Path(__file__).resolve().parents[2] / 'schemas' / 'rpnh'
-    names = ('registry_source_cut', 'registry_read_session_request', 'registry_index_query')
+    names = ('registry_source_cut', 'registry_read_session_request', 'registry_index_query',
+             'product_origin_page')
     paths = {'rpnh/' + name + '/v1': root / (name + '.v1.schema.json') for name in names}
     return {schema: json.loads(path.read_text(encoding='utf-8')) for schema, path in paths.items()}, (), paths

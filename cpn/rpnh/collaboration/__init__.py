@@ -210,11 +210,12 @@ _OPTIONAL_PUBLIC_EXPORTS = {
     **{name: '.registry_read_contracts' for name in (
         'RegistryReadSessionError', 'ReadLimits', 'SourceSelection', 'ExplicitSources',
         'SelectedSourceSet', 'ReadSessionRequest', 'PublicRegistryHead', 'SourceCut',
-        'HistoricalCutRequest', 'TypedPredicate', 'TypedIndexClause', 'IndexQuery')},
+        'HistoricalCutRequest', 'TypedPredicate', 'TypedIndexClause', 'IndexQuery',
+        'PRODUCT_ORIGIN_PROFILE', 'PRODUCT_ORIGIN_PAGE_SCHEMA', 'PRODUCT_ORIGIN_CONTRACT_REVISION')},
     **{name: '.registry_read_session' for name in (
         'RegistryReadHostBinding', 'RegistryReadSession', 'ExistingReadAuthorityProvider',
         'ResolvedReadSource', 'open_readonly_source', 'open_registry_session',
-        'query_index', 'read_exact', 'read_material')},
+        'query_index', 'query_product_origin_v1', 'read_exact', 'read_material')},
     **{name: '.registry_typed_readers' for name in (
         'TypedReaderCatalog', 'TypedReadError', 'DEFAULT_TYPED_READER_CATALOG')},
     **{name: '.subnet_exchange' for name in (

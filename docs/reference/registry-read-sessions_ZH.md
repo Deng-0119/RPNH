@@ -6,8 +6,8 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: registry-read-sessions.md
-  revision: "2026-10-07.1"
-  status: implemented-offline-functional-coverage
+  revision: "2026-10-09.1"
+  status: implemented
 ---
 
 [English](registry-read-sessions.md) | [中文](registry-read-sessions_ZH.md)
@@ -95,6 +95,141 @@ predicate/projection 字段、每个 `in` 最多 64 个值、64 KiB 查询输入
 可以收紧限制。标量行数/字节预算在无界 history hydration 前检查；每个 cut
 只读一遍历史，不对每个索引对象重新扫描。超限返回 `LIMIT_EXCEEDED` 或合法
 有界 continuation，不伪报 complete。
+
+## 固定产物来源查询
+
+`session.query_product_origin_v1(root, at_cut, include=None, page_size=None,
+cursor=None)` 是公共 Python 会话能力。模块级便捷函数
+`query_product_origin_v1(session, root, at_cut, include=None, page_size=None,
+cursor=None)` 行为相同，两者都可通过 `cpn.rpnh.collaboration` 使用。
+常量 `PRODUCT_ORIGIN_PROFILE`、`PRODUCT_ORIGIN_PAGE_SCHEMA`、
+`PRODUCT_ORIGIN_CONTRACT_REVISION` 分别标识 `product_origin_v1`、
+`rpnh/product_origin_page/v1` 和修订 `2`。没有 `fields` 参数或逐请求限额覆盖。
+现有比较查看器及其 HTTP 接口不提供此查询。
+
+### 精确根与请求
+
+先选择一个已获授权的 source 并捕获 cut。`at_cut` 必须是本会话签发且未被修改的
+`SourceCut`，其 source 与 `root` 相同。支持以下根形式：
+
+- `SourceQualifiedResourceRef` 包装原两字段 `ResourceVersionRef`：来源为 canonical
+  `petri_output` 或 `workspace_write`，且 producer 为 Invocation
+- `SourceQualifiedVersionRef` 包装精确 `operation_result/v1` 的 `VersionRef`，
+  ID kind 分别为 `operation_result` / `operation_result_version`
+
+不接受 generic `VersionRef` 包装的 resource、名称、路径、裸 ID、`latest`、隐式 source
+或跨源搜索。resource 来源限制只用于根，不限制 Start 输入或 claim 的 resource。
+合法请求不会在内部追踪更新的 head。
+
+`include=None` 按固定顺序请求全部三个关系：`producer_execution`、`start_inputs`、
+`claims`。显式非空 list 或 tuple 必须由无重复字符串组成，且包含 `producer_execution`；
+任何输入顺序均正规化到同一固定顺序。只要生产者证明时，传
+`include=("producer_execution",)`，此时既不查找 Start，也不枚举 claim token 或已消费
+claims。仅另加 `claims` 不查找 Start；仅另加 `start_inputs` 不要求 Claims 公开字段，
+也不返回消费分类。不支持的关系在读取对象前拒绝。
+
+`page_size` 必须是正整数，拒绝布尔值。最大值是
+`min(100, session.limits.max_page_size)`，默认值是 `min(20, maximum)`。
+错误类型和非正数返回 `INVALID_QUERY`；显式超限返回 `LIMIT_EXCEEDED`，不会截断到上限。
+这些 profile 限制不改变 `IndexQuery` 或 `ReadLimits` 的默认值。
+
+### 必需字段权限
+
+在检查对象存在性、completion 数量、Start 缺失或依赖完整性之前，先完整预检本请求
+需要的所有 record/index 字段。仅有根读取权限不足。沿用 owner 签发的
+`ObserverReadScope`，查询不签发 grant。record 与 index 权限分别检查。
+
+| Entry type | 所有 include 必需的 record 字段 | 条件 record 字段 |
+| --- | --- | --- |
+| `invocation/v1` | `invocation_ref`, `task_ref`, `net_instance_ref`, `own_transition_firing_ref`, `operation_binding_ref`, `operation_execution_lease_ref` | 无 |
+| `transition_firing/v1` | `transition_firing_ref`, `task_ref`, `net_instance_ref`, `operation_binding_ref`, `firing_admission_ref`, `claim_marking_delta_ref`, `admission_marking_checkpoint_ref` | Start：`start_event_id`, `start_transaction_id`, `start_ordinal`, `start_input_binding_refs`, `start_input_resource_refs`；Claims：`claimed_input_refs` |
+| `firing_admission/v1` | `firing_admission_ref`, `transition_firing_ref`, `invocation_ref`, `operation_execution_lease_ref`, `claim_marking_delta_ref`, `admission_marking_checkpoint_ref` | 无 |
+| `firing_completion/v2` | `firing_completion_ref`, `transition_firing_ref`, `invocation_ref`, `operation_result_ref`, `successor_checkpoint_ref` | 无 |
+| `operation_result/v1` | `operation_result_ref`, `invocation_ref`, `transition_firing_ref`, `business_outcome` | Resource 根：`output_resource_refs` |
+| `marking_checkpoint/v1` | `marking_checkpoint_ref`, `net_ref`, `settled`, `transition_firing_refs` | 无 |
+| `resource_version/v1` | 无 | Resource 根：`resource_id`, `resource_version_id`, `origin_kind`, `producer_ref`, `provenance_producer_invocation_ref`, `provenance_operation_binding_ref` |
+| `marking_delta/v1` | 无 | Claims：`marking_delta_ref`, `net_instance_ref`, `phase`, `transition_firing_refs`, `operation_binding_refs`, `consumed_refs` |
+| `petri_token/v1` | 无 | Claims：`petri_token_ref`, `net_instance_ref`, `resource_ref` |
+
+所有 include 还需要 `firing_completion/v2` 的 index 字段
+`transition_firing_ref`、`firing_completion_ref`、`invocation_ref`、`operation_result_ref`。
+Result 根不需要 `output_resource_refs` 权限，也不展开其他 outputs。内部校验依赖不产生
+额外 record 或正文披露权。原默认投影不变；新增六类 reader 默认只投影自己的 self ref，
+Start 字段必须显式请求。
+
+### 页、证明与行
+
+成功响应恰含：`schema_version`、`profile`、`contract_revision`、`root`、`source_cut`、
+`access_revision`、`root_proof`、`rows`、`coverage`、`continuation`。随包提供的
+[page content schema](../../cpn/schemas/rpnh/product_origin_page.v1.schema.json)
+仅为惰性校验数据，不是新增 Registry 对象或持久事实。
+
+每页重复 `root_proof`，且恰含六字段：`producer_invocation_ref`、`transition_firing_ref`、
+`firing_completion_ref`、`operation_result_ref`、`operation_binding_ref`、`root_role`。
+所有引用均完整且带 source 身份。`root_role` 的含义如下：
+
+- `registered_output`：精确 resource 属于 canonical result 的 `output_resource_refs`
+- `invocation_produced_resource`：resource 不是上述成员，但全部必需 producing closure 成立
+- `operation_result`：根为 result
+
+非成员角色仍要求完整 producing closure。同 Invocation 或单独的 `produced_by` 关系
+既不足以证明正式输出成员资格，也不足以使本 profile 查询成功。响应不披露其他 outputs、
+私有闭包 ID、task/round/net/lease 细节、标题或正文。
+
+只有以下两种行形状：
+
+- `start_input`：`role`、原始零起始 `position`、`input_binding_ref`、`resource_ref`、
+  `evidence`、`verification`。Binding 是带 source 的 generic resource 或 token
+  `VersionRef`，resource 使用两字段 `ResourceVersionRef` 包装。Evidence 恰含
+  `start_event_id`、`start_transaction_id`、`start_ordinal`；event/transaction ID 保持
+  typed 字符串。Verification 恰为 `binding_identity="exact_at_cut"`、
+  `resource_identity="exact_at_cut"`、`target_record="not_requested"`、`material="not_read"`。
+- `claim`：`role`、`token_ref`、可空 `resource_ref`、`classification`、`evidence`、
+  `verification`。Classification 为 `consumed_claim` 或 `non_consuming_claim`。
+  Evidence 恰含 `transition_firing_ref`、`claim_marking_delta_ref`。Verification 恰为
+  `token_record="verified_at_cut"`、`resource_target="not_requested"`、`material="not_read"`。
+
+Start 行在 claims 之前，保留原 position，包括不同位置重复的 resource。Claims 按完整
+source/entity/logical/version 身份排序，不同 role 不合并。Start 记录实际输入 resource
+版本，substitution 后它可以合法地不同于 token 的 resource。Claim 的 resource 引用
+不代表读取过目标 metadata 或正文。仅生产者的成功响应为 `rows=[]`、`continuation=null`。
+
+### Coverage、分页与有限范围
+
+首个成功页之前，所有必需 producing closure 和请求关系的全部 candidate/endpoint 检查
+都已完成。后续位置有损坏项、缺少必需 witness、字段未授权或校验预算不足，均不能返回
+前半成功结果或 cursor。
+
+`coverage` 仅含 `scope="authorized_root_at_cut"`、`state`、`relations`。生产者关系始终
+为 `{state: complete, witness: verified_at_cut}`。已请求 Start/Claims 的
+`witness="verified_at_cut"`；截至本页累计交付完整时 state 为 `complete`，否则为
+`partial`。合法空关系即使其他关系尚未交付完也为 complete；尚未开始交付的非空关系为
+partial。未请求关系恰为 `{state: not_in_profile}`。以下固定不支持标签始终用相同形状，
+不查询存在性：`direct_derivations`、`calls_in_execution`、`observed_reads`、`formal_access`、
+`declarations`、`parent_child`、`recursive_ancestors`、`content_influence`。请求任一项返回
+`UNSUPPORTED_RELATION`。没有隐藏、候选、扫描或总数量。
+
+全局 `partial` 仅表示完整校验且已授权的行尚未交付完，同时 continuation 非空；全局
+`complete` 的 continuation 为 null。整页 envelope、重复 proof、coverage、continuation
+均计入响应字节上限。为满足字节限额，行数可少于 `page_size`。必要 proof/envelope 或单个
+必要行装不下时返回 `LIMIT_EXCEEDED`，不返回空行页加 continuation。历史 capture、逻辑
+校验工作、保留状态和响应字节分别受现有 session 限制约束。
+
+续页必须带回未变的完整请求，包括 root、cut、include、page size，以及返回的 cursor。
+仅顺序不同的等价 include 会正规化为相同集合。Origin 与 index cursor 共用会话槽上限和
+生命周期，但不能互换（`CURSOR_MISMATCH`）。重放复用已验证 rows 和下一 token，不新增槽。
+成功、重放和受保护数据相关错误均在序列化后复核当前 authority、source binding、
+schema/catalog 和到期时间。安全错误响应只含 `code`、固定 `message`、`reopen_session`；
+authority/到期错误覆盖待发的数据相关错误。
+
+支持普通同-net sibling Success。合法 changed-net settlement 返回
+`UNSUPPORTED_SETTLEMENT_SHAPE`，本查询不执行 bridge 或 replay。晚到 canonical promotion
+不能让对象在旧 cut 中变得可见。新会话必须重新捕获当前或显式历史 cut，并通过当前权限
+检查；旧 handle 和 cursor 不能转移。
+
+`complete` 仅描述本次有限授权根、cut 和所选关系，不证明全部 workflow 历史、递归祖先、
+实际阅读、delivery acknowledgment、工具调用因果或模型/内容影响。
+完整请求续页示例见[独立读取指南](../guides/independent-registry-reader_ZH.md)。
 
 ## 交付与失效
 
