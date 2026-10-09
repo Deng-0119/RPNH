@@ -3,7 +3,8 @@ from __future__ import annotations
 
 from collections import Counter
 from dataclasses import fields, replace
-from itertools import combinations, product
+from itertools import combinations
+from time import monotonic
 import uuid
 
 from ..marking import MarkingStateError
@@ -111,41 +112,99 @@ def check_state_safety(analysis_input, state):
     return tuple(reasons)
 
 
-def enabled_bindings(analysis_input, state):
+class _EnumerationDeadline(Exception):
+    """Stop pure analysis without altering its recorded semantic conclusions."""
+
+
+def _check_deadline(deadline):
+    if deadline is not None and monotonic() >= deadline:
+        raise _EnumerationDeadline
+
+
+def _candidate_groups(pools, deadline):
+    """Iterative deterministic Cartesian traversal, keeping no combination pool.
+
+    Every input pool is already known nonempty. Each yielded candidate costs
+    at most a path through the declared inputs; a budget lookahead consumes only
+    one more candidate rather than all combinations of a weighted input.
+    """
+    if not pools:
+        _check_deadline(deadline)
+        yield ()
+        return
+    stack = [iter(combinations(*pools[0]))]
+    prefix = []
+    while stack:
+        _check_deadline(deadline)
+        try:
+            group = next(stack[-1])
+        except StopIteration:
+            stack.pop()
+            if prefix:
+                prefix.pop()
+            continue
+        if len(stack) == len(pools):
+            yield (*prefix, group)
+        else:
+            prefix.append(group)
+            stack.append(iter(combinations(*pools[len(stack)])))
+
+
+def enabled_bindings(analysis_input, state, *, deadline=None, _candidate_limit=None):
     support = check_supported_semantics(analysis_input)
     if not support.supported:
         return BindingEnumeration((), False, support.reasons)
+    limit = analysis_input.policy.max_bindings if _candidate_limit is None else _candidate_limit
+    if type(limit) is not int or not 0 <= limit <= analysis_input.policy.max_bindings:
+        raise ValueError("candidate replay bound differs from the analysis policy")
     local = restore_state(analysis_input, state)
     actions = []
-    # Every occurrence and every finite case remains a distinct choice.
-    for occurrence in state.active:
-        for case in _model(analysis_input, occurrence.transition_id).cases:
-            actions.append(ActionBinding("SETTLE", occurrence.transition_id,
-                firing_ref=occurrence.firing_ref, case_id=case.case_id))
     examined = 0
-    for transition_id in sorted(local._net.transitions):
-        required = Counter()
-        for place, _, weight in local._claim_input_arcs(transition_id):
-            required[place] += weight
-        for place, target, weight in local._net.lease_reference_arcs:
-            if target == transition_id:
+    try:
+        # SETTLE choices are bounded by the explicit input occurrences/models,
+        # not a combinatorial pool. Preserve their existing order and counters.
+        for occurrence in state.active:
+            for case in _model(analysis_input, occurrence.transition_id).cases:
+                _check_deadline(deadline)
+                actions.append(ActionBinding("SETTLE", occurrence.transition_id,
+                    firing_ref=occurrence.firing_ref, case_id=case.case_id))
+        for transition_id in sorted(local._net.transitions):
+            _check_deadline(deadline)
+            required = Counter()
+            for place, _, weight in local._claim_input_arcs(transition_id):
                 required[place] += weight
-        pools = [combinations(tuple(t.token_id for t in local._fresh_on(place, transition_id)), weight)
-                 for place, weight in sorted(required.items())]
-        for groups in product(*pools):
-            if examined >= analysis_input.policy.max_bindings:
-                return BindingEnumeration(tuple(actions), False, ("max_bindings",), examined)
-            examined += 1
-            selected_ids = set(i for group in groups for i in group)
-            # Never filter by unrestricted is_enabled: a later exact binding can work.
-            candidate = local._try_reserve(transition_id, set(), allowed_token_ids=selected_ids)
-            if candidate is None or set((*candidate.token_ids, *candidate.reference_token_ids)) != selected_ids:
+            for place, target, weight in local._net.lease_reference_arcs:
+                if target == transition_id:
+                    required[place] += weight
+            pools = [(tuple(t.token_id for t in local._fresh_on(place, transition_id)), weight)
+                     for place, weight in sorted(required.items())]
+            if any(len(tokens) < weight for tokens, weight in pools):
                 continue
-            if not local._is_enabled_locked(transition_id, allowed_token_ids=selected_ids):
-                continue
-            refs = tuple(sorted((t.token_ref for t in local._tokens if t.token_id in selected_ids),
-                                key=lambda r: (r.entity_type, str(r.entity_id), str(r.version_id))))
-            actions.append(ActionBinding("START", transition_id, refs))
+            candidates = _candidate_groups(pools, deadline)
+            while True:
+                # Stored time prefixes replay exactly their examined START
+                # count, without constructing an extra lookahead candidate.
+                if _candidate_limit is not None and examined >= limit:
+                    return BindingEnumeration(tuple(actions), False, ("max_seconds",), examined)
+                try:
+                    groups = next(candidates)
+                except StopIteration:
+                    break
+                if examined >= limit:
+                    return BindingEnumeration(tuple(actions), False, ("max_bindings",), examined)
+                examined += 1
+                selected_ids = set(i for group in groups for i in group)
+                # Never filter by unrestricted is_enabled: a later exact binding can work.
+                candidate = local._try_reserve(transition_id, set(), allowed_token_ids=selected_ids)
+                if candidate is None or set((*candidate.token_ids, *candidate.reference_token_ids)) != selected_ids:
+                    continue
+                if not local._is_enabled_locked(transition_id, allowed_token_ids=selected_ids):
+                    continue
+                refs = tuple(sorted((t.token_ref for t in local._tokens if t.token_id in selected_ids),
+                                    key=lambda r: (r.entity_type, str(r.entity_id), str(r.version_id))))
+                actions.append(ActionBinding("START", transition_id, refs))
+    except _EnumerationDeadline:
+        return BindingEnumeration(tuple(actions), False, ("max_seconds",), examined)
     return BindingEnumeration(tuple(actions), True, (), examined)
 
 

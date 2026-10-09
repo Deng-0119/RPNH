@@ -262,26 +262,67 @@ def _checked_graph(current_input: AnalysisInput, data: Mapping) -> ExplorationGr
         initial_bindings = None
     else:
         enumerations = {}
+        raw_initial = data["initial_bindings"]
+        stored_initial = None
+        if raw_initial is not None:
+            from .contracts import BindingEnumeration
+            candidate_count = raw_initial["candidates_examined"]
+            if (type(candidate_count) is not int or not 0 <= candidate_count <= policy.max_bindings
+                    or type(raw_initial["complete"]) is not bool):
+                raise ValueError("initial enumeration exceeds its candidate bound")
+            stored_initial = BindingEnumeration(
+                tuple(_binding_from_data(binding) for binding in raw_initial["bindings"]),
+                raw_initial["complete"], tuple(raw_initial["reasons"]), candidate_count)
+            if canonical_json(stored_initial) != canonical_json(raw_initial):
+                raise ValueError("noncanonical initial enumeration")
         stopped = {i for i, node in enumerate(nodes)
                    if current_input.terminal_contract.stop_on_terminal
                    and classify_terminal(current_input, node.state).allowed}
         for i, node in enumerate(nodes):
-            if i in stopped:
-                if outgoing[i]:
-                    raise ValueError("action after terminal stop")
-                expected_bindings = set()
+            if i in stopped and outgoing[i]:
+                raise ValueError("action after terminal stop")
+            # An untouched time/depth/graph-budget frontier makes no
+            # enabledness or closure claim. Do not restart its search under
+            # the Registry writer lock solely to reconfirm UNKNOWN.
+            need_enumeration = ((i == 0 and stored_initial is not None)
+                or (i not in stopped and (i in expanded or outgoing[i]
+                    or set(pending.get(i, ())) - {"max_seconds", "max_states", "max_edges", "max_depth"})))
+            if not need_enumeration:
                 enumeration = None
+                expected_bindings = set()
+            elif i == 0 and stored_initial is not None and not stored_initial.complete:
+                if stored_initial.reasons == ("max_seconds",):
+                    prefix = semantics.enabled_bindings(current_input, node.state,
+                        _candidate_limit=stored_initial.candidates_examined)
+                    if prefix.candidates_examined != stored_initial.candidates_examined:
+                        raise ValueError("stored candidate prefix is longer than the real enumeration")
+                    if stored_initial.candidates_examined == 0:
+                        # Deadline may interrupt the explicit SETTLE choices
+                        # before START enumeration. They keep their input
+                        # order and do not allocate a Cartesian pool.
+                        if (any(binding.kind != "SETTLE" for binding in stored_initial.bindings)
+                                or prefix.bindings[:len(stored_initial.bindings)] != stored_initial.bindings):
+                            raise ValueError("stored settlement prefix differs")
+                    elif prefix.bindings != stored_initial.bindings:
+                        raise ValueError("stored candidate prefix differs")
+                    enumeration = stored_initial
+                else:
+                    enumeration = semantics.enabled_bindings(current_input, node.state)
+                    if enumeration != stored_initial:
+                        raise ValueError("stored binding cutoff differs")
             else:
                 enumeration = semantics.enabled_bindings(current_input, node.state)
+            if enumeration is not None:
                 enumerations[i] = enumeration
-                expected_bindings = {canonical_json(binding) for binding in enumeration.bindings}
+                expected_bindings = (set() if i in stopped else
+                    {canonical_json(binding) for binding in enumeration.bindings})
             actual_bindings = [canonical_json(edge.successor.action.binding) for edge in outgoing[i]]
             if len(set(actual_bindings)) != len(actual_bindings) or not set(actual_bindings) <= expected_bindings:
                 raise ValueError("edge is not a distinct enabled binding")
             unresolved = any(edge.target is None or edge.successor.unknown_reasons for edge in outgoing[i])
             if i in expanded:
                 if (unresolved or set(actual_bindings) != expected_bindings
-                        or (enumeration is not None and not enumeration.complete)):
+                        or (i not in stopped and enumeration is not None and not enumeration.complete)):
                     raise ValueError("expanded node lacks exhaustive resolved successors")
             else:
                 valid_reasons = {"max_seconds"}
@@ -327,7 +368,10 @@ def verify_report(report: AnalysisReport | Mapping,
                   current_input: AnalysisInput) -> bool:
     """Verify stored exact graph evidence and conclusions without new BFS.
 
-    Work is bounded by stored nodes/edges and the original binding limit.
+    Work is bounded by stored nodes/edges, explicit occurrence/model choices,
+    and the original binding limit plus one exhaustion lookahead. Time-cutoff
+    initial prefixes replay only their stored examined candidate count; untouched
+    uncertain frontiers start no enumeration. No new semantic clock is used.
     Complete graphs require exhaustive expanded nodes; legitimate prefixes keep
     their UNKNOWN conclusions regardless of the verifier's wall-clock speed.
     """

@@ -152,15 +152,9 @@ def evaluate_properties(analysis_input: AnalysisInput,
         results.append(PropertyResult(name, verdict, reason, quantifier,
                                       assumptions=assumptions, witness=witness))
 
-    # Historical category names expand into separate exact property IDs.
-    aliases = {
-        "completion": ("terminal_classification", "proper_completion",
-                       "possible_successful_completion", "allowed_completion_from_every_state"),
-        "cycle": ("inevitable_completion_without_fairness",),
-    }
-    selected = tuple(dict.fromkeys(name for selected in (
-                                   analysis_input.policy.properties + analysis_input.policy.required_properties)
-                                   for name in aliases.get(selected, (selected,))))
+    # AnalysisPolicy normalizes categories before selection, reporting or gating.
+    selected = tuple(dict.fromkeys(analysis_input.policy.properties
+                                   + analysis_input.policy.required_properties))
     for name in selected:
         if not graph.support.supported:
             emit(name, "UNKNOWN", unknown_reason, "unsupported input semantics")
@@ -183,8 +177,6 @@ def evaluate_properties(analysis_input: AnalysisInput,
                      "all reachable states and steps")
         elif name == "enabledness":
             enumeration = graph.initial_bindings
-            if enumeration is None:
-                enumeration = semantics.enabled_bindings(analysis_input, graph.nodes[0].state)
             if enumeration and enumeration.bindings:
                 # Enabledness is a state query, independent of a terminal-stop
                 # scheduling decision; validate using the exact marking API.

@@ -16,6 +16,17 @@ SEMANTICS_VERSION = "exact-start-settle/v1"
 Verdict = Literal["HOLDS", "VIOLATED", "UNKNOWN", "NOT_APPLICABLE"]
 
 
+def normalize_property_ids(names: tuple[str, ...]) -> tuple[str, ...]:
+    """Expand historical categories, preserving order and unsupported IDs."""
+    aliases = {
+        "completion": ("terminal_classification", "proper_completion",
+                       "possible_successful_completion", "allowed_completion_from_every_state"),
+        "cycle": ("inevitable_completion_without_fairness",),
+    }
+    return tuple(dict.fromkeys(name for selected in names
+                               for name in aliases.get(selected, (selected,))))
+
+
 def canonical_data(value):
     """Closed deterministic data, preserving bool/string and rejecting bad keys."""
     if value is None or type(value) in (str, bool, int):
@@ -104,6 +115,12 @@ class AnalysisPolicy:
     properties: tuple[str, ...] = ("safety", "enabledness", "terminal_classification", "proper_completion", "possible_successful_completion", "allowed_completion_from_every_state", "dead_transition", "inevitable_completion_without_fairness", "local_progress")
     mode: str = "advisory"
     required_properties: tuple[str, ...] = ("safety",)
+
+    def __post_init__(self):
+        # Selection, serialized reports and strict gates share canonical IDs.
+        object.__setattr__(self, "properties", normalize_property_ids(self.properties))
+        object.__setattr__(self, "required_properties",
+                           normalize_property_ids(self.required_properties))
 
 
 @dataclass(frozen=True, slots=True)

@@ -96,9 +96,15 @@ def explore(analysis_input: AnalysisInput) -> ExplorationGraph:
         terminal = classify_terminal(analysis_input, node.state)
         if (analysis_input.terminal_contract.stop_on_terminal
                 and terminal.allowed):
+            # Terminal stop closes the graph, but current enabledness is a
+            # separate point query. Retain its bounded evidence when requested.
+            if index == 0 and "enabledness" in (*policy.properties, *policy.required_properties):
+                initial_bindings = semantics.enabled_bindings(analysis_input, node.state,
+                    deadline=started + policy.max_seconds)
             expanded.append(index)
             continue
-        enumeration = semantics.enabled_bindings(analysis_input, node.state)
+        enumeration = semantics.enabled_bindings(analysis_input, node.state,
+                                                 deadline=started + policy.max_seconds)
         if index == 0:
             initial_bindings = enumeration
         if not enumeration.complete:

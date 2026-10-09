@@ -6,7 +6,7 @@ metadata:
   audience: developer
   language: en
   counterpart: pn-validation_ZH.md
-  revision: "2026-10-09.1"
+  revision: "2026-10-09.2"
   status: experimental
 ---
 
@@ -53,6 +53,16 @@ limits preserve the unexpanded frontier. Global `HOLDS` conclusions require a
 complete supported graph. Valid finite success paths or counterexamples can
 establish their specific existential or negative conclusion before cutoff.
 
+Weighted bindings are generated lazily in deterministic order without pooling
+combinations. `max_bindings` counts examined START candidates, with at most one
+additional candidate to distinguish exhaustion from cutoff. Explicit SETTLE
+choices are bounded by the input occurrences/outcomes. Enumeration also checks
+the analysis deadline internally. Verification replays the stored time prefix,
+leaves untouched frontiers unenumerated and starts no new semantic clock.
+This structural bound is not a fixed wall-clock limit for commit. At an initial
+terminal stop, requested enabledness retains a bounded point query independent
+of terminal graph closure.
+
 ## Explicit owner policy
 
 Existing runs use compatibility behavior: absent finite models are unverified
@@ -65,6 +75,12 @@ Advisory policy records conclusions and retains the existing Registry gates.
 Strict policy requires every named mandatory property to be `HOLDS`; missing
 models, cutoffs and unmodeled required properties block. The registered policy
 persists across reopen and cannot be omitted from a later owner adoption.
+`properties` and `required_properties` share alias normalization: `completion`
+expands to `terminal_classification`, `proper_completion`,
+`possible_successful_completion` and `allowed_completion_from_every_state`;
+`cycle` expands to `inevitable_completion_without_fairness`. Required properties
+also enter the evaluated set. Reports and the strict gate use the same canonical
+IDs; aliases do not expand support for unmodeled behavior.
 
 For a declared contentless control step named `step.run`, this function builds
 a finite policy. Supply a matching compiled Module and real owner inputs to

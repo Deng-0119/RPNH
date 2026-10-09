@@ -6,7 +6,7 @@ metadata:
   audience: developer
   language: zh-CN
   counterpart: pn-validation.md
-  revision: "2026-10-09.1"
+  revision: "2026-10-09.2"
   status: experimental
 ---
 
@@ -45,6 +45,13 @@ claim 后归还新的 token occurrence；静态 lease read 保留精确引用。
 全局 `HOLDS` 需要完整且受支持的图；可重放的有限成功路径或反例可以在截断前成立其
 具体存在性或否定结论。
 
+加权 binding 按确定顺序惰性生成，不预先物化组合池。`max_bindings` 统计已检查的
+START 候选，最多再取一个候选区分耗尽和截断；显式 SETTLE 选择由输入中的
+occurrence/outcome 数量限定。枚举内部也检查分析 deadline。复验仅重放存储的时间
+截断前缀，不重新枚举未触及的 frontier，也不启动新的语义计时。这个结构性界限
+不是固定的提交墙钟上限。初态已满足 terminal-stop 时，所请求的 enabledness
+仍保留受预算约束的点查询，独立于终态图闭合。
+
 ## 明确的 owner 策略
 
 既有运行采用兼容行为：没有有限模型即未验证（`UNKNOWN`）。通过 `start_run` 的
@@ -54,7 +61,11 @@ scheduler/terminal contract 与 policy。
 
 advisory 记录结论并保留既有 Registry gate。strict 要求每个明确指定的必需属性都为
 `HOLDS`；缺模型、截断或必需属性未建模都会阻断。已登记策略在 reopen 后保留，后续
-owner adoption 不能省略它。
+owner adoption 不能省略它。`properties` 和 `required_properties` 共用别名规范化：
+`completion` 展开为 `terminal_classification`、`proper_completion`、
+`possible_successful_completion`、`allowed_completion_from_every_state`；
+`cycle` 展开为 `inevitable_completion_without_fairness`。必需属性也加入实际计算集合，
+报告和 strict gate 使用同一组规范 ID；别名不扩大未建模范围。
 
 下列函数为声明了无内容 control 输出的 `step.run` 创建有限策略。向 `start_run`
 提供匹配的 compiled Module 和真实 owner inputs；它不是独立 workflow，也不是已执行
