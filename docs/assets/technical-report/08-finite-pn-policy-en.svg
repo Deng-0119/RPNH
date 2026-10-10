@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="570" viewBox="0 0 1120 570" role="img" aria-labelledby="title desc" xml:lang="en">
+<title id="title">Finite analysis informs an explicit owner policy</title><desc id="desc">An exact compiled net, marking and finite models feed bounded exploration. Property verdicts reach either advisory policy or a strict gate requiring each mandatory property to be HOLDS. The existing Registry gates still apply.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#708798"/></marker></defs>
+<rect width="1120" height="570" rx="20" fill="#FFFFFF"/>
+<g font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" fill="#183042">
+<text x="40" y="64" font-size="32" font-weight="700" text-anchor="start" fill="#183042">Finite analysis informs an explicit owner policy</text>
+<rect x="40" y="205" width="250" height="155" rx="16" fill="#F4F7FA" stroke="#7655A8" stroke-width="2.5"/>
+<text x="165.0" y="259.5" font-size="29" font-weight="700" text-anchor="middle" fill="#7655A8">Exact inputs</text>
+<text x="165.0" y="297.5" font-size="23" font-weight="400" text-anchor="middle" fill="#536878">Net + marking</text>
+<text x="165.0" y="331.5" font-size="23" font-weight="400" text-anchor="middle" fill="#536878">Finite models</text>
+<rect x="365" y="205" width="300" height="155" rx="16" fill="#F4F7FA" stroke="#2463A6" stroke-width="2.5"/>
+<text x="515.0" y="259.5" font-size="29" font-weight="700" text-anchor="middle" fill="#2463A6">Bounded analysis</text>
+<text x="515.0" y="297.5" font-size="23" font-weight="400" text-anchor="middle" fill="#536878">HOLDS · VIOLATED</text>
+<text x="515.0" y="331.5" font-size="23" font-weight="400" text-anchor="middle" fill="#536878">UNKNOWN · N/A</text>
+<rect x="775" y="105" width="305" height="125" rx="16" fill="#F4F7FA" stroke="#087F82" stroke-width="2.5"/>
+<text x="927.5" y="161.5" font-size="29" font-weight="700" text-anchor="middle" fill="#087F82">Advisory</text>
+<text x="927.5" y="199.5" font-size="23" font-weight="400" text-anchor="middle" fill="#536878">Record conclusions</text>
+<rect x="775" y="365" width="305" height="125" rx="16" fill="#F4F7FA" stroke="#AD640A" stroke-width="2.5"/>
+<text x="927.5" y="421.5" font-size="29" font-weight="700" text-anchor="middle" fill="#AD640A">Strict</text>
+<text x="927.5" y="459.5" font-size="23" font-weight="400" text-anchor="middle" fill="#536878">Required → HOLDS</text>
+<path d="M 290 282 H 355" fill="none" stroke="#708798" stroke-width="3" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M 665 260 H 710 V 168 H 765" fill="none" stroke="#708798" stroke-width="3" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M 665 305 H 710 V 428 H 765" fill="none" stroke="#708798" stroke-width="3" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="775" y="287" font-size="23" font-weight="400" text-anchor="start" fill="#536878">Existing Registry gates remain</text>
+<text x="40" y="542" font-size="23" font-weight="400" text-anchor="start" fill="#536878">Unresolved properties stay UNKNOWN. Analysis executes no tools.</text>
+</g>
+</svg>

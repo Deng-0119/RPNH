@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="550" viewBox="0 0 1120 550" role="img" aria-labelledby="title desc" xml:lang="en">
+<title id="title">A worker result becomes committed evidence</title><desc id="desc">The owner admits and records Start before dispatch. Products are registered; settlement closes the successor checkpoint and applicable workspace publication. A declared terminal rule selects the result.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#708798"/></marker></defs>
+<rect width="1120" height="550" rx="20" fill="#FFFFFF"/>
+<g font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" fill="#183042">
+<text x="40" y="64" font-size="32" font-weight="700" text-anchor="start" fill="#183042">A worker result becomes committed evidence</text>
+<text x="44" y="117" font-size="24" font-weight="700" text-anchor="start" fill="#2463A6">01</text>
+<rect x="40" y="135" width="280" height="118" rx="16" fill="#F4F7FA" stroke="#2463A6" stroke-width="2.5"/>
+<text x="180.0" y="188.0" font-size="29" font-weight="700" text-anchor="middle" fill="#2463A6">Admit + Start</text>
+<text x="180.0" y="226.0" font-size="23" font-weight="400" text-anchor="middle" fill="#536878">Exact firing and lease</text>
+<text x="424" y="117" font-size="24" font-weight="700" text-anchor="start" fill="#2463A6">02</text>
+<rect x="420" y="135" width="280" height="118" rx="16" fill="#F4F7FA" stroke="#2463A6" stroke-width="2.5"/>
+<text x="560.0" y="188.0" font-size="29" font-weight="700" text-anchor="middle" fill="#2463A6">Dispatch</text>
+<text x="560.0" y="226.0" font-size="23" font-weight="400" text-anchor="middle" fill="#536878">Admitted worker</text>
+<text x="804" y="117" font-size="24" font-weight="700" text-anchor="start" fill="#087F82">03</text>
+<rect x="800" y="135" width="280" height="118" rx="16" fill="#F4F7FA" stroke="#087F82" stroke-width="2.5"/>
+<text x="940.0" y="188.0" font-size="29" font-weight="700" text-anchor="middle" fill="#087F82">Register products</text>
+<text x="940.0" y="226.0" font-size="23" font-weight="400" text-anchor="middle" fill="#536878">Exact output authority</text>
+<text x="804" y="322" font-size="24" font-weight="700" text-anchor="start" fill="#087F82">04</text>
+<rect x="800" y="340" width="280" height="118" rx="16" fill="#F4F7FA" stroke="#087F82" stroke-width="2.5"/>
+<text x="940.0" y="393.0" font-size="29" font-weight="700" text-anchor="middle" fill="#087F82">Settle</text>
+<text x="940.0" y="431.0" font-size="23" font-weight="400" text-anchor="middle" fill="#536878">Successor checkpoint</text>
+<text x="424" y="322" font-size="24" font-weight="700" text-anchor="start" fill="#7655A8">05</text>
+<rect x="420" y="340" width="280" height="118" rx="16" fill="#F4F7FA" stroke="#7655A8" stroke-width="2.5"/>
+<text x="560.0" y="393.0" font-size="29" font-weight="700" text-anchor="middle" fill="#7655A8">Terminal rule</text>
+<text x="560.0" y="431.0" font-size="23" font-weight="400" text-anchor="middle" fill="#536878">Select registered result</text>
+<text x="44" y="322" font-size="24" font-weight="700" text-anchor="start" fill="#7655A8">06</text>
+<rect x="40" y="340" width="280" height="118" rx="16" fill="#F4F7FA" stroke="#7655A8" stroke-width="2.5"/>
+<text x="180.0" y="393.0" font-size="29" font-weight="700" text-anchor="middle" fill="#7655A8">Read result</text>
+<text x="180.0" y="431.0" font-size="23" font-weight="400" text-anchor="middle" fill="#536878">Exact terminal evidence</text>
+<path d="M 320 194 H 410" fill="none" stroke="#708798" stroke-width="3" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M 700 194 H 790" fill="none" stroke="#708798" stroke-width="3" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M 940 253 V 330" fill="none" stroke="#708798" stroke-width="3" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M 800 399 H 710" fill="none" stroke="#708798" stroke-width="3" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M 420 399 H 330" fill="none" stroke="#708798" stroke-width="3" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="40" y="522" font-size="23" font-weight="400" text-anchor="start" fill="#536878">Runtime completion and business acceptance are separate results.</text>
+</g>
+</svg>

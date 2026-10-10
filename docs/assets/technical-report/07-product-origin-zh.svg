@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="570" viewBox="0 0 1120 570" role="img" aria-labelledby="title desc" xml:lang="zh">
+<title id="title">来源证据限定在一个 root 与切面</title><desc id="desc">准确授权 root 与固定切面选定经验证的 producer 闭包。查询返回 producer execution proof，以及可选的 Start inputs 和 claims；不读取正文、不证明内容影响。</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#708798"/></marker></defs>
+<rect width="1120" height="570" rx="20" fill="#FFFFFF"/>
+<g font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" fill="#183042">
+<text x="40" y="64" font-size="32" font-weight="700" text-anchor="start" fill="#183042">来源证据限定在一个 root 与切面</text>
+<rect x="40" y="215" width="260" height="125" rx="16" fill="#F4F7FA" stroke="#7655A8" stroke-width="2.5"/>
+<text x="170.0" y="271.5" font-size="29" font-weight="700" text-anchor="middle" fill="#7655A8">准确 root 与切面</text>
+<text x="170.0" y="309.5" font-size="23" font-weight="400" text-anchor="middle" fill="#536878">已授权来源</text>
+<rect x="395" y="215" width="280" height="125" rx="16" fill="#F4F7FA" stroke="#2463A6" stroke-width="2.5"/>
+<text x="535.0" y="271.5" font-size="29" font-weight="700" text-anchor="middle" fill="#2463A6">验证生成闭包</text>
+<text x="535.0" y="309.5" font-size="23" font-weight="400" text-anchor="middle" fill="#536878">首个成功页之前</text>
+<rect x="790" y="105" width="290" height="100" rx="16" fill="#F4F7FA" stroke="#087F82" stroke-width="2.5"/>
+<text x="935.0" y="149.0" font-size="29" font-weight="700" text-anchor="middle" fill="#087F82">Producer proof</text>
+<text x="935.0" y="187.0" font-size="23" font-weight="400" text-anchor="middle" fill="#536878">始终包含</text>
+<rect x="790" y="245" width="290" height="100" rx="16" fill="#F4F7FA" stroke="#087F82" stroke-width="2.5"/>
+<text x="935.0" y="289.0" font-size="29" font-weight="700" text-anchor="middle" fill="#087F82">Start inputs</text>
+<text x="935.0" y="327.0" font-size="23" font-weight="400" text-anchor="middle" fill="#536878">可选关系</text>
+<rect x="790" y="385" width="290" height="100" rx="16" fill="#F4F7FA" stroke="#087F82" stroke-width="2.5"/>
+<text x="935.0" y="429.0" font-size="29" font-weight="700" text-anchor="middle" fill="#087F82">Claims</text>
+<text x="935.0" y="467.0" font-size="23" font-weight="400" text-anchor="middle" fill="#536878">可选关系</text>
+<path d="M 300 278 H 385" fill="none" stroke="#708798" stroke-width="3" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M 675 278 H 727 V 155 H 780" fill="none" stroke="#708798" stroke-width="3" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M 675 278 H 727 V 295 H 780" fill="none" stroke="#708798" stroke-width="3" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M 675 278 H 727 V 435 H 780" fill="none" stroke="#708798" stroke-width="3" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="40" y="542" font-size="23" font-weight="400" text-anchor="start" fill="#536878">仅提供元数据证据：不读取 payload，不宣称内容影响。</text>
+</g>
+</svg>

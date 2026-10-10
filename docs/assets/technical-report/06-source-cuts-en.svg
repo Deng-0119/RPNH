@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="540" viewBox="0 0 1120 540" role="img" aria-labelledby="title desc" xml:lang="en">
+<title id="title">Each source keeps its own fixed read cut</title><desc id="desc">An authorized read session queries Source A and Source B at independently captured cuts. Pages stay on those cuts and receive a current authority recheck. The view is not a global atomic snapshot.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#708798"/></marker></defs>
+<rect width="1120" height="540" rx="20" fill="#FFFFFF"/>
+<g font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" fill="#183042">
+<text x="40" y="64" font-size="32" font-weight="700" text-anchor="start" fill="#183042">Each source keeps its own fixed read cut</text>
+<rect x="40" y="205" width="240" height="130" rx="16" fill="#F4F7FA" stroke="#7655A8" stroke-width="2.5"/>
+<text x="160.0" y="264.0" font-size="29" font-weight="700" text-anchor="middle" fill="#7655A8">Read session</text>
+<text x="160.0" y="302.0" font-size="23" font-weight="400" text-anchor="middle" fill="#536878">Existing authority</text>
+<rect x="405" y="120" width="280" height="110" rx="16" fill="#F4F7FA" stroke="#2463A6" stroke-width="2.5"/>
+<text x="545.0" y="169.0" font-size="29" font-weight="700" text-anchor="middle" fill="#2463A6">Source A at cut A</text>
+<text x="545.0" y="207.0" font-size="23" font-weight="400" text-anchor="middle" fill="#536878">Exact source identity</text>
+<rect x="405" y="325" width="280" height="110" rx="16" fill="#F4F7FA" stroke="#2463A6" stroke-width="2.5"/>
+<text x="545.0" y="374.0" font-size="29" font-weight="700" text-anchor="middle" fill="#2463A6">Source B at cut B</text>
+<text x="545.0" y="412.0" font-size="23" font-weight="400" text-anchor="middle" fill="#536878">Exact source identity</text>
+<rect x="825" y="205" width="255" height="130" rx="16" fill="#F4F7FA" stroke="#087F82" stroke-width="2.5"/>
+<text x="952.5" y="264.0" font-size="29" font-weight="700" text-anchor="middle" fill="#087F82">Read-only view</text>
+<text x="952.5" y="302.0" font-size="23" font-weight="400" text-anchor="middle" fill="#536878">Access rechecked</text>
+<path d="M 280 248 H 337 V 175 H 395" fill="none" stroke="#708798" stroke-width="3" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M 280 292 H 337 V 380 H 395" fill="none" stroke="#708798" stroke-width="3" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M 685 175 H 750 V 245 H 815" fill="none" stroke="#708798" stroke-width="3" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M 685 380 H 750 V 295 H 815" fill="none" stroke="#708798" stroke-width="3" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="40" y="512" font-size="23" font-weight="400" text-anchor="start" fill="#536878">Queries bind each source cut; there is no global atomic snapshot.</text>
+</g>
+</svg>

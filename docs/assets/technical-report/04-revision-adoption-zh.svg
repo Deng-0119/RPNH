@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="550" viewBox="0 0 1120 550" role="img" aria-labelledby="title desc" xml:lang="zh">
+<title id="title">创作修订与采用修订分开</title><desc id="desc">创作修订可以独立推进。运行时采用必须显式进行，暂停准入、排空活动 firing、核对 occurrence 映射，并遵守已配置的 policy。</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#708798"/></marker></defs>
+<rect width="1120" height="550" rx="20" fill="#FFFFFF"/>
+<g font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" fill="#183042">
+<text x="40" y="64" font-size="32" font-weight="700" text-anchor="start" fill="#183042">创作修订与采用修订分开</text>
+<text x="40" y="111" font-size="23" font-weight="400" text-anchor="start" fill="#536878">定义历史</text>
+<rect x="40" y="140" width="280" height="105" rx="16" fill="#F4F7FA" stroke="#7655A8" stroke-width="2.5"/>
+<text x="180.0" y="186.5" font-size="29" font-weight="700" text-anchor="middle" fill="#7655A8">修订 A</text>
+<text x="180.0" y="224.5" font-size="23" font-weight="400" text-anchor="middle" fill="#536878">稳定身份</text>
+<rect x="800" y="140" width="280" height="105" rx="16" fill="#F4F7FA" stroke="#7655A8" stroke-width="2.5"/>
+<text x="940.0" y="186.5" font-size="29" font-weight="700" text-anchor="middle" fill="#7655A8">修订 B</text>
+<text x="940.0" y="224.5" font-size="23" font-weight="400" text-anchor="middle" fill="#536878">明确来源</text>
+<path d="M 320 192 H 790" fill="none" stroke="#708798" stroke-width="3" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="560" y="172" font-size="24" font-weight="400" text-anchor="middle" fill="#7655A8">编辑 · 组合 · 合并</text>
+<text x="40" y="292" font-size="23" font-weight="400" text-anchor="start" fill="#536878">正在执行的流程</text>
+<rect x="40" y="330" width="280" height="125" rx="16" fill="#F4F7FA" stroke="#087F82" stroke-width="2.5"/>
+<text x="180.0" y="386.5" font-size="29" font-weight="700" text-anchor="middle" fill="#087F82">当前网</text>
+<text x="180.0" y="424.5" font-size="23" font-weight="400" text-anchor="middle" fill="#536878">当前 checkpoint</text>
+<rect x="420" y="330" width="280" height="125" rx="16" fill="#F4F7FA" stroke="#AD640A" stroke-width="2.5"/>
+<text x="560.0" y="386.5" font-size="29" font-weight="700" text-anchor="middle" fill="#AD640A">采用关口</text>
+<text x="560.0" y="424.5" font-size="23" font-weight="400" text-anchor="middle" fill="#536878">暂停 · 排空 · 映射</text>
+<rect x="800" y="330" width="280" height="125" rx="16" fill="#F4F7FA" stroke="#087F82" stroke-width="2.5"/>
+<text x="940.0" y="386.5" font-size="29" font-weight="700" text-anchor="middle" fill="#087F82">后继网</text>
+<text x="940.0" y="424.5" font-size="23" font-weight="400" text-anchor="middle" fill="#536878">已提交血缘</text>
+<path d="M 320 393 H 410" fill="none" stroke="#708798" stroke-width="3" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M 700 393 H 790" fill="none" stroke="#708798" stroke-width="3" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M 940 245 V 280 H 560 V 320" fill="none" stroke="#708798" stroke-width="3" stroke-linejoin="round" marker-end="url(#arrow)" stroke-dasharray="9 7"/>
+<text x="40" y="522" font-size="23" font-weight="400" text-anchor="start" fill="#536878">Owner replacement 与声明式 operation revision 各有明确契约。</text>
+</g>
+</svg>

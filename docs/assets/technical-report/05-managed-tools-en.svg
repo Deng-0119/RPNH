@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="540" viewBox="0 0 1120 540" role="img" aria-labelledby="title desc" xml:lang="en">
+<title id="title">Declared concurrency uses one shared capacity</title><desc id="desc">An Agent action supplies explicitly bound managed calls. The HOST scheduler admits nonconflicting calls within run-shared capacity. Genuine receipts remain linked to each invocation.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#708798"/></marker></defs>
+<rect width="1120" height="540" rx="20" fill="#FFFFFF"/>
+<g font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" fill="#183042">
+<text x="40" y="64" font-size="32" font-weight="700" text-anchor="start" fill="#183042">Declared concurrency uses one shared capacity</text>
+<rect x="40" y="205" width="225" height="130" rx="16" fill="#F4F7FA" stroke="#7655A8" stroke-width="2.5"/>
+<text x="152.5" y="264.0" font-size="29" font-weight="700" text-anchor="middle" fill="#7655A8">Agent action</text>
+<text x="152.5" y="302.0" font-size="23" font-weight="400" text-anchor="middle" fill="#536878">Selected tools</text>
+<rect x="335" y="205" width="250" height="130" rx="16" fill="#F4F7FA" stroke="#2463A6" stroke-width="2.5"/>
+<text x="460.0" y="264.0" font-size="29" font-weight="700" text-anchor="middle" fill="#2463A6">HOST scheduler</text>
+<text x="460.0" y="302.0" font-size="23" font-weight="400" text-anchor="middle" fill="#536878">Capacity + conflicts</text>
+<rect x="685" y="125" width="195" height="95" rx="16" fill="#F4F7FA" stroke="#087F82" stroke-width="2.5"/>
+<text x="782.5" y="183.5" font-size="29" font-weight="700" text-anchor="middle" fill="#087F82">Tool A</text>
+<rect x="685" y="325" width="195" height="95" rx="16" fill="#F4F7FA" stroke="#087F82" stroke-width="2.5"/>
+<text x="782.5" y="383.5" font-size="29" font-weight="700" text-anchor="middle" fill="#087F82">Tool B</text>
+<rect x="950" y="205" width="140" height="130" rx="16" fill="#F4F7FA" stroke="#7655A8" stroke-width="2.5"/>
+<text x="1020.0" y="264.0" font-size="29" font-weight="700" text-anchor="middle" fill="#7655A8">Receipts</text>
+<text x="1020.0" y="302.0" font-size="23" font-weight="400" text-anchor="middle" fill="#536878">Exact IDs</text>
+<path d="M 265 270 H 325" fill="none" stroke="#708798" stroke-width="3" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M 585 250 H 625 V 172 H 675" fill="none" stroke="#708798" stroke-width="3" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M 585 290 H 625 V 372 H 675" fill="none" stroke="#708798" stroke-width="3" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M 880 172 H 910 V 240 H 940" fill="none" stroke="#708798" stroke-width="3" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M 880 372 H 910 V 300 H 940" fill="none" stroke="#708798" stroke-width="3" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="40" y="512" font-size="23" font-weight="400" text-anchor="start" fill="#536878">Conflicts serialize. An unknown outcome blocks new calls to that operation.</text>
+</g>
+</svg>

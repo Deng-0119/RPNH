@@ -5,7 +5,7 @@ include LICENSE README.md README_ZH.md
 include SECURITY.md SECURITY_ZH.md
 include THIRD_PARTY_NOTICES.md
 
-recursive-include docs *.json *.md *.txt
+recursive-include docs *.json *.md *.txt *.svg
 recursive-include examples *.json *.md *.png *.py *.toml *.txt *.zip *.in
 include examples/harnessaudit_office/results/*.csv
 include examples/harnessaudit_office/comparison/*.csv

@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="550" viewBox="0 0 1120 550" role="img" aria-labelledby="title desc" xml:lang="zh">
+<title id="title">Worker 结果如何成为已提交证据</title><desc id="desc">Owner 先准入并记录 Start，再派发执行。产物登记后，settlement 闭合后继 checkpoint 及适用的 workspace 发布；声明的终态规则再选定结果。</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#708798"/></marker></defs>
+<rect width="1120" height="550" rx="20" fill="#FFFFFF"/>
+<g font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" fill="#183042">
+<text x="40" y="64" font-size="32" font-weight="700" text-anchor="start" fill="#183042">Worker 结果如何成为已提交证据</text>
+<text x="44" y="117" font-size="24" font-weight="700" text-anchor="start" fill="#2463A6">01</text>
+<rect x="40" y="135" width="280" height="118" rx="16" fill="#F4F7FA" stroke="#2463A6" stroke-width="2.5"/>
+<text x="180.0" y="188.0" font-size="29" font-weight="700" text-anchor="middle" fill="#2463A6">准入与 Start</text>
+<text x="180.0" y="226.0" font-size="23" font-weight="400" text-anchor="middle" fill="#536878">准确 firing 与 lease</text>
+<text x="424" y="117" font-size="24" font-weight="700" text-anchor="start" fill="#2463A6">02</text>
+<rect x="420" y="135" width="280" height="118" rx="16" fill="#F4F7FA" stroke="#2463A6" stroke-width="2.5"/>
+<text x="560.0" y="188.0" font-size="29" font-weight="700" text-anchor="middle" fill="#2463A6">派发执行</text>
+<text x="560.0" y="226.0" font-size="23" font-weight="400" text-anchor="middle" fill="#536878">已准入的 worker</text>
+<text x="804" y="117" font-size="24" font-weight="700" text-anchor="start" fill="#087F82">03</text>
+<rect x="800" y="135" width="280" height="118" rx="16" fill="#F4F7FA" stroke="#087F82" stroke-width="2.5"/>
+<text x="940.0" y="188.0" font-size="29" font-weight="700" text-anchor="middle" fill="#087F82">登记产物</text>
+<text x="940.0" y="226.0" font-size="23" font-weight="400" text-anchor="middle" fill="#536878">准确输出 authority</text>
+<text x="804" y="322" font-size="24" font-weight="700" text-anchor="start" fill="#087F82">04</text>
+<rect x="800" y="340" width="280" height="118" rx="16" fill="#F4F7FA" stroke="#087F82" stroke-width="2.5"/>
+<text x="940.0" y="393.0" font-size="29" font-weight="700" text-anchor="middle" fill="#087F82">结算</text>
+<text x="940.0" y="431.0" font-size="23" font-weight="400" text-anchor="middle" fill="#536878">后继 checkpoint</text>
+<text x="424" y="322" font-size="24" font-weight="700" text-anchor="start" fill="#7655A8">05</text>
+<rect x="420" y="340" width="280" height="118" rx="16" fill="#F4F7FA" stroke="#7655A8" stroke-width="2.5"/>
+<text x="560.0" y="393.0" font-size="29" font-weight="700" text-anchor="middle" fill="#7655A8">终态规则</text>
+<text x="560.0" y="431.0" font-size="23" font-weight="400" text-anchor="middle" fill="#536878">选定已登记结果</text>
+<text x="44" y="322" font-size="24" font-weight="700" text-anchor="start" fill="#7655A8">06</text>
+<rect x="40" y="340" width="280" height="118" rx="16" fill="#F4F7FA" stroke="#7655A8" stroke-width="2.5"/>
+<text x="180.0" y="393.0" font-size="29" font-weight="700" text-anchor="middle" fill="#7655A8">读取结果</text>
+<text x="180.0" y="431.0" font-size="23" font-weight="400" text-anchor="middle" fill="#536878">准确终态证据</text>
+<path d="M 320 194 H 410" fill="none" stroke="#708798" stroke-width="3" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M 700 194 H 790" fill="none" stroke="#708798" stroke-width="3" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M 940 253 V 330" fill="none" stroke="#708798" stroke-width="3" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M 800 399 H 710" fill="none" stroke="#708798" stroke-width="3" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M 420 399 H 330" fill="none" stroke="#708798" stroke-width="3" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="40" y="522" font-size="23" font-weight="400" text-anchor="start" fill="#536878">Runtime 完成与业务验收分别判断。</text>
+</g>
+</svg>

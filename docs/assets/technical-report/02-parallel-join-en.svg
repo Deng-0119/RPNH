@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="540" viewBox="0 0 1120 540" role="img" aria-labelledby="title desc" xml:lang="en">
+<title id="title">Parallel branches meet at an AND-join</title><desc id="desc">Both branches have settled and consumed their separate input occurrences. Their product occurrences enable Join. Circles are places; rectangles are transitions.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#708798"/></marker></defs>
+<rect width="1120" height="540" rx="20" fill="#FFFFFF"/>
+<g font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" fill="#183042">
+<text x="40" y="64" font-size="32" font-weight="700" text-anchor="start" fill="#183042">Parallel branches meet at an AND-join</text>
+<text x="40" y="108" font-size="23" font-weight="400" text-anchor="start" fill="#536878">Both branch products are now available</text>
+<circle cx="100" cy="205" r="32" fill="#FFFFFF" stroke="#087F82" stroke-width="3"/>
+<circle cx="100" cy="385" r="32" fill="#FFFFFF" stroke="#087F82" stroke-width="3"/>
+<rect x="220" y="160" width="220" height="90" rx="16" fill="#F4F7FA" stroke="#2463A6" stroke-width="2.5"/>
+<text x="330.0" y="216.0" font-size="29" font-weight="700" text-anchor="middle" fill="#2463A6">Facts</text>
+<rect x="220" y="340" width="220" height="90" rx="16" fill="#F4F7FA" stroke="#2463A6" stroke-width="2.5"/>
+<text x="330.0" y="396.0" font-size="29" font-weight="700" text-anchor="middle" fill="#2463A6">Risks</text>
+<circle cx="625" cy="205" r="40" fill="#FFFFFF" stroke="#087F82" stroke-width="3"/>
+<circle cx="625" cy="205" r="9" fill="#087F82"/>
+<circle cx="625" cy="385" r="40" fill="#FFFFFF" stroke="#087F82" stroke-width="3"/>
+<circle cx="625" cy="385" r="9" fill="#087F82"/>
+<text x="625" y="140" font-size="25" font-weight="400" text-anchor="middle" fill="#087F82">Facts product</text>
+<text x="625" y="460" font-size="25" font-weight="400" text-anchor="middle" fill="#087F82">Risks product</text>
+<rect x="865" y="245" width="195" height="105" rx="16" fill="#F4F7FA" stroke="#087F82" stroke-width="2.5"/>
+<text x="962.5" y="291.5" font-size="29" font-weight="700" text-anchor="middle" fill="#087F82">Join</text>
+<text x="962.5" y="329.5" font-size="23" font-weight="400" text-anchor="middle" fill="#536878">Both required</text>
+<path d="M 132 205 H 210" fill="none" stroke="#708798" stroke-width="3" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M 132 385 H 210" fill="none" stroke="#708798" stroke-width="3" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M 440 205 H 575" fill="none" stroke="#708798" stroke-width="3" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M 440 385 H 575" fill="none" stroke="#708798" stroke-width="3" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M 665 205 H 780 V 272 H 855" fill="none" stroke="#708798" stroke-width="3" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M 665 385 H 780 V 324 H 855" fill="none" stroke="#708798" stroke-width="3" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="40" y="512" font-size="23" font-weight="400" text-anchor="start" fill="#536878">○ Place     ● Token occurrence     ▭ Transition</text>
+</g>
+</svg>

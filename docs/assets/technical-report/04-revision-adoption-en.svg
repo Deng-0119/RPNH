@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="550" viewBox="0 0 1120 550" role="img" aria-labelledby="title desc" xml:lang="en">
+<title id="title">Authoring a revision does not adopt it</title><desc id="desc">Author revisions can advance independently. Runtime adoption is explicit and requires paused admission, drained firings, and checked occurrence mappings, subject to configured policy.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#708798"/></marker></defs>
+<rect width="1120" height="550" rx="20" fill="#FFFFFF"/>
+<g font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" fill="#183042">
+<text x="40" y="64" font-size="32" font-weight="700" text-anchor="start" fill="#183042">Authoring a revision does not adopt it</text>
+<text x="40" y="111" font-size="23" font-weight="400" text-anchor="start" fill="#536878">Definition history</text>
+<rect x="40" y="140" width="280" height="105" rx="16" fill="#F4F7FA" stroke="#7655A8" stroke-width="2.5"/>
+<text x="180.0" y="186.5" font-size="29" font-weight="700" text-anchor="middle" fill="#7655A8">Revision A</text>
+<text x="180.0" y="224.5" font-size="23" font-weight="400" text-anchor="middle" fill="#536878">Stable identities</text>
+<rect x="800" y="140" width="280" height="105" rx="16" fill="#F4F7FA" stroke="#7655A8" stroke-width="2.5"/>
+<text x="940.0" y="186.5" font-size="29" font-weight="700" text-anchor="middle" fill="#7655A8">Revision B</text>
+<text x="940.0" y="224.5" font-size="23" font-weight="400" text-anchor="middle" fill="#536878">Explicit provenance</text>
+<path d="M 320 192 H 790" fill="none" stroke="#708798" stroke-width="3" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="560" y="172" font-size="24" font-weight="400" text-anchor="middle" fill="#7655A8">edit · compose · merge</text>
+<text x="40" y="292" font-size="23" font-weight="400" text-anchor="start" fill="#536878">Running process</text>
+<rect x="40" y="330" width="280" height="125" rx="16" fill="#F4F7FA" stroke="#087F82" stroke-width="2.5"/>
+<text x="180.0" y="386.5" font-size="29" font-weight="700" text-anchor="middle" fill="#087F82">Current net</text>
+<text x="180.0" y="424.5" font-size="23" font-weight="400" text-anchor="middle" fill="#536878">Current checkpoint</text>
+<rect x="420" y="330" width="280" height="125" rx="16" fill="#F4F7FA" stroke="#AD640A" stroke-width="2.5"/>
+<text x="560.0" y="386.5" font-size="29" font-weight="700" text-anchor="middle" fill="#AD640A">Adoption gate</text>
+<text x="560.0" y="424.5" font-size="23" font-weight="400" text-anchor="middle" fill="#536878">Pause · drain · map</text>
+<rect x="800" y="330" width="280" height="125" rx="16" fill="#F4F7FA" stroke="#087F82" stroke-width="2.5"/>
+<text x="940.0" y="386.5" font-size="29" font-weight="700" text-anchor="middle" fill="#087F82">Successor net</text>
+<text x="940.0" y="424.5" font-size="23" font-weight="400" text-anchor="middle" fill="#536878">Committed lineage</text>
+<path d="M 320 393 H 410" fill="none" stroke="#708798" stroke-width="3" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M 700 393 H 790" fill="none" stroke="#708798" stroke-width="3" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M 940 245 V 280 H 560 V 320" fill="none" stroke="#708798" stroke-width="3" stroke-linejoin="round" marker-end="url(#arrow)" stroke-dasharray="9 7"/>
+<text x="40" y="522" font-size="23" font-weight="400" text-anchor="start" fill="#536878">Owner replacement and declared operation-driven revision have distinct contracts.</text>
+</g>
+</svg>
