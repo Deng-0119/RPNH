@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: en
   counterpart: adapters_ZH.md
-  revision: "2026-09-29.2"
+  revision: "2026-10-11.1"
   status: source-reviewed-v0.1.0rc1
   basis: "core; adapter differences explicitly labelled"
 ---
@@ -24,6 +24,15 @@ codex --version
 ```
 
 The RPNH launcher uses its compatibility server and existing main-session authority. `rpnh --frontend codex` begins a session and may execute models after input; it is not an offline smoke command. Use `rpnh --frontend basic` for the documented RPNH-specific controls. A Codex model picker is an RPNH configuration projection, not permission to rewrite Codex provider settings or select a different route silently. The optional local-process subscription bridge is a separate provider path, not implied by choosing the TUI.
+
+At `thread/start`, `config.model_reasoning_effort` selects only a registered
+RPNH model/effort profile. When effort is omitted or null, the active model
+retains the active selection and a different model uses its catalog default.
+An explicit registered effort overrides either choice.
+Top-level `effort` remains a legacy input. Conflicting non-null values and
+invalid types are rejected before session admission. Other `config` keys remain
+ignored and cannot change provider or permission settings. This request-decoding
+behavior is covered by offline handler tests; it does not expand the client pin.
 
 The subscription bridge gives each firing a temporary private Codex home and
 runtime directory.  Authentication remains a reference to the configured

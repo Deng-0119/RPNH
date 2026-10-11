@@ -857,6 +857,39 @@ class CodexAppServer:
             return []
         return list(self._threads.values())
 
+    def _start_thread_profile(
+            self, params: Mapping[str, Any],
+    ) -> ExecutionProfile:
+        """Decode only the registered model/effort part of thread/start.
+
+        Stock Codex sends effort in config; the top-level spelling remains a
+        narrow legacy input. Absent/null values mean no explicit override.
+        Other config keys retain their existing ignored behavior and cannot
+        become provider, permission or execution configuration.
+        """
+        config = params.get("config")
+        if config is not None and not isinstance(config, Mapping):
+            raise ValueError("thread/start config must be an object or null")
+        nested_effort = (
+            config.get("model_reasoning_effort") if config is not None else None)
+        legacy_effort = params.get("effort")
+        for effort in (nested_effort, legacy_effort):
+            if effort is not None and not isinstance(effort, str):
+                raise ValueError("RPNH reasoning effort must be text or null")
+        if (nested_effort is not None and legacy_effort is not None
+                and nested_effort != legacy_effort):
+            raise ValueError("conflicting thread/start reasoning effort values")
+        requested_model = params.get("model")
+        model_id = (
+            self.default_model_id if requested_model is None else requested_model)
+        requested_effort = (
+            nested_effort if nested_effort is not None else legacy_effort)
+        if requested_effort is None and model_id == self.default_model_id:
+            requested_effort = self.default_reasoning_effort
+        # Preserve the model-scoped wire-none codec, allowlist and immutable
+        # execution identity checks in the existing selection resolver.
+        return self._profile_for_selection(model_id, requested_effort)
+
     async def _start_thread(
             self, websocket: Any, request_id: object,
             params: Mapping[str, Any],
@@ -864,14 +897,7 @@ class CodexAppServer:
         if self._threads or self._lease is not None:
             raise ValueError(
                 "RPNH Codex frontend is already bound to its one main session")
-        requested_model = params.get("model")
-        model_id = (
-            self.default_model_id
-            if requested_model is None else requested_model)
-        requested_effort = params.get("effort")
-        if requested_model is None and requested_effort is None:
-            requested_effort = self.default_reasoning_effort
-        profile = self._profile_for_selection(model_id, requested_effort)
+        profile = self._start_thread_profile(params)
         self._require_ready_profile(profile)
         raw_cwd = params.get("cwd")
         cwd = (

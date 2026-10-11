@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: configuration.md
-  revision: "2026-10-06.1"
+  revision: "2026-10-11.1"
   status: source-reviewed-pre-release
 ---
 
@@ -37,6 +37,17 @@ plugin catalog 管理已安装原生 operation，workflow/module declaration 管
 模型、授权或计费已验证。
 若模型声明了 effort，`rpnh config use ... --effort EFFORT` 从该模型配置的值中选择；
 省略时使用其配置的默认值。
+
+`rpnh doctor`（也可用 `rpnh config doctor`）会报告最终生效的 execution
+选择来源：显式 `--execution` 参数、非空 `RPNH_EXECUTION_CONFIG` 变量，
+或保存的 profile 选择。空变量视为未设置；生效的选择无效时直接失败，
+不会回退到低优先级选择器。来源检查只输出固定标签，不输出变量值、路径、
+endpoint、adapter 参数或凭据。它只说明 execution 选择器的来源，
+不表示每项生效配置的来源。Doctor 仍是只读、离线检查，不会启动交互设置。
+即使环境覆盖会为本次执行选择其他 profile，`rpnh config show` 仍描述保存的选择。
+对 external-provider 与 local-process 两类 adapter，doctor 都使用所选 execution
+profile 的精确 `reasoning_effort` 做校验，包括声明的字面值 `none`；未声明 effort
+时仍为 `null`。它不会替换为 catalog 默认值，也不会接受与所选 effort 不一致的 adapter。
 
 ## Provider 与精确模型字段
 

@@ -23,6 +23,13 @@
       "rust_effort_source": {
         "git_blob_sha1": "8c021b17c2a870b5e1e69e3e57210d46c8722606",
         "url": "https://github.com/openai/codex/blob/rust-v0.155.0/codex-rs/protocol/src/openai_models.rs"
+      },
+      "thread_start_params": {
+        "path": "0.155.0/ThreadStartParams.json",
+        "upstream_path": "codex-rs/app-server-protocol/schema/json/v2/ThreadStartParams.json",
+        "url": "https://github.com/openai/codex/blob/f0a1b8f0849d90960bc406b848f32e5a129b0457/codex-rs/app-server-protocol/schema/json/v2/ThreadStartParams.json",
+        "sha256": "792e2f32e37cece971bd616664ea2053741acbed4e9c92e9d1766427718f2ecd",
+        "git_blob_sha1": "8bf5ae8bef72a0769bc1b9f66f7ce4cc0148dcb7"
       }
     },
     "0.161.0": {

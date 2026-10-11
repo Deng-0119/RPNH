@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: adapters.md
-  revision: "2026-09-29.2"
+  revision: "2026-10-11.1"
   status: source-reviewed-v0.1.0rc1
   basis: "core; adapter differences explicitly labelled"
 ---
@@ -24,6 +24,13 @@ codex --version
 ```
 
 RPNH launcher 使用兼容服务和既有主会话权威。`rpnh --frontend codex` 启动会话，输入后可能执行模型，不是离线 smoke。RPNH 自己的任务控制用 `rpnh --frontend basic`。Codex model picker 是 RPNH 配置投影，不授权改写 Codex 供应商设置或静默换路由。可选 local-process subscription bridge 是独立供应商路径，选择 TUI 不自动选择它。
+
+在 `thread/start` 中，`config.model_reasoning_effort` 只选择已注册的
+RPNH model/effort profile。effort 省略或为 null 时，当前模型保留当前选择，
+不同模型使用其 catalog 默认值；显式指定已注册的 effort 时，两种情况都采用该值。
+顶层 `effort` 仍作为旧输入接受。
+两个非 null 值冲突或类型不合法时，在会话准入前拒绝。其他 `config` 键仍被忽略，
+不能改变供应商或权限设置。此请求解码行为由离线 handler 测试覆盖，不扩大客户端固定版本。
 
 subscription bridge 为每个 firing 创建临时私有 Codex home 与 runtime 目录。认证状态
 保持为对已配置来源的引用，不复制凭据；私有目录使用 `0700`，并随 firing 一起删除。

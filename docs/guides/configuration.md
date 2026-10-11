@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: en
   counterpart: configuration_ZH.md
-  revision: "2026-10-06.1"
+  revision: "2026-10-11.1"
   status: source-reviewed-pre-release
 ---
 
@@ -41,6 +41,21 @@ present; it is not a network, model, authorization or billing check.
 For a model that declares efforts, `rpnh config use ... --effort EFFORT`
 selects one of that model's configured values; omission uses its configured
 default.
+
+`rpnh doctor` (also `rpnh config doctor`) reports the winning execution
+selection source: the explicit `--execution` option, the nonempty
+`RPNH_EXECUTION_CONFIG` variable, or the saved profile selection. An empty
+variable is absent; an invalid winning selection fails without falling back
+to a lower-priority selector. The source check prints only this fixed label,
+not the variable value, path, endpoint, adapter arguments or credentials.
+It describes the execution selector only, not the origin of every effective
+setting. Doctor remains read-only and offline, and does not start interactive
+setup. `rpnh config show` continues to describe the saved selection even when
+an environment override would select a different profile for execution.
+For both external-provider and local-process adapters, doctor validates against
+the selected execution profile's exact `reasoning_effort`, including a declared
+literal `none`; an absent effort remains `null`. It does not substitute the
+catalog default or accept an adapter whose effort differs from the selection.
 
 ## Provider and exact-model fields
 

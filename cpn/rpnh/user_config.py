@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from enum import Enum
 import json
 import os
 from pathlib import Path
@@ -446,21 +447,39 @@ def interactive_setup(
     return setup_profile(input_fn=input_fn, output_fn=output_fn, directory=directory)
 
 
-def resolve_execution_path(
+class _ExecutionSelectionSource(str, Enum):
+    EXPLICIT = "explicit"
+    ENVIRONMENT = "env"
+    SAVED = "saved"
+    INTERACTIVE = "interactive"
+
+
+@dataclass(frozen=True, slots=True)
+class _ResolvedExecutionSelection:
+    path: Path
+    selection_source: _ExecutionSelectionSource
+
+
+def _resolve_execution_selection(
         explicit: Path | None, *, save_default: bool,
         allow_interactive_setup: bool = False,
-) -> Path:
+) -> _ResolvedExecutionSelection:
+    """Resolve and validate the winning selector without inspecting losers."""
     if save_default and explicit is None:
         raise ValueError("--save-default requires --execution")
     selected = explicit
+    selection_source = _ExecutionSelectionSource.EXPLICIT
     if selected is None:
         environment = os.environ.get("RPNH_EXECUTION_CONFIG")
         if environment:
             selected = Path(environment).expanduser()
+            selection_source = _ExecutionSelectionSource.ENVIRONMENT
     if selected is None:
         selected = read_selected_path()
+        selection_source = _ExecutionSelectionSource.SAVED
     if selected is None and allow_interactive_setup:
         selected = interactive_setup().path
+        selection_source = _ExecutionSelectionSource.INTERACTIVE
     if selected is None:
         raise ValueError(
             "no model configured; run `rpnh init` in a terminal. "
@@ -474,7 +493,16 @@ def resolve_execution_path(
         if explicit is None:
             raise ValueError("--save-default requires --execution")
         save_selected_path(selected)
-    return selected
+    return _ResolvedExecutionSelection(selected, selection_source)
+
+
+def resolve_execution_path(
+        explicit: Path | None, *, save_default: bool,
+        allow_interactive_setup: bool = False,
+) -> Path:
+    return _resolve_execution_selection(
+        explicit, save_default=save_default,
+        allow_interactive_setup=allow_interactive_setup).path
 
 
 def missing_credentials(

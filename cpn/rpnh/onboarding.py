@@ -12,8 +12,9 @@ from urllib.parse import urlsplit
 
 from cpn.rpnh import provider_setup
 from cpn.rpnh.user_config import (
+    _ExecutionSelectionSource, _resolve_execution_selection,
     ExecutionProfile, discover_profiles, load_profile, profile_directory,
-    read_selected_path, resolve_execution_path, save_selected_path,
+    read_selected_path, save_selected_path,
 )
 
 
@@ -237,17 +238,27 @@ def configuration_report(execution: Path | None = None) -> dict:
           "Linux / WSL2" if sys.platform == "linux" else "Run RPNH on Linux or WSL2.")
     profile = None
     try:
-        selected = resolve_execution_path(execution, save_default=False)
+        resolved = _resolve_execution_selection(execution, save_default=False)
+        selected = resolved.path
+        check("execution selection source", "ok", {
+            _ExecutionSelectionSource.EXPLICIT: "Explicit --execution option.",
+            _ExecutionSelectionSource.ENVIRONMENT: "RPNH_EXECUTION_CONFIG environment variable.",
+            _ExecutionSelectionSource.SAVED: "Saved profile selection.",
+            _ExecutionSelectionSource.INTERACTIVE: "Interactive setup selection.",
+        }[resolved.selection_source])
         profile = load_profile(selected)
         check("model", "ok", f"{profile.provider} / {profile.model_condition}")
         from cpn.llm_adapters import load_llm_execution_selection
         selection = load_llm_execution_selection(selected)
         if profile.adapter_kind == "external_provider":
             from cpn.llm_adapters.external_provider import _load_config
-            _load_config(selection.adapter_config_path, profile.model_condition)
+            _load_config(selection.adapter_config_path, profile.model_condition,
+                         selection.reasoning_effort)
         else:
             from cpn.llm_adapters.local_process import _load_config
-            argv, _environment_values = _load_config(selection.adapter_config_path, profile.model_condition)
+            argv, _environment_values = _load_config(
+                selection.adapter_config_path, profile.model_condition,
+                selection.reasoning_effort)
             if not Path(argv[0]).is_file() or not os.access(argv[0], os.X_OK):
                 raise ValueError("Local adapter executable is missing or not executable.")
         check("adapter", "ok", "Configuration is valid; no adapter command or provider request executed.")
