@@ -17,7 +17,7 @@ metadata:
 
 ## 面向 Agent 与程序的可执行流程
 
-**更新日期：**2026-10-11。**实现快照：**
+**更新日期：** 2026-10-11。**实现快照：**
 [`6cec63ff5b7a0039611713961d00941767edaaf8`][snapshot]。
 历史测试分别保留自己的源码身份，见[第 10 节](#10-历史结果及其限制)。
 本次报告更新未运行 runtime、模型或 benchmark 实验。
@@ -85,9 +85,9 @@ RPNH 适用于重视持久化输出、显式协作或受控流程变更的应用
 - **定义：**`ModuleDeclaration`、Agent graph source 与不可变 author revision。
 - **绑定：**`Registration` 将声明的 key 解析为可信 HOST 实现。声明不能自行引入可执行 Python locator；
   读取编译数据也不会注册 callable。
-- **执行：**同一 `RunOwner`/`Harness` 路径负责准入与结算。`Orchestrator` 使用 HOST 已有的 owner、
+- **执行：** 同一 `RunOwner`/`Harness` 路径负责准入与结算。`Orchestrator` 使用 HOST 已有的 owner、
   event loop、worker 与 dispatch service。
-- **观察：**选定的 Registry 投影和 read session 保持只读。
+- **观察：** 选定的 Registry 投影和 read session 保持只读。
 
 Basic、Codex 与 OpenCode 是同一直接主会话根的不同呈现，共享 lease 防止多个可写呈现竞争。
 DSH 是受注册管理的 HOST 接入。独立子任务各自拥有 Registry、net 和 owner；从属 execution net
@@ -155,9 +155,9 @@ Assembly 固定准确的成员修订与 lowering 映射；名称相同不足以�
 
 运行时变更有两条显式路径：
 
-1. **Owner replacement：**针对当前 net 准备候选，暂停准入、排空活动 firing，检查 occurrence
+1. **Owner replacement：** 针对当前 net 准备候选，暂停准入、排空活动 firing，检查 occurrence
    mapping/retirement，再沿用已有预算与 workspace 血缘采用后继网。
-2. **声明式 operation revision：**登记的 Module 产物与 `DeclaredModuleRevision` 提供经检查的
+2. **声明式 operation revision：** 登记的 Module 产物与 `DeclaredModuleRevision` 提供经检查的
    structural delta 和有限 activation。Revision witness、后继 checkpoint 与 adoption 随 settlement
    闭合；切换整张网要求当前 firing 是唯一尚未解决的 provisional firing。
 
@@ -357,18 +357,18 @@ Solver 无网络，每个 checkpoint 使用新容器，由外部 controller 传�
 
 ### 确定性 pipeline 与局部 runtime 窗口
 
-- **原子工具 pipeline：**测试 `00f2d29c…` 加 16 个 example 文件，core 不变，后发布于 `80a17c3c…`。
+- **原子工具 pipeline：** 测试 `00f2d29c…` 加 16 个 example 文件，core 不变，后发布于 `80a17c3c…`。
   使用真实 AF_UNIX owner；32 个唯一 pytest ID、33 次执行，包含 unit check。
   标准 fixture 为 complete、**2.000 kWh / 1.70 CNY**、十次 firing、12 个工具产物和两个 source resource；
   rounding fixture 为 **0.02 CNY**。独立整数输入 validator 是示例 scorer，不是 benchmark grader。
   新进程 readback 保持 event ordinal/count 1001 与十次 dispatch/Start 不变，模型调用为零。
   更早 AF_UNIX 阻塞尝试单独保留。[准确来源、输入与结果](results/tool-pipeline-20261008/README_ZH.md)。
-- **ERP runtime：**测试 `dbad004…` 加后来发布于 `e92b05c…` 的 overlay。
+- **ERP runtime：** 测试 `dbad004…` 加后来发布于 `e92b05c…` 的 overlay。
   65 个唯一 offline case 加四个 subtest，installed-owner complete/stop/timeout 路径与六个 direct-owner
   receipt 场景。九次 synthetic backend invocation 与后续 18 次 unknown-outcome probe 保持规定的防重放边界。
   没有真实 provider、Odoo world 或原 grader；重建复用同一个 owner，不能认证 OS-owner crash recovery。
   [完整窗口](results/erp-runtime-20261008/README_ZH.md)。
-- **共享入口与准确 reader：**H1 测试 `674252f…` 加七个文件，通过 39 个唯一 native case。
+- **共享入口与准确 reader：** H1 测试 `674252f…` 加七个文件，通过 39 个唯一 native case。
   H1+H2a 测试 `715468d…` 加五个 reader 文件，后发布于 `d92ff37…`：八个窗口共 166 个唯一 case/执行，
   含 12 个独立 package check。真实 AF_UNIX/SIGINT/resume 使用脚本化 Agent，没有真实 provider。
   Pipeline/readback 的 11 个稳定字段一致，live-only transport/stop 字段缺席。
@@ -398,6 +398,7 @@ freeze04 first18 的 **5 PASS / 9 FAIL / 4 BLOCKED**，以及单独 repair4 条�
 
 以下实现链接固定到本报告快照。历史结果页面分别标明不同的测试与发布版本。
 API 细节见各图旁边的专题链接。
+
 [snapshot]: https://github.com/Deng-0119/RPNH/tree/6cec63ff5b7a0039611713961d00941767edaaf8
 [module]: https://github.com/Deng-0119/RPNH/blob/6cec63ff5b7a0039611713961d00941767edaaf8/cpn/rpnh/module.py
 [registration]: https://github.com/Deng-0119/RPNH/blob/6cec63ff5b7a0039611713961d00941767edaaf8/cpn/rpnh/registration.py
