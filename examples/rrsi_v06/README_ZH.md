@@ -11,25 +11,53 @@ provider 与模型由用户的 execution profile 选择。
 [`google-research/rrsi`](https://github.com/google-research/rrsi)；应用设计见
 `DESIGN_ZH.md`，来源说明见 `THIRD_PARTY_NOTICES.md`。
 
-## 结构
+## PetriNet 声明
 
-```text
-固定协议 + 用户自有 execution profile
-                 |
-                 v
-校准 -> H0 evolve -> 两轮 protocol round -> H0/final heldout -> export
-                          |
-                          +-> Analyst child Registry
-                          +-> Digester child Registries
-                          +-> Proposer child Registry
-                          +-> Critic child Registry
+以下图片由 RPNH PetriNet viewer 呈现，分别对应一个独立 child Module 的初始声明。
+图片只展示结构，不表示某次 run、marking、评分或执行成功。Policy 与四个角色的完整
+compiled 文档各不相同，即使显示出的拓扑相似也分别保留。
+[图片身份记录](results/figure-provenance.json) 将图片对应到公开源码及精确的
+compiled/projection 字节。
 
-每个评分 slot -----------------------------> Policy child Registry
-```
+campaign 协调校准、两轮演化、heldout 评估与导出。每个评分槽位实例化 Policy；
+每轮实例化 Analyst、Proposer、Critic，Analyst 的请求还可创建 Digester child。
+每次 occurrence 有自己的 Registry 证据，复用声明图不会复用不同 occurrence 的运行状态。
 
-campaign 只负责 application 协调。每个面向模型的 occurrence 都复用现有 registered-host
-binding、`start_run`、`Harness.exact_execute` 与 PetriNet 转移校验。CandidateManifest
-通过显式 run/resource 引用关联源文本与执行证据。
+### Policy：prepare、model、grade
+
+![Policy 初始声明：完整 PetriNet 全图](assets/rrsi.policy.prepare-model-grade.png)
+
+request 依次经过 prepare、一次已注册 model 操作和独立 grader，最后到达 result。
+以下可读细节是同一 PetriNet 的节点放大视图，没有改变其结构。
+
+![Policy prepare 节点细节](assets/rrsi.policy.prepare-model-grade-policy.prepare.png)
+![Policy model 节点细节](assets/rrsi.policy.prepare-model-grade-policy.model.png)
+![Policy grade 节点细节](assets/rrsi.policy.prepare-model-grade-policy.grade.png)
+
+### Analyst
+
+![Analyst 初始声明：完整 PetriNet 全图](assets/rrsi.role.analyst.png)
+![Analyst model 操作细节](assets/rrsi.role.analyst-role.model.png)
+
+### Proposer
+
+![Proposer 初始声明：完整 PetriNet 全图](assets/rrsi.role.proposer.png)
+![Proposer model 操作细节](assets/rrsi.role.proposer-role.model.png)
+
+### Critic
+
+![Critic 初始声明：完整 PetriNet 全图](assets/rrsi.role.critic.png)
+![Critic model 操作细节](assets/rrsi.role.critic-role.model.png)
+
+### Digester
+
+![Digester 初始声明：完整 PetriNet 全图](assets/rrsi.role.digester.png)
+![Digester model 操作细节](assets/rrsi.role.digester-role.model.png)
+
+各角色先初始化 state，再调用已注册的 model 操作，随后处理 response。action
+transition 可以返回 state 进入下一次 model 步骤，或发布 result。每个角色的
+工具声明、额度和绑定仍分别保留。model 细节只放大该操作；可直接打开完整图片，
+以原始分辨率检查整个 PetriNet。
 
 ## 安装与测试
 

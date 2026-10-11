@@ -15,26 +15,58 @@ reference method and domain adapters are available at
 `DESIGN.md` for the application design and `THIRD_PARTY_NOTICES.md` for
 attribution.
 
-## Architecture
+## PetriNet declarations
 
-```text
-fixed protocol + user execution profile
-                 |
-                 v
-calibration -> H0 evolve -> two protocol rounds -> H0/final heldout -> export
-                              |
-                              +-> Analyst child Registry
-                              +-> Digester child Registries
-                              +-> Proposer child Registry
-                              +-> Critic child Registry
+Each image below is the initial declaration of one independent child Module,
+rendered by the RPNH PetriNet viewer. They show structure without a run, marking,
+score, or success claim. The Policy and four role declarations are separate:
+their full compiled documents differ, even where the displayed topology looks
+alike. The [figure identities](results/figure-provenance.json) bind these images
+to the public source and exact compiled/projection bytes.
 
-every scored slot ---------------------------> Policy child Registry
-```
+The campaign coordinates calibration, two evolution rounds, heldout evaluation,
+and export. Each scored slot instantiates Policy; each round instantiates
+Analyst, Proposer, and Critic, and Analyst requests can create Digester children.
+A campaign occurrence has its own Registry evidence. Reusing a declaration
+figure does not share execution state between occurrences.
 
-The campaign is application coordination. Each model-facing occurrence uses
-the existing registered-host binding, `start_run`, `Harness.exact_execute`, and
-PetriNet transition validation. Candidate manifests link literal source text to
-explicit run and resource references.
+### Policy: prepare, model, grade
+
+![Policy initial declaration: complete PetriNet](assets/rrsi.policy.prepare-model-grade.png)
+
+The request passes through prepare, one registered model operation, and the
+independent grader before reaching result. The readable node details below are
+views of the same PetriNet, with no changes to its structure.
+
+![Policy prepare detail](assets/rrsi.policy.prepare-model-grade-policy.prepare.png)
+![Policy model detail](assets/rrsi.policy.prepare-model-grade-policy.model.png)
+![Policy grade detail](assets/rrsi.policy.prepare-model-grade-policy.grade.png)
+
+### Analyst
+
+![Analyst initial declaration: complete PetriNet](assets/rrsi.role.analyst.png)
+![Analyst model operation detail](assets/rrsi.role.analyst-role.model.png)
+
+### Proposer
+
+![Proposer initial declaration: complete PetriNet](assets/rrsi.role.proposer.png)
+![Proposer model operation detail](assets/rrsi.role.proposer-role.model.png)
+
+### Critic
+
+![Critic initial declaration: complete PetriNet](assets/rrsi.role.critic.png)
+![Critic model operation detail](assets/rrsi.role.critic-role.model.png)
+
+### Digester
+
+![Digester initial declaration: complete PetriNet](assets/rrsi.role.digester.png)
+![Digester model operation detail](assets/rrsi.role.digester-role.model.png)
+
+Each role initializes state, invokes its registered model operation, and handles
+the response. The action transition either returns to state for another model
+step or publishes result. Role-specific tool declarations, limits, and bindings
+remain distinct. The model details enlarge that operation; open each full image
+to inspect the complete PetriNet at its original resolution.
 
 ## Install and test
 

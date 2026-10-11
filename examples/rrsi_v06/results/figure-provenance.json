@@ -1,0 +1,334 @@
+{
+  "schema_version": "rpnh/example-figure-provenance/v1",
+  "source_repository": "https://github.com/Deng-0119/RPNH",
+  "source_commit": "34d42d171d7e9a7f803b71467063b55786c2cea8",
+  "source_mode": "initial_configured",
+  "observation_head": null,
+  "execution_claim": false,
+  "views": [
+    "petri"
+  ],
+  "generator": "RPNH official PetriNet viewer",
+  "source_files": {
+    "examples/rrsi_v06/src/rpnh_rrsi/formal_policy.py": "0551afcb75f3c72bb8c13c81e5660c643819fc46f4aced1f706e8f478eda84af",
+    "examples/rrsi_v06/src/rpnh_rrsi/formal_role.py": "70291ad5e972fb524c4f8758fc715c78e2ed58c3028a41e327fcf687ef52c56b",
+    "cpn/rpnh/inspection.py": "cbb5bebeadd1c3ea5915f300732d8078bc3ed5a6c8caef027e96b60d9cd68f74",
+    "cpn/frontend/dashboard.py": "d7afad94d269dedcdc9ac7263760e2077757afd6473f62e507cd119e55ad00bb",
+    "cpn/frontend/static/observation-panel.mjs": "080d5e3d304720cc72d793f189ec4cc2cf0d3d0cfbce83f7dffe80efa7132fbd",
+    "cpn/frontend/static/i18n.mjs": "26df126578d68df19605f2a624577aa52e28d233e3df6feba7c733717aa26244",
+    "cpn/frontend/static/style.css": "f15611aa6cd1c1e809dabfacc148e4d0f7ce51d6a887d5e36b3abe16d470c054",
+    "cpn/frontend/static/comparison-view.mjs": "d69abe70cb65efded03d26a1cb53afe40d99af32b31aa09c024822fc309914cd",
+    "cpn/frontend/static/index.html": "c3c2f5a2cec42544be98d1335d9b814b36d9f3152fdf20bfcbf0a3cd3ac46a4f",
+    "cpn/frontend/static/app.js": "3924e65c10f949dd2fef3ea65f897bfeda67a3632f1242e6ec8958f14f0df4f0",
+    "cpn/frontend/static/source-observation.mjs": "9c2a2e7c11fe9d4134eee0995a8dad0ea45840e127682d839aabe7d805e1aaf5",
+    "cpn/frontend/static/canvas-text.mjs": "35e20d6be41e812810a6373ab52c1203d57ec063e0c8b305332b8cef33430df0",
+    "cpn/frontend/static/comparison-context.mjs": "77ae1c767188073eb26743376d43d5ec06c35cb26a61d81694f838bdd779730b",
+    "cpn/frontend/static/layout.mjs": "1d31b59b269baeb74804d3cf29265615aa031b5ecb5691e3364d10069422e6f8",
+    "cpn/frontend/static/overview.mjs": "50457c51d75e13a8e8d892efc99f774fcb06ca4182e1323fb27dc44b3091f559",
+    "cpn/frontend/static/firing-activity.mjs": "3c102e9a66196fa1ea35943632781645294085628b92513365a98d988e7441b4",
+    "cpn/frontend/static/model.mjs": "024ddd7f0dd8eaf991d14bdd3206e112567ebccac245b6a73cf8c44c6bc29c02",
+    "cpn/frontend/static/wire-geometry.mjs": "2d0b9e623a2de1be117d92800a949e87beeb005429769935e96dcd66ae745457",
+    "cpn/frontend/static/worksets.mjs": "f956660e1862a30f1d10370d8988418d196037e06fe86d87130dcb7253b35394",
+    "cpn/frontend/static/dashboard-model.mjs": "5d891477762152e95f9d344b2f6d497fd61a516993d3ef7689798a90c070307c",
+    "cpn/frontend/static/panels.mjs": "c8b65dd65a92ad0f136b356a6aaee01cd21f9395cd719666897f204fde19baa4",
+    "cpn/frontend/static/agent-members.mjs": "f697f65be68f6c426d94156175fff8ccdc82d7855d3c76bafa51818f46230edf",
+    "cpn/frontend/static/checkpoint-view.mjs": "72e002462d3f5af8770e8c55bf9f730838ee2b5189f6d65f97502fe684bd2f02",
+    "cpn/frontend/static/messages.mjs": "781f9da125b8929a39268544883f4d3ddfd297f7ff40bfc696e0d169e2959860",
+    "cpn/frontend/static/renderer.mjs": "1defbe613875af1b587bcf47791d1856b64aaefe36464a2e3d98892859cdb5b9"
+  },
+  "declarations": [
+    {
+      "id": "rrsi.policy.prepare-model-grade",
+      "compiled_sha256": "f3d1886025f9406bdda1787c7f32b00a7f5a42e9549bced3833457fa37f33035",
+      "projection_sha256": "cbdf68d02ef616b799eed7585eca77d40889049b866aa0df32e7c98fc62ed231",
+      "summary": {
+        "node_count": 7,
+        "transition_count": 3,
+        "place_count": 4,
+        "resource_place_count": 0,
+        "edge_count": 6,
+        "resource_edge_count": 0
+      },
+      "images": [
+        {
+          "file": "rrsi.policy.prepare-model-grade.png",
+          "sha256": "cc5918310802164e9d2a8ff3a5ce44d6f4a6e083079daf6a4d65379d020ac220",
+          "mode": "petri",
+          "kind": "complete-net",
+          "dimensions": [
+            1600,
+            1100
+          ],
+          "original_capture_sha256": "97169b8cbf97cd5d146dc555e6783ca66c230fb4cc96b56022e43fe4bf3496e7",
+          "mask_box": [
+            0,
+            1074,
+            300,
+            1100
+          ],
+          "pn_pixels_changed": false
+        },
+        {
+          "file": "rrsi.policy.prepare-model-grade-policy.prepare.png",
+          "sha256": "146f2647c274e01731b182c4569f2219c9039a9c8bd0db78e1d940564c35d31e",
+          "mode": "petri",
+          "kind": "node-detail",
+          "dimensions": [
+            1600,
+            1100
+          ],
+          "original_capture_sha256": "d7591149498cf514c3e0af241d264dee93fbbaf30378e936b440a9855d08f48b",
+          "mask_box": [
+            0,
+            1074,
+            300,
+            1100
+          ],
+          "pn_pixels_changed": false
+        },
+        {
+          "file": "rrsi.policy.prepare-model-grade-policy.model.png",
+          "sha256": "2faa8a57ed1c9a1576a9b13d9a24147ab33d2710c1ae750a6f6ffc190e4cdb51",
+          "mode": "petri",
+          "kind": "node-detail",
+          "dimensions": [
+            1600,
+            1100
+          ],
+          "original_capture_sha256": "ed1389a439e44ef27625a29d9066631c64a127dc00b8338713bb5ea79c9285ed",
+          "mask_box": [
+            0,
+            1074,
+            300,
+            1100
+          ],
+          "pn_pixels_changed": false
+        },
+        {
+          "file": "rrsi.policy.prepare-model-grade-policy.grade.png",
+          "sha256": "dd62bc20782392d2281b51c6b60d5d56712975e17b4e2c2c7f73b1e96aa21146",
+          "mode": "petri",
+          "kind": "node-detail",
+          "dimensions": [
+            1600,
+            1100
+          ],
+          "original_capture_sha256": "6f1f698b8f2d884d6bc2a2d4c092e5b79dc70ac48e42bec90c99c6a7f3f1c7ca",
+          "mask_box": [
+            0,
+            1074,
+            300,
+            1100
+          ],
+          "pn_pixels_changed": false
+        }
+      ]
+    },
+    {
+      "id": "rrsi.role.analyst",
+      "compiled_sha256": "4c292bbce0acc7f881c074b26dbfe5d4b2b50228a90a430d7def1ce4dda15d20",
+      "projection_sha256": "a84f8967c4656e1d1f118ddc7728b7a94f1c94c53219dcd6f5fdb3dfad1dcc03",
+      "summary": {
+        "node_count": 7,
+        "transition_count": 3,
+        "place_count": 4,
+        "resource_place_count": 0,
+        "edge_count": 7,
+        "resource_edge_count": 0
+      },
+      "images": [
+        {
+          "file": "rrsi.role.analyst.png",
+          "sha256": "8df86f7e7ea760c263bfd7c3aa4500ba9564f5c13d4a4790f550fee9217c51aa",
+          "mode": "petri",
+          "kind": "complete-net",
+          "dimensions": [
+            1600,
+            1100
+          ],
+          "original_capture_sha256": "ec500604261233457b0c7dc06d15b22ce80429453aff47014a505b24ebea84eb",
+          "mask_box": [
+            0,
+            1074,
+            300,
+            1100
+          ],
+          "pn_pixels_changed": false
+        },
+        {
+          "file": "rrsi.role.analyst-role.model.png",
+          "sha256": "4c3eeee3dc793830b0c994cad809d7f1d1e0929f7ff3f475f7791626edae807c",
+          "mode": "petri",
+          "kind": "node-detail",
+          "dimensions": [
+            1600,
+            1100
+          ],
+          "original_capture_sha256": "b31fc0bff048991903e2c5073b62a91d0025439eae24c63fb3c2b0abc62a3bdf",
+          "mask_box": [
+            0,
+            1074,
+            300,
+            1100
+          ],
+          "pn_pixels_changed": false
+        }
+      ]
+    },
+    {
+      "id": "rrsi.role.proposer",
+      "compiled_sha256": "c3eaa547ef65fcf01b2cc432224dc439e565f4831c3a20e11a4b49be6cbd4bfa",
+      "projection_sha256": "8af0470a840e654994ccee87c48cde32ddf5323aa7340cc29ae5918626d9de98",
+      "summary": {
+        "node_count": 7,
+        "transition_count": 3,
+        "place_count": 4,
+        "resource_place_count": 0,
+        "edge_count": 7,
+        "resource_edge_count": 0
+      },
+      "images": [
+        {
+          "file": "rrsi.role.proposer.png",
+          "sha256": "8df86f7e7ea760c263bfd7c3aa4500ba9564f5c13d4a4790f550fee9217c51aa",
+          "mode": "petri",
+          "kind": "complete-net",
+          "dimensions": [
+            1600,
+            1100
+          ],
+          "original_capture_sha256": "5e7dd9e9aa03664a7e5f8e4396587c229463de32590b2b4ba491fe7ed8109a58",
+          "mask_box": [
+            0,
+            1074,
+            300,
+            1100
+          ],
+          "pn_pixels_changed": false
+        },
+        {
+          "file": "rrsi.role.proposer-role.model.png",
+          "sha256": "4c3eeee3dc793830b0c994cad809d7f1d1e0929f7ff3f475f7791626edae807c",
+          "mode": "petri",
+          "kind": "node-detail",
+          "dimensions": [
+            1600,
+            1100
+          ],
+          "original_capture_sha256": "bb445214875f0e415aa8023ebfae519fdbcf8afb7382a61fb39db2402a665aab",
+          "mask_box": [
+            0,
+            1074,
+            300,
+            1100
+          ],
+          "pn_pixels_changed": false
+        }
+      ]
+    },
+    {
+      "id": "rrsi.role.critic",
+      "compiled_sha256": "681c799a2253d897bec4de65a2eb5d55ef9a6ef95e71f3ebdff4a8a5e70199b4",
+      "projection_sha256": "fbe2ffc65f884a684b9c1f1173115a53c4c0ce2fba8f0d164d5173f8ccf6c386",
+      "summary": {
+        "node_count": 7,
+        "transition_count": 3,
+        "place_count": 4,
+        "resource_place_count": 0,
+        "edge_count": 7,
+        "resource_edge_count": 0
+      },
+      "images": [
+        {
+          "file": "rrsi.role.critic.png",
+          "sha256": "78c59da6c4a75d8a4e6d503bd7b562c35c92b5cb68af704d1f71de5c16ca7d49",
+          "mode": "petri",
+          "kind": "complete-net",
+          "dimensions": [
+            1600,
+            1100
+          ],
+          "original_capture_sha256": "7287986cdf4189bcccca0b83f5da6abc94e34b89859ff52ca46e03a59566b4de",
+          "mask_box": [
+            0,
+            1074,
+            300,
+            1100
+          ],
+          "pn_pixels_changed": false
+        },
+        {
+          "file": "rrsi.role.critic-role.model.png",
+          "sha256": "2498ecb341123f819643223b0fb926d794f877b5c79b44d5fcb171179c61b2b7",
+          "mode": "petri",
+          "kind": "node-detail",
+          "dimensions": [
+            1600,
+            1100
+          ],
+          "original_capture_sha256": "31c03bcc920bac0f84d80def08a9eec0878333faacf435cc86b0a23b77c49f2b",
+          "mask_box": [
+            0,
+            1074,
+            300,
+            1100
+          ],
+          "pn_pixels_changed": false
+        }
+      ]
+    },
+    {
+      "id": "rrsi.role.digester",
+      "compiled_sha256": "617db112df158f66f43d82c83b781d87977cdb587cdd8e24744e0c4695dadd97",
+      "projection_sha256": "c8be80e5f255016738185f384c1a5a975ba0b26eaabbe998bf45673162fc66f2",
+      "summary": {
+        "node_count": 7,
+        "transition_count": 3,
+        "place_count": 4,
+        "resource_place_count": 0,
+        "edge_count": 7,
+        "resource_edge_count": 0
+      },
+      "images": [
+        {
+          "file": "rrsi.role.digester.png",
+          "sha256": "a4ef88e861a537c8889cf29858a7d0da3edc03a7bad25952176a4d29cf563fa7",
+          "mode": "petri",
+          "kind": "complete-net",
+          "dimensions": [
+            1600,
+            1100
+          ],
+          "original_capture_sha256": "723e47ad8cf9944eb21cf7431b3ea73bf3536cc05cbe83a9f530d0ebeaf48ddd",
+          "mask_box": [
+            0,
+            1074,
+            300,
+            1100
+          ],
+          "pn_pixels_changed": false
+        },
+        {
+          "file": "rrsi.role.digester-role.model.png",
+          "sha256": "2498ecb341123f819643223b0fb926d794f877b5c79b44d5fcb171179c61b2b7",
+          "mode": "petri",
+          "kind": "node-detail",
+          "dimensions": [
+            1600,
+            1100
+          ],
+          "original_capture_sha256": "eab29075a0dcd1e87192605f2e674cfa4a3ead0fe5fb2204b27cd692a6188ca7",
+          "mask_box": [
+            0,
+            1074,
+            300,
+            1100
+          ],
+          "pn_pixels_changed": false
+        }
+      ]
+    }
+  ],
+  "image_treatment": "Published images are sanitized copies of the original official-viewer captures. Only the non-PetriNet bottom-left observation-time footer is masked. PetriNet nodes, edges, states, retained pixels and dimensions are unchanged.",
+  "image_path_base": "../assets/"
+}
