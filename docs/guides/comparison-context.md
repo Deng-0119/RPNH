@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: en
   counterpart: comparison-context_ZH.md
-  revision: "2026-10-07.1"
+  revision: "2026-10-11.1"
   status: implementation-candidate
   basis: "public exact read session; descriptive comparison only"
 ---
@@ -32,6 +32,33 @@ paths, principal declarations, grants, callbacks, or a compiler. Index, record,
 material-body and export permissions remain independent. Opening this viewer
 does not grant any of them. See the independent Registry read-session guide for
 configuration and issuer details. Existing `rpnh net --run ...` behavior remains.
+
+## Plain merge results
+
+Fresh `PlainModuleMergeAuthor` results persist a deterministic
+`rpnh/plain_merge_public_pn/v1` projection before the actual two-parent revision
+M is committed. The viewer selects M itself and displays its existing PN nodes,
+arcs and configuration references. Comparing M with a parent uses `full_pair`:
+merge correspondence and runtime continuity are `not_provided`.
+
+The merge-only `rpnh/stored_plain_merge_public_pn/v1` envelope freezes a bounded
+ancestor inventory proof, tied to the original source binding, exact materials,
+commands, explicit conflict choices, HOST declarations and schema authorities.
+The reader reconstructs the nearest base, normalized analysis and resolved
+Module from authorized fixed-cut bytes. It never compiles, invokes a HOST,
+queries current facts or writes a Registry. Every merge proof material is
+required; denial or corruption cannot become a topology-only fallback. This
+version retains the session's existing row and total material-byte limits; a
+large valid merge can exceed a selected observer's view budget. These view limits
+do not reject the authoritative merge. Graph authors, opaque designer constraints
+and unsupported author histories remain excluded.
+
+The original result command and its five prepared materials are unchanged.
+Publication adds one immutable projection cut before the final revision cut;
+interrupted replay reuses its exact identity and bytes. Historical completed M
+without a stored projection remains `PROJECTION_UNAVAILABLE`; reading or replay
+never backfills it. Ordinary author and Assembly projections retain their
+existing contracts.
 
 ## Select and navigate
 

@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: comparison-context.md
-  revision: "2026-10-07.1"
+  revision: "2026-10-11.1"
   status: implementation-candidate
   basis: "public exact read session; descriptive comparison only"
 ---
@@ -29,6 +29,26 @@ rpnh net --read-host-config /absolute/path/read-host.json --view --no-open
 签发的 observation context；HTTP 输入不接收路径、principal 声明、grant、回调或 compiler。
 index、record、材料正文与 export 权限彼此独立，打开 Viewer 不会授予这些权限。
 配置与签发细节见独立 Registry read-session 指南。原有 `rpnh net --run ...` 行为保持不变。
+
+## 普通合并结果
+
+新建 `PlainModuleMergeAuthor` 结果会在实际双父版本 M 提交前，持久化确定性的
+`rpnh/plain_merge_public_pn/v1` 投影。Viewer 直接选择 M，显示它的现有 PN
+节点、弧和配置引用。M 与父版本的比较采用 `full_pair`；合并对应关系和运行时
+连续性仍为 `not_provided`。
+
+合并专用 `rpnh/stored_plain_merge_public_pn/v1` 封装冻结有界的祖先清单证明，
+绑定原始来源、精确材料、命令、显式冲突选择、HOST 声明和 schema 权威。
+读取方仅从已授权固定切面的字节重建最近共同基点、规范化分析及解析后的 Module，
+不编译、不调用 HOST、不查询当前事实，也不写 Registry。全部合并证明材料都
+是必需的；拒绝访问或损坏不能降级为仅拓扑回退。本版保留会话现有的行数及材料
+总字节限制；有效的大型合并可能超出所选观察者的视图预算。这些视图限制不会
+拒绝权威合并。图作者、不透明 designer constraints 及不支持的作者历史仍在范围外。
+
+原结果命令及其五份预备材料保持不变。发布流程在最终版本切面之前增加一个
+不可变投影切面；中断后重放复用原精确身份与字节。没有已存投影的历史完成版 M
+仍返回 `PROJECTION_UNAVAILABLE`，读取和重放均不补写。普通作者及 Assembly
+投影继续沿用原有合同。
 
 ## 选择与导航
 

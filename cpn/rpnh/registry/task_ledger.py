@@ -65,6 +65,7 @@ class TaskControlLedger:
 
     def adopt_net(self, *, net_instance_ref: VersionRef, idempotency_key: str,
                   supersedes_net_ref: VersionRef | None = None,
+                  collaboration_action=None,
                   ) -> tuple[EventEnvelope, ...]:
         """Adopt one fully registered exact workflow-design/net closure.
 
@@ -101,6 +102,8 @@ class TaskControlLedger:
         existing = self.service.event_store.list_events_by_idempotency_key(
             idempotency_key)
         if existing:
+            from .user_collaboration import early_replay_fence
+            early_replay_fence(self.service, idempotency_key, collaboration_action)
             adopted = [event for event in existing
                        if event.event_type == "net_adopted/v1"]
             if len(adopted) != 1 or dict(adopted[0].payload) != payload:

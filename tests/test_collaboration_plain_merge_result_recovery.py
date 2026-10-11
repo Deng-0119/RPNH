@@ -11,12 +11,12 @@ from test_collaboration_plain_merge_resolution import conflicting, choices_for
 from cpn.rpnh.collaboration import PlainModuleMergeAuthor, SourceQualifiedResourceRef, validate_closed_revision
 from cpn.rpnh.collaboration import plain_merge_result as implementation
 from cpn.rpnh.registry._registry import _RegistryCore
-from cpn.rpnh.registry.event_store import RegistryConflict
+from cpn.rpnh.registry.event_store import RegistryConflict, StaleWriterError
 from cpn.rpnh.registry.registration_gateway import RegistryRegistrationGateway
 from cpn.rpnh.registry.schema_catalog import canonical_json
 from cpn.rpnh.registry.transaction import RegistryTransaction
 
-CUTS = ("command", *implementation.ROLES, "revision")
+CUTS = ("command", *implementation.ROLES, "projection", "revision")
 
 
 class DurableCut(RuntimeError):
@@ -38,6 +38,10 @@ def test_every_committed_result_cut_reopens_and_preserves_the_first_complete_req
     args = {"analysis_ref": analysis.analysis_ref, "choices": choices_for(analysis, "local"), "command_id": "durable-result"}
     key = implementation._key(args["command_id"])
     by_key = {key + ":" + role: role for role in CUTS[:-1]}
+    from cpn.rpnh.collaboration.public_projections import _key as projection_key
+    reference = implementation._result_ref(core, author.binding, args["command_id"], left.revision.revision_ref, right.revision.revision_ref)
+    by_key.pop(key + ":projection")
+    by_key[projection_key(reference)] = "projection"
     by_key[key] = "revision"
     before, observed, committed = facts(core), [], {}
     original = RegistryTransaction.commit
@@ -68,6 +72,12 @@ def test_every_committed_result_cut_reopens_and_preserves_the_first_complete_req
     prefix = CUTS.index(cut) + 1
     assert [row["role"] for row in observed] == list(CUTS[:prefix])
     after_cut = facts(core)
+    if cut == "projection":
+        from test_collaboration_plain_merge_projection import snapshot
+        from cpn.rpnh.collaboration.public_projections import read_public_projection
+        from cpn.rpnh.collaboration.registry_typed_readers import TypedReadError
+        with pytest.raises(TypedReadError, match="NOT_PRESENT_AT_CUT"):
+            read_public_projection(core, reference, snapshot=snapshot(core, "plain-source"))
     assert after_cut["objects"] - before["objects"] == prefix
     assert after_cut["committed_transactions"] - before["committed_transactions"] == prefix
     command = json.loads(committed["command"][1])
@@ -81,6 +91,8 @@ def test_every_committed_result_cut_reopens_and_preserves_the_first_complete_req
     new_gateway = RegistryRegistrationGateway(reopened, gateway._task_ref, gateway._bootstrap_ref)
     replay = PlainModuleMergeAuthor(new_gateway, support.registration(), author.producer)
     assert reopened.writer_epoch != core.writer_epoch
+    with pytest.raises(StaleWriterError):
+        author.publish(**args)
     assert facts(reopened) == after_cut
     changed = deepcopy(args["choices"])
     changed[0]["reason"] += "; a changed caller reason"
@@ -100,8 +112,8 @@ def test_every_committed_result_cut_reopens_and_preserves_the_first_complete_req
     for version, raw in committed.values():
         assert reopened.object_store.path_for_version(version).read_bytes() == raw
     final = facts(reopened)
-    assert final["objects"] - before["objects"] == 7
-    assert final["committed_transactions"] - before["committed_transactions"] == 7
+    assert final["objects"] - before["objects"] == 8
+    assert final["committed_transactions"] - before["committed_transactions"] == 8
     if cut == "revision":
         assert final == after_cut
     reader = _RegistryCore(reopened.run_dir, create=False, read_only=True, catalog=reopened.catalog)

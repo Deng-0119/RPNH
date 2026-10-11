@@ -1,0 +1,279 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "registry_v1/user_collaboration_delivery/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "registry_v1/user_collaboration_delivery/v1"
+    },
+    "self_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "entity_type": {
+          "type": "string",
+          "minLength": 1
+        },
+        "logical_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "version_id": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "entity_type",
+        "logical_id",
+        "version_id"
+      ]
+    },
+    "source_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "owner_task_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "entity_type": {
+          "type": "string",
+          "minLength": 1
+        },
+        "logical_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "version_id": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "entity_type",
+        "logical_id",
+        "version_id"
+      ]
+    },
+    "publisher_bootstrap_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "entity_type": {
+          "type": "string",
+          "minLength": 1
+        },
+        "logical_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "version_id": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "entity_type",
+        "logical_id",
+        "version_id"
+      ]
+    },
+    "command_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "session_ref": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "entity_type": {
+              "type": "string",
+              "minLength": 1
+            },
+            "logical_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "version_id": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "required": [
+            "entity_type",
+            "logical_id",
+            "version_id"
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "project_ref": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "entity_type": {
+              "type": "string",
+              "minLength": 1
+            },
+            "logical_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "version_id": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "required": [
+            "entity_type",
+            "logical_id",
+            "version_id"
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "data": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "source_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_task_ref": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "entity_type": {
+              "type": "string",
+              "minLength": 1
+            },
+            "logical_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "version_id": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "required": [
+            "entity_type",
+            "logical_id",
+            "version_id"
+          ]
+        },
+        "received_text_ref": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "entity_type": {
+              "type": "string",
+              "minLength": 1
+            },
+            "logical_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "version_id": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "required": [
+            "entity_type",
+            "logical_id",
+            "version_id"
+          ]
+        },
+        "author_session_ref": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "entity_type": {
+              "type": "string",
+              "minLength": 1
+            },
+            "logical_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "version_id": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "required": [
+            "entity_type",
+            "logical_id",
+            "version_id"
+          ]
+        },
+        "witness": {
+          "type": "object"
+        },
+        "execution_ref": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "entity_type": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "logical_id": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "version_id": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "required": [
+                "entity_type",
+                "logical_id",
+                "version_id"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "source_id",
+        "source_task_ref",
+        "received_text_ref",
+        "author_session_ref",
+        "witness",
+        "execution_ref"
+      ]
+    }
+  },
+  "required": [
+    "schema_version",
+    "self_ref",
+    "source_id",
+    "owner_task_ref",
+    "publisher_bootstrap_ref",
+    "command_id",
+    "session_ref",
+    "project_ref",
+    "data"
+  ]
+}

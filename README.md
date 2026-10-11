@@ -273,7 +273,7 @@ all cases.
 | Understand execution | [Dashboard](docs/guides/viewer.md), [architecture](docs/architecture/design.md), [Registry/runtime](docs/reference/runtime-registry.md), [finite PN validation](docs/reference/pn-validation.md), [sessions and Agents](docs/reference/agents.md) |
 | Reuse and inspect definitions | [Portable packages](docs/guides/portable-packages.md), [receiver preparation](docs/environment-preparation.md), [graph authoring](docs/reference/graph-authoring.md), [Worksets](docs/reference/worksets.md) |
 | Read exact evidence | [Independent Registry reader](docs/guides/independent-registry-reader.md), [source queries](docs/guides/source-queries.md), [checkpoint comparison](docs/guides/checkpoint-comparison.md), [curated results](docs/results/README.md) |
-| Integrate a host | [Frontend and host adapters](docs/guides/adapters.md), [extension and observation interfaces](docs/reference/extensions-observation.md) |
+| Integrate a host | [Frontend and host adapters](docs/guides/adapters.md), [extension and observation interfaces](docs/reference/extensions-observation.md), [controlled user collaboration](docs/guides/user-collaboration.md) |
 | Operate or contribute | [Troubleshooting](docs/guides/troubleshooting.md), [development](docs/guides/development.md), [contributing](CONTRIBUTING.md), [security](SECURITY.md), [changelog](CHANGELOG.md), [release validation](docs/guides/release-validation.md) |
 
 ## Validation and development

@@ -36,6 +36,7 @@ class PendingEdit:
     retire_token_refs: tuple
     owner_inputs: dict
     status: str = "REGISTERED"
+    collaboration_action: object = None
 
 
 class OwnerEdits:
@@ -43,7 +44,9 @@ class OwnerEdits:
         self.owner = owner
         self.queue = []
 
-    def retract(self, arguments, command_id):
+    def retract(self, arguments, command_id, *, collaboration_action=None):
+        from .registry.user_collaboration import owner_edit_action
+        owner_edit_action(self.owner._core, command_id, collaboration_action, operation='retract')
         if (set(arguments) != {"edit_command_id"}
                 or not isinstance(arguments["edit_command_id"], str) or not arguments["edit_command_id"]):
             raise ValueError("retract_edit requires one explicit edit_command_id")
@@ -73,8 +76,10 @@ class OwnerEdits:
             lineage=(command.as_version_ref(),), suffix="retraction")
         return {**body, "result_ref": ref_payload(ref.as_version_ref())}
 
-    def correct(self, arguments, command_id):
+    def correct(self, arguments, command_id, *, collaboration_action=None):
         """A corrected full candidate is a new command, never an auto merge."""
+        from .registry.user_collaboration import owner_edit_action
+        owner_edit_action(self.owner._core, command_id, collaboration_action, operation='correct')
         if set(arguments) != {"edit_command_id", "candidate", "base_net_ref", "marking_mapping",
                               "retire_token_refs", "owner_inputs"}:
             raise ValueError("correct_edit requires the retained candidate command id")
@@ -155,7 +160,9 @@ class OwnerEdits:
             suffix=f"status:{status}:{len(self.owner.control.records('result'))}")
         return {**body, "result_ref": ref_payload(resource.as_version_ref())}
 
-    def submit(self, arguments, command_id):
+    def submit(self, arguments, command_id, *, collaboration_action=None):
+        from .registry.user_collaboration import owner_edit_action
+        collaboration_action = owner_edit_action(self.owner._core, command_id, collaboration_action)
         required = {"candidate", "base_net_ref", "marking_mapping", "retire_token_refs", "owner_inputs"}
         if set(arguments) != required:
             raise ValueError("whole edit requires full candidate, base NET, mapping, retirement and owner inputs")
@@ -164,9 +171,12 @@ class OwnerEdits:
                 or not isinstance(arguments["owner_inputs"], dict)):
             raise TypeError("owner edit marking choices must be explicit JSON containers")
         owner = self.owner
+        candidate_data = dict(arguments)
+        if collaboration_action is not None:
+            candidate_data['user_collaboration'] = collaboration_action.material()
         previous = [body for _ref, body in owner.control.records("candidate") if body["command_id"] == command_id]
         if previous:
-            if len(previous) != 1 or previous[0]["data"] != arguments:
+            if len(previous) != 1 or previous[0]["data"] != candidate_data:
                 raise ValueError("edit command id was reused for different immutable candidate data")
             results = [body["data"] for _ref, body in owner.control.records("result")
                        if body["command_id"] == command_id]
@@ -181,7 +191,7 @@ class OwnerEdits:
         base = _version_from_payload(arguments["base_net_ref"])
         if base.entity_type != "net_instance/v1":
             raise ValueError("edit base must be an exact registered net ref")
-        candidate_record = owner.control.publish("candidate", command_id, None, arguments,
+        candidate_record = owner.control.publish("candidate", command_id, None, candidate_data,
             lineage=(owner.original_input_ref.as_version_ref(),))
         if base != executable.net_ref:
             result = owner.control.publish("result", command_id, None,
@@ -248,6 +258,7 @@ class OwnerEdits:
         request = replace(request, owner_command_ref=command)
         edit = PendingEdit(command_id, candidate_record, publication, request, structure.compiled, compiled,
             arguments["marking_mapping"], tuple(_version_from_payload(ref) for ref in arguments["retire_token_refs"]), place_inputs)
+        edit.collaboration_action = collaboration_action
         self.queue.append(edit)
         owner.admission_paused = True
         self.result(edit, "REGISTERED")
@@ -281,6 +292,11 @@ class OwnerEdits:
         from .pn_validation.runtime_gate import analyze_owner_preview
         pn_evidence = analyze_owner_preview(owner, preview)
         tx = owner._core.begin(idempotency_key=edit.command_id)
+        if edit.collaboration_action is not None:
+            if tx._collaboration_action is None:
+                tx.bind_collaboration_action(edit.collaboration_action)
+            elif tx._collaboration_action.material() != edit.collaboration_action.material():
+                raise RegistryConflict('pending owner edit cannot inherit a different later HOST action')
         allocated = allocate_owner_mapping(owner._core, edit.publication, marking, decision,
             command_id=edit.command_id, preview=preview, transaction=tx)
         checkpoint_body = owner._core.get_version(marking.checkpoint_ref.version_id).metadata

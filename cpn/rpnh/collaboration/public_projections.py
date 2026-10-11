@@ -10,12 +10,13 @@ from copy import deepcopy
 import hashlib
 import json
 
-from ..registry.schema_catalog import canonical_json, canonical_text
+from ..registry.schema_catalog import SchemaGovernanceError, canonical_json, canonical_text
 from .registry_typed_readers import TypedReadError, wire_ref, prepared_at, payload_at, descriptor_at
+from ._plain_merge_projection import PRODUCER as MERGE_PRODUCER, STORED_SCHEMA as MERGE_STORED_SCHEMA
 
 SCHEMA = 'rpnh/public_pn_projection/v1'
 STORED_SCHEMA = 'rpnh/stored_public_pn_projection/v1'
-PRODUCER_CONTRACTS = ('rpnh/closed_author_public_pn/v1', 'rpnh/plain_transform_public_pn/v1', 'rpnh/assembly_public_pn/v9')
+PRODUCER_CONTRACTS = ('rpnh/closed_author_public_pn/v1', 'rpnh/plain_transform_public_pn/v1', 'rpnh/assembly_public_pn/v9', MERGE_PRODUCER)
 NODE_FIELDS = frozenset({'id','label','kind','category','hidden_by_default','operation','operation_id','executor',
     'inputs','outputs','token_kind','capacity','schema'})
 EDGE_FIELDS = frozenset({'id','source','target','kind','mode','weight','outcome','hidden_by_default','resource',
@@ -276,7 +277,8 @@ def make_public_projection(revision, compiled, elements, *, producer_contract, p
         'runtime':{'coverage':'not_provided'}}
 
 
-def publish_public_projection(author, value, *, parent=None, producer_contract=PRODUCER_CONTRACTS[0]):
+def publish_public_projection(author, value, *, parent=None, producer_contract=PRODUCER_CONTRACTS[0],
+                              merge_proof=None, merge_dependencies=None):
     """Called only after the producer validated the exact publication inputs."""
     from ..registry.resource_service import _publish_private_system
     from ..registry.resources import PrivateSystemOrigin, PublishResource
@@ -312,6 +314,12 @@ def publish_public_projection(author, value, *, parent=None, producer_contract=P
         dependencies.append({'ref':ref.to_dict(),'bytes':len(raw),'sha256':hashlib.sha256(raw).hexdigest()})
     document = {'schema_version':STORED_SCHEMA,'projection':projection,'compiled':value.compiled.to_dict(),
         'elements':source_value.element_map,'dependencies':dependencies}
+    if producer_contract == MERGE_PRODUCER:
+        if parent is not None or merge_proof is None or merge_dependencies is None:
+            raise ValueError('merge projection requires its complete exact proof')
+        document.update(schema_version=MERGE_STORED_SCHEMA, merge_proof=merge_proof, dependencies=merge_dependencies)
+    elif merge_proof is not None or merge_dependencies is not None:
+        raise ValueError('merge proof requires its explicit producer')
     payload = canonical_json(document)
     resource = _publish_private_system(author.core,author.gateway._task_ref,PublishResource(
         origin=PrivateSystemOrigin(author.gateway._bootstrap_ref),payload=payload,media_type='application/json',
@@ -368,6 +376,8 @@ def _read_public_projection_complete(core, entry_ref, *, snapshot):
         raise TypedReadError('INTEGRITY_FAILED')
     try:
         stored = json.loads(raw)
+        if metadata['descriptors'].get('public_pn_contract') == MERGE_PRODUCER:
+            return _read_merge_projection(core, target, record, projection_ref, raw, stored, snapshot)
         if set(stored) != {'schema_version','projection','compiled','elements','dependencies'} or stored['schema_version'] != STORED_SCHEMA:
             raise ValueError('unknown projection')
         result = stored['projection']
@@ -514,7 +524,9 @@ def _read_public_projection_complete(core, entry_ref, *, snapshot):
             core, result, compiled, stored['elements'], parent, snapshot)
         return result
     except TypedReadError: raise
-    except (ValueError,KeyError,TypeError) as exc:
+    except (ValueError,KeyError,TypeError,SchemaGovernanceError) as exc:
+        if metadata['descriptors'].get('public_pn_contract') == MERGE_PRODUCER and getattr(exc, 'code', None):
+            raise
         raise TypedReadError('INTEGRITY_FAILED') from exc
 
 
@@ -528,7 +540,74 @@ def read_public_projection(core,entry_ref,*,snapshot):
         if (getattr(exc,'code',None) not in {'MATERIAL_ACCESS_NOT_GRANTED','NOT_DISCLOSED'}
                 or wire_ref(entry_ref)[1]['entity_type'] not in {'collaboration_net_revision/v1','collaboration_assembly_revision/v9'}):
             raise
+        projection_ref = _projection_row(core, entry_ref, snapshot)
+        if prepared_at(core, projection_ref, snapshot).metadata.get('descriptors', {}).get('public_pn_contract') == MERGE_PRODUCER:
+            raise  # Every merge proof dependency is required, never optional mapping.
         return _read_topology_only(core,entry_ref,snapshot=snapshot)
+
+
+def _read_merge_projection(core, target, record, projection_ref, raw, stored, snapshot):
+    from ._plain_merge_projection import MaterialClosure, verify
+    snapshot.check_authorized(target, 'record')
+    if (set(stored) != {'schema_version', 'projection', 'compiled', 'elements', 'dependencies', 'merge_proof'}
+            or stored['schema_version'] != MERGE_STORED_SCHEMA
+            or wire_ref(target)[1]['entity_type'] != 'collaboration_net_revision/v1'):
+        raise ValueError('unknown merge projection envelope')
+    for kind in ('registry_type_catalog/v1', 'collaboration_source_binding/v1'):
+        if sum(row['object_type'] == kind for row in snapshot.objects.values()) != 1:
+            raise ValueError('merge requires its unique canonical source/catalog authority')
+    dependencies = stored['dependencies']
+    if (not isinstance(dependencies, list) or len(dependencies) > len(snapshot.objects)
+            or len(stored['merge_proof']['inventories']) > len(snapshot.objects)):
+        raise TypedReadError('LIMIT_EXCEEDED')
+    pins = {}
+    total = len(raw)
+    for row in dependencies:
+        if (set(row) != {'ref', 'bytes', 'sha256', 'metadata'} or type(row['bytes']) is not int
+                or row['bytes'] < 0 or wire_ref(row['ref'])[0] != target['source_id']):
+            raise ValueError('invalid merge dependency pin')
+        key = canonical_text(row['ref'])
+        if key in pins:
+            raise ValueError('duplicate merge dependency')
+        pins[key] = row
+        total += row['bytes']
+    if total > snapshot.max_material_bytes:
+        raise TypedReadError('LIMIT_EXCEEDED')
+    closure = MaterialClosure(snapshot, core.task_id)
+    closure.check(projection_ref, prepared_at(core, projection_ref, snapshot))
+    used = set()
+    def read(reference):
+        key = canonical_text(reference)
+        pin = pins.get(key)
+        if pin is None:
+            raise ValueError('missing merge dependency pin')
+        kind = wire_ref(reference)[1]['entity_type']
+        if kind == 'collaboration_net_revision/v1':
+            snapshot.check_authorized(reference, 'record')
+        body, prepared = payload_at(core, reference, snapshot, material=kind == 'resource_version/v1',
+            max_bytes=snapshot.max_material_bytes)
+        if (len(body) != pin['bytes'] or hashlib.sha256(body).hexdigest() != pin['sha256']
+                or canonical_json(prepared.metadata) != canonical_json(pin['metadata'])):
+            raise ValueError('merge exact dependency bytes/metadata differ')
+        closure.check(reference, prepared)
+        used.add(key)
+        return body, prepared
+    value = verify(core, record, stored['compiled'], stored['elements'], stored['merge_proof'], read)
+    binding = json.loads(read(stored['merge_proof']['binding_ref'])[0])
+    metadata = prepared_at(core, projection_ref, snapshot).metadata
+    if (metadata['task_ref'] != binding['task_ref']
+            or metadata['origin']['primary_ref'] != binding['bootstrap_command_ref']
+            or metadata['descriptors'] != {'public_pn_revision_ref': canonical_text(target),
+                'public_pn_contract': MERGE_PRODUCER, 'content_sha256': hashlib.sha256(raw).hexdigest()}):
+        raise ValueError('merge projection binding/provenance differs')
+    if used != set(pins):
+        raise ValueError('unused merge dependency pins')
+    expected = make_public_projection(value.revision, value.compiled, value.element_map, producer_contract=MERGE_PRODUCER)
+    if canonical_json(stored['projection']) != canonical_json(expected):
+        raise ValueError('merge public graph differs from exact proof')
+    expected.update(mapping_coverage='not_provided', generated_correspondences=[], projection_ref=projection_ref,
+        integrity={'status': 'verified_recorded_sha256', 'sha256': hashlib.sha256(raw).hexdigest()})
+    return expected
 
 
 def _read_topology_only(core,entry_ref,*,snapshot):
@@ -546,6 +625,8 @@ def _read_topology_only(core,entry_ref,*,snapshot):
         raise TypedReadError('INTEGRITY_FAILED')
     try:
         stored=json.loads(raw);public=stored['projection']
+        if meta['descriptors'].get('public_pn_contract') == MERGE_PRODUCER:
+            return _read_public_projection_complete(core, target, snapshot=snapshot)
         if (stored['schema_version']!=STORED_SCHEMA or public['schema_version']!=SCHEMA or public['target_ref']!=target
                 or public['producer_contract'] not in PRODUCER_CONTRACTS):raise ValueError('wrong public projection')
         bootstrap=meta['origin']['primary_ref']

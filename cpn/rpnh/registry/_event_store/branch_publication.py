@@ -151,7 +151,16 @@ def validate_branch_publication(context):
     if not uses_branch_namespace(context):
         return
     objects = [item for item in context.objects if item.object_type in BRANCH_TYPES]
-    if len(objects) != 1 or len(context.objects) != 1 or context.relations or len(context.events) != 2:
+    from ..user_collaboration import RECEIPT
+    receipts = [item for item in context.objects if item.object_type == RECEIPT]
+    # The central guard has already validated this exact receipt atomically.
+    # Partition only its publication; arbitrary extra objects/events stay illegal.
+    receipt_versions = {str(item.version_id) for item in receipts}
+    branch_events = [event for event in context.events if not (
+        event.event_type == 'object_version_published/v1'
+        and event.payload.get('version_id') in receipt_versions)]
+    if (len(objects) != 1 or len(receipts) > 1 or len(context.objects) != 1 + len(receipts)
+            or context.relations or len(branch_events) != 2 or len(context.events) != 2 + len(receipts)):
         raise RegistryConflict("Branch publication requires one immutable successor and its exact facts")
     obj = objects[0]
     store = descriptor_store(context.event_store)
@@ -159,7 +168,7 @@ def validate_branch_publication(context):
     record = _branch_record_type(obj.object_type)
     value = record.from_dict(document, catalog=context.event_store.catalog)
     binding = _local_binding(context.db, context.event_store.catalog, context.task_id, store)
-    publications = [event for event in context.events if event.event_type == "object_version_published/v1"]
+    publications = [event for event in branch_events if event.event_type == "object_version_published/v1"]
     terminals = [event for event in context.events if event.event_type == "transaction_committed/v1"]
     if len(publications) != 1 or len(terminals) != 1:
         raise RegistryConflict("Branch publication requires its unique publication/commit facts")
@@ -187,7 +196,7 @@ def validate_branch_publication(context):
             or terminal.producer_principal != "framework" or terminal.producer_invocation_id is not None
             or terminal.command_id != context.idempotency_key or terminal.idempotency_key != context.idempotency_key
             or terminal.payload_schema_ref != "registry_v1/transaction_committed/v1"
-            or dict(terminal.payload) != {"object_count": 1, "relation_count": 0, "fact_count": 1}):
+            or dict(terminal.payload) != {"object_count": 1 + len(receipts), "relation_count": 0, "fact_count": 1 + len(receipts)}):
         raise RegistryConflict("Branch command/owner/identity publication is inconsistent")
     previous_doc = current_branch_document(context.db, context.event_store.catalog, context.task_id, str(obj.logical_id), store)
     if value.sequence == 1:
@@ -211,7 +220,15 @@ def validate_branch_publication(context):
     revision = _branch_target(context.db, store, context.task_id, value)
     if value.sequence > 1:
         if value.expected_head_revision_ref not in revision.parent_revision_refs:
-            raise RegistryConflict("only direct-descendant Branch advance is supported; reset is not enabled")
+            # A protected genuine M has two sibling parents, while its proven
+            # common base is the current official head. The central writer
+            # guard has reclosed that original proof and every input approval
+            # before accepting this exact same-transaction receipt. Legacy
+            # receipt-free Branch semantics and reset prohibition stay intact.
+            if (len(receipts) != 1 or len(revision.parent_revision_refs) != 2
+                    or receipts[0].metadata['data']['operation'] != 'advance'
+                    or receipts[0].metadata['data']['result_revision_ref'] != value.head_revision_ref.to_dict()['ref']):
+                raise RegistryConflict("only direct-descendant Branch advance is supported; reset is not enabled")
         # Descriptor parents are not yet a validated DAG. Do not let a cycle
         # in that input enable a reset through the direct-parent predicate.
         _reject_reused_head(context.db, store, context.task_id, previous_doc, value.head_revision_ref)

@@ -46,6 +46,7 @@ metadata:
 | 准备精确 v2 分享包环境，保留 v1 原语义 | [分享包环境声明](guides/package-environments_ZH.md) |
 | 检查、解析并准备所选接收端，随后单独授权启动 | [接收端环境准备](environment-preparation_ZH.md) |
 | 分析受支持的有限网并区分 HOLDS、VIOLATED 与 UNKNOWN | [有限 PN 验证](reference/pn-validation_ZH.md) |
+| 接入本地参与者，进行精确审核与受保护 Branch 接纳 | [受控用户协作](guides/user-collaboration_ZH.md) |
 | 打开独立合法类型化读取和跨网比较 | [独立 Registry 读取](guides/independent-registry-reader_ZH.md) |
 | 理解固定 cut 类型化读合同与权限校验 | [Registry 读会话](reference/registry-read-sessions_ZH.md) |
 | 从精确产物核对 producer 与可选 Start 输入、claim | [有界产物来源查询](reference/registry-read-sessions_ZH.md) |

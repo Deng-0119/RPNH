@@ -57,6 +57,14 @@ class RegistryTransaction:
         self._initial_heads: dict[str, int] = {}
         self._closed = False
         self._expected_registry_ordinal: int | None = None
+        from .user_collaboration import routed_action
+        self._collaboration_action = routed_action(event_store, idempotency_key)
+
+    def bind_collaboration_action(self, action) -> None:
+        from .user_collaboration import check_handle
+        if self._closed or self._collaboration_action is not None:
+            raise RuntimeError('transaction collaboration action is already bound or closed')
+        self._collaboration_action = check_handle(self.event_store, action)
 
     def _initial_stream_head(self, stream_id: str) -> int:
         head = self._initial_heads.get(stream_id)
@@ -330,6 +338,8 @@ class RegistryTransaction:
     def commit(self) -> tuple[EventEnvelope, ...]:
         if self._closed:
             raise RuntimeError("transaction is closed")
+        from .user_collaboration import stage_action_receipt
+        stage_action_receipt(self)
         business_settlements = sum(
             event.event_type == "transition_firing_settled/v1"
             for event in self._events)
@@ -397,7 +407,8 @@ class RegistryTransaction:
                 self._expected_dependency_root_predecessor),
             firing_publications=tuple(self._firing_publications),
             workspace_head_advances=tuple(self._workspace_head_advances),
-            expected_registry_ordinal=self._expected_registry_ordinal)
+            expected_registry_ordinal=self._expected_registry_ordinal,
+            collaboration_action=self._collaboration_action)
         self._closed = True
         return result
 

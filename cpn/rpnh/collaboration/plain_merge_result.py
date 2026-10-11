@@ -202,6 +202,29 @@ def _validate_merge_at(db, core, revision, registration, binding, visiting):
         command_ref, analysis_ref, SourceQualifiedResourceRef.from_dict(expected["prepared_materials"][0]["resource_ref"], catalog=core.catalog))
 
 
+def _projection_proof_at(db, author, value, binding):
+    """Freeze bounded validated ancestry; original materials stay authoritative."""
+    from .materials import _validate_at
+    from .plain_merge import _lineage_at
+    from .registry_typed_readers import qualify, wire_ref
+    from ._plain_merge_projection import PROOF_SCHEMA, verify
+    records = _lineage_at(db, author.core, value.revision.parent_revision_refs, binding)
+    proof = {"schema_version": PROOF_SCHEMA, "binding_ref": qualify(binding["source_id"], binding["binding_ref"]),
+        "inventories": [{"revision_ref": reference.to_dict(),
+            "compiled": _validate_at(db, author.core, reference, author.registration, binding, set()).compiled.to_dict()}
+            for reference in sorted(records, key=lambda ref: canonical_json(ref.to_dict()))]}
+    dependencies = {}
+    def read(reference):
+        _, local = wire_ref(reference)
+        prepared = exact_prepared(db, author.core.object_store, author.core.task_id, local)
+        raw = readable_payload(author.core.object_store, prepared, media_type=prepared.media_type)
+        dependencies[canonical_text(reference)] = {"ref": reference, "bytes": len(raw),
+            "sha256": hashlib.sha256(raw).hexdigest(), "metadata": prepared.metadata}
+        return raw, prepared
+    verify(author.core, value.revision.to_dict(), value.compiled.to_dict(), value.element_map, proof, read)
+    return proof, [dependencies[key] for key in sorted(dependencies)]
+
+
 class PlainModuleMergeAuthor:
     def __init__(self, gateway, registration, producer_principal_ref):
         self.analyzer = PlainModuleMergeAnalyzer(gateway, registration, producer_principal_ref)
@@ -256,7 +279,12 @@ class PlainModuleMergeAuthor:
                     raise RegistryConflict("merge prepared identity differs")
             with self.core.event_store.connect() as db:
                 db.execute("BEGIN")
-                _validate_merge_at(db, self.core, revision, self.registration, binding, {revision.revision_ref})
+                value = _validate_merge_at(db, self.core, revision, self.registration, binding, {revision.revision_ref})
+                proof, dependencies = _projection_proof_at(db, self, value, binding)
+            from .public_projections import publish_public_projection
+            from ._plain_merge_projection import PRODUCER
+            publish_public_projection(self, value, producer_contract=PRODUCER,
+                merge_proof=proof, merge_dependencies=dependencies)
             tx = self.core.begin(idempotency_key=key)
             tx.prewrite(object_type=NET_REVISION_TYPE, logical_id=revision.revision_ref.ref.entity_id,
                 version_id=revision.revision_ref.ref.version_id, payload=canonical_json(revision.to_dict()),

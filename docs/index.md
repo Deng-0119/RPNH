@@ -50,6 +50,7 @@ has a corresponding Chinese page.
 | Prepare exact v2 package requirements without changing legacy package behavior | [Package environments](guides/package-environments.md) |
 | Check, resolve and prepare a selected receiver before authorized launch | [Receiver environment preparation](environment-preparation.md) |
 | Analyze supported finite nets and distinguish HOLDS, VIOLATED and UNKNOWN | [Finite PN validation](reference/pn-validation.md) |
+| Integrate local participants with exact review and protected Branch acceptance | [Controlled user collaboration](guides/user-collaboration.md) |
 | Open an independently authorized typed reader and cross-net comparison | [Independent Registry reader](guides/independent-registry-reader.md) |
 | Understand the fixed-cut typed read contract and authority checks | [Registry read sessions](reference/registry-read-sessions.md) |
 | Trace one exact product to its verified producer and optional Start inputs/claims | [Bounded product-origin query](reference/registry-read-sessions.md#fixed-product-origin-query) |

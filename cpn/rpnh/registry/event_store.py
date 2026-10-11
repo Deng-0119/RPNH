@@ -1878,6 +1878,7 @@ class EventStore:
                       workspace_head_advances: Sequence[
                           Mapping[str, object]] = (),
                       expected_registry_ordinal: int | None = None,
+                      collaboration_action=None,
                       ) -> tuple[EventEnvelope, ...]:
         from ._event_store import commit
 
@@ -1893,6 +1894,7 @@ class EventStore:
             firing_publications=firing_publications,
             workspace_head_advances=workspace_head_advances,
             expected_registry_ordinal=expected_registry_ordinal,
+            collaboration_action=collaboration_action,
         )
 
     def _before_firing_authority_mutation(

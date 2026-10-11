@@ -1,0 +1,374 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "registry_v1/user_collaboration_proposal/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "registry_v1/user_collaboration_proposal/v1"
+    },
+    "self_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "entity_type": {
+          "type": "string",
+          "minLength": 1
+        },
+        "logical_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "version_id": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "entity_type",
+        "logical_id",
+        "version_id"
+      ]
+    },
+    "source_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "owner_task_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "entity_type": {
+          "type": "string",
+          "minLength": 1
+        },
+        "logical_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "version_id": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "entity_type",
+        "logical_id",
+        "version_id"
+      ]
+    },
+    "publisher_bootstrap_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "entity_type": {
+          "type": "string",
+          "minLength": 1
+        },
+        "logical_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "version_id": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "entity_type",
+        "logical_id",
+        "version_id"
+      ]
+    },
+    "command_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "session_ref": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "entity_type": {
+              "type": "string",
+              "minLength": 1
+            },
+            "logical_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "version_id": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "required": [
+            "entity_type",
+            "logical_id",
+            "version_id"
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "project_ref": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "entity_type": {
+              "type": "string",
+              "minLength": 1
+            },
+            "logical_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "version_id": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "required": [
+            "entity_type",
+            "logical_id",
+            "version_id"
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "data": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "source_text_ref": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "entity_type": {
+              "type": "string",
+              "minLength": 1
+            },
+            "logical_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "version_id": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "required": [
+            "entity_type",
+            "logical_id",
+            "version_id"
+          ]
+        },
+        "origin_text": {
+          "type": "object"
+        },
+        "execution_refs": {
+          "type": "object"
+        },
+        "text_digest": {
+          "type": "string",
+          "minLength": 1
+        },
+        "payload": {
+          "type": "object"
+        },
+        "base_revision_ref": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "entity_type": {
+              "type": "string",
+              "minLength": 1
+            },
+            "logical_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "version_id": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "required": [
+            "entity_type",
+            "logical_id",
+            "version_id"
+          ]
+        },
+        "expected_branch_ref": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "entity_type": {
+              "type": "string",
+              "minLength": 1
+            },
+            "logical_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "version_id": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "required": [
+            "entity_type",
+            "logical_id",
+            "version_id"
+          ]
+        },
+        "expected_head_ref": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "entity_type": {
+              "type": "string",
+              "minLength": 1
+            },
+            "logical_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "version_id": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "required": [
+            "entity_type",
+            "logical_id",
+            "version_id"
+          ]
+        },
+        "candidate_revision_ref": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "entity_type": {
+              "type": "string",
+              "minLength": 1
+            },
+            "logical_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "version_id": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "required": [
+            "entity_type",
+            "logical_id",
+            "version_id"
+          ]
+        },
+        "previous_proposal_ref": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "entity_type": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "logical_id": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "version_id": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "required": [
+                "entity_type",
+                "logical_id",
+                "version_id"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "reason": {
+          "type": "string"
+        },
+        "delivery_ref": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "entity_type": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "logical_id": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "version_id": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "required": [
+                "entity_type",
+                "logical_id",
+                "version_id"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "synthetic_fixture": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "source_text_ref",
+        "origin_text",
+        "execution_refs",
+        "text_digest",
+        "payload",
+        "base_revision_ref",
+        "expected_branch_ref",
+        "expected_head_ref",
+        "candidate_revision_ref",
+        "previous_proposal_ref",
+        "reason",
+        "delivery_ref",
+        "synthetic_fixture"
+      ]
+    }
+  },
+  "required": [
+    "schema_version",
+    "self_ref",
+    "source_id",
+    "owner_task_ref",
+    "publisher_bootstrap_ref",
+    "command_id",
+    "session_ref",
+    "project_ref",
+    "data"
+  ]
+}

@@ -12,6 +12,27 @@ from .references import SOURCE_RESOURCE_REF_SCHEMA, SOURCE_VERSION_REF_SCHEMA
 from .authoring import NET_REVISION_SCHEMA, NET_REVISION_TYPE
 
 
+def user_collaboration_schema_data():
+    """Explicit trusted-HOST collaboration facts; no default catalog change."""
+    from ..registry.user_collaboration import TYPES
+    from ..registry.observer_access import observer_access_schema_data
+    documents, definitions, paths = author_material_schema_data()
+    other, extra, provenance = observer_access_schema_data()
+    documents.update(other)
+    paths.update(provenance)
+    known = {item.name: item for item in (*definitions, *extra)}
+    root = Path(__file__).resolve().parents[2] / 'schemas' / 'registry_v1'
+    for name in TYPES:
+        schema = 'registry_v1/' + name
+        path = root / (name.replace('/', '.') + '.schema.json')
+        documents[schema] = json.loads(path.read_text(encoding='utf-8'))
+        paths[schema] = path
+        known[name] = TypeDefinition(name=name, category='object', owner='collaboration',
+            schema_ref=schema, criticality=None, permission='writer-only', retention='permanent',
+            recovery_rule='exact-actor-command-replay', integrity_rule='original-writer-user-authority')
+    return documents, tuple(known.values()), paths
+
+
 COLLABORATION_SCHEMA_REFS = (
     SOURCE_RESOURCE_REF_SCHEMA,
     SOURCE_VERSION_REF_SCHEMA,

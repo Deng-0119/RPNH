@@ -1,5 +1,8 @@
 """Opt-in collaboration contracts; importing this package changes no runtime."""
 
+from .user_collaboration import UserCollaborationHost
+from .schema_catalog import user_collaboration_schema_data
+
 from .references import SourceQualifiedResourceRef, SourceQualifiedVersionRef
 from .authoring import NetRevision, AuthorRevisionReadError, read_net_revision
 from .schema_catalog import authoring_schema_data, collaboration_schema_data, source_identity_schema_data, branch_schema_data, author_material_schema_data

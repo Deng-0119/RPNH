@@ -237,7 +237,7 @@ session surface 的 registered host 集成。所有情况下，模型选择与�
 | 理解执行 | [看板](docs/guides/viewer_ZH.md)、[架构](docs/architecture/design_ZH.md)、[Registry/runtime](docs/reference/runtime-registry_ZH.md)、[有限 PN 验证](docs/reference/pn-validation_ZH.md)、[会话与 Agent](docs/reference/agents_ZH.md) |
 | 复用与检查定义 | [可移植包](docs/guides/portable-packages_ZH.md)、[接收端准备](docs/environment-preparation_ZH.md)、[图作者接口](docs/reference/graph-authoring_ZH.md)、[Workset](docs/reference/worksets_ZH.md) |
 | 读取精确证据 | [独立 Registry 读取](docs/guides/independent-registry-reader_ZH.md)、[来源查询](docs/guides/source-queries_ZH.md)、[checkpoint 比较](docs/guides/checkpoint-comparison_ZH.md)、[精选结果](docs/results/README_ZH.md) |
-| 接入宿主 | [前端与宿主适配](docs/guides/adapters_ZH.md)、[扩展与观察接口](docs/reference/extensions-observation_ZH.md) |
+| 接入宿主 | [前端与宿主适配](docs/guides/adapters_ZH.md)、[扩展与观察接口](docs/reference/extensions-observation_ZH.md)、[受控用户协作](docs/guides/user-collaboration_ZH.md) |
 | 使用维护或参与开发 | [排障](docs/guides/troubleshooting_ZH.md)、[开发](docs/guides/development_ZH.md)、[参与贡献](CONTRIBUTING_ZH.md)、[安全报告](SECURITY_ZH.md)、[变更记录](CHANGELOG_ZH.md)、[发布验证](docs/guides/release-validation_ZH.md) |
 
 ## 验证与开发

@@ -37,6 +37,7 @@ def publish_batch(event_store: "EventStore", *, task_id: TypedId, branch_id: str
                   firing_publications: Sequence[Mapping[str, object]] = (),
                   workspace_head_advances: Sequence[Mapping[str, object]] = (),
                   expected_registry_ordinal: int | None = None,
+                  collaboration_action=None,
                   ) -> tuple[EventEnvelope, ...]:
     """Validate and atomically append one complete Registry transaction."""
     from ..event_store import (
@@ -434,6 +435,9 @@ def publish_batch(event_store: "EventStore", *, task_id: TypedId, branch_id: str
             dependency_root_predecessor),
         workspace_head_advances=workspace_head_commands,
     )
+    if collaboration_action is not None:
+        from ..user_collaboration import check_handle
+        command_material['user_collaboration'] = check_handle(event_store, collaboration_action).material()
     with event_store._lock, event_store.connect() as db:
         db.execute("BEGIN IMMEDIATE")
         current_epoch = int(db.execute(
@@ -482,6 +486,11 @@ def publish_batch(event_store: "EventStore", *, task_id: TypedId, branch_id: str
         existing = db.execute(
             "SELECT transaction_id,status,command_json FROM transactions WHERE task_id=? AND idempotency_key=?",
             (str(task_id), idempotency_key)).fetchone()
+        from .user_collaboration import validate_commit as validate_user_collaboration
+        validate_user_collaboration(event_store, db, task_id=task_id,
+            transaction_id=transaction_id, idempotency_key=idempotency_key,
+            objects=objects, events=events, relations=relations,
+            action=collaboration_action, existing=existing)
         from .preserved_plan_commit import validate_preserved_plan_commit
         validate_preserved_plan_commit(
             event_store, db, task_id=task_id, branch_id=branch_id,

@@ -41,7 +41,7 @@ def test_real_result_combines_rename_content_reads_and_replays_without_runtime(f
     assert result.module.entry["second"].component == "renamed"
     assert {row["locator"]: row["element_id"] for row in result.element_map["elements"]} == left_ids
     assert all(row["copied_from"] is None for row in result.element_map["elements"])
-    assert support.counts(core)[0] == before[0] + 7  # complete command + resolution + four materials + M
+    assert support.counts(core)[0] == before[0] + 8  # complete command + resolution + four materials + projection + M
     reader = _RegistryCore(core.run_dir, create=False, read_only=True, catalog=core.catalog)
     assert validate_closed_revision(reader, result.revision.revision_ref, support.registration()).module.to_dict() == result.module.to_dict()
     frozen = support.counts(core)
