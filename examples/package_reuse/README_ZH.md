@@ -295,3 +295,9 @@ cmp "$SAMPLE/native-add-v2.zip" "$WORK/rebuilt-stock-package/native-add-v2.zip"
 可选的原始包重建必须逐字节相同。此脚本不是通用图编辑器；作者改动应落实到其
 真实 Module 和依赖声明。包身份、本地环境锁和私有运行证据彼此独立。
 不要把本地 selection、凭证、receipt 或 Registry 路径放进公开 sharepackage。
+
+## PetriNet 声明图册
+
+下图展示本案例的初始 PetriNet 结构。[完整图册](figures/README_ZH.md)展示所列声明变体，并提供大网的节点局部图。
+
+![初始 PetriNet 结构](assets/petrinet-2448db2bb307d99f.png)

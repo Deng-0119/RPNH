@@ -7,6 +7,7 @@ from collections import Counter
 import csv
 from dataclasses import dataclass
 from html import escape
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -16,6 +17,7 @@ import struct
 import subprocess
 from urllib.parse import unquote, urlsplit, urlunsplit
 import zlib
+import xml.etree.ElementTree as ET
 
 import yaml
 from markdown_it import MarkdownIt
@@ -44,6 +46,54 @@ PUBLIC_DOWNLOADS = {
     'examples/tool_pipeline/tests/pipe_transport.py',
 }
 PNG_SIGNATURE = b'\x89PNG\r\n\x1a\n'
+# Exact already-reviewed report artwork only; new or changed SVGs require review.
+# Keep path/content admission separate from static-XML safety validation below.
+REVIEWED_REPORT_SVGS = {
+    'docs/assets/technical-report/01-architecture-en.svg':
+        '2f16b514871d48b8574e68306c06976f0f43e88ba961b826b3cf4143b835173b',
+    'docs/assets/technical-report/01-architecture-zh.svg':
+        '8ce5bea3c7d4b7663847a5a96e98983a9b22b36d07d4f5b13acedfeb10575da1',
+    'docs/assets/technical-report/02-parallel-join-en.svg':
+        'aede7eecba91f32e064ba4b9114d110d754ae4540230cdd5e8bf3177aa62e85c',
+    'docs/assets/technical-report/02-parallel-join-zh.svg':
+        '7156dbfa0d3f8c1900e5c50d1f127597d3fd9b8985ddfcedf464c4cbaf3553e7',
+    'docs/assets/technical-report/03-settlement-en.svg':
+        '96845dbcf3b5ab46600adf186bf0ababc0e85e3b1c381f31deef08d9f8991655',
+    'docs/assets/technical-report/03-settlement-zh.svg':
+        '264301b881c11a44ffb6b99b9a31c7eb91e1543081d68a37b57869e9ea41e2d5',
+    'docs/assets/technical-report/04-revision-adoption-en.svg':
+        'ea2cf30b0d62ca812bca7cd06909236264471a37a3d05fbcd6c02c411c6119a6',
+    'docs/assets/technical-report/04-revision-adoption-zh.svg':
+        'd1e4e197fcf05367233db96471c5fb0178f803631a52369360cfba9812dfe5bc',
+    'docs/assets/technical-report/05-managed-tools-en.svg':
+        '67c29342075c14832533dafe79bc22eb33c7d581caf8c41de130cd7e61408e0e',
+    'docs/assets/technical-report/05-managed-tools-zh.svg':
+        '1e48662084011d205edfae67681f4be501bad490af0e455b2d6b49e4f497ce98',
+    'docs/assets/technical-report/06-source-cuts-en.svg':
+        'b4d361190e66d84a7b4dc7a12e179e8924abe125530c1db4e31b925eba239ec6',
+    'docs/assets/technical-report/06-source-cuts-zh.svg':
+        '070b5de56a165706f9e20cd0085979e1d9c04e2af6982c0601c1363b9e6b1a4d',
+    'docs/assets/technical-report/07-product-origin-en.svg':
+        '2ff5d5bcc2e132b99a33bcfa0572a210236dc49dd0be1a51a8cc51d1f41b5c54',
+    'docs/assets/technical-report/07-product-origin-zh.svg':
+        'acdc94dfc0dd34e08d358e760b49ff4fa34d9910d7884da39a3d8fb71ef8ff13',
+    'docs/assets/technical-report/08-finite-pn-policy-en.svg':
+        'e9fc4b50c0d4c4ae1d19df8d4e133fc11289d4b670b704b682037630cbae2b86',
+    'docs/assets/technical-report/08-finite-pn-policy-zh.svg':
+        '0681fbc4c9059075a41503040847d141bb4819b9e6d569c1d14c5536a8c279cc',
+}
+REPORT_SVG_ELEMENTS = {
+    'svg', 'title', 'desc', 'defs', 'marker', 'path', 'rect', 'g', 'text', 'circle',
+}
+REPORT_SVG_ATTRIBUTES = {
+    'width', 'height', 'viewBox', 'role', 'aria-labelledby', 'id',
+    '{http://www.w3.org/XML/1998/namespace}lang',
+    'refX', 'refY', 'markerWidth', 'markerHeight', 'orient', 'd', 'fill',
+    'x', 'y', 'rx', 'font-family', 'font-size', 'font-weight', 'text-anchor',
+    'stroke', 'stroke-width', 'stroke-linejoin', 'marker-end',
+    'stroke-dasharray', 'cx', 'cy', 'r',
+}
+
 
 
 @dataclass
@@ -74,10 +124,12 @@ def auxiliary_documents(root: Path) -> list[Path]:
 
 
 def reviewed_assets(root: Path) -> list[Path]:
-    """Return public example images from the two explicit asset roots."""
+    """Return example PNGs and the explicit reviewed report SVGs."""
     return sorted({
         *root.glob('examples/**/assets/*.png'),
         *root.glob('cpn/examples/**/assets/*.png'),
+        *(root / name for name in REVIEWED_REPORT_SVGS
+          if (root / name).is_file()),
     })
 
 
@@ -153,12 +205,46 @@ def local_target(page: Path, href: str, root: Path) -> tuple[Path, str] | None:
     return target, unquote(url.fragment)
 
 
+def validate_report_svg(payload: bytes) -> None:
+    """Reject active/external XML independently of the exact-content allowlist."""
+    text = payload.decode('utf-8')
+    if '<!' in text or '<?' in text:
+        raise ValueError('SVG declarations, entities and processing instructions are forbidden')
+    document = ET.fromstring(text)
+    namespace = '{http://www.w3.org/2000/svg}'
+    if document.tag != namespace + 'svg':
+        raise ValueError('SVG root namespace required')
+    ids, references = set(), []
+    allowed_elements = {namespace + name for name in REPORT_SVG_ELEMENTS}
+    for element in document.iter():
+        if element.tag not in allowed_elements:
+            raise ValueError('unsupported SVG element')
+        for key, value in element.attrib.items():
+            if key not in REPORT_SVG_ATTRIBUTES:
+                raise ValueError('unsupported SVG attribute')
+            if key == 'id':
+                if not re.fullmatch(r'[A-Za-z_][A-Za-z0-9_.-]*', value) or value in ids:
+                    raise ValueError('invalid or duplicate SVG id')
+                ids.add(value)
+            if key in {'fill', 'stroke', 'marker-end'}:
+                reference = re.fullmatch(r'url\(#([A-Za-z_][A-Za-z0-9_.-]*)\)', value)
+                if reference:
+                    references.append(reference.group(1))
+                elif not re.fullmatch(r'none|#[0-9A-Fa-f]{3}|#[0-9A-Fa-f]{6}', value):
+                    raise ValueError('SVG paint/reference must be a color or local fragment')
+            elif 'url(' in value.lower():
+                raise ValueError('unsupported SVG URL')
+    if any(reference not in ids for reference in references):
+        raise ValueError('missing local SVG reference')
+
+
 def reviewed_image_target(page: Path, source: str, root: Path) -> Path:
     target = local_target(page, source, root)
     if target is None:
         raise ValueError(f'{page}: example images must be local: {source}')
     path, anchor = target
     relative = path.relative_to(root)
+    reviewed_svg_digest = REVIEWED_REPORT_SVGS.get(relative.as_posix())
     allowed = (
         len(relative.parts) >= 4
         and relative.parts[-2] == 'assets'
@@ -166,12 +252,20 @@ def reviewed_image_target(page: Path, source: str, root: Path) -> Path:
         and (relative.parts[0] == 'examples'
              or relative.parts[:2] == ('cpn', 'examples'))
     )
-    if not allowed or anchor:
+    if (not allowed and reviewed_svg_digest is None) or anchor:
         raise ValueError(f'{page}: image is outside reviewed asset policy: {source}')
     try:
         payload = path.read_bytes()
     except OSError as exc:
         raise ValueError(f'{page}: missing image asset {path}') from exc
+    if reviewed_svg_digest is not None:
+        try:
+            validate_report_svg(payload)
+            if hashlib.sha256(payload).hexdigest() != reviewed_svg_digest:
+                raise ValueError('unreviewed SVG content')
+        except (UnicodeError, ET.ParseError, ValueError) as exc:
+            raise ValueError(f'{page}: invalid reviewed report SVG asset {path}: {exc}') from exc
+        return path
     try:
         if not payload.startswith(PNG_SIGNATURE):
             raise ValueError('signature')

@@ -114,23 +114,99 @@ class DocumentationTests(unittest.TestCase):
             docs.check(self.root)
 
     def test_unreviewed_image_location_rejected(self):
-        source = next(iter(docs.reviewed_assets(self.root)))
+        source = next(path for path in docs.reviewed_assets(self.root)
+                      if path.suffix == '.png')
         shutil.copyfile(source, self.root / 'unreviewed.png')
         self.append('![Unreviewed](unreviewed.png)')
         with self.assertRaisesRegex(ValueError, 'outside reviewed asset policy'):
             docs.check(self.root)
 
     def test_malformed_reviewed_png_rejected(self):
-        path = next(iter(docs.reviewed_assets(self.root)))
+        path = next(path for path in docs.reviewed_assets(self.root)
+                      if path.suffix == '.png')
         path.write_bytes(b'not a png')
         with self.assertRaisesRegex(ValueError, 'invalid PNG'):
             docs.check(self.root)
 
     def test_truncated_reviewed_png_rejected_after_valid_header(self):
-        path = next(iter(docs.reviewed_assets(self.root)))
+        path = next(path for path in docs.reviewed_assets(self.root)
+                      if path.suffix == '.png')
         path.write_bytes(path.read_bytes()[:24])
         with self.assertRaisesRegex(ValueError, 'invalid PNG'):
             docs.check(self.root)
+
+    def test_reviewed_report_svgs_have_static_xml_and_exact_content(self):
+        self.assertEqual(len(docs.REVIEWED_REPORT_SVGS), 16)
+        for name in docs.REVIEWED_REPORT_SVGS:
+            path = self.root / name
+            self.assertIn(path, docs.reviewed_assets(self.root))
+            self.assertEqual(
+                docs.reviewed_image_target(self.root / 'README.md', name, self.root),
+                path)
+
+    def test_unknown_svg_rejected_even_in_report_assets(self):
+        source = self.root / next(iter(docs.REVIEWED_REPORT_SVGS))
+        target = source.with_name('unreviewed.svg')
+        shutil.copyfile(source, target)
+        with self.assertRaisesRegex(ValueError, 'outside reviewed asset policy'):
+            docs.reviewed_image_target(
+                self.root / 'README.md', str(target.relative_to(self.root)), self.root)
+
+    def test_modified_reviewed_svg_rejected(self):
+        name = next(iter(docs.REVIEWED_REPORT_SVGS))
+        path = self.root / name
+        path.write_bytes(path.read_bytes().replace(b'<title id="title">',
+                                                   b'<title id="title">Changed '))
+        with self.assertRaisesRegex(ValueError, 'unreviewed SVG content'):
+            docs.reviewed_image_target(self.root / 'README.md', name, self.root)
+
+    def test_svg_xml_safety_is_independent_of_content_hash(self):
+        opening = '<svg xmlns="http://www.w3.org/2000/svg"'
+        fixtures = (
+            opening + '><script>alert(1)</script></svg>',
+            opening + '><foreignObject/></svg>',
+            opening + ' onload="alert(1)"></svg>',
+            opening + '><path style="fill:red"/></svg>',
+            opening + '><path href="https://example.invalid/a"/></svg>',
+            opening + '><path fill="url(https://example.invalid/a)"/></svg>',
+            opening + '><path marker-end="url(#missing)"/></svg>',
+            opening + '><g id="same"/><g id="same"/></svg>',
+            '<!DOCTYPE svg [<!ENTITY x SYSTEM "file:///etc/passwd">]>'
+            + opening + '><text>&x;</text></svg>',
+            '<?xml-stylesheet href="https://example.invalid/a"?>'
+            + opening + '></svg>',
+            '<svg><text>wrong namespace</text></svg>',
+            opening + '><unknown/></svg>',
+            opening + '><path data-extra="new"/></svg>',
+        )
+        for payload in fixtures:
+            with self.subTest(payload=payload):
+                with self.assertRaises(ValueError):
+                    docs.validate_report_svg(payload.encode('utf-8'))
+
+    def test_report_svg_path_and_source_boundaries_remain_strict(self):
+        name = next(iter(docs.REVIEWED_REPORT_SVGS))
+        for source in (name + '#title', 'https://example.invalid/report.svg'):
+            with self.subTest(source=source):
+                with self.assertRaises(ValueError):
+                    docs.reviewed_image_target(self.root / 'README.md', source, self.root)
+        target = self.root / name
+        outside = Path(self.tmp.name) / 'outside.svg'
+        shutil.copyfile(target, outside)
+        target.unlink()
+        target.symlink_to(outside)
+        with self.assertRaisesRegex(ValueError, 'escapes documentation root'):
+            docs.reviewed_image_target(self.root / 'README.md', name, self.root)
+
+    def test_report_svgs_are_copied_unchanged_into_bilingual_site(self):
+        output = Path(self.tmp.name) / 'report-site'
+        docs.build(self.root, output)
+        for language, document in (('en', 'technical-report'), ('zh', 'technical-report_ZH')):
+            html = (output / 'docs' / (document + '.html')).read_text()
+            for name in docs.REVIEWED_REPORT_SVGS:
+                self.assertEqual((output / name).read_bytes(), (self.root / name).read_bytes())
+                if name.endswith('-' + language + '.svg'):
+                    self.assertIn('src="' + name.removeprefix('docs/') + '"', html)
 
     def test_build_language_links_and_no_runtime_import(self):
         output = Path(self.tmp.name) / 'site'

@@ -1,0 +1,49 @@
+{
+  "schema": "rpnh/example_figure_provenance/v1",
+  "source_repository": "Deng-0119/RPNH",
+  "source_commit": "34d42d171d7e9a7f803b71467063b55786c2cea8",
+  "figures": [
+    {
+      "declaration": "package_native_add",
+      "view": "PetriNet",
+      "scope": "initial declaration",
+      "compiled_pn_canonical_sha256": "c476dd029295f175e89c5f3a52e4a955af276c97be6142b9d08b9804983d86ac",
+      "projection_canonical_sha256": "7bf95b6e856f224a988c1eb47e2fa8350d784cedb393ec00ce1cc9f5909ca038",
+      "compiled_pn_file_sha256": "ad235ee41cf992a2a1a547d8a977c8bff89918896a7deb829b3a30d9a88e1cea",
+      "projection_file_sha256": "17923f325747b0918ef190601b3946a22adef48e504d79701f50489fd89ce196",
+      "image": {
+        "path": "assets/petrinet-2448db2bb307d99f.png",
+        "sha256": "2448db2bb307d99fc22c0189a9a887dbe855bdec5c6cd91d741db883650244be",
+        "original_capture_sha256": "aeab0061e0a7ffab26d24db023709a1751afd03997ade6160f10f246fb272a8f",
+        "sanitization": {
+          "operation": "crop non-PN footer only",
+          "crop_box_xyxy": [
+            0,
+            0,
+            1800,
+            1173
+          ],
+          "original_dimensions": [
+            1800,
+            1200
+          ],
+          "safe_dimensions": [
+            1800,
+            1173
+          ],
+          "pixel_equal_to_original_crop": true,
+          "pn_nodes_edges_counts_states_unchanged": true,
+          "safe_png_sha256": "2448db2bb307d99fc22c0189a9a887dbe855bdec5c6cd91d741db883650244be"
+        }
+      },
+      "node_details": []
+    }
+  ],
+  "image_path_base": "..",
+  "hashes": {
+    "png": "SHA-256 of exact PNG bytes",
+    "file": "SHA-256 of UTF-8 JSON file bytes, including indentation and final newline",
+    "canonical_json": "SHA-256 of UTF-8 JSON with sorted keys, compact separators (comma, colon), Unicode characters unescaped, and nonfinite values prohibited"
+  },
+  "reuse_verification": "Each original capture was reused only after the full compiled PN document and full projection matched canonical JSON from offline compilation of the public source commit. Pixel sanitation removes only the non-PN footer."
+}

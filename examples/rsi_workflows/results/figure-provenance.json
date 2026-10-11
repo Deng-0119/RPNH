@@ -1,0 +1,1052 @@
+{
+  "schema": "rpnh/example_figure_provenance/v1",
+  "source_repository": "Deng-0119/RPNH",
+  "source_commit": "34d42d171d7e9a7f803b71467063b55786c2cea8",
+  "figures": [
+    {
+      "declaration": "rsi_rounds_1",
+      "view": "PetriNet",
+      "scope": "initial declaration",
+      "compiled_pn_canonical_sha256": "4f091a476e99a529d23978f6c17c6c89417d35b1e92062df40d9104131f091a8",
+      "projection_canonical_sha256": "ac62da318df74b6838d026801504f9602355ff42ba28e8bb38757e8f1bc822ae",
+      "compiled_pn_file_sha256": "334bb5561ab7abb3bcc501677acd615466b0f2b2ed976ac4da7b7b9dafd6e522",
+      "projection_file_sha256": "4dfbae835a72622cbc4e9b249b9e143d35291e7332a5c15fceeaf96d078d389a",
+      "image": {
+        "path": "assets/petrinet-bc51f0c2910010fa.png",
+        "sha256": "bc51f0c2910010fa6c3c9717851b0b818d62148c9c0461e844602f861f1a4d89",
+        "original_capture_sha256": "5ded38ab337c62daf8c5f617b5b5e3b915d3448504699d7b79663774a7cd7f16",
+        "sanitization": {
+          "operation": "crop non-PN footer only",
+          "crop_box_xyxy": [
+            0,
+            0,
+            1800,
+            1173
+          ],
+          "original_dimensions": [
+            1800,
+            1200
+          ],
+          "safe_dimensions": [
+            1800,
+            1173
+          ],
+          "pixel_equal_to_original_crop": true,
+          "pn_nodes_edges_counts_states_unchanged": true,
+          "safe_png_sha256": "bc51f0c2910010fa6c3c9717851b0b818d62148c9c0461e844602f861f1a4d89"
+        }
+      },
+      "node_details": [
+        {
+          "node": "round_1_evaluator.run",
+          "path": "assets/node-detail-171cb3d60e9557a7.png",
+          "sha256": "171cb3d60e9557a78041be216002206f069f4b5b18faa08f2a1cd75a6b8a649d",
+          "original_capture_sha256": "2c26a43577d69a95ec3e706f2141c808665ad6410643923bba3c189c39162c8b",
+          "sanitization": {
+            "operation": "crop non-PN footer only",
+            "crop_box_xyxy": [
+              0,
+              0,
+              1800,
+              1173
+            ],
+            "original_dimensions": [
+              1800,
+              1200
+            ],
+            "safe_dimensions": [
+              1800,
+              1173
+            ],
+            "pixel_equal_to_original_crop": true,
+            "pn_nodes_edges_counts_states_unchanged": true,
+            "safe_png_sha256": "171cb3d60e9557a78041be216002206f069f4b5b18faa08f2a1cd75a6b8a649d"
+          }
+        },
+        {
+          "node": "round_1_proposer.run",
+          "path": "assets/node-detail-f7f6e530d220c9a8.png",
+          "sha256": "f7f6e530d220c9a852bfd22a45e4cced4c7525c8840676056543fa335cb0acee",
+          "original_capture_sha256": "1dc8fd743bea1cf650a859bb25621bbdc5782e159937768403192a89ddb06d77",
+          "sanitization": {
+            "operation": "crop non-PN footer only",
+            "crop_box_xyxy": [
+              0,
+              0,
+              1800,
+              1173
+            ],
+            "original_dimensions": [
+              1800,
+              1200
+            ],
+            "safe_dimensions": [
+              1800,
+              1173
+            ],
+            "pixel_equal_to_original_crop": true,
+            "pn_nodes_edges_counts_states_unchanged": true,
+            "safe_png_sha256": "f7f6e530d220c9a852bfd22a45e4cced4c7525c8840676056543fa335cb0acee"
+          }
+        },
+        {
+          "node": "round_1_selector.run",
+          "path": "assets/node-detail-99173def2419de0b.png",
+          "sha256": "99173def2419de0b08850971c668b1c2741711b31ca0989857561a9ea2ac2ba6",
+          "original_capture_sha256": "8a558c3699bc52d2955a7473f68ab8f5c5b57ebc984b97d9dbfc2a563e865932",
+          "sanitization": {
+            "operation": "crop non-PN footer only",
+            "crop_box_xyxy": [
+              0,
+              0,
+              1800,
+              1173
+            ],
+            "original_dimensions": [
+              1800,
+              1200
+            ],
+            "safe_dimensions": [
+              1800,
+              1173
+            ],
+            "pixel_equal_to_original_crop": true,
+            "pn_nodes_edges_counts_states_unchanged": true,
+            "safe_png_sha256": "99173def2419de0b08850971c668b1c2741711b31ca0989857561a9ea2ac2ba6"
+          }
+        }
+      ]
+    },
+    {
+      "declaration": "rsi_rounds_2",
+      "view": "PetriNet",
+      "scope": "initial declaration",
+      "compiled_pn_canonical_sha256": "1adc17c0666667ed2b102bdee0eaed35903d720304441299f4d86bf2ad9349b1",
+      "projection_canonical_sha256": "00674dccf0553e3e3c97c3f822cfb071fd699e230292e6c5a3d3948d691ca2c3",
+      "compiled_pn_file_sha256": "4b9c8f6f9a243f2b845d8a56f35f3ddfa2a2ad07ce16285282eb81103a1e1446",
+      "projection_file_sha256": "c80bf805e3fe3937ceac4f5c3c086cdc253e9c9d67833b67295ac4e77165c8e8",
+      "image": {
+        "path": "assets/petrinet-e900afe5cddd927f.png",
+        "sha256": "e900afe5cddd927f5b2b901a412732fa2068230f2016df92fe52235d1127403a",
+        "original_capture_sha256": "8823293d0930b9fcc262cb8439d165a9d1a5f1880d107505fce7120b2a18fcda",
+        "sanitization": {
+          "operation": "crop non-PN footer only",
+          "crop_box_xyxy": [
+            0,
+            0,
+            1800,
+            1173
+          ],
+          "original_dimensions": [
+            1800,
+            1200
+          ],
+          "safe_dimensions": [
+            1800,
+            1173
+          ],
+          "pixel_equal_to_original_crop": true,
+          "pn_nodes_edges_counts_states_unchanged": true,
+          "safe_png_sha256": "e900afe5cddd927f5b2b901a412732fa2068230f2016df92fe52235d1127403a"
+        }
+      },
+      "node_details": [
+        {
+          "node": "round_1_evaluator.run",
+          "path": "assets/node-detail-2d49e772f55ae514.png",
+          "sha256": "2d49e772f55ae514ac66eeeb6b4ee91c23ae6df57138a1039b7a3a7c5b2bfe52",
+          "original_capture_sha256": "abb3ac6b36d1a6950c632cb43d8d83fcf63c736a9f9288d04b0559f0d0c69931",
+          "sanitization": {
+            "operation": "crop non-PN footer only",
+            "crop_box_xyxy": [
+              0,
+              0,
+              1800,
+              1173
+            ],
+            "original_dimensions": [
+              1800,
+              1200
+            ],
+            "safe_dimensions": [
+              1800,
+              1173
+            ],
+            "pixel_equal_to_original_crop": true,
+            "pn_nodes_edges_counts_states_unchanged": true,
+            "safe_png_sha256": "2d49e772f55ae514ac66eeeb6b4ee91c23ae6df57138a1039b7a3a7c5b2bfe52"
+          }
+        },
+        {
+          "node": "round_1_proposer.run",
+          "path": "assets/node-detail-146eba4e70678aea.png",
+          "sha256": "146eba4e70678aea1f821e84a240f0d89469c22a3d1486482ba43b3da897539e",
+          "original_capture_sha256": "101240867cd0f9f473c205641c7ef4bfeb9edd534000f4d282c029ebe52137ca",
+          "sanitization": {
+            "operation": "crop non-PN footer only",
+            "crop_box_xyxy": [
+              0,
+              0,
+              1800,
+              1173
+            ],
+            "original_dimensions": [
+              1800,
+              1200
+            ],
+            "safe_dimensions": [
+              1800,
+              1173
+            ],
+            "pixel_equal_to_original_crop": true,
+            "pn_nodes_edges_counts_states_unchanged": true,
+            "safe_png_sha256": "146eba4e70678aea1f821e84a240f0d89469c22a3d1486482ba43b3da897539e"
+          }
+        },
+        {
+          "node": "round_1_selector.run",
+          "path": "assets/node-detail-2bba76c17370faf9.png",
+          "sha256": "2bba76c17370faf9bd2d22cfff4e7cfa631de9b56c06222288f0a82755f1d1fe",
+          "original_capture_sha256": "67209d341202457107d6a971789b3fc5f2fbbe30a067ecb3643b5855914e88dc",
+          "sanitization": {
+            "operation": "crop non-PN footer only",
+            "crop_box_xyxy": [
+              0,
+              0,
+              1800,
+              1173
+            ],
+            "original_dimensions": [
+              1800,
+              1200
+            ],
+            "safe_dimensions": [
+              1800,
+              1173
+            ],
+            "pixel_equal_to_original_crop": true,
+            "pn_nodes_edges_counts_states_unchanged": true,
+            "safe_png_sha256": "2bba76c17370faf9bd2d22cfff4e7cfa631de9b56c06222288f0a82755f1d1fe"
+          }
+        },
+        {
+          "node": "round_2_evaluator.run",
+          "path": "assets/node-detail-f3b222b9e3297363.png",
+          "sha256": "f3b222b9e3297363b772e375ec9601bfbdd1b1a7ec5e6dfcad6db3f8e15c575c",
+          "original_capture_sha256": "94e121f821b25e45c1621e72180979016a73a11eb28b113fef058d74f4b443aa",
+          "sanitization": {
+            "operation": "crop non-PN footer only",
+            "crop_box_xyxy": [
+              0,
+              0,
+              1800,
+              1173
+            ],
+            "original_dimensions": [
+              1800,
+              1200
+            ],
+            "safe_dimensions": [
+              1800,
+              1173
+            ],
+            "pixel_equal_to_original_crop": true,
+            "pn_nodes_edges_counts_states_unchanged": true,
+            "safe_png_sha256": "f3b222b9e3297363b772e375ec9601bfbdd1b1a7ec5e6dfcad6db3f8e15c575c"
+          }
+        },
+        {
+          "node": "round_2_proposer.run",
+          "path": "assets/node-detail-323b5ceeafd83ed8.png",
+          "sha256": "323b5ceeafd83ed8a57accc5558bd758afa0fcb4b8fa1709ac0b573fef8bf8df",
+          "original_capture_sha256": "f973e51169b6172bf8142baeffa1f79d4902e0b1e21ee629351e5f7c36058cf3",
+          "sanitization": {
+            "operation": "crop non-PN footer only",
+            "crop_box_xyxy": [
+              0,
+              0,
+              1800,
+              1173
+            ],
+            "original_dimensions": [
+              1800,
+              1200
+            ],
+            "safe_dimensions": [
+              1800,
+              1173
+            ],
+            "pixel_equal_to_original_crop": true,
+            "pn_nodes_edges_counts_states_unchanged": true,
+            "safe_png_sha256": "323b5ceeafd83ed8a57accc5558bd758afa0fcb4b8fa1709ac0b573fef8bf8df"
+          }
+        },
+        {
+          "node": "round_2_selector.run",
+          "path": "assets/node-detail-bffa3c1d4b87ba4b.png",
+          "sha256": "bffa3c1d4b87ba4b233cd03e44afd2c6962d85ea26a8a4ebca24cf7da4155625",
+          "original_capture_sha256": "03a659a115d7b8188862164d474a47535a0d7052b123d7888dcd9eb59bd41144",
+          "sanitization": {
+            "operation": "crop non-PN footer only",
+            "crop_box_xyxy": [
+              0,
+              0,
+              1800,
+              1173
+            ],
+            "original_dimensions": [
+              1800,
+              1200
+            ],
+            "safe_dimensions": [
+              1800,
+              1173
+            ],
+            "pixel_equal_to_original_crop": true,
+            "pn_nodes_edges_counts_states_unchanged": true,
+            "safe_png_sha256": "bffa3c1d4b87ba4b233cd03e44afd2c6962d85ea26a8a4ebca24cf7da4155625"
+          }
+        }
+      ]
+    },
+    {
+      "declaration": "rsi_rounds_3",
+      "view": "PetriNet",
+      "scope": "initial declaration",
+      "compiled_pn_canonical_sha256": "08562ff8b8a23e9fe25449d932ed357899fe24e9321a29b66ce5b8292afed072",
+      "projection_canonical_sha256": "a1e3285ab1f5c02a34a24e438b6c001c29ea654a1395a3921801b0344cb3e924",
+      "compiled_pn_file_sha256": "e4db149ac8eeb0f154863c374ae6da82eaac2cc3a295bb1e62df1f655133026c",
+      "projection_file_sha256": "381bc9c71e270a4e137e372df5f7fa1188b6966b2109df737a7706fe3a9f64dc",
+      "image": {
+        "path": "assets/petrinet-cfe4f81163c978a8.png",
+        "sha256": "cfe4f81163c978a8e8ef5d1211995963a94985f0f901118d747db497820be2e1",
+        "original_capture_sha256": "d92b92318c17a3de13b41c3faed8872cf718123a18f1d8bd1ce5ca61124525ba",
+        "sanitization": {
+          "operation": "crop non-PN footer only",
+          "crop_box_xyxy": [
+            0,
+            0,
+            1800,
+            1173
+          ],
+          "original_dimensions": [
+            1800,
+            1200
+          ],
+          "safe_dimensions": [
+            1800,
+            1173
+          ],
+          "pixel_equal_to_original_crop": true,
+          "pn_nodes_edges_counts_states_unchanged": true,
+          "safe_png_sha256": "cfe4f81163c978a8e8ef5d1211995963a94985f0f901118d747db497820be2e1"
+        }
+      },
+      "node_details": [
+        {
+          "node": "round_1_evaluator.run",
+          "path": "assets/node-detail-3e39afa284a7351d.png",
+          "sha256": "3e39afa284a7351d6541c131c5d061a13c3a938d8c4403af482e4b7d4834dd9c",
+          "original_capture_sha256": "a54f34e9224ab672eb9341f29b7577db65326374431f383c279dbb588e14b7cb",
+          "sanitization": {
+            "operation": "crop non-PN footer only",
+            "crop_box_xyxy": [
+              0,
+              0,
+              1800,
+              1173
+            ],
+            "original_dimensions": [
+              1800,
+              1200
+            ],
+            "safe_dimensions": [
+              1800,
+              1173
+            ],
+            "pixel_equal_to_original_crop": true,
+            "pn_nodes_edges_counts_states_unchanged": true,
+            "safe_png_sha256": "3e39afa284a7351d6541c131c5d061a13c3a938d8c4403af482e4b7d4834dd9c"
+          }
+        },
+        {
+          "node": "round_1_proposer.run",
+          "path": "assets/node-detail-3a7eb3d2216f27bd.png",
+          "sha256": "3a7eb3d2216f27bd16b74903ea3e97e23b8b2f662448307c6aeb1858e994a594",
+          "original_capture_sha256": "1c904744fb825d54943489af74fefe1d1d27d079bd3ff20d1b35ba45aa5c7683",
+          "sanitization": {
+            "operation": "crop non-PN footer only",
+            "crop_box_xyxy": [
+              0,
+              0,
+              1800,
+              1173
+            ],
+            "original_dimensions": [
+              1800,
+              1200
+            ],
+            "safe_dimensions": [
+              1800,
+              1173
+            ],
+            "pixel_equal_to_original_crop": true,
+            "pn_nodes_edges_counts_states_unchanged": true,
+            "safe_png_sha256": "3a7eb3d2216f27bd16b74903ea3e97e23b8b2f662448307c6aeb1858e994a594"
+          }
+        },
+        {
+          "node": "round_1_selector.run",
+          "path": "assets/node-detail-c89d457032557fa9.png",
+          "sha256": "c89d457032557fa9bdde1dcc70bb76dade302b5e184066eb48c02b9240e45d87",
+          "original_capture_sha256": "3b80f590ce8a4baaf91a64f478acfabba3f6d1adc259ef0b2b011cf5330f51f9",
+          "sanitization": {
+            "operation": "crop non-PN footer only",
+            "crop_box_xyxy": [
+              0,
+              0,
+              1800,
+              1173
+            ],
+            "original_dimensions": [
+              1800,
+              1200
+            ],
+            "safe_dimensions": [
+              1800,
+              1173
+            ],
+            "pixel_equal_to_original_crop": true,
+            "pn_nodes_edges_counts_states_unchanged": true,
+            "safe_png_sha256": "c89d457032557fa9bdde1dcc70bb76dade302b5e184066eb48c02b9240e45d87"
+          }
+        },
+        {
+          "node": "round_2_evaluator.run",
+          "path": "assets/node-detail-292b3746057d76fb.png",
+          "sha256": "292b3746057d76fb7b2d44991ee66e6a53a1a11ccfd0b5db64949fbc1f486ea1",
+          "original_capture_sha256": "b57c96de83cab0a35cea5a98048ab1543be75bfdb551bee07f0d490d3f1340fa",
+          "sanitization": {
+            "operation": "crop non-PN footer only",
+            "crop_box_xyxy": [
+              0,
+              0,
+              1800,
+              1173
+            ],
+            "original_dimensions": [
+              1800,
+              1200
+            ],
+            "safe_dimensions": [
+              1800,
+              1173
+            ],
+            "pixel_equal_to_original_crop": true,
+            "pn_nodes_edges_counts_states_unchanged": true,
+            "safe_png_sha256": "292b3746057d76fb7b2d44991ee66e6a53a1a11ccfd0b5db64949fbc1f486ea1"
+          }
+        },
+        {
+          "node": "round_2_proposer.run",
+          "path": "assets/node-detail-cb73f33611a241a3.png",
+          "sha256": "cb73f33611a241a3007f4d3eef23b124e7aff3c40c5b3d97e4852e8a1696ea7b",
+          "original_capture_sha256": "ec685ee9325cfb66bef61a1cfe5790cb287e918cda0b70dcd6cf17d2135e7f9d",
+          "sanitization": {
+            "operation": "crop non-PN footer only",
+            "crop_box_xyxy": [
+              0,
+              0,
+              1800,
+              1173
+            ],
+            "original_dimensions": [
+              1800,
+              1200
+            ],
+            "safe_dimensions": [
+              1800,
+              1173
+            ],
+            "pixel_equal_to_original_crop": true,
+            "pn_nodes_edges_counts_states_unchanged": true,
+            "safe_png_sha256": "cb73f33611a241a3007f4d3eef23b124e7aff3c40c5b3d97e4852e8a1696ea7b"
+          }
+        },
+        {
+          "node": "round_2_selector.run",
+          "path": "assets/node-detail-76639e77d39f0375.png",
+          "sha256": "76639e77d39f037511620813b6d08315f1dd0cf7ae68539cee3a5ab36cee5d7b",
+          "original_capture_sha256": "ad6b311e6d08c7ab1211a01e8b1c2a3571bbabebdddc5e61662cc41420d3a0da",
+          "sanitization": {
+            "operation": "crop non-PN footer only",
+            "crop_box_xyxy": [
+              0,
+              0,
+              1800,
+              1173
+            ],
+            "original_dimensions": [
+              1800,
+              1200
+            ],
+            "safe_dimensions": [
+              1800,
+              1173
+            ],
+            "pixel_equal_to_original_crop": true,
+            "pn_nodes_edges_counts_states_unchanged": true,
+            "safe_png_sha256": "76639e77d39f037511620813b6d08315f1dd0cf7ae68539cee3a5ab36cee5d7b"
+          }
+        },
+        {
+          "node": "round_3_evaluator.run",
+          "path": "assets/node-detail-7293f9345f2759f0.png",
+          "sha256": "7293f9345f2759f003e18f3f985b45bf89ae46d8b94d0b1ea784daa3c12d8d39",
+          "original_capture_sha256": "e82fbc10eeb1ae08419ce4199f9c30288a476d4eaee6ed68483ef336582fe991",
+          "sanitization": {
+            "operation": "crop non-PN footer only",
+            "crop_box_xyxy": [
+              0,
+              0,
+              1800,
+              1173
+            ],
+            "original_dimensions": [
+              1800,
+              1200
+            ],
+            "safe_dimensions": [
+              1800,
+              1173
+            ],
+            "pixel_equal_to_original_crop": true,
+            "pn_nodes_edges_counts_states_unchanged": true,
+            "safe_png_sha256": "7293f9345f2759f003e18f3f985b45bf89ae46d8b94d0b1ea784daa3c12d8d39"
+          }
+        },
+        {
+          "node": "round_3_proposer.run",
+          "path": "assets/node-detail-5f79123407355196.png",
+          "sha256": "5f79123407355196d634967f7d71cac3e4021ffe50dec44817fc8a1f80fa1d3a",
+          "original_capture_sha256": "046888864f6eb76b97f80a12923798651f8909484f9e2ea5a1b0e16b9a7d73ca",
+          "sanitization": {
+            "operation": "crop non-PN footer only",
+            "crop_box_xyxy": [
+              0,
+              0,
+              1800,
+              1173
+            ],
+            "original_dimensions": [
+              1800,
+              1200
+            ],
+            "safe_dimensions": [
+              1800,
+              1173
+            ],
+            "pixel_equal_to_original_crop": true,
+            "pn_nodes_edges_counts_states_unchanged": true,
+            "safe_png_sha256": "5f79123407355196d634967f7d71cac3e4021ffe50dec44817fc8a1f80fa1d3a"
+          }
+        },
+        {
+          "node": "round_3_selector.run",
+          "path": "assets/node-detail-461a06d7b9a89d9b.png",
+          "sha256": "461a06d7b9a89d9be66f4456b9cf67020a7cdc0f8ce455f3486049b1accace58",
+          "original_capture_sha256": "11113b877310436d513e0ed6535c4b10d694bdc01d3fdc1a2e73e26ddc3e4ca1",
+          "sanitization": {
+            "operation": "crop non-PN footer only",
+            "crop_box_xyxy": [
+              0,
+              0,
+              1800,
+              1173
+            ],
+            "original_dimensions": [
+              1800,
+              1200
+            ],
+            "safe_dimensions": [
+              1800,
+              1173
+            ],
+            "pixel_equal_to_original_crop": true,
+            "pn_nodes_edges_counts_states_unchanged": true,
+            "safe_png_sha256": "461a06d7b9a89d9be66f4456b9cf67020a7cdc0f8ce455f3486049b1accace58"
+          }
+        }
+      ]
+    },
+    {
+      "declaration": "rsi_rounds_4",
+      "view": "PetriNet",
+      "scope": "initial declaration",
+      "compiled_pn_canonical_sha256": "987db4689ba27792be075fa86d7d44e5067e1da4dfb5a2ea78627145421567c0",
+      "projection_canonical_sha256": "2b193adcc10ec503b88f315823e4012ea859687290a7c6ef9c159b761fdd80ce",
+      "compiled_pn_file_sha256": "7c08b62a83adb3bb78afd969c2a0e18f70a5a023ec82adb86b01a449609d46af",
+      "projection_file_sha256": "8403efdb93a4cd5c937ddd126679425355815fc5fddc4f9c489e74fa56401f1b",
+      "image": {
+        "path": "assets/petrinet-270f21f530edf7f3.png",
+        "sha256": "270f21f530edf7f389eb7eb09894a7c1b43666f43a6acb50b395e7b7b47b426b",
+        "original_capture_sha256": "65f516aff96da952a85004cff274c1651fdd90f558897c3a3b5a3de53c115361",
+        "sanitization": {
+          "operation": "crop non-PN footer only",
+          "crop_box_xyxy": [
+            0,
+            0,
+            1800,
+            1173
+          ],
+          "original_dimensions": [
+            1800,
+            1200
+          ],
+          "safe_dimensions": [
+            1800,
+            1173
+          ],
+          "pixel_equal_to_original_crop": true,
+          "pn_nodes_edges_counts_states_unchanged": true,
+          "safe_png_sha256": "270f21f530edf7f389eb7eb09894a7c1b43666f43a6acb50b395e7b7b47b426b"
+        }
+      },
+      "node_details": [
+        {
+          "node": "round_1_evaluator.run",
+          "path": "assets/node-detail-0551fc2f23df44e0.png",
+          "sha256": "0551fc2f23df44e0b42655f1a3ca0d42a6948646cc3150a2c2361e2ad0c6128b",
+          "original_capture_sha256": "1ca23c273afd8ef34042b9d7812c49e670ebe04ab50f3fcb9fa1071ec422b09a",
+          "sanitization": {
+            "operation": "crop non-PN footer only",
+            "crop_box_xyxy": [
+              0,
+              0,
+              1800,
+              1173
+            ],
+            "original_dimensions": [
+              1800,
+              1200
+            ],
+            "safe_dimensions": [
+              1800,
+              1173
+            ],
+            "pixel_equal_to_original_crop": true,
+            "pn_nodes_edges_counts_states_unchanged": true,
+            "safe_png_sha256": "0551fc2f23df44e0b42655f1a3ca0d42a6948646cc3150a2c2361e2ad0c6128b"
+          }
+        },
+        {
+          "node": "round_1_proposer.run",
+          "path": "assets/node-detail-9f27181bdc94a598.png",
+          "sha256": "9f27181bdc94a59857994cdf399f8051745821f5520c0497c643871a003d0e98",
+          "original_capture_sha256": "f2d3ea66d3be52266fee319a0438a3f55488cfbb7c7ba6766e6d14a961f70096",
+          "sanitization": {
+            "operation": "crop non-PN footer only",
+            "crop_box_xyxy": [
+              0,
+              0,
+              1800,
+              1173
+            ],
+            "original_dimensions": [
+              1800,
+              1200
+            ],
+            "safe_dimensions": [
+              1800,
+              1173
+            ],
+            "pixel_equal_to_original_crop": true,
+            "pn_nodes_edges_counts_states_unchanged": true,
+            "safe_png_sha256": "9f27181bdc94a59857994cdf399f8051745821f5520c0497c643871a003d0e98"
+          }
+        },
+        {
+          "node": "round_1_selector.run",
+          "path": "assets/node-detail-f6b91eb921599264.png",
+          "sha256": "f6b91eb921599264a663cf52bafdfb03321d1b3e917fdc1efc58e54b0985b319",
+          "original_capture_sha256": "a59f164e9c0b2ddaa1e138cd412d9267077bf9776ab49268d200560e6e86d6d4",
+          "sanitization": {
+            "operation": "crop non-PN footer only",
+            "crop_box_xyxy": [
+              0,
+              0,
+              1800,
+              1173
+            ],
+            "original_dimensions": [
+              1800,
+              1200
+            ],
+            "safe_dimensions": [
+              1800,
+              1173
+            ],
+            "pixel_equal_to_original_crop": true,
+            "pn_nodes_edges_counts_states_unchanged": true,
+            "safe_png_sha256": "f6b91eb921599264a663cf52bafdfb03321d1b3e917fdc1efc58e54b0985b319"
+          }
+        },
+        {
+          "node": "round_2_evaluator.run",
+          "path": "assets/node-detail-8c5c7c5f2db1c398.png",
+          "sha256": "8c5c7c5f2db1c3987db20eeae32d0ec2afdd8ea624bbeec5f6ea0603ca1cf525",
+          "original_capture_sha256": "cba9d0532d96d802bfc131504b3e384373d3e801830547f2ffb11b644da3a208",
+          "sanitization": {
+            "operation": "crop non-PN footer only",
+            "crop_box_xyxy": [
+              0,
+              0,
+              1800,
+              1173
+            ],
+            "original_dimensions": [
+              1800,
+              1200
+            ],
+            "safe_dimensions": [
+              1800,
+              1173
+            ],
+            "pixel_equal_to_original_crop": true,
+            "pn_nodes_edges_counts_states_unchanged": true,
+            "safe_png_sha256": "8c5c7c5f2db1c3987db20eeae32d0ec2afdd8ea624bbeec5f6ea0603ca1cf525"
+          }
+        },
+        {
+          "node": "round_2_proposer.run",
+          "path": "assets/node-detail-5c5ea1b2d858d262.png",
+          "sha256": "5c5ea1b2d858d2621e917ae0e1a60cd0b804bf05c1d51c7fab57c2ee01dcbe5c",
+          "original_capture_sha256": "d5aab07bae72e6e81e92ec0f255d21f9aacce56de8c2c6a9dd0acd251744efe2",
+          "sanitization": {
+            "operation": "crop non-PN footer only",
+            "crop_box_xyxy": [
+              0,
+              0,
+              1800,
+              1173
+            ],
+            "original_dimensions": [
+              1800,
+              1200
+            ],
+            "safe_dimensions": [
+              1800,
+              1173
+            ],
+            "pixel_equal_to_original_crop": true,
+            "pn_nodes_edges_counts_states_unchanged": true,
+            "safe_png_sha256": "5c5ea1b2d858d2621e917ae0e1a60cd0b804bf05c1d51c7fab57c2ee01dcbe5c"
+          }
+        },
+        {
+          "node": "round_2_selector.run",
+          "path": "assets/node-detail-fd51fa9eb22fbcf7.png",
+          "sha256": "fd51fa9eb22fbcf762b1d654345f49b0a8717f245a5739be7afb734431d90c2a",
+          "original_capture_sha256": "db291c03e53955044e6dc3ff9112936d00c89b81ce4199d51d6ab879d8b9888d",
+          "sanitization": {
+            "operation": "crop non-PN footer only",
+            "crop_box_xyxy": [
+              0,
+              0,
+              1800,
+              1173
+            ],
+            "original_dimensions": [
+              1800,
+              1200
+            ],
+            "safe_dimensions": [
+              1800,
+              1173
+            ],
+            "pixel_equal_to_original_crop": true,
+            "pn_nodes_edges_counts_states_unchanged": true,
+            "safe_png_sha256": "fd51fa9eb22fbcf762b1d654345f49b0a8717f245a5739be7afb734431d90c2a"
+          }
+        },
+        {
+          "node": "round_3_evaluator.run",
+          "path": "assets/node-detail-f0f39cc08ea868b1.png",
+          "sha256": "f0f39cc08ea868b13ad2f62099e9a4b7468873e3054e0848a68f1530a337abc0",
+          "original_capture_sha256": "9de94591d57cc9f48c98d3b028a82969e4ce68204a1c10444cfa52171109357c",
+          "sanitization": {
+            "operation": "crop non-PN footer only",
+            "crop_box_xyxy": [
+              0,
+              0,
+              1800,
+              1173
+            ],
+            "original_dimensions": [
+              1800,
+              1200
+            ],
+            "safe_dimensions": [
+              1800,
+              1173
+            ],
+            "pixel_equal_to_original_crop": true,
+            "pn_nodes_edges_counts_states_unchanged": true,
+            "safe_png_sha256": "f0f39cc08ea868b13ad2f62099e9a4b7468873e3054e0848a68f1530a337abc0"
+          }
+        },
+        {
+          "node": "round_3_proposer.run",
+          "path": "assets/node-detail-0f55a5d4603cf9e8.png",
+          "sha256": "0f55a5d4603cf9e826ee4811ad711137d14559573a5210f4b025771ad6cb5795",
+          "original_capture_sha256": "98dc0923ec51cff38ba87ab71b3f5a9ec3b6e1a6c6ab0e2d13152cb61a89d9a1",
+          "sanitization": {
+            "operation": "crop non-PN footer only",
+            "crop_box_xyxy": [
+              0,
+              0,
+              1800,
+              1173
+            ],
+            "original_dimensions": [
+              1800,
+              1200
+            ],
+            "safe_dimensions": [
+              1800,
+              1173
+            ],
+            "pixel_equal_to_original_crop": true,
+            "pn_nodes_edges_counts_states_unchanged": true,
+            "safe_png_sha256": "0f55a5d4603cf9e826ee4811ad711137d14559573a5210f4b025771ad6cb5795"
+          }
+        },
+        {
+          "node": "round_3_selector.run",
+          "path": "assets/node-detail-be7e88bebdf1943c.png",
+          "sha256": "be7e88bebdf1943ccb005f57ee3bfc161a4eb21c01c8d36d7c63ebca5e8eebf5",
+          "original_capture_sha256": "ed0335f43712b757f26f337b4c91b356b2877a709f49f966a7d6c9bce398fff5",
+          "sanitization": {
+            "operation": "crop non-PN footer only",
+            "crop_box_xyxy": [
+              0,
+              0,
+              1800,
+              1173
+            ],
+            "original_dimensions": [
+              1800,
+              1200
+            ],
+            "safe_dimensions": [
+              1800,
+              1173
+            ],
+            "pixel_equal_to_original_crop": true,
+            "pn_nodes_edges_counts_states_unchanged": true,
+            "safe_png_sha256": "be7e88bebdf1943ccb005f57ee3bfc161a4eb21c01c8d36d7c63ebca5e8eebf5"
+          }
+        },
+        {
+          "node": "round_4_evaluator.run",
+          "path": "assets/node-detail-69f46631aa7d9084.png",
+          "sha256": "69f46631aa7d9084a5645fc42f4f514dcdbc9be29f43de320d58506745f49eb5",
+          "original_capture_sha256": "df448351e21a843acce4a3806a8ef15bb1731847c496a2e1f52eeeff6838c742",
+          "sanitization": {
+            "operation": "crop non-PN footer only",
+            "crop_box_xyxy": [
+              0,
+              0,
+              1800,
+              1173
+            ],
+            "original_dimensions": [
+              1800,
+              1200
+            ],
+            "safe_dimensions": [
+              1800,
+              1173
+            ],
+            "pixel_equal_to_original_crop": true,
+            "pn_nodes_edges_counts_states_unchanged": true,
+            "safe_png_sha256": "69f46631aa7d9084a5645fc42f4f514dcdbc9be29f43de320d58506745f49eb5"
+          }
+        },
+        {
+          "node": "round_4_proposer.run",
+          "path": "assets/node-detail-a4f97f07602f0834.png",
+          "sha256": "a4f97f07602f083477222fc9fd49d2b9f518c90c6077f56194d6c688b7be2a93",
+          "original_capture_sha256": "f2812cb51a3bcb5c78bf2eb2bcad01b4fe255e206d53bb38b67cc6ac576cb099",
+          "sanitization": {
+            "operation": "crop non-PN footer only",
+            "crop_box_xyxy": [
+              0,
+              0,
+              1800,
+              1173
+            ],
+            "original_dimensions": [
+              1800,
+              1200
+            ],
+            "safe_dimensions": [
+              1800,
+              1173
+            ],
+            "pixel_equal_to_original_crop": true,
+            "pn_nodes_edges_counts_states_unchanged": true,
+            "safe_png_sha256": "a4f97f07602f083477222fc9fd49d2b9f518c90c6077f56194d6c688b7be2a93"
+          }
+        },
+        {
+          "node": "round_4_selector.run",
+          "path": "assets/node-detail-5d1e94b3023389be.png",
+          "sha256": "5d1e94b3023389bebf15c1341f7be68cf83ad8e6564d4fd11a096c89186fdfdc",
+          "original_capture_sha256": "691d5a0178e671a0ca23e057e4f1d751b97bfac551af585b08f7e88068f82262",
+          "sanitization": {
+            "operation": "crop non-PN footer only",
+            "crop_box_xyxy": [
+              0,
+              0,
+              1800,
+              1173
+            ],
+            "original_dimensions": [
+              1800,
+              1200
+            ],
+            "safe_dimensions": [
+              1800,
+              1173
+            ],
+            "pixel_equal_to_original_crop": true,
+            "pn_nodes_edges_counts_states_unchanged": true,
+            "safe_png_sha256": "5d1e94b3023389bebf15c1341f7be68cf83ad8e6564d4fd11a096c89186fdfdc"
+          }
+        }
+      ]
+    },
+    {
+      "declaration": "rsi_one_round_failed_retain",
+      "view": "PetriNet",
+      "scope": "initial declaration",
+      "compiled_pn_canonical_sha256": "2db966d183d3da698bd8b6d51314798050e909723aa1cbf5cd9b748747660a28",
+      "projection_canonical_sha256": "ad625fe7beb9a2ed8f6b9f797dd2431456b51ac4e9a5480e74771d6ee71dffe6",
+      "compiled_pn_file_sha256": "85c70c212450d11a1460bdd1b0cfd4bc2ed1eae081b5ffd1ed4cf19580306909",
+      "projection_file_sha256": "dcadb407eeea38484405c98d71524dacd43eb9900004e289120484566694ee19",
+      "image": {
+        "path": "assets/petrinet-6d4ef3a0349e89c3.png",
+        "sha256": "6d4ef3a0349e89c3c00fafb030b969926d828390a6fba399baee2745a385139a",
+        "original_capture_sha256": "519ae98cb1ebaa12ce0a1d276c31e88ebb5f44e23f6ef1d9d14d77c528465090",
+        "sanitization": {
+          "operation": "crop non-PN footer only",
+          "crop_box_xyxy": [
+            0,
+            0,
+            1800,
+            1173
+          ],
+          "original_dimensions": [
+            1800,
+            1200
+          ],
+          "safe_dimensions": [
+            1800,
+            1173
+          ],
+          "pixel_equal_to_original_crop": true,
+          "pn_nodes_edges_counts_states_unchanged": true,
+          "safe_png_sha256": "6d4ef3a0349e89c3c00fafb030b969926d828390a6fba399baee2745a385139a"
+        }
+      },
+      "node_details": [
+        {
+          "node": "round_1_evaluator.run",
+          "path": "assets/node-detail-e9d22fddc11d0d13.png",
+          "sha256": "e9d22fddc11d0d1376b65a1c671d67905c47313e0687e0c250df6cfdad890246",
+          "original_capture_sha256": "125d52a6035d68b1fb5b7fb526158e73cb7244025a5a99d57c79b68256bd3b7b",
+          "sanitization": {
+            "operation": "crop non-PN footer only",
+            "crop_box_xyxy": [
+              0,
+              0,
+              1800,
+              1173
+            ],
+            "original_dimensions": [
+              1800,
+              1200
+            ],
+            "safe_dimensions": [
+              1800,
+              1173
+            ],
+            "pixel_equal_to_original_crop": true,
+            "pn_nodes_edges_counts_states_unchanged": true,
+            "safe_png_sha256": "e9d22fddc11d0d1376b65a1c671d67905c47313e0687e0c250df6cfdad890246"
+          }
+        },
+        {
+          "node": "round_1_proposer.run",
+          "path": "assets/node-detail-1e0f4cc9d6a48fd6.png",
+          "sha256": "1e0f4cc9d6a48fd6428c2d779bf9f0681b6a22425dce399d07b5a777b6ba1720",
+          "original_capture_sha256": "242441a78e7a209864545b4b927cf6cba92f457faf4c993f5dd18c3becf6601e",
+          "sanitization": {
+            "operation": "crop non-PN footer only",
+            "crop_box_xyxy": [
+              0,
+              0,
+              1800,
+              1173
+            ],
+            "original_dimensions": [
+              1800,
+              1200
+            ],
+            "safe_dimensions": [
+              1800,
+              1173
+            ],
+            "pixel_equal_to_original_crop": true,
+            "pn_nodes_edges_counts_states_unchanged": true,
+            "safe_png_sha256": "1e0f4cc9d6a48fd6428c2d779bf9f0681b6a22425dce399d07b5a777b6ba1720"
+          }
+        },
+        {
+          "node": "round_1_selector.run",
+          "path": "assets/node-detail-8cce594c4141d355.png",
+          "sha256": "8cce594c4141d3559e5883d6c7a00f6019f5f34b4e82812498ce92617e1f0b53",
+          "original_capture_sha256": "0984a83022065b6d4eed105baf9ad46a2f88afebce6a554ae0ebffadb474b6d0",
+          "sanitization": {
+            "operation": "crop non-PN footer only",
+            "crop_box_xyxy": [
+              0,
+              0,
+              1800,
+              1173
+            ],
+            "original_dimensions": [
+              1800,
+              1200
+            ],
+            "safe_dimensions": [
+              1800,
+              1173
+            ],
+            "pixel_equal_to_original_crop": true,
+            "pn_nodes_edges_counts_states_unchanged": true,
+            "safe_png_sha256": "8cce594c4141d3559e5883d6c7a00f6019f5f34b4e82812498ce92617e1f0b53"
+          }
+        }
+      ]
+    }
+  ],
+  "image_path_base": "..",
+  "hashes": {
+    "png": "SHA-256 of exact PNG bytes",
+    "file": "SHA-256 of UTF-8 JSON file bytes, including indentation and final newline",
+    "canonical_json": "SHA-256 of UTF-8 JSON with sorted keys, compact separators (comma, colon), Unicode characters unescaped, and nonfinite values prohibited"
+  },
+  "reuse_verification": "Each original capture was reused only after the full compiled PN document and full projection matched canonical JSON from offline compilation of the public source commit. Pixel sanitation removes only the non-PN footer."
+}

@@ -206,3 +206,9 @@ worker failure, terminal replay without dispatch and read-only reconstruction.
 - Recovering arbitrary interrupted active tools is not added here. Unresolved
   firing states require the existing recovery/reconciliation rules. No
   `completed` dictionary or report file permits a restart to skip authority.
+
+## PetriNet declaration gallery
+
+The image below shows this example’s initial PetriNet structure. The [full gallery](figures/README.md) shows the listed declaration variants and readable node details for large nets.
+
+![Initial PetriNet structure](assets/petrinet-0cd0dd4a76320ce6.png)

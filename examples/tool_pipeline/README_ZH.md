@@ -166,3 +166,9 @@ terminal 判定均未替换。这**没有**验证外部 socket 客户端、原�
   目录须受信任。交付文件哈希只是交付校验，并非新增 Registry 完整性保证。
 - 没有新增任意中断工具的恢复机制。未决 firing 需按现有 recovery/reconciliation
   规则处理；`completed` 字典或报告文件不能让恢复绕过 authority。
+
+## PetriNet 声明图册
+
+下图展示本案例的初始 PetriNet 结构。[完整图册](figures/README_ZH.md)展示所列声明变体，并提供大网的节点局部图。
+
+![初始 PetriNet 结构](assets/petrinet-0cd0dd4a76320ce6.png)

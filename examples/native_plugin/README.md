@@ -65,3 +65,9 @@ saves the genuine result with terminal reference and model counts. Exit 0 means
 PASS, 1 means failed validation; terminal IPC unavailability reports BLOCKED/2.
 Use new output paths for every check. [Two-version differences and rebinding](AUTHOR_VERSIONS.md)
 explains explicit renaming, versioning, full descriptors and new locks.
+
+## PetriNet declaration gallery
+
+The image below shows this example’s initial PetriNet structure. The [full gallery](figures/README.md) shows the listed declaration variants and readable node details for large nets.
+
+![Initial PetriNet structure](assets/petrinet-afe2f2df36c37247.png)

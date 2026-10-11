@@ -71,3 +71,9 @@ port或R3验收。
 
 不新增CLI、author-revision到run的捷径、自动branch晋升、child编排、retry、训练或发布。
 纯Registry测试不表示author/CAS或完整R2/R3路线图门槛已经完成。
+
+## PetriNet 声明图册
+
+下图展示本案例的初始 PetriNet 结构。[完整图册](figures/README_ZH.md)展示所列声明变体，并提供大网的节点局部图。
+
+![初始 PetriNet 结构](assets/petrinet-bc51f0c2910010fa.png)

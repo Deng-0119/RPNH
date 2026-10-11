@@ -1,0 +1,1198 @@
+{
+  "schema": "rpnh/example_figure_provenance/v1",
+  "source_repository": "Deng-0119/RPNH",
+  "source_commit": "34d42d171d7e9a7f803b71467063b55786c2cea8",
+  "figures": [
+    {
+      "declaration": "tools_ten_operations",
+      "view": "PetriNet",
+      "scope": "initial declaration",
+      "compiled_pn_canonical_sha256": "b50aa84751d337232a701d9b002e882f99325f7883a4e1be92d89934199a4ad4",
+      "projection_canonical_sha256": "b54e6787d61580dbce6a699dc78df2bb8a16efff536f7cf04ea49b0269ab3da7",
+      "compiled_pn_file_sha256": "f8f6e6ab2af3c3910e42d40565004b01e310e455561682e71f145f3a7c4c55e1",
+      "projection_file_sha256": "7c055c57519f84360d4fa96ff3e6bbc82458557d65038724664ecd197fbdcbc4",
+      "image": {
+        "path": "assets/petrinet-0cd0dd4a76320ce6.png",
+        "sha256": "0cd0dd4a76320ce6be22957c656d2f5c4609198df52a14bd0d0029b14b46c7c3",
+        "original_capture_sha256": "d3b25323f4ff167e6707611243ad88f47ce99771a60e2a86820be0e206cadb67",
+        "sanitization": {
+          "operation": "crop non-PN footer only",
+          "crop_box_xyxy": [
+            0,
+            0,
+            1800,
+            1173
+          ],
+          "original_dimensions": [
+            1800,
+            1200
+          ],
+          "safe_dimensions": [
+            1800,
+            1173
+          ],
+          "pixel_equal_to_original_crop": true,
+          "pn_nodes_edges_counts_states_unchanged": true,
+          "safe_png_sha256": "0cd0dd4a76320ce6be22957c656d2f5c4609198df52a14bd0d0029b14b46c7c3"
+        }
+      },
+      "node_details": [
+        {
+          "node": "check_tariff_input.run",
+          "path": "assets/node-detail-936abedf06e25953.png",
+          "sha256": "936abedf06e25953c3c99cb073f9a8da25428256b810345664780791c25e9244",
+          "original_capture_sha256": "3ec1cff87f2cc51169defbf042119154b855b0a1fed4deebd0892c0d8ff4122b",
+          "sanitization": {
+            "operation": "crop non-PN footer only",
+            "crop_box_xyxy": [
+              0,
+              0,
+              1800,
+              1173
+            ],
+            "original_dimensions": [
+              1800,
+              1200
+            ],
+            "safe_dimensions": [
+              1800,
+              1173
+            ],
+            "pixel_equal_to_original_crop": true,
+            "pn_nodes_edges_counts_states_unchanged": true,
+            "safe_png_sha256": "936abedf06e25953c3c99cb073f9a8da25428256b810345664780791c25e9244"
+          }
+        },
+        {
+          "node": "check_usage_input.run",
+          "path": "assets/node-detail-b43a08311004c5ba.png",
+          "sha256": "b43a08311004c5ba8c59d84f9c2b4ee0a255d460f25e6bc929f433b18a92d96a",
+          "original_capture_sha256": "10bc2dfa59acc787fdf97221134d7b2aabd21709ee0be65a07a303ad91d6d32b",
+          "sanitization": {
+            "operation": "crop non-PN footer only",
+            "crop_box_xyxy": [
+              0,
+              0,
+              1800,
+              1173
+            ],
+            "original_dimensions": [
+              1800,
+              1200
+            ],
+            "safe_dimensions": [
+              1800,
+              1173
+            ],
+            "pixel_equal_to_original_crop": true,
+            "pn_nodes_edges_counts_states_unchanged": true,
+            "safe_png_sha256": "b43a08311004c5ba8c59d84f9c2b4ee0a255d460f25e6bc929f433b18a92d96a"
+          }
+        },
+        {
+          "node": "compute_cost.run",
+          "path": "assets/node-detail-e020ec2623655f8b.png",
+          "sha256": "e020ec2623655f8b710249604968da803d98f14c79d58324509b47be3d574577",
+          "original_capture_sha256": "76c808b6c14cdbfca58eb3e6c0761227e3502ae0cb82d81ce8998c36f7a4b9f1",
+          "sanitization": {
+            "operation": "crop non-PN footer only",
+            "crop_box_xyxy": [
+              0,
+              0,
+              1800,
+              1173
+            ],
+            "original_dimensions": [
+              1800,
+              1200
+            ],
+            "safe_dimensions": [
+              1800,
+              1173
+            ],
+            "pixel_equal_to_original_crop": true,
+            "pn_nodes_edges_counts_states_unchanged": true,
+            "safe_png_sha256": "e020ec2623655f8b710249604968da803d98f14c79d58324509b47be3d574577"
+          }
+        },
+        {
+          "node": "join_intervals.run",
+          "path": "assets/node-detail-710ca96f7bd94e66.png",
+          "sha256": "710ca96f7bd94e664051af88355969308cbc35815ac2ad0744ee3c2d60e1d08d",
+          "original_capture_sha256": "cbfb3814f08ee09bc74e64d80b387fad43ec91deff5ba2cca3afd156990672e2",
+          "sanitization": {
+            "operation": "crop non-PN footer only",
+            "crop_box_xyxy": [
+              0,
+              0,
+              1800,
+              1173
+            ],
+            "original_dimensions": [
+              1800,
+              1200
+            ],
+            "safe_dimensions": [
+              1800,
+              1173
+            ],
+            "pixel_equal_to_original_crop": true,
+            "pn_nodes_edges_counts_states_unchanged": true,
+            "safe_png_sha256": "710ca96f7bd94e664051af88355969308cbc35815ac2ad0744ee3c2d60e1d08d"
+          }
+        },
+        {
+          "node": "normalize_tariff.run",
+          "path": "assets/node-detail-6c7e2599a0270739.png",
+          "sha256": "6c7e2599a0270739bee9ccef49ff0f646281ccdb265c77d5ff5e730f84f59f31",
+          "original_capture_sha256": "fdb446d9eb80f63228dd87d43958a73c1420b141c6de3ff854e622284bd508d0",
+          "sanitization": {
+            "operation": "crop non-PN footer only",
+            "crop_box_xyxy": [
+              0,
+              0,
+              1800,
+              1173
+            ],
+            "original_dimensions": [
+              1800,
+              1200
+            ],
+            "safe_dimensions": [
+              1800,
+              1173
+            ],
+            "pixel_equal_to_original_crop": true,
+            "pn_nodes_edges_counts_states_unchanged": true,
+            "safe_png_sha256": "6c7e2599a0270739bee9ccef49ff0f646281ccdb265c77d5ff5e730f84f59f31"
+          }
+        },
+        {
+          "node": "normalize_usage.run",
+          "path": "assets/node-detail-22c2cff3cc10384f.png",
+          "sha256": "22c2cff3cc10384fb894ab7726db15b73664dfc7da87bef8ddacaac46d413d54",
+          "original_capture_sha256": "0dc27c94c1ebc94907830ec2853b731075834ec368565cec0f0390d1e4566b9a",
+          "sanitization": {
+            "operation": "crop non-PN footer only",
+            "crop_box_xyxy": [
+              0,
+              0,
+              1800,
+              1173
+            ],
+            "original_dimensions": [
+              1800,
+              1200
+            ],
+            "safe_dimensions": [
+              1800,
+              1173
+            ],
+            "pixel_equal_to_original_crop": true,
+            "pn_nodes_edges_counts_states_unchanged": true,
+            "safe_png_sha256": "22c2cff3cc10384fb894ab7726db15b73664dfc7da87bef8ddacaac46d413d54"
+          }
+        },
+        {
+          "node": "publish_report.run",
+          "path": "assets/node-detail-3c6630b60258e155.png",
+          "sha256": "3c6630b60258e15546130f0e6f11af216f8715908075994093673a3fc5f8c419",
+          "original_capture_sha256": "fc646fd86145366636c9012549eb719249eecf859e1c2654fb2bd61a8e7a6bfc",
+          "sanitization": {
+            "operation": "crop non-PN footer only",
+            "crop_box_xyxy": [
+              0,
+              0,
+              1800,
+              1173
+            ],
+            "original_dimensions": [
+              1800,
+              1200
+            ],
+            "safe_dimensions": [
+              1800,
+              1173
+            ],
+            "pixel_equal_to_original_crop": true,
+            "pn_nodes_edges_counts_states_unchanged": true,
+            "safe_png_sha256": "3c6630b60258e15546130f0e6f11af216f8715908075994093673a3fc5f8c419"
+          }
+        },
+        {
+          "node": "read_tariff.run",
+          "path": "assets/node-detail-bb368e01bc911645.png",
+          "sha256": "bb368e01bc911645a4dff907c7b8955fb333cef933e8fbfd12fbb27657d7b312",
+          "original_capture_sha256": "891cd8067669266557cf50288b2fa14fdc44b231ba00177f169145df506b5c3a",
+          "sanitization": {
+            "operation": "crop non-PN footer only",
+            "crop_box_xyxy": [
+              0,
+              0,
+              1800,
+              1173
+            ],
+            "original_dimensions": [
+              1800,
+              1200
+            ],
+            "safe_dimensions": [
+              1800,
+              1173
+            ],
+            "pixel_equal_to_original_crop": true,
+            "pn_nodes_edges_counts_states_unchanged": true,
+            "safe_png_sha256": "bb368e01bc911645a4dff907c7b8955fb333cef933e8fbfd12fbb27657d7b312"
+          }
+        },
+        {
+          "node": "read_usage.run",
+          "path": "assets/node-detail-be6914546a8dfdd2.png",
+          "sha256": "be6914546a8dfdd299301f370862e0f2f517815e5d81bc3ed54d096f3f8c44c6",
+          "original_capture_sha256": "04a75c8e220bd19ce659f831ada2acded64a9b6dbc476d7bccf13d785b0e2e44",
+          "sanitization": {
+            "operation": "crop non-PN footer only",
+            "crop_box_xyxy": [
+              0,
+              0,
+              1800,
+              1173
+            ],
+            "original_dimensions": [
+              1800,
+              1200
+            ],
+            "safe_dimensions": [
+              1800,
+              1173
+            ],
+            "pixel_equal_to_original_crop": true,
+            "pn_nodes_edges_counts_states_unchanged": true,
+            "safe_png_sha256": "be6914546a8dfdd299301f370862e0f2f517815e5d81bc3ed54d096f3f8c44c6"
+          }
+        },
+        {
+          "node": "validate_report.run",
+          "path": "assets/node-detail-469eec86921c74cb.png",
+          "sha256": "469eec86921c74cbb9e8a64e93ec3123170cedd331c8204eb151d0bfc258ea7c",
+          "original_capture_sha256": "3fae75af890e5d07a6777090732bdcfff6c45e3e45c5e977595ccbdd3e1c2f28",
+          "sanitization": {
+            "operation": "crop non-PN footer only",
+            "crop_box_xyxy": [
+              0,
+              0,
+              1800,
+              1173
+            ],
+            "original_dimensions": [
+              1800,
+              1200
+            ],
+            "safe_dimensions": [
+              1800,
+              1173
+            ],
+            "pixel_equal_to_original_crop": true,
+            "pn_nodes_edges_counts_states_unchanged": true,
+            "safe_png_sha256": "469eec86921c74cbb9e8a64e93ec3123170cedd331c8204eb151d0bfc258ea7c"
+          }
+        }
+      ]
+    },
+    {
+      "declaration": "tools_rejected_usage",
+      "view": "PetriNet",
+      "scope": "initial declaration",
+      "compiled_pn_canonical_sha256": "18e1cf2fe6d9c3e911f85f759fe8e71ed29fbfd80998f32387d3bee6ec5f8c99",
+      "projection_canonical_sha256": "bde230baae6ecc8c5a4db5b5cd8df7cd47b44138f60e09e264ad360cde450698",
+      "compiled_pn_file_sha256": "b7d85346921c03d9de2aa90dc59a8d5f0ef7fd886ad0da0163ae25503ef7a3ba",
+      "projection_file_sha256": "d97c27a0c4172d4bdcb08c91ea87e2f26dbdf596c1dd0cd0ae6181789ea3a573",
+      "image": {
+        "path": "assets/petrinet-70b12ffee60309f8.png",
+        "sha256": "70b12ffee60309f8287bc296e4d67a520eba96b593c61b8c128a08d8752448b3",
+        "original_capture_sha256": "8b2fc5a1d4d1899b117c351bd8125603fc6e4724e66edd21aedd45b97cb6572a",
+        "sanitization": {
+          "operation": "crop non-PN footer only",
+          "crop_box_xyxy": [
+            0,
+            0,
+            1800,
+            1173
+          ],
+          "original_dimensions": [
+            1800,
+            1200
+          ],
+          "safe_dimensions": [
+            1800,
+            1173
+          ],
+          "pixel_equal_to_original_crop": true,
+          "pn_nodes_edges_counts_states_unchanged": true,
+          "safe_png_sha256": "70b12ffee60309f8287bc296e4d67a520eba96b593c61b8c128a08d8752448b3"
+        }
+      },
+      "node_details": [
+        {
+          "node": "check_tariff_input.run",
+          "path": "assets/node-detail-936abedf06e25953.png",
+          "sha256": "936abedf06e25953c3c99cb073f9a8da25428256b810345664780791c25e9244",
+          "original_capture_sha256": "fa4b8f853c47ec6e6ffcc80c24bd7f36f97ca1ba8ed85eb4fead7dfa72d141ee",
+          "sanitization": {
+            "operation": "crop non-PN footer only",
+            "crop_box_xyxy": [
+              0,
+              0,
+              1800,
+              1173
+            ],
+            "original_dimensions": [
+              1800,
+              1200
+            ],
+            "safe_dimensions": [
+              1800,
+              1173
+            ],
+            "pixel_equal_to_original_crop": true,
+            "pn_nodes_edges_counts_states_unchanged": true,
+            "safe_png_sha256": "936abedf06e25953c3c99cb073f9a8da25428256b810345664780791c25e9244"
+          }
+        },
+        {
+          "node": "check_usage_input.run",
+          "path": "assets/node-detail-0b81114270f153df.png",
+          "sha256": "0b81114270f153dfcbe8619e75422c63ff9df5c04ec5297cb63fbc08add46568",
+          "original_capture_sha256": "1c40c8f3dd9577b6a94bc24b8666abff3115a2201bfb63b48f524c8575340c9f",
+          "sanitization": {
+            "operation": "crop non-PN footer only",
+            "crop_box_xyxy": [
+              0,
+              0,
+              1800,
+              1173
+            ],
+            "original_dimensions": [
+              1800,
+              1200
+            ],
+            "safe_dimensions": [
+              1800,
+              1173
+            ],
+            "pixel_equal_to_original_crop": true,
+            "pn_nodes_edges_counts_states_unchanged": true,
+            "safe_png_sha256": "0b81114270f153dfcbe8619e75422c63ff9df5c04ec5297cb63fbc08add46568"
+          }
+        },
+        {
+          "node": "compute_cost.run",
+          "path": "assets/node-detail-c0ebd76e43a1861f.png",
+          "sha256": "c0ebd76e43a1861f071fc460fc00ea885204dfce76e80ecab8a949e876f2b42b",
+          "original_capture_sha256": "674a31f40ef2ac4c1a58faf09af6b373ab7fc47649bff1362aa04bc2b3715276",
+          "sanitization": {
+            "operation": "crop non-PN footer only",
+            "crop_box_xyxy": [
+              0,
+              0,
+              1800,
+              1173
+            ],
+            "original_dimensions": [
+              1800,
+              1200
+            ],
+            "safe_dimensions": [
+              1800,
+              1173
+            ],
+            "pixel_equal_to_original_crop": true,
+            "pn_nodes_edges_counts_states_unchanged": true,
+            "safe_png_sha256": "c0ebd76e43a1861f071fc460fc00ea885204dfce76e80ecab8a949e876f2b42b"
+          }
+        },
+        {
+          "node": "join_intervals.run",
+          "path": "assets/node-detail-710ca96f7bd94e66.png",
+          "sha256": "710ca96f7bd94e664051af88355969308cbc35815ac2ad0744ee3c2d60e1d08d",
+          "original_capture_sha256": "f046dc0902638ca4593b43de3e2b353981a4fde6902249bcb585809dba6d6b25",
+          "sanitization": {
+            "operation": "crop non-PN footer only",
+            "crop_box_xyxy": [
+              0,
+              0,
+              1800,
+              1173
+            ],
+            "original_dimensions": [
+              1800,
+              1200
+            ],
+            "safe_dimensions": [
+              1800,
+              1173
+            ],
+            "pixel_equal_to_original_crop": true,
+            "pn_nodes_edges_counts_states_unchanged": true,
+            "safe_png_sha256": "710ca96f7bd94e664051af88355969308cbc35815ac2ad0744ee3c2d60e1d08d"
+          }
+        },
+        {
+          "node": "normalize_tariff.run",
+          "path": "assets/node-detail-7d84ea0a8eff4020.png",
+          "sha256": "7d84ea0a8eff4020e9d245267eb7e5d7627df8b589c4dd46bec1cef02cb30454",
+          "original_capture_sha256": "de079b29caeda24e0122e376a5375a9c57fe925102e2ce5507142713647c8271",
+          "sanitization": {
+            "operation": "crop non-PN footer only",
+            "crop_box_xyxy": [
+              0,
+              0,
+              1800,
+              1173
+            ],
+            "original_dimensions": [
+              1800,
+              1200
+            ],
+            "safe_dimensions": [
+              1800,
+              1173
+            ],
+            "pixel_equal_to_original_crop": true,
+            "pn_nodes_edges_counts_states_unchanged": true,
+            "safe_png_sha256": "7d84ea0a8eff4020e9d245267eb7e5d7627df8b589c4dd46bec1cef02cb30454"
+          }
+        },
+        {
+          "node": "normalize_usage.run",
+          "path": "assets/node-detail-22c2cff3cc10384f.png",
+          "sha256": "22c2cff3cc10384fb894ab7726db15b73664dfc7da87bef8ddacaac46d413d54",
+          "original_capture_sha256": "4f4b6eb45958ead13a0db02d936f7c0f655818f6f628cfa35f94cdeed88e7e7a",
+          "sanitization": {
+            "operation": "crop non-PN footer only",
+            "crop_box_xyxy": [
+              0,
+              0,
+              1800,
+              1173
+            ],
+            "original_dimensions": [
+              1800,
+              1200
+            ],
+            "safe_dimensions": [
+              1800,
+              1173
+            ],
+            "pixel_equal_to_original_crop": true,
+            "pn_nodes_edges_counts_states_unchanged": true,
+            "safe_png_sha256": "22c2cff3cc10384fb894ab7726db15b73664dfc7da87bef8ddacaac46d413d54"
+          }
+        },
+        {
+          "node": "publish_report.run",
+          "path": "assets/node-detail-3c6630b60258e155.png",
+          "sha256": "3c6630b60258e15546130f0e6f11af216f8715908075994093673a3fc5f8c419",
+          "original_capture_sha256": "a4f5921dc4b8197dda54d58cbbe9a6e72ba22960f67c6380074c24bfac92ba52",
+          "sanitization": {
+            "operation": "crop non-PN footer only",
+            "crop_box_xyxy": [
+              0,
+              0,
+              1800,
+              1173
+            ],
+            "original_dimensions": [
+              1800,
+              1200
+            ],
+            "safe_dimensions": [
+              1800,
+              1173
+            ],
+            "pixel_equal_to_original_crop": true,
+            "pn_nodes_edges_counts_states_unchanged": true,
+            "safe_png_sha256": "3c6630b60258e15546130f0e6f11af216f8715908075994093673a3fc5f8c419"
+          }
+        },
+        {
+          "node": "read_tariff.run",
+          "path": "assets/node-detail-bb368e01bc911645.png",
+          "sha256": "bb368e01bc911645a4dff907c7b8955fb333cef933e8fbfd12fbb27657d7b312",
+          "original_capture_sha256": "f35ac626fc83819aff280a9f665bbfcdb8da1a858d3bda0bc8d9bd47eab46b53",
+          "sanitization": {
+            "operation": "crop non-PN footer only",
+            "crop_box_xyxy": [
+              0,
+              0,
+              1800,
+              1173
+            ],
+            "original_dimensions": [
+              1800,
+              1200
+            ],
+            "safe_dimensions": [
+              1800,
+              1173
+            ],
+            "pixel_equal_to_original_crop": true,
+            "pn_nodes_edges_counts_states_unchanged": true,
+            "safe_png_sha256": "bb368e01bc911645a4dff907c7b8955fb333cef933e8fbfd12fbb27657d7b312"
+          }
+        },
+        {
+          "node": "read_usage.run",
+          "path": "assets/node-detail-be6914546a8dfdd2.png",
+          "sha256": "be6914546a8dfdd299301f370862e0f2f517815e5d81bc3ed54d096f3f8c44c6",
+          "original_capture_sha256": "10fd0062b489397be9cbe95ad9d291f5fd8a94424e3377d9786adacd0c622722",
+          "sanitization": {
+            "operation": "crop non-PN footer only",
+            "crop_box_xyxy": [
+              0,
+              0,
+              1800,
+              1173
+            ],
+            "original_dimensions": [
+              1800,
+              1200
+            ],
+            "safe_dimensions": [
+              1800,
+              1173
+            ],
+            "pixel_equal_to_original_crop": true,
+            "pn_nodes_edges_counts_states_unchanged": true,
+            "safe_png_sha256": "be6914546a8dfdd299301f370862e0f2f517815e5d81bc3ed54d096f3f8c44c6"
+          }
+        },
+        {
+          "node": "validate_report.run",
+          "path": "assets/node-detail-469eec86921c74cb.png",
+          "sha256": "469eec86921c74cbb9e8a64e93ec3123170cedd331c8204eb151d0bfc258ea7c",
+          "original_capture_sha256": "2656b061c9c99d303ffac5e41f5879a4340215ea06d9b8a57004b947c24c6e58",
+          "sanitization": {
+            "operation": "crop non-PN footer only",
+            "crop_box_xyxy": [
+              0,
+              0,
+              1800,
+              1173
+            ],
+            "original_dimensions": [
+              1800,
+              1200
+            ],
+            "safe_dimensions": [
+              1800,
+              1173
+            ],
+            "pixel_equal_to_original_crop": true,
+            "pn_nodes_edges_counts_states_unchanged": true,
+            "safe_png_sha256": "469eec86921c74cbb9e8a64e93ec3123170cedd331c8204eb151d0bfc258ea7c"
+          }
+        }
+      ]
+    },
+    {
+      "declaration": "tools_mismatched_intervals",
+      "view": "PetriNet",
+      "scope": "initial declaration",
+      "compiled_pn_canonical_sha256": "f4b670a739d11d3f0967da860637017161c1a59fcc7c990d8b29cbfb094e5854",
+      "projection_canonical_sha256": "4235b4448d65bc31a7a75a44868d2c00d09cbc8e4757bdd436e8836754d26ed7",
+      "compiled_pn_file_sha256": "f5f36dc59683fbead1a086839daf75f31aab2ad4ab94d67fe995012de1f710e7",
+      "projection_file_sha256": "8557936c0bc91550c463ca49179cffb517b7d987a21ef9b30e735f7f9b178d8b",
+      "image": {
+        "path": "assets/petrinet-7ace4e414fe6dfc5.png",
+        "sha256": "7ace4e414fe6dfc56d2b7746f7840ad621235ae46dd6f4b8a74b31eb2b8c0cb5",
+        "original_capture_sha256": "3b8d13f7a7eff0502300bfa2a91a5e8330dbdf5ad33afd005b2bdc0c1c9e255e",
+        "sanitization": {
+          "operation": "crop non-PN footer only",
+          "crop_box_xyxy": [
+            0,
+            0,
+            1800,
+            1173
+          ],
+          "original_dimensions": [
+            1800,
+            1200
+          ],
+          "safe_dimensions": [
+            1800,
+            1173
+          ],
+          "pixel_equal_to_original_crop": true,
+          "pn_nodes_edges_counts_states_unchanged": true,
+          "safe_png_sha256": "7ace4e414fe6dfc56d2b7746f7840ad621235ae46dd6f4b8a74b31eb2b8c0cb5"
+        }
+      },
+      "node_details": [
+        {
+          "node": "check_tariff_input.run",
+          "path": "assets/node-detail-936abedf06e25953.png",
+          "sha256": "936abedf06e25953c3c99cb073f9a8da25428256b810345664780791c25e9244",
+          "original_capture_sha256": "f7b5395531497e752dca9b33d82e014781b934ac7f0b5e811bf77751fb8350aa",
+          "sanitization": {
+            "operation": "crop non-PN footer only",
+            "crop_box_xyxy": [
+              0,
+              0,
+              1800,
+              1173
+            ],
+            "original_dimensions": [
+              1800,
+              1200
+            ],
+            "safe_dimensions": [
+              1800,
+              1173
+            ],
+            "pixel_equal_to_original_crop": true,
+            "pn_nodes_edges_counts_states_unchanged": true,
+            "safe_png_sha256": "936abedf06e25953c3c99cb073f9a8da25428256b810345664780791c25e9244"
+          }
+        },
+        {
+          "node": "check_usage_input.run",
+          "path": "assets/node-detail-0b81114270f153df.png",
+          "sha256": "0b81114270f153dfcbe8619e75422c63ff9df5c04ec5297cb63fbc08add46568",
+          "original_capture_sha256": "f2b86b9086a2668f140f3480791811dd7dd42eb577056d94a64ac1787f50bf4c",
+          "sanitization": {
+            "operation": "crop non-PN footer only",
+            "crop_box_xyxy": [
+              0,
+              0,
+              1800,
+              1173
+            ],
+            "original_dimensions": [
+              1800,
+              1200
+            ],
+            "safe_dimensions": [
+              1800,
+              1173
+            ],
+            "pixel_equal_to_original_crop": true,
+            "pn_nodes_edges_counts_states_unchanged": true,
+            "safe_png_sha256": "0b81114270f153dfcbe8619e75422c63ff9df5c04ec5297cb63fbc08add46568"
+          }
+        },
+        {
+          "node": "compute_cost.run",
+          "path": "assets/node-detail-c0ebd76e43a1861f.png",
+          "sha256": "c0ebd76e43a1861f071fc460fc00ea885204dfce76e80ecab8a949e876f2b42b",
+          "original_capture_sha256": "3976b21cb6a3d7e9c05449d73f67388ed2e446c08bb5da1b2ff8aa676be58225",
+          "sanitization": {
+            "operation": "crop non-PN footer only",
+            "crop_box_xyxy": [
+              0,
+              0,
+              1800,
+              1173
+            ],
+            "original_dimensions": [
+              1800,
+              1200
+            ],
+            "safe_dimensions": [
+              1800,
+              1173
+            ],
+            "pixel_equal_to_original_crop": true,
+            "pn_nodes_edges_counts_states_unchanged": true,
+            "safe_png_sha256": "c0ebd76e43a1861f071fc460fc00ea885204dfce76e80ecab8a949e876f2b42b"
+          }
+        },
+        {
+          "node": "join_intervals.run",
+          "path": "assets/node-detail-710ca96f7bd94e66.png",
+          "sha256": "710ca96f7bd94e664051af88355969308cbc35815ac2ad0744ee3c2d60e1d08d",
+          "original_capture_sha256": "c38b16b2ccdf837c9fab7533f72bbcb3f60d64a18c8ebf21d8f1b2d865f51705",
+          "sanitization": {
+            "operation": "crop non-PN footer only",
+            "crop_box_xyxy": [
+              0,
+              0,
+              1800,
+              1173
+            ],
+            "original_dimensions": [
+              1800,
+              1200
+            ],
+            "safe_dimensions": [
+              1800,
+              1173
+            ],
+            "pixel_equal_to_original_crop": true,
+            "pn_nodes_edges_counts_states_unchanged": true,
+            "safe_png_sha256": "710ca96f7bd94e664051af88355969308cbc35815ac2ad0744ee3c2d60e1d08d"
+          }
+        },
+        {
+          "node": "normalize_tariff.run",
+          "path": "assets/node-detail-7d84ea0a8eff4020.png",
+          "sha256": "7d84ea0a8eff4020e9d245267eb7e5d7627df8b589c4dd46bec1cef02cb30454",
+          "original_capture_sha256": "243ba5ab9646ca8366cb6c363d50ba2070075b34881a81e6300712a9d9fee78e",
+          "sanitization": {
+            "operation": "crop non-PN footer only",
+            "crop_box_xyxy": [
+              0,
+              0,
+              1800,
+              1173
+            ],
+            "original_dimensions": [
+              1800,
+              1200
+            ],
+            "safe_dimensions": [
+              1800,
+              1173
+            ],
+            "pixel_equal_to_original_crop": true,
+            "pn_nodes_edges_counts_states_unchanged": true,
+            "safe_png_sha256": "7d84ea0a8eff4020e9d245267eb7e5d7627df8b589c4dd46bec1cef02cb30454"
+          }
+        },
+        {
+          "node": "normalize_usage.run",
+          "path": "assets/node-detail-22c2cff3cc10384f.png",
+          "sha256": "22c2cff3cc10384fb894ab7726db15b73664dfc7da87bef8ddacaac46d413d54",
+          "original_capture_sha256": "a249e93c6de5d9e30f773f7f611c7bf71768057ca43ece11656aaa820970e2a7",
+          "sanitization": {
+            "operation": "crop non-PN footer only",
+            "crop_box_xyxy": [
+              0,
+              0,
+              1800,
+              1173
+            ],
+            "original_dimensions": [
+              1800,
+              1200
+            ],
+            "safe_dimensions": [
+              1800,
+              1173
+            ],
+            "pixel_equal_to_original_crop": true,
+            "pn_nodes_edges_counts_states_unchanged": true,
+            "safe_png_sha256": "22c2cff3cc10384fb894ab7726db15b73664dfc7da87bef8ddacaac46d413d54"
+          }
+        },
+        {
+          "node": "publish_report.run",
+          "path": "assets/node-detail-3c6630b60258e155.png",
+          "sha256": "3c6630b60258e15546130f0e6f11af216f8715908075994093673a3fc5f8c419",
+          "original_capture_sha256": "106402e810dedaca8d3d97536c7f175f9484f7e857f9b3e4f5ab144e790e3773",
+          "sanitization": {
+            "operation": "crop non-PN footer only",
+            "crop_box_xyxy": [
+              0,
+              0,
+              1800,
+              1173
+            ],
+            "original_dimensions": [
+              1800,
+              1200
+            ],
+            "safe_dimensions": [
+              1800,
+              1173
+            ],
+            "pixel_equal_to_original_crop": true,
+            "pn_nodes_edges_counts_states_unchanged": true,
+            "safe_png_sha256": "3c6630b60258e15546130f0e6f11af216f8715908075994093673a3fc5f8c419"
+          }
+        },
+        {
+          "node": "read_tariff.run",
+          "path": "assets/node-detail-bb368e01bc911645.png",
+          "sha256": "bb368e01bc911645a4dff907c7b8955fb333cef933e8fbfd12fbb27657d7b312",
+          "original_capture_sha256": "a1e902636941e3310e7c97bff72a8c33af34a99e78946d00fd986e9443b8fb88",
+          "sanitization": {
+            "operation": "crop non-PN footer only",
+            "crop_box_xyxy": [
+              0,
+              0,
+              1800,
+              1173
+            ],
+            "original_dimensions": [
+              1800,
+              1200
+            ],
+            "safe_dimensions": [
+              1800,
+              1173
+            ],
+            "pixel_equal_to_original_crop": true,
+            "pn_nodes_edges_counts_states_unchanged": true,
+            "safe_png_sha256": "bb368e01bc911645a4dff907c7b8955fb333cef933e8fbfd12fbb27657d7b312"
+          }
+        },
+        {
+          "node": "read_usage.run",
+          "path": "assets/node-detail-be6914546a8dfdd2.png",
+          "sha256": "be6914546a8dfdd299301f370862e0f2f517815e5d81bc3ed54d096f3f8c44c6",
+          "original_capture_sha256": "47f3cf4fe059ffb3ea55dba742b8c09084c515ee5365471e7d668e16c579ea31",
+          "sanitization": {
+            "operation": "crop non-PN footer only",
+            "crop_box_xyxy": [
+              0,
+              0,
+              1800,
+              1173
+            ],
+            "original_dimensions": [
+              1800,
+              1200
+            ],
+            "safe_dimensions": [
+              1800,
+              1173
+            ],
+            "pixel_equal_to_original_crop": true,
+            "pn_nodes_edges_counts_states_unchanged": true,
+            "safe_png_sha256": "be6914546a8dfdd299301f370862e0f2f517815e5d81bc3ed54d096f3f8c44c6"
+          }
+        },
+        {
+          "node": "validate_report.run",
+          "path": "assets/node-detail-469eec86921c74cb.png",
+          "sha256": "469eec86921c74cbb9e8a64e93ec3123170cedd331c8204eb151d0bfc258ea7c",
+          "original_capture_sha256": "00f55b130295850bf486db38bdd12c731c762672a9e9462713d418fce04332c9",
+          "sanitization": {
+            "operation": "crop non-PN footer only",
+            "crop_box_xyxy": [
+              0,
+              0,
+              1800,
+              1173
+            ],
+            "original_dimensions": [
+              1800,
+              1200
+            ],
+            "safe_dimensions": [
+              1800,
+              1173
+            ],
+            "pixel_equal_to_original_crop": true,
+            "pn_nodes_edges_counts_states_unchanged": true,
+            "safe_png_sha256": "469eec86921c74cbb9e8a64e93ec3123170cedd331c8204eb151d0bfc258ea7c"
+          }
+        }
+      ]
+    },
+    {
+      "declaration": "tools_double_rejection",
+      "view": "PetriNet",
+      "scope": "initial declaration",
+      "compiled_pn_canonical_sha256": "b8a66d85ae9a18bdf293689a3a348626bc7b1e065a35d3916e9183f6186999d0",
+      "projection_canonical_sha256": "5829de6359d9edd4ac7afa5e6b42dbed7d8c51c66304aa3265268a748488369a",
+      "compiled_pn_file_sha256": "496d47a3b465b9b5fd3c53bf44ae87f28a204a8fef54bc6a44f4f54d372cf1c4",
+      "projection_file_sha256": "7b7db4a4c0344bb14a78af19fce027546eb9d4ee9953dcf59e7726bc68a5ed08",
+      "image": {
+        "path": "assets/petrinet-7ace4e414fe6dfc5.png",
+        "sha256": "7ace4e414fe6dfc56d2b7746f7840ad621235ae46dd6f4b8a74b31eb2b8c0cb5",
+        "original_capture_sha256": "b89273ecf5c8208951e8b88e45ecf8cd94b21fb8d6a315d99185ca3df08f9fb4",
+        "sanitization": {
+          "operation": "crop non-PN footer only",
+          "crop_box_xyxy": [
+            0,
+            0,
+            1800,
+            1173
+          ],
+          "original_dimensions": [
+            1800,
+            1200
+          ],
+          "safe_dimensions": [
+            1800,
+            1173
+          ],
+          "pixel_equal_to_original_crop": true,
+          "pn_nodes_edges_counts_states_unchanged": true,
+          "safe_png_sha256": "7ace4e414fe6dfc56d2b7746f7840ad621235ae46dd6f4b8a74b31eb2b8c0cb5"
+        }
+      },
+      "node_details": [
+        {
+          "node": "check_tariff_input.run",
+          "path": "assets/node-detail-cab511bc68990248.png",
+          "sha256": "cab511bc68990248d40beb75433a73e9c926d469a54383dbacf0b26f12e1bc1a",
+          "original_capture_sha256": "a327ea98f4bb75fc1b36d9a96c70721980b4ff4bacbea9c0e8fc6224dba8fb29",
+          "sanitization": {
+            "operation": "crop non-PN footer only",
+            "crop_box_xyxy": [
+              0,
+              0,
+              1800,
+              1173
+            ],
+            "original_dimensions": [
+              1800,
+              1200
+            ],
+            "safe_dimensions": [
+              1800,
+              1173
+            ],
+            "pixel_equal_to_original_crop": true,
+            "pn_nodes_edges_counts_states_unchanged": true,
+            "safe_png_sha256": "cab511bc68990248d40beb75433a73e9c926d469a54383dbacf0b26f12e1bc1a"
+          }
+        },
+        {
+          "node": "check_usage_input.run",
+          "path": "assets/node-detail-b43a08311004c5ba.png",
+          "sha256": "b43a08311004c5ba8c59d84f9c2b4ee0a255d460f25e6bc929f433b18a92d96a",
+          "original_capture_sha256": "459ec2d63a3fd58a829e21631646cc1075fc22d0ef8fe5a2c3571e2ab2089c39",
+          "sanitization": {
+            "operation": "crop non-PN footer only",
+            "crop_box_xyxy": [
+              0,
+              0,
+              1800,
+              1173
+            ],
+            "original_dimensions": [
+              1800,
+              1200
+            ],
+            "safe_dimensions": [
+              1800,
+              1173
+            ],
+            "pixel_equal_to_original_crop": true,
+            "pn_nodes_edges_counts_states_unchanged": true,
+            "safe_png_sha256": "b43a08311004c5ba8c59d84f9c2b4ee0a255d460f25e6bc929f433b18a92d96a"
+          }
+        },
+        {
+          "node": "compute_cost.run",
+          "path": "assets/node-detail-1a54b4ccdf6bc49b.png",
+          "sha256": "1a54b4ccdf6bc49b6f9a8e685f84394322de21ba36599c7bc95e5aa57588b1d6",
+          "original_capture_sha256": "6a5befdebf864dc5a8f32b54f111f773beab8ba8cb29070faf07adeb337e2bc7",
+          "sanitization": {
+            "operation": "crop non-PN footer only",
+            "crop_box_xyxy": [
+              0,
+              0,
+              1800,
+              1173
+            ],
+            "original_dimensions": [
+              1800,
+              1200
+            ],
+            "safe_dimensions": [
+              1800,
+              1173
+            ],
+            "pixel_equal_to_original_crop": true,
+            "pn_nodes_edges_counts_states_unchanged": true,
+            "safe_png_sha256": "1a54b4ccdf6bc49b6f9a8e685f84394322de21ba36599c7bc95e5aa57588b1d6"
+          }
+        },
+        {
+          "node": "join_intervals.run",
+          "path": "assets/node-detail-710ca96f7bd94e66.png",
+          "sha256": "710ca96f7bd94e664051af88355969308cbc35815ac2ad0744ee3c2d60e1d08d",
+          "original_capture_sha256": "815230ed6f42338d15e980c7f79532877246bb337ec5a5dd14ef250c900ad0ac",
+          "sanitization": {
+            "operation": "crop non-PN footer only",
+            "crop_box_xyxy": [
+              0,
+              0,
+              1800,
+              1173
+            ],
+            "original_dimensions": [
+              1800,
+              1200
+            ],
+            "safe_dimensions": [
+              1800,
+              1173
+            ],
+            "pixel_equal_to_original_crop": true,
+            "pn_nodes_edges_counts_states_unchanged": true,
+            "safe_png_sha256": "710ca96f7bd94e664051af88355969308cbc35815ac2ad0744ee3c2d60e1d08d"
+          }
+        },
+        {
+          "node": "normalize_tariff.run",
+          "path": "assets/node-detail-c10fbcc4f4ac9624.png",
+          "sha256": "c10fbcc4f4ac96246b6a885d1adf0abdb755ce3a8bce6984c3a305b94beffb5b",
+          "original_capture_sha256": "da262b4c1ed3f05c2d0b722864eef8581624ac8acf27cb200a9a02dda40be34c",
+          "sanitization": {
+            "operation": "crop non-PN footer only",
+            "crop_box_xyxy": [
+              0,
+              0,
+              1800,
+              1173
+            ],
+            "original_dimensions": [
+              1800,
+              1200
+            ],
+            "safe_dimensions": [
+              1800,
+              1173
+            ],
+            "pixel_equal_to_original_crop": true,
+            "pn_nodes_edges_counts_states_unchanged": true,
+            "safe_png_sha256": "c10fbcc4f4ac96246b6a885d1adf0abdb755ce3a8bce6984c3a305b94beffb5b"
+          }
+        },
+        {
+          "node": "normalize_usage.run",
+          "path": "assets/node-detail-22c2cff3cc10384f.png",
+          "sha256": "22c2cff3cc10384fb894ab7726db15b73664dfc7da87bef8ddacaac46d413d54",
+          "original_capture_sha256": "28bc3169c1c07515711119205efda37a319c3a1492c55b36f50e5f9cbd335631",
+          "sanitization": {
+            "operation": "crop non-PN footer only",
+            "crop_box_xyxy": [
+              0,
+              0,
+              1800,
+              1173
+            ],
+            "original_dimensions": [
+              1800,
+              1200
+            ],
+            "safe_dimensions": [
+              1800,
+              1173
+            ],
+            "pixel_equal_to_original_crop": true,
+            "pn_nodes_edges_counts_states_unchanged": true,
+            "safe_png_sha256": "22c2cff3cc10384fb894ab7726db15b73664dfc7da87bef8ddacaac46d413d54"
+          }
+        },
+        {
+          "node": "publish_report.run",
+          "path": "assets/node-detail-e9a0e1bad84cc9f4.png",
+          "sha256": "e9a0e1bad84cc9f41ed7d24499162d50f6c1dccffda0f5c6b649928e05a7ed83",
+          "original_capture_sha256": "523e69e316c33dab476d6aeaf79b7647b0cdbae7d7380dcf5feabc6625a3fc73",
+          "sanitization": {
+            "operation": "crop non-PN footer only",
+            "crop_box_xyxy": [
+              0,
+              0,
+              1800,
+              1173
+            ],
+            "original_dimensions": [
+              1800,
+              1200
+            ],
+            "safe_dimensions": [
+              1800,
+              1173
+            ],
+            "pixel_equal_to_original_crop": true,
+            "pn_nodes_edges_counts_states_unchanged": true,
+            "safe_png_sha256": "e9a0e1bad84cc9f41ed7d24499162d50f6c1dccffda0f5c6b649928e05a7ed83"
+          }
+        },
+        {
+          "node": "read_tariff.run",
+          "path": "assets/node-detail-bb368e01bc911645.png",
+          "sha256": "bb368e01bc911645a4dff907c7b8955fb333cef933e8fbfd12fbb27657d7b312",
+          "original_capture_sha256": "cb4489c824f8fc0a894d94ab2091f61cc7b132eb4454f2ca1d9612a14e00990a",
+          "sanitization": {
+            "operation": "crop non-PN footer only",
+            "crop_box_xyxy": [
+              0,
+              0,
+              1800,
+              1173
+            ],
+            "original_dimensions": [
+              1800,
+              1200
+            ],
+            "safe_dimensions": [
+              1800,
+              1173
+            ],
+            "pixel_equal_to_original_crop": true,
+            "pn_nodes_edges_counts_states_unchanged": true,
+            "safe_png_sha256": "bb368e01bc911645a4dff907c7b8955fb333cef933e8fbfd12fbb27657d7b312"
+          }
+        },
+        {
+          "node": "read_usage.run",
+          "path": "assets/node-detail-83c227133c0598ba.png",
+          "sha256": "83c227133c0598ba5f4cd6877b7e6feb144bbddd4f18555667b06835f1ae052d",
+          "original_capture_sha256": "594f4759c02ac4abcb8d77acbd3ef53baa15833e82f0e690fade8a0653fd2f2d",
+          "sanitization": {
+            "operation": "crop non-PN footer only",
+            "crop_box_xyxy": [
+              0,
+              0,
+              1800,
+              1173
+            ],
+            "original_dimensions": [
+              1800,
+              1200
+            ],
+            "safe_dimensions": [
+              1800,
+              1173
+            ],
+            "pixel_equal_to_original_crop": true,
+            "pn_nodes_edges_counts_states_unchanged": true,
+            "safe_png_sha256": "83c227133c0598ba5f4cd6877b7e6feb144bbddd4f18555667b06835f1ae052d"
+          }
+        },
+        {
+          "node": "validate_report.run",
+          "path": "assets/node-detail-d0eea34816a8171a.png",
+          "sha256": "d0eea34816a8171a19c827867e23850d7ff588eef3a11e6e9e6e9ef6ff9b2335",
+          "original_capture_sha256": "30916d93638f8a66066b7007667dd62c8d566dc26ea97828e139a3b4f4582090",
+          "sanitization": {
+            "operation": "crop non-PN footer only",
+            "crop_box_xyxy": [
+              0,
+              0,
+              1800,
+              1173
+            ],
+            "original_dimensions": [
+              1800,
+              1200
+            ],
+            "safe_dimensions": [
+              1800,
+              1173
+            ],
+            "pixel_equal_to_original_crop": true,
+            "pn_nodes_edges_counts_states_unchanged": true,
+            "safe_png_sha256": "d0eea34816a8171a19c827867e23850d7ff588eef3a11e6e9e6e9ef6ff9b2335"
+          }
+        }
+      ]
+    }
+  ],
+  "image_path_base": "..",
+  "hashes": {
+    "png": "SHA-256 of exact PNG bytes",
+    "file": "SHA-256 of UTF-8 JSON file bytes, including indentation and final newline",
+    "canonical_json": "SHA-256 of UTF-8 JSON with sorted keys, compact separators (comma, colon), Unicode characters unescaped, and nonfinite values prohibited"
+  },
+  "reuse_verification": "Each original capture was reused only after the full compiled PN document and full projection matched canonical JSON from offline compilation of the public source commit. Pixel sanitation removes only the non-PN footer."
+}

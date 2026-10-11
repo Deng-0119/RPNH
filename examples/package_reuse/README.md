@@ -324,3 +324,9 @@ editor; author changes belong in its actual Module/dependency declarations.
 Keep ZIP/package identity separate from local environment locks and private run
 evidence. Do not share local selections, credentials, receipts or Registry paths
 as part of a public sharepackage.
+
+## PetriNet declaration gallery
+
+The image below shows this example’s initial PetriNet structure. The [full gallery](figures/README.md) shows the listed declaration variants and readable node details for large nets.
+
+![Initial PetriNet structure](assets/petrinet-2448db2bb307d99f.png)

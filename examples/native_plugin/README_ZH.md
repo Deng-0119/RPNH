@@ -54,3 +54,9 @@ schema/资源/安装来源，不执行 operation 或绑定 HOST。终态入口�
 运行声明为 pure 的操作，保存真实 result、terminal ref 与模型计数。exit 0 表示
 PASS，1 为验证失败，终态 IPC 不可用报告 BLOCKED/2；每次使用新的输出路径。
 [两版本差异与重新绑定](AUTHOR_VERSIONS_ZH.md)说明改名、版本、完整 descriptor 与新 lock。
+
+## PetriNet 声明图册
+
+下图展示本案例的初始 PetriNet 结构。[完整图册](figures/README_ZH.md)展示所列声明变体，并提供大网的节点局部图。
+
+![初始 PetriNet 结构](assets/petrinet-afe2f2df36c37247.png)

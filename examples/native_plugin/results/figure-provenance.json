@@ -1,0 +1,119 @@
+{
+  "schema": "rpnh/example_figure_provenance/v1",
+  "source_repository": "Deng-0119/RPNH",
+  "source_commit": "34d42d171d7e9a7f803b71467063b55786c2cea8",
+  "figures": [
+    {
+      "declaration": "native_add",
+      "view": "PetriNet",
+      "scope": "initial declaration",
+      "compiled_pn_canonical_sha256": "c476dd029295f175e89c5f3a52e4a955af276c97be6142b9d08b9804983d86ac",
+      "projection_canonical_sha256": "06c329b57595a9b79e373d1458f79195a08cb95f4f0cc3bf9ce8a27a0c2f5265",
+      "compiled_pn_file_sha256": "ad235ee41cf992a2a1a547d8a977c8bff89918896a7deb829b3a30d9a88e1cea",
+      "projection_file_sha256": "07f94a4016c4bcf6be521dd037455230ea1fec4148c7c8dcf9409129ab907889",
+      "image": {
+        "path": "assets/petrinet-afe2f2df36c37247.png",
+        "sha256": "afe2f2df36c3724751843004341d47ec652bf329510efb257611a38a3010e314",
+        "original_capture_sha256": "8bc8bdff8549966338bb5e0032f9b4eb8a45777c7f5ae0fbc7d82e99126fc92e",
+        "sanitization": {
+          "operation": "crop non-PN footer only",
+          "crop_box_xyxy": [
+            0,
+            0,
+            1800,
+            1173
+          ],
+          "original_dimensions": [
+            1800,
+            1200
+          ],
+          "safe_dimensions": [
+            1800,
+            1173
+          ],
+          "pixel_equal_to_original_crop": true,
+          "pn_nodes_edges_counts_states_unchanged": true,
+          "safe_png_sha256": "afe2f2df36c3724751843004341d47ec652bf329510efb257611a38a3010e314"
+        }
+      },
+      "node_details": []
+    },
+    {
+      "declaration": "native_instruction",
+      "view": "PetriNet",
+      "scope": "initial declaration",
+      "compiled_pn_canonical_sha256": "256f83bdf91a0bcf9ed9b71b185d04457312f251f9b49876abd9a5e644cea379",
+      "projection_canonical_sha256": "2297b80b913e5ef0de78c19b8a9b9a37bbb7ad07ad64e44b6ea7e10ec35900b9",
+      "compiled_pn_file_sha256": "d421efb17e807b279e3d389d064db6ad4f4dd8b104d966a139785b5f5cf1081b",
+      "projection_file_sha256": "4b0714779746d8e2da38e83b53433fe88d92862394c161cb786d3938ca25718f",
+      "image": {
+        "path": "assets/petrinet-afe2f2df36c37247.png",
+        "sha256": "afe2f2df36c3724751843004341d47ec652bf329510efb257611a38a3010e314",
+        "original_capture_sha256": "9291bd4738fe3bbb20e30ef7d0524d391319251d410e38fc3cdca96797506e36",
+        "sanitization": {
+          "operation": "crop non-PN footer only",
+          "crop_box_xyxy": [
+            0,
+            0,
+            1800,
+            1173
+          ],
+          "original_dimensions": [
+            1800,
+            1200
+          ],
+          "safe_dimensions": [
+            1800,
+            1173
+          ],
+          "pixel_equal_to_original_crop": true,
+          "pn_nodes_edges_counts_states_unchanged": true,
+          "safe_png_sha256": "afe2f2df36c3724751843004341d47ec652bf329510efb257611a38a3010e314"
+        }
+      },
+      "node_details": []
+    },
+    {
+      "declaration": "native_summarize",
+      "view": "PetriNet",
+      "scope": "initial declaration",
+      "compiled_pn_canonical_sha256": "e2ddef3ef834421133ae35142de2cc17762e01660edd41c081545c2ac7401fe7",
+      "projection_canonical_sha256": "6dbbf1609719544b87a07908285efd0753c4711292fdb3a5a63e7e9278cf8628",
+      "compiled_pn_file_sha256": "8236a3fa9edd0aa7e06209b57eb61d44ea256e182d2b3b6a243499661903e5f5",
+      "projection_file_sha256": "484ba0b225a14310506646e806201b7d13a6182cee70aebddc1c91a9f1dce482",
+      "image": {
+        "path": "assets/petrinet-afe2f2df36c37247.png",
+        "sha256": "afe2f2df36c3724751843004341d47ec652bf329510efb257611a38a3010e314",
+        "original_capture_sha256": "c29cde86918c51d1df9b413fdcc6601a594e023b3269c81cf3408c30e726279a",
+        "sanitization": {
+          "operation": "crop non-PN footer only",
+          "crop_box_xyxy": [
+            0,
+            0,
+            1800,
+            1173
+          ],
+          "original_dimensions": [
+            1800,
+            1200
+          ],
+          "safe_dimensions": [
+            1800,
+            1173
+          ],
+          "pixel_equal_to_original_crop": true,
+          "pn_nodes_edges_counts_states_unchanged": true,
+          "safe_png_sha256": "afe2f2df36c3724751843004341d47ec652bf329510efb257611a38a3010e314"
+        }
+      },
+      "node_details": []
+    }
+  ],
+  "image_path_base": "..",
+  "hashes": {
+    "png": "SHA-256 of exact PNG bytes",
+    "file": "SHA-256 of UTF-8 JSON file bytes, including indentation and final newline",
+    "canonical_json": "SHA-256 of UTF-8 JSON with sorted keys, compact separators (comma, colon), Unicode characters unescaped, and nonfinite values prohibited"
+  },
+  "reuse_verification": "Each original capture was reused only after the full compiled PN document and full projection matched canonical JSON from offline compilation of the public source commit. Pixel sanitation removes only the non-PN footer."
+}

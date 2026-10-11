@@ -88,3 +88,9 @@ multi-process, external-provider, registered-model-port or R3 acceptance.
 No CLI, author-revision-to-run shortcut, automatic branch promotion, child
 orchestration, retry, training or publishing is introduced. Pure Registry tests
 do not establish the still-separate author/CAS or complete R2/R3 roadmap gates.
+
+## PetriNet declaration gallery
+
+The image below shows this example’s initial PetriNet structure. The [full gallery](figures/README.md) shows the listed declaration variants and readable node details for large nets.
+
+![Initial PetriNet structure](assets/petrinet-bc51f0c2910010fa.png)
