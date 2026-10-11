@@ -15,8 +15,8 @@ runner 不选择或切换 provider/model。
 
 ## 实际 dashboard 视图
 
-下面所有图片都截取自已完成的确定性 Registry run，不是手绘示意图。公开副本移除了精确
-checkpoint 身份。
+下方图片均来自官方 Viewer。串行、文档和长流程图截取自已完成的确定性 Registry run，
+公开副本移除了精确 checkpoint 身份；并行图展示初始声明。
 
 ### 串行流程
 
@@ -24,13 +24,12 @@ checkpoint 身份。
 
 ### 并行分叉与 join
 
-Overview 便于直接阅读 Agent 网状关系：
+prepare → (facts ∥ risks) → join。Overview 展示四个 Agent 的关系；Petri 保留数据/控制 place、权重与 interrupted 返回分支。这里展示 `initial_configured` 结构，不包含执行状态、token marking 或成功结果。
 
-![并行工作流 Agent 概览](assets/parallel-overview.png)
+![并行初始声明：完整 Overview](assets/pattern_parallel/overview-full.png)
+![并行初始声明：完整 Petri 图](assets/pattern_parallel/petri-full.png)
 
-PetriNet 展示实现同一分叉和全输入 join 的真实数据 place、控制 place 与弧：
-
-![并行工作流 PetriNet](assets/parallel-petrinet.png)
+[阅读 5 张 Petri 局部图](figures/parallel/README_ZH.md)，追踪分叉、join 与跨图连接。
 
 ### 文档任务
 

@@ -89,8 +89,21 @@ No CLI, author-revision-to-run shortcut, automatic branch promotion, child
 orchestration, retry, training or publishing is introduced. Pure Registry tests
 do not establish the still-separate author/CAS or complete R2/R3 roadmap gates.
 
-## PetriNet declaration gallery
+<a id="petrinet-declaration-gallery"></a>
 
-The image below shows this example’s initial PetriNet structure. The [full gallery](figures/README.md) shows the listed declaration variants and readable node details for large nets.
+## Four-round declaration: Petri and Flow
 
-![Initial PetriNet structure](assets/petrinet-bc51f0c2910010fa.png)
+Four rounds follow proposer → evaluator → selector. Rounds 1–3 pass next into the following round; every round exposes a stop output, and round 4 can produce selected_state. These `initial_configured` views show structure without execution state, token markings or a success result.
+
+The two full views below are orientation images; use the preview and gallery for readable detail. [Original Petri image](assets/rsi_rounds_4/petri-full.png) · [original Flow image](assets/rsi_rounds_4/flow-full.png).
+
+![Four-round initial declaration: complete Petri view](assets/rsi_rounds_4/petri-full.png)
+![Four-round initial declaration: complete Flow view](assets/rsi_rounds_4/flow-full.png)
+
+Readable Flow preview F05: round 1 selector and the start of its retain/select/stop branches only; the upstream evaluator/candidate and downstream endpoints are outside this panel.
+
+![Flow detail preview F05](assets/rsi_rounds_4/F05.png)
+
+[Read the four-round gallery’s 49 detail panels](figures/four-round/README.md) for readable nodes, branches and cross-panel connections. Flow folds incumbent/evaluation places; dashed open arrows preserve the read-only candidate relation.
+
+[Other declaration variants](figures/README.md) include one to three rounds and the failed-retain example.

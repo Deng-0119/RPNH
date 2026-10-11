@@ -16,8 +16,9 @@ the runner never selects or changes a provider or model.
 
 ## Actual dashboard views
 
-All images below were captured from completed deterministic Registry runs, not
-from hand-drawn diagrams. Public copies omit exact checkpoint identities.
+All images below come from the official Viewer. Serial, document and long-process
+images show completed deterministic Registry runs with exact checkpoint identities
+omitted; the parallel images show an initial declaration.
 
 ### Serial
 
@@ -25,14 +26,12 @@ from hand-drawn diagrams. Public copies omit exact checkpoint identities.
 
 ### Parallel fan-out and join
 
-Overview makes the Agent network easy to read:
+prepare → (facts ∥ risks) → join. Overview shows the four Agent relations; Petri retains data/control places, weights and interrupted return branches. These `initial_configured` views contain no execution state, token marking or success result.
 
-![Parallel workflow Agent overview](assets/parallel-overview.png)
+![Parallel initial declaration: complete Overview](assets/pattern_parallel/overview-full.png)
+![Parallel initial declaration: complete Petri view](assets/pattern_parallel/petri-full.png)
 
-PetriNet exposes the actual data places, control places and arcs that enforce
-the same fan-out and all-input join:
-
-![Parallel workflow PetriNet](assets/parallel-petrinet.png)
+[Read the 5 Petri detail panels](figures/parallel/README.md) to follow the branches, join and cross-panel connections.
 
 ### Document task
 

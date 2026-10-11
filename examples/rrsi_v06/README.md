@@ -21,8 +21,7 @@ Each image below is the initial declaration of one independent child Module,
 rendered by the RPNH PetriNet viewer. They show structure without a run, marking,
 score, or success claim. The Policy and four role declarations are separate:
 their full compiled documents differ, even where the displayed topology looks
-alike. The [figure identities](results/figure-provenance.json) bind these images
-to the public source and exact compiled/projection bytes.
+alike. The [Policy gallery](figures/policy/README.md) identifies the views below; the [role figure identities](results/figure-provenance.json) retain the original role captures’ source and compiled/projection byte identities.
 
 The campaign coordinates calibration, two evolution rounds, heldout evaluation,
 and export. Each scored slot instantiates Policy; each round instantiates
@@ -32,15 +31,18 @@ figure does not share execution state between occurrences.
 
 ### Policy: prepare, model, grade
 
-![Policy initial declaration: complete PetriNet](assets/rrsi.policy.prepare-model-grade.png)
+request → prepare → model → grade → result. Petri retains the intermediate state/response places; Flow folds these two handoffs. Both show the initial declaration (`initial_configured`).
 
-The request passes through prepare, one registered model operation, and the
-independent grader before reaching result. The readable node details below are
-views of the same PetriNet, with no changes to its structure.
+The two full views below are orientation images; use the preview and gallery for readable detail. [Original Petri image](assets/rrsi.policy.prepare-model-grade/petri-full.png) · [original Flow image](assets/rrsi.policy.prepare-model-grade/flow-full.png).
 
-![Policy prepare detail](assets/rrsi.policy.prepare-model-grade-policy.prepare.png)
-![Policy model detail](assets/rrsi.policy.prepare-model-grade-policy.model.png)
-![Policy grade detail](assets/rrsi.policy.prepare-model-grade-policy.grade.png)
+![Policy initial declaration: complete Petri view](assets/rrsi.policy.prepare-model-grade/petri-full.png)
+![Policy initial declaration: complete Flow view](assets/rrsi.policy.prepare-model-grade/flow-full.png)
+
+Readable Flow preview F03: the `policy.model` operation and portions of its incoming/outgoing lines only; prepare and grade are outside this panel.
+
+![Flow detail preview F03](assets/rrsi.policy.prepare-model-grade/F03.png)
+
+[Read the Petri and Flow detail panels](figures/policy/README.md). Full views provide orientation; the gallery shows readable nodes, arcs and cross-panel connections.
 
 ### Analyst
 
