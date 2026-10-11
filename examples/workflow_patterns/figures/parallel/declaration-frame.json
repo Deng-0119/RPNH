@@ -1,0 +1,635 @@
+{
+  "schema_version": "rpnh/dashboard/v1",
+  "net": {
+    "schema_version": "rpnh/net_view/v1",
+    "source": {
+      "mode": "initial_configured",
+      "task_label": "pattern_parallel",
+      "verified_head_ordinal": null
+    },
+    "summary": {
+      "node_count": 13,
+      "transition_count": 4,
+      "place_count": 9,
+      "resource_place_count": 0,
+      "edge_count": 26,
+      "resource_edge_count": 0
+    },
+    "nodes": [
+      {
+        "id": "team.control__facts_to_join",
+        "label": "team.control__facts_to_join",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/rpnh_agent_text/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "team.control__prepare_to_facts",
+        "label": "team.control__prepare_to_facts",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/rpnh_agent_text/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "team.control__prepare_to_risks",
+        "label": "team.control__prepare_to_risks",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/rpnh_agent_text/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "team.control__risks_to_join",
+        "label": "team.control__risks_to_join",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/rpnh_agent_text/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "team.data__facts__facts",
+        "label": "team.data__facts__facts",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/rpnh_agent_text/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "team.data__join__result",
+        "label": "team.data__join__result",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/rpnh_agent_text/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "team.data__prepare__brief",
+        "label": "team.data__prepare__brief",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/rpnh_agent_text/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "team.data__risks__risks",
+        "label": "team.data__risks__risks",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/rpnh_agent_text/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "team.facts",
+        "label": "team.facts",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "team.facts",
+        "operation_id": "op_0",
+        "executor": "rpnh/default-agent/v1",
+        "inputs": [
+          "team.input__facts__brief"
+        ],
+        "outputs": [
+          "team.output__facts__facts",
+          "team.interrupt__facts__facts__brief"
+        ]
+      },
+      {
+        "id": "team.ingress__prepare__request",
+        "label": "team.ingress__prepare__request",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/rpnh_agent_text/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "team.join",
+        "label": "team.join",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "team.join",
+        "operation_id": "op_1",
+        "executor": "rpnh/default-agent/v1",
+        "inputs": [
+          "team.input__join__facts",
+          "team.input__join__risks"
+        ],
+        "outputs": [
+          "team.result",
+          "team.interrupt__join__join__facts",
+          "team.interrupt__join__join__risks"
+        ]
+      },
+      {
+        "id": "team.prepare",
+        "label": "team.prepare",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "team.prepare",
+        "operation_id": "op_2",
+        "executor": "rpnh/default-agent/v1",
+        "inputs": [
+          "team.request"
+        ],
+        "outputs": [
+          "team.output__prepare__brief",
+          "team.interrupt__prepare__prepare__request"
+        ]
+      },
+      {
+        "id": "team.risks",
+        "label": "team.risks",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "team.risks",
+        "operation_id": "op_3",
+        "executor": "rpnh/default-agent/v1",
+        "inputs": [
+          "team.input__risks__brief"
+        ],
+        "outputs": [
+          "team.output__risks__risks",
+          "team.interrupt__risks__risks__brief"
+        ]
+      }
+    ],
+    "edges": [
+      {
+        "id": "edge:arc:team.control__facts_to_join:team.join:consume:-:1",
+        "source": "team.control__facts_to_join",
+        "target": "team.join",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:team.control__prepare_to_facts:team.facts:consume:-:1",
+        "source": "team.control__prepare_to_facts",
+        "target": "team.facts",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:team.control__prepare_to_risks:team.risks:consume:-:1",
+        "source": "team.control__prepare_to_risks",
+        "target": "team.risks",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:team.control__risks_to_join:team.join:consume:-:1",
+        "source": "team.control__risks_to_join",
+        "target": "team.join",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:team.data__facts__facts:team.join:consume:-:1",
+        "source": "team.data__facts__facts",
+        "target": "team.join",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:team.data__prepare__brief:team.facts:consume:-:1",
+        "source": "team.data__prepare__brief",
+        "target": "team.facts",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:team.data__prepare__brief:team.risks:consume:-:1",
+        "source": "team.data__prepare__brief",
+        "target": "team.risks",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:team.data__risks__risks:team.join:consume:-:1",
+        "source": "team.data__risks__risks",
+        "target": "team.join",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:team.facts:team.control__facts_to_join:produce:complete:1",
+        "source": "team.facts",
+        "target": "team.control__facts_to_join",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "control_only",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:team.facts:team.control__prepare_to_facts:produce:interrupted:1",
+        "source": "team.facts",
+        "target": "team.control__prepare_to_facts",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "interrupted",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "forward",
+        "forward_source": "team.control__prepare_to_facts"
+      },
+      {
+        "id": "edge:arc:team.facts:team.data__facts__facts:produce:complete:1",
+        "source": "team.facts",
+        "target": "team.data__facts__facts",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:team.facts:team.data__prepare__brief:produce:interrupted:1",
+        "source": "team.facts",
+        "target": "team.data__prepare__brief",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "interrupted",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "forward",
+        "forward_source": "team.data__prepare__brief"
+      },
+      {
+        "id": "edge:arc:team.ingress__prepare__request:team.prepare:consume:-:1",
+        "source": "team.ingress__prepare__request",
+        "target": "team.prepare",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:team.join:team.control__facts_to_join:produce:interrupted:1",
+        "source": "team.join",
+        "target": "team.control__facts_to_join",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "interrupted",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "forward",
+        "forward_source": "team.control__facts_to_join"
+      },
+      {
+        "id": "edge:arc:team.join:team.control__risks_to_join:produce:interrupted:1",
+        "source": "team.join",
+        "target": "team.control__risks_to_join",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "interrupted",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "forward",
+        "forward_source": "team.control__risks_to_join"
+      },
+      {
+        "id": "edge:arc:team.join:team.data__facts__facts:produce:interrupted:1",
+        "source": "team.join",
+        "target": "team.data__facts__facts",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "interrupted",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "forward",
+        "forward_source": "team.data__facts__facts"
+      },
+      {
+        "id": "edge:arc:team.join:team.data__join__result:produce:complete:1",
+        "source": "team.join",
+        "target": "team.data__join__result",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:team.join:team.data__risks__risks:produce:interrupted:1",
+        "source": "team.join",
+        "target": "team.data__risks__risks",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "interrupted",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "forward",
+        "forward_source": "team.data__risks__risks"
+      },
+      {
+        "id": "edge:arc:team.prepare:team.control__prepare_to_facts:produce:complete:1",
+        "source": "team.prepare",
+        "target": "team.control__prepare_to_facts",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "control_only",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:team.prepare:team.control__prepare_to_risks:produce:complete:1",
+        "source": "team.prepare",
+        "target": "team.control__prepare_to_risks",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "control_only",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:team.prepare:team.data__prepare__brief:produce:complete:1",
+        "source": "team.prepare",
+        "target": "team.data__prepare__brief",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 2,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:team.prepare:team.ingress__prepare__request:produce:interrupted:1",
+        "source": "team.prepare",
+        "target": "team.ingress__prepare__request",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "interrupted",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "forward",
+        "forward_source": "team.ingress__prepare__request"
+      },
+      {
+        "id": "edge:arc:team.risks:team.control__prepare_to_risks:produce:interrupted:1",
+        "source": "team.risks",
+        "target": "team.control__prepare_to_risks",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "interrupted",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "forward",
+        "forward_source": "team.control__prepare_to_risks"
+      },
+      {
+        "id": "edge:arc:team.risks:team.control__risks_to_join:produce:complete:1",
+        "source": "team.risks",
+        "target": "team.control__risks_to_join",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "control_only",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:team.risks:team.data__prepare__brief:produce:interrupted:1",
+        "source": "team.risks",
+        "target": "team.data__prepare__brief",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "interrupted",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "forward",
+        "forward_source": "team.data__prepare__brief"
+      },
+      {
+        "id": "edge:arc:team.risks:team.data__risks__risks:produce:complete:1",
+        "source": "team.risks",
+        "target": "team.data__risks__risks",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      }
+    ]
+  },
+  "source": {
+    "mode": "initial_configured",
+    "task_label": "pattern_parallel",
+    "verified_head_ordinal": null
+  },
+  "boundaries": {
+    "entry": [
+      {
+        "name": "request",
+        "port": "team.request",
+        "place": "team.ingress__prepare__request"
+      }
+    ],
+    "exit": [
+      {
+        "name": "result",
+        "port": "team.result",
+        "place": "team.data__join__result"
+      }
+    ],
+    "terminal_rules": [
+      {
+        "key": "rpnh/agent-task-terminal/v1",
+        "operation": "team.join",
+        "transition_ids": [
+          "team.join"
+        ],
+        "outcome": "complete",
+        "port": "team.result",
+        "place": "team.data__join__result"
+      }
+    ],
+    "terminal_evidence": "not_provided"
+  },
+  "transition_bindings": [],
+  "presentation": {
+    "title": "pattern_parallel",
+    "description": "Public example initial declaration. Structure only; execution and marking are not provided.",
+    "nodes": {},
+    "status": "default",
+    "topology_digest": "dd6931fa02774043fe6ab592cd829c207980494458c95cb9d8c8219b79731fee"
+  },
+  "position": {
+    "mode": "live",
+    "cursor": null,
+    "latest_head": null
+  },
+  "coverage": {
+    "history": "unsupported",
+    "firings": "not_provided",
+    "agent_nodes": "declared_llm_executor",
+    "terminal_evidence": "not_provided"
+  },
+  "change": {},
+  "agent_nodes": [
+    {
+      "transition_id": "team.facts",
+      "source": "declared_llm_executor",
+      "semantic_group": {
+        "component": "team",
+        "semantic_node_id": "facts"
+      }
+    },
+    {
+      "transition_id": "team.join",
+      "source": "declared_llm_executor",
+      "semantic_group": {
+        "component": "team",
+        "semantic_node_id": "join"
+      }
+    },
+    {
+      "transition_id": "team.prepare",
+      "source": "declared_llm_executor",
+      "semantic_group": {
+        "component": "team",
+        "semantic_node_id": "prepare"
+      }
+    },
+    {
+      "transition_id": "team.risks",
+      "source": "declared_llm_executor",
+      "semantic_group": {
+        "component": "team",
+        "semantic_node_id": "risks"
+      }
+    }
+  ]
+}

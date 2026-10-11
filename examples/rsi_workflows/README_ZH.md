@@ -69,7 +69,7 @@ python -m pytest -q examples/rsi_workflows/tests/test_runtime.py --rsi-transport
 不是自动production fallback，也不是socket、多进程、外部provider、registered-model
 port或R3验收。
 
-不新增CLI、author-revision到run的捷径、自动branch晋升、child编排、retry、训练或发布。
+迭代运行层不新增任务执行CLI、author-revision到run的捷径、自动branch晋升、child编排、retry、训练或发布。
 纯Registry测试不表示author/CAS或完整R2/R3路线图门槛已经完成。
 
 <a id="petrinet-声明图册"></a>
@@ -78,15 +78,11 @@ port或R3验收。
 
 四轮均为 proposer → evaluator → selector；第 1–3 轮的 next 送入后轮，每轮 stop 为独立输出，第 4 轮还可输出 selected_state。以下是 `initial_configured` 初始结构，不包含执行状态、token marking 或成功结果。
 
-以下两张全图仅用于整体定位；文字细节见下方预览和图册。[Petri 原图](assets/rsi_rounds_4/petri-full.png) · [Flow 原图](assets/rsi_rounds_4/flow-full.png)。
+以下完整 Petri 与 Flow 全景用于了解整体结构；交互细节可在本地官方 Viewer 中缩放、点击查看。[Petri 原图](assets/rsi_rounds_4/petri-full.png) · [Flow 原图](assets/rsi_rounds_4/flow-full.png)。
 
 ![四轮初始声明：完整 Petri 图](assets/rsi_rounds_4/petri-full.png)
 ![四轮初始声明：完整 Flow 图](assets/rsi_rounds_4/flow-full.png)
 
-Flow 局部预览 F05：仅第 1 轮 selector 及 retain/select/stop 分支的起始部分；上游 evaluator/candidate 和下游端点位于画面外。
-
-![Flow 局部预览 F05](assets/rsi_rounds_4/F05.png)
-
-[阅读四轮图册的 49 张局部图](figures/four-round/README_ZH.md)，查看节点、分支和跨图连接。Flow 折叠 incumbent/evaluation place；虚线空心箭头保留 candidate 的只读关系。
+[在本地 Viewer 打开这份声明](figures/four-round/README_ZH.md#local-viewer)。
 
 [其他声明变体](figures/README_ZH.md)包含一至三轮及 failed-retain 示例。

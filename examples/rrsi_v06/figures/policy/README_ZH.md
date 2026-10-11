@@ -4,124 +4,42 @@
 
 [返回案例说明](../../README_ZH.md)。
 
-这些图片展示 `initial_configured` 初始声明；不包含执行状态、token marking 或成功结果。全图用于定位，编号局部图用于阅读节点、弧和标签。
+这些图片展示 `initial_configured` 初始声明；不包含执行状态、token marking 或成功结果。全景展示完整结构；细节可在下方本地 Viewer 中查看。
 
 声明源码：[formal_policy.py](https://github.com/Deng-0119/RPNH/blob/34d42d171d7e9a7f803b71467063b55786c2cea8/examples/rrsi_v06/src/rpnh_rrsi/formal_policy.py)。使用[官方 Viewer `34d42d17`](https://github.com/Deng-0119/RPNH/tree/34d42d171d7e9a7f803b71467063b55786c2cea8) 渲染。
 
 request → prepare → state → model → response → grade → result。Flow 折叠中间的 state 与 response place；两种视图保留相同的操作顺序。
 
-[Petri](#petri) · [Flow](#flow)
+[Petri](#petri) · [Flow](#flow) · [本地 Viewer](#local-viewer)
 
 ## Petri
 
-<img src="../../assets/rrsi.policy.prepare-model-grade/petri-full.png" width="730" alt="Policy — complete Petri declaration" />
+<img src="../../assets/rrsi.policy.prepare-model-grade/petri-full.png" width="730" alt="rrsi.policy.prepare-model-grade — complete Petri declaration" />
 
-[打开定位图原图](../../assets/rrsi.policy.prepare-model-grade/petri-full.png).
-
-[P01](#p01) → [P02](#p02) → [P03](#p03) → [P04](#p04) → [P05](#p05) → [P06](#p06) → [P07](#p07)
-
-### P01
-
-**请求。** `request` → [prepare](#p02)。
-
-完整节点（从上到下，再从左到右）：`policy.request`。
-
-<img src="../../assets/rrsi.policy.prepare-model-grade/P01.png" width="730" alt="Policy：prepare → model → grade — petri P01 — 请求" />
-
-### P02
-
-**准备。** [request](#p01) → `prepare` → [state](#p03)。
-
-完整节点（从上到下，再从左到右）：`policy.prepare`。
-
-<img src="../../assets/rrsi.policy.prepare-model-grade/P02.png" width="730" alt="Policy：prepare → model → grade — petri P02 — 准备" />
-
-### P03
-
-**状态。** [prepare](#p02) → `state` → [model](#p04)。
-
-完整节点（从上到下，再从左到右）：`policy.state`。
-
-<img src="../../assets/rrsi.policy.prepare-model-grade/P03.png" width="730" alt="Policy：prepare → model → grade — petri P03 — 状态" />
-
-### P04
-
-**模型操作。** [state](#p03) → `model` → [response](#p05)。
-
-完整节点（从上到下，再从左到右）：`policy.model`。
-
-<img src="../../assets/rrsi.policy.prepare-model-grade/P04.png" width="730" alt="Policy：prepare → model → grade — petri P04 — 模型操作" />
-
-### P05
-
-**响应。** [model](#p04) → `response` → [grade](#p06)。
-
-完整节点（从上到下，再从左到右）：`policy.response`。
-
-<img src="../../assets/rrsi.policy.prepare-model-grade/P05.png" width="730" alt="Policy：prepare → model → grade — petri P05 — 响应" />
-
-### P06
-
-**评分。** [response](#p05) → `grade` → [result](#p07)。
-
-完整节点（从上到下，再从左到右）：`policy.grade`。
-
-<img src="../../assets/rrsi.policy.prepare-model-grade/P06.png" width="730" alt="Policy：prepare → model → grade — petri P06 — 评分" />
-
-### P07
-
-**结果。** [grade](#p06) → `result`。
-
-完整节点（从上到下，再从左到右）：`policy.result`。
-
-<img src="../../assets/rrsi.policy.prepare-model-grade/P07.png" width="730" alt="Policy：prepare → model → grade — petri P07 — 结果" />
+[打开全景原图](../../assets/rrsi.policy.prepare-model-grade/petri-full.png)。
 
 ## Flow
 
-<img src="../../assets/rrsi.policy.prepare-model-grade/flow-full.png" width="730" alt="Policy — complete Flow declaration" />
+<img src="../../assets/rrsi.policy.prepare-model-grade/flow-full.png" width="730" alt="rrsi.policy.prepare-model-grade — complete Flow declaration" />
 
-[打开定位图原图](../../assets/rrsi.policy.prepare-model-grade/flow-full.png).
+[打开全景原图](../../assets/rrsi.policy.prepare-model-grade/flow-full.png)。
 
-[F01](#f01) → [F02](#f02) → [F03](#f03) → [F04](#f04) → [F05](#f05)
+<a id="local-viewer"></a>
 
-### F01
+## 在本地 Viewer 查看声明
 
-**请求。** `request` → [prepare](#f02)。
+在仓库根目录，使用已安装 RPNH 的 Python 环境运行：
 
-完整节点（从上到下，再从左到右）：`policy.request`。
+```bash
+python examples/view_declaration.py rrsi-policy --no-open
+```
 
-<img src="../../assets/rrsi.policy.prepare-model-grade/F01.png" width="730" alt="Policy：prepare → model → grade — flow F01 — 请求" />
+打开终端打印的 `http://127.0.0.1:端口/` 地址；端口由系统分配，不是固定端口。保持该终端运行，查看结束后按 Ctrl+C 关闭 Viewer。
 
-### F02
+1. 切换 **PetriNet** 或 **Detailed flow**。
+2. 用滚轮或 `−` / `＋` 缩放，拖动画布空白处平移；**Fit to view** 返回全景。
+3. 点击节点或弧打开详情；也可用 **Search + Locate** 定位节点。
 
-**准备。** [request](#f01) → `prepare` → [model](#f03)。 到 model 的连线折叠了 [state](#p03)。
+该命令只读取随仓库提供、与全景图对应的 [静态声明帧](declaration-frame.json)，复用官方 Viewer。它不创建 Registry、不执行 transition、不调用模型；这里不提供执行状态、token marking 或历史回放。
 
-完整节点（从上到下，再从左到右）：`policy.prepare`。
-
-<img src="../../assets/rrsi.policy.prepare-model-grade/F02.png" width="730" alt="Policy：prepare → model → grade — flow F02 — 准备" />
-
-### F03
-
-**模型操作。** [prepare](#f02) → `model` → [grade](#f04)。 到 grade 的连线折叠了 [response](#p05)。
-
-完整节点（从上到下，再从左到右）：`policy.model`。
-
-<img src="../../assets/rrsi.policy.prepare-model-grade/F03.png" width="730" alt="Policy：prepare → model → grade — flow F03 — 模型操作" />
-
-### F04
-
-**评分。** [model](#f03) → `grade` → [result](#f05)。
-
-完整节点（从上到下，再从左到右）：`policy.grade`。
-
-<img src="../../assets/rrsi.policy.prepare-model-grade/F04.png" width="730" alt="Policy：prepare → model → grade — flow F04 — 评分" />
-
-### F05
-
-**结果。** [grade](#f04) → `result`。
-
-完整节点（从上到下，再从左到右）：`policy.result`。
-
-<img src="../../assets/rrsi.policy.prepare-model-grade/F05.png" width="730" alt="Policy：prepare → model → grade — flow F05 — 结果" />
-
-节点 ID 用于辨认 Viewer 中的通用或省略标签；局部图保持原始显示。
+若要查看自己已经存在的运行，把其准确的 Registry run 目录设为 `RUN_DIR`，再执行 `rpnh net --run "$RUN_DIR" --view --no-open`。该运行的状态与上面的静态声明不同。更多控件见[Viewer 指南](../../../../docs/guides/viewer_ZH.md)。

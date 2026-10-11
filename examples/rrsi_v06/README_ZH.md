@@ -16,7 +16,7 @@ provider 与模型由用户的 execution profile 选择。
 以下图片由 RPNH PetriNet viewer 呈现，分别对应一个独立 child Module 的初始声明。
 图片只展示结构，不表示某次 run、marking、评分或执行成功。Policy 与四个角色的完整
 compiled 文档各不相同，即使显示出的拓扑相似也分别保留。
-[Policy 图册](figures/policy/README_ZH.md)说明下方视图的来源；[角色图片身份记录](results/figure-provenance.json)保留原角色图的源码与 compiled/projection 字节身份。
+[Policy 全景与本地 Viewer](figures/policy/README_ZH.md)说明下方视图的来源；[角色图片身份记录](results/figure-provenance.json)保留原角色图的源码与 compiled/projection 字节身份。
 
 campaign 协调校准、两轮演化、heldout 评估与导出。每个评分槽位实例化 Policy；
 每轮实例化 Analyst、Proposer、Critic，Analyst 的请求还可创建 Digester child。
@@ -26,16 +26,12 @@ campaign 协调校准、两轮演化、heldout 评估与导出。每个评分槽
 
 request → prepare → model → grade → result。Petri 保留中间 state/response place；Flow 折叠这两个交接点。两图均为初始声明（`initial_configured`）。
 
-以下两张全图仅用于整体定位；文字细节见下方预览和图册。[Petri 原图](assets/rrsi.policy.prepare-model-grade/petri-full.png) · [Flow 原图](assets/rrsi.policy.prepare-model-grade/flow-full.png)。
+以下完整 Petri 与 Flow 全景用于了解整体结构；交互细节可在本地官方 Viewer 中缩放、点击查看。[Petri 原图](assets/rrsi.policy.prepare-model-grade/petri-full.png) · [Flow 原图](assets/rrsi.policy.prepare-model-grade/flow-full.png)。
 
 ![Policy 初始声明：完整 Petri 图](assets/rrsi.policy.prepare-model-grade/petri-full.png)
 ![Policy 初始声明：完整 Flow 图](assets/rrsi.policy.prepare-model-grade/flow-full.png)
 
-Flow 局部预览 F03：仅 `policy.model` 操作及两侧部分连线；prepare、grade 位于画面外。
-
-![Flow 局部预览 F03](assets/rrsi.policy.prepare-model-grade/F03.png)
-
-[阅读 Petri 与 Flow 局部图](figures/policy/README_ZH.md)。全图用于定位，图册展示可读节点、弧及跨图连接。
+[在本地 Viewer 打开这份声明](figures/policy/README_ZH.md#local-viewer)。
 
 ### Analyst
 

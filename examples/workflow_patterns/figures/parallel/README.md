@@ -4,66 +4,42 @@ English | [中文](README_ZH.md)
 
 [Return to the example guide](../../README.md).
 
-These figures show the `initial_configured` declaration, without execution state, token markings or a success result. Use the full views for orientation and the numbered panels to read nodes, arcs and labels.
+These figures show the `initial_configured` declaration, without execution state, token markings or a success result. The panoramas show the whole structure; use the local Viewer below for details.
 
 Declaration source: [parallel.json](https://github.com/Deng-0119/RPNH/blob/34d42d171d7e9a7f803b71467063b55786c2cea8/examples/workflow_patterns/scenarios/parallel.json), [run.py](https://github.com/Deng-0119/RPNH/blob/34d42d171d7e9a7f803b71467063b55786c2cea8/examples/workflow_patterns/run.py). Rendered by the [official Viewer at `34d42d17`](https://github.com/Deng-0119/RPNH/tree/34d42d171d7e9a7f803b71467063b55786c2cea8).
 
 prepare branches to facts and risks, then converges at join. Overview shows four Agents and their four relations; Petri retains data/control places, weights and interrupted return branches.
 
-[Overview](#overview) · [Petri](#petri)
+[Overview](#overview) · [Petri](#petri) · [Local Viewer](#local-viewer)
 
 ## Overview
 
-<img src="../../assets/pattern_parallel/overview-full.png" width="730" alt="Parallel — complete Agent Overview declaration" />
+<img src="../../assets/pattern_parallel/overview-full.png" width="730" alt="pattern_parallel — complete Overview declaration" />
+
+[Open the original panorama](../../assets/pattern_parallel/overview-full.png).
 
 ## Petri
 
-<img src="../../assets/pattern_parallel/petri-full.png" width="730" alt="Parallel — complete Petri declaration" />
+<img src="../../assets/pattern_parallel/petri-full.png" width="730" alt="pattern_parallel — complete Petri declaration" />
 
-[Open the original orientation image](../../assets/pattern_parallel/petri-full.png).
+[Open the original panorama](../../assets/pattern_parallel/petri-full.png).
 
-[P01](#p01) → [P02](#p02) → [P03](#p03) → [P04](#p04) → [P05](#p05)
+<a id="local-viewer"></a>
 
-P01–P05 are overlapping left-to-right panels. Follow lines cut by an edge into the adjacent panel; bridge-shaped crossings do not join the lines.
+## Inspect the declaration in the local Viewer
 
-### P01
+From the repository root, use a Python environment with RPNH installed:
 
-**Request inlet.** The request enters prepare in [P02](#p02); an interrupted prepare returns it to this inlet.
+```bash
+python examples/view_declaration.py parallel --no-open
+```
 
-Complete nodes (top to bottom, then left to right): `team.ingress__prepare__request`.
+Open the printed `http://127.0.0.1:PORT/` address; the operating system chooses the port. Keep the terminal running, then press Ctrl+C to stop the Viewer.
 
-<img src="../../assets/pattern_parallel/P01.png" width="730" alt="Parallel fan-out and join — petri P01 — Request inlet" />
+1. Select **Overview** or **PetriNet**.
+2. Zoom with the wheel or `−` / `＋`, drag the blank canvas to pan, and use **Fit to view** to restore the panorama.
+3. Select a node or arc to open its details, or use **Search + Locate** to find a node.
 
-### P02
+This command reads only the checked-in [static declaration frame](declaration-frame.json) corresponding to the panoramas and uses the official Viewer. It creates no Registry, executes no transition and calls no model. Execution state, token markings and history are not provided.
 
-**Prepare and sibling Agents.** prepare supplies the control places and two copies of brief in [P03](#p03). facts and risks produce their separate join inputs in [P03](#p03) and [P05](#p05); interrupted branches return their inputs.
-
-Complete nodes (top to bottom, then left to right): `team.facts`, `team.prepare`, `team.risks`.
-
-<img src="../../assets/pattern_parallel/P02.png" width="730" alt="Parallel fan-out and join — petri P02 — Prepare and sibling Agents" />
-
-### P03
-
-**Fan-out handoffs and risks control.** The first three places connect prepare to facts/risks in [P02](#p02); the bottom place carries risks completion to join in [P04](#p04). The shared brief has weight 2 on production and weight 1 on each consumption.
-
-Complete nodes (top to bottom, then left to right): `team.control__prepare_to_facts`, `team.data__prepare__brief`, `team.control__prepare_to_risks`, `team.control__risks_to_join`.
-
-<img src="../../assets/pattern_parallel/P03.png" width="730" alt="Parallel fan-out and join — petri P03 — Fan-out handoffs and risks control" />
-
-### P04
-
-**All-input join.** join consumes both control signals and both branch products from [P03](#p03) and [P05](#p05). Completion produces result; interruption restores the four inputs.
-
-Complete nodes (top to bottom, then left to right): `team.join`.
-
-<img src="../../assets/pattern_parallel/P04.png" width="730" alt="Parallel fan-out and join — petri P04 — All-input join" />
-
-### P05
-
-**Facts control, branch products and result.** facts and risks from [P02](#p02) supply join in [P04](#p04); join produces the result shown here. The remaining risks control place is in [P03](#p03).
-
-Complete nodes (top to bottom, then left to right): `team.control__facts_to_join`, `team.data__facts__facts`, `team.data__join__result`, `team.data__risks__risks`.
-
-<img src="../../assets/pattern_parallel/P05.png" width="730" alt="Parallel fan-out and join — petri P05 — Facts control, branch products and result" />
-
-Node IDs identify generic or shortened Viewer labels; the images retain the original display.
+To inspect a run you already have, set `RUN_DIR` to its exact Registry run directory, then run `rpnh net --run "$RUN_DIR" --view --no-open`. That run has its own state, unlike the static declaration above. See the [Viewer guide](../../../../docs/guides/viewer.md) for more controls.

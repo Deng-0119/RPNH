@@ -1,0 +1,1302 @@
+{
+  "schema_version": "rpnh/dashboard/v1",
+  "net": {
+    "schema_version": "rpnh/net_view/v1",
+    "source": {
+      "mode": "initial_configured",
+      "task_label": "rsi_rounds_4",
+      "verified_head_ordinal": null
+    },
+    "summary": {
+      "node_count": 37,
+      "transition_count": 12,
+      "place_count": 25,
+      "resource_place_count": 0,
+      "edge_count": 48,
+      "resource_edge_count": 0
+    },
+    "nodes": [
+      {
+        "id": "round_1_evaluator.candidate",
+        "label": "round_1_evaluator.candidate",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/synthetic_iteration_candidate/v1",
+        "capacity": 1,
+        "token_kind": "data"
+      },
+      {
+        "id": "round_1_evaluator.evaluation",
+        "label": "round_1_evaluator.evaluation",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/synthetic_iteration_evaluation/v1",
+        "capacity": 1,
+        "token_kind": "data"
+      },
+      {
+        "id": "round_1_evaluator.request",
+        "label": "round_1_evaluator.request",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/synthetic_iteration_request/v1",
+        "capacity": 1,
+        "token_kind": "data"
+      },
+      {
+        "id": "round_1_evaluator.run",
+        "label": "round_1_evaluator.run",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "round_1_evaluator.run",
+        "operation_id": "op_0",
+        "executor": "example/synthetic_iteration_evaluator/v1",
+        "inputs": [
+          "round_1_evaluator.candidate",
+          "round_1_evaluator.request"
+        ],
+        "outputs": [
+          "round_1_evaluator.evaluation"
+        ]
+      },
+      {
+        "id": "round_1_proposer.incumbent",
+        "label": "round_1_proposer.incumbent",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/synthetic_iteration_state/v1",
+        "capacity": 1,
+        "token_kind": "data"
+      },
+      {
+        "id": "round_1_proposer.run",
+        "label": "round_1_proposer.run",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "round_1_proposer.run",
+        "operation_id": "op_1",
+        "executor": "example/synthetic_iteration_proposer/v1",
+        "inputs": [
+          "round_1_proposer.state"
+        ],
+        "outputs": [
+          "round_1_proposer.incumbent",
+          "round_1_proposer.candidate"
+        ]
+      },
+      {
+        "id": "round_1_proposer.state",
+        "label": "round_1_proposer.state",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/synthetic_iteration_state/v1",
+        "capacity": 1,
+        "token_kind": "data"
+      },
+      {
+        "id": "round_1_selector.next",
+        "label": "round_1_selector.next",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/synthetic_iteration_state/v1",
+        "capacity": 1,
+        "token_kind": "data"
+      },
+      {
+        "id": "round_1_selector.run",
+        "label": "round_1_selector.run",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "round_1_selector.run",
+        "operation_id": "op_2",
+        "executor": "example/synthetic_iteration_selector/v1",
+        "inputs": [
+          "round_1_selector.incumbent",
+          "round_1_selector.candidate",
+          "round_1_selector.evaluation"
+        ],
+        "outputs": [
+          "round_1_selector.next",
+          "round_1_selector.stop"
+        ]
+      },
+      {
+        "id": "round_1_selector.stop",
+        "label": "round_1_selector.stop",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/synthetic_iteration_state/v1",
+        "capacity": 1,
+        "token_kind": "data"
+      },
+      {
+        "id": "round_2_evaluator.candidate",
+        "label": "round_2_evaluator.candidate",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/synthetic_iteration_candidate/v1",
+        "capacity": 1,
+        "token_kind": "data"
+      },
+      {
+        "id": "round_2_evaluator.evaluation",
+        "label": "round_2_evaluator.evaluation",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/synthetic_iteration_evaluation/v1",
+        "capacity": 1,
+        "token_kind": "data"
+      },
+      {
+        "id": "round_2_evaluator.request",
+        "label": "round_2_evaluator.request",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/synthetic_iteration_request/v1",
+        "capacity": 1,
+        "token_kind": "data"
+      },
+      {
+        "id": "round_2_evaluator.run",
+        "label": "round_2_evaluator.run",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "round_2_evaluator.run",
+        "operation_id": "op_3",
+        "executor": "example/synthetic_iteration_evaluator/v1",
+        "inputs": [
+          "round_2_evaluator.candidate",
+          "round_2_evaluator.request"
+        ],
+        "outputs": [
+          "round_2_evaluator.evaluation"
+        ]
+      },
+      {
+        "id": "round_2_proposer.incumbent",
+        "label": "round_2_proposer.incumbent",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/synthetic_iteration_state/v1",
+        "capacity": 1,
+        "token_kind": "data"
+      },
+      {
+        "id": "round_2_proposer.run",
+        "label": "round_2_proposer.run",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "round_2_proposer.run",
+        "operation_id": "op_4",
+        "executor": "example/synthetic_iteration_proposer/v1",
+        "inputs": [
+          "round_2_proposer.state"
+        ],
+        "outputs": [
+          "round_2_proposer.incumbent",
+          "round_2_proposer.candidate"
+        ]
+      },
+      {
+        "id": "round_2_selector.next",
+        "label": "round_2_selector.next",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/synthetic_iteration_state/v1",
+        "capacity": 1,
+        "token_kind": "data"
+      },
+      {
+        "id": "round_2_selector.run",
+        "label": "round_2_selector.run",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "round_2_selector.run",
+        "operation_id": "op_5",
+        "executor": "example/synthetic_iteration_selector/v1",
+        "inputs": [
+          "round_2_selector.incumbent",
+          "round_2_selector.candidate",
+          "round_2_selector.evaluation"
+        ],
+        "outputs": [
+          "round_2_selector.next",
+          "round_2_selector.stop"
+        ]
+      },
+      {
+        "id": "round_2_selector.stop",
+        "label": "round_2_selector.stop",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/synthetic_iteration_state/v1",
+        "capacity": 1,
+        "token_kind": "data"
+      },
+      {
+        "id": "round_3_evaluator.candidate",
+        "label": "round_3_evaluator.candidate",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/synthetic_iteration_candidate/v1",
+        "capacity": 1,
+        "token_kind": "data"
+      },
+      {
+        "id": "round_3_evaluator.evaluation",
+        "label": "round_3_evaluator.evaluation",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/synthetic_iteration_evaluation/v1",
+        "capacity": 1,
+        "token_kind": "data"
+      },
+      {
+        "id": "round_3_evaluator.request",
+        "label": "round_3_evaluator.request",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/synthetic_iteration_request/v1",
+        "capacity": 1,
+        "token_kind": "data"
+      },
+      {
+        "id": "round_3_evaluator.run",
+        "label": "round_3_evaluator.run",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "round_3_evaluator.run",
+        "operation_id": "op_6",
+        "executor": "example/synthetic_iteration_evaluator/v1",
+        "inputs": [
+          "round_3_evaluator.candidate",
+          "round_3_evaluator.request"
+        ],
+        "outputs": [
+          "round_3_evaluator.evaluation"
+        ]
+      },
+      {
+        "id": "round_3_proposer.incumbent",
+        "label": "round_3_proposer.incumbent",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/synthetic_iteration_state/v1",
+        "capacity": 1,
+        "token_kind": "data"
+      },
+      {
+        "id": "round_3_proposer.run",
+        "label": "round_3_proposer.run",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "round_3_proposer.run",
+        "operation_id": "op_7",
+        "executor": "example/synthetic_iteration_proposer/v1",
+        "inputs": [
+          "round_3_proposer.state"
+        ],
+        "outputs": [
+          "round_3_proposer.incumbent",
+          "round_3_proposer.candidate"
+        ]
+      },
+      {
+        "id": "round_3_selector.next",
+        "label": "round_3_selector.next",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/synthetic_iteration_state/v1",
+        "capacity": 1,
+        "token_kind": "data"
+      },
+      {
+        "id": "round_3_selector.run",
+        "label": "round_3_selector.run",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "round_3_selector.run",
+        "operation_id": "op_8",
+        "executor": "example/synthetic_iteration_selector/v1",
+        "inputs": [
+          "round_3_selector.incumbent",
+          "round_3_selector.candidate",
+          "round_3_selector.evaluation"
+        ],
+        "outputs": [
+          "round_3_selector.next",
+          "round_3_selector.stop"
+        ]
+      },
+      {
+        "id": "round_3_selector.stop",
+        "label": "round_3_selector.stop",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/synthetic_iteration_state/v1",
+        "capacity": 1,
+        "token_kind": "data"
+      },
+      {
+        "id": "round_4_evaluator.candidate",
+        "label": "round_4_evaluator.candidate",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/synthetic_iteration_candidate/v1",
+        "capacity": 1,
+        "token_kind": "data"
+      },
+      {
+        "id": "round_4_evaluator.evaluation",
+        "label": "round_4_evaluator.evaluation",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/synthetic_iteration_evaluation/v1",
+        "capacity": 1,
+        "token_kind": "data"
+      },
+      {
+        "id": "round_4_evaluator.request",
+        "label": "round_4_evaluator.request",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/synthetic_iteration_request/v1",
+        "capacity": 1,
+        "token_kind": "data"
+      },
+      {
+        "id": "round_4_evaluator.run",
+        "label": "round_4_evaluator.run",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "round_4_evaluator.run",
+        "operation_id": "op_9",
+        "executor": "example/synthetic_iteration_evaluator/v1",
+        "inputs": [
+          "round_4_evaluator.candidate",
+          "round_4_evaluator.request"
+        ],
+        "outputs": [
+          "round_4_evaluator.evaluation"
+        ]
+      },
+      {
+        "id": "round_4_proposer.incumbent",
+        "label": "round_4_proposer.incumbent",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/synthetic_iteration_state/v1",
+        "capacity": 1,
+        "token_kind": "data"
+      },
+      {
+        "id": "round_4_proposer.run",
+        "label": "round_4_proposer.run",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "round_4_proposer.run",
+        "operation_id": "op_10",
+        "executor": "example/synthetic_iteration_proposer/v1",
+        "inputs": [
+          "round_4_proposer.state"
+        ],
+        "outputs": [
+          "round_4_proposer.incumbent",
+          "round_4_proposer.candidate"
+        ]
+      },
+      {
+        "id": "round_4_selector.next",
+        "label": "round_4_selector.next",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/synthetic_iteration_state/v1",
+        "capacity": 1,
+        "token_kind": "data"
+      },
+      {
+        "id": "round_4_selector.run",
+        "label": "round_4_selector.run",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "round_4_selector.run",
+        "operation_id": "op_11",
+        "executor": "example/synthetic_iteration_selector/v1",
+        "inputs": [
+          "round_4_selector.incumbent",
+          "round_4_selector.candidate",
+          "round_4_selector.evaluation"
+        ],
+        "outputs": [
+          "round_4_selector.next",
+          "round_4_selector.stop"
+        ]
+      },
+      {
+        "id": "round_4_selector.stop",
+        "label": "round_4_selector.stop",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/synthetic_iteration_state/v1",
+        "capacity": 1,
+        "token_kind": "data"
+      }
+    ],
+    "edges": [
+      {
+        "id": "edge:arc:round_1_evaluator.candidate:round_1_evaluator.run:read:-:1",
+        "source": "round_1_evaluator.candidate",
+        "target": "round_1_evaluator.run",
+        "kind": "arc",
+        "mode": "read",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:round_1_evaluator.candidate:round_1_selector.run:consume:-:1",
+        "source": "round_1_evaluator.candidate",
+        "target": "round_1_selector.run",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:round_1_evaluator.evaluation:round_1_selector.run:consume:-:1",
+        "source": "round_1_evaluator.evaluation",
+        "target": "round_1_selector.run",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:round_1_evaluator.request:round_1_evaluator.run:consume:-:1",
+        "source": "round_1_evaluator.request",
+        "target": "round_1_evaluator.run",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:round_1_evaluator.run:round_1_evaluator.evaluation:produce:evaluated:1",
+        "source": "round_1_evaluator.run",
+        "target": "round_1_evaluator.evaluation",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "evaluated",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:round_1_proposer.incumbent:round_1_selector.run:consume:-:1",
+        "source": "round_1_proposer.incumbent",
+        "target": "round_1_selector.run",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:round_1_proposer.run:round_1_evaluator.candidate:produce:proposed:1",
+        "source": "round_1_proposer.run",
+        "target": "round_1_evaluator.candidate",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "proposed",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:round_1_proposer.run:round_1_proposer.incumbent:produce:proposed:1",
+        "source": "round_1_proposer.run",
+        "target": "round_1_proposer.incumbent",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "proposed",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:round_1_proposer.state:round_1_proposer.run:consume:-:1",
+        "source": "round_1_proposer.state",
+        "target": "round_1_proposer.run",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:round_1_selector.next:round_2_proposer.run:consume:-:1",
+        "source": "round_1_selector.next",
+        "target": "round_2_proposer.run",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:round_1_selector.run:round_1_selector.next:produce:retain:1",
+        "source": "round_1_selector.run",
+        "target": "round_1_selector.next",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "retain",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:round_1_selector.run:round_1_selector.next:produce:select:1",
+        "source": "round_1_selector.run",
+        "target": "round_1_selector.next",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "select",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:round_1_selector.run:round_1_selector.stop:produce:stop:1",
+        "source": "round_1_selector.run",
+        "target": "round_1_selector.stop",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "stop",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:round_2_evaluator.candidate:round_2_evaluator.run:read:-:1",
+        "source": "round_2_evaluator.candidate",
+        "target": "round_2_evaluator.run",
+        "kind": "arc",
+        "mode": "read",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:round_2_evaluator.candidate:round_2_selector.run:consume:-:1",
+        "source": "round_2_evaluator.candidate",
+        "target": "round_2_selector.run",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:round_2_evaluator.evaluation:round_2_selector.run:consume:-:1",
+        "source": "round_2_evaluator.evaluation",
+        "target": "round_2_selector.run",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:round_2_evaluator.request:round_2_evaluator.run:consume:-:1",
+        "source": "round_2_evaluator.request",
+        "target": "round_2_evaluator.run",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:round_2_evaluator.run:round_2_evaluator.evaluation:produce:evaluated:1",
+        "source": "round_2_evaluator.run",
+        "target": "round_2_evaluator.evaluation",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "evaluated",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:round_2_proposer.incumbent:round_2_selector.run:consume:-:1",
+        "source": "round_2_proposer.incumbent",
+        "target": "round_2_selector.run",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:round_2_proposer.run:round_2_evaluator.candidate:produce:proposed:1",
+        "source": "round_2_proposer.run",
+        "target": "round_2_evaluator.candidate",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "proposed",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:round_2_proposer.run:round_2_proposer.incumbent:produce:proposed:1",
+        "source": "round_2_proposer.run",
+        "target": "round_2_proposer.incumbent",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "proposed",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:round_2_selector.next:round_3_proposer.run:consume:-:1",
+        "source": "round_2_selector.next",
+        "target": "round_3_proposer.run",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:round_2_selector.run:round_2_selector.next:produce:retain:1",
+        "source": "round_2_selector.run",
+        "target": "round_2_selector.next",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "retain",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:round_2_selector.run:round_2_selector.next:produce:select:1",
+        "source": "round_2_selector.run",
+        "target": "round_2_selector.next",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "select",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:round_2_selector.run:round_2_selector.stop:produce:stop:1",
+        "source": "round_2_selector.run",
+        "target": "round_2_selector.stop",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "stop",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:round_3_evaluator.candidate:round_3_evaluator.run:read:-:1",
+        "source": "round_3_evaluator.candidate",
+        "target": "round_3_evaluator.run",
+        "kind": "arc",
+        "mode": "read",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:round_3_evaluator.candidate:round_3_selector.run:consume:-:1",
+        "source": "round_3_evaluator.candidate",
+        "target": "round_3_selector.run",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:round_3_evaluator.evaluation:round_3_selector.run:consume:-:1",
+        "source": "round_3_evaluator.evaluation",
+        "target": "round_3_selector.run",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:round_3_evaluator.request:round_3_evaluator.run:consume:-:1",
+        "source": "round_3_evaluator.request",
+        "target": "round_3_evaluator.run",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:round_3_evaluator.run:round_3_evaluator.evaluation:produce:evaluated:1",
+        "source": "round_3_evaluator.run",
+        "target": "round_3_evaluator.evaluation",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "evaluated",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:round_3_proposer.incumbent:round_3_selector.run:consume:-:1",
+        "source": "round_3_proposer.incumbent",
+        "target": "round_3_selector.run",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:round_3_proposer.run:round_3_evaluator.candidate:produce:proposed:1",
+        "source": "round_3_proposer.run",
+        "target": "round_3_evaluator.candidate",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "proposed",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:round_3_proposer.run:round_3_proposer.incumbent:produce:proposed:1",
+        "source": "round_3_proposer.run",
+        "target": "round_3_proposer.incumbent",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "proposed",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:round_3_selector.next:round_4_proposer.run:consume:-:1",
+        "source": "round_3_selector.next",
+        "target": "round_4_proposer.run",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:round_3_selector.run:round_3_selector.next:produce:retain:1",
+        "source": "round_3_selector.run",
+        "target": "round_3_selector.next",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "retain",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:round_3_selector.run:round_3_selector.next:produce:select:1",
+        "source": "round_3_selector.run",
+        "target": "round_3_selector.next",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "select",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:round_3_selector.run:round_3_selector.stop:produce:stop:1",
+        "source": "round_3_selector.run",
+        "target": "round_3_selector.stop",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "stop",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:round_4_evaluator.candidate:round_4_evaluator.run:read:-:1",
+        "source": "round_4_evaluator.candidate",
+        "target": "round_4_evaluator.run",
+        "kind": "arc",
+        "mode": "read",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:round_4_evaluator.candidate:round_4_selector.run:consume:-:1",
+        "source": "round_4_evaluator.candidate",
+        "target": "round_4_selector.run",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:round_4_evaluator.evaluation:round_4_selector.run:consume:-:1",
+        "source": "round_4_evaluator.evaluation",
+        "target": "round_4_selector.run",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:round_4_evaluator.request:round_4_evaluator.run:consume:-:1",
+        "source": "round_4_evaluator.request",
+        "target": "round_4_evaluator.run",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:round_4_evaluator.run:round_4_evaluator.evaluation:produce:evaluated:1",
+        "source": "round_4_evaluator.run",
+        "target": "round_4_evaluator.evaluation",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "evaluated",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:round_4_proposer.incumbent:round_4_selector.run:consume:-:1",
+        "source": "round_4_proposer.incumbent",
+        "target": "round_4_selector.run",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:round_4_proposer.run:round_4_evaluator.candidate:produce:proposed:1",
+        "source": "round_4_proposer.run",
+        "target": "round_4_evaluator.candidate",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "proposed",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:round_4_proposer.run:round_4_proposer.incumbent:produce:proposed:1",
+        "source": "round_4_proposer.run",
+        "target": "round_4_proposer.incumbent",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "proposed",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:round_4_selector.run:round_4_selector.next:produce:retain:1",
+        "source": "round_4_selector.run",
+        "target": "round_4_selector.next",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "retain",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:round_4_selector.run:round_4_selector.next:produce:select:1",
+        "source": "round_4_selector.run",
+        "target": "round_4_selector.next",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "select",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:round_4_selector.run:round_4_selector.stop:produce:stop:1",
+        "source": "round_4_selector.run",
+        "target": "round_4_selector.stop",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "stop",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      }
+    ]
+  },
+  "source": {
+    "mode": "initial_configured",
+    "task_label": "rsi_rounds_4",
+    "verified_head_ordinal": null
+  },
+  "boundaries": {
+    "entry": [
+      {
+        "name": "initial_state",
+        "port": "round_1_proposer.state",
+        "place": "round_1_proposer.state"
+      },
+      {
+        "name": "round_1_evaluation_request",
+        "port": "round_1_evaluator.request",
+        "place": "round_1_evaluator.request"
+      },
+      {
+        "name": "round_2_evaluation_request",
+        "port": "round_2_evaluator.request",
+        "place": "round_2_evaluator.request"
+      },
+      {
+        "name": "round_3_evaluation_request",
+        "port": "round_3_evaluator.request",
+        "place": "round_3_evaluator.request"
+      },
+      {
+        "name": "round_4_evaluation_request",
+        "port": "round_4_evaluator.request",
+        "place": "round_4_evaluator.request"
+      }
+    ],
+    "exit": [
+      {
+        "name": "round_1_stop",
+        "port": "round_1_selector.stop",
+        "place": "round_1_selector.stop"
+      },
+      {
+        "name": "round_2_stop",
+        "port": "round_2_selector.stop",
+        "place": "round_2_selector.stop"
+      },
+      {
+        "name": "round_3_stop",
+        "port": "round_3_selector.stop",
+        "place": "round_3_selector.stop"
+      },
+      {
+        "name": "round_4_stop",
+        "port": "round_4_selector.stop",
+        "place": "round_4_selector.stop"
+      },
+      {
+        "name": "selected_state",
+        "port": "round_4_selector.next",
+        "place": "round_4_selector.next"
+      }
+    ],
+    "terminal_rules": [
+      {
+        "key": "example/synthetic_iteration_terminal/v1",
+        "operation": "round_4_selector.run",
+        "transition_ids": [
+          "round_4_selector.run"
+        ],
+        "outcome": "select",
+        "port": "round_4_selector.next",
+        "place": "round_4_selector.next"
+      },
+      {
+        "key": "example/synthetic_iteration_terminal/v1",
+        "operation": "round_1_selector.run",
+        "transition_ids": [
+          "round_1_selector.run"
+        ],
+        "outcome": "stop",
+        "port": "round_1_selector.stop",
+        "place": "round_1_selector.stop"
+      },
+      {
+        "key": "example/synthetic_iteration_terminal/v1",
+        "operation": "round_2_selector.run",
+        "transition_ids": [
+          "round_2_selector.run"
+        ],
+        "outcome": "stop",
+        "port": "round_2_selector.stop",
+        "place": "round_2_selector.stop"
+      },
+      {
+        "key": "example/synthetic_iteration_terminal/v1",
+        "operation": "round_3_selector.run",
+        "transition_ids": [
+          "round_3_selector.run"
+        ],
+        "outcome": "stop",
+        "port": "round_3_selector.stop",
+        "place": "round_3_selector.stop"
+      },
+      {
+        "key": "example/synthetic_iteration_terminal/v1",
+        "operation": "round_4_selector.run",
+        "transition_ids": [
+          "round_4_selector.run"
+        ],
+        "outcome": "stop",
+        "port": "round_4_selector.stop",
+        "place": "round_4_selector.stop"
+      },
+      {
+        "key": "example/synthetic_iteration_terminal/v1",
+        "operation": "round_4_selector.run",
+        "transition_ids": [
+          "round_4_selector.run"
+        ],
+        "outcome": "retain",
+        "port": "round_4_selector.next",
+        "place": "round_4_selector.next"
+      }
+    ],
+    "terminal_evidence": "not_provided"
+  },
+  "transition_bindings": [],
+  "presentation": {
+    "title": "rsi_rounds_4",
+    "description": "Public example initial declaration. Structure only; execution and marking are not provided.",
+    "nodes": {},
+    "status": "default",
+    "topology_digest": "16bfe95475178bcd5fb232c65f427bc5f495726828d69f062eb8b4c2daf7e003"
+  },
+  "position": {
+    "mode": "live",
+    "cursor": null,
+    "latest_head": null
+  },
+  "coverage": {
+    "history": "unsupported",
+    "firings": "not_provided",
+    "agent_nodes": "declared_llm_executor",
+    "terminal_evidence": "not_provided"
+  },
+  "change": {},
+  "agent_nodes": []
+}

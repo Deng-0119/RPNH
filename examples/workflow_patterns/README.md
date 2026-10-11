@@ -31,7 +31,7 @@ prepare → (facts ∥ risks) → join. Overview shows the four Agent relations;
 ![Parallel initial declaration: complete Overview](assets/pattern_parallel/overview-full.png)
 ![Parallel initial declaration: complete Petri view](assets/pattern_parallel/petri-full.png)
 
-[Read the 5 Petri detail panels](figures/parallel/README.md) to follow the branches, join and cross-panel connections.
+[Open this declaration in the local Viewer](figures/parallel/README.md#local-viewer) to zoom, pan and select nodes or arcs.
 
 ### Document task
 

@@ -29,7 +29,7 @@ prepare → (facts ∥ risks) → join。Overview 展示四个 Agent 的关系�
 ![并行初始声明：完整 Overview](assets/pattern_parallel/overview-full.png)
 ![并行初始声明：完整 Petri 图](assets/pattern_parallel/petri-full.png)
 
-[阅读 5 张 Petri 局部图](figures/parallel/README_ZH.md)，追踪分叉、join 与跨图连接。
+[在本地 Viewer 打开这份声明](figures/parallel/README_ZH.md#local-viewer)，可缩放、平移并点击节点或弧查看细节。
 
 ### 文档任务
 

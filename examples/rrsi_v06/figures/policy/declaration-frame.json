@@ -1,0 +1,255 @@
+{
+  "schema_version": "rpnh/dashboard/v1",
+  "net": {
+    "schema_version": "rpnh/net_view/v1",
+    "source": {
+      "mode": "initial_configured",
+      "task_label": "rrsi.policy.prepare-model-grade",
+      "verified_head_ordinal": null
+    },
+    "summary": {
+      "node_count": 7,
+      "transition_count": 3,
+      "place_count": 4,
+      "resource_place_count": 0,
+      "edge_count": 6,
+      "resource_edge_count": 0
+    },
+    "nodes": [
+      {
+        "id": "policy.grade",
+        "label": "policy.grade",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "policy.grade",
+        "operation_id": "op_0",
+        "executor": "application/rrsi_v06/formal_policy/grade_executor/v1",
+        "inputs": [
+          "policy.response_in"
+        ],
+        "outputs": [
+          "policy.result"
+        ]
+      },
+      {
+        "id": "policy.model",
+        "label": "policy.model",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "policy.model",
+        "operation_id": "op_1",
+        "executor": "application/rrsi_v06/formal_policy/model_executor/v1",
+        "inputs": [
+          "policy.state_in"
+        ],
+        "outputs": [
+          "policy.response_out"
+        ]
+      },
+      {
+        "id": "policy.prepare",
+        "label": "policy.prepare",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "policy.prepare",
+        "operation_id": "op_2",
+        "executor": "application/rrsi_v06/formal_policy/prepare_executor/v1",
+        "inputs": [
+          "policy.request"
+        ],
+        "outputs": [
+          "policy.state_out"
+        ]
+      },
+      {
+        "id": "policy.request",
+        "label": "policy.request",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/rrsi_v06/formal_policy/request/v1",
+        "capacity": 1,
+        "token_kind": "data"
+      },
+      {
+        "id": "policy.response",
+        "label": "policy.response",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/rrsi_v06/formal_policy/response/v1",
+        "capacity": 1,
+        "token_kind": "data"
+      },
+      {
+        "id": "policy.result",
+        "label": "policy.result",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/rrsi_v06/formal_policy/result/v1",
+        "capacity": 1,
+        "token_kind": "data"
+      },
+      {
+        "id": "policy.state",
+        "label": "policy.state",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/rrsi_v06/formal_policy/state/v1",
+        "capacity": 1,
+        "token_kind": "data"
+      }
+    ],
+    "edges": [
+      {
+        "id": "edge:arc:policy.grade:policy.result:produce:complete:1",
+        "source": "policy.grade",
+        "target": "policy.result",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:policy.model:policy.response:produce:complete:1",
+        "source": "policy.model",
+        "target": "policy.response",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:policy.prepare:policy.state:produce:complete:1",
+        "source": "policy.prepare",
+        "target": "policy.state",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:policy.request:policy.prepare:consume:-:1",
+        "source": "policy.request",
+        "target": "policy.prepare",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:policy.response:policy.grade:consume:-:1",
+        "source": "policy.response",
+        "target": "policy.grade",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:policy.state:policy.model:consume:-:1",
+        "source": "policy.state",
+        "target": "policy.model",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      }
+    ]
+  },
+  "source": {
+    "mode": "initial_configured",
+    "task_label": "rrsi.policy.prepare-model-grade",
+    "verified_head_ordinal": null
+  },
+  "boundaries": {
+    "entry": [
+      {
+        "name": "request",
+        "port": "policy.request",
+        "place": "policy.request"
+      }
+    ],
+    "exit": [
+      {
+        "name": "result",
+        "port": "policy.result",
+        "place": "policy.result"
+      }
+    ],
+    "terminal_rules": [
+      {
+        "key": "application/rrsi_v06/formal_policy/terminal/v1",
+        "operation": "policy.grade",
+        "transition_ids": [
+          "policy.grade"
+        ],
+        "outcome": "complete",
+        "port": "policy.result",
+        "place": "policy.result"
+      }
+    ],
+    "terminal_evidence": "not_provided"
+  },
+  "transition_bindings": [],
+  "presentation": {
+    "title": "rrsi.policy.prepare-model-grade",
+    "description": "Public example initial declaration. Structure only; execution and marking are not provided.",
+    "nodes": {},
+    "status": "default",
+    "topology_digest": "c59ca905dc6c8a896f21c0469845caaa4bfd807d5695b519c9ea396a05bdf65f"
+  },
+  "position": {
+    "mode": "live",
+    "cursor": null,
+    "latest_head": null
+  },
+  "coverage": {
+    "history": "unsupported",
+    "firings": "not_provided",
+    "agent_nodes": "declared_llm_executor",
+    "terminal_evidence": "not_provided"
+  },
+  "change": {},
+  "agent_nodes": [
+    {
+      "transition_id": "policy.model",
+      "source": "declared_llm_executor"
+    }
+  ]
+}
