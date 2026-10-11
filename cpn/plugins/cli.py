@@ -13,7 +13,9 @@ def main(argv=None):
     parser.add_argument("--config", type=Path, help="owner-selected plugin JSON (or RPNH_PLUGIN_CONFIG)")
     sub = parser.add_subparsers(dest="command", required=True)
     sub.add_parser("list")
-    sub.add_parser("inspect", help="inspect installed metadata and explicit selection without loading factories")
+    inspect = sub.add_parser("inspect", help="inspect installed metadata and explicit selection without loading factories")
+    inspect.add_argument("--diagnose-selection", action="store_true",
+                         help="compare selection with inert declarations; not execution readiness")
     sub.add_parser("check")
     build = sub.add_parser("build")
     build.add_argument("operation")
@@ -24,7 +26,7 @@ def main(argv=None):
     args = parser.parse_args(argv)
     if args.command == "inspect":
         from .catalog import inspect_plugins
-        value = inspect_plugins(read_config(args.config))
+        value = inspect_plugins(read_config(args.config), diagnose_selection=args.diagnose_selection)
         print(json.dumps(value, ensure_ascii=False, indent=2, sort_keys=True))
         return 0
     catalog = load_catalog(read_config(args.config))

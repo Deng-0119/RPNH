@@ -6,9 +6,9 @@ metadata:
   audience: application-developer-and-researcher
   language: zh-CN
   counterpart: technical-report.md
-  revision: "2026-10-10.1"
+  revision: "2026-10-11.1"
   status: technical-report
-  basis: "Deng-0119/RPNH at a6f242ea187fadcef81a8c1e95377fec616dc840"
+  basis: "Deng-0119/RPNH at 6cec63ff5b7a0039611713961d00941767edaaf8"
 ---
 
 [English](technical-report.md) | 中文 | [文档导航](index_ZH.md)
@@ -17,18 +17,64 @@ metadata:
 
 ## 面向 Agent 与程序的可执行流程
 
-**更新日期：**2026-10-10。**实现快照：**
-[`a6f242ea187fadcef81a8c1e95377fec616dc840`][snapshot]。
+**更新日期：**2026-10-11。**实现快照：**
+[`6cec63ff5b7a0039611713961d00941767edaaf8`][snapshot]。
 历史测试分别保留自己的源码身份，见[第 10 节](#10-历史结果及其限制)。
 本次报告更新未运行 runtime、模型或 benchmark 实验。
 
-RPNH 是用于组合语言模型 Agent、原生程序与可复用工作流的 provider-neutral harness。
-类型化流程定义依赖和 outcome，可信 HOST 注册提供实现，Registry 与 Petri-net 状态共同约束执行。
-定义可以修订和复用；准确的产物、checkpoint 与 source-qualified 读取则保留可供审查的历史。
+## 摘要
 
-以下八张图各解释一个边界。它们是概念示意，不是运行截图或完整 schema；完整契约以链接中的专题为准。
+Agent 应用需要协调工作、保留各步产物，并在恢复时区分可信的回答与真正完成的流程。
+RPNH 将这些职责显式化：类型化 PetriNet 约束执行资格，可信 HOST 绑定提供执行实现，
+持久 Registry 记录产物、结算与 checkpoint。本报告先讲解一个可运行的小案例，
+再说明它所涉及的执行与观察契约。证据分别来自脚本化演示、确定性工具，以及单独标明的
+历史真实模型评估。它们支持一套具体的执行设计，尚未建立相对其他系统的质量、速度或成本优势。
+
+## 先看一个可运行的案例
+
+设想一项必须先完成事实检查与风险检查、再给出最终答复的任务。仓库中的 `parallel` 案例
+由 `prepare` 登记共同简报，`facts` 与 `risks` 使用各自声明的输入，`join` 必须取得两条分支
+的产物。声明允许最多两个节点并行。这些依赖写在[案例定义][parallel-scenario]中，
+而不是要求某个 Agent 自行记住执行顺序。
+
+![RPNH 官方 Viewer 中已记录的并行工作流 Overview，显示 prepare、facts、risks 与 join。](../examples/workflow_patterns/assets/parallel-overview.png)
+
+**案例图 A。** 官方 Viewer 已有的脚本化完成案例 Overview。四个清晰可读的 Agent 节点
+展示审核结构；Overview 省略 PetriNet 的 place 与 arc。
+[同一案例的 PetriNet 视图和复现方法](../examples/workflow_patterns/README_ZH.md)
+给出底层表示。这是保留的历史图片，不是对本报告源码快照的新运行；拓扑本身也不能证明完成，
+或证明两条分支在实际时间上同时执行。
+
+[运行器][parallel-runner]只有在 stop reason 为 terminal、存在 terminal-evidence 引用、
+且已登记输出等于 `Parallel workflow complete.` 时才接受该案例。Fixture 提供预设文本，
+检查的是交接与结算协议，不是语言模型开展有效事实或风险审核的能力。
+[公开的带日期验证记录][parallel-validation]记载该场景有 4 个 transition、9 个 place、
+26 条 arc，provider 调用为零；它没有锁定实际测试 commit，因此只能作为历史案例证据，
+不能作为当前源码的验收结论。
+
+[安装所选源码](guides/installation_ZH.md)后，按[工作流案例库](../examples/workflow_patterns/README_ZH.md)
+创建新 run 并打开只读 Viewer。默认不选择真实模型 profile，但仍需要受支持的本地进程与
+IPC 权限。真实模型 route 必须单独、显式传入。
+
+两个相关案例把相同结构应用到预设审核文本以外的任务。[混合汇总](../examples/hybrid_summary/README_ZH.md)
+在两个 Agent 节点之间插入原生计算；[原子工具流水线](../examples/tool_pipeline/README_ZH.md)
+则把用量与电价准备、计费和独立验证分为十个工具 transition。
+其[历史原生运行结果](results/tool-pipeline-20261008/README_ZH.md)保留了产生
+2.000 kWh / 1.70 CNY 结果的输入、源码和 scorer。该特定 fixture 证明一条计算及证据路径，
+不能推广为一般业务任务的成功率。
+
+## 研究背景与阅读路径
+
+PetriNet 是描述并发、同步和状态分析的成熟方法；Murata 的综述也讨论了模型表达能力与分析
+复杂度之间的权衡 [1]。RPNH 在 Agent 与程序执行周围应用类型化网图和 Registry 契约。
+ReAct 研究交替进行语言模型推理与动作的方法 [2]。此类 Agent 行为与 RPNH 的执行记录
+分别关注应用中的不同层次；引用这些工作不代表已经进行直接对比实验。
+
+案例涉及的执行资格和结果规则见[第 2 节](#2-执行资格来自真实-token-与-claim)与
+[第 3 节](#3-settlement-将计算连接到持久状态)，受控变更见
+[第 4 节](#4-先创作修订再显式采用)，测得结果及失败见[第 10 节](#10-历史结果及其限制)。
+契约章节中的八张编号图是概念示意，不是运行截图或完整 schema；完整契约以链接中的专题为准。
 RPNH 适用于重视持久化输出、显式协作或受控流程变更的应用，也会增加声明和状态管理工作。
-已公开结果尚未建立相对其他 harness 的质量、速度或成本优势。
 
 ## 1. 将方法与实际执行分开
 
@@ -259,7 +305,7 @@ Workset 记录 contribution、delivery 与 acceptance；首次验收要求真实
 
 ## 10. 历史结果及其限制
 
-以下是相互独立的历史窗口，不是对 `a6f242e` 或本次重写的验证。
+以下是相互独立的历史窗口，不是对 `6cec63f` 或本次重写的验证。
 [整理后的结果](results/README_ZH.md)保留完整 score/status 投影、输入、源码身份、命令和限制。
 发布 commit 不等于重跑；runtime 完成不能替代原始业务验收。
 
@@ -336,34 +382,50 @@ freeze04 first18 的 **5 PASS / 9 FAIL / 4 BLOCKED**，以及单独 repair4 条�
 它不认证后来的 PN 或 origin-query commit。本次更新没有重跑以上任何窗口。
 其余版本特定检查见[release-validation 历史](guides/release-validation_ZH.md)。
 
+## 参考文献
+
+1. Tadao Murata. “Petri nets: Properties, analysis and applications.”
+   *Proceedings of the IEEE* 77(4), 541–580, 1989。
+   [DOI](https://doi.org/10.1109/5.24143) ·
+   [论文](https://docenti.ing.unipi.it/~a009435/issw/extra/murata.pdf)。
+2. Shunyu Yao, Jeffrey Zhao, Dian Yu, Nan Du, Izhak Shafran, Karthik Narasimhan
+   and Yuan Cao. “ReAct: Synergizing Reasoning and Acting in Language Models.”
+   ICLR 2023。[论文](https://arxiv.org/abs/2210.03629v3)。
+
+这些文献提供研究背景。RPNH 的实现与结果主张，以各节链接中的版本化源码和带日期证据为依据。
+
 ## 源码索引
 
 以下实现链接固定到本报告快照。历史结果页面分别标明不同的测试与发布版本。
 API 细节见各图旁边的专题链接。
-[snapshot]: https://github.com/Deng-0119/RPNH/tree/a6f242ea187fadcef81a8c1e95377fec616dc840
-[module]: https://github.com/Deng-0119/RPNH/blob/a6f242ea187fadcef81a8c1e95377fec616dc840/cpn/rpnh/module.py
-[registration]: https://github.com/Deng-0119/RPNH/blob/a6f242ea187fadcef81a8c1e95377fec616dc840/cpn/rpnh/registration.py
-[compiler]: https://github.com/Deng-0119/RPNH/blob/a6f242ea187fadcef81a8c1e95377fec616dc840/cpn/rpnh/compiler.py
-[orchestrator]: https://github.com/Deng-0119/RPNH/blob/a6f242ea187fadcef81a8c1e95377fec616dc840/cpn/orchestrator/runner.py
-[petri]: https://github.com/Deng-0119/RPNH/blob/a6f242ea187fadcef81a8c1e95377fec616dc840/cpn/rpnh/petri_contracts.py
-[harness]: https://github.com/Deng-0119/RPNH/blob/a6f242ea187fadcef81a8c1e95377fec616dc840/cpn/rpnh/harness.py
-[graph]: https://github.com/Deng-0119/RPNH/blob/a6f242ea187fadcef81a8c1e95377fec616dc840/cpn/rpnh/agent_workflows.py
-[owner]: https://github.com/Deng-0119/RPNH/blob/a6f242ea187fadcef81a8c1e95377fec616dc840/cpn/rpnh/run.py
-[commit]: https://github.com/Deng-0119/RPNH/blob/a6f242ea187fadcef81a8c1e95377fec616dc840/cpn/rpnh/registry/_event_store/commit.py
-[run-reader]: https://github.com/Deng-0119/RPNH/blob/a6f242ea187fadcef81a8c1e95377fec616dc840/cpn/rpnh/registry/run_authority.py
-[task-control]: https://github.com/Deng-0119/RPNH/blob/a6f242ea187fadcef81a8c1e95377fec616dc840/cpn/rpnh/task_control.py
-[authors]: https://github.com/Deng-0119/RPNH/blob/a6f242ea187fadcef81a8c1e95377fec616dc840/cpn/rpnh/collaboration/__init__.py
-[revision]: https://github.com/Deng-0119/RPNH/blob/a6f242ea187fadcef81a8c1e95377fec616dc840/cpn/rpnh/registry/module_revision.py
-[scheduler]: https://github.com/Deng-0119/RPNH/blob/a6f242ea187fadcef81a8c1e95377fec616dc840/cpn/plugins/managed_scheduler.py
-[broker]: https://github.com/Deng-0119/RPNH/blob/a6f242ea187fadcef81a8c1e95377fec616dc840/cpn/components/agent_loop/program_execution.py
-[isolation]: https://github.com/Deng-0119/RPNH/blob/a6f242ea187fadcef81a8c1e95377fec616dc840/cpn/plugins/controlled_script.py
-[pipeline-module]: https://github.com/Deng-0119/RPNH/blob/a6f242ea187fadcef81a8c1e95377fec616dc840/examples/tool_pipeline/module.json
-[read-session]: https://github.com/Deng-0119/RPNH/blob/a6f242ea187fadcef81a8c1e95377fec616dc840/cpn/rpnh/collaboration/registry_read_session.py
-[read-host]: https://github.com/Deng-0119/RPNH/blob/a6f242ea187fadcef81a8c1e95377fec616dc840/cpn/rpnh/collaboration/read_host_config.py
-[origin-query]: https://github.com/Deng-0119/RPNH/blob/a6f242ea187fadcef81a8c1e95377fec616dc840/cpn/rpnh/collaboration/_product_origin_query.py
-[origin-core]: https://github.com/Deng-0119/RPNH/blob/a6f242ea187fadcef81a8c1e95377fec616dc840/cpn/rpnh/collaboration/_product_origin_core.py
-[origin-includes]: https://github.com/Deng-0119/RPNH/blob/a6f242ea187fadcef81a8c1e95377fec616dc840/cpn/rpnh/collaboration/_product_origin_includes.py
-[pn-contracts]: https://github.com/Deng-0119/RPNH/blob/a6f242ea187fadcef81a8c1e95377fec616dc840/cpn/rpnh/pn_validation/contracts.py
-[pn-policy]: https://github.com/Deng-0119/RPNH/blob/a6f242ea187fadcef81a8c1e95377fec616dc840/cpn/rpnh/pn_validation/runtime_gate.py
-[pn-adoption]: https://github.com/Deng-0119/RPNH/blob/a6f242ea187fadcef81a8c1e95377fec616dc840/cpn/rpnh/registry/pn_validation.py
-[parent-child]: https://github.com/Deng-0119/RPNH/blob/a6f242ea187fadcef81a8c1e95377fec616dc840/cpn/rpnh/registry/parent_child.py
+[snapshot]: https://github.com/Deng-0119/RPNH/tree/6cec63ff5b7a0039611713961d00941767edaaf8
+[module]: https://github.com/Deng-0119/RPNH/blob/6cec63ff5b7a0039611713961d00941767edaaf8/cpn/rpnh/module.py
+[registration]: https://github.com/Deng-0119/RPNH/blob/6cec63ff5b7a0039611713961d00941767edaaf8/cpn/rpnh/registration.py
+[compiler]: https://github.com/Deng-0119/RPNH/blob/6cec63ff5b7a0039611713961d00941767edaaf8/cpn/rpnh/compiler.py
+[orchestrator]: https://github.com/Deng-0119/RPNH/blob/6cec63ff5b7a0039611713961d00941767edaaf8/cpn/orchestrator/runner.py
+[petri]: https://github.com/Deng-0119/RPNH/blob/6cec63ff5b7a0039611713961d00941767edaaf8/cpn/rpnh/petri_contracts.py
+[harness]: https://github.com/Deng-0119/RPNH/blob/6cec63ff5b7a0039611713961d00941767edaaf8/cpn/rpnh/harness.py
+[graph]: https://github.com/Deng-0119/RPNH/blob/6cec63ff5b7a0039611713961d00941767edaaf8/cpn/rpnh/agent_workflows.py
+[owner]: https://github.com/Deng-0119/RPNH/blob/6cec63ff5b7a0039611713961d00941767edaaf8/cpn/rpnh/run.py
+[commit]: https://github.com/Deng-0119/RPNH/blob/6cec63ff5b7a0039611713961d00941767edaaf8/cpn/rpnh/registry/_event_store/commit.py
+[run-reader]: https://github.com/Deng-0119/RPNH/blob/6cec63ff5b7a0039611713961d00941767edaaf8/cpn/rpnh/registry/run_authority.py
+[task-control]: https://github.com/Deng-0119/RPNH/blob/6cec63ff5b7a0039611713961d00941767edaaf8/cpn/rpnh/task_control.py
+[authors]: https://github.com/Deng-0119/RPNH/blob/6cec63ff5b7a0039611713961d00941767edaaf8/cpn/rpnh/collaboration/__init__.py
+[revision]: https://github.com/Deng-0119/RPNH/blob/6cec63ff5b7a0039611713961d00941767edaaf8/cpn/rpnh/registry/module_revision.py
+[scheduler]: https://github.com/Deng-0119/RPNH/blob/6cec63ff5b7a0039611713961d00941767edaaf8/cpn/plugins/managed_scheduler.py
+[broker]: https://github.com/Deng-0119/RPNH/blob/6cec63ff5b7a0039611713961d00941767edaaf8/cpn/components/agent_loop/program_execution.py
+[isolation]: https://github.com/Deng-0119/RPNH/blob/6cec63ff5b7a0039611713961d00941767edaaf8/cpn/plugins/controlled_script.py
+[pipeline-module]: https://github.com/Deng-0119/RPNH/blob/6cec63ff5b7a0039611713961d00941767edaaf8/examples/tool_pipeline/module.json
+[read-session]: https://github.com/Deng-0119/RPNH/blob/6cec63ff5b7a0039611713961d00941767edaaf8/cpn/rpnh/collaboration/registry_read_session.py
+[read-host]: https://github.com/Deng-0119/RPNH/blob/6cec63ff5b7a0039611713961d00941767edaaf8/cpn/rpnh/collaboration/read_host_config.py
+[origin-query]: https://github.com/Deng-0119/RPNH/blob/6cec63ff5b7a0039611713961d00941767edaaf8/cpn/rpnh/collaboration/_product_origin_query.py
+[origin-core]: https://github.com/Deng-0119/RPNH/blob/6cec63ff5b7a0039611713961d00941767edaaf8/cpn/rpnh/collaboration/_product_origin_core.py
+[origin-includes]: https://github.com/Deng-0119/RPNH/blob/6cec63ff5b7a0039611713961d00941767edaaf8/cpn/rpnh/collaboration/_product_origin_includes.py
+[pn-contracts]: https://github.com/Deng-0119/RPNH/blob/6cec63ff5b7a0039611713961d00941767edaaf8/cpn/rpnh/pn_validation/contracts.py
+[pn-policy]: https://github.com/Deng-0119/RPNH/blob/6cec63ff5b7a0039611713961d00941767edaaf8/cpn/rpnh/pn_validation/runtime_gate.py
+[pn-adoption]: https://github.com/Deng-0119/RPNH/blob/6cec63ff5b7a0039611713961d00941767edaaf8/cpn/rpnh/registry/pn_validation.py
+[parent-child]: https://github.com/Deng-0119/RPNH/blob/6cec63ff5b7a0039611713961d00941767edaaf8/cpn/rpnh/registry/parent_child.py
+
+[parallel-scenario]: https://github.com/Deng-0119/RPNH/blob/6cec63ff5b7a0039611713961d00941767edaaf8/examples/workflow_patterns/scenarios/parallel.json
+[parallel-runner]: https://github.com/Deng-0119/RPNH/blob/6cec63ff5b7a0039611713961d00941767edaaf8/examples/workflow_patterns/run.py
+[parallel-validation]: https://github.com/Deng-0119/RPNH/blob/6cec63ff5b7a0039611713961d00941767edaaf8/examples/workflow_patterns/validation.json

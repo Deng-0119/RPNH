@@ -214,17 +214,60 @@ def read_plugin_metadata(text):
     return value
 
 
-def inspect_plugins(document=None):
+def _selection_diagnostics(selected, observations):
+    """Compare already-read inert declarations; never decide execution admission."""
+    checks = []
+    for choice in selected:
+        sources = observations.get(choice["entry_point"], [])
+        status, fields = "not_checked", []
+        if not sources:
+            reason = "entry_point_missing"
+        elif len(sources) != 1:
+            reason = "entry_point_ambiguous"
+        else:
+            inert, error = sources[0]
+            if error is not None:
+                reason = "inert_metadata_invalid"
+            elif inert is None:
+                reason = "inert_metadata_missing"
+            else:
+                declarations = [row for row in inert["plugins"]
+                                if row["entry_point"] == choice["entry_point"]]
+                declaration = next((row for row in declarations
+                                    if row["plugin_id"] == choice["name"]), None)
+                if not declarations:
+                    reason = "entry_point_not_declared"
+                elif declaration is None:
+                    reason = "selected_plugin_not_declared"
+                else:
+                    fields = [key for key, expected in (
+                        ("version", choice["version"]), ("api_contract", API_VERSION))
+                        if declaration[key] != expected]
+                    status = "mismatch" if fields else "matched"
+                    reason = "selected_declaration_mismatch" if fields else "selected_declaration_match"
+        checks.append({"entry_point": choice["entry_point"], "name": choice["name"],
+                       "version": choice["version"], "status": status, "reason": reason,
+                       "mismatched_fields": fields})
+    return {"evidence_scope": "inert_metadata_only", "expected_api_contract": API_VERSION,
+            "checks": checks}
+
+
+def inspect_plugins(document=None, *, diagnose_selection=False):
     """Observe installed entry points and explicit selections without loading code.
 
     This plugin catalog observation is separate from Registry source authority.
     Metadata is an inert declaration, never a verified PluginDefinition or HOST
     binding. Installed file identities are not original wheel artifact hashes.
     Config values/environment names are deliberately not included in this view.
+    Opt-in selection diagnostics compare inert fields only, never compatibility
+    or admission. The default v1 report remains unchanged.
     """
+    if type(diagnose_selection) is not bool:
+        raise TypeError("diagnose_selection must be a bool")
     selected = _selection_rows(document)
     installed = list(metadata.entry_points(group=ENTRY_POINT_GROUP))
     rows = []
+    observations = {}
     for ep in sorted(installed, key=lambda item: (item.name, item.value)):
         raw = ep.dist.read_text(INERT_METADATA_FILE)
         error = None
@@ -232,6 +275,8 @@ def inspect_plugins(document=None):
             inert = read_plugin_metadata(raw)
         except PluginError as exc:
             inert, error = None, str(exc)
+        if diagnose_selection:
+            observations.setdefault(ep.name, []).append((inert, error))
         declarations = [] if inert is None else [r for r in inert["plugins"] if r["entry_point"] == ep.name]
         choices = [{"name": r["name"], "version": r["version"]}
                    for r in selected if r["entry_point"] == ep.name]
@@ -254,8 +299,11 @@ def inspect_plugins(document=None):
                 "selection": {"status": "selected", "identities": [{"name": choice["name"], "version": choice["version"]}],
                     "entry_point_resolution": "missing"},
                 "factory_loaded": "not_checked", "host_bound": "not_checked"})
-    return {"schema_version": "rpnh/plugin_inspection/v1", "plugins": rows,
+    report = {"schema_version": "rpnh/plugin_inspection/v1", "plugins": rows,
         "note": "No factory imported. Inert declarations and selected versions are not factory verification or HOST binding; wheel SHA is unknown."}
+    if diagnose_selection:
+        report["selection_diagnostics"] = _selection_diagnostics(selected, observations)
+    return report
 
 
 def inspect_plugin_wheel(path):

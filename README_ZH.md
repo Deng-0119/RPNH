@@ -155,12 +155,18 @@ Registry／run 中从用户所选切面追加新的执行代次。详见
 | 串行、并行、文档和长流程 | 多 Agent 拓扑、有界并行、join 与时间轴 checkpoint | [工作流案例库](examples/workflow_patterns/README_ZH.md) |
 | 独立任务 | 一个主会话控制多个相互隔离的子 Registry | [任务工作区](examples/task_workspace/README_ZH.md) |
 | 原生 PetriNet 操作 | 定义组合与真实 whole-net replacement | [网操作](examples/net_operations/README_ZH.md) |
+| 可运行 v2 分享包 | 显式接收端准备、绑定与原生加法执行 | [分享包复用](examples/package_reuse/README_ZH.md) |
+| 十步工具流水线 | 十个确定性工具 transition、join 与独立账单验证器 | [工具流水线](examples/tool_pipeline/README_ZH.md) |
+| 有界合成迭代 | 同一 Registry 中的一至四轮流程，不宣称模型能力改进 | [合成迭代](examples/rsi_workflows/README_ZH.md) |
 | Basic、Codex、DSH 与 OpenCode | 同一个 provider-neutral 语义任务经过四种宿主入口 | [安装版适配任务](docs/guides/examples_ZH.md) |
 | JB 临床 packet | 公开临床来源、文档／数据分析和 Designer 自主设计图 | [复现 JB](examples/jb_steering_packet/README_ZH.md) |
 | 3-DOF 动力下降 | 数值实现、独立验证和 Designer 自主设计图 | [复现 3-DOF](examples/three_dof_powered_descent/README_ZH.md) |
 | HarnessAudit Office benchmark | 原生团队、登记业务工具、原始评分与完整结果边界 | [Office 示例](examples/harnessaudit_office/README_ZH.md) |
 | RRSI v0.6 Policy 演化 | 独立 child Registry 驱动的两轮 Policy 演化与分数/成本选择 | [RRSI 示例](examples/rrsi_v06/README_ZH.md) |
 | AutomationBench 公开业务任务 | 历史pilot、freeze04首轮18题与独立repair四题；按条件保留评分与限制 | [AutomationBench 示例](examples/automationbench/README_ZH.md) |
+| ERP-Bench | 受管 ERP 动作与单独保留的原始 verifier 成绩 | [ERP 案例](examples/erp_bench/README_ZH.md) |
+| SlopCodeBench pilot | 原生 Session 命令与有限编码任务前缀 | [编码试验](examples/slopcodebench/README_ZH.md) |
+| 案例证据 | 只读校验结果文件与源码身份 | [证据契约](examples/example_validation/README_ZH.md) |
 
 执行案例中的实际 dashboard 图注明其运行来源。Benchmark examples 提供成绩记录与新运行的
 viewer 命令，不宣称已归档运行截图。[完整案例指南](docs/guides/examples_ZH.md)记录计算、文档、串行、并行、长流程和
@@ -218,7 +224,9 @@ session surface 的 registered host 集成。所有情况下，模型选择与�
 
 ## 文档
 
-[English index](docs/index.md) · [中文文档](docs/index_ZH.md)
+[全部文档主题](docs/index_ZH.md) · [全部源码案例](examples/README_ZH.md) ·
+[代码与安装包目录](docs/guides/repository-layout_ZH.md) ·
+[固定版本代码链接](docs/technical-report_ZH.md#源码索引) · [English index](docs/index.md)
 
 | 目标 | 从这里开始 |
 |---|---|
@@ -227,6 +235,8 @@ session surface 的 registered host 集成。所有情况下，模型选择与�
 | 配置 runtime | [配置](docs/guides/configuration_ZH.md)、[模型](docs/guides/models_ZH.md)、[使用与恢复](docs/guides/usage_ZH.md) |
 | 构建应用 | [自定义与插件](docs/guides/customization_ZH.md)、[原生 PetriNet 操作](docs/guides/net-operations_ZH.md)、[声明](docs/reference/declarations_ZH.md) |
 | 理解执行 | [看板](docs/guides/viewer_ZH.md)、[架构](docs/architecture/design_ZH.md)、[Registry/runtime](docs/reference/runtime-registry_ZH.md)、[有限 PN 验证](docs/reference/pn-validation_ZH.md)、[会话与 Agent](docs/reference/agents_ZH.md) |
+| 复用与检查定义 | [可移植包](docs/guides/portable-packages_ZH.md)、[接收端准备](docs/environment-preparation_ZH.md)、[图作者接口](docs/reference/graph-authoring_ZH.md)、[Workset](docs/reference/worksets_ZH.md) |
+| 读取精确证据 | [独立 Registry 读取](docs/guides/independent-registry-reader_ZH.md)、[来源查询](docs/guides/source-queries_ZH.md)、[checkpoint 比较](docs/guides/checkpoint-comparison_ZH.md)、[精选结果](docs/results/README_ZH.md) |
 | 接入宿主 | [前端与宿主适配](docs/guides/adapters_ZH.md)、[扩展与观察接口](docs/reference/extensions-observation_ZH.md) |
 | 使用维护或参与开发 | [排障](docs/guides/troubleshooting_ZH.md)、[开发](docs/guides/development_ZH.md)、[参与贡献](CONTRIBUTING_ZH.md)、[安全报告](SECURITY_ZH.md)、[变更记录](CHANGELOG_ZH.md)、[发布验证](docs/guides/release-validation_ZH.md) |
 

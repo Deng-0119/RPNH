@@ -177,12 +177,18 @@ same Registry/run. See [usage](docs/guides/usage.md) and the
 | Serial, parallel, document and long workflows | Multi-Agent topology, bounded parallelism, joins and timeline checkpoints | [Workflow gallery](examples/workflow_patterns/README.md) |
 | Independent tasks | Separate child Registries controlled from one main session | [Task workspace](examples/task_workspace/README.md) |
 | Native Petri-net operations | Definition composition and live whole-net replacement | [Net operations](examples/net_operations/README.md) |
+| Runnable v2 package | Explicit receiver preparation, binding and native-add execution | [Package reuse](examples/package_reuse/README.md) |
+| Ten-tool pipeline | Ten deterministic tool transitions, joins and an independent bill validator | [Tool pipeline](examples/tool_pipeline/README.md) |
+| Bounded synthetic iteration | One to four rounds in one Registry; no model-improvement claim | [Synthetic iteration](examples/rsi_workflows/README.md) |
 | Basic, Codex, DSH and OpenCode | One provider-neutral semantic task through four host surfaces | [Installed adapter task](docs/guides/examples.md) |
 | JB clinical packet | Public clinical sources, document/data analysis and a Designer-authored graph | [Reproduce JB](examples/jb_steering_packet/README.md) |
 | 3-DOF powered descent | Numerical implementation, independent validation and a Designer-authored graph | [Reproduce 3-DOF](examples/three_dof_powered_descent/README.md) |
 | HarnessAudit Office benchmark | Native agent teams, registered business tools, original scoring and retained results | [Office example](examples/harnessaudit_office/README.md) |
 | RRSI v0.6 Policy evolution | Two-round Policy evolution with independent child Registries and score/cost selection | [RRSI example](examples/rrsi_v06/README.md) |
 | AutomationBench public workflows | Historical pilot, freeze04 first18 and separate repair4 with condition-specific scores and limits | [AutomationBench example](examples/automationbench/README.md) |
+| ERP-Bench | Managed ERP actions with separately retained original-verifier results | [ERP example](examples/erp_bench/README.md) |
+| SlopCodeBench pilot | Native Session commands and a bounded coding-task prefix | [Coding pilot](examples/slopcodebench/README.md) |
+| Example evidence | Read-only checks of evidence files and source identities | [Evidence contract](examples/example_validation/README.md) |
 
 Execution-gallery pages identify the origin of their actual dashboard images.
 Benchmark examples supply scored records and viewer commands for newly
@@ -254,7 +260,9 @@ all cases.
 
 ## Documentation
 
-[English index](docs/index.md) · [中文文档](docs/index_ZH.md)
+[All documentation topics](docs/index.md) · [All source examples](examples/README.md) ·
+[Code and package map](docs/guides/repository-layout.md) ·
+[Versioned implementation links](docs/technical-report.md#source-map) · [中文文档](docs/index_ZH.md)
 
 | Goal | Start here |
 |---|---|
@@ -263,6 +271,8 @@ all cases.
 | Configure the runtime | [Configuration](docs/guides/configuration.md), [models](docs/guides/models.md), [usage and recovery](docs/guides/usage.md) |
 | Build an application | [Customization and plugins](docs/guides/customization.md), [native Petri-net operations](docs/guides/net-operations.md), [declarations](docs/reference/declarations.md) |
 | Understand execution | [Dashboard](docs/guides/viewer.md), [architecture](docs/architecture/design.md), [Registry/runtime](docs/reference/runtime-registry.md), [finite PN validation](docs/reference/pn-validation.md), [sessions and Agents](docs/reference/agents.md) |
+| Reuse and inspect definitions | [Portable packages](docs/guides/portable-packages.md), [receiver preparation](docs/environment-preparation.md), [graph authoring](docs/reference/graph-authoring.md), [Worksets](docs/reference/worksets.md) |
+| Read exact evidence | [Independent Registry reader](docs/guides/independent-registry-reader.md), [source queries](docs/guides/source-queries.md), [checkpoint comparison](docs/guides/checkpoint-comparison.md), [curated results](docs/results/README.md) |
 | Integrate a host | [Frontend and host adapters](docs/guides/adapters.md), [extension and observation interfaces](docs/reference/extensions-observation.md) |
 | Operate or contribute | [Troubleshooting](docs/guides/troubleshooting.md), [development](docs/guides/development.md), [contributing](CONTRIBUTING.md), [security](SECURITY.md), [changelog](CHANGELOG.md), [release validation](docs/guides/release-validation.md) |
 

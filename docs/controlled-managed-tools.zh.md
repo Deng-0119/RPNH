@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: controlled-managed-tools.md
-  revision: "2026-10-08.2"
+  revision: "2026-10-11.1"
   status: reference
 ---
 
@@ -101,6 +101,19 @@ canonical sources，并复核访问；不可用来源遵循已有披露合同。
 `plugins inspect` 只读已安装元数据和显式选择，不加载 factory。已安装、已选择、
 声明已加载、HOST 已绑定、可执行是不同状态。缺少 inert metadata 不授权执行
 factory。`plugins list`/`check` 会加载可信已选 factory，范围不同。
+
+使用 `rpnh plugins --config PLUGIN_JSON inspect --diagnose-selection`，或调用
+`inspect_plugins(document, diagnose_selection=True)`，可对照显式选择与已安装
+inert 声明。此选项仅增加 `selection_diagnostics`；默认 v1 JSON 和 inspect
+退出码不变。每个已选项按配置顺序获得检查。`matched` 仅表示所声明的插件
+身份、精确版本与 API 契约一致；已知版本/API 差异返回 `mismatch` 并列出
+`mismatched_fields`。distribution 版本不作为插件版本比较。
+
+entry point 缺失或歧义、inert 元数据缺失或无效、entry point 未声明、已选插件
+未声明分别保留 `not_checked` 与不同原因；不能选择一个恰好匹配的来源来化解
+歧义。此诊断不加载 factory、不改变选择、不证明兼容性或准入执行。factory/HOST
+状态保持 `not_checked`，不输出配置值和环境变量名称。即使 inert 声明匹配，
+正常 loader 与 Registry/PN 的检查仍是原有权威。
 
 ## 可带离仓库的插件作者自检（P5）
 

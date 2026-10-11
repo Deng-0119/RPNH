@@ -6,8 +6,8 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: index.md
-  revision: "2026-10-09.1"
-  status: source-candidate-not-published
+  revision: "2026-10-11.1"
+  status: maintained
   basis: "core; adapter differences explicitly labelled"
 ---
 
@@ -16,6 +16,9 @@ metadata:
 # 文档导航
 
 需要先连续了解项目定位、执行模型和评估边界，可以从[技术报告](technical-report_ZH.md)开始。
+
+可运行输入与源码职责分别见[完整案例索引](../examples/README_ZH.md)和
+[代码与安装包目录](guides/repository-layout_ZH.md)。
 
 先读安装和精确模型配置，再选择最接近目标应用的案例。指南描述本次选定的源码快照；带日期的验证
 记录保留其实际测试的旧版本边界，不能自动作为后续提交的认证。每个主题都有对应英文页。
@@ -41,8 +44,11 @@ metadata:
 | 查询并查看固定来源范围 | [SourceSet 查询](guides/source-queries_ZH.md) |
 | 离线预览声明包并锁定本地依赖 | [可移植包](guides/portable-packages_ZH.md) |
 | 准备精确 v2 分享包环境，保留 v1 原语义 | [分享包环境声明](guides/package-environments_ZH.md) |
+| 检查、解析并准备所选接收端，随后单独授权启动 | [接收端环境准备](environment-preparation_ZH.md) |
+| 分析受支持的有限网并区分 HOLDS、VIOLATED 与 UNKNOWN | [有限 PN 验证](reference/pn-validation_ZH.md) |
 | 打开独立合法类型化读取和跨网比较 | [独立 Registry 读取](guides/independent-registry-reader_ZH.md) |
 | 理解固定 cut 类型化读合同与权限校验 | [Registry 读会话](reference/registry-read-sessions_ZH.md) |
+| 从精确产物核对 producer 与可选 Start 输入、claim | [有界产物来源查询](reference/registry-read-sessions_ZH.md) |
 | 检查类型化公共投影与完整闭合定义交换 | [Registry 类型化投影与子网交换](guides/typed-registry-exchange_ZH.md) |
 | 按四个独立证据轴比较精确网图 | [跨网比较](guides/comparison-context_ZH.md) |
 | 对照已准备 HOST 的声明快照 | [HOST 声明诊断](guides/host-readiness_ZH.md) |

@@ -6,8 +6,8 @@ metadata:
   audience: operator-and-developer
   language: en
   counterpart: index_ZH.md
-  revision: "2026-10-09.1"
-  status: source-candidate-not-published
+  revision: "2026-10-11.1"
+  status: maintained
   basis: "core; adapter differences explicitly labelled"
 ---
 
@@ -17,6 +17,9 @@ metadata:
 
 For a continuous introduction to the project's purpose, execution model and
 evaluation boundaries, read the [technical report](technical-report.md).
+
+For runnable inputs and source ownership, use the [complete example index](../examples/README.md)
+and [code and package map](guides/repository-layout.md).
 
 Start with installation and exact model configuration, then choose the example
 closest to the application you want to build. The guides describe this selected
@@ -45,8 +48,11 @@ has a corresponding Chinese page.
 | Query and inspect fixed source scopes | [SourceSet queries](guides/source-queries.md) |
 | Preview declaration packages and lock local dependencies offline | [Portable packages](guides/portable-packages.md) |
 | Prepare exact v2 package requirements without changing legacy package behavior | [Package environments](guides/package-environments.md) |
+| Check, resolve and prepare a selected receiver before authorized launch | [Receiver environment preparation](environment-preparation.md) |
+| Analyze supported finite nets and distinguish HOLDS, VIOLATED and UNKNOWN | [Finite PN validation](reference/pn-validation.md) |
 | Open an independently authorized typed reader and cross-net comparison | [Independent Registry reader](guides/independent-registry-reader.md) |
 | Understand the fixed-cut typed read contract and authority checks | [Registry read sessions](reference/registry-read-sessions.md) |
+| Trace one exact product to its verified producer and optional Start inputs/claims | [Bounded product-origin query](reference/registry-read-sessions.md#fixed-product-origin-query) |
 | Inspect typed public projections and exchange a complete closed definition | [Typed Registry projections and subnet exchange](guides/typed-registry-exchange.md) |
 | Compare exact nets with four independent evidence axes | [Cross-net comparison](guides/comparison-context.md) |
 | Diagnose declarations against an already-prepared HOST snapshot | [HOST declaration diagnostics](guides/host-readiness.md) |

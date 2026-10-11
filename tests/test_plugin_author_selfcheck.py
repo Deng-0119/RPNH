@@ -204,3 +204,133 @@ def test_terminal_selfcheck_rejects_nonpure_before_runtime(tmp_path, monkeypatch
 def test_empty_catalog_keeps_no_discovery_behavior(monkeypatch):
     monkeypatch.setattr("cpn.plugins.catalog.metadata.entry_points", lambda **_: pytest.fail("empty load discovers plugins"))
     assert load_catalog().plugins == ()
+
+
+@pytest.mark.parametrize("damage,status,reason,fields", [
+    ("none", "matched", "selected_declaration_match", []),
+    ("version", "mismatch", "selected_declaration_mismatch", ["version"]),
+    ("version_exact", "mismatch", "selected_declaration_mismatch", ["version"]),
+    ("api", "mismatch", "selected_declaration_mismatch", ["api_contract"]),
+    ("version_api", "mismatch", "selected_declaration_mismatch", ["version", "api_contract"]),
+    ("plugin", "not_checked", "selected_plugin_not_declared", []),
+    ("entry_point", "not_checked", "entry_point_not_declared", []),
+    ("missing_metadata", "not_checked", "inert_metadata_missing", []),
+    ("invalid_metadata", "not_checked", "inert_metadata_invalid", []),
+    ("missing_install", "not_checked", "entry_point_missing", []),
+    ("ambiguous_install", "not_checked", "entry_point_ambiguous", []),
+])
+def test_selection_diagnostic_exact_inert_states(monkeypatch, damage, status, reason, fields):
+    from cpn.plugins import catalog as catalog_module
+    declaration = {"plugin_id": "demo", "version": "0.3.0",
+                   "api_contract": "rpnh/plugin/v1", "entry_point": "demo"}
+    if damage in {"version", "version_api"}:
+        declaration["version"] = "0.4.0"
+    if damage == "version_exact":
+        declaration["version"] = "0.3"
+    if damage in {"api", "version_api"}:
+        declaration["api_contract"] = "rpnh/plugin/v2"
+    if damage == "plugin":
+        declaration["plugin_id"] = "other"
+    if damage == "entry_point":
+        declaration["entry_point"] = "other"
+    raw = json.dumps({"schema_version": "rpnh/installed_plugin_metadata/v1",
+                      "plugins": [declaration]})
+    if damage == "missing_metadata":
+        raw = None
+    elif damage == "invalid_metadata":
+        raw = "{}"
+    ep = entrypoint()
+    ep.dist.version = "2026.1"  # A distribution version is not a plugin version.
+    reads, parses = [], []
+    def read_text(name):
+        reads.append(name)
+        return raw
+    ep.dist.read_text = read_text
+    parse_metadata = catalog_module.read_plugin_metadata
+    def parse(text):
+        parses.append(text)
+        return parse_metadata(text)
+    monkeypatch.setattr(catalog_module, "read_plugin_metadata", parse)
+    ep.load = lambda: pytest.fail("inert diagnostic loaded a factory")
+    installed = [] if damage == "missing_install" else [ep, ep] if damage == "ambiguous_install" else [ep]
+    discovery = []
+    def find(**kwargs):
+        discovery.append(kwargs)
+        return installed
+    monkeypatch.setattr("cpn.plugins.catalog.metadata.entry_points", find)
+    doc = selection()
+    doc["plugins"][0]["config"] = {"sentinel": "PRIVATE_CONFIG_SENTINEL"}
+    doc["plugins"][0]["environment"] = ["PRIVATE_ENV_SENTINEL"]
+    report = inspect_plugins(doc, diagnose_selection=True)
+    assert report["selection_diagnostics"] == {
+        "evidence_scope": "inert_metadata_only", "expected_api_contract": "rpnh/plugin/v1",
+        "checks": [{"entry_point": "demo", "name": "demo", "version": "0.3.0",
+                    "status": status, "reason": reason, "mismatched_fields": fields}],
+    }
+    assert discovery == [{"group": "rpnh.plugins"}]
+    assert reads == ["rpnh_environment_plugins.json"] * len(installed)
+    assert parses == [raw] * len(installed)
+    assert all(row["factory_loaded"] == row["host_bound"] == "not_checked" for row in report["plugins"])
+    assert "PRIVATE_CONFIG_SENTINEL" not in json.dumps(report)
+    assert "PRIVATE_ENV_SENTINEL" not in json.dumps(report)
+
+
+def test_selection_diagnostic_preserves_default_and_selection_order(monkeypatch):
+    ep = entrypoint()
+    ep.load = lambda: pytest.fail("inert diagnostic loaded a factory")
+    monkeypatch.setattr("cpn.plugins.catalog.metadata.entry_points", lambda **_: [ep])
+    doc = selection()
+    original = inspect_plugins(doc)
+    assert "selection_diagnostics" not in original
+    assert inspect_plugins(doc, diagnose_selection=False) == original
+    diagnosed = inspect_plugins(doc, diagnose_selection=True)
+    assert diagnosed.pop("selection_diagnostics")["checks"][0]["status"] == "matched"
+    assert diagnosed == original
+    doc["plugins"].insert(0, {**doc["plugins"][0], "name": "other"})
+    checks = inspect_plugins(doc, diagnose_selection=True)["selection_diagnostics"]["checks"]
+    assert [(row["name"], row["reason"]) for row in checks] == [
+        ("other", "selected_plugin_not_declared"), ("demo", "selected_declaration_match")]
+    assert inspect_plugins(diagnose_selection=True)["selection_diagnostics"]["checks"] == []
+
+
+def test_selection_diagnostic_rejects_nonbool_before_discovery(monkeypatch):
+    monkeypatch.setattr("cpn.plugins.catalog.metadata.entry_points",
+                        lambda **_: pytest.fail("invalid bool reached discovery"))
+    for invalid in (1, None, "false", []):
+        with pytest.raises(TypeError, match="diagnose_selection"):
+            inspect_plugins(selection(), diagnose_selection=invalid)
+
+
+def test_selection_diagnostic_cli_stays_readonly(tmp_path, monkeypatch, capsys):
+    import socket
+    import sqlite3
+    from cpn.plugins import cli
+    from cpn.rpnh import compiler
+    from cpn.rpnh.registry._registry import _RegistryCore
+    def forbidden(*args, **kwargs):
+        pytest.fail("inspection crossed a factory, execution, Registry or network boundary")
+    ep = entrypoint()
+    ep.load = forbidden
+    monkeypatch.setattr("cpn.plugins.catalog.metadata.entry_points", lambda **_: [ep])
+    monkeypatch.setattr(cli, "load_catalog", forbidden)
+    monkeypatch.setattr(cli, "run_plugin", forbidden)
+    monkeypatch.setattr(compiler, "compile_module", forbidden)
+    monkeypatch.setattr(_RegistryCore, "__init__", forbidden)
+    monkeypatch.setattr(sqlite3, "connect", forbidden)
+    monkeypatch.setattr(socket, "getaddrinfo", forbidden)
+    monkeypatch.setattr(socket, "socket", forbidden)
+    doc = selection()
+    doc["plugins"][0]["version"] = "9.0"
+    config = tmp_path / "plugins.json"
+    config.write_text(json.dumps(doc))
+    assert cli.main(["--config", str(config), "inspect"]) == 0
+    original = json.loads(capsys.readouterr().out)
+    assert "selection_diagnostics" not in original
+    assert cli.main(["--config", str(config), "inspect", "--diagnose-selection"]) == 0
+    diagnosed = json.loads(capsys.readouterr().out)
+    assert diagnosed.pop("selection_diagnostics")["checks"][0]["status"] == "mismatch"
+    assert diagnosed == original
+    with pytest.raises(SystemExit) as error:
+        cli.main(["--config", str(config), "list", "--diagnose-selection"])
+    assert error.value.code == 2
+    assert "unrecognized arguments: --diagnose-selection" in capsys.readouterr().err

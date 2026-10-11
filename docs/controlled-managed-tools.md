@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: en
   counterpart: controlled-managed-tools.zh.md
-  revision: "2026-10-08.2"
+  revision: "2026-10-11.1"
   status: reference
 ---
 
@@ -120,6 +120,23 @@ disclosure contract. See [Viewer](guides/viewer.md).
 factories. Installed, selected, declaration loaded, HOST bound, and run-ready are
 separate states. Missing inert metadata does not authorize factory execution.
 `plugins list`/`check` load trusted selected factories; they have different scope.
+
+To compare an explicit selection with installed inert declarations, use
+`rpnh plugins --config PLUGIN_JSON inspect --diagnose-selection`, or call
+`inspect_plugins(document, diagnose_selection=True)`. This opt-in adds
+`selection_diagnostics` to the report; the default v1 JSON and inspect exit code
+are unchanged. Each selected entry receives a check in configuration order.
+`matched` means only that its declared plugin identity, exact version and API
+contract agree. Known version/API differences produce `mismatch` with
+`mismatched_fields`; distribution versions are not plugin versions.
+
+Missing or ambiguous entry points, missing or invalid inert metadata, an
+undeclared entry point, and an undeclared selected plugin remain `not_checked`
+with separate reasons. Ambiguity is never resolved by choosing a matching row.
+These diagnostics do not load factories, change selection, certify compatibility
+or admit execution. Factory/HOST status stays `not_checked`; configuration
+values and environment-variable names are omitted. Normal loader and Registry/PN
+checks remain authoritative, even when inert declarations match.
 
 ## Portable plugin author checks (P5)
 
