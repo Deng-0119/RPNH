@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: en
   counterpart: comparison-context_ZH.md
-  revision: "2026-10-11.1"
+  revision: "2026-10-11.3"
   status: implementation-candidate
   basis: "public exact read session; descriptive comparison only"
 ---
@@ -146,6 +146,106 @@ The new read-only routes are `GET/HEAD /api/v2/comparison-selection` and
 response are closed DTOs. The existing `/api/v2/comparison-view` and
 `rpnh/checkpoint_comparison/v1` still require the same exact net and preserve
 their earlier current-capture semantics.
+
+Large requests use read-only `POST /api/v2/comparison-context` with
+`Content-Type: application/json` and the same closed v1 request DTO as the body.
+The browser switches to POST when the encoded GET path reaches 60000 bytes,
+before the HTTP request-line limit of 65536 bytes; smaller requests retain GET,
+and HEAD remains supported. POST requires one valid `Content-Length` and does
+not accept chunked transfer. Before reading or allocating the body, the server
+checks its declared length against HOST `max_request_bytes`, returning 413 when
+exceeded. The parser also checks actual UTF-8 body bytes, including whitespace;
+duplicate JSON keys remain invalid. The Python parser is
+`parse_body(raw: bytes, *, host_limits=None)`; the local request helper accepts
+`handle_request(provider, "POST", "/api/v2/comparison-context", body=raw)`.
+This POST performs only the existing read-only comparison. Methods on other
+routes and owner operations are unchanged. Comparison responses send exactly
+the compact UTF-8 JSON bytes measured by the budget validator; `Content-Length`
+is that byte count. HEAD returns the same length header without the body.
+
+## HOST resource budgets
+
+`LIMITS` contains defaults, not fixed product ceilings. The trusted Python APIs
+are `ComparisonProvider(session, *, host_limits=None)` and
+`comparison_context(session, request, *, host_limits=None)`. The mapping accepts
+partial overrides; omitted fields retain these defaults:
+
+| Budget | Default |
+|---|---:|
+| `max_nodes_per_side` | 10000 |
+| `max_edges_per_side` | 30000 |
+| `max_mapping_relations` | 20000 |
+| `max_field_rows` (all axes together) | 200000 |
+| `max_evidence_reads` | 20000 |
+| `max_response_bytes` | 16000000 |
+| `max_material_bytes` (one optional body) | 1048576 |
+| `max_selection_cursors` (cached continuation handles) | 128 |
+| `max_request_bytes` (UTF-8 JSON body and canonical representation) | 1000000 |
+
+Every override must be a positive integer, excluding Boolean values, within the
+JSON safe-integer range (1 through 9007199254740991). Unknown keys fail. Integer
+wire representation, reference formats, string shapes and the occurrence-path
+shape limit remain protocol validation, not resource settings.
+
+The request/selection DTO still contains exactly the original six `limits`
+fields. A client may lower these values; exceeding the configured HOST value
+fails with `scope_limit` (HTTP 413). Underlying session `ReadLimits` still apply:
+response bytes are clamped to the session response budget; optional material
+reads use the minimum of HOST per-body bytes, session `max_material_bytes`, and
+the remaining comparison byte budget; selection cursors use the minimum of HOST
+cursor capacity and session `max_cursors`. Other session read gates remain in
+force. The selection route advertises the effective six budgets, which the
+browser sends back. HTTP parsing and both response validators use those budgets,
+without an additional default-sized graph/row array ceiling. No output is silently
+truncated. An oversized optional material body remains undisclosed as before.
+
+For example, keep this policy in a separate trusted local
+`comparison-policy.json`, never in an HTTP request or the closed read-HOST DTO:
+
+```json
+{
+  "max_nodes_per_side": 20000,
+  "max_edges_per_side": 60000,
+  "max_mapping_relations": 40000,
+  "max_field_rows": 400000,
+  "max_evidence_reads": 40000,
+  "max_response_bytes": 32000000,
+  "max_material_bytes": 8388608,
+  "max_selection_cursors": 256,
+  "max_request_bytes": 2000000
+}
+```
+
+```python
+import json
+from pathlib import Path
+from cpn.frontend.comparison_context import ComparisonProvider
+from cpn.frontend.server import serve_projection
+from cpn.rpnh.collaboration.read_host_config import open_read_host_session
+
+policy = json.loads(Path("/absolute/path/comparison-policy.json").read_text())
+with open_read_host_session("/absolute/path/read-host.json") as session:
+    provider = ComparisonProvider(session, host_limits=policy)
+    serve_projection(provider, host="127.0.0.1", port=8765, open_browser=False)
+```
+
+The existing `read-host.json` `limits` object must also allow the intended session
+budgets, for example `{"max_response_bytes": 32000000,
+"max_material_bytes": 8388608, "max_cursors": 256}`. Its existing loader builds
+typed `ReadLimits` for the HOST binding and an omitted-limits session request
+that inherits those ceilings. For a direct Python session, configure
+`RegistryReadHostBinding(..., limits=ReadLimits(...))`; omit request limits to
+inherit them, or supply `ReadLimitOverrides(...)` to tighten selected fields.
+An explicitly supplied `ReadLimits(...)` restricts every field it contains,
+including its default-filled fields. Requests cannot raise HOST ceilings. The ordinary CLI launcher retains Comparison defaults;
+use the explicit launcher above for Comparison overrides.
+
+For custom HTTP integrations, pass the same trusted policy to
+`parse_query(raw, *, host_limits=None)`,
+`validate_request(value, *, host_limits=None)`, and
+`validate_comparison_context(value, request, *, host_limits=None)`. The existing
+server obtains it from `ComparisonProvider.host_limits`. These are local HOST
+choices, not new request fields, grants, model settings or Registry writes.
 
 ## Verification boundaries
 

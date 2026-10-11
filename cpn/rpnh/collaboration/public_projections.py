@@ -385,13 +385,13 @@ def _read_public_projection_complete(core, entry_ref, *, snapshot):
             raise ValueError('wrong exact projection')
         if metadata['descriptors']['public_pn_contract'] != result['producer_contract']:
             raise ValueError('wrong producer')
-        total=len(raw);seen=set()
+        seen=set()
         for dep in stored['dependencies']:
             key=canonical_json(dep['ref'])
             if key in seen:raise ValueError('duplicate projection dependency')
             seen.add(key)
-            total+=dep['bytes']
-            if total>getattr(snapshot,'max_material_bytes',4*1024*1024):raise TypedReadError('LIMIT_EXCEEDED')
+            if type(dep['bytes']) is not int or dep['bytes'] < 0:
+                raise ValueError('invalid projection dependency size')
             body,_ = payload_at(core,dep['ref'],snapshot,material=True,
                 max_bytes=getattr(snapshot,'max_material_bytes',4*1024*1024))
             if len(body)!=dep['bytes'] or hashlib.sha256(body).hexdigest()!=dep['sha256']:
@@ -532,6 +532,12 @@ def _read_public_projection_complete(core, entry_ref, *, snapshot):
 
 
 def read_public_projection(core,entry_ref,*,snapshot):
+    from ._projection_read_budget import projection_read_scope
+    with projection_read_scope(snapshot) as scoped:
+        return _read_public_projection_scoped(core, entry_ref, snapshot=scoped)
+
+
+def _read_public_projection_scoped(core,entry_ref,*,snapshot):
     try:
         return _read_public_projection_complete(core,entry_ref,snapshot=snapshot)
     except Exception as exc:
@@ -561,7 +567,6 @@ def _read_merge_projection(core, target, record, projection_ref, raw, stored, sn
             or len(stored['merge_proof']['inventories']) > len(snapshot.objects)):
         raise TypedReadError('LIMIT_EXCEEDED')
     pins = {}
-    total = len(raw)
     for row in dependencies:
         if (set(row) != {'ref', 'bytes', 'sha256', 'metadata'} or type(row['bytes']) is not int
                 or row['bytes'] < 0 or wire_ref(row['ref'])[0] != target['source_id']):
@@ -570,9 +575,6 @@ def _read_merge_projection(core, target, record, projection_ref, raw, stored, sn
         if key in pins:
             raise ValueError('duplicate merge dependency')
         pins[key] = row
-        total += row['bytes']
-    if total > snapshot.max_material_bytes:
-        raise TypedReadError('LIMIT_EXCEEDED')
     closure = MaterialClosure(snapshot, core.task_id)
     closure.check(projection_ref, prepared_at(core, projection_ref, snapshot))
     used = set()
@@ -647,14 +649,10 @@ def _read_topology_only(core,entry_ref,*,snapshot):
             raise TypedReadError('UNSUPPORTED_READER_VERSION')
         pins={canonical_json(row['ref']):row for row in stored['dependencies']}
         if len(pins)!=len(stored['dependencies']):raise ValueError('duplicate public pin')
-        total=len(raw)
         def material(reference):
-            nonlocal total
             pin=pins.get(canonical_json(reference))
             if pin is None:raise ValueError('missing own public dependency')
             body,metadata=payload_at(core,reference,snapshot,material=True,max_bytes=snapshot.max_material_bytes)
-            total+=len(body)
-            if total>snapshot.max_material_bytes:raise TypedReadError('LIMIT_EXCEEDED')
             if len(body)!=pin['bytes'] or hashlib.sha256(body).hexdigest()!=pin['sha256']:raise ValueError('own public digest differs')
             return json.loads(body),metadata
         definition,definition_meta=material(source['definition_ref'])
@@ -700,6 +698,12 @@ def _read_topology_only(core,entry_ref,*,snapshot):
 
 
 def read_public_mapping(core, left_ref, right_ref, *, snapshot):
+    from ._projection_read_budget import projection_read_scope
+    with projection_read_scope(snapshot) as scoped:
+        return _read_public_mapping_scoped(core, left_ref, right_ref, snapshot=scoped)
+
+
+def _read_public_mapping_scoped(core, left_ref, right_ref, *, snapshot):
     left = read_public_projection(core,left_ref,snapshot=snapshot)
     right = read_public_projection(core,right_ref,snapshot=snapshot)
     a,b = left['target_ref'],right['target_ref']

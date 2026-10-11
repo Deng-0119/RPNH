@@ -28,7 +28,7 @@ from .sources import get_local_source_identity
 from .source_query import wire
 from .registry_read_contracts import (RegistryReadSessionError, ReadLimits, SourceSelection,
     ReadSessionRequest, SelectedSourceSet, SourceCut, HistoricalCutRequest, PublicRegistryHead,
-    IndexQuery, qualified_ref, document_digest, READER_CONTRACT_VERSION)
+    IndexQuery, qualified_ref, document_digest, READER_CONTRACT_VERSION, _effective_read_limits)
 
 
 @dataclass(slots=True)
@@ -226,6 +226,7 @@ class _Snapshot:
     publication_transaction_keys: Mapping = field(repr=False)
     budget_bytes: int
     _origin_context: object | None = field(default=None, repr=False, compare=False)
+    max_material_closure_bytes: int | None = None
 
 
 @dataclass(slots=True)
@@ -415,7 +416,7 @@ class RegistryReadSession:
         self._catalog = host.typed_reader_catalog
         self._catalog_fingerprint = self._catalog.fingerprint()
         self._caller = host.verified_caller
-        self.limits = ReadLimits().tightened(request.limits).tightened(host.limits)
+        self.limits = _effective_read_limits(host.limits, request.limits)
         if len(request.selection.sources) > self.limits.max_sources or len(canonical_json(request.to_dict())) > self.limits.max_query_bytes:
             raise RegistryReadSessionError('LIMIT_EXCEEDED')
         self.session_id = 'rs_' + secrets.token_urlsafe(24)
@@ -787,7 +788,8 @@ class RegistryReadSession:
             MappingProxyType({r['version_id']: MappingProxyType(dict(r)) for r in objects}), events,
             tuple(MappingProxyType(dict(r)) for r in relations),
             check_authorized,
-            self.limits.max_material_bytes, MappingProxyType(publication_ordinals), publication_keys, budget_bytes)
+            self.limits.max_material_bytes, MappingProxyType(publication_ordinals), publication_keys, budget_bytes,
+            max_material_closure_bytes=self.limits.max_material_closure_bytes)
         self.final_recheck((source_id,))
         if _capture_owner is not None:
             # Pending bytes already include this candidate; do not add them twice.

@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: registry-read-sessions.md
-  revision: "2026-10-09.1"
+  revision: "2026-10-11.1"
   status: implemented
 ---
 
@@ -92,9 +92,57 @@ reader/schema catalog。普通 canonical append 不移动既有 cut。更换 fil
 默认每页 100 条，整页最多 1,000 条；最多 64 个 source/clause、32 个
 predicate/projection 字段、每个 `in` 最多 64 个值、64 KiB 查询输入、4 MiB
 响应/材料、100,000 扫描行以及 64 MiB 扫描/保留的 canonical 数据。HOST
-可以收紧限制。标量行数/字节预算在无界 history hydration 前检查；每个 cut
+可以收紧限制，材料策略另见下节。标量行数/字节预算在无界 history hydration 前检查；每个 cut
 只读一遍历史，不对每个索引对象重新扫描。超限返回 `LIMIT_EXCEEDED` 或合法
 有界 continuation，不伪报 complete。
+
+## HOST 材料策略与单次操作边界
+
+`ReadLimits` 保留保守的 4 MiB 材料默认值。可信 HOST 可分别配置
+`max_material_bytes`（单个不可变正文）和 `max_material_closure_bytes`
+（一次公共 projection 或 mapping 操作读取的唯一不可变正文总字节）。响应、扫描、
+source、page、cursor 和生存期等全部十五项预算也由可信 HOST 配置。HOST 省略
+设置时保留原默认值；默认值不会再充当隐藏的第二重上限。稀疏请求继承 HOST
+值，并且只能收紧。提高资源预算不会授予 record、material、export、Registry
+写入或 PN 权限。
+
+普通 `ReadSessionRequest` 使用稀疏 `ReadLimitOverrides`。省略字段继承 HOST
+上限；显式请求 `max_material_bytes=4194304`，即使 HOST 允许更多，也仍限制为
+4 MiB。每个显式请求值最多达到 HOST 上限。稀疏的单正文限制不会同时收紧总量。
+因此 `limits: {}` 与显式提供默认数值不同。wire 值必须为正整数，拒绝 null、
+布尔值、非整数和未知字段。Python `ReadLimitOverrides` 内部用 `None` 表示
+省略，序列化时不输出该字段。
+
+旧的完整 `ReadLimits` 请求对象仍对所有字段施加显式限制。HOST `ReadLimits`
+若省略 `max_material_closure_bytes`，总量跟随 `max_material_bytes`，保留旧的
+单一配置旋钮语义。该回退在生成有效值时解析；对尚未解析的策略做
+`dataclasses.replace` 会保留联动。有效 session limits 已包含具体数值，此时
+替换一个字段只改变该字段。属主控制的 read-HOST 文件中 `limits` 只表示可信策略，
+不再同时构造一份补满默认值的请求。文件属主、权限和内容不变性检查仍执行。
+Viewer/HTTP 请求不能设置此可信策略。包含新 closure 字段的序列化请求需要支持
+更新后 request schema 的 reader。
+
+一次公共 projection 操作与全部嵌套 proof、topology、assembly、runtime declaration
+及 generated-correspondence 读取共享临时账本。`read_public_mapping` 两端共享
+同一账本。所有取得的不可变正文（包括 descriptor）在物理读取或 reader 缓存返回前，
+按精确 source-qualified ref 和已经验证的登记大小计入一次。重复引用不重复增加唯一
+字节量，但材料访问仍检查当前授权。原 pin、正文、digest、metadata、固定 cut 和
+语义证明校验都不变。每次新操作使用新账本，不修改 session snapshot，也不写 Registry
+事实。Viewer 分别调用左右 projection 时仍是两个操作，不声称提供 Viewer 整体或并发
+session 配额。
+
+单正文超限返回 `MATERIAL_TOO_LARGE`；总量超限返回 `LIMIT_EXCEEDED`。新的总量
+覆盖过去未累计的嵌套和 descriptor 读取，因此即使默认数值不变，旧实现曾接受的较大
+嵌套或 mapping 读取也可能被拒绝，这是有意收紧统计覆盖。更小的
+`read_material(max_bytes=...)` 仍会收紧单正文上限。公共 projection 操作之外的
+通用内部 payload 读取保留旧默认行为。
+
+请根据实际不可变证明和工作负载选择 HOST 上限。stored envelope 加依赖 pin 字节
+可能只是下界，因为其他必要 descriptor 也计入总量。本次变更不提供 PN 通用容量 benchmark
+来证明应采用更大的默认数值。该账本限制唯一原始输入字节，不限制 Python 对象展开后的
+峰值堆、重复 I/O、解析工作、序列化临时空间、进程总 RSS 或并发操作。扫描及响应预算
+保持独立，不认证全部 projection 分配。调大上限不能使非法或未授权证明通过，也不会
+修补已保存 projection。
 
 ## 固定产物来源查询
 

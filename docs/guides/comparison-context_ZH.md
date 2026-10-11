@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: comparison-context.md
-  revision: "2026-10-11.1"
+  revision: "2026-10-11.3"
   status: implementation-candidate
   basis: "public exact read session; descriptive comparison only"
 ---
@@ -109,6 +109,94 @@ selector、scope、axis 或 visual pair 变化时取消在途读取，清空双�
 `rpnh/comparison_request/v1`、返回 `rpnh/comparison_context/v1`，输入输出均为封闭 DTO。
 旧 `/api/v2/comparison-view` 与 `rpnh/checkpoint_comparison/v1` 仍要求 same exact net，
 保留原 current-capture 语义。
+
+大请求使用只读 `POST /api/v2/comparison-context`，`Content-Type: application/json`，
+正文为同一闭合 v1 请求 DTO。浏览器在编码后的 GET 路径达到 60000 字节时自动改用 POST，
+避免 HTTP 请求行 65536 字节限制；较小请求继续使用 GET，原 HEAD 仍支持。
+POST 必须有单个有效 `Content-Length`，不支持分块传输；server 在读取、分配正文之前按
+HOST `max_request_bytes` 检查声明长度，超限返回 413。解析器也校验实际 UTF-8 正文字节，
+包括空白；重复 JSON 键仍拒绝。Python 对应 API 为
+`parse_body(raw: bytes, *, host_limits=None)`，本地请求 helper 为
+`handle_request(provider, "POST", "/api/v2/comparison-context", body=raw)`。
+该 POST 只执行原有只读比较；其他路由的方法与 owner 操作保持原状。
+比较响应发送与预算校验完全相同的紧凑 UTF-8 JSON 字节，`Content-Length` 为该字节数；
+HEAD 返回相同长度头而不发送正文。
+
+## HOST 资源预算
+
+`LIMITS` 是默认值，不是产品固定上限。可信 Python API 为
+`ComparisonProvider(session, *, host_limits=None)` 和
+`comparison_context(session, request, *, host_limits=None)`。映射可只覆盖部分字段；
+未指定项保持以下默认值：
+
+| 预算 | 默认值 |
+|---|---:|
+| `max_nodes_per_side` | 10000 |
+| `max_edges_per_side` | 30000 |
+| `max_mapping_relations` | 20000 |
+| `max_field_rows`（四轴合计） | 200000 |
+| `max_evidence_reads` | 20000 |
+| `max_response_bytes` | 16000000 |
+| `max_material_bytes`（单份可选正文） | 1048576 |
+| `max_selection_cursors`（缓存 continuation 句柄） | 128 |
+| `max_request_bytes`（UTF-8 JSON 正文及规范表示） | 1000000 |
+
+覆盖值必须是正整数，不能是布尔值，范围为 JSON 安全整数 1 至 9007199254740991；
+未知键会被拒绝。整数传输表示、引用格式、字符串形状及 occurrence-path 形状深度限制
+仍是协议校验，不是资源配置。
+
+请求和 selection DTO 的 `limits` 仍仅包含原来的六个字段。客户端可降低预算；超过 HOST
+配置值时返回 `scope_limit`（HTTP 413）。底层 session 的 `ReadLimits` 仍有效：响应字节
+预算与 session 响应预算取最小值；可选材料正文取 HOST 单份预算、session
+`max_material_bytes` 和比较剩余字节预算的最小值；selection 游标取 HOST 容量和
+session `max_cursors` 的最小值。其他 session 读取门仍生效。selection 路由公布有效的
+六项预算，浏览器将其用于请求。HTTP 解析与两端响应校验均使用实际预算，不再附加按
+默认规模固定的图/字段行数组上限。不静默裁切输出；过大的可选正文仍按原语义不披露。
+
+例如，将以下策略放入独立可信本地 `comparison-policy.json`，不要放入 HTTP 请求或
+闭合的 read-HOST DTO：
+
+```json
+{
+  "max_nodes_per_side": 20000,
+  "max_edges_per_side": 60000,
+  "max_mapping_relations": 40000,
+  "max_field_rows": 400000,
+  "max_evidence_reads": 40000,
+  "max_response_bytes": 32000000,
+  "max_material_bytes": 8388608,
+  "max_selection_cursors": 256,
+  "max_request_bytes": 2000000
+}
+```
+
+```python
+import json
+from pathlib import Path
+from cpn.frontend.comparison_context import ComparisonProvider
+from cpn.frontend.server import serve_projection
+from cpn.rpnh.collaboration.read_host_config import open_read_host_session
+
+policy = json.loads(Path("/absolute/path/comparison-policy.json").read_text())
+with open_read_host_session("/absolute/path/read-host.json") as session:
+    provider = ComparisonProvider(session, host_limits=policy)
+    serve_projection(provider, host="127.0.0.1", port=8765, open_browser=False)
+```
+
+已有 `read-host.json` 的 `limits` 对象也必须允许相应 session 预算，例如
+`{"max_response_bytes": 32000000, "max_material_bytes": 8388608, "max_cursors": 256}`。
+现有加载器用它为 HOST binding 构造 typed `ReadLimits`，session request 省略
+limits 并继承这些上限。直接通过 Python 建立 session 时，配置
+`RegistryReadHostBinding(..., limits=ReadLimits(...))`；省略 request limits
+即可继承，或用 `ReadLimitOverrides(...)` 进一步收紧指定字段。显式传入
+`ReadLimits(...)` 会约束其全部字段，包括按默认值填入的字段。请求不能提高 HOST 上限。
+普通 CLI 启动器保留 Comparison 默认值；需要覆盖时使用上述显式启动示例。
+
+自定义 HTTP 集成应向 `parse_query(raw, *, host_limits=None)`、
+`validate_request(value, *, host_limits=None)` 和
+`validate_comparison_context(value, request, *, host_limits=None)` 传入同一可信策略。
+现有 server 从 `ComparisonProvider.host_limits` 取得策略。这些是本地 HOST 选择，
+没有新增请求字段、grant、模型设置或 Registry 写入。
 
 ## 验证边界
 

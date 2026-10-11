@@ -11,7 +11,7 @@ const invalid=()=>{const error=new Error('invalid_response');error.code='invalid
 const object=(v,keys,optional=[])=>{if(!v||Array.isArray(v)||typeof v!=='object'||keys.some(k=>!Object.hasOwn(v,k))||Object.keys(v).some(k=>!keys.includes(k)&&!optional.includes(k)))invalid();return v;};
 const text=v=>{if(typeof v!=='string'||!v.length||v.length>4096||/[\x00-\x1f]/.test(v))invalid();return v;};
 const integer=(v,min=0)=>{if(!Number.isSafeInteger(v)||v<min)invalid();};
-const array=v=>{if(!Array.isArray(v)||v.length>200000)invalid();return v;};
+const array=v=>{if(!Array.isArray(v))invalid();return v;};
 const unique=v=>{array(v);if(new Set(v.map(stable)).size!==v.length)invalid();return v;};
 const reasons=new Set(['exact_identity','verified_author_mapping','explicit_presence','not_requested','not_provided','not_disclosed','not_captured','incomplete_scope','mapping_missing','mapping_unsupported','mapping_conflicting','comparator_unsupported','projection_unavailable','scope_limit']);
 const nodeFields=['id','label','kind','category','hidden_by_default','operation','operation_id','executor','inputs','outputs','token_kind','capacity','schema'];
@@ -28,11 +28,21 @@ function cut(v){object(v,['source_id','cut_id','head','reader_contract_version']
 function endpoint(v){object(v,['side','target_key','subject_kind','subject_id','occurrence_path']);if(!['left','right'].includes(v.side)||!['node','edge','boundary','author_element'].includes(v.subject_kind))invalid();text(v.target_key);text(v.subject_id);occurrence(v.occurrence_path);}
 function fact(v){if(v?.state==='provided'){object(v,['state','value','evidence_refs']);for(const r of unique(v.evidence_refs))ref(r);}else if(v?.state==='unknown'){object(v,['state','reason_code']);if(!reasons.has(v.reason_code))invalid();}else if(v?.state==='absent_in_complete_scope'){object(v,['state','absence_evidence_refs']);if(!unique(v.absence_evidence_refs).length)invalid();v.absence_evidence_refs.forEach(r=>ref(r));}else invalid();}
 export function comparisonContextPath(request){return '/api/v2/comparison-context?'+new URLSearchParams({request:JSON.stringify(request)});}
+export function comparisonContextTransport(request){
+    const path=comparisonContextPath(request);
+    // Keep small GETs; large JSON travels in a bounded read-only POST body.
+    return new TextEncoder().encode(path).length<60000?{path,options:{}}:
+        {path:'/api/v2/comparison-context',options:{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(request)}};
+}
 
 /** Validate closed shapes, exact cut/target/scope and recomputable field facts. */
 export async function normalizeComparisonContext(value,request){
     object(value,['schema_version','client_request_id','context_id','purpose','request_echo','global_atomic_snapshot','publication','sources','left','right','mapping','presentation','axes','comparability','authority']);
     if(value.schema_version!==CONTEXT_SCHEMA||value.client_request_id!==request.client_request_id||value.purpose!=='descriptive_read_only'||value.global_atomic_snapshot!==false||value.publication!=='complete_pair'||value.comparability!=='not_established'||value.authority!=='display_only')invalid();text(value.context_id);
+    const limits=object(request.limits,['max_nodes_per_side','max_edges_per_side','max_mapping_relations','max_field_rows','max_evidence_reads','max_response_bytes']);
+    for(const n of Object.values(limits))integer(n,1);
+    if(new TextEncoder().encode(JSON.stringify(value)).length>limits.max_response_bytes)invalid();
+    if(array(value.mapping.relations).length>limits.max_mapping_relations||AXES.reduce((n,axis)=>n+array(value.axes[axis].rows).length,0)>limits.max_field_rows)invalid();
     const echo=object(value.request_echo,['left','right','source_cuts','scope','axes','view_preference','visual_pairs']);
     for(const k of ['left','right','scope','axes','view_preference','visual_pairs'])if(!same(echo[k],request[k]))invalid();
     if(request.source_cuts!==null&&!same(echo.source_cuts,request.source_cuts))invalid();
@@ -45,6 +55,7 @@ export async function normalizeComparisonContext(value,request){
         if(!same(s.selected_target,request[side])||s.source_observation_key!==sources.get(request[side].source_id)?.observation_key)invalid();
         const g=object(s.graph,['schema_version','target_key','scope_key','nodes','edges','boundary_edges','topology_coverage']);
         if(g.schema_version!=='rpnh/comparison_pn/v1'||g.target_key!==await contextKey(request[side])||g.scope_key!==await contextKey({target:request[side],scope:request.scope[side]})||g.topology_coverage!=='complete_in_declared_scope')invalid();
+        if(array(g.nodes).length>limits.max_nodes_per_side||array(g.edges).length>limits.max_edges_per_side)invalid();
         const nodeIds=new Set(),edgeIds=new Set();bySubject[side]=new Map();subjects[side]=new Set();
         for(const n of array(g.nodes)){object(n,nodeFields.slice(0,5),nodeFields.slice(5));text(n.id);text(n.label);if(nodeIds.has(n.id)||!['transition','place'].includes(n.kind)||!['execution','place','resource'].includes(n.category)||typeof n.hidden_by_default!=='boolean')invalid();nodeIds.add(n.id);for(const k of nodeFields.slice(5))if(Object.hasOwn(n,k)){if(['inputs','outputs'].includes(k))unique(n[k]).forEach(text);else if(k==='capacity'){if(n[k]!==null)integer(n[k]);}else if(n[k]!==null&&typeof n[k]!=='string')invalid();}subjects[side].add('node:'+n.id);bySubject[side].set('node:'+n.id,n);}
         for(const e of array(g.edges)){object(e,edgeFields.slice(0,8),edgeFields.slice(8));text(e.id);text(e.kind);text(e.mode);integer(e.weight,1);if(edgeIds.has(e.id)||!nodeIds.has(e.source)||!nodeIds.has(e.target)||typeof e.hidden_by_default!=='boolean'||(e.outcome!==null&&typeof e.outcome!=='string')||(Object.hasOwn(e,'resource')&&typeof e.resource!=='boolean'))invalid();edgeIds.add(e.id);for(const k of ['direction','emit','forward_source'])if(Object.hasOwn(e,k)&&e[k]!==null)text(e[k]);subjects[side].add('edge:'+e.id);bySubject[side].set('edge:'+e.id,e);}
@@ -129,7 +140,7 @@ export function installComparisonContextPanel(container,{request,translate=t=>t,
         finally{if(indexTicket===indexGeneration&&indexLoading){indexLoading=false;activeIndexCursor=null;if(state.open)draw();}}
     }
     async function load(){const ticket=state.begin();if(!ticket)return;indexController?.abort();indexController=null;++indexGeneration;indexLoading=false;activeIndexCursor=null;controller?.abort();controller=new AbortController();clearRenderers();draw();
-        try{const raw=await request(comparisonContextPath(ticket.request),controller.signal);if(await state.accept(ticket,raw))draw();}
+        try{const transport=comparisonContextTransport(ticket.request);const raw=await request(transport.path,controller.signal,transport.options);if(await state.accept(ticket,raw))draw();}
         catch(error){if(state.accepts(ticket)){state.fail(ticket,error);clearRenderers();if(state.error==='access_changed'){state.sources=[];state.options=[];state.cuts=null;state.session=null;state.limits=null;state.nextCursor=null;state.indexLoaded=false;state.selection={left:null,right:null};state.source_left=null;state.source_right=null;}draw();}}
     }
     function changeScope(side,next){const scopeValue={kind:'selected_pair',left:structuredClone(state.scope.left),right:structuredClone(state.scope.right),[side]:structuredClone(next)};

@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: en
   counterpart: registry-read-sessions_ZH.md
-  revision: "2026-10-09.1"
+  revision: "2026-10-11.1"
   status: implemented
 ---
 
@@ -105,10 +105,72 @@ cursor is read-only and returns the same page at the same cut.
 Limits default to a 100-entry page, at most 1,000 entries per whole page,
 64 sources/clauses, 32 predicates/projection fields, 64 values per `in`,
 64 KiB query input, 4 MiB response/material, 100,000 scanned rows, and
-64 MiB of scan/retained canonical data. The HOST may tighten limits.
+64 MiB of scan/retained canonical data. The HOST may tighten limits; material
+policy is described separately below.
 Scalar row/byte budgets run before unbounded history hydration. Each cut
 hydrates history once, not once per indexed object. Over-budget reads return
 `LIMIT_EXCEEDED` or a valid bounded continuation, never a false complete page.
+
+## HOST material policy and operation bounds
+
+`ReadLimits` retains a conservative 4 MiB material default. The trusted HOST may
+configure `max_material_bytes` (one immutable body) and
+`max_material_closure_bytes` (unique immutable bodies in one public projection
+or mapping operation). All fifteen budgets, including response, scan, source,
+page, cursor and lifetime ceilings, are trusted HOST policies. Their existing
+defaults apply when the HOST omits settings; defaults are not a second hidden
+maximum. Sparse requests inherit HOST values and can only tighten them.
+An increased resource budget conveys no record, material, export,
+Registry-write or PN authority.
+
+A normal `ReadSessionRequest` uses sparse `ReadLimitOverrides`. Omitted fields
+inherit the HOST ceiling; explicitly requesting `max_material_bytes=4194304`
+keeps that 4 MiB restriction even when the HOST permits more. Each supplied
+request value is clipped to the HOST ceiling. A sparse body restriction does
+not also restrict the closure. `limits: {}` and an explicit default-valued
+field therefore have different meanings. Wire values must be positive
+integers; null, booleans, non-integers and unknown fields are rejected. Python
+`ReadLimitOverrides` uses `None` internally for omission and omits it on wire.
+
+Legacy full `ReadLimits` request objects remain explicit restrictions for all
+fields. In a HOST `ReadLimits`, omitted `max_material_closure_bytes` follows
+`max_material_bytes`, preserving the old single-knob policy. This fallback is
+resolved when converting the policy to effective values; `dataclasses.replace`
+on an unresolved policy preserves it. Effective session limits contain concrete
+values, so replacing one effective field changes only that field. The owned
+read-HOST file's `limits` is trusted policy, not a second default-filled request.
+The file's ownership and unchanged-content checks still apply. Viewer/HTTP
+requests cannot set this trusted policy. New serialized requests containing the
+closure field require a reader with the updated request schema.
+
+One public projection operation shares a temporary ledger with all nested
+proof, topology, assembly, runtime-declaration and generated-correspondence
+reads. `read_public_mapping` shares one ledger across both roots. Every fetched
+immutable body, including descriptors, is charged once by its exact
+source-qualified reference and verified registered size before a physical
+read or the reader's cached return. Repeated references do not add unique
+bytes, but material access still checks current authorization. Original pin,
+byte, digest, metadata, fixed-cut and semantic proof checks remain required.
+A new operation gets a fresh ledger; it does not mutate the session's snapshot
+or publish Registry facts. Separate Viewer left/right projection calls are
+separate operations, not a single Viewer-wide or concurrent-session quota.
+
+Per-body overflow returns `MATERIAL_TOO_LARGE`; aggregate overflow returns
+`LIMIT_EXCEEDED`. The aggregate now covers previously uncounted nested and
+descriptor reads: unchanged numeric defaults can reject a large nested or
+mapping read accepted by older accounting. This is intentional stricter
+coverage. A lower `read_material(max_bytes=...)` still tightens its body limit.
+Generic internal payload reads outside a public-projection operation keep
+their previous default behavior.
+
+Choose operator ceilings from the actual immutable proof and workload. Stored
+envelope plus pinned dependency bytes can be only a lower bound because other
+required descriptors also count. This change supplies no PN-size benchmark
+establishing a larger default. This ledger bounds unique raw input bytes, not
+peak Python heap, repeated I/O, parsing work, serialization scratch, total RSS,
+or concurrent operations. Scan and response limits remain independent; they
+do not certify all projection allocations. Changing ceilings never makes an
+invalid or unauthorized proof acceptable and never repairs stored projections.
 
 ## Fixed product-origin query
 

@@ -188,16 +188,64 @@ class ReadLimits:
     max_cuts: int = 64
     max_cursors: int = 128
     session_seconds: int = 600
+    # None preserves the legacy single material knob, including dataclasses.replace.
+    max_material_closure_bytes: int | None = None
 
     def __post_init__(self):
-        if any(type(value) is not int or value < 1 for value in asdict(self).values()):
+        if any(type(value) is not int or value < 1 for key, value in asdict(self).items()
+               if key != 'max_material_closure_bytes' or value is not None):
             raise ValueError('read limits require positive integers')
 
     def tightened(self, other):
-        return ReadLimits(**{key: min(value, getattr(other, key)) for key, value in asdict(self).items()})
+        return ReadLimits(**{key: min(value, other.to_dict()[key])
+                             for key, value in self.to_dict().items()})
 
     def to_dict(self):
-        return asdict(self)
+        values = asdict(self)
+        if values['max_material_closure_bytes'] is None:
+            values['max_material_closure_bytes'] = self.max_material_bytes
+        return values
+
+
+@dataclass(frozen=True, slots=True)
+class ReadLimitOverrides:
+    """Sparse request restrictions, never trusted HOST policy or authority.
+
+    None means omitted internally; serialized values contain only positive ints.
+    Legacy ReadLimits remains an explicit, fully populated request restriction.
+    """
+    max_sources: int | None = None
+    max_clauses: int | None = None
+    max_predicates: int | None = None
+    max_in_values: int | None = None
+    max_projection_fields: int | None = None
+    max_page_size: int | None = None
+    max_query_bytes: int | None = None
+    max_response_bytes: int | None = None
+    max_scan_rows: int | None = None
+    max_scan_bytes: int | None = None
+    max_material_bytes: int | None = None
+    max_cuts: int | None = None
+    max_cursors: int | None = None
+    session_seconds: int | None = None
+    max_material_closure_bytes: int | None = None
+
+    def __post_init__(self):
+        if any(type(value) is not int or value < 1
+               for value in asdict(self).values() if value is not None):
+            raise ValueError('read limit overrides require positive integers')
+
+    def to_dict(self):
+        return {key: value for key, value in asdict(self).items() if value is not None}
+
+
+def _effective_read_limits(host, requested):
+    """Trusted HOST ceilings; sparse requests may only tighten each budget."""
+    values, restrictions = host.to_dict(), requested.to_dict()
+    for key in values:
+        if key in restrictions:
+            values[key] = min(values[key], restrictions[key])
+    return ReadLimits(**values)
 
 
 @dataclass(frozen=True, slots=True)
@@ -254,11 +302,11 @@ def _selections(values):
 class ReadSessionRequest:
     selection: ExplicitSources | SelectedSourceSet
     purpose: str
-    limits: ReadLimits = field(default_factory=ReadLimits)
+    limits: ReadLimits | ReadLimitOverrides = field(default_factory=ReadLimitOverrides)
     schema_version: str = 'rpnh/registry_read_session_request/v1'
 
     def __post_init__(self):
-        if type(self.selection) not in (ExplicitSources, SelectedSourceSet) or type(self.limits) is not ReadLimits:
+        if type(self.selection) not in (ExplicitSources, SelectedSourceSet) or type(self.limits) not in (ReadLimits, ReadLimitOverrides):
             raise TypeError('unsupported read session request')
         _require_source_id(self.purpose)
         if self.schema_version != 'rpnh/registry_read_session_request/v1':

@@ -211,7 +211,7 @@ _OPTIONAL_PUBLIC_EXPORTS = {
         'HostProfile', 'ExistingRunHandle', 'launch_package')},
     'render_environment_setup': '.environment_setup',
     **{name: '.registry_read_contracts' for name in (
-        'RegistryReadSessionError', 'ReadLimits', 'SourceSelection', 'ExplicitSources',
+        'RegistryReadSessionError', 'ReadLimits', 'ReadLimitOverrides', 'SourceSelection', 'ExplicitSources',
         'SelectedSourceSet', 'ReadSessionRequest', 'PublicRegistryHead', 'SourceCut',
         'HistoricalCutRequest', 'TypedPredicate', 'TypedIndexClause', 'IndexQuery',
         'PRODUCT_ORIGIN_PROFILE', 'PRODUCT_ORIGIN_PAGE_SCHEMA', 'PRODUCT_ORIGIN_CONTRACT_REVISION')},

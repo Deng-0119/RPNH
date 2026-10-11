@@ -214,6 +214,7 @@ def handle_request(
     target: str,
     *,
     show_resources: bool = False,
+    body: bytes = b"",
 ) -> RequestResponse:
     """Handle one request synchronously without opening a socket.
 
@@ -221,10 +222,10 @@ def handle_request(
     GET and HEAD use the same validated response without opening execution hosts.
     """
     method = method.upper()
-    if method not in {"GET", "HEAD"}:
+    path = urlsplit(target).path
+    if method not in {"GET", "HEAD"} and not (method == "POST" and path == "/api/v2/comparison-context"):
         return _response(
             405, "text/plain; charset=utf-8", "只支持 GET 和 HEAD".encode("utf-8"))
-    path = urlsplit(target).path
     if path == "/":
         body = (_STATIC_ROOT / "index.html").read_bytes().replace(
             b"__NET_VIEW_BOOTSTRAP__",
@@ -298,17 +299,22 @@ def handle_request(
         except (ValueError, TypeError, KeyError, RuntimeError, OSError, sqlite3.Error):
             response = _response(503, "application/json; charset=utf-8", b'{"error":"read_failed"}')
     elif path in {"/api/v2/comparison-context", "/api/v2/comparison-selection"}:
-        from .comparison_context import (parse_query as parse_context_query,
+        from .comparison_context import (parse_query as parse_context_query, parse_body, _json,
             validate_comparison_context, ComparisonContextError)
         from cpn.rpnh.collaboration.registry_read_contracts import RegistryReadSessionError
         from .comparison_context import _session_error
         try:
             if path.endswith("comparison-context"):
-                selected = parse_context_query(urlsplit(target).query)
+                host_limits = getattr(provider, "host_limits", None)
+                if method == "POST":
+                    if urlsplit(target).query: raise ComparisonContextError("invalid_query")
+                    selected = parse_body(body, host_limits=host_limits)
+                else:
+                    selected = parse_context_query(urlsplit(target).query, host_limits=host_limits)
                 action = getattr(provider, "comparison_context", None)
                 if not callable(action): raise ComparisonContextError("unsupported")
                 payload = action(selected)
-                validate_comparison_context(payload, selected)
+                validate_comparison_context(payload, selected, host_limits=host_limits)
             else:
                 params = parse_qs(urlsplit(target).query, keep_blank_values=True, strict_parsing=True)
                 if set(params) - {"cursor"} or any(len(v) != 1 or not v[0] for v in params.values()):
@@ -318,7 +324,7 @@ def handle_request(
                 payload = action(cursor=params.get("cursor", [None])[0])
                 if payload.get("schema_version") != "rpnh/comparison_selection/v1":
                     raise ComparisonContextError("read_failed")
-            response = _response(200, "application/json; charset=utf-8", json.dumps(payload, ensure_ascii=False, allow_nan=False).encode("utf8"))
+            response = _response(200, "application/json; charset=utf-8", _json(payload).encode("utf8"))
         except (ComparisonContextError, RegistryReadSessionError) as error:
             code = error.code if isinstance(error, ComparisonContextError) else _session_error(error).code
             status = {"invalid_query": 400, "access_changed": 403, "stale_observation": 409,
@@ -478,17 +484,48 @@ class _ProjectionHandler(BaseHTTPRequestHandler):
             )
         return None, raw_target
 
+    def _read_comparison_body(self) -> bytes | RequestResponse:
+        # Reject framing/size before allocating or reading the declared body.
+        from .comparison_context import _host_limits
+        lengths = self.headers.get_all("Content-Length", [])
+        content_types = self.headers.get_all("Content-Type", [])
+        if (self.headers.get_all("Transfer-Encoding", []) or len(lengths) != 1
+                or not lengths[0].isascii() or not lengths[0].isdecimal()
+                or len(content_types) != 1 or self.headers.get_content_type() != "application/json"):
+            return _response(400, "application/json; charset=utf-8", b'{"error":"invalid_query"}')
+        try:
+            maximum = _host_limits(getattr(self.server.provider, "host_limits", None))["max_request_bytes"]
+            # Comparing decimal lengths also avoids allocating an unbounded integer.
+            length_text = lengths[0].lstrip("0") or "0"
+            bound = str(maximum)
+            if len(length_text) > len(bound) or (len(length_text) == len(bound) and length_text > bound):
+                return _response(413, "application/json; charset=utf-8", b'{"error":"scope_limit"}')
+            length = int(length_text)
+            body = self.rfile.read(length)
+            if len(body) != length: raise ValueError("incomplete body")
+            return body
+        except (ValueError, OSError):
+            return _response(400, "application/json; charset=utf-8", b'{"error":"invalid_query"}')
+
     def _send(self) -> None:
         rejection, target = self._request_boundary()
         if rejection is not None:
             self._send_response(rejection)
             return
         assert target is not None
+        body = b""
+        if self.command == "POST" and urlsplit(target).path == "/api/v2/comparison-context":
+            body = self._read_comparison_body()
+            if isinstance(body, RequestResponse):
+                self.close_connection = True
+                self._send_response(body)
+                return
         response = handle_request(
             self.server.provider,
             self.command,
             target,
             show_resources=self.server.show_resources,
+            body=body,
         )
         self._send_response(response)
 

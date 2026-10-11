@@ -147,7 +147,7 @@ async function loadTokenResource(token) {
 }
 
 function loadScript(src) { return new Promise((resolve, reject) => { const s = document.createElement('script'); s.src = src; s.onload = resolve; s.onerror = () => reject(messageError("本地展示资产未构建，请按分支手册构建或安装完整 wheel。")); document.head.append(s); }); }
-async function request(path, signal) { const r = await fetch(path, { cache: 'no-store', signal }); const value = await r.json(); if (!r.ok) {
+async function request(path, signal, options = {}) { const r = await fetch(path, { ...options, cache: 'no-store', signal }); const value = await r.json(); if (!r.ok) {
     const e = new Error(value.error ?? `HTTP ${r.status}`);
     e.status = r.status;
     throw e;

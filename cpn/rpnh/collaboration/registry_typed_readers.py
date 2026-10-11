@@ -60,6 +60,15 @@ def _context(snapshot):
 
 
 def _cached_read(core, reference, snapshot, namespace, contract, loader):
+    budget = getattr(snapshot, '_projection_material_budget', None)
+    if budget is not None and namespace in {'payload', 'descriptor-body', 'descriptor'}:
+        # Run before both cache hits and misses. A cache is never read authority.
+        if namespace == 'payload' and contract[1]:
+            snapshot.check_authorized(reference, 'material')
+        prepared = prepared_at(core, reference, snapshot)
+        if namespace == 'payload' and prepared.size > contract[2]:
+            raise TypedReadError('MATERIAL_TOO_LARGE')
+        budget.admit(reference, prepared)
     context = _context(snapshot)
     if context is None:
         return loader()
@@ -113,7 +122,12 @@ def _prepared_at(core, reference, snapshot):
         row['storage_locator'], body)
 
 
-def payload_at(core, reference, snapshot, *, material=False, max_bytes=4 * 1024 * 1024):
+def payload_at(core, reference, snapshot, *, material=False, max_bytes=None):
+    budget = getattr(snapshot, '_projection_material_budget', None)
+    if max_bytes is None:
+        max_bytes = budget.max_body_bytes if budget is not None else 4 * 1024 * 1024
+    elif budget is not None:
+        max_bytes = min(max_bytes, budget.max_body_bytes)
     return _cached_read(core, reference, snapshot, 'payload', ('envelope-digest/v1', material, max_bytes),
         lambda: _payload_at(core, reference, snapshot, material=material, max_bytes=max_bytes))
 

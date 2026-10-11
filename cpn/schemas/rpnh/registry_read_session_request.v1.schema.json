@@ -65,6 +65,10 @@
           "type": "integer",
           "minimum": 1
         },
+        "max_material_closure_bytes": {
+          "type": "integer",
+          "minimum": 1
+        },
         "max_cuts": {
           "type": "integer",
           "minimum": 1
@@ -95,7 +99,6 @@
             "sources": {
               "type": "array",
               "minItems": 1,
-              "maxItems": 64,
               "items": {
                 "type": "object",
                 "additionalProperties": false,
@@ -194,7 +197,6 @@
             "sources": {
               "type": "array",
               "minItems": 1,
-              "maxItems": 64,
               "items": {
                 "type": "object",
                 "additionalProperties": false,

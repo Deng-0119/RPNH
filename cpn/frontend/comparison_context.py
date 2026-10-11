@@ -18,6 +18,8 @@ AXES = ('definition', 'configuration', 'materials', 'runtime')
 LIMITS = {'max_nodes_per_side': 10000, 'max_edges_per_side': 30000,
           'max_mapping_relations': 20000, 'max_field_rows': 200000,
           'max_evidence_reads': 20000, 'max_response_bytes': 16000000}
+HOST_LIMITS = {**LIMITS, 'max_material_bytes': 1048576,
+               'max_selection_cursors': 128, 'max_request_bytes': 1000000}
 NODE_FIELDS = ('id', 'label', 'kind', 'category', 'hidden_by_default', 'operation',
                'operation_id', 'executor', 'inputs', 'outputs', 'token_kind', 'capacity', 'schema')
 EDGE_FIELDS = ('id', 'source', 'target', 'kind', 'mode', 'weight', 'outcome',
@@ -38,6 +40,27 @@ class ComparisonContextError(ValueError):
             code = 'read_failed'
         self.code = code
         super().__init__(code)
+
+
+def _host_limits(host_limits=None):
+    """Trusted HOST overrides; never populate this mapping from HTTP input."""
+    if host_limits is not None and (type(host_limits) is not dict
+            or set(host_limits) - set(HOST_LIMITS)):
+        raise ValueError('unknown comparison HOST limits')
+    limits = {**HOST_LIMITS, **(host_limits or {})}
+    if any(type(v) is not int or not 1 <= v <= 9007199254740991 for v in limits.values()):
+        raise ValueError('comparison HOST limits require positive JSON-safe integers')
+    return limits
+
+
+def _effective_host_limits(host_limits, description):
+    limits = _host_limits(host_limits)
+    session_limits = description.get('effective_limits', {})
+    for key in ('max_response_bytes', 'max_material_bytes'):
+        if key in session_limits: limits[key] = min(limits[key], session_limits[key])
+    if 'max_cursors' in session_limits:
+        limits['max_selection_cursors'] = min(limits['max_selection_cursors'], session_limits['max_cursors'])
+    return limits
 
 
 def _json(value):
@@ -66,8 +89,8 @@ def _int(value, minimum=0):
     return value
 
 
-def _array(value, limit=30000):
-    if type(value) is not list or len(value) > limit:
+def _array(value, limit=None):
+    if type(value) is not list or (limit is not None and len(value) > limit):
         raise ComparisonContextError()
     return value
 
@@ -174,7 +197,8 @@ def endpoint(value):
     return value
 
 
-def validate_request(value):
+def validate_request(value, *, host_limits=None):
+    policy = _host_limits(host_limits)
     _object(value, ('schema_version', 'session_id', 'client_request_id', 'left', 'right', 'source_cuts',
                     'scope', 'axes', 'view_preference', 'visual_pairs', 'limits'))
     if value['schema_version'] != REQUEST_SCHEMA or value['view_preference'] not in {'auto', 'full_pair'}:
@@ -183,7 +207,7 @@ def validate_request(value):
     _text(value['client_request_id'], 256)
     target(value['left']); target(value['right'])
     if value['source_cuts'] is not None:
-        if type(value['source_cuts']) is not dict or len(value['source_cuts']) > 128:
+        if type(value['source_cuts']) is not dict:
             raise ComparisonContextError()
         for sid, cut in value['source_cuts'].items():
             if source_cut(cut)['source_id'] != sid:
@@ -216,14 +240,19 @@ def validate_request(value):
                 if item['side'] != side or item['target_key'] != _key(value[side]):
                     raise ComparisonContextError()
     _object(value['limits'], LIMITS)
-    for key, maximum in LIMITS.items():
+    for key in LIMITS:
+        maximum = policy[key]
         if _int(value['limits'][key], 1) > maximum: raise ComparisonContextError('scope_limit')
-    if len(_json(value).encode()) > 1000000:
+    if len(_json(value).encode()) > policy['max_request_bytes']:
         raise ComparisonContextError('scope_limit')
     return deepcopy(value)
 
 
-def parse_query(raw):
+def parse_body(raw, *, host_limits=None):
+    """Parse a bounded UTF-8 JSON body; duplicate keys remain invalid."""
+    policy = _host_limits(host_limits)
+    if type(raw) is not bytes: raise ComparisonContextError()
+    if len(raw) > policy['max_request_bytes']: raise ComparisonContextError('scope_limit')
     def unique(pairs):
         result = {}
         for key, value in pairs:
@@ -231,11 +260,19 @@ def parse_query(raw):
             result[key] = value
         return result
     try:
+        return validate_request(json.loads(raw.decode('utf-8'), object_pairs_hook=unique,
+            parse_constant=lambda _: (_ for _ in ()).throw(ComparisonContextError())), host_limits=policy)
+    except (ValueError, TypeError, KeyError, RecursionError) as exc:
+        if isinstance(exc, ComparisonContextError): raise
+        raise ComparisonContextError() from exc
+
+
+def parse_query(raw, *, host_limits=None):
+    try:
         values = parse_qs(raw, keep_blank_values=True, strict_parsing=True)
         if set(values) != {'request'} or len(values['request']) != 1:
             raise ComparisonContextError()
-        return validate_request(json.loads(values['request'][0], object_pairs_hook=unique,
-                                           parse_constant=lambda _: (_ for _ in ()).throw(ComparisonContextError())))
+        return parse_body(values['request'][0].encode('utf-8'), host_limits=host_limits)
     except (ValueError, TypeError, KeyError, RecursionError) as exc:
         if isinstance(exc, ComparisonContextError): raise
         raise ComparisonContextError() from exc
@@ -280,7 +317,7 @@ def _hierarchy(projection, nodes, edges):
         return {'coverage': 'not_provided', 'scopes': []}
     node_ids, edge_ids = {n['id'] for n in nodes}, {e['id'] for e in edges}
     scopes = []
-    for item in _array(raw, 10000):
+    for item in _array(raw):
         _object(item, ('scope', 'parent_scope', 'label', 'node_ids', 'edge_ids', 'evidence_refs'))
         side_scope(item['scope'])
         if item['scope']['kind'] not in {'module', 'subnet'}: raise ComparisonContextError('read_failed')
@@ -810,7 +847,7 @@ def _material_facts(session, projection, cuts, observations, budget):
                 body = {'status': 'scope_limit'}
             else:
                 budget['reads'] -= 1
-                body = session.read_material(resource_ref=_qualified(resource), at_cut=cuts[sid], max_bytes=min(1048576, budget['bytes']))
+                body = session.read_material(resource_ref=_qualified(resource), at_cut=cuts[sid], max_bytes=min(budget['max_material_bytes'], budget['bytes']))
         except Exception as exc:
             from cpn.rpnh.collaboration.registry_read_contracts import RegistryReadSessionError
             if not isinstance(exc, RegistryReadSessionError) or exc.code not in {'MATERIAL_ACCESS_NOT_GRANTED', 'GOVERNED_DELIVERY_REQUIRED', 'MATERIAL_TOO_LARGE'}:
@@ -831,11 +868,13 @@ def _material_facts(session, projection, cuts, observations, budget):
     return facts
 
 
-def comparison_context(session, request):
+def comparison_context(session, request, *, host_limits=None):
     """Read both selected sides and all evidence through one public session."""
-    selected = validate_request(request)
+    policy = _host_limits(host_limits)
     try:
         description = session.describe()
+        selected = validate_request(request, host_limits=policy)
+        effective = _effective_host_limits(policy, description)
         if selected['session_id'] != description['session_id']:
             raise ComparisonContextError('access_changed')
         limits = dict(selected['limits'])
@@ -907,7 +946,7 @@ def comparison_context(session, request):
         evidence_refs = {_json(e['evidence_ref']) for relation in mapping['relations'] for e in relation['evidence']}
         evidence_refs.update(_json(ref) for change in mapping['explicit_presence_changes'] for ref in change['absence_evidence_refs'])
         if len(evidence_refs) > limits['max_evidence_reads']: raise ComparisonContextError('scope_limit')
-        budget = {'reads': limits['max_evidence_reads'] - len(evidence_refs), 'bytes': limits['max_response_bytes'], 'cache': {}}
+        budget = {'reads': limits['max_evidence_reads'] - len(evidence_refs), 'bytes': limits['max_response_bytes'], 'max_material_bytes': effective['max_material_bytes'], 'cache': {}}
         materials = {side: _material_facts(session, projections[side], cuts, observations, budget)
                      if 'materials' in selected['axes'] else {} for side in sides}
         for side in sides:
@@ -929,7 +968,7 @@ def comparison_context(session, request):
                     'source_cuts': cuts_wire, 'scope': {'kind': 'full_pair', 'left': {'kind': 'full_net'}, 'right': {'kind': 'full_net'}},
                     'view_preference': 'full_pair'}},
             'axes': axes, 'comparability': 'not_established', 'authority': 'display_only'}
-        validate_comparison_context(result, selected)
+        validate_comparison_context(result, selected, host_limits=policy)
         if len(_json(result).encode()) > limits['max_response_bytes']: raise ComparisonContextError('scope_limit')
         session.final_recheck(tuple(cuts))
         return result
@@ -945,15 +984,16 @@ class ComparisonProvider:
     """Independent read-only viewer; deliberately has no raw-net __call__."""
     comparison_only = True
 
-    def __init__(self, session):
+    def __init__(self, session, *, host_limits=None):
         from threading import RLock
         self.session = session
+        self.host_limits = _host_limits(host_limits)
         self._selection_pages = {}
         self._lock = RLock()
 
     def comparison_context(self, request):
         with self._lock:
-            return comparison_context(self.session, request)
+            return comparison_context(self.session, request, host_limits=self.host_limits)
 
     def comparison_selection(self, *, cursor=None):
         with self._lock:
@@ -968,6 +1008,7 @@ class ComparisonProvider:
         import secrets
         with self._lock:
             description = self.session.describe()
+            policy = _effective_host_limits(self.host_limits, description)
             if cursor is None:
                 cuts, specs = {}, []
                 for state in description['sources']:
@@ -1023,14 +1064,14 @@ class ComparisonProvider:
                     targets.append({'target': chosen, 'label': f"{chosen['source_id']} · {chosen['kind']} · {ref['ref']['version_id']}", 'read_state': 'not_read'})
             continuation = None
             if next_state:
-                if len(self._selection_pages) >= 128: raise ComparisonContextError('scope_limit')
+                if len(self._selection_pages) >= policy['max_selection_cursors']: raise ComparisonContextError('scope_limit')
                 continuation = 'selection_' + secrets.token_urlsafe(24)
                 self._selection_pages[continuation] = next_state
             response = {'schema_version': 'rpnh/comparison_selection/v1', 'session_id': description['session_id'],
                 'sources': deepcopy(description['sources']),
                 'targets': targets, 'source_cuts': {sid: cut.to_dict() for sid, cut in state['cuts'].items()},
                 'next_cursor': continuation,
-                'limits': {key: min(value, description.get('effective_limits', {}).get(key, value)) for key, value in LIMITS.items()}}
+                'limits': {key: policy[key] for key in LIMITS}}
             self.session.final_recheck()
             state['response'] = deepcopy(response)
             return response
@@ -1053,9 +1094,10 @@ def _fact(value):
     else: raise ComparisonContextError('invalid_response')
 
 
-def validate_comparison_context(value, request):
+def validate_comparison_context(value, request, *, host_limits=None):
     """Closed response validation with recomputed scope, modes and row counts."""
-    request = validate_request(request)
+    request = validate_request(request, host_limits=host_limits)
+    limits = request['limits']
     _object(value, ('schema_version', 'client_request_id', 'context_id', 'purpose', 'request_echo',
                     'global_atomic_snapshot', 'publication', 'sources', 'left', 'right', 'mapping',
                     'presentation', 'axes', 'comparability', 'authority'))
@@ -1071,7 +1113,7 @@ def validate_comparison_context(value, request):
     if request['source_cuts'] is not None and echo['source_cuts'] != request['source_cuts']:
         raise ComparisonContextError('invalid_response')
     observations = {}
-    for observed in _array(value['sources'], 128):
+    for observed in _array(value['sources']):
         _object(observed, ('observation_key', 'source_state', 'final_recheck'))
         if observed['final_recheck'] != 'passed': raise ComparisonContextError('invalid_response')
         state = _object(observed['source_state'], ('source_id', 'source_ref', 'cut', 'access_revision', 'access_state', 'coverage'))
@@ -1097,6 +1139,8 @@ def validate_comparison_context(value, request):
             or graph['scope_key'] != scope_key or graph['topology_coverage'] != 'complete_in_declared_scope'):
             raise ComparisonContextError('invalid_response')
         _projection_graph(graph)
+        if len(graph['nodes']) > limits['max_nodes_per_side'] or len(graph['edges']) > limits['max_edges_per_side']:
+            raise ComparisonContextError('scope_limit')
         resolution = _object(current['scope_resolution'], ('scope_key', 'requested_scope', 'resolved_scope',
             'member_node_ids', 'member_edge_ids', 'boundary_edges', 'membership_evidence_refs', 'coverage'))
         if (resolution['scope_key'] != scope_key or resolution['requested_scope'] != request['scope'][side]
@@ -1145,6 +1189,8 @@ def validate_comparison_context(value, request):
     if mapping['contract_version'] != 'rpnh/comparison_mapping/v1' or mapping['coverage'] not in {'complete_in_declared_scope', 'partial', 'none'}:
         raise ComparisonContextError('invalid_response')
     if not set(_unique(mapping['reason_codes'])) <= REASONS: raise ComparisonContextError('invalid_response')
+    if len(mapping['relations']) > limits['max_mapping_relations']:
+        raise ComparisonContextError('scope_limit')
     relation_ids, covered = set(), {'left': set(), 'right': set()}
     for relation in _array(mapping['relations']):
         _object(relation, ('relation_id', 'relation_kind', 'left', 'right', 'validation', 'semantic_claim', 'evidence', 'coverage', 'reason_code', 'author_direction'))
@@ -1235,7 +1281,7 @@ def validate_comparison_context(value, request):
         if axis not in request['axes'] and (result['coverage'] != 'not_requested' or result['rows']): raise ComparisonContextError('invalid_response')
         if not set(_unique(result['unknown_reasons'])) <= REASONS: raise ComparisonContextError('invalid_response')
         ids = set()
-        for row in _array(result['rows'], LIMITS['max_field_rows']):
+        for row in _array(result['rows'], limits['max_field_rows']):
             _object(row, ('row_id', 'subject_relation_id', 'subject_scope', 'field_path', 'comparator_contract',
                 'left_fact', 'right_fact', 'classification', 'reason_code', 'evidence_refs', 'interpretation'))
             if row['row_id'] in ids or row['subject_scope'] != scope_key or row['interpretation'] != 'current_analysis' or row['reason_code'] not in REASONS or row['classification'] not in {'known_same', 'known_changed', 'unknown'} or row['comparator_contract'] != 'rpnh/json_equal/v1':
@@ -1249,6 +1295,8 @@ def validate_comparison_context(value, request):
             if recomputed != row: raise ComparisonContextError('invalid_response')
         if result['counts'] != _axis(axis, scope_key, result['rows'], result['coverage'], result['unknown_reasons'])['counts']:
             raise ComparisonContextError('invalid_response')
+    if sum(len(axis['rows']) for axis in value['axes'].values()) > limits['max_field_rows'] or len(_json(value).encode()) > limits['max_response_bytes']:
+        raise ComparisonContextError('scope_limit')
     if 'definition' in request['axes'] and value['axes']['definition']['rows'] != _definition_rows({s: value[s] for s in ('left', 'right')}, mapping, scope_key):
         raise ComparisonContextError('invalid_response')
     return value

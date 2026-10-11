@@ -18,7 +18,7 @@ from cpn.frontend.server import handle_request
 from cpn.rpnh.collaboration import ClosedModuleAuthor, author_material_schema_data
 from cpn.rpnh.collaboration.materials import _elements
 from cpn.rpnh.collaboration.references import SourceQualifiedVersionRef, SourceQualifiedResourceRef
-from cpn.rpnh.collaboration.registry_read_contracts import ReadSessionRequest, ExplicitSources, SourceSelection
+from cpn.rpnh.collaboration.registry_read_contracts import ReadLimits, ReadSessionRequest, ExplicitSources, SourceSelection
 from cpn.rpnh.collaboration.registry_read_session import (RegistryReadHostBinding, ExistingReadAuthorityProvider,
     open_registry_session, open_readonly_source)
 from cpn.rpnh.collaboration.registry_typed_readers import TypedReaderCatalog
@@ -451,3 +451,314 @@ def test_third_selected_source_observation_revocation_is_part_of_final_pair_guar
     assert response.status == 403 and json.loads(response.body) == {'error': 'access_changed'}
     assert not any(name in response.body.decode() for name in ('left', 'right', 'nodes', 'counts', 'graph'))
     assert (counts(left), counts(right)) == before
+
+
+
+@pytest.fixture
+def policy_session():
+    """Public-session double for policy tests; no new Registry or business run."""
+    from pathlib import Path
+    from cpn.rpnh.collaboration.registry_read_contracts import SourceCut
+    fixture = json.loads((Path(__file__).resolve().parents[1] / 'frontend/net-viewer/tests/comparison-context-fixture.json').read_text())
+    selected = fixture['request']['left']
+    state = fixture['context']['sources'][0]['source_state']
+    class Session:
+        limits = ReadLimits()
+        def describe(self):
+            return {'session_id': fixture['request']['session_id'], 'effective_limits': self.limits.to_dict(),
+                    'sources': [{'source_id': selected['source_id'], 'capabilities': {'index_fields': {'collaboration_net_revision/v1': ['name']}}}]}
+        def capture_cut(self, source):
+            return SourceCut.from_dict(state['cut'])
+        def source_state(self, cut): return deepcopy(state)
+        def final_recheck(self, *args): pass
+        def query_index(self, *args, **kwargs): return {'entries': [], 'continuation': None}
+        def read_public_projection(self, *, entry_ref, at_cut):
+            return {'status': 'ok', 'entry_ref': entry_ref.to_dict(), 'source_cut': at_cut.to_dict(),
+                    'record': {'schema_version': 'rpnh/public_pn_projection/v1', 'target_ref': entry_ref.to_dict(), 'runtime': {'coverage': 'not_provided'},
+                               'nodes': deepcopy(fixture['context']['left']['graph']['nodes']),
+                               'edges': deepcopy(fixture['context']['left']['graph']['edges'])}}
+    return Session(), selected
+
+
+@pytest.mark.parametrize('key', LIMITS)
+def test_host_budget_above_default_python_http_and_client_escalation(policy_session, key):
+    session, selected = policy_session
+    session.limits = ReadLimits(max_response_bytes=32_000_000)
+    policy = {key: LIMITS[key] + 1}
+    provider = ComparisonProvider(session, host_limits=policy)
+    page = provider.comparison_selection()
+    assert page['limits'][key] == LIMITS[key] + 1
+    assert set(page['limits']) == set(LIMITS)
+    req = request(session, selected, selected)
+    req['limits'] = page['limits']
+    assert parse_query(urlencode({'request': json.dumps(req)}), host_limits=policy) == req
+    result = comparison_context(session, req, host_limits=policy)
+    assert validate_comparison_context(result, req, host_limits=policy) == result
+    url = '/api/v2/comparison-context?' + urlencode({'request': json.dumps(req)})
+    assert handle_request(provider, 'GET', url).status == 200
+    assert handle_request(provider, 'HEAD', url).status == 200
+    req['limits'][key] += 1
+    with pytest.raises(ComparisonContextError, match='scope_limit'):
+        comparison_context(session, req, host_limits=policy)
+    response = handle_request(provider, 'GET', '/api/v2/comparison-context?' + urlencode({'request': json.dumps(req)}))
+    assert response.status == 413
+
+
+@pytest.mark.parametrize('key', LIMITS)
+def test_smaller_host_budget_advertised_and_enforced(policy_session, key):
+    session, selected = policy_session
+    policy = {key: 1}
+    provider = ComparisonProvider(session, host_limits=policy)
+    assert provider.comparison_selection()['limits'][key] == 1
+    req = request(session, selected, selected)
+    with pytest.raises(ComparisonContextError, match='scope_limit'):
+        provider.comparison_context(req)
+    req['limits'][key] = 1
+    validate_request(req, host_limits=policy)
+    if key in {'max_nodes_per_side', 'max_edges_per_side', 'max_mapping_relations', 'max_field_rows', 'max_response_bytes'}:
+        with pytest.raises(ComparisonContextError, match='scope_limit'):
+            provider.comparison_context(req)
+
+
+@pytest.mark.parametrize('value', [0, -1, True, 1.5, '2', None, 9007199254740992])
+def test_invalid_host_budgets_rejected(value):
+    from cpn.frontend.comparison_context import HOST_LIMITS
+    for key in HOST_LIMITS:
+        with pytest.raises(ValueError):
+            ComparisonProvider(None, host_limits={key: value})
+    with pytest.raises(ValueError): ComparisonProvider(None, host_limits={'unknown': 1})
+    with pytest.raises(ValueError): ComparisonProvider(None, host_limits=[])
+
+
+def test_underlying_session_ceiling_and_defaults_remain_effective(policy_session):
+    session, selected = policy_session
+    session.limits = ReadLimits(max_response_bytes=1024)
+    provider = ComparisonProvider(session, host_limits={'max_response_bytes': 32_000_000})
+    assert provider.comparison_selection()['limits']['max_response_bytes'] == 1024
+    req = request(session, selected, selected)
+    with pytest.raises(ComparisonContextError, match='scope_limit'):
+        provider.comparison_context(req)
+    ordinary = session
+    ordinary.limits = ReadLimits()
+    req = request(ordinary, selected, selected)
+    assert comparison_context(ordinary, req)['publication'] == 'complete_pair'
+    assert ComparisonProvider(ordinary).comparison_selection()['limits']['max_response_bytes'] == 4 * 1024 * 1024
+
+
+def test_large_graph_has_no_hidden_array_default_ceiling():
+    nodes = [{'id': str(i), 'label': 'n', 'kind': 'place', 'category': 'place', 'hidden_by_default': False} for i in range(30001)]
+    edges = [{'id': str(i), 'source': '0', 'target': '1', 'kind': 'arc', 'mode': 'read', 'weight': 1,
+              'outcome': None, 'hidden_by_default': False} for i in range(30001)]
+    projection = {'nodes': nodes, 'edges': edges}
+    limits = {**LIMITS, 'max_nodes_per_side': 30001, 'max_edges_per_side': 30001}
+    graph, _, _ = _scope(projection, {}, {'kind': 'full_net'}, limits)
+    assert len(graph['nodes']) == len(graph['edges']) == 30001
+    with pytest.raises(ComparisonContextError, match='scope_limit'):
+        _scope(projection, {}, {'kind': 'full_net'}, LIMITS)
+
+
+def test_material_budget_above_default_smaller_and_session_ceiling():
+    from cpn.frontend.comparison_context import _material_facts, _effective_host_limits
+    from cpn.rpnh.collaboration.registry_read_contracts import RegistryReadSessionError
+    resource = {'schema_version': 'rpnh/collaboration/source_resource_ref/v1', 'source_id': 'a',
+                'ref': {'resource_id': 'resource:' + 'a' * 32, 'resource_version_id': 'resource_version:' + 'b' * 32}}
+    class Cut:
+        def to_dict(self): return {'cut': 'fixed'}
+    class Session:
+        def read_exact(self, **kwargs): return {'status': 'not_disclosed'}
+        def read_material(self, **kwargs):
+            self.received = kwargs['max_bytes']
+            if self.received < 1048577: raise RegistryReadSessionError('MATERIAL_TOO_LARGE')
+            return {'status': 'ok', 'resource_ref': resource, 'source_cut': Cut().to_dict(), 'byte_count': 1048577, 'sha256': 'a' * 64}
+    session = Session()
+    for requested, underlying, state in [(2097152, 4194304, 'provided'), (100, 4194304, 'unknown'), (2097152, 100, 'unknown'), (1048576, 4194304, 'unknown')]:
+        policy = _effective_host_limits({'max_material_bytes': requested}, {'effective_limits': {'max_material_bytes': underlying}})
+        budget = {'reads': 2, 'bytes': 4 * 1024 * 1024, 'cache': {}, 'max_material_bytes': policy['max_material_bytes']}
+        facts = _material_facts(session, {'runtime': {'tokens': [{'resource_ref': resource}]}}, {'a': Cut()}, {}, budget)
+        assert session.received == min(requested, underlying)
+        assert next(iter(facts.values()))['body_digest']['state'] == state
+
+
+@pytest.mark.parametrize('host_max,session_max,allowed', [(130, 130, 130), (1, 130, 1), (130, 1, 1)])
+def test_selection_cursor_budget_can_exceed_128_and_respects_session(policy_session, monkeypatch, host_max, session_max, allowed):
+    session, selected = policy_session
+    session.limits = ReadLimits(max_cursors=session_max)
+    monkeypatch.setattr(session, 'query_index', lambda *args, **kwargs: {'entries': [], 'continuation': 'next'})
+    provider = ComparisonProvider(session, host_limits={'max_selection_cursors': host_max})
+    cursor = None
+    for _ in range(allowed):
+        page = provider.comparison_selection(cursor=cursor)
+        cursor = page['next_cursor']
+        assert cursor is not None
+    with pytest.raises(ComparisonContextError, match='scope_limit'):
+        provider.comparison_selection(cursor=cursor)
+
+
+def test_request_byte_budget_is_host_only_and_configurable(policy_session):
+    session, selected = policy_session
+    req = request(session, selected, selected)
+    with pytest.raises(ComparisonContextError, match='scope_limit'):
+        parse_query(urlencode({'request': json.dumps(req)}), host_limits={'max_request_bytes': 1})
+    req['limits']['max_request_bytes'] = 2_000_000
+    with pytest.raises(ComparisonContextError): validate_request(req)
+
+
+def test_browser_validator_uses_request_budget_above_old_array_cap():
+    import subprocess
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[1]
+    script = r"""
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+import {normalizeComparisonContext} from './cpn/frontend/static/comparison-context.mjs';
+const {request,context} = JSON.parse(readFileSync('./frontend/net-viewer/tests/comparison-context-fixture.json','utf8'));
+const axis = context.axes.configuration;
+const row = context.axes.definition.rows[0];
+assert.ok(row);
+axis.rows = Array.from({length:200001}, (_,i)=>({...row,evidence_refs:[],row_id:'row-'+i,field_path:'configuration.field-'+i,subject_relation_id:null,left_fact:{state:'unknown',reason_code:'not_provided'},right_fact:{state:'unknown',reason_code:'not_provided'},classification:'unknown'}));
+axis.coverage='partial';
+axis.counts={...axis.counts,loaded_count:axis.rows.length,total_count:null,known_same:0,known_changed:0,unknown:axis.rows.length,coverage:'partial'};
+request.limits.max_field_rows=210000;
+request.limits.max_response_bytes=256000000;
+assert.equal((await normalizeComparisonContext(context,request)).axes.configuration.rows.length,200001);
+request.limits.max_field_rows=200000;
+await assert.rejects(normalizeComparisonContext(context,request));
+console.log('browser resource budget checks passed');
+"""
+    result = subprocess.run(['node', '--max-old-space-size=700', '--input-type=module', '-e', script], cwd=root, text=True, capture_output=True)
+    assert result.returncode == 0, result.stdout + result.stderr
+
+
+
+def test_comparison_large_post_loopback_and_pre_read_host_limit(policy_session, monkeypatch):
+    """Actual HTTP, using a public-session double; creates no Registry."""
+    from http.client import HTTPConnection
+    from threading import Thread
+    from cpn.frontend.server import _ProjectionHTTPServer
+    from cpn.frontend.comparison_context import _json
+    session, selected = policy_session
+    req = request(session, selected, selected)
+    endpoints = {side: [{'side': side, 'target_key': _key(selected), 'subject_kind': 'node',
+                         'subject_id': 'step.run', 'occurrence_path': []}] for side in ('left', 'right')}
+    req['visual_pairs'] = [{'pair_id': str(i), 'label': 'é' * 3500, **deepcopy(endpoints)} for i in range(10)]
+    body = _json(req).encode('utf-8')
+    assert len(body) > 65536
+    provider = ComparisonProvider(session, host_limits={'max_request_bytes': len(body)})
+    reads = []
+    original = session.read_public_projection
+    def read(**kwargs):
+        reads.append(kwargs)
+        return original(**kwargs)
+    monkeypatch.setattr(session, 'read_public_projection', read)
+    with _ProjectionHTTPServer(provider, '127.0.0.1', 0, False) as server:
+        thread = Thread(target=server.serve_forever, kwargs={'poll_interval': 0.01})
+        thread.start()
+        try:
+            conn = HTTPConnection('127.0.0.1', server.bound_port, timeout=2)
+            conn.request('POST', '/api/v2/comparison-context', body=body, headers={'Content-Type': 'application/json'})
+            response = conn.getresponse(); wire = response.read()
+            assert response.status == 200
+            assert int(response.getheader('Content-Length')) == len(wire)
+            assert wire == _json(json.loads(wire)).encode('utf-8')
+            assert json.loads(wire)['request_echo']['visual_pairs'] == req['visual_pairs']
+            conn.close()
+            assert len(reads) == 2
+            # Send headers only. A read-before-size-check would hang until timeout.
+            conn = HTTPConnection('127.0.0.1', server.bound_port, timeout=2)
+            conn.putrequest('POST', '/api/v2/comparison-context')
+            conn.putheader('Content-Type', 'application/json')
+            conn.putheader('Content-Length', str(len(body) + 1))
+            conn.endheaders()
+            response = conn.getresponse()
+            assert response.status == 413 and json.loads(response.read()) == {'error': 'scope_limit'}
+            conn.close()
+            assert len(reads) == 2
+            small = request(session, selected, selected)
+            conn = HTTPConnection('127.0.0.1', server.bound_port, timeout=2)
+            conn.request('GET', '/api/v2/comparison-context?' + urlencode({'request': _json(small)}))
+            response = conn.getresponse()
+            assert response.status == 200 and json.loads(response.read())['publication'] == 'complete_pair'
+            conn.close()
+            print('loopback accepted POST bytes:', len(body), '; over-budget headers-only rejection: 413; legacy GET: 200')
+        finally:
+            server.shutdown(); thread.join(timeout=2)
+            assert not thread.is_alive()
+
+
+@pytest.mark.parametrize('method', ['GET', 'HEAD', 'POST'])
+def test_comparison_exact_response_wire_budget(policy_session, method):
+    from cpn.frontend.comparison_context import _json
+    session, selected = policy_session
+    req = request(session, selected, selected)
+    req['client_request_id'] = '字节预算'
+    wire = _json(comparison_context(session, req)).encode('utf-8')
+    req['limits']['max_response_bytes'] = len(wire)
+    provider = ComparisonProvider(session, host_limits={'max_response_bytes': len(wire)})
+    def call():
+        target = '/api/v2/comparison-context'
+        if method != 'POST': target += '?' + urlencode({'request': _json(req)})
+        return handle_request(provider, method, target, body=_json(req).encode('utf-8') if method == 'POST' else b'')
+    response = call()
+    assert response.status == 200
+    assert int(response.headers['Content-Length']) == len(wire)
+    assert response.body == (b'' if method == 'HEAD' else wire)
+    req['limits']['max_response_bytes'] -= 1
+    assert call().status == 413
+
+
+def test_comparison_post_parser_closed_body_and_legacy_methods(policy_session):
+    from cpn.frontend.comparison_context import _json, parse_body
+    session, selected = policy_session
+    req = request(session, selected, selected); raw = _json(req).encode('utf-8')
+    assert parse_body(raw, host_limits={'max_request_bytes': len(raw)}) == req
+    with pytest.raises(ComparisonContextError, match='scope_limit'):
+        parse_body(raw, host_limits={'max_request_bytes': len(raw) - 1})
+    with pytest.raises(ComparisonContextError, match='scope_limit'):
+        parse_body(raw + b' ', host_limits={'max_request_bytes': len(raw)})
+    for invalid in (b'{"schema_version":1,"schema_version":2}', b'NaN', b'\xff', raw[:-1]):
+        with pytest.raises(ComparisonContextError): parse_body(invalid)
+    provider = ComparisonProvider(session)
+    assert handle_request(provider, 'POST', '/api/v2/comparison-context?request=bad', body=raw).status == 400
+    assert handle_request(provider, 'POST', '/api/v2/comparison-selection', body=raw).status == 405
+    assert handle_request(provider, 'PUT', '/api/v2/comparison-context', body=raw).status == 405
+    assert handle_request(provider, 'POST', '/api/v1/net', body=raw).status == 405
+
+
+def test_comparison_frontend_large_post_options_reach_fetch():
+    import subprocess
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[1]
+    script = r"""
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+import {comparisonContextTransport} from './cpn/frontend/static/comparison-context.mjs';
+import {checkpointApp,response} from './frontend/net-viewer/tests/checkpoint-test-harness.mjs';
+const {request,context}=JSON.parse(readFileSync('./frontend/net-viewer/tests/comparison-context-fixture.json','utf8'));
+assert.match(comparisonContextTransport(request).path,/comparison-context\?request=/);
+assert.deepEqual(comparisonContextTransport(request).options,{});
+const large=structuredClone(request), relation=context.mapping.relations[0];
+large.visual_pairs=Array.from({length:20},(_,i)=>({pair_id:String(i),label:'x'.repeat(4000),left:relation.left,right:relation.right}));
+const transport=comparisonContextTransport(large);
+assert.equal(transport.path,'/api/v2/comparison-context');assert.equal(transport.options.method,'POST');
+assert.ok(new TextEncoder().encode(transport.options.body).length>65536);
+assert.deepEqual(JSON.parse(transport.options.body),large);
+const calls=[];
+const app=checkpointApp(async(url,options)=>{
+    calls.push({url,options});
+    return url.startsWith('/api/v2/comparison-selection')?response({schema_version:'rpnh/comparison_selection/v1',session_id:request.session_id,targets:[],source_cuts:{},next_cursor:null,limits:request.limits}):response({error:'scope_limit'},413);
+});
+app.api.crossComparison.open();await new Promise(resolve=>setTimeout(resolve,0));
+const state=app.api.crossComparison.state;
+state.selection={left:large.left,right:large.right};state.visualPairs=large.visual_pairs;
+app.api.crossComparison.refreshLanguage();
+const button=app.document.getElementById('comparison-context-panel').querySelectorAll('button').find(b=>b.textContent==='Read comparison');
+assert.ok(button);button.onclick();await new Promise(resolve=>setTimeout(resolve,0));
+const actual=calls.at(-1);assert.equal(actual.url,'/api/v2/comparison-context');
+assert.equal(actual.options.method,'POST');assert.equal(actual.options.headers['Content-Type'],'application/json');
+assert.equal(actual.options.cache,'no-store');assert.ok(actual.options.signal);
+assert.deepEqual(JSON.parse(actual.options.body).visual_pairs,large.visual_pairs);
+assert.equal(state.error,'scope_limit');app.api.crossComparison.close();
+console.log('actual app request helper forwarded bounded Comparison POST options');
+"""
+    result = subprocess.run(['node', '--input-type=module', '-e', script], cwd=root, capture_output=True, text=True)
+    assert result.returncode == 0, result.stdout + result.stderr

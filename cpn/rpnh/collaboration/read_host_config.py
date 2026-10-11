@@ -113,12 +113,14 @@ def load_read_host_config(path: Path | str) -> ReadHostConfiguration:
         _object(document, ('schema_version', 'purpose', 'sources'), ('limits', 'source_set'))
         if document['schema_version'] != CONFIG_SCHEMA:
             raise _invalid()
-        if type(document['sources']) is not list or not 1 <= len(document['sources']) <= 64:
-            raise _invalid()
         limits_data = document.get('limits', {})
-        if type(limits_data) is not dict:
+        if (type(limits_data) is not dict
+                or any(type(value) is not int or value < 1 for value in limits_data.values())):
             raise _invalid()
         limits = ReadLimits(**limits_data)
+        if (type(document['sources']) is not list
+                or not 1 <= len(document['sources']) <= limits.max_sources):
+            raise _invalid()
         schemas, types, paths = registry_read_schema_data()
         catalog = SchemaCatalog(schemas=schemas, types=types, schema_paths=paths)
         caller = 'uid:' + str(os.geteuid())
@@ -165,7 +167,8 @@ def load_read_host_config(path: Path | str) -> ReadHostConfiguration:
                     raise RegistryReadSessionError('NOT_DISCLOSED')
                 _local_path(str(manifest_root))
                 return open_readonly_source(manifest_root, catalog=catalog, binding_generation=generation)
-        request = ReadSessionRequest(selection, document['purpose'], limits)
+        # The owned file supplies trusted ceilings, not default-filled request restrictions.
+        request = ReadSessionRequest(selection, document['purpose'])
         binding = RegistryReadHostBinding(caller, resolve, ExistingReadAuthorityProvider(authorities),
             DEFAULT_TYPED_READER_CATALOG, limits, source_set_resolver)
         return ReadHostConfiguration(request, binding)

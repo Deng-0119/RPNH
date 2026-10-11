@@ -69,7 +69,7 @@ def issue(world, *, index=True, record=True, material=(), export=(), destination
         expires_at=(datetime.now(timezone.utc) + timedelta(seconds=seconds)).isoformat(), command_id=command)
 
 
-def session(world, context, *, limits=ReadLimits(), reader_catalog=None, generation=None):
+def session(world, context, *, limits=ReadLimits(), request_limits=None, reader_catalog=None, generation=None):
     core, gateway, identity, bootstrap, principal, source = world
     selection = SourceSelection(SourceQualifiedVersionRef(source, identity.task_ref), 'local')
     def resolver(source_id, access_path):
@@ -77,7 +77,8 @@ def session(world, context, *, limits=ReadLimits(), reader_catalog=None, generat
         return open_readonly_source(core.run_dir, catalog=core.catalog, binding_generation='1' if generation is None else generation[0])
     host = RegistryReadHostBinding('verified:test', resolver,
         ExistingReadAuthorityProvider({('verified:test', source, 'local'): context}), reader_catalog or TypedReaderCatalog(), limits=limits)
-    return open_registry_session(ReadSessionRequest(ExplicitSources((selection,)), 'inspect', limits), host=host)
+    return open_registry_session(ReadSessionRequest(ExplicitSources((selection,)), 'inspect',
+        limits if request_limits is None else request_limits), host=host)
 
 
 def counts(world):
@@ -153,6 +154,44 @@ def test_permissions_are_independent_and_material_bounded(world):
     with pytest.raises(RegistryReadSessionError) as error:
         body_reader.authorize_export((ref,), destination='local-package', at_cuts={world[-1]: body_cut})
     assert error.value.code == 'EXPORT_ACCESS_NOT_GRANTED'
+
+
+@pytest.mark.parametrize('host_bytes,request_bytes,accepted', [
+    (8 * 1024 * 1024, 8 * 1024 * 1024, True),
+    (4 * 1024 * 1024, 8 * 1024 * 1024, False),
+    (8 * 1024 * 1024, 4 * 1024 * 1024, False),
+])
+def test_host_and_request_control_large_material_without_default_ceiling(world, host_bytes, request_bytes, accepted):
+    payload = b'x' * (4 * 1024 * 1024 + 1)
+    ref = publish(world, payload, 'large-configured-material')
+    context = issue(world, material=(ref,))
+    before = counts(world)
+    with session(world, context, limits=ReadLimits(max_material_bytes=host_bytes),
+                 request_limits=ReadLimits(max_material_bytes=request_bytes)) as reader:
+        cut = reader.capture_cut(world[-1])
+        if accepted:
+            assert reader.read_material(resource_ref=ref, at_cut=cut)['bytes'] == payload
+        else:
+            with pytest.raises(RegistryReadSessionError) as error:
+                reader.read_material(resource_ref=ref, at_cut=cut)
+            assert error.value.code == 'MATERIAL_TOO_LARGE'
+    assert counts(world) == before
+
+
+def test_host_configures_page_budget_above_default_and_request_can_tighten(world):
+    context = issue(world)
+    before = counts(world)
+    from jsonschema import Draft7Validator
+    schema_path = Path(__file__).parents[1] / 'cpn/schemas/rpnh/registry_index_query.v1.schema.json'
+    Draft7Validator(json.loads(schema_path.read_text())).validate(query(world, 1500).to_dict())
+    with session(world, context, limits=ReadLimits(max_page_size=2000)) as reader:
+        assert len(reader.query_index(query(world, 1500))['entries']) == 4
+    with session(world, context, limits=ReadLimits(max_page_size=2000),
+                 request_limits=ReadLimits(max_page_size=2)) as reader:
+        with pytest.raises(RegistryReadSessionError) as error:
+            reader.query_index(query(world, 3))
+        assert error.value.code == 'LIMIT_EXCEEDED'
+    assert counts(world) == before
 
 
 def test_material_utf8_preserves_default_bytes_and_byte_bounds(world):
@@ -868,3 +907,13 @@ def test_literal_same_exact_ids_remain_distinct_across_canonical_sources(tmp_pat
         reader.read_exact(entry_ref=left,at_cut=cuts[right.source_id])
     assert error.value.code == 'NOT_DISCLOSED'
     assert {source:counts(value) for source,value in worlds.items()} == before
+
+
+def test_read_session_public_schema_allows_host_budget_sources_above_default():
+    from jsonschema import Draft7Validator
+    schema = json.loads((Path(__file__).parents[1] / 'cpn/schemas/rpnh/registry_read_session_request.v1.schema.json').read_text())
+    # Shape validation must not impose the default HOST source budget.
+    sources = tuple(SourceSelection(SourceQualifiedVersionRef('source-' + str(i),
+        VersionRef('task/v1', new_id('task'), new_id('task_version'))), 'local') for i in range(65))
+    request = ReadSessionRequest(ExplicitSources(sources), 'inspect', ReadLimits(max_sources=128))
+    Draft7Validator(schema).validate(request.to_dict())
