@@ -17,6 +17,13 @@ Registry、调度状态或信号处理器。Provider 装配、工具 ABI 与业�
 本例保留 `make_harness(...)`，供逐步观察的旧测试兼容使用，返回同一入口内部
 的 Harness；正常执行使用 `make_orchestrator(...).run()`。
 
+## 相关源码案例
+
+[多源数据合并](multi_source/README_ZH.md)将同一登记工具模式用于原 JSON、CSV、Parquet
+输入、三输入 join 与两件终态产物。[SQL 查询校验](../query_validation/README_ZH.md)
+把相同执行边界用于固定候选的只读查询和保留行序的精确结果比较。两例各自提供实际完成态
+Viewer 图片、点击指南、带日期的原生证据与验收器适配限制。
+
 ## 从仓库根目录运行
 
 使用仓库正常的 Python 3.11+ 开发环境，安装核心与测试依赖。本例是源码目录中的

@@ -1,0 +1,380 @@
+{
+  "schema_version": "rpnh/dashboard/v1",
+  "net": {
+    "schema_version": "rpnh/net_view/v1",
+    "source": {
+      "mode": "initial_configured",
+      "task_label": "Query validation: declaration only",
+      "verified_head_ordinal": null
+    },
+    "summary": {
+      "node_count": 11,
+      "transition_count": 3,
+      "place_count": 8,
+      "resource_place_count": 0,
+      "edge_count": 11,
+      "resource_edge_count": 0
+    },
+    "nodes": [
+      {
+        "id": "compare_results.candidate_result",
+        "label": "compare_results.candidate_result",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/query_validation_candidate_result/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "compare_results.final_sql",
+        "label": "compare_results.final_sql",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/query_validation_final_sql/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "compare_results.original_result",
+        "label": "compare_results.original_result",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/query_validation_original_result/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "compare_results.report",
+        "label": "compare_results.report",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/query_validation_report/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "compare_results.run",
+        "label": "compare_results.run",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "compare_results.run",
+        "operation_id": "op_0",
+        "executor": "example/query_validation/execute_compare_results/v1",
+        "inputs": [
+          "compare_results.original_result",
+          "compare_results.candidate_result"
+        ],
+        "outputs": [
+          "compare_results.report",
+          "compare_results.final_sql"
+        ]
+      },
+      {
+        "id": "execute_queries.request",
+        "label": "execute_queries.request",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/query_validation_request/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "execute_queries.run",
+        "label": "execute_queries.run",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "execute_queries.run",
+        "operation_id": "op_1",
+        "executor": "example/query_validation/execute_execute_queries/v1",
+        "inputs": [
+          "execute_queries.request"
+        ],
+        "outputs": [
+          "execute_queries.original_result",
+          "execute_queries.candidate_result"
+        ]
+      },
+      {
+        "id": "inspect_inputs.candidate_sql",
+        "label": "inspect_inputs.candidate_sql",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/query_validation_candidate_sql/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "inspect_inputs.database",
+        "label": "inspect_inputs.database",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/query_validation_database/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "inspect_inputs.original_sql",
+        "label": "inspect_inputs.original_sql",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/query_validation_original_sql/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "inspect_inputs.run",
+        "label": "inspect_inputs.run",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "inspect_inputs.run",
+        "operation_id": "op_2",
+        "executor": "example/query_validation/execute_inspect_inputs/v1",
+        "inputs": [
+          "inspect_inputs.database",
+          "inspect_inputs.original_sql",
+          "inspect_inputs.candidate_sql"
+        ],
+        "outputs": [
+          "inspect_inputs.request"
+        ]
+      }
+    ],
+    "edges": [
+      {
+        "id": "edge:arc:compare_results.candidate_result:compare_results.run:consume:-:1",
+        "source": "compare_results.candidate_result",
+        "target": "compare_results.run",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:compare_results.original_result:compare_results.run:consume:-:1",
+        "source": "compare_results.original_result",
+        "target": "compare_results.run",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:compare_results.run:compare_results.final_sql:produce:complete:1",
+        "source": "compare_results.run",
+        "target": "compare_results.final_sql",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:compare_results.run:compare_results.report:produce:complete:1",
+        "source": "compare_results.run",
+        "target": "compare_results.report",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:execute_queries.request:execute_queries.run:consume:-:1",
+        "source": "execute_queries.request",
+        "target": "execute_queries.run",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:execute_queries.run:compare_results.candidate_result:produce:complete:1",
+        "source": "execute_queries.run",
+        "target": "compare_results.candidate_result",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:execute_queries.run:compare_results.original_result:produce:complete:1",
+        "source": "execute_queries.run",
+        "target": "compare_results.original_result",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:inspect_inputs.candidate_sql:inspect_inputs.run:consume:-:1",
+        "source": "inspect_inputs.candidate_sql",
+        "target": "inspect_inputs.run",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:inspect_inputs.database:inspect_inputs.run:consume:-:1",
+        "source": "inspect_inputs.database",
+        "target": "inspect_inputs.run",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:inspect_inputs.original_sql:inspect_inputs.run:consume:-:1",
+        "source": "inspect_inputs.original_sql",
+        "target": "inspect_inputs.run",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:inspect_inputs.run:execute_queries.request:produce:complete:1",
+        "source": "inspect_inputs.run",
+        "target": "execute_queries.request",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      }
+    ]
+  },
+  "source": {
+    "mode": "initial_configured",
+    "task_label": "Query validation: declaration only",
+    "verified_head_ordinal": null
+  },
+  "boundaries": {
+    "entry": [
+      {
+        "name": "candidate_sql",
+        "port": "inspect_inputs.candidate_sql",
+        "place": "inspect_inputs.candidate_sql"
+      },
+      {
+        "name": "database",
+        "port": "inspect_inputs.database",
+        "place": "inspect_inputs.database"
+      },
+      {
+        "name": "original_sql",
+        "port": "inspect_inputs.original_sql",
+        "place": "inspect_inputs.original_sql"
+      }
+    ],
+    "exit": [
+      {
+        "name": "final_sql",
+        "port": "compare_results.final_sql",
+        "place": "compare_results.final_sql"
+      },
+      {
+        "name": "report",
+        "port": "compare_results.report",
+        "place": "compare_results.report"
+      }
+    ],
+    "terminal_rules": [
+      {
+        "key": "example/query_validation/terminal/v1",
+        "operation": "compare_results.run",
+        "transition_ids": [
+          "compare_results.run"
+        ],
+        "outcome": "complete",
+        "port": "compare_results.report",
+        "place": "compare_results.report"
+      }
+    ],
+    "terminal_evidence": "not_provided"
+  },
+  "transition_bindings": [],
+  "presentation": {
+    "title": "SQL query validation and provenance",
+    "description": "Initial declaration only. Three registered tools, no model run, no verifier score or runtime marking.",
+    "nodes": {},
+    "status": "default",
+    "topology_digest": "189e3a2adb9f0961fccd0cc327a3301f4458074b3a8eb5941aeebd4f5b0e3fc5"
+  },
+  "position": {
+    "mode": "live",
+    "cursor": null,
+    "latest_head": null
+  },
+  "coverage": {
+    "history": "unsupported",
+    "firings": "not_provided",
+    "agent_nodes": "declared_llm_executor",
+    "terminal_evidence": "not_provided"
+  },
+  "change": {},
+  "agent_nodes": []
+}

@@ -20,6 +20,15 @@ The example's `make_harness(...)` helper remains compatible for step-level tests
 it returns the same entry's underlying Harness. Normal runs use
 `make_orchestrator(...).run()`.
 
+## Related source examples
+
+The [multi-source data merger](multi_source/README.md) extends this registered-tool
+pattern to original JSON, CSV and Parquet inputs, a three-input join and two
+terminal artifacts. [SQL query validation](../query_validation/README.md) applies
+the same execution boundary to fixed-candidate read-only queries and exact ordered
+result comparison. Each includes its own actual completed Viewer image, click
+guide, dated native evidence and verifier-adaptation limits.
+
 ## Run from the repository root
 
 Use the repository's normal Python 3.11+ development environment with its core

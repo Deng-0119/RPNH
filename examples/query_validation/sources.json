@@ -1,0 +1,61 @@
+{
+  "repository": "harbor-framework/terminal-bench-2",
+  "commit": "2fd12b88aafdd04a52c298e3940bcb189f9766d6",
+  "dataset_release": "unresolved; this is a source commit, not a claimed published dataset release",
+  "task": "query-optimize",
+  "files": [
+    {
+      "path": "query-optimize/instruction.md",
+      "git_blob_sha1": "0cda77677f90bba165f4bc0bae2a1a3d44f57a1d",
+      "url": "https://github.com/harbor-framework/terminal-bench-2/blob/2fd12b88aafdd04a52c298e3940bcb189f9766d6/query-optimize/instruction.md"
+    },
+    {
+      "path": "query-optimize/environment/Dockerfile",
+      "git_blob_sha1": "a3bc1e5f6a8a3ff3d89c8d5c80c25a38c8a1e55d",
+      "url": "https://github.com/harbor-framework/terminal-bench-2/blob/2fd12b88aafdd04a52c298e3940bcb189f9766d6/query-optimize/environment/Dockerfile"
+    },
+    {
+      "path": "query-optimize/environment/task-deps/my-sql-query.sql",
+      "git_blob_sha1": "43f4dabe1e65ec9b89c993e378ea975a70fc1f5b",
+      "url": "https://github.com/harbor-framework/terminal-bench-2/blob/2fd12b88aafdd04a52c298e3940bcb189f9766d6/query-optimize/environment/task-deps/my-sql-query.sql"
+    },
+    {
+      "path": "query-optimize/tests/test_outputs.py",
+      "git_blob_sha1": "e445e276070cea0720e35760cd7e89bfb8023afc",
+      "url": "https://github.com/harbor-framework/terminal-bench-2/blob/2fd12b88aafdd04a52c298e3940bcb189f9766d6/query-optimize/tests/test_outputs.py"
+    },
+    {
+      "path": "query-optimize/tests/test.sh",
+      "git_blob_sha1": "cb4a41a45e4b23f4d1f1392fd68f6e47c5dbbf57",
+      "url": "https://github.com/harbor-framework/terminal-bench-2/blob/2fd12b88aafdd04a52c298e3940bcb189f9766d6/query-optimize/tests/test.sh"
+    },
+    {
+      "path": "query-optimize/task.toml",
+      "git_blob_sha1": "88fe3b4ada048489160d6a164aba3b88de5cf111",
+      "url": "https://github.com/harbor-framework/terminal-bench-2/blob/2fd12b88aafdd04a52c298e3940bcb189f9766d6/query-optimize/task.toml"
+    },
+    {
+      "path": "LICENSE",
+      "git_blob_sha1": "261eeb9e9f8b2b4b0d119366dda99c6fd7d35c64",
+      "url": "https://github.com/harbor-framework/terminal-bench-2/blob/2fd12b88aafdd04a52c298e3940bcb189f9766d6/LICENSE"
+    }
+  ],
+  "database": {
+    "url": "https://huggingface.co/datasets/pimpalgaonkar/terminalbench-sqlite-db/resolve/84e42d43436afd2c21b4d3f94c05383fd3a6f78e/oewn.sqlite",
+    "revision": "84e42d43436afd2c21b4d3f94c05383fd3a6f78e",
+    "sha256": "89eab7555b6b86a74b8e0ee5a7db7beec0b2575a45cd2b22fe132eae79f5ad5a",
+    "license_status": "pinned SQLite artifact provenance/terms not fully established; local authorized use and public redistribution are separate; not copied or redistributed",
+    "underlying_project_license": {
+      "project": "Open English WordNet",
+      "current_license": "CC-BY-4.0; retain Princeton WordNet and OEWN attribution",
+      "url": "https://github.com/globalwordnet/english-wordnet/blob/main/LICENSE.md",
+      "scope": "underlying official project, not verification of pinned third-party SQLite conversion"
+    }
+  },
+  "grader": {
+    "status": "not_run",
+    "role": "evaluator_only",
+    "reference_solution_exposed_to_example": false
+  },
+  "rpnh_base": "b8d5942e768b2d59862b8e3eb7efa41a274f6307"
+}

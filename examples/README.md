@@ -22,6 +22,8 @@ Choose an example by the behavior you want to see:
 | Definition operations and live replacement | [Native net operations](net_operations/README.md) | [Adopted replacement PetriNet](net_operations/README.md) | Definition-only plus one live task |
 | Reuse one native-add v2 package across environments | [Package reuse](package_reuse/README.md) | [Package PetriNet declaration](package_reuse/figures/README.md) | No model |
 | Ten registered tools in one typed Petri net | [Atomic tool pipeline](tool_pipeline/README.md) | [PN variants and node details](tool_pipeline/figures/README.md) | Deterministic HOST tools; no model |
+| Read-only SQL execution and exact ordered query comparison | [SQL query validation](query_validation/README.md) | [Native result, verifier boundaries and actual Viewer](query_validation/README.md) | Fixed candidate; no model/provider calls |
+| Original JSON, CSV and Parquet inputs joined into two artifacts | [Multi-source data merge](tool_pipeline/multi_source/README.md) | [Conflicts, adapted verifier and actual Viewer](tool_pipeline/multi_source/README.md) | Deterministic HOST tools; no model |
 | Bounded synthetic iteration in one Registry | [Synthetic iteration](rsi_workflows/README.md) | [One to four rounds and terminal binding](rsi_workflows/figures/README.md) | Deterministic HOSTs; no model-improvement claim |
 | Real clinical document/data packet | [JB steering packet](jb_steering_packet/README.md) | [Accepted workflow Overview](jb_steering_packet/README.md) | User-owned exact live profile |
 | Real numerical optimal-control task | [3-DOF powered descent](three_dof_powered_descent/README.md) | [Accepted workflow Overview](three_dof_powered_descent/README.md) | User-owned exact live profile |

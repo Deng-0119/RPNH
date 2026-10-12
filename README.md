@@ -181,6 +181,8 @@ same Registry/run. See [usage](docs/guides/usage.md) and the
 | Native Petri-net operations | Definition composition and live whole-net replacement | [Net operations](examples/net_operations/README.md) |
 | Runnable v2 package | Explicit receiver preparation, binding and native-add execution | [Package reuse](examples/package_reuse/README.md) |
 | Ten-tool pipeline | Ten deterministic tool transitions, joins and an independent bill validator | [Tool pipeline](examples/tool_pipeline/README.md) |
+| SQL query validation | Fixed SQL candidate, read-only execution and exact ordered results | [SQL example](examples/query_validation/README.md) |
+| Multi-source merge | Original JSON, CSV and real Parquet inputs, conflicts and two output artifacts | [Multi-source example](examples/tool_pipeline/multi_source/README.md) |
 | Bounded synthetic iteration | One to four rounds in one Registry; no model-improvement claim | [Synthetic iteration](examples/rsi_workflows/README.md) |
 | Basic, Codex, DSH and OpenCode | One provider-neutral semantic task through four host surfaces | [Installed adapter task](docs/guides/examples.md) |
 | JB clinical packet | Public clinical sources, document/data analysis and a Designer-authored graph | [Reproduce JB](examples/jb_steering_packet/README.md) |

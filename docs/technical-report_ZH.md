@@ -295,6 +295,9 @@ Workset 记录 contribution、delivery 与 acceptance；首次验收要求真实
 - [Native plugin](../examples/native_plugin/README_ZH.md)：可修改的 schema 与显式安装的确定性程序。
 - [Hybrid summary](../examples/hybrid_summary/README_ZH.md)：Agent → 程序 → Agent；默认脚本化，真实执行另行选择。
 - [原子工具 pipeline](../examples/tool_pipeline/README_ZH.md)：离线用量/电价分支、金额计算、独立验证与最终发布。
+- [SQL 查询校验](../examples/query_validation/README_ZH.md)：固定候选的只读 SQLite 执行、保留行序的精确比较与最终 SQL 资源。
+- [多源数据合并](../examples/tool_pipeline/multi_source/README_ZH.md)：原 JSON／CSV／Parquet 输入、三输入 join 与两件终态产物。
+  两个源码案例均提供实际 Viewer 图片与点击查看说明；带日期的原生结果及适配验收器限制分别记录。
 - [Package reuse](../examples/package_reuse/README_ZH.md)：接收方绑定 closed process，准备与运行保持分离。
 
 此快照的安装导出目录包含 `adapter_task`、`native_plugin`、`hybrid_summary`、`compose_serial`

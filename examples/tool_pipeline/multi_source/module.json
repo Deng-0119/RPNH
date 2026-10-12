@@ -1,0 +1,638 @@
+{
+  "schema_version": "rpnh/module_declaration/v1",
+  "name": "MultiSourceDataMerger",
+  "components": [
+    {
+      "name": "read_source_a",
+      "key": "operation",
+      "config_schema": "application/operation_component_config/v1",
+      "config": {},
+      "ports": [
+        {
+          "name": "source",
+          "direction": "input",
+          "schema": "application/tool_pipeline_multi_source_source_a_bytes/v1"
+        },
+        {
+          "name": "parsed",
+          "direction": "output",
+          "schema": "application/tool_pipeline_multi_source_source_a_parsed/v1"
+        },
+        {
+          "name": "blocked",
+          "direction": "output",
+          "schema": "application/tool_pipeline_multi_source_blocked/v1"
+        },
+        {
+          "name": "rejected",
+          "direction": "output",
+          "schema": "application/tool_pipeline_multi_source_rejected/v1"
+        }
+      ],
+      "operations": [
+        {
+          "name": "run",
+          "executor": "example/tool_pipeline/multi_source/execute_read_source_a/v1",
+          "inputs": [
+            "source"
+          ],
+          "outputs": [
+            "parsed",
+            "blocked",
+            "rejected"
+          ],
+          "request_port": null,
+          "tools": [
+            "example/tool_pipeline/multi_source/read_source_a/v1"
+          ],
+          "config": {},
+          "outcomes": [
+            {
+              "name": "complete",
+              "products": [
+                {
+                  "port": "parsed"
+                }
+              ]
+            },
+            {
+              "name": "blocked",
+              "products": [
+                {
+                  "port": "blocked"
+                }
+              ]
+            },
+            {
+              "name": "rejected",
+              "products": [
+                {
+                  "port": "rejected"
+                }
+              ]
+            }
+          ],
+          "budget_binding": {
+            "bucket_id": "multi_source",
+            "budget_scope": "module",
+            "finalization_scope": null
+          }
+        }
+      ]
+    },
+    {
+      "name": "read_source_b",
+      "key": "operation",
+      "config_schema": "application/operation_component_config/v1",
+      "config": {},
+      "ports": [
+        {
+          "name": "source",
+          "direction": "input",
+          "schema": "application/tool_pipeline_multi_source_source_b_bytes/v1"
+        },
+        {
+          "name": "parsed",
+          "direction": "output",
+          "schema": "application/tool_pipeline_multi_source_source_b_parsed/v1"
+        },
+        {
+          "name": "blocked",
+          "direction": "output",
+          "schema": "application/tool_pipeline_multi_source_blocked/v1"
+        },
+        {
+          "name": "rejected",
+          "direction": "output",
+          "schema": "application/tool_pipeline_multi_source_rejected/v1"
+        }
+      ],
+      "operations": [
+        {
+          "name": "run",
+          "executor": "example/tool_pipeline/multi_source/execute_read_source_b/v1",
+          "inputs": [
+            "source"
+          ],
+          "outputs": [
+            "parsed",
+            "blocked",
+            "rejected"
+          ],
+          "request_port": null,
+          "tools": [
+            "example/tool_pipeline/multi_source/read_source_b/v1"
+          ],
+          "config": {},
+          "outcomes": [
+            {
+              "name": "complete",
+              "products": [
+                {
+                  "port": "parsed"
+                }
+              ]
+            },
+            {
+              "name": "blocked",
+              "products": [
+                {
+                  "port": "blocked"
+                }
+              ]
+            },
+            {
+              "name": "rejected",
+              "products": [
+                {
+                  "port": "rejected"
+                }
+              ]
+            }
+          ],
+          "budget_binding": {
+            "bucket_id": "multi_source",
+            "budget_scope": "module",
+            "finalization_scope": null
+          }
+        }
+      ]
+    },
+    {
+      "name": "read_source_c",
+      "key": "operation",
+      "config_schema": "application/operation_component_config/v1",
+      "config": {},
+      "ports": [
+        {
+          "name": "source",
+          "direction": "input",
+          "schema": "application/tool_pipeline_multi_source_source_c_bytes/v1"
+        },
+        {
+          "name": "parsed",
+          "direction": "output",
+          "schema": "application/tool_pipeline_multi_source_source_c_parsed/v1"
+        },
+        {
+          "name": "blocked",
+          "direction": "output",
+          "schema": "application/tool_pipeline_multi_source_blocked/v1"
+        },
+        {
+          "name": "rejected",
+          "direction": "output",
+          "schema": "application/tool_pipeline_multi_source_rejected/v1"
+        }
+      ],
+      "operations": [
+        {
+          "name": "run",
+          "executor": "example/tool_pipeline/multi_source/execute_read_source_c/v1",
+          "inputs": [
+            "source"
+          ],
+          "outputs": [
+            "parsed",
+            "blocked",
+            "rejected"
+          ],
+          "request_port": null,
+          "tools": [
+            "example/tool_pipeline/multi_source/read_source_c/v1"
+          ],
+          "config": {},
+          "outcomes": [
+            {
+              "name": "complete",
+              "products": [
+                {
+                  "port": "parsed"
+                }
+              ]
+            },
+            {
+              "name": "blocked",
+              "products": [
+                {
+                  "port": "blocked"
+                }
+              ]
+            },
+            {
+              "name": "rejected",
+              "products": [
+                {
+                  "port": "rejected"
+                }
+              ]
+            }
+          ],
+          "budget_binding": {
+            "bucket_id": "multi_source",
+            "budget_scope": "module",
+            "finalization_scope": null
+          }
+        }
+      ]
+    },
+    {
+      "name": "merge_users",
+      "key": "operation",
+      "config_schema": "application/operation_component_config/v1",
+      "config": {},
+      "ports": [
+        {
+          "name": "source_a",
+          "direction": "input",
+          "schema": "application/tool_pipeline_multi_source_source_a_parsed/v1"
+        },
+        {
+          "name": "source_b",
+          "direction": "input",
+          "schema": "application/tool_pipeline_multi_source_source_b_parsed/v1"
+        },
+        {
+          "name": "source_c",
+          "direction": "input",
+          "schema": "application/tool_pipeline_multi_source_source_c_parsed/v1"
+        },
+        {
+          "name": "merged",
+          "direction": "output",
+          "schema": "application/tool_pipeline_multi_source_merged/v1"
+        },
+        {
+          "name": "conflicts",
+          "direction": "output",
+          "schema": "application/tool_pipeline_multi_source_conflicts/v1"
+        }
+      ],
+      "operations": [
+        {
+          "name": "run",
+          "executor": "example/tool_pipeline/multi_source/execute_merge_users/v1",
+          "inputs": [
+            "source_a",
+            "source_b",
+            "source_c"
+          ],
+          "outputs": [
+            "merged",
+            "conflicts"
+          ],
+          "request_port": null,
+          "tools": [
+            "example/tool_pipeline/multi_source/merge_users/v1"
+          ],
+          "config": {},
+          "outcomes": [
+            {
+              "name": "complete",
+              "products": [
+                {
+                  "port": "merged"
+                },
+                {
+                  "port": "conflicts"
+                }
+              ]
+            }
+          ],
+          "budget_binding": {
+            "bucket_id": "multi_source",
+            "budget_scope": "module",
+            "finalization_scope": null
+          }
+        }
+      ]
+    },
+    {
+      "name": "encode_parquet",
+      "key": "operation",
+      "config_schema": "application/operation_component_config/v1",
+      "config": {},
+      "ports": [
+        {
+          "name": "merged",
+          "direction": "input",
+          "schema": "application/tool_pipeline_multi_source_merged/v1"
+        },
+        {
+          "name": "artifact",
+          "direction": "output",
+          "schema": "application/tool_pipeline_multi_source_parquet_artifact/v1"
+        },
+        {
+          "name": "blocked",
+          "direction": "output",
+          "schema": "application/tool_pipeline_multi_source_blocked/v1"
+        }
+      ],
+      "operations": [
+        {
+          "name": "run",
+          "executor": "example/tool_pipeline/multi_source/execute_encode_parquet/v1",
+          "inputs": [
+            "merged"
+          ],
+          "outputs": [
+            "artifact",
+            "blocked"
+          ],
+          "request_port": null,
+          "tools": [
+            "example/tool_pipeline/multi_source/encode_parquet/v1"
+          ],
+          "config": {},
+          "outcomes": [
+            {
+              "name": "complete",
+              "products": [
+                {
+                  "port": "artifact"
+                }
+              ]
+            },
+            {
+              "name": "blocked",
+              "products": [
+                {
+                  "port": "blocked"
+                }
+              ]
+            }
+          ],
+          "budget_binding": {
+            "bucket_id": "multi_source",
+            "budget_scope": "module",
+            "finalization_scope": null
+          }
+        }
+      ]
+    },
+    {
+      "name": "encode_conflicts",
+      "key": "operation",
+      "config_schema": "application/operation_component_config/v1",
+      "config": {},
+      "ports": [
+        {
+          "name": "conflicts",
+          "direction": "input",
+          "schema": "application/tool_pipeline_multi_source_conflicts/v1"
+        },
+        {
+          "name": "artifact",
+          "direction": "output",
+          "schema": "application/tool_pipeline_multi_source_conflict_artifact/v1"
+        }
+      ],
+      "operations": [
+        {
+          "name": "run",
+          "executor": "example/tool_pipeline/multi_source/execute_encode_conflicts/v1",
+          "inputs": [
+            "conflicts"
+          ],
+          "outputs": [
+            "artifact"
+          ],
+          "request_port": null,
+          "tools": [
+            "example/tool_pipeline/multi_source/encode_conflicts/v1"
+          ],
+          "config": {},
+          "outcomes": [
+            {
+              "name": "complete",
+              "products": [
+                {
+                  "port": "artifact"
+                }
+              ]
+            }
+          ],
+          "budget_binding": {
+            "bucket_id": "multi_source",
+            "budget_scope": "module",
+            "finalization_scope": null
+          }
+        }
+      ]
+    },
+    {
+      "name": "finish",
+      "key": "operation",
+      "config_schema": "application/operation_component_config/v1",
+      "config": {},
+      "ports": [
+        {
+          "name": "parquet",
+          "direction": "input",
+          "schema": "application/tool_pipeline_multi_source_parquet_artifact/v1"
+        },
+        {
+          "name": "conflicts",
+          "direction": "input",
+          "schema": "application/tool_pipeline_multi_source_conflict_artifact/v1"
+        },
+        {
+          "name": "final",
+          "direction": "output",
+          "schema": "application/tool_pipeline_multi_source_final/v1"
+        }
+      ],
+      "operations": [
+        {
+          "name": "run",
+          "executor": "example/tool_pipeline/multi_source/execute_finish/v1",
+          "inputs": [
+            "parquet",
+            "conflicts"
+          ],
+          "outputs": [
+            "final"
+          ],
+          "request_port": null,
+          "tools": [
+            "example/tool_pipeline/multi_source/finish/v1"
+          ],
+          "config": {},
+          "outcomes": [
+            {
+              "name": "complete",
+              "products": [
+                {
+                  "port": "final"
+                }
+              ]
+            }
+          ],
+          "budget_binding": {
+            "bucket_id": "multi_source",
+            "budget_scope": "module",
+            "finalization_scope": null
+          }
+        }
+      ]
+    }
+  ],
+  "links": [
+    {
+      "source": {
+        "component": "read_source_a",
+        "port": "parsed"
+      },
+      "target": {
+        "component": "merge_users",
+        "port": "source_a"
+      }
+    },
+    {
+      "source": {
+        "component": "read_source_b",
+        "port": "parsed"
+      },
+      "target": {
+        "component": "merge_users",
+        "port": "source_b"
+      }
+    },
+    {
+      "source": {
+        "component": "read_source_c",
+        "port": "parsed"
+      },
+      "target": {
+        "component": "merge_users",
+        "port": "source_c"
+      }
+    },
+    {
+      "source": {
+        "component": "merge_users",
+        "port": "merged"
+      },
+      "target": {
+        "component": "encode_parquet",
+        "port": "merged"
+      }
+    },
+    {
+      "source": {
+        "component": "merge_users",
+        "port": "conflicts"
+      },
+      "target": {
+        "component": "encode_conflicts",
+        "port": "conflicts"
+      }
+    },
+    {
+      "source": {
+        "component": "encode_parquet",
+        "port": "artifact"
+      },
+      "target": {
+        "component": "finish",
+        "port": "parquet"
+      }
+    },
+    {
+      "source": {
+        "component": "encode_conflicts",
+        "port": "artifact"
+      },
+      "target": {
+        "component": "finish",
+        "port": "conflicts"
+      }
+    }
+  ],
+  "entry": {
+    "source_a": {
+      "component": "read_source_a",
+      "port": "source"
+    },
+    "source_b": {
+      "component": "read_source_b",
+      "port": "source"
+    },
+    "source_c": {
+      "component": "read_source_c",
+      "port": "source"
+    }
+  },
+  "exit": {
+    "report": {
+      "component": "finish",
+      "port": "final"
+    },
+    "read_source_a_blocked": {
+      "component": "read_source_a",
+      "port": "blocked"
+    },
+    "read_source_a_rejected": {
+      "component": "read_source_a",
+      "port": "rejected"
+    },
+    "read_source_b_blocked": {
+      "component": "read_source_b",
+      "port": "blocked"
+    },
+    "read_source_b_rejected": {
+      "component": "read_source_b",
+      "port": "rejected"
+    },
+    "read_source_c_blocked": {
+      "component": "read_source_c",
+      "port": "blocked"
+    },
+    "read_source_c_rejected": {
+      "component": "read_source_c",
+      "port": "rejected"
+    },
+    "encode_parquet_blocked": {
+      "component": "encode_parquet",
+      "port": "blocked"
+    }
+  },
+  "terminal": {
+    "key": "example/tool_pipeline/multi_source/terminal/v1",
+    "source": {
+      "component": "finish",
+      "port": "final"
+    },
+    "operation": "run",
+    "outcome": "complete",
+    "config": {
+      "run_outcome": "complete"
+    }
+  },
+  "required_schemas": [
+    "application/operation_component_config/v1",
+    "application/tool_pipeline_multi_source_source_a_bytes/v1",
+    "application/tool_pipeline_multi_source_source_a_parsed/v1",
+    "application/tool_pipeline_multi_source_source_b_bytes/v1",
+    "application/tool_pipeline_multi_source_source_b_parsed/v1",
+    "application/tool_pipeline_multi_source_source_c_bytes/v1",
+    "application/tool_pipeline_multi_source_source_c_parsed/v1",
+    "application/tool_pipeline_multi_source_merged/v1",
+    "application/tool_pipeline_multi_source_conflicts/v1",
+    "application/tool_pipeline_multi_source_parquet_artifact/v1",
+    "application/tool_pipeline_multi_source_conflict_artifact/v1",
+    "application/tool_pipeline_multi_source_final/v1",
+    "application/tool_pipeline_multi_source_blocked/v1",
+    "application/tool_pipeline_multi_source_rejected/v1"
+  ],
+  "budgets": {},
+  "budget_buckets": [
+    {
+      "bucket_id": "multi_source",
+      "budget_scope": "module",
+      "finalization_scope": null,
+      "max_attempts": 7
+    }
+  ]
+}

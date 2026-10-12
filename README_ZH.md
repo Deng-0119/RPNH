@@ -159,6 +159,8 @@ Registry／run 中从用户所选切面追加新的执行代次。详见
 | 原生 PetriNet 操作 | 定义组合与真实 whole-net replacement | [网操作](examples/net_operations/README_ZH.md) |
 | 可运行 v2 分享包 | 显式接收端准备、绑定与原生加法执行 | [分享包复用](examples/package_reuse/README_ZH.md) |
 | 十步工具流水线 | 十个确定性工具 transition、join 与独立账单验证器 | [工具流水线](examples/tool_pipeline/README_ZH.md) |
+| SQL 查询校验 | 固定 SQL 候选、只读执行与保留行序的精确结果比较 | [SQL 案例](examples/query_validation/README_ZH.md) |
+| 多源数据合并 | 原 JSON、CSV 和真实 Parquet 输入、冲突及两件终态产物 | [多源案例](examples/tool_pipeline/multi_source/README_ZH.md) |
 | 有界合成迭代 | 同一 Registry 中的一至四轮流程，不宣称模型能力改进 | [合成迭代](examples/rsi_workflows/README_ZH.md) |
 | Basic、Codex、DSH 与 OpenCode | 同一个 provider-neutral 语义任务经过四种宿主入口 | [安装版适配任务](docs/guides/examples_ZH.md) |
 | JB 临床 packet | 公开临床来源、文档／数据分析和 Designer 自主设计图 | [复现 JB](examples/jb_steering_packet/README_ZH.md) |

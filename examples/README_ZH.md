@@ -20,6 +20,8 @@
 | 定义操作与真实 replacement | [原生网操作](net_operations/README_ZH.md) | [已采用 replacement PetriNet](net_operations/README_ZH.md) | 纯定义操作加一个真实任务 |
 | 跨环境复用同一个原生加法 v2 包 | [包复用](package_reuse/README_ZH.md) | [包 PetriNet 声明图](package_reuse/figures/README_ZH.md) | 不使用模型 |
 | 同一个类型化 Petri 网中的十个登记工具 | [原子工具流水线](tool_pipeline/README_ZH.md) | [PN 变体与节点局部图](tool_pipeline/figures/README_ZH.md) | 确定性 HOST 工具；不使用模型 |
+| 只读 SQL 执行与保留行序的精确查询比较 | [SQL 查询校验](query_validation/README_ZH.md) | [原生结果、验收边界与实际 Viewer](query_validation/README_ZH.md) | 固定候选；无模型／provider 调用 |
+| 原 JSON、CSV、Parquet 多输入汇合并形成两件产物 | [多源数据合并](tool_pipeline/multi_source/README_ZH.md) | [冲突、适配验收器与实际 Viewer](tool_pipeline/multi_source/README_ZH.md) | 确定性 HOST 工具；不使用模型 |
 | 单 Registry 内的有界合成迭代 | [合成迭代](rsi_workflows/README_ZH.md) | [一至四轮与终止绑定声明图](rsi_workflows/figures/README_ZH.md) | 确定性 HOST；不声称模型改进 |
 | 真实临床文档／数据 packet | [JB steering packet](jb_steering_packet/README_ZH.md) | [已采用 workflow Overview](jb_steering_packet/README_ZH.md) | 用户自有精确真实 profile |
 | 真实数值最优控制任务 | [3-DOF 动力下降](three_dof_powered_descent/README_ZH.md) | [已采用 workflow Overview](three_dof_powered_descent/README_ZH.md) | 用户自有精确真实 profile |

@@ -380,6 +380,12 @@ Choose an example by the boundary you want to inspect:
   scripted by default, live execution selected separately.
 - [Atomic-tool pipeline](../examples/tool_pipeline/README.md): offline usage/tariff
   branches, amount calculation, independent validation and final publication.
+- [SQL query validation](../examples/query_validation/README.md): fixed-candidate,
+  read-only SQLite execution, exact ordered comparison and a final SQL resource.
+- [Multi-source data merge](../examples/tool_pipeline/multi_source/README.md):
+  original JSON/CSV/Parquet inputs, a three-input join and two terminal artifacts.
+  Both source examples link actual Viewer captures and navigation instructions;
+  their dated native results and adapted-verifier limits are documented separately.
 - [Package reuse](../examples/package_reuse/README.md): receiver binding of a
   closed process; preparation and execution remain separate.
 

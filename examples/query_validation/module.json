@@ -1,0 +1,280 @@
+{
+  "schema_version": "rpnh/module_declaration/v1",
+  "name": "QueryValidationObservation",
+  "components": [
+    {
+      "name": "inspect_inputs",
+      "key": "operation",
+      "config_schema": "application/operation_component_config/v1",
+      "config": {},
+      "ports": [
+        {
+          "name": "database",
+          "direction": "input",
+          "schema": "application/query_validation_database/v1"
+        },
+        {
+          "name": "original_sql",
+          "direction": "input",
+          "schema": "application/query_validation_original_sql/v1"
+        },
+        {
+          "name": "candidate_sql",
+          "direction": "input",
+          "schema": "application/query_validation_candidate_sql/v1"
+        },
+        {
+          "name": "request",
+          "direction": "output",
+          "schema": "application/query_validation_request/v1"
+        }
+      ],
+      "operations": [
+        {
+          "name": "run",
+          "executor": "example/query_validation/execute_inspect_inputs/v1",
+          "inputs": [
+            "database",
+            "original_sql",
+            "candidate_sql"
+          ],
+          "outputs": [
+            "request"
+          ],
+          "request_port": null,
+          "tools": [
+            "example/query_validation/inspect_inputs/v1"
+          ],
+          "config": {},
+          "outcomes": [
+            {
+              "name": "complete",
+              "products": [
+                {
+                  "port": "request"
+                }
+              ]
+            }
+          ],
+          "budget_binding": {
+            "bucket_id": "observation",
+            "budget_scope": "module",
+            "finalization_scope": null
+          }
+        }
+      ]
+    },
+    {
+      "name": "execute_queries",
+      "key": "operation",
+      "config_schema": "application/operation_component_config/v1",
+      "config": {},
+      "ports": [
+        {
+          "name": "request",
+          "direction": "input",
+          "schema": "application/query_validation_request/v1"
+        },
+        {
+          "name": "original_result",
+          "direction": "output",
+          "schema": "application/query_validation_original_result/v1"
+        },
+        {
+          "name": "candidate_result",
+          "direction": "output",
+          "schema": "application/query_validation_candidate_result/v1"
+        }
+      ],
+      "operations": [
+        {
+          "name": "run",
+          "executor": "example/query_validation/execute_execute_queries/v1",
+          "inputs": [
+            "request"
+          ],
+          "outputs": [
+            "original_result",
+            "candidate_result"
+          ],
+          "request_port": null,
+          "tools": [
+            "example/query_validation/execute_queries/v1"
+          ],
+          "config": {},
+          "outcomes": [
+            {
+              "name": "complete",
+              "products": [
+                {
+                  "port": "original_result"
+                },
+                {
+                  "port": "candidate_result"
+                }
+              ]
+            }
+          ],
+          "budget_binding": {
+            "bucket_id": "observation",
+            "budget_scope": "module",
+            "finalization_scope": null
+          }
+        }
+      ]
+    },
+    {
+      "name": "compare_results",
+      "key": "operation",
+      "config_schema": "application/operation_component_config/v1",
+      "config": {},
+      "ports": [
+        {
+          "name": "original_result",
+          "direction": "input",
+          "schema": "application/query_validation_original_result/v1"
+        },
+        {
+          "name": "candidate_result",
+          "direction": "input",
+          "schema": "application/query_validation_candidate_result/v1"
+        },
+        {
+          "name": "report",
+          "direction": "output",
+          "schema": "application/query_validation_report/v1"
+        },
+        {
+          "name": "final_sql",
+          "direction": "output",
+          "schema": "application/query_validation_final_sql/v1"
+        }
+      ],
+      "operations": [
+        {
+          "name": "run",
+          "executor": "example/query_validation/execute_compare_results/v1",
+          "inputs": [
+            "original_result",
+            "candidate_result"
+          ],
+          "outputs": [
+            "report",
+            "final_sql"
+          ],
+          "request_port": null,
+          "tools": [
+            "example/query_validation/compare_results/v1"
+          ],
+          "config": {},
+          "outcomes": [
+            {
+              "name": "complete",
+              "products": [
+                {
+                  "port": "report"
+                },
+                {
+                  "port": "final_sql"
+                }
+              ]
+            }
+          ],
+          "budget_binding": {
+            "bucket_id": "observation",
+            "budget_scope": "module",
+            "finalization_scope": null
+          }
+        }
+      ]
+    }
+  ],
+  "links": [
+    {
+      "source": {
+        "component": "inspect_inputs",
+        "port": "request"
+      },
+      "target": {
+        "component": "execute_queries",
+        "port": "request"
+      }
+    },
+    {
+      "source": {
+        "component": "execute_queries",
+        "port": "original_result"
+      },
+      "target": {
+        "component": "compare_results",
+        "port": "original_result"
+      }
+    },
+    {
+      "source": {
+        "component": "execute_queries",
+        "port": "candidate_result"
+      },
+      "target": {
+        "component": "compare_results",
+        "port": "candidate_result"
+      }
+    }
+  ],
+  "entry": {
+    "database": {
+      "component": "inspect_inputs",
+      "port": "database"
+    },
+    "original_sql": {
+      "component": "inspect_inputs",
+      "port": "original_sql"
+    },
+    "candidate_sql": {
+      "component": "inspect_inputs",
+      "port": "candidate_sql"
+    }
+  },
+  "exit": {
+    "report": {
+      "component": "compare_results",
+      "port": "report"
+    },
+    "final_sql": {
+      "component": "compare_results",
+      "port": "final_sql"
+    }
+  },
+  "terminal": {
+    "key": "example/query_validation/terminal/v1",
+    "source": {
+      "component": "compare_results",
+      "port": "report"
+    },
+    "operation": "run",
+    "outcome": "complete",
+    "config": {
+      "run_outcome": "complete"
+    }
+  },
+  "required_schemas": [
+    "application/operation_component_config/v1",
+    "application/query_validation_database/v1",
+    "application/query_validation_original_sql/v1",
+    "application/query_validation_candidate_sql/v1",
+    "application/query_validation_request/v1",
+    "application/query_validation_original_result/v1",
+    "application/query_validation_candidate_result/v1",
+    "application/query_validation_report/v1",
+    "application/query_validation_final_sql/v1"
+  ],
+  "budgets": {},
+  "budget_buckets": [
+    {
+      "bucket_id": "observation",
+      "budget_scope": "module",
+      "finalization_scope": null,
+      "max_attempts": 3
+    }
+  ]
+}
