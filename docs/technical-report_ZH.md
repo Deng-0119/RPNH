@@ -6,7 +6,7 @@ metadata:
   audience: application-developer-and-researcher
   language: zh-CN
   counterpart: technical-report.md
-  revision: "2026-10-12.1"
+  revision: "2026-10-12.2"
   status: technical-report
   basis: "Deng-0119/RPNH at 6cec63ff5b7a0039611713961d00941767edaaf8"
 ---
@@ -20,7 +20,7 @@ metadata:
 **更新日期：** 2026-10-12。**实现快照：**
 [`6cec63ff5b7a0039611713961d00941767edaaf8`][snapshot]。
 历史测试分别保留自己的源码身份，见[第 10 节](#10-历史结果及其限制)。
-本次报告更新未运行 runtime、模型或 benchmark 实验。
+下方新增原生案例分别保留自己的执行窗口；报告原快照和历史模型／benchmark 结果仍单独标识。
 
 ## 摘要
 
@@ -390,6 +390,22 @@ freeze04 first18 的 **5 PASS / 9 FAIL / 4 BLOCKED**，以及单独 repair4 条�
 保留独立 source identity、分窗口验证和原始失败，包括延期的 parity case 与不完整的 native/stock-client 范围。
 它不认证后来的 PN 或 origin-query commit。本次更新没有重跑以上任何窗口。
 其余版本特定检查见[release-validation 历史](guides/release-validation_ZH.md)。
+
+## 原生输入与协作
+
+原输入边界针对选定 run、task、net、wait 和 firing 准入 exact 输入。可信本地前门绑定提交者 principal/session，浏览器字段不能自行选择权限。已接受的[模拟退款审批](../examples/approval_workflow/README_ZH.md)记录 requester 与 approver 两份输入和两次结算；[外部结果接入报价](../examples/a2a_quote/README_ZH.md)记录受控 verifier 的一份输入和一次结算。业务输入均为合成数据。报价是确定性外部结果示例，历史 A2A 模块名仅为 CLI/schema 兼容保留；不代表 A2A SDK 或 OID4VP 互操作。
+
+[原生电费协作](../examples/user_collaboration/native_billing/README_ZH.md)单独演示定义贡献。用量贡献者收紧 `check_usage_input.run`，owner 审阅并推进受保护 Branch；电价贡献者从这份已接受 revision 的精确字节开始，收紧 `check_tariff_input.run`，再经第二次审阅和 Branch 推进。owner 最后采用同时含两项贡献的网，再执行十步业务。这是一条单 parent 祖先链。原同 base resolver 的纯回归保留实际 `coupled_contract` 限制：整组选一侧可能丢弃另一修改，不据此宣称自动双 parent 融合。三个受控本地 Registry 身份也不等于外部 SSO 或真实人类作者认证。
+
+这个受控本地案例展示贡献记录与原生执行的可追踪关系，范围不包含性能比较、外部身份认证或自动双 parent 融合；按日期标明的源码身份与图像哈希见[截图来源](../examples/user_collaboration/native_billing/figures/provenance.json)。
+
+![实际原生多人电费 PN 全景，十次业务结算。](../examples/user_collaboration/native_billing/figures/panorama.png)
+
+原始图显示同一采用网的 28 节点／29 弧；两份 source 提案、十次业务结算、十二项资源和一个 complete 终态均由原 Registry 读回。三个模型计数均 `[0,0]`；结果逐字段等于 2.000 kWh／1.70 CNY。贡献节点及 owner 单独采用图见[示例](../examples/user_collaboration/native_billing/README_ZH.md)，执行与捕获源码窗口见[provenance](../examples/user_collaboration/native_billing/figures/provenance.json)。
+
+![实际 Viewer 聚焦继承的用量贡献及其记录中的提议者。](../examples/user_collaboration/native_billing/figures/contributor-2.png)
+
+Viewer 将同一 PN 操作节点、修改字段 `value/config/max_integer`、记录中的提议者及 exact proposal/base/candidate revision 引用连接起来。用量修改在最终采用网中仍以继承贡献可见；示例同时提供完整引用补图与独立的 owner adoption 行为。读者因此可以在同一执行模型中，沿业务节点追踪到经过审阅的版本及其最终采用。
 
 ## 参考文献
 

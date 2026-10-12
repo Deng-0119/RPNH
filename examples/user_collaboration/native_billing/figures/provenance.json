@@ -1,0 +1,150 @@
+{
+  "schema_version": "example/native-billing-viewer-provenance/v1",
+  "date": "2026-10-12",
+  "view": "actual original RegistryDashboard/UserContributionView; completed native PetriNet",
+  "public_integration_base": "d7603cb7172edfd183e3ac9d2ca16e2f2767f85e",
+  "source_identity": {
+    "reused_public_source_commit": "5aea9b00bd7871bbc1e97f595d63447a534acccb",
+    "reused_files": [
+      {
+        "path": "examples/tool_pipeline/module.json",
+        "sha256": "fd8483bbc7974386531383d4988fe42f3deb350b78c1a06837473710a171d577"
+      },
+      {
+        "path": "examples/tool_pipeline/host.py",
+        "sha256": "0cb8ae2074f726a29785c7b8995d56ddff93ae27e7471a1112e4ae198c0fe9fc"
+      },
+      {
+        "path": "examples/tool_pipeline/tools.py",
+        "sha256": "4505285f2a3d801f2ac31adc63cbc73aa3d5a271a5f6a88b44fac6bc05d7fca9"
+      },
+      {
+        "path": "examples/tool_pipeline/contracts.py",
+        "sha256": "80343a6929294ddf5aaa663595a3c2508a4550a85e93de71bd68b948df294534"
+      },
+      {
+        "path": "examples/tool_pipeline/run.py",
+        "sha256": "ad0df2b9d2e018d3b17dc49350a051f8620e3a3c31cfb96840afb6bbbb694dc4"
+      },
+      {
+        "path": "examples/tool_pipeline/fixtures/usage.json",
+        "sha256": "ee40f4a6d10cead79a1c2323d91214c1b45e05aee27640413520bf449f12eddf"
+      },
+      {
+        "path": "examples/tool_pipeline/fixtures/tariff.json",
+        "sha256": "a5fec5935e2698908b1dbd54c375191ea70c17a2983a32d0dc6fcec729cc5cab"
+      },
+      {
+        "path": "examples/tool_pipeline/fixtures/expected-report.json",
+        "sha256": "d369c18417ae7b8ccb88d9ef8f4fce6844f637df81b3e17e5ced51414e5b68d5"
+      }
+    ],
+    "executed_cpn_source_tree": {
+      "sha256": "9cfd04a03b2a9b766b7bf1bca63d1038ee3f6275e6071b4abc071b4e2ba43444",
+      "file_count": 765,
+      "method": "sorted-relative-path-NUL-and-binary-SHA256"
+    },
+    "executed_example_source_tree": {
+      "sha256": "d25fc083908fa0b2a9d254896c5e86b42f9a416a6191ca171232aadd5e93e4ec",
+      "file_count": 10,
+      "method": "sorted-relative-path-NUL-and-binary-SHA256"
+    },
+    "execution_scope": "These fingerprints identify the recorded final native execution window. Reused billing-file pins and later publication trees are distinct identities; this record does not assert that a later assembled tree was rerun."
+  },
+  "browser": {
+    "final_window": "native-06",
+    "nodes": 28,
+    "arcs": 29,
+    "head_before": 1318,
+    "head_after": 1318,
+    "readonly": true,
+    "original_export_exact_match": true,
+    "runtime_window": "nf-native-02"
+  },
+  "result": {
+    "proposal_firings": 2,
+    "business_firings": 10,
+    "resources": 12,
+    "terminals": 1,
+    "total_kwh": "2.000",
+    "total_cny": "1.70",
+    "model_counters": [
+      [
+        0,
+        0
+      ],
+      [
+        0,
+        0
+      ],
+      [
+        0,
+        0
+      ]
+    ]
+  },
+  "images": [
+    {
+      "path": "panorama.png",
+      "bytes": 395732,
+      "sha256": "9f3ae9ab36476fed5ecb3997b98cbcf3f451b335bc4443f8b1429bf79fa56027",
+      "transform": "none; original Playwright screenshot bytes"
+    },
+    {
+      "path": "owner-adoption.png",
+      "bytes": 269275,
+      "sha256": "ce679a1f205aa8dec94f341b83123197eb9f964eb2355b390aa1b22f45931d16",
+      "transform": "none; original Playwright screenshot bytes"
+    },
+    {
+      "path": "contributor-1.png",
+      "bytes": 332583,
+      "sha256": "db65450e6e648f73d03d8f05f3a39fb08d935300860e4255cbd3a15490cca0ad",
+      "transform": "none; original Playwright screenshot bytes"
+    },
+    {
+      "path": "contributor-1-refs.png",
+      "bytes": 333358,
+      "sha256": "05d1166dd06b673b04fd95bcc57b295e89bdcd105e361ddddb0ae8d55c822359",
+      "transform": "none; original Playwright screenshot bytes"
+    },
+    {
+      "path": "contributor-1-base_revision_ref.png",
+      "bytes": 333677,
+      "sha256": "300fdc65ed7ba8945ce11cfefa99b67d7c04e607b861e7a9a770cf4ef7d6bac2",
+      "transform": "none; original Playwright screenshot bytes"
+    },
+    {
+      "path": "contributor-1-candidate_revision_ref.png",
+      "bytes": 333715,
+      "sha256": "a83328773fa45215d4115f7b3aff75ea38287f708f6233eac7f464f1ac1e3191",
+      "transform": "none; original Playwright screenshot bytes"
+    },
+    {
+      "path": "contributor-2.png",
+      "bytes": 333548,
+      "sha256": "7e8688b0b6674ebc8d7529b1afedcea0a01d388d04f8071e4cd4855277da5db1",
+      "transform": "none; original Playwright screenshot bytes"
+    },
+    {
+      "path": "contributor-2-refs.png",
+      "bytes": 334453,
+      "sha256": "fdf18ebd74b7a1b1f791ec087f770159ad0e9465cfe747be1cc60639e22c95f0",
+      "transform": "none; original Playwright screenshot bytes"
+    },
+    {
+      "path": "contributor-2-base_revision_ref.png",
+      "bytes": 334794,
+      "sha256": "9552cda0a0f54e22af51e103e56f622ee82f21b3585a3b408da3412394f75191",
+      "transform": "none; original Playwright screenshot bytes"
+    },
+    {
+      "path": "contributor-2-candidate_revision_ref.png",
+      "bytes": 335200,
+      "sha256": "5692834a890b20d5f401641a197fe20838532a0ba190ca7a5f94c529cde5f85d",
+      "transform": "none; original Playwright screenshot bytes"
+    }
+  ],
+  "disclosure": "Original opaque local actor/session/reference and checkpoint labels and observation times remain visible. No personal identity mapping, credentials, Registry/session artifacts or endpoints are included.",
+  "reopen": "Keep the original trusted --serve HOST alive and revisit its printed loopback URL before its one-hour read grant expires. This viewing entry is scoped to that live HOST/session; a Registry path or export does not restore the session after exit or expiry."
+}

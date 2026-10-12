@@ -42,6 +42,8 @@ and [external-result quote intake](examples/a2a_quote/README.md). Each opens wit
 its actual Viewer capture and includes same-run inspection and reopen commands.
 Business inputs and external results are synthetic; no model or financial service is called.
 
+[Native billing collaboration](examples/user_collaboration/native_billing/README.md) follows two recorded contributions into one adopted ten-step PN. The original Registry remains the execution and evidence authority; the example includes the verified result, actual Viewer captures and commands to run and inspect it.
+
 ## See a multi-agent run
 
 [Controlled managed tools](docs/controlled-managed-tools.md) covers exact result

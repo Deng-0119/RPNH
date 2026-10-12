@@ -2,6 +2,8 @@
 
 English | [中文](README_ZH.md) | [Detailed results and analysis](../../docs/results/user-collaboration-20261012/README.md)
 
+Start with [native billing collaboration](native_billing/README.md) for a self-contained, model-free example: three controlled local actors, two sequential contributions to one adopted PN, and actual Viewer captures. The route-planning study below retains its original results and evidence.
+
 Three independent controlled simulated Registry actors, A/B/C, contributed configuration changes to the same 24-batch route-planning network. Each had a separate actor and session under one trusted HOST; these were not three human participants or external accounts. Models proposed changes, the owner accepted a revision, and deterministic HOST tools executed the adopted business Petri net.
 
 ## The adopted task network in the official Viewer

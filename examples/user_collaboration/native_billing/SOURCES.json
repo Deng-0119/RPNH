@@ -1,0 +1,40 @@
+{
+  "schema_version": "native_billing_collaboration/sources/v1",
+  "public_repository": "https://github.com/Deng-0119/RPNH",
+  "source_commit": "5aea9b00bd7871bbc1e97f595d63447a534acccb",
+  "purpose": "Exact reused public billing implementation and original synthetic fixture bytes. The actual executed product/example tree identities are recorded separately in figures/provenance.json.",
+  "files": [
+    {
+      "path": "examples/tool_pipeline/module.json",
+      "sha256": "fd8483bbc7974386531383d4988fe42f3deb350b78c1a06837473710a171d577"
+    },
+    {
+      "path": "examples/tool_pipeline/host.py",
+      "sha256": "0cb8ae2074f726a29785c7b8995d56ddff93ae27e7471a1112e4ae198c0fe9fc"
+    },
+    {
+      "path": "examples/tool_pipeline/tools.py",
+      "sha256": "4505285f2a3d801f2ac31adc63cbc73aa3d5a271a5f6a88b44fac6bc05d7fca9"
+    },
+    {
+      "path": "examples/tool_pipeline/contracts.py",
+      "sha256": "80343a6929294ddf5aaa663595a3c2508a4550a85e93de71bd68b948df294534"
+    },
+    {
+      "path": "examples/tool_pipeline/run.py",
+      "sha256": "ad0df2b9d2e018d3b17dc49350a051f8620e3a3c31cfb96840afb6bbbb694dc4"
+    },
+    {
+      "path": "examples/tool_pipeline/fixtures/usage.json",
+      "sha256": "ee40f4a6d10cead79a1c2323d91214c1b45e05aee27640413520bf449f12eddf"
+    },
+    {
+      "path": "examples/tool_pipeline/fixtures/tariff.json",
+      "sha256": "a5fec5935e2698908b1dbd54c375191ea70c17a2983a32d0dc6fcec729cc5cab"
+    },
+    {
+      "path": "examples/tool_pipeline/fixtures/expected-report.json",
+      "sha256": "d369c18417ae7b8ccb88d9ef8f4fce6844f637df81b3e17e5ced51414e5b68d5"
+    }
+  ]
+}

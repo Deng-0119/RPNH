@@ -40,6 +40,8 @@ workspace 或恢复状态的独立所有者。
 [外部结果接入报价](examples/a2a_quote/README_ZH.md)。每个案例开头都有实际 Viewer
 截图，并提供同一运行的查看与重开命令。业务输入和外部结果均为合成，不调用模型或金融服务。
 
+[原生电费协作](examples/user_collaboration/native_billing/README_ZH.md)沿两份原提案观察贡献如何进入同一个采用后的十步 PN。原 Registry 继续掌管执行与证据；示例包含已核验结果、真实 Viewer 截图及运行和查看命令。
+
 ## 先看一次多 Agent 运行
 
 下图来自仓库内 `parallel` 案例完成后的真实 Registry 看板。`prepare` 会同时启用两个独立

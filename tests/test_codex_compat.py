@@ -992,6 +992,16 @@ def test_codex_interrupt_race_prefers_registry_terminal_evidence(
     server._threads[state.thread_id] = state
     socket = _FakeWebSocket([])
 
+    with pytest.raises(ValueError, match="does not match the active RPNH turn"):
+        asyncio.run(server._interrupt_turn(socket, "stale", {
+            "threadId": state.thread_id,
+            "turnId": "turn-previous",
+        }))
+    assert control.stop_calls == 0
+    assert state.active.turn_id == "turn-race"
+    assert session.terminal is False
+    assert socket.sent == []
+
     asyncio.run(server._interrupt_turn(socket, 1, {
         "threadId": state.thread_id,
         "turnId": "turn-race",
@@ -1010,6 +1020,15 @@ def test_codex_interrupt_race_prefers_registry_terminal_evidence(
     rebuilt = server._committed_turns(state)
     assert rebuilt[0]["id"] != "turn-race"
     assert rebuilt[0]["items"][1]["text"] == "won naturally"
+
+    asyncio.run(server._interrupt_turn(socket, "duplicate", {
+        "threadId": state.thread_id,
+        "turnId": "turn-race",
+    }))
+    assert control.stop_calls == 1
+    assert state.turns[0]["status"] == "completed"
+    assert sum(item.get("method") == "turn/completed"
+               for item in socket.sent) == 1
 
 
 def test_codex_stopped_turn_is_reconciled_without_entering_history(

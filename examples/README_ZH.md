@@ -34,6 +34,7 @@
 | 编码任务前缀的原生 Session 命令 | [SlopCodeBench pilot](slopcodebench/README_ZH.md) | [pilot 范围与保留结果](slopcodebench/README_ZH.md) | 脚本夹具或显式授权的真实 profile |
 | 三个模拟用户共建同一任务网：分支、审阅、协调与采用 | [用户协作](user_collaboration/README_ZH.md) | [原业务 PN 截图与官方静态 Viewer](user_collaboration/README_ZH.md) | 离线查看；不包含完整真实模型实验环境 |
 | 验证证据文件与源码身份 | [示例证据约定](example_validation/README_ZH.md) | [只读验证工具](example_validation/README_ZH.md) | 无独立 PN、模型调用或业务执行 |
+| 两位贡献者修改同一个原生电费 PN | [原生电费协作](user_collaboration/native_billing/README_ZH.md) | 实际全 PN 与记录中的提议者详情 | 确定性；三个受控本地主体 |
 
 安装版附加入口：[适配任务](../docs/guides/examples_ZH.md)通过全部支持宿主运行同一个语义任务，图示为原 DSH 执行网。
 

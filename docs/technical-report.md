@@ -6,7 +6,7 @@ metadata:
   audience: application-developer-and-researcher
   language: en
   counterpart: technical-report_ZH.md
-  revision: "2026-10-12.1"
+  revision: "2026-10-12.2"
   status: technical-report
   basis: "Deng-0119/RPNH at 6cec63ff5b7a0039611713961d00941767edaaf8"
 ---
@@ -20,7 +20,7 @@ English | [中文](technical-report_ZH.md) | [Documentation](index.md)
 **Updated:** 2026-10-12. **Implementation snapshot:**
 [`6cec63ff5b7a0039611713961d00941767edaaf8`][snapshot].
 Historical tests retain their own source identities in [§10](#10-historical-results-and-their-limits).
-This report update ran no runtime, model or benchmark experiments.
+The dated native examples added below retain their own execution windows; the earlier report snapshot and historical model/benchmark results remain separate.
 
 ## Abstract
 
@@ -498,6 +498,22 @@ including the deferred parity case and incomplete native/stock-client scope.
 It is not certification of later PN or origin-query commits. This update reran
 none of those windows. [Release-validation history](guides/release-validation.md)
 provides the remaining version-specific checks.
+
+## Native input and collaboration
+
+The original input boundary admits an exact input against the selected run, task, net, wait and firing. A trusted local front door binds the submitting principal/session; a browser field does not select that authority. The accepted [mock refund approval](../examples/approval_workflow/README.md) records requester and approver inputs and two settlements; [external-result quote intake](../examples/a2a_quote/README.md) records one controlled verifier input and one settlement. Both use synthetic business inputs. The quote is a deterministic external-result example; its historical A2A module name is retained for CLI/schema compatibility. It does not implement A2A SDK or OID4VP interoperability.
+
+The [native billing collaboration](../examples/user_collaboration/native_billing/README.md) exercises definition ownership separately from input approval. A usage contributor tightens `check_usage_input.run`; the owner reviews and advances the protected Branch. A tariff contributor starts from those exact accepted revision bytes, tightens `check_tariff_input.run`, and receives the second review/advance. The owner then adopts the revision containing both contributions before the ten-step business executes. This is a single-parent ancestor chain. A same-base resolver regression retains the actual `coupled_contract` limitation: selecting one side can discard the other change. It is not proof of automatic two-parent merging. Three controlled local Registry identities are not external SSO or evidence of real-human authorship.
+
+This controlled local example demonstrates traceability of recorded contributions and native execution. Its scope does not include performance comparison, external identity authentication or automatic multi-parent merging; dated source identities and image hashes are recorded in the [capture provenance](../examples/user_collaboration/native_billing/figures/provenance.json).
+
+![Actual native multi-user billing PN panorama, with ten settled business firings.](../examples/user_collaboration/native_billing/figures/panorama.png)
+
+The original capture shows all 28 nodes and 29 arcs of the adopted net. Original Registry readback confirms two source proposals, ten business settlements, twelve resources and one complete terminal, with three `[0,0]` model counters and the exact 2.000 kWh / CNY 1.70 report. [The example](../examples/user_collaboration/native_billing/README.md) includes each contributor and separate owner adoption; [provenance](../examples/user_collaboration/native_billing/figures/provenance.json) keeps execution and capture source windows distinct.
+
+![Actual Viewer focus on the inherited usage contribution and its recorded proposer.](../examples/user_collaboration/native_billing/figures/contributor-2.png)
+
+The Viewer connects the same PN operation node to its changed `value/config/max_integer` field, recorded proposer, and exact proposal/base/candidate revision references. The usage change remains visible as an inherited contribution in the final adopted net; the example links the full reference captures and the separate owner adoption action. This makes the path from a business node through its reviewed revision to adoption inspectable within one execution model.
 
 ## References
 

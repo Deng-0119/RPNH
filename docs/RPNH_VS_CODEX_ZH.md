@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: RPNH_VS_CODEX.md
-  revision: "2026-09-29.2"
+  revision: "2026-10-12.2"
   status: source-reviewed-pre-release
 ---
 
@@ -106,3 +106,13 @@ Registry；共享 owner lease 会阻止并发可写前端。每个可独立切�
 - RPNH 自带空 provider/model catalog，不包含项目专用 workflow。Provider 配置与任务专用
   graph 设计都属于用户；
 - 独立仓库是通用 harness 的权威；历史实验 workspace 不是运行时依赖。
+
+## 从可运行示例检查权威边界
+
+不用真实模型也能观察同一执行边界。[模拟审批](../examples/approval_workflow/README_ZH.md)和[外部结果接入报价](../examples/a2a_quote/README_ZH.md)将受控输入绑定到原 Registry 等待。[原生电费协作](../examples/user_collaboration/native_billing/README_ZH.md)记录两项连续贡献、owner 审阅／Branch 推进，以及业务执行前的显式 adoption。
+
+这些案例使用官方只读 Viewer 查看实际 PN 和原引用。贡献配色表示记录中的提议者，采用另行展示，不认证作者或给 baseline 节点归属。接口增加观察能力，执行权威仍在原系统。[技术报告](technical-report_ZH.md#原生输入与协作)连贯说明证据与限制；各示例页包含真实图像、源码窗口和可调用入口。
+
+![实际原生多人电费 PN 全景，十次业务结算。](../examples/user_collaboration/native_billing/figures/panorama.png)
+
+原始图显示同一采用网的 28 节点／29 弧；两份 source 提案、十次业务结算、十二项资源和一个 complete 终态均由原 Registry 读回。三个模型计数均 `[0,0]`；结果逐字段等于 2.000 kWh／1.70 CNY。贡献节点及 owner 单独采用图见[示例](../examples/user_collaboration/native_billing/README_ZH.md)，执行与捕获源码窗口见[provenance](../examples/user_collaboration/native_billing/figures/provenance.json)。

@@ -76,6 +76,8 @@ metadata:
 | 编写选择性移植的普通后继与独立复制 | [移植普通后继](reference/plain-transplant-descendants_ZH.md) |
 | 核对历史评分、源码与未运行范围 | [精选结果](results/README_ZH.md) |
 
+[原生电费协作](../examples/user_collaboration/native_billing/README_ZH.md)把原贡献连接到官方只读 Viewer；[技术报告](technical-report_ZH.md#原生输入与协作)将其证据与已接受的审批和外部结果应用连贯说明。
+
 ## 如何阅读参考
 明确区分声明契约、高级可信宿主接口与私有模块。各页源码路径是仓库内定位信息，不是独立安装说明。可选 API 按能力标注，必须与所选源码/产物核对；自动生成页面不授予 SDK 稳定性承诺。
 

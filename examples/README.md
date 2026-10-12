@@ -36,6 +36,7 @@ Choose an example by the behavior you want to see:
 | Native Session commands for a coding-task prefix | [SlopCodeBench pilot](slopcodebench/README.md) | [Pilot scope and retained results](slopcodebench/README.md) | Scripted fixtures or an explicitly authorized live profile |
 | Three simulated users jointly build one task network: branch, review, coordinate and adopt | [User collaboration](user_collaboration/README.md) | [Recorded business PN and official static Viewer](user_collaboration/README.md) | Offline inspection; full real-model experiment is not bundled |
 | Validate evidence files and source identities | [Example evidence contract](example_validation/README.md) | [Read-only validation utility](example_validation/README.md) | No standalone PN, model call or business execution |
+| Two contributors revise one native billing PN | [Native billing collaboration](user_collaboration/native_billing/README.md) | Actual full PN and recorded-proposer details | Deterministic; three controlled local actors |
 
 Additional installed entry point: the [adapter task](../docs/guides/examples.md) runs one semantic task through every supported host; its retained illustration is the DSH execution net.
 

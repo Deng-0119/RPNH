@@ -333,6 +333,11 @@ def test_exact_abort_is_coalesced_until_checkpoint_and_resume(boundary):
     assert app.abort(SID) and control.stops == 1
     assert app.command(SID, "rpnh-resume", "", "ignored")["status"] == "RESUME_STARTED"
     assert control.resumes == 1
+    with pytest.raises(FrontendError, match="not paused at a Registry checkpoint"):
+        app.command(SID, "rpnh-resume", "", "ignored")
+    assert control.resumes == 1
+    assert control.starts == 1
+    assert len(main.records) == 1
     app.abort(SID)
     assert control.stops == 2
 

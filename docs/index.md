@@ -80,6 +80,8 @@ has a corresponding Chinese page.
 | Author ordinary descendants and independent copies of selective transplants | [Transplant descendants](reference/plain-transplant-descendants.md) |
 | Review historical scores, exact sources and unrun scope | [Curated results](results/README.md) |
 
+The [native billing collaboration](../examples/user_collaboration/native_billing/README.md) connects recorded contributions to the original read-only Viewer. The [technical report](technical-report.md#native-input-and-collaboration) relates its evidence to the accepted approval and external-result applications.
+
 ## Reading the reference
 Declaration contracts, advanced trusted-host interfaces and private implementation modules are explicitly separated. Source paths in each page are repository-relative navigation aids, not independent installation instructions. Optional APIs are labelled by capability; their availability must be checked in the selected source/artifact. A generated page does not grant SDK stability.
 

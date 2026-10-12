@@ -2,6 +2,8 @@
 
 [English](README.md) | 中文 | [详细结果与分析](../../docs/results/user-collaboration-20261012/README_ZH.md)
 
+需要可独立运行、无需模型的示例，可从[原生电费协作](native_billing/README_ZH.md)开始：三个受控本地主体、连续两项贡献进入同一采用网，并提供真实 Viewer 截图。下方路线规划研究继续保留原结果与证据。
+
 三个独立受控的模拟 Registry 身份 A/B/C，共同修改同一个 24 批次路线规划任务网的配置。各自有独立 actor 和 session，由同一个可信 HOST 协调；它们不是三位真人或三个外部账号。模型提出修改，owner 接受一个版本，再由确定性 HOST 工具执行采用后的业务 Petri 网。
 
 ## 先看官方 Viewer 中已采用的任务网

@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: en
   counterpart: RPNH_VS_CODEX_ZH.md
-  revision: "2026-09-29.2"
+  revision: "2026-10-12.2"
   status: source-reviewed-pre-release
 ---
 
@@ -128,3 +128,13 @@ tokens, workspace, or final-result authority.
   Users own both provider configuration and task-specific graph design.
 - This standalone repository is authoritative for the reusable harness; a
   historical experiment workspace is not a runtime dependency.
+
+## Inspect the authority in runnable examples
+
+The same execution boundary is visible without a live model. [Mock approval](../examples/approval_workflow/README.md) and [external-result quote intake](../examples/a2a_quote/README.md) bind controlled input to original Registry waits. [Native billing collaboration](../examples/user_collaboration/native_billing/README.md) records two sequential contributions, owner review/Branch advances and explicit adoption before business execution.
+
+These examples use the official read-only Viewer for the actual PN and original references. Contribution colors mean recorded proposers, with adoption shown separately; they do not authenticate authors or attribute baseline nodes. The interfaces add observation, not frontend execution ownership. The [technical report](technical-report.md#native-input-and-collaboration) connects their limits and evidence; the example pages contain the actual images, source windows and callable entries.
+
+![Actual native multi-user billing PN panorama, with ten settled business firings.](../examples/user_collaboration/native_billing/figures/panorama.png)
+
+The original capture shows all 28 nodes and 29 arcs of the adopted net. Original Registry readback confirms two source proposals, ten business settlements, twelve resources and one complete terminal, with three `[0,0]` model counters and the exact 2.000 kWh / CNY 1.70 report. [The example](../examples/user_collaboration/native_billing/README.md) includes each contributor and separate owner adoption; [provenance](../examples/user_collaboration/native_billing/figures/provenance.json) keeps execution and capture source windows distinct.
