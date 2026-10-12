@@ -519,8 +519,14 @@ def build_replacement_history(
         retained_history_token_limit: int,
         fact_capsule: Mapping[str, Any],
         pending_tool_call_ids: AbstractSet[str] = frozenset(),
+        tool_output_byte_limit: int = 10_000,
 ) -> tuple[dict[str, Any], ...]:
-    """Build the bounded forward-only replacement-history contract."""
+    """Build replacement history; each tool group gets max(40000, output limit).
+
+    The group budget includes call/result frames, escaping and archive notice.
+    Individual result projections and retained-history tokens remain bounded
+    independently. Executed call arguments are never truncated to fit.
+    """
     if not isinstance(summary, str) or not summary.strip():
         raise ValueError("context summary must be nonempty text")
     if (not isinstance(messages, Sequence)
@@ -535,6 +541,9 @@ def build_replacement_history(
             or fact_capsule.get("schema_version")
             != "agent_context_fact_capsule/v1"):
         raise ValueError("context compaction requires one typed fact capsule")
+    if type(tool_output_byte_limit) is not int or tool_output_byte_limit < 128:
+        raise ValueError("tool output byte limit is too small")
+    tool_batch_byte_limit = max(TOOL_BATCH_BYTE_LIMIT, tool_output_byte_limit)
     archive_bytes = 0
     if "result_archive" in fact_capsule:
         without_archive = dict(fact_capsule)
@@ -545,7 +554,7 @@ def build_replacement_history(
         archive_bytes = (
             len(_canonical_json(_fact_capsule_message(fact_capsule)))
             - len(_canonical_json(_fact_capsule_message(without_archive))))
-    if archive_bytes >= TOOL_BATCH_BYTE_LIMIT:
+    if archive_bytes >= tool_batch_byte_limit:
         raise ValueError("result archive locator exceeds the active notification budget")
     groups = list(_message_groups(messages))
     # Only the latest recorded ordinary turn can still owe a result notice.
@@ -556,7 +565,7 @@ def build_replacement_history(
                for m in groups[i])), None)
     if pending_index is not None:
         groups[pending_index] = bound_tool_result_groups(
-            groups[pending_index], byte_limit=TOOL_BATCH_BYTE_LIMIT - archive_bytes)
+            groups[pending_index], byte_limit=tool_batch_byte_limit - archive_bytes)
     messages = tuple(message for group in groups for message in group)
     recent_budget = retained_history_token_limit - math.ceil(archive_bytes / 4)
     recent = (retained_recent_history(messages, token_limit=recent_budget)
@@ -566,7 +575,7 @@ def build_replacement_history(
     consumed = 0
     for index, group in enumerate(groups):
         if consumed >= recent_start or index == pending_index:
-            retained.extend(bound_tool_result_groups(group))
+            retained.extend(bound_tool_result_groups(group, byte_limit=tool_batch_byte_limit))
         else:
             for message in group:
                 if message.get("role") != "tool":

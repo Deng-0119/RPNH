@@ -1,0 +1,194 @@
+{
+  "schema_version": "rpnh/public_result_sources/v1",
+  "experiment_date": "2026-10-12",
+  "tested_runtime": {
+    "source_tree": "c26cf943eb9d32d14646fe411da6332ace9a3c24",
+    "wheel_sha256": "66e55af8ff6e7a8156441e8a6f622628002d62cba7bb28d2259015ab501fbad4",
+    "effective_runtime": "installed wheel plus the following eight original runtime overlays",
+    "overlays": [
+      {
+        "path": "cpn/components/agent_loop/action_execution.py",
+        "bytes": 47126,
+        "sha256": "e3d18fc84d00271df237638cae362d53c17635ef0e436455dc1e94bdc3c0784d",
+        "git_blob": "d85464759d00a35fe8bdacef49abec7b3694a993"
+      },
+      {
+        "path": "cpn/components/agent_loop/compact.py",
+        "bytes": 33114,
+        "sha256": "9ba854147b936c4f7c970eaa827abb181f550c3ce03af19ed0744b62714ee2d9",
+        "git_blob": "2cb2158fddb35f5058754dc5377a73edd16c4209"
+      },
+      {
+        "path": "cpn/components/agent_loop/compaction.py",
+        "bytes": 61387,
+        "sha256": "164d591c8fefa942a90e1de0493364456c0edc51e052c8c73c252e54fec7995e",
+        "git_blob": "95f37c05b26526e06237d819454cc696fd794ad8"
+      },
+      {
+        "path": "cpn/components/agent_loop/context.py",
+        "bytes": 60095,
+        "sha256": "d17c519106407bdf9fcfd63a6c72dcc3418258701b20f0a6feb09603c9014ee3",
+        "git_blob": "b4788e514ad67ef26f94242b90f1d53a321a54cc"
+      },
+      {
+        "path": "cpn/components/agent_loop/tool_catalog.py",
+        "bytes": 35280,
+        "sha256": "af9923716b17e1fd316242c1494187c286a0f092d97897a901cef6357aa3bc1e",
+        "git_blob": "77bd484a5739163bf638ea99b264f5c060b56e9d"
+      },
+      {
+        "path": "cpn/components/agent_loop/workspace.py",
+        "bytes": 63791,
+        "sha256": "be54bde414c2396686fd3bbbf9ebb6dd6ea9be5dc6ab54243e359b8346929c41",
+        "git_blob": "b1a999dc6e105a54df0cb5890b98b78661da5b01"
+      },
+      {
+        "path": "cpn/rpnh/owner_edits.py",
+        "bytes": 22332,
+        "sha256": "1d61fd06686ee23fe48fe24847a4d3bd3ba9af382e3e6ad080c58493d9c91ace",
+        "git_blob": "717df1c8e26cb380eec66d8f1353940194f16e9f"
+      },
+      {
+        "path": "cpn/rpnh/registry/_event_store/provenance.py",
+        "bytes": 55717,
+        "sha256": "a013787f4474d3500911404d4c7bf03fbb9279c4e7584a11cc9fe91a6e584738",
+        "git_blob": "b390c56b2ffaeb852d9e517fe6b0c7bfe167f8f5"
+      }
+    ],
+    "boundary": "These identify the executed experiment, not all later product revisions."
+  },
+  "scorer": {
+    "repository": "https://github.com/MIT-CAVE/rc-cli",
+    "commit": "fdafa50e8b8a18d4cbff112ec432011952b92c7d",
+    "path": "scoring/score.py",
+    "sha256": "4ab51620391b3b5d131720518d2ce4c346f0eedb3d68afcf1ae9174b9e6b1540",
+    "license": "MIT"
+  },
+  "dataset": {
+    "reference": "https://registry.opendata.aws/amazon-last-mile-challenges/",
+    "license": "CC BY-NC 4.0",
+    "development_denominator": 512,
+    "eval_denominator": 512,
+    "raw_data_bundled": false
+  },
+  "runtime_figures": [
+    {
+      "path": "examples/user_collaboration/figures/baseline.png",
+      "bytes": 816600,
+      "sha256": "b2fd897a6eeb16af51e6ea693bd4bbf2c15288cad9030cfe51e8510fb17d841d",
+      "git_blob": "b9e5ba936b0fd9bff655810cf2b58e7b64c70b69",
+      "dimensions": [
+        4485,
+        5000
+      ],
+      "mode": "original_registry_current_capture",
+      "domain": "development",
+      "edited": false,
+      "png_chunk_types": [
+        "IDAT",
+        "IEND",
+        "IHDR"
+      ],
+      "footer": "Original technical checkpoint reference and observation time retained. These are execution identifiers, not personal identity or access credentials."
+    },
+    {
+      "path": "examples/user_collaboration/figures/adopted-M2.png",
+      "bytes": 816946,
+      "sha256": "4618c59948734bf3f877e82f3c2af3d72432e924a8b8df46c783f72cbd8086f6",
+      "git_blob": "4ff7514ac783613b6309d7777db7c15472f91d82",
+      "dimensions": [
+        4485,
+        5000
+      ],
+      "mode": "original_registry_current_capture",
+      "domain": "development",
+      "edited": false,
+      "png_chunk_types": [
+        "IDAT",
+        "IEND",
+        "IHDR"
+      ],
+      "footer": "Original technical checkpoint reference and observation time retained. These are execution identifiers, not personal identity or access credentials."
+    }
+  ],
+  "static_declarations": {
+    "source_mode": "initial_configured",
+    "projection_product_commit": "ccbb5702ee984082212bdfe85831c3192d7517ae",
+    "projection_interfaces": [
+      "compile_module",
+      "project_compiled_net",
+      "public_net",
+      "project_compiled_boundaries"
+    ],
+    "registration_source_identities": {
+      "business.py": {
+        "git_blob": "1ee41408c74dc2e0feb03e6ea9d3d4149cdc35d0",
+        "bytes": 12144,
+        "sha256": "4376ee13534ddaeafb7f61d9745debcad95e614546974f4e330c25c14868c7da"
+      },
+      "host.py": {
+        "git_blob": "0e153c171044d0b41c6840e005922c8af512b58a",
+        "bytes": 6743,
+        "sha256": "0589602709d4fa44a713bb171c19066d7bddba10bae989065097602e7c78373a"
+      },
+      "contracts.py": {
+        "git_blob": "07e9602f8570c27dd364489c7d3afede610f5489",
+        "bytes": 5168,
+        "sha256": "736d141861673aff7570ea64348f4cbd3a09b08140e3230dd8b7dec3cef14751"
+      },
+      "pn_authoring.py": {
+        "git_blob": "2ac0f24328971cf14ced6465055013b072278e92",
+        "bytes": 1644,
+        "sha256": "1578baabdcd2b8cf72225c325015b97c0e0c0c99ddaadbc9d675f059a11c163f"
+      },
+      "planning_policies.py": {
+        "git_blob": "8df9430c387b792d1d83bde39cfc840d29b415fe",
+        "bytes": 4887,
+        "sha256": "4c7c528b913696d8b8c6b16dcca15c761cd7d0ce50cbfbf4fe81dddd8830a628"
+      }
+    },
+    "frames": [
+      {
+        "module": "examples/user_collaboration/declarations/BASELINE_MODULE.json",
+        "module_sha256": "a6467a5058f03e426fff88b2a0e800dc276b1e72266afdfc17c75762be6a894b",
+        "frame": "examples/user_collaboration/figures/baseline/declaration-frame.json",
+        "frame_sha256": "0191d4b4ec872d70b44acefee3a683d0eea17f7cb69e3db50c81295c17f1498d",
+        "summary": {
+          "node_count": 197,
+          "transition_count": 74,
+          "place_count": 123,
+          "resource_place_count": 0,
+          "edge_count": 220,
+          "resource_edge_count": 0
+        },
+        "topology_digest": "5bf5cb22d711f6b1f74bfc926d4d8f748336002a4537ccfdc6abe5cd052f1952",
+        "no_marking_or_runtime": true
+      },
+      {
+        "module": "examples/user_collaboration/declarations/ADOPTED_M2_MODULE.json",
+        "module_sha256": "d7bf9c78bfd6ee34a52ac553e1db05576014db8fbb4bd3918343b9ce8bdfe889",
+        "frame": "examples/user_collaboration/figures/adopted-M2/declaration-frame.json",
+        "frame_sha256": "fc40217619cc6eced46ea972b80edc3e33cdab509bc016d31fb63ceec24f0153",
+        "summary": {
+          "node_count": 197,
+          "transition_count": 74,
+          "place_count": 123,
+          "resource_place_count": 0,
+          "edge_count": 220,
+          "resource_edge_count": 0
+        },
+        "topology_digest": "5bf5cb22d711f6b1f74bfc926d4d8f748336002a4537ccfdc6abe5cd052f1952",
+        "no_marking_or_runtime": true
+      }
+    ],
+    "claim": "Offline declaration compilation and payload-free projection. No marking, history, runtime execution or terminal evidence. Original recorded baseline and adopted-module bytes preserved."
+  },
+  "aggregate_result": {
+    "path": "docs/results/user-collaboration-20261012/results.json",
+    "bytes": 7469,
+    "sha256": "2062848a7986acb5384e5063922ab8a1f7696947b9d93662326314cfdc628667",
+    "git_blob": "5a7d38163c70c143545c1bf6f8f9738748a65349",
+    "method": "Whitelisted aggregate projection of retained native results, checked against independently re-aggregated paired-grade rows. No rescoring."
+  },
+  "reproduction_scope": "Read aggregate results and original PNGs, or serve bundled static frames with the official local Viewer. Full real-model experiment prerequisites and runtime state are not bundled."
+}

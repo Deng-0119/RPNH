@@ -174,13 +174,28 @@ class OwnerEdits:
         candidate_data = dict(arguments)
         if collaboration_action is not None:
             candidate_data['user_collaboration'] = collaboration_action.material()
-        previous = [body for _ref, body in owner.control.records("candidate") if body["command_id"] == command_id]
+        candidate_record = None
+        previous = [(ref, body) for ref, body in owner.control.records("candidate")
+                    if body["command_id"] == command_id]
         if previous:
-            if len(previous) != 1 or previous[0]["data"] != candidate_data:
+            # Python equality aliases JSON booleans/numbers (and int/float).
+            # Replay must preserve the exact canonical candidate publication.
+            if (len(previous) != 1
+                    or canonical_json(previous[0][1]["data"])
+                    != canonical_json(candidate_data)):
                 raise ValueError("edit command id was reused for different immutable candidate data")
             results = [body["data"] for _ref, body in owner.control.records("result")
                        if body["command_id"] == command_id]
-            return results[-1] if results else {"status": "REGISTERED"}
+            if results:
+                return results[-1]
+            if (any(body["command_id"] == command_id
+                    for _ref, body in owner.control.records("command"))
+                    or any(edit.command_id == command_id for edit in self.queue)):
+                raise RegistryConflict("owner edit partial preparation already has a command or queued edit")
+            # Publication succeeded, but preparation failed before its command
+            # and queue entry. Continue with the exact immutable candidate;
+            # republishing would allocate a different resource identity.
+            candidate_record = previous[0][0]
         module = ModuleDeclaration.from_dict(arguments["candidate"])
         compiled = compile_module(module, owner.registration)
         from .registry.schema_catalog import PROTECTED_SCHEMA_REFS
@@ -191,8 +206,9 @@ class OwnerEdits:
         base = _version_from_payload(arguments["base_net_ref"])
         if base.entity_type != "net_instance/v1":
             raise ValueError("edit base must be an exact registered net ref")
-        candidate_record = owner.control.publish("candidate", command_id, None, candidate_data,
-            lineage=(owner.original_input_ref.as_version_ref(),))
+        if candidate_record is None:
+            candidate_record = owner.control.publish("candidate", command_id, None, candidate_data,
+                lineage=(owner.original_input_ref.as_version_ref(),))
         if base != executable.net_ref:
             result = owner.control.publish("result", command_id, None,
                 {"status": "CONFLICT", "reason": "base NET changed; explicitly resubmit",

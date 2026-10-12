@@ -1,0 +1,5764 @@
+{
+  "schema_version": "rpnh/dashboard/v1",
+  "net": {
+    "schema_version": "rpnh/net_view/v1",
+    "source": {
+      "mode": "initial_configured",
+      "task_label": "Recorded baseline declaration",
+      "verified_head_ordinal": null
+    },
+    "summary": {
+      "node_count": 197,
+      "transition_count": 74,
+      "place_count": 123,
+      "resource_place_count": 0,
+      "edge_count": 220,
+      "resource_edge_count": 0
+    },
+    "nodes": [
+      {
+        "id": "aggregate.aggregate",
+        "label": "aggregate.aggregate",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "aggregate.aggregate",
+        "operation_id": "op_0",
+        "executor": "example/user_collaboration/execute_aggregate/v1",
+        "inputs": [
+          "aggregate.manifest",
+          "aggregate.report_batch_0",
+          "aggregate.report_batch_1",
+          "aggregate.report_batch_2",
+          "aggregate.report_batch_3",
+          "aggregate.report_batch_4",
+          "aggregate.report_batch_5",
+          "aggregate.report_batch_6",
+          "aggregate.report_batch_7",
+          "aggregate.report_batch_8",
+          "aggregate.report_batch_9",
+          "aggregate.report_batch_10",
+          "aggregate.report_batch_11",
+          "aggregate.report_batch_12",
+          "aggregate.report_batch_13",
+          "aggregate.report_batch_14",
+          "aggregate.report_batch_15",
+          "aggregate.report_batch_16",
+          "aggregate.report_batch_17",
+          "aggregate.report_batch_18",
+          "aggregate.report_batch_19",
+          "aggregate.report_batch_20",
+          "aggregate.report_batch_21",
+          "aggregate.report_batch_22",
+          "aggregate.report_batch_23"
+        ],
+        "outputs": [
+          "aggregate.summary"
+        ]
+      },
+      {
+        "id": "aggregate.manifest",
+        "label": "aggregate.manifest",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_manifest/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "aggregate.report_batch_0",
+        "label": "aggregate.report_batch_0",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_validated/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "aggregate.report_batch_1",
+        "label": "aggregate.report_batch_1",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_validated/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "aggregate.report_batch_10",
+        "label": "aggregate.report_batch_10",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_validated/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "aggregate.report_batch_11",
+        "label": "aggregate.report_batch_11",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_validated/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "aggregate.report_batch_12",
+        "label": "aggregate.report_batch_12",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_validated/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "aggregate.report_batch_13",
+        "label": "aggregate.report_batch_13",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_validated/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "aggregate.report_batch_14",
+        "label": "aggregate.report_batch_14",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_validated/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "aggregate.report_batch_15",
+        "label": "aggregate.report_batch_15",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_validated/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "aggregate.report_batch_16",
+        "label": "aggregate.report_batch_16",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_validated/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "aggregate.report_batch_17",
+        "label": "aggregate.report_batch_17",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_validated/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "aggregate.report_batch_18",
+        "label": "aggregate.report_batch_18",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_validated/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "aggregate.report_batch_19",
+        "label": "aggregate.report_batch_19",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_validated/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "aggregate.report_batch_2",
+        "label": "aggregate.report_batch_2",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_validated/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "aggregate.report_batch_20",
+        "label": "aggregate.report_batch_20",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_validated/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "aggregate.report_batch_21",
+        "label": "aggregate.report_batch_21",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_validated/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "aggregate.report_batch_22",
+        "label": "aggregate.report_batch_22",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_validated/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "aggregate.report_batch_23",
+        "label": "aggregate.report_batch_23",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_validated/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "aggregate.report_batch_3",
+        "label": "aggregate.report_batch_3",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_validated/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "aggregate.report_batch_4",
+        "label": "aggregate.report_batch_4",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_validated/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "aggregate.report_batch_5",
+        "label": "aggregate.report_batch_5",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_validated/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "aggregate.report_batch_6",
+        "label": "aggregate.report_batch_6",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_validated/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "aggregate.report_batch_7",
+        "label": "aggregate.report_batch_7",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_validated/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "aggregate.report_batch_8",
+        "label": "aggregate.report_batch_8",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_validated/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "aggregate.report_batch_9",
+        "label": "aggregate.report_batch_9",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_validated/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "aggregate.summary",
+        "label": "aggregate.summary",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_summary/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "batch_0.candidate",
+        "label": "batch_0.candidate",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_candidate/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "batch_0.checked",
+        "label": "batch_0.checked",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_checked/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "batch_0.ingest",
+        "label": "batch_0.ingest",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "batch_0.ingest",
+        "operation_id": "op_1",
+        "executor": "example/user_collaboration/execute_ingest/v1",
+        "inputs": [
+          "batch_0.source"
+        ],
+        "outputs": [
+          "batch_0.checked",
+          "batch_0.original"
+        ]
+      },
+      {
+        "id": "batch_0.original",
+        "label": "batch_0.original",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_original/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "batch_0.plan",
+        "label": "batch_0.plan",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "batch_0.plan",
+        "operation_id": "op_2",
+        "executor": "example/user_collaboration/execute_configurable_plan/v1",
+        "inputs": [
+          "batch_0.plan_input"
+        ],
+        "outputs": [
+          "batch_0.candidate"
+        ]
+      },
+      {
+        "id": "batch_0.source",
+        "label": "batch_0.source",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_source/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "batch_0.validate",
+        "label": "batch_0.validate",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "batch_0.validate",
+        "operation_id": "op_3",
+        "executor": "example/user_collaboration/execute_validate/v1",
+        "inputs": [
+          "batch_0.validation_source",
+          "batch_0.validation_candidate"
+        ],
+        "outputs": [
+          "batch_0.validated"
+        ]
+      },
+      {
+        "id": "batch_1.candidate",
+        "label": "batch_1.candidate",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_candidate/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "batch_1.checked",
+        "label": "batch_1.checked",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_checked/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "batch_1.ingest",
+        "label": "batch_1.ingest",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "batch_1.ingest",
+        "operation_id": "op_4",
+        "executor": "example/user_collaboration/execute_ingest/v1",
+        "inputs": [
+          "batch_1.source"
+        ],
+        "outputs": [
+          "batch_1.checked",
+          "batch_1.original"
+        ]
+      },
+      {
+        "id": "batch_1.original",
+        "label": "batch_1.original",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_original/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "batch_1.plan",
+        "label": "batch_1.plan",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "batch_1.plan",
+        "operation_id": "op_5",
+        "executor": "example/user_collaboration/execute_configurable_plan/v1",
+        "inputs": [
+          "batch_1.plan_input"
+        ],
+        "outputs": [
+          "batch_1.candidate"
+        ]
+      },
+      {
+        "id": "batch_1.source",
+        "label": "batch_1.source",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_source/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "batch_1.validate",
+        "label": "batch_1.validate",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "batch_1.validate",
+        "operation_id": "op_6",
+        "executor": "example/user_collaboration/execute_validate/v1",
+        "inputs": [
+          "batch_1.validation_source",
+          "batch_1.validation_candidate"
+        ],
+        "outputs": [
+          "batch_1.validated"
+        ]
+      },
+      {
+        "id": "batch_10.candidate",
+        "label": "batch_10.candidate",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_candidate/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "batch_10.checked",
+        "label": "batch_10.checked",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_checked/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "batch_10.ingest",
+        "label": "batch_10.ingest",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "batch_10.ingest",
+        "operation_id": "op_7",
+        "executor": "example/user_collaboration/execute_ingest/v1",
+        "inputs": [
+          "batch_10.source"
+        ],
+        "outputs": [
+          "batch_10.checked",
+          "batch_10.original"
+        ]
+      },
+      {
+        "id": "batch_10.original",
+        "label": "batch_10.original",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_original/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "batch_10.plan",
+        "label": "batch_10.plan",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "batch_10.plan",
+        "operation_id": "op_8",
+        "executor": "example/user_collaboration/execute_configurable_plan/v1",
+        "inputs": [
+          "batch_10.plan_input"
+        ],
+        "outputs": [
+          "batch_10.candidate"
+        ]
+      },
+      {
+        "id": "batch_10.source",
+        "label": "batch_10.source",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_source/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "batch_10.validate",
+        "label": "batch_10.validate",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "batch_10.validate",
+        "operation_id": "op_9",
+        "executor": "example/user_collaboration/execute_validate/v1",
+        "inputs": [
+          "batch_10.validation_source",
+          "batch_10.validation_candidate"
+        ],
+        "outputs": [
+          "batch_10.validated"
+        ]
+      },
+      {
+        "id": "batch_11.candidate",
+        "label": "batch_11.candidate",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_candidate/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "batch_11.checked",
+        "label": "batch_11.checked",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_checked/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "batch_11.ingest",
+        "label": "batch_11.ingest",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "batch_11.ingest",
+        "operation_id": "op_10",
+        "executor": "example/user_collaboration/execute_ingest/v1",
+        "inputs": [
+          "batch_11.source"
+        ],
+        "outputs": [
+          "batch_11.checked",
+          "batch_11.original"
+        ]
+      },
+      {
+        "id": "batch_11.original",
+        "label": "batch_11.original",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_original/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "batch_11.plan",
+        "label": "batch_11.plan",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "batch_11.plan",
+        "operation_id": "op_11",
+        "executor": "example/user_collaboration/execute_configurable_plan/v1",
+        "inputs": [
+          "batch_11.plan_input"
+        ],
+        "outputs": [
+          "batch_11.candidate"
+        ]
+      },
+      {
+        "id": "batch_11.source",
+        "label": "batch_11.source",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_source/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "batch_11.validate",
+        "label": "batch_11.validate",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "batch_11.validate",
+        "operation_id": "op_12",
+        "executor": "example/user_collaboration/execute_validate/v1",
+        "inputs": [
+          "batch_11.validation_source",
+          "batch_11.validation_candidate"
+        ],
+        "outputs": [
+          "batch_11.validated"
+        ]
+      },
+      {
+        "id": "batch_12.candidate",
+        "label": "batch_12.candidate",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_candidate/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "batch_12.checked",
+        "label": "batch_12.checked",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_checked/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "batch_12.ingest",
+        "label": "batch_12.ingest",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "batch_12.ingest",
+        "operation_id": "op_13",
+        "executor": "example/user_collaboration/execute_ingest/v1",
+        "inputs": [
+          "batch_12.source"
+        ],
+        "outputs": [
+          "batch_12.checked",
+          "batch_12.original"
+        ]
+      },
+      {
+        "id": "batch_12.original",
+        "label": "batch_12.original",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_original/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "batch_12.plan",
+        "label": "batch_12.plan",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "batch_12.plan",
+        "operation_id": "op_14",
+        "executor": "example/user_collaboration/execute_configurable_plan/v1",
+        "inputs": [
+          "batch_12.plan_input"
+        ],
+        "outputs": [
+          "batch_12.candidate"
+        ]
+      },
+      {
+        "id": "batch_12.source",
+        "label": "batch_12.source",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_source/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "batch_12.validate",
+        "label": "batch_12.validate",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "batch_12.validate",
+        "operation_id": "op_15",
+        "executor": "example/user_collaboration/execute_validate/v1",
+        "inputs": [
+          "batch_12.validation_source",
+          "batch_12.validation_candidate"
+        ],
+        "outputs": [
+          "batch_12.validated"
+        ]
+      },
+      {
+        "id": "batch_13.candidate",
+        "label": "batch_13.candidate",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_candidate/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "batch_13.checked",
+        "label": "batch_13.checked",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_checked/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "batch_13.ingest",
+        "label": "batch_13.ingest",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "batch_13.ingest",
+        "operation_id": "op_16",
+        "executor": "example/user_collaboration/execute_ingest/v1",
+        "inputs": [
+          "batch_13.source"
+        ],
+        "outputs": [
+          "batch_13.checked",
+          "batch_13.original"
+        ]
+      },
+      {
+        "id": "batch_13.original",
+        "label": "batch_13.original",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_original/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "batch_13.plan",
+        "label": "batch_13.plan",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "batch_13.plan",
+        "operation_id": "op_17",
+        "executor": "example/user_collaboration/execute_configurable_plan/v1",
+        "inputs": [
+          "batch_13.plan_input"
+        ],
+        "outputs": [
+          "batch_13.candidate"
+        ]
+      },
+      {
+        "id": "batch_13.source",
+        "label": "batch_13.source",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_source/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "batch_13.validate",
+        "label": "batch_13.validate",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "batch_13.validate",
+        "operation_id": "op_18",
+        "executor": "example/user_collaboration/execute_validate/v1",
+        "inputs": [
+          "batch_13.validation_source",
+          "batch_13.validation_candidate"
+        ],
+        "outputs": [
+          "batch_13.validated"
+        ]
+      },
+      {
+        "id": "batch_14.candidate",
+        "label": "batch_14.candidate",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_candidate/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "batch_14.checked",
+        "label": "batch_14.checked",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_checked/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "batch_14.ingest",
+        "label": "batch_14.ingest",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "batch_14.ingest",
+        "operation_id": "op_19",
+        "executor": "example/user_collaboration/execute_ingest/v1",
+        "inputs": [
+          "batch_14.source"
+        ],
+        "outputs": [
+          "batch_14.checked",
+          "batch_14.original"
+        ]
+      },
+      {
+        "id": "batch_14.original",
+        "label": "batch_14.original",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_original/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "batch_14.plan",
+        "label": "batch_14.plan",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "batch_14.plan",
+        "operation_id": "op_20",
+        "executor": "example/user_collaboration/execute_configurable_plan/v1",
+        "inputs": [
+          "batch_14.plan_input"
+        ],
+        "outputs": [
+          "batch_14.candidate"
+        ]
+      },
+      {
+        "id": "batch_14.source",
+        "label": "batch_14.source",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_source/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "batch_14.validate",
+        "label": "batch_14.validate",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "batch_14.validate",
+        "operation_id": "op_21",
+        "executor": "example/user_collaboration/execute_validate/v1",
+        "inputs": [
+          "batch_14.validation_source",
+          "batch_14.validation_candidate"
+        ],
+        "outputs": [
+          "batch_14.validated"
+        ]
+      },
+      {
+        "id": "batch_15.candidate",
+        "label": "batch_15.candidate",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_candidate/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "batch_15.checked",
+        "label": "batch_15.checked",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_checked/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "batch_15.ingest",
+        "label": "batch_15.ingest",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "batch_15.ingest",
+        "operation_id": "op_22",
+        "executor": "example/user_collaboration/execute_ingest/v1",
+        "inputs": [
+          "batch_15.source"
+        ],
+        "outputs": [
+          "batch_15.checked",
+          "batch_15.original"
+        ]
+      },
+      {
+        "id": "batch_15.original",
+        "label": "batch_15.original",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_original/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "batch_15.plan",
+        "label": "batch_15.plan",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "batch_15.plan",
+        "operation_id": "op_23",
+        "executor": "example/user_collaboration/execute_configurable_plan/v1",
+        "inputs": [
+          "batch_15.plan_input"
+        ],
+        "outputs": [
+          "batch_15.candidate"
+        ]
+      },
+      {
+        "id": "batch_15.source",
+        "label": "batch_15.source",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_source/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "batch_15.validate",
+        "label": "batch_15.validate",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "batch_15.validate",
+        "operation_id": "op_24",
+        "executor": "example/user_collaboration/execute_validate/v1",
+        "inputs": [
+          "batch_15.validation_source",
+          "batch_15.validation_candidate"
+        ],
+        "outputs": [
+          "batch_15.validated"
+        ]
+      },
+      {
+        "id": "batch_16.candidate",
+        "label": "batch_16.candidate",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_candidate/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "batch_16.checked",
+        "label": "batch_16.checked",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_checked/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "batch_16.ingest",
+        "label": "batch_16.ingest",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "batch_16.ingest",
+        "operation_id": "op_25",
+        "executor": "example/user_collaboration/execute_ingest/v1",
+        "inputs": [
+          "batch_16.source"
+        ],
+        "outputs": [
+          "batch_16.checked",
+          "batch_16.original"
+        ]
+      },
+      {
+        "id": "batch_16.original",
+        "label": "batch_16.original",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_original/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "batch_16.plan",
+        "label": "batch_16.plan",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "batch_16.plan",
+        "operation_id": "op_26",
+        "executor": "example/user_collaboration/execute_configurable_plan/v1",
+        "inputs": [
+          "batch_16.plan_input"
+        ],
+        "outputs": [
+          "batch_16.candidate"
+        ]
+      },
+      {
+        "id": "batch_16.source",
+        "label": "batch_16.source",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_source/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "batch_16.validate",
+        "label": "batch_16.validate",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "batch_16.validate",
+        "operation_id": "op_27",
+        "executor": "example/user_collaboration/execute_validate/v1",
+        "inputs": [
+          "batch_16.validation_source",
+          "batch_16.validation_candidate"
+        ],
+        "outputs": [
+          "batch_16.validated"
+        ]
+      },
+      {
+        "id": "batch_17.candidate",
+        "label": "batch_17.candidate",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_candidate/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "batch_17.checked",
+        "label": "batch_17.checked",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_checked/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "batch_17.ingest",
+        "label": "batch_17.ingest",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "batch_17.ingest",
+        "operation_id": "op_28",
+        "executor": "example/user_collaboration/execute_ingest/v1",
+        "inputs": [
+          "batch_17.source"
+        ],
+        "outputs": [
+          "batch_17.checked",
+          "batch_17.original"
+        ]
+      },
+      {
+        "id": "batch_17.original",
+        "label": "batch_17.original",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_original/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "batch_17.plan",
+        "label": "batch_17.plan",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "batch_17.plan",
+        "operation_id": "op_29",
+        "executor": "example/user_collaboration/execute_configurable_plan/v1",
+        "inputs": [
+          "batch_17.plan_input"
+        ],
+        "outputs": [
+          "batch_17.candidate"
+        ]
+      },
+      {
+        "id": "batch_17.source",
+        "label": "batch_17.source",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_source/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "batch_17.validate",
+        "label": "batch_17.validate",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "batch_17.validate",
+        "operation_id": "op_30",
+        "executor": "example/user_collaboration/execute_validate/v1",
+        "inputs": [
+          "batch_17.validation_source",
+          "batch_17.validation_candidate"
+        ],
+        "outputs": [
+          "batch_17.validated"
+        ]
+      },
+      {
+        "id": "batch_18.candidate",
+        "label": "batch_18.candidate",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_candidate/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "batch_18.checked",
+        "label": "batch_18.checked",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_checked/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "batch_18.ingest",
+        "label": "batch_18.ingest",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "batch_18.ingest",
+        "operation_id": "op_31",
+        "executor": "example/user_collaboration/execute_ingest/v1",
+        "inputs": [
+          "batch_18.source"
+        ],
+        "outputs": [
+          "batch_18.checked",
+          "batch_18.original"
+        ]
+      },
+      {
+        "id": "batch_18.original",
+        "label": "batch_18.original",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_original/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "batch_18.plan",
+        "label": "batch_18.plan",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "batch_18.plan",
+        "operation_id": "op_32",
+        "executor": "example/user_collaboration/execute_configurable_plan/v1",
+        "inputs": [
+          "batch_18.plan_input"
+        ],
+        "outputs": [
+          "batch_18.candidate"
+        ]
+      },
+      {
+        "id": "batch_18.source",
+        "label": "batch_18.source",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_source/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "batch_18.validate",
+        "label": "batch_18.validate",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "batch_18.validate",
+        "operation_id": "op_33",
+        "executor": "example/user_collaboration/execute_validate/v1",
+        "inputs": [
+          "batch_18.validation_source",
+          "batch_18.validation_candidate"
+        ],
+        "outputs": [
+          "batch_18.validated"
+        ]
+      },
+      {
+        "id": "batch_19.candidate",
+        "label": "batch_19.candidate",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_candidate/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "batch_19.checked",
+        "label": "batch_19.checked",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_checked/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "batch_19.ingest",
+        "label": "batch_19.ingest",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "batch_19.ingest",
+        "operation_id": "op_34",
+        "executor": "example/user_collaboration/execute_ingest/v1",
+        "inputs": [
+          "batch_19.source"
+        ],
+        "outputs": [
+          "batch_19.checked",
+          "batch_19.original"
+        ]
+      },
+      {
+        "id": "batch_19.original",
+        "label": "batch_19.original",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_original/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "batch_19.plan",
+        "label": "batch_19.plan",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "batch_19.plan",
+        "operation_id": "op_35",
+        "executor": "example/user_collaboration/execute_configurable_plan/v1",
+        "inputs": [
+          "batch_19.plan_input"
+        ],
+        "outputs": [
+          "batch_19.candidate"
+        ]
+      },
+      {
+        "id": "batch_19.source",
+        "label": "batch_19.source",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_source/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "batch_19.validate",
+        "label": "batch_19.validate",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "batch_19.validate",
+        "operation_id": "op_36",
+        "executor": "example/user_collaboration/execute_validate/v1",
+        "inputs": [
+          "batch_19.validation_source",
+          "batch_19.validation_candidate"
+        ],
+        "outputs": [
+          "batch_19.validated"
+        ]
+      },
+      {
+        "id": "batch_2.candidate",
+        "label": "batch_2.candidate",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_candidate/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "batch_2.checked",
+        "label": "batch_2.checked",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_checked/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "batch_2.ingest",
+        "label": "batch_2.ingest",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "batch_2.ingest",
+        "operation_id": "op_37",
+        "executor": "example/user_collaboration/execute_ingest/v1",
+        "inputs": [
+          "batch_2.source"
+        ],
+        "outputs": [
+          "batch_2.checked",
+          "batch_2.original"
+        ]
+      },
+      {
+        "id": "batch_2.original",
+        "label": "batch_2.original",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_original/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "batch_2.plan",
+        "label": "batch_2.plan",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "batch_2.plan",
+        "operation_id": "op_38",
+        "executor": "example/user_collaboration/execute_configurable_plan/v1",
+        "inputs": [
+          "batch_2.plan_input"
+        ],
+        "outputs": [
+          "batch_2.candidate"
+        ]
+      },
+      {
+        "id": "batch_2.source",
+        "label": "batch_2.source",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_source/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "batch_2.validate",
+        "label": "batch_2.validate",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "batch_2.validate",
+        "operation_id": "op_39",
+        "executor": "example/user_collaboration/execute_validate/v1",
+        "inputs": [
+          "batch_2.validation_source",
+          "batch_2.validation_candidate"
+        ],
+        "outputs": [
+          "batch_2.validated"
+        ]
+      },
+      {
+        "id": "batch_20.candidate",
+        "label": "batch_20.candidate",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_candidate/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "batch_20.checked",
+        "label": "batch_20.checked",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_checked/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "batch_20.ingest",
+        "label": "batch_20.ingest",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "batch_20.ingest",
+        "operation_id": "op_40",
+        "executor": "example/user_collaboration/execute_ingest/v1",
+        "inputs": [
+          "batch_20.source"
+        ],
+        "outputs": [
+          "batch_20.checked",
+          "batch_20.original"
+        ]
+      },
+      {
+        "id": "batch_20.original",
+        "label": "batch_20.original",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_original/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "batch_20.plan",
+        "label": "batch_20.plan",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "batch_20.plan",
+        "operation_id": "op_41",
+        "executor": "example/user_collaboration/execute_configurable_plan/v1",
+        "inputs": [
+          "batch_20.plan_input"
+        ],
+        "outputs": [
+          "batch_20.candidate"
+        ]
+      },
+      {
+        "id": "batch_20.source",
+        "label": "batch_20.source",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_source/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "batch_20.validate",
+        "label": "batch_20.validate",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "batch_20.validate",
+        "operation_id": "op_42",
+        "executor": "example/user_collaboration/execute_validate/v1",
+        "inputs": [
+          "batch_20.validation_source",
+          "batch_20.validation_candidate"
+        ],
+        "outputs": [
+          "batch_20.validated"
+        ]
+      },
+      {
+        "id": "batch_21.candidate",
+        "label": "batch_21.candidate",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_candidate/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "batch_21.checked",
+        "label": "batch_21.checked",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_checked/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "batch_21.ingest",
+        "label": "batch_21.ingest",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "batch_21.ingest",
+        "operation_id": "op_43",
+        "executor": "example/user_collaboration/execute_ingest/v1",
+        "inputs": [
+          "batch_21.source"
+        ],
+        "outputs": [
+          "batch_21.checked",
+          "batch_21.original"
+        ]
+      },
+      {
+        "id": "batch_21.original",
+        "label": "batch_21.original",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_original/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "batch_21.plan",
+        "label": "batch_21.plan",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "batch_21.plan",
+        "operation_id": "op_44",
+        "executor": "example/user_collaboration/execute_configurable_plan/v1",
+        "inputs": [
+          "batch_21.plan_input"
+        ],
+        "outputs": [
+          "batch_21.candidate"
+        ]
+      },
+      {
+        "id": "batch_21.source",
+        "label": "batch_21.source",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_source/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "batch_21.validate",
+        "label": "batch_21.validate",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "batch_21.validate",
+        "operation_id": "op_45",
+        "executor": "example/user_collaboration/execute_validate/v1",
+        "inputs": [
+          "batch_21.validation_source",
+          "batch_21.validation_candidate"
+        ],
+        "outputs": [
+          "batch_21.validated"
+        ]
+      },
+      {
+        "id": "batch_22.candidate",
+        "label": "batch_22.candidate",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_candidate/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "batch_22.checked",
+        "label": "batch_22.checked",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_checked/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "batch_22.ingest",
+        "label": "batch_22.ingest",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "batch_22.ingest",
+        "operation_id": "op_46",
+        "executor": "example/user_collaboration/execute_ingest/v1",
+        "inputs": [
+          "batch_22.source"
+        ],
+        "outputs": [
+          "batch_22.checked",
+          "batch_22.original"
+        ]
+      },
+      {
+        "id": "batch_22.original",
+        "label": "batch_22.original",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_original/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "batch_22.plan",
+        "label": "batch_22.plan",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "batch_22.plan",
+        "operation_id": "op_47",
+        "executor": "example/user_collaboration/execute_configurable_plan/v1",
+        "inputs": [
+          "batch_22.plan_input"
+        ],
+        "outputs": [
+          "batch_22.candidate"
+        ]
+      },
+      {
+        "id": "batch_22.source",
+        "label": "batch_22.source",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_source/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "batch_22.validate",
+        "label": "batch_22.validate",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "batch_22.validate",
+        "operation_id": "op_48",
+        "executor": "example/user_collaboration/execute_validate/v1",
+        "inputs": [
+          "batch_22.validation_source",
+          "batch_22.validation_candidate"
+        ],
+        "outputs": [
+          "batch_22.validated"
+        ]
+      },
+      {
+        "id": "batch_23.candidate",
+        "label": "batch_23.candidate",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_candidate/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "batch_23.checked",
+        "label": "batch_23.checked",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_checked/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "batch_23.ingest",
+        "label": "batch_23.ingest",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "batch_23.ingest",
+        "operation_id": "op_49",
+        "executor": "example/user_collaboration/execute_ingest/v1",
+        "inputs": [
+          "batch_23.source"
+        ],
+        "outputs": [
+          "batch_23.checked",
+          "batch_23.original"
+        ]
+      },
+      {
+        "id": "batch_23.original",
+        "label": "batch_23.original",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_original/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "batch_23.plan",
+        "label": "batch_23.plan",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "batch_23.plan",
+        "operation_id": "op_50",
+        "executor": "example/user_collaboration/execute_configurable_plan/v1",
+        "inputs": [
+          "batch_23.plan_input"
+        ],
+        "outputs": [
+          "batch_23.candidate"
+        ]
+      },
+      {
+        "id": "batch_23.source",
+        "label": "batch_23.source",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_source/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "batch_23.validate",
+        "label": "batch_23.validate",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "batch_23.validate",
+        "operation_id": "op_51",
+        "executor": "example/user_collaboration/execute_validate/v1",
+        "inputs": [
+          "batch_23.validation_source",
+          "batch_23.validation_candidate"
+        ],
+        "outputs": [
+          "batch_23.validated"
+        ]
+      },
+      {
+        "id": "batch_3.candidate",
+        "label": "batch_3.candidate",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_candidate/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "batch_3.checked",
+        "label": "batch_3.checked",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_checked/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "batch_3.ingest",
+        "label": "batch_3.ingest",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "batch_3.ingest",
+        "operation_id": "op_52",
+        "executor": "example/user_collaboration/execute_ingest/v1",
+        "inputs": [
+          "batch_3.source"
+        ],
+        "outputs": [
+          "batch_3.checked",
+          "batch_3.original"
+        ]
+      },
+      {
+        "id": "batch_3.original",
+        "label": "batch_3.original",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_original/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "batch_3.plan",
+        "label": "batch_3.plan",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "batch_3.plan",
+        "operation_id": "op_53",
+        "executor": "example/user_collaboration/execute_configurable_plan/v1",
+        "inputs": [
+          "batch_3.plan_input"
+        ],
+        "outputs": [
+          "batch_3.candidate"
+        ]
+      },
+      {
+        "id": "batch_3.source",
+        "label": "batch_3.source",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_source/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "batch_3.validate",
+        "label": "batch_3.validate",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "batch_3.validate",
+        "operation_id": "op_54",
+        "executor": "example/user_collaboration/execute_validate/v1",
+        "inputs": [
+          "batch_3.validation_source",
+          "batch_3.validation_candidate"
+        ],
+        "outputs": [
+          "batch_3.validated"
+        ]
+      },
+      {
+        "id": "batch_4.candidate",
+        "label": "batch_4.candidate",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_candidate/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "batch_4.checked",
+        "label": "batch_4.checked",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_checked/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "batch_4.ingest",
+        "label": "batch_4.ingest",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "batch_4.ingest",
+        "operation_id": "op_55",
+        "executor": "example/user_collaboration/execute_ingest/v1",
+        "inputs": [
+          "batch_4.source"
+        ],
+        "outputs": [
+          "batch_4.checked",
+          "batch_4.original"
+        ]
+      },
+      {
+        "id": "batch_4.original",
+        "label": "batch_4.original",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_original/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "batch_4.plan",
+        "label": "batch_4.plan",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "batch_4.plan",
+        "operation_id": "op_56",
+        "executor": "example/user_collaboration/execute_configurable_plan/v1",
+        "inputs": [
+          "batch_4.plan_input"
+        ],
+        "outputs": [
+          "batch_4.candidate"
+        ]
+      },
+      {
+        "id": "batch_4.source",
+        "label": "batch_4.source",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_source/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "batch_4.validate",
+        "label": "batch_4.validate",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "batch_4.validate",
+        "operation_id": "op_57",
+        "executor": "example/user_collaboration/execute_validate/v1",
+        "inputs": [
+          "batch_4.validation_source",
+          "batch_4.validation_candidate"
+        ],
+        "outputs": [
+          "batch_4.validated"
+        ]
+      },
+      {
+        "id": "batch_5.candidate",
+        "label": "batch_5.candidate",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_candidate/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "batch_5.checked",
+        "label": "batch_5.checked",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_checked/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "batch_5.ingest",
+        "label": "batch_5.ingest",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "batch_5.ingest",
+        "operation_id": "op_58",
+        "executor": "example/user_collaboration/execute_ingest/v1",
+        "inputs": [
+          "batch_5.source"
+        ],
+        "outputs": [
+          "batch_5.checked",
+          "batch_5.original"
+        ]
+      },
+      {
+        "id": "batch_5.original",
+        "label": "batch_5.original",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_original/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "batch_5.plan",
+        "label": "batch_5.plan",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "batch_5.plan",
+        "operation_id": "op_59",
+        "executor": "example/user_collaboration/execute_configurable_plan/v1",
+        "inputs": [
+          "batch_5.plan_input"
+        ],
+        "outputs": [
+          "batch_5.candidate"
+        ]
+      },
+      {
+        "id": "batch_5.source",
+        "label": "batch_5.source",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_source/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "batch_5.validate",
+        "label": "batch_5.validate",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "batch_5.validate",
+        "operation_id": "op_60",
+        "executor": "example/user_collaboration/execute_validate/v1",
+        "inputs": [
+          "batch_5.validation_source",
+          "batch_5.validation_candidate"
+        ],
+        "outputs": [
+          "batch_5.validated"
+        ]
+      },
+      {
+        "id": "batch_6.candidate",
+        "label": "batch_6.candidate",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_candidate/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "batch_6.checked",
+        "label": "batch_6.checked",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_checked/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "batch_6.ingest",
+        "label": "batch_6.ingest",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "batch_6.ingest",
+        "operation_id": "op_61",
+        "executor": "example/user_collaboration/execute_ingest/v1",
+        "inputs": [
+          "batch_6.source"
+        ],
+        "outputs": [
+          "batch_6.checked",
+          "batch_6.original"
+        ]
+      },
+      {
+        "id": "batch_6.original",
+        "label": "batch_6.original",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_original/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "batch_6.plan",
+        "label": "batch_6.plan",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "batch_6.plan",
+        "operation_id": "op_62",
+        "executor": "example/user_collaboration/execute_configurable_plan/v1",
+        "inputs": [
+          "batch_6.plan_input"
+        ],
+        "outputs": [
+          "batch_6.candidate"
+        ]
+      },
+      {
+        "id": "batch_6.source",
+        "label": "batch_6.source",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_source/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "batch_6.validate",
+        "label": "batch_6.validate",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "batch_6.validate",
+        "operation_id": "op_63",
+        "executor": "example/user_collaboration/execute_validate/v1",
+        "inputs": [
+          "batch_6.validation_source",
+          "batch_6.validation_candidate"
+        ],
+        "outputs": [
+          "batch_6.validated"
+        ]
+      },
+      {
+        "id": "batch_7.candidate",
+        "label": "batch_7.candidate",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_candidate/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "batch_7.checked",
+        "label": "batch_7.checked",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_checked/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "batch_7.ingest",
+        "label": "batch_7.ingest",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "batch_7.ingest",
+        "operation_id": "op_64",
+        "executor": "example/user_collaboration/execute_ingest/v1",
+        "inputs": [
+          "batch_7.source"
+        ],
+        "outputs": [
+          "batch_7.checked",
+          "batch_7.original"
+        ]
+      },
+      {
+        "id": "batch_7.original",
+        "label": "batch_7.original",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_original/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "batch_7.plan",
+        "label": "batch_7.plan",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "batch_7.plan",
+        "operation_id": "op_65",
+        "executor": "example/user_collaboration/execute_configurable_plan/v1",
+        "inputs": [
+          "batch_7.plan_input"
+        ],
+        "outputs": [
+          "batch_7.candidate"
+        ]
+      },
+      {
+        "id": "batch_7.source",
+        "label": "batch_7.source",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_source/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "batch_7.validate",
+        "label": "batch_7.validate",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "batch_7.validate",
+        "operation_id": "op_66",
+        "executor": "example/user_collaboration/execute_validate/v1",
+        "inputs": [
+          "batch_7.validation_source",
+          "batch_7.validation_candidate"
+        ],
+        "outputs": [
+          "batch_7.validated"
+        ]
+      },
+      {
+        "id": "batch_8.candidate",
+        "label": "batch_8.candidate",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_candidate/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "batch_8.checked",
+        "label": "batch_8.checked",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_checked/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "batch_8.ingest",
+        "label": "batch_8.ingest",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "batch_8.ingest",
+        "operation_id": "op_67",
+        "executor": "example/user_collaboration/execute_ingest/v1",
+        "inputs": [
+          "batch_8.source"
+        ],
+        "outputs": [
+          "batch_8.checked",
+          "batch_8.original"
+        ]
+      },
+      {
+        "id": "batch_8.original",
+        "label": "batch_8.original",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_original/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "batch_8.plan",
+        "label": "batch_8.plan",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "batch_8.plan",
+        "operation_id": "op_68",
+        "executor": "example/user_collaboration/execute_configurable_plan/v1",
+        "inputs": [
+          "batch_8.plan_input"
+        ],
+        "outputs": [
+          "batch_8.candidate"
+        ]
+      },
+      {
+        "id": "batch_8.source",
+        "label": "batch_8.source",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_source/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "batch_8.validate",
+        "label": "batch_8.validate",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "batch_8.validate",
+        "operation_id": "op_69",
+        "executor": "example/user_collaboration/execute_validate/v1",
+        "inputs": [
+          "batch_8.validation_source",
+          "batch_8.validation_candidate"
+        ],
+        "outputs": [
+          "batch_8.validated"
+        ]
+      },
+      {
+        "id": "batch_9.candidate",
+        "label": "batch_9.candidate",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_candidate/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "batch_9.checked",
+        "label": "batch_9.checked",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_checked/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "batch_9.ingest",
+        "label": "batch_9.ingest",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "batch_9.ingest",
+        "operation_id": "op_70",
+        "executor": "example/user_collaboration/execute_ingest/v1",
+        "inputs": [
+          "batch_9.source"
+        ],
+        "outputs": [
+          "batch_9.checked",
+          "batch_9.original"
+        ]
+      },
+      {
+        "id": "batch_9.original",
+        "label": "batch_9.original",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_original/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "batch_9.plan",
+        "label": "batch_9.plan",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "batch_9.plan",
+        "operation_id": "op_71",
+        "executor": "example/user_collaboration/execute_configurable_plan/v1",
+        "inputs": [
+          "batch_9.plan_input"
+        ],
+        "outputs": [
+          "batch_9.candidate"
+        ]
+      },
+      {
+        "id": "batch_9.source",
+        "label": "batch_9.source",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_source/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "batch_9.validate",
+        "label": "batch_9.validate",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "batch_9.validate",
+        "operation_id": "op_72",
+        "executor": "example/user_collaboration/execute_validate/v1",
+        "inputs": [
+          "batch_9.validation_source",
+          "batch_9.validation_candidate"
+        ],
+        "outputs": [
+          "batch_9.validated"
+        ]
+      },
+      {
+        "id": "publish.final",
+        "label": "publish.final",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/user_collaboration_final/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "publish.publish",
+        "label": "publish.publish",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "publish.publish",
+        "operation_id": "op_73",
+        "executor": "example/user_collaboration/execute_publish/v1",
+        "inputs": [
+          "publish.summary"
+        ],
+        "outputs": [
+          "publish.final"
+        ]
+      }
+    ],
+    "edges": [
+      {
+        "id": "edge:arc:aggregate.aggregate:aggregate.summary:produce:complete:1",
+        "source": "aggregate.aggregate",
+        "target": "aggregate.summary",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:aggregate.manifest:aggregate.aggregate:consume:-:1",
+        "source": "aggregate.manifest",
+        "target": "aggregate.aggregate",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:aggregate.report_batch_0:aggregate.aggregate:consume:-:1",
+        "source": "aggregate.report_batch_0",
+        "target": "aggregate.aggregate",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:aggregate.report_batch_1:aggregate.aggregate:consume:-:1",
+        "source": "aggregate.report_batch_1",
+        "target": "aggregate.aggregate",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:aggregate.report_batch_10:aggregate.aggregate:consume:-:1",
+        "source": "aggregate.report_batch_10",
+        "target": "aggregate.aggregate",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:aggregate.report_batch_11:aggregate.aggregate:consume:-:1",
+        "source": "aggregate.report_batch_11",
+        "target": "aggregate.aggregate",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:aggregate.report_batch_12:aggregate.aggregate:consume:-:1",
+        "source": "aggregate.report_batch_12",
+        "target": "aggregate.aggregate",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:aggregate.report_batch_13:aggregate.aggregate:consume:-:1",
+        "source": "aggregate.report_batch_13",
+        "target": "aggregate.aggregate",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:aggregate.report_batch_14:aggregate.aggregate:consume:-:1",
+        "source": "aggregate.report_batch_14",
+        "target": "aggregate.aggregate",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:aggregate.report_batch_15:aggregate.aggregate:consume:-:1",
+        "source": "aggregate.report_batch_15",
+        "target": "aggregate.aggregate",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:aggregate.report_batch_16:aggregate.aggregate:consume:-:1",
+        "source": "aggregate.report_batch_16",
+        "target": "aggregate.aggregate",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:aggregate.report_batch_17:aggregate.aggregate:consume:-:1",
+        "source": "aggregate.report_batch_17",
+        "target": "aggregate.aggregate",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:aggregate.report_batch_18:aggregate.aggregate:consume:-:1",
+        "source": "aggregate.report_batch_18",
+        "target": "aggregate.aggregate",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:aggregate.report_batch_19:aggregate.aggregate:consume:-:1",
+        "source": "aggregate.report_batch_19",
+        "target": "aggregate.aggregate",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:aggregate.report_batch_2:aggregate.aggregate:consume:-:1",
+        "source": "aggregate.report_batch_2",
+        "target": "aggregate.aggregate",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:aggregate.report_batch_20:aggregate.aggregate:consume:-:1",
+        "source": "aggregate.report_batch_20",
+        "target": "aggregate.aggregate",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:aggregate.report_batch_21:aggregate.aggregate:consume:-:1",
+        "source": "aggregate.report_batch_21",
+        "target": "aggregate.aggregate",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:aggregate.report_batch_22:aggregate.aggregate:consume:-:1",
+        "source": "aggregate.report_batch_22",
+        "target": "aggregate.aggregate",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:aggregate.report_batch_23:aggregate.aggregate:consume:-:1",
+        "source": "aggregate.report_batch_23",
+        "target": "aggregate.aggregate",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:aggregate.report_batch_3:aggregate.aggregate:consume:-:1",
+        "source": "aggregate.report_batch_3",
+        "target": "aggregate.aggregate",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:aggregate.report_batch_4:aggregate.aggregate:consume:-:1",
+        "source": "aggregate.report_batch_4",
+        "target": "aggregate.aggregate",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:aggregate.report_batch_5:aggregate.aggregate:consume:-:1",
+        "source": "aggregate.report_batch_5",
+        "target": "aggregate.aggregate",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:aggregate.report_batch_6:aggregate.aggregate:consume:-:1",
+        "source": "aggregate.report_batch_6",
+        "target": "aggregate.aggregate",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:aggregate.report_batch_7:aggregate.aggregate:consume:-:1",
+        "source": "aggregate.report_batch_7",
+        "target": "aggregate.aggregate",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:aggregate.report_batch_8:aggregate.aggregate:consume:-:1",
+        "source": "aggregate.report_batch_8",
+        "target": "aggregate.aggregate",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:aggregate.report_batch_9:aggregate.aggregate:consume:-:1",
+        "source": "aggregate.report_batch_9",
+        "target": "aggregate.aggregate",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:aggregate.summary:publish.publish:consume:-:1",
+        "source": "aggregate.summary",
+        "target": "publish.publish",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_0.candidate:batch_0.validate:consume:-:1",
+        "source": "batch_0.candidate",
+        "target": "batch_0.validate",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_0.checked:batch_0.plan:consume:-:1",
+        "source": "batch_0.checked",
+        "target": "batch_0.plan",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_0.ingest:batch_0.checked:produce:complete:1",
+        "source": "batch_0.ingest",
+        "target": "batch_0.checked",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_0.ingest:batch_0.original:produce:complete:1",
+        "source": "batch_0.ingest",
+        "target": "batch_0.original",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_0.original:batch_0.validate:consume:-:1",
+        "source": "batch_0.original",
+        "target": "batch_0.validate",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_0.plan:batch_0.candidate:produce:complete:1",
+        "source": "batch_0.plan",
+        "target": "batch_0.candidate",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_0.source:batch_0.ingest:consume:-:1",
+        "source": "batch_0.source",
+        "target": "batch_0.ingest",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_0.validate:aggregate.report_batch_0:produce:complete:1",
+        "source": "batch_0.validate",
+        "target": "aggregate.report_batch_0",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_1.candidate:batch_1.validate:consume:-:1",
+        "source": "batch_1.candidate",
+        "target": "batch_1.validate",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_1.checked:batch_1.plan:consume:-:1",
+        "source": "batch_1.checked",
+        "target": "batch_1.plan",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_1.ingest:batch_1.checked:produce:complete:1",
+        "source": "batch_1.ingest",
+        "target": "batch_1.checked",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_1.ingest:batch_1.original:produce:complete:1",
+        "source": "batch_1.ingest",
+        "target": "batch_1.original",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_1.original:batch_1.validate:consume:-:1",
+        "source": "batch_1.original",
+        "target": "batch_1.validate",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_1.plan:batch_1.candidate:produce:complete:1",
+        "source": "batch_1.plan",
+        "target": "batch_1.candidate",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_1.source:batch_1.ingest:consume:-:1",
+        "source": "batch_1.source",
+        "target": "batch_1.ingest",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_1.validate:aggregate.report_batch_1:produce:complete:1",
+        "source": "batch_1.validate",
+        "target": "aggregate.report_batch_1",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_10.candidate:batch_10.validate:consume:-:1",
+        "source": "batch_10.candidate",
+        "target": "batch_10.validate",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_10.checked:batch_10.plan:consume:-:1",
+        "source": "batch_10.checked",
+        "target": "batch_10.plan",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_10.ingest:batch_10.checked:produce:complete:1",
+        "source": "batch_10.ingest",
+        "target": "batch_10.checked",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_10.ingest:batch_10.original:produce:complete:1",
+        "source": "batch_10.ingest",
+        "target": "batch_10.original",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_10.original:batch_10.validate:consume:-:1",
+        "source": "batch_10.original",
+        "target": "batch_10.validate",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_10.plan:batch_10.candidate:produce:complete:1",
+        "source": "batch_10.plan",
+        "target": "batch_10.candidate",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_10.source:batch_10.ingest:consume:-:1",
+        "source": "batch_10.source",
+        "target": "batch_10.ingest",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_10.validate:aggregate.report_batch_10:produce:complete:1",
+        "source": "batch_10.validate",
+        "target": "aggregate.report_batch_10",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_11.candidate:batch_11.validate:consume:-:1",
+        "source": "batch_11.candidate",
+        "target": "batch_11.validate",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_11.checked:batch_11.plan:consume:-:1",
+        "source": "batch_11.checked",
+        "target": "batch_11.plan",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_11.ingest:batch_11.checked:produce:complete:1",
+        "source": "batch_11.ingest",
+        "target": "batch_11.checked",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_11.ingest:batch_11.original:produce:complete:1",
+        "source": "batch_11.ingest",
+        "target": "batch_11.original",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_11.original:batch_11.validate:consume:-:1",
+        "source": "batch_11.original",
+        "target": "batch_11.validate",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_11.plan:batch_11.candidate:produce:complete:1",
+        "source": "batch_11.plan",
+        "target": "batch_11.candidate",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_11.source:batch_11.ingest:consume:-:1",
+        "source": "batch_11.source",
+        "target": "batch_11.ingest",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_11.validate:aggregate.report_batch_11:produce:complete:1",
+        "source": "batch_11.validate",
+        "target": "aggregate.report_batch_11",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_12.candidate:batch_12.validate:consume:-:1",
+        "source": "batch_12.candidate",
+        "target": "batch_12.validate",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_12.checked:batch_12.plan:consume:-:1",
+        "source": "batch_12.checked",
+        "target": "batch_12.plan",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_12.ingest:batch_12.checked:produce:complete:1",
+        "source": "batch_12.ingest",
+        "target": "batch_12.checked",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_12.ingest:batch_12.original:produce:complete:1",
+        "source": "batch_12.ingest",
+        "target": "batch_12.original",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_12.original:batch_12.validate:consume:-:1",
+        "source": "batch_12.original",
+        "target": "batch_12.validate",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_12.plan:batch_12.candidate:produce:complete:1",
+        "source": "batch_12.plan",
+        "target": "batch_12.candidate",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_12.source:batch_12.ingest:consume:-:1",
+        "source": "batch_12.source",
+        "target": "batch_12.ingest",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_12.validate:aggregate.report_batch_12:produce:complete:1",
+        "source": "batch_12.validate",
+        "target": "aggregate.report_batch_12",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_13.candidate:batch_13.validate:consume:-:1",
+        "source": "batch_13.candidate",
+        "target": "batch_13.validate",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_13.checked:batch_13.plan:consume:-:1",
+        "source": "batch_13.checked",
+        "target": "batch_13.plan",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_13.ingest:batch_13.checked:produce:complete:1",
+        "source": "batch_13.ingest",
+        "target": "batch_13.checked",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_13.ingest:batch_13.original:produce:complete:1",
+        "source": "batch_13.ingest",
+        "target": "batch_13.original",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_13.original:batch_13.validate:consume:-:1",
+        "source": "batch_13.original",
+        "target": "batch_13.validate",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_13.plan:batch_13.candidate:produce:complete:1",
+        "source": "batch_13.plan",
+        "target": "batch_13.candidate",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_13.source:batch_13.ingest:consume:-:1",
+        "source": "batch_13.source",
+        "target": "batch_13.ingest",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_13.validate:aggregate.report_batch_13:produce:complete:1",
+        "source": "batch_13.validate",
+        "target": "aggregate.report_batch_13",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_14.candidate:batch_14.validate:consume:-:1",
+        "source": "batch_14.candidate",
+        "target": "batch_14.validate",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_14.checked:batch_14.plan:consume:-:1",
+        "source": "batch_14.checked",
+        "target": "batch_14.plan",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_14.ingest:batch_14.checked:produce:complete:1",
+        "source": "batch_14.ingest",
+        "target": "batch_14.checked",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_14.ingest:batch_14.original:produce:complete:1",
+        "source": "batch_14.ingest",
+        "target": "batch_14.original",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_14.original:batch_14.validate:consume:-:1",
+        "source": "batch_14.original",
+        "target": "batch_14.validate",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_14.plan:batch_14.candidate:produce:complete:1",
+        "source": "batch_14.plan",
+        "target": "batch_14.candidate",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_14.source:batch_14.ingest:consume:-:1",
+        "source": "batch_14.source",
+        "target": "batch_14.ingest",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_14.validate:aggregate.report_batch_14:produce:complete:1",
+        "source": "batch_14.validate",
+        "target": "aggregate.report_batch_14",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_15.candidate:batch_15.validate:consume:-:1",
+        "source": "batch_15.candidate",
+        "target": "batch_15.validate",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_15.checked:batch_15.plan:consume:-:1",
+        "source": "batch_15.checked",
+        "target": "batch_15.plan",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_15.ingest:batch_15.checked:produce:complete:1",
+        "source": "batch_15.ingest",
+        "target": "batch_15.checked",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_15.ingest:batch_15.original:produce:complete:1",
+        "source": "batch_15.ingest",
+        "target": "batch_15.original",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_15.original:batch_15.validate:consume:-:1",
+        "source": "batch_15.original",
+        "target": "batch_15.validate",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_15.plan:batch_15.candidate:produce:complete:1",
+        "source": "batch_15.plan",
+        "target": "batch_15.candidate",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_15.source:batch_15.ingest:consume:-:1",
+        "source": "batch_15.source",
+        "target": "batch_15.ingest",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_15.validate:aggregate.report_batch_15:produce:complete:1",
+        "source": "batch_15.validate",
+        "target": "aggregate.report_batch_15",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_16.candidate:batch_16.validate:consume:-:1",
+        "source": "batch_16.candidate",
+        "target": "batch_16.validate",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_16.checked:batch_16.plan:consume:-:1",
+        "source": "batch_16.checked",
+        "target": "batch_16.plan",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_16.ingest:batch_16.checked:produce:complete:1",
+        "source": "batch_16.ingest",
+        "target": "batch_16.checked",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_16.ingest:batch_16.original:produce:complete:1",
+        "source": "batch_16.ingest",
+        "target": "batch_16.original",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_16.original:batch_16.validate:consume:-:1",
+        "source": "batch_16.original",
+        "target": "batch_16.validate",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_16.plan:batch_16.candidate:produce:complete:1",
+        "source": "batch_16.plan",
+        "target": "batch_16.candidate",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_16.source:batch_16.ingest:consume:-:1",
+        "source": "batch_16.source",
+        "target": "batch_16.ingest",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_16.validate:aggregate.report_batch_16:produce:complete:1",
+        "source": "batch_16.validate",
+        "target": "aggregate.report_batch_16",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_17.candidate:batch_17.validate:consume:-:1",
+        "source": "batch_17.candidate",
+        "target": "batch_17.validate",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_17.checked:batch_17.plan:consume:-:1",
+        "source": "batch_17.checked",
+        "target": "batch_17.plan",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_17.ingest:batch_17.checked:produce:complete:1",
+        "source": "batch_17.ingest",
+        "target": "batch_17.checked",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_17.ingest:batch_17.original:produce:complete:1",
+        "source": "batch_17.ingest",
+        "target": "batch_17.original",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_17.original:batch_17.validate:consume:-:1",
+        "source": "batch_17.original",
+        "target": "batch_17.validate",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_17.plan:batch_17.candidate:produce:complete:1",
+        "source": "batch_17.plan",
+        "target": "batch_17.candidate",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_17.source:batch_17.ingest:consume:-:1",
+        "source": "batch_17.source",
+        "target": "batch_17.ingest",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_17.validate:aggregate.report_batch_17:produce:complete:1",
+        "source": "batch_17.validate",
+        "target": "aggregate.report_batch_17",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_18.candidate:batch_18.validate:consume:-:1",
+        "source": "batch_18.candidate",
+        "target": "batch_18.validate",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_18.checked:batch_18.plan:consume:-:1",
+        "source": "batch_18.checked",
+        "target": "batch_18.plan",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_18.ingest:batch_18.checked:produce:complete:1",
+        "source": "batch_18.ingest",
+        "target": "batch_18.checked",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_18.ingest:batch_18.original:produce:complete:1",
+        "source": "batch_18.ingest",
+        "target": "batch_18.original",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_18.original:batch_18.validate:consume:-:1",
+        "source": "batch_18.original",
+        "target": "batch_18.validate",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_18.plan:batch_18.candidate:produce:complete:1",
+        "source": "batch_18.plan",
+        "target": "batch_18.candidate",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_18.source:batch_18.ingest:consume:-:1",
+        "source": "batch_18.source",
+        "target": "batch_18.ingest",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_18.validate:aggregate.report_batch_18:produce:complete:1",
+        "source": "batch_18.validate",
+        "target": "aggregate.report_batch_18",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_19.candidate:batch_19.validate:consume:-:1",
+        "source": "batch_19.candidate",
+        "target": "batch_19.validate",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_19.checked:batch_19.plan:consume:-:1",
+        "source": "batch_19.checked",
+        "target": "batch_19.plan",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_19.ingest:batch_19.checked:produce:complete:1",
+        "source": "batch_19.ingest",
+        "target": "batch_19.checked",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_19.ingest:batch_19.original:produce:complete:1",
+        "source": "batch_19.ingest",
+        "target": "batch_19.original",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_19.original:batch_19.validate:consume:-:1",
+        "source": "batch_19.original",
+        "target": "batch_19.validate",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_19.plan:batch_19.candidate:produce:complete:1",
+        "source": "batch_19.plan",
+        "target": "batch_19.candidate",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_19.source:batch_19.ingest:consume:-:1",
+        "source": "batch_19.source",
+        "target": "batch_19.ingest",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_19.validate:aggregate.report_batch_19:produce:complete:1",
+        "source": "batch_19.validate",
+        "target": "aggregate.report_batch_19",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_2.candidate:batch_2.validate:consume:-:1",
+        "source": "batch_2.candidate",
+        "target": "batch_2.validate",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_2.checked:batch_2.plan:consume:-:1",
+        "source": "batch_2.checked",
+        "target": "batch_2.plan",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_2.ingest:batch_2.checked:produce:complete:1",
+        "source": "batch_2.ingest",
+        "target": "batch_2.checked",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_2.ingest:batch_2.original:produce:complete:1",
+        "source": "batch_2.ingest",
+        "target": "batch_2.original",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_2.original:batch_2.validate:consume:-:1",
+        "source": "batch_2.original",
+        "target": "batch_2.validate",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_2.plan:batch_2.candidate:produce:complete:1",
+        "source": "batch_2.plan",
+        "target": "batch_2.candidate",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_2.source:batch_2.ingest:consume:-:1",
+        "source": "batch_2.source",
+        "target": "batch_2.ingest",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_2.validate:aggregate.report_batch_2:produce:complete:1",
+        "source": "batch_2.validate",
+        "target": "aggregate.report_batch_2",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_20.candidate:batch_20.validate:consume:-:1",
+        "source": "batch_20.candidate",
+        "target": "batch_20.validate",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_20.checked:batch_20.plan:consume:-:1",
+        "source": "batch_20.checked",
+        "target": "batch_20.plan",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_20.ingest:batch_20.checked:produce:complete:1",
+        "source": "batch_20.ingest",
+        "target": "batch_20.checked",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_20.ingest:batch_20.original:produce:complete:1",
+        "source": "batch_20.ingest",
+        "target": "batch_20.original",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_20.original:batch_20.validate:consume:-:1",
+        "source": "batch_20.original",
+        "target": "batch_20.validate",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_20.plan:batch_20.candidate:produce:complete:1",
+        "source": "batch_20.plan",
+        "target": "batch_20.candidate",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_20.source:batch_20.ingest:consume:-:1",
+        "source": "batch_20.source",
+        "target": "batch_20.ingest",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_20.validate:aggregate.report_batch_20:produce:complete:1",
+        "source": "batch_20.validate",
+        "target": "aggregate.report_batch_20",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_21.candidate:batch_21.validate:consume:-:1",
+        "source": "batch_21.candidate",
+        "target": "batch_21.validate",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_21.checked:batch_21.plan:consume:-:1",
+        "source": "batch_21.checked",
+        "target": "batch_21.plan",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_21.ingest:batch_21.checked:produce:complete:1",
+        "source": "batch_21.ingest",
+        "target": "batch_21.checked",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_21.ingest:batch_21.original:produce:complete:1",
+        "source": "batch_21.ingest",
+        "target": "batch_21.original",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_21.original:batch_21.validate:consume:-:1",
+        "source": "batch_21.original",
+        "target": "batch_21.validate",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_21.plan:batch_21.candidate:produce:complete:1",
+        "source": "batch_21.plan",
+        "target": "batch_21.candidate",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_21.source:batch_21.ingest:consume:-:1",
+        "source": "batch_21.source",
+        "target": "batch_21.ingest",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_21.validate:aggregate.report_batch_21:produce:complete:1",
+        "source": "batch_21.validate",
+        "target": "aggregate.report_batch_21",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_22.candidate:batch_22.validate:consume:-:1",
+        "source": "batch_22.candidate",
+        "target": "batch_22.validate",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_22.checked:batch_22.plan:consume:-:1",
+        "source": "batch_22.checked",
+        "target": "batch_22.plan",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_22.ingest:batch_22.checked:produce:complete:1",
+        "source": "batch_22.ingest",
+        "target": "batch_22.checked",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_22.ingest:batch_22.original:produce:complete:1",
+        "source": "batch_22.ingest",
+        "target": "batch_22.original",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_22.original:batch_22.validate:consume:-:1",
+        "source": "batch_22.original",
+        "target": "batch_22.validate",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_22.plan:batch_22.candidate:produce:complete:1",
+        "source": "batch_22.plan",
+        "target": "batch_22.candidate",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_22.source:batch_22.ingest:consume:-:1",
+        "source": "batch_22.source",
+        "target": "batch_22.ingest",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_22.validate:aggregate.report_batch_22:produce:complete:1",
+        "source": "batch_22.validate",
+        "target": "aggregate.report_batch_22",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_23.candidate:batch_23.validate:consume:-:1",
+        "source": "batch_23.candidate",
+        "target": "batch_23.validate",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_23.checked:batch_23.plan:consume:-:1",
+        "source": "batch_23.checked",
+        "target": "batch_23.plan",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_23.ingest:batch_23.checked:produce:complete:1",
+        "source": "batch_23.ingest",
+        "target": "batch_23.checked",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_23.ingest:batch_23.original:produce:complete:1",
+        "source": "batch_23.ingest",
+        "target": "batch_23.original",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_23.original:batch_23.validate:consume:-:1",
+        "source": "batch_23.original",
+        "target": "batch_23.validate",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_23.plan:batch_23.candidate:produce:complete:1",
+        "source": "batch_23.plan",
+        "target": "batch_23.candidate",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_23.source:batch_23.ingest:consume:-:1",
+        "source": "batch_23.source",
+        "target": "batch_23.ingest",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_23.validate:aggregate.report_batch_23:produce:complete:1",
+        "source": "batch_23.validate",
+        "target": "aggregate.report_batch_23",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_3.candidate:batch_3.validate:consume:-:1",
+        "source": "batch_3.candidate",
+        "target": "batch_3.validate",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_3.checked:batch_3.plan:consume:-:1",
+        "source": "batch_3.checked",
+        "target": "batch_3.plan",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_3.ingest:batch_3.checked:produce:complete:1",
+        "source": "batch_3.ingest",
+        "target": "batch_3.checked",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_3.ingest:batch_3.original:produce:complete:1",
+        "source": "batch_3.ingest",
+        "target": "batch_3.original",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_3.original:batch_3.validate:consume:-:1",
+        "source": "batch_3.original",
+        "target": "batch_3.validate",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_3.plan:batch_3.candidate:produce:complete:1",
+        "source": "batch_3.plan",
+        "target": "batch_3.candidate",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_3.source:batch_3.ingest:consume:-:1",
+        "source": "batch_3.source",
+        "target": "batch_3.ingest",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_3.validate:aggregate.report_batch_3:produce:complete:1",
+        "source": "batch_3.validate",
+        "target": "aggregate.report_batch_3",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_4.candidate:batch_4.validate:consume:-:1",
+        "source": "batch_4.candidate",
+        "target": "batch_4.validate",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_4.checked:batch_4.plan:consume:-:1",
+        "source": "batch_4.checked",
+        "target": "batch_4.plan",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_4.ingest:batch_4.checked:produce:complete:1",
+        "source": "batch_4.ingest",
+        "target": "batch_4.checked",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_4.ingest:batch_4.original:produce:complete:1",
+        "source": "batch_4.ingest",
+        "target": "batch_4.original",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_4.original:batch_4.validate:consume:-:1",
+        "source": "batch_4.original",
+        "target": "batch_4.validate",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_4.plan:batch_4.candidate:produce:complete:1",
+        "source": "batch_4.plan",
+        "target": "batch_4.candidate",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_4.source:batch_4.ingest:consume:-:1",
+        "source": "batch_4.source",
+        "target": "batch_4.ingest",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_4.validate:aggregate.report_batch_4:produce:complete:1",
+        "source": "batch_4.validate",
+        "target": "aggregate.report_batch_4",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_5.candidate:batch_5.validate:consume:-:1",
+        "source": "batch_5.candidate",
+        "target": "batch_5.validate",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_5.checked:batch_5.plan:consume:-:1",
+        "source": "batch_5.checked",
+        "target": "batch_5.plan",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_5.ingest:batch_5.checked:produce:complete:1",
+        "source": "batch_5.ingest",
+        "target": "batch_5.checked",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_5.ingest:batch_5.original:produce:complete:1",
+        "source": "batch_5.ingest",
+        "target": "batch_5.original",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_5.original:batch_5.validate:consume:-:1",
+        "source": "batch_5.original",
+        "target": "batch_5.validate",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_5.plan:batch_5.candidate:produce:complete:1",
+        "source": "batch_5.plan",
+        "target": "batch_5.candidate",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_5.source:batch_5.ingest:consume:-:1",
+        "source": "batch_5.source",
+        "target": "batch_5.ingest",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_5.validate:aggregate.report_batch_5:produce:complete:1",
+        "source": "batch_5.validate",
+        "target": "aggregate.report_batch_5",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_6.candidate:batch_6.validate:consume:-:1",
+        "source": "batch_6.candidate",
+        "target": "batch_6.validate",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_6.checked:batch_6.plan:consume:-:1",
+        "source": "batch_6.checked",
+        "target": "batch_6.plan",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_6.ingest:batch_6.checked:produce:complete:1",
+        "source": "batch_6.ingest",
+        "target": "batch_6.checked",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_6.ingest:batch_6.original:produce:complete:1",
+        "source": "batch_6.ingest",
+        "target": "batch_6.original",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_6.original:batch_6.validate:consume:-:1",
+        "source": "batch_6.original",
+        "target": "batch_6.validate",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_6.plan:batch_6.candidate:produce:complete:1",
+        "source": "batch_6.plan",
+        "target": "batch_6.candidate",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_6.source:batch_6.ingest:consume:-:1",
+        "source": "batch_6.source",
+        "target": "batch_6.ingest",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_6.validate:aggregate.report_batch_6:produce:complete:1",
+        "source": "batch_6.validate",
+        "target": "aggregate.report_batch_6",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_7.candidate:batch_7.validate:consume:-:1",
+        "source": "batch_7.candidate",
+        "target": "batch_7.validate",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_7.checked:batch_7.plan:consume:-:1",
+        "source": "batch_7.checked",
+        "target": "batch_7.plan",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_7.ingest:batch_7.checked:produce:complete:1",
+        "source": "batch_7.ingest",
+        "target": "batch_7.checked",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_7.ingest:batch_7.original:produce:complete:1",
+        "source": "batch_7.ingest",
+        "target": "batch_7.original",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_7.original:batch_7.validate:consume:-:1",
+        "source": "batch_7.original",
+        "target": "batch_7.validate",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_7.plan:batch_7.candidate:produce:complete:1",
+        "source": "batch_7.plan",
+        "target": "batch_7.candidate",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_7.source:batch_7.ingest:consume:-:1",
+        "source": "batch_7.source",
+        "target": "batch_7.ingest",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_7.validate:aggregate.report_batch_7:produce:complete:1",
+        "source": "batch_7.validate",
+        "target": "aggregate.report_batch_7",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_8.candidate:batch_8.validate:consume:-:1",
+        "source": "batch_8.candidate",
+        "target": "batch_8.validate",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_8.checked:batch_8.plan:consume:-:1",
+        "source": "batch_8.checked",
+        "target": "batch_8.plan",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_8.ingest:batch_8.checked:produce:complete:1",
+        "source": "batch_8.ingest",
+        "target": "batch_8.checked",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_8.ingest:batch_8.original:produce:complete:1",
+        "source": "batch_8.ingest",
+        "target": "batch_8.original",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_8.original:batch_8.validate:consume:-:1",
+        "source": "batch_8.original",
+        "target": "batch_8.validate",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_8.plan:batch_8.candidate:produce:complete:1",
+        "source": "batch_8.plan",
+        "target": "batch_8.candidate",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_8.source:batch_8.ingest:consume:-:1",
+        "source": "batch_8.source",
+        "target": "batch_8.ingest",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_8.validate:aggregate.report_batch_8:produce:complete:1",
+        "source": "batch_8.validate",
+        "target": "aggregate.report_batch_8",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_9.candidate:batch_9.validate:consume:-:1",
+        "source": "batch_9.candidate",
+        "target": "batch_9.validate",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_9.checked:batch_9.plan:consume:-:1",
+        "source": "batch_9.checked",
+        "target": "batch_9.plan",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_9.ingest:batch_9.checked:produce:complete:1",
+        "source": "batch_9.ingest",
+        "target": "batch_9.checked",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_9.ingest:batch_9.original:produce:complete:1",
+        "source": "batch_9.ingest",
+        "target": "batch_9.original",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_9.original:batch_9.validate:consume:-:1",
+        "source": "batch_9.original",
+        "target": "batch_9.validate",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_9.plan:batch_9.candidate:produce:complete:1",
+        "source": "batch_9.plan",
+        "target": "batch_9.candidate",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_9.source:batch_9.ingest:consume:-:1",
+        "source": "batch_9.source",
+        "target": "batch_9.ingest",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:batch_9.validate:aggregate.report_batch_9:produce:complete:1",
+        "source": "batch_9.validate",
+        "target": "aggregate.report_batch_9",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:publish.publish:publish.final:produce:complete:1",
+        "source": "publish.publish",
+        "target": "publish.final",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      }
+    ]
+  },
+  "source": {
+    "mode": "initial_configured",
+    "task_label": "Recorded baseline declaration",
+    "verified_head_ordinal": null
+  },
+  "boundaries": {
+    "entry": [
+      {
+        "name": "batch_0",
+        "port": "batch_0.source",
+        "place": "batch_0.source"
+      },
+      {
+        "name": "batch_1",
+        "port": "batch_1.source",
+        "place": "batch_1.source"
+      },
+      {
+        "name": "batch_10",
+        "port": "batch_10.source",
+        "place": "batch_10.source"
+      },
+      {
+        "name": "batch_11",
+        "port": "batch_11.source",
+        "place": "batch_11.source"
+      },
+      {
+        "name": "batch_12",
+        "port": "batch_12.source",
+        "place": "batch_12.source"
+      },
+      {
+        "name": "batch_13",
+        "port": "batch_13.source",
+        "place": "batch_13.source"
+      },
+      {
+        "name": "batch_14",
+        "port": "batch_14.source",
+        "place": "batch_14.source"
+      },
+      {
+        "name": "batch_15",
+        "port": "batch_15.source",
+        "place": "batch_15.source"
+      },
+      {
+        "name": "batch_16",
+        "port": "batch_16.source",
+        "place": "batch_16.source"
+      },
+      {
+        "name": "batch_17",
+        "port": "batch_17.source",
+        "place": "batch_17.source"
+      },
+      {
+        "name": "batch_18",
+        "port": "batch_18.source",
+        "place": "batch_18.source"
+      },
+      {
+        "name": "batch_19",
+        "port": "batch_19.source",
+        "place": "batch_19.source"
+      },
+      {
+        "name": "batch_2",
+        "port": "batch_2.source",
+        "place": "batch_2.source"
+      },
+      {
+        "name": "batch_20",
+        "port": "batch_20.source",
+        "place": "batch_20.source"
+      },
+      {
+        "name": "batch_21",
+        "port": "batch_21.source",
+        "place": "batch_21.source"
+      },
+      {
+        "name": "batch_22",
+        "port": "batch_22.source",
+        "place": "batch_22.source"
+      },
+      {
+        "name": "batch_23",
+        "port": "batch_23.source",
+        "place": "batch_23.source"
+      },
+      {
+        "name": "batch_3",
+        "port": "batch_3.source",
+        "place": "batch_3.source"
+      },
+      {
+        "name": "batch_4",
+        "port": "batch_4.source",
+        "place": "batch_4.source"
+      },
+      {
+        "name": "batch_5",
+        "port": "batch_5.source",
+        "place": "batch_5.source"
+      },
+      {
+        "name": "batch_6",
+        "port": "batch_6.source",
+        "place": "batch_6.source"
+      },
+      {
+        "name": "batch_7",
+        "port": "batch_7.source",
+        "place": "batch_7.source"
+      },
+      {
+        "name": "batch_8",
+        "port": "batch_8.source",
+        "place": "batch_8.source"
+      },
+      {
+        "name": "batch_9",
+        "port": "batch_9.source",
+        "place": "batch_9.source"
+      },
+      {
+        "name": "manifest",
+        "port": "aggregate.manifest",
+        "place": "aggregate.manifest"
+      }
+    ],
+    "exit": [
+      {
+        "name": "report",
+        "port": "publish.final",
+        "place": "publish.final"
+      }
+    ],
+    "terminal_rules": [
+      {
+        "key": "example/user_collaboration/terminal/v1",
+        "operation": "publish.publish",
+        "transition_ids": [
+          "publish.publish"
+        ],
+        "outcome": "complete",
+        "port": "publish.final",
+        "place": "publish.final"
+      }
+    ],
+    "terminal_evidence": "not_provided"
+  },
+  "transition_bindings": [],
+  "presentation": {
+    "title": "Recorded baseline declaration",
+    "description": "Static declaration structure only. No runtime marking, firings, history or terminal evidence. See the report for original runtime PNGs.",
+    "nodes": {},
+    "status": "default",
+    "topology_digest": "5bf5cb22d711f6b1f74bfc926d4d8f748336002a4537ccfdc6abe5cd052f1952"
+  },
+  "position": {
+    "mode": "live",
+    "cursor": null,
+    "latest_head": null
+  },
+  "coverage": {
+    "history": "unsupported",
+    "firings": "not_provided",
+    "agent_nodes": "declared_llm_executor",
+    "terminal_evidence": "not_provided"
+  },
+  "change": {},
+  "agent_nodes": []
+}

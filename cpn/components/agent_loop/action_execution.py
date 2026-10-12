@@ -178,7 +178,7 @@ OPTIONAL_TOOL_BINDINGS = {
         ("read_file", _read_file, "Read an exact registered input path; returns a bounded decoded view.",
          TOOL_ARGUMENT_SCHEMAS["read_file"]),
         ("write_file", _write_file,
-         "Register one workspace file and its exact semantic Petri output. Use content or one exact visible source_resource_ref. For a text output, content is direct text; for a structured output, content is one JSON document. output_port_id is the declared symbolic output port; outcome_id is required when the operation declares multiple semantic outcomes.",
+         "Register one workspace file and its exact semantic Petri output. Use content or one exact visible source_resource_ref. With source_resource_ref only, optional json_replacements applies ordered {pointer,value} replacements to existing RFC 6901 JSON targets (~0 for ~, ~1 for /, empty pointer for root). A JSON-string source containing JSON is decoded once more. Publish the complete edited document without mutating the source; no add/remove operations or code execution. Omit json_replacements for the unchanged whole-resource copy. For a text output, content is direct text; for a structured output, content is one JSON document. output_port_id is the declared symbolic output port; outcome_id is required when the operation declares multiple semantic outcomes.",
         TOOL_ARGUMENT_SCHEMAS["write_file"]),
         ("workspace", _workspace,
          "Run one bounded, network-disabled shell script in this firing's persistent private workspace. Regular files created or changed by the command are versioned in Registry and projected to later agents after this firing settles.",

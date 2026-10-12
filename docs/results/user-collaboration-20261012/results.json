@@ -1,0 +1,250 @@
+{
+  "schema_version": "rpnh/public_collaboration_results/v1",
+  "experiment_date": "2026-10-12",
+  "scope": "One controlled collaboration study; independent controlled simulated Registry identities, not human participants. Aggregated from retained results; no rescoring during publication.",
+  "actors": 3,
+  "model_conditions": [
+    "gpt-5.6-terra",
+    "deepseek-v4-pro"
+  ],
+  "logical_calls": 22,
+  "provider_attempt_specs": 22,
+  "calls_by_actor": {
+    "A": 15,
+    "B": 4,
+    "C": 3
+  },
+  "upstream_http_attempts": null,
+  "postlimit_excess": 0,
+  "domains": {
+    "development": {
+      "baseline": {
+        "denominator": 512,
+        "original_terminal": "complete",
+        "valid_count": 512,
+        "delivery_rate": 1.0,
+        "unexpected_route_count": 0,
+        "unidentified_records": 0,
+        "statuses": {
+          "VALID": 512
+        },
+        "time_windows": {
+          "UNKNOWN": 330,
+          "FAIL": 182
+        },
+        "capacity": {
+          "PASS": 512
+        },
+        "finite_raw_travel_count": 512,
+        "mean_raw_travel_seconds": 10998.1900390625,
+        "median_raw_travel_seconds": 11239.900000000001,
+        "native_product_count": 98,
+        "validity_scope": "VALID is permutation/structural validity; constraint FAIL/UNKNOWN remain separate",
+        "official_sequence_score": 0.10917468859236977,
+        "official_score_status": "SCORED",
+        "official_feasible": 512,
+        "scorer_error_count": 0
+      },
+      "candidate": {
+        "denominator": 512,
+        "original_terminal": "complete",
+        "valid_count": 512,
+        "delivery_rate": 1.0,
+        "unexpected_route_count": 0,
+        "unidentified_records": 0,
+        "statuses": {
+          "VALID": 512
+        },
+        "time_windows": {
+          "UNKNOWN": 437,
+          "FAIL": 75
+        },
+        "capacity": {
+          "PASS": 512
+        },
+        "finite_raw_travel_count": 512,
+        "mean_raw_travel_seconds": 11846.7419921875,
+        "median_raw_travel_seconds": 11910.5,
+        "native_product_count": 98,
+        "validity_scope": "VALID is permutation/structural validity; constraint FAIL/UNKNOWN remain separate",
+        "official_sequence_score": 0.10095887022211457,
+        "official_score_status": "SCORED",
+        "official_feasible": 512,
+        "scorer_error_count": 0
+      },
+      "paired_raw_travel": {
+        "denominator": 512,
+        "finite_pairs": 512,
+        "lower": 104,
+        "equal": 1,
+        "higher": 407,
+        "mean_candidate_minus_baseline_seconds": 848.551953125
+      },
+      "paired_time_window_statuses": {
+        "UNKNOWN -> UNKNOWN": 311,
+        "FAIL -> UNKNOWN": 126,
+        "FAIL -> FAIL": 56,
+        "UNKNOWN -> FAIL": 19
+      },
+      "paired_official_scores": {
+        "denominator": 512,
+        "finite_pairs": 512,
+        "lower": 324,
+        "equal": 1,
+        "higher": 187
+      },
+      "official_comparison": {
+        "candidate_minus_baseline": -0.008215818370255201,
+        "denominator": 512,
+        "direction": "lower_is_better",
+        "official_feasible": {
+          "baseline": 512,
+          "candidate": 512
+        },
+        "outcomes": {
+          "baseline": {
+            "COMPLETE": 512
+          },
+          "candidate": {
+            "COMPLETE": 512
+          }
+        },
+        "status": "COMPARED"
+      }
+    },
+    "eval": {
+      "baseline": {
+        "denominator": 512,
+        "original_terminal": "complete",
+        "valid_count": 512,
+        "delivery_rate": 1.0,
+        "unexpected_route_count": 0,
+        "unidentified_records": 0,
+        "statuses": {
+          "VALID": 512
+        },
+        "time_windows": {
+          "FAIL": 161,
+          "UNKNOWN": 351
+        },
+        "capacity": {
+          "PASS": 512
+        },
+        "finite_raw_travel_count": 512,
+        "mean_raw_travel_seconds": 10173.91484375,
+        "median_raw_travel_seconds": 10295.5,
+        "native_product_count": 98,
+        "validity_scope": "VALID is permutation/structural validity; constraint FAIL/UNKNOWN remain separate",
+        "official_sequence_score": 0.10338247119855226,
+        "official_score_status": "SCORED",
+        "official_feasible": 512,
+        "scorer_error_count": 0
+      },
+      "candidate": {
+        "denominator": 512,
+        "original_terminal": "complete",
+        "valid_count": 512,
+        "delivery_rate": 1.0,
+        "unexpected_route_count": 0,
+        "unidentified_records": 0,
+        "statuses": {
+          "VALID": 512
+        },
+        "time_windows": {
+          "UNKNOWN": 433,
+          "FAIL": 79
+        },
+        "capacity": {
+          "PASS": 512
+        },
+        "finite_raw_travel_count": 512,
+        "mean_raw_travel_seconds": 11030.640625,
+        "median_raw_travel_seconds": 10889.8,
+        "native_product_count": 98,
+        "validity_scope": "VALID is permutation/structural validity; constraint FAIL/UNKNOWN remain separate",
+        "official_sequence_score": 0.09472347840269131,
+        "official_score_status": "SCORED",
+        "official_feasible": 512,
+        "scorer_error_count": 0
+      },
+      "paired_raw_travel": {
+        "denominator": 512,
+        "finite_pairs": 512,
+        "lower": 57,
+        "equal": 18,
+        "higher": 437,
+        "mean_candidate_minus_baseline_seconds": 856.72578125
+      },
+      "paired_time_window_statuses": {
+        "FAIL -> UNKNOWN": 99,
+        "UNKNOWN -> UNKNOWN": 334,
+        "FAIL -> FAIL": 62,
+        "UNKNOWN -> FAIL": 17
+      },
+      "paired_official_scores": {
+        "denominator": 512,
+        "finite_pairs": 512,
+        "lower": 320,
+        "equal": 18,
+        "higher": 174
+      },
+      "official_comparison": {
+        "candidate_minus_baseline": -0.00865899279586095,
+        "denominator": 512,
+        "direction": "lower_is_better",
+        "official_feasible": {
+          "baseline": 512,
+          "candidate": 512
+        },
+        "outcomes": {
+          "baseline": {
+            "COMPLETE": 512
+          },
+          "candidate": {
+            "COMPLETE": 512
+          }
+        },
+        "status": "COMPARED"
+      }
+    }
+  },
+  "policy_strata": [
+    {
+      "domain": "development",
+      "policy": "deadline_first",
+      "routes": 217,
+      "mean_official_score_delta": 0.02728457241110805,
+      "mean_raw_travel_delta_seconds": 1707.6737327188941,
+      "baseline_time_window_FAIL": 105,
+      "candidate_time_window_FAIL": 0
+    },
+    {
+      "domain": "development",
+      "policy": "zone_nearest",
+      "routes": 295,
+      "mean_official_score_delta": -0.03432966514841056,
+      "mean_raw_travel_delta_seconds": 216.58779661016942,
+      "baseline_time_window_FAIL": 77,
+      "candidate_time_window_FAIL": 75
+    },
+    {
+      "domain": "eval",
+      "policy": "deadline_first",
+      "routes": 190,
+      "mean_official_score_delta": 0.03093693052939111,
+      "mean_raw_travel_delta_seconds": 1595.3278947368422,
+      "baseline_time_window_FAIL": 71,
+      "candidate_time_window_FAIL": 1
+    },
+    {
+      "domain": "eval",
+      "policy": "zone_nearest",
+      "routes": 322,
+      "mean_official_score_delta": -0.03202304693187925,
+      "mean_raw_travel_delta_seconds": 420.9046583850932,
+      "baseline_time_window_FAIL": 90,
+      "candidate_time_window_FAIL": 78
+    }
+  ],
+  "causal_limit": "Descriptive within fixed original route groups; nonrandom batches/overlap, not independent actor/model causal credit"
+}

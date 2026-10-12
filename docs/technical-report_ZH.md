@@ -6,7 +6,7 @@ metadata:
   audience: application-developer-and-researcher
   language: zh-CN
   counterpart: technical-report.md
-  revision: "2026-10-11.1"
+  revision: "2026-10-12.1"
   status: technical-report
   basis: "Deng-0119/RPNH at 6cec63ff5b7a0039611713961d00941767edaaf8"
 ---
@@ -17,7 +17,7 @@ metadata:
 
 ## 面向 Agent 与程序的可执行流程
 
-**更新日期：** 2026-10-11。**实现快照：**
+**更新日期：** 2026-10-12。**实现快照：**
 [`6cec63ff5b7a0039611713961d00941767edaaf8`][snapshot]。
 历史测试分别保留自己的源码身份，见[第 10 节](#10-历史结果及其限制)。
 本次报告更新未运行 runtime、模型或 benchmark 实验。
@@ -308,6 +308,12 @@ Workset 记录 contribution、delivery 与 acceptance；首次验收要求真实
 以下是相互独立的历史窗口，不是对 `6cec63f` 或本次重写的验证。
 [整理后的结果](results/README_ZH.md)保留完整 score/status 投影、输入、源码身份、命令和限制。
 发布 commit 不等于重跑；runtime 完成不能替代原始业务验收。
+
+### 受控多用户协作
+
+[2026 年 10 月 12 日实验](results/user-collaboration-20261012/README_ZH.md)由三个受控模拟 Registry 身份、两个真实模型，完成原生提案、审阅、明确 peer 协调、保护分支合并／采用、业务执行与独立评估。B 在同一身份与累计预算内切换模型。累计 22 次 logical call／provider-attempt spec 包含失败尝试，HTTP 尝试次数仍未知。
+
+开发、评估各固定 512 条路线，序列分数分别降低 7.525%／8.376%，平均行程增加 7.715%／8.421%，时间窗仍有 FAIL 与 UNKNOWN。C2 显式组装策略联合，随后 owner 在原合并中选择 incoming C2。本例证明受控执行链闭合，不证明自动无冲突融合、新路线算法或协作的因果收益。[原 runtime 全景与静态声明 Viewer](../examples/user_collaboration/README_ZH.md)区分执行证据与离线结构查看。
 
 ### ERP-Bench
 

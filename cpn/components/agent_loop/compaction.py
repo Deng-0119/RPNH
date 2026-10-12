@@ -221,7 +221,7 @@ import time
 
 from cpn.rpnh.llm_contracts import LLMInputPortFailure
 from cpn.rpnh.response_protocol import LLMResponseProtocolError
-from .compact import ContextPressurePolicy, ContextReductionSettings
+from .compact import ContextPressurePolicy, ContextReductionSettings, TOOL_BATCH_BYTE_LIMIT
 from .models import (
     AgentLoopProtocolError, AgentTurnTimingEvidence,
 )
@@ -491,7 +491,8 @@ class CompactionExecutionMixin:
             render_tool_result=render_tool_result)
         history = reduce_tool_messages(
             history, byte_limit=reduction_settings.tool_output_byte_limit)
-        history = bound_tool_result_groups(history)
+        history = bound_tool_result_groups(
+            history, byte_limit=max(TOOL_BATCH_BYTE_LIMIT, reduction_settings.tool_output_byte_limit))
         prompt = json.loads(prompt_payload)
         target = self._target(context)
         envelope = materialize_agent_request_envelope(
@@ -888,7 +889,8 @@ class CompactionExecutionMixin:
                 retainable_history, observed.text,
                 retained_history_token_limit=(
                     prepared.reduction_settings.retained_history_token_limit),
-                fact_capsule=capsule, pending_tool_call_ids=pending_ids)
+                fact_capsule=capsule, pending_tool_call_ids=pending_ids,
+                tool_output_byte_limit=prepared.reduction_settings.tool_output_byte_limit)
             document = {
                 "agent_context_compaction_id": prepared.compaction_id,
                 "agent_context_compaction_version_id": str(

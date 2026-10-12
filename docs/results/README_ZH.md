@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: README.md
-  revision: "2026-10-09.1"
+  revision: "2026-10-12.1"
   status: historical-curated-result
 ---
 
@@ -19,6 +19,7 @@ metadata:
 
 | 记录 | 原范围 |
 |---|---|
+| [受控用户协作](user-collaboration-20261012/README_ZH.md) | 三个模拟身份／两个真实模型；开发、评估各 512；分数改善而行程增加；原始全景与静态 Viewer |
 | [ERP-Bench 历史首波结果](erp-first-wave-20261008/README_ZH.md) | ERP A01–A04 + H01：阻断/失败与 0/100、21/100、100/100 分别保留 |
 | [SlopCodeBench 适配前 3 点结果](scb-prefix3-20261008/README_ZH.md) | SCB 五点中前三点：13/13、25/25、40/47；第四/第五点未运行 |
 | [ERP 合成原生 runtime 验证](erp-runtime-20261008/README_ZH.md) | ERP 合成验证：65 + 4 subtest；B 生命周期 / C 六场景 |

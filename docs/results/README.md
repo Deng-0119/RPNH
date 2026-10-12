@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: en
   counterpart: README_ZH.md
-  revision: "2026-10-09.1"
+  revision: "2026-10-12.1"
   status: historical-curated-result
 ---
 
@@ -19,6 +19,7 @@ These records retain historical application scores and finite zero-model runtime
 
 | Record | Historical scope |
 |---|---|
+| [Controlled user collaboration](user-collaboration-20261012/README.md) | Three simulated identities / two real models; dev/eval 512 each; score improves while travel increases; original panoramas and static Viewer |
 | [ERP-Bench historical first-wave results](erp-first-wave-20261008/README.md) | ERP A01–A04 + H01: blocked/failed and 0/100, 21/100, 100/100 kept separate |
 | [SlopCodeBench adapted prefix 3 results](scb-prefix3-20261008/README.md) | SCB first3of5: 13/13, 25/25, 40/47; CP4/CP5 not_run |
 | [ERP synthetic native runtime validation](erp-runtime-20261008/README.md) | ERP synthetic: 65 + 4 subtests; B lifecycle / C six scenarios |

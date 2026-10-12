@@ -51,7 +51,7 @@ from cpn.rpnh.registry.resources import (
 from cpn.rpnh.registry.schema_catalog import TypeDefinition, canonical_json
 
 from .compact import (build_replacement_history, reduce_tool_messages,
-                      bound_tool_result_groups, should_compact)
+                      bound_tool_result_groups, should_compact, TOOL_BATCH_BYTE_LIMIT)
 from .request_envelope_materialization import materialize_agent_request_envelope
 from .models import (
     AgentActionRecord, AgentLoopSnapshot, AgentLoopState, AgentTurnRecord,
@@ -1042,7 +1042,8 @@ class ContextExecutionMixin:
         # summarize.
         messages = reduce_tool_messages(
             messages, byte_limit=tool_output_byte_limit)
-        messages = bound_tool_result_groups(messages)
+        messages = bound_tool_result_groups(
+            messages, byte_limit=max(TOOL_BATCH_BYTE_LIMIT, tool_output_byte_limit))
         events = self.mechanical_lifecycle.turn_events(loop)
         from cpn.components.request_protocol import validate_llm_request_message_history
         validate_llm_request_message_history(messages)

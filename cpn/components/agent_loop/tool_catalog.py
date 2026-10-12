@@ -292,6 +292,24 @@ TOOL_ARGUMENT_SCHEMAS: dict[str, dict[str, Any]] = {
                         "required": [
                             "resource_id", "resource_version_id"],
                     },
+                    "json_replacements": {
+                        "type": "array", "minItems": 1,
+                        "description": (
+                            "Optional ordered replacements on the exact source JSON. "
+                            "A JSON-string source containing JSON is decoded once more. "
+                            "Each RFC 6901 pointer must already exist; ~0 means ~, "
+                            "~1 means /, and an empty pointer selects the root. "
+                            "No add/remove operations or code execution. Omit this "
+                            "field to preserve the original whole-resource copy."),
+                        "items": {
+                            "type": "object", "additionalProperties": False,
+                            "properties": {
+                                "pointer": {"type": "string"},
+                                "value": {},
+                            },
+                            "required": ["pointer", "value"],
+                        },
+                    },
                     "output_port_id": {"type": "string", "minLength": 1},
                     "outcome_id": {"type": "string", "minLength": 1},
                 },
@@ -500,7 +518,11 @@ def _canonical_agent_tool_catalog_payload() -> bytes:
                         "Either supply content to write exact bytes directly, or "
                         "first use query_registry_resources summaries and select "
                         "one exact current source_resource_ref returned for this "
-                        "active firing. Workspace bytes are never an implicit write "
+                        "active firing. With that source only, json_replacements "
+                        "applies model-selected pointer/value replacements to existing "
+                        "JSON targets and publishes the complete edited document. "
+                        "Without replacements, the entire source is copied unchanged. "
+                        "Workspace bytes are never an implicit write "
                         "source. The final write_file and complete_interaction "
                         "may be ordered in the same response when completion is the "
                         "final tool call."),
@@ -671,7 +693,13 @@ def model_visible_agent_tool_description(name: str) -> str:
             "UTF-8 content, or one exact current Registry source_resource_ref. For "
             "a Registry source, query_registry_resources summaries first and copy "
             "the exact resource_id and resource_version_id from the selected current "
-            "row; workspace bytes are not source authority. Supply a concise "
+            "row. With source_resource_ref only, optional json_replacements "
+            "replaces existing RFC 6901 pointer targets with the supplied JSON "
+            "values; a JSON-string source containing JSON is decoded once more. "
+            "The complete edited document is published, never a patch; no source "
+            "mutation, add/remove operations or code execution. Omit replacements "
+            "for unchanged whole-resource copy. Workspace bytes are not source "
+            "authority. Supply a concise "
             "description covering the file's purpose and "
             "important result; it is a navigation summary, not a substitute for "
             "the file. A final complete_interaction call may follow in this same "

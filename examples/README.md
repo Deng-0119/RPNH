@@ -30,6 +30,7 @@ Choose an example by the behavior you want to see:
 | Business-workflow benchmark and host extensions | [AutomationBench](automationbench/README.md) | [Results, task boundaries and viewer guide](automationbench/README.md) | Read retained results offline; new live runs require an authorized profile |
 | Managed ERP tasks with the original verifier | [ERP-Bench](erp_bench/README.md) | [Task and execution guide](erp_bench/README.md) | User-owned exact live profile and original Docker environment |
 | Native Session commands for a coding-task prefix | [SlopCodeBench pilot](slopcodebench/README.md) | [Pilot scope and retained results](slopcodebench/README.md) | Scripted fixtures or an explicitly authorized live profile |
+| Controlled multi-user proposals, adoption and measured route tradeoffs | [User collaboration](user_collaboration/README.md) | [Runtime panoramas and static structure Viewer](user_collaboration/README.md) | Offline inspection; full real-model experiment is not bundled |
 | Validate evidence files and source identities | [Example evidence contract](example_validation/README.md) | [Read-only validation utility](example_validation/README.md) | No standalone PN, model call or business execution |
 
 Additional installed entry point: the [adapter task](../docs/guides/examples.md) runs one semantic task through every supported host; its retained illustration is the DSH execution net.
@@ -39,7 +40,7 @@ The galleries distinguish initial declarations from recorded runs. **PetriNet** 
 Each runnable workflow creates a real Registry that can be opened with
 `rpnh net --run RUN_DIR --view --no-open`. Scripted fixtures exercise the same
 protocol and settlement boundaries but are not claims about model reasoning.
-Run screenshots retain their original scenario scope; declaration galleries state their source and offline-compilation boundary. Public images omit exact checkpoint identities and local observation timestamps.
+Run screenshots retain their original scenario scope; declaration galleries state their source and offline-compilation boundary. Routine example captures omit exact checkpoint identities and local observation timestamps. Dated result galleries may preserve original technical run identifiers when explicitly documented; these are not identity or access credentials.
 
 For interruption/recovery behavior, use the independent-task example and the
 dedicated [checkpoint recovery guide](../docs/guides/checkpoint-recovery.md).

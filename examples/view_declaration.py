@@ -18,6 +18,8 @@ _EXAMPLES = Path(__file__).resolve().parent
 _DECLARATIONS = {
     "rsi-four-round": "rsi_workflows/figures/four-round/declaration-frame.json",
     "rrsi-policy": "rrsi_v06/figures/policy/declaration-frame.json",
+    "collaboration-baseline": "user_collaboration/figures/baseline/declaration-frame.json",
+    "collaboration-adopted": "user_collaboration/figures/adopted-M2/declaration-frame.json",
     "parallel": "workflow_patterns/figures/parallel/declaration-frame.json",
 }
 

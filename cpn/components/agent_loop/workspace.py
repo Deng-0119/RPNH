@@ -247,6 +247,49 @@ def _semantic_workspace_path(
         "outputs", "ports", symbolic_port_name.removeprefix("team."),
         *relative_parts)
 
+def _replace_registered_json(payload: bytes, replacements) -> bytes:
+    """Replace existing RFC 6901 targets in a fresh decoded source document."""
+    document = json.loads(payload)
+    if isinstance(document, str):
+        document = json.loads(document)
+    for replacement in replacements:
+        pointer = replacement["pointer"]
+        # Later replacements may descend into this value; do not mutate the
+        # original model arguments retained by the action record.
+        value = json.loads(canonical_json(replacement["value"]))
+        if pointer == "":
+            document = value
+            continue
+        if not pointer.startswith("/"):
+            raise ValueError("json_replacements pointer must be empty or start with /")
+        tokens = pointer[1:].split("/")
+        for token in tokens:
+            for index, character in enumerate(token):
+                if character == "~" and (index + 1 == len(token) or token[index + 1] not in "01"):
+                    raise ValueError("json_replacements pointer has an invalid ~ escape")
+        tokens = [token.replace("~1", "/").replace("~0", "~") for token in tokens]
+        current = document
+        for index, token in enumerate(tokens):
+            if isinstance(current, dict):
+                key = token
+                if key not in current:
+                    raise ValueError("json_replacements target does not exist: " + pointer)
+            elif isinstance(current, list):
+                if (not token or any(c not in "0123456789" for c in token)
+                        or (len(token) > 1 and token[0] == "0")):
+                    raise ValueError("json_replacements list target requires a canonical index")
+                key = int(token)
+                if key >= len(current):
+                    raise ValueError("json_replacements target does not exist: " + pointer)
+            else:
+                raise ValueError("json_replacements target parent is not an object or array: " + pointer)
+            if index == len(tokens) - 1:
+                current[key] = value
+            else:
+                current = current[key]
+    return canonical_json(document)
+
+
 class WorkspaceExecutionMixin:
     def _execute_file_materialization(
             self, context, identity_key, materialize):
@@ -1250,7 +1293,13 @@ class WorkspaceExecutionMixin:
                 arguments["source_resource_ref"])
             _terminal, _receipt, workspace_payload = self._deliver(
                 context, source_ref, "tool_result", key + ":source")
-            if port.schema == "application/rpnh_agent_text/v1":
+            if "json_replacements" in arguments:
+                workspace_payload = _replace_registered_json(
+                    workspace_payload, arguments["json_replacements"])
+                payload = (canonical_json(workspace_payload.decode("utf-8"))
+                           if port.schema == "application/rpnh_agent_text/v1"
+                           else workspace_payload)
+            elif port.schema == "application/rpnh_agent_text/v1":
                 try:
                     decoded = json.loads(workspace_payload)
                 except (UnicodeDecodeError, json.JSONDecodeError):

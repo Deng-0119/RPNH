@@ -262,6 +262,9 @@ def canonical_attempt_response_record(
     primary = origin.get("primary_ref") if isinstance(origin, Mapping) else None
     secondary = origin.get("secondary_ref") if isinstance(origin, Mapping) else None
     secondary_exact = normalize(secondary) if isinstance(secondary, Mapping) else None
+    raw_response = response_metadata.get("origin_kind") == "provider_raw_response"
+    origin_kind = "provider_raw_response" if raw_response else "provider_response"
+    call_types = {"llm_call_spec/v2", "llm_call_spec/v3"} if raw_response else {"llm_call_spec/v1"}
     if (attempt["entity_type"] != "provider_attempt_spec/v1"
             or response["entity_type"] != "resource_version/v1"
             or (attempt["entity_type"], attempt["entity_id"],
@@ -274,16 +277,19 @@ def canonical_attempt_response_record(
             != attempt["version_id"]
             or response_metadata.get("resource_id") != response["entity_id"]
             or response_metadata.get("resource_version_id") != response["version_id"]
-            or response_metadata.get("origin_kind") != "provider_response"
+            or response_metadata.get("origin_kind") != origin_kind
             or not isinstance(origin, Mapping)
-            or origin.get("kind") != "provider_response"
+            or origin.get("kind") != origin_kind
             or set(origin) != {"kind", "primary_ref", "secondary_ref"}
             or not isinstance(primary, Mapping)
             or set(primary) != {"entity_type", "logical_id", "version_id"}
             or normalize(primary) != attempt
             or not isinstance(secondary, Mapping)
             or set(secondary) != {"entity_type", "logical_id", "version_id"}
-            or secondary.get("entity_type") != "llm_call_spec/v1"
+            or secondary.get("entity_type") not in call_types
+            or (raw_response and attempt_metadata.get("llm_call_ref") != secondary)
+            or (raw_response and response_metadata.get("producer_ref")
+                != attempt_metadata.get("invocation_ref"))
             or secondary.get("logical_id") != attempt_metadata.get("llm_call_id")
             or secondary.get("version_id")
             != attempt_metadata.get("llm_call_version_id")
@@ -392,18 +398,30 @@ def canonical_attempt_response_record(
             "attempt response requires one canonical strong provenance authority")
 
     extensions = response_metadata.get("extensions")
-    facts = (extensions.get("registry.provider_response/v1")
-             if isinstance(extensions, Mapping) else None)
-    if (not isinstance(facts, Mapping)
-            or set(facts) != {
-                "finish_reason", "external_request_id",
-                "reconciliation_proof_ref"}):
+    facts_key = ("registry.provider_raw_response/" + secondary["entity_type"].rsplit("/", 1)[1]
+                 if raw_response else "registry.provider_response/v1")
+    facts = extensions.get(facts_key) if isinstance(extensions, Mapping) else None
+    fact_fields = ({"transport_kind", "status_code", "external_request_id"} if raw_response else
+                   {"finish_reason", "external_request_id", "reconciliation_proof_ref"})
+    if not isinstance(facts, Mapping) or set(facts) != fact_fields:
         raise CanonicalAttemptResponseViolation(
             "attempt response metadata lacks terminal facts")
-    proof_ref = facts.get("reconciliation_proof_ref")
-    if proof_ref is not None:
-        raise CanonicalAttemptResponseViolation(
-            "v1 response observation cannot claim reconciliation completion")
+    if raw_response:
+        status = facts["status_code"]
+        if (facts["transport_kind"] != attempt_metadata.get("transport_kind")
+                or (facts["transport_kind"] == "subprocess" and status is not None)
+                or (facts["transport_kind"] != "subprocess"
+                    and (type(status) is not int or not 100 <= status <= 599))
+                or type(response_metadata.get("size")) is not int
+                or response_metadata["size"] < 0):
+            raise CanonicalAttemptResponseViolation("raw response transport or size differs")
+        # Raw return is observed before decoding; no semantic finish reason yet.
+        finish_reason = None
+    else:
+        if facts.get("reconciliation_proof_ref") is not None:
+            raise CanonicalAttemptResponseViolation(
+                "v1 response observation cannot claim reconciliation completion")
+        finish_reason = facts.get("finish_reason")
     task_ref = response_metadata.get("task_ref")
     round_ref = response_metadata.get("round_ref")
     net_ref = response_metadata.get("net_ref")
@@ -522,8 +540,9 @@ def canonical_attempt_response_record(
             "resource_id": response["entity_id"],
             "resource_version_id": response["version_id"],
         },
-        "response_payload_digest": response_metadata.get("payload_digest"),
-        "finish_reason": facts.get("finish_reason"),
+        **({"response_size": response_metadata["size"]} if raw_response else
+           {"response_payload_digest": response_metadata.get("payload_digest")}),
+        "finish_reason": finish_reason,
         "external_request_id": facts.get(
             "external_request_id"),
     }
@@ -575,7 +594,7 @@ def canonical_attempt_response_record(
             "provider_attempt_id": attempt["entity_id"],
             "response_version_id": response["version_id"],
             "response_observed_event_id": observation["event_id"],
-            "finish_reason": facts.get("finish_reason"),
+            "finish_reason": finish_reason,
             "external_request_id": facts.get(
                 "external_request_id"),
         }
@@ -912,9 +931,13 @@ def require_canonical_attempt_response(
             (attempt_id, response_version, response_version),
         ).fetchall()
         try:
-            completion_records = [
-                store._verified_persisted_event_record(db, row)
-                for row in completion_rows]
+            completion_records = []
+            for row in completion_rows:
+                record = store._verified_persisted_event_record(db, row)
+                # Only derive the comparison material after native event verification.
+                # Persisted rows carry canonical payload_json, not payload_digest.
+                completion_records.append(dict(record, payload_digest=canonical_text(
+                    json.loads(record["payload_json"]))))
         except RegistryCorruptError as exc:
             raise RegistryCorruptError(
                 "persisted attempt response authority is corrupt") from exc

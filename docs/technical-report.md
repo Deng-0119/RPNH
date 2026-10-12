@@ -6,7 +6,7 @@ metadata:
   audience: application-developer-and-researcher
   language: en
   counterpart: technical-report_ZH.md
-  revision: "2026-10-11.1"
+  revision: "2026-10-12.1"
   status: technical-report
   basis: "Deng-0119/RPNH at 6cec63ff5b7a0039611713961d00941767edaaf8"
 ---
@@ -17,7 +17,7 @@ English | [中文](technical-report_ZH.md) | [Documentation](index.md)
 
 ## Executable processes for Agents and programs
 
-**Updated:** 2026-10-11. **Implementation snapshot:**
+**Updated:** 2026-10-12. **Implementation snapshot:**
 [`6cec63ff5b7a0039611713961d00941767edaaf8`][snapshot].
 Historical tests retain their own source identities in [§10](#10-historical-results-and-their-limits).
 This report update ran no runtime, model or benchmark experiments.
@@ -397,6 +397,12 @@ These are separate historical windows, not validation of `6cec63f` or this rewri
 The [curated results](results/README.md) preserve complete score/status projections,
 inputs, source identities, commands and limitations. Publication commits are not
 reruns. Runtime completion does not replace original business acceptance.
+
+### Controlled multi-user collaboration
+
+The [12 October 2026 study](results/user-collaboration-20261012/README.md) completed native proposals, review, explicit peer coordination, protected-branch merge/adoption, business execution and independent evaluation with three controlled simulated Registry identities and two real models. B switched models within its existing identity and cumulative budget. A total of 22 logical calls / provider-attempt specifications included failed attempts; HTTP-attempt counts remain unknown.
+
+On fixed development/eval sets of 512 routes each, sequence score fell by 7.525% / 8.376%, while mean travel increased 7.715% / 8.421%; time-window FAIL and UNKNOWN remained. C2 explicitly assembled the strategy union, then the owner selected incoming C2 through the original merge. This demonstrates a controlled execution chain, not automatic conflict-free fusion, new routing algorithms or causal collaboration gains. [Original runtime panoramas and static declaration Viewer](../examples/user_collaboration/README.md) keep execution evidence separate from offline structure inspection.
 
 ### ERP-Bench
 

@@ -28,6 +28,7 @@
 | 业务 workflow benchmark 与宿主扩展 | [AutomationBench](automationbench/README_ZH.md) | [成绩、任务边界与 viewer 指南](automationbench/README_ZH.md) | 离线查看保留结果；新的实时运行需要已授权 profile |
 | 使用原验证器的 managed ERP 任务 | [ERP-Bench](erp_bench/README_ZH.md) | [任务与执行指南](erp_bench/README_ZH.md) | 用户自有精确真实 profile 与原 Docker 环境 |
 | 编码任务前缀的原生 Session 命令 | [SlopCodeBench pilot](slopcodebench/README_ZH.md) | [pilot 范围与保留结果](slopcodebench/README_ZH.md) | 脚本夹具或显式授权的真实 profile |
+| 受控多用户提案、采用与路线指标取舍 | [用户协作](user_collaboration/README_ZH.md) | [runtime 全景与静态结构 Viewer](user_collaboration/README_ZH.md) | 离线查看；不包含完整真实模型实验环境 |
 | 验证证据文件与源码身份 | [示例证据约定](example_validation/README_ZH.md) | [只读验证工具](example_validation/README_ZH.md) | 无独立 PN、模型调用或业务执行 |
 
 安装版附加入口：[适配任务](../docs/guides/examples_ZH.md)通过全部支持宿主运行同一个语义任务，图示为原 DSH 执行网。
@@ -36,7 +37,7 @@
 
 每个可运行 workflow 都会创建真实 Registry，可用
 `rpnh net --run RUN_DIR --view --no-open` 打开。脚本替身经过相同协议与结算边界，但不代表
-模型推理能力。运行截图保留其原场景范围；初始声明图的来源与静态编译边界在各图册中说明。公开图片不包含精确 checkpoint 身份或本地观察时间。
+模型推理能力。运行截图保留其原场景范围；初始声明图的来源与静态编译边界在各图册中说明。常规案例截图省略精确 checkpoint 标识和本地观察时间。注明日期的结果图册可在明确说明后保留原始技术运行标识；这些不是个人身份或访问凭据。
 
 中断／恢复行为请使用独立任务案例和专门的
 [checkpoint 恢复指南](../docs/guides/checkpoint-recovery_ZH.md)。Reopen 会在同一 Registry
