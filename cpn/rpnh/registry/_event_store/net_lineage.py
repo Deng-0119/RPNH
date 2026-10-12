@@ -744,7 +744,8 @@ def verified_checkpoint_head(event_store: "EventStore", catalog: SchemaCatalog,
                 "reentry_superseded_token_refs"):
             if field in checkpoint or field in event.payload:
                 expected[field] = checkpoint.get(field)
-        for field in ("owner_command_ref", "owner_command_result_ref"):
+        for field in ("owner_command_ref", "owner_command_result_ref",
+                      "input_wait_ref", "input_receipt_ref"):
             if field in checkpoint or field in event.payload:
                 expected[field] = checkpoint.get(field, [])
         repair_fields = (

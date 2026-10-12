@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <title>Mock approval · RPNH</title>
+  <link rel="stylesheet" href="/approval.css">
+  <script src="/approval.js" defer></script>
+</head>
+<body>
+  <a class="skip" href="#main" data-i18n="skip">Skip to content</a>
+  <header class="topbar">
+    <span class="brand">RPNH <span data-i18n="demo">Controlled demo</span></span>
+    <button id="language" type="button" lang="zh-Hans" aria-label="切换到中文">中文</button>
+  </header>
+  <main id="main" tabindex="-1">
+    <div class="heading">
+      <div><p class="eyebrow" data-i18n="mock">MOCK · NO MONEY MOVES</p>
+        <h1 data-i18n="title">Review before action</h1>
+        <p data-i18n="intro">Submit a synthetic request, review its exact candidate, then follow the server-reported result.</p>
+      </div>
+      <button id="refresh" type="button" data-i18n="refresh">Refresh state</button>
+    </div>
+    <section class="context" aria-labelledby="context-title">
+      <h2 id="context-title" data-i18n="context">This client</h2>
+      <p id="client-name">—</p>
+      <p class="muted" data-i18n="binding">The server prebinds this client to an existing native identity. This label does not grant permission.</p>
+    </section>
+    <p id="connection" role="status" aria-live="polite"></p>
+    <div id="feedback" role="alert" hidden></div>
+    <noscript>This application needs JavaScript to read server state. 此应用需要 JavaScript 才能读取服务器状态。</noscript>
+    <section class="card state-card" aria-labelledby="state-title">
+      <div class="section-heading"><h2 id="state-title" data-i18n="state">Current case</h2><span id="status" class="badge">—</span></div>
+      <p id="status-help"></p>
+      <dl id="case-summary" class="facts"></dl>
+      <ul id="notices" hidden></ul>
+    </section>
+    <div class="workspace">
+      <section class="card" aria-labelledby="request-title">
+        <p class="eyebrow" data-i18n="step1">01 · REQUEST</p>
+        <h2 id="request-title" data-i18n="requestTitle">Request a mock refund</h2>
+        <p class="muted" data-i18n="requestHelp">Use synthetic business data only. The server supplies the case and checks the policy.</p>
+        <form id="request-form">
+          <fieldset id="request-fields" disabled>
+            <legend class="sr-only" data-i18n="requestTitle">Request a mock refund</legend>
+            <label for="amount" data-i18n="amountInput">Amount in integer minor units</label>
+            <input id="amount" name="amount_minor" type="text" inputmode="numeric" pattern="[0-9]+" required aria-describedby="amount-help amount-preview" autocomplete="off">
+            <p id="amount-help" class="hint" data-i18n="amountHelp">Enter whole minor units, not a decimal amount. Currency determines the decimal places.</p>
+            <label for="currency" data-i18n="currency">Currency</label>
+            <input id="currency" name="currency" type="text" pattern="[A-Za-z]{3}" maxlength="3" required autocomplete="off" autocapitalize="characters" spellcheck="false" aria-describedby="currency-help">
+            <p id="currency-help" class="hint" data-i18n="currencyHelp">Three-letter currency code. Accepted currencies are checked by the server.</p>
+            <p id="amount-preview" class="preview" aria-live="polite"></p>
+            <label for="reason" data-i18n="reason">Reason</label>
+            <textarea id="reason" name="reason" rows="4" required></textarea>
+            <button class="primary" id="request-submit" type="submit" data-i18n="submit">Submit request</button>
+          </fieldset>
+        </form>
+        <p id="request-access" class="hint"></p>
+      </section>
+      <section class="card" aria-labelledby="candidate-title">
+        <p class="eyebrow" data-i18n="step2">02 · EXACT CANDIDATE</p>
+        <h2 id="candidate-title" data-i18n="candidateTitle">What is being approved?</h2>
+        <p id="candidate-empty" class="muted"></p>
+        <div id="candidate-content" hidden>
+          <dl id="candidate-summary" class="facts"></dl>
+          <details id="candidate-details">
+            <summary data-i18n="exactDetails">Exact references and full candidate JSON</summary>
+            <dl id="candidate-refs" class="facts refs"></dl>
+            <pre id="candidate-json" tabindex="0" aria-label="Full candidate JSON"></pre>
+          </details>
+        </div>
+        <p class="hint" data-i18n="decisionHelp">A decision applies only to the candidate and waiting input shown here. The server rechecks every decision.</p>
+        <div class="actions">
+          <button id="approve" class="primary" type="button" disabled data-i18n="approve">Approve this candidate</button>
+          <button id="deny" class="danger" type="button" disabled data-i18n="deny">Deny this candidate</button>
+        </div>
+        <p id="decision-access" class="hint"></p>
+      </section>
+    </div>
+    <section class="card" aria-labelledby="result-title">
+      <p class="eyebrow" data-i18n="step3">03 · SERVER RESULT</p>
+      <h2 id="result-title" data-i18n="resultTitle">Outcome & recovery</h2>
+      <p id="result-help"></p>
+      <pre id="result-json" tabindex="0" aria-label="Server result JSON" hidden></pre>
+    </section>
+    <nav class="card" aria-label="Demo navigation" id="navigation">
+      <h2 data-i18n="navigation">Continue or return</h2>
+      <div class="links">
+        <a id="viewer-link" hidden data-i18n="viewer">Open original Viewer · same run</a>
+        <a id="requester-link" hidden data-i18n="requesterLink">Return to requester page</a>
+        <a id="approver-link" hidden data-i18n="approverLink">Open approver page</a>
+        <a id="home-link" hidden data-i18n="homeLink">Return to demo home</a>
+      </div>
+      <p id="navigation-empty" class="hint" data-i18n="noLinks">Navigation appears when the server provides it.</p>
+      <p class="hint" data-i18n="navigationHelp">Links do not change identity or grant access. Open the approver page in its already bound client context. A 403 means that context is not authorized.</p>
+    </nav>
+    <footer data-i18n="footer">Controlled mock application · Local registered results only · No real refunds, payments or bookings</footer>
+  </main>
+</body>
+</html>

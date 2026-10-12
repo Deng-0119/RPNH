@@ -713,6 +713,14 @@
       "path": "registry_v1/run_execution_authority.v1.schema.json"
     },
     {
+      "schema_id": "registry_v1/run_input_receipt/v1",
+      "path": "registry_v1/run_input_receipt.v1.schema.json"
+    },
+    {
+      "schema_id": "registry_v1/run_input_wait/v1",
+      "path": "registry_v1/run_input_wait.v1.schema.json"
+    },
+    {
       "schema_id": "registry_v1/run_reopen_authorization/v1",
       "path": "registry_v1/run_reopen_authorization.v1.schema.json"
     },

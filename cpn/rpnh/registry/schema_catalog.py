@@ -89,6 +89,8 @@ def canonical_text(value: Any) -> str:
 
 
 CURRENT_OBJECT_TYPES = (
+    "run_input_wait/v1",
+    "run_input_receipt/v1",
     "parent_child_intent/v1",
     "parent_child_intent/v2",
     "parent_child_dispatch/v1",

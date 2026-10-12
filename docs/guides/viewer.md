@@ -479,3 +479,24 @@ changes clear displayed details. Closing or changing scope clears the anchor.
 Identifier fields must be strings; arrays and other coercible values are rejected.
 The opt-in HTTP response boundary cross-checks both frame source layers, the
 selected net/checkpoint/C, capture H/E and token placement before disclosing it.
+
+## Controlled input examples
+
+The [refund approval](../../examples/approval_workflow/README.md) and
+[external-result quote](../../examples/a2a_quote/README.md) applications link their
+controlled client pages to this original read-only Viewer. Use **PetriNet** to
+show every place, transition and arc; the timeline selects original saved
+checkpoints without repeating execution.
+
+```bash
+python -m examples.view_input_declaration approval_workflow
+python -m examples.view_input_declaration a2a_quote
+python -m examples.view_input_declaration approval_workflow --run-dir /path/to/refund-demo/run
+python -m examples.view_input_declaration a2a_quote --run-dir /path/to/quote-demo/run
+```
+
+Without `--run-dir`, the view is explicitly `initial_configured`: it is a
+declaration, not execution evidence. `--json` prints the selected projection
+without starting HTTP. Actual waiting/completed images and historical capture scope
+are documented with each example. External responses are local synthetic fixtures;
+input admission and registered completion are native RPNH operations.

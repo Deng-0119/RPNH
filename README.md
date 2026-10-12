@@ -36,6 +36,12 @@ Offline preparation and inspection are available through [portable package previ
 
 See [curated results](docs/results/README.md) for historical application scores and zero-model runtime checks. Each record keeps its tested source and conditions; these older windows do not certify a later combined product or a new rc2 binary release.
 
+Two controlled local applications connect browser input to the original Registry
+and PN: [two-principal mock refund approval](examples/approval_workflow/README.md)
+and [external-result quote intake](examples/a2a_quote/README.md). Each opens with
+its actual Viewer capture and includes same-run inspection and reopen commands.
+Business inputs and external results are synthetic; no model or financial service is called.
+
 ## See a multi-agent run
 
 [Controlled managed tools](docs/controlled-managed-tools.md) covers exact result
@@ -183,6 +189,8 @@ same Registry/run. See [usage](docs/guides/usage.md) and the
 | Ten-tool pipeline | Ten deterministic tool transitions, joins and an independent bill validator | [Tool pipeline](examples/tool_pipeline/README.md) |
 | SQL query validation | Fixed SQL candidate, read-only execution and exact ordered results | [SQL example](examples/query_validation/README.md) |
 | Multi-source merge | Original JSON, CSV and real Parquet inputs, conflicts and two output artifacts | [Multi-source example](examples/tool_pipeline/multi_source/README.md) |
+| Two-principal mock refund approval | Distinct native requester and approver, exact input waits and registered mock result | [Refund approval](examples/approval_workflow/README.md) |
+| External-result quote intake | Custom local HTTP fixtures, exact association and one registered quote | [Controlled quote](examples/a2a_quote/README.md) |
 | Bounded synthetic iteration | One to four rounds in one Registry; no model-improvement claim | [Synthetic iteration](examples/rsi_workflows/README.md) |
 | Basic, Codex, DSH and OpenCode | One provider-neutral semantic task through four host surfaces | [Installed adapter task](docs/guides/examples.md) |
 | JB clinical packet | Public clinical sources, document/data analysis and a Designer-authored graph | [Reproduce JB](examples/jb_steering_packet/README.md) |

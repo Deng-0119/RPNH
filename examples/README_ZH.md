@@ -22,6 +22,8 @@
 | 同一个类型化 Petri 网中的十个登记工具 | [原子工具流水线](tool_pipeline/README_ZH.md) | [PN 变体与节点局部图](tool_pipeline/figures/README_ZH.md) | 确定性 HOST 工具；不使用模型 |
 | 只读 SQL 执行与保留行序的精确查询比较 | [SQL 查询校验](query_validation/README_ZH.md) | [原生结果、验收边界与实际 Viewer](query_validation/README_ZH.md) | 固定候选；无模型／provider 调用 |
 | 原 JSON、CSV、Parquet 多输入汇合并形成两件产物 | [多源数据合并](tool_pipeline/multi_source/README_ZH.md) | [冲突、适配验收器与实际 Viewer](tool_pipeline/multi_source/README_ZH.md) | 确定性 HOST 工具；不使用模型 |
+| 不同原生申请者与审批者 | [模拟退款审批](approval_workflow/README_ZH.md) | [实际 PN 与同一运行 Viewer](approval_workflow/README_ZH.md#原运行-petri-net) | 受控本地客户端；无资金或模型调用 |
+| 精确的外部结果接入 | [受控报价](a2a_quote/README_ZH.md) | [实际 PN 与同一运行 Viewer](a2a_quote/README_ZH.md#原运行-petri-net) | 自定义 HTTP 状态 fixture；无外部服务或模型 |
 | 单 Registry 内的有界合成迭代 | [合成迭代](rsi_workflows/README_ZH.md) | [一至四轮与终止绑定声明图](rsi_workflows/figures/README_ZH.md) | 确定性 HOST；不声称模型改进 |
 | 真实临床文档／数据 packet | [JB steering packet](jb_steering_packet/README_ZH.md) | [已采用 workflow Overview](jb_steering_packet/README_ZH.md) | 用户自有精确真实 profile |
 | 真实数值最优控制任务 | [3-DOF 动力下降](three_dof_powered_descent/README_ZH.md) | [已采用 workflow Overview](three_dof_powered_descent/README_ZH.md) | 用户自有精确真实 profile |

@@ -1,0 +1,114 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "registry_v1/run_input_receipt/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "definitions": {
+    "ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "entity_type": {
+          "type": "string"
+        },
+        "logical_id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
+        },
+        "version_id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*:[a-f0-9]{32}$"
+        }
+      },
+      "required": [
+        "entity_type",
+        "logical_id",
+        "version_id"
+      ]
+    }
+  },
+  "properties": {
+    "self_ref": {
+      "$ref": "#/definitions/ref"
+    },
+    "command_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "wait_ref": {
+      "$ref": "#/definitions/ref"
+    },
+    "session_ref": {
+      "$ref": "#/definitions/ref"
+    },
+    "principal_ref": {
+      "$ref": "#/definitions/ref"
+    },
+    "disposition": {
+      "enum": [
+        "accepted",
+        "expired"
+      ]
+    },
+    "resource_ref": {
+      "$ref": "#/definitions/ref"
+    },
+    "token_ref": {
+      "$ref": "#/definitions/ref"
+    },
+    "checkpoint_ref": {
+      "$ref": "#/definitions/ref"
+    },
+    "predecessor_checkpoint_ref": {
+      "$ref": "#/definitions/ref"
+    },
+    "binding_ref": {
+      "$ref": "#/definitions/ref"
+    },
+    "declaration": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "payload": {
+          "type": "string"
+        },
+        "summary": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "schema_id",
+        "payload",
+        "summary"
+      ]
+    },
+    "supersedes_receipt_ref": {
+      "oneOf": [
+        {
+          "$ref": "#/definitions/ref"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "required": [
+    "self_ref",
+    "command_id",
+    "wait_ref",
+    "session_ref",
+    "principal_ref",
+    "disposition",
+    "resource_ref",
+    "token_ref",
+    "checkpoint_ref",
+    "predecessor_checkpoint_ref",
+    "binding_ref",
+    "declaration"
+  ]
+}

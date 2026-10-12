@@ -35,6 +35,11 @@ workspace 或恢复状态的独立所有者。
 
 历史应用评分与零模型 runtime 验证见[精选结果](docs/results/README_ZH.md)。每项保留实际源码与条件；这些旧窗口不认证后续组合产品，也不代表已发布新的 rc2 二进制。
 
+两个受控本地应用把浏览器输入接入原 Registry 与 PN：
+[双主体模拟退款审批](examples/approval_workflow/README_ZH.md)和
+[外部结果接入报价](examples/a2a_quote/README_ZH.md)。每个案例开头都有实际 Viewer
+截图，并提供同一运行的查看与重开命令。业务输入和外部结果均为合成，不调用模型或金融服务。
+
 ## 先看一次多 Agent 运行
 
 下图来自仓库内 `parallel` 案例完成后的真实 Registry 看板。`prepare` 会同时启用两个独立
@@ -161,6 +166,8 @@ Registry／run 中从用户所选切面追加新的执行代次。详见
 | 十步工具流水线 | 十个确定性工具 transition、join 与独立账单验证器 | [工具流水线](examples/tool_pipeline/README_ZH.md) |
 | SQL 查询校验 | 固定 SQL 候选、只读执行与保留行序的精确结果比较 | [SQL 案例](examples/query_validation/README_ZH.md) |
 | 多源数据合并 | 原 JSON、CSV 和真实 Parquet 输入、冲突及两件终态产物 | [多源案例](examples/tool_pipeline/multi_source/README_ZH.md) |
+| 双主体模拟退款审批 | 不同原生申请者与审批者、精确输入等待和登记模拟结果 | [退款审批](examples/approval_workflow/README_ZH.md) |
+| 外部结果接入报价 | 自定义本地 HTTP fixture、精确关联与一次登记报价 | [受控报价](examples/a2a_quote/README_ZH.md) |
 | 有界合成迭代 | 同一 Registry 中的一至四轮流程，不宣称模型能力改进 | [合成迭代](examples/rsi_workflows/README_ZH.md) |
 | Basic、Codex、DSH 与 OpenCode | 同一个 provider-neutral 语义任务经过四种宿主入口 | [安装版适配任务](docs/guides/examples_ZH.md) |
 | JB 临床 packet | 公开临床来源、文档／数据分析和 Designer 自主设计图 | [复现 JB](examples/jb_steering_packet/README_ZH.md) |

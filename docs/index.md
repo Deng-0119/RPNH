@@ -32,6 +32,8 @@ has a corresponding Chinese page.
 | Understand RPNH before trying or integrating it | [Technical report](technical-report.md) |
 | Install core/basic, source or wheel | [Installation](guides/installation.md) |
 | Run native, hybrid, task and installed cross-host examples | [Examples](guides/examples.md) |
+| Approve a mock refund with two distinct native principals | [Controlled refund application](../examples/approval_workflow/README.md) |
+| Admit a synthetic external result to one original run | [External-result quote application](../examples/a2a_quote/README.md) |
 | Export and modify a dependency-complete example | [Reusable examples](guides/examples.md#export-an-example-and-make-it-yours) |
 | Build a runnable v2 package and prepare its receiver | [Native-add package tutorial](guides/package-reuse-example.md) |
 | Understand the source tree and packaged boundaries | [Repository map](guides/repository-layout.md) |

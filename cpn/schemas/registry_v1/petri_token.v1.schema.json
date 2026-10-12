@@ -15,6 +15,7 @@
     "lease_claim": {"type": "object", "additionalProperties": false, "properties": {"lease_identity_ref": {"allOf": [{"$ref": "#/definitions/ref"}, {"properties": {"entity_type": {"enum": ["resource_version/v1", "logical_artifact_slot/v1"]}}}]}, "expected_resource_ref": {"$ref": "#/definitions/nullable_resource_ref"}, "access_mode": {"enum": ["read", "edit", "produce"]}, "staging_place": {"type": "string", "minLength": 1}}, "required": ["lease_identity_ref", "expected_resource_ref", "access_mode"]}
   },
   "properties": {
+    "input_receipt_ref": {"oneOf": [{"$ref": "#/definitions/ref"}, {"type": "null"}]},
     "petri_token_ref": {"$ref": "#/definitions/ref"},
     "net_instance_ref": {"$ref": "#/definitions/ref"},
     "token_id": {"type": "integer", "minimum": 0},

@@ -38,6 +38,7 @@ def publish_batch(event_store: "EventStore", *, task_id: TypedId, branch_id: str
                   workspace_head_advances: Sequence[Mapping[str, object]] = (),
                   expected_registry_ordinal: int | None = None,
                   collaboration_action=None,
+                  run_input_command=None,
                   ) -> tuple[EventEnvelope, ...]:
     """Validate and atomically append one complete Registry transaction."""
     from ..event_store import (
@@ -435,6 +436,8 @@ def publish_batch(event_store: "EventStore", *, task_id: TypedId, branch_id: str
             dependency_root_predecessor),
         workspace_head_advances=workspace_head_commands,
     )
+    if run_input_command is not None:
+        command_material["run_input"] = run_input_command.material()
     if collaboration_action is not None:
         from ..user_collaboration import check_handle
         command_material['user_collaboration'] = check_handle(event_store, collaboration_action).material()
@@ -486,6 +489,10 @@ def publish_batch(event_store: "EventStore", *, task_id: TypedId, branch_id: str
         existing = db.execute(
             "SELECT transaction_id,status,command_json FROM transactions WHERE task_id=? AND idempotency_key=?",
             (str(task_id), idempotency_key)).fetchone()
+        from .run_inputs import validate_commit as validate_run_input
+        validate_run_input(event_store, db, task_id=task_id,
+            idempotency_key=idempotency_key, objects=objects, events=events,
+            action=run_input_command, existing=existing)
         from .user_collaboration import validate_commit as validate_user_collaboration
         validate_user_collaboration(event_store, db, task_id=task_id,
             transaction_id=transaction_id, idempotency_key=idempotency_key,

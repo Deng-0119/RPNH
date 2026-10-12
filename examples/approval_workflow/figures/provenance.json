@@ -1,0 +1,84 @@
+{
+  "example": "approval_workflow",
+  "evidence": "actual controlled local native browser capture; not a static declaration",
+  "source_base": "2b25958526261f88c7b204fe775d38e9ba7ab37e",
+  "source_window": "Historical controlled local capture. The recorded source window identifies its base and changed paths; it is not a byte-level attestation of later public edits.",
+  "model_calls": 0,
+  "captures": [
+    {
+      "state": "waiting",
+      "file": "waiting.png",
+      "mode": "actual_original_registry_petri",
+      "net_ref": {
+        "entity_type": "net_instance/v1",
+        "entity_id": {
+          "kind": "net_instance",
+          "value": "b4284b0fb42d56fc859a27e241b2c35b"
+        },
+        "version_id": {
+          "kind": "net_instance_version",
+          "value": "f9927aa334975eeca75daef68681f9f7"
+        }
+      },
+      "checkpoint_ref": {
+        "entity_type": "marking_checkpoint/v1",
+        "logical_id": "marking_checkpoint:d94299a453bd51ae931c14aa68fb344d",
+        "version_id": "marking_checkpoint_version:1506086b81375bddb9cf908cf27152d8"
+      },
+      "head_ordinal": 225,
+      "writer_epoch": 2,
+      "summary": {
+        "node_count": 7,
+        "transition_count": 2,
+        "place_count": 5,
+        "resource_place_count": 0,
+        "edge_count": 6,
+        "resource_edge_count": 0
+      },
+      "pixel_transformations": [],
+      "sha256": "ed70713b4432276374ec08edab5a4f8fb543d99a60156322f88441274a429625"
+    },
+    {
+      "state": "completed",
+      "file": "completed.png",
+      "mode": "actual_original_registry_petri",
+      "net_ref": {
+        "entity_type": "net_instance/v1",
+        "entity_id": {
+          "kind": "net_instance",
+          "value": "b4284b0fb42d56fc859a27e241b2c35b"
+        },
+        "version_id": {
+          "kind": "net_instance_version",
+          "value": "f9927aa334975eeca75daef68681f9f7"
+        }
+      },
+      "checkpoint_ref": {
+        "entity_type": "marking_checkpoint/v1",
+        "logical_id": "marking_checkpoint:5a0a38c7a82f57139857c24595eb3430",
+        "version_id": "marking_checkpoint_version:35a7e83d3b6e5e7f8da498dbf1aa5212"
+      },
+      "head_ordinal": 324,
+      "writer_epoch": 2,
+      "summary": {
+        "node_count": 7,
+        "transition_count": 2,
+        "place_count": 5,
+        "resource_place_count": 0,
+        "edge_count": 6,
+        "resource_edge_count": 0
+      },
+      "pixel_transformations": [],
+      "sha256": "a681bd3b6ca954b9ed72f3b4aa67fda375b6f2b8c1cd31c96f0eab7635888985"
+    }
+  ],
+  "limits": [
+    "Synthetic local registered outputs only; no external refund, booking or payment effect.",
+    "Original technical checkpoint footer and observation time retained.",
+    "Historical captures do not certify later source or presentation changes.",
+    "Separate controlled browser clients and native actors; not production login or independent external-account verification."
+  ],
+  "capture_window": "approval-final-02",
+  "source_window_base_commit": "10645c1ba2ab255b69c5b34add7bdf77b2fee57b",
+  "public_metadata_note": "Editorially summarized capture provenance; image pixels, recorded references, counts and capture window are unchanged."
+}

@@ -59,6 +59,16 @@ class RegistryTransaction:
         self._expected_registry_ordinal: int | None = None
         from .user_collaboration import routed_action
         self._collaboration_action = routed_action(event_store, idempotency_key)
+        self._run_input_command = None
+
+    def bind_run_input_command(self, command) -> None:
+        from .run_inputs import InputCommand
+        if self._closed or self._run_input_command is not None:
+            raise RuntimeError('run input command already bound or closed')
+        if type(command) is not InputCommand or command.store is not self.event_store:
+            raise TypeError('run input command belongs to another store')
+        command.material()
+        self._run_input_command = command
 
     def bind_collaboration_action(self, action) -> None:
         from .user_collaboration import check_handle
@@ -408,7 +418,8 @@ class RegistryTransaction:
             firing_publications=tuple(self._firing_publications),
             workspace_head_advances=tuple(self._workspace_head_advances),
             expected_registry_ordinal=self._expected_registry_ordinal,
-            collaboration_action=self._collaboration_action)
+            collaboration_action=self._collaboration_action,
+            run_input_command=self._run_input_command)
         self._closed = True
         return result
 

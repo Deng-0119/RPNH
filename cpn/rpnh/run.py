@@ -690,6 +690,7 @@ def resume_run(
     # persisted registration inventory has passed read-only validation.
     bind_operation_registration(registration)
     recovery = None
+    input_checkpoint = None
     checkpoint_recoveries = []
     selected_checkpoint = None
     if checkpoint_version_id is not None:
@@ -751,10 +752,19 @@ def resume_run(
         )
         preflight_kernel, preflight_repository, historical_input = (
             _operation_services(preflight))
-        recovery = classify_registered_operation_recovery(
-            preflight, preflight_kernel, preflight_repository,
-            current_run=preflight_current,
-            historical_input=historical_input)
+        from .registry._event_store.run_inputs import resumable
+        # Only a complete persistent input boundary admits this narrower path.
+        # Active firings continue through the original completion classifier.
+        from .registry.module_execution import active_module_firings
+        if not active_module_firings(preflight, material.executable.net_ref,
+                                     require_current_writer=False):
+            with preflight.event_store.connect() as db:
+                input_checkpoint = resumable(preflight.event_store, db, preflight.task_id)
+        if input_checkpoint is None:
+            recovery = classify_registered_operation_recovery(
+                preflight, preflight_kernel, preflight_repository,
+                current_run=preflight_current,
+                historical_input=historical_input)
     elif preflight_current["status"] == "stopped_by_owner":
         from .registry.module_execution import active_module_firings
         preflight_executable, _structure, _marking = hydrate_module_runtime(
@@ -767,7 +777,23 @@ def resume_run(
         from .registry.errors import ResourceIntegrityFault
         raise ResourceIntegrityFault(
             "run resume requires stopped_by_owner or one recoverable completion")
-    core = _RegistryCore(destination, create=False, catalog=catalog)
+    if input_checkpoint is not None:
+        # Reserve the new writer only after rechecking the exact wait under
+        # the same write lock that advances the Registry fencing epoch.
+        core = _RegistryCore(destination, create=False, catalog=catalog,
+                             writer_epoch=preflight.writer_epoch)
+        with core.event_store._lock, core.event_store.connect() as db:
+            db.execute('BEGIN IMMEDIATE')
+            from .registry._event_store.run_inputs import writer
+            writer(db, preflight.writer_epoch)
+            if resumable(core.event_store, db, core.task_id) != input_checkpoint:
+                raise ValueError('input checkpoint changed before writer acquisition')
+            core.writer_epoch = preflight.writer_epoch + 1
+            db.execute("UPDATE registry_meta SET value=? WHERE key='writer_epoch'",
+                       (str(core.writer_epoch),))
+            db.commit()
+    else:
+        core = _RegistryCore(destination, create=False, catalog=catalog)
     kernel = _ResourceServiceKernel(core)
     current_run_execution_authority(
         core, kernel, expected_model_condition=model_condition)
@@ -870,7 +896,7 @@ def resume_run(
             recovery_manifest_ref=material.recovery_manifest_ref,
             idempotency_key=f"rpnh:resume:writer-{core.writer_epoch}",
         )
-    elif recovery is not None and selected_checkpoint is None:
+    elif (recovery is not None or input_checkpoint is not None) and selected_checkpoint is None:
         recovered_executable, _structure, _marking = hydrate_module_runtime(core)
         from .registry.run_authority import record_recovered_run_entry
         record_recovered_run_entry(

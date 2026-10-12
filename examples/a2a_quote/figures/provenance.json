@@ -1,0 +1,84 @@
+{
+  "example": "a2a_quote",
+  "evidence": "actual controlled local native browser capture; not a static declaration",
+  "source_base": "2b25958526261f88c7b204fe775d38e9ba7ab37e",
+  "source_window": "Historical controlled local capture. The recorded source window identifies its base and changed paths; it is not a byte-level attestation of later public edits.",
+  "model_calls": 0,
+  "captures": [
+    {
+      "state": "waiting",
+      "file": "waiting.png",
+      "mode": "actual_original_registry_petri",
+      "net_ref": {
+        "entity_type": "net_instance/v1",
+        "entity_id": {
+          "kind": "net_instance",
+          "value": "8c0a6e66ff63583797cfa28ddac890c3"
+        },
+        "version_id": {
+          "kind": "net_instance_version",
+          "value": "53ef208afea25d1f93ce162ea2a2d9b2"
+        }
+      },
+      "checkpoint_ref": {
+        "entity_type": "marking_checkpoint/v1",
+        "logical_id": "marking_checkpoint:0ec7b014235257e4ad9c42c40ec65856",
+        "version_id": "marking_checkpoint_version:9cc6289fedc1501892f7405fc42a1383"
+      },
+      "head_ordinal": 111,
+      "writer_epoch": 2,
+      "summary": {
+        "node_count": 4,
+        "transition_count": 1,
+        "place_count": 3,
+        "resource_place_count": 0,
+        "edge_count": 3,
+        "resource_edge_count": 0
+      },
+      "pixel_transformations": [],
+      "sha256": "44780363d15803c616dcfab45e2dd8bd32032f8c015c4679b327914ca8b2f731"
+    },
+    {
+      "state": "completed",
+      "file": "completed.png",
+      "mode": "actual_original_registry_petri",
+      "net_ref": {
+        "entity_type": "net_instance/v1",
+        "entity_id": {
+          "kind": "net_instance",
+          "value": "8c0a6e66ff63583797cfa28ddac890c3"
+        },
+        "version_id": {
+          "kind": "net_instance_version",
+          "value": "53ef208afea25d1f93ce162ea2a2d9b2"
+        }
+      },
+      "checkpoint_ref": {
+        "entity_type": "marking_checkpoint/v1",
+        "logical_id": "marking_checkpoint:c01d620f885c5fcd9268f98ec5670a72",
+        "version_id": "marking_checkpoint_version:79a7a176fa345219a5a9249d6a6540b9"
+      },
+      "head_ordinal": 210,
+      "writer_epoch": 2,
+      "summary": {
+        "node_count": 4,
+        "transition_count": 1,
+        "place_count": 3,
+        "resource_place_count": 0,
+        "edge_count": 3,
+        "resource_edge_count": 0
+      },
+      "pixel_transformations": [],
+      "sha256": "5346b3672f8e9b71d958d10e9a2e6805524a7917f2b8a44a3a600df4805a548a"
+    }
+  ],
+  "limits": [
+    "Synthetic local registered outputs only; no external refund, booking or payment effect.",
+    "Original technical checkpoint footer and observation time retained.",
+    "Historical captures do not certify later source or presentation changes.",
+    "Custom Python HTTP status fixtures; no A2A interoperability, OID4VP or cryptographic verification tested."
+  ],
+  "capture_window": "a2a-final-01",
+  "source_window_base_commit": "10645c1ba2ab255b69c5b34add7bdf77b2fee57b",
+  "public_metadata_note": "Editorially summarized capture provenance; image pixels, recorded references, counts and capture window are unchanged."
+}

@@ -387,3 +387,21 @@ locator 或 payload。范围/capture 不匹配时拒绝；披露资格改变会�
 披露资格改变清除详情后仍保留该锚。关闭或切换范围才清除身份锚。所有标识字段必须为
 字符串，拒绝数组等可强制转换的值。opt-in HTTP 响应边界在披露前交叉核验 frame
 两层 source、所选 net/checkpoint/C、capture H/E 与 token 的库所位置。
+
+## 受控输入示例
+
+[退款审批](../../examples/approval_workflow/README_ZH.md)与
+[外部结果接入报价](../../examples/a2a_quote/README_ZH.md)把受控客户端页面连接到
+原只读 Viewer。选择 **PetriNet** 可显示全部库所、转换与弧；时间轴只选择
+原保存检查点，不重复执行。
+
+```bash
+python -m examples.view_input_declaration approval_workflow
+python -m examples.view_input_declaration a2a_quote
+python -m examples.view_input_declaration approval_workflow --run-dir /path/to/refund-demo/run
+python -m examples.view_input_declaration a2a_quote --run-dir /path/to/quote-demo/run
+```
+
+未指定 `--run-dir` 时明确标为 `initial_configured`，只展示声明，不是运行证据。
+`--json` 输出选定投影而不启动 HTTP。实际等待／完成截图与历史捕获边界见各示例。外部响应是本地合成 fixture；
+输入准入与登记完成使用原生 RPNH 操作。

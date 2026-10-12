@@ -55,6 +55,8 @@
     }
   },
   "properties": {
+    "input_receipt_ref": {"oneOf": [{"$ref": "#/definitions/ref"}, {"type": "null"}]},
+    "input_wait_ref": {"$ref": "#/definitions/ref"},
     "owner_command_ref": {"$ref": "#/definitions/ref"},
     "owner_command_result_ref": {"$ref": "#/definitions/ref"},
     "marking_checkpoint_ref": {"$ref": "#/definitions/marking_checkpoint_ref"},

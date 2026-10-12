@@ -28,6 +28,8 @@ metadata:
 | 首次了解 RPNH，再试用或集成 | [技术报告](technical-report_ZH.md) |
 | 安装 core/basic、源码或 wheel | [安装](guides/installation_ZH.md) |
 | 运行原生、混合、任务与安装版跨宿主案例 | [案例](guides/examples_ZH.md) |
+| 由两个不同原生主体处理模拟退款 | [受控退款应用](../examples/approval_workflow/README_ZH.md) |
+| 将合成外部结果接入同一原生运行 | [外部结果接入报价应用](../examples/a2a_quote/README_ZH.md) |
 | 导出包含完整依赖的案例并修改 | [可复用案例](guides/examples_ZH.md#导出案例并改成自己的应用) |
 | 构建可运行 v2 包并准备接收端 | [原生加法分享包教程](guides/package-reuse-example_ZH.md) |
 | 理解源码目录与安装包边界 | [仓库目录图](guides/repository-layout_ZH.md) |

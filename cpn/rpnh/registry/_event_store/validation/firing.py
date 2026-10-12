@@ -1196,12 +1196,14 @@ def validate_firing_event(context, pending):
             isinstance(structural_predecessor, Mapping)
             and structural_predecessor.get("logical_id")
             == str(net_instance_id))
+        input_net_matches = (net_instance_id is None and task_round_id is None
+            and "input_wait_ref" in payload)
         owner_net_matches = (net_instance_id is None and task_round_id is None
             and len(owner_predecessors) == 1)
         if (not isinstance(checkpoint_ref, Mapping)
                 or not isinstance(net_ref, Mapping)
                 or not (transaction_net_matches
-                        or structural_net_matches or owner_net_matches)
+                        or structural_net_matches or owner_net_matches or input_net_matches)
                 or not exact_ref_exists(
                     checkpoint_ref, "marking_checkpoint/v1")
                 or not exact_ref_exists(net_ref, "net_instance/v1")):
@@ -1245,11 +1247,13 @@ def validate_firing_event(context, pending):
                 raise RegistryConflict(
                     "checkpoint reentry provenance tuple is incomplete")
         previous = payload.get("previous_checkpoint_ref")
-        for field in ("owner_command_ref", "owner_command_result_ref"):
+        for field in ("owner_command_ref", "owner_command_result_ref",
+                      "input_wait_ref", "input_receipt_ref"):
             if checkpoint.get(field) != payload.get(field):
                 raise RegistryConflict("owner checkpoint event differs from immutable command refs")
         if previous is not None:
-            marking_net_id = str(net_instance_id)
+            marking_net_id = (str(net_ref["logical_id"]) if input_net_matches
+                              else str(net_instance_id))
             if structural_predecessors or repair_predecessors or owner_predecessors:
                 if not isinstance(structural_predecessor, Mapping):
                     raise RegistryConflict(
@@ -1507,6 +1511,21 @@ def validate_firing_event(context, pending):
             elif owner_predecessors:
                 if delta_ref is not None or transition_refs != [] or matching_repairs:
                     raise RegistryConflict("owner command checkpoint is not firing settlement or repair")
+            elif "input_wait_ref" in payload:
+                # The native input commit guard has already revalidated the
+                # complete command under this same BEGIN IMMEDIATE snapshot.
+                # This is an input boundary, never a firing settlement.
+                wait_ref = payload["input_wait_ref"]
+                receipt_ref = payload.get("input_receipt_ref")
+                witness_ref = receipt_ref or wait_ref
+                kind = "run_input_receipt/v1" if receipt_ref else "run_input_wait/v1"
+                witness = version_metadata(str(witness_ref.get("version_id", "")), kind)
+                if (witness is None or str(witness_ref.get("version_id", "")) not in new_by_version
+                        or witness.get("checkpoint_ref") != checkpoint_ref
+                        or witness.get("predecessor_checkpoint_ref") != previous
+                        or (receipt_ref is not None and witness.get("wait_ref") != wait_ref)
+                        or delta_ref is not None or transition_refs != []):
+                    raise RegistryConflict("input checkpoint lacks its atomic native witness")
             elif matching_repairs:
                 if len(matching_repairs) != 1:
                     raise RegistryConflict(
