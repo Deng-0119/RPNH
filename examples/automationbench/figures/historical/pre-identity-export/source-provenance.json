@@ -1,0 +1,43 @@
+{
+  "example": "automationbench",
+  "title": "AutomationBench native actor: initial declaration",
+  "frame_sha256": "3041305144052f0bc686a42d35683456b3531e81ab2bf644003ff9aaa6765ec2",
+  "source_commit": "270b76012a571286d303047547bd93cfecaa19c5",
+  "scope": "Initial native actor declaration using the shipped synthetic acceptance prompt and plugin factory schemas. Disconnected host bindings; no business run or historical score evidence.",
+  "summary": {
+    "node_count": 3,
+    "transition_count": 1,
+    "place_count": 2,
+    "resource_place_count": 0,
+    "edge_count": 3,
+    "resource_edge_count": 0
+  },
+  "managed_tools": {
+    "executor": [
+      "api_search",
+      "api_fetch",
+      "base64_encode"
+    ]
+  },
+  "sources": [
+    {
+      "path": "examples/automationbench/src/rpnh_ab/native.py",
+      "sha256": "7f244f7527fc3670a7f3bdc324d751be3791e11b5409a8f2f8fa7a79ae02e58c"
+    },
+    {
+      "path": "examples/automationbench/src/rpnh_ab/plugin.py",
+      "sha256": "e67842010b003ecabfe3509e409735b622f68c8c89657cc3a9745a2e1acc04be"
+    },
+    {
+      "path": "examples/automationbench/src/rpnh_ab/offline_fixture.py",
+      "sha256": "49fd80f5116d1db471d401368851e719de243190203280878a03ef4c0838edeb"
+    }
+  ],
+  "official_viewer_export": {
+    "image": "initial-petri.svg",
+    "provenance": "viewer-export-provenance.json",
+    "sha256": "38ed53e8246004556f9d8251ab242be5829ef4df3683fe0fa187def91f2955a4",
+    "view": "PetriNet",
+    "runtime_evidence": false
+  }
+}

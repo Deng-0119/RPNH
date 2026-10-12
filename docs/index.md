@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: en
   counterpart: index_ZH.md
-  revision: "2026-10-11.1"
+  revision: "2026-10-12.4"
   status: maintained
   basis: "core; adapter differences explicitly labelled"
 ---
@@ -32,6 +32,7 @@ has a corresponding Chinese page.
 | Understand RPNH before trying or integrating it | [Technical report](technical-report.md) |
 | Install core/basic, source or wheel | [Installation](guides/installation.md) |
 | Run native, hybrid, task and installed cross-host examples | [Examples](guides/examples.md) |
+| Co-build agent input-lineage and reconciliation contracts | [Agent-network co-building](../examples/user_collaboration/agent_cobuild/README.md) |
 | Approve a mock refund with two distinct native principals | [Controlled refund application](../examples/approval_workflow/README.md) |
 | Admit a synthetic external result to one original run | [External-result quote application](../examples/a2a_quote/README.md) |
 | Export and modify a dependency-complete example | [Reusable examples](guides/examples.md#export-an-example-and-make-it-yours) |
@@ -80,7 +81,9 @@ has a corresponding Chinese page.
 | Author ordinary descendants and independent copies of selective transplants | [Transplant descendants](reference/plain-transplant-descendants.md) |
 | Review historical scores, exact sources and unrun scope | [Curated results](results/README.md) |
 
-The [native billing collaboration](../examples/user_collaboration/native_billing/README.md) connects recorded contributions to the original read-only Viewer. The [technical report](technical-report.md#native-input-and-collaboration) relates its evidence to the accepted approval and external-result applications.
+The current collaboration entry is [agent-network co-building](../examples/user_collaboration/agent_cobuild/README.md). Two native task-agent roles, `curator.run` and `auditor.run`, use stock `AgentStage`/default `AgentLoop` in an ordinary Module assembled from two stock single-agent declarations, with `curator.result → auditor.request`. Deterministic source programs from two controlled original principals strengthen the curator input-lineage contract and auditor reconciliation contract. The original HOST reviews exact revisions, advances a protected Branch sequentially and enables owner adoption before target execution.
+
+Source programs, external control actions and target agents remain separate; this single-parent chain does not imply automatic same-base merging. A `local_process` scripted driver computes from actual inputs and tool returns. This demonstrates structure and protocol using registered task agents. It makes no live-model or cognition claim; execution results, artifacts and Viewer evidence are reported on the example page.
 
 ## Reading the reference
 Declaration contracts, advanced trusted-host interfaces and private implementation modules are explicitly separated. Source paths in each page are repository-relative navigation aids, not independent installation instructions. Optional APIs are labelled by capability; their availability must be checked in the selected source/artifact. A generated page does not grant SDK stability.

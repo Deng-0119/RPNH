@@ -1,7 +1,7 @@
 {
   "example": "harnessaudit_office",
   "title": "HarnessAudit Office off-t1: initial declaration",
-  "frame_sha256": "ec345796758a70d5f6d1f19ebc7f5930d83eb0b4922448b55d29b2c213e5301b",
+  "frame_sha256": "8ea2600347bd1d7abda0af708e488ec0e4ce1af6d46723ef29a29be98b7e259d",
   "source_commit": "270b76012a571286d303047547bd93cfecaa19c5",
   "scope": "Initial off-t1 business workflow from pinned public task roles: coordinator plan, two specialists, coordinator finalization. Real public tool bindings; disconnected host configuration. No run, score or tool dispatch.",
   "summary": {
@@ -115,6 +115,12 @@
     "provenance": "viewer-export-provenance.json",
     "sha256": "393902d9e01a43220dd721c2301bcd80de610fc10d4832fdebbb1e3fd2c4cb1c",
     "view": "PetriNet",
+    "runtime_evidence": false,
+    "source_frame": "historical/pre-identity-export/declaration-frame.json"
+  },
+  "identity_export": {
+    "provenance": "identity-export-provenance.json",
+    "scope": "declaration_only",
     "runtime_evidence": false
   }
 }

@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: en
   counterpart: RPNH_VS_CODEX_ZH.md
-  revision: "2026-10-12.2"
+  revision: "2026-10-12.4"
   status: source-reviewed-pre-release
 ---
 
@@ -129,12 +129,14 @@ tokens, workspace, or final-result authority.
 - This standalone repository is authoritative for the reusable harness; a
   historical experiment workspace is not a runtime dependency.
 
-## Inspect the authority in runnable examples
+## Inspect authority through examples
 
-The same execution boundary is visible without a live model. [Mock approval](../examples/approval_workflow/README.md) and [external-result quote intake](../examples/a2a_quote/README.md) bind controlled input to original Registry waits. [Native billing collaboration](../examples/user_collaboration/native_billing/README.md) records two sequential contributions, owner review/Branch advances and explicit adoption before business execution.
+The current collaboration entry is [agent-network co-building](../examples/user_collaboration/agent_cobuild/README.md). Two native task-agent roles, `curator.run` and `auditor.run`, use stock `AgentStage`/default `AgentLoop` in an ordinary Module assembled from two stock single-agent declarations, with `curator.result → auditor.request`. Deterministic source programs from two controlled original principals strengthen the curator input-lineage contract and auditor reconciliation contract. The original HOST reviews exact revisions, advances a protected Branch sequentially and enables owner adoption before target execution.
 
-These examples use the official read-only Viewer for the actual PN and original references. Contribution colors mean recorded proposers, with adoption shown separately; they do not authenticate authors or attribute baseline nodes. The interfaces add observation, not frontend execution ownership. The [technical report](technical-report.md#native-input-and-collaboration) connects their limits and evidence; the example pages contain the actual images, source windows and callable entries.
+Source programs, external control actions and target agents remain separate; this single-parent chain does not imply automatic same-base merging. A `local_process` scripted driver computes from actual inputs and tool returns. This demonstrates structure and protocol using registered task agents. It makes no live-model or cognition claim; execution results, artifacts and Viewer evidence are reported on the example page.
 
-![Actual native multi-user billing PN panorama, with ten settled business firings.](../examples/user_collaboration/native_billing/figures/panorama.png)
+[Mock approval](../examples/approval_workflow/README.md) and [external-result quote intake](../examples/a2a_quote/README.md) are native-input/authority fixtures, not evidence of real A2A/OID4VP interoperability. [Historical route](../examples/user_collaboration/README.md#historical-route-planning-mechanism-evidence) and [native billing](../examples/user_collaboration/native_billing/README.md) preserve original business-tool nets, versions, results, images and failures. Their operations and controlled authors are not task agents and do not validate the current example.
 
-The original capture shows all 28 nodes and 29 arcs of the adopted net. Original Registry readback confirms two source proposals, ten business settlements, twelve resources and one complete terminal, with three `[0,0]` model counters and the exact 2.000 kWh / CNY 1.70 report. [The example](../examples/user_collaboration/native_billing/README.md) includes each contributor and separate owner adoption; [provenance](../examples/user_collaboration/native_billing/figures/provenance.json) keeps execution and capture source windows distinct.
+Overview is a read-only agent projection, not a reduced executable PN. `registered_agent_binding` traces to the exact executable binding and agent reference; `declared_llm_executor` establishes a declaration only, not execution; `explicit_host_annotation` is an unconfirmed display annotation and cannot establish agent identity. Roles are grouped through explicit scoped identity, not equal names, model names or user accounts. An edge retains original path provenance and denotes a structural path to the next agent, not observed firing order or proof that a guard passes or an all-input join is satisfied. The full PetriNet and owning Registry retain authority, guards, joins and actual loop/turn/action, tool and product references. Managed children/actions are not additional PN transitions; independent child Registries remain independent.
+
+Contribution colors identify recorded proposers, with adoption shown separately; they do not authenticate authors or attribute baseline nodes. Interfaces add observation while execution authority remains in the original system. The [technical report](technical-report.md#agent-task-networks-and-read-only-projections) explains these layers and historical limits.

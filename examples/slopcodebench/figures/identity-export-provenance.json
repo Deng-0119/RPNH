@@ -1,0 +1,35 @@
+{
+  "schema_version": "rpnh/declaration_identity_export/v1",
+  "example": "slopcodebench",
+  "source_revision": "18242a8959ba440d5815d5b900d4803da6250e74",
+  "source_scope": "current source builders plus uncommitted identity-export helper; not a benchmark run",
+  "generator": "examples/_support/declaration_identity.py",
+  "reproduce": "compile_example_declaration(example, public_task=retained_public_input_if_HarnessAudit), then export_declaration_identity(historical_frame, compiled)",
+  "identity_sources": [
+    "examples/slopcodebench/pilot.py",
+    "examples/slopcodebench/plugin.py"
+  ],
+  "binding_contract_source": "cpn/rpnh/agent_tasks.py::agent_task_registration",
+  "semantic_identity_source": "cpn/rpnh/agent_workflows.py::build_agent_workflow_module",
+  "historical_frame": "historical/pre-identity-export/declaration-frame.json",
+  "historical_provenance": "historical/pre-identity-export/source-provenance.json",
+  "runtime_evidence": false,
+  "provider_or_model_calls": 0,
+  "benchmark_runs": 0,
+  "checks": [
+    "Original source and frame bytes match the existing source-provenance identities.",
+    "Fresh compiled public nodes, ports, edges and boundary rules equal the historical frame."
+  ],
+  "transformations": [
+    "Original frame and source-provenance copied byte for byte to historical path.",
+    "Add only compiler-derived transport and semantic_node_id; no prompts or execution config exported.",
+    "Populate declared_llm_executor inventory; agent_ref and executable_binding_ref remain null.",
+    "Mark declaration-only provenance in source and coverage; preserve all original PN paths and boundary rules.",
+    "Update existing frame identity in source-provenance; keep old SVG and viewer-export-provenance bytes and link them to the historical frame."
+  ],
+  "limits": [
+    "No runtime binding or execution evidence is created.",
+    "Managed tool registrations are not re-exported or dispatched; their original inventory remains historical provenance.",
+    "Existing initial-petri.svg is the previous PetriNet export, not a new Agent Overview screenshot."
+  ]
+}

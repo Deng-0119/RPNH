@@ -32,7 +32,9 @@ Explicit opt-in [author/graph interfaces](docs/reference/declarations.md), [Work
 
 Offline preparation and inspection are available through [portable package preview and exact local locks](docs/guides/portable-packages.md), [HOST declaration diagnostics](docs/guides/host-readiness.md), and [checkpoint comparison](docs/guides/checkpoint-comparison.md). Package commands use the installed `rpnh` entry; the HOST diagnostic is an explicit Python API. These interfaces inspect materials and recorded facts without granting execution authority.
 
-[Three simulated users build one task network together](examples/user_collaboration/README.md): inspect the adopted 24-batch business Petri net in the original Viewer capture, then follow the recorded configuration contributions and [measured outcomes and tradeoffs](docs/results/user-collaboration-20261012/README.md).
+The current collaboration entry is [agent-network co-building](examples/user_collaboration/agent_cobuild/README.md). Two native task-agent roles, `curator.run` and `auditor.run`, use stock `AgentStage`/default `AgentLoop` in an ordinary Module assembled from two stock single-agent declarations, with `curator.result → auditor.request`. Deterministic source programs from two controlled original principals strengthen the curator input-lineage contract and auditor reconciliation contract. The original HOST reviews exact revisions, advances a protected Branch sequentially and enables owner adoption before target execution.
+
+Source programs, external control actions and target agents remain separate; this single-parent chain does not imply automatic same-base merging. A `local_process` scripted driver computes from actual inputs and tool returns. This demonstrates structure and protocol using registered task agents. It makes no live-model or cognition claim; execution results, artifacts and Viewer evidence are reported on the example page.
 
 See [curated results](docs/results/README.md) for historical application scores and zero-model runtime checks. Each record keeps its tested source and conditions; these older windows do not certify a later combined product or a new rc2 binary release.
 
@@ -42,7 +44,7 @@ and [external-result quote intake](examples/a2a_quote/README.md). Each opens wit
 its actual Viewer capture and includes same-run inspection and reopen commands.
 Business inputs and external results are synthetic; no model or financial service is called.
 
-[Native billing collaboration](examples/user_collaboration/native_billing/README.md) follows two recorded contributions into one adopted ten-step PN. The original Registry remains the execution and evidence authority; the example includes the verified result, actual Viewer captures and commands to run and inspect it.
+[Historical route](examples/user_collaboration/README.md#historical-route-planning-mechanism-evidence) and [native billing](examples/user_collaboration/native_billing/README.md) retain original 74/10-operation business-tool nets, versions, results, images, contribution/adoption receipts and failures. Their tool operations and authors are not task agents; historical results do not validate the current co-building example.
 
 ## See a multi-agent run
 
@@ -72,6 +74,8 @@ shows the transitions, handoff places, fan-out arcs and all-input join used by
 execution:
 
 [![Actual RPNH parallel PetriNet projection](examples/workflow_patterns/assets/parallel-petrinet.png)](examples/workflow_patterns/assets/parallel-petrinet.png)
+
+Overview identities come from exact registered bindings or clearly marked declarations; an external display annotation does not confirm an agent. Overview edges retain structural path provenance. The full PN still determines guards and all-input joins; a path alone does not prove firing order.
 
 These are real graph projections with aggregate execution state and controls;
 only run-specific checkpoint identities and local timestamps were removed from
@@ -180,29 +184,32 @@ same Registry/run. See [usage](docs/guides/usage.md) and the
 
 ## Example catalog
 
-| Example | What it demonstrates | Instructions |
-|---|---|---|
-| Native calculation | Local plugin, registered input/output and zero model calls | [Native tool](examples/native_plugin/README.md) |
-| Model–program–model calculation | Agent nodes around a native summary operation | [Hybrid summary](examples/hybrid_summary/README.md) |
-| Serial, parallel, document and long workflows | Multi-Agent topology, bounded parallelism, joins and timeline checkpoints | [Workflow gallery](examples/workflow_patterns/README.md) |
-| Independent tasks | Separate child Registries controlled from one main session | [Task workspace](examples/task_workspace/README.md) |
-| Native Petri-net operations | Definition composition and live whole-net replacement | [Net operations](examples/net_operations/README.md) |
-| Runnable v2 package | Explicit receiver preparation, binding and native-add execution | [Package reuse](examples/package_reuse/README.md) |
-| Ten-tool pipeline | Ten deterministic tool transitions, joins and an independent bill validator | [Tool pipeline](examples/tool_pipeline/README.md) |
-| SQL query validation | Fixed SQL candidate, read-only execution and exact ordered results | [SQL example](examples/query_validation/README.md) |
-| Multi-source merge | Original JSON, CSV and real Parquet inputs, conflicts and two output artifacts | [Multi-source example](examples/tool_pipeline/multi_source/README.md) |
-| Two-principal mock refund approval | Distinct native requester and approver, exact input waits and registered mock result | [Refund approval](examples/approval_workflow/README.md) |
-| External-result quote intake | Custom local HTTP fixtures, exact association and one registered quote | [Controlled quote](examples/a2a_quote/README.md) |
-| Bounded synthetic iteration | One to four rounds in one Registry; no model-improvement claim | [Synthetic iteration](examples/rsi_workflows/README.md) |
-| Basic, Codex, DSH and OpenCode | One provider-neutral semantic task through four host surfaces | [Installed adapter task](docs/guides/examples.md) |
-| JB clinical packet | Public clinical sources, document/data analysis and a Designer-authored graph | [Reproduce JB](examples/jb_steering_packet/README.md) |
-| 3-DOF powered descent | Numerical implementation, independent validation and a Designer-authored graph | [Reproduce 3-DOF](examples/three_dof_powered_descent/README.md) |
-| HarnessAudit Office benchmark | Native agent teams, registered business tools, original scoring and retained results | [Office example](examples/harnessaudit_office/README.md) |
-| RRSI v0.6 Policy evolution | Two-round Policy evolution with independent child Registries and score/cost selection | [RRSI example](examples/rrsi_v06/README.md) |
-| AutomationBench public workflows | Historical pilot, freeze04 first18 and separate repair4 with condition-specific scores and limits | [AutomationBench example](examples/automationbench/README.md) |
-| ERP-Bench | Managed ERP actions with separately retained original-verifier results | [ERP example](examples/erp_bench/README.md) |
-| SlopCodeBench pilot | Native Session commands and a bounded coding-task prefix | [Coding pilot](examples/slopcodebench/README.md) |
-| Example evidence | Read-only checks of evidence files and source identities | [Evidence contract](examples/example_validation/README.md) |
+Choose by modeled object: agent workflows describe task responsibilities and handoffs; domain algorithms and business systems are tools or external environments. ERP, 3-DOF, JB, HarnessAudit, AutomationBench, SlopCodeBench and RRSI remain genuine agent/role workflows. RRSI custom registered-host role PNs can have genuine agent bindings without using stock AgentLoop. Pure-tool pipelines, native-input gates, author principals and annotations do not become agents merely through Registry lineage.
+
+| Category | Example | What it demonstrates | Instructions |
+| --- |---|---|---|
+| Agent/role workflow | Agent-network co-building | Curator → auditor native AgentLoop roles, contract contributions and original HOST adoption; scripted protocol boundary | [Co-building example](examples/user_collaboration/agent_cobuild/README.md) |
+| Tool/SDK fixture | Native calculation | Local plugin, registered input/output and zero model calls | [Native tool](examples/native_plugin/README.md) |
+| Agent/role workflow | Model–program–model calculation | Agent nodes around a native summary operation | [Hybrid summary](examples/hybrid_summary/README.md) |
+| Agent/role workflow | Serial, parallel, document and long workflows | Multi-Agent topology, bounded parallelism, joins and timeline checkpoints | [Workflow gallery](examples/workflow_patterns/README.md) |
+| Agent/role workflow | Independent tasks | Separate child Registries controlled from one main session | [Task workspace](examples/task_workspace/README.md) |
+| Agent / definition-only | Native Petri-net operations | Definition composition and live whole-net replacement | [Net operations](examples/net_operations/README.md) |
+| Tool/SDK fixture | Runnable v2 package | Explicit receiver preparation, binding and native-add execution | [Package reuse](examples/package_reuse/README.md) |
+| Tool/SDK fixture | Ten-tool pipeline | Ten deterministic tool transitions, joins and an independent bill validator | [Tool pipeline](examples/tool_pipeline/README.md) |
+| Tool/SDK fixture | SQL query validation | Fixed SQL candidate, read-only execution and exact ordered results | [SQL example](examples/query_validation/README.md) |
+| Tool/SDK fixture | Multi-source merge | Original JSON, CSV and real Parquet inputs, conflicts and two output artifacts | [Multi-source example](examples/tool_pipeline/multi_source/README.md) |
+| Native-input fixture | Two-principal mock refund approval | Distinct native requester and approver, exact input waits and registered mock result | [Refund approval](examples/approval_workflow/README.md) |
+| Native-input fixture | External-result quote intake | Custom local HTTP fixtures, exact association and one registered quote | [Controlled quote](examples/a2a_quote/README.md) |
+| Tool/SDK fixture | Bounded synthetic iteration | One to four rounds in one Registry; no model-improvement claim | [Synthetic iteration](examples/rsi_workflows/README.md) |
+| Agent/role workflow | Basic, Codex, DSH and OpenCode | One provider-neutral semantic task through four host surfaces | [Installed adapter task](docs/guides/examples.md) |
+| Agent/role workflow | JB clinical packet | Public clinical sources, document/data analysis and a Designer-authored graph | [Reproduce JB](examples/jb_steering_packet/README.md) |
+| Agent/role workflow | 3-DOF powered descent | Numerical implementation, independent validation and a Designer-authored graph | [Reproduce 3-DOF](examples/three_dof_powered_descent/README.md) |
+| Agent/role workflow | HarnessAudit Office benchmark | Native agent teams, registered business tools, original scoring and retained results | [Office example](examples/harnessaudit_office/README.md) |
+| Agent/role workflow | RRSI v0.6 Policy evolution | Two-round Policy evolution with independent child Registries and score/cost selection | [RRSI example](examples/rrsi_v06/README.md) |
+| Agent/role workflow | AutomationBench public workflows | Historical pilot, freeze04 first18 and separate repair4 with condition-specific scores and limits | [AutomationBench example](examples/automationbench/README.md) |
+| Agent/role workflow | ERP-Bench | Managed ERP actions with separately retained original-verifier results | [ERP example](examples/erp_bench/README.md) |
+| Agent/role workflow | SlopCodeBench pilot | Native Session commands and a bounded coding-task prefix | [Coding pilot](examples/slopcodebench/README.md) |
+| Tool/SDK fixture | Example evidence | Read-only checks of evidence files and source identities | [Evidence contract](examples/example_validation/README.md) |
 
 Execution-gallery pages identify the origin of their actual dashboard images.
 Benchmark examples supply scored records and viewer commands for newly

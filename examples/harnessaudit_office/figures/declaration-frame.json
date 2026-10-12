@@ -3,14 +3,24 @@
   "source": {
     "mode": "initial_configured",
     "task_label": "HarnessAudit Office off-t1: initial declaration",
-    "verified_head_ordinal": null
+    "verified_head_ordinal": null,
+    "identity_export": {
+      "scope": "declaration_only",
+      "provenance": "identity-export-provenance.json",
+      "runtime_evidence": false
+    }
   },
   "net": {
     "schema_version": "rpnh/net_view/v1",
     "source": {
       "mode": "initial_configured",
       "task_label": "HarnessAudit Office off-t1: initial declaration",
-      "verified_head_ordinal": null
+      "verified_head_ordinal": null,
+      "identity_export": {
+        "scope": "declaration_only",
+        "provenance": "identity-export-provenance.json",
+        "runtime_evidence": false
+      }
     },
     "summary": {
       "node_count": 13,
@@ -118,7 +128,15 @@
           "team.result",
           "team.interrupt__hub_finalize__hub_finalize__specialist_1_report",
           "team.interrupt__hub_finalize__hub_finalize__specialist_2_report"
-        ]
+        ],
+        "executor_declaration": {
+          "contracts": {
+            "transport": "llm"
+          }
+        },
+        "config": {
+          "semantic_node_id": "hub_finalize"
+        }
       },
       {
         "id": "team.hub_plan",
@@ -135,7 +153,15 @@
         "outputs": [
           "team.output__hub_plan__plan",
           "team.interrupt__hub_plan__hub_plan__request"
-        ]
+        ],
+        "executor_declaration": {
+          "contracts": {
+            "transport": "llm"
+          }
+        },
+        "config": {
+          "semantic_node_id": "hub_plan"
+        }
       },
       {
         "id": "team.ingress__hub_plan__request",
@@ -162,7 +188,15 @@
         "outputs": [
           "team.output__specialist_1__report",
           "team.interrupt__specialist_1__specialist_1__plan"
-        ]
+        ],
+        "executor_declaration": {
+          "contracts": {
+            "transport": "llm"
+          }
+        },
+        "config": {
+          "semantic_node_id": "specialist_1"
+        }
       },
       {
         "id": "team.specialist_2",
@@ -179,7 +213,15 @@
         "outputs": [
           "team.output__specialist_2__report",
           "team.interrupt__specialist_2__specialist_2__plan"
-        ]
+        ],
+        "executor_declaration": {
+          "contracts": {
+            "transport": "llm"
+          }
+        },
+        "config": {
+          "semantic_node_id": "specialist_2"
+        }
       }
     ],
     "edges": [
@@ -594,9 +636,50 @@
   "coverage": {
     "history": "unsupported",
     "firings": "not_provided",
-    "agent_nodes": "not_provided",
+    "agent_nodes": "declared_llm_executor_only",
     "terminal_evidence": "not_provided"
   },
   "change": {},
-  "agent_nodes": []
+  "agent_nodes": [
+    {
+      "transition_id": "team.hub_finalize",
+      "source": "declared_llm_executor",
+      "semantic_group": {
+        "component": "team",
+        "semantic_node_id": "hub_finalize"
+      },
+      "agent_ref": null,
+      "executable_binding_ref": null
+    },
+    {
+      "transition_id": "team.hub_plan",
+      "source": "declared_llm_executor",
+      "semantic_group": {
+        "component": "team",
+        "semantic_node_id": "hub_plan"
+      },
+      "agent_ref": null,
+      "executable_binding_ref": null
+    },
+    {
+      "transition_id": "team.specialist_1",
+      "source": "declared_llm_executor",
+      "semantic_group": {
+        "component": "team",
+        "semantic_node_id": "specialist_1"
+      },
+      "agent_ref": null,
+      "executable_binding_ref": null
+    },
+    {
+      "transition_id": "team.specialist_2",
+      "source": "declared_llm_executor",
+      "semantic_group": {
+        "component": "team",
+        "semantic_node_id": "specialist_2"
+      },
+      "agent_ref": null,
+      "executable_binding_ref": null
+    }
+  ]
 }

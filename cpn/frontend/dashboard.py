@@ -274,15 +274,14 @@ class RegistryDashboard:
                 records[tid].append(item)
         return records
 
-    def _agent_nodes(self, core, observation, upper, presentation):
+    def _agent_nodes(self, core, observation, upper):
         """Read existing Agent bindings/LLM contracts; never guess from names.
 
-        A trusted host may explicitly map an externally-owned Agent anchor via
-        the topology-matched presentation file. Such mappings remain annotations,
-        not Registry execution authority. No code or prompt is loaded from them.
+        Presentation annotations do not establish an Agent identity. Registered
+        custom roles remain eligible through their exact executable binding;
+        an LLM contract alone is disclosed as a declaration, not a runtime Agent.
         """
         candidates = {n['id']: n for n in observation['net']['nodes']}
-        mapped = set(presentation.get('agent_nodes', ()))
         agents = []
         for binding in observation['transition_bindings']:
             tid = binding['transition_id']
@@ -295,8 +294,7 @@ class RegistryDashboard:
             agent_ref = value.get('agent_ref')
             contract = candidates[tid].get('executor_declaration', {}).get('contracts', {})
             source = ('registered_agent_binding' if agent_ref is not None else
-                      'declared_llm_executor' if contract.get('transport') == 'llm' else
-                      'explicit_host_annotation' if tid in mapped else None)
+                      'declared_llm_executor' if contract.get('transport') == 'llm' else None)
             if source:
                 # Explicit semantic IDs are read, never changed. Scope them to
                 # the compiled component so rework variants of one Agent can
@@ -391,13 +389,13 @@ class RegistryDashboard:
             else:
                 change['coverage'] = 'declared_effects_not_animated'
         presentation = presentation_for(self.presentation, net)
-        agents = self._agent_nodes(core, obs, upper, presentation)
+        agents = self._agent_nodes(core, obs, upper)
         response = {'schema_version': SCHEMA, 'source': {**obs['source'], 'verified_head_ordinal': upper},
                     'net': net, 'boundaries': obs['boundaries'], 'transition_bindings': obs['transition_bindings'],
                     'presentation': presentation, 'agent_nodes': agents, 'change': change,
                     'position': {'mode': 'live' if cursor is None else 'history', 'cursor': selected['cursor'],
                                  'at': selected['at'], 'latest_head': current_upper},
-                    'coverage': {'agent_nodes': 'declared_or_explicit_host_annotation',
+                    'coverage': {'agent_nodes': 'registered_binding_or_declared_llm_executor',
                                  'history': 'current_net_canonical_checkpoints', 'end_reason': end,
                                  'firings': 'current_observations' if cursor is None else 'canonical_only',
                                  'provisional_history': 'unsupported', 'terminal_evidence': 'not_provided'},

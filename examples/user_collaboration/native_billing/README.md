@@ -1,21 +1,23 @@
 ---
 name: rpnh-native-billing-collaboration
-description: "Three controlled local actors contribute to one native billing PN, with original execution and Viewer evidence."
+description: "Historical ten-operation billing tool PN: controlled contribution, original adoption and dated execution evidence."
 metadata:
   document-kind: example
   audience: trusted-host-developer
   language: en
   counterpart: README_ZH.md
-  revision: "2026-10-12.2"
-  status: validated-local-native-and-viewer
+  revision: "2026-10-12.4"
+  status: historical-validated-local-native-and-viewer
   basis: "public synthetic tool pipeline; original Registry and HOST authority"
 ---
 
-# Three local actors building one billing Petri net
+# Historical native billing contribution mechanism
 
 English | [中文](README_ZH.md)
 
-Three controlled local actors contribute to one billing network: a usage contributor proposes the first revision, a tariff contributor extends that accepted revision, and the owner reviews and adopts the final net. The native run and actual official Viewer were verified on 2026-10-12. The ten-step business result is **2.000 kWh / CNY 1.70**.
+The current agent-contract collaboration entry is [curator → auditor co-building](../agent_cobuild/README.md). This page preserves the historical ten-operation billing tool PN and its original code, versions, images, results and failures. Two deterministic source programs change business-validation limits; neither those authors nor the billing operations are task agents. This record does not validate the current agent example.
+
+In the recorded billing case, a usage contributor proposed the first revision, a tariff contributor extended that accepted revision, and the owner reviewed and adopted the final net. The native run and official Viewer were verified on 2026-10-12. The business result was **2.000 kWh / CNY 1.70**.
 
 ![Actual completed native billing PetriNet: all 28 nodes and 29 arcs.](figures/panorama.png)
 
@@ -45,7 +47,7 @@ This is a **single-parent sequence of accepted revisions**. It does not demonstr
 
 The owner and two contributors have three distinct original task Registries, principal records and HOST sessions. One trusted local process controls all three. They are simulated local actors, not three human participants, external authenticated accounts or separate OS security domains.
 
-Each contributor performs one native source operation, derives a complete revision from its exact accepted base bytes, and publishes stock TEXT through the original gateway. `ingest_completed_text` re-derives the successful source firing, invocation, product and principal. Each proposal has its own delivery witness. Its `synthetic_fixture=false` field identifies the original execution-provenance route; the actors and business inputs remain synthetic.
+Each deterministic contributor program performs one native source operation, derives a complete revision from its exact accepted base bytes, and publishes stock TEXT through the original gateway. `ingest_completed_text` re-derives the successful source firing, invocation, product and principal. Each proposal has its own delivery witness. Its `synthetic_fixture=false` field identifies the original execution-provenance route; the actors and business inputs remain synthetic.
 
 The target's publication principal does not replace the recorded proposer. The owner approves each exact proposal, performs two protected Branch advances, and separately adopts the final revision through `owner.control.edits.submit`. The original product commit boundaries generate both advance receipts and the adoption receipt. Execution uses the existing scheduler and permission checks; no model, provider, wallet or external business service is called.
 
@@ -65,12 +67,12 @@ To reopen the **same result**, keep that `--serve` process alive and revisit its
 
 In the Viewer:
 
-1. Open **PetriNet** to inspect all 28 nodes and 29 arcs.
+1. Open **PetriNet** to inspect all 28 nodes and 29 arcs. A pure-tool agent Overview can be empty; **Detailed flow** shows the business-tool structure.
 2. Open **User contributions**, select either recorded proposer, and focus `check_usage_input.run` or `check_tariff_input.run`.
 3. Inspect `value/config/max_integer` and its exact proposal/base/candidate references.
 4. Open **Separate action evidence without node mappings** for the owner's adoption action.
 
-## Verified result and source identity
+## Historical result and source identity
 
 The recorded native run has two completed source TEXT firings, two approved proposals, two protected Branch advances, one owner adoption, ten settled business firings, twelve business resources and one complete business terminal. The three model counters are `[0, 0]`. The complete report matches the original fixture field for field: **2.000 kWh / CNY 1.70**.
 

@@ -3,14 +3,24 @@
   "source": {
     "mode": "initial_configured",
     "task_label": "SlopCodeBench checkpoint actor: initial declaration",
-    "verified_head_ordinal": null
+    "verified_head_ordinal": null,
+    "identity_export": {
+      "scope": "declaration_only",
+      "provenance": "identity-export-provenance.json",
+      "runtime_evidence": false
+    }
   },
   "net": {
     "schema_version": "rpnh/net_view/v1",
     "source": {
       "mode": "initial_configured",
       "task_label": "SlopCodeBench checkpoint actor: initial declaration",
-      "verified_head_ordinal": null
+      "verified_head_ordinal": null,
+      "identity_export": {
+        "scope": "declaration_only",
+        "provenance": "identity-export-provenance.json",
+        "runtime_evidence": false
+      }
     },
     "summary": {
       "node_count": 3,
@@ -56,7 +66,15 @@
         "outputs": [
           "team.result",
           "team.interrupt__solve__solve__request"
-        ]
+        ],
+        "executor_declaration": {
+          "contracts": {
+            "transport": "llm"
+          }
+        },
+        "config": {
+          "semantic_node_id": "solve"
+        }
       }
     ],
     "edges": [
@@ -149,9 +167,20 @@
   "coverage": {
     "history": "unsupported",
     "firings": "not_provided",
-    "agent_nodes": "not_provided",
+    "agent_nodes": "declared_llm_executor_only",
     "terminal_evidence": "not_provided"
   },
   "change": {},
-  "agent_nodes": []
+  "agent_nodes": [
+    {
+      "transition_id": "team.solve",
+      "source": "declared_llm_executor",
+      "semantic_group": {
+        "component": "team",
+        "semantic_node_id": "solve"
+      },
+      "agent_ref": null,
+      "executable_binding_ref": null
+    }
+  ]
 }

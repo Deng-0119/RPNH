@@ -1,0 +1,8 @@
+{
+  "records": [
+    {"id": "source-a", "category": "planning", "minutes": 12},
+    {"id": "source-b", "category": "review", "minutes": 7},
+    {"id": "source-c", "category": "planning", "minutes": 5},
+    {"id": "source-d", "category": "review", "minutes": 0}
+  ]
+}

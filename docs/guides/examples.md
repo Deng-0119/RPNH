@@ -6,7 +6,7 @@ metadata:
   audience: user-and-developer
   language: en
   counterpart: examples_ZH.md
-  revision: "2026-10-07.1"
+  revision: "2026-10-12.4"
   status: current-instructions-with-dated-evidence
   basis: "source candidate commands; deterministic runs and dated authorized live evidence explicitly separated"
 ---
@@ -25,6 +25,7 @@ them instead of being silently relabelled as current execution.
 
 | I want to see | Start here | Default |
 |---|---|---|
+| Co-build curator and auditor task contracts | [Agent-network co-building](../../examples/user_collaboration/agent_cobuild/README.md) | Stock AgentLoop; local_process scripted driver |
 | Copy and customize an example outside the checkout | [Dependency-complete export](#export-an-example-and-make-it-yours) | Native/scripted paths |
 | Prepare and execute a shared v2 package | [Native-add package tutorial](package-reuse-example.md) | No model; separate preparation and run approval |
 | Local arithmetic and registered resources | Example 1, native plugin | No model |
@@ -38,6 +39,25 @@ them instead of being silently relabelled as current execution.
 | A real numerical optimal-control task | Example 7, 3-DOF powered descent | Authorized profile |
 | Two-round RRSI Policy evolution with independent child Registries | Example 8, RRSI v0.6 application | Authorized profile |
 | A public business-workflow benchmark with retained task scores | AutomationBench example | Offline result inspection; authorized profile for new runs |
+
+## Choose by modeled object
+
+The current collaboration entry is [agent-network co-building](../../examples/user_collaboration/agent_cobuild/README.md). Two native task-agent roles, `curator.run` and `auditor.run`, use stock `AgentStage`/default `AgentLoop` in an ordinary Module assembled from two stock single-agent declarations, with `curator.result → auditor.request`. Deterministic source programs from two controlled original principals strengthen the curator input-lineage contract and auditor reconciliation contract. The original HOST reviews exact revisions, advances a protected Branch sequentially and enables owner adoption before target execution.
+
+Source programs, external control actions and target agents remain separate; this single-parent chain does not imply automatic same-base merging. A `local_process` scripted driver computes from actual inputs and tool returns. This demonstrates structure and protocol using registered task agents. It makes no live-model or cognition claim; execution results, artifacts and Viewer evidence are reported on the example page.
+
+Choose by modeled object: agent workflows describe task responsibilities and handoffs; domain algorithms and business systems are tools or external environments. ERP, 3-DOF, JB, HarnessAudit, AutomationBench, SlopCodeBench and RRSI remain genuine agent/role workflows. RRSI custom registered-host role PNs can have genuine agent bindings without using stock AgentLoop. Pure-tool pipelines, native-input gates, author principals and annotations do not become agents merely through Registry lineage.
+
+| Category | Entries and boundary |
+|---|---|
+| Agent/role tasks | Hybrid, workflow patterns, task_workspace, live replacement; ERP, AutomationBench, SlopCodeBench, HarnessAudit, 3-DOF, JB, RRSI |
+| Tool/SDK components | native_plugin, package_reuse, compose_serial, tool_pipeline, multi-source merge, fixed SQL validation, synthetic RSI, iteration_profile, portable minimal package; definition-only does not prove execution, synthetic iteration does not prove autonomous improvement |
+| Native-input fixtures | approval_workflow is a mock refund input/authority gate; a2a_quote is controlled external-result association, with real A2A/OID4VP still BLOCKED_NOT_RUN |
+| Historical mechanism/business evidence | [74-operation route net](../../examples/user_collaboration/README.md#historical-route-planning-mechanism-evidence) and [ten-operation billing](../../examples/user_collaboration/native_billing/README.md) retain original results, versions, failures and images; neither is an agent behavior net |
+
+Co-building is a source entry, not a new named export. adapter_task is one semantic task across hosts; example_validation and declaration-view helpers are checking/display infrastructure. See the [source index](../../examples/README.md) for complete entries.
+
+Overview is a read-only agent projection, not a reduced executable PN. `registered_agent_binding` traces to the exact executable binding and agent reference; `declared_llm_executor` establishes a declaration only, not execution; `explicit_host_annotation` is an unconfirmed display annotation and cannot establish agent identity. Roles are grouped through explicit scoped identity, not equal names, model names or user accounts. An edge retains original path provenance and denotes a structural path to the next agent, not observed firing order or proof that a guard passes or an all-input join is satisfied. The full PetriNet and owning Registry retain authority, guards, joins and actual loop/turn/action, tool and product references. Managed children/actions are not additional PN transitions; independent child Registries remain independent.
 
 ## Prerequisites
 
@@ -157,7 +177,6 @@ declaration-only diagrams:
 | Serial PetriNet | Parallel Agent overview |
 |---|---|
 | ![Serial workflow](../../examples/workflow_patterns/assets/serial-petrinet.png) | ![Parallel Agent graph](../../examples/workflow_patterns/assets/parallel-overview.png) |
-
 | Document Detailed flow | Long-process overview |
 |---|---|
 | ![Document workflow](../../examples/workflow_patterns/assets/document-flow.png) | ![Long workflow](../../examples/workflow_patterns/assets/long-process-overview.png) |
@@ -260,7 +279,6 @@ it makes no provider call:
 | Basic | Codex 0.155.0 |
 |---|---|
 | ![Basic accepted run](../../cpn/examples/adapter_task/assets/basic-petrinet.png) | ![Codex accepted run](../../cpn/examples/adapter_task/assets/codex-petrinet.png) |
-
 | Pinned DSH | OpenCode 1.18.32 |
 |---|---|
 | ![DSH accepted run](../../cpn/examples/adapter_task/assets/dsh-petrinet.png) | ![OpenCode accepted run](../../cpn/examples/adapter_task/assets/opencode-petrinet.png) |

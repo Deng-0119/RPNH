@@ -9,10 +9,13 @@ export function overviewGraph(raw, agentNodes = undefined) {
   const by = new Map(raw.nodes.map(n => [n.id, n]));
   // Only explicit read-side Agent declarations or the legacy executor contract.
   // A friendly name, a presentation type, or an executor key substring is NOT identity.
-  const declared = agentNodes === undefined ? raw.nodes.filter(n => n.kind === 'transition'
+  const inventory = agentNodes === undefined ? raw.nodes.filter(n => n.kind === 'transition'
     && (n.executor_declaration?.contracts?.transport === 'llm'
       || n.execution_kind === 'agent')).map(n => ({transition_id: n.id})) : agentNodes;
-  if (!Array.isArray(declared)) throw new Error('Agent declarations must be an array');
+  if (!Array.isArray(inventory)) throw new Error('Agent declarations must be an array');
+  // Older dashboard frames may include display-only host annotations. They
+  // remain available in presentation metadata, but cannot establish identity.
+  const declared = inventory.filter(item => item?.source !== 'explicit_host_annotation');
   const agentIds = new Set();
   for (const item of declared) {
     if (!item || by.get(item.transition_id)?.kind !== 'transition')

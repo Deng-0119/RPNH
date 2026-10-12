@@ -1,0 +1,230 @@
+{
+  "schema_version": "agent_cobuild/capture_provenance/v1",
+  "public_comparison_base": "b0e59431d8a871a56ddb556079290b6eb385dc1f",
+  "local_product_parent": "18242a8959ba440d5815d5b900d4803da6250e74",
+  "dispatch": "53e1c06af8eda24173a9286caa394bc88f4fd2d0",
+  "run_ref": {
+    "entity_type": "native_run_identity/v1",
+    "logical_id": "run:984cf24c64e848c68bfcaafedbae3398",
+    "version_id": "run_version:33d2effe046a46948c7139bc1f85524d"
+  },
+  "accepted_revision_ref": {
+    "schema_version": "rpnh/collaboration/source_version_ref/v1",
+    "source_id": "agent-cobuild-owner-39284846e3784fc8aa6d57748229adc0",
+    "ref": {
+      "entity_type": "collaboration_net_revision/v1",
+      "logical_id": "resource:bb77a03a5b265db590ab06d3bbeb5f69",
+      "version_id": "resource_version:fcbcb9d3d3b35e7dacd33d521ba35964"
+    }
+  },
+  "terminal_ref": {
+    "entity_type": "run_terminal_evidence/v1",
+    "logical_id": "terminal_evidence:e41c7b3ab3264e83accb030a6a63abfa",
+    "version_id": "terminal_evidence_version:9db25f41fd874875b2d5e2eea94c3fd1"
+  },
+  "windows": [
+    {
+      "window": "capture-01",
+      "status": "PASSED",
+      "before": {
+        "event_head": 1099,
+        "event_count": 1099,
+        "writer_epoch": "2"
+      },
+      "after": {
+        "event_head": 1099,
+        "event_count": 1099,
+        "writer_epoch": "2"
+      },
+      "readonly_unchanged": true,
+      "overview": {
+        "nodes": 2,
+        "edges": 1,
+        "unclipped": true,
+        "identity_sources": [
+          {
+            "transition_id": "auditor.run",
+            "source": "registered_agent_binding",
+            "semantic_group": {
+              "component": "auditor",
+              "semantic_node_id": "auditor"
+            },
+            "agent_ref": {
+              "entity_type": "agent/v1",
+              "logical_id": "agent:a731852c36d941958f158a5b9045d816",
+              "version_id": "agent_version:96084165b881496596991322d65e6bf5"
+            },
+            "executable_binding_ref": {
+              "entity_type": "executable_transition_binding/v1",
+              "entity_id": {
+                "kind": "executable_transition_binding",
+                "value": "ab2370d683565703ad89a099a482522b"
+              },
+              "version_id": {
+                "kind": "executable_transition_binding_version",
+                "value": "0978cc1419e45371a6ed6e9d2cbee8e0"
+              }
+            }
+          },
+          {
+            "transition_id": "curator.run",
+            "source": "registered_agent_binding",
+            "semantic_group": {
+              "component": "curator",
+              "semantic_node_id": "curator"
+            },
+            "agent_ref": {
+              "entity_type": "agent/v1",
+              "logical_id": "agent:17b033ecb2d84559acdc3ff1ddef696d",
+              "version_id": "agent_version:99ab504323d144f58f9789e37f875399"
+            },
+            "executable_binding_ref": {
+              "entity_type": "executable_transition_binding/v1",
+              "entity_id": {
+                "kind": "executable_transition_binding",
+                "value": "59d78a3ef14853c096968eefed6c7ced"
+              },
+              "version_id": {
+                "kind": "executable_transition_binding_version",
+                "value": "d0a3f6d2dbf35f1da408468e05602163"
+              }
+            }
+          }
+        ]
+      },
+      "petri": {
+        "nodes": 5,
+        "edges": 6
+      },
+      "scope": "original HOST contribution + original target"
+    },
+    {
+      "window": "capture-02",
+      "status": "PASSED",
+      "before": {
+        "event_head": 1099,
+        "event_count": 1099,
+        "writer_epoch": "2"
+      },
+      "after": {
+        "event_head": 1099,
+        "event_count": 1099,
+        "writer_epoch": "2"
+      },
+      "readonly_unchanged": true,
+      "overview": {
+        "nodes": 2,
+        "edges": 1,
+        "unclipped": true,
+        "identity_sources": [
+          {
+            "transition_id": "auditor.run",
+            "source": "registered_agent_binding",
+            "semantic_group": {
+              "component": "auditor",
+              "semantic_node_id": "auditor"
+            },
+            "agent_ref": {
+              "entity_type": "agent/v1",
+              "logical_id": "agent:a731852c36d941958f158a5b9045d816",
+              "version_id": "agent_version:96084165b881496596991322d65e6bf5"
+            },
+            "executable_binding_ref": {
+              "entity_type": "executable_transition_binding/v1",
+              "entity_id": {
+                "kind": "executable_transition_binding",
+                "value": "ab2370d683565703ad89a099a482522b"
+              },
+              "version_id": {
+                "kind": "executable_transition_binding_version",
+                "value": "0978cc1419e45371a6ed6e9d2cbee8e0"
+              }
+            }
+          },
+          {
+            "transition_id": "curator.run",
+            "source": "registered_agent_binding",
+            "semantic_group": {
+              "component": "curator",
+              "semantic_node_id": "curator"
+            },
+            "agent_ref": {
+              "entity_type": "agent/v1",
+              "logical_id": "agent:17b033ecb2d84559acdc3ff1ddef696d",
+              "version_id": "agent_version:99ab504323d144f58f9789e37f875399"
+            },
+            "executable_binding_ref": {
+              "entity_type": "executable_transition_binding/v1",
+              "entity_id": {
+                "kind": "executable_transition_binding",
+                "value": "59d78a3ef14853c096968eefed6c7ced"
+              },
+              "version_id": {
+                "kind": "executable_transition_binding_version",
+                "value": "d0a3f6d2dbf35f1da408468e05602163"
+              }
+            }
+          }
+        ]
+      },
+      "petri": {
+        "nodes": 5,
+        "edges": 6
+      },
+      "scope": "read-only reopen, role descriptions; original contribution screenshots retained from capture-01"
+    },
+    {
+      "window": "capture-03",
+      "status": "PASSED",
+      "scope": "targeted owner-adoption scrolling capture; original HOST, no business rerun",
+      "before": {
+        "event_head": 1099,
+        "event_count": 1099,
+        "writer_epoch": "2"
+      },
+      "after": {
+        "event_head": 1099,
+        "event_count": 1099,
+        "writer_epoch": "2"
+      },
+      "readonly_unchanged": true,
+      "adopted_receipt": {
+        "entity_type": "user_collaboration_receipt/v1",
+        "logical_id": "resource:82798e5d145e5c4d87b4bf707dca954a",
+        "version_id": "resource_version:0c7de10ed6d65e95a48e086f6bd6496f"
+      },
+      "visible_adopted_role": true,
+      "visible_exact_receipt_in_second_image": true
+    }
+  ],
+  "execution_source_window": "fresh03 snapshot retained with private return; new example source plus local product parent and pre-run diff",
+  "post_execution_changes": [
+    "CLI counts distinct agent_loop logical IDs instead of 12 record versions; execution unchanged.",
+    "Read-only role descriptions and reopen CLI added; capture-02 uses this view on the same existing target."
+  ],
+  "image_transformations": [],
+  "declaration_transformations": [],
+  "report_transformations": "report.json decodes original terminal TEXT JSON string; terminal-product.json is original registered product bytes.",
+  "limits": [
+    "Scripted structural/protocol evidence; no live LLM analysis or cognitive quality claim.",
+    "Display descriptions attach only to original confirmed role nodes; no agent_nodes annotation supplies identity.",
+    "Current standard Viewer discloses references, not prompt/resource bodies; full safe original request/action/handoff evidence is in the private return.",
+    "Original source/control/target registries remain separate; HOST review/advance/adopt are external control receipts, not target PN firings."
+  ],
+  "declaration_source": "Original registered definition bytes read through read-only Registry after run; head unchanged1099",
+  "image_sources": {
+    "curator.run-execution.png": "capture-02",
+    "curator.run-binding.png": "capture-02",
+    "contributor-1.png": "capture-01",
+    "owner-adoption-ref.png": "capture-03",
+    "contributor-2.png": "capture-01",
+    "overview-panorama.png": "capture-02",
+    "owner-adoption.png": "capture-03",
+    "curator.run-overview.png": "capture-02",
+    "auditor.run-overview.png": "capture-02",
+    "auditor.run-binding.png": "capture-02",
+    "petri-panorama.png": "capture-02",
+    "auditor.run-execution.png": "capture-02"
+  },
+  "review_correction": "Initial capture-01 owner-adoption viewport showed reviewed rather than adopted; original image retained as failure evidence. capture-03 scrolls the original exact adopted record and receipt without Registry writes."
+}

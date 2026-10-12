@@ -6,7 +6,7 @@ metadata:
   audience: user-and-developer
   language: zh-CN
   counterpart: examples.md
-  revision: "2026-10-07.1"
+  revision: "2026-10-12.4"
   status: current-instructions-with-dated-evidence
   basis: "source candidate commands; deterministic runs and dated authorized live evidence explicitly separated"
 ---
@@ -23,6 +23,7 @@ PetriNet 投影。脚本化模型只是确定性协议替身，不是语言模�
 
 | 想查看的内容 | 从哪里开始 | 默认模式 |
 |---|---|---|
+| 共建 curator 与 auditor 任务合同 | [Agent 任务网共建](../../examples/user_collaboration/agent_cobuild/README_ZH.md) | Stock AgentLoop；local_process 脚本驱动 |
 | 在 checkout 外复制并修改案例 | [包含完整依赖的导出](#导出案例并改成自己的应用) | 原生／脚本化路径 |
 | 准备并执行分享的 v2 包 | [原生加法分享包教程](package-reuse-example_ZH.md) | 不使用模型；准备与运行分别授权 |
 | 本地计算与登记资源 | 案例 1，原生插件 | 不使用模型 |
@@ -36,6 +37,25 @@ PetriNet 投影。脚本化模型只是确定性协议替身，不是语言模�
 | 真实数值最优控制任务 | 案例 7，3-DOF 动力下降 | 已授权 profile |
 | 独立 child Registry 驱动的 RRSI 两轮 Policy 演化 | 案例 8，RRSI v0.6 application | 已授权 profile |
 | 带保留逐题成绩的公开业务 workflow benchmark | AutomationBench 示例 | 离线查看结果；新运行需要已授权 profile |
+
+## 按建模对象选择
+
+当前协作入口是[Agent 任务网共建](../../examples/user_collaboration/agent_cobuild/README_ZH.md)。`curator.run` 与 `auditor.run` 两个原生任务 agent 使用 stock `AgentStage`／default `AgentLoop`，由两份 stock 单 agent 声明组成同一普通 Module，连接为 `curator.result → auditor.request`。两个受控原 principal 的确定性 source 程序分别加强 curator 输入来源合同和 auditor 对账合同。原 HOST 审阅精确 revision、连续推进受保护 Branch，再由 owner 在 target 执行前采用。
+
+source 程序、网外控制动作与 target agent 分层记录；单 parent 链不表示同 base 自动合并。`local_process` 脚本驱动从实际输入与工具返回计算，以已登记任务 agent 展示结构／协议，不声称真实模型调用或认知能力；运行结果、产物与 Viewer 证据以示例页记录为准。
+
+按建模对象选择：agent 工作流描述任务职责与交接，领域算法和业务系统是工具或外部环境。ERP、3-DOF、JB、HarnessAudit、AutomationBench、SlopCodeBench 与 RRSI 保留为真实 agent／角色工作流。RRSI 自定义 registered-host role PN 也可具有真实 agent 绑定，不要求一律使用 stock AgentLoop。纯工具流水线、原生输入 gate、作者 principal 和显示注释不会仅因 Registry 来源链而变成 agent。
+
+| 类别 | 入口与边界 |
+|---|---|
+| Agent／角色任务 | Hybrid、workflow patterns、task_workspace、live replacement；ERP、AutomationBench、SlopCodeBench、HarnessAudit、3-DOF、JB、RRSI |
+| 工具／SDK 组件 | native_plugin、package_reuse、compose_serial、tool_pipeline、多源合并、固定 SQL 校验、合成 RSI、iteration_profile、portable minimal 包；纯定义不证明执行，合成迭代不证明自主改进 |
+| 原生输入 fixture | approval_workflow 是模拟退款输入／权限 gate；a2a_quote 是受控外部结果关联，真实 A2A／OID4VP 仍 BLOCKED_NOT_RUN |
+| 历史机制／业务证据 | [路线 74-operation](../../examples/user_collaboration/README_ZH.md#历史路线规划机制证据)与[电费十操作](../../examples/user_collaboration/native_billing/README_ZH.md)，保留原结果、版本、失败与图，不计为 agent 行为网 |
+
+共建示例是源码入口，未加入命名导出。adapter_task 是跨宿主的单语义任务；example_validation 与声明视图辅助代码是检查／展示设施。完整入口见[源码索引](../../examples/README_ZH.md)。
+
+Overview 是只读 agent 投影，不是简化后可执行 PN。`registered_agent_binding` 可追到精确 executable binding 与 agent 引用；`declared_llm_executor` 仅确认声明，不证明执行；`explicit_host_annotation` 是未确认显示注释，不建立 agent 身份。角色按显式 scoped identity 分组，不能凭同名、模型名或用户账号合并。边保留原路径依据，表示通往下一 agent 的结构路径，不证明已发生顺序、guard 通过或全输入 join 满足。完整 PetriNet 与所属 Registry 保留权限、guard、join 以及实际 loop／turn／action、工具和产物引用。managed child／action 不计为新增 PN transition，独立 child Registry 保持独立。
 
 ## 前置条件
 
@@ -140,7 +160,6 @@ python examples/hybrid_summary/run.py --execution "$EXECUTION_CONFIG" \
 | 串行 PetriNet | 并行 Agent 概览 |
 |---|---|
 | ![串行工作流](../../examples/workflow_patterns/assets/serial-petrinet.png) | ![并行 Agent 图](../../examples/workflow_patterns/assets/parallel-overview.png) |
-
 | 文档 Detailed flow | 长流程概览 |
 |---|---|
 | ![文档工作流](../../examples/workflow_patterns/assets/document-flow.png) | ![长工作流](../../examples/workflow_patterns/assets/long-process-overview.png) |
@@ -235,7 +254,6 @@ DSH 和 OpenCode 1.18.32 的独立说明。列出或导出任务都不会调用 
 | Basic | Codex 0.155.0 |
 |---|---|
 | ![Basic 验收运行](../../cpn/examples/adapter_task/assets/basic-petrinet.png) | ![Codex 验收运行](../../cpn/examples/adapter_task/assets/codex-petrinet.png) |
-
 | 固定版本 DSH | OpenCode 1.18.32 |
 |---|---|
 | ![DSH 验收运行](../../cpn/examples/adapter_task/assets/dsh-petrinet.png) | ![OpenCode 验收运行](../../cpn/examples/adapter_task/assets/opencode-petrinet.png) |

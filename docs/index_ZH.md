@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: index.md
-  revision: "2026-10-11.1"
+  revision: "2026-10-12.4"
   status: maintained
   basis: "core; adapter differences explicitly labelled"
 ---
@@ -28,6 +28,7 @@ metadata:
 | 首次了解 RPNH，再试用或集成 | [技术报告](technical-report_ZH.md) |
 | 安装 core/basic、源码或 wheel | [安装](guides/installation_ZH.md) |
 | 运行原生、混合、任务与安装版跨宿主案例 | [案例](guides/examples_ZH.md) |
+| 共建 agent 输入来源与对账合同 | [Agent 任务网共建](../examples/user_collaboration/agent_cobuild/README_ZH.md) |
 | 由两个不同原生主体处理模拟退款 | [受控退款应用](../examples/approval_workflow/README_ZH.md) |
 | 将合成外部结果接入同一原生运行 | [外部结果接入报价应用](../examples/a2a_quote/README_ZH.md) |
 | 导出包含完整依赖的案例并修改 | [可复用案例](guides/examples_ZH.md#导出案例并改成自己的应用) |
@@ -76,7 +77,9 @@ metadata:
 | 编写选择性移植的普通后继与独立复制 | [移植普通后继](reference/plain-transplant-descendants_ZH.md) |
 | 核对历史评分、源码与未运行范围 | [精选结果](results/README_ZH.md) |
 
-[原生电费协作](../examples/user_collaboration/native_billing/README_ZH.md)把原贡献连接到官方只读 Viewer；[技术报告](technical-report_ZH.md#原生输入与协作)将其证据与已接受的审批和外部结果应用连贯说明。
+当前协作入口是[Agent 任务网共建](../examples/user_collaboration/agent_cobuild/README_ZH.md)。`curator.run` 与 `auditor.run` 两个原生任务 agent 使用 stock `AgentStage`／default `AgentLoop`，由两份 stock 单 agent 声明组成同一普通 Module，连接为 `curator.result → auditor.request`。两个受控原 principal 的确定性 source 程序分别加强 curator 输入来源合同和 auditor 对账合同。原 HOST 审阅精确 revision、连续推进受保护 Branch，再由 owner 在 target 执行前采用。
+
+source 程序、网外控制动作与 target agent 分层记录；单 parent 链不表示同 base 自动合并。`local_process` 脚本驱动从实际输入与工具返回计算，以已登记任务 agent 展示结构／协议，不声称真实模型调用或认知能力；运行结果、产物与 Viewer 证据以示例页记录为准。
 
 ## 如何阅读参考
 明确区分声明契约、高级可信宿主接口与私有模块。各页源码路径是仓库内定位信息，不是独立安装说明。可选 API 按能力标注，必须与所选源码/产物核对；自动生成页面不授予 SDK 稳定性承诺。

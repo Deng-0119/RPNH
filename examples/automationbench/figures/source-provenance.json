@@ -1,7 +1,7 @@
 {
   "example": "automationbench",
   "title": "AutomationBench native actor: initial declaration",
-  "frame_sha256": "3041305144052f0bc686a42d35683456b3531e81ab2bf644003ff9aaa6765ec2",
+  "frame_sha256": "280dfbab7b655f0f285ebecea6680849e2527c9a39ee1597ed0173c8744fe2f7",
   "source_commit": "270b76012a571286d303047547bd93cfecaa19c5",
   "scope": "Initial native actor declaration using the shipped synthetic acceptance prompt and plugin factory schemas. Disconnected host bindings; no business run or historical score evidence.",
   "summary": {
@@ -38,6 +38,12 @@
     "provenance": "viewer-export-provenance.json",
     "sha256": "38ed53e8246004556f9d8251ab242be5829ef4df3683fe0fa187def91f2955a4",
     "view": "PetriNet",
+    "runtime_evidence": false,
+    "source_frame": "historical/pre-identity-export/declaration-frame.json"
+  },
+  "identity_export": {
+    "provenance": "identity-export-provenance.json",
+    "scope": "declaration_only",
     "runtime_evidence": false
   }
 }

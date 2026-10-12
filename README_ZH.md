@@ -31,7 +31,9 @@ workspace 或恢复状态的独立所有者。
 
 [受控 managed 工具](docs/controlled-managed-tools.zh.md)介绍精确结果分页、有界并发、隔离 Python 程序、只读结果证据与来源预检。新能力通过显式 HOST 策略选择；既有默认工具目录与基准对照条件保持原样。
 
-[三个模拟用户共同构建同一任务网络](examples/user_collaboration/README_ZH.md)：先看官方 Viewer 保留的已采用 24 批次业务 Petri 网，再核对各方配置贡献记录与[实测结果和取舍](docs/results/user-collaboration-20261012/README_ZH.md)。
+当前协作入口是[Agent 任务网共建](examples/user_collaboration/agent_cobuild/README_ZH.md)。`curator.run` 与 `auditor.run` 两个原生任务 agent 使用 stock `AgentStage`／default `AgentLoop`，由两份 stock 单 agent 声明组成同一普通 Module，连接为 `curator.result → auditor.request`。两个受控原 principal 的确定性 source 程序分别加强 curator 输入来源合同和 auditor 对账合同。原 HOST 审阅精确 revision、连续推进受保护 Branch，再由 owner 在 target 执行前采用。
+
+source 程序、网外控制动作与 target agent 分层记录；单 parent 链不表示同 base 自动合并。`local_process` 脚本驱动从实际输入与工具返回计算，以已登记任务 agent 展示结构／协议，不声称真实模型调用或认知能力；运行结果、产物与 Viewer 证据以示例页记录为准。
 
 历史应用评分与零模型 runtime 验证见[精选结果](docs/results/README_ZH.md)。每项保留实际源码与条件；这些旧窗口不认证后续组合产品，也不代表已发布新的 rc2 二进制。
 
@@ -40,7 +42,7 @@ workspace 或恢复状态的独立所有者。
 [外部结果接入报价](examples/a2a_quote/README_ZH.md)。每个案例开头都有实际 Viewer
 截图，并提供同一运行的查看与重开命令。业务输入和外部结果均为合成，不调用模型或金融服务。
 
-[原生电费协作](examples/user_collaboration/native_billing/README_ZH.md)沿两份原提案观察贡献如何进入同一个采用后的十步 PN。原 Registry 继续掌管执行与证据；示例包含已核验结果、真实 Viewer 截图及运行和查看命令。
+[历史路线](examples/user_collaboration/README_ZH.md#历史路线规划机制证据)与[原生电费](examples/user_collaboration/native_billing/README_ZH.md)保留原 74／10-operation 业务工具网、版本、结果、图像、贡献／采用回执与失败。其工具操作和作者不是任务 agent，历史结果不验证当前共建示例。
 
 ## 先看一次多 Agent 运行
 
@@ -66,6 +68,8 @@ transition、交接 place、并行分叉弧和全输入 join：
 这些图片保留真实图投影、聚合执行状态和控件，只移除了 run 专属 checkpoint 身份及本地
 时间。看板始终只读；完成判定依赖 Registry 终态证据和已登记最终结果，不能用图片或
 进程退出替代。
+
+Overview 身份来自精确登记绑定或明确标注的声明；外部显示注释不确认 agent 身份。概览边保留结构路径来源，guard 与全输入 join 仍由完整 PN 决定，路径本身不证明实际 firing 顺序。
 
 ## RPNH 提供什么
 
@@ -157,29 +161,32 @@ Registry／run 中从用户所选切面追加新的执行代次。详见
 
 ## 案例目录
 
-| 案例 | 展示的能力 | 说明 |
-|---|---|---|
-| 原生计算 | 本地插件、登记输入输出、零模型调用 | [原生工具](examples/native_plugin/README_ZH.md) |
-| 模型—程序—模型计算 | 原生汇总 operation 前后的 Agent 节点 | [混合汇总](examples/hybrid_summary/README_ZH.md) |
-| 串行、并行、文档和长流程 | 多 Agent 拓扑、有界并行、join 与时间轴 checkpoint | [工作流案例库](examples/workflow_patterns/README_ZH.md) |
-| 独立任务 | 一个主会话控制多个相互隔离的子 Registry | [任务工作区](examples/task_workspace/README_ZH.md) |
-| 原生 PetriNet 操作 | 定义组合与真实 whole-net replacement | [网操作](examples/net_operations/README_ZH.md) |
-| 可运行 v2 分享包 | 显式接收端准备、绑定与原生加法执行 | [分享包复用](examples/package_reuse/README_ZH.md) |
-| 十步工具流水线 | 十个确定性工具 transition、join 与独立账单验证器 | [工具流水线](examples/tool_pipeline/README_ZH.md) |
-| SQL 查询校验 | 固定 SQL 候选、只读执行与保留行序的精确结果比较 | [SQL 案例](examples/query_validation/README_ZH.md) |
-| 多源数据合并 | 原 JSON、CSV 和真实 Parquet 输入、冲突及两件终态产物 | [多源案例](examples/tool_pipeline/multi_source/README_ZH.md) |
-| 双主体模拟退款审批 | 不同原生申请者与审批者、精确输入等待和登记模拟结果 | [退款审批](examples/approval_workflow/README_ZH.md) |
-| 外部结果接入报价 | 自定义本地 HTTP fixture、精确关联与一次登记报价 | [受控报价](examples/a2a_quote/README_ZH.md) |
-| 有界合成迭代 | 同一 Registry 中的一至四轮流程，不宣称模型能力改进 | [合成迭代](examples/rsi_workflows/README_ZH.md) |
-| Basic、Codex、DSH 与 OpenCode | 同一个 provider-neutral 语义任务经过四种宿主入口 | [安装版适配任务](docs/guides/examples_ZH.md) |
-| JB 临床 packet | 公开临床来源、文档／数据分析和 Designer 自主设计图 | [复现 JB](examples/jb_steering_packet/README_ZH.md) |
-| 3-DOF 动力下降 | 数值实现、独立验证和 Designer 自主设计图 | [复现 3-DOF](examples/three_dof_powered_descent/README_ZH.md) |
-| HarnessAudit Office benchmark | 原生团队、登记业务工具、原始评分与完整结果边界 | [Office 示例](examples/harnessaudit_office/README_ZH.md) |
-| RRSI v0.6 Policy 演化 | 独立 child Registry 驱动的两轮 Policy 演化与分数/成本选择 | [RRSI 示例](examples/rrsi_v06/README_ZH.md) |
-| AutomationBench 公开业务任务 | 历史pilot、freeze04首轮18题与独立repair四题；按条件保留评分与限制 | [AutomationBench 示例](examples/automationbench/README_ZH.md) |
-| ERP-Bench | 受管 ERP 动作与单独保留的原始 verifier 成绩 | [ERP 案例](examples/erp_bench/README_ZH.md) |
-| SlopCodeBench pilot | 原生 Session 命令与有限编码任务前缀 | [编码试验](examples/slopcodebench/README_ZH.md) |
-| 案例证据 | 只读校验结果文件与源码身份 | [证据契约](examples/example_validation/README_ZH.md) |
+按建模对象选择：agent 工作流描述任务职责与交接，领域算法和业务系统是工具或外部环境。ERP、3-DOF、JB、HarnessAudit、AutomationBench、SlopCodeBench 与 RRSI 保留为真实 agent／角色工作流。RRSI 自定义 registered-host role PN 也可具有真实 agent 绑定，不要求一律使用 stock AgentLoop。纯工具流水线、原生输入 gate、作者 principal 和显示注释不会仅因 Registry 来源链而变成 agent。
+
+| 类别 | 案例 | 展示的能力 | 说明 |
+| --- |---|---|---|
+| Agent／角色工作流 | Agent 任务网共建 | Curator → auditor 原生 AgentLoop 角色、合同贡献与原 HOST 采用；脚本协议边界 | [共建示例](examples/user_collaboration/agent_cobuild/README_ZH.md) |
+| 工具／SDK fixture | 原生计算 | 本地插件、登记输入输出、零模型调用 | [原生工具](examples/native_plugin/README_ZH.md) |
+| Agent／角色工作流 | 模型—程序—模型计算 | 原生汇总 operation 前后的 Agent 节点 | [混合汇总](examples/hybrid_summary/README_ZH.md) |
+| Agent／角色工作流 | 串行、并行、文档和长流程 | 多 Agent 拓扑、有界并行、join 与时间轴 checkpoint | [工作流案例库](examples/workflow_patterns/README_ZH.md) |
+| Agent／角色工作流 | 独立任务 | 一个主会话控制多个相互隔离的子 Registry | [任务工作区](examples/task_workspace/README_ZH.md) |
+| Agent／纯声明 | 原生 PetriNet 操作 | 定义组合与真实 whole-net replacement | [网操作](examples/net_operations/README_ZH.md) |
+| 工具／SDK fixture | 可运行 v2 分享包 | 显式接收端准备、绑定与原生加法执行 | [分享包复用](examples/package_reuse/README_ZH.md) |
+| 工具／SDK fixture | 十步工具流水线 | 十个确定性工具 transition、join 与独立账单验证器 | [工具流水线](examples/tool_pipeline/README_ZH.md) |
+| 工具／SDK fixture | SQL 查询校验 | 固定 SQL 候选、只读执行与保留行序的精确结果比较 | [SQL 案例](examples/query_validation/README_ZH.md) |
+| 工具／SDK fixture | 多源数据合并 | 原 JSON、CSV 和真实 Parquet 输入、冲突及两件终态产物 | [多源案例](examples/tool_pipeline/multi_source/README_ZH.md) |
+| 原生输入 fixture | 双主体模拟退款审批 | 不同原生申请者与审批者、精确输入等待和登记模拟结果 | [退款审批](examples/approval_workflow/README_ZH.md) |
+| 原生输入 fixture | 外部结果接入报价 | 自定义本地 HTTP fixture、精确关联与一次登记报价 | [受控报价](examples/a2a_quote/README_ZH.md) |
+| 工具／SDK fixture | 有界合成迭代 | 同一 Registry 中的一至四轮流程，不宣称模型能力改进 | [合成迭代](examples/rsi_workflows/README_ZH.md) |
+| Agent／角色工作流 | Basic、Codex、DSH 与 OpenCode | 同一个 provider-neutral 语义任务经过四种宿主入口 | [安装版适配任务](docs/guides/examples_ZH.md) |
+| Agent／角色工作流 | JB 临床 packet | 公开临床来源、文档／数据分析和 Designer 自主设计图 | [复现 JB](examples/jb_steering_packet/README_ZH.md) |
+| Agent／角色工作流 | 3-DOF 动力下降 | 数值实现、独立验证和 Designer 自主设计图 | [复现 3-DOF](examples/three_dof_powered_descent/README_ZH.md) |
+| Agent／角色工作流 | HarnessAudit Office benchmark | 原生团队、登记业务工具、原始评分与完整结果边界 | [Office 示例](examples/harnessaudit_office/README_ZH.md) |
+| Agent／角色工作流 | RRSI v0.6 Policy 演化 | 独立 child Registry 驱动的两轮 Policy 演化与分数/成本选择 | [RRSI 示例](examples/rrsi_v06/README_ZH.md) |
+| Agent／角色工作流 | AutomationBench 公开业务任务 | 历史pilot、freeze04首轮18题与独立repair四题；按条件保留评分与限制 | [AutomationBench 示例](examples/automationbench/README_ZH.md) |
+| Agent／角色工作流 | ERP-Bench | 受管 ERP 动作与单独保留的原始 verifier 成绩 | [ERP 案例](examples/erp_bench/README_ZH.md) |
+| Agent／角色工作流 | SlopCodeBench pilot | 原生 Session 命令与有限编码任务前缀 | [编码试验](examples/slopcodebench/README_ZH.md) |
+| 工具／SDK fixture | 案例证据 | 只读校验结果文件与源码身份 | [证据契约](examples/example_validation/README_ZH.md) |
 
 执行案例中的实际 dashboard 图注明其运行来源。Benchmark examples 提供成绩记录与新运行的
 viewer 命令，不宣称已归档运行截图。[完整案例指南](docs/guides/examples_ZH.md)记录计算、文档、串行、并行、长流程和

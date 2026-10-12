@@ -1,7 +1,7 @@
 {
   "example": "erp_bench",
   "title": "ERP-Bench native actor: initial declaration",
-  "frame_sha256": "01c80a96dcaa0c76d25f290bfcceab7c0663a69dd354dd88410d7fe164e27da7",
+  "frame_sha256": "03997a45072bed4bc98708afb2749b6a6a7b2fd4dc3e10d82b007268e7749d2e",
   "source_commit": "270b76012a571286d303047547bd93cfecaa19c5",
   "scope": "Initial native actor declaration with erp_python and validate_plan bindings. Disconnected host configuration; no ERP container, transaction, model call or execution history.",
   "summary": {
@@ -33,6 +33,12 @@
     "provenance": "viewer-export-provenance.json",
     "sha256": "38ed53e8246004556f9d8251ab242be5829ef4df3683fe0fa187def91f2955a4",
     "view": "PetriNet",
+    "runtime_evidence": false,
+    "source_frame": "historical/pre-identity-export/declaration-frame.json"
+  },
+  "identity_export": {
+    "provenance": "identity-export-provenance.json",
+    "scope": "declaration_only",
     "runtime_evidence": false
   }
 }

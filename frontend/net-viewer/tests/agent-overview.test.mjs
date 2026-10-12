@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
 import ELK from 'elkjs/lib/elk.bundled.js';
 import {displayGraph,normalizeFrame,visibleSelection} from '../../../cpn/frontend/static/dashboard-model.mjs';
 import {topologyKey} from '../../../cpn/frontend/static/model.mjs';
@@ -38,6 +39,28 @@ test('neither an Agent-looking name nor a presentation type converts an ordinary
 test('an explicit empty inventory stays empty rather than guessing from contract or names',()=>{
  const f=frame();f.agent_nodes=[];f.net.nodes[1].executor_declaration={contracts:{transport:'llm'}};
  const v=displayGraph(f,'overview');assert.equal(v.nodes.length,0);assert.equal(v.edges.length,0);assert.equal(v.agent_coverage,'provided');
+});
+test('historical host annotations cannot promote a tool or merge it into a confirmed Agent',()=>{
+ const f=frame(),before=displayGraph(f,'overview');
+ f.agent_nodes.push({transition_id:'tool',source:'explicit_host_annotation',semantic_group:{component:'team',semantic_node_id:'agent'}});
+ f.agent_nodes[0].semantic_group={component:'team',semantic_node_id:'agent'};
+ f.presentation.nodes.tool={name:'Agent',type:'智能体'};
+ const v=displayGraph(f,'overview');
+ assert.deepEqual(v.nodes.map(n=>n.id),before.nodes.map(n=>n.id));
+ assert.deepEqual(v.edges,before.edges);
+ assert.deepEqual(v.nodes[0].source_ids,['a']);
+ f.agent_nodes=[{transition_id:'tool',source:'explicit_host_annotation'}];
+ assert.equal(displayGraph(f,'overview').nodes.length,0);
+});
+test('registered custom roles and declared LLM tasks retain their distinct identity sources',()=>{
+ const f=frame();
+ f.agent_nodes[0]={transition_id:'a',source:'registered_agent_binding',agent_ref:{entity_type:'agent/v1',logical_id:'custom-role',version_id:'role-v1'}};
+ f.agent_nodes[1].source='declared_llm_executor';
+ f.agent_nodes[2].source='declared_llm_executor';
+ const before=structuredClone(f.agent_nodes),v=displayGraph(f,'overview');
+ assert.deepEqual(v.nodes.map(n=>n.id),['a','b','c']);
+ assert.deepEqual(pairs(v),[['a','b'],['b','c']]);
+ assert.deepEqual(f.agent_nodes,before);
 });
 test('invalid Agent references fail closed; places cannot be marked Agent',()=>{
  for(const id of ['missing','p1']){const f=frame();f.agent_nodes=[{transition_id:id}];assert.throws(()=>displayGraph(f,'overview'));}
@@ -97,4 +120,23 @@ test('explicit input rollback is not an Agent self-handoff',()=>{
   f.net.edges.push({...edge('restore-original','a','original-input','produce'),emit:'forward',forward_source:'original-input',outcome:'interrupted'});
   const g=displayGraph(f,'overview');
   assert.ok(!g.edges.some(e=>e.source==='a'&&e.target==='a'));
+});
+
+test('bundled source-derived benchmark declarations show only their task Agents',()=>{
+ for (const [name,ids] of [['erp_bench',['team.executor']],['automationbench',['team.executor']],
+   ['slopcodebench',['team.solve']],['harnessaudit_office',['team.hub_finalize','team.hub_plan','team.specialist_1','team.specialist_2']]]) {
+  const path=new URL(`../../../examples/${name}/figures/declaration-frame.json`,import.meta.url);
+  const raw=JSON.parse(readFileSync(path,'utf8')), f=normalizeFrame(raw),before=JSON.stringify(f),v=displayGraph(f,'overview');
+  assert.deepEqual(v.nodes.map(n=>n.id),ids);
+  assert.equal(JSON.stringify(f),before);
+  assert.ok(raw.agent_nodes.every(n=>n.source==='declared_llm_executor'&&n.agent_ref===null&&n.executable_binding_ref===null));
+  assert.equal(raw.source.identity_export.runtime_evidence,false);
+  assert.equal(raw.coverage.firings,'not_provided');
+  if(name==='harnessaudit_office') {
+   assert.deepEqual(pairs(v),[['team.hub_plan','team.specialist_1'],['team.hub_plan','team.specialist_2'],
+    ['team.specialist_1','team.hub_finalize'],['team.specialist_2','team.hub_finalize']]);
+   assert.ok(v.edges.every(e=>e.source_ids.length>0&&e.source_ids.every(id=>f.net.edges.some(a=>a.id===id))));
+   assert.equal(v.relation_semantics,'next_agent_structural_path_not_execution_order');
+  } else assert.equal(v.edges.length,0);
+ }
 });

@@ -6,7 +6,7 @@ metadata:
   audience: trusted-host-developer
   language: zh-CN
   counterpart: user-collaboration.md
-  revision: "2026-10-11.1"
+  revision: "2026-10-12.4"
   status: maintained
   basis: "trusted local HOST; plain author revisions; original Registry authority"
 ---
@@ -18,6 +18,16 @@ metadata:
 `cpn.rpnh.collaboration` 中的 `UserCollaborationHost` 将本地参与者接入受保护的
 plain-author Branch。目标 owner 邀请贡献者、审核精确提案、接纳修订，再单独决定是否
 将其采用到运行中的任务。发布、执行与恢复仍由原 Registry 和 owner 负责。
+
+## Agent 合同共建入口
+
+当前协作入口是[Agent 任务网共建](../../examples/user_collaboration/agent_cobuild/README_ZH.md)。`curator.run` 与 `auditor.run` 两个原生任务 agent 使用 stock `AgentStage`／default `AgentLoop`，由两份 stock 单 agent 声明组成同一普通 Module，连接为 `curator.result → auditor.request`。两个受控原 principal 的确定性 source 程序分别加强 curator 输入来源合同和 auditor 对账合同。原 HOST 审阅精确 revision、连续推进受保护 Branch，再由 owner 在 target 执行前采用。
+
+source 程序、网外控制动作与 target agent 分层记录；单 parent 链不表示同 base 自动合并。`local_process` 脚本驱动从实际输入与工具返回计算，以已登记任务 agent 展示结构／协议，不声称真实模型调用或认知能力；运行结果、产物与 Viewer 证据以示例页记录为准。
+
+source 程序不是作者模型 agent，HOST review／advance／adopt 是网外控制，不冒充 target PN firing。历史路线和电费 fixture 修改业务策略／阈值，不能用其业务节点数或 principal 数量代替任务 agent 数量。显示层不授予工具权限或采用权。
+
+示例使用两份 stock 单 agent 声明组装普通 Module，保留既有 plain-proposal 约束、Registry 门、adapter 与调度器。
 
 ## 建立可信 HOST 边界
 

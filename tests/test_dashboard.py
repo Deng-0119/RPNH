@@ -171,8 +171,10 @@ def test_host_agent_mapping_is_explicit_validated_annotation_not_execution_autho
                 'agent_nodes':['loop.step']}
     other = RegistryDashboard(run.run_dir, catalog=run.catalog, presentation=manifest)
     value = other.dashboard()
-    assert value['agent_nodes'][0]['source'] == 'explicit_host_annotation'
-    assert value['agent_nodes'][0]['agent_ref'] is None
+    assert value['agent_nodes'] == []
+    assert value['presentation']['agent_nodes'] == ['loop.step']
+    assert value['presentation']['annotation_scope'] == 'current_annotation_not_historical_fact'
+    assert value['coverage']['agent_nodes'] == 'registered_binding_or_declared_llm_executor'
     assert value['net'] == run.dashboard()['net']
     for invalid in [['missing'],['loop.input'],['loop.step','loop.step'],'loop.step']:
         manifest['agent_nodes'] = invalid
@@ -219,3 +221,73 @@ def test_agent_classification_rejects_foreign_binding(agent_run,monkeypatch):
         return value
     monkeypatch.setattr(agent_run,'_load',load)
     with pytest.raises(ValueError,match='Agent binding differs'): agent_run.dashboard()
+
+
+def test_stock_agentloop_roles_read_actual_registered_bindings_without_dispatch(tmp_path):
+    from cpn.components.agent_loop.optional_host_bindings import make_optional_agent_host_bindings
+    from cpn.rpnh.agent_tasks import agent_task_catalog, agent_task_registration, EXECUTOR_KEY, TERMINAL_KEY
+    from cpn.rpnh.agent_workflows import (AgentWorkflowGraph, AgentWorkflowNode as Node,
+        AgentWorkflowPort as Port, AgentWorkflowEndpoint as End, AgentWorkflowArc as Arc,
+        AgentWorkflowExecution as Execution, build_agent_workflow_module, TEXT_SCHEMA)
+    from cpn.rpnh.llm_contracts import LLMInputTarget
+    from cpn.rpnh.registry.module_budgets import ModuleBudgetDeclaration
+    from cpn.rpnh.registry.schema_catalog import canonical_json
+    from cpn.rpnh.run import OwnerInput, start_run
+    graph = AgentWorkflowGraph(tuple(Node(name, 'Offline identity fixture; do not dispatch.',
+        (Port('request', 'task'),), (Port('result', 'task'),),
+        Execution(role='actor', tools=('complete_interaction', 'write_file')))
+        for name in ('curator', 'auditor')), (Arc('handoff', End('curator','result'), End('auditor','request')),),
+        End('curator','request'), End('auditor','result'))
+    module = build_agent_workflow_module(graph, executor_key=EXECUTOR_KEY, terminal_key=TERMINAL_KEY,
+        tools=(), required_schemas=(), max_attempts_per_node=2)
+    target = LLMInputTarget('offline-identity-only', 64, 65536)
+    task = OwnerInput(TEXT_SCHEMA, canonical_json('Identity fixture'), 'Identity fixture')
+    owner = start_run(module, agent_task_registration(), run_dir=tmp_path/'stock',
+        task_input=task, entry_inputs={'request':task},
+        budgets=ModuleBudgetDeclaration(tuple(module.to_dict()['budget_buckets']), ('rpnh/module_declaration/v1',), 4, 0, 4, 0),
+        model_condition=target.model_condition, owner_statement='Adopt only; no model dispatch',
+        command_id='test:stock-identity', catalog=agent_task_catalog(),
+        host_execution_bindings=make_optional_agent_host_bindings(target))
+    dashboard = RegistryDashboard(tmp_path/'stock', catalog=owner._core.catalog)
+    before = (owner._core.event_store.max_ordinal(), owner._core.event_store.writer_epoch)
+    frame = dashboard.dashboard()
+    assert {a['transition_id'] for a in frame['agent_nodes']} == {'team.curator', 'team.auditor'}
+    assert len({json.dumps(a['agent_ref'], sort_keys=True) for a in frame['agent_nodes']}) == 2
+    for agent in frame['agent_nodes']:
+        assert agent['source'] == 'registered_agent_binding'
+        registered = dashboard._load(owner._core, agent['agent_ref'], 'agent/v1', before[0])
+        binding = dashboard._load(owner._core, agent['executable_binding_ref'], 'executable_transition_binding/v1', before[0])
+        assert registered['agent_ref'] == binding['agent_ref'] == agent['agent_ref']
+        assert registered['shadow_transition_id'] == agent['transition_id']
+    assert all(not n['runtime']['firings'] for n in frame['net']['nodes'] if n['kind']=='transition')
+    assert before == (owner._core.event_store.max_ordinal(), owner._core.event_store.writer_epoch)
+
+
+def test_registered_custom_role_does_not_require_stock_llm_transport(tmp_path):
+    from cpn.rpnh.registry.identities import new_id
+    from cpn.rpnh.registry.models import VersionRef
+    from cpn.rpnh.registry.module_host_bindings import HostExecutionBinding
+    from cpn.rpnh.registry.strict_contracts import ref_payload
+    from cpn.rpnh.registry.module_budgets import ModuleBudgetDeclaration
+    from cpn.rpnh.registry.schema_catalog import canonical_json
+    from cpn.rpnh.run import OwnerInput, start_run
+    def bind(*, core, source_ref, **kwargs):
+        ref = VersionRef('agent/v1', new_id('agent'), new_id('agent_version'))
+        data = {'agent_id':str(ref.entity_id), 'agent_version_id':str(ref.version_id),
+                'agent_ref':ref_payload(ref), 'team_net_declaration_ref':ref_payload(source_ref.as_version_ref()),
+                'declared_agent_id':'custom-role', 'shadow_transition_id':'loop.step'}
+        core.publish_bytes(object_type=ref.entity_type, logical_id=ref.entity_id, version_id=ref.version_id,
+            payload=canonical_json(data), metadata=data, media_type='application/json',
+            schema_ref='registry_v1/agent/v1', idempotency_key='test:custom-role')
+        return {'loop.step':HostExecutionBinding(agent_ref=ref)}
+    module = fixture.declaration()
+    value = OwnerInput(fixture.VALUE, canonical_json(0), 'Offline role binding fixture')
+    owner = start_run(module, fixture.registration(), run_dir=tmp_path/'custom',
+        task_input=value, entry_inputs={'input':value},
+        budgets=ModuleBudgetDeclaration(tuple(module.to_dict()['budget_buckets']), ('rpnh/module_declaration/v1',), 8, 0, 8, 0),
+        model_condition='offline-custom-role', owner_statement='Identity fixture only; no execution',
+        command_id='test:custom-role-start', host_execution_bindings=bind)
+    frame = RegistryDashboard(tmp_path/'custom', catalog=owner._core.catalog).dashboard()
+    assert len(frame['agent_nodes']) == 1
+    assert frame['agent_nodes'][0]['source'] == 'registered_agent_binding'
+    assert frame['agent_nodes'][0]['agent_ref']['entity_type'] == 'agent/v1'

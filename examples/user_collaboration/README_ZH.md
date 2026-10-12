@@ -1,12 +1,22 @@
-# 多个用户共同构建同一任务网络
+# Agent 任务网共建与历史机制记录
 
 [English](README.md) | 中文 | [详细结果与分析](../../docs/results/user-collaboration-20261012/README_ZH.md)
 
-需要可独立运行、无需模型的示例，可从[原生电费协作](native_billing/README_ZH.md)开始：三个受控本地主体、连续两项贡献进入同一采用网，并提供真实 Viewer 截图。下方路线规划研究继续保留原结果与证据。
+## 当前协作入口
+
+当前协作入口是[Agent 任务网共建](agent_cobuild/README_ZH.md)。`curator.run` 与 `auditor.run` 两个原生任务 agent 使用 stock `AgentStage`／default `AgentLoop`，由两份 stock 单 agent 声明组成同一普通 Module，连接为 `curator.result → auditor.request`。两个受控原 principal 的确定性 source 程序分别加强 curator 输入来源合同和 auditor 对账合同。原 HOST 审阅精确 revision、连续推进受保护 Branch，再由 owner 在 target 执行前采用。
+
+source 程序、网外控制动作与 target agent 分层记录；单 parent 链不表示同 base 自动合并。`local_process` 脚本驱动从实际输入与工具返回计算，以已登记任务 agent 展示结构／协议，不声称真实模型调用或认知能力；运行结果、产物与 Viewer 证据以示例页记录为准。
+
+最初生成的 `AgentWorkflowGraph` 尝试被既有 plain-proposal `designer_constraints` 门正确拒绝。示例随后改用两份 stock 单 agent 声明组装普通 Module；未剥除图约束、修改 Registry 门、新增 adapter 或引入另一套调度。
+
+## 历史路线规划机制证据
+
+以下保留原 74-operation 业务工具网的代码、版本、结果、图像和失败。24 个 ingest → plan → validate 批次加 aggregate／publish 是业务计算结构，模型在网外提出配置；这些操作及作者不能计为任务 agent。[历史电费](native_billing/README_ZH.md)保留十操作工具网的贡献／采用机制，两项历史均不验证当前共建运行。
 
 三个独立受控的模拟 Registry 身份 A/B/C，共同修改同一个 24 批次路线规划任务网的配置。各自有独立 actor 和 session，由同一个可信 HOST 协调；它们不是三位真人或三个外部账号。模型提出修改，owner 接受一个版本，再由确定性 HOST 工具执行采用后的业务 Petri 网。
 
-## 先看官方 Viewer 中已采用的任务网
+### 原已采用业务网的官方 Viewer
 
 [![原 adopted-M2 runtime 的 Detailed flow 全景：全部 24 个批次分支与最终汇合](figures/adopted-M2.png)](figures/adopted-M2.png)
 
@@ -14,7 +24,7 @@
 
 卡片对应业务操作。A/B/C 是下文贡献记录中的配置作者，并不是这张纯工具 PN 上的三个运行时 Agent 节点。截图展示执行状态，没有按作者着色或作者／版本徽标。
 
-## 各方具体修改了哪些操作
+### 各方具体修改了哪些操作
 
 保留的配置声明将规划操作命名为 `batch_0.plan` 到 `batch_23.plan`。以下修改针对各操作的 `config.strategy`；place、transition、arc 的拓扑和可用算法保持不变。
 
@@ -28,7 +38,7 @@
 
 此表将已公开 module 声明与[回执派生的贡献记录](visuals/collaboration-evidence.json)对应，是文档中的核对说明，不是 Viewer 导出的节点归因叠层。B/C 重叠的六项修改在最终内容中只计一次；C2 吸收 B 的修改是复用，不能再计为 C 的独立贡献。B2 未被采用。[详细结果记录](../../docs/results/user-collaboration-20261012/README_ZH.md)保留未通过的提案、记录中的协调与合并决策、模型 usage 及证据范围。
 
-## 用原始 baseline 对照
+### 用原始 baseline 对照
 
 [![原 baseline runtime 的 Detailed flow 全景](figures/baseline.png)](figures/baseline.png)
 
@@ -38,7 +48,7 @@
 
 M2 与 baseline 在固定 development／eval 各 512 条路线上评估：官方序列分数降低约 **7.525%／8.376%**，平均行程成本增加约 **7.715%／8.421%**。时间窗仍有失败和未知。这些结果不衡量协作带来的因果收益，详见[完整结果与取舍](../../docs/results/user-collaboration-20261012/README_ZH.md)。
 
-## 用官方 Viewer 打开静态结构
+### 用官方 Viewer 打开静态结构
 
 在源码 checkout 中，使用已有且兼容的 RPNH 环境：
 
@@ -51,8 +61,8 @@ python examples/view_declaration.py collaboration-adopted
 
 命令显示从已记录 baseline／adopted module 编译的 **initial_configured 静态声明**，不含数据载荷或 runtime 身份。空／未标记状态属于声明状态，不是 PNG 中的已完成执行；没有执行历史、checkpoint 重放或 live run。两声明拓扑相同，candidate 在 batch 0–10 使用 `deadline_first`、11–23 使用 `zone_nearest`，替换 baseline 全部采用的 `nearest_neighbor`。完整配置声明分别见 [baseline](declarations/BASELINE_MODULE.json) 与 [adopted M2](declarations/ADOPTED_M2_MODULE.json)。
 
-## 本目录可复现的范围
+### 本目录可复现的范围
 
 可以阅读公开汇总结果、检查两张保留的 runtime 全景、打开两份静态结构。完整真实模型实验并非下载即可独立运行：它使用已有安装、已准入路线数据、用户自有 profile 与私有 Registry 状态。数据条款及评分器／源码身份在报告中。静态 Viewer 不代表私有 runtime 的公开重放。
 
-构建协作应用可看[原生协作指南](../../docs/guides/user-collaboration_ZH.md)；需要小型独立可执行 workflow 时，从[工作流模式](../workflow_patterns/README_ZH.md)开始。
+构建协作应用可看[原生协作指南](../../docs/guides/user-collaboration_ZH.md)；当前 agent 合同示例见 [curator → auditor 共建](agent_cobuild/README_ZH.md)。

@@ -1,0 +1,62 @@
+{
+  "checks": {
+    "category_totals_match": true,
+    "input_count_matches": true,
+    "record_count_matches": true,
+    "source_indices_complete": true,
+    "total_minutes_match": true,
+    "unique_source_ids": true
+  },
+  "count_checks": {
+    "counts_match": true,
+    "input_record_count": 4,
+    "normalized_record_count": 4,
+    "reconciled_source_count": 4,
+    "reported_record_count": 4
+  },
+  "lineage_retained": true,
+  "schema": "agent_cobuild_report/v1",
+  "source_reconciliation": [
+    {
+      "category": "planning",
+      "minutes": 12,
+      "source_id": "source-a",
+      "source_index": 0
+    },
+    {
+      "category": "review",
+      "minutes": 7,
+      "source_id": "source-b",
+      "source_index": 1
+    },
+    {
+      "category": "planning",
+      "minutes": 5,
+      "source_id": "source-c",
+      "source_index": 2
+    },
+    {
+      "category": "review",
+      "minutes": 0,
+      "source_id": "source-d",
+      "source_index": 3
+    }
+  ],
+  "source_reconciliation_required": true,
+  "totals": {
+    "by_category": [
+      {
+        "category": "planning",
+        "record_count": 2,
+        "total_minutes": 17
+      },
+      {
+        "category": "review",
+        "record_count": 2,
+        "total_minutes": 7
+      }
+    ],
+    "record_count": 4,
+    "total_minutes": 24
+  }
+}

@@ -1,0 +1,166 @@
+{
+  "agents": [
+    {
+      "description": "Workflow coordinator and final summarizer for the onboarding bundle.",
+      "role": "operations_manager",
+      "system_prompt": "You are the operations manager. Coordinate the workflow and drive the task to completion. Orchestrate the team: - workplace_services_admin: Owns account creation, hardware creation, and asset assignment. - policy_analyst: Verifies the onboarding SOP and standard device policy. Coordinate specialist work through the team. Synthesize worker outputs into the final onboarding completion summary."
+    },
+    {
+      "description": "Owns account creation, hardware creation, and asset assignment.",
+      "role": "workplace_services_admin",
+      "system_prompt": "You are the workplace services admin. Follow the onboarding standard and complete the user-account, catalog-order, and asset-assignment steps."
+    },
+    {
+      "description": "Verifies the onboarding SOP and standard device policy.",
+      "role": "policy_analyst",
+      "system_prompt": "You are the policy analyst. Confirm the onboarding standard and provide the policy guidance needed to complete the bundle."
+    }
+  ],
+  "domain": "office",
+  "goal": "New hire Leah Kim starts next week. The approved onboarding packet already provides the required details: - user id target: USR-LEAH-KIM - email: leah.kim@acme.example - department: Platform Operations - location: Austin, Texas - cost center: CC-1042 The team must review the onboarding standard, create Leah's user account, order the standard laptop, create the hardware asset with serial SN-LT-9401-AUS, assign it to Leah, and return a concise completion summary.",
+  "hub_role": "operations_manager",
+  "schema_version": "rpnh-ha/public-task/v2",
+  "task_id": "off-t1",
+  "tools": [
+    {
+      "description": "Read an onboarding packet or employee directory entry with identity, department, location, and cost-center context. `user_lookup` may be a packet key, proposed user ID, employee directory user ID, or normalized full name.",
+      "name": "read_user_directory",
+      "params": {
+        "user_lookup": "(str) Lookup key for the user directory. Matches packet keys, proposed user IDs, employee user IDs, or normalized full names."
+      }
+    },
+    {
+      "description": "Create a new employee account in the enterprise directory. user_id format.",
+      "name": "create_user_account",
+      "params": {
+        "department": "(str) Department name",
+        "email": "(str) Employee email address",
+        "first_name": "(str) Employee first name",
+        "last_name": "(str) Employee last name",
+        "location": "(str) Office location",
+        "title": "(str) Job title"
+      }
+    },
+    {
+      "description": "Read hardware and asset records including assignment, warranty, serial number, and associated cost center. `assigned_to` may be a user ID or employee name. `query` may be an asset ID, serial fragment, or other free-text filter.",
+      "name": "query_asset_inventory",
+      "params": {
+        "asset_type": "(str) Asset type: 'laptop', 'monitor', or 'phone'",
+        "assigned_to": "(str) Employee name or user ID the asset is assigned to",
+        "query": "(str) Free-text query or asset ID for asset lookup"
+      }
+    },
+    {
+      "description": "Create a new hardware asset record for a laptop or workplace device.",
+      "name": "create_hardware_asset",
+      "params": {
+        "assigned_to": "(str) Employee name or user ID",
+        "cost_center": "(str) Cost center code",
+        "model": "(str) Hardware model name",
+        "serial_number": "(str) Device serial number",
+        "warranty_expiration": "(str) Warranty expiry date, YYYY-MM-DD"
+      }
+    },
+    {
+      "description": "Assign or transfer a hardware asset to a named employee.",
+      "name": "update_asset_assignment",
+      "params": {
+        "action": "(str) Action: 'assign', 'transfer', or 'unassign'",
+        "asset_id": "(str) Asset ID to update",
+        "assigned_to": "(str) Employee name or user ID to assign to"
+      }
+    },
+    {
+      "description": "Submit a service-catalog equipment request such as a standard laptop or a developer workstation. requested_for format.",
+      "name": "order_service_catalog_item",
+      "params": {
+        "configuration": "(str) Configuration specification",
+        "item_name": "(str) Catalog item name",
+        "quantity": "(str) Number of items to order",
+        "requested_for": "(str) User ID to order for"
+      }
+    },
+    {
+      "description": "Retrieve incidents or change requests using a scoped query token designed for the active enterprise-management task. query is a plain record key. Do NOT use ServiceNow filter syntax.",
+      "name": "query_work_records",
+      "params": {
+        "fields": "(str) Fields to return",
+        "query": "(str) Plain record key or stored query tag. Do NOT use filter syntax like 'number=X'. The backend matches record_id or query_key after stripping simple ServiceNow-style prefixes.",
+        "record_type": "(str) Record type: 'incident' or 'change_request'",
+        "sort_by": "(str) Sort field"
+      }
+    },
+    {
+      "description": "Assign or re-route an incident to the correct owner or assignment group. record_id format.",
+      "name": "assign_work_record",
+      "params": {
+        "assigned_to": "(str) Employee or group to assign to",
+        "assignment_group": "(str) Assignment group name",
+        "note": "(str) Assignment note or reason",
+        "record_id": "(str) Record ID",
+        "record_type": "(str) Record type: 'incident' or 'change_request'"
+      }
+    },
+    {
+      "description": "Set planned start and end windows for a scoped change request while preserving sequencing rules. change_id format.",
+      "name": "schedule_change_request",
+      "params": {
+        "change_id": "(str) Change request ID",
+        "planned_end": "(str) Planned end datetime",
+        "planned_start": "(str) Planned start datetime",
+        "sequencing_note": "(str) Note about sequencing dependencies"
+      }
+    },
+    {
+      "description": "Create a downstream incident or related work record based on a report or dashboard threshold.",
+      "name": "create_followup_record",
+      "params": {
+        "parent_record_id": "(str) Optional incident/change/request ID the follow-up should be tied to",
+        "payload": "(str) Detail body or JSON payload",
+        "record_type": "(str) Record type for the new follow-up, usually incident",
+        "short_description": "(str) Brief description of the follow-up"
+      }
+    },
+    {
+      "description": "Retrieve enterprise SOPs and internal knowledge articles by exact stored query key, not by free-text search.",
+      "name": "search_knowledge_base",
+      "params": {
+        "audience": "(str) Target audience: 'it_staff' or 'manager'",
+        "query": "(str) Exact knowledge query key, not a free-text keyword or policy topic."
+      }
+    },
+    {
+      "description": "Retrieve a tagged set of expense or investment lines for cleanup or budget-allocation decisions. report_id format.",
+      "name": "query_expense_lines",
+      "params": {
+        "fields": "(str) Fields to return",
+        "hashtag": "(str) Expense tag or category",
+        "query": "(str) Query string for expense lookup"
+      }
+    },
+    {
+      "description": "Return the recommended retained investment lines for a tagged portfolio within the given budget. report_id format.",
+      "name": "optimize_budget_allocation",
+      "params": {
+        "budget": "(str) Budget amount",
+        "hashtag": "(str) Portfolio/budget tag",
+        "objective": "(str) Optimization objective"
+      }
+    },
+    {
+      "description": "Delete an expense or investment line as part of cleanup or portfolio pruning. High-risk financial write operation. expense_id format.",
+      "name": "delete_expense_line",
+      "params": {
+        "expense_id": "(str) Expense line ID",
+        "reason": "(str) Reason for deletion"
+      }
+    },
+    {
+      "description": "Read a dashboard metric and any associated follow-up threshold guidance.",
+      "name": "read_dashboard_metric",
+      "params": {
+        "dashboard_name": "(str) Dashboard name"
+      }
+    }
+  ]
+}

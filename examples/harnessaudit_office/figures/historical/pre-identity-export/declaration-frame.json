@@ -1,0 +1,602 @@
+{
+  "schema_version": "rpnh/dashboard/v1",
+  "source": {
+    "mode": "initial_configured",
+    "task_label": "HarnessAudit Office off-t1: initial declaration",
+    "verified_head_ordinal": null
+  },
+  "net": {
+    "schema_version": "rpnh/net_view/v1",
+    "source": {
+      "mode": "initial_configured",
+      "task_label": "HarnessAudit Office off-t1: initial declaration",
+      "verified_head_ordinal": null
+    },
+    "summary": {
+      "node_count": 13,
+      "transition_count": 4,
+      "place_count": 9,
+      "resource_place_count": 0,
+      "edge_count": 26,
+      "resource_edge_count": 0
+    },
+    "nodes": [
+      {
+        "id": "team.control__plan_to_specialist_1",
+        "label": "team.control__plan_to_specialist_1",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/rpnh_agent_text/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "team.control__plan_to_specialist_2",
+        "label": "team.control__plan_to_specialist_2",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/rpnh_agent_text/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "team.control__specialist_1_to_hub",
+        "label": "team.control__specialist_1_to_hub",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/rpnh_agent_text/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "team.control__specialist_2_to_hub",
+        "label": "team.control__specialist_2_to_hub",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/rpnh_agent_text/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "team.data__hub_finalize__result",
+        "label": "team.data__hub_finalize__result",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/rpnh_agent_text/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "team.data__hub_plan__plan",
+        "label": "team.data__hub_plan__plan",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/rpnh_agent_text/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "team.data__specialist_1__report",
+        "label": "team.data__specialist_1__report",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/rpnh_agent_text/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "team.data__specialist_2__report",
+        "label": "team.data__specialist_2__report",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/rpnh_agent_text/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "team.hub_finalize",
+        "label": "team.hub_finalize",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "team.hub_finalize",
+        "operation_id": "op_0",
+        "executor": "rpnh/default-agent/v1",
+        "inputs": [
+          "team.input__hub_finalize__specialist_1_report",
+          "team.input__hub_finalize__specialist_2_report"
+        ],
+        "outputs": [
+          "team.result",
+          "team.interrupt__hub_finalize__hub_finalize__specialist_1_report",
+          "team.interrupt__hub_finalize__hub_finalize__specialist_2_report"
+        ]
+      },
+      {
+        "id": "team.hub_plan",
+        "label": "team.hub_plan",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "team.hub_plan",
+        "operation_id": "op_1",
+        "executor": "rpnh/default-agent/v1",
+        "inputs": [
+          "team.request"
+        ],
+        "outputs": [
+          "team.output__hub_plan__plan",
+          "team.interrupt__hub_plan__hub_plan__request"
+        ]
+      },
+      {
+        "id": "team.ingress__hub_plan__request",
+        "label": "team.ingress__hub_plan__request",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/rpnh_agent_text/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "team.specialist_1",
+        "label": "team.specialist_1",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "team.specialist_1",
+        "operation_id": "op_2",
+        "executor": "rpnh/default-agent/v1",
+        "inputs": [
+          "team.input__specialist_1__plan"
+        ],
+        "outputs": [
+          "team.output__specialist_1__report",
+          "team.interrupt__specialist_1__specialist_1__plan"
+        ]
+      },
+      {
+        "id": "team.specialist_2",
+        "label": "team.specialist_2",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "team.specialist_2",
+        "operation_id": "op_3",
+        "executor": "rpnh/default-agent/v1",
+        "inputs": [
+          "team.input__specialist_2__plan"
+        ],
+        "outputs": [
+          "team.output__specialist_2__report",
+          "team.interrupt__specialist_2__specialist_2__plan"
+        ]
+      }
+    ],
+    "edges": [
+      {
+        "id": "edge:arc:team.control__plan_to_specialist_1:team.specialist_1:consume:-:1",
+        "source": "team.control__plan_to_specialist_1",
+        "target": "team.specialist_1",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:team.control__plan_to_specialist_2:team.specialist_2:consume:-:1",
+        "source": "team.control__plan_to_specialist_2",
+        "target": "team.specialist_2",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:team.control__specialist_1_to_hub:team.hub_finalize:consume:-:1",
+        "source": "team.control__specialist_1_to_hub",
+        "target": "team.hub_finalize",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:team.control__specialist_2_to_hub:team.hub_finalize:consume:-:1",
+        "source": "team.control__specialist_2_to_hub",
+        "target": "team.hub_finalize",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:team.data__hub_plan__plan:team.specialist_1:consume:-:1",
+        "source": "team.data__hub_plan__plan",
+        "target": "team.specialist_1",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:team.data__hub_plan__plan:team.specialist_2:consume:-:1",
+        "source": "team.data__hub_plan__plan",
+        "target": "team.specialist_2",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:team.data__specialist_1__report:team.hub_finalize:consume:-:1",
+        "source": "team.data__specialist_1__report",
+        "target": "team.hub_finalize",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:team.data__specialist_2__report:team.hub_finalize:consume:-:1",
+        "source": "team.data__specialist_2__report",
+        "target": "team.hub_finalize",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:team.hub_finalize:team.control__specialist_1_to_hub:produce:interrupted:1",
+        "source": "team.hub_finalize",
+        "target": "team.control__specialist_1_to_hub",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "interrupted",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "forward",
+        "forward_source": "team.control__specialist_1_to_hub"
+      },
+      {
+        "id": "edge:arc:team.hub_finalize:team.control__specialist_2_to_hub:produce:interrupted:1",
+        "source": "team.hub_finalize",
+        "target": "team.control__specialist_2_to_hub",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "interrupted",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "forward",
+        "forward_source": "team.control__specialist_2_to_hub"
+      },
+      {
+        "id": "edge:arc:team.hub_finalize:team.data__hub_finalize__result:produce:complete:1",
+        "source": "team.hub_finalize",
+        "target": "team.data__hub_finalize__result",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:team.hub_finalize:team.data__specialist_1__report:produce:interrupted:1",
+        "source": "team.hub_finalize",
+        "target": "team.data__specialist_1__report",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "interrupted",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "forward",
+        "forward_source": "team.data__specialist_1__report"
+      },
+      {
+        "id": "edge:arc:team.hub_finalize:team.data__specialist_2__report:produce:interrupted:1",
+        "source": "team.hub_finalize",
+        "target": "team.data__specialist_2__report",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "interrupted",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "forward",
+        "forward_source": "team.data__specialist_2__report"
+      },
+      {
+        "id": "edge:arc:team.hub_plan:team.control__plan_to_specialist_1:produce:complete:1",
+        "source": "team.hub_plan",
+        "target": "team.control__plan_to_specialist_1",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "control_only",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:team.hub_plan:team.control__plan_to_specialist_2:produce:complete:1",
+        "source": "team.hub_plan",
+        "target": "team.control__plan_to_specialist_2",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "control_only",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:team.hub_plan:team.data__hub_plan__plan:produce:complete:1",
+        "source": "team.hub_plan",
+        "target": "team.data__hub_plan__plan",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 2,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:team.hub_plan:team.ingress__hub_plan__request:produce:interrupted:1",
+        "source": "team.hub_plan",
+        "target": "team.ingress__hub_plan__request",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "interrupted",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "forward",
+        "forward_source": "team.ingress__hub_plan__request"
+      },
+      {
+        "id": "edge:arc:team.ingress__hub_plan__request:team.hub_plan:consume:-:1",
+        "source": "team.ingress__hub_plan__request",
+        "target": "team.hub_plan",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:team.specialist_1:team.control__plan_to_specialist_1:produce:interrupted:1",
+        "source": "team.specialist_1",
+        "target": "team.control__plan_to_specialist_1",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "interrupted",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "forward",
+        "forward_source": "team.control__plan_to_specialist_1"
+      },
+      {
+        "id": "edge:arc:team.specialist_1:team.control__specialist_1_to_hub:produce:complete:1",
+        "source": "team.specialist_1",
+        "target": "team.control__specialist_1_to_hub",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "control_only",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:team.specialist_1:team.data__hub_plan__plan:produce:interrupted:1",
+        "source": "team.specialist_1",
+        "target": "team.data__hub_plan__plan",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "interrupted",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "forward",
+        "forward_source": "team.data__hub_plan__plan"
+      },
+      {
+        "id": "edge:arc:team.specialist_1:team.data__specialist_1__report:produce:complete:1",
+        "source": "team.specialist_1",
+        "target": "team.data__specialist_1__report",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:team.specialist_2:team.control__plan_to_specialist_2:produce:interrupted:1",
+        "source": "team.specialist_2",
+        "target": "team.control__plan_to_specialist_2",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "interrupted",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "forward",
+        "forward_source": "team.control__plan_to_specialist_2"
+      },
+      {
+        "id": "edge:arc:team.specialist_2:team.control__specialist_2_to_hub:produce:complete:1",
+        "source": "team.specialist_2",
+        "target": "team.control__specialist_2_to_hub",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "control_only",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:team.specialist_2:team.data__hub_plan__plan:produce:interrupted:1",
+        "source": "team.specialist_2",
+        "target": "team.data__hub_plan__plan",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "interrupted",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "forward",
+        "forward_source": "team.data__hub_plan__plan"
+      },
+      {
+        "id": "edge:arc:team.specialist_2:team.data__specialist_2__report:produce:complete:1",
+        "source": "team.specialist_2",
+        "target": "team.data__specialist_2__report",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      }
+    ]
+  },
+  "boundaries": {
+    "entry": [
+      {
+        "name": "request",
+        "port": "team.request",
+        "place": "team.ingress__hub_plan__request"
+      }
+    ],
+    "exit": [
+      {
+        "name": "result",
+        "port": "team.result",
+        "place": "team.data__hub_finalize__result"
+      }
+    ],
+    "terminal_rules": [
+      {
+        "key": "rpnh/agent-task-terminal/v1",
+        "operation": "team.hub_finalize",
+        "transition_ids": [
+          "team.hub_finalize"
+        ],
+        "outcome": "complete",
+        "port": "team.result",
+        "place": "team.data__hub_finalize__result"
+      }
+    ],
+    "terminal_evidence": "not_provided"
+  },
+  "transition_bindings": [],
+  "presentation": {
+    "title": "HarnessAudit Office off-t1: initial declaration",
+    "description": "Initial off-t1 business workflow from pinned public task roles: coordinator plan, two specialists, coordinator finalization. Real public tool bindings; disconnected host configuration. No run, score or tool dispatch.",
+    "nodes": {},
+    "topology_digest": "6681ac9fefd248a07565320d6b4bfb96f8b26db44ebeb4b487e602dcf4a38fd1",
+    "status": "default"
+  },
+  "position": {
+    "mode": "live",
+    "cursor": null,
+    "latest_head": null
+  },
+  "coverage": {
+    "history": "unsupported",
+    "firings": "not_provided",
+    "agent_nodes": "not_provided",
+    "terminal_evidence": "not_provided"
+  },
+  "change": {},
+  "agent_nodes": []
+}

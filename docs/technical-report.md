@@ -6,7 +6,7 @@ metadata:
   audience: application-developer-and-researcher
   language: en
   counterpart: technical-report_ZH.md
-  revision: "2026-10-12.2"
+  revision: "2026-10-12.4"
   status: technical-report
   basis: "Deng-0119/RPNH at 6cec63ff5b7a0039611713961d00941767edaaf8"
 ---
@@ -20,7 +20,7 @@ English | [中文](technical-report_ZH.md) | [Documentation](index.md)
 **Updated:** 2026-10-12. **Implementation snapshot:**
 [`6cec63ff5b7a0039611713961d00941767edaaf8`][snapshot].
 Historical tests retain their own source identities in [§10](#10-historical-results-and-their-limits).
-The dated native examples added below retain their own execution windows; the earlier report snapshot and historical model/benchmark results remain separate.
+The dated native examples below retain their own execution windows; the earlier report snapshot and historical model/benchmark results remain separate.
 
 ## Abstract
 
@@ -77,6 +77,26 @@ Its [historical native result](results/tool-pipeline-20261008/README.md) preserv
 the input, source and scorer for the reported 2.000 kWh / 1.70 CNY result. That
 specific fixture establishes a calculation and evidence path, not a general
 business-task success rate.
+
+## Agent task networks and read-only projections
+
+Choose by modeled object: agent workflows describe task responsibilities and handoffs; domain algorithms and business systems are tools or external environments. ERP, 3-DOF, JB, HarnessAudit, AutomationBench, SlopCodeBench and RRSI remain genuine agent/role workflows. RRSI custom registered-host role PNs can have genuine agent bindings without using stock AgentLoop. Pure-tool pipelines, native-input gates, author principals and annotations do not become agents merely through Registry lineage.
+
+The current collaboration entry is [agent-network co-building](../examples/user_collaboration/agent_cobuild/README.md). Two native task-agent roles, `curator.run` and `auditor.run`, use stock `AgentStage`/default `AgentLoop` in an ordinary Module assembled from two stock single-agent declarations, with `curator.result → auditor.request`. Deterministic source programs from two controlled original principals strengthen the curator input-lineage contract and auditor reconciliation contract. The original HOST reviews exact revisions, advances a protected Branch sequentially and enables owner adoption before target execution.
+
+![Actual agent co-building Overview: Curator → Auditor.](../examples/user_collaboration/agent_cobuild/figures/overview-panorama.png)
+
+The 12 October UTC fresh03 protocol run retained both contracts in the exact adopted declaration and each role’s two real request recipes. Two main-task firings and two native AgentLoops completed four scripted turns and six tool actions; the independent original-input check verified four source records and 24 minutes (planning 17, review 7). The [actual main-task PN](../examples/user_collaboration/agent_cobuild/figures/petri-panorama.png) has five nodes and six arcs. Registered file-I/O child nets remain separate. All three official Viewer capture windows preserved head/event count 1099 and writer epoch 2; [capture provenance](../examples/user_collaboration/agent_cobuild/figures/provenance.json) identifies their source windows. No external provider or cognitive-quality claim is involved.
+
+Source programs, external control actions and target agents remain separate; this single-parent chain does not imply automatic same-base merging. A `local_process` scripted driver computes from actual inputs and tool returns. This demonstrates structure and protocol using registered task agents. It makes no live-model or cognition claim; execution results, artifacts and Viewer evidence are reported on the example page.
+
+The example assembles two stock single-agent declarations into an ordinary Module, preserving the existing plain-proposal constraints, Registry gates, adapter and scheduler.
+
+Overview is a read-only agent projection, not a reduced executable PN. `registered_agent_binding` traces to the exact executable binding and agent reference; `declared_llm_executor` establishes a declaration only, not execution; `explicit_host_annotation` is an unconfirmed display annotation and cannot establish agent identity. Roles are grouped through explicit scoped identity, not equal names, model names or user accounts. An edge retains original path provenance and denotes a structural path to the next agent, not observed firing order or proof that a guard passes or an all-input join is satisfied. The full PetriNet and owning Registry retain authority, guards, joins and actual loop/turn/action, tool and product references. Managed children/actions are not additional PN transitions; independent child Registries remain independent.
+
+Static declarations and runtime records are identified separately. An empty overview alone does not disprove a genuine agent workflow in source; declared or registered identity does not prove execution of this task.
+
+The ERP / AutomationBench / HarnessAudit Office / SlopCodeBench static exports contain 1 / 1 / 4 / 1 declared roles. Identity export corrections preserve the original frames and images; they do not rerun or recertify those benchmarks.
 
 ## Research context and reading route
 
@@ -245,6 +265,8 @@ Returned output, later submitted-request inclusion, observed business state and
 model semantic use remain different claims. Missing policies preserve ordinary
 serial/toolkit behavior.
 
+Managed children are call evidence within the parent operation, not extra PN transitions. A returned parent, enclosing completion and business success require separate checks; none establishes execution of a child blocked by an isolation prerequisite.
+
 Details: [controlled managed tools](controlled-managed-tools.md), [customization](guides/customization.md).
 Code: [scheduler][scheduler], [program broker][broker], [isolated runtime][isolation],
 [pipeline declaration][pipeline-module].
@@ -372,6 +394,7 @@ The installed entry is `rpnh`; the user-owned provider/exact-model catalog start
 empty. Start with [installation](guides/installation.md) and [models](guides/models.md).
 Choose an example by the boundary you want to inspect:
 
+- [Agent-network co-building](../examples/user_collaboration/agent_cobuild/README.md): two stock AgentLoop roles with sequential original-principal contract contributions and owner adoption; scripted structure/protocol evidence.
 - [Workflow patterns](../examples/workflow_patterns/README.md): serial/parallel
   dependencies with scripted local responses by default.
 - [Native plugin](../examples/native_plugin/README.md): editable schemas and an
@@ -405,6 +428,8 @@ inputs, source identities, commands and limitations. Publication commits are not
 reruns. Runtime completion does not replace original business acceptance.
 
 ### Controlled multi-user collaboration
+
+This historical execution PN is 24 ingest → plan → validate batches plus aggregate/publication: 74 business-tool operations. Models authored configurations outside the net. These are not 74 agents or execution evidence for the current co-building net.
 
 The [12 October 2026 study](results/user-collaboration-20261012/README.md) completed native proposals, review, explicit peer coordination, protected-branch merge/adoption, business execution and independent evaluation with three controlled simulated Registry identities and two real models. B switched models within its existing identity and cumulative budget. A total of 22 logical calls / provider-attempt specifications included failed attempts; HTTP-attempt counts remain unknown.
 
@@ -499,21 +524,11 @@ It is not certification of later PN or origin-query commits. This update reran
 none of those windows. [Release-validation history](guides/release-validation.md)
 provides the remaining version-specific checks.
 
-## Native input and collaboration
+<a id="native-input-and-collaboration"></a>
 
-The original input boundary admits an exact input against the selected run, task, net, wait and firing. A trusted local front door binds the submitting principal/session; a browser field does not select that authority. The accepted [mock refund approval](../examples/approval_workflow/README.md) records requester and approver inputs and two settlements; [external-result quote intake](../examples/a2a_quote/README.md) records one controlled verifier input and one settlement. Both use synthetic business inputs. The quote is a deterministic external-result example; its historical A2A module name is retained for CLI/schema compatibility. It does not implement A2A SDK or OID4VP interoperability.
+## Historical native-input and contribution evidence
 
-The [native billing collaboration](../examples/user_collaboration/native_billing/README.md) exercises definition ownership separately from input approval. A usage contributor tightens `check_usage_input.run`; the owner reviews and advances the protected Branch. A tariff contributor starts from those exact accepted revision bytes, tightens `check_tariff_input.run`, and receives the second review/advance. The owner then adopts the revision containing both contributions before the ten-step business executes. This is a single-parent ancestor chain. A same-base resolver regression retains the actual `coupled_contract` limitation: selecting one side can discard the other change. It is not proof of automatic two-parent merging. Three controlled local Registry identities are not external SSO or evidence of real-human authorship.
-
-This controlled local example demonstrates traceability of recorded contributions and native execution. Its scope does not include performance comparison, external identity authentication or automatic multi-parent merging; dated source identities and image hashes are recorded in the [capture provenance](../examples/user_collaboration/native_billing/figures/provenance.json).
-
-![Actual native multi-user billing PN panorama, with ten settled business firings.](../examples/user_collaboration/native_billing/figures/panorama.png)
-
-The original capture shows all 28 nodes and 29 arcs of the adopted net. Original Registry readback confirms two source proposals, ten business settlements, twelve resources and one complete terminal, with three `[0,0]` model counters and the exact 2.000 kWh / CNY 1.70 report. [The example](../examples/user_collaboration/native_billing/README.md) includes each contributor and separate owner adoption; [provenance](../examples/user_collaboration/native_billing/figures/provenance.json) keeps execution and capture source windows distinct.
-
-![Actual Viewer focus on the inherited usage contribution and its recorded proposer.](../examples/user_collaboration/native_billing/figures/contributor-2.png)
-
-The Viewer connects the same PN operation node to its changed `value/config/max_integer` field, recorded proposer, and exact proposal/base/candidate revision references. The usage change remains visible as an inherited contribution in the final adopted net; the example links the full reference captures and the separate owner adoption action. This makes the path from a business node through its reviewed revision to adoption inspectable within one execution model.
+The historical [mock approval](../examples/approval_workflow/README.md), [external-result quote intake](../examples/a2a_quote/README.md) and [native billing contribution](../examples/user_collaboration/native_billing/README.md) examples retain their original source windows, Viewer images, results and authority limits. They demonstrate exact native-input admission or sequential definition contribution, protected-Branch advance and owner adoption around synthetic business/tool fixtures. Their business operations and controlled principals are not task agents; these records do not validate the current agent co-building run, real A2A/OID4VP interoperability, external identity authentication or automatic multi-parent merging.
 
 ## References
 

@@ -1,7 +1,7 @@
 {
   "example": "slopcodebench",
   "title": "SlopCodeBench checkpoint actor: initial declaration",
-  "frame_sha256": "605befc3f6cd0f49fec27ab1764916f8f5aa9c7e5a18fad8f4cd5afd35bbf058",
+  "frame_sha256": "560335e8a05051ac829f48d2c052e8588c722f84225db5aad3c46f7dd248c067",
   "source_commit": "270b76012a571286d303047547bd93cfecaa19c5",
   "scope": "Initial per-checkpoint solve declaration with session_command bound as a managed tool. No Session, shell command, model call or benchmark evaluation.",
   "summary": {
@@ -32,6 +32,12 @@
     "provenance": "viewer-export-provenance.json",
     "sha256": "bd1ae93a20e138e3967b4f25c17edb482a6c3b10fb8bfbc569ad198e0f11a393",
     "view": "PetriNet",
+    "runtime_evidence": false,
+    "source_frame": "historical/pre-identity-export/declaration-frame.json"
+  },
+  "identity_export": {
+    "provenance": "identity-export-provenance.json",
+    "scope": "declaration_only",
     "runtime_evidence": false
   }
 }

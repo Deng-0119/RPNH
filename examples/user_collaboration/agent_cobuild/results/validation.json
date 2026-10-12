@@ -1,0 +1,193 @@
+{
+  "status": "NATIVE_COBUILD_EXECUTION_AND_INDEPENDENT_RESULT_PASS",
+  "result": {
+    "status": "PASS",
+    "verified_against": "original_input_not_report_flags",
+    "record_count": 4,
+    "source_ids": [
+      "source-a",
+      "source-b",
+      "source-c",
+      "source-d"
+    ],
+    "totals": {
+      "record_count": 4,
+      "total_minutes": 24,
+      "by_category": [
+        {
+          "category": "planning",
+          "record_count": 2,
+          "total_minutes": 17
+        },
+        {
+          "category": "review",
+          "record_count": 2,
+          "total_minutes": 7
+        }
+      ]
+    },
+    "claim": "deterministic_result_and_contract_compliance_only"
+  },
+  "distinct_controlled_original_principals": 3,
+  "distinct_contributors": 2,
+  "source_program_settlements": 2,
+  "target_agent_nodes": 2,
+  "target_agent_loop_versions": 12,
+  "target_firings": 2,
+  "target_turns": 4,
+  "target_actions": 6,
+  "actual_model_call_counts": [
+    4,
+    0
+  ],
+  "accounting_meaning": "settled scripted task calls, post-limit excess",
+  "external_provider_calls": 0,
+  "accepted_revision": {
+    "schema_version": "rpnh/collaboration/source_version_ref/v1",
+    "source_id": "agent-cobuild-owner-39284846e3784fc8aa6d57748229adc0",
+    "ref": {
+      "entity_type": "collaboration_net_revision/v1",
+      "logical_id": "resource:bb77a03a5b265db590ab06d3bbeb5f69",
+      "version_id": "resource_version:fcbcb9d3d3b35e7dacd33d521ba35964"
+    }
+  },
+  "adopt_receipt_ref": {
+    "entity_type": "user_collaboration_receipt/v1",
+    "logical_id": "resource:82798e5d145e5c4d87b4bf707dca954a",
+    "version_id": "resource_version:0c7de10ed6d65e95a48e086f6bd6496f"
+  },
+  "adopted_net_ref": {
+    "entity_type": "net_instance/v1",
+    "logical_id": "net_instance:b753b0b8c0a0588093600d0815381575",
+    "version_id": "net_instance_version:baf44762e8925d50a97f8cb3cc997845"
+  },
+  "terminal": {
+    "final_checkpoint_ref": {
+      "entity_type": "marking_checkpoint/v1",
+      "logical_id": "marking_checkpoint:2d75f73224bb5911a79d65def3223793",
+      "version_id": "marking_checkpoint_version:16a56b6b3a6057749be28b0e6c564f46"
+    },
+    "final_result_index_ref": {
+      "entity_type": "final_result_index/v1",
+      "logical_id": "terminal_evidence:1705a12a2abf47688036eb607beacc32",
+      "version_id": "terminal_evidence_version:a2067d38902f43159665bae8c4ae5b81"
+    },
+    "producer": "rpnh/agent-task-terminal/v1",
+    "run_outcome": "complete",
+    "run_ref": {
+      "entity_type": "native_run_identity/v1",
+      "logical_id": "run:984cf24c64e848c68bfcaafedbae3398",
+      "version_id": "run_version:33d2effe046a46948c7139bc1f85524d"
+    },
+    "terminal_evidence_ref": {
+      "entity_type": "run_terminal_evidence/v1",
+      "logical_id": "terminal_evidence:e41c7b3ab3264e83accb030a6a63abfa",
+      "version_id": "terminal_evidence_version:9db25f41fd874875b2d5e2eea94c3fd1"
+    },
+    "terminal_occurrence_ref": {
+      "entity_type": "transition_firing/v1",
+      "logical_id": "transition_firing:12843d79545151f4b5f00c11c9391c5b",
+      "version_id": "transition_firing_version:fbbda46e4b5e5e51822d026b2ba838ae"
+    },
+    "terminal_result_ref": {
+      "entity_type": "resource_version/v1",
+      "logical_id": "resource:8e7cbd29eb8f5641a4cda103b890e2f8",
+      "version_id": "resource_version:427306fe37ac5d30b127f75d6f6ee1ad"
+    }
+  },
+  "roles": [
+    {
+      "role": "auditor",
+      "agent_ref": {
+        "entity_type": "agent/v1",
+        "logical_id": "agent:a731852c36d941958f158a5b9045d816",
+        "version_id": "agent_version:96084165b881496596991322d65e6bf5"
+      },
+      "execution_binding_ref": {
+        "entity_type": "executable_transition_binding/v1",
+        "logical_id": "executable_transition_binding:ab2370d683565703ad89a099a482522b",
+        "version_id": "executable_transition_binding_version:0978cc1419e45371a6ed6e9d2cbee8e0"
+      },
+      "loop_ref": {
+        "entity_type": "agent_loop/v1",
+        "logical_id": "agent_loop:4614426902f14679b97dabf485e13d64",
+        "version_id": "agent_loop_version:6c2bd8e8285a5aa38c47407a792e1bfd"
+      },
+      "request_resource_refs": [
+        {
+          "resource_id": "resource:4cb2cc802f215940bb21599c81bb9e9f",
+          "resource_version_id": "resource_version:2a3d22d878ee5951afd9fcf0800b6a36"
+        },
+        {
+          "resource_id": "resource:7bc9fbefa0d9558eaca2eadf4b8ca5e3",
+          "resource_version_id": "resource_version:25fa6589e98c5409b88c5c079ca22c7d"
+        }
+      ],
+      "action_refs": [
+        {
+          "entity_type": "agent_action/v2",
+          "logical_id": "agent_action:027a13ea429552fd8dd827f821e31a7c",
+          "version_id": "agent_action_version:512c92e754ae5442b70220598a7b0f21"
+        },
+        {
+          "entity_type": "agent_action/v2",
+          "logical_id": "agent_action:5c5546a765205bcca936a37d25576b50",
+          "version_id": "agent_action_version:6aba8d2a9ad05a4db124316a06f1131b"
+        },
+        {
+          "entity_type": "agent_action/v2",
+          "logical_id": "agent_action:7a2eebedb17057028eef06e5f04ee6b9",
+          "version_id": "agent_action_version:27fb9895b43a59499f52b0e00ecc2cf2"
+        }
+      ]
+    },
+    {
+      "role": "curator",
+      "agent_ref": {
+        "entity_type": "agent/v1",
+        "logical_id": "agent:17b033ecb2d84559acdc3ff1ddef696d",
+        "version_id": "agent_version:99ab504323d144f58f9789e37f875399"
+      },
+      "execution_binding_ref": {
+        "entity_type": "executable_transition_binding/v1",
+        "logical_id": "executable_transition_binding:59d78a3ef14853c096968eefed6c7ced",
+        "version_id": "executable_transition_binding_version:d0a3f6d2dbf35f1da408468e05602163"
+      },
+      "loop_ref": {
+        "entity_type": "agent_loop/v1",
+        "logical_id": "agent_loop:4815d53cbe2a4aa1bbf6cae9677870d4",
+        "version_id": "agent_loop_version:c8a0399b9d5a54378f40acee3cb604d8"
+      },
+      "request_resource_refs": [
+        {
+          "resource_id": "resource:6750b749e3715046b400ec6437e59e5e",
+          "resource_version_id": "resource_version:a4090b1718255a19a6c76759fb2d9aa4"
+        },
+        {
+          "resource_id": "resource:8cc62aceb90758319ac2fde8038293f4",
+          "resource_version_id": "resource_version:9906b5cd15c75552899859c10ad9cd19"
+        }
+      ],
+      "action_refs": [
+        {
+          "entity_type": "agent_action/v2",
+          "logical_id": "agent_action:688e78e17f2750b6977b2ad569806d54",
+          "version_id": "agent_action_version:d0568913755754ec8e748b7fbdce837c"
+        },
+        {
+          "entity_type": "agent_action/v2",
+          "logical_id": "agent_action:f4666547b14d505381e46e178bf2dfbe",
+          "version_id": "agent_action_version:5e5c9634238c5754a19e748ae5a45998"
+        },
+        {
+          "entity_type": "agent_action/v2",
+          "logical_id": "agent_action:374a77339c0e54269f0114e2ebcbf7d8",
+          "version_id": "agent_action_version:d1339192993b5f5ca97fa66ab193165c"
+        }
+      ]
+    }
+  ],
+  "cognition": "NOT_RUN_NOT_CLAIMED",
+  "unvisited_paths": "framework interrupted outcomes not run; no rework branch declared",
+  "stdout_correction": "Original run03 stdout agent_nodes=12 counted loop record versions; corrected CLI counts two logical loop IDs. Original stdout retained; no task rerun."
+}

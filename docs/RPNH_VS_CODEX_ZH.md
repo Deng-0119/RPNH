@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: RPNH_VS_CODEX.md
-  revision: "2026-10-12.2"
+  revision: "2026-10-12.4"
   status: source-reviewed-pre-release
 ---
 
@@ -107,12 +107,14 @@ Registry；共享 owner lease 会阻止并发可写前端。每个可独立切�
   graph 设计都属于用户；
 - 独立仓库是通用 harness 的权威；历史实验 workspace 不是运行时依赖。
 
-## 从可运行示例检查权威边界
+## 从示例检查权威边界
 
-不用真实模型也能观察同一执行边界。[模拟审批](../examples/approval_workflow/README_ZH.md)和[外部结果接入报价](../examples/a2a_quote/README_ZH.md)将受控输入绑定到原 Registry 等待。[原生电费协作](../examples/user_collaboration/native_billing/README_ZH.md)记录两项连续贡献、owner 审阅／Branch 推进，以及业务执行前的显式 adoption。
+当前协作入口是[Agent 任务网共建](../examples/user_collaboration/agent_cobuild/README_ZH.md)。`curator.run` 与 `auditor.run` 两个原生任务 agent 使用 stock `AgentStage`／default `AgentLoop`，由两份 stock 单 agent 声明组成同一普通 Module，连接为 `curator.result → auditor.request`。两个受控原 principal 的确定性 source 程序分别加强 curator 输入来源合同和 auditor 对账合同。原 HOST 审阅精确 revision、连续推进受保护 Branch，再由 owner 在 target 执行前采用。
 
-这些案例使用官方只读 Viewer 查看实际 PN 和原引用。贡献配色表示记录中的提议者，采用另行展示，不认证作者或给 baseline 节点归属。接口增加观察能力，执行权威仍在原系统。[技术报告](technical-report_ZH.md#原生输入与协作)连贯说明证据与限制；各示例页包含真实图像、源码窗口和可调用入口。
+source 程序、网外控制动作与 target agent 分层记录；单 parent 链不表示同 base 自动合并。`local_process` 脚本驱动从实际输入与工具返回计算，以已登记任务 agent 展示结构／协议，不声称真实模型调用或认知能力；运行结果、产物与 Viewer 证据以示例页记录为准。
 
-![实际原生多人电费 PN 全景，十次业务结算。](../examples/user_collaboration/native_billing/figures/panorama.png)
+[模拟审批](../examples/approval_workflow/README_ZH.md)和[外部结果接入报价](../examples/a2a_quote/README_ZH.md)是原生输入／权限 fixture，不证明真实 A2A／OID4VP 互操作。[历史路线](../examples/user_collaboration/README_ZH.md#历史路线规划机制证据)与[原生电费](../examples/user_collaboration/native_billing/README_ZH.md)保留原业务工具网、版本、结果、图像与失败；它们的业务操作和受控作者不计为任务 agent，也不验证当前示例。
 
-原始图显示同一采用网的 28 节点／29 弧；两份 source 提案、十次业务结算、十二项资源和一个 complete 终态均由原 Registry 读回。三个模型计数均 `[0,0]`；结果逐字段等于 2.000 kWh／1.70 CNY。贡献节点及 owner 单独采用图见[示例](../examples/user_collaboration/native_billing/README_ZH.md)，执行与捕获源码窗口见[provenance](../examples/user_collaboration/native_billing/figures/provenance.json)。
+Overview 是只读 agent 投影，不是简化后可执行 PN。`registered_agent_binding` 可追到精确 executable binding 与 agent 引用；`declared_llm_executor` 仅确认声明，不证明执行；`explicit_host_annotation` 是未确认显示注释，不建立 agent 身份。角色按显式 scoped identity 分组，不能凭同名、模型名或用户账号合并。边保留原路径依据，表示通往下一 agent 的结构路径，不证明已发生顺序、guard 通过或全输入 join 满足。完整 PetriNet 与所属 Registry 保留权限、guard、join 以及实际 loop／turn／action、工具和产物引用。managed child／action 不计为新增 PN transition，独立 child Registry 保持独立。
+
+贡献配色表示记录中的提议者，采用另行展示，不认证作者或赋予 baseline 归属。接口增加观察能力，执行权威仍在原系统。[技术报告](technical-report_ZH.md#agent-任务网与只读投影)说明分层与历史限制。

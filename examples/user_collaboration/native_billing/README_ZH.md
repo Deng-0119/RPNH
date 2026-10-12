@@ -1,21 +1,23 @@
 ---
 name: rpnh-native-billing-collaboration
-description: "三个受控本地主体共建同一个原生电费 PN，保留原执行与 Viewer 证据。"
+description: "历史十操作电费工具 PN：受控贡献、原采用机制与按日期保留的执行证据。"
 metadata:
   document-kind: example
   audience: trusted-host-developer
   language: zh-CN
   counterpart: README.md
-  revision: "2026-10-12.2"
-  status: validated-local-native-and-viewer
+  revision: "2026-10-12.4"
+  status: historical-validated-local-native-and-viewer
   basis: "public synthetic tool pipeline; original Registry and HOST authority"
 ---
 
-# 三个本地主体共建一个电费 Petri 网
+# 历史原生电费贡献机制
 
 [English](README.md) | 中文
 
-三个受控本地主体共同构建一个电费网：用量贡献者提交第一项修改，电价贡献者继承已接受版本继续修改，owner 审阅并采用最终网。原生运行和实际官方 Viewer 已于 2026-10-12 核验。十步业务得到 **2.000 kWh／1.70 CNY**。
+当前 agent 合同协作入口为 [curator → auditor 共建](../agent_cobuild/README_ZH.md)。本页保留历史十操作电费工具 PN 及其原代码、版本、图像、结果和失败。两份确定性 source 程序修改业务校验上限；这些作者和电费操作均不是任务 agent，本记录不验证当前 agent 示例。
+
+在原电费案例中，用量贡献者提交第一项修改，电价贡献者继承已接受版本继续修改，owner 审阅并采用最终网。原生运行和官方 Viewer 已于 2026-10-12 核验，业务结果为 **2.000 kWh／1.70 CNY**。
 
 ![实际完成的原生电费 PetriNet：全部 28 节点、29 弧。](figures/panorama.png)
 
@@ -45,7 +47,7 @@ metadata:
 
 owner 和两位贡献者拥有三个不同的原 task Registry、principal 记录及 HOST session，由一个可信本地进程控制。它们是模拟本地主体，不是三位真人、外部认证账号或独立 OS 安全域。
 
-每位贡献者执行一次原生 source 操作，从精确已接受 base 字节生成完整 revision，经原 gateway 发布 stock TEXT。`ingest_completed_text` 从原记录重新闭合成功 source firing、invocation、产品与 principal。每条 proposal 有自己的 delivery witness；其中 `synthetic_fixture=false` 表示采用原始执行来源通路，参与者和业务输入仍是合成的。
+每份确定性贡献者程序执行一次原生 source 操作，从精确已接受 base 字节生成完整 revision，经原 gateway 发布 stock TEXT。`ingest_completed_text` 从原记录重新闭合成功 source firing、invocation、产品与 principal。每条 proposal 有自己的 delivery witness；其中 `synthetic_fixture=false` 表示采用原始执行来源通路，参与者和业务输入仍是合成的。
 
 目标发布 principal 不替代记录中的提议者。owner 分别批准两条精确提案，完成两次受保护 Branch advance，再通过 `owner.control.edits.submit` 单独采用最终版本。两个 advance receipt 和一个 adoption receipt 均由原产品提交边界生成。运行沿用既有调度与权限检查，不调用模型、provider、钱包或外部业务服务。
 
@@ -65,12 +67,12 @@ python -m examples.user_collaboration.native_billing.run --work-dir /path/to/sho
 
 在 Viewer 中：
 
-1. 打开 **PetriNet**，查看全部 28 节点和 29 弧。
+1. 打开 **PetriNet**，查看全部 28 节点和 29 弧。纯工具网的 agent Overview 可以为空；**Detailed flow** 展示业务工具结构。
 2. 打开 **用户贡献**，选择任一记录中的提议者，聚焦 `check_usage_input.run` 或 `check_tariff_input.run`。
 3. 检查 `value/config/max_integer` 及其精确 proposal/base/candidate 引用。
 4. 打开**未映射至节点的独立行为证据**，查看 owner adoption。
 
-## 已核验结果与源码身份
+## 历史结果与源码身份
 
 记录的原生运行包含两次完成的 source TEXT firing、两条已批准提案、两次受保护 Branch advance、一次 owner adoption、十次业务结算、十二项业务资源及一个 complete 业务终态。三个模型计数均为 `[0, 0]`。完整报告逐字段匹配原 fixture：**2.000 kWh／1.70 CNY**。
 

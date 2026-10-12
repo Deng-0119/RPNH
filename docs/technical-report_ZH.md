@@ -6,7 +6,7 @@ metadata:
   audience: application-developer-and-researcher
   language: zh-CN
   counterpart: technical-report.md
-  revision: "2026-10-12.2"
+  revision: "2026-10-12.4"
   status: technical-report
   basis: "Deng-0119/RPNH at 6cec63ff5b7a0039611713961d00941767edaaf8"
 ---
@@ -20,7 +20,7 @@ metadata:
 **更新日期：** 2026-10-12。**实现快照：**
 [`6cec63ff5b7a0039611713961d00941767edaaf8`][snapshot]。
 历史测试分别保留自己的源码身份，见[第 10 节](#10-历史结果及其限制)。
-下方新增原生案例分别保留自己的执行窗口；报告原快照和历史模型／benchmark 结果仍单独标识。
+下方原生案例分别保留自己的执行窗口；报告原快照和历史模型／benchmark 结果仍单独标识。
 
 ## 摘要
 
@@ -62,6 +62,26 @@ IPC 权限。真实模型 route 必须单独、显式传入。
 其[历史原生运行结果](results/tool-pipeline-20261008/README_ZH.md)保留了产生
 2.000 kWh / 1.70 CNY 结果的输入、源码和 scorer。该特定 fixture 证明一条计算及证据路径，
 不能推广为一般业务任务的成功率。
+
+## Agent 任务网与只读投影
+
+按建模对象选择：agent 工作流描述任务职责与交接，领域算法和业务系统是工具或外部环境。ERP、3-DOF、JB、HarnessAudit、AutomationBench、SlopCodeBench 与 RRSI 保留为真实 agent／角色工作流。RRSI 自定义 registered-host role PN 也可具有真实 agent 绑定，不要求一律使用 stock AgentLoop。纯工具流水线、原生输入 gate、作者 principal 和显示注释不会仅因 Registry 来源链而变成 agent。
+
+当前协作入口是[Agent 任务网共建](../examples/user_collaboration/agent_cobuild/README_ZH.md)。`curator.run` 与 `auditor.run` 两个原生任务 agent 使用 stock `AgentStage`／default `AgentLoop`，由两份 stock 单 agent 声明组成同一普通 Module，连接为 `curator.result → auditor.request`。两个受控原 principal 的确定性 source 程序分别加强 curator 输入来源合同和 auditor 对账合同。原 HOST 审阅精确 revision、连续推进受保护 Branch，再由 owner 在 target 执行前采用。
+
+![实际 Agent 共建 Overview：Curator → Auditor。](../examples/user_collaboration/agent_cobuild/figures/overview-panorama.png)
+
+10月12日 UTC 的 fresh03 协议运行将两项合同保留在精确采用声明和每角色两次真实请求中。两次主任务 firing、两个原生 AgentLoop 完成四次脚本 turn、六个工具 action；独立原输入检查核对四条来源、24分钟（planning17、review7）。[实际主任务 PN](../examples/user_collaboration/agent_cobuild/figures/petri-panorama.png)为五节点六弧，原登记的文件 I/O 子网保持分开。三个官方 Viewer 捕获窗口前后 head／事件数均为 1099、writer epoch 均为 2，[捕获来源](../examples/user_collaboration/agent_cobuild/figures/provenance.json)标明各自源码窗口；不包含外部 provider 调用或认知质量主张。
+
+source 程序、网外控制动作与 target agent 分层记录；单 parent 链不表示同 base 自动合并。`local_process` 脚本驱动从实际输入与工具返回计算，以已登记任务 agent 展示结构／协议，不声称真实模型调用或认知能力；运行结果、产物与 Viewer 证据以示例页记录为准。
+
+示例使用两份 stock 单 agent 声明组装普通 Module，保留既有 plain-proposal 约束、Registry 门、adapter 与调度器。
+
+Overview 是只读 agent 投影，不是简化后可执行 PN。`registered_agent_binding` 可追到精确 executable binding 与 agent 引用；`declared_llm_executor` 仅确认声明，不证明执行；`explicit_host_annotation` 是未确认显示注释，不建立 agent 身份。角色按显式 scoped identity 分组，不能凭同名、模型名或用户账号合并。边保留原路径依据，表示通往下一 agent 的结构路径，不证明已发生顺序、guard 通过或全输入 join 满足。完整 PetriNet 与所属 Registry 保留权限、guard、join 以及实际 loop／turn／action、工具和产物引用。managed child／action 不计为新增 PN transition，独立 child Registry 保持独立。
+
+静态声明与运行分别标识；空概览本身不否定源码中的真实 agent 工作流，声明或已登记身份也不证明本次任务已执行。
+
+ERP／AutomationBench／HarnessAudit Office／SlopCodeBench 的静态导出分别含 1／1／4／1 个声明角色。身份导出修正保留原 frame 与图像，不重跑或重新认证这些 benchmark。
 
 ## 研究背景与阅读路径
 
@@ -193,6 +213,8 @@ Native plugin 自身则是可信 HOST 代码。
 准确的输出 reader 对已登记结果分页，不会重新执行。返回结果、进入后续已提交请求、观测到业务状态变化
 和模型在语义上使用结果是不同结论。没有显式 policy 时保留原有串行与 toolkit 行为。
 
+Managed child 是父 operation 内的调用证据，不是新增 PN transition。父程序返回、外层 complete 与业务成功须分别检查，均不能证明受隔离前置阻塞的 child 已执行。
+
 详见：[受控 managed tools](controlled-managed-tools.zh.md)、[定制](guides/customization_ZH.md)。
 代码：[scheduler][scheduler]、[program broker][broker]、[隔离 runtime][isolation]、[pipeline 声明][pipeline-module]。
 
@@ -291,6 +313,7 @@ Workset 记录 contribution、delivery 与 acceptance；首次验收要求真实
 安装入口为 `rpnh`，用户自有的 provider/exact-model catalog 初始为空。
 先看[安装指南](guides/installation_ZH.md)与[模型指南](guides/models_ZH.md)，再按需要检查的边界选例子：
 
+- [Agent 任务网共建](../examples/user_collaboration/agent_cobuild/README_ZH.md)：两项原主体合同贡献连续接纳并由 owner 采用，两个 stock AgentLoop 角色提供脚本化结构／协议证据。
 - [Workflow patterns](../examples/workflow_patterns/README_ZH.md)：串行与并行依赖，默认使用脚本化本地响应。
 - [Native plugin](../examples/native_plugin/README_ZH.md)：可修改的 schema 与显式安装的确定性程序。
 - [Hybrid summary](../examples/hybrid_summary/README_ZH.md)：Agent → 程序 → Agent；默认脚本化，真实执行另行选择。
@@ -313,6 +336,8 @@ Workset 记录 contribution、delivery 与 acceptance；首次验收要求真实
 发布 commit 不等于重跑；runtime 完成不能替代原始业务验收。
 
 ### 受控多用户协作
+
+这项历史记录的执行 PN 是 24 批次 ingest → plan → validate 加 aggregate／publish，共 74 个业务工具操作。模型在网外创作配置；这不是 74 个 agent，也不是当前共建网的运行证据。
 
 [2026 年 10 月 12 日实验](results/user-collaboration-20261012/README_ZH.md)由三个受控模拟 Registry 身份、两个真实模型，完成原生提案、审阅、明确 peer 协调、保护分支合并／采用、业务执行与独立评估。B 在同一身份与累计预算内切换模型。累计 22 次 logical call／provider-attempt spec 包含失败尝试，HTTP 尝试次数仍未知。
 
@@ -391,21 +416,11 @@ freeze04 first18 的 **5 PASS / 9 FAIL / 4 BLOCKED**，以及单独 repair4 条�
 它不认证后来的 PN 或 origin-query commit。本次更新没有重跑以上任何窗口。
 其余版本特定检查见[release-validation 历史](guides/release-validation_ZH.md)。
 
-## 原生输入与协作
+<a id="原生输入与协作"></a>
 
-原输入边界针对选定 run、task、net、wait 和 firing 准入 exact 输入。可信本地前门绑定提交者 principal/session，浏览器字段不能自行选择权限。已接受的[模拟退款审批](../examples/approval_workflow/README_ZH.md)记录 requester 与 approver 两份输入和两次结算；[外部结果接入报价](../examples/a2a_quote/README_ZH.md)记录受控 verifier 的一份输入和一次结算。业务输入均为合成数据。报价是确定性外部结果示例，历史 A2A 模块名仅为 CLI/schema 兼容保留；不代表 A2A SDK 或 OID4VP 互操作。
+## 历史原生输入与贡献证据
 
-[原生电费协作](../examples/user_collaboration/native_billing/README_ZH.md)单独演示定义贡献。用量贡献者收紧 `check_usage_input.run`，owner 审阅并推进受保护 Branch；电价贡献者从这份已接受 revision 的精确字节开始，收紧 `check_tariff_input.run`，再经第二次审阅和 Branch 推进。owner 最后采用同时含两项贡献的网，再执行十步业务。这是一条单 parent 祖先链。原同 base resolver 的纯回归保留实际 `coupled_contract` 限制：整组选一侧可能丢弃另一修改，不据此宣称自动双 parent 融合。三个受控本地 Registry 身份也不等于外部 SSO 或真实人类作者认证。
-
-这个受控本地案例展示贡献记录与原生执行的可追踪关系，范围不包含性能比较、外部身份认证或自动双 parent 融合；按日期标明的源码身份与图像哈希见[截图来源](../examples/user_collaboration/native_billing/figures/provenance.json)。
-
-![实际原生多人电费 PN 全景，十次业务结算。](../examples/user_collaboration/native_billing/figures/panorama.png)
-
-原始图显示同一采用网的 28 节点／29 弧；两份 source 提案、十次业务结算、十二项资源和一个 complete 终态均由原 Registry 读回。三个模型计数均 `[0,0]`；结果逐字段等于 2.000 kWh／1.70 CNY。贡献节点及 owner 单独采用图见[示例](../examples/user_collaboration/native_billing/README_ZH.md)，执行与捕获源码窗口见[provenance](../examples/user_collaboration/native_billing/figures/provenance.json)。
-
-![实际 Viewer 聚焦继承的用量贡献及其记录中的提议者。](../examples/user_collaboration/native_billing/figures/contributor-2.png)
-
-Viewer 将同一 PN 操作节点、修改字段 `value/config/max_integer`、记录中的提议者及 exact proposal/base/candidate revision 引用连接起来。用量修改在最终采用网中仍以继承贡献可见；示例同时提供完整引用补图与独立的 owner adoption 行为。读者因此可以在同一执行模型中，沿业务节点追踪到经过审阅的版本及其最终采用。
+历史[模拟审批](../examples/approval_workflow/README_ZH.md)、[外部结果接入报价](../examples/a2a_quote/README_ZH.md)和[原生电费贡献](../examples/user_collaboration/native_billing/README_ZH.md)分别保留原源码窗口、Viewer 图像、结果及权限边界。它们围绕合成业务／工具 fixture 展示精确原生输入准入，或连续定义贡献、受保护 Branch 推进与 owner 采用。业务操作和受控 principal 不计为任务 agent；这些记录不验证当前 Agent 共建运行、真实 A2A／OID4VP 互操作、外部身份认证或自动多 parent 合并。
 
 ## 参考文献
 

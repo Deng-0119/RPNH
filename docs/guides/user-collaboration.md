@@ -6,7 +6,7 @@ metadata:
   audience: trusted-host-developer
   language: en
   counterpart: user-collaboration_ZH.md
-  revision: "2026-10-11.1"
+  revision: "2026-10-12.4"
   status: maintained
   basis: "trusted local HOST; plain author revisions; original Registry authority"
 ---
@@ -20,6 +20,16 @@ to a protected plain-author Branch. The target owner invites contributors,
 reviews exact proposals, accepts a revision, and separately decides whether to
 adopt it into a running task. The existing Registry and owner remain responsible
 for publication, execution and recovery.
+
+## Agent-contract co-building entry
+
+The current collaboration entry is [agent-network co-building](../../examples/user_collaboration/agent_cobuild/README.md). Two native task-agent roles, `curator.run` and `auditor.run`, use stock `AgentStage`/default `AgentLoop` in an ordinary Module assembled from two stock single-agent declarations, with `curator.result → auditor.request`. Deterministic source programs from two controlled original principals strengthen the curator input-lineage contract and auditor reconciliation contract. The original HOST reviews exact revisions, advances a protected Branch sequentially and enables owner adoption before target execution.
+
+Source programs, external control actions and target agents remain separate; this single-parent chain does not imply automatic same-base merging. A `local_process` scripted driver computes from actual inputs and tool returns. This demonstrates structure and protocol using registered task agents. It makes no live-model or cognition claim; execution results, artifacts and Viewer evidence are reported on the example page.
+
+Source programs are not author-model agents. HOST review/advance/adopt are external control, not target PN firings. Historical route and billing fixtures revise business strategies/limits; their business-node or principal counts do not establish task-agent counts. Display does not grant tool or adoption authority.
+
+The example assembles two stock single-agent declarations into an ordinary Module, preserving the existing plain-proposal constraints, Registry gates, adapter and scheduler.
 
 ## Establish the trusted HOST boundary
 
