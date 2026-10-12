@@ -2,6 +2,16 @@
 
 [English](README.md) | 中文
 
+## 官方 Viewer 全景
+
+这张官方 Viewer SVG 导出图是单个 checkpoint 的原生 solve 声明。session_command 是该 Agent 内的 managed tool；shell command 不是额外的顶层 PN 阶段。声明不调用 Session、不修改代码、不调用模型，也不进行 benchmark 评测。
+
+[![单 checkpoint 求解声明](figures/initial-petri.svg)](figures/initial-petri.svg)
+
+这是自包含的[官方 Viewer SVG 导出图](figures/viewer-export-provenance.json)；只调整最外层视口以完整保留已渲染的图。下方静态 Viewer 支持选中节点和弧查看详情。
+
+点击全景打开原始大图。 [打开静态 Viewer 与查看来源](figures/README_ZH.md)。
+
 这是可选的开发试验，把真实 RPNH owner／AgentLoop 接到原始 SlopCodeBench Docker
 Session 内的正常编码、编辑和测试命令。它不是未经改动的官方 AgentRunner 运行。
 本地已完成59项合成测试、安装态 owner／原生插件／AF_UNIX 命令路径，以及固定上游

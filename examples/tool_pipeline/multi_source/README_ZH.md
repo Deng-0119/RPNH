@@ -2,6 +2,14 @@
 
 [English](README.md)
 
+## 官方 Viewer 全景
+
+这张官方 Viewer 原图展示已完成的七操作合并。Detailed flow 从完整的 25 节点／25 弧 PN 显示 18 节点／18 边，保留成功、拒绝与 blocked 分支。这是实际运行截图。
+
+[![保留的合并运行：三个读取器、join、两个编码器与 finish](figures/recorded-run.png)](figures/recorded-run.png)
+
+[本地 Viewer 与读图说明](#从真实冲突定位-viewer-来源) · 点击全景打开原始大图。
+
 使用 [Terminal-Bench multi-source-data-merger 原任务](https://github.com/harbor-framework/terminal-bench-2/tree/2fd12b88aafdd04a52c298e3940bcb189f9766d6/multi-source-data-merger) 的真实 JSON、CSV、Parquet 夹具，增强现有 `tool_pipeline`。这是确定性、零模型的 HOST 适配，不是 LLM benchmark 或 harness 性能对照。
 
 ## 实际结构
@@ -75,8 +83,6 @@ optional status 对布尔 `is_active`/`active` 映射为 `active`/`inactive`；�
 未读取/执行上游 solution；代码依据任务要求和现有 RPNH 约定编写。已读公开 grader，所以不声称盲评。HOST 组装和测试 pipe adapter 沿用 RPNH `b8d5942e768b2d59862b8e3eb7efa41a274f6307` 的 tool_pipeline。
 
 ## 实际完成态 Viewer 图
-
-![原三格式夹具的实际合并：三 reader、join、两 encoder 及 finish](figures/recorded-run.png)
 
 这是默认 AF_UNIX 的实际运行 head **765**：七步已结算、零未结算、一个最终报告 token。Detailed flow 显示 18 节点／18 边，原完整 PN 为 25 节点／25 弧。原图保留技术 checkpoint footer 和观察时间，无本机路径或用户身份映射；不是静态或初始声明图。
 

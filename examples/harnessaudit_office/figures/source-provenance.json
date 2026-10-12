@@ -1,0 +1,120 @@
+{
+  "example": "harnessaudit_office",
+  "title": "HarnessAudit Office off-t1: initial declaration",
+  "frame_sha256": "ec345796758a70d5f6d1f19ebc7f5930d83eb0b4922448b55d29b2c213e5301b",
+  "source_commit": "270b76012a571286d303047547bd93cfecaa19c5",
+  "scope": "Initial off-t1 business workflow from pinned public task roles: coordinator plan, two specialists, coordinator finalization. Real public tool bindings; disconnected host configuration. No run, score or tool dispatch.",
+  "summary": {
+    "node_count": 13,
+    "transition_count": 4,
+    "place_count": 9,
+    "resource_place_count": 0,
+    "edge_count": 26,
+    "resource_edge_count": 0
+  },
+  "managed_tools": {
+    "hub_plan": [
+      "assign_work_record",
+      "create_followup_record",
+      "create_hardware_asset",
+      "create_user_account",
+      "delete_expense_line",
+      "optimize_budget_allocation",
+      "order_service_catalog_item",
+      "query_asset_inventory",
+      "query_expense_lines",
+      "query_work_records",
+      "read_dashboard_metric",
+      "read_user_directory",
+      "schedule_change_request",
+      "search_knowledge_base",
+      "update_asset_assignment"
+    ],
+    "hub_finalize": [
+      "assign_work_record",
+      "create_followup_record",
+      "create_hardware_asset",
+      "create_user_account",
+      "delete_expense_line",
+      "optimize_budget_allocation",
+      "order_service_catalog_item",
+      "query_asset_inventory",
+      "query_expense_lines",
+      "query_work_records",
+      "read_dashboard_metric",
+      "read_user_directory",
+      "schedule_change_request",
+      "search_knowledge_base",
+      "update_asset_assignment"
+    ],
+    "specialist_1": [
+      "assign_work_record",
+      "create_followup_record",
+      "create_hardware_asset",
+      "create_user_account",
+      "delete_expense_line",
+      "optimize_budget_allocation",
+      "order_service_catalog_item",
+      "query_asset_inventory",
+      "query_expense_lines",
+      "query_work_records",
+      "read_dashboard_metric",
+      "read_user_directory",
+      "schedule_change_request",
+      "search_knowledge_base",
+      "update_asset_assignment"
+    ],
+    "specialist_2": [
+      "assign_work_record",
+      "create_followup_record",
+      "create_hardware_asset",
+      "create_user_account",
+      "delete_expense_line",
+      "optimize_budget_allocation",
+      "order_service_catalog_item",
+      "query_asset_inventory",
+      "query_expense_lines",
+      "query_work_records",
+      "read_dashboard_metric",
+      "read_user_directory",
+      "schedule_change_request",
+      "search_knowledge_base",
+      "update_asset_assignment"
+    ]
+  },
+  "sources": [
+    {
+      "path": "examples/harnessaudit_office/src/rpnh_ha/workflow.py",
+      "sha256": "256f54847755333d30a48b2fba13cf7b69c2a805cafe19d5966329694582bf27"
+    },
+    {
+      "path": "examples/harnessaudit_office/src/rpnh_ha/local_driver.py",
+      "sha256": "4da95c1087cab8761f3a228bc64758422ecba3acade4ec56c1d440b6593ed2f4"
+    },
+    {
+      "path": "examples/harnessaudit_office/src/rpnh_ha/native_plugin.py",
+      "sha256": "f469ece9954097764f8b21c2acc7ff02d6ff8fa8bfcecf1d5e48cf813673a24d"
+    },
+    {
+      "path": "examples/harnessaudit_office/src/rpnh_ha/task_view.py",
+      "sha256": "433cbb7769681719e430fc7ed15bb08ee4ebdde7cad968215ecfe9b3f398cce9"
+    }
+  ],
+  "upstream_inputs": [
+    {
+      "url": "https://github.com/UCSB-AI/HarnessAudit/blob/6317162590aeeb1c8dde32b880ac199933343e4a/multi_agent/tasks/office/personnel/off-t1.yaml",
+      "sha256": "f2c135240dca8417fc102c4e70d48bcc93e8dc25e407147e6256a25dc46cb6ee"
+    },
+    {
+      "url": "https://github.com/UCSB-AI/HarnessAudit/blob/6317162590aeeb1c8dde32b880ac199933343e4a/multi_agent/tools/office.yaml",
+      "sha256": "7e53cc520d71200f4c5ad6be4f30136c39dcadc2a2e6a999a7b3ad5ee7fb4a07"
+    }
+  ],
+  "official_viewer_export": {
+    "image": "initial-petri.svg",
+    "provenance": "viewer-export-provenance.json",
+    "sha256": "393902d9e01a43220dd721c2301bcd80de610fc10d4832fdebbb1e3fd2c4cb1c",
+    "view": "PetriNet",
+    "runtime_evidence": false
+  }
+}

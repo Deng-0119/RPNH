@@ -2,6 +2,14 @@
 
 # 用 typed Petri net 执行原子工具流程
 
+## 官方 Viewer 全景
+
+官方 Viewer 展示十操作电费声明的全部 28 个节点和 29 条弧；点击原图可按完整尺寸查看。这是声明图，不含运行状态或成功断言。
+
+[![十操作电费流程完整 PetriNet 声明](assets/petrinet-0cd0dd4a76320ce6.png)](assets/petrinet-0cd0dd4a76320ce6.png)
+
+[本地官方 Viewer 与声明来源](figures/README_ZH.md) · 点击全景打开原始大图。
+
 这是完全离线的合成电费例子：1,500 Wh 按 80 fen/kWh、500 Wh 按
 100 fen/kWh 计费，结果为 **2.000 kWh，1.20 + 0.50 = 1.70 CNY**。
 不连接电力公司、不缴费、不调用模型。
@@ -178,4 +186,3 @@ terminal 判定均未替换。这**没有**验证外部 socket 客户端、原�
 
 下图展示本案例的初始 PetriNet 结构。[完整图册](figures/README_ZH.md)展示所列声明变体，并提供大网的节点局部图。
 
-![初始 PetriNet 结构](assets/petrinet-0cd0dd4a76320ce6.png)

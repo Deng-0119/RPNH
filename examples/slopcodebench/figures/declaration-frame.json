@@ -1,0 +1,157 @@
+{
+  "schema_version": "rpnh/dashboard/v1",
+  "source": {
+    "mode": "initial_configured",
+    "task_label": "SlopCodeBench checkpoint actor: initial declaration",
+    "verified_head_ordinal": null
+  },
+  "net": {
+    "schema_version": "rpnh/net_view/v1",
+    "source": {
+      "mode": "initial_configured",
+      "task_label": "SlopCodeBench checkpoint actor: initial declaration",
+      "verified_head_ordinal": null
+    },
+    "summary": {
+      "node_count": 3,
+      "transition_count": 1,
+      "place_count": 2,
+      "resource_place_count": 0,
+      "edge_count": 3,
+      "resource_edge_count": 0
+    },
+    "nodes": [
+      {
+        "id": "team.data__solve__result",
+        "label": "team.data__solve__result",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/rpnh_agent_text/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "team.ingress__solve__request",
+        "label": "team.ingress__solve__request",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/rpnh_agent_text/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "team.solve",
+        "label": "team.solve",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "team.solve",
+        "operation_id": "op_0",
+        "executor": "rpnh/default-agent/v1",
+        "inputs": [
+          "team.request"
+        ],
+        "outputs": [
+          "team.result",
+          "team.interrupt__solve__solve__request"
+        ]
+      }
+    ],
+    "edges": [
+      {
+        "id": "edge:arc:team.ingress__solve__request:team.solve:consume:-:1",
+        "source": "team.ingress__solve__request",
+        "target": "team.solve",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:team.solve:team.data__solve__result:produce:complete:1",
+        "source": "team.solve",
+        "target": "team.data__solve__result",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:team.solve:team.ingress__solve__request:produce:interrupted:1",
+        "source": "team.solve",
+        "target": "team.ingress__solve__request",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "interrupted",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "forward",
+        "forward_source": "team.ingress__solve__request"
+      }
+    ]
+  },
+  "boundaries": {
+    "entry": [
+      {
+        "name": "request",
+        "port": "team.request",
+        "place": "team.ingress__solve__request"
+      }
+    ],
+    "exit": [
+      {
+        "name": "result",
+        "port": "team.result",
+        "place": "team.data__solve__result"
+      }
+    ],
+    "terminal_rules": [
+      {
+        "key": "rpnh/agent-task-terminal/v1",
+        "operation": "team.solve",
+        "transition_ids": [
+          "team.solve"
+        ],
+        "outcome": "complete",
+        "port": "team.result",
+        "place": "team.data__solve__result"
+      }
+    ],
+    "terminal_evidence": "not_provided"
+  },
+  "transition_bindings": [],
+  "presentation": {
+    "title": "SlopCodeBench checkpoint actor: initial declaration",
+    "description": "Initial per-checkpoint solve declaration with session_command bound as a managed tool. No Session, shell command, model call or benchmark evaluation.",
+    "nodes": {},
+    "topology_digest": "d1393d7ebce616bbbeb91fec4cb2d6699852b82a96d641fa50e7426b259d1b23",
+    "status": "default"
+  },
+  "position": {
+    "mode": "live",
+    "cursor": null,
+    "latest_head": null
+  },
+  "coverage": {
+    "history": "unsupported",
+    "firings": "not_provided",
+    "agent_nodes": "not_provided",
+    "terminal_evidence": "not_provided"
+  },
+  "change": {},
+  "agent_nodes": []
+}

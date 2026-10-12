@@ -2,6 +2,14 @@
 
 English | [中文](README_ZH.md)
 
+## Official Viewer panorama
+
+The original official Viewer capture shows the completed deterministic model–program–model workflow in Detailed flow. It folds two simple handoffs; it is a recorded run, not an initial declaration.
+
+[![Completed hybrid workflow: normalize, native summarize, explain](assets/hybrid-summary-flow.png)](assets/hybrid-summary-flow.png)
+
+[Local Viewer and reading guide](../../docs/guides/viewer.md) · Click the panorama to open the original full-size image.
+
 Obtain the complete editable closure from installed RPNH:
 
 ```bash
@@ -28,8 +36,6 @@ scripted/model normalize -> demo/summarize -> scripted/model explain
 This actual Detailed flow view comes from the completed deterministic run. It
 shows the two Agent nodes around the native `demo/summarize` operation and the
 registered handoffs between them.
-
-![Completed hybrid calculation flow](assets/hybrid-summary-flow.png)
 
 After installing RPNH and `examples/native_plugin`, run the deterministic mode:
 

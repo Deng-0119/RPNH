@@ -2,6 +2,16 @@
 
 English | [中文](README_ZH.md)
 
+## Official Viewer panorama
+
+The official Viewer renders the original off-t1 public-role workflow: hub plan, two specialists, and hub finalization. It is compiled from the pinned public task and current role-bound managed-tool declarations. This is initial_configured structure, not a retained run or benchmark score; other task conditions have their own declarations.
+
+[![Office off-t1 business declaration](figures/initial-petri.svg)](figures/initial-petri.svg)
+
+This is a self-contained [official Viewer SVG export](figures/viewer-export-provenance.json); only its outer viewport is normalized to include the complete rendered graph. Open the static Viewer below for selectable node and arc details.
+
+Click the panorama for the original full-size image. [Open the static Viewer and inspect the source](figures/README.md).
+
 **Published reference:** [Published scores and interpretation](COMPARISON.md) · [Implementation supplement](IMPLEMENTATION_COMPARISON.md). This comparison uses public results and requires no local reference implementation or execution.
 
 This example connects **formal RPNH + a benchmark-configured agent team + the

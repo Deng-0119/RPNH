@@ -1,5 +1,13 @@
 # SQL 查询校验与来源追溯
 
+## 官方 Viewer 全景
+
+这张官方 Viewer 原图展示已完成 SQL 运行的 Detailed flow：inspect inputs、execute queries、compare results。显示的 8 节点流程是 11 节点／11 弧 PN 的简化视图，不是静态声明。
+
+[![SQL 保留运行：三个已结算操作与两个最终输出](figures/recorded-run.png)](figures/recorded-run.png)
+
+[本地 Viewer 与读图说明](#官方-viewer) · 点击全景打开原始大图。
+
 本例通过原有 Registry/PetriNet 记录真实 SQLite 读取、精确结果比较和最终 SQL 资源。
 附带的 [sol.sql](sol.sql) 仅依据固定任务说明、原始输入查询及哈希核验后的数据库独立推导，
 未读取 evaluator tests、golden 或预期输出。没有调用 benchmark 求解器、模型或 provider。
@@ -117,8 +125,6 @@ Example 展示与成熟 harness 对照分开验收；展示来源不要求先跑
 ## 本地完整收尾与真实运行图
 
 独立冻结的 `sol.sql` 在一次 176.76 秒的 evaluator 窗口中通过**未修改上游的六项测试**。只由启动插件映射五个绝对路径，复用本地 Python/SQLite/pytest；原 `test.sh`、Docker 资源限额、CTRF 和 stock harness 均未运行。这是明确适配下的原验收结果，不是完整官方 dataset benchmark。参考内容未进入作者上下文，候选、数据库及验收器字节前后不变。原生不可变资源仍保留发布当时的 `original_verifier: not_run`；后续 evaluator 收据单列，不回写历史。
-
-![真实 SQL Registry：三步已结算及最终 SQL／报告 token](figures/recorded-run.png)
 
 图来自实际默认 AF_UNIX 完成态：Registry head **421**，三步已结算、零未结算、两个终态 token。原 Viewer 图片字节保留技术 checkpoint footer 和观察时间，无本机文件路径或用户身份映射；不是初始声明图。
 

@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import { NetRenderer } from '../../../cpn/frontend/static/renderer.mjs';
 import { referenceText } from '../../../cpn/frontend/static/model.mjs';
 
@@ -38,7 +39,7 @@ test('checkpoint identity renders exact wire or dataclass ID, not object coercio
 test('resource filtering and focus update both link roots and detached labels', () => {
   const cells = new Map();
   for (const id of ['node:r', 'node:t', 'edge:e']) cells.set(id, {
-    attrs: {}, labels: {}, attr(key, value) { this.attrs[key] = value; },
+    attrs: {}, labels: {}, get(key) { return key === 'baseStroke' ? '#4865c8' : ''; }, attr(key, value) { this.attrs[key] = value; },
     label(index, value) { this.labels[index] = value; },
   });
   const nodes = [{id: 'r', kind: 'place', category: 'resource'}, {id: 't', kind: 'transition', category: 'execution'}];
@@ -78,4 +79,25 @@ test('fit includes very tall graphs below the normal zoom floor and remains reve
   assert.ok(scale > fit);
   NetRenderer.prototype.zoom.call(viewer, .8);
   assert.ok(Math.abs(scale - fit) < 1e-12);
+});
+
+
+test('short viewports preserve graph height and allow the complete dashboard to scroll', () => {
+  const css = readFileSync(new URL('../../../cpn/frontend/static/style.css', import.meta.url), 'utf8');
+  const body = css.match(/body\{([^}]+)\}/)[1];
+  const main = css.match(/main\{([^}]+)\}/)[1];
+  const canvas = css.match(/#canvas-wrap\{([^}]+)\}/)[1];
+  assert.match(body, /height:100dvh/);
+  assert.match(body, /overflow-y:auto/);
+  assert.doesNotMatch(body, /(?:^|;)overflow:hidden/);
+  assert.match(main, /min-height:480px/);
+  assert.match(canvas, /min-height:360px/);
+  const contextRule = '#observation-panel,#comparison-panel,#comparison-context-panel{flex-shrink:0}';
+  assert.ok(css.includes(contextRule));
+  assert.ok(css.lastIndexOf(contextRule) > css.indexOf('#comparison-context-panel {'), 'context non-shrink override follows its existing bounded panel styles');
+  assert.match(canvas, /overflow:hidden/, 'graph pan/zoom remains inside its own viewport');
+  const html = readFileSync(new URL('../../../cpn/frontend/static/index.html', import.meta.url), 'utf8');
+  for (const selector of ['observation-panel', 'canvas-wrap', 'time-slider', 'user-contributions-panel']) {
+    assert.ok(html.includes('id="' + selector + '"'), selector + ' remains in the real dashboard');
+  }
 });

@@ -2,6 +2,14 @@
 
 English | [中文](README_ZH.md)
 
+## Official Viewer panorama
+
+The official PetriNet view shows the recorded demo/add request, operation and result. Its one plugin resource is hidden in this retained capture; Show resources in a local Viewer reveals it.
+
+[![Completed native-add PetriNet](assets/native-plugin-petrinet.png)](assets/native-plugin-petrinet.png)
+
+[Local Viewer and reading guide](../../docs/guides/viewer.md) · Click the panorama to open the original full-size image.
+
 Start from a source checkout root or obtain an editable installed copy:
 
 ```bash
@@ -15,12 +23,10 @@ Each `RUN_DIR` must not exist before the command starts. Listing/exporting does
 not install or execute the plugin. Runtime requires supported local process and
 Unix-domain socket permissions, even though this example makes no model call.
 
-The image below is the actual PetriNet view of the completed `demo/add` run.
+The opening image is the actual PetriNet view of the completed `demo/add` run.
 The hidden resource counter shows that one declared plugin capability can be
 revealed with **Show resources**; the visible graph is the ordinary
 request–operation–result path.
-
-![Completed native-plugin PetriNet](assets/native-plugin-petrinet.png)
 
 ```bash
 python -m pip install -e ./examples/native_plugin
@@ -68,6 +74,6 @@ explains explicit renaming, versioning, full descriptors and new locks.
 
 ## PetriNet declaration gallery
 
-The image below shows this example’s initial PetriNet structure. The [full gallery](figures/README.md) shows the listed declaration variants and readable node details for large nets.
+The opening image shows this example’s initial PetriNet structure. The [full gallery](figures/README.md) shows the listed declaration variants and readable node details for large nets.
 
-![Initial PetriNet structure](assets/petrinet-afe2f2df36c37247.png)
+[![Initial PetriNet structure](assets/petrinet-afe2f2df36c37247.png)](assets/petrinet-afe2f2df36c37247.png)

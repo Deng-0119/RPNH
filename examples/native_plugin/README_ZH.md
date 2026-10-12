@@ -2,6 +2,14 @@
 
 [English](README.md) | 中文
 
+## 官方 Viewer 全景
+
+官方 PetriNet 截图展示保留的 demo/add 请求、操作与结果；原截图隐藏了一个插件资源，在本地 Viewer 中使用 Show resources 可展开。
+
+[![已完成 native-add 的 PetriNet](assets/native-plugin-petrinet.png)](assets/native-plugin-petrinet.png)
+
+[本地 Viewer 与读图说明](../../docs/guides/viewer_ZH.md) · 点击全景打开原始大图。
+
 可从源码根目录运行，或先获取安装版的可修改副本：
 
 ```bash
@@ -15,8 +23,6 @@ cd /absolute/absent/my-native
 
 下图是 `demo/add` 完成后的实际 PetriNet。隐藏资源计数表明可通过 **Show resources**
 显示一个已声明的插件 capability；当前可见图是普通的请求—operation—结果路径。
-
-![已完成原生插件 PetriNet](assets/native-plugin-petrinet.png)
 
 ```bash
 python -m pip install -e ./examples/native_plugin
@@ -59,4 +65,4 @@ PASS，1 为验证失败，终态 IPC 不可用报告 BLOCKED/2；每次使用�
 
 下图展示本案例的初始 PetriNet 结构。[完整图册](figures/README_ZH.md)展示所列声明变体，并提供大网的节点局部图。
 
-![初始 PetriNet 结构](assets/petrinet-afe2f2df36c37247.png)
+[![初始 PetriNet 结构](assets/petrinet-afe2f2df36c37247.png)](assets/petrinet-afe2f2df36c37247.png)

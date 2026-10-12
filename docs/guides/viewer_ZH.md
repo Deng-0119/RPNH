@@ -17,6 +17,10 @@ metadata:
 看板只投影一个已有 Registry run，不获取 writer 权限，不执行 transition、不恢复任务、不创建
 结果，也不修改 PetriNet。终端文本与浏览器读取同一份持久化 run 证据。
 
+已有可信协作 HOST 时，可按[用户贡献指南](viewer-user-contributions_ZH.md)在实际 Petri 网中
+查看记录中的提案修改。此视图沿用原 Registry 事实和读取权限；仅打开 run 不能恢复
+缺失的协作 session。
+
 ## 五分钟串行与并行教程
 
 先在源码仓库创建两个离线 run。它们使用确定性 local-process 替身，不调用 provider：

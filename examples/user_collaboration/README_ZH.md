@@ -2,51 +2,39 @@
 
 [English](README.md) | 中文 | [详细结果与分析](../../docs/results/user-collaboration-20261012/README_ZH.md)
 
-这个例子的主线是：**三个独立的受控模拟用户身份，如何在同一项目内从共同版本分支、分别贡献、审阅与协调冲突，最终采用一个共同任务网络。** A/B/C 有各自的原生 Registry actor 和 session，由同一个可信 HOST 协调；它们不是三位真人或三个外部账号。两种真实模型用于提出修改，模型与用户身份是两个不同维度。
+三个独立受控的模拟 Registry 身份 A/B/C，共同修改同一个 24 批次路线规划任务网的配置。各自有独立 actor 和 session，由同一个可信 HOST 协调；它们不是三位真人或三个外部账号。模型提出修改，owner 接受一个版本，再由确定性 HOST 工具执行采用后的业务 Petri 网。
 
-## 先看协作过程
+## 先看官方 Viewer 中已采用的任务网
 
-| 角色 | 对共同成果的作用 | 原生记录中的结果 |
+[![原 adopted-M2 runtime 的 Detailed flow 全景：全部 24 个批次分支与最终汇合](figures/adopted-M2.png)](figures/adopted-M2.png)
+
+这张未修改的 4485 × 5000 截图来自原 **development adopted-M2 runtime**：已准入路线输入、全部 24 个 ingest → plan → validate 分支、聚合、发布和结果。截图有 74 次已结算 firing、零 unsettled。Detailed flow 折叠 97 个交接 place，从完整 197 节点／220 弧的 Petri 网展示 100 节点／123 边。打开原图可查看全网。
+
+卡片对应业务操作。A/B/C 是下文贡献记录中的配置作者，并不是这张纯工具 PN 上的三个运行时 Agent 节点。截图展示执行状态，没有按作者着色或作者／版本徽标。
+
+## 各方具体修改了哪些操作
+
+保留的配置声明将规划操作命名为 `batch_0.plan` 到 `batch_23.plan`。以下修改针对各操作的 `config.strategy`；place、transition、arc 的拓扑和可用算法保持不变。
+
+| 参与者与原提案 | 涉及的规划操作 | 已采用 M2 中保留的内容 |
 | --- | --- | --- |
-| A：项目 owner 与初始作者 | A5 建立共同基线，将 batch 0–10 改为 `deadline_first`；负责最后的接受与采用 | A5 经审阅、推进；其 11 项策略保留在最终 M2 中 |
-| B：独立贡献者 | 从 A5 提出 B1，将 batch 11–17 改为 `zone_nearest`；随后同一 B 切换模型尝试 B2 | B1 提供独有的 batch 11；B2 实际撤回该项，被要求修改，未采用 |
-| C：独立贡献者与后续协调者 | 从同一 A5 提出 C1，将 batch 12–23 改为 `zone_nearest`；C2 再显式吸收 B 的独有项 | C2 形成 batch 11–23 的联合版本，由 owner A 选择并纳入 M2 |
+| A，共同版本 A5 | `batch_0.plan`–`batch_10.plan` | 11 项从 `nearest_neighbor` 改为 `deadline_first` |
+| B，基于 A5 的独立提案 B1 | `batch_11.plan`–`batch_17.plan` | `zone_nearest`；batch 11 为 B 独有，12–17 与 C1 重叠 |
+| C，基于 A5 的独立提案 C1 | `batch_12.plan`–`batch_23.plan` | `zone_nearest`；batch 18–23 为 C 独有，12–17 与 B1 重叠 |
+| C，协调版本 C2 | 在 C1 中补入 B 的 batch 11 修改 | 形成 batch 11–23 的完整 `zone_nearest` 配置，同时保留 A 的 0–10 配置 |
+| A，owner 决策 | 在原 B1/C2 合并中选择 incoming C2，推进保护分支并采用 M2 | 接受后的配置用于上图所示业务运行 |
 
-[![真实回执派生的简化协作关系图](visuals/collaboration-relations_ZH.png)](visuals/collaboration-relations_ZH.png)
+此表将已公开 module 声明与[回执派生的贡献记录](visuals/collaboration-evidence.json)对应，是文档中的核对说明，不是 Viewer 导出的节点归因叠层。B/C 重叠的六项修改在最终内容中只计一次；C2 吸收 B 的修改是复用，不能再计为 C 的独立贡献。B2 未被采用。[详细结果记录](../../docs/results/user-collaboration-20261012/README_ZH.md)保留未通过的提案、记录中的协调与合并决策、模型 usage 及证据范围。
 
-图示依据原生身份、提案、审阅、合并与采用回执重建关系，**不是 PN 运行截图或墙钟时间轴**。B/C 的分叉表示基于同一 A5 的独立版本关系；现有记录没有证明两者在墙钟上同时执行。图的安全事实投影见 [collaboration-evidence.json](visuals/collaboration-evidence.json)。
-
-### 从分别贡献到实际采用
-
-1. **共同起点。** A5 经批准并推进后，B1 与 C1 从同一 revision 分别提出修改；各自原任务条件没有提供另一方的提案。修改的是已有任务网的策略配置，图拓扑保持不变。
-2. **独立贡献有重叠，也有独有部分。** B1 与 C1 在 batch 12–17 的六项修改相同；B 独有 batch 11，C 独有 batch 18–23。相同值不能被重复算成独有贡献。
-3. **审阅保留未通过情况。** B 的 B1 使用 DeepSeek，B2 切换 Terra，但原身份、session 与累计计数连续（3 + 1 次逻辑模型调用）。B2 的文字声称保留 B 的贡献，实际写入却撤回 batch 11；原审阅要求修改。B2 不是 M2 的父版本，不能因部分值与最终版相同就记为已采用贡献。B1/C1 初次组合则有原审阅和报告记载的共享业务预算约束冲突，随后需 C2 协调。
-4. **先协调内容，再处理合并。** C2 基于 C1，获得批准的 peer 增量后明确补入 B 的 batch 11。原生 M2 的两个父版本是 B1 与 C2；其合并仍报告耦合约束冲突，owner A 显式选择已经包含联合内容的 incoming C2。联合内容不是合并算法自动生成的。
-5. **接受与采用确实发生。** 保护分支的 advance 指向 M2，随后原生 adopt 回执记录 `ADOPTED`，与原 A 项目和 session 连续。批准提案、内容相同、接受版本与最终采用是不同事实。Owner 审阅、advance 和 adopt 由 A 会话的受控 HOST 执行，不是模型自行授予权限。
-
-[![最终采用内容的来源与复用](visuals/final-content-provenance_ZH.png)](visuals/final-content-provenance_ZH.png)
-
-这张内容来源图区分 A 保留的 11 项、B/C 重叠的六项、各自独有项，以及 C2 对 B 内容的显式复用。C2 的整合不是把 B 的贡献重新算作 C 的独立创作。最终内容保留了 B 与 C 的实质贡献；这个结论来自本次记录，不保证未来所有协作都能达成联合采用。
-
-## 共同构建的任务是什么？
-
-载体是一个 24 批次的路线规划业务网：读取已准入路线输入，按策略规划，再聚合、发布结果并由独立评分器评估。模型负责修改已有配置；业务 PN 本身由确定性 HOST 工具执行，每条路线不调用模型。协作主线与下方业务执行全景是两层不同的记录。
-
-采用后的 M2 与原 `nearest_neighbor` baseline 分别在固定 development／eval 各 512 条路线上评估：官方序列分数降低约 **7.525%／8.376%**，平均行程成本增加约 **7.715%／8.421%**。时间窗仍有失败和未知，不能概括为全业务通过。完整配对分布、取舍图、按模型独立的 token 使用与证据边界见[详细结果与分析](../../docs/results/user-collaboration-20261012/README_ZH.md)。这些路线结果本身不衡量协作带来的因果收益。
-
-## 已采用任务网的原始 runtime 全景
-
-以下两张未修改的 4485 × 5000 PNG 来自原 **development** baseline 与 adopted-M2 runtime Registry 的官方 RPNH Viewer。每张都包含全部 24 个 batch 分支、聚合、发布和结果；截图有 74 次已结算 firing、零 unsettled。Detailed flow 折叠 97 个交接 place，从完整 197 节点／220 弧的 Petri 网展示 100 节点／123 边。打开原图可查看全流程。
-
-### Baseline
+## 用原始 baseline 对照
 
 [![原 baseline runtime 的 Detailed flow 全景](figures/baseline.png)](figures/baseline.png)
 
-### Adopted M2
+这张同样未修改的 4485 × 5000 截图来自原 **development baseline**，拓扑相同，全部 24 个规划操作均使用 `nearest_neighbor`。它也有 74 次已结算 firing、零 unsettled。
 
-[![原 adopted-M2 runtime 的 Detailed flow 全景](figures/adopted-M2.png)](figures/adopted-M2.png)
+两图保留原技术 checkpoint 标识与观察时间，指向被记录的执行状态，不是个人或账号身份，也不是访问凭据。PNG 不含文本／EXIF 元数据。两图没有重画、改标或冒充新运行；精确字节身份见 [SOURCES.json](../../docs/results/user-collaboration-20261012/SOURCES.json)。执行完成不等于路线业务约束全部通过。
 
-原 footer 保留技术 checkpoint 标识与观察时间，指向被记录的执行状态，不是个人或账号身份，也不是访问凭据。PNG 不含文本／EXIF 元数据。两图没有重画、改标或冒充云端新运行；精确字节身份见 [SOURCES.json](../../docs/results/user-collaboration-20261012/SOURCES.json)。执行完成不等于路线业务约束全部通过。
+M2 与 baseline 在固定 development／eval 各 512 条路线上评估：官方序列分数降低约 **7.525%／8.376%**，平均行程成本增加约 **7.715%／8.421%**。时间窗仍有失败和未知。这些结果不衡量协作带来的因果收益，详见[完整结果与取舍](../../docs/results/user-collaboration-20261012/README_ZH.md)。
 
 ## 用官方 Viewer 打开静态结构
 

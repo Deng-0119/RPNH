@@ -2,6 +2,14 @@
 
 # 单 Registry 合成迭代（R2）
 
+## 官方 Viewer 全景
+
+这张官方 Viewer 完整全景来自四轮初始声明，展示 proposer/evaluator/selector 链与终态分支，不含运行 marking，也不表示模型提升。
+
+[![四轮完整 PetriNet 声明](assets/rsi_rounds_4/petri-full.png)](assets/rsi_rounds_4/petri-full.png)
+
+[本地 Viewer 与读图说明](figures/four-round/README_ZH.md#local-viewer) · 点击全景打开原始大图。
+
 这个有限示例把纯 proposer/evaluator/selector HOST 接到原 iteration-profile compiler。
 不新增 runner、scheduler、provider、预算计数器、Registry 类型或外部 winner 状态。
 依赖 R1 后继修订的显式 terminal_outcomes 字段；原冻结 R1 未生成可用的 native
@@ -80,8 +88,7 @@ port或R3验收。
 
 以下完整 Petri 与 Flow 全景用于了解整体结构；交互细节可在本地官方 Viewer 中缩放、点击查看。[Petri 原图](assets/rsi_rounds_4/petri-full.png) · [Flow 原图](assets/rsi_rounds_4/flow-full.png)。
 
-![四轮初始声明：完整 Petri 图](assets/rsi_rounds_4/petri-full.png)
-![四轮初始声明：完整 Flow 图](assets/rsi_rounds_4/flow-full.png)
+[![四轮初始声明：完整 Flow 图](assets/rsi_rounds_4/flow-full.png)](assets/rsi_rounds_4/flow-full.png)
 
 [在本地 Viewer 打开这份声明](figures/four-round/README_ZH.md#local-viewer)。
 

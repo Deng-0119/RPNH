@@ -1,0 +1,858 @@
+{
+  "schema_version": "rpnh/dashboard/v1",
+  "source": {
+    "mode": "initial_configured",
+    "task_label": "Ten-operation billing declaration",
+    "verified_head_ordinal": null
+  },
+  "net": {
+    "schema_version": "rpnh/net_view/v1",
+    "source": {
+      "mode": "initial_configured",
+      "task_label": "Ten-operation billing declaration",
+      "verified_head_ordinal": null
+    },
+    "summary": {
+      "node_count": 28,
+      "transition_count": 10,
+      "place_count": 18,
+      "resource_place_count": 0,
+      "edge_count": 29,
+      "resource_edge_count": 0
+    },
+    "nodes": [
+      {
+        "id": "check_tariff_input.checked",
+        "label": "check_tariff_input.checked",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/tool_pipeline_tariff_checked/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "check_tariff_input.raw",
+        "label": "check_tariff_input.raw",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/tool_pipeline_tariff_raw/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "check_tariff_input.rejection",
+        "label": "check_tariff_input.rejection",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/tool_pipeline_rejection/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "check_tariff_input.run",
+        "label": "check_tariff_input.run",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "check_tariff_input.run",
+        "operation_id": "op_0",
+        "executor": "example/tool_pipeline/execute_check_tariff_input/v1",
+        "inputs": [
+          "check_tariff_input.raw"
+        ],
+        "outputs": [
+          "check_tariff_input.checked",
+          "check_tariff_input.rejection"
+        ]
+      },
+      {
+        "id": "check_usage_input.checked",
+        "label": "check_usage_input.checked",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/tool_pipeline_usage_checked/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "check_usage_input.raw",
+        "label": "check_usage_input.raw",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/tool_pipeline_usage_raw/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "check_usage_input.rejection",
+        "label": "check_usage_input.rejection",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/tool_pipeline_rejection/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "check_usage_input.run",
+        "label": "check_usage_input.run",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "check_usage_input.run",
+        "operation_id": "op_1",
+        "executor": "example/tool_pipeline/execute_check_usage_input/v1",
+        "inputs": [
+          "check_usage_input.raw"
+        ],
+        "outputs": [
+          "check_usage_input.checked",
+          "check_usage_input.rejection"
+        ]
+      },
+      {
+        "id": "compute_cost.candidate",
+        "label": "compute_cost.candidate",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/tool_pipeline_candidate/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "compute_cost.joined",
+        "label": "compute_cost.joined",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/tool_pipeline_joined/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "compute_cost.run",
+        "label": "compute_cost.run",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "compute_cost.run",
+        "operation_id": "op_2",
+        "executor": "example/tool_pipeline/execute_compute_cost/v1",
+        "inputs": [
+          "compute_cost.joined"
+        ],
+        "outputs": [
+          "compute_cost.candidate"
+        ]
+      },
+      {
+        "id": "join_intervals.rejection",
+        "label": "join_intervals.rejection",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/tool_pipeline_rejection/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "join_intervals.run",
+        "label": "join_intervals.run",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "join_intervals.run",
+        "operation_id": "op_3",
+        "executor": "example/tool_pipeline/execute_join_intervals/v1",
+        "inputs": [
+          "join_intervals.usage",
+          "join_intervals.tariff"
+        ],
+        "outputs": [
+          "join_intervals.joined",
+          "join_intervals.rejection"
+        ]
+      },
+      {
+        "id": "join_intervals.tariff",
+        "label": "join_intervals.tariff",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/tool_pipeline_tariff_normalized/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "join_intervals.usage",
+        "label": "join_intervals.usage",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/tool_pipeline_usage_normalized/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "normalize_tariff.run",
+        "label": "normalize_tariff.run",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "normalize_tariff.run",
+        "operation_id": "op_4",
+        "executor": "example/tool_pipeline/execute_normalize_tariff/v1",
+        "inputs": [
+          "normalize_tariff.checked"
+        ],
+        "outputs": [
+          "normalize_tariff.normalized"
+        ]
+      },
+      {
+        "id": "normalize_usage.run",
+        "label": "normalize_usage.run",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "normalize_usage.run",
+        "operation_id": "op_5",
+        "executor": "example/tool_pipeline/execute_normalize_usage/v1",
+        "inputs": [
+          "normalize_usage.checked"
+        ],
+        "outputs": [
+          "normalize_usage.normalized"
+        ]
+      },
+      {
+        "id": "publish_report.final",
+        "label": "publish_report.final",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/tool_pipeline_final/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "publish_report.run",
+        "label": "publish_report.run",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "publish_report.run",
+        "operation_id": "op_6",
+        "executor": "example/tool_pipeline/execute_publish_report/v1",
+        "inputs": [
+          "publish_report.validated"
+        ],
+        "outputs": [
+          "publish_report.final"
+        ]
+      },
+      {
+        "id": "publish_report.validated",
+        "label": "publish_report.validated",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/tool_pipeline_validated/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "read_tariff.run",
+        "label": "read_tariff.run",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "read_tariff.run",
+        "operation_id": "op_7",
+        "executor": "example/tool_pipeline/execute_read_tariff/v1",
+        "inputs": [
+          "read_tariff.source"
+        ],
+        "outputs": [
+          "read_tariff.raw",
+          "read_tariff.validation_source"
+        ]
+      },
+      {
+        "id": "read_tariff.source",
+        "label": "read_tariff.source",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/tool_pipeline_source_tariff/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "read_tariff.validation_source",
+        "label": "read_tariff.validation_source",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/tool_pipeline_tariff_validation_source/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "read_usage.run",
+        "label": "read_usage.run",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "read_usage.run",
+        "operation_id": "op_8",
+        "executor": "example/tool_pipeline/execute_read_usage/v1",
+        "inputs": [
+          "read_usage.source"
+        ],
+        "outputs": [
+          "read_usage.raw",
+          "read_usage.validation_source"
+        ]
+      },
+      {
+        "id": "read_usage.source",
+        "label": "read_usage.source",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/tool_pipeline_source_usage/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "read_usage.validation_source",
+        "label": "read_usage.validation_source",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/tool_pipeline_usage_validation_source/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "validate_report.rejection",
+        "label": "validate_report.rejection",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/tool_pipeline_rejection/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "validate_report.run",
+        "label": "validate_report.run",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "validate_report.run",
+        "operation_id": "op_9",
+        "executor": "example/tool_pipeline/execute_validate_report/v1",
+        "inputs": [
+          "validate_report.candidate",
+          "validate_report.usage_source",
+          "validate_report.tariff_source"
+        ],
+        "outputs": [
+          "validate_report.validated",
+          "validate_report.rejection"
+        ]
+      }
+    ],
+    "edges": [
+      {
+        "id": "edge:arc:check_tariff_input.checked:normalize_tariff.run:consume:-:1",
+        "source": "check_tariff_input.checked",
+        "target": "normalize_tariff.run",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:check_tariff_input.raw:check_tariff_input.run:consume:-:1",
+        "source": "check_tariff_input.raw",
+        "target": "check_tariff_input.run",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:check_tariff_input.run:check_tariff_input.checked:produce:complete:1",
+        "source": "check_tariff_input.run",
+        "target": "check_tariff_input.checked",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:check_tariff_input.run:check_tariff_input.rejection:produce:rejected:1",
+        "source": "check_tariff_input.run",
+        "target": "check_tariff_input.rejection",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "rejected",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:check_usage_input.checked:normalize_usage.run:consume:-:1",
+        "source": "check_usage_input.checked",
+        "target": "normalize_usage.run",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:check_usage_input.raw:check_usage_input.run:consume:-:1",
+        "source": "check_usage_input.raw",
+        "target": "check_usage_input.run",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:check_usage_input.run:check_usage_input.checked:produce:complete:1",
+        "source": "check_usage_input.run",
+        "target": "check_usage_input.checked",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:check_usage_input.run:check_usage_input.rejection:produce:rejected:1",
+        "source": "check_usage_input.run",
+        "target": "check_usage_input.rejection",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "rejected",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:compute_cost.candidate:validate_report.run:consume:-:1",
+        "source": "compute_cost.candidate",
+        "target": "validate_report.run",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:compute_cost.joined:compute_cost.run:consume:-:1",
+        "source": "compute_cost.joined",
+        "target": "compute_cost.run",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:compute_cost.run:compute_cost.candidate:produce:complete:1",
+        "source": "compute_cost.run",
+        "target": "compute_cost.candidate",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:join_intervals.run:compute_cost.joined:produce:complete:1",
+        "source": "join_intervals.run",
+        "target": "compute_cost.joined",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:join_intervals.run:join_intervals.rejection:produce:rejected:1",
+        "source": "join_intervals.run",
+        "target": "join_intervals.rejection",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "rejected",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:join_intervals.tariff:join_intervals.run:consume:-:1",
+        "source": "join_intervals.tariff",
+        "target": "join_intervals.run",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:join_intervals.usage:join_intervals.run:consume:-:1",
+        "source": "join_intervals.usage",
+        "target": "join_intervals.run",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:normalize_tariff.run:join_intervals.tariff:produce:complete:1",
+        "source": "normalize_tariff.run",
+        "target": "join_intervals.tariff",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:normalize_usage.run:join_intervals.usage:produce:complete:1",
+        "source": "normalize_usage.run",
+        "target": "join_intervals.usage",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:publish_report.run:publish_report.final:produce:complete:1",
+        "source": "publish_report.run",
+        "target": "publish_report.final",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:publish_report.validated:publish_report.run:consume:-:1",
+        "source": "publish_report.validated",
+        "target": "publish_report.run",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:read_tariff.run:check_tariff_input.raw:produce:complete:1",
+        "source": "read_tariff.run",
+        "target": "check_tariff_input.raw",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:read_tariff.run:read_tariff.validation_source:produce:complete:1",
+        "source": "read_tariff.run",
+        "target": "read_tariff.validation_source",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:read_tariff.source:read_tariff.run:consume:-:1",
+        "source": "read_tariff.source",
+        "target": "read_tariff.run",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:read_tariff.validation_source:validate_report.run:consume:-:1",
+        "source": "read_tariff.validation_source",
+        "target": "validate_report.run",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:read_usage.run:check_usage_input.raw:produce:complete:1",
+        "source": "read_usage.run",
+        "target": "check_usage_input.raw",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:read_usage.run:read_usage.validation_source:produce:complete:1",
+        "source": "read_usage.run",
+        "target": "read_usage.validation_source",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:read_usage.source:read_usage.run:consume:-:1",
+        "source": "read_usage.source",
+        "target": "read_usage.run",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:read_usage.validation_source:validate_report.run:consume:-:1",
+        "source": "read_usage.validation_source",
+        "target": "validate_report.run",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:validate_report.run:publish_report.validated:produce:complete:1",
+        "source": "validate_report.run",
+        "target": "publish_report.validated",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:validate_report.run:validate_report.rejection:produce:rejected:1",
+        "source": "validate_report.run",
+        "target": "validate_report.rejection",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "rejected",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      }
+    ]
+  },
+  "boundaries": {
+    "entry": [
+      {
+        "name": "tariff",
+        "port": "read_tariff.source",
+        "place": "read_tariff.source"
+      },
+      {
+        "name": "usage",
+        "port": "read_usage.source",
+        "place": "read_usage.source"
+      }
+    ],
+    "exit": [
+      {
+        "name": "check_tariff_input_rejection",
+        "port": "check_tariff_input.rejection",
+        "place": "check_tariff_input.rejection"
+      },
+      {
+        "name": "check_usage_input_rejection",
+        "port": "check_usage_input.rejection",
+        "place": "check_usage_input.rejection"
+      },
+      {
+        "name": "join_intervals_rejection",
+        "port": "join_intervals.rejection",
+        "place": "join_intervals.rejection"
+      },
+      {
+        "name": "report",
+        "port": "publish_report.final",
+        "place": "publish_report.final"
+      },
+      {
+        "name": "validate_report_rejection",
+        "port": "validate_report.rejection",
+        "place": "validate_report.rejection"
+      }
+    ],
+    "terminal_rules": [
+      {
+        "key": "example/tool_pipeline/terminal/v1",
+        "operation": "publish_report.run",
+        "transition_ids": [
+          "publish_report.run"
+        ],
+        "outcome": "complete",
+        "port": "publish_report.final",
+        "place": "publish_report.final"
+      }
+    ],
+    "terminal_evidence": "not_provided"
+  },
+  "transition_bindings": [],
+  "presentation": {
+    "title": "Ten-operation billing declaration",
+    "description": "Initial declaration from the published source. No operations executed.",
+    "nodes": {},
+    "topology_digest": "ad9d0c5783f6d102374266333a11295e32dc3b1c9615f6b844131054af1e0def",
+    "status": "default"
+  },
+  "position": {
+    "mode": "live",
+    "cursor": null,
+    "latest_head": null
+  },
+  "coverage": {
+    "history": "unsupported",
+    "firings": "not_provided",
+    "agent_nodes": "not_provided",
+    "terminal_evidence": "not_provided"
+  },
+  "change": {},
+  "agent_nodes": []
+}

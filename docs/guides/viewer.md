@@ -18,6 +18,11 @@ The dashboard projects one existing Registry run. It never acquires writer
 authority, executes transitions, resumes work, creates results or changes the
 PetriNet. Terminal text and the browser use the same durable run evidence.
 
+For a trusted collaboration HOST, the [user-contribution guide](viewer-user-contributions.md)
+explains how to inspect recorded proposal changes on the actual Petri net. It uses
+existing Registry facts and read permissions; standalone run viewing cannot
+reconstruct missing collaboration sessions.
+
 ## Five-minute serial and parallel tour
 
 Create two offline runs from the source checkout. They use a deterministic

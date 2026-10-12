@@ -2,6 +2,14 @@
 
 # Atomic tools executed by a typed Petri net
 
+## Official Viewer panorama
+
+The official Viewer shows all 28 nodes and 29 arcs of the ten-operation billing declaration. Open the original image for its full size. The captioned declaration has no execution state or success claim.
+
+[![Complete ten-operation billing PetriNet declaration](assets/petrinet-0cd0dd4a76320ce6.png)](assets/petrinet-0cd0dd4a76320ce6.png)
+
+[Local official Viewer and declaration source](figures/README.md) · Click the panorama to open the original full-size image.
+
 An offline, synthetic electricity-bill example. The two input documents contain
 1,500 Wh at 80 fen/kWh and 500 Wh at 100 fen/kWh. The result is **2.000 kWh,
 1.20 + 0.50 = 1.70 CNY**. Nothing contacts a utility, pays a bill or calls a model.
@@ -218,6 +226,5 @@ worker failure, terminal replay without dispatch and read-only reconstruction.
 
 ## PetriNet declaration gallery
 
-The image below shows this example’s initial PetriNet structure. The [full gallery](figures/README.md) shows the listed declaration variants and readable node details for large nets.
+The opening image shows this example’s initial PetriNet structure. The [full gallery](figures/README.md) shows the listed declaration variants and readable node details for large nets.
 
-![Initial PetriNet structure](assets/petrinet-0cd0dd4a76320ce6.png)

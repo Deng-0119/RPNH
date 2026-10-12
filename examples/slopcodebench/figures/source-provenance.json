@@ -1,0 +1,37 @@
+{
+  "example": "slopcodebench",
+  "title": "SlopCodeBench checkpoint actor: initial declaration",
+  "frame_sha256": "605befc3f6cd0f49fec27ab1764916f8f5aa9c7e5a18fad8f4cd5afd35bbf058",
+  "source_commit": "270b76012a571286d303047547bd93cfecaa19c5",
+  "scope": "Initial per-checkpoint solve declaration with session_command bound as a managed tool. No Session, shell command, model call or benchmark evaluation.",
+  "summary": {
+    "node_count": 3,
+    "transition_count": 1,
+    "place_count": 2,
+    "resource_place_count": 0,
+    "edge_count": 3,
+    "resource_edge_count": 0
+  },
+  "managed_tools": {
+    "solve": [
+      "session_command"
+    ]
+  },
+  "sources": [
+    {
+      "path": "examples/slopcodebench/pilot.py",
+      "sha256": "578873f967f31e231e2263fab87a7b4a69a4d25bea6cfa128585ebdbab70a201"
+    },
+    {
+      "path": "examples/slopcodebench/plugin.py",
+      "sha256": "ed80903120515facf8a052d4226dbbc864e6f37615ea5f222840de20f0ccc569"
+    }
+  ],
+  "official_viewer_export": {
+    "image": "initial-petri.svg",
+    "provenance": "viewer-export-provenance.json",
+    "sha256": "bd1ae93a20e138e3967b4f25c17edb482a6c3b10fb8bfbc569ad198e0f11a393",
+    "view": "PetriNet",
+    "runtime_evidence": false
+  }
+}

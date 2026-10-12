@@ -2,6 +2,14 @@
 
 [English](README.md) | 中文
 
+## 官方 Viewer 全景
+
+下方官方 Viewer 全景是 Policy child 的完整声明：prepare、model、grade。RRSI 编排多个独立 child run；这张图不是整个 campaign 的单一 PN，也不是运行结果。下文继续展示四个角色声明及其边界。
+
+[![Policy child 完整 PetriNet 声明](assets/rrsi.policy.prepare-model-grade/petri-full.png)](assets/rrsi.policy.prepare-model-grade/petri-full.png)
+
+[本地 Viewer 与读图说明](figures/policy/README_ZH.md#local-viewer) · 点击全景打开原始大图。
+
 本示例在现有 RPNH Registry 与 PetriNet 运行时上实现公开 RRSI v0.6 方法，展示当前
 harness 如何承载 RSI 角色循环、独立评估与分数/成本选择。Analyst、Digester、Proposer、
 Critic 与 Policy occurrence 作为独立 RPNH child run 执行，各自保留 Registry 证据。
@@ -28,30 +36,29 @@ request → prepare → model → grade → result。Petri 保留中间 state/re
 
 以下完整 Petri 与 Flow 全景用于了解整体结构；交互细节可在本地官方 Viewer 中缩放、点击查看。[Petri 原图](assets/rrsi.policy.prepare-model-grade/petri-full.png) · [Flow 原图](assets/rrsi.policy.prepare-model-grade/flow-full.png)。
 
-![Policy 初始声明：完整 Petri 图](assets/rrsi.policy.prepare-model-grade/petri-full.png)
-![Policy 初始声明：完整 Flow 图](assets/rrsi.policy.prepare-model-grade/flow-full.png)
+[![Policy 初始声明：完整 Flow 图](assets/rrsi.policy.prepare-model-grade/flow-full.png)](assets/rrsi.policy.prepare-model-grade/flow-full.png)
 
 [在本地 Viewer 打开这份声明](figures/policy/README_ZH.md#local-viewer)。
 
 ### Analyst
 
-![Analyst 初始声明：完整 PetriNet 全图](assets/rrsi.role.analyst.png)
-![Analyst model 操作细节](assets/rrsi.role.analyst-role.model.png)
+[![Analyst 初始声明：完整 PetriNet 全图](assets/rrsi.role.analyst.png)](assets/rrsi.role.analyst.png)
+[![Analyst model 操作细节](assets/rrsi.role.analyst-role.model.png)](assets/rrsi.role.analyst-role.model.png)
 
 ### Proposer
 
-![Proposer 初始声明：完整 PetriNet 全图](assets/rrsi.role.proposer.png)
-![Proposer model 操作细节](assets/rrsi.role.proposer-role.model.png)
+[![Proposer 初始声明：完整 PetriNet 全图](assets/rrsi.role.proposer.png)](assets/rrsi.role.proposer.png)
+[![Proposer model 操作细节](assets/rrsi.role.proposer-role.model.png)](assets/rrsi.role.proposer-role.model.png)
 
 ### Critic
 
-![Critic 初始声明：完整 PetriNet 全图](assets/rrsi.role.critic.png)
-![Critic model 操作细节](assets/rrsi.role.critic-role.model.png)
+[![Critic 初始声明：完整 PetriNet 全图](assets/rrsi.role.critic.png)](assets/rrsi.role.critic.png)
+[![Critic model 操作细节](assets/rrsi.role.critic-role.model.png)](assets/rrsi.role.critic-role.model.png)
 
 ### Digester
 
-![Digester 初始声明：完整 PetriNet 全图](assets/rrsi.role.digester.png)
-![Digester model 操作细节](assets/rrsi.role.digester-role.model.png)
+[![Digester 初始声明：完整 PetriNet 全图](assets/rrsi.role.digester.png)](assets/rrsi.role.digester.png)
+[![Digester model 操作细节](assets/rrsi.role.digester-role.model.png)](assets/rrsi.role.digester-role.model.png)
 
 各角色先初始化 state，再调用已注册的 model 操作，随后处理 response。action
 transition 可以返回 state 进入下一次 model 步骤，或发布 result。每个角色的

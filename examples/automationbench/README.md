@@ -2,6 +2,16 @@
 
 English | [中文](README_ZH.md)
 
+## Official Viewer panorama
+
+This is the native actor declaration exported as SVG from the official Viewer. The single Agent transition owns managed api_search, api_fetch and base64_encode calls; these tools are not separate PN workflow stages. The frame uses the shipped synthetic acceptance prompt and plugin-factory contracts with disconnected host bindings. It contains no historical pilot execution or score.
+
+[![Native actor declaration](figures/initial-petri.svg)](figures/initial-petri.svg)
+
+This is a self-contained [official Viewer SVG export](figures/viewer-export-provenance.json); only its outer viewport is normalized to include the complete rendered graph. Open the static Viewer below for selectable node and arc details.
+
+Click the panorama for the original full-size image. [Open the static Viewer and inspect the source](figures/README.md).
+
 This example preserves the real, score-blind **2026-10-02** 18-task AutomationBench pilot and
 the native RPNH adapter used to produce it. The historical run covered all six public
 business domains and three integration-width strata. It used a real external

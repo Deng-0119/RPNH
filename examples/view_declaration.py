@@ -20,7 +20,14 @@ _DECLARATIONS = {
     "rrsi-policy": "rrsi_v06/figures/policy/declaration-frame.json",
     "collaboration-baseline": "user_collaboration/figures/baseline/declaration-frame.json",
     "collaboration-adopted": "user_collaboration/figures/adopted-M2/declaration-frame.json",
+    "tool-pipeline": "tool_pipeline/figures/declaration-frame.json",
     "parallel": "workflow_patterns/figures/parallel/declaration-frame.json",
+    "automationbench": "automationbench/figures/declaration-frame.json",
+    "erp-bench": "erp_bench/figures/declaration-frame.json",
+    "slopcodebench": "slopcodebench/figures/declaration-frame.json",
+    "harnessaudit-office": "harnessaudit_office/figures/declaration-frame.json",
+    "iteration-profile": "../cpn/examples/iteration_profile/figures/iteration-profile/declaration-frame.json",
+    "compose-serial": "net_operations/figures/compose-serial/declaration-frame.json",
 }
 
 

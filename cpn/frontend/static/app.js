@@ -1,3 +1,4 @@
+import { installContributionsPanel, contributionNodeStyle } from './user-contributions.mjs';
 import { installComparisonContextPanel } from './comparison-context.mjs';
 import { installComparisonPanel } from './comparison-view.mjs';
 import { SourceObservationState, sourceObservationPath, renderSourceObservation } from './source-observation.mjs';
@@ -19,7 +20,7 @@ const sourceObservation = new SourceObservationState();
 let sourceObservationController=null;
 function drawSourceObservation(){renderSourceObservation($('source-observation-panel'),sourceObservation,{translate:tr,onSelect:loadSourceObservation,onClose:()=>{sourceObservationController?.abort();sourceObservation.close();drawSourceObservation();}});}
 async function loadSourceObservation(reference=null){
-    crossComparison.close();comparisonPanel.close();
+    contributionPanel.close();crossComparison.close();comparisonPanel.close();
     sourceObservationController?.abort();sourceObservationController=new AbortController();
     const selected=sourceObservation.begin(reference);drawSourceObservation();
     try{const raw=await request(sourceObservationPath(reference),sourceObservationController.signal);sourceObservation.accept(selected,raw);}
@@ -41,12 +42,12 @@ const viewports = new Map();
 let checkpointView = null, checkpointProbe = null, probeSerial = 0, retainedCapture = false, checkpointBusy = false;
 const checkpointReturns = [];
 const crossComparison = installComparisonContextPanel($('comparison-context-panel'), {request, translate:tr, events:window,
-    onOpen:()=>{comparisonPanel.close();stop();clearTimeout(timer);controller?.abort();timeline.begin();++historySerial;++probeSerial;checkpointBusy=false;cancelActivity();cancelTokenResource();},onClose:()=>schedule()});
+    onOpen:()=>{contributionPanel.close(false);comparisonPanel.close();stop();clearTimeout(timer);controller?.abort();timeline.begin();++historySerial;++probeSerial;checkpointBusy=false;cancelActivity();cancelTokenResource();},onClose:()=>schedule()});
 $('compare-nets').onclick=()=>crossComparison.open();
 const comparisonPanel = installComparisonPanel($('comparison-panel'), {request, translate:tr, events:window, onClose:()=>schedule()});
 function openComparison() {
     if (!frame) return;
-    crossComparison.close();
+    contributionPanel.close(false);crossComparison.close();
     // Validate exact choices before interrupting the existing observation flow.
     try {comparisonPanel.open(frame, checkpointView ? [] : timeline.items);}
     catch {comparisonPanel.close();notice(()=>tr('当前视图没有可比较的精确检查点。'));return;}
@@ -55,6 +56,26 @@ function openComparison() {
     cancelActivity();cancelTokenResource();
 }
 $('compare-checkpoints').onclick=openComparison;
+
+const contributionPanel = installContributionsPanel($('user-contributions-panel'), {request, getFrame:()=>frame, translate:tr, events:window,
+    onOpen:()=>{
+        comparisonPanel.close();crossComparison.close();sourceObservationController?.abort();sourceObservation.close();drawSourceObservation();
+        stop();clearTimeout(timer);controller?.abort();timeline.begin();++historySerial;++probeSerial;checkpointBusy=false;
+        cancelActivity();cancelTokenResource();mode='petri';render();
+        $('user-contributions').setAttribute('aria-pressed','true');
+    },
+    onClose:resume=>{$('user-contributions').setAttribute('aria-pressed','false');if(resume)schedule();},
+    onChange:()=>{if(renderer&&graph){decorate();summary();timeControls();}},
+    onFocus:async id=>{
+        const selectedFrame=frame,node=frame?.net.nodes.find(node=>node.id===id);if(!node)return;
+        if(graph?.view_mode!=='petri'&&!await render())return;
+        if(frame!==selectedFrame||!contributionPanel.state.open)return;
+        if(node.category==='resource')showResources=true;
+        $('search').value='';findIndex=-1;
+        select('node',id);renderer.center('node',id);
+    }});
+$('user-contributions').onclick=()=>{if(frame)return contributionPanel.state.open?contributionPanel.close():contributionPanel.open();};
+
 
 let activity = {observation:null,loading:false,error:null,stale:false,paused:false,expanded:new Set()}, activityGeneration=0, activityController=null;
 function cancelActivity(resume=false) {
@@ -156,6 +177,7 @@ function clearMotion() { renderer?.paper.svg.querySelectorAll('.token-illustrati
 function notice(message) { noticeMessage = message; const text = showMessage(message); $('error-banner').hidden = !text; $('error-banner').textContent = text ?? ''; }
 function detail() {
     const chosen = mode === 'overview' ? visibleSelection(graph, selection) : selection;
+    contributionPanel.selected(chosen?.kind==='node'&&frame?.net.nodes.some(node=>node.id===chosen.id)?chosen.id:null);
     $('inspector').hidden = !chosen;
     document.querySelector('.detail-tabs').hidden = mode === 'overview';
     if (!frame || !chosen)
@@ -210,13 +232,15 @@ function drawMap() {
         const p = layout.nodes.get(n.id), r = document.createElementNS(ns, 'rect');
         for (const [k, v] of Object.entries({ x: p.x, y: p.y, width: p.width, height: p.height, rx: 8, fill: n.display?.role === 'entry' ? '#359f85' : n.display?.role === 'exit' ? '#9184ce' : '#8b9fcd' }))
             r.setAttribute(k, v);
+        const contribution=mode==='petri'?contributionNodeStyle(contributionPanel.overlay(),n.id):null;
+        if(contribution){r.setAttribute('fill',contribution.color);r.setAttribute('opacity',contribution.match?'1':'.15');}
         svg.append(r);
     }
 }
 function decorate() {
     if (!graph)
         return;
-    const counts = renderer.decorate({ showResources, search: $('search').value, selection: visibleSelection(graph, selection) });
+    const counts = renderer.decorate({ showResources, search: $('search').value, selection: visibleSelection(graph, selection), contribution:mode==='petri'?contributionPanel.overlay():null });
     $('counts').textContent = mode === 'overview' ? tr('{0} 个智能体 · {1} 条后继关系', graph.nodes.length, graph.edges.length) : tr("显示 {0} 个节点 · 原始 {1} 节点 / {2} 弧", counts.visibleNodes, frame.net.nodes.length, frame.net.edges.length);
     $('resources').hidden = mode === 'overview';
     const resources = frame.net.nodes.filter(n => n.category === 'resource').length;
@@ -243,7 +267,8 @@ function summary() {
     $('source-badge').textContent = frame.net.source.mode === 'initial_configured' ? tr("初始声明") : frame.position.mode === 'history' ? tr("历史检查点") : tr("当前状态");
     if (retainedCapture) $('source-badge').textContent = tr('暂停 · 保留捕获');
     if(activity.paused) $('source-badge').textContent=tr('暂停 · 保留当前观察');
-    $('source-badge').dataset.mode = activity.paused ? 'activity_retained' : retainedCapture ? 'retained' : frame.position.mode;
+    if(contributionPanel.state.open) $('source-badge').textContent=tr('暂停 · 贡献观察');
+    $('source-badge').dataset.mode = contributionPanel.state.open ? 'contribution_retained' : activity.paused ? 'activity_retained' : retainedCapture ? 'retained' : frame.position.mode;
     $('checkpoint').textContent = `#${frame.source.verified_head_ordinal ?? '?'} · ${referenceText(frame.net.marking?.checkpoint_ref)}`;
     $('mode-caption').textContent = mode === 'overview' ? tr('智能体概览 · 仅显示 Agent → Agent 后继关系') : mode === 'petri' ? tr("PetriNet · 完整库所、转换与弧") : mode === 'list' ? tr("执行列表 · 一行对应一次真实执行") : tr("流程视图 · 左 → 右{0}", graph.folded.length ? tr(" · {0} 个单一交接可在详情展开", graph.folded.length) : '');
     for (const m of ['overview', 'flow', 'petri', 'list'])
@@ -278,8 +303,9 @@ async function render(previous = null, ticket = timeline.serial, candidate = fra
         const relation = graph.edges.find(e => e.id === selection.id);
         if (relation) selection = {kind:'edge', id:relation.witness_arc_ids?.[0] ?? relation.source_ids[0]};
     }
-    if (frame && frame!==candidate) {comparisonPanel.close();crossComparison.close();cancelActivity();cancelTokenResource();}
+    if (frame && frame!==candidate) {contributionPanel.close(false);comparisonPanel.close();crossComparison.close();cancelActivity();cancelTokenResource();}
     frame = candidate;
+    contributionPanel.checkFrame();
     if (resolved) {
         firingTarget = resolved.target;
         selection = firingTarget ? { kind: 'node', id: firingTarget.transition_id } : null;
@@ -303,6 +329,9 @@ async function render(previous = null, ticket = timeline.serial, candidate = fra
     $('paper').dataset.ready = 'true';
     $('paper').dataset.head = String(head(frame.net));
     $('paper').dataset.layoutRuns = String(layouts.runs);
+    // Mode/panel renders can complete after the last dashboard read. Refresh
+    // its lazy health text so the visible layout counter is not left at zero.
+    setHealth(healthMessage);
     $('paper').dataset.viewMode = mode;
     if (first || scopeChanged) {
         renderer.fit();
@@ -363,6 +392,11 @@ function timeControls() {
         for (const id of ['speed', 'refresh', 'auto-refresh']) $(id).disabled = false;
         $('refresh').title = '';
     }
+    if(contributionPanel.state.open) {
+        $('auto-refresh').disabled=true;$('play').disabled=true;
+        $('timeline-scope').textContent=tr('保留当前主图观察；贡献证据绑定精确检查点');
+        $('back-live').setAttribute('aria-pressed','false');
+    }
     if(activity.paused) {
         $('auto-refresh').disabled=true; $('play').disabled=true;
         $('timeline-scope').textContent=tr('保留当前主图观察；活动单独固定 H/E');
@@ -401,7 +435,7 @@ async function loadHistory(before = null) {
         }
     }
 }
-function schedule() { clearTimeout(timer); if (!comparisonOnly && !crossComparison.state.open && !comparisonPanel.state.open && !activity.paused && !checkpointView && !retainedCapture && !checkpointBusy && $('auto-refresh').checked)
+function schedule() { clearTimeout(timer); if (!comparisonOnly && !contributionPanel.state.open && !crossComparison.state.open && !comparisonPanel.state.open && !activity.paused && !checkpointView && !retainedCapture && !checkpointBusy && $('auto-refresh').checked)
     timer = setTimeout(async () => { if (timeline.mode === 'live')
         await loadFrame(null);
     else {
@@ -410,7 +444,7 @@ function schedule() { clearTimeout(timer); if (!comparisonOnly && !crossComparis
     } }, 2500); }
 async function loadFrame(cursor) {
     if (checkpointView || retainedCapture || checkpointBusy) return;
-    comparisonPanel.close();crossComparison.close();
+    contributionPanel.close(false);comparisonPanel.close();crossComparison.close();
     ++probeSerial; checkpointProbe = null;
     cancelActivity();cancelTokenResource();
     const ticket = timeline.begin();
@@ -532,7 +566,7 @@ function retainedState() {
             nextBefore: timeline.nextBefore, historyHead: timeline.historyHead, endReason: timeline.endReason}};
 }
 function pauseCheckpointNavigation() {
-    comparisonPanel.close();crossComparison.close();
+    contributionPanel.close(false);comparisonPanel.close();crossComparison.close();
     cancelActivity();cancelTokenResource();
     stop(); clearTimeout(timer); controller?.abort(); ++historySerial; ++probeSerial;
     $('auto-refresh').checked = false;
@@ -634,7 +668,7 @@ function overviewEmpty() {
     }
 }
 function refreshLanguage() {
-    drawSourceObservation();comparisonPanel.refreshLanguage();crossComparison.refreshLanguage();
+    drawSourceObservation();comparisonPanel.refreshLanguage();crossComparison.refreshLanguage();contributionPanel.refreshLanguage();
     const savedNotice=noticeMessage;
     const openDetails = [...$('detail').querySelectorAll('details')].map((d, i) => d.open ? i : -1), scroll = $('detail').scrollTop;
     applyLanguage(document);
@@ -667,7 +701,7 @@ async function start() {
     if (!$('paper')?.parentElement) throw messageError('PetriNet 画布缺少宿主容器');
     renderer = new NetRenderer(window.joint, $('paper'), selectRendered);
     for (const m of ['overview', 'flow', 'petri', 'list'])
-        $(`mode-${m}`).onclick = () => { if(m==='overview') {cancelActivity(true);cancelTokenResource();} mode = m; render(); };
+        $(`mode-${m}`).onclick = () => { if(m!=='petri')contributionPanel.close(); if(m==='overview') {cancelActivity(true);cancelTokenResource();} mode = m; render(); };
     for (const t of ['about', 'executions', 'evidence'])
         $(`tab-${t}`).onclick = () => { tab = t; detail(); };
     $('line-bridges').onchange = () => { clearMotion(); decorate(); };
@@ -732,7 +766,7 @@ async function start() {
         clearMotion(); };
     $('motion').checked = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     window.addEventListener('pagehide', event => {
-        cancelActivity();cancelTokenResource(); clearTimeout(timer); stop(); ++historySerial; ++probeSerial; timeline.begin(); controller?.abort();
+        contributionPanel.close(false);cancelActivity();cancelTokenResource(); clearTimeout(timer); stop(); ++historySerial; ++probeSerial; timeline.begin(); controller?.abort();
         checkpointBusy=false;
         // A bfcache entry keeps this app instance: its paper and resize observer
         // must survive, while pending reads and comparison state are discarded.

@@ -31,7 +31,7 @@ workspace 或恢复状态的独立所有者。
 
 [受控 managed 工具](docs/controlled-managed-tools.zh.md)介绍精确结果分页、有界并发、隔离 Python 程序、只读结果证据与来源预检。新能力通过显式 HOST 策略选择；既有默认工具目录与基准对照条件保持原样。
 
-[三个模拟用户共同构建同一任务网络](examples/user_collaboration/README_ZH.md)：从 A 的共同版本到 B/C 的独立贡献、审阅、显式冲突协调与 owner 采用，两张真实回执关系图串起完整协作主线。例子再提供实际业务网全景、官方静态 Viewer 与[实测结果和取舍](docs/results/user-collaboration-20261012/README_ZH.md)。
+[三个模拟用户共同构建同一任务网络](examples/user_collaboration/README_ZH.md)：先看官方 Viewer 保留的已采用 24 批次业务 Petri 网，再核对各方配置贡献记录与[实测结果和取舍](docs/results/user-collaboration-20261012/README_ZH.md)。
 
 历史应用评分与零模型 runtime 验证见[精选结果](docs/results/README_ZH.md)。每项保留实际源码与条件；这些旧窗口不认证后续组合产品，也不代表已发布新的 rc2 二进制。
 
@@ -40,7 +40,7 @@ workspace 或恢复状态的独立所有者。
 下图来自仓库内 `parallel` 案例完成后的真实 Registry 看板。`prepare` 会同时启用两个独立
 Agent；只有两个登记产物都可用后，`join` 才具备执行条件。
 
-![RPNH 并行多 Agent 实际概览](examples/workflow_patterns/assets/parallel-overview.png)
+[![RPNH 并行多 Agent 实际概览](examples/workflow_patterns/assets/parallel-overview.png)](examples/workflow_patterns/assets/parallel-overview.png)
 
 完成[快速开始](#快速开始)后，无需 provider 或 API 凭据即可复现：
 
@@ -54,7 +54,7 @@ rpnh net --run "$DEMO_ROOT/parallel" --view --no-open
 Overview 强调 Agent 之间的结构；同一次运行的 PetriNet 视图会展示执行实际使用的
 transition、交接 place、并行分叉弧和全输入 join：
 
-![RPNH 并行流程的实际 PetriNet 投影](examples/workflow_patterns/assets/parallel-petrinet.png)
+[![RPNH 并行流程的实际 PetriNet 投影](examples/workflow_patterns/assets/parallel-petrinet.png)](examples/workflow_patterns/assets/parallel-petrinet.png)
 
 这些图片保留真实图投影、聚合执行状态和控件，只移除了 run 专属 checkpoint 身份及本地
 时间。看板始终只读；完成判定依赖 Registry 终态证据和已登记最终结果，不能用图片或

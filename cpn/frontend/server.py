@@ -23,6 +23,7 @@ _STATIC_ROOT = Path(__file__).with_name("static")
 _SCHEMA_VERSION = "rpnh/net_view/v1"
 _REQUEST_TIMEOUT_SECONDS = 5.0
 _ASSETS = {
+    "/user-contributions.mjs": ("user-contributions.mjs", "text/javascript; charset=utf-8"),
     "/source-observation.mjs": ("source-observation.mjs", "text/javascript; charset=utf-8"),
     "/worksets.mjs": ("worksets.mjs", "text/javascript; charset=utf-8"),
     "/firing-activity.mjs": ("firing-activity.mjs", "text/javascript; charset=utf-8"),
@@ -261,6 +262,35 @@ def handle_request(
         except (ValueError, TypeError, KeyError):
             response = _response(400, 'application/json; charset=utf-8', b'{"error":"invalid_query"}')
         except (RuntimeError, OSError, sqlite3.Error):
+            response = _response(503, 'application/json; charset=utf-8', b'{"error":"read_failed"}')
+    elif path == "/api/v2/user-contributions":
+        from .user_contributions import (parse_query, SCHEMA, ContributionInvalid,
+            ContributionAccessChanged, ContributionStale, ContributionLimit)
+        from cpn.rpnh.collaboration.registry_read_contracts import RegistryReadSessionError
+        import sqlite3
+        try:
+            selected = parse_query(urlsplit(target).query)
+            action = getattr(provider, 'user_contributions', None)
+            if not callable(action):
+                raise NotImplementedError('not_configured')
+            payload = action(**selected)
+            if payload.get('schema_version') != SCHEMA or payload.get('selector') != selected:
+                raise ValueError('contribution response selector differs')
+            response = _response(200, 'application/json; charset=utf-8', json.dumps(payload, ensure_ascii=False, allow_nan=False).encode('utf8'))
+        except NotImplementedError:
+            response = _response(501, 'application/json; charset=utf-8', b'{"error":"not_configured_or_unsupported"}')
+        except ContributionInvalid:
+            response = _response(400, 'application/json; charset=utf-8', b'{"error":"invalid_query"}')
+        except ContributionAccessChanged:
+            response = _response(403, 'application/json; charset=utf-8', b'{"error":"access_changed"}')
+        except ContributionStale:
+            response = _response(409, 'application/json; charset=utf-8', b'{"error":"stale_observation"}')
+        except ContributionLimit:
+            response = _response(413, 'application/json; charset=utf-8', b'{"error":"scope_limit"}')
+        except RegistryReadSessionError as error:
+            status = 413 if error.code == 'LIMIT_EXCEEDED' else 422 if error.code == 'PROJECTION_UNAVAILABLE' else 403
+            response = _response(status, 'application/json; charset=utf-8', json.dumps({'error': 'scope_limit' if status == 413 else 'projection_unavailable' if status == 422 else 'access_changed'}).encode())
+        except (ValueError, TypeError, KeyError, RuntimeError, OSError, sqlite3.Error):
             response = _response(503, 'application/json; charset=utf-8', b'{"error":"read_failed"}')
     elif path == "/api/v2/worksets":
         if urlsplit(target).query:

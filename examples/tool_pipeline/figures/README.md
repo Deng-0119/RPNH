@@ -38,3 +38,13 @@ Declaration source: [examples/tool_pipeline/README.md](../README.md), [examples/
 
 [Inspect all node details](nodes/tools_double_rejection/README.md).
 [Figure identities](../results/figure-provenance.json).
+
+## Local official Viewer
+
+From the repository root with dependencies already available, run the command below. Open its loopback URL, select PetriNet, zoom, pan and select nodes or arcs. The bundled frame is statically compiled from the current published source, with no run or business execution; the retained images below keep their original source identities.
+
+```bash
+python examples/view_declaration.py tool-pipeline --no-open
+```
+
+[Current static declaration source](source-provenance.json).

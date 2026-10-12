@@ -1,0 +1,38 @@
+{
+  "example": "erp_bench",
+  "title": "ERP-Bench native actor: initial declaration",
+  "frame_sha256": "01c80a96dcaa0c76d25f290bfcceab7c0663a69dd354dd88410d7fe164e27da7",
+  "source_commit": "270b76012a571286d303047547bd93cfecaa19c5",
+  "scope": "Initial native actor declaration with erp_python and validate_plan bindings. Disconnected host configuration; no ERP container, transaction, model call or execution history.",
+  "summary": {
+    "node_count": 3,
+    "transition_count": 1,
+    "place_count": 2,
+    "resource_place_count": 0,
+    "edge_count": 3,
+    "resource_edge_count": 0
+  },
+  "managed_tools": {
+    "executor": [
+      "erp_python",
+      "validate_plan"
+    ]
+  },
+  "sources": [
+    {
+      "path": "examples/erp_bench/src/rpnh_erp_bench/native.py",
+      "sha256": "b87423511b50d8f2a7b865b1dc3f7ec3e1b0e84c760ef67cc0be5280dae7bd46"
+    },
+    {
+      "path": "examples/erp_bench/src/rpnh_erp_bench/plugin.py",
+      "sha256": "13d9c09b3eb9b30f326f4daf9d9745309844c55f10cc02f832e9c984d63479bf"
+    }
+  ],
+  "official_viewer_export": {
+    "image": "initial-petri.svg",
+    "provenance": "viewer-export-provenance.json",
+    "sha256": "38ed53e8246004556f9d8251ab242be5829ef4df3683fe0fa187def91f2955a4",
+    "view": "PetriNet",
+    "runtime_evidence": false
+  }
+}

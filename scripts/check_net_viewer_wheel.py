@@ -25,6 +25,7 @@ REQUIRED_STATIC_FILES = (
     "source-observation.mjs",
     "firing-activity.mjs",
     "worksets.mjs",
+    "user-contributions.mjs",
 )
 REQUIRED_VENDOR_FILES = (
     "joint.js",

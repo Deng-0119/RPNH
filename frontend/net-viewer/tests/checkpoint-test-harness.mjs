@@ -1,3 +1,4 @@
+import * as contributionsModule from '../../../cpn/frontend/static/user-contributions.mjs';
 import * as comparisonContextModule from '../../../cpn/frontend/static/comparison-context.mjs';
 import * as comparisonModule from '../../../cpn/frontend/static/comparison-view.mjs';
 import * as sourceObservationModule from '../../../cpn/frontend/static/source-observation.mjs';
@@ -64,7 +65,7 @@ export function checkpointApp(fetcher, {startup = false} = {}) {
         nodes: new Map(graph.nodes.map((n,i) => [n.id,{x:i*240,y:30,width:224,height:126,ports:[]}])), edges:new Map()});
     const layouts = {runs: 0, get: graph => getLayout(graph)};
     const runtime = startup ? rendererRuntime(document, window) : {};
-    const context = vm.createContext({...comparisonContextModule,...comparisonModule,...sourceObservationModule,...activityModule,...model, ...dashboard, ...checkpoint, ...locale, tr: locale.t,
+    const context = vm.createContext({...contributionsModule,...comparisonContextModule,...comparisonModule,...sourceObservationModule,...activityModule,...model, ...dashboard, ...checkpoint, ...locale, tr: locale.t,
         renderInspector, renderExecutionTable, renderObservationPanel, element, resolveFiringTarget, installWorksetPanel,
         document, window, console, structuredClone, AbortController, ...runtime,
         LayoutCache: class {constructor() {return layouts;}},
@@ -82,8 +83,9 @@ export function checkpointApp(fetcher, {startup = false} = {}) {
         : appSource.replace(/\nstart\(\)\.catch[\s\S]*$/,'')) + `
         ${startup ? '' : 'renderer=injectedRenderer; layouts=injectedLayouts;' + modeBindings}
         globalThis.api={loadFrame,loadHistory,probeCheckpoint,openPreviousNet,returnCheckpointCapture,returnToLive,
-            render,select,schedule,timeControls,refreshLanguage,openComparison,comparisonPanel,crossComparison,loadActivity,cancelActivity,selectActivity,openPetri,
+            render,select,schedule,timeControls,refreshLanguage,openComparison,comparisonPanel,crossComparison,contributionPanel,loadActivity,cancelActivity,selectActivity,openPetri,
             viewer() {return renderer;},
+            layoutRuns(value) {layouts.runs=value;},
             activityState() {return activity;},
             resourceState() {return tokenResource;},
             closeActivity() {cancelActivity(true);detail();},

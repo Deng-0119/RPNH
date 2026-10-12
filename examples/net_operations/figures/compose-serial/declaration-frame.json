@@ -1,0 +1,196 @@
+{
+  "schema_version": "rpnh/dashboard/v1",
+  "source": {
+    "mode": "initial_configured",
+    "task_label": "SerialExample: declaration only",
+    "verified_head_ordinal": null
+  },
+  "net": {
+    "schema_version": "rpnh/net_view/v1",
+    "source": {
+      "mode": "initial_configured",
+      "task_label": "SerialExample: declaration only",
+      "verified_head_ordinal": null
+    },
+    "summary": {
+      "node_count": 5,
+      "transition_count": 2,
+      "place_count": 3,
+      "resource_place_count": 0,
+      "edge_count": 4,
+      "resource_edge_count": 0
+    },
+    "nodes": [
+      {
+        "id": "finish_step.request",
+        "label": "finish_step.request",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/example_net_operation_text/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "finish_step.result",
+        "label": "finish_step.result",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/example_net_operation_text/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "finish_step.run",
+        "label": "finish_step.run",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "finish_step.run",
+        "operation_id": "op_0",
+        "executor": "example/deterministic-text/v1",
+        "inputs": [
+          "finish_step.request"
+        ],
+        "outputs": [
+          "finish_step.result"
+        ]
+      },
+      {
+        "id": "prepare_step.request",
+        "label": "prepare_step.request",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/example_net_operation_text/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "prepare_step.run",
+        "label": "prepare_step.run",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "prepare_step.run",
+        "operation_id": "op_1",
+        "executor": "example/deterministic-text/v1",
+        "inputs": [
+          "prepare_step.request"
+        ],
+        "outputs": [
+          "prepare_step.result"
+        ]
+      }
+    ],
+    "edges": [
+      {
+        "id": "edge:arc:finish_step.request:finish_step.run:consume:-:1",
+        "source": "finish_step.request",
+        "target": "finish_step.run",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:finish_step.run:finish_step.result:produce:complete:1",
+        "source": "finish_step.run",
+        "target": "finish_step.result",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:prepare_step.request:prepare_step.run:consume:-:1",
+        "source": "prepare_step.request",
+        "target": "prepare_step.run",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:prepare_step.run:finish_step.request:produce:complete:1",
+        "source": "prepare_step.run",
+        "target": "finish_step.request",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      }
+    ]
+  },
+  "boundaries": {
+    "entry": [
+      {
+        "name": "prepare_request",
+        "port": "prepare_step.request",
+        "place": "prepare_step.request"
+      }
+    ],
+    "exit": [
+      {
+        "name": "finish_result",
+        "port": "finish_step.result",
+        "place": "finish_step.result"
+      }
+    ],
+    "terminal_rules": [
+      {
+        "key": "example/text-terminal/v1",
+        "operation": "finish_step.run",
+        "transition_ids": [
+          "finish_step.run"
+        ],
+        "outcome": "complete",
+        "port": "finish_step.result",
+        "place": "finish_step.result"
+      }
+    ],
+    "terminal_evidence": "not_provided"
+  },
+  "transition_bindings": [],
+  "presentation": {
+    "title": "Compose two serial stages: initial declaration",
+    "description": "Shipped serial composition compiled with explicit inert HOST contract stubs. No execution or model call.",
+    "nodes": {},
+    "topology_digest": "c270e827b94354c7995738ffd4a60f3701ec9694e36439084e8cb59f78a41661",
+    "status": "default"
+  },
+  "position": {
+    "mode": "live",
+    "cursor": null,
+    "latest_head": null
+  },
+  "coverage": {
+    "history": "unsupported",
+    "firings": "not_provided",
+    "agent_nodes": "not_provided",
+    "terminal_evidence": "not_provided"
+  },
+  "change": {},
+  "agent_nodes": []
+}

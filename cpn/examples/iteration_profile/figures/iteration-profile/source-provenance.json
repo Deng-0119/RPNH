@@ -1,0 +1,42 @@
+{
+  "schema": "rpnh/example_declaration_provenance/v1",
+  "example": "iteration-profile",
+  "source_repository": "Deng-0119/RPNH",
+  "source_commit": "270b76012a571286d303047547bd93cfecaa19c5",
+  "scope": "Exact shipped two-round declaration compiled through load_iteration_profile and compile_iteration_profile. The application schemas and executor/terminal contracts are explicit inert HOST stubs from the existing test fixture. The stubs throw if invoked. This is not a runnable proposer, evaluator, selector, scorer or Registry run.",
+  "frame_sha256": "ec5a3ac0697aaf00cda39d3b7c194711289bfee4c71f0897f544880e13add890",
+  "summary": {
+    "node_count": 19,
+    "transition_count": 6,
+    "place_count": 13,
+    "resource_place_count": 0,
+    "edge_count": 24,
+    "resource_edge_count": 0
+  },
+  "sources": [
+    {
+      "path": "cpn/examples/iteration_profile/propose_evaluate_select.json",
+      "sha256": "05f1340c45fad7d27db654a197c9a920530b0b9a4ae5e0747705f0604e1c9231"
+    },
+    {
+      "path": "cpn/rpnh/iteration_profile.py",
+      "sha256": "4c0fb7c2bc93543b037614a3813c50b34172cf1f9942c8c22e20a3772efa3a5a"
+    },
+    {
+      "path": "tests/test_iteration_profile.py",
+      "sha256": "17fe93f40830912043a406dd28684451748baf36fdb37e6b6774d0a146118eaa"
+    }
+  ],
+  "compiler": "Original compile_module / project_compiled_net / project_compiled_boundaries / public_net",
+  "model_calls": 0,
+  "registry_created": false,
+  "business_executor_invocations": 0,
+  "viewer": "Original cpn.frontend.server.serve_projection and bundled frontend static assets",
+  "official_viewer_export": {
+    "image": "initial-petri.svg",
+    "provenance": "viewer-export-provenance.json",
+    "sha256": "53475e9472ef163cb33837d9de0438e88dfb39e42baae88b5c65d287f6b9e80e",
+    "view": "PetriNet",
+    "runtime_evidence": false
+  }
+}

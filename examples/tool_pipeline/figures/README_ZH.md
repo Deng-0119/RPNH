@@ -38,3 +38,13 @@
 
 [查看全部节点细节](nodes/tools_double_rejection/README_ZH.md).
 [图片身份记录](../results/figure-provenance.json)。
+
+## 本地官方 Viewer
+
+在仓库根目录、已有依赖的环境中运行下列命令。打开打印的回环 URL，选择 PetriNet；缩放、平移并点击节点或弧查看细节。随附 frame 从当前发布源码静态编译，不含运行或业务执行；下方旧图仍保留其原始来源身份。
+
+```bash
+python examples/view_declaration.py tool-pipeline --no-open
+```
+
+[当前静态声明来源](source-provenance.json).

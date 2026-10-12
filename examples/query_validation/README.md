@@ -1,5 +1,13 @@
 # SQL query validation and provenance
 
+## Official Viewer panorama
+
+This original official Viewer capture shows the completed SQL run in Detailed flow: inspect inputs, execute queries and compare results. The displayed 8-node flow is a simplification of the 11-node/11-arc PN; it is not a static declaration.
+
+[![Recorded SQL workflow: three settled operations and two final outputs](figures/recorded-run.png)](figures/recorded-run.png)
+
+[Local Viewer and reading guide](#viewer) · Click the panorama to open the original full-size image.
+
 This database example records actual SQLite reads, exact result comparison and a
 final SQL resource through the existing Registry/PetriNet. The bundled [sol.sql](sol.sql)
 was independently derived from the pinned task instruction, original query and
@@ -147,8 +155,6 @@ does not establish a harness speed or reliability advantage.
 ## Completed local task and recorded run
 
 The independently frozen `sol.sql` passed all **six unchanged upstream tests** in one 176.76-second evaluator run. A narrow invocation plugin mapped five absolute paths; existing Python/SQLite/pytest replaced the upstream installation wrapper. The original `test.sh`, Docker limits, CTRF and stock harness were not run. This is an adapted verifier result, not a full official dataset benchmark. The evaluator reference stayed separate from the author, and the candidate/database/verifier bytes remained unchanged. Immutable native resources still say `original_verifier: not_run`, reflecting their pre-evaluation publication; the later evaluator receipt is separate.
-
-![Actual SQL Registry: three settled operations and final SQL/report tokens](figures/recorded-run.png)
 
 This is the actual native completed run: Registry head **421**, three settled operations, zero unsettled records, and two final tokens. The image preserves the original Viewer bytes, including a technical checkpoint footer and observation time; it contains no local filesystem path or user identity map. It is not the initial declaration frame.
 

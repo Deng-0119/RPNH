@@ -2,6 +2,22 @@
 
 # Inert iteration profile authoring (R1, delivery revision 2)
 
+## Official Viewer initial declaration
+
+The official Viewer SVG export renders the exact shipped two-round profile using explicit inert HOST contract stubs. It has no implemented proposer, evaluator or selector and no execution history. This is a declaration-only authoring example.
+
+[![iteration-profile initial PetriNet](figures/iteration-profile/initial-petri.svg)](figures/iteration-profile/initial-petri.svg)
+
+This is a self-contained [official Viewer SVG export](figures/iteration-profile/viewer-export-provenance.json); only its outer viewport is normalized to include the complete rendered graph. Open the static Viewer below for selectable node and arc details.
+
+Click the panorama for the full-size original. From the repository root, with RPNH dependencies already available:
+
+```bash
+python examples/view_declaration.py iteration-profile --no-open
+```
+
+This opens only the static declaration. Use the local Viewer to zoom and select nodes; no run is started. [Source and inert HOST contract scope](figures/iteration-profile/source-provenance.json).
+
 `propose_evaluate_select.json` is one **declaration-only** example. It is not a
 runnable RSI campaign and does not implement a scorer, proposer or selector.
 The optional authoring convenience API lives beside the existing Module/compiler

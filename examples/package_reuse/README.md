@@ -2,6 +2,14 @@
 
 English | [中文](README_ZH.md)
 
+## Official Viewer panorama
+
+The official Viewer renders the native-add v2 package declaration: request and registered plugin capability feed the operation, which produces the result. This is initial_configured structure, without runtime marking or success evidence.
+
+[![Initial native-add v2 package PetriNet](assets/petrinet-2448db2bb307d99f.png)](assets/petrinet-2448db2bb307d99f.png)
+
+[Declaration source and detail views](figures/README.md) · Click the panorama to open the original full-size image.
+
 This example sends the **same `native-add-v2.zip`, package lock and `main` entry**
 through existing-environment, new-venv and setup-document routes. Its genuine
 Module comes from the public `build_plugin_module` API and calls the existing
@@ -327,6 +335,5 @@ as part of a public sharepackage.
 
 ## PetriNet declaration gallery
 
-The image below shows this example’s initial PetriNet structure. The [full gallery](figures/README.md) shows the listed declaration variants and readable node details for large nets.
+The opening image shows this example’s initial PetriNet structure. The [full gallery](figures/README.md) shows the listed declaration variants and readable node details for large nets.
 
-![Initial PetriNet structure](assets/petrinet-2448db2bb307d99f.png)

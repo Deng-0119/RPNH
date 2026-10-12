@@ -2,51 +2,39 @@
 
 English | [中文](README_ZH.md) | [Detailed results and analysis](../../docs/results/user-collaboration-20261012/README.md)
 
-The story here is **how three independent, controlled simulated user identities branch from a common revision, contribute separately, review and coordinate conflicts, and ultimately adopt one shared task network.** A, B and C have distinct native Registry actors and sessions under one trusted HOST coordinator; they are not three human participants or external accounts. Two real models propose changes. Model choice and user identity are separate dimensions.
+Three independent controlled simulated Registry actors, A/B/C, contributed configuration changes to the same 24-batch route-planning network. Each had a separate actor and session under one trusted HOST; these were not three human participants or external accounts. Models proposed changes, the owner accepted a revision, and deterministic HOST tools executed the adopted business Petri net.
 
-## Start with the collaboration
+## The adopted task network in the official Viewer
 
-| Role | Contribution to the shared outcome | Recorded native outcome |
+[![Original adopted-M2 runtime Detailed flow panorama: all 24 batch branches and final aggregation](figures/adopted-M2.png)](figures/adopted-M2.png)
+
+This unedited 4485 × 5000 capture shows the original **development adopted-M2 runtime**: admitted route inputs, all 24 ingest → plan → validate branches, aggregation, publication and the result. It has 74 settled firings and zero unsettled. Detailed flow folds 97 handoff places, displaying 100 nodes / 123 edges from the full 197-node / 220-arc Petri net. Open the original image to inspect the entire network.
+
+The cards are business operations. A/B/C are the configuration authors recorded separately below; they are not three runtime Agent nodes in this tool-only PN. The screenshot shows execution state, without per-author coloring or author/revision badges.
+
+## Which operations each participant changed
+
+The retained configuration declarations identify the planning operations as `batch_0.plan` through `batch_23.plan`. The edits below change each operation's `config.strategy`; places, transitions, arcs and available algorithms keep the same topology.
+
+| Participant and recorded proposal | Planning operations affected | Content retained in adopted M2 |
 | --- | --- | --- |
-| A: project owner and initial author | Establishes common revision A5, changing batches 0–10 to `deadline_first`; owns final acceptance and adoption | A5 is reviewed and advanced; its 11 policy changes remain in M2 |
-| B: independent contributor | Branches from A5 as B1, changing batches 11–17 to `zone_nearest`; later tries B2 with a different model under the same identity | B1 supplies the unique batch-11 change; B2 actually retracts it, receives a change request and is not adopted |
-| C: independent contributor, then coordinator | Branches from the same A5 as C1, changing batches 12–23 to `zone_nearest`; C2 explicitly incorporates B's unique change | C2 contains the union for batches 11–23, which owner A selects for M2 |
+| A, common revision A5 | `batch_0.plan`–`batch_10.plan` | Eleven changes from `nearest_neighbor` to `deadline_first` |
+| B, independent proposal B1 from A5 | `batch_11.plan`–`batch_17.plan` | `zone_nearest`; batch 11 is unique to B, while batches 12–17 also appear in C1 |
+| C, independent proposal C1 from A5 | `batch_12.plan`–`batch_23.plan` | `zone_nearest`; batches 18–23 are unique to C, while batches 12–17 overlap B1 |
+| C, coordinated revision C2 | Adds B's batch-11 change to C1 | The complete `zone_nearest` configuration for batches 11–23, retaining A's 0–10 configuration |
+| A, owner decision | Selects incoming C2 in the original B1/C2 merge, advances the protected branch and adopts M2 | The accepted configuration is used in the runtime shown above |
 
-[![Simplified collaboration relations derived from real receipts](visuals/collaboration-relations.png)](visuals/collaboration-relations.png)
+This table is a document-level correspondence between the published module declarations and the [receipt-derived contribution record](visuals/collaboration-evidence.json). It is not an attribution overlay exported by the Viewer. The six overlapping B/C changes count once in the final content; C2's incorporation of B's change is reuse, not a new independent C contribution. B2 was not adopted. The [detailed result record](../../docs/results/user-collaboration-20261012/README.md) retains unsuccessful proposals, the recorded coordination and merge decisions, model usage and their evidence limits.
 
-This diagram reconstructs relationships from native identity, proposal, review, merge and adoption receipts. **It is not a running PN screenshot or a wall-clock timeline.** The B/C fork shows independent version relationships from A5; the retained evidence does not establish simultaneous execution. See the safe fact projection in [collaboration-evidence.json](visuals/collaboration-evidence.json).
-
-### From separate contributions to actual adoption
-
-1. **A common starting point.** After A5 is approved and advanced, B1 and C1 propose changes from that same revision. Neither original task condition supplies the other contributor's proposal. They edit strategy configuration in the existing task network; its topology remains unchanged.
-2. **Contributions overlap and also have unique parts.** B1 and C1 make the same six changes on batches 12–17. Batch 11 is unique to B; batches 18–23 are unique to C. Equal values do not count twice as unique contributions.
-3. **Review preserves unsuccessful outcomes.** B uses DeepSeek for B1 and Terra for B2 while keeping the same identity, session and cumulative accounting (3 + 1 logical model calls). B2's prose claims to preserve B's contribution, but its actual write retracts batch 11, so review requests changes. B2 is not a parent of M2; matching some final values does not establish adopted authorship. Separately, the first B1/C1 combination has a shared business-budget contract conflict recorded in the original review and report, requiring subsequent C2 coordination.
-4. **Coordinate content, then resolve the merge.** C2 revises C1 with approved peer deltas and explicitly adds B's batch 11. Native M2 has B1 and C2 as its two parents. Its merge still reports a coupled-contract conflict; owner A explicitly selects the incoming C2 that already contains the union. The merge algorithm does not construct that union automatically.
-5. **Acceptance and adoption both happen.** The protected-branch advance points to M2. A subsequent native adopt receipt records `ADOPTED`, continuous with the original A project and session. Proposal approval, equal content, revision acceptance and final adoption are distinct facts. Owner review, advance and adopt are performed by the controlled HOST for A's session, not through model-granted authority.
-
-[![Content provenance and reuse in the adopted result](visuals/final-content-provenance.png)](visuals/final-content-provenance.png)
-
-This content map separates A's 11 retained changes, the six overlapping B/C changes, their unique changes, and C2's explicit reuse of B's content. Integration by C2 does not turn B's contribution into C's independent authorship. The final result retains substantive contributions from both B and C in this recorded case; it does not guarantee a successful joint adoption in every collaboration.
-
-## What task did they build together?
-
-The application is a 24-batch route-planning network: read admitted route inputs, plan with a configured policy, aggregate and publish results, then evaluate with an independent scorer. Models edit the existing configuration; deterministic HOST tools execute the business PN without a model call per route. The collaboration story and the business-runtime panoramas below describe two different layers.
-
-Adopted M2 and the original `nearest_neighbor` baseline are evaluated on fixed development and evaluation sets of 512 routes each. Official sequence scores decrease by about **7.525% / 8.376%**, while mean travel cost increases by about **7.715% / 8.421%**. Time-window failures and unknowns remain, so this is not an all-business-constraints pass. See the [detailed results and analysis](../../docs/results/user-collaboration-20261012/README.md) for paired distributions, tradeoff plots, model-separated token usage and evidence limits. These route outcomes alone do not measure a causal benefit from collaboration.
-
-## Original runtime panoramas of the adopted task network
-
-These unedited 4485 × 5000 PNGs came from the original **development** baseline and adopted-M2 runtime Registries in the official RPNH Viewer. Each shows all 24 batch branches, aggregation, publication and result. The capture has 74 settled firings and zero unsettled; Detailed flow folds 97 handoff places, showing 100 nodes / 123 edges from the full 197-node / 220-arc Petri net. Open the image at original size to inspect the whole workflow.
-
-### Baseline
+## Original baseline for comparison
 
 [![Original baseline runtime Detailed flow panorama](figures/baseline.png)](figures/baseline.png)
 
-### Adopted M2
+This second unedited 4485 × 5000 capture is the original **development baseline** with the same topology and `nearest_neighbor` in all 24 planning operations. It also has 74 settled firings and zero unsettled.
 
-[![Original adopted-M2 runtime Detailed flow panorama](figures/adopted-M2.png)](figures/adopted-M2.png)
+Both images retain their original technical checkpoint identifiers and observation times. These identify recorded execution state, not a person or account, and are not access tokens. The PNGs contain no textual/EXIF metadata. Neither has been redrawn, relabeled or presented as a new run. Their exact byte identities are in [SOURCES.json](../../docs/results/user-collaboration-20261012/SOURCES.json). Completed execution does not imply all route business constraints passed.
 
-The original footer retains technical checkpoint identifiers and observation times. These identify recorded execution state, not a person or an account. They are not access tokens. The PNGs contain no textual/EXIF metadata. Neither image has been redrawn, relabeled or presented as a new cloud run. Their exact byte identities are in [SOURCES.json](../../docs/results/user-collaboration-20261012/SOURCES.json). Completed execution does not imply all route business constraints passed.
+Adopted M2 and baseline were evaluated on fixed development and evaluation sets of 512 routes each. Official sequence scores decrease by about **7.525% / 8.376%**, while mean travel cost increases by about **7.715% / 8.421%**. Time-window failures and unknowns remain. These outcomes do not measure a causal benefit from collaboration; see the [full results and tradeoffs](../../docs/results/user-collaboration-20261012/README.md).
 
 ## Open the static structure in the official Viewer
 

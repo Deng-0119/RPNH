@@ -2,6 +2,16 @@
 
 [English](README.md)
 
+## 官方 Viewer 全景
+
+官方 Viewer 展示原生 executor 的请求、结果与中断返回结构。erp_python 和 validate_plan 是 Agent 内的 managed tools。这份初始声明不执行 ERP 事务、不启动 Odoo、不调用模型，也不是已完成任务的记录。
+
+[![ERP 原生 actor 声明](figures/initial-petri.svg)](figures/initial-petri.svg)
+
+这是自包含的[官方 Viewer SVG 导出图](figures/viewer-export-provenance.json)；只调整最外层视口以完整保留已渲染的图。下方静态 Viewer 支持选中节点和弧查看详情。
+
+点击全景打开原始大图。 [打开静态 Viewer 与查看来源](figures/README_ZH.md)。
+
 本示例将 RPNH 持有的模型执行与受管工具接入两个源码保持不变的 ERP-Bench
 任务：`2000_easy_01_buy_only_baseline` 用于 smoke，
 `2299_hard_repair_plan_hard` 用于修复展示。修复任务的故障在初始状态中已存在。

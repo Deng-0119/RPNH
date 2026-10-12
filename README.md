@@ -32,7 +32,7 @@ Explicit opt-in [author/graph interfaces](docs/reference/declarations.md), [Work
 
 Offline preparation and inspection are available through [portable package preview and exact local locks](docs/guides/portable-packages.md), [HOST declaration diagnostics](docs/guides/host-readiness.md), and [checkpoint comparison](docs/guides/checkpoint-comparison.md). Package commands use the installed `rpnh` entry; the HOST diagnostic is an explicit Python API. These interfaces inspect materials and recorded facts without granting execution authority.
 
-[Three simulated users build one task network together](examples/user_collaboration/README.md): follow A's common revision, B/C's independent contributions, review, explicit conflict coordination and owner adoption in two receipt-based collaboration diagrams. The example then links the actual business-network panoramas, official static Viewer and [measured outcomes and tradeoffs](docs/results/user-collaboration-20261012/README.md).
+[Three simulated users build one task network together](examples/user_collaboration/README.md): inspect the adopted 24-batch business Petri net in the original Viewer capture, then follow the recorded configuration contributions and [measured outcomes and tradeoffs](docs/results/user-collaboration-20261012/README.md).
 
 See [curated results](docs/results/README.md) for historical application scores and zero-model runtime checks. Each record keeps its tested source and conditions; these older windows do not certify a later combined product or a new rc2 binary release.
 
@@ -47,7 +47,7 @@ This dashboard comes from the checked-in `parallel` example after a completed
 Registry run. `prepare` enables two independent Agents; `join` becomes eligible
 only after both registered products are available.
 
-![Actual RPNH parallel multi-agent overview](examples/workflow_patterns/assets/parallel-overview.png)
+[![Actual RPNH parallel multi-agent overview](examples/workflow_patterns/assets/parallel-overview.png)](examples/workflow_patterns/assets/parallel-overview.png)
 
 After completing [Quick start](#quick-start), reproduce it without a provider or
 API credential:
@@ -63,7 +63,7 @@ Overview emphasizes Agent-to-Agent structure. The PetriNet view of the same run
 shows the transitions, handoff places, fan-out arcs and all-input join used by
 execution:
 
-![Actual RPNH parallel PetriNet projection](examples/workflow_patterns/assets/parallel-petrinet.png)
+[![Actual RPNH parallel PetriNet projection](examples/workflow_patterns/assets/parallel-petrinet.png)](examples/workflow_patterns/assets/parallel-petrinet.png)
 
 These are real graph projections with aggregate execution state and controls;
 only run-specific checkpoint identities and local timestamps were removed from

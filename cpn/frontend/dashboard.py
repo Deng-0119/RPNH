@@ -112,7 +112,7 @@ class RegistryDashboard:
     def __init__(self, run_dir: Path, *, catalog: SchemaCatalog, presentation=None,
                  binding=None, max_checkpoints: int = DEFAULT_MAX_CHECKPOINTS,
                  max_firings: int = DEFAULT_MAX_FIRINGS, source_observations=None,
-                 workset_source_readers=None):
+                 workset_source_readers=None, user_contribution_view=None):
         if not isinstance(catalog, SchemaCatalog):
             raise TypeError('an explicit SchemaCatalog is required')
         if (type(max_checkpoints) is not int or max_checkpoints < 1
@@ -123,6 +123,7 @@ class RegistryDashboard:
         self.max_checkpoints, self.max_firings = max_checkpoints, max_firings
         self.source_observations = source_observations
         self.workset_source_readers = dict(workset_source_readers or {})
+        self.user_contribution_view = user_contribution_view
         core = self._open()
         self.task_id = str(core.task_id)
 
@@ -329,6 +330,19 @@ class RegistryDashboard:
         if token_resource is None:
             return checkpoint_view(self, net_ref=net_ref, checkpoint_ref=checkpoint_ref, cut=cut)
         return checkpoint_view(self, net_ref=net_ref, checkpoint_ref=checkpoint_ref, cut=cut, token_resource=token_resource)
+
+    def user_contributions(self, *, net_ref, checkpoint_ref, cut):
+        from .user_contributions import ContributionAccessChanged
+        self._bound()
+        if self.user_contribution_view is None:
+            raise NotImplementedError('not_configured')
+        if Path(self.user_contribution_view.run_dir).resolve() != self.run_dir:
+            raise ContributionAccessChanged('access_changed')
+        result = self.user_contribution_view(net_ref=net_ref, checkpoint_ref=checkpoint_ref, cut=cut)
+        if result.get('source', {}).get('task_id') != self.task_id:
+            raise ContributionAccessChanged('access_changed')
+        self._bound()
+        return result
 
     def comparison_view(self, *, left_selector, right_selector):
         from .comparison_view import comparison_view

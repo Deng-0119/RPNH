@@ -8,13 +8,21 @@ profile。
 
 ## 实际验收 Registry 视图
 
-| Basic | Codex 0.155.0 |
-|---|---|
-| ![Basic 验收运行](assets/basic-petrinet.png) | ![Codex 验收运行](assets/codex-petrinet.png) |
+### Basic
 
-| 固定版本 DSH | OpenCode 1.18.32 |
-|---|---|
-| ![DSH 验收运行](assets/dsh-petrinet.png) | ![OpenCode 验收运行](assets/opencode-petrinet.png) |
+[![Basic 保留的 PetriNet](assets/basic-petrinet.png)](assets/basic-petrinet.png)
+
+### Codex 0.155.0
+
+[![Codex 0.155.0 保留的 PetriNet](assets/codex-petrinet.png)](assets/codex-petrinet.png)
+
+### Pinned DSH
+
+[![Pinned DSH 保留的 PetriNet](assets/dsh-petrinet.png)](assets/dsh-petrinet.png)
+
+### OpenCode 1.18.32
+
+[![OpenCode 1.18.32 保留的 PetriNet](assets/opencode-petrinet.png)](assets/opencode-petrinet.png)
 
 这些图片是各展示入口背后的实际已结算 PetriNet，并移除了 run 专属 checkpoint 身份。
 它们不是 TUI 截图，也不能替代每个宿主的 Registry 与 provider audit 核对。

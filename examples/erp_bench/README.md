@@ -2,6 +2,16 @@
 
 [中文](README_ZH.md)
 
+## Official Viewer panorama
+
+The official Viewer shows the native executor request/result and interrupt-return structure. erp_python and validate_plan are managed tools inside the Agent. This initial declaration does not execute an ERP transaction, start Odoo, call a model, or record a completed task.
+
+[![Native ERP actor declaration](figures/initial-petri.svg)](figures/initial-petri.svg)
+
+This is a self-contained [official Viewer SVG export](figures/viewer-export-provenance.json); only its outer viewport is normalized to include the complete rendered graph. Open the static Viewer below for selectable node and arc details.
+
+Click the panorama for the original full-size image. [Open the static Viewer and inspect the source](figures/README.md).
+
 This example connects RPNH-owned model execution and managed tools to two
 unchanged ERP-Bench task sources. `2000_easy_01_buy_only_baseline` is the smoke
 case; `2299_hard_repair_plan_hard` is the repair showcase. The outage is present

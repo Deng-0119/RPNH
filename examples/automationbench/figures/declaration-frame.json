@@ -1,0 +1,157 @@
+{
+  "schema_version": "rpnh/dashboard/v1",
+  "source": {
+    "mode": "initial_configured",
+    "task_label": "AutomationBench native actor: initial declaration",
+    "verified_head_ordinal": null
+  },
+  "net": {
+    "schema_version": "rpnh/net_view/v1",
+    "source": {
+      "mode": "initial_configured",
+      "task_label": "AutomationBench native actor: initial declaration",
+      "verified_head_ordinal": null
+    },
+    "summary": {
+      "node_count": 3,
+      "transition_count": 1,
+      "place_count": 2,
+      "resource_place_count": 0,
+      "edge_count": 3,
+      "resource_edge_count": 0
+    },
+    "nodes": [
+      {
+        "id": "team.data__executor__result",
+        "label": "team.data__executor__result",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/rpnh_agent_text/v1",
+        "capacity": null,
+        "token_kind": "data"
+      },
+      {
+        "id": "team.executor",
+        "label": "team.executor",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "team.executor",
+        "operation_id": "op_0",
+        "executor": "rpnh/default-agent/v1",
+        "inputs": [
+          "team.request"
+        ],
+        "outputs": [
+          "team.result",
+          "team.interrupt__executor__executor__request"
+        ]
+      },
+      {
+        "id": "team.ingress__executor__request",
+        "label": "team.ingress__executor__request",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/rpnh_agent_text/v1",
+        "capacity": null,
+        "token_kind": "data"
+      }
+    ],
+    "edges": [
+      {
+        "id": "edge:arc:team.executor:team.data__executor__result:produce:complete:1",
+        "source": "team.executor",
+        "target": "team.data__executor__result",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:team.executor:team.ingress__executor__request:produce:interrupted:1",
+        "source": "team.executor",
+        "target": "team.ingress__executor__request",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "interrupted",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "forward",
+        "forward_source": "team.ingress__executor__request"
+      },
+      {
+        "id": "edge:arc:team.ingress__executor__request:team.executor:consume:-:1",
+        "source": "team.ingress__executor__request",
+        "target": "team.executor",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      }
+    ]
+  },
+  "boundaries": {
+    "entry": [
+      {
+        "name": "request",
+        "port": "team.request",
+        "place": "team.ingress__executor__request"
+      }
+    ],
+    "exit": [
+      {
+        "name": "result",
+        "port": "team.result",
+        "place": "team.data__executor__result"
+      }
+    ],
+    "terminal_rules": [
+      {
+        "key": "rpnh/agent-task-terminal/v1",
+        "operation": "team.executor",
+        "transition_ids": [
+          "team.executor"
+        ],
+        "outcome": "complete",
+        "port": "team.result",
+        "place": "team.data__executor__result"
+      }
+    ],
+    "terminal_evidence": "not_provided"
+  },
+  "transition_bindings": [],
+  "presentation": {
+    "title": "AutomationBench native actor: initial declaration",
+    "description": "Initial native actor declaration using the shipped synthetic acceptance prompt and plugin factory schemas. Disconnected host bindings; no business run or historical score evidence.",
+    "nodes": {},
+    "topology_digest": "11fe731461380bf8b6bcd28263a07d5ac1678601b21f1cc9d9178acb8f958c2e",
+    "status": "default"
+  },
+  "position": {
+    "mode": "live",
+    "cursor": null,
+    "latest_head": null
+  },
+  "coverage": {
+    "history": "unsupported",
+    "firings": "not_provided",
+    "agent_nodes": "not_provided",
+    "terminal_evidence": "not_provided"
+  },
+  "change": {},
+  "agent_nodes": []
+}

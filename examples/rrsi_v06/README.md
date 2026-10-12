@@ -2,6 +2,14 @@
 
 English | [中文](README_ZH.md)
 
+## Official Viewer panorama
+
+The official Viewer panorama below is the complete Policy child declaration: prepare, model and grade. RRSI coordinates independent child runs; this image is not a whole-campaign PN or a runtime result. The four role declarations and their boundaries follow below.
+
+[![Complete Policy child PetriNet declaration](assets/rrsi.policy.prepare-model-grade/petri-full.png)](assets/rrsi.policy.prepare-model-grade/petri-full.png)
+
+[Local Viewer and reading guide](figures/policy/README.md#local-viewer) · Click the panorama to open the original full-size image.
+
 This example implements the public RRSI v0.6 method as a bounded application on
 the existing RPNH Registry and PetriNet runtime. It demonstrates how the current
 harness supports an RSI role loop, independent evaluations, and score/cost
@@ -35,30 +43,29 @@ request → prepare → model → grade → result. Petri retains the intermedia
 
 These complete Petri and Flow panoramas show the overall structure. Use the local official Viewer to zoom in and select details. [Original Petri image](assets/rrsi.policy.prepare-model-grade/petri-full.png) · [original Flow image](assets/rrsi.policy.prepare-model-grade/flow-full.png).
 
-![Policy initial declaration: complete Petri view](assets/rrsi.policy.prepare-model-grade/petri-full.png)
-![Policy initial declaration: complete Flow view](assets/rrsi.policy.prepare-model-grade/flow-full.png)
+[![Policy initial declaration: complete Flow view](assets/rrsi.policy.prepare-model-grade/flow-full.png)](assets/rrsi.policy.prepare-model-grade/flow-full.png)
 
 [Open this declaration in the local Viewer](figures/policy/README.md#local-viewer).
 
 ### Analyst
 
-![Analyst initial declaration: complete PetriNet](assets/rrsi.role.analyst.png)
-![Analyst model operation detail](assets/rrsi.role.analyst-role.model.png)
+[![Analyst initial declaration: complete PetriNet](assets/rrsi.role.analyst.png)](assets/rrsi.role.analyst.png)
+[![Analyst model operation detail](assets/rrsi.role.analyst-role.model.png)](assets/rrsi.role.analyst-role.model.png)
 
 ### Proposer
 
-![Proposer initial declaration: complete PetriNet](assets/rrsi.role.proposer.png)
-![Proposer model operation detail](assets/rrsi.role.proposer-role.model.png)
+[![Proposer initial declaration: complete PetriNet](assets/rrsi.role.proposer.png)](assets/rrsi.role.proposer.png)
+[![Proposer model operation detail](assets/rrsi.role.proposer-role.model.png)](assets/rrsi.role.proposer-role.model.png)
 
 ### Critic
 
-![Critic initial declaration: complete PetriNet](assets/rrsi.role.critic.png)
-![Critic model operation detail](assets/rrsi.role.critic-role.model.png)
+[![Critic initial declaration: complete PetriNet](assets/rrsi.role.critic.png)](assets/rrsi.role.critic.png)
+[![Critic model operation detail](assets/rrsi.role.critic-role.model.png)](assets/rrsi.role.critic-role.model.png)
 
 ### Digester
 
-![Digester initial declaration: complete PetriNet](assets/rrsi.role.digester.png)
-![Digester model operation detail](assets/rrsi.role.digester-role.model.png)
+[![Digester initial declaration: complete PetriNet](assets/rrsi.role.digester.png)](assets/rrsi.role.digester.png)
+[![Digester model operation detail](assets/rrsi.role.digester-role.model.png)](assets/rrsi.role.digester-role.model.png)
 
 Each role initializes state, invokes its registered model operation, and handles
 the response. The action transition either returns to state for another model

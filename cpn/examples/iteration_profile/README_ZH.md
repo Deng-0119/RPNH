@@ -2,6 +2,22 @@
 
 # Inert iteration profile 声明便利层（R1，交付修订 2）
 
+## 官方 Viewer 初始声明
+
+官方 Viewer SVG 导出图用显式 inert HOST 契约桩呈现随附的两轮 profile；它不实现 proposer、evaluator 或 selector，也不含执行历史。这是仅声明的 authoring 示例。
+
+[![iteration-profile initial PetriNet](figures/iteration-profile/initial-petri.svg)](figures/iteration-profile/initial-petri.svg)
+
+这是自包含的[官方 Viewer SVG 导出图](figures/iteration-profile/viewer-export-provenance.json)；只调整最外层视口以完整保留已渲染的图。下方静态 Viewer 支持选中节点和弧查看详情。
+
+点击全景打开原始大图。在已有 RPNH 依赖的环境、仓库根目录运行：
+
+```bash
+python examples/view_declaration.py iteration-profile --no-open
+```
+
+这只打开静态声明；使用本地 Viewer 缩放并点击节点，不启动运行。 [源码与 inert HOST 契约范围](figures/iteration-profile/source-provenance.json).
+
 `propose_evaluate_select.json` 只有一个**声明示例**，不是可运行的 RSI campaign，
 也不实现 scorer、proposer 或 selector。可选便利 API 位于现有 Module/compiler
 相邻的 `cpn.rpnh.iteration_profile`，不新增 runner、Registry 类型或调度器。

@@ -6,7 +6,7 @@ metadata:
   audience: application-developer-and-researcher
   language: zh-CN
   counterpart: README.md
-  revision: "2026-10-12.2"
+  revision: "2026-10-12.3"
   status: recorded-result
 ---
 
@@ -16,7 +16,7 @@ metadata:
 
 三个独立受控的**模拟 Registry 身份／会话**、两种真实模型条件以及同用户切换模型，完成了原生提案 → 审阅 → 显式协调 → 保护分支合并 → 实际采用 → 业务执行 → 独立评估的闭环。两个固定 512 条路线集合的官方序列分数下降，平均行程时间同时增加。本例展示一次可核查的端到端能力，不构成模型排名或协作收益的因果估计。
 
-[协作过程图、业务全景与本地结构 Viewer](../../../examples/user_collaboration/README_ZH.md) · [精确汇总数值](results.json) · [源码与图片身份](SOURCES.json) · [协作 API](../../guides/user-collaboration_ZH.md)
+[原业务 PN 全景、贡献记录与本地结构 Viewer](../../../examples/user_collaboration/README_ZH.md) · [精确汇总数值](results.json) · [源码与图片身份](SOURCES.json) · [协作 API](../../guides/user-collaboration_ZH.md)
 
 ## 条件与实际过程
 
@@ -36,7 +36,7 @@ A、B、C 是三个独立受控 Registry 身份，并非三位真人或外部账
 | C2 | 在明确的 peer 协调后，保留 B 的 batch 11 与 C 的 batch 18–23 |
 | M2 | 原两父合并 B1/C2；owner 选择已经组装好的 incoming C2，保护分支推进并真正采用 |
 
-B1/C1 在六个 batch 上重叠。共享的 74 次业务 operation 预算触发 coupled-contract 合并冲突。策略联合先由 C2 形成，再由 owner 在原合并中选择。因此这里展示的是**显式协调后的原生合并采用**，不是自动无冲突融合。C2 复制 B 的修改不能再计为 C 的独立发明；A 的 11 项修改仍被保留。实际只改了已有策略配置，图拓扑与可用算法没有变化。
+B1/C1 在六个 batch 上重叠。保留的 owner 审阅与实验报告记载了首次共享业务预算冲突；本次导出证据未包含首次 B1/C1 merge analysis 原件。另有保留的 M2 analysis 明确记录，其 B1/C2 输入在共享 74 次业务 operation 预算下存在 `coupled_contract` 冲突。策略联合先由 C2 形成，再由 owner 在这次合并中选择已组装好的 incoming C2。具体见[回执派生记录与证据范围](../../../examples/user_collaboration/visuals/collaboration-evidence.json)。因此这里展示的是**显式协调后的原生合并采用**，不是自动无冲突融合。C2 复制 B 的修改不能再计为 C 的独立发明；A 的 11 项修改仍被保留。实际只改了已有策略配置，图拓扑与可用算法没有变化。
 
 ## 测得结果
 
@@ -70,15 +70,15 @@ development 与 eval 各固定 512 条路线，分别运行 baseline 与已采�
 
 以下图形使用全部 **1,024 条原路线配对**，没有重新评分、删去异常点或新增样本。`raw_travel_seconds` 是路线行程矩阵代价累加，不是程序 walltime、服务时间或真实车队某一天预测。[机器可读细分析](ANALYSIS.json)保留分母、精确数值与缺字段覆盖。
 
-![开发与评估两域的配对官方分数和行程变化](figures/01_paired_score_travel.png)
+[![开发与评估两域的配对官方分数和行程变化](figures/01_paired_score_travel.png)](figures/01_paired_score_travel.png)
 
 **配对结果。** Candidate 同时改善分数与行程的路线是开发 98/512、评估 51/512；baseline 两轴都更好的有 181、168 条。分数改善但行程增加的有 226、269 条；余下各域 6 条分数变差但行程缩短，以及 1／18 条完全不变。整体均值也是分数更好、行程更长，两配置在这两个轴上互不支配。这些路线点不是可互相替代的系统工作点，更不证明全局 Pareto 最优；时间窗 UNKNOWN 仍是另一项约束限制。
 
-![按固定策略组划分的配对行程增量分布](figures/02_travel_delta_distribution.png)
+[![按固定策略组划分的配对行程增量分布](figures/02_travel_delta_distribution.png)](figures/02_travel_delta_distribution.png)
 
 **分布与尾部。** 配对行程增量中位数为开发 +574.45 秒、评估 +524.15 秒，P95 为 +2,994.39／+2,855.34 秒。407/512、437/512 条路线变长，涉及 23/24、24/24 个 batch；变化广泛存在，`deadline_first` 尾部更长。箱体为中间 50% 与中位数，须为 P5–P95 阈值内最远实际观测；表中精确分位数采用 `(n−1)p` 线性插值。配对增量中位数不同于两臂中位数相减。
 
-![策略组对净行程增长的贡献与正增长集中度](figures/03_growth_contributions.png)
+[![策略组对净行程增长的贡献与正增长集中度](figures/03_growth_contributions.png)](figures/03_growth_contributions.png)
 
 **按组记账。** `deadline_first` 只覆盖开发 217/512、评估 190/512 条路线，却占各域**净**行程增长的 85.29%、69.10%。增量最大的 52 条占开发／评估**只累加正增量**的 35.37%／37.62%，这个分母不扣缩短部分。左图扣除节省，右图不扣；累加小时描述固定路线集，不是计算机运行时间。策略组非随机，这些是描述性分解，不给 actor／模型分配信用，也不是策略的因果估计。
 

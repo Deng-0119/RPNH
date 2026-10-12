@@ -2,6 +2,30 @@
 
 [English](README.md) | [中文](README_ZH.md)
 
+## 官方 Viewer 初始声明
+
+这张官方 Viewer SVG 导出图对应 compose_serial 声明：prepare_step 后接 finish_step，使用显式 inert HOST 契约桩编译。它与下方保留的 live-replacement 网分别独立，不执行这两个阶段。
+
+[![compose-serial initial PetriNet](figures/compose-serial/initial-petri.svg)](figures/compose-serial/initial-petri.svg)
+
+这是自包含的[官方 Viewer SVG 导出图](figures/compose-serial/viewer-export-provenance.json)；只调整最外层视口以完整保留已渲染的图。下方静态 Viewer 支持选中节点和弧查看详情。
+
+点击全景打开原始大图。在已有 RPNH 依赖的环境、仓库根目录运行：
+
+```bash
+python examples/view_declaration.py compose-serial --no-open
+```
+
+这只打开静态声明；使用本地 Viewer 缩放并点击节点，不启动运行。 [源码与 inert HOST 契约范围](figures/compose-serial/source-provenance.json).
+
+## 官方 Viewer 全景
+
+这张官方 Viewer 原图来自 live-replacement 示例已采用的后继网，只表示该网版本。下方独立的 compose_serial 仅生成声明，不能用这张运行图代表。
+
+[![保留的已采用替换网 PetriNet](assets/live-replacement-petrinet.png)](assets/live-replacement-petrinet.png)
+
+[本地 Viewer 与读图说明](../../docs/guides/viewer_ZH.md) · 点击全景打开原始大图。
+
 ## 仅定义示例
 
 在仓库根目录运行：
@@ -28,8 +52,6 @@ python -m examples.net_operations.compose_serial
 
 下图来自 `live_result.json` 对应的已授权真实运行，是采用后继网之后的实际 PetriNet。
 时间轴会明确停在 net-version 边界；图片不会把先后两个定义伪装成一张静态网。
-
-![已采用的替换 PetriNet](assets/live-replacement-petrinet.png)
 
 以下命令会产生真实 provider 费用。先检查 `rpnh config show`，取得其中显示的
 `execution_config_path`，并使用仓库外一个尚不存在的目录：

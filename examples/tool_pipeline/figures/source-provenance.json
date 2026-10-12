@@ -1,0 +1,35 @@
+{
+  "schema": "rpnh/example_declaration_provenance/v1",
+  "example": "tool-pipeline",
+  "source_repository": "Deng-0119/RPNH",
+  "source_commit": "270b76012a571286d303047547bd93cfecaa19c5",
+  "scope": "Exact published ten-operation module compiled with its original trusted HOST registration. Registration stores the original executors and tools; none is invoked. This frame is initial_configured and has no Registry or runtime success state.",
+  "frame_sha256": "647e0d1c7b0300b0135f90ca12938ef04a216597e745c88eb45205773888a6ea",
+  "summary": {
+    "node_count": 28,
+    "transition_count": 10,
+    "place_count": 18,
+    "resource_place_count": 0,
+    "edge_count": 29,
+    "resource_edge_count": 0
+  },
+  "sources": [
+    {
+      "path": "examples/tool_pipeline/module.json",
+      "sha256": "fd8483bbc7974386531383d4988fe42f3deb350b78c1a06837473710a171d577"
+    },
+    {
+      "path": "examples/tool_pipeline/host.py",
+      "sha256": "0cb8ae2074f726a29785c7b8995d56ddff93ae27e7471a1112e4ae198c0fe9fc"
+    },
+    {
+      "path": "examples/tool_pipeline/contracts.py",
+      "sha256": "80343a6929294ddf5aaa663595a3c2508a4550a85e93de71bd68b948df294534"
+    }
+  ],
+  "compiler": "Original compile_module / project_compiled_net / project_compiled_boundaries / public_net",
+  "model_calls": 0,
+  "registry_created": false,
+  "business_executor_invocations": 0,
+  "viewer": "Original cpn.frontend.server.serve_projection and bundled frontend static assets"
+}

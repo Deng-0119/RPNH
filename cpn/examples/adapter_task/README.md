@@ -8,13 +8,21 @@ and authorize your own exact RPNH execution profile before running a host.
 
 ## Actual accepted Registry views
 
-| Basic | Codex 0.155.0 |
-|---|---|
-| ![Basic accepted run](assets/basic-petrinet.png) | ![Codex accepted run](assets/codex-petrinet.png) |
+### Basic
 
-| Pinned DSH | OpenCode 1.18.32 |
-|---|---|
-| ![DSH accepted run](assets/dsh-petrinet.png) | ![OpenCode accepted run](assets/opencode-petrinet.png) |
+[![Basic recorded PetriNet](assets/basic-petrinet.png)](assets/basic-petrinet.png)
+
+### Codex 0.155.0
+
+[![Codex 0.155.0 recorded PetriNet](assets/codex-petrinet.png)](assets/codex-petrinet.png)
+
+### Pinned DSH
+
+[![Pinned DSH recorded PetriNet](assets/dsh-petrinet.png)](assets/dsh-petrinet.png)
+
+### OpenCode 1.18.32
+
+[![OpenCode 1.18.32 recorded PetriNet](assets/opencode-petrinet.png)](assets/opencode-petrinet.png)
 
 These are the actual settled PetriNet views behind each presentation, with
 run-specific checkpoint identities omitted. They are not TUI screenshots and

@@ -2,6 +2,16 @@
 
 [English](README.md) | 中文
 
+## 官方 Viewer 全景
+
+官方 Viewer 呈现原 off-t1 公开角色流程：hub plan、两个 specialist 与 hub finalization。图从固定版本的公开任务及当前按角色绑定的 managed-tool 声明编译。这是 initial_configured 结构，不是保留运行或 benchmark 评分；其他任务条件有各自的声明。
+
+[![Office off-t1 业务声明](figures/initial-petri.svg)](figures/initial-petri.svg)
+
+这是自包含的[官方 Viewer SVG 导出图](figures/viewer-export-provenance.json)；只调整最外层视口以完整保留已渲染的图。下方静态 Viewer 支持选中节点和弧查看详情。
+
+点击全景打开原始大图。 [打开静态 Viewer 与查看来源](figures/README_ZH.md)。
+
 **公开结果对照：** [已发布成绩与本例解读](COMPARISON_ZH.md) · [实现差异补充](IMPLEMENTATION_COMPARISON_ZH.md)。直接引用论文／官网结果，不要求在本机实现或运行原始 harness。
 
 本示例展示 **正式 RPNH＋按 benchmark 配置的 agent 团队＋原始 Office 工具**。

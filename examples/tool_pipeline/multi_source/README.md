@@ -2,6 +2,14 @@
 
 [简体中文](README_ZH.md)
 
+## Official Viewer panorama
+
+The original official Viewer capture shows the completed seven-operation merge. Detailed flow displays 18 nodes/18 edges from the full 25-node/25-arc PN, retaining the success, rejection and blocked branches. This is a recorded runtime capture.
+
+[![Recorded merger: three readers, join, two encoders and finish](figures/recorded-run.png)](figures/recorded-run.png)
+
+[Local Viewer and reading guide](#follow-a-real-conflict-through-the-viewer) · Click the panorama to open the original full-size image.
+
 This extends the existing deterministic `tool_pipeline` example with a real external task:
 [Terminal-Bench `multi-source-data-merger`](https://github.com/harbor-framework/terminal-bench-2/tree/2fd12b88aafdd04a52c298e3940bcb189f9766d6/multi-source-data-merger).
 It is a fixed, zero-model HOST implementation, not an agent benchmark, model result, or harness speed comparison.
@@ -82,8 +90,6 @@ python -m pytest -q examples/tool_pipeline/multi_source/tests/test_multi_source.
 - HOST executor assembly and the test wake adapter follow RPNH `examples/tool_pipeline` at `b8d5942e768b2d59862b8e3eb7efa41a274f6307`.
 
 ## Actual completed Viewer capture
-
-![Actual original-fixture merge: three readers, join, two encoders and finish](figures/recorded-run.png)
 
 The image is the actual default AF_UNIX run at Registry head **765**: seven settled operations, zero unsettled records, one final report token. Detailed flow shows 18 nodes/18 edges from the full 25-node/25-arc PN. The original image retains a technical checkpoint footer and observation time, not a local path or user identity map. It is not a static or initial declaration.
 

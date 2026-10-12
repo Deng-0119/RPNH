@@ -2,6 +2,14 @@
 
 [English](README.md) | 中文
 
+## 官方 Viewer 全景
+
+官方 Viewer 呈现 native-add v2 包声明：请求与已注册插件 capability 输入操作，再产生结果。这是 initial_configured 静态结构，不含运行 marking 或成功证据。
+
+[![native-add v2 包的初始 PetriNet](assets/petrinet-2448db2bb307d99f.png)](assets/petrinet-2448db2bb307d99f.png)
+
+[声明来源与详情图](figures/README_ZH.md) · 点击全景打开原始大图。
+
 本例让**同一个 `native-add-v2.zip`、包锁和 `main` 入口**分别经过已有环境、新 venv、
 操作说明三条路径。真实 Module 来自公开 `build_plugin_module` API，调用现有
 `demo/add` 插件，没有手写一个等价工作流代替原包。
@@ -300,4 +308,3 @@ cmp "$SAMPLE/native-add-v2.zip" "$WORK/rebuilt-stock-package/native-add-v2.zip"
 
 下图展示本案例的初始 PetriNet 结构。[完整图册](figures/README_ZH.md)展示所列声明变体，并提供大网的节点局部图。
 
-![初始 PetriNet 结构](assets/petrinet-2448db2bb307d99f.png)

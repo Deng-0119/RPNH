@@ -1,0 +1,67 @@
+{
+  "source": "Actual official Viewer DOM after selecting PetriNet",
+  "view": "PetriNet",
+  "scope": "initial_configured declaration export; not a runtime screenshot",
+  "page_title": "ERP-Bench native actor: initial declaration",
+  "rendered_counts": "Showing 3 nodes · Original: 3 nodes / 3 arcs",
+  "dom_evidence_sha256": "0628f94331ddddba8f6808f4c02e5f8e0d33c22c4a850cb292bb4161fc7cfeca",
+  "original_svg_sha256": "04a4167d002c20fb334fdbfe4910105b1f344639f7bf9177c09dc9c355d5ab94",
+  "export_svg_sha256": "38ed53e8246004556f9d8251ab242be5829ef4df3683fe0fa187def91f2955a4",
+  "descendants_byte_identical": true,
+  "descendants_sha256": "9fa02e0ad7b54481d60ede50e586ad0fb2a13655304123101c2d1a405d91eb7e",
+  "root_changes_only": [
+    "xmlns for standalone SVG",
+    "width and height at original graph scale",
+    "viewBox enclosing observed rendered graph bounds plus 36 graph-unit padding",
+    "root positioning removed and official canvas background retained"
+  ],
+  "rendered_graph_rect": {
+    "bottom": 596.5812377929688,
+    "height": 58.6512451171875,
+    "left": 384.5826416015625,
+    "right": 778.6993408203125,
+    "top": 537.9299926757812,
+    "width": 394.11669921875,
+    "x": 384.5826416015625,
+    "y": 537.9299926757812
+  },
+  "original_svg_rect": {
+    "bottom": 611.375,
+    "height": 87,
+    "left": 0,
+    "right": 1180,
+    "top": 524.375,
+    "width": 1180,
+    "x": 0,
+    "y": 524.375
+  },
+  "original_layers_transform": "matrix(0.2798601398601399,0,0,0.2798601398601399,374.5076923076923,3.4799999999999898)",
+  "export_dimensions": [
+    1481,
+    282
+  ],
+  "export_viewBox": [
+    374.50767656659747,
+    3.480027640816214,
+    414.26662928868006,
+    78.80117518711756
+  ],
+  "ui_screenshot_sha256": "b567cf3500d486e464b8250e1f225c605bd6dd8ca17e9b7597637ccf29fbdf93",
+  "schema": "rpnh/official_viewer_svg_export/v1",
+  "source_commit": "270b76012a571286d303047547bd93cfecaa19c5",
+  "source_frame_sha256": "01c80a96dcaa0c76d25f290bfcceab7c0663a69dd354dd88410d7fe164e27da7",
+  "viewer_source": [
+    {
+      "path": "cpn/frontend/static/app.js",
+      "sha256": "6eb395384abbaf74057381d3c8f16c535975e0099f39ee34492baa8a51004778"
+    },
+    {
+      "path": "cpn/frontend/static/style.css",
+      "sha256": "f15611aa6cd1c1e809dabfacc148e4d0f7ce51d6a887d5e36b3abe16d470c054"
+    },
+    {
+      "path": "cpn/frontend/static/index.html",
+      "sha256": "c3c2f5a2cec42544be98d1335d9b814b36d9f3152fdf20bfcbf0a3cd3ac46a4f"
+    }
+  ]
+}

@@ -2,6 +2,16 @@
 
 English | [中文](README_ZH.md)
 
+## Official Viewer panorama
+
+This official Viewer SVG export is the native solve declaration for one checkpoint. session_command is a managed tool inside that Agent; a shell command is not an extra top-level PN stage. The declaration makes no Session call, code change, model call or benchmark evaluation.
+
+[![Per-checkpoint solve declaration](figures/initial-petri.svg)](figures/initial-petri.svg)
+
+This is a self-contained [official Viewer SVG export](figures/viewer-export-provenance.json); only its outer viewport is normalized to include the complete rendered graph. Open the static Viewer below for selectable node and arc details.
+
+Click the panorama for the original full-size image. [Open the static Viewer and inspect the source](figures/README.md).
+
 This optional development pilot connects a real RPNH owner/AgentLoop to normal
 coding and testing commands in the original SlopCodeBench Docker Session. It is
 not an untouched official `AgentRunner` run. Local acceptance includes 59

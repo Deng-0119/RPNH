@@ -6,7 +6,7 @@ metadata:
   audience: application-developer-and-researcher
   language: en
   counterpart: README_ZH.md
-  revision: "2026-10-12.2"
+  revision: "2026-10-12.3"
   status: recorded-result
 ---
 
@@ -16,7 +16,7 @@ English | [中文](README_ZH.md) | [Results index](../README.md)
 
 Three independent controlled **simulated Registry identities/sessions**, two real model conditions, and a same-user model switch completed a native proposal → review → explicit coordination → protected-branch merge → adoption → business execution → independent evaluation chain. The official sequence score improved on both fixed 512-route sets; mean travel time increased. This is one measured end-to-end capability case, not a comparison of models or a causal estimate of collaboration benefit.
 
-[Collaboration diagrams, business panoramas and local structure Viewer](../../../examples/user_collaboration/README.md) · [Exact aggregate values](results.json) · [Source and figure identities](SOURCES.json) · [Collaboration API](../../guides/user-collaboration.md)
+[Original business-PN panoramas, contribution records and local structure Viewer](../../../examples/user_collaboration/README.md) · [Exact aggregate values](results.json) · [Source and figure identities](SOURCES.json) · [Collaboration API](../../guides/user-collaboration.md)
 
 ## Conditions and actual work
 
@@ -36,7 +36,7 @@ There were **22 logical calls and 22 provider-attempt specifications**: A 15, B 
 | C2 | Explicit peer coordination retained B's batch 11 and C's batches 18–23 |
 | M2 | Original two-parent merge of B1/C2; owner selected the already assembled incoming C2; protected branch advanced and result was actually adopted |
 
-B1/C1 overlapped on six batches. The common 74-operation business budget produced a coupled-contract merge conflict. C2 assembled the strategy union before the merge; owner selection resolved it. This was **explicit coordination followed by native merge/adoption**, not automatic conflict-free fusion. Copying B's change into C2 does not create a second independent contribution. A's 11 changes remained. Only existing strategy configurations changed; graph topology and available algorithms did not.
+B1/C1 overlapped on six batches. The retained owner review and experiment report record an initial shared business-budget conflict; the initial B1/C1 merge analysis itself is not included in the exported evidence. The retained M2 analysis separately records a `coupled_contract` conflict for its B1/C2 inputs under the shared 74-operation business budget. C2 had assembled the strategy union before that merge; the owner selected the already assembled incoming C2. See the [receipt-derived evidence and source coverage](../../../examples/user_collaboration/visuals/collaboration-evidence.json). This was **explicit coordination followed by native merge/adoption**, not automatic conflict-free fusion. Copying B's change into C2 does not create a second independent contribution. A's 11 changes remained. Only existing strategy configurations changed; graph topology and available algorithms did not.
 
 ## Measured results
 
@@ -70,15 +70,15 @@ These records support specific failure diagnosis and source checks. They have no
 
 The following figures use all **1,024 original route pairs**, with no rescoring, trimming or new samples. `raw_travel_seconds` sums route travel-matrix costs; it is not program walltime, service time or a fleet-day forecast. [Machine-readable secondary analysis](ANALYSIS.json) preserves denominators, exact values and missing-field coverage.
 
-![Paired official-score and travel changes, development and eval](figures/01_paired_score_travel.png)
+[![Paired official-score and travel changes, development and eval](figures/01_paired_score_travel.png)](figures/01_paired_score_travel.png)
 
 **Paired outcomes.** Candidate improves both score and travel on 98/512 development routes and 51/512 eval routes; baseline is better on both axes on 181 and 168. Score improves while travel grows on 226 and 269. The remaining cases are six per domain with worse score but shorter travel, and 1/18 exact ties. Across domain means, score improves and travel worsens, so neither configuration dominates on these two axes. These route points are not alternative system operating points or evidence of a global Pareto optimum; time-window UNKNOWN remains an additional constraint limitation.
 
-![Distribution of paired travel changes by fixed strategy group](figures/02_travel_delta_distribution.png)
+[![Distribution of paired travel changes by fixed strategy group](figures/02_travel_delta_distribution.png)](figures/02_travel_delta_distribution.png)
 
 **Spread and tail.** Median paired travel growth is +574.45 seconds (development) and +524.15 (eval); P95 is +2,994.39 / +2,855.34 seconds. Travel grows on 407/512 and 437/512 routes, across 23/24 and 24/24 batches. It is widespread, with a longer `deadline_first` tail. The boxes show the middle 50% and median; whiskers reach the most extreme observations within the P5–P95 thresholds. Exact tabulated quantiles use linear interpolation at `(n−1)p`. Paired-delta medians differ from subtracting the two arm medians.
 
-![Strategy-group contributions to net travel growth and concentration of positive growth](figures/03_growth_contributions.png)
+[![Strategy-group contributions to net travel growth and concentration of positive growth](figures/03_growth_contributions.png)](figures/03_growth_contributions.png)
 
 **Accounting by group.** `deadline_first` accounts for 85.29% of development and 69.10% of eval **net** travel growth, although it covers only 217/512 and 190/512 routes. The 52 largest increases account for 35.37% / 37.62% of **gross positive** growth (development / eval); savings are excluded from that denominator. The left panel subtracts savings; the right does not. Summed hours describe the fixed routes, not computer runtime. Strategy groups were not randomized, so these are descriptive contributions, not actor/model credit or a policy causal estimate.
 

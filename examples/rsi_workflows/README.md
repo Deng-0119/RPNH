@@ -2,6 +2,14 @@
 
 # Single-Registry synthetic iteration (R2)
 
+## Official Viewer panorama
+
+This complete official Viewer panorama is the four-round initial declaration. It shows the proposer/evaluator/selector chain and terminal branches, with no runtime marking or model-improvement claim.
+
+[![Complete four-round PetriNet declaration](assets/rsi_rounds_4/petri-full.png)](assets/rsi_rounds_4/petri-full.png)
+
+[Local Viewer and reading guide](figures/four-round/README.md#local-viewer) · Click the panorama to open the original full-size image.
+
 This finite example supplies pure proposer, evaluator and selector HOSTs to the
 existing iteration-profile compiler. It adds no runner, scheduler, provider,
 budget counter, Registry type or mutable winner store. It requires the R1
@@ -97,8 +105,7 @@ Four rounds follow proposer → evaluator → selector. Rounds 1–3 pass next i
 
 These complete Petri and Flow panoramas show the overall structure. Use the local official Viewer to zoom in and select details. [Original Petri image](assets/rsi_rounds_4/petri-full.png) · [original Flow image](assets/rsi_rounds_4/flow-full.png).
 
-![Four-round initial declaration: complete Petri view](assets/rsi_rounds_4/petri-full.png)
-![Four-round initial declaration: complete Flow view](assets/rsi_rounds_4/flow-full.png)
+[![Four-round initial declaration: complete Flow view](assets/rsi_rounds_4/flow-full.png)](assets/rsi_rounds_4/flow-full.png)
 
 [Open this declaration in the local Viewer](figures/four-round/README.md#local-viewer).
 

@@ -2,6 +2,16 @@
 
 [English](README.md) | 中文
 
+## 官方 Viewer 全景
+
+这是官方 Viewer 呈现的原生 actor 声明。单个 Agent transition 承载 managed api_search、api_fetch 与 base64_encode 调用，这些工具不是各自独立的 PN 流程阶段。图使用随附的合成验收 prompt 与插件工厂契约，HOST 绑定不连接服务；不含历史 pilot 运行或评分。
+
+[![原生 actor 声明](figures/initial-petri.svg)](figures/initial-petri.svg)
+
+这是自包含的[官方 Viewer SVG 导出图](figures/viewer-export-provenance.json)；只调整最外层视口以完整保留已渲染的图。下方静态 Viewer 支持选中节点和弧查看详情。
+
+点击全景打开原始大图。 [打开静态 Viewer 与查看来源](figures/README_ZH.md)。
+
 本 example 保留了 **2026-10-02** 的真实、score-blind AutomationBench 18 题分层 pilot，以及生成结果所用
 的 RPNH native 适配器。历史试验覆盖六个 public 业务域和三种集成宽度，使用真实外部模型路线；
 AutomationBench 的业务 SaaS 仍是本地模拟世界。

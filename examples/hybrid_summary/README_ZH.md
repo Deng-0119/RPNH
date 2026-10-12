@@ -2,6 +2,14 @@
 
 [English](README.md) | 中文
 
+## 官方 Viewer 全景
+
+官方 Viewer 原图展示已完成的确定性 model–program–model 流程，当前为 Detailed flow，折叠两个简单交接点；这是保留的运行截图，不是初始声明。
+
+[![已完成 hybrid 流程：normalize、原生 summarize、explain](assets/hybrid-summary-flow.png)](assets/hybrid-summary-flow.png)
+
+[本地 Viewer 与读图说明](../../docs/guides/viewer_ZH.md) · 点击全景打开原始大图。
+
 从已安装 RPNH 获取完整的可修改依赖闭包：
 
 ```bash
@@ -21,8 +29,6 @@ python -m pip install -e ./examples/native_plugin
 
 下图是确定性运行完成后的实际 Detailed flow，展示原生 `demo/summarize` operation 前后的
 两个 Agent 节点，以及它们之间已登记的交接。
-
-![已完成混合计算流程](assets/hybrid-summary-flow.png)
 
 安装 RPNH 和 `examples/native_plugin` 后运行确定性模式：
 

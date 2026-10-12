@@ -2,6 +2,30 @@
 
 [English](README.md) | [中文](README_ZH.md)
 
+## Official Viewer initial declaration
+
+This SVG exported from the official Viewer is the compose_serial declaration: prepare_step then finish_step, compiled with explicit inert HOST contract stubs. It is separate from the recorded live-replacement net below and does not execute the two stages.
+
+[![compose-serial initial PetriNet](figures/compose-serial/initial-petri.svg)](figures/compose-serial/initial-petri.svg)
+
+This is a self-contained [official Viewer SVG export](figures/compose-serial/viewer-export-provenance.json); only its outer viewport is normalized to include the complete rendered graph. Open the static Viewer below for selectable node and arc details.
+
+Click the panorama for the full-size original. From the repository root, with RPNH dependencies already available:
+
+```bash
+python examples/view_declaration.py compose-serial --no-open
+```
+
+This opens only the static declaration. Use the local Viewer to zoom and select nodes; no run is started. [Source and inert HOST contract scope](figures/compose-serial/source-provenance.json).
+
+## Official Viewer panorama
+
+This original official Viewer capture is the adopted successor in the live-replacement example. It shows that net version only. The compose_serial panorama above is a separate declaration-only net.
+
+[![Recorded adopted replacement PetriNet](assets/live-replacement-petrinet.png)](assets/live-replacement-petrinet.png)
+
+[Local Viewer and reading guide](../../docs/guides/viewer.md) · Click the panorama to open the original full-size image.
+
 ## Definition-only example
 
 From the repository root, run:
@@ -33,8 +57,6 @@ The image is the actual adopted successor net from the authorized live run
 recorded in `live_result.json`. The timeline explicitly stops at the net-version
 boundary; the picture does not pretend that both definitions were one static
 net.
-
-![Adopted replacement PetriNet](assets/live-replacement-petrinet.png)
 
 This command incurs real provider cost. First inspect `rpnh config show`, obtain
 the displayed `execution_config_path`, and use an absent directory outside the

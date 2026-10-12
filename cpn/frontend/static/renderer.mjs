@@ -1,3 +1,4 @@
+import { contributionNodeStyle } from './user-contributions.mjs';
 import { cardState } from './dashboard-model.mjs';
 import { nodeKey, edgeKey, topologyKey, statusLabel, firingSummary, tokensLabel, arcLabel, arcStyle, wrapLabel, resourceEdge, searchText } from './model.mjs';
 /** JointJS is a renderer only. All semantic relationships remain in the snapshot. */
@@ -75,7 +76,7 @@ export class NetRenderer {
       status: { ...common, x: label.x + label.width / 2, y: label.y + 37, textAnchor: 'middle', fontSize: 10, fill: accent },
       eyebrow: { text: '' }, divider: { d: '' },
     };
-    return new this.Shape({ id: nodeKey(node.id), semanticId: node.id, semanticKind: 'node',
+    return new this.Shape({ id: nodeKey(node.id), semanticId: node.id, semanticKind: 'node', baseStroke:accent, baseStrokeDash:!card&&node.category==='resource'?'5 3':'',
       position: { x: position.x, y: position.y }, size: { width: position.width, height: position.height }, markup,
       ports: { groups: { layout: { position: { name: 'absolute' }, markup: [{ tagName: 'circle', selector: 'portBody' }],
         attrs: { portBody: { r: 0, magnet: false, pointerEvents: 'none' } } } },
@@ -125,7 +126,7 @@ export class NetRenderer {
     }
     return changed;
   }
-  decorate({ showResources, search = '', selection = null }) {
+  decorate({ showResources, search = '', selection = null, contribution = null }) {
     if (!this.snapshot) return;
     const term = search.trim().toLocaleLowerCase(), focus = new Set();
     if (selection?.kind === 'node') {
@@ -140,15 +141,21 @@ export class NetRenderer {
       const cell = this.graph.getCell(nodeKey(n.id)), visible = showResources || n.category !== 'resource';
       const match = !term || searchText(n).includes(term), selected = selection?.kind === 'node' && selection.id === n.id;
       cell.attr('root/display', visible ? null : 'none');
-      cell.attr('root/opacity', match && (!focus.size || focus.has(n.id)) ? 1 : .2);
-      cell.attr('body/strokeWidth', selected ? 3.5 : n.kind === 'place' ? 2 : 1.6);
+      const provenance = contributionNodeStyle(contribution, n.id);
+      const opacity = match && (!focus.size || focus.has(n.id)) ? 1 : .2;
+      cell.attr('root/opacity', provenance && !provenance.match ? Math.min(opacity,.15) : opacity);
+      cell.attr('root/data-contribution-state', provenance?.state ?? null);
+      cell.attr('body/stroke', provenance?.color ?? cell.get('baseStroke'));
+      cell.attr('body/strokeDasharray', provenance?.dash ?? cell.get('baseStrokeDash'));
+      cell.attr('body/strokeWidth', selected ? (provenance ? 5 : 3.5) : provenance ? 3 : n.kind === 'place' ? 2 : 1.6);
       cell.attr('root/aria-pressed', String(selected));
       if (visible) visibleNodes++;
     }
     for (const e of this.snapshot.edges) {
       const cell = this.graph.getCell(edgeKey(e.id)), visible = showResources || !resourceEdge(e, this.byNode);
       cell.attr('root/display', visible ? null : 'none');
-      const opacity = (!term || searchText(e).includes(term)) && (!focus.size || focus.has(e.source) && focus.has(e.target)) ? 1 : .16;
+      const matchedActor = !contribution?.actor || contributionNodeStyle(contribution,e.source).match || contributionNodeStyle(contribution,e.target).match;
+      const opacity = matchedActor && (!term || searchText(e).includes(term)) && (!focus.size || focus.has(e.source) && focus.has(e.target)) ? 1 : .16;
       cell.attr('root/opacity', opacity);
       // Labels can be inline (the pinned default) or in an optional SVG layer.
       // Keep caption display/focus state explicit in either configuration.

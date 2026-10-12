@@ -1,0 +1,34 @@
+{
+  "schema": "rpnh/example_declaration_provenance/v1",
+  "example": "compose-serial",
+  "source_repository": "Deng-0119/RPNH",
+  "source_commit": "270b76012a571286d303047547bd93cfecaa19c5",
+  "scope": "Exact shipped prepare/finish stages and serial ComposePlan compiled through compose_modules and compile_module. Application text schema, executor and terminal contracts are explicit inert HOST stubs; their callbacks throw if invoked. This is a definition-only example, not an executed serial run or the live-replacement example.",
+  "frame_sha256": "f7184e3fc3f1cf85a1822fb780fc4c8c1fbc9e47640c572ef5476f50dbbd4363",
+  "summary": {
+    "node_count": 5,
+    "transition_count": 2,
+    "place_count": 3,
+    "resource_place_count": 0,
+    "edge_count": 4,
+    "resource_edge_count": 0
+  },
+  "sources": [
+    {
+      "path": "examples/net_operations/compose_serial.py",
+      "sha256": "98621360271c95e207e6500aeba8046ed81cce0ac2d3c100410e688ad28e70f4"
+    }
+  ],
+  "compiler": "Original compile_module / project_compiled_net / project_compiled_boundaries / public_net",
+  "model_calls": 0,
+  "registry_created": false,
+  "business_executor_invocations": 0,
+  "viewer": "Original cpn.frontend.server.serve_projection and bundled frontend static assets",
+  "official_viewer_export": {
+    "image": "initial-petri.svg",
+    "provenance": "viewer-export-provenance.json",
+    "sha256": "d07a678ac64c7ee5e44dc85e830f2a1717c3313f4f8c9f2717b3482039187c1b",
+    "view": "PetriNet",
+    "runtime_evidence": false
+  }
+}
