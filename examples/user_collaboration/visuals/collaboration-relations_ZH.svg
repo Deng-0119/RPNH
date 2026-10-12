@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="1190" viewBox="0 0 1800 1190" role="img" aria-labelledby="title desc"><title id="title">三个模拟用户，共建同一任务</title><desc id="desc">原始回执派生的只读协作关系，不是 PN 运行图或墙钟时间线。</desc><defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#8091aa"/></marker></defs><rect width="100%" height="100%" fill="#f5f7fb"/>
+<text id="text-1" x="65" y="66" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="39" fill="#192840" font-weight="700">三个模拟用户，共建同一任务</text>
+<text id="text-2" x="65" y="108" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#576780" font-weight="400">原 Registry 回执的只读协作关系投影</text>
+<rect x="65" y="133" width="1670" height="39" rx="9" fill="#e6ecf4" stroke="none" stroke-width="2"/>
+<text id="text-4" x="82" y="160" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="19" fill="#576780" font-weight="400">A/B/C 是三个独立模拟 actor / session，由同一可信 HOST 协调；不是三名真人用户实验。</text>
+<path d="M 365 447 L 425 447 L 425 325 L 478 325" fill="none" stroke="#8091aa" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M 425 447 L 425 585 L 478 585" fill="none" stroke="#8091aa" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M 800 325 L 918 325" fill="none" stroke="#8091aa" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M 800 585 L 918 585" fill="none" stroke="#8091aa" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M 800 382 L 856 382 L 856 523 L 918 523" fill="none" stroke="#8091aa" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#arrow)" stroke-dasharray="7 6"/>
+<path d="M 640 240 L 640 203 L 1555 203 L 1555 498" fill="none" stroke="#8091aa" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M 1300 585 L 1388 585" fill="none" stroke="#8091aa" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M 1555 697 L 1555 715 L 1350 715 L 1350 897 L 1388 897" fill="none" stroke="#8091aa" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text id="text-13" x="950" y="192" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="18" fill="#576780" font-weight="400">M2 的 local 输入：原 B1</text>
+<text id="text-14" x="822" y="298" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="17" fill="#576780" font-weight="400">修订</text>
+<text id="text-15" x="822" y="613" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="17" fill="#576780" font-weight="400">修订</text>
+<text id="text-16" x="870" y="443" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="17" fill="#576780" font-weight="400">B1 贡献</text>
+<text id="text-17" x="870" y="468" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="17" fill="#576780" font-weight="400">显式提供</text>
+<text id="text-18" x="1406" y="751" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="21" fill="#167d72" font-weight="700">A 明确选择现成 C2</text>
+<text id="text-19" x="1406" y="782" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="19" fill="#576780" font-weight="400">随后推进受保护分支</text>
+<rect x="65" y="363" width="300" height="166" rx="16" fill="#edf4fd" stroke="#316ab0" stroke-width="2"/>
+<text id="text-21" data-max-width="268" x="87" y="395" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="18" fill="#316ab0" font-weight="700">A · 所有者</text>
+<text id="text-22" data-max-width="268" x="87" y="430" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="26" fill="#192840" font-weight="700">A5</text>
+<text id="text-23" data-max-width="268" x="87" y="466" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="20" fill="#576780" font-weight="400">获批共同基线</text>
+<text id="text-24" data-max-width="268" x="87" y="496" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="20" fill="#576780" font-weight="400">0–10 · deadline_first</text>
+<rect x="480" y="240" width="320" height="175" rx="16" fill="#fff6e5" stroke="#aa6b05" stroke-width="2"/>
+<text id="text-26" data-max-width="288" x="502" y="272" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="18" fill="#aa6b05" font-weight="700">B · 独立提案</text>
+<text id="text-27" data-max-width="288" x="502" y="307" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="26" fill="#192840" font-weight="700">B1</text>
+<text id="text-28" data-max-width="288" x="502" y="343" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="20" fill="#576780" font-weight="400">zone_nearest · 11–17</text>
+<text id="text-29" data-max-width="288" x="502" y="373" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="20" fill="#576780" font-weight="400">以 A5 为基线；获批</text>
+<rect x="480" y="500" width="320" height="175" rx="16" fill="#eaf8f4" stroke="#167d72" stroke-width="2"/>
+<text id="text-31" data-max-width="288" x="502" y="532" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="18" fill="#167d72" font-weight="700">C · 独立提案</text>
+<text id="text-32" data-max-width="288" x="502" y="567" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="26" fill="#192840" font-weight="700">C1</text>
+<text id="text-33" data-max-width="288" x="502" y="603" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="20" fill="#576780" font-weight="400">zone_nearest · 12–23</text>
+<text id="text-34" data-max-width="288" x="502" y="633" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="20" fill="#576780" font-weight="400">以 A5 为基线；未读 B1</text>
+<rect x="920" y="240" width="380" height="175" rx="16" fill="#fceded" stroke="#a2464c" stroke-width="2"/>
+<text id="text-36" data-max-width="348" x="942" y="272" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="18" fill="#a2464c" font-weight="700">B · 修订</text>
+<text id="text-37" data-max-width="348" x="942" y="307" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="26" fill="#192840" font-weight="700">B2</text>
+<text id="text-38" data-max-width="348" x="942" y="343" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="20" fill="#576780" font-weight="400">撤回批次 11；未被采用</text>
+<text id="text-39" data-max-width="348" x="942" y="373" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="20" fill="#576780" font-weight="400">request_changes</text>
+<rect x="920" y="500" width="380" height="175" rx="16" fill="#eaf8f4" stroke="#167d72" stroke-width="2"/>
+<text id="text-41" data-max-width="348" x="942" y="532" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="18" fill="#167d72" font-weight="700">C · 显式协调</text>
+<text id="text-42" data-max-width="348" x="942" y="567" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="26" fill="#192840" font-weight="700">C2</text>
+<text id="text-43" data-max-width="348" x="942" y="603" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="20" fill="#576780" font-weight="400">zone_nearest · 11–23</text>
+<text id="text-44" data-max-width="348" x="942" y="633" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="20" fill="#576780" font-weight="400">保留 C1，并吸收 B1 贡献</text>
+<rect x="1390" y="500" width="330" height="197" rx="16" fill="#f1edfa" stroke="#7754b2" stroke-width="2"/>
+<text id="text-46" data-max-width="298" x="1412" y="532" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="18" fill="#7754b2" font-weight="700">已审查的合并输入</text>
+<text id="text-47" data-max-width="298" x="1412" y="567" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="26" fill="#192840" font-weight="700">M2</text>
+<text id="text-48" data-max-width="298" x="1412" y="603" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="20" fill="#576780" font-weight="400">local B1 + incoming C2</text>
+<text id="text-49" data-max-width="298" x="1412" y="633" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="20" fill="#576780" font-weight="400">仍存在 coupled_contract</text>
+<text id="text-50" data-max-width="298" x="1412" y="663" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="20" fill="#576780" font-weight="400">不是自动无冲突融合</text>
+<rect x="1390" y="820" width="330" height="154" rx="16" fill="#eaf8f4" stroke="#167d72" stroke-width="2"/>
+<text id="text-52" data-max-width="298" x="1412" y="852" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="18" fill="#167d72" font-weight="700">A · 所有者 / 受控 HOST</text>
+<text id="text-53" data-max-width="298" x="1412" y="887" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="26" fill="#192840" font-weight="700">ADOPTED</text>
+<text id="text-54" data-max-width="298" x="1412" y="923" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="20" fill="#576780" font-weight="400">有原始采用回执</text>
+<rect x="480" y="796" width="820" height="178" rx="16" fill="#fff6e5" stroke="#aa6b05" stroke-width="2"/>
+<text id="text-56" x="503" y="829" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="20" fill="#aa6b05" font-weight="700">首次 B1 + C1 合并：需要协调</text>
+<text id="text-57" x="503" y="866" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="18" fill="#576780" font-weight="400">原 owner review 记录：共享业务预算引发一次冲突，需要完整协调提案。</text>
+<text id="text-58" x="503" y="896" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="18" fill="#576780" font-weight="400">原 74-operation PN 的共享契约耦合了被修改的规划器。</text>
+<text id="text-59" x="503" y="926" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="18" fill="#576780" font-weight="400">覆盖：原审查 / 报告；本证据导出不含首次 merge analysis 原件。</text>
+<text id="text-60" x="65" y="1021" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="19" fill="#576780" font-weight="400">实线：已核对的共同基线、前序提案或合并输入关系。虚线：向 C2 显式提供已批准的 B1 贡献。</text>
+<text id="text-61" x="65" y="1060" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="20" fill="#192840" font-weight="500">布局不是墙钟时间线；独立分支不证明同时执行。</text>
+<text id="text-62" x="65" y="1099" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="19" fill="#576780" font-weight="400">此图是回执派生阅读辅助，不是 PN 运行帧；业务 PN 实图及官方 Viewer 入口另列。</text>
+<text id="text-63" x="65" y="1144" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="18" fill="#576780" font-weight="400">审计指针与范围：collaboration-evidence.json</text>
+</svg>

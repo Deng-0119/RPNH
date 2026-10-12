@@ -190,5 +190,139 @@
     "git_blob": "5a7d38163c70c143545c1bf6f8f9738748a65349",
     "method": "Whitelisted aggregate projection of retained native results, checked against independently re-aggregated paired-grade rows. No rescoring."
   },
-  "reproduction_scope": "Read aggregate results and original PNGs, or serve bundled static frames with the official local Viewer. Full real-model experiment prerequisites and runtime state are not bundled."
+  "reproduction_scope": "Read aggregate results and original PNGs, or serve bundled static frames with the official local Viewer. Full real-model experiment prerequisites and runtime state are not bundled.",
+  "secondary_analysis": {
+    "date": "2026-10-12",
+    "kind": "Read-only descriptive reaggregation of existing records",
+    "new_model_calls": 0,
+    "new_business_runs": 0,
+    "rescoring": false,
+    "original_results_changed": false,
+    "paired_record_identities": [
+      {
+        "domain": "development",
+        "sha256": "3fef500e9c444a6ed1249f688d1ec342028d743380f4d369cd3ee92c865562da",
+        "rows": 512
+      },
+      {
+        "domain": "eval",
+        "sha256": "e9a4ec154b319fda2fef2cf8548c51af6c8953167a5e96a67a3904d55755e341",
+        "rows": 512
+      }
+    ],
+    "source_analysis_manifest_sha256": "22027bd0691860857f0ea0adbd6b6f3611d1a2f8764a3a82d316730df6e3e6c5",
+    "source_pair_summary_sha256": "17f9147fdf238053ee1b675d34912c716c39729c6c54263e9c0197845f0efc3d",
+    "source_usage_public_summary_sha256": "cc8edaf9555d35753042e8bd04d661ba06b2d45a1f7496089d30b83b8be740c6",
+    "public_summary": {
+      "path": "docs/results/user-collaboration-20261012/ANALYSIS.json",
+      "bytes": 43012,
+      "sha256": "5a000a99b2c7e83962acd25ee632af584baec5394f76fec8f0df1b5c2617ef65",
+      "git_blob": "7a378a845c07268e800c7f048e7af2784c4eb96a",
+      "projection": "All-domain/policy paired summaries, per-batch aggregates, tail concentration, separately bucketed model usage and timing coverage; no individual route or response references."
+    },
+    "figures": [
+      {
+        "path": "docs/results/user-collaboration-20261012/figures/01_paired_score_travel.png",
+        "bytes": 326955,
+        "sha256": "50611fe22c033fc6ec759ca7be132e5ec17c5f06054546a2b3348d44450e05cf",
+        "git_blob": "c38ab97ea917fe3746045c84499c81763f75c592",
+        "dimensions": [
+          2159,
+          1087
+        ],
+        "source": "All original 1024 paired-route rows; derived visualization, not a runtime Viewer capture",
+        "personal_metadata_present": false
+      },
+      {
+        "path": "docs/results/user-collaboration-20261012/figures/02_travel_delta_distribution.png",
+        "bytes": 217357,
+        "sha256": "ca02cff6b57b0c1fd5d9862797e0584395e77f9ea3c1c1f493f06fafaaabd2ae",
+        "git_blob": "a93de7724f0651589d5638f47bea4a3e1d22857b",
+        "dimensions": [
+          2137,
+          1138
+        ],
+        "source": "All original 1024 paired-route rows; derived visualization, not a runtime Viewer capture",
+        "personal_metadata_present": false
+      },
+      {
+        "path": "docs/results/user-collaboration-20261012/figures/03_growth_contributions.png",
+        "bytes": 228402,
+        "sha256": "a543c0c22c87da43d9bea455b9a1718fca0382281c2e808a774d3a68a08a812b",
+        "git_blob": "bc43d12af494558671c6a2c937eef2a188f5274a",
+        "dimensions": [
+          2162,
+          1070
+        ],
+        "source": "All original 1024 paired-route rows; derived visualization, not a runtime Viewer capture",
+        "personal_metadata_present": false
+      }
+    ],
+    "observed_harness_scope": "Native identity and budget continuity, distinction of actions/proposal/adoption states, and provenance in one controlled study. Relative benefit over mature alternative harnesses was not tested.",
+    "time_scope": "No complete successful timeline, CPU or additive phase spans; route travel seconds are not system runtime.",
+    "review_scope": "Independent arithmetic/plot/causal-claim review; no new model or benchmark execution."
+  },
+  "collaboration_story_projection": {
+    "scope": "Simplified relationship and content-provenance diagrams derived from native receipts; not official Viewer screenshots, execution PNs or wall-clock concurrency evidence.",
+    "data": "examples/user_collaboration/visuals/collaboration-evidence.json",
+    "files": [
+      {
+        "path": "examples/user_collaboration/visuals/collaboration-evidence.json",
+        "bytes": 8929,
+        "sha256": "7d3c01772c46cabacf60a722225ae56f20fc081860a993728e6fa60cbeb5075f",
+        "git_blob": "ea08ef807bd5f045a75ab6d68bc4e6b5bc133493"
+      },
+      {
+        "path": "examples/user_collaboration/visuals/collaboration-relations.png",
+        "bytes": 320201,
+        "sha256": "3615f5e5e1c138a9583ea85dddc1ddc7836a9ec7a767d889d685ed5dae728259",
+        "git_blob": "d7cd77f3095bcff2f4088c8d76ae987fbf37a027"
+      },
+      {
+        "path": "examples/user_collaboration/visuals/collaboration-relations.svg",
+        "bytes": 11489,
+        "sha256": "d4bc4fdbed753f9c1b9c0e8bd45778e83b76b874678454c71719dc6ba40f8d96",
+        "git_blob": "3aebca256d1babbc45a48c557413495f5c982b11"
+      },
+      {
+        "path": "examples/user_collaboration/visuals/collaboration-relations_ZH.png",
+        "bytes": 277373,
+        "sha256": "d86fe03b4d44633b46e2663efa28535c0cab87d76333e40633836f106843df84",
+        "git_blob": "08fe669aec1ff219225e12e15af60cad8aee3548"
+      },
+      {
+        "path": "examples/user_collaboration/visuals/collaboration-relations_ZH.svg",
+        "bytes": 11423,
+        "sha256": "b634714bb50beee304e69db9f513ee0d26c02733b021f9bac7f879bbfe7319d0",
+        "git_blob": "10154833a7b0e4c2e73f36c9e06b6f1ecdc38aa1"
+      },
+      {
+        "path": "examples/user_collaboration/visuals/final-content-provenance.png",
+        "bytes": 241928,
+        "sha256": "0720b5979a5c815833ecfbc4061114dbf06cee7530cc6a811ce2b518730965b5",
+        "git_blob": "9c539ac043f9f8fa2a2836c3251947f039d22e67"
+      },
+      {
+        "path": "examples/user_collaboration/visuals/final-content-provenance.svg",
+        "bytes": 47029,
+        "sha256": "d0d7f68cc93685eb706917968472cc97b91a618b473f0f9c6054cf70e86a68cf",
+        "git_blob": "2f08d338187434a60f316a913f5159a5cb2f3403"
+      },
+      {
+        "path": "examples/user_collaboration/visuals/final-content-provenance_ZH.png",
+        "bytes": 212744,
+        "sha256": "d68c4cc13b775880a0bcf6e8493391ead3edfe4fbb127cdaae4df413215a09c5",
+        "git_blob": "35d57e2ce2e33931070b83cf27520da3f3a917a6"
+      },
+      {
+        "path": "examples/user_collaboration/visuals/final-content-provenance_ZH.svg",
+        "bytes": 46940,
+        "sha256": "f0c00aefa2c5f861092bdf2827018a91ac9764cadc1d254c5a1e4e6469c0f17d",
+        "git_blob": "f759db5a966c6976ca341947aa82fba7632095ac"
+      }
+    ],
+    "identity_scope": "Three independent controlled simulated actors/sessions under one trusted HOST; not three human participants.",
+    "adoption_scope": "C2 explicitly combines contributions before owner A selects incoming C2 in the original B1/C2 merge, advances and adopts M2. B2 is not adopted.",
+    "public_source_scope": "Selected safe facts and source hashes only; full source receipts remain retained in the original restricted return."
+  }
 }

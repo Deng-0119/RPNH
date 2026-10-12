@@ -6,7 +6,7 @@ metadata:
   audience: application-developer-and-researcher
   language: en
   counterpart: README_ZH.md
-  revision: "2026-10-12.1"
+  revision: "2026-10-12.2"
   status: recorded-result
 ---
 
@@ -16,7 +16,7 @@ English | [中文](README_ZH.md) | [Results index](../README.md)
 
 Three independent controlled **simulated Registry identities/sessions**, two real model conditions, and a same-user model switch completed a native proposal → review → explicit coordination → protected-branch merge → adoption → business execution → independent evaluation chain. The official sequence score improved on both fixed 512-route sets; mean travel time increased. This is one measured end-to-end capability case, not a comparison of models or a causal estimate of collaboration benefit.
 
-[Full workflow panoramas and local structure Viewer](../../../examples/user_collaboration/README.md) · [Exact aggregate values](results.json) · [Source and figure identities](SOURCES.json) · [Collaboration API](../../guides/user-collaboration.md)
+[Collaboration diagrams, business panoramas and local structure Viewer](../../../examples/user_collaboration/README.md) · [Exact aggregate values](results.json) · [Source and figure identities](SOURCES.json) · [Collaboration API](../../guides/user-collaboration.md)
 
 ## Conditions and actual work
 
@@ -52,6 +52,48 @@ Each of development and eval had a fixed 512-route population, baseline and adop
 `VALID` means permutation/structural validity. Time-window UNKNOWN is not PASS. In the paired records, 126 development and 99 eval routes moved FAIL→UNKNOWN, while 19 and 17 moved UNKNOWN→FAIL. Checked/unknown package counts were unchanged within each pair. Thus fewer observed violations did not establish full constraint satisfaction. Travel increased on 407/512 development and 437/512 eval routes.
 
 The nonrandom `deadline_first` groups worsened sequence score on average (+0.027285 development / +0.030937 eval); `zone_nearest` groups improved it (−0.034330 / −0.032023). Both groups increased mean travel. This descriptive stratification, overlapping edits and different prompts/transports/attempt counts cannot assign independent causal credit to an actor, model or model switch.
+
+## What the harness evidence establishes
+
+The business comparison is **deterministic nearest-neighbor versus a model-authored configuration of other existing deterministic planners**. Neither business arm calls an LLM per route. Model usage belongs to proposal authoring, revision and failed attempts. There is no matched experiment holding the model, task, input, tool capabilities and resources fixed while comparing RPNH with a mature alternative harness.
+
+| Capability observed in this case | Concrete evidence |
+|---|---|
+| Identity and budget continuity | B1/B2 use the same actor/session; profile switching does not reset the 3 + 1 calls; failed attempts remain counted |
+| Separate tool completion from valid work | A3/A4 complete tool/TEXT handling but fail proposal validation |
+| Check actual actions against a model's description | B2 says it retains its contribution; its actual edit removes batch 11, and the proposal is not adopted |
+| Identify adopted content and its origin | M2 links B1/C2, the common A5 ancestor, owner selection and the actual adoption receipt; matching values in unadopted B2 do not establish adoption |
+
+These records support specific failure diagnosis and source checks. They have not measured whether another agent investigates more accurately or quickly, uses fewer tokens, or repeats less work than with an alternative harness. Observed traceability is a concrete capability; comparative engineering benefit remains untested.
+
+## Where the route tradeoffs occur
+
+The following figures use all **1,024 original route pairs**, with no rescoring, trimming or new samples. `raw_travel_seconds` sums route travel-matrix costs; it is not program walltime, service time or a fleet-day forecast. [Machine-readable secondary analysis](ANALYSIS.json) preserves denominators, exact values and missing-field coverage.
+
+![Paired official-score and travel changes, development and eval](figures/01_paired_score_travel.png)
+
+**Paired outcomes.** Candidate improves both score and travel on 98/512 development routes and 51/512 eval routes; baseline is better on both axes on 181 and 168. Score improves while travel grows on 226 and 269. The remaining cases are six per domain with worse score but shorter travel, and 1/18 exact ties. Across domain means, score improves and travel worsens, so neither configuration dominates on these two axes. These route points are not alternative system operating points or evidence of a global Pareto optimum; time-window UNKNOWN remains an additional constraint limitation.
+
+![Distribution of paired travel changes by fixed strategy group](figures/02_travel_delta_distribution.png)
+
+**Spread and tail.** Median paired travel growth is +574.45 seconds (development) and +524.15 (eval); P95 is +2,994.39 / +2,855.34 seconds. Travel grows on 407/512 and 437/512 routes, across 23/24 and 24/24 batches. It is widespread, with a longer `deadline_first` tail. The boxes show the middle 50% and median; whiskers reach the most extreme observations within the P5–P95 thresholds. Exact tabulated quantiles use linear interpolation at `(n−1)p`. Paired-delta medians differ from subtracting the two arm medians.
+
+![Strategy-group contributions to net travel growth and concentration of positive growth](figures/03_growth_contributions.png)
+
+**Accounting by group.** `deadline_first` accounts for 85.29% of development and 69.10% of eval **net** travel growth, although it covers only 217/512 and 190/512 routes. The 52 largest increases account for 35.37% / 37.62% of **gross positive** growth (development / eval); savings are excluded from that denominator. The left panel subtracts savings; the right does not. Summed hours describe the fixed routes, not computer runtime. Strategy groups were not randomized, so these are descriptive contributions, not actor/model credit or a policy causal estimate.
+
+## Registered model usage
+
+All 22 registered response envelopes have input/output fields. They cover the retained authoring responses, including failed attempts; they do not establish complete HTTP retry or billing coverage.
+
+| Recorded transport / model / effort | Responses | Input tokens | Output tokens | Other recorded fields |
+|---|---:|---:|---:|---|
+| Native app-server / gpt-5.6-terra / medium | 19 | 661,047 | 7,682 | Cached field present in 19/19, all 0; provider total absent |
+| ExternalProviderInputPort / deepseek-v4-pro / undeclared | 3 | 63,694 | 3,836 | Provider total 67,530 in 3/3; cached field absent |
+
+Terra's input-plus-output arithmetic sum is 668,729, not a retained provider-total field. Reasoning-token detail and cost fields are absent for both models; absence is UNKNOWN, not zero. Tokenizers, provider accounting and inclusion of cache/reasoning were not established as equivalent, so no cross-model total or currency estimate is offered. Repeated input context is counted each turn. The 13 Terra responses in failed stages A2/A3/A4 account for input 528,958 and output 5,250; this disposition is not a measured avoidable-waste estimate. B2 is also retained rather than silently excluded.
+
+The 22 envelopes contain no usable request durations. The safe evidence has only selected coarse HOST-command walltimes, without a complete successful timeline, CPU measurements or additive phase spans. Registry timestamps, logical order and timing fields declared in a schema are not measured operation durations. Shares for model waiting, tool IO, publication/settlement, scheduling and scoring remain unknown. Different owner histories and adaptations also prevent a fair speed comparison. The closing wheel-plus-overlay identity does not independently certify identical full-stack bytes in every earlier execution window.
 
 ## Scope, reuse and limitations
 

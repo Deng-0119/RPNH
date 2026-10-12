@@ -1,0 +1,1225 @@
+{
+  "schema_version": "rpnh/public_collaboration_secondary_analysis/v1",
+  "scope": "Descriptive reanalysis of the original fixed 512 development and 512 eval pairs and 22 registered author-response envelopes. No new experiment, model call or rescoring.",
+  "original_results_unchanged": true,
+  "metric_direction": {
+    "official_score": "lower_is_better",
+    "raw_travel_seconds": "lower_is_shorter"
+  },
+  "units": {
+    "raw_travel_seconds": "sum of route travel-matrix costs, not process wall-clock or service time",
+    "aggregated_travel_seconds": "sum over the fixed routes, not observed elapsed runtime or a fleet-day forecast"
+  },
+  "quantile_method": "linear interpolation at (n-1)*p (Hyndman-Fan type 7)",
+  "ties": "Exact equality of retained numeric values; no epsilon or exclusions",
+  "sources": [
+    {
+      "domain": "development",
+      "sha256": "3fef500e9c444a6ed1249f688d1ec342028d743380f4d369cd3ee92c865562da",
+      "rows": 512
+    },
+    {
+      "domain": "eval",
+      "sha256": "e9a4ec154b319fda2fef2cf8548c51af6c8953167a5e96a67a3904d55755e341",
+      "rows": 512
+    }
+  ],
+  "causal_limit": "One controlled collaboration case, nonrandom strategy groups, no matched mature-harness arm. Route pairs are not independent agent trials. No demonstrated advantage in debugging speed, token cost, recovery cost or general model performance.",
+  "domains": {
+    "development": {
+      "all": {
+        "n": 512,
+        "paired_travel_delta_seconds": {
+          "n": 512,
+          "mean": 848.551953125,
+          "sum": 434458.6,
+          "quantiles_type7": {
+            "0": -882.1000000000004,
+            "0.01": -643.1789999999994,
+            "0.05": -371.9549999999995,
+            "0.1": -212.64000000000033,
+            "0.25": 88.90000000000055,
+            "0.5": 574.4499999999994,
+            "0.75": 1434.625000000001,
+            "0.9": 2508.700000000001,
+            "0.95": 2994.385,
+            "0.99": 3889.7719999999977,
+            "1": 4764.5
+          }
+        },
+        "paired_travel_delta_percent": {
+          "n": 512,
+          "mean": 8.12395993476156,
+          "sum": 4159.467486597919,
+          "quantiles_type7": {
+            "0": -8.129990677313438,
+            "0.01": -5.223229140613652,
+            "0.05": -3.318529977415027,
+            "0.1": -1.6775626801073753,
+            "0.25": 0.6872783393772723,
+            "0.5": 5.476955129107417,
+            "0.75": 13.036702277798994,
+            "0.9": 21.46536421053872,
+            "0.95": 27.86967242042846,
+            "0.99": 38.86479388882728,
+            "1": 55.39289796821418
+          }
+        },
+        "ratio_of_mean_travel_percent": 7.715378167781983,
+        "paired_score_delta": {
+          "n": 512,
+          "mean": -0.00821581837025521,
+          "sum": -4.2064990055706675,
+          "quantiles_type7": {
+            "0": -0.18051603388566737,
+            "0.01": -0.11821586099061253,
+            "0.05": -0.0845002022203107,
+            "0.1": -0.06604203948534057,
+            "0.25": -0.03767643807446112,
+            "0.5": -0.013858372452189974,
+            "0.75": 0.01749049513625555,
+            "0.9": 0.06610779968719173,
+            "0.95": 0.08757028944189911,
+            "0.99": 0.1305197745757885,
+            "1": 0.15494464890264356
+          }
+        },
+        "travel_directions": {
+          "higher": 407,
+          "lower": 104,
+          "equal": 1
+        },
+        "score_directions": {
+          "higher": 187,
+          "lower": 324,
+          "equal": 1
+        },
+        "score_travel_grid": {
+          "score_higher__travel_higher": 181,
+          "score_lower__travel_higher": 226,
+          "score_lower__travel_lower": 98,
+          "score_higher__travel_lower": 6,
+          "score_equal__travel_equal": 1
+        },
+        "gross_added_travel_seconds": 459378.99999999994,
+        "gross_saved_travel_seconds": 24920.4,
+        "time_window_transitions": {
+          "UNKNOWN -> UNKNOWN": 311,
+          "FAIL -> UNKNOWN": 126,
+          "FAIL -> FAIL": 56,
+          "UNKNOWN -> FAIL": 19
+        }
+      },
+      "by_policy": {
+        "deadline_first": {
+          "n": 217,
+          "paired_travel_delta_seconds": {
+            "n": 217,
+            "mean": 1707.6737327188941,
+            "sum": 370565.2,
+            "quantiles_type7": {
+              "0": -246.89999999999964,
+              "0.01": -176.2040000000002,
+              "0.05": 108.93999999999944,
+              "0.1": 372.53999999999985,
+              "0.25": 894.1999999999998,
+              "0.5": 1625.0,
+              "0.75": 2475.3999999999996,
+              "0.9": 3071.86,
+              "0.95": 3361.6199999999967,
+              "0.99": 4228.096000000001,
+              "1": 4764.5
+            }
+          },
+          "paired_travel_delta_percent": {
+            "n": 217,
+            "mean": 15.924450912493928,
+            "sum": 3455.6058480111824,
+            "quantiles_type7": {
+              "0": -2.1922308546059903,
+              "0.01": -1.0755953049029419,
+              "0.05": 0.642803120562331,
+              "0.1": 3.7099885942524717,
+              "0.25": 9.292967104955306,
+              "0.5": 14.093321317713027,
+              "0.75": 20.953472575989128,
+              "0.9": 30.793951705539534,
+              "0.95": 36.07441354050565,
+              "0.99": 50.325973221796886,
+              "1": 55.39289796821418
+            }
+          },
+          "ratio_of_mean_travel_percent": 14.788103804678766,
+          "paired_score_delta": {
+            "n": 217,
+            "mean": 0.02728457241110805,
+            "sum": 5.920752213210447,
+            "quantiles_type7": {
+              "0": -0.13931022924319816,
+              "0.01": -0.09687535420488896,
+              "0.05": -0.062262071603583206,
+              "0.1": -0.029786309619684946,
+              "0.25": 0.00046037026200648756,
+              "0.5": 0.022686930410460993,
+              "0.75": 0.06451086333974464,
+              "0.9": 0.09385403503381835,
+              "0.95": 0.1144606044559772,
+              "0.99": 0.14650200537593394,
+              "1": 0.15494464890264356
+            }
+          },
+          "travel_directions": {
+            "higher": 211,
+            "lower": 5,
+            "equal": 1
+          },
+          "score_directions": {
+            "higher": 164,
+            "lower": 52,
+            "equal": 1
+          },
+          "score_travel_grid": {
+            "score_higher__travel_higher": 162,
+            "score_lower__travel_higher": 49,
+            "score_lower__travel_lower": 3,
+            "score_higher__travel_lower": 2,
+            "score_equal__travel_equal": 1
+          },
+          "gross_added_travel_seconds": 371268.89999999997,
+          "gross_saved_travel_seconds": 703.7000000000007,
+          "time_window_transitions": {
+            "UNKNOWN -> UNKNOWN": 112,
+            "FAIL -> UNKNOWN": 105
+          },
+          "net_travel_increase_share_percent": 85.29355846563976,
+          "gross_added_travel_share_percent": 80.81973707984041,
+          "score_delta_contribution_to_domain_mean": 0.011563969166426654
+        },
+        "zone_nearest": {
+          "n": 295,
+          "paired_travel_delta_seconds": {
+            "n": 295,
+            "mean": 216.58779661016942,
+            "sum": 63893.39999999998,
+            "quantiles_type7": {
+              "0": -882.1000000000004,
+              "0.01": -725.3760000000003,
+              "0.05": -435.45,
+              "0.1": -350.98000000000025,
+              "0.25": -67.30000000000018,
+              "0.5": 175.20000000000073,
+              "0.75": 567.2999999999997,
+              "0.9": 787.1200000000001,
+              "0.95": 948.95,
+              "0.99": 1186.8340000000003,
+              "1": 1572.3999999999996
+            }
+          },
+          "paired_travel_delta_percent": {
+            "n": 295,
+            "mean": 2.3859716562262254,
+            "sum": 703.8616385867365,
+            "quantiles_type7": {
+              "0": -8.129990677313438,
+              "0.01": -5.566712829095249,
+              "0.05": -3.8186864930855373,
+              "0.1": -3.157257311173731,
+              "0.25": -0.7231622267483131,
+              "0.5": 1.7656516348985076,
+              "0.75": 5.436169134278976,
+              "0.9": 7.975826552844572,
+              "0.95": 9.964615609439045,
+              "0.99": 14.643633500910314,
+              "1": 16.31266872942887
+            }
+          },
+          "ratio_of_mean_travel_percent": 2.0444316568051235,
+          "paired_score_delta": {
+            "n": 295,
+            "mean": -0.03432966514841056,
+            "sum": -10.127251218781115,
+            "quantiles_type7": {
+              "0": -0.18051603388566737,
+              "0.01": -0.12797509660708026,
+              "0.05": -0.09148771977831528,
+              "0.1": -0.07678953100536687,
+              "0.25": -0.04762466584697523,
+              "0.5": -0.029696614648769187,
+              "0.75": -0.013502096816197986,
+              "0.9": -0.0026870380037171144,
+              "0.95": 0.0029261529505961027,
+              "0.99": 0.028895176841838725,
+              "1": 0.048631197059925815
+            }
+          },
+          "travel_directions": {
+            "lower": 99,
+            "higher": 196
+          },
+          "score_directions": {
+            "lower": 272,
+            "higher": 23
+          },
+          "score_travel_grid": {
+            "score_lower__travel_lower": 95,
+            "score_lower__travel_higher": 177,
+            "score_higher__travel_higher": 19,
+            "score_higher__travel_lower": 4
+          },
+          "gross_added_travel_seconds": 88110.09999999998,
+          "gross_saved_travel_seconds": 24216.7,
+          "time_window_transitions": {
+            "FAIL -> FAIL": 56,
+            "UNKNOWN -> UNKNOWN": 199,
+            "UNKNOWN -> FAIL": 19,
+            "FAIL -> UNKNOWN": 21
+          },
+          "net_travel_increase_share_percent": 14.706441534360232,
+          "gross_added_travel_share_percent": 19.180262920159606,
+          "score_delta_contribution_to_domain_mean": -0.019779787536681866
+        }
+      },
+      "tail_concentration": [
+        {
+          "top_routes": 1,
+          "fixed_population_percent": 0.1953125,
+          "travel_delta_seconds": 4764.5,
+          "share_of_net_increase_percent": 1.0966522471876492,
+          "share_of_gross_added_percent": 1.0371610369651205,
+          "policy_counts": {
+            "deadline_first": 1
+          }
+        },
+        {
+          "top_routes": 5,
+          "fixed_population_percent": 0.9765625,
+          "travel_delta_seconds": 21571.4,
+          "share_of_net_increase_percent": 4.965122108297546,
+          "share_of_gross_added_percent": 4.695774077613475,
+          "policy_counts": {
+            "deadline_first": 5
+          }
+        },
+        {
+          "top_routes": 6,
+          "fixed_population_percent": 1.171875,
+          "travel_delta_seconds": 25471.6,
+          "share_of_net_increase_percent": 5.862837103466245,
+          "share_of_gross_added_percent": 5.544789814075089,
+          "policy_counts": {
+            "deadline_first": 6
+          }
+        },
+        {
+          "top_routes": 10,
+          "fixed_population_percent": 1.953125,
+          "travel_delta_seconds": 40073.100000000006,
+          "share_of_net_increase_percent": 9.22368667578453,
+          "share_of_gross_added_percent": 8.723319960207151,
+          "policy_counts": {
+            "deadline_first": 10
+          }
+        },
+        {
+          "top_routes": 26,
+          "fixed_population_percent": 5.078125,
+          "travel_delta_seconds": 91041.9,
+          "share_of_net_increase_percent": 20.955253273844736,
+          "share_of_gross_added_percent": 19.81847232894843,
+          "policy_counts": {
+            "deadline_first": 26
+          }
+        },
+        {
+          "top_routes": 52,
+          "fixed_population_percent": 10.15625,
+          "travel_delta_seconds": 162463.59999999998,
+          "share_of_net_increase_percent": 37.39449512565754,
+          "share_of_gross_added_percent": 35.365917902211464,
+          "policy_counts": {
+            "deadline_first": 52
+          }
+        },
+        {
+          "top_routes": 128,
+          "fixed_population_percent": 25.0,
+          "travel_delta_seconds": 306778.39999999997,
+          "share_of_net_increase_percent": 70.61165321620977,
+          "share_of_gross_added_percent": 66.78111102161832,
+          "policy_counts": {
+            "deadline_first": 127,
+            "zone_nearest": 1
+          }
+        }
+      ],
+      "by_batch": {
+        "batch_0": {
+          "n": 18,
+          "mean_travel_delta_seconds": 1350.4777777777776,
+          "net_travel_delta_seconds": 24308.6,
+          "mean_score_delta": 0.03861579083135615
+        },
+        "batch_1": {
+          "n": 5,
+          "mean_travel_delta_seconds": 2560.0599999999995,
+          "net_travel_delta_seconds": 12800.299999999997,
+          "mean_score_delta": 0.08462484053070311
+        },
+        "batch_10": {
+          "n": 16,
+          "mean_travel_delta_seconds": 1278.2375000000002,
+          "net_travel_delta_seconds": 20451.800000000003,
+          "mean_score_delta": 0.03310054263750405
+        },
+        "batch_11": {
+          "n": 13,
+          "mean_travel_delta_seconds": 204.03846153846183,
+          "net_travel_delta_seconds": 2652.5000000000036,
+          "mean_score_delta": -0.033817587947747
+        },
+        "batch_12": {
+          "n": 32,
+          "mean_travel_delta_seconds": 181.25312499999995,
+          "net_travel_delta_seconds": 5800.0999999999985,
+          "mean_score_delta": -0.024399229134773444
+        },
+        "batch_13": {
+          "n": 32,
+          "mean_travel_delta_seconds": 245.26249999999982,
+          "net_travel_delta_seconds": 7848.399999999994,
+          "mean_score_delta": -0.03155093223973861
+        },
+        "batch_14": {
+          "n": 31,
+          "mean_travel_delta_seconds": 160.3225806451611,
+          "net_travel_delta_seconds": 4969.9999999999945,
+          "mean_score_delta": -0.025511904421059023
+        },
+        "batch_15": {
+          "n": 32,
+          "mean_travel_delta_seconds": 372.41874999999993,
+          "net_travel_delta_seconds": 11917.399999999998,
+          "mean_score_delta": -0.04125383978444391
+        },
+        "batch_16": {
+          "n": 6,
+          "mean_travel_delta_seconds": 278.6499999999998,
+          "net_travel_delta_seconds": 1671.8999999999987,
+          "mean_score_delta": -0.02690399347504746
+        },
+        "batch_17": {
+          "n": 32,
+          "mean_travel_delta_seconds": 270.40625,
+          "net_travel_delta_seconds": 8653.0,
+          "mean_score_delta": -0.03146742172475333
+        },
+        "batch_18": {
+          "n": 27,
+          "mean_travel_delta_seconds": 86.69999999999995,
+          "net_travel_delta_seconds": 2340.8999999999987,
+          "mean_score_delta": -0.03346882170793365
+        },
+        "batch_19": {
+          "n": 10,
+          "mean_travel_delta_seconds": 183.5800000000001,
+          "net_travel_delta_seconds": 1835.800000000001,
+          "mean_score_delta": -0.062205416242121725
+        },
+        "batch_2": {
+          "n": 25,
+          "mean_travel_delta_seconds": 1894.0320000000002,
+          "net_travel_delta_seconds": 47350.8,
+          "mean_score_delta": 0.01584814318280475
+        },
+        "batch_20": {
+          "n": 32,
+          "mean_travel_delta_seconds": 308.62812499999995,
+          "net_travel_delta_seconds": 9876.099999999999,
+          "mean_score_delta": -0.03874754744355969
+        },
+        "batch_21": {
+          "n": 5,
+          "mean_travel_delta_seconds": -353.12000000000023,
+          "net_travel_delta_seconds": -1765.6000000000013,
+          "mean_score_delta": -0.0375549198387113
+        },
+        "batch_22": {
+          "n": 32,
+          "mean_travel_delta_seconds": 176.15312499999993,
+          "net_travel_delta_seconds": 5636.899999999998,
+          "mean_score_delta": -0.04232829588207181
+        },
+        "batch_23": {
+          "n": 11,
+          "mean_travel_delta_seconds": 223.27272727272728,
+          "net_travel_delta_seconds": 2456.0,
+          "mean_score_delta": -0.02817546464812737
+        },
+        "batch_3": {
+          "n": 32,
+          "mean_travel_delta_seconds": 2016.953125,
+          "net_travel_delta_seconds": 64542.5,
+          "mean_score_delta": 0.028652783327606127
+        },
+        "batch_4": {
+          "n": 16,
+          "mean_travel_delta_seconds": 1827.3937499999997,
+          "net_travel_delta_seconds": 29238.299999999996,
+          "mean_score_delta": 0.03362740873825429
+        },
+        "batch_5": {
+          "n": 16,
+          "mean_travel_delta_seconds": 1609.775,
+          "net_travel_delta_seconds": 25756.4,
+          "mean_score_delta": 0.0441673167329884
+        },
+        "batch_6": {
+          "n": 13,
+          "mean_travel_delta_seconds": 2264.3538461538456,
+          "net_travel_delta_seconds": 29436.59999999999,
+          "mean_score_delta": 0.03009583130384604
+        },
+        "batch_7": {
+          "n": 23,
+          "mean_travel_delta_seconds": 1708.5565217391302,
+          "net_travel_delta_seconds": 39296.799999999996,
+          "mean_score_delta": 0.0009173489793023924
+        },
+        "batch_8": {
+          "n": 32,
+          "mean_travel_delta_seconds": 1633.73125,
+          "net_travel_delta_seconds": 52279.4,
+          "mean_score_delta": 0.015326687451045467
+        },
+        "batch_9": {
+          "n": 21,
+          "mean_travel_delta_seconds": 1195.4142857142858,
+          "net_travel_delta_seconds": 25103.700000000004,
+          "mean_score_delta": 0.03868228609007855
+        }
+      }
+    },
+    "eval": {
+      "all": {
+        "n": 512,
+        "paired_travel_delta_seconds": {
+          "n": 512,
+          "mean": 856.72578125,
+          "sum": 438643.6,
+          "quantiles_type7": {
+            "0": -668.2000000000007,
+            "0.01": -374.73000000000036,
+            "0.05": -146.6150000000001,
+            "0.1": -25.05999999999967,
+            "0.25": 172.3250000000005,
+            "0.5": 524.1500000000005,
+            "0.75": 1254.2000000000003,
+            "0.9": 2283.520000000001,
+            "0.95": 2855.335,
+            "0.99": 4339.219999999998,
+            "1": 7046.200000000001
+          }
+        },
+        "paired_travel_delta_percent": {
+          "n": 512,
+          "mean": 8.663868021717546,
+          "sum": 4435.9004271193835,
+          "quantiles_type7": {
+            "0": -5.731891400095132,
+            "0.01": -4.088321391864676,
+            "0.05": -1.448200171985385,
+            "0.1": -0.2445311813299205,
+            "0.25": 1.9831996725369014,
+            "0.5": 5.786809304246379,
+            "0.75": 12.391907437338348,
+            "0.9": 22.273234252766887,
+            "0.95": 29.338284831663106,
+            "0.99": 40.341966815953214,
+            "1": 60.780816872467895
+          }
+        },
+        "ratio_of_mean_travel_percent": 8.42080747094418,
+        "paired_score_delta": {
+          "n": 512,
+          "mean": -0.008658992795860949,
+          "sum": -4.433404311480806,
+          "quantiles_type7": {
+            "0": -0.20148447005213282,
+            "0.01": -0.14184944743387512,
+            "0.05": -0.08782640414879597,
+            "0.1": -0.06327363339485668,
+            "0.25": -0.03607023141493761,
+            "0.5": -0.010378535443060301,
+            "0.75": 0.012996211423598504,
+            "0.9": 0.05086438520536415,
+            "0.95": 0.07859824884781103,
+            "0.99": 0.1559448178846976,
+            "1": 0.28569009584310007
+          }
+        },
+        "travel_directions": {
+          "higher": 437,
+          "equal": 18,
+          "lower": 57
+        },
+        "score_directions": {
+          "higher": 174,
+          "equal": 18,
+          "lower": 320
+        },
+        "score_travel_grid": {
+          "score_higher__travel_higher": 168,
+          "score_equal__travel_equal": 18,
+          "score_lower__travel_higher": 269,
+          "score_lower__travel_lower": 51,
+          "score_higher__travel_lower": 6
+        },
+        "gross_added_travel_seconds": 448603.7,
+        "gross_saved_travel_seconds": 9960.10000000001,
+        "time_window_transitions": {
+          "FAIL -> UNKNOWN": 99,
+          "UNKNOWN -> UNKNOWN": 334,
+          "FAIL -> FAIL": 62,
+          "UNKNOWN -> FAIL": 17
+        }
+      },
+      "by_policy": {
+        "deadline_first": {
+          "n": 190,
+          "paired_travel_delta_seconds": {
+            "n": 190,
+            "mean": 1595.3278947368422,
+            "sum": 303112.3,
+            "quantiles_type7": {
+              "0": -252.09999999999945,
+              "0.01": -34.13399999999969,
+              "0.05": 0.0,
+              "0.1": 0.0,
+              "0.25": 567.9499999999994,
+              "0.5": 1494.749999999999,
+              "0.75": 2297.474999999999,
+              "0.9": 3144.94,
+              "0.95": 3843.9099999999994,
+              "0.99": 5011.5799999999745,
+              "1": 7046.200000000001
+            }
+          },
+          "paired_travel_delta_percent": {
+            "n": 190,
+            "mean": 15.767415181089634,
+            "sum": 2995.8088844070303,
+            "quantiles_type7": {
+              "0": -3.0805889900409293,
+              "0.01": -0.3448046397501696,
+              "0.05": 0.0,
+              "0.1": 0.0,
+              "0.25": 6.040274244706924,
+              "0.5": 15.01663632665132,
+              "0.75": 22.894561934424132,
+              "0.9": 31.03018592281656,
+              "0.95": 37.65052697621491,
+              "0.99": 51.17141454395988,
+              "1": 60.780816872467895
+            }
+          },
+          "ratio_of_mean_travel_percent": 14.749090250161867,
+          "paired_score_delta": {
+            "n": 190,
+            "mean": 0.03093693052939111,
+            "sum": 5.8780168005843105,
+            "quantiles_type7": {
+              "0": -0.14069922264040768,
+              "0.01": -0.07355562921809858,
+              "0.05": -0.046572783962903146,
+              "0.1": -0.00983120044521388,
+              "0.25": 0.0,
+              "0.5": 0.02217658928097735,
+              "0.75": 0.05163763387493288,
+              "0.9": 0.08700694286802084,
+              "0.95": 0.1264494904913204,
+              "0.99": 0.21358561824451602,
+              "1": 0.28569009584310007
+            }
+          },
+          "travel_directions": {
+            "higher": 167,
+            "equal": 18,
+            "lower": 5
+          },
+          "score_directions": {
+            "higher": 136,
+            "equal": 18,
+            "lower": 36
+          },
+          "score_travel_grid": {
+            "score_higher__travel_higher": 133,
+            "score_equal__travel_equal": 18,
+            "score_lower__travel_higher": 34,
+            "score_lower__travel_lower": 2,
+            "score_higher__travel_lower": 3
+          },
+          "gross_added_travel_seconds": 303519.0,
+          "gross_saved_travel_seconds": 406.70000000000437,
+          "time_window_transitions": {
+            "FAIL -> UNKNOWN": 70,
+            "UNKNOWN -> UNKNOWN": 119,
+            "FAIL -> FAIL": 1
+          },
+          "net_travel_increase_share_percent": 69.10218227280644,
+          "gross_added_travel_share_percent": 67.65860379662494,
+          "score_delta_contribution_to_domain_mean": 0.011480501563641232
+        },
+        "zone_nearest": {
+          "n": 322,
+          "paired_travel_delta_seconds": {
+            "n": 322,
+            "mean": 420.9046583850932,
+            "sum": 135531.30000000002,
+            "quantiles_type7": {
+              "0": -668.2000000000007,
+              "0.01": -397.44100000000003,
+              "0.05": -240.24000000000103,
+              "0.1": -112.380000000001,
+              "0.25": 104.82499999999936,
+              "0.5": 340.8499999999997,
+              "0.75": 620.3500000000004,
+              "0.9": 970.6400000000007,
+              "0.95": 1282.0850000000007,
+              "0.99": 2129.219000000006,
+              "1": 2761.499999999998
+            }
+          },
+          "paired_travel_delta_percent": {
+            "n": 322,
+            "mean": 4.472333983578738,
+            "sum": 1440.0915427123537,
+            "quantiles_type7": {
+              "0": -5.731891400095132,
+              "0.01": -4.593346730570891,
+              "0.05": -1.9739325133903567,
+              "0.1": -1.0064667825698461,
+              "0.25": 0.9731907549057723,
+              "0.5": 3.8240148402235823,
+              "0.75": 7.099399798349413,
+              "0.9": 10.674842382495296,
+              "0.95": 12.583536272620911,
+              "0.99": 20.045725028710542,
+              "1": 26.523283028004204
+            }
+          },
+          "ratio_of_mean_travel_percent": 4.297234646799741,
+          "paired_score_delta": {
+            "n": 322,
+            "mean": -0.03202304693187925,
+            "sum": -10.311421112065117,
+            "quantiles_type7": {
+              "0": -0.20148447005213282,
+              "0.01": -0.15082405123821993,
+              "0.05": -0.09243839721251368,
+              "0.1": -0.07366445466143542,
+              "0.25": -0.047755949796530625,
+              "0.5": -0.02600426229075503,
+              "0.75": -0.010131375763090363,
+              "0.9": 0.0019887096567909645,
+              "0.95": 0.011232546621562475,
+              "0.99": 0.034528076410653245,
+              "1": 0.08203167553361443
+            }
+          },
+          "travel_directions": {
+            "higher": 270,
+            "lower": 52
+          },
+          "score_directions": {
+            "higher": 38,
+            "lower": 284
+          },
+          "score_travel_grid": {
+            "score_higher__travel_higher": 35,
+            "score_lower__travel_higher": 235,
+            "score_lower__travel_lower": 49,
+            "score_higher__travel_lower": 3
+          },
+          "gross_added_travel_seconds": 145084.7,
+          "gross_saved_travel_seconds": 9553.400000000005,
+          "time_window_transitions": {
+            "UNKNOWN -> FAIL": 17,
+            "UNKNOWN -> UNKNOWN": 215,
+            "FAIL -> FAIL": 61,
+            "FAIL -> UNKNOWN": 29
+          },
+          "net_travel_increase_share_percent": 30.897817727193562,
+          "gross_added_travel_share_percent": 32.341396203375055,
+          "score_delta_contribution_to_domain_mean": -0.020139494359502182
+        }
+      },
+      "tail_concentration": [
+        {
+          "top_routes": 1,
+          "fixed_population_percent": 0.1953125,
+          "travel_delta_seconds": 7046.200000000001,
+          "share_of_net_increase_percent": 1.6063610639708414,
+          "share_of_gross_added_percent": 1.5706959171313124,
+          "policy_counts": {
+            "deadline_first": 1
+          }
+        },
+        {
+          "top_routes": 5,
+          "fixed_population_percent": 0.9765625,
+          "travel_delta_seconds": 27969.3,
+          "share_of_net_increase_percent": 6.376315532701264,
+          "share_of_gross_added_percent": 6.234745723229657,
+          "policy_counts": {
+            "deadline_first": 5
+          }
+        },
+        {
+          "top_routes": 6,
+          "fixed_population_percent": 1.171875,
+          "travel_delta_seconds": 32327.0,
+          "share_of_net_increase_percent": 7.369764428342281,
+          "share_of_gross_added_percent": 7.2061376221373115,
+          "policy_counts": {
+            "deadline_first": 6
+          }
+        },
+        {
+          "top_routes": 10,
+          "fixed_population_percent": 1.953125,
+          "travel_delta_seconds": 48270.9,
+          "share_of_net_increase_percent": 11.004583219725536,
+          "share_of_gross_added_percent": 10.760254540923313,
+          "policy_counts": {
+            "deadline_first": 10
+          }
+        },
+        {
+          "top_routes": 26,
+          "fixed_population_percent": 5.078125,
+          "travel_delta_seconds": 100762.2,
+          "share_of_net_increase_percent": 22.97131429707398,
+          "share_of_gross_added_percent": 22.461294902382658,
+          "policy_counts": {
+            "deadline_first": 26
+          }
+        },
+        {
+          "top_routes": 52,
+          "fixed_population_percent": 10.15625,
+          "travel_delta_seconds": 168753.4,
+          "share_of_net_increase_percent": 38.4716430377646,
+          "share_of_gross_added_percent": 37.61747841134614,
+          "policy_counts": {
+            "deadline_first": 49,
+            "zone_nearest": 3
+          }
+        },
+        {
+          "top_routes": 128,
+          "fixed_population_percent": 25.0,
+          "travel_delta_seconds": 297184.7,
+          "share_of_net_increase_percent": 67.75083461835531,
+          "share_of_gross_added_percent": 66.24660028439355,
+          "policy_counts": {
+            "deadline_first": 110,
+            "zone_nearest": 18
+          }
+        }
+      ],
+      "by_batch": {
+        "batch_0": {
+          "n": 20,
+          "mean_travel_delta_seconds": 1323.91,
+          "net_travel_delta_seconds": 26478.2,
+          "mean_score_delta": 0.031230458740716054
+        },
+        "batch_1": {
+          "n": 10,
+          "mean_travel_delta_seconds": 1802.2099999999998,
+          "net_travel_delta_seconds": 18022.1,
+          "mean_score_delta": 0.058261915117844586
+        },
+        "batch_10": {
+          "n": 22,
+          "mean_travel_delta_seconds": 1156.709090909091,
+          "net_travel_delta_seconds": 25447.600000000002,
+          "mean_score_delta": 0.0469212166689688
+        },
+        "batch_11": {
+          "n": 26,
+          "mean_travel_delta_seconds": 474.4653846153847,
+          "net_travel_delta_seconds": 12336.100000000002,
+          "mean_score_delta": -0.030344377969418142
+        },
+        "batch_12": {
+          "n": 16,
+          "mean_travel_delta_seconds": 964.4250000000002,
+          "net_travel_delta_seconds": 15430.800000000003,
+          "mean_score_delta": -0.03699118181782853
+        },
+        "batch_13": {
+          "n": 32,
+          "mean_travel_delta_seconds": 301.05625000000003,
+          "net_travel_delta_seconds": 9633.800000000001,
+          "mean_score_delta": -0.021365664238873386
+        },
+        "batch_14": {
+          "n": 32,
+          "mean_travel_delta_seconds": 384.91875000000005,
+          "net_travel_delta_seconds": 12317.400000000001,
+          "mean_score_delta": -0.03292738855927409
+        },
+        "batch_15": {
+          "n": 3,
+          "mean_travel_delta_seconds": 295.9333333333337,
+          "net_travel_delta_seconds": 887.8000000000011,
+          "mean_score_delta": -0.04337268024758878
+        },
+        "batch_16": {
+          "n": 32,
+          "mean_travel_delta_seconds": 396.7500000000001,
+          "net_travel_delta_seconds": 12696.000000000004,
+          "mean_score_delta": -0.03402962015439235
+        },
+        "batch_17": {
+          "n": 27,
+          "mean_travel_delta_seconds": 284.63333333333327,
+          "net_travel_delta_seconds": 7685.0999999999985,
+          "mean_score_delta": -0.03644930648257412
+        },
+        "batch_18": {
+          "n": 32,
+          "mean_travel_delta_seconds": 441.2281249999999,
+          "net_travel_delta_seconds": 14119.299999999997,
+          "mean_score_delta": -0.027946813190218623
+        },
+        "batch_19": {
+          "n": 32,
+          "mean_travel_delta_seconds": 401.9906250000001,
+          "net_travel_delta_seconds": 12863.700000000003,
+          "mean_score_delta": -0.03787808655674505
+        },
+        "batch_2": {
+          "n": 25,
+          "mean_travel_delta_seconds": 1392.792,
+          "net_travel_delta_seconds": 34819.799999999996,
+          "mean_score_delta": 0.031676873526382716
+        },
+        "batch_20": {
+          "n": 19,
+          "mean_travel_delta_seconds": 309.65789473684197,
+          "net_travel_delta_seconds": 5883.499999999997,
+          "mean_score_delta": -0.03638684033031945
+        },
+        "batch_21": {
+          "n": 19,
+          "mean_travel_delta_seconds": 313.13684210526327,
+          "net_travel_delta_seconds": 5949.600000000002,
+          "mean_score_delta": -0.039043454967638884
+        },
+        "batch_22": {
+          "n": 28,
+          "mean_travel_delta_seconds": 287.1607142857143,
+          "net_travel_delta_seconds": 8040.5,
+          "mean_score_delta": -0.029084653874463292
+        },
+        "batch_23": {
+          "n": 24,
+          "mean_travel_delta_seconds": 736.9874999999998,
+          "net_travel_delta_seconds": 17687.699999999997,
+          "mean_score_delta": -0.026503783936351208
+        },
+        "batch_3": {
+          "n": 16,
+          "mean_travel_delta_seconds": 2267.2687499999997,
+          "net_travel_delta_seconds": 36276.299999999996,
+          "mean_score_delta": 0.02201944319746472
+        },
+        "batch_4": {
+          "n": 16,
+          "mean_travel_delta_seconds": 1685.0374999999992,
+          "net_travel_delta_seconds": 26960.599999999988,
+          "mean_score_delta": 0.011886896352209384
+        },
+        "batch_5": {
+          "n": 2,
+          "mean_travel_delta_seconds": 1372.75,
+          "net_travel_delta_seconds": 2745.5,
+          "mean_score_delta": 0.004357432421871518
+        },
+        "batch_6": {
+          "n": 21,
+          "mean_travel_delta_seconds": 1607.7238095238095,
+          "net_travel_delta_seconds": 33762.2,
+          "mean_score_delta": 0.03382906275735974
+        },
+        "batch_7": {
+          "n": 12,
+          "mean_travel_delta_seconds": 808.3416666666662,
+          "net_travel_delta_seconds": 9700.099999999995,
+          "mean_score_delta": 0.03230025868539585
+        },
+        "batch_8": {
+          "n": 27,
+          "mean_travel_delta_seconds": 1853.4851851851854,
+          "net_travel_delta_seconds": 50044.100000000006,
+          "mean_score_delta": 0.01968046128759041
+        },
+        "batch_9": {
+          "n": 19,
+          "mean_travel_delta_seconds": 2045.042105263158,
+          "net_travel_delta_seconds": 38855.8,
+          "mean_score_delta": 0.03505251027273094
+        }
+      }
+    }
+  },
+  "model_usage": {
+    "scope": "All 22 registered author response envelopes in the completed experiment; not raw HTTP attempts or total orchestration/billing usage",
+    "input_output_coverage": {
+      "registered_responses_expected": 22,
+      "registered_responses_read": 22,
+      "input_fields": 22,
+      "output_fields": 22
+    },
+    "ledger_crosscheck": {
+      "logical_calls": 22,
+      "provider_attempt_specs": 22,
+      "postlimit_excess": 0,
+      "HTTP_attempts": "UNKNOWN"
+    },
+    "buckets": [
+      {
+        "provider_evidence_bucket": "Codex native app-server; billing provider not independently verified",
+        "model": "gpt-5.6-terra",
+        "reasoning_effort": "medium",
+        "response_count": 19,
+        "input_tokens": 661047,
+        "output_tokens": 7682,
+        "cached_field_coverage": 19,
+        "cached_input_tokens_sum_where_present": 0,
+        "total_field_coverage": 0,
+        "reported_total_tokens_sum_where_present": null,
+        "derived_input_plus_output": 668729,
+        "reasoning_field_coverage": 0,
+        "cost_field_coverage": 0
+      },
+      {
+        "provider_evidence_bucket": "ExternalProviderInputPort; billing provider not independently verified",
+        "model": "deepseek-v4-pro",
+        "reasoning_effort": "UNDECLARED",
+        "response_count": 3,
+        "input_tokens": 63694,
+        "output_tokens": 3836,
+        "cached_field_coverage": 0,
+        "cached_input_tokens_sum_where_present": null,
+        "total_field_coverage": 3,
+        "reported_total_tokens_sum_where_present": 67530,
+        "derived_input_plus_output": 67530,
+        "reasoning_field_coverage": 0,
+        "cost_field_coverage": 0
+      }
+    ],
+    "by_stage": {
+      "A2": {
+        "response_count": 1,
+        "input_tokens": 3041,
+        "output_tokens": 146,
+        "cached_field_coverage": 1,
+        "cached_input_tokens_sum_where_present": 0,
+        "total_field_coverage": 0,
+        "reported_total_tokens_sum_where_present": null,
+        "derived_input_plus_output": 3187,
+        "reasoning_field_coverage": 0,
+        "cost_field_coverage": 0,
+        "model": "gpt-5.6-terra",
+        "reasoning_effort": "medium"
+      },
+      "A3": {
+        "response_count": 8,
+        "input_tokens": 404591,
+        "output_tokens": 3001,
+        "cached_field_coverage": 8,
+        "cached_input_tokens_sum_where_present": 0,
+        "total_field_coverage": 0,
+        "reported_total_tokens_sum_where_present": null,
+        "derived_input_plus_output": 407592,
+        "reasoning_field_coverage": 0,
+        "cost_field_coverage": 0,
+        "model": "gpt-5.6-terra",
+        "reasoning_effort": "medium"
+      },
+      "A4": {
+        "response_count": 4,
+        "input_tokens": 121326,
+        "output_tokens": 2103,
+        "cached_field_coverage": 4,
+        "cached_input_tokens_sum_where_present": 0,
+        "total_field_coverage": 0,
+        "reported_total_tokens_sum_where_present": null,
+        "derived_input_plus_output": 123429,
+        "reasoning_field_coverage": 0,
+        "cost_field_coverage": 0,
+        "model": "gpt-5.6-terra",
+        "reasoning_effort": "medium"
+      },
+      "A5": {
+        "response_count": 2,
+        "input_tokens": 41683,
+        "output_tokens": 652,
+        "cached_field_coverage": 2,
+        "cached_input_tokens_sum_where_present": 0,
+        "total_field_coverage": 0,
+        "reported_total_tokens_sum_where_present": null,
+        "derived_input_plus_output": 42335,
+        "reasoning_field_coverage": 0,
+        "cost_field_coverage": 0,
+        "model": "gpt-5.6-terra",
+        "reasoning_effort": "medium"
+      },
+      "B1": {
+        "response_count": 3,
+        "input_tokens": 63694,
+        "output_tokens": 3836,
+        "cached_field_coverage": 0,
+        "cached_input_tokens_sum_where_present": null,
+        "total_field_coverage": 3,
+        "reported_total_tokens_sum_where_present": 67530,
+        "derived_input_plus_output": 67530,
+        "reasoning_field_coverage": 0,
+        "cost_field_coverage": 0,
+        "model": "deepseek-v4-pro",
+        "reasoning_effort": "UNDECLARED"
+      },
+      "B2": {
+        "response_count": 1,
+        "input_tokens": 43987,
+        "output_tokens": 463,
+        "cached_field_coverage": 1,
+        "cached_input_tokens_sum_where_present": 0,
+        "total_field_coverage": 0,
+        "reported_total_tokens_sum_where_present": null,
+        "derived_input_plus_output": 44450,
+        "reasoning_field_coverage": 0,
+        "cost_field_coverage": 0,
+        "model": "gpt-5.6-terra",
+        "reasoning_effort": "medium"
+      },
+      "C1": {
+        "response_count": 2,
+        "input_tokens": 30872,
+        "output_tokens": 987,
+        "cached_field_coverage": 2,
+        "cached_input_tokens_sum_where_present": 0,
+        "total_field_coverage": 0,
+        "reported_total_tokens_sum_where_present": null,
+        "derived_input_plus_output": 31859,
+        "reasoning_field_coverage": 0,
+        "cost_field_coverage": 0,
+        "model": "gpt-5.6-terra",
+        "reasoning_effort": "medium"
+      },
+      "C2": {
+        "response_count": 1,
+        "input_tokens": 15547,
+        "output_tokens": 330,
+        "cached_field_coverage": 1,
+        "cached_input_tokens_sum_where_present": 0,
+        "total_field_coverage": 0,
+        "reported_total_tokens_sum_where_present": null,
+        "derived_input_plus_output": 15877,
+        "reasoning_field_coverage": 0,
+        "cost_field_coverage": 0,
+        "model": "gpt-5.6-terra",
+        "reasoning_effort": "medium"
+      }
+    },
+    "by_disposition": [
+      {
+        "disposition": "failed_authoring_attempts_retained",
+        "model": "gpt-5.6-terra",
+        "stages": [
+          "A2",
+          "A3",
+          "A4"
+        ],
+        "response_count": 13,
+        "input_tokens": 528958,
+        "output_tokens": 5250,
+        "cached_field_coverage": 13,
+        "cached_input_tokens_sum_where_present": 0,
+        "total_field_coverage": 0,
+        "reported_total_tokens_sum_where_present": null,
+        "derived_input_plus_output": 534208,
+        "reasoning_field_coverage": 0,
+        "cost_field_coverage": 0
+      },
+      {
+        "disposition": "valid_but_not_approved_or_adopted",
+        "model": "gpt-5.6-terra",
+        "stages": [
+          "B2"
+        ],
+        "response_count": 1,
+        "input_tokens": 43987,
+        "output_tokens": 463,
+        "cached_field_coverage": 1,
+        "cached_input_tokens_sum_where_present": 0,
+        "total_field_coverage": 0,
+        "reported_total_tokens_sum_where_present": null,
+        "derived_input_plus_output": 44450,
+        "reasoning_field_coverage": 0,
+        "cost_field_coverage": 0
+      },
+      {
+        "disposition": "accepted_ancestry_or_coordinated_candidate_stages",
+        "model": "gpt-5.6-terra",
+        "stages": [
+          "A5",
+          "C1",
+          "C2"
+        ],
+        "response_count": 5,
+        "input_tokens": 88102,
+        "output_tokens": 1969,
+        "cached_field_coverage": 5,
+        "cached_input_tokens_sum_where_present": 0,
+        "total_field_coverage": 0,
+        "reported_total_tokens_sum_where_present": null,
+        "derived_input_plus_output": 90071,
+        "reasoning_field_coverage": 0,
+        "cost_field_coverage": 0
+      },
+      {
+        "disposition": "accepted_ancestry_or_coordinated_candidate_stages",
+        "model": "deepseek-v4-pro",
+        "stages": [
+          "B1"
+        ],
+        "response_count": 3,
+        "input_tokens": 63694,
+        "output_tokens": 3836,
+        "cached_field_coverage": 0,
+        "cached_input_tokens_sum_where_present": null,
+        "total_field_coverage": 3,
+        "reported_total_tokens_sum_where_present": 67530,
+        "derived_input_plus_output": 67530,
+        "reasoning_field_coverage": 0,
+        "cost_field_coverage": 0
+      }
+    ],
+    "business_execution": "Both baseline and adopted candidate execute deterministic HOST strategies; these LLM tokens belong to authoring/revision/failed authoring, not per-route inference.",
+    "comparability": "No common token-equivalence, cost, speed or harness-efficiency claim across models. No matched mature-harness control exists in this case.",
+    "missing_data": "Missing total/reasoning/cache/cost fields remain missing, not zero; HTTP retry and billing coverage unknown."
+  },
+  "timing_coverage": {
+    "complete_successful_timeline_available": false,
+    "end_to_end_walltime_seconds": null,
+    "cpu_seconds": null,
+    "internal_phase_shares": null,
+    "observed_scope": "Selected coarse failure HOST-command windows only; no complete successful timeline or additive phase spans.",
+    "route_travel_is_system_runtime": false,
+    "event_timestamps_are_operation_durations": false
+  }
+}

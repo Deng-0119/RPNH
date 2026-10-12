@@ -1,0 +1,329 @@
+{
+  "artifact_type": "derived_read_only_collaboration_summary",
+  "format_version": 1,
+  "scope": {
+    "authority": "Display summary only; original Registry receipts remain the source authority.",
+    "execution": "No task execution, firing, clock-time ordering or parallel-runtime evidence is encoded.",
+    "participants": "Three independently bound simulated actors/sessions, orchestrated by one trusted HOST coordinator; not a human-user study.",
+    "public_source_coverage": "Minimal selected fields and audit pointers; the retained original source receipts are not bundled here.",
+    "figures": "Explanatory SVG/PNG diagrams, not official Viewer screenshots or Petri nets."
+  },
+  "actors": {
+    "count": 3,
+    "distinct_actor_and_session_refs_verified": true,
+    "owner": "A",
+    "proposers": [
+      "B",
+      "C"
+    ]
+  },
+  "proposals": {
+    "A5": {
+      "actor": "A",
+      "base": "original baseline",
+      "previous_proposal": null,
+      "changed_batches_relative_to_base": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ],
+      "strategy": "deadline_first",
+      "synthetic_fixture": false,
+      "source_pointer": "/contributions/A5"
+    },
+    "B1": {
+      "actor": "B",
+      "base": "A5",
+      "previous_proposal": null,
+      "changed_batches_relative_to_base": [
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17
+      ],
+      "strategy": "zone_nearest",
+      "synthetic_fixture": false,
+      "source_pointer": "/contributions/B1"
+    },
+    "B2": {
+      "actor": "B",
+      "base": "A5",
+      "previous_proposal": "B1",
+      "changed_batches_relative_to_base": [
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23
+      ],
+      "strategy": "zone_nearest",
+      "synthetic_fixture": false,
+      "source_pointer": "/contributions/B2"
+    },
+    "C1": {
+      "actor": "C",
+      "base": "A5",
+      "previous_proposal": null,
+      "changed_batches_relative_to_base": [
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23
+      ],
+      "strategy": "zone_nearest",
+      "synthetic_fixture": false,
+      "source_pointer": "/contributions/C1"
+    },
+    "C2": {
+      "actor": "C",
+      "base": "A5",
+      "previous_proposal": "C1",
+      "changed_batches_relative_to_base": [
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23
+      ],
+      "strategy": "zone_nearest",
+      "synthetic_fixture": false,
+      "source_pointer": "/contributions/C2"
+    }
+  },
+  "reviews": [
+    {
+      "proposal": "A5",
+      "reviewer": "A",
+      "disposition": "approve",
+      "source_pointer": "/reviews/0/data"
+    },
+    {
+      "proposal": "B1",
+      "reviewer": "A",
+      "disposition": "approve",
+      "source_pointer": "/reviews/1/data"
+    },
+    {
+      "proposal": "B2",
+      "reviewer": "A",
+      "disposition": "request_changes",
+      "source_pointer": "/reviews/2/data"
+    },
+    {
+      "proposal": "C1",
+      "reviewer": "A",
+      "disposition": "request_changes",
+      "source_pointer": "/reviews/3/data"
+    },
+    {
+      "proposal": "C2",
+      "reviewer": "A",
+      "disposition": "approve",
+      "source_pointer": "/reviews/4/data"
+    }
+  ],
+  "initial_merge": {
+    "inputs": [
+      "B1",
+      "C1"
+    ],
+    "reported_conflict": "one shared business-budget conflict requiring coordination",
+    "source": "CONTRIBUTIONS.json",
+    "source_pointer": "/reviews/3/data/reason",
+    "coverage": "Recorded owner review and experiment report; initial merge analysis itself is not in this exported evidence set."
+  },
+  "M2": {
+    "base": "A5",
+    "local_input": "B1",
+    "incoming_input": "C2",
+    "conflict_count": 1,
+    "conflict_reason": "coupled_contract",
+    "owner_choice": "incoming",
+    "owner": "A",
+    "protected_branch_action": "advance",
+    "adoption": "ADOPTED",
+    "automatic_conflict_free_union": false,
+    "source_pointers": [
+      "MERGE_ANALYSIS_M2.json#/original_analysis/request",
+      "MERGE_ANALYSIS_M2.json#/original_analysis/conflicts/0/reason",
+      "MERGE_ANALYSIS_M2.json#/decision_aid/choices/0",
+      "CONTRIBUTIONS.json#/acceptance_receipt",
+      "ADOPTION_M2.json#/adoption/status"
+    ]
+  },
+  "final_content": {
+    "A5_retained_deadline_first": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "B1_unique_zone_nearest": [
+      11
+    ],
+    "B1_C1_same_value_overlap": [
+      12,
+      13,
+      14,
+      15,
+      16,
+      17
+    ],
+    "C1_unique_zone_nearest": [
+      18,
+      19,
+      20,
+      21,
+      22,
+      23
+    ],
+    "C2_role": "Explicitly coordinated complete proposal; incorporated approved B1 contribution while preserving C1 changes.",
+    "counting": "Overlap is six shared exact changes, not twelve independent final changes. Copied B1 content is not newly attributed to C.",
+    "B2": "Not approved/selected; batch 11 reverted to nearest_neighbor."
+  },
+  "audit_sources": [
+    {
+      "file": "CONTRIBUTIONS.json",
+      "sha256": "93613c915e2502d5b53010e2b1172d4eec7b6ca7c1479a684f32598e0d0a7a35"
+    },
+    {
+      "file": "INITIAL_NATIVE_IDENTITIES.json",
+      "sha256": "865d4d76d1922da140fb1fd6164e11be24be0f95f97e08cfc1bce2a4b9eea8d9"
+    },
+    {
+      "file": "MERGE_ANALYSIS_M2.json",
+      "sha256": "0f7437dde63d428407b2ad4b00bfecbf6ab4b6f5a9061d28f9aa05ba835296af"
+    },
+    {
+      "file": "ADOPTION_M2.json",
+      "sha256": "71cc3bd573f40fea9c847b704762913d1bcb26aaace86cd3ffdfd0eae082bbc2"
+    },
+    {
+      "file": "ADOPTION_RECEIPT_M2.json",
+      "sha256": "fa4bc4549218a58eee90d9a30c154986cbbebcd37b0bce9a38b7ad745defd6dc"
+    }
+  ],
+  "viewer": {
+    "source_commit": "5c4f04e9b4ed622a7496126966116bf7151de22a",
+    "collaboration_lineage_canvas": "not implemented in inspected official Viewer",
+    "existing_business_declaration_commands": [
+      "python examples/view_declaration.py collaboration-baseline",
+      "python examples/view_declaration.py collaboration-adopted"
+    ]
+  },
+  "relations": [
+    {
+      "from": "A5",
+      "to": "B1",
+      "kind": "declared_common_base",
+      "evidence_level": "exact native proposal reference equality",
+      "source": "CONTRIBUTIONS.json",
+      "source_pointer": "/contributions/B1/proposal/data/base_revision_ref"
+    },
+    {
+      "from": "A5",
+      "to": "C1",
+      "kind": "declared_common_base",
+      "evidence_level": "exact native proposal reference equality",
+      "source": "CONTRIBUTIONS.json",
+      "source_pointer": "/contributions/C1/proposal/data/base_revision_ref"
+    },
+    {
+      "from": "B1",
+      "to": "B2",
+      "kind": "previous_proposal",
+      "evidence_level": "exact native previous_proposal_ref equality",
+      "source": "CONTRIBUTIONS.json",
+      "source_pointer": "/contributions/B2/proposal/data/previous_proposal_ref"
+    },
+    {
+      "from": "C1",
+      "to": "C2",
+      "kind": "previous_proposal",
+      "evidence_level": "exact native previous_proposal_ref equality",
+      "source": "CONTRIBUTIONS.json",
+      "source_pointer": "/contributions/C2/proposal/data/previous_proposal_ref"
+    },
+    {
+      "from": "B1",
+      "to": "C2",
+      "kind": "approved_contribution_supplied_then_retained",
+      "evidence_level": "recorded proposal/review explanation plus exact retained configuration delta; not a revision-parent edge",
+      "source": "CONTRIBUTIONS.json",
+      "source_pointers": [
+        "/contributions/C2/proposal/data/reason",
+        "/reviews/4/data/reason",
+        "/contributions/B1/retained_exact_changes"
+      ]
+    },
+    {
+      "from": "B1",
+      "to": "M2",
+      "kind": "local_merge_input",
+      "evidence_level": "exact original native merge request",
+      "source": "MERGE_ANALYSIS_M2.json",
+      "source_pointer": "/original_analysis/request/local_revision_ref"
+    },
+    {
+      "from": "C2",
+      "to": "M2",
+      "kind": "incoming_merge_input",
+      "evidence_level": "exact original native merge request",
+      "source": "MERGE_ANALYSIS_M2.json",
+      "source_pointer": "/original_analysis/request/incoming_revision_ref"
+    },
+    {
+      "from": "M2",
+      "to": "ADOPTED",
+      "kind": "explicit_owner_selection_then_protected_advance_and_adoption",
+      "evidence_level": "original decision aid and exact native advance/adoption receipts; controlled HOST using owner A session",
+      "source_pointers": [
+        "MERGE_ANALYSIS_M2.json#/decision_aid/choices/0",
+        "CONTRIBUTIONS.json#/acceptance_receipt",
+        "ADOPTION_RECEIPT_M2.json#/session_ref",
+        "ADOPTION_M2.json#/adoption/status"
+      ]
+    }
+  ]
+}

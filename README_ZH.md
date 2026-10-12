@@ -31,7 +31,7 @@ workspace 或恢复状态的独立所有者。
 
 [受控 managed 工具](docs/controlled-managed-tools.zh.md)介绍精确结果分页、有界并发、隔离 Python 程序、只读结果证据与来源预检。新能力通过显式 HOST 策略选择；既有默认工具目录与基准对照条件保持原样。
 
-[三个模拟身份的受控协作实验](docs/results/user-collaboration-20261012/README_ZH.md)完成了真实提案、显式协调、采用与独立评估；序列分数改善而平均行程增加。[原始全景与本地静态结构 Viewer](examples/user_collaboration/README_ZH.md)展示其范围。
+[三个模拟用户共同构建同一任务网络](examples/user_collaboration/README_ZH.md)：从 A 的共同版本到 B/C 的独立贡献、审阅、显式冲突协调与 owner 采用，两张真实回执关系图串起完整协作主线。例子再提供实际业务网全景、官方静态 Viewer 与[实测结果和取舍](docs/results/user-collaboration-20261012/README_ZH.md)。
 
 历史应用评分与零模型 runtime 验证见[精选结果](docs/results/README_ZH.md)。每项保留实际源码与条件；这些旧窗口不认证后续组合产品，也不代表已发布新的 rc2 二进制。
 

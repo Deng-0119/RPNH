@@ -1,0 +1,353 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="1090" viewBox="0 0 1800 1090" role="img" aria-labelledby="title desc"><title id="title">最终采用内容来自哪里</title><desc id="desc">24 个规划批次的精确配置变化与来源。</desc><defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#8091aa"/></marker></defs><rect width="100%" height="100%" fill="#f5f7fb"/>
+<text id="text-1" x="65" y="66" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="39" fill="#192840" font-weight="700">最终采用内容来自哪里</text>
+<text id="text-2" x="65" y="108" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#576780" font-weight="400">原始基线 → A5 共同基线 → 独立提案 → 显式协调的 C2 / 已采用 M2</text>
+<text id="text-3" x="65" y="151" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="20" fill="#576780" font-weight="400">批次从 0 编号。末行颜色表示保留内容的贡献来源，不是运行状态。</text>
+<rect x="372" y="198" width="579" height="44" rx="8" fill="#edf4fd" stroke="none" stroke-width="2"/>
+<text id="text-5" x="380" y="227" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="16" fill="#316ab0" font-weight="700">A5 · 保留共同基线</text>
+<rect x="955" y="198" width="49" height="44" rx="8" fill="#fff6e5" stroke="none" stroke-width="2"/>
+<text id="text-7" x="963" y="227" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="16" fill="#aa6b05" font-weight="700">B1</text>
+<rect x="1008" y="198" width="314" height="44" rx="8" fill="#f1edfa" stroke="none" stroke-width="2"/>
+<text id="text-9" x="1016" y="227" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="16" fill="#7754b2" font-weight="700">B1 ∩ C1 · 相同变更</text>
+<rect x="1326" y="198" width="314" height="44" rx="8" fill="#eaf8f4" stroke="none" stroke-width="2"/>
+<text id="text-11" x="1334" y="227" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="16" fill="#167d72" font-weight="700">C1 · 独有变更</text>
+<text id="text-12" x="388" y="275" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="16" fill="#576780" font-weight="400">00</text>
+<text id="text-13" x="441" y="275" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="16" fill="#576780" font-weight="400">01</text>
+<text id="text-14" x="494" y="275" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="16" fill="#576780" font-weight="400">02</text>
+<text id="text-15" x="547" y="275" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="16" fill="#576780" font-weight="400">03</text>
+<text id="text-16" x="600" y="275" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="16" fill="#576780" font-weight="400">04</text>
+<text id="text-17" x="653" y="275" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="16" fill="#576780" font-weight="400">05</text>
+<text id="text-18" x="706" y="275" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="16" fill="#576780" font-weight="400">06</text>
+<text id="text-19" x="759" y="275" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="16" fill="#576780" font-weight="400">07</text>
+<text id="text-20" x="812" y="275" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="16" fill="#576780" font-weight="400">08</text>
+<text id="text-21" x="865" y="275" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="16" fill="#576780" font-weight="400">09</text>
+<text id="text-22" x="918" y="275" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="16" fill="#576780" font-weight="400">10</text>
+<text id="text-23" x="971" y="275" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="16" fill="#576780" font-weight="400">11</text>
+<text id="text-24" x="1024" y="275" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="16" fill="#576780" font-weight="400">12</text>
+<text id="text-25" x="1077" y="275" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="16" fill="#576780" font-weight="400">13</text>
+<text id="text-26" x="1130" y="275" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="16" fill="#576780" font-weight="400">14</text>
+<text id="text-27" x="1183" y="275" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="16" fill="#576780" font-weight="400">15</text>
+<text id="text-28" x="1236" y="275" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="16" fill="#576780" font-weight="400">16</text>
+<text id="text-29" x="1289" y="275" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="16" fill="#576780" font-weight="400">17</text>
+<text id="text-30" x="1342" y="275" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="16" fill="#576780" font-weight="400">18</text>
+<text id="text-31" x="1395" y="275" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="16" fill="#576780" font-weight="400">19</text>
+<text id="text-32" x="1448" y="275" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="16" fill="#576780" font-weight="400">20</text>
+<text id="text-33" x="1501" y="275" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="16" fill="#576780" font-weight="400">21</text>
+<text id="text-34" x="1554" y="275" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="16" fill="#576780" font-weight="400">22</text>
+<text id="text-35" x="1607" y="275" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="16" fill="#576780" font-weight="400">23</text>
+<text id="text-36" x="65" y="328" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="24" fill="#192840" font-weight="700">baseline</text>
+<text id="text-37" x="65" y="354" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="17" fill="#576780" font-weight="400">原始基线</text>
+<rect x="372" y="300" width="48" height="55" rx="7" fill="#e9edf2" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-39" x="388" y="336" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#576780" font-weight="600">N</text>
+<rect x="425" y="300" width="48" height="55" rx="7" fill="#e9edf2" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-41" x="441" y="336" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#576780" font-weight="600">N</text>
+<rect x="478" y="300" width="48" height="55" rx="7" fill="#e9edf2" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-43" x="494" y="336" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#576780" font-weight="600">N</text>
+<rect x="531" y="300" width="48" height="55" rx="7" fill="#e9edf2" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-45" x="547" y="336" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#576780" font-weight="600">N</text>
+<rect x="584" y="300" width="48" height="55" rx="7" fill="#e9edf2" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-47" x="600" y="336" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#576780" font-weight="600">N</text>
+<rect x="637" y="300" width="48" height="55" rx="7" fill="#e9edf2" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-49" x="653" y="336" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#576780" font-weight="600">N</text>
+<rect x="690" y="300" width="48" height="55" rx="7" fill="#e9edf2" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-51" x="706" y="336" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#576780" font-weight="600">N</text>
+<rect x="743" y="300" width="48" height="55" rx="7" fill="#e9edf2" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-53" x="759" y="336" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#576780" font-weight="600">N</text>
+<rect x="796" y="300" width="48" height="55" rx="7" fill="#e9edf2" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-55" x="812" y="336" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#576780" font-weight="600">N</text>
+<rect x="849" y="300" width="48" height="55" rx="7" fill="#e9edf2" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-57" x="865" y="336" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#576780" font-weight="600">N</text>
+<rect x="902" y="300" width="48" height="55" rx="7" fill="#e9edf2" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-59" x="918" y="336" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#576780" font-weight="600">N</text>
+<rect x="955" y="300" width="48" height="55" rx="7" fill="#e9edf2" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-61" x="971" y="336" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#576780" font-weight="600">N</text>
+<rect x="1008" y="300" width="48" height="55" rx="7" fill="#e9edf2" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-63" x="1024" y="336" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#576780" font-weight="600">N</text>
+<rect x="1061" y="300" width="48" height="55" rx="7" fill="#e9edf2" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-65" x="1077" y="336" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#576780" font-weight="600">N</text>
+<rect x="1114" y="300" width="48" height="55" rx="7" fill="#e9edf2" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-67" x="1130" y="336" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#576780" font-weight="600">N</text>
+<rect x="1167" y="300" width="48" height="55" rx="7" fill="#e9edf2" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-69" x="1183" y="336" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#576780" font-weight="600">N</text>
+<rect x="1220" y="300" width="48" height="55" rx="7" fill="#e9edf2" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-71" x="1236" y="336" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#576780" font-weight="600">N</text>
+<rect x="1273" y="300" width="48" height="55" rx="7" fill="#e9edf2" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-73" x="1289" y="336" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#576780" font-weight="600">N</text>
+<rect x="1326" y="300" width="48" height="55" rx="7" fill="#e9edf2" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-75" x="1342" y="336" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#576780" font-weight="600">N</text>
+<rect x="1379" y="300" width="48" height="55" rx="7" fill="#e9edf2" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-77" x="1395" y="336" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#576780" font-weight="600">N</text>
+<rect x="1432" y="300" width="48" height="55" rx="7" fill="#e9edf2" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-79" x="1448" y="336" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#576780" font-weight="600">N</text>
+<rect x="1485" y="300" width="48" height="55" rx="7" fill="#e9edf2" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-81" x="1501" y="336" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#576780" font-weight="600">N</text>
+<rect x="1538" y="300" width="48" height="55" rx="7" fill="#e9edf2" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-83" x="1554" y="336" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#576780" font-weight="600">N</text>
+<rect x="1591" y="300" width="48" height="55" rx="7" fill="#e9edf2" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-85" x="1607" y="336" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#576780" font-weight="600">N</text>
+<text id="text-86" x="65" y="403" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="24" fill="#192840" font-weight="700">A5</text>
+<text id="text-87" x="65" y="429" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="17" fill="#576780" font-weight="400">已批准共同基线</text>
+<rect x="372" y="375" width="48" height="55" rx="7" fill="#edf4fd" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-89" x="388" y="411" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#316ab0" font-weight="600">D</text>
+<rect x="425" y="375" width="48" height="55" rx="7" fill="#edf4fd" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-91" x="441" y="411" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#316ab0" font-weight="600">D</text>
+<rect x="478" y="375" width="48" height="55" rx="7" fill="#edf4fd" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-93" x="494" y="411" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#316ab0" font-weight="600">D</text>
+<rect x="531" y="375" width="48" height="55" rx="7" fill="#edf4fd" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-95" x="547" y="411" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#316ab0" font-weight="600">D</text>
+<rect x="584" y="375" width="48" height="55" rx="7" fill="#edf4fd" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-97" x="600" y="411" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#316ab0" font-weight="600">D</text>
+<rect x="637" y="375" width="48" height="55" rx="7" fill="#edf4fd" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-99" x="653" y="411" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#316ab0" font-weight="600">D</text>
+<rect x="690" y="375" width="48" height="55" rx="7" fill="#edf4fd" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-101" x="706" y="411" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#316ab0" font-weight="600">D</text>
+<rect x="743" y="375" width="48" height="55" rx="7" fill="#edf4fd" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-103" x="759" y="411" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#316ab0" font-weight="600">D</text>
+<rect x="796" y="375" width="48" height="55" rx="7" fill="#edf4fd" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-105" x="812" y="411" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#316ab0" font-weight="600">D</text>
+<rect x="849" y="375" width="48" height="55" rx="7" fill="#edf4fd" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-107" x="865" y="411" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#316ab0" font-weight="600">D</text>
+<rect x="902" y="375" width="48" height="55" rx="7" fill="#edf4fd" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-109" x="918" y="411" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#316ab0" font-weight="600">D</text>
+<rect x="955" y="375" width="48" height="55" rx="7" fill="#e9edf2" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-111" x="971" y="411" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#576780" font-weight="600">N</text>
+<rect x="1008" y="375" width="48" height="55" rx="7" fill="#e9edf2" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-113" x="1024" y="411" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#576780" font-weight="600">N</text>
+<rect x="1061" y="375" width="48" height="55" rx="7" fill="#e9edf2" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-115" x="1077" y="411" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#576780" font-weight="600">N</text>
+<rect x="1114" y="375" width="48" height="55" rx="7" fill="#e9edf2" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-117" x="1130" y="411" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#576780" font-weight="600">N</text>
+<rect x="1167" y="375" width="48" height="55" rx="7" fill="#e9edf2" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-119" x="1183" y="411" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#576780" font-weight="600">N</text>
+<rect x="1220" y="375" width="48" height="55" rx="7" fill="#e9edf2" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-121" x="1236" y="411" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#576780" font-weight="600">N</text>
+<rect x="1273" y="375" width="48" height="55" rx="7" fill="#e9edf2" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-123" x="1289" y="411" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#576780" font-weight="600">N</text>
+<rect x="1326" y="375" width="48" height="55" rx="7" fill="#e9edf2" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-125" x="1342" y="411" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#576780" font-weight="600">N</text>
+<rect x="1379" y="375" width="48" height="55" rx="7" fill="#e9edf2" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-127" x="1395" y="411" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#576780" font-weight="600">N</text>
+<rect x="1432" y="375" width="48" height="55" rx="7" fill="#e9edf2" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-129" x="1448" y="411" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#576780" font-weight="600">N</text>
+<rect x="1485" y="375" width="48" height="55" rx="7" fill="#e9edf2" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-131" x="1501" y="411" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#576780" font-weight="600">N</text>
+<rect x="1538" y="375" width="48" height="55" rx="7" fill="#e9edf2" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-133" x="1554" y="411" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#576780" font-weight="600">N</text>
+<rect x="1591" y="375" width="48" height="55" rx="7" fill="#e9edf2" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-135" x="1607" y="411" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#576780" font-weight="600">N</text>
+<text id="text-136" x="65" y="478" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="24" fill="#192840" font-weight="700">B1</text>
+<text id="text-137" x="65" y="504" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="17" fill="#576780" font-weight="400">B 的独立提案</text>
+<rect x="372" y="450" width="48" height="55" rx="7" fill="#edf4fd" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-139" x="388" y="486" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#316ab0" font-weight="600">D</text>
+<rect x="425" y="450" width="48" height="55" rx="7" fill="#edf4fd" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-141" x="441" y="486" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#316ab0" font-weight="600">D</text>
+<rect x="478" y="450" width="48" height="55" rx="7" fill="#edf4fd" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-143" x="494" y="486" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#316ab0" font-weight="600">D</text>
+<rect x="531" y="450" width="48" height="55" rx="7" fill="#edf4fd" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-145" x="547" y="486" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#316ab0" font-weight="600">D</text>
+<rect x="584" y="450" width="48" height="55" rx="7" fill="#edf4fd" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-147" x="600" y="486" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#316ab0" font-weight="600">D</text>
+<rect x="637" y="450" width="48" height="55" rx="7" fill="#edf4fd" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-149" x="653" y="486" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#316ab0" font-weight="600">D</text>
+<rect x="690" y="450" width="48" height="55" rx="7" fill="#edf4fd" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-151" x="706" y="486" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#316ab0" font-weight="600">D</text>
+<rect x="743" y="450" width="48" height="55" rx="7" fill="#edf4fd" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-153" x="759" y="486" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#316ab0" font-weight="600">D</text>
+<rect x="796" y="450" width="48" height="55" rx="7" fill="#edf4fd" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-155" x="812" y="486" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#316ab0" font-weight="600">D</text>
+<rect x="849" y="450" width="48" height="55" rx="7" fill="#edf4fd" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-157" x="865" y="486" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#316ab0" font-weight="600">D</text>
+<rect x="902" y="450" width="48" height="55" rx="7" fill="#edf4fd" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-159" x="918" y="486" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#316ab0" font-weight="600">D</text>
+<rect x="955" y="450" width="48" height="55" rx="7" fill="#eaf8f4" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-161" x="971" y="486" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#167d72" font-weight="600">Z</text>
+<rect x="1008" y="450" width="48" height="55" rx="7" fill="#eaf8f4" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-163" x="1024" y="486" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#167d72" font-weight="600">Z</text>
+<rect x="1061" y="450" width="48" height="55" rx="7" fill="#eaf8f4" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-165" x="1077" y="486" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#167d72" font-weight="600">Z</text>
+<rect x="1114" y="450" width="48" height="55" rx="7" fill="#eaf8f4" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-167" x="1130" y="486" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#167d72" font-weight="600">Z</text>
+<rect x="1167" y="450" width="48" height="55" rx="7" fill="#eaf8f4" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-169" x="1183" y="486" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#167d72" font-weight="600">Z</text>
+<rect x="1220" y="450" width="48" height="55" rx="7" fill="#eaf8f4" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-171" x="1236" y="486" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#167d72" font-weight="600">Z</text>
+<rect x="1273" y="450" width="48" height="55" rx="7" fill="#eaf8f4" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-173" x="1289" y="486" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#167d72" font-weight="600">Z</text>
+<rect x="1326" y="450" width="48" height="55" rx="7" fill="#e9edf2" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-175" x="1342" y="486" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#576780" font-weight="600">N</text>
+<rect x="1379" y="450" width="48" height="55" rx="7" fill="#e9edf2" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-177" x="1395" y="486" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#576780" font-weight="600">N</text>
+<rect x="1432" y="450" width="48" height="55" rx="7" fill="#e9edf2" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-179" x="1448" y="486" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#576780" font-weight="600">N</text>
+<rect x="1485" y="450" width="48" height="55" rx="7" fill="#e9edf2" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-181" x="1501" y="486" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#576780" font-weight="600">N</text>
+<rect x="1538" y="450" width="48" height="55" rx="7" fill="#e9edf2" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-183" x="1554" y="486" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#576780" font-weight="600">N</text>
+<rect x="1591" y="450" width="48" height="55" rx="7" fill="#e9edf2" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-185" x="1607" y="486" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#576780" font-weight="600">N</text>
+<text id="text-186" x="65" y="553" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="24" fill="#192840" font-weight="700">C1</text>
+<text id="text-187" x="65" y="579" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="17" fill="#576780" font-weight="400">C 的独立提案</text>
+<rect x="372" y="525" width="48" height="55" rx="7" fill="#edf4fd" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-189" x="388" y="561" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#316ab0" font-weight="600">D</text>
+<rect x="425" y="525" width="48" height="55" rx="7" fill="#edf4fd" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-191" x="441" y="561" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#316ab0" font-weight="600">D</text>
+<rect x="478" y="525" width="48" height="55" rx="7" fill="#edf4fd" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-193" x="494" y="561" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#316ab0" font-weight="600">D</text>
+<rect x="531" y="525" width="48" height="55" rx="7" fill="#edf4fd" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-195" x="547" y="561" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#316ab0" font-weight="600">D</text>
+<rect x="584" y="525" width="48" height="55" rx="7" fill="#edf4fd" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-197" x="600" y="561" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#316ab0" font-weight="600">D</text>
+<rect x="637" y="525" width="48" height="55" rx="7" fill="#edf4fd" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-199" x="653" y="561" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#316ab0" font-weight="600">D</text>
+<rect x="690" y="525" width="48" height="55" rx="7" fill="#edf4fd" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-201" x="706" y="561" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#316ab0" font-weight="600">D</text>
+<rect x="743" y="525" width="48" height="55" rx="7" fill="#edf4fd" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-203" x="759" y="561" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#316ab0" font-weight="600">D</text>
+<rect x="796" y="525" width="48" height="55" rx="7" fill="#edf4fd" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-205" x="812" y="561" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#316ab0" font-weight="600">D</text>
+<rect x="849" y="525" width="48" height="55" rx="7" fill="#edf4fd" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-207" x="865" y="561" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#316ab0" font-weight="600">D</text>
+<rect x="902" y="525" width="48" height="55" rx="7" fill="#edf4fd" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-209" x="918" y="561" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#316ab0" font-weight="600">D</text>
+<rect x="955" y="525" width="48" height="55" rx="7" fill="#e9edf2" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-211" x="971" y="561" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#576780" font-weight="600">N</text>
+<rect x="1008" y="525" width="48" height="55" rx="7" fill="#eaf8f4" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-213" x="1024" y="561" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#167d72" font-weight="600">Z</text>
+<rect x="1061" y="525" width="48" height="55" rx="7" fill="#eaf8f4" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-215" x="1077" y="561" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#167d72" font-weight="600">Z</text>
+<rect x="1114" y="525" width="48" height="55" rx="7" fill="#eaf8f4" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-217" x="1130" y="561" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#167d72" font-weight="600">Z</text>
+<rect x="1167" y="525" width="48" height="55" rx="7" fill="#eaf8f4" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-219" x="1183" y="561" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#167d72" font-weight="600">Z</text>
+<rect x="1220" y="525" width="48" height="55" rx="7" fill="#eaf8f4" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-221" x="1236" y="561" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#167d72" font-weight="600">Z</text>
+<rect x="1273" y="525" width="48" height="55" rx="7" fill="#eaf8f4" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-223" x="1289" y="561" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#167d72" font-weight="600">Z</text>
+<rect x="1326" y="525" width="48" height="55" rx="7" fill="#eaf8f4" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-225" x="1342" y="561" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#167d72" font-weight="600">Z</text>
+<rect x="1379" y="525" width="48" height="55" rx="7" fill="#eaf8f4" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-227" x="1395" y="561" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#167d72" font-weight="600">Z</text>
+<rect x="1432" y="525" width="48" height="55" rx="7" fill="#eaf8f4" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-229" x="1448" y="561" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#167d72" font-weight="600">Z</text>
+<rect x="1485" y="525" width="48" height="55" rx="7" fill="#eaf8f4" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-231" x="1501" y="561" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#167d72" font-weight="600">Z</text>
+<rect x="1538" y="525" width="48" height="55" rx="7" fill="#eaf8f4" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-233" x="1554" y="561" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#167d72" font-weight="600">Z</text>
+<rect x="1591" y="525" width="48" height="55" rx="7" fill="#eaf8f4" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-235" x="1607" y="561" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#167d72" font-weight="600">Z</text>
+<text id="text-236" x="65" y="628" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="24" fill="#a2464c" font-weight="700">B2</text>
+<text id="text-237" x="65" y="654" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="17" fill="#576780" font-weight="400">未批准 / 未采用</text>
+<rect x="372" y="600" width="48" height="55" rx="7" fill="#edf4fd" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-239" x="388" y="636" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#316ab0" font-weight="600">D</text>
+<rect x="425" y="600" width="48" height="55" rx="7" fill="#edf4fd" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-241" x="441" y="636" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#316ab0" font-weight="600">D</text>
+<rect x="478" y="600" width="48" height="55" rx="7" fill="#edf4fd" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-243" x="494" y="636" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#316ab0" font-weight="600">D</text>
+<rect x="531" y="600" width="48" height="55" rx="7" fill="#edf4fd" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-245" x="547" y="636" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#316ab0" font-weight="600">D</text>
+<rect x="584" y="600" width="48" height="55" rx="7" fill="#edf4fd" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-247" x="600" y="636" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#316ab0" font-weight="600">D</text>
+<rect x="637" y="600" width="48" height="55" rx="7" fill="#edf4fd" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-249" x="653" y="636" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#316ab0" font-weight="600">D</text>
+<rect x="690" y="600" width="48" height="55" rx="7" fill="#edf4fd" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-251" x="706" y="636" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#316ab0" font-weight="600">D</text>
+<rect x="743" y="600" width="48" height="55" rx="7" fill="#edf4fd" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-253" x="759" y="636" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#316ab0" font-weight="600">D</text>
+<rect x="796" y="600" width="48" height="55" rx="7" fill="#edf4fd" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-255" x="812" y="636" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#316ab0" font-weight="600">D</text>
+<rect x="849" y="600" width="48" height="55" rx="7" fill="#edf4fd" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-257" x="865" y="636" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#316ab0" font-weight="600">D</text>
+<rect x="902" y="600" width="48" height="55" rx="7" fill="#edf4fd" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-259" x="918" y="636" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#316ab0" font-weight="600">D</text>
+<rect x="955" y="600" width="48" height="55" rx="7" fill="#e9edf2" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-261" x="971" y="636" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#576780" font-weight="600">N</text>
+<rect x="1008" y="600" width="48" height="55" rx="7" fill="#eaf8f4" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-263" x="1024" y="636" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#167d72" font-weight="600">Z</text>
+<rect x="1061" y="600" width="48" height="55" rx="7" fill="#eaf8f4" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-265" x="1077" y="636" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#167d72" font-weight="600">Z</text>
+<rect x="1114" y="600" width="48" height="55" rx="7" fill="#eaf8f4" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-267" x="1130" y="636" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#167d72" font-weight="600">Z</text>
+<rect x="1167" y="600" width="48" height="55" rx="7" fill="#eaf8f4" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-269" x="1183" y="636" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#167d72" font-weight="600">Z</text>
+<rect x="1220" y="600" width="48" height="55" rx="7" fill="#eaf8f4" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-271" x="1236" y="636" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#167d72" font-weight="600">Z</text>
+<rect x="1273" y="600" width="48" height="55" rx="7" fill="#eaf8f4" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-273" x="1289" y="636" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#167d72" font-weight="600">Z</text>
+<rect x="1326" y="600" width="48" height="55" rx="7" fill="#eaf8f4" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-275" x="1342" y="636" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#167d72" font-weight="600">Z</text>
+<rect x="1379" y="600" width="48" height="55" rx="7" fill="#eaf8f4" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-277" x="1395" y="636" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#167d72" font-weight="600">Z</text>
+<rect x="1432" y="600" width="48" height="55" rx="7" fill="#eaf8f4" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-279" x="1448" y="636" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#167d72" font-weight="600">Z</text>
+<rect x="1485" y="600" width="48" height="55" rx="7" fill="#eaf8f4" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-281" x="1501" y="636" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#167d72" font-weight="600">Z</text>
+<rect x="1538" y="600" width="48" height="55" rx="7" fill="#eaf8f4" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-283" x="1554" y="636" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#167d72" font-weight="600">Z</text>
+<rect x="1591" y="600" width="48" height="55" rx="7" fill="#eaf8f4" stroke="#d9e0e8" stroke-width="2"/>
+<text id="text-285" x="1607" y="636" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#167d72" font-weight="600">Z</text>
+<rect x="953" y="598" width="52" height="59" rx="8" fill="none" stroke="#a2464c" stroke-width="2"/>
+<text id="text-287" x="65" y="703" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="24" fill="#192840" font-weight="700">C2 / M2</text>
+<text id="text-288" x="65" y="729" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="17" fill="#576780" font-weight="400">显式协调 / 已采用</text>
+<rect x="372" y="675" width="48" height="55" rx="7" fill="#edf4fd" stroke="#316ab0" stroke-width="2"/>
+<text id="text-290" x="388" y="711" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#316ab0" font-weight="600">D</text>
+<rect x="425" y="675" width="48" height="55" rx="7" fill="#edf4fd" stroke="#316ab0" stroke-width="2"/>
+<text id="text-292" x="441" y="711" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#316ab0" font-weight="600">D</text>
+<rect x="478" y="675" width="48" height="55" rx="7" fill="#edf4fd" stroke="#316ab0" stroke-width="2"/>
+<text id="text-294" x="494" y="711" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#316ab0" font-weight="600">D</text>
+<rect x="531" y="675" width="48" height="55" rx="7" fill="#edf4fd" stroke="#316ab0" stroke-width="2"/>
+<text id="text-296" x="547" y="711" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#316ab0" font-weight="600">D</text>
+<rect x="584" y="675" width="48" height="55" rx="7" fill="#edf4fd" stroke="#316ab0" stroke-width="2"/>
+<text id="text-298" x="600" y="711" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#316ab0" font-weight="600">D</text>
+<rect x="637" y="675" width="48" height="55" rx="7" fill="#edf4fd" stroke="#316ab0" stroke-width="2"/>
+<text id="text-300" x="653" y="711" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#316ab0" font-weight="600">D</text>
+<rect x="690" y="675" width="48" height="55" rx="7" fill="#edf4fd" stroke="#316ab0" stroke-width="2"/>
+<text id="text-302" x="706" y="711" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#316ab0" font-weight="600">D</text>
+<rect x="743" y="675" width="48" height="55" rx="7" fill="#edf4fd" stroke="#316ab0" stroke-width="2"/>
+<text id="text-304" x="759" y="711" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#316ab0" font-weight="600">D</text>
+<rect x="796" y="675" width="48" height="55" rx="7" fill="#edf4fd" stroke="#316ab0" stroke-width="2"/>
+<text id="text-306" x="812" y="711" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#316ab0" font-weight="600">D</text>
+<rect x="849" y="675" width="48" height="55" rx="7" fill="#edf4fd" stroke="#316ab0" stroke-width="2"/>
+<text id="text-308" x="865" y="711" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#316ab0" font-weight="600">D</text>
+<rect x="902" y="675" width="48" height="55" rx="7" fill="#edf4fd" stroke="#316ab0" stroke-width="2"/>
+<text id="text-310" x="918" y="711" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#316ab0" font-weight="600">D</text>
+<rect x="955" y="675" width="48" height="55" rx="7" fill="#fff6e5" stroke="#aa6b05" stroke-width="2"/>
+<text id="text-312" x="971" y="711" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#aa6b05" font-weight="600">Z</text>
+<rect x="1008" y="675" width="48" height="55" rx="7" fill="#f1edfa" stroke="#7754b2" stroke-width="2"/>
+<text id="text-314" x="1024" y="711" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#7754b2" font-weight="600">Z</text>
+<rect x="1061" y="675" width="48" height="55" rx="7" fill="#f1edfa" stroke="#7754b2" stroke-width="2"/>
+<text id="text-316" x="1077" y="711" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#7754b2" font-weight="600">Z</text>
+<rect x="1114" y="675" width="48" height="55" rx="7" fill="#f1edfa" stroke="#7754b2" stroke-width="2"/>
+<text id="text-318" x="1130" y="711" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#7754b2" font-weight="600">Z</text>
+<rect x="1167" y="675" width="48" height="55" rx="7" fill="#f1edfa" stroke="#7754b2" stroke-width="2"/>
+<text id="text-320" x="1183" y="711" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#7754b2" font-weight="600">Z</text>
+<rect x="1220" y="675" width="48" height="55" rx="7" fill="#f1edfa" stroke="#7754b2" stroke-width="2"/>
+<text id="text-322" x="1236" y="711" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#7754b2" font-weight="600">Z</text>
+<rect x="1273" y="675" width="48" height="55" rx="7" fill="#f1edfa" stroke="#7754b2" stroke-width="2"/>
+<text id="text-324" x="1289" y="711" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#7754b2" font-weight="600">Z</text>
+<rect x="1326" y="675" width="48" height="55" rx="7" fill="#eaf8f4" stroke="#167d72" stroke-width="2"/>
+<text id="text-326" x="1342" y="711" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#167d72" font-weight="600">Z</text>
+<rect x="1379" y="675" width="48" height="55" rx="7" fill="#eaf8f4" stroke="#167d72" stroke-width="2"/>
+<text id="text-328" x="1395" y="711" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#167d72" font-weight="600">Z</text>
+<rect x="1432" y="675" width="48" height="55" rx="7" fill="#eaf8f4" stroke="#167d72" stroke-width="2"/>
+<text id="text-330" x="1448" y="711" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#167d72" font-weight="600">Z</text>
+<rect x="1485" y="675" width="48" height="55" rx="7" fill="#eaf8f4" stroke="#167d72" stroke-width="2"/>
+<text id="text-332" x="1501" y="711" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#167d72" font-weight="600">Z</text>
+<rect x="1538" y="675" width="48" height="55" rx="7" fill="#eaf8f4" stroke="#167d72" stroke-width="2"/>
+<text id="text-334" x="1554" y="711" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#167d72" font-weight="600">Z</text>
+<rect x="1591" y="675" width="48" height="55" rx="7" fill="#eaf8f4" stroke="#167d72" stroke-width="2"/>
+<text id="text-336" x="1607" y="711" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="23" fill="#167d72" font-weight="600">Z</text>
+<text id="text-337" x="372" y="791" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="21" fill="#576780" font-weight="400">D = deadline_first     Z = zone_nearest     N = nearest_neighbor</text>
+<rect x="65" y="824" width="515" height="150" rx="16" fill="#edf4fd" stroke="#316ab0" stroke-width="2"/>
+<text id="text-339" data-max-width="483" x="87" y="856" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="18" fill="#316ab0" font-weight="700">A5</text>
+<text id="text-340" data-max-width="483" x="87" y="891" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="26" fill="#192840" font-weight="700">11 项共同基线变更</text>
+<text id="text-341" data-max-width="483" x="87" y="927" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="20" fill="#576780" font-weight="400">0–10：所有后续候选均保留 A5。</text>
+<rect x="606" y="824" width="554" height="150" rx="16" fill="#f1edfa" stroke="#7754b2" stroke-width="2"/>
+<text id="text-343" data-max-width="522" x="628" y="856" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="18" fill="#7754b2" font-weight="700">B1 + C1</text>
+<text id="text-344" data-max-width="522" x="628" y="891" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="26" fill="#192840" font-weight="700">相对 A5 共 13 项最终变更</text>
+<text id="text-345" data-max-width="522" x="628" y="927" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="20" fill="#576780" font-weight="400">B 独有 1 项 + 共有 6 项 + C 独有 6 项</text>
+<rect x="1186" y="824" width="550" height="150" rx="16" fill="#eaf8f4" stroke="#167d72" stroke-width="2"/>
+<text id="text-347" data-max-width="518" x="1208" y="856" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="18" fill="#167d72" font-weight="700">C2 → M2</text>
+<text id="text-348" data-max-width="518" x="1208" y="891" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="26" fill="#192840" font-weight="700">先协调，再采用</text>
+<text id="text-349" data-max-width="518" x="1208" y="927" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="20" fill="#576780" font-weight="400">吸收的 B1 变更不再计为 C 的独创。</text>
+<text id="text-350" x="65" y="1021" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="20" fill="#576780" font-weight="400">精确内容来源不是性能因果消融；六项重叠变更在最终内容中只计一次。</text>
+<text id="text-351" x="65" y="1060" font-family="Noto Sans CJK SC, DejaVu Sans, sans-serif" font-size="18" fill="#576780" font-weight="400">原始回执的只读摘要；范围与指针：collaboration-evidence.json</text>
+</svg>
