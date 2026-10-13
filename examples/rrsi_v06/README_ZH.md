@@ -42,20 +42,28 @@ request → prepare → model → grade → result。Petri 保留中间 state/re
 
 ### Analyst
 
+在仓库根目录运行 `python examples/view_declaration.py rrsi-analyst --no-open`。[静态帧](figures/analyst/declaration-frame.json) · [统一启动与离线检查说明](figures/README_ZH.md)。
+
 [![Analyst 初始声明：完整 PetriNet 全图](assets/rrsi.role.analyst.png)](assets/rrsi.role.analyst.png)
 [![Analyst model 操作细节](assets/rrsi.role.analyst-role.model.png)](assets/rrsi.role.analyst-role.model.png)
 
 ### Proposer
+
+在仓库根目录运行 `python examples/view_declaration.py rrsi-proposer --no-open`。[静态帧](figures/proposer/declaration-frame.json) · [统一启动与离线检查说明](figures/README_ZH.md)。
 
 [![Proposer 初始声明：完整 PetriNet 全图](assets/rrsi.role.proposer.png)](assets/rrsi.role.proposer.png)
 [![Proposer model 操作细节](assets/rrsi.role.proposer-role.model.png)](assets/rrsi.role.proposer-role.model.png)
 
 ### Critic
 
+在仓库根目录运行 `python examples/view_declaration.py rrsi-critic --no-open`。[静态帧](figures/critic/declaration-frame.json) · [统一启动与离线检查说明](figures/README_ZH.md)。
+
 [![Critic 初始声明：完整 PetriNet 全图](assets/rrsi.role.critic.png)](assets/rrsi.role.critic.png)
 [![Critic model 操作细节](assets/rrsi.role.critic-role.model.png)](assets/rrsi.role.critic-role.model.png)
 
 ### Digester
+
+在仓库根目录运行 `python examples/view_declaration.py rrsi-digester --no-open`。[静态帧](figures/digester/declaration-frame.json) · [统一启动与离线检查说明](figures/README_ZH.md)。
 
 [![Digester 初始声明：完整 PetriNet 全图](assets/rrsi.role.digester.png)](assets/rrsi.role.digester.png)
 [![Digester model 操作细节](assets/rrsi.role.digester-role.model.png)](assets/rrsi.role.digester-role.model.png)

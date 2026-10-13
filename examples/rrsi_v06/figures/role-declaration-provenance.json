@@ -1,0 +1,94 @@
+{
+  "schema_version": "rpnh/rrsi-role-declaration-provenance/v1",
+  "source_repository": "https://github.com/Deng-0119/RPNH",
+  "source_base_commit": "e51591d9593b9cfda249a9645cdde412acbf3ca4",
+  "source_files_sha256": {
+    "examples/rrsi_v06/src/rpnh_rrsi/formal_role.py": "70291ad5e972fb524c4f8758fc715c78e2ed58c3028a41e327fcf687ef52c56b",
+    "cpn/rpnh/compiler.py": "ce1c82eb52b26fb57e17e1f10afb235b6f19e128f27c034974553bab44622215",
+    "cpn/rpnh/executable_net.py": "8842d3dadde43d0d325b6c01b3a829169452566e919619ef2bfed86bd3d68441",
+    "cpn/rpnh/inspection.py": "cbb5bebeadd1c3ea5915f300732d8078bc3ed5a6c8caef027e96b60d9cd68f74",
+    "cpn/frontend/dashboard.py": "7ef6fe342d772699cb9159e8e8d129003b97a74bed9297cb90ee5e8f9b174d03",
+    "examples/_support/declaration_identity.py": "a2fb6cc843939c3a23a702f821e5f021ff7b579c01062b328a4b13f95f645682"
+  },
+  "generator": "examples/rrsi_v06/declarations.py",
+  "generator_sha256": "fe7d76c039bc5fc98483d9ce1f248a966ae8643058214ba2e2c9c4b250f3a625",
+  "serialization": "UTF-8 json.dumps(ensure_ascii=False, indent=2, allow_nan=False) + LF",
+  "source_mode": "initial_configured",
+  "observation_head": null,
+  "execution_claim": false,
+  "runtime_evidence": false,
+  "historical_figure_provenance": "../results/figure-provenance.json",
+  "historical_figure_provenance_sha256": "0c1ed3810cd28764712de9f59bde10e182398038013cb91e534277731af87831",
+  "historical_compiled_identity_matches": true,
+  "image_treatment": "Existing image files and historical provenance are unchanged; no new capture.",
+  "declarations": [
+    {
+      "role": "analyst",
+      "id": "rrsi.role.analyst",
+      "frame": "analyst/declaration-frame.json",
+      "compiled_sha256": "4c292bbce0acc7f881c074b26dbfe5d4b2b50228a90a430d7def1ce4dda15d20",
+      "projection_sha256": "bf25d77e57b0f24f78745b6e181cdbb211839c67c92442d542a22e570a7bae0d",
+      "frame_sha256": "f1d39877f9bba905abd59d2e6fcb53355750e3db8da7aef3c12f498bb630c92f",
+      "summary": {
+        "node_count": 7,
+        "transition_count": 3,
+        "place_count": 4,
+        "resource_place_count": 0,
+        "edge_count": 7,
+        "resource_edge_count": 0
+      },
+      "identity_source": "declared_llm_executor"
+    },
+    {
+      "role": "proposer",
+      "id": "rrsi.role.proposer",
+      "frame": "proposer/declaration-frame.json",
+      "compiled_sha256": "c3eaa547ef65fcf01b2cc432224dc439e565f4831c3a20e11a4b49be6cbd4bfa",
+      "projection_sha256": "72933dbe469a4938fd0b095ee054a27f26d71562138bd7f43930f65ad7514387",
+      "frame_sha256": "9004ca3ebbea4e22e544197d1d4696d3bc27916bb86348f27706e562da7843c7",
+      "summary": {
+        "node_count": 7,
+        "transition_count": 3,
+        "place_count": 4,
+        "resource_place_count": 0,
+        "edge_count": 7,
+        "resource_edge_count": 0
+      },
+      "identity_source": "declared_llm_executor"
+    },
+    {
+      "role": "critic",
+      "id": "rrsi.role.critic",
+      "frame": "critic/declaration-frame.json",
+      "compiled_sha256": "681c799a2253d897bec4de65a2eb5d55ef9a6ef95e71f3ebdff4a8a5e70199b4",
+      "projection_sha256": "15e61dbc613bb20b17b05e12722bfb7cbf620f95165b12379f720e73b8ece87c",
+      "frame_sha256": "ae32f868e3e2e35c7f8c43df8ebeddc6be5acb5d94781120455dee18191b60ef",
+      "summary": {
+        "node_count": 7,
+        "transition_count": 3,
+        "place_count": 4,
+        "resource_place_count": 0,
+        "edge_count": 7,
+        "resource_edge_count": 0
+      },
+      "identity_source": "declared_llm_executor"
+    },
+    {
+      "role": "digester",
+      "id": "rrsi.role.digester",
+      "frame": "digester/declaration-frame.json",
+      "compiled_sha256": "617db112df158f66f43d82c83b781d87977cdb587cdd8e24744e0c4695dadd97",
+      "projection_sha256": "278473867b308232c5a67719910b10a1cf5da29e77f4cf41466c2bf370e3c47c",
+      "frame_sha256": "8388009f0ad254054ab900ad341e73b570aa5e7eea24f81fb57fa64abee31ed7",
+      "summary": {
+        "node_count": 7,
+        "transition_count": 3,
+        "place_count": 4,
+        "resource_place_count": 0,
+        "edge_count": 7,
+        "resource_edge_count": 0
+      },
+      "identity_source": "declared_llm_executor"
+    }
+  ]
+}

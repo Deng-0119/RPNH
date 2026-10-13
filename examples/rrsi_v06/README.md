@@ -49,20 +49,28 @@ These complete Petri and Flow panoramas show the overall structure. Use the loca
 
 ### Analyst
 
+From the repository root: `python examples/view_declaration.py rrsi-analyst --no-open`. [Static frame](figures/analyst/declaration-frame.json) · [Shared launch and offline-check guide](figures/README.md).
+
 [![Analyst initial declaration: complete PetriNet](assets/rrsi.role.analyst.png)](assets/rrsi.role.analyst.png)
 [![Analyst model operation detail](assets/rrsi.role.analyst-role.model.png)](assets/rrsi.role.analyst-role.model.png)
 
 ### Proposer
+
+From the repository root: `python examples/view_declaration.py rrsi-proposer --no-open`. [Static frame](figures/proposer/declaration-frame.json) · [Shared launch and offline-check guide](figures/README.md).
 
 [![Proposer initial declaration: complete PetriNet](assets/rrsi.role.proposer.png)](assets/rrsi.role.proposer.png)
 [![Proposer model operation detail](assets/rrsi.role.proposer-role.model.png)](assets/rrsi.role.proposer-role.model.png)
 
 ### Critic
 
+From the repository root: `python examples/view_declaration.py rrsi-critic --no-open`. [Static frame](figures/critic/declaration-frame.json) · [Shared launch and offline-check guide](figures/README.md).
+
 [![Critic initial declaration: complete PetriNet](assets/rrsi.role.critic.png)](assets/rrsi.role.critic.png)
 [![Critic model operation detail](assets/rrsi.role.critic-role.model.png)](assets/rrsi.role.critic-role.model.png)
 
 ### Digester
+
+From the repository root: `python examples/view_declaration.py rrsi-digester --no-open`. [Static frame](figures/digester/declaration-frame.json) · [Shared launch and offline-check guide](figures/README.md).
 
 [![Digester initial declaration: complete PetriNet](assets/rrsi.role.digester.png)](assets/rrsi.role.digester.png)
 [![Digester model operation detail](assets/rrsi.role.digester-role.model.png)](assets/rrsi.role.digester-role.model.png)

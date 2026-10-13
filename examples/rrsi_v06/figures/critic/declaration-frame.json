@@ -1,0 +1,291 @@
+{
+  "schema_version": "rpnh/dashboard/v1",
+  "net": {
+    "schema_version": "rpnh/net_view/v1",
+    "source": {
+      "mode": "initial_configured",
+      "task_label": "rrsi.role.critic",
+      "verified_head_ordinal": null
+    },
+    "summary": {
+      "node_count": 7,
+      "transition_count": 3,
+      "place_count": 4,
+      "resource_place_count": 0,
+      "edge_count": 7,
+      "resource_edge_count": 0
+    },
+    "nodes": [
+      {
+        "id": "role.act",
+        "label": "role.act",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "role.act",
+        "operation_id": "op_0",
+        "executor": "application/rrsi_v06/formal_role/critic/action_executor/v1",
+        "inputs": [
+          "role.response_in"
+        ],
+        "outputs": [
+          "role.state_out",
+          "role.result"
+        ],
+        "executor_declaration": {
+          "contracts": {
+            "transport": "deterministic"
+          }
+        },
+        "config": {}
+      },
+      {
+        "id": "role.init",
+        "label": "role.init",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "role.init",
+        "operation_id": "op_1",
+        "executor": "application/rrsi_v06/formal_role/critic/init_executor/v1",
+        "inputs": [
+          "role.request"
+        ],
+        "outputs": [
+          "role.state_out"
+        ],
+        "executor_declaration": {
+          "contracts": {
+            "transport": "deterministic"
+          }
+        },
+        "config": {}
+      },
+      {
+        "id": "role.model",
+        "label": "role.model",
+        "kind": "transition",
+        "category": "execution",
+        "hidden_by_default": false,
+        "operation": "role.model",
+        "operation_id": "op_2",
+        "executor": "application/rrsi_v06/formal_role/critic/model_executor/v1",
+        "inputs": [
+          "role.state_in"
+        ],
+        "outputs": [
+          "role.response_out"
+        ],
+        "executor_declaration": {
+          "contracts": {
+            "transport": "llm"
+          }
+        },
+        "config": {}
+      },
+      {
+        "id": "role.request",
+        "label": "role.request",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/rrsi_v06/formal_role/request/v1",
+        "capacity": 1,
+        "token_kind": "data"
+      },
+      {
+        "id": "role.response",
+        "label": "role.response",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/rrsi_v06/formal_role/response/v1",
+        "capacity": 1,
+        "token_kind": "data"
+      },
+      {
+        "id": "role.result",
+        "label": "role.result",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/rrsi_v06/formal_role/result/v1",
+        "capacity": 1,
+        "token_kind": "data"
+      },
+      {
+        "id": "role.state",
+        "label": "role.state",
+        "kind": "place",
+        "category": "place",
+        "hidden_by_default": false,
+        "schema": "application/rrsi_v06/formal_role/state/v1",
+        "capacity": 1,
+        "token_kind": "data"
+      }
+    ],
+    "edges": [
+      {
+        "id": "edge:arc:role.act:role.result:produce:complete:1",
+        "source": "role.act",
+        "target": "role.result",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:role.act:role.state:produce:continue:1",
+        "source": "role.act",
+        "target": "role.state",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "continue",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:role.init:role.state:produce:complete:1",
+        "source": "role.init",
+        "target": "role.state",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:role.model:role.response:produce:complete:1",
+        "source": "role.model",
+        "target": "role.response",
+        "kind": "arc",
+        "mode": "produce",
+        "weight": 1,
+        "outcome": "complete",
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "output",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:role.request:role.init:consume:-:1",
+        "source": "role.request",
+        "target": "role.init",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:role.response:role.act:consume:-:1",
+        "source": "role.response",
+        "target": "role.act",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      },
+      {
+        "id": "edge:arc:role.state:role.model:consume:-:1",
+        "source": "role.state",
+        "target": "role.model",
+        "kind": "arc",
+        "mode": "consume",
+        "weight": 1,
+        "outcome": null,
+        "hidden_by_default": false,
+        "resource": false,
+        "direction": "input",
+        "emit": "produced",
+        "forward_source": null
+      }
+    ]
+  },
+  "source": {
+    "mode": "initial_configured",
+    "task_label": "rrsi.role.critic",
+    "verified_head_ordinal": null
+  },
+  "boundaries": {
+    "entry": [
+      {
+        "name": "request",
+        "port": "role.request",
+        "place": "role.request"
+      }
+    ],
+    "exit": [
+      {
+        "name": "result",
+        "port": "role.result",
+        "place": "role.result"
+      }
+    ],
+    "terminal_rules": [
+      {
+        "key": "application/rrsi_v06/formal_role/terminal/v1",
+        "operation": "role.act",
+        "transition_ids": [
+          "role.act"
+        ],
+        "outcome": "complete",
+        "port": "role.result",
+        "place": "role.result"
+      }
+    ],
+    "terminal_evidence": "not_provided"
+  },
+  "transition_bindings": [],
+  "presentation": {
+    "title": "RRSI Critic",
+    "description": "Initial child declaration; no execution or marking.",
+    "nodes": {},
+    "status": "default",
+    "topology_digest": "cd30026bcbaa90b91a67abf51618383e3c531a8bcbc108ee501fee680292aa76"
+  },
+  "position": {
+    "mode": "live",
+    "cursor": null,
+    "latest_head": null
+  },
+  "coverage": {
+    "history": "unsupported",
+    "firings": "not_provided",
+    "agent_nodes": "declared_llm_executor_only",
+    "terminal_evidence": "not_provided"
+  },
+  "change": {},
+  "agent_nodes": [
+    {
+      "transition_id": "role.model",
+      "source": "declared_llm_executor",
+      "semantic_group": null,
+      "agent_ref": null,
+      "executable_binding_ref": null
+    }
+  ]
+}
