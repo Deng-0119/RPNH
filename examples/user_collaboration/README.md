@@ -1,12 +1,26 @@
 # Agent-network co-building and historical mechanisms
 
-English | [中文](README_ZH.md) | [Detailed results and analysis](../../docs/results/user-collaboration-20261012/README.md)
+English | [中文](README_ZH.md) | [Run the current example](agent_cobuild/README.md#run-with-an-existing-compatible-installation) | [Historical route results and analysis](../../docs/results/user-collaboration-20261012/README.md)
 
 ## Current collaboration entry
 
-The current collaboration entry is [agent-network co-building](agent_cobuild/README.md). Two native task-agent roles, `curator.run` and `auditor.run`, use stock `AgentStage`/default `AgentLoop` in an ordinary Module assembled from two stock single-agent declarations, with `curator.result → auditor.request`. Deterministic source programs from two controlled original principals strengthen the curator input-lineage contract and auditor reconciliation contract. The original HOST reviews exact revisions, advances a protected Branch sequentially and enables owner adoption before target execution.
+Start with [agent-network co-building](agent_cobuild/README.md): `curator.run` preserves input lineage and produces the handoff; `auditor.run` reconciles each source and registers the final report. The two native task agents use stock `AgentStage`/default `AgentLoop` in one ordinary Module, connected by `curator.result → auditor.request`.
 
-Source programs, external control actions and target agents remain separate; this single-parent chain does not imply automatic same-base merging. A `local_process` scripted driver computes from actual inputs and tool returns. This demonstrates structure and protocol using registered task agents. It makes no live-model or cognition claim; execution results, artifacts and Viewer evidence are reported on the example page.
+Deterministic source programs from two controlled original Registry principals contribute contract revisions. The original HOST reviews them, advances a protected Branch sequentially and enables owner adoption. The target’s `local_process` scripted driver computes from actual inputs and tool returns; this validates structure and protocol without live-model calls.
+
+### Current task network in the official Viewer
+
+[![Actual Agent Overview: Curator → Auditor](agent_cobuild/figures/overview-panorama.png)](agent_cobuild/figures/overview-panorama.png)
+
+Read-only captures of the original 2026-10-12 UTC scripted protocol run: the Overview shows two originally registered task agents and one structural handoff relation. See [co-building details and run evidence](agent_cobuild/README.md) for the two controlled source principals' contributions and owner adoption.
+
+[![Actual main-task PetriNet: five nodes and six arcs](agent_cobuild/figures/petri-panorama.png)](agent_cobuild/figures/petri-panorama.png)
+
+The full main-task PN has five nodes, six arcs and two settled firings. Its framework interruption-return paths were not run; file-I/O execution child nets are recorded separately. Both images retain their original bytes from read-only capture-02 of the same target; [provenance](agent_cobuild/figures/provenance.json) records unchanged head/event count 1099 and writer epoch 2 before and after capture.
+
+Open the [contributions and artifacts](agent_cobuild/README.md#what-each-participant-changes), [run with an existing compatible installation](agent_cobuild/README.md#run-with-an-existing-compatible-installation), or review the [implementation and validation scope](agent_cobuild/README.md#implementation-and-validation-scope). Source programs, external control actions and target agents remain separate; sequential single-parent revisions do not imply automatic same-base merging.
+
+### Implementation note
 
 The initial generated `AgentWorkflowGraph` attempt was correctly rejected by the existing plain-proposal `designer_constraints` gate. The example instead assembles two stock single-agent declarations into an ordinary Module. It does not strip graph constraints, change a Registry gate, add an adapter or introduce another scheduler.
 

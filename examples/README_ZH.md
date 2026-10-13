@@ -56,7 +56,7 @@
 | 历史路线配置贡献与业务评估 | [路线机制与结果](user_collaboration/README_ZH.md#历史路线规划机制证据) | 原 74-operation 工具 PN、版本与失败 | 网外模型配置提案；工具执行业务 |
 | 历史十操作电费网的连续修订 | [原生电费机制 fixture](user_collaboration/native_billing/README_ZH.md) | 原业务 PN、提议者与采用证据 | 确定性 source 程序与工具；非 agent 网 |
 
-安装版附加入口：[适配任务](../docs/guides/examples_ZH.md)通过全部支持宿主运行同一个语义任务，图示为原 DSH 执行网。
+安装版附加入口：[适配任务](../docs/guides/examples_ZH.md)通过全部支持宿主运行同一个语义任务，图示为 DSH 宿主下已记录的任务 PN。两层含义见[业务 PN 与执行 PN 定义](../docs/ARCHITECTURE_ZH.md#workflow-graph-与-petrinet-lowering)。
 
 图册区分初始声明与运行记录。**PetriNet** 展示完整原网，纯工具网的 agent 概览可为空，工具流程见 **Detailed flow**。节点详情不是简化视图。 Overview 是只读 agent 投影，不是简化后可执行 PN。`registered_agent_binding` 可追到精确 executable binding 与 agent 引用；`declared_llm_executor` 仅确认声明，不证明执行；`explicit_host_annotation` 是未确认显示注释，不建立 agent 身份。角色按显式 scoped identity 分组，不能凭同名、模型名或用户账号合并。边保留原路径依据，表示通往下一 agent 的结构路径，不证明已发生顺序、guard 通过或全输入 join 满足。完整 PetriNet 与所属 Registry 保留权限、guard、join 以及实际 loop／turn／action、工具和产物引用。managed child／action 不计为新增 PN transition，独立 child Registry 保持独立。
 

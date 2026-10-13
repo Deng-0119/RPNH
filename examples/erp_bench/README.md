@@ -10,6 +10,8 @@ The official Viewer shows the native executor request/result and interrupt-retur
 
 This is a self-contained [official Viewer SVG export](figures/viewer-export-provenance.json); only its outer viewport is normalized to include the complete rendered graph. Open the static Viewer below for selectable node and arc details.
 
+The image retains the earlier PetriNet export; the current static Viewer frame separately adds compiler-derived declaration identities, as recorded in the [identity export](figures/identity-export-provenance.json). It is not a new Agent Overview capture or a new run.
+
 Click the panorama for the original full-size image. [Open the static Viewer and inspect the source](figures/README.md).
 
 This example connects RPNH-owned model execution and managed tools to two

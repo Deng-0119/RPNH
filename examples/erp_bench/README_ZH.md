@@ -10,6 +10,8 @@
 
 这是自包含的[官方 Viewer SVG 导出图](figures/viewer-export-provenance.json)；只调整最外层视口以完整保留已渲染的图。下方静态 Viewer 支持选中节点和弧查看详情。
 
+本图保留原 PetriNet 导出；当前静态 Viewer 帧另补编译器导出的声明身份，见[身份导出记录](figures/identity-export-provenance.json)。它不是新的 Agent Overview 截图，也不表示新运行。
+
 点击全景打开原始大图。 [打开静态 Viewer 与查看来源](figures/README_ZH.md)。
 
 本示例将 RPNH 持有的模型执行与受管工具接入两个源码保持不变的 ERP-Bench

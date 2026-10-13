@@ -10,6 +10,8 @@ This is the native actor declaration exported as SVG from the official Viewer. T
 
 This is a self-contained [official Viewer SVG export](figures/viewer-export-provenance.json); only its outer viewport is normalized to include the complete rendered graph. Open the static Viewer below for selectable node and arc details.
 
+The image retains the earlier PetriNet export; the current static Viewer frame separately adds compiler-derived declaration identities, as recorded in the [identity export](figures/identity-export-provenance.json). It is not a new Agent Overview capture or a new run.
+
 Click the panorama for the original full-size image. [Open the static Viewer and inspect the source](figures/README.md).
 
 This example preserves the real, score-blind **2026-10-02** 18-task AutomationBench pilot and

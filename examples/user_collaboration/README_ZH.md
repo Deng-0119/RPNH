@@ -1,12 +1,26 @@
 # Agent 任务网共建与历史机制记录
 
-[English](README.md) | 中文 | [详细结果与分析](../../docs/results/user-collaboration-20261012/README_ZH.md)
+[English](README.md) | 中文 | [运行当前示例](agent_cobuild/README_ZH.md#使用已有兼容安装运行) | [历史路线结果与分析](../../docs/results/user-collaboration-20261012/README_ZH.md)
 
 ## 当前协作入口
 
-当前协作入口是[Agent 任务网共建](agent_cobuild/README_ZH.md)。`curator.run` 与 `auditor.run` 两个原生任务 agent 使用 stock `AgentStage`／default `AgentLoop`，由两份 stock 单 agent 声明组成同一普通 Module，连接为 `curator.result → auditor.request`。两个受控原 principal 的确定性 source 程序分别加强 curator 输入来源合同和 auditor 对账合同。原 HOST 审阅精确 revision、连续推进受保护 Branch，再由 owner 在 target 执行前采用。
+当前入口是[Agent 任务网共建](agent_cobuild/README_ZH.md)：`curator.run` 保留输入来源并生成交接，`auditor.run` 逐来源对账并登记最终报告。两个原生任务 agent 在同一普通 Module 中使用 stock `AgentStage`／default `AgentLoop`，连接为 `curator.result → auditor.request`。
 
-source 程序、网外控制动作与 target agent 分层记录；单 parent 链不表示同 base 自动合并。`local_process` 脚本驱动从实际输入与工具返回计算，以已登记任务 agent 展示结构／协议，不声称真实模型调用或认知能力；运行结果、产物与 Viewer 证据以示例页记录为准。
+两个受控原 Registry principal 的确定性 source 程序分别贡献合同修订，由原 HOST 审阅、连续推进受保护 Branch，再由 owner 采用。target 的 `local_process` 脚本驱动从实际输入与工具返回计算；这是结构／协议验证，未调用真实模型。
+
+### 当前任务网的官方 Viewer
+
+[![实际 Agent Overview：Curator → Auditor](agent_cobuild/figures/overview-panorama.png)](agent_cobuild/figures/overview-panorama.png)
+
+原 2026-10-12 UTC 脚本协议运行的只读截图：概览显示两个原登记任务 agent 和一条结构交接关系。两个受控 source principal 的贡献与 owner 采用记录，见[共建详情与运行证据](agent_cobuild/README_ZH.md)。
+
+[![实际主任务 PetriNet：五节点六弧](agent_cobuild/figures/petri-panorama.png)](agent_cobuild/figures/petri-panorama.png)
+
+完整主任务 PN 有五节点六弧，两次已结算 firing；图中框架中断返回路径本次未运行，文件 I/O 的执行子网另行记录。两图保留原始字节，来自同一 target 的只读 capture-02；[来源收据](agent_cobuild/figures/provenance.json)记录捕获前后 head／事件数 1099、writer epoch 2 不变。
+
+查看[贡献与产物详情](agent_cobuild/README_ZH.md#每个参与者改变什么)、[使用已有兼容安装运行](agent_cobuild/README_ZH.md#使用已有兼容安装运行)或[实现与验证范围](agent_cobuild/README_ZH.md#实现与验证范围)。source 程序、网外控制动作与 target agent 分层记录；连续单 parent 修订不代表同 base 自动合并。
+
+### 实现说明
 
 最初生成的 `AgentWorkflowGraph` 尝试被既有 plain-proposal `designer_constraints` 门正确拒绝。示例随后改用两份 stock 单 agent 声明组装普通 Module；未剥除图约束、修改 Registry 门、新增 adapter 或引入另一套调度。
 
