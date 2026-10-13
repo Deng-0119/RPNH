@@ -6,7 +6,9 @@ Two controlled original Registry principals contribute useful task contracts to 
 
 The model driver is a **dynamic deterministic local-process program**. It reads this run's actual tool returns and computes outputs; it is neither a live LLM nor a replay or a set of prefilled answers. This example demonstrates native agent structure, tool protocol, contract co-building and result provenance. It does not demonstrate autonomous analysis, cognitive quality or independent human collaboration.
 
-![Actual official Agent Overview](figures/overview-panorama.png)
+[![Actual official Viewer main-task PN: five nodes, six arcs and two settled firings.](figures/petri-panorama.png)](figures/petri-panorama.png)
+
+[Actual official Agent Overview](figures/overview-panorama.png) · [Same-run capture provenance](figures/provenance.json)
 
 The Overview contains two original `registered_agent_binding` identities. Descriptions explain their roles but do not establish identity. The arrow is an original structural handoff path, not an invented execution-order record. The [full main task PN](figures/petri-panorama.png) retains five nodes and six arcs, including framework interruption-return paths that were **not run**. No rework branch is declared. Registered file-materialization and workspace-finalization child nets support the agents’ file I/O; they are separate from this main task PN.
 

@@ -1,0 +1,64 @@
+{
+  "schema": "rpnh/retained_initial_petri_figure/v1",
+  "image": "hybrid-summary-initial-petri.png",
+  "image_sha256": "215dfedaaf560ea8c86864ee65042279dfc6834b6d91b95ed792f0801318246f",
+  "view": "PetriNet",
+  "source_mode": "initial_configured",
+  "scope": "Retained official Viewer capture of a historical frozen candidate declaration. Not a runtime capture or a claim of recompilation under current main.",
+  "source_commit": null,
+  "source_tree_local_computed": "43f9cde5e6bb8d6b1b5d4e3f88c27f2e1c3d3266",
+  "source_tree_is_published_git_ref": false,
+  "declaration_input": {
+    "path": "examples/hybrid_summary/graph.json",
+    "sha256": "88f157c712c04e1cde30f2804f803f2fe6d9d42cf901b5d604e1ddc6ae46b1fb",
+    "input_matches_public_ref": "23f804be12daf8430dc73e502534a91d8c6856c3",
+    "url": "https://github.com/Deng-0119/RPNH/blob/23f804be12daf8430dc73e502534a91d8c6856c3/examples/hybrid_summary/graph.json",
+    "comparison_scope": "Input bytes match; compiled/projection equivalence to current main is not asserted."
+  },
+  "summary": {
+    "node_count": 10,
+    "transition_count": 3,
+    "place_count": 7,
+    "resource_place_count": 1,
+    "edge_count": 14,
+    "resource_edge_count": 1
+  },
+  "original_capture_sha256": "f992eeb2aae6b852343ded796d825c81c31eb0befa20316b6010815d6cad5c83",
+  "retained_capture_crop": {
+    "box": [
+      0,
+      0,
+      1800,
+      1173
+    ],
+    "original_dimensions": [
+      1800,
+      1200
+    ],
+    "retained_dimensions": [
+      1800,
+      1173
+    ],
+    "removed": "Non-PN bottom footer only",
+    "recorded_pixel_equal_to_original_crop": true,
+    "new_transformations_in_this_change": []
+  },
+  "viewer_source_sha256": [
+    {
+      "path": "cpn/frontend/static/app.js",
+      "sha256": "3924e65c10f949dd2fef3ea65f897bfeda67a3632f1242e6ec8958f14f0df4f0"
+    },
+    {
+      "path": "cpn/frontend/static/renderer.mjs",
+      "sha256": "1defbe613875af1b587bcf47791d1856b64aaefe36464a2e3d98892859cdb5b9"
+    },
+    {
+      "path": "cpn/frontend/static/layout.mjs",
+      "sha256": "1d31b59b269baeb74804d3cf29265615aa031b5ecb5691e3364d10069422e6f8"
+    },
+    {
+      "path": "cpn/frontend/static/style.css",
+      "sha256": "f15611aa6cd1c1e809dabfacc148e4d0f7ce51d6a887d5e36b3abe16d470c054"
+    }
+  ]
+}

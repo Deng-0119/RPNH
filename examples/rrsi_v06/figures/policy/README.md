@@ -20,7 +20,7 @@ request → prepare → state → model → response → grade → result. Flow 
 
 ## Flow
 
-<img src="../../assets/rrsi.policy.prepare-model-grade/flow-full.png" width="730" alt="rrsi.policy.prepare-model-grade — complete Flow declaration" />
+[rrsi.policy.prepare-model-grade — complete Flow declaration](../../assets/rrsi.policy.prepare-model-grade/flow-full.png)
 
 [Open the original panorama](../../assets/rrsi.policy.prepare-model-grade/flow-full.png).
 

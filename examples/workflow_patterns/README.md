@@ -16,9 +16,7 @@ the runner never selects or changes a provider or model.
 
 ## Actual dashboard views
 
-All images below come from the official Viewer. Serial, document and long-process
-images show completed deterministic Registry runs with exact checkpoint identities
-omitted; the parallel images show an initial declaration.
+All images below come from the official Viewer. Serial and document images show completed deterministic Registry runs with exact checkpoint identities omitted. The parallel and long-process PN images are initial declarations; the original completed long-process Overview remains linked separately.
 
 ### Serial
 
@@ -28,7 +26,7 @@ omitted; the parallel images show an initial declaration.
 
 prepare → (facts ∥ risks) → join. Overview shows the four Agent relations; Petri retains data/control places, weights and interrupted return branches. These `initial_configured` views contain no execution state, token marking or success result.
 
-![Parallel initial declaration: complete Overview](assets/pattern_parallel/overview-full.png)
+[Parallel initial declaration: complete Overview](assets/pattern_parallel/overview-full.png)
 ![Parallel initial declaration: complete Petri view](assets/pattern_parallel/petri-full.png)
 
 [Open this declaration in the local Viewer](figures/parallel/README.md#local-viewer) to zoom, pan and select nodes or arcs.
@@ -39,7 +37,9 @@ prepare → (facts ∥ risks) → join. Overview shows the four Agent relations;
 
 ### Long process
 
-![Six-stage workflow overview](assets/long-process-overview.png)
+[![Six-stage initial-declaration PN: 18 nodes and 33 arcs, no runtime state](assets/long-process-initial-petri.png)](assets/long-process-initial-petri.png)
+
+This retained official Viewer initial declaration comes from a frozen source candidate; its [long_process.json](scenarios/long_process.json) input is byte-identical to this example. It does not claim recompilation under current main or the original completed runtime state. [Image and input provenance](assets/long-process-initial-petri-provenance.json) · [Original completed Overview](assets/long-process-overview.png). Click the PN for the full-size image; inspect small labels through zoom and node/arc selection in the local Viewer for this example below.
 
 The calculation example remains
 [`hybrid_summary`](../hybrid_summary/README.md), because it demonstrates the

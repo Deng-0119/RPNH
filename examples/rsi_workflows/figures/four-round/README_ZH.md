@@ -20,7 +20,7 @@
 
 ## Flow
 
-<img src="../../assets/rsi_rounds_4/flow-full.png" width="730" alt="rsi_rounds_4 — complete Flow declaration" />
+[rsi_rounds_4 — complete Flow declaration](../../assets/rsi_rounds_4/flow-full.png)
 
 [打开全景原图](../../assets/rsi_rounds_4/flow-full.png)。
 

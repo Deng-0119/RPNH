@@ -4,9 +4,11 @@ English | [中文](README_ZH.md)
 
 ## Official Viewer panorama
 
-The original official Viewer capture shows the completed deterministic model–program–model workflow in Detailed flow. It folds two simple handoffs; it is a recorded run, not an initial declaration.
+The retained official Viewer PN below is an initial declaration: normalize, native summarize and explain, with 10 nodes and 14 arcs. It comes from a frozen source candidate; its [graph.json](graph.json) input is byte-identical to this example. It does not claim recompilation under current main or the original completed runtime state.
 
-[![Completed hybrid workflow: normalize, native summarize, explain](assets/hybrid-summary-flow.png)](assets/hybrid-summary-flow.png)
+[![Hybrid initial-declaration PN: 10 nodes and 14 arcs, no runtime state](assets/hybrid-summary-initial-petri.png)](assets/hybrid-summary-initial-petri.png)
+
+[Image and input provenance](assets/initial-petri-provenance.json) · [Original completed Detailed flow](assets/hybrid-summary-flow.png)
 
 [Local Viewer and reading guide](../../docs/guides/viewer.md) · Click the panorama to open the original full-size image.
 
@@ -33,9 +35,7 @@ This three-node DAG reads `graph.json` and executes it through
 scripted/model normalize -> demo/summarize -> scripted/model explain
 ```
 
-This actual Detailed flow view comes from the completed deterministic run. It
-shows the two Agent nodes around the native `demo/summarize` operation and the
-registered handoffs between them.
+The original Detailed flow linked above comes from the completed deterministic run. It shows the two Agent nodes around native `demo/summarize` and their registered handoffs; it is kept separate from the inline initial-declaration PN.
 
 After installing RPNH and `examples/native_plugin`, run the deterministic mode:
 

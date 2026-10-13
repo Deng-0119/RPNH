@@ -24,7 +24,9 @@ path-adapted assertion sets passing 3/3; the grader was visible and original
 `test.sh` was not run. See the [full business PN](project_collaboration/figures/source-petri.png),
 real attached execution nets and [capture provenance](project_collaboration/figures/provenance.json).
 
-![Actual completed project Overview: Implementer → Reviewer.](project_collaboration/figures/source-overview.png)
+[![Completed source business PN: implementer/reviewer, five nodes and six arcs.](project_collaboration/figures/source-petri.png)](project_collaboration/figures/source-petri.png)
+
+[Full-size PN](project_collaboration/figures/source-petri.png) · [Exact observation and provenance](project_collaboration/figures/source-petri.json) · [Capture record](project_collaboration/figures/provenance.json)
 
 ## Agent and role workflows
 
@@ -91,3 +93,5 @@ Start with the [complete examples guide](../docs/guides/examples.md) and the
 profiles, Registry directories and provider transcripts stay outside this tree.
 
 Public record dated 2026-10-06: freeze04 first18 has 5 PASS / 9 FAIL / 4 BLOCKED; separate repair4 has 1 PASS / 3 FAIL. The old 14 scored tasks were not rerun. [Results and limits](automationbench/PUBLIC_RESULTS_20261006.md).
+
+The Viewer supports zoom, pan and node/arc inspection; its brief Overview shows task agents and handoffs. See the [Viewer guide](../docs/guides/viewer.md).

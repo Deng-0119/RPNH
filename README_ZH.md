@@ -25,7 +25,9 @@ workspace 或恢复状态的独立所有者。
 
 当前协作入口是[复制、共创并复用同一 Agent 项目](examples/project_collaboration/README_ZH.md)。完整项目包含定义、输入、环境、原任务、验收器、来源与许可证；两个受控贡献者解决真实冲突并形成双 parent 修订 M。业务执行前依次采用 M → base 内容新后继 → M 内容新后继，再下载精确原 M，由新身份、独立授权的 receiver 导入。source 与 receiver 均由 implementer／reviewer 两个调用真实模型的 stock AgentLoop 职责执行同一原始多源合并任务；receiver 包不含 source 的业务答案。[操作指南](docs/guides/project-entry_ZH.md)给出导入、审核、接纳、采用、下载和运行步骤。
 
-![实际项目 source Overview：Implementer → Reviewer。](examples/project_collaboration/figures/source-overview.png)
+[![source 完成态业务 PN：implementer／reviewer，五节点六弧。](examples/project_collaboration/figures/source-petri.png)](examples/project_collaboration/figures/source-petri.png)
+
+[原尺寸 PN](examples/project_collaboration/figures/source-petri.png) · [精确观察与来源](examples/project_collaboration/figures/source-petri.json) · [捕获记录](examples/project_collaboration/figures/provenance.json)
 
 2026-10-13 的有界结果为 **43 次登记／42 次响应，上限 48**：source 23／22（保留 1 次 `NOT_SUBMITTED` 原失败、2 个完成业务 firing），receiver 20／20、2 个完成业务 firing。两端路径适配原断言均 **3/3 PASS**，独立完整 instruction 审阅为 **ACCEPT_BOTH**；原 `test.sh` **NOT_RUN**，grader **VISIBLE**，不称盲评官方容器成绩。全部四行／20 单元格和三项完整字段冲突经独立核对；可选 status 归一化歧义仍披露。
 
@@ -57,7 +59,7 @@ workspace 或恢复状态的独立所有者。
 下图来自仓库内 `parallel` 案例完成后的真实 Registry 看板。`prepare` 会同时启用两个独立
 Agent；只有两个登记产物都可用后，`join` 才具备执行条件。
 
-[![RPNH 并行多 Agent 实际概览](examples/workflow_patterns/assets/parallel-overview.png)](examples/workflow_patterns/assets/parallel-overview.png)
+[![RPNH 并行流程的实际 PetriNet 投影](examples/workflow_patterns/assets/parallel-petrinet.png)](examples/workflow_patterns/assets/parallel-petrinet.png)
 
 完成[快速开始](#快速开始)后，无需 provider 或 API 凭据即可复现：
 
@@ -68,10 +70,7 @@ python -m examples.workflow_patterns.run \
 rpnh net --run "$DEMO_ROOT/parallel" --view --no-open
 ```
 
-Overview 强调 Agent 之间的结构；同一次运行的 PetriNet 视图会展示执行实际使用的
-transition、交接 place、并行分叉弧和全输入 join：
-
-[![RPNH 并行流程的实际 PetriNet 投影](examples/workflow_patterns/assets/parallel-petrinet.png)](examples/workflow_patterns/assets/parallel-petrinet.png)
+上图为同一次运行的 PetriNet 视图，展示执行实际使用的 transition、交接 place、并行分叉弧和全输入 join。Viewer 支持缩放、平移、节点／弧细节与 checkpoint 查看；简要视图 Overview 用于查看承担任务的 Agent 及交接，见 [Viewer 指南](docs/guides/viewer_ZH.md)及[同次运行原 Overview](examples/workflow_patterns/assets/parallel-overview.png)。
 
 这些图片保留真实图投影、聚合执行状态和控件，只移除了 run 专属 checkpoint 身份及本地
 时间。看板始终只读；完成判定依赖 Registry 终态证据和已登记最终结果，不能用图片或

@@ -15,8 +15,7 @@ runner 不选择或切换 provider/model。
 
 ## 实际 dashboard 视图
 
-下方图片均来自官方 Viewer。串行、文档和长流程图截取自已完成的确定性 Registry run，
-公开副本移除了精确 checkpoint 身份；并行图展示初始声明。
+以下图片均来自官方 Viewer。串行与文档图展示已完成的确定性 Registry 运行，省略精确 checkpoint 身份；并行与长流程 PN 为初始声明。原长流程完成态 Overview 单独保留链接。
 
 ### 串行流程
 
@@ -26,7 +25,7 @@ runner 不选择或切换 provider/model。
 
 prepare → (facts ∥ risks) → join。Overview 展示四个 Agent 的关系；Petri 保留数据/控制 place、权重与 interrupted 返回分支。这里展示 `initial_configured` 结构，不包含执行状态、token marking 或成功结果。
 
-![并行初始声明：完整 Overview](assets/pattern_parallel/overview-full.png)
+[并行初始声明：完整 Overview](assets/pattern_parallel/overview-full.png)
 ![并行初始声明：完整 Petri 图](assets/pattern_parallel/petri-full.png)
 
 [在本地 Viewer 打开这份声明](figures/parallel/README_ZH.md#local-viewer)，可缩放、平移并点击节点或弧查看细节。
@@ -37,7 +36,9 @@ prepare → (facts ∥ risks) → join。Overview 展示四个 Agent 的关系�
 
 ### 长流程
 
-![六阶段工作流概览](assets/long-process-overview.png)
+[![六阶段初始声明 PN：18 节点／33 弧，无运行状态](assets/long-process-initial-petri.png)](assets/long-process-initial-petri.png)
+
+保留的官方 Viewer 初始声明来自冻结源码候选；[long_process.json](scenarios/long_process.json) 输入与当前示例逐字节相同，未声称当前版本重新编译或原运行完成态。[图像与输入来源](assets/long-process-initial-petri-provenance.json) · [原完成态 Overview](assets/long-process-overview.png)。点击 PN 打开原尺寸；细节可在下述同例本地 Viewer 中缩放、点击节点／弧查看。
 
 计算案例继续使用 [`hybrid_summary`](../hybrid_summary/README_ZH.md)，因为它展示了更有价值的
 模型—原生插件—模型边界，不在这里重复同一 operation。

@@ -20,7 +20,7 @@ Each round follows proposer → evaluator → selector. Rounds 1–3 feed next i
 
 ## Flow
 
-<img src="../../assets/rsi_rounds_4/flow-full.png" width="730" alt="rsi_rounds_4 — complete Flow declaration" />
+[rsi_rounds_4 — complete Flow declaration](../../assets/rsi_rounds_4/flow-full.png)
 
 [Open the original panorama](../../assets/rsi_rounds_4/flow-full.png).
 

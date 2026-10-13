@@ -14,7 +14,7 @@ prepare 分叉到 facts 与 risks，再由 join 汇合。Overview 仅展示四�
 
 ## Overview
 
-<img src="../../assets/pattern_parallel/overview-full.png" width="730" alt="pattern_parallel — complete Overview declaration" />
+[pattern_parallel — complete Overview declaration](../../assets/pattern_parallel/overview-full.png)
 
 [打开全景原图](../../assets/pattern_parallel/overview-full.png)。
 

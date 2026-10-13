@@ -34,9 +34,9 @@ campaign 协调校准、两轮演化、heldout 评估与导出。每个评分槽
 
 request → prepare → model → grade → result。Petri 保留中间 state/response place；Flow 折叠这两个交接点。两图均为初始声明（`initial_configured`）。
 
-以下完整 Petri 与 Flow 全景用于了解整体结构；交互细节可在本地官方 Viewer 中缩放、点击查看。[Petri 原图](assets/rrsi.policy.prepare-model-grade/petri-full.png) · [Flow 原图](assets/rrsi.policy.prepare-model-grade/flow-full.png)。
+上方展示完整 PN 全景，下方保留原 Flow 链接；交互细节可在本地官方 Viewer 中缩放、点击查看。[Petri 原图](assets/rrsi.policy.prepare-model-grade/petri-full.png) · [Flow 原图](assets/rrsi.policy.prepare-model-grade/flow-full.png)。
 
-[![Policy 初始声明：完整 Flow 图](assets/rrsi.policy.prepare-model-grade/flow-full.png)](assets/rrsi.policy.prepare-model-grade/flow-full.png)
+[Policy 初始声明：完整 Flow 图](assets/rrsi.policy.prepare-model-grade/flow-full.png)
 
 [在本地 Viewer 打开这份声明](figures/policy/README_ZH.md#local-viewer)。
 

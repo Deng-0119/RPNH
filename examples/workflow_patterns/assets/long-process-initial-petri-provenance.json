@@ -1,0 +1,64 @@
+{
+  "schema": "rpnh/retained_initial_petri_figure/v1",
+  "image": "long-process-initial-petri.png",
+  "image_sha256": "a0f7ea28c8053fbd8c5855bfd665d8f04771766d7231f7934ecf5a433c23afae",
+  "view": "PetriNet",
+  "source_mode": "initial_configured",
+  "scope": "Retained official Viewer capture of a historical frozen candidate declaration. Not a runtime capture or a claim of recompilation under current main.",
+  "source_commit": null,
+  "source_tree_local_computed": "43f9cde5e6bb8d6b1b5d4e3f88c27f2e1c3d3266",
+  "source_tree_is_published_git_ref": false,
+  "declaration_input": {
+    "path": "examples/workflow_patterns/scenarios/long_process.json",
+    "sha256": "d713da658e512e39cd9c798a467e79ab885ed016c8a40d53213480ed54bf8962",
+    "input_matches_public_ref": "23f804be12daf8430dc73e502534a91d8c6856c3",
+    "url": "https://github.com/Deng-0119/RPNH/blob/23f804be12daf8430dc73e502534a91d8c6856c3/examples/workflow_patterns/scenarios/long_process.json",
+    "comparison_scope": "Input bytes match; compiled/projection equivalence to current main is not asserted."
+  },
+  "summary": {
+    "node_count": 18,
+    "transition_count": 6,
+    "place_count": 12,
+    "resource_place_count": 0,
+    "edge_count": 33,
+    "resource_edge_count": 0
+  },
+  "original_capture_sha256": "02046d77b60965b92853bbfa5251b08189a895bc5ca6566efd9b8b5939800c64",
+  "retained_capture_crop": {
+    "box": [
+      0,
+      0,
+      1800,
+      1173
+    ],
+    "original_dimensions": [
+      1800,
+      1200
+    ],
+    "retained_dimensions": [
+      1800,
+      1173
+    ],
+    "removed": "Non-PN bottom footer only",
+    "recorded_pixel_equal_to_original_crop": true,
+    "new_transformations_in_this_change": []
+  },
+  "viewer_source_sha256": [
+    {
+      "path": "cpn/frontend/static/app.js",
+      "sha256": "3924e65c10f949dd2fef3ea65f897bfeda67a3632f1242e6ec8958f14f0df4f0"
+    },
+    {
+      "path": "cpn/frontend/static/renderer.mjs",
+      "sha256": "1defbe613875af1b587bcf47791d1856b64aaefe36464a2e3d98892859cdb5b9"
+    },
+    {
+      "path": "cpn/frontend/static/layout.mjs",
+      "sha256": "1d31b59b269baeb74804d3cf29265615aa031b5ecb5691e3364d10069422e6f8"
+    },
+    {
+      "path": "cpn/frontend/static/style.css",
+      "sha256": "f15611aa6cd1c1e809dabfacc148e4d0f7ce51d6a887d5e36b3abe16d470c054"
+    }
+  ]
+}

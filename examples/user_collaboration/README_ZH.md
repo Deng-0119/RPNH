@@ -11,7 +11,7 @@ receiver 执行。两端都使用真实 provider-backed stock implementer/review
 
 ### 当前项目在官方 Viewer 中的原图
 
-[![Source 完成态 Agent Overview：Implementer → Reviewer](../project_collaboration/figures/source-overview.png)](../project_collaboration/figures/source-overview.png)
+[Source 完成态 Agent Overview：Implementer → Reviewer](../project_collaboration/figures/source-overview.png)
 
 Source 完成态包含两个任务 agent 和一条结构交接边；[精确观察](../project_collaboration/figures/source-overview.json)保留原对象引用。
 
@@ -27,7 +27,7 @@ Source 完成态包含两个任务 agent 和一条结构交接边；[精确观�
 
 ### 历史脚本任务网的官方 Viewer
 
-[![实际 Agent Overview：Curator → Auditor](agent_cobuild/figures/overview-panorama.png)](agent_cobuild/figures/overview-panorama.png)
+[实际 Agent Overview：Curator → Auditor](agent_cobuild/figures/overview-panorama.png)
 
 原 2026-10-12 UTC 脚本协议运行的只读截图：概览显示两个原登记任务 agent 和一条结构交接关系。两个受控 source principal 的贡献与 owner 采用记录，见[共建详情与运行证据](agent_cobuild/README_ZH.md)。
 

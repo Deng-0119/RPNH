@@ -28,7 +28,9 @@ runtime—not separate owners of model, workspace or recovery state.
 
 The current collaboration entry is [copy, co-create and reuse one agent project](examples/project_collaboration/README.md). A complete project includes definitions, inputs, environment requirements, the original task, verifier, provenance and licenses. Two controlled contributors resolve real conflicts into a two-parent revision M. Before business execution, the source adopts M → a new successor with base content → a new successor with M content, then downloads exact original M for an independently authorized receiver with fresh identities. Source and receiver each run the original multi-source merge task through two provider-backed stock implementer/reviewer AgentLoop roles; the receiver package contains no source business answers. The [operator guide](docs/guides/project-entry.md) covers import, review, acceptance, adoption, download and execution.
 
-![Actual project source Overview: Implementer → Reviewer.](examples/project_collaboration/figures/source-overview.png)
+[![Completed source business PN: implementer/reviewer, five nodes and six arcs.](examples/project_collaboration/figures/source-petri.png)](examples/project_collaboration/figures/source-petri.png)
+
+[Full-size PN](examples/project_collaboration/figures/source-petri.png) · [Exact observation and provenance](examples/project_collaboration/figures/source-petri.json) · [Capture record](examples/project_collaboration/figures/provenance.json)
 
 The bounded **2026-10-13** result is **43 registered requests / 42 responses within a limit of 48**: source 23/22, retaining one original `NOT_SUBMITTED` failure and two completed business firings; receiver 20/20 and two completed business firings. Both path-adapted original assertion sets are **3/3 PASS**, and independent full-instruction review is **ACCEPT_BOTH**. Original `test.sh` is **NOT_RUN** and the grader was **VISIBLE**; these are not blind official-container scores. Independent checks cover all four rows/20 cells and three complete field conflicts; optional status normalization remains a disclosed instruction ambiguity.
 
@@ -65,7 +67,7 @@ This dashboard comes from the checked-in `parallel` example after a completed
 Registry run. `prepare` enables two independent Agents; `join` becomes eligible
 only after both registered products are available.
 
-[![Actual RPNH parallel multi-agent overview](examples/workflow_patterns/assets/parallel-overview.png)](examples/workflow_patterns/assets/parallel-overview.png)
+[![Actual RPNH parallel PetriNet projection](examples/workflow_patterns/assets/parallel-petrinet.png)](examples/workflow_patterns/assets/parallel-petrinet.png)
 
 After completing [Quick start](#quick-start), reproduce it without a provider or
 API credential:
@@ -77,11 +79,7 @@ python -m examples.workflow_patterns.run \
 rpnh net --run "$DEMO_ROOT/parallel" --view --no-open
 ```
 
-Overview emphasizes Agent-to-Agent structure. The PetriNet view of the same run
-shows the transitions, handoff places, fan-out arcs and all-input join used by
-execution:
-
-[![Actual RPNH parallel PetriNet projection](examples/workflow_patterns/assets/parallel-petrinet.png)](examples/workflow_patterns/assets/parallel-petrinet.png)
+The PetriNet above shows the same run's transitions, handoff places, fan-out arcs and all-input join. The Viewer supports zoom, pan, node/arc details and checkpoint inspection. Its brief Overview shows task agents and handoffs; see the [Viewer guide](docs/guides/viewer.md) and [same-run original Overview](examples/workflow_patterns/assets/parallel-overview.png).
 
 Overview identities come from exact registered bindings or clearly marked declarations; an external display annotation does not confirm an agent. Overview edges retain structural path provenance. The full PN still determines guards and all-input joins; a path alone does not prove firing order.
 

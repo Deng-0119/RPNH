@@ -4,9 +4,11 @@
 
 ## 官方 Viewer 全景
 
-官方 Viewer 原图展示已完成的确定性 model–program–model 流程，当前为 Detailed flow，折叠两个简单交接点；这是保留的运行截图，不是初始声明。
+下图是保留的官方 Viewer 初始声明 PN：normalize、原生 summarize 与 explain，共 10 节点／14 弧。它来自冻结源码候选；[graph.json](graph.json) 输入与当前示例逐字节相同，未声称当前版本重新编译或原运行完成态。
 
-[![已完成 hybrid 流程：normalize、原生 summarize、explain](assets/hybrid-summary-flow.png)](assets/hybrid-summary-flow.png)
+[![Hybrid 初始声明 PN：10 节点／14 弧，无运行状态](assets/hybrid-summary-initial-petri.png)](assets/hybrid-summary-initial-petri.png)
+
+[图像与输入来源](assets/initial-petri-provenance.json) · [原完成态 Detailed flow](assets/hybrid-summary-flow.png)
 
 [本地 Viewer 与读图说明](../../docs/guides/viewer_ZH.md) · 点击全景打开原始大图。
 
@@ -27,8 +29,7 @@ python -m pip install -e ./examples/native_plugin
 脚本化/模型整理 -> demo/summarize -> 脚本化/模型解释
 ```
 
-下图是确定性运行完成后的实际 Detailed flow，展示原生 `demo/summarize` operation 前后的
-两个 Agent 节点，以及它们之间已登记的交接。
+上方链接的原 Detailed flow 来自已完成的确定性运行，展示原生 `demo/summarize` operation 前后的两个 Agent 节点及已登记交接；它与内嵌的初始声明 PN 分开记录。
 
 安装 RPNH 和 `examples/native_plugin` 后运行确定性模式：
 

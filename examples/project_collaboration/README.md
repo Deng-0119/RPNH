@@ -14,7 +14,11 @@ Actual official Viewer images from the 2026-10-13 native inspection window. [Cap
 
 Open each image at original size to inspect small references; its same-name JSON preserves the exact observation.
 
-![Source completed agent overview: implementer → reviewer, two agents and one handoff.](figures/source-overview.png)
+![Complete source business PN: five nodes/six arcs; the original interrupted firing remains recorded.](figures/source-petri.png)
+
+source-05 · cut 3474 · selector 3401 · [Exact PN observation](figures/source-petri.json) · [Full-size PN](figures/source-petri.png).
+
+[Source completed agent overview: implementer → reviewer, two agents and one handoff.](figures/source-overview.png)
 
 Source completed agent overview: implementer → reviewer, two agents and one handoff. source-05 · cut 3474 · selector 3401 · [Exact references, panel text and position](figures/source-overview.json).
 
@@ -97,7 +101,7 @@ This bounded journey completed native execution, original path-adapted scoring, 
 
 ## Completed source and execution nets
 
-![Complete source business PN: five nodes/six arcs; the original interrupted firing remains recorded.](figures/source-petri.png)
+[Complete source business PN: five nodes/six arcs; the original interrupted firing remains recorded.](figures/source-petri.png)
 
 Complete source business PN: five nodes/six arcs; the original interrupted firing remains recorded. source-05 · cut 3474 · selector 3401 · [Exact references, panel text and position](figures/source-petri.json).
 
@@ -151,7 +155,7 @@ Exact final adoption receipt for the new successor restoring M content. source-0
 
 ## Independent receiver
 
-![Independent receiver completed overview: two agents/one edge with new local identities.](figures/receiver-overview.png)
+[Independent receiver completed overview: two agents/one edge with new local identities.](figures/receiver-overview.png)
 
 Independent receiver completed overview: two agents/one edge with new local identities. receiver-04 · cut 2441 · selector 2386 · [Exact references, panel text and position](figures/receiver-overview.json).
 
@@ -170,3 +174,5 @@ Receiver actual workspace-finalization execution PN, with separate execution che
 ## Capture provenance and observation positions
 
 Actual official Viewer images from the 2026-10-13 native inspection window. [Image provenance and per-image records](figures/provenance.json) bind exact source provenance, PNG digests, revision/net/checkpoint and observation position. The 17 PNGs total 4,908,456 bytes and are unchanged; companion JSON omits only localhost URL and local run_dir, retaining original panel text, refs and position. Source capture is H3474/E8 and receiver-04 capture is H2441/E4; a later administrative owner read-grant renewal advanced receiver to H2444, so heads are not claimed equal across windows. Historical cuts, checkpoint selector hints and capture heads remain distinct.
+
+The Viewer's brief Overview shows task agents and handoffs; the full PN supports zoom, pan and node/arc inspection. See the [Viewer guide](../../docs/guides/viewer.md).

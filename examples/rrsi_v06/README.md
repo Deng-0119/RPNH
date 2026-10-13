@@ -41,9 +41,9 @@ figure does not share execution state between occurrences.
 
 request → prepare → model → grade → result. Petri retains the intermediate state/response places; Flow folds these two handoffs. Both show the initial declaration (`initial_configured`).
 
-These complete Petri and Flow panoramas show the overall structure. Use the local official Viewer to zoom in and select details. [Original Petri image](assets/rrsi.policy.prepare-model-grade/petri-full.png) · [original Flow image](assets/rrsi.policy.prepare-model-grade/flow-full.png).
+The complete PN panorama is shown above; the original Flow view remains linked below. Use the local official Viewer to zoom in and select details. [Original Petri image](assets/rrsi.policy.prepare-model-grade/petri-full.png) · [original Flow image](assets/rrsi.policy.prepare-model-grade/flow-full.png).
 
-[![Policy initial declaration: complete Flow view](assets/rrsi.policy.prepare-model-grade/flow-full.png)](assets/rrsi.policy.prepare-model-grade/flow-full.png)
+[Policy initial declaration: complete Flow view](assets/rrsi.policy.prepare-model-grade/flow-full.png)
 
 [Open this declaration in the local Viewer](figures/policy/README.md#local-viewer).
 

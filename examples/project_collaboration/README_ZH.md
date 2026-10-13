@@ -14,7 +14,11 @@
 
 打开图片原尺寸查看较小引用；同名 JSON 保留精确观察。
 
-![source 完成后的 agent 简要视图：implementer → reviewer，两个 agent、一次交接。](figures/source-overview.png)
+![source 完整业务 PN：五节点／六弧，原中断 firing 记录仍保留。](figures/source-petri.png)
+
+source-05 · cut 3474 · selector 3401 · [PN 精确观察](figures/source-petri.json) · [PN 原尺寸](figures/source-petri.png)。
+
+[source 完成后的 agent 简要视图：implementer → reviewer，两个 agent、一次交接。](figures/source-overview.png)
 
 source 完成后的 agent 简要视图：implementer → reviewer，两个 agent、一次交接。 source-05 · cut 3474 · selector 3401 · [精确引用、面板文字与位置](figures/source-overview.json)。
 
@@ -97,7 +101,7 @@ source 通过原生 **Previous Net Segment** 连续两次导航，先查看已�
 
 ## 源端完成态与执行网
 
-![source 完整业务 PN：五节点／六弧，原中断 firing 记录仍保留。](figures/source-petri.png)
+[source 完整业务 PN：五节点／六弧，原中断 firing 记录仍保留。](figures/source-petri.png)
 
 source 完整业务 PN：五节点／六弧，原中断 firing 记录仍保留。 source-05 · cut 3474 · selector 3401 · [精确引用、面板文字与位置](figures/source-petri.json)。
 
@@ -151,7 +155,7 @@ User contributions 中按记录的提议者聚焦；展示受控主体，不证�
 
 ## 独立接收方
 
-![独立 receiver 完成态简要视图：两个 agent／一条边，使用新本地身份。](figures/receiver-overview.png)
+[独立 receiver 完成态简要视图：两个 agent／一条边，使用新本地身份。](figures/receiver-overview.png)
 
 独立 receiver 完成态简要视图：两个 agent／一条边，使用新本地身份。 receiver-04 · cut 2441 · selector 2386 · [精确引用、面板文字与位置](figures/receiver-overview.json)。
 
@@ -170,3 +174,5 @@ receiver 真实 workspace-finalization 执行 PN，具有独立执行 checkpoint
 ## 捕获来源与观察位置
 
 2026-10-13 原生检查窗口的实际官方 Viewer 图。[图像来源与逐图记录](figures/provenance.json)包含精确源码来源、PNG 摘要、revision/net/checkpoint 及观察位置。17 张 PNG 共 4,908,456 字节，原图未变换；同名 JSON 仅省去 localhost URL 和本地 run_dir，保留原 panel text、refs 与 position。source 捕获为 H3474/E8，receiver-04 捕获为 H2441/E4；之后 owner 读取授权行政续签推进 receiver 到 H2444，不能据此声称不同窗口 head 相等。历史 cut、checkpoint selector hint 和捕获 head 分别解释。
+
+Viewer 的简要视图用于查看承担任务的 agent 与交接；完整 PN 支持缩放、平移及节点／弧细节，见 [Viewer 指南](../../docs/guides/viewer_ZH.md)。

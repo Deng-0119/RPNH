@@ -6,7 +6,9 @@
 
 模型驱动是**动态确定性本地程序**。它读取本次真实工具返回并计算产物，不是 live LLM、旧回放或预填答案。此例验证原生 agent 结构、工具协议、合同共建与产物来源，不证明自主分析、认知质量或独立真人协作。
 
-![实际官方 Agent Overview](figures/overview-panorama.png)
+[![实际官方 Viewer 主任务 PN：五节点六弧、两次已结算 firing。](figures/petri-panorama.png)](figures/petri-panorama.png)
+
+[实际官方 Agent Overview](figures/overview-panorama.png) · [同次运行捕获来源](figures/provenance.json)
 
 概览的两个身份均来自原 `registered_agent_binding`。说明文字解释职责，不提供身份权威。箭头保留原结构交接路径，不冒充发生顺序记录。[完整主任务 PN](figures/petri-panorama.png)有五节点六弧，包含本次**未运行**的框架中断返回路径；未声明返工分支。原登记的文件物化和工作区收尾子网承接 agent 文件 I/O，与这张主任务 PN 分开记录。
 

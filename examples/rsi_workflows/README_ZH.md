@@ -86,9 +86,9 @@ port或R3验收。
 
 四轮均为 proposer → evaluator → selector；第 1–3 轮的 next 送入后轮，每轮 stop 为独立输出，第 4 轮还可输出 selected_state。以下是 `initial_configured` 初始结构，不包含执行状态、token marking 或成功结果。
 
-以下完整 Petri 与 Flow 全景用于了解整体结构；交互细节可在本地官方 Viewer 中缩放、点击查看。[Petri 原图](assets/rsi_rounds_4/petri-full.png) · [Flow 原图](assets/rsi_rounds_4/flow-full.png)。
+上方展示完整 PN 全景，下方保留原 Flow 链接；交互细节可在本地官方 Viewer 中缩放、点击查看。[Petri 原图](assets/rsi_rounds_4/petri-full.png) · [Flow 原图](assets/rsi_rounds_4/flow-full.png)。
 
-[![四轮初始声明：完整 Flow 图](assets/rsi_rounds_4/flow-full.png)](assets/rsi_rounds_4/flow-full.png)
+[四轮初始声明：完整 Flow 图](assets/rsi_rounds_4/flow-full.png)
 
 [在本地 Viewer 打开这份声明](figures/four-round/README_ZH.md#local-viewer)。
 

@@ -13,7 +13,7 @@ actual business and execution PN captures, failures and dated acceptance limits.
 
 ### Original current-project captures in the official Viewer
 
-[![Source completed Agent Overview: Implementer → Reviewer](../project_collaboration/figures/source-overview.png)](../project_collaboration/figures/source-overview.png)
+[Source completed Agent Overview: Implementer → Reviewer](../project_collaboration/figures/source-overview.png)
 
 The completed source has two task agents and one structural handoff edge; the [exact observation](../project_collaboration/figures/source-overview.json) retains the original object references.
 
@@ -29,7 +29,7 @@ Deterministic source programs from two controlled original Registry principals c
 
 ### Historical scripted task network in the official Viewer
 
-[![Actual Agent Overview: Curator → Auditor](agent_cobuild/figures/overview-panorama.png)](agent_cobuild/figures/overview-panorama.png)
+[Actual Agent Overview: Curator → Auditor](agent_cobuild/figures/overview-panorama.png)
 
 Read-only captures of the original 2026-10-12 UTC scripted protocol run: the Overview shows two originally registered task agents and one structural handoff relation. See [co-building details and run evidence](agent_cobuild/README.md) for the two controlled source principals' contributions and owner adoption.
 

@@ -14,7 +14,7 @@ prepare branches to facts and risks, then converges at join. Overview shows four
 
 ## Overview
 
-<img src="../../assets/pattern_parallel/overview-full.png" width="730" alt="pattern_parallel — complete Overview declaration" />
+[pattern_parallel — complete Overview declaration](../../assets/pattern_parallel/overview-full.png)
 
 [Open the original panorama](../../assets/pattern_parallel/overview-full.png).
 

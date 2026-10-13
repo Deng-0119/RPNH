@@ -22,7 +22,9 @@
 查看[完整业务 PN](project_collaboration/figures/source-petri.png)、真实下级执行网及
 [图像来源](project_collaboration/figures/provenance.json)。
 
-![实际完成的项目概览：Implementer → Reviewer。](project_collaboration/figures/source-overview.png)
+[![source 完成态业务 PN：implementer／reviewer，五节点六弧。](project_collaboration/figures/source-petri.png)](project_collaboration/figures/source-petri.png)
+
+[原尺寸 PN](project_collaboration/figures/source-petri.png) · [精确观察与来源](project_collaboration/figures/source-petri.json) · [捕获记录](project_collaboration/figures/provenance.json)
 
 | 目标 | 案例 | 图册或指南 | 默认模型边界 |
 |---|---|---|---|
@@ -85,3 +87,5 @@ ERP、AutomationBench、HarnessAudit Office 与 SlopCodeBench 的静态 frame �
 transcript 均保存在仓库之外。
 
 2026-10-06公开记录：freeze04首轮18题为5 PASS / 9 FAIL / 4 BLOCKED；独立repair四题为1 PASS / 3 FAIL。旧14道已评分题未重跑。 [结果与限制](automationbench/PUBLIC_RESULTS_20261006_ZH.md).
+
+Viewer 可缩放、平移并查看节点／弧细节；简要视图用于查看任务 agent 与交接，见 [Viewer 指南](../docs/guides/viewer_ZH.md)。

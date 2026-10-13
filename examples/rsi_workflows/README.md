@@ -103,9 +103,9 @@ do not establish the still-separate author/CAS or complete R2/R3 roadmap gates.
 
 Four rounds follow proposer → evaluator → selector. Rounds 1–3 pass next into the following round; every round exposes a stop output, and round 4 can produce selected_state. These `initial_configured` views show structure without execution state, token markings or a success result.
 
-These complete Petri and Flow panoramas show the overall structure. Use the local official Viewer to zoom in and select details. [Original Petri image](assets/rsi_rounds_4/petri-full.png) · [original Flow image](assets/rsi_rounds_4/flow-full.png).
+The complete PN panorama is shown above; the original Flow view remains linked below. Use the local official Viewer to zoom in and select details. [Original Petri image](assets/rsi_rounds_4/petri-full.png) · [original Flow image](assets/rsi_rounds_4/flow-full.png).
 
-[![Four-round initial declaration: complete Flow view](assets/rsi_rounds_4/flow-full.png)](assets/rsi_rounds_4/flow-full.png)
+[Four-round initial declaration: complete Flow view](assets/rsi_rounds_4/flow-full.png)
 
 [Open this declaration in the local Viewer](figures/four-round/README.md#local-viewer).
 
