@@ -1,0 +1,77 @@
+{
+  "repo": "harbor-framework/terminal-bench-2",
+  "commit": "2fd12b88aafdd04a52c298e3940bcb189f9766d6",
+  "files": [
+    {
+      "path": "LICENSE",
+      "bytes": 11357,
+      "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4",
+      "git_blob_sha1": "261eeb9e9f8b2b4b0d119366dda99c6fd7d35c64",
+      "url": "https://github.com/harbor-framework/terminal-bench-2/blob/2fd12b88aafdd04a52c298e3940bcb189f9766d6/LICENSE"
+    },
+    {
+      "path": "multi-source-data-merger/README.md",
+      "bytes": 2567,
+      "sha256": "9bf37162a4c1b88ed93627830bb8512ebae154325d7cb069c883144a0e4c69d6",
+      "git_blob_sha1": "782bb94539a004a8d9cc49128c3c0c40d0744f48",
+      "url": "https://github.com/harbor-framework/terminal-bench-2/blob/2fd12b88aafdd04a52c298e3940bcb189f9766d6/multi-source-data-merger/README.md"
+    },
+    {
+      "path": "multi-source-data-merger/environment/Dockerfile",
+      "bytes": 427,
+      "sha256": "c95a40d3d35b473dc15ae1e8784ba7fb1725805c0583fc574dd2764325d75e4f",
+      "git_blob_sha1": "a8966022ba4cad288ab82e25e81e606e683c6325",
+      "url": "https://github.com/harbor-framework/terminal-bench-2/blob/2fd12b88aafdd04a52c298e3940bcb189f9766d6/multi-source-data-merger/environment/Dockerfile"
+    },
+    {
+      "path": "multi-source-data-merger/environment/data/source_a/users.json",
+      "bytes": 291,
+      "sha256": "75e51e2d3ab0bdba2269d7cf3757576f84f3ee2c13407d2db94289a5958a1778",
+      "git_blob_sha1": "b2ce9c16e8a8fd05ded8999277868e0fadb08590",
+      "url": "https://github.com/harbor-framework/terminal-bench-2/blob/2fd12b88aafdd04a52c298e3940bcb189f9766d6/multi-source-data-merger/environment/data/source_a/users.json"
+    },
+    {
+      "path": "multi-source-data-merger/environment/data/source_b/users.csv",
+      "bytes": 129,
+      "sha256": "8e87d16dc47d166edd8e56165955bad265b630d53d02762367c816affb5fa760",
+      "git_blob_sha1": "01caf3644523871392c4b003925527efae19beb5",
+      "url": "https://github.com/harbor-framework/terminal-bench-2/blob/2fd12b88aafdd04a52c298e3940bcb189f9766d6/multi-source-data-merger/environment/data/source_b/users.csv"
+    },
+    {
+      "path": "multi-source-data-merger/environment/data/source_c/users.parquet",
+      "bytes": 3639,
+      "sha256": "23d1ea51c4170bdba53febb885a0f495e28de525a52667347b2932136b9a72fe",
+      "git_blob_sha1": "c35d82f3afb02b1163e3caa3ed0a7bfd76bdfc9c",
+      "url": "https://github.com/harbor-framework/terminal-bench-2/blob/2fd12b88aafdd04a52c298e3940bcb189f9766d6/multi-source-data-merger/environment/data/source_c/users.parquet"
+    },
+    {
+      "path": "multi-source-data-merger/instruction.md",
+      "bytes": 1912,
+      "sha256": "d1d28bb6e37f7a255a1b7f78aae8591f35c0494f33e4913392424ad954aab944",
+      "git_blob_sha1": "cbbe31c93fb2ba3cd45fe3f1b12f7853217faee0",
+      "url": "https://github.com/harbor-framework/terminal-bench-2/blob/2fd12b88aafdd04a52c298e3940bcb189f9766d6/multi-source-data-merger/instruction.md"
+    },
+    {
+      "path": "multi-source-data-merger/task.toml",
+      "bytes": 1107,
+      "sha256": "ee3964c0ee040f0a0cb121cefefbc15443d127684acb003fa5b61dd42f31c694",
+      "git_blob_sha1": "734afa323ded79684ccf5bcee48025e916fcc1b9",
+      "url": "https://github.com/harbor-framework/terminal-bench-2/blob/2fd12b88aafdd04a52c298e3940bcb189f9766d6/multi-source-data-merger/task.toml"
+    },
+    {
+      "path": "multi-source-data-merger/tests/test.sh",
+      "bytes": 652,
+      "sha256": "d5a00e64413c0e1ae452f38a1aa1a47c3ed7b4416bbfccae1a4c053025a336d1",
+      "git_blob_sha1": "09bee88fa482355986e5f8dc9f53c8e48bea5549",
+      "url": "https://github.com/harbor-framework/terminal-bench-2/blob/2fd12b88aafdd04a52c298e3940bcb189f9766d6/multi-source-data-merger/tests/test.sh"
+    },
+    {
+      "path": "multi-source-data-merger/tests/test_outputs.py",
+      "bytes": 1889,
+      "sha256": "a070888930cf829aeca039771260b1386bda990ea805f313468d381ba3608ca5",
+      "git_blob_sha1": "da09df999069e1fac808592b3daabd9ce91b1dde",
+      "url": "https://github.com/harbor-framework/terminal-bench-2/blob/2fd12b88aafdd04a52c298e3940bcb189f9766d6/multi-source-data-merger/tests/test_outputs.py"
+    }
+  ],
+  "verification": "All ten bytes, SHA256 and Git blob SHA1 matched the frozen planning source manifest."
+}

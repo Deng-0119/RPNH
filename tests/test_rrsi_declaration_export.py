@@ -16,7 +16,8 @@ from cpn.frontend.dashboard import public_net
 from cpn.frontend.server import handle_request
 from examples._support.declaration_identity import export_declaration_identity
 from examples.rrsi_v06.declarations import (
-    FIGURES, ROOT, ROLES, build_role_frame, compile_role_declaration,
+    FIGURES, ROOT, ROLES, SOURCE_OVERLAYS, _source_overlay_records,
+    build_role_frame, compile_role_declaration,
     generated_files, json_bytes,
 )
 from examples.rrsi_v06.src.rpnh_rrsi.formal_role import ROLE_LIMITS, ROLE_TOOLS
@@ -24,6 +25,25 @@ from examples.view_declaration import DeclarationFixture, _DECLARATIONS, main
 
 
 class RRSIDeclarationTests(unittest.TestCase):
+    def test_source_overlay_metadata_base_and_reviewed_hashes(self):
+        overlay = SOURCE_OVERLAYS[0]
+        current = {overlay["path"]: overlay["sha256"]}
+        attributed = _source_overlay_records(current)
+        self.assertEqual(attributed, [dict(overlay)])
+        self.assertIsNot(attributed[0], overlay)
+        self.assertEqual(current, {overlay["path"]: overlay["sha256"]})
+        self.assertEqual(
+            _source_overlay_records({overlay["path"]: overlay["base_sha256"]}), []
+        )
+
+    def test_source_overlay_metadata_unknown_hash_requires_new_evidence(self):
+        overlay = SOURCE_OVERLAYS[0]
+        unknown = {overlay["path"]: "0" * 64}
+        original = deepcopy(unknown)
+        with self.assertRaisesRegex(ValueError, "update source attribution explicitly"):
+            _source_overlay_records(unknown)
+        self.assertEqual(unknown, original)
+
     def test_rebuild_bytes_provenance_and_historical_identity(self):
         outputs = generated_files()
         for path, data in outputs.items():

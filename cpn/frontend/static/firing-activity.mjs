@@ -1,6 +1,6 @@
 /** Three-event retrospective evidence. Never merges into frame.net.runtime. */
 import {stable} from './model.mjs';
-import {checkpointSelector, selectorForFrame} from './checkpoint-view.mjs';
+import {checkpointReference, checkpointSelector, selectorForFrame} from './checkpoint-view.mjs';
 import {messageError} from './i18n.mjs';
 export const ACTIVITY_TYPES = Object.freeze(['firing_admitted/v1','transition_firing_started/v1','operation_execution_started/v1']);
 const fail = () => {throw messageError('活动响应的身份、范围或分页无效');};
@@ -70,7 +70,8 @@ export function normalizeActivityPage(value, request, frame) {
         ref(f.firing_ref,'transition_firing/v1');ref(f.node_ref,'node_declaration/v1');ref(f.invocation_ref,'invocation/v1');
         checkpointSelector({net_ref:request.net_ref,checkpoint_ref:f.admission_checkpoint_ref,cut:request.cut});
         const binding=frame.transition_bindings.find(b=>b.transition_id===f.transition_id), k=stable(f.firing_ref);
-        if (!q.transition_ids.includes(f.transition_id) || !binding || !same(binding.node_ref,f.node_ref)
+        if (!q.transition_ids.includes(f.transition_id) || !binding
+            || !same(checkpointReference(binding.node_ref,'node_declaration/v1',true),f.node_ref)
             || !positive(f.attempt_index) || firings.has(k)
             || !['PROVISIONAL','PUBLISHED'].includes(f.publication_class_at_evidence)
             || (f.publication_class_at_evidence==='PROVISIONAL' ? f.publication_visible_position!==null : !positive(f.publication_visible_position) || f.publication_visible_position>capture.head_ordinal)

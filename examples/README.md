@@ -15,10 +15,22 @@ Choose by modeled object: agent workflows describe task responsibilities and han
 
 Choose an example by the behavior you want to see:
 
+Start with [copy, co-create and reuse one agent project](project_collaboration/README.md)
+for the complete project journey: resolve two contributors' conflicts into original
+two-parent M, perform three pre-business content adoptions, then download exact M
+for an independent receiver. Both ends run stock implementer/reviewer agents.
+The dated result records 43 registered requests/42 responses and both original
+path-adapted assertion sets passing 3/3; the grader was visible and original
+`test.sh` was not run. See the [full business PN](project_collaboration/figures/source-petri.png),
+real attached execution nets and [capture provenance](project_collaboration/figures/provenance.json).
+
+![Actual completed project Overview: Implementer → Reviewer.](project_collaboration/figures/source-overview.png)
+
 ## Agent and role workflows
 
 | Goal | Example | Figures or guide | Default model boundary |
 |---|---|---|---|
+| Copy a complete project, resolve conflicts and reuse exact M independently | [Project collaboration](project_collaboration/README.md) | [Actual business and execution PN views](project_collaboration/README.md#actual-viewer-project-and-two-pn-layers) | Existing authorized live profile; controlled contributors |
 | Two original-principal contributions to curator → auditor contracts | [Agent-network co-building](user_collaboration/agent_cobuild/README.md) | Actual execution and evidence on example page | Native AgentLoop; local_process scripted protocol demonstration |
 | Model–program–model calculation | [Hybrid summary](hybrid_summary/README.md) | [Detailed flow](hybrid_summary/README.md) | Scripted; optional exact live profile |
 | Serial, parallel, document and long workflow shapes | [Workflow patterns](workflow_patterns/README.md) | [PN and simplified-view gallery](workflow_patterns/README.md) | Scripted; optional exact live profile |

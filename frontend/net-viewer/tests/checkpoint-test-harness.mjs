@@ -11,7 +11,7 @@ import * as model from '../../../cpn/frontend/static/model.mjs';
 import * as dashboard from '../../../cpn/frontend/static/dashboard-model.mjs';
 import * as checkpoint from '../../../cpn/frontend/static/checkpoint-view.mjs';
 import * as locale from '../../../cpn/frontend/static/i18n.mjs';
-import {renderInspector, renderExecutionTable, element} from '../../../cpn/frontend/static/panels.mjs';
+import {createManagedTools, renderInspector, renderExecutionTable, element} from '../../../cpn/frontend/static/panels.mjs';
 import {renderObservationPanel} from '../../../cpn/frontend/static/observation-panel.mjs';
 import {resolveFiringTarget} from '../../../cpn/frontend/static/agent-members.mjs';
 // A deliberately minimal DOM/renderer/layout surface. This executes the real app
@@ -66,7 +66,7 @@ export function checkpointApp(fetcher, {startup = false} = {}) {
     const layouts = {runs: 0, get: graph => getLayout(graph)};
     const runtime = startup ? rendererRuntime(document, window) : {};
     const context = vm.createContext({...contributionsModule,...comparisonContextModule,...comparisonModule,...sourceObservationModule,...activityModule,...model, ...dashboard, ...checkpoint, ...locale, tr: locale.t,
-        renderInspector, renderExecutionTable, renderObservationPanel, element, resolveFiringTarget, installWorksetPanel,
+        createManagedTools, renderInspector, renderExecutionTable, renderObservationPanel, element, resolveFiringTarget, installWorksetPanel,
         document, window, console, structuredClone, AbortController, ...runtime,
         LayoutCache: class {constructor() {return layouts;}},
         setTimeout: (fn, ms) => { const id=++timerId;timers.set(id,{fn,ms});return id; },

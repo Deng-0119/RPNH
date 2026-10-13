@@ -1,0 +1,602 @@
+{
+  "format": "rpnh-project-collaboration-figures/v1",
+  "observed_date": "2026-10-13",
+  "source_public_base": "518101cb3db8726cb3da52e507aa23895840774f",
+  "source_initial_local_head": "09db339b114418938d6466b5b63fd4a76173f1cb",
+  "business_candidate": "uncommitted reviewed overlay and narrow fixes; exact execution windows retained separately",
+  "pre_model_candidate_tree": "70db9aa32b44fc1bf6323b854ad6b7dbc84ecc73",
+  "capture_method": "Actual original official Viewer in two independent browser contexts; existing Playwright and Chromium, original controls/Fit/scroll only; PNG bytes unchanged.",
+  "capture_writes": "Task-owned browser outputs only; no Registry writer or business rerun. Original owner read grants were explicitly renewed separately.",
+  "scopes": {
+    "source-05": {
+      "status": "CAPTURED",
+      "png_count": 101,
+      "gaps": 0,
+      "head": 3474,
+      "writer_epoch": 8
+    },
+    "receiver-04": {
+      "status": "CAPTURED",
+      "png_count": 28,
+      "gaps": 0,
+      "head": 2441,
+      "writer_epoch": 4
+    }
+  },
+  "counts": {
+    "overview_agents": 2,
+    "overview_edges": 1,
+    "business_pn_nodes": 5,
+    "business_pn_arcs": 6
+  },
+  "limits": [
+    "Historical M/base observations are before business execution, not terminal token resurrection or external-effect rollback.",
+    "The source original interrupted firing remains visible. Business and attached execution nets have separate checkpoints/tokens.",
+    "Local recorded actors are controlled principals, not verified remote human identities or author models.",
+    "Capture heads and checkpoint selector hints are separate. Later administrative grant renewals can advance the head without business work."
+  ],
+  "evidence_transformations": [
+    "Companion JSON omits only localhost URL and local run_dir; source identifiers, panel text, checkpoint and position are unchanged."
+  ],
+  "figures": [
+    {
+      "file": "source-overview.png",
+      "bytes": 112550,
+      "sha256": "ea13189181c15ae49b1718628edf6bc72213a7dc2cb5829d8bb24f19b31e251b",
+      "project": "source",
+      "capture_window": "source-05",
+      "original_capture_file": "002-overview-handoff.png",
+      "caption": "Completed source agent overview; two roles and one handoff.",
+      "evidence": "source-overview.json",
+      "source": {
+        "mode": "registry_current",
+        "task_id": "task:2b38a57c0b3f485982db07afeffa2c42",
+        "net_ref": {
+          "entity_type": "net_instance/v1",
+          "entity_id": {
+            "kind": "net_instance",
+            "value": "21b28e3a7ae35ec7bd56214557a52e3e"
+          },
+          "version_id": {
+            "kind": "net_instance_version",
+            "value": "f48524699a4154dca7c94299fde043d1"
+          }
+        },
+        "verified_head_ordinal": 3474,
+        "writer_fencing_epoch": 8
+      },
+      "position": {
+        "mode": "live",
+        "cursor": 3401,
+        "at": "2026-10-13T08:29:56.817825+00:00",
+        "latest_head": 3474
+      },
+      "checkpoint": "#3474 \u00b7 marking_checkpoint_version:4645b59b19b4525887a4a07f2e6f35a4",
+      "png_transformations": []
+    },
+    {
+      "file": "source-petri.png",
+      "bytes": 231236,
+      "sha256": "2183e24cd55d3e25d4ee57206260a8d66e4e1adfb6d8c1555ce7294de59758a0",
+      "project": "source",
+      "capture_window": "source-05",
+      "original_capture_file": "038-full-business-pn.png",
+      "caption": "Completed source business PN; five nodes, six arcs, including the original interrupted firing.",
+      "evidence": "source-petri.json",
+      "source": {
+        "mode": "registry_current",
+        "task_id": "task:2b38a57c0b3f485982db07afeffa2c42",
+        "net_ref": {
+          "entity_type": "net_instance/v1",
+          "entity_id": {
+            "kind": "net_instance",
+            "value": "21b28e3a7ae35ec7bd56214557a52e3e"
+          },
+          "version_id": {
+            "kind": "net_instance_version",
+            "value": "f48524699a4154dca7c94299fde043d1"
+          }
+        },
+        "verified_head_ordinal": 3474,
+        "writer_fencing_epoch": 8
+      },
+      "position": {
+        "mode": "live",
+        "cursor": 3401,
+        "at": "2026-10-13T08:29:56.817825+00:00",
+        "latest_head": 3474
+      },
+      "checkpoint": "#3474 \u00b7 marking_checkpoint_version:4645b59b19b4525887a4a07f2e6f35a4",
+      "png_transformations": []
+    },
+    {
+      "file": "source-execution-materialization.png",
+      "bytes": 289838,
+      "sha256": "144cc742d3da8b1b591367067ab3a13bda8110a7b6f21f4c6d53586ec237a037",
+      "project": "source",
+      "capture_window": "source-05",
+      "original_capture_file": "010-execution-child-implementer_run-0-0.png",
+      "caption": "Actual attached file-materialization execution PN, map_ready and sealed.",
+      "evidence": "source-execution-materialization.json",
+      "source": {
+        "mode": "registry_current",
+        "task_id": "task:2b38a57c0b3f485982db07afeffa2c42",
+        "net_ref": {
+          "entity_type": "net_instance/v1",
+          "entity_id": {
+            "kind": "net_instance",
+            "value": "21b28e3a7ae35ec7bd56214557a52e3e"
+          },
+          "version_id": {
+            "kind": "net_instance_version",
+            "value": "f48524699a4154dca7c94299fde043d1"
+          }
+        },
+        "verified_head_ordinal": 3474,
+        "writer_fencing_epoch": 8
+      },
+      "position": {
+        "mode": "live",
+        "cursor": 3401,
+        "at": "2026-10-13T08:29:56.817825+00:00",
+        "latest_head": 3474
+      },
+      "checkpoint": "#3474 \u00b7 marking_checkpoint_version:4645b59b19b4525887a4a07f2e6f35a4",
+      "png_transformations": []
+    },
+    {
+      "file": "source-execution-finalization.png",
+      "bytes": 301151,
+      "sha256": "dfd2d06b9e449f3855d0414eb0c31237c047ef1604e02a145cc0aa469f3f3761",
+      "project": "source",
+      "capture_window": "source-05",
+      "original_capture_file": "014-execution-child-implementer_run-0-1.png",
+      "caption": "Actual attached workspace-finalization execution PN, map_ready and sealed.",
+      "evidence": "source-execution-finalization.json",
+      "source": {
+        "mode": "registry_current",
+        "task_id": "task:2b38a57c0b3f485982db07afeffa2c42",
+        "net_ref": {
+          "entity_type": "net_instance/v1",
+          "entity_id": {
+            "kind": "net_instance",
+            "value": "21b28e3a7ae35ec7bd56214557a52e3e"
+          },
+          "version_id": {
+            "kind": "net_instance_version",
+            "value": "f48524699a4154dca7c94299fde043d1"
+          }
+        },
+        "verified_head_ordinal": 3474,
+        "writer_fencing_epoch": 8
+      },
+      "position": {
+        "mode": "live",
+        "cursor": 3401,
+        "at": "2026-10-13T08:29:56.817825+00:00",
+        "latest_head": 3474
+      },
+      "checkpoint": "#3474 \u00b7 marking_checkpoint_version:4645b59b19b4525887a4a07f2e6f35a4",
+      "png_transformations": []
+    },
+    {
+      "file": "source-contributor-focus.png",
+      "bytes": 331762,
+      "sha256": "0cc7b131b2cdf86c7ba1572268128691264c914e0076a37161af2c029110a891",
+      "project": "source",
+      "capture_window": "source-05",
+      "original_capture_file": "041-contributor-1-1.png",
+      "caption": "Recorded proposer focus in the original contribution panel; not remote human authentication.",
+      "evidence": "source-contributor-focus.json",
+      "source": {
+        "mode": "registry_current",
+        "task_id": "task:2b38a57c0b3f485982db07afeffa2c42",
+        "net_ref": {
+          "entity_type": "net_instance/v1",
+          "entity_id": {
+            "kind": "net_instance",
+            "value": "21b28e3a7ae35ec7bd56214557a52e3e"
+          },
+          "version_id": {
+            "kind": "net_instance_version",
+            "value": "f48524699a4154dca7c94299fde043d1"
+          }
+        },
+        "verified_head_ordinal": 3474,
+        "writer_fencing_epoch": 8
+      },
+      "position": {
+        "mode": "live",
+        "cursor": 3401,
+        "at": "2026-10-13T08:29:56.817825+00:00",
+        "latest_head": 3474
+      },
+      "checkpoint": "#3474 \u00b7 marking_checkpoint_version:4645b59b19b4525887a4a07f2e6f35a4",
+      "png_transformations": []
+    },
+    {
+      "file": "source-M-contributions.png",
+      "bytes": 342900,
+      "sha256": "57ec601a754be091eb544164a3e08ace37e91d659aaa56830bc62a758cce534b",
+      "project": "source",
+      "capture_window": "source-05",
+      "original_capture_file": "104-historical-net-2-adoption.png",
+      "caption": "Original M historical contribution observation before business execution, cut 574.",
+      "evidence": "source-M-contributions.json",
+      "source": {
+        "mode": "registry_current",
+        "task_id": "task:2b38a57c0b3f485982db07afeffa2c42",
+        "net_ref": {
+          "entity_type": "net_instance/v1",
+          "logical_id": "net_instance:825b6765b8815ee0bc964cb45455820f",
+          "version_id": "net_instance_version:474bf04cb7e85f24bbf6a1eae12c29d8"
+        },
+        "verified_head_ordinal": 574,
+        "writer_fencing_epoch": 8
+      },
+      "position": {
+        "mode": "history",
+        "cursor": 574,
+        "at": "2026-10-13T06:11:02.033251+00:00",
+        "latest_head": 3474
+      },
+      "checkpoint": "#574 \u00b7 marking_checkpoint_version:20b9b741290b4f88a4760cfbb456a98d",
+      "png_transformations": []
+    },
+    {
+      "file": "source-M-reference.png",
+      "bytes": 346213,
+      "sha256": "35f879d893776f1cfdfd175d9d5c3c365fa1502e2443f00e2affaaa9e6c69e54",
+      "project": "source",
+      "capture_window": "source-05",
+      "original_capture_file": "096-historical-1-reference-1-original-two-parent-M.png",
+      "caption": "Exact original two-parent M reference in the original retained historical panel.",
+      "evidence": "source-M-reference.json",
+      "source": {
+        "mode": "registry_current",
+        "task_id": "task:2b38a57c0b3f485982db07afeffa2c42",
+        "net_ref": {
+          "entity_type": "net_instance/v1",
+          "logical_id": "net_instance:6e4e0d7c18435d7f87f9467a826dd9ad",
+          "version_id": "net_instance_version:535e3a37b7f75a2ab181d2e3a7cb463f"
+        },
+        "verified_head_ordinal": 709,
+        "writer_fencing_epoch": 8
+      },
+      "position": {
+        "mode": "history",
+        "cursor": 709,
+        "at": "2026-10-13T06:11:24.956728+00:00",
+        "latest_head": 3474
+      },
+      "checkpoint": "#709 \u00b7 marking_checkpoint_version:bd9ede1dee5d4ad69c168ceb14c6d2f4",
+      "png_transformations": []
+    },
+    {
+      "file": "source-M-adoption.png",
+      "bytes": 344393,
+      "sha256": "caa024eb2c0ec5eae3640fd1aed88ee764c5bf9b386f6354c5814d5e5bd95755",
+      "project": "source",
+      "capture_window": "source-05",
+      "original_capture_file": "105-historical-2-reference-4-first-M-adoption.png",
+      "caption": "Exact first M adoption receipt reference in the original historical selected-observation JSON.",
+      "evidence": "source-M-adoption.json",
+      "source": {
+        "mode": "registry_current",
+        "task_id": "task:2b38a57c0b3f485982db07afeffa2c42",
+        "net_ref": {
+          "entity_type": "net_instance/v1",
+          "logical_id": "net_instance:825b6765b8815ee0bc964cb45455820f",
+          "version_id": "net_instance_version:474bf04cb7e85f24bbf6a1eae12c29d8"
+        },
+        "verified_head_ordinal": 574,
+        "writer_fencing_epoch": 8
+      },
+      "position": {
+        "mode": "history",
+        "cursor": 574,
+        "at": "2026-10-13T06:11:02.033251+00:00",
+        "latest_head": 3474
+      },
+      "checkpoint": "#574 \u00b7 marking_checkpoint_version:20b9b741290b4f88a4760cfbb456a98d",
+      "png_transformations": []
+    },
+    {
+      "file": "source-M-parent-1.png",
+      "bytes": 344909,
+      "sha256": "d68ef62ed2ead034958d4ca5296d0edf26cef8407b7d14f230513866bb73ffee",
+      "project": "source",
+      "capture_window": "source-05",
+      "original_capture_file": "107-historical-2-reference-2-M-parent-1.png",
+      "caption": "First exact M parent reference in recorded element-change evidence.",
+      "evidence": "source-M-parent-1.json",
+      "source": {
+        "mode": "registry_current",
+        "task_id": "task:2b38a57c0b3f485982db07afeffa2c42",
+        "net_ref": {
+          "entity_type": "net_instance/v1",
+          "logical_id": "net_instance:825b6765b8815ee0bc964cb45455820f",
+          "version_id": "net_instance_version:474bf04cb7e85f24bbf6a1eae12c29d8"
+        },
+        "verified_head_ordinal": 574,
+        "writer_fencing_epoch": 8
+      },
+      "position": {
+        "mode": "history",
+        "cursor": 574,
+        "at": "2026-10-13T06:11:02.033251+00:00",
+        "latest_head": 3474
+      },
+      "checkpoint": "#574 \u00b7 marking_checkpoint_version:20b9b741290b4f88a4760cfbb456a98d",
+      "png_transformations": []
+    },
+    {
+      "file": "source-M-parent-2.png",
+      "bytes": 345286,
+      "sha256": "6a2684b742bf1df7ae68877cdef79b21e5d088079c5ff61bd40a5618aa4d08a5",
+      "project": "source",
+      "capture_window": "source-05",
+      "original_capture_file": "108-historical-2-reference-3-M-parent-2.png",
+      "caption": "Second exact M parent reference in recorded element-change evidence.",
+      "evidence": "source-M-parent-2.json",
+      "source": {
+        "mode": "registry_current",
+        "task_id": "task:2b38a57c0b3f485982db07afeffa2c42",
+        "net_ref": {
+          "entity_type": "net_instance/v1",
+          "logical_id": "net_instance:825b6765b8815ee0bc964cb45455820f",
+          "version_id": "net_instance_version:474bf04cb7e85f24bbf6a1eae12c29d8"
+        },
+        "verified_head_ordinal": 574,
+        "writer_fencing_epoch": 8
+      },
+      "position": {
+        "mode": "history",
+        "cursor": 574,
+        "at": "2026-10-13T06:11:02.033251+00:00",
+        "latest_head": 3474
+      },
+      "checkpoint": "#574 \u00b7 marking_checkpoint_version:20b9b741290b4f88a4760cfbb456a98d",
+      "png_transformations": []
+    },
+    {
+      "file": "source-base-adoption.png",
+      "bytes": 336611,
+      "sha256": "45b60b8412a68d05d47df02988095619fc95631d70d46ac5b974872c1d4bac77",
+      "project": "source",
+      "capture_window": "source-05",
+      "original_capture_file": "094-historical-1-reference-6-rollback-adoption.png",
+      "caption": "Exact adoption receipt for the new successor containing restored base content, before business execution.",
+      "evidence": "source-base-adoption.json",
+      "source": {
+        "mode": "registry_current",
+        "task_id": "task:2b38a57c0b3f485982db07afeffa2c42",
+        "net_ref": {
+          "entity_type": "net_instance/v1",
+          "logical_id": "net_instance:6e4e0d7c18435d7f87f9467a826dd9ad",
+          "version_id": "net_instance_version:535e3a37b7f75a2ab181d2e3a7cb463f"
+        },
+        "verified_head_ordinal": 709,
+        "writer_fencing_epoch": 8
+      },
+      "position": {
+        "mode": "history",
+        "cursor": 709,
+        "at": "2026-10-13T06:11:24.956728+00:00",
+        "latest_head": 3474
+      },
+      "checkpoint": "#709 \u00b7 marking_checkpoint_version:bd9ede1dee5d4ad69c168ceb14c6d2f4",
+      "png_transformations": []
+    },
+    {
+      "file": "source-continuation-adoption.png",
+      "bytes": 372006,
+      "sha256": "cb27b5608144da6965c6c22052a7e383efd4012bed1d8866e3d6bc688fe6e549",
+      "project": "source",
+      "capture_window": "source-05",
+      "original_capture_file": "089-reference-8-continuation-adoption.png",
+      "caption": "Exact final adoption receipt for the new successor containing restored M content.",
+      "evidence": "source-continuation-adoption.json",
+      "source": {
+        "mode": "registry_current",
+        "task_id": "task:2b38a57c0b3f485982db07afeffa2c42",
+        "net_ref": {
+          "entity_type": "net_instance/v1",
+          "entity_id": {
+            "kind": "net_instance",
+            "value": "21b28e3a7ae35ec7bd56214557a52e3e"
+          },
+          "version_id": {
+            "kind": "net_instance_version",
+            "value": "f48524699a4154dca7c94299fde043d1"
+          }
+        },
+        "verified_head_ordinal": 3474,
+        "writer_fencing_epoch": 8
+      },
+      "position": {
+        "mode": "live",
+        "cursor": 3401,
+        "at": "2026-10-13T08:29:56.817825+00:00",
+        "latest_head": 3474
+      },
+      "checkpoint": "#3474 \u00b7 marking_checkpoint_version:4645b59b19b4525887a4a07f2e6f35a4",
+      "png_transformations": []
+    },
+    {
+      "file": "source-result-resource.png",
+      "bytes": 284193,
+      "sha256": "c4f4ec66ef27afeb618bc0201e2038dc7423940cfa0192655799025a2dcab4f8",
+      "project": "source",
+      "capture_window": "source-05",
+      "original_capture_file": "115-resource-1-1.png",
+      "caption": "Original completed output token resource registration; not payload-body display.",
+      "evidence": "source-result-resource.json",
+      "source": {
+        "mode": "registry_current",
+        "task_id": "task:2b38a57c0b3f485982db07afeffa2c42",
+        "net_ref": {
+          "entity_type": "net_instance/v1",
+          "entity_id": {
+            "kind": "net_instance",
+            "value": "21b28e3a7ae35ec7bd56214557a52e3e"
+          },
+          "version_id": {
+            "kind": "net_instance_version",
+            "value": "f48524699a4154dca7c94299fde043d1"
+          }
+        },
+        "verified_head_ordinal": 3474,
+        "writer_fencing_epoch": 8
+      },
+      "position": {
+        "mode": "live",
+        "cursor": 3401,
+        "at": "2026-10-13T08:29:56.817825+00:00",
+        "latest_head": 3474
+      },
+      "checkpoint": "#3474 \u00b7 marking_checkpoint_version:4645b59b19b4525887a4a07f2e6f35a4",
+      "png_transformations": []
+    },
+    {
+      "file": "receiver-overview.png",
+      "bytes": 112854,
+      "sha256": "94aa2957e81e670d733764099031ad90a31b262ccaa99368bc50a8c84119df81",
+      "project": "receiver",
+      "capture_window": "receiver-04",
+      "original_capture_file": "003-overview-handoff.png",
+      "caption": "Independent receiver completed agent overview with new local identities.",
+      "evidence": "receiver-overview.json",
+      "source": {
+        "mode": "registry_current",
+        "task_id": "task:0c6e443a9af74a5d87f745ca886b616a",
+        "net_ref": {
+          "entity_type": "net_instance/v1",
+          "entity_id": {
+            "kind": "net_instance",
+            "value": "08d8f7eebb5e5a868c8f47dbcf405bdc"
+          },
+          "version_id": {
+            "kind": "net_instance_version",
+            "value": "e43489c40ca955ac9b8c5b2d4bb0d0a1"
+          }
+        },
+        "verified_head_ordinal": 2441,
+        "writer_fencing_epoch": 4
+      },
+      "position": {
+        "mode": "live",
+        "cursor": 2386,
+        "at": "2026-10-13T07:58:24.221954+00:00",
+        "latest_head": 2441
+      },
+      "checkpoint": "#2441 \u00b7 marking_checkpoint_version:dee89818bf6d54a8a4a3421b22c7c8eb",
+      "png_transformations": []
+    },
+    {
+      "file": "receiver-petri.png",
+      "bytes": 227856,
+      "sha256": "ff85f71b56112cf5badaa12b098f705bcefd284c9c63e582dae0d97e20b71540",
+      "project": "receiver",
+      "capture_window": "receiver-04",
+      "original_capture_file": "032-full-business-pn.png",
+      "caption": "Independent receiver business PN; five nodes and six arcs.",
+      "evidence": "receiver-petri.json",
+      "source": {
+        "mode": "registry_current",
+        "task_id": "task:0c6e443a9af74a5d87f745ca886b616a",
+        "net_ref": {
+          "entity_type": "net_instance/v1",
+          "entity_id": {
+            "kind": "net_instance",
+            "value": "08d8f7eebb5e5a868c8f47dbcf405bdc"
+          },
+          "version_id": {
+            "kind": "net_instance_version",
+            "value": "e43489c40ca955ac9b8c5b2d4bb0d0a1"
+          }
+        },
+        "verified_head_ordinal": 2441,
+        "writer_fencing_epoch": 4
+      },
+      "position": {
+        "mode": "live",
+        "cursor": 2386,
+        "at": "2026-10-13T07:58:24.221954+00:00",
+        "latest_head": 2441
+      },
+      "checkpoint": "#2441 \u00b7 marking_checkpoint_version:dee89818bf6d54a8a4a3421b22c7c8eb",
+      "png_transformations": []
+    },
+    {
+      "file": "receiver-execution-materialization.png",
+      "bytes": 287525,
+      "sha256": "bd5a500973047686c79b16b48791ea7200704e5dcf5ddb7949f71c5721d5b9aa",
+      "project": "receiver",
+      "capture_window": "receiver-04",
+      "original_capture_file": "009-execution-child-implementer_run-0-0.png",
+      "caption": "Receiver actual attached file-materialization execution PN.",
+      "evidence": "receiver-execution-materialization.json",
+      "source": {
+        "mode": "registry_current",
+        "task_id": "task:0c6e443a9af74a5d87f745ca886b616a",
+        "net_ref": {
+          "entity_type": "net_instance/v1",
+          "entity_id": {
+            "kind": "net_instance",
+            "value": "08d8f7eebb5e5a868c8f47dbcf405bdc"
+          },
+          "version_id": {
+            "kind": "net_instance_version",
+            "value": "e43489c40ca955ac9b8c5b2d4bb0d0a1"
+          }
+        },
+        "verified_head_ordinal": 2441,
+        "writer_fencing_epoch": 4
+      },
+      "position": {
+        "mode": "live",
+        "cursor": 2386,
+        "at": "2026-10-13T07:58:24.221954+00:00",
+        "latest_head": 2441
+      },
+      "checkpoint": "#2441 \u00b7 marking_checkpoint_version:dee89818bf6d54a8a4a3421b22c7c8eb",
+      "png_transformations": []
+    },
+    {
+      "file": "receiver-execution-finalization.png",
+      "bytes": 297173,
+      "sha256": "150fa711ddfc2b6763fb03093bab78c569d2cf30d5b1ff000f2a745bc2a07c0e",
+      "project": "receiver",
+      "capture_window": "receiver-04",
+      "original_capture_file": "013-execution-child-implementer_run-0-1.png",
+      "caption": "Receiver actual attached workspace-finalization execution PN.",
+      "evidence": "receiver-execution-finalization.json",
+      "source": {
+        "mode": "registry_current",
+        "task_id": "task:0c6e443a9af74a5d87f745ca886b616a",
+        "net_ref": {
+          "entity_type": "net_instance/v1",
+          "entity_id": {
+            "kind": "net_instance",
+            "value": "08d8f7eebb5e5a868c8f47dbcf405bdc"
+          },
+          "version_id": {
+            "kind": "net_instance_version",
+            "value": "e43489c40ca955ac9b8c5b2d4bb0d0a1"
+          }
+        },
+        "verified_head_ordinal": 2441,
+        "writer_fencing_epoch": 4
+      },
+      "position": {
+        "mode": "live",
+        "cursor": 2386,
+        "at": "2026-10-13T07:58:24.221954+00:00",
+        "latest_head": 2441
+      },
+      "checkpoint": "#2441 \u00b7 marking_checkpoint_version:dee89818bf6d54a8a4a3421b22c7c8eb",
+      "png_transformations": []
+    }
+  ]
+}

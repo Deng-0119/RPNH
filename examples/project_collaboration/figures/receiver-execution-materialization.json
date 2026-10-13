@@ -1,0 +1,29 @@
+{
+  "label": "execution-child-implementer.run-0-0",
+  "project": "receiver",
+  "source": {
+    "mode": "registry_current",
+    "task_id": "task:0c6e443a9af74a5d87f745ca886b616a",
+    "net_ref": {
+      "entity_type": "net_instance/v1",
+      "entity_id": {
+        "kind": "net_instance",
+        "value": "08d8f7eebb5e5a868c8f47dbcf405bdc"
+      },
+      "version_id": {
+        "kind": "net_instance_version",
+        "value": "e43489c40ca955ac9b8c5b2d4bb0d0a1"
+      }
+    },
+    "verified_head_ordinal": 2441,
+    "writer_fencing_epoch": 4
+  },
+  "position": {
+    "mode": "live",
+    "cursor": 2386,
+    "at": "2026-10-13T07:58:24.221954+00:00",
+    "latest_head": 2441
+  },
+  "checkpoint": "#2441 \u00b7 marking_checkpoint_version:dee89818bf6d54a8a4a3421b22c7c8eb",
+  "panel_text": "View execution child nets\nReturn to business firing\n\nRead-only execution observation H2441/E4\n\nExact business parent references\nfile-materialization-v1 \u00b7 map_ready \u00b7 sealed: true\nworkspace-finalization-v1 \u00b7 map_ready \u00b7 sealed: true\nfile-materialization-v1\n1\n1\n1\nmap_ready\n0\npending\nmaterialize_file\nExecution instance, checkpoint, token and evidence references\n{\n  \"execution_instance_ref\": {\n    \"entity_type\": \"execution_instance/v1\",\n    \"logical_id\": \"execution_instance:98c08dfe5c8854e584b33c10bd21263f\",\n    \"version_id\": \"execution_instance_version:3765708a9b7c5484b76b93a498e04084\"\n  },\n  \"execution_net_definition_ref\": {\n    \"entity_type\": \"execution_net_definition/v1\",\n    \"logical_id\": \"execution_net_definition:513d4ef3d3d05e8588de71a5a7ba9828\",\n    \"version_id\": \"execution_net_definition_version:997fd0fa00e55d04811d3e2130f9c07b\"\n  },\n  \"initial_checkpoint_ref\": {\n    \"entity_type\": \"execution_checkpoint/v1\",\n    \"logical_id\": \"execution_checkpoint:2d3ad8035e875a298b23f9bf1148316f\",\n    \"version_id\": \"execution_checkpoint_version:bcb1611fd6dc59a398590ea13469c1f8\"\n  },\n  \"parent_business_checkpoint_ref\": {\n    \"entity_type\": \"marking_checkpoint/v1\",\n    \"logical_id\": \"marking_checkpoint:523556abdfe05cccbf7c9ae2decf413f\",\n    \"version_id\": \"marking_checkpoint_version:3b8c31f6043a5b218981de0e97843782\"\n  },\n  \"parent_business_firing_ref\": {\n    \"entity_type\": \"transition_firing/v1\",\n    \"logical_id\": \"transition_firing:4574c38b31b157ac837184b729313c07\",\n    \"version_id\": \"transition_firing_version:f78d2a43b29959f2b056c6607cf5fae4\"\n  },\n  \"parent_business_net_ref\": {\n    \"entity_type\": \"net_instance/v1\",\n    \"logical_id\": \"net_instance:08d8f7eebb5e5a868c8f47dbcf405bdc\",\n    \"version_id\": \"net_instance_version:e43489c40ca955ac9b8c5b2d4bb0d0a1\"\n  },\n  \"parent_invocation_ref\": {\n    \"entity_type\": \"invocation/v1\",\n    \"logical_id\": \"invocation:845c5b1822985e9ca9f31c4ca90d9a6d\",\n    \"version_id\": \"invocation_version:d5fd97204cf5570a9087ac8bf17c37ac\"\n  },\n  \"attachment\": {\n    \"event_id\": \"event:9af06e11f6c84a888bb9ef44837e0619\",\n    \"ordinal\": 898\n  },\n  \"checkpoint_ref\": {\n    \"entity_type\": \"execution_checkpoint/v1\",\n    \"logical_id\": \"execution_checkpoint:2d3ad8035e875a298b23f9bf1148316f\",\n    \"version_id\": \"execution_checkpoint_version:945518f25508576b863c4b417dec2931\"\n  },\n  \"sequence\": 2,\n  \"status\": \"map_ready\",\n  \"map_ready\": true,\n  \"sealed\": true,\n  \"map_ready_checkpoint_ref\": {\n    \"entity_type\": \"execution_checkpoint/v1\",\n    \"logical_id\": \"execution_checkpoint:2d3ad8035e875a298b23f9bf1148316f\",\n    \"version_id\": \"execution_checkpoint_version:945518f25508576b863c4b417dec2931\"\n  },\n  \"tokens\": [\n    {\n      \"token_ref\": {\n        \"entity_type\": \"execution_token/v1\",\n        \"logical_id\": \"execution_token:13e572ff096054269755771df955a4bd\",\n        \"version_id\": \"execution_token_version:b203f284ede45f53a29b12ba5930e4e1\"\n      },\n      \"place\": \"map_ready\",\n      \"ordinal\": 1,\n      \"produced_by_firing_ref\": {\n        \"entity_type\": \"execution_transition_firing/v1\",\n        \"logical_id\": \"execution_transition_firing:fb2bbf72df8554b091841324f7a0f0e8\",\n        \"version_id\": \"execution_transition_firing_version:7b5365ab22285d18b424b07be10d7d92\"\n      }\n    }\n  ],\n  \"active_firings\": [],\n  \"transition_firing_ref\": {\n    \"entity_type\": \"execution_transition_firing/v1\",\n    \"logical_id\": \"execution_transition_firing:fb2bbf72df8554b091841324f7a0f0e8\",\n    \"version_id\": \"execution_transition_firing_version:7b5365ab22285d18b424b07be10d7d92\"\n  },\n  \"evidence_refs\": [\n    {\n      \"entity_type\": \"resource_version/v1\",\n      \"logical_id\": \"resource:943f346286825945a4f6a1728d646450\",\n      \"version_id\": \"resource_version:e7c6f8418d4957e78521307c8d389e19\"\n    }\n  ],\n  \"terminal_mapping_ref\": {\n    \"entity_type\": \"execution_terminal_mapping/v1\",\n    \"logical_id\": \"execution_terminal_mapping:c25f927e930c542d96097f33628d873b\",\n    \"version_id\": \"execution_terminal_mapping_version:283ea59b21285a1f8a8c5e70450b1573\"\n  },\n  \"seal_event\": {\n    \"event_id\": \"event:a4d7dbdbb8d44dbcaf4070a03e142c42\",\n    \"ordinal\": 1105\n  }\n}\nRegistered execution net definition"
+}

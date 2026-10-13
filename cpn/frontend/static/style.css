@@ -96,3 +96,9 @@ html[lang="en"] .tools{flex-shrink:0}
 /* Preserve readable context before overflowing the short page. Each panel
    retains its own existing max-height and internal scroll when expanded. */
 #observation-panel,#comparison-panel,#comparison-context-panel{flex-shrink:0}
+
+.managed-tools-section button { overflow-wrap: anywhere; }
+
+.execution-net-diagram { overflow: auto; max-width: 100%; margin: 12px 0; }
+.execution-net-diagram svg { display: block; font-size: 12px; }
+#inspector:has(.execution-net-diagram) { width: min(720px, 90vw); }

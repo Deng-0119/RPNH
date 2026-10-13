@@ -235,7 +235,7 @@ def read_environment_requirements(package_lock, verified_packages, *, entry_id=N
     """
     from .package_preview import preview_package
     from .package_resolution import resolve_package
-    from .share_packages import LOCK_SCHEMA_V2, PACKAGE_SCHEMA_V2
+    from .share_packages import LOCK_SCHEMA_V2, LOCK_SCHEMA_V3, PACKAGE_SCHEMA_V2, PACKAGE_SCHEMA_V3
     if type(package_lock) is not PackageResolutionLock:
         raise TypeError("an exact PackageResolutionLock is required")
     if len(package_lock.to_bytes()) > limits.artifact_bytes:
@@ -278,7 +278,9 @@ def read_environment_requirements(package_lock, verified_packages, *, entry_id=N
     computed = resolve_package(root, others, wanted_entry, limits=limits)
     if computed.to_bytes() != package_lock.to_bytes():
         raise EnvironmentContractError("ENVIRONMENT_TARGET_MISMATCH", "package lock differs from verified exact closure")
-    if lock["schema_version"] != LOCK_SCHEMA_V2 or any(item.manifest["schema_version"] != PACKAGE_SCHEMA_V2 for item in selected.values()):
+    if lock["schema_version"] not in (LOCK_SCHEMA_V2, LOCK_SCHEMA_V3) or any(
+            item.manifest["schema_version"] not in (PACKAGE_SCHEMA_V2, PACKAGE_SCHEMA_V3)
+            or "environment_requirements_path" not in item.manifest["entries"][0] for item in selected.values()):
         raise EnvironmentContractError("ENVIRONMENT_REQUIREMENTS_UNDECLARED", "all selected package entries require formal environment declarations")
     requirements, inventory = [], []
     for item in sorted(selected.values(), key=lambda value: value.manifest_digest):

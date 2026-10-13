@@ -1,14 +1,33 @@
-# Agent-network co-building and historical mechanisms
+# Agent-project collaboration and historical mechanisms
 
-English | [中文](README_ZH.md) | [Run the current example](agent_cobuild/README.md#run-with-an-existing-compatible-installation) | [Historical route results and analysis](../../docs/results/user-collaboration-20261012/README.md)
+English | [中文](README_ZH.md) | [Run the current example](../project_collaboration/README.md) | [Historical route results and analysis](../../docs/results/user-collaboration-20261012/README.md)
 
 ## Current collaboration entry
+
+Start with [copy, co-create and reuse one agent project](../project_collaboration/README.md):
+two controlled contributors resolve conflicts into original two-parent M; three
+pre-business content adoptions precede exact-M download and independent receiver
+execution. Both ends use provider-backed stock implementer/reviewer agents.
+The example includes the original task, inputs, environment, verifier, licenses,
+actual business and execution PN captures, failures and dated acceptance limits.
+
+### Original current-project captures in the official Viewer
+
+[![Source completed Agent Overview: Implementer → Reviewer](../project_collaboration/figures/source-overview.png)](../project_collaboration/figures/source-overview.png)
+
+The completed source has two task agents and one structural handoff edge; the [exact observation](../project_collaboration/figures/source-overview.json) retains the original object references.
+
+[![Full business PN of the same run: five nodes and six arcs](../project_collaboration/figures/source-petri.png)](../project_collaboration/figures/source-petri.png)
+
+The same run's full business PN has five nodes and six arcs and retains the original interrupted firing. Both images preserve source-05's original bytes; the [business-PN observation](../project_collaboration/figures/source-petri.json) and [capture provenance](../project_collaboration/figures/provenance.json) record their source and exact positions.
+
+## Historical scripted contract co-building
 
 Start with [agent-network co-building](agent_cobuild/README.md): `curator.run` preserves input lineage and produces the handoff; `auditor.run` reconciles each source and registers the final report. The two native task agents use stock `AgentStage`/default `AgentLoop` in one ordinary Module, connected by `curator.result → auditor.request`.
 
 Deterministic source programs from two controlled original Registry principals contribute contract revisions. The original HOST reviews them, advances a protected Branch sequentially and enables owner adoption. The target’s `local_process` scripted driver computes from actual inputs and tool returns; this validates structure and protocol without live-model calls.
 
-### Current task network in the official Viewer
+### Historical scripted task network in the official Viewer
 
 [![Actual Agent Overview: Curator → Auditor](agent_cobuild/figures/overview-panorama.png)](agent_cobuild/figures/overview-panorama.png)
 
@@ -79,4 +98,4 @@ These commands show **initial_configured static declarations** compiled from the
 
 You can read the public aggregate results, inspect both retained runtime images and open the two static structures. The entire real-model experiment is not a standalone download-and-run package: it used an existing installation, admitted routing data, user-owned profiles and private Registry state. Dataset terms and scorer/source pins are in the report. Do not interpret the static Viewer as a public replay of that private runtime.
 
-For building a collaboration application, see the [native collaboration guide](../../docs/guides/user-collaboration.md). For the current agent-contract example, use [curator → auditor co-building](agent_cobuild/README.md).
+For building a collaboration application, see the [native collaboration guide](../../docs/guides/user-collaboration.md). For current project co-creation and independent reuse, use [project collaboration](../project_collaboration/README.md); [curator → auditor co-building](agent_cobuild/README.md) preserves the historical scripted contract example.

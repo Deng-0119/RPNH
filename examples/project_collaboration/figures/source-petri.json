@@ -1,0 +1,29 @@
+{
+  "label": "full-business-pn",
+  "project": "source",
+  "source": {
+    "mode": "registry_current",
+    "task_id": "task:2b38a57c0b3f485982db07afeffa2c42",
+    "net_ref": {
+      "entity_type": "net_instance/v1",
+      "entity_id": {
+        "kind": "net_instance",
+        "value": "21b28e3a7ae35ec7bd56214557a52e3e"
+      },
+      "version_id": {
+        "kind": "net_instance_version",
+        "value": "f48524699a4154dca7c94299fde043d1"
+      }
+    },
+    "verified_head_ordinal": 3474,
+    "writer_fencing_epoch": 8
+  },
+  "position": {
+    "mode": "live",
+    "cursor": 3401,
+    "at": "2026-10-13T08:29:56.817825+00:00",
+    "latest_head": 3474
+  },
+  "checkpoint": "#3474 \u00b7 marking_checkpoint_version:4645b59b19b4525887a4a07f2e6f35a4",
+  "panel_text": "R\nRPNH Run dashboard\nCurrent state\nLanguage\nEnglish\n\u4e2d\u6587\nRead-only observation\nGuide\nFull screen\nWORKFLOW OBSERVATORY\nRun workflow\n\nFollow the recorded workflow from task input to result output.\n\nWorkflow steps\n2\nUnsettled records\n0\nSettled firings\n3\nActive tokens\n1\nOverview\nDetailed flow\nPetriNet\nExecutions\nLocate\nUser contributions\nCompare independent nets\nCompare checkpoints\nRecorded source queries\nWorksets\nHide resources (0)\nLocate activity\nRefresh\nLive\nThis frame's observation context\nObservation mode\nCurrent observation (current)\nSelected cut head\n3474\nCheckpoint selector hint\n3401\nLatest head reported by this frame\n3474\nFiring disclosure state\nThis frame's disclosed scope is complete (complete)\nLoaded firing count\n3\nTotal firings in disclosed scope\n3\n\nThe checkpoint selector hint is not a pagination cursor and does not prove a saved checkpoint exists.\n\nCounts and state cover only firing disclosure for transitions explicitly listed in this frame.\n\ncomplete means only this frame's disclosed scope is complete; it does not prove all real executions or lifecycle evidence are complete.\n\nExact references (full JSON)\nPetriNet \u00b7 All places, transitions and arcs\nShowing 5 nodes \u00b7 Original: 5 nodes / 6 arcs\nLine bridges\n0 independent crossings\nA bridge means crossing without joining. Connections exist only at node endpoints.\nConsume \u00d71\nConsume \u00d71\nProduce \u00d71 \u00b7 Outcome interrupted\nProduce \u00d71 \u00b7 Outcome complete\nProduce \u00d71 \u00b7 Outcome interrupted\nProduce \u00d71 \u00b7 Outcome complete\nReceive taskimplementer.request\n0\nEntry place\nData handoffimplementer.result\n0\nPlace\nTRANSITION\nimplementer\nNode ID: implementer.run\nSettled: 2\nDeliver resultreviewer.result\n1\nOutput place\nTRANSITION\nreviewer\nNode ID: reviewer.run\nSettled: 1\n\u2212\n\uff0b\nFit to view\nReset focus\nMinimap\nDrag to pan \u00b7 Scroll to zoom \u00b7 Select a step for details\nRun timelineCanonical checkpoints of this net version \u00b7 No unsettled-state replay \u00b7 Stops at the net-version boundary\n\u25cf Live position\nPrevious net segment\n\u25c0\nPlay\n\u25b6\n1\u00d7\n2\u00d7\n0.5\u00d7\n5 / 5 \u00b7 #3401\nSeeking changes the view only; it never pauses or reruns the task.\nAnimate changes\nLive observation \u00b7 5:29:05 PM \u00b7 Layouts: 2\nCheckpoint recorded: 10/13/2026, 4:29:56 PM\n#3474 \u00b7 marking_checkpoint_version:4645b59b19b4525887a4a07f2e6f35a4"
+}

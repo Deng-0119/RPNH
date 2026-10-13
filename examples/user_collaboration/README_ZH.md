@@ -1,14 +1,31 @@
-# Agent 任务网共建与历史机制记录
+# Agent 项目共建与历史机制记录
 
-[English](README.md) | 中文 | [运行当前示例](agent_cobuild/README_ZH.md#使用已有兼容安装运行) | [历史路线结果与分析](../../docs/results/user-collaboration-20261012/README_ZH.md)
+[English](README.md) | 中文 | [运行当前示例](../project_collaboration/README_ZH.md) | [历史路线结果与分析](../../docs/results/user-collaboration-20261012/README_ZH.md)
 
 ## 当前协作入口
 
-当前入口是[Agent 任务网共建](agent_cobuild/README_ZH.md)：`curator.run` 保留输入来源并生成交接，`auditor.run` 逐来源对账并登记最终报告。两个原生任务 agent 在同一普通 Module 中使用 stock `AgentStage`／default `AgentLoop`，连接为 `curator.result → auditor.request`。
+从[复制、共创并复用同一 Agent 项目](../project_collaboration/README_ZH.md)开始：
+两方受控贡献者解决冲突形成原双 parent M，在业务前三次采用内容，再下载精确 M 供独立
+receiver 执行。两端都使用真实 provider-backed stock implementer/reviewer agent。
+该入口包含原任务、输入、环境、验收器、许可证、真实业务／执行 PN、失败及注明日期的验收边界。
+
+### 当前项目在官方 Viewer 中的原图
+
+[![Source 完成态 Agent Overview：Implementer → Reviewer](../project_collaboration/figures/source-overview.png)](../project_collaboration/figures/source-overview.png)
+
+Source 完成态包含两个任务 agent 和一条结构交接边；[精确观察](../project_collaboration/figures/source-overview.json)保留原对象引用。
+
+[![同一运行的完整业务 PN：五节点六弧](../project_collaboration/figures/source-petri.png)](../project_collaboration/figures/source-petri.png)
+
+同一运行的完整业务 PN 为五节点六弧，保留原中断 firing。两图均为 source-05 原字节；[业务 PN 观察](../project_collaboration/figures/source-petri.json)与[捕获来源](../project_collaboration/figures/provenance.json)记录其来源和精确位置。
+
+## 历史脚本合同共建
+
+历史脚本案例是[Agent 任务网共建](agent_cobuild/README_ZH.md)：`curator.run` 保留输入来源并生成交接，`auditor.run` 逐来源对账并登记最终报告。两个原生任务 agent 在同一普通 Module 中使用 stock `AgentStage`／default `AgentLoop`，连接为 `curator.result → auditor.request`。
 
 两个受控原 Registry principal 的确定性 source 程序分别贡献合同修订，由原 HOST 审阅、连续推进受保护 Branch，再由 owner 采用。target 的 `local_process` 脚本驱动从实际输入与工具返回计算；这是结构／协议验证，未调用真实模型。
 
-### 当前任务网的官方 Viewer
+### 历史脚本任务网的官方 Viewer
 
 [![实际 Agent Overview：Curator → Auditor](agent_cobuild/figures/overview-panorama.png)](agent_cobuild/figures/overview-panorama.png)
 
@@ -79,4 +96,4 @@ python examples/view_declaration.py collaboration-adopted
 
 可以阅读公开汇总结果、检查两张保留的 runtime 全景、打开两份静态结构。完整真实模型实验并非下载即可独立运行：它使用已有安装、已准入路线数据、用户自有 profile 与私有 Registry 状态。数据条款及评分器／源码身份在报告中。静态 Viewer 不代表私有 runtime 的公开重放。
 
-构建协作应用可看[原生协作指南](../../docs/guides/user-collaboration_ZH.md)；当前 agent 合同示例见 [curator → auditor 共建](agent_cobuild/README_ZH.md)。
+构建协作应用可看[原生协作指南](../../docs/guides/user-collaboration_ZH.md)；当前项目共创与独立复用见 [project collaboration](../project_collaboration/README_ZH.md)，历史脚本合同示例见 [curator → auditor 共建](agent_cobuild/README_ZH.md)。

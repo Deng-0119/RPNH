@@ -3,6 +3,19 @@ import assert from 'node:assert/strict';
 import {activityRequest,activityPath,normalizeActivityPage,mergeActivity,activityCards,resolveActivityTarget} from '../../../cpn/frontend/static/firing-activity.mjs';
 import {fixtureFrame,envelope} from './firing-activity-fixture.mjs';
 const normalized=(value,request=activityRequest(fixtureFrame(),['step.run'],value.page.request_cursor,value.page.limit))=>normalizeActivityPage(value,request,fixtureFrame());
+test('actual dashboard dataclass node binding matches canonical activity without changing the frame',()=>{
+    const frame=fixtureFrame(),binding=frame.transition_bindings[0],canonical=structuredClone(binding.node_ref);
+    const typed=text=>{const [kind,value]=text.split(':');return {kind,value};};
+    binding.node_ref={entity_type:canonical.entity_type,entity_id:typed(canonical.logical_id),version_id:typed(canonical.version_id)};
+    const before=structuredClone(frame),request=activityRequest(frame,['step.run']);
+    assert.doesNotThrow(()=>normalizeActivityPage(envelope(),request,frame));
+    assert.deepEqual(frame,before);
+    binding.node_ref.version_id.value='f'.repeat(32);
+    assert.throws(()=>normalizeActivityPage(envelope(),request,frame));
+    binding.node_ref.version_id=typed(canonical.version_id);
+    binding.node_ref.entity_id.kind='task';
+    assert.throws(()=>normalizeActivityPage(envelope(),request,frame));
+});
 test('separate observation never promotes provisional or derives unobserved start',()=>{
     const frame=fixtureFrame(),before=JSON.stringify(frame),a=envelope({limit:2,count:2,more:true});
     const one=mergeActivity(null,normalized(a));assert.equal(activityCards(one)[0].observed_stage,'unknown');assert.equal(one.records.length,2);assert.equal(one.firings.length,1);assert.equal(one.complete,false);

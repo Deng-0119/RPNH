@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import base64
 from copy import deepcopy
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 import io
 import json
 import uuid
@@ -20,6 +20,8 @@ from .package_resolution import resolve_package
 from .registry_typed_readers import wire_ref
 
 EXCHANGE_SCHEMA = 'rpnh/subnet_exchange/v1'
+MERGE_EXCHANGE_SCHEMA = 'rpnh/subnet_exchange/v2'
+EXCHANGE_SCHEMAS = (EXCHANGE_SCHEMA, MERGE_EXCHANGE_SCHEMA)
 PROVENANCE_SCHEMA = 'rpnh/subnet_import_provenance/v1'
 
 
@@ -74,7 +76,7 @@ def _material(session, reference, cuts, limits):
 def _ordinary(module, revision=None):
     if (module.get('designer_constraints') or any(c['key'].startswith('rpnh/agent-workflow-graph/') for c in module['components'])
         or (revision and (revision['definition_kind'] != 'closed_module' or revision.get('open_region_contract_ref') is not None
-            or revision.get('selected_change_refs') or len(revision.get('parent_revision_refs',[]))>1
+            or revision.get('selected_change_refs') or len(revision.get('parent_revision_refs',[]))>2
             or revision['command_id'].startswith('collaboration-assembly-')))):
         raise SubnetExchangeError('UNSUPPORTED_EXCHANGE_CONTRACT')
 
@@ -147,13 +149,13 @@ def plan_subnet_export(session, *, root_revision_ref, cuts, include='definition_
     if wire_ref(root)[1]['entity_type'] != 'collaboration_net_revision/v1':
         raise SubnetExchangeError('UNSUPPORTED_EXCHANGE_CONTRACT')
     cuts = dict(cuts)
-    materials, records, visiting, seen = {}, {}, set(), set()
+    materials, records, visiting, seen, heights = {}, {}, set(), set(), {}
     total, edges = 0, 0
-    def material(reference):
+    def material(reference, raw=None):
         nonlocal total
         key = canonical_bytes(_ref(reference))
         if key not in materials:
-            raw = _material(session,reference,cuts,limits)
+            raw = _material(session,reference,cuts,limits) if raw is None else raw
             total += len(raw)
             if total>limits.closure_expanded_bytes or len(materials)>=limits.members-8:
                 raise SubnetExchangeError('LIMIT_EXCEEDED')
@@ -163,7 +165,9 @@ def plan_subnet_export(session, *, root_revision_ref, cuts, include='definition_
         nonlocal edges
         key = canonical_bytes(reference)
         if key in visiting: raise SubnetExchangeError('DEPENDENCY_CYCLE')
-        if key in seen: return
+        if key in seen:
+            if depth + heights[key] >= limits.dependency_depth: raise SubnetExchangeError('LIMIT_EXCEEDED')
+            return
         if depth>=limits.dependency_depth: raise SubnetExchangeError('LIMIT_EXCEEDED')
         visiting.add(key)
         record = _record(session,reference,cuts)
@@ -172,18 +176,35 @@ def plan_subnet_export(session, *, root_revision_ref, cuts, include='definition_
         # Stored producer validation establishes ordinary provenance and actual
         # public lowering without invoking a compiler at read time.
         projection = _unwrap(session.read_public_projection(entry_ref=_typed_ref(reference),at_cut=cuts[reference['source_id']]),'record')
-        if projection.get('producer_contract') != 'rpnh/closed_author_public_pn/v1':
+        producer = projection.get('producer_contract')
+        parents = record['parent_revision_refs']
+        if (producer not in ('rpnh/closed_author_public_pn/v1', 'rpnh/plain_merge_public_pn/v1')
+                or (len(parents) == 2) != (producer == 'rpnh/plain_merge_public_pn/v1')):
             raise SubnetExchangeError('UNSUPPORTED_EXCHANGE_CONTRACT')
         for field in ('element_mapping_ref','boundary_mapping_ref','host_requirements_ref'):
             document=material(record[field])
             if field=='host_requirements_ref':
                 for dep in document['declaration_refs']: material(dep['resource_ref'])
-        material(projection['projection_ref'])
+        stored = material(projection['projection_ref'])
+        if producer == 'rpnh/plain_merge_public_pn/v1':
+            # The existing fixed-cut reader has verified these exact metadata
+            # pins against their source objects. Descriptor payloads are inert
+            # canonical evidence, not destination Registry publications.
+            for pin in stored['dependencies']:
+                edges += 1
+                if edges > limits.dependency_edges: raise SubnetExchangeError('LIMIT_EXCEEDED')
+                kind = wire_ref(pin['ref'])[1]['entity_type']
+                raw = None if kind == 'resource_version/v1' else canonical_bytes(pin['metadata'])
+                material(pin['ref'], raw)
+                actual = materials[canonical_bytes(pin['ref'])]
+                if len(actual) != pin['bytes'] or sha256(actual) != pin['sha256']:
+                    raise SubnetExchangeError('INTEGRITY_FAILED')
         for parent in record['parent_revision_refs']:
             edges += 1
             if edges>limits.dependency_edges: raise SubnetExchangeError('LIMIT_EXCEEDED')
             visit(parent,depth+1)
         if record.get('subnet_provenance_ref'): material(record['subnet_provenance_ref'])
+        heights[key] = max((1 + heights[canonical_bytes(p)] for p in record['parent_revision_refs']), default=0)
         records[key]=record
         visiting.remove(key);seen.add(key)
     visit(root)
@@ -214,18 +235,36 @@ class _Paths:
         self.used.add(candidate.casefold());return candidate
 
 
-def _zip(files):
+def _zip(files, *, compression=zipfile.ZIP_STORED):
     output=io.BytesIO()
-    with zipfile.ZipFile(output,'w',compression=zipfile.ZIP_STORED) as archive:
+    with zipfile.ZipFile(output,'w',compression=compression) as archive:
         for name,raw in sorted(files.items()):
-            info=zipfile.ZipInfo(name,(1980,1,1,0,0,0));info.external_attr=0o100644<<16
+            info=zipfile.ZipInfo(name,(1980,1,1,0,0,0));info.external_attr=0o100644<<16;info.compress_type=compression
             archive.writestr(info,raw)
     return output.getvalue()
 
 
 def _selected_packages(root, local_packages, entry_id, limits):
-    root=preview_package(root.archive_bytes if isinstance(root,PackagePreview) else root,limits=limits)
-    local=tuple(preview_package(p.archive_bytes if isinstance(p,PackagePreview) else p,limits=limits) for p in local_packages)
+    # Admit each candidate before expanding the next one. A catalog of locally
+    # available alternatives is not permission to allocate all of them first.
+    bounded=replace(limits, archive_bytes=min(limits.archive_bytes,limits.closure_bytes),
+        expanded_bytes=min(limits.expanded_bytes,limits.closure_expanded_bytes))
+    root=preview_package(root.archive_bytes if isinstance(root,PackagePreview) else root,limits=bounded)
+    total=len(root.archive_bytes)
+    expanded=len(root.manifest_bytes)+sum(len(raw) for _,raw in root.artifacts)
+    local=[]
+    for index,candidate in enumerate(local_packages,2):
+        remaining_bytes=limits.closure_bytes-total
+        remaining_expanded=limits.closure_expanded_bytes-expanded
+        if index>limits.packages or min(remaining_bytes,remaining_expanded)<=0:
+            raise PackageError('PACKAGE_LIMIT_EXCEEDED','local package aggregate limit')
+        bounded=replace(limits,archive_bytes=min(limits.archive_bytes,remaining_bytes),
+            expanded_bytes=min(limits.expanded_bytes,remaining_expanded))
+        item=preview_package(candidate.archive_bytes if isinstance(candidate,PackagePreview) else candidate,limits=bounded)
+        total+=len(item.archive_bytes)
+        expanded+=len(item.manifest_bytes)+sum(len(raw) for _,raw in item.artifacts)
+        local.append(item)
+    local=tuple(local)
     lock=resolve_package(root,local,root_entry_id=entry_id,limits=limits)
     candidates={root.manifest_digest:root}
     for p in local:
@@ -240,15 +279,47 @@ def _selected_packages(root, local_packages, entry_id, limits):
     return root,tuple(selected),lock
 
 
-def _exchange(preview):
+def _charge_exchange_archive(preview, limits, budget, depth):
+    budget['archives'] += 1
+    budget['bytes'] += len(preview.archive_bytes)
+    budget['expanded'] += len(preview.manifest_bytes) + sum(len(raw) for _, raw in preview.artifacts)
+    budget['members'] += 1 + len(preview.artifacts)
+    budget['edges'] += len(preview.manifest['dependencies'])
+    if (depth >= limits.dependency_depth or budget['archives'] > limits.packages
+            or budget['bytes'] > limits.closure_bytes or budget['expanded'] > limits.closure_expanded_bytes
+            or budget['members'] > limits.closure_members or budget['edges'] > limits.dependency_edges):
+        raise SubnetExchangeError('LIMIT_EXCEEDED')
+
+
+def _exchange(preview, limits=DEFAULT_LIMITS, *, _budget=None, _depth=0, _admitted=False):
+    # One budget for the entire retained-history traversal, never reset by an
+    # embedded archive. Repeated evidence is charged again, not free recursion.
+    budget = _budget if _budget is not None else {'archives': 0, 'bytes': 0, 'expanded': 0, 'members': 0, 'edges': 0, 'active': set()}
+    if not _admitted: _charge_exchange_archive(preview, limits, budget, _depth)
+    digest = preview.archive_digest
+    if digest in budget['active']: raise SubnetExchangeError('DEPENDENCY_CYCLE')
+    budget['active'].add(digest)
+    try:
+        return _exchange_inventory(preview, limits, budget, _depth)
+    finally:
+        budget['active'].remove(digest)
+
+
+def _exchange_inventory(preview, limits, budget, archive_depth):
     found=[]
     for path,raw in preview.artifacts:
         if next(row for row in preview.manifest['artifacts'] if row['path']==path)['media_type']!='application/json':continue
         value=json.loads(raw)
-        if isinstance(value,dict) and value.get('schema_version')==EXCHANGE_SCHEMA: found.append((path,value))
+        if isinstance(value,dict) and str(value.get('schema_version', '')).startswith('rpnh/subnet_exchange/'):
+            if value['schema_version'] not in EXCHANGE_SCHEMAS: raise SubnetExchangeError('UNSUPPORTED_EXCHANGE_CONTRACT')
+            found.append((path,value))
     if len(found)>1: raise SubnetExchangeError('INTEGRITY_FAILED')
     if not found:return None
     path,value=found[0]
+    if value['schema_version'] == MERGE_EXCHANGE_SCHEMA and preview.manifest['schema_version'] != 'rpnh/share_package/v3':
+        raise SubnetExchangeError('UNSUPPORTED_EXCHANGE_CONTRACT')
+    if preview.manifest['schema_version'] == 'rpnh/share_package/v3' and preview.manifest['subnet_exchange'] != {'artifact_path': path, 'schema_version': value['schema_version']}:
+        raise SubnetExchangeError('INTEGRITY_FAILED')
     if set(value)!={'schema_version','root_revision_ref','source_cut_evidence','records','materials','preserved_environment_artifacts'}:
         raise SubnetExchangeError('INTEGRITY_FAILED')
     artifacts=dict(preview.artifacts)
@@ -265,12 +336,17 @@ def _exchange(preview):
     records={canonical_bytes(record['revision_ref']):record for record in value['records']}
     if len(records)!=len(value['records']) or canonical_bytes(value['root_revision_ref']) not in records:
         raise SubnetExchangeError('INTEGRITY_FAILED')
-    active=set();done=set()
+    active=set();done=set();heights={};postorder=[]
+    def edge_count(count):
+        budget['edges'] += count
+        if budget['edges'] > limits.dependency_edges: raise SubnetExchangeError('LIMIT_EXCEEDED')
     def visit(ref,depth=0):
         key=canonical_bytes(ref)
         if key in active:raise SubnetExchangeError('DEPENDENCY_CYCLE')
-        if key in done:return
-        if depth>=DEFAULT_LIMITS.dependency_depth:raise SubnetExchangeError('LIMIT_EXCEEDED')
+        if key in done:
+            if archive_depth + depth + heights[key] >= limits.dependency_depth: raise SubnetExchangeError('LIMIT_EXCEEDED')
+            return
+        if archive_depth + depth>=limits.dependency_depth:raise SubnetExchangeError('LIMIT_EXCEEDED')
         if key not in records:raise SubnetExchangeError('INCOMPLETE_CLOSURE')
         active.add(key);r=records[key]
         for field in ('definition_ref','element_mapping_ref','boundary_mapping_ref','host_requirements_ref'):
@@ -278,7 +354,9 @@ def _exchange(preview):
         host=json.loads(artifacts[rows[canonical_bytes(r['host_requirements_ref'])]['artifact_path']])
         for dep in host['declaration_refs']:
             if canonical_bytes(dep['resource_ref']) not in rows:raise SubnetExchangeError('INCOMPLETE_CLOSURE')
-        for parent in r['parent_revision_refs']:visit(parent,depth+1)
+        for parent in r['parent_revision_refs']:
+            edge_count(1)
+            visit(parent,depth+1)
         from ..module import ModuleDeclaration
         from .materials import _elements,_boundaries
         module_doc=json.loads(artifacts[rows[canonical_bytes(r['definition_ref'])]['artifact_path']])
@@ -292,20 +370,55 @@ def _exchange(preview):
             raise SubnetExchangeError('INTEGRITY_FAILED')
         boundaries=json.loads(artifacts[rows[canonical_bytes(r['boundary_mapping_ref'])]['artifact_path']])
         if boundaries!=_boundaries(module,elements):raise SubnetExchangeError('INTEGRITY_FAILED')
-        active.remove(key);done.add(key)
+        heights[key] = max((1 + heights[canonical_bytes(p)] for p in r['parent_revision_refs']), default=0)
+        active.remove(key);done.add(key);postorder.append(key)
     visit(value['root_revision_ref'])
+    if done != set(records): raise SubnetExchangeError('INCOMPLETE_CLOSURE')
+    merge_projections = {}
     for row in value['materials']:
         document=json.loads(artifacts[row['artifact_path']])
-        if isinstance(document,dict) and document.get('schema_version')=='rpnh/stored_public_pn_projection/v1':
+        if isinstance(document,dict) and document.get('schema_version') in ('rpnh/stored_public_pn_projection/v1', 'rpnh/stored_plain_merge_public_pn/v1'):
             for dep in document['dependencies']:
                 found=rows.get(canonical_bytes(dep['ref']))
                 if found is None or found['bytes']!=dep['bytes'] or found['sha256']!=dep['sha256']:
                     raise SubnetExchangeError('INCOMPLETE_CLOSURE')
+            if document['schema_version'] == 'rpnh/stored_plain_merge_public_pn/v1':
+                edge_count(len(document['dependencies']))
+                if value['schema_version'] != MERGE_EXCHANGE_SCHEMA:
+                    raise SubnetExchangeError('UNSUPPORTED_EXCHANGE_CONTRACT')
+                key = canonical_bytes(document['projection']['author_revision_ref'])
+                if key not in records or key in merge_projections:
+                    raise SubnetExchangeError('INTEGRITY_FAILED')
+                from ._subnet_merge_proof import verify_exchange_merge
+                verify_exchange_merge(records[key], document, rows, artifacts, limits)
+                merge_projections[key] = document
+    for key, record in records.items():
+        if key in rows:
+            source_record = json.loads(artifacts[rows[key]['artifact_path']])
+            # These two fields are typed-reader derived evidence, not fields
+            # of the canonical immutable NetRevision descriptor.
+            exact_record = {k: v for k, v in record.items() if k not in {'subnet_provenance_ref', 'commit_ordinal'}}
+            if canonical_bytes(exact_record) != canonical_bytes(source_record):
+                raise SubnetExchangeError('INTEGRITY_FAILED')
+    expected_merges = {key for key, record in records.items() if len(record['parent_revision_refs']) == 2}
+    if value['schema_version'] == MERGE_EXCHANGE_SCHEMA and not expected_merges:
+        raise SubnetExchangeError('UNSUPPORTED_EXCHANGE_CONTRACT')
+    if set(merge_projections) != expected_merges:
+        raise SubnetExchangeError('INCOMPLETE_CLOSURE')
     root=records[canonical_bytes(value['root_revision_ref'])]
     module=artifacts[rows[canonical_bytes(root['definition_ref'])]['artifact_path']]
     declared=artifacts[preview.manifest['entries'][0]['declaration_path']]
     if canonical_bytes(json.loads(module))!=canonical_bytes(json.loads(declared)):
         raise SubnetExchangeError('INTEGRITY_FAILED')
+    from ._subnet_prior_proof import verify_prior_evidence
+    distances = {canonical_bytes(value['root_revision_ref']): 0}
+    for key in reversed(postorder):
+        for parent in records[key]['parent_revision_refs']:
+            parent_key = canonical_bytes(parent)
+            distances[parent_key] = max(distances.get(parent_key, 0), distances[key] + 1)
+    for key, record in records.items():
+        if record.get('subnet_provenance_ref'):
+            verify_prior_evidence(record, rows, artifacts, limits, budget, archive_depth + distances[key])
     for row in value['preserved_environment_artifacts']:
         body=artifacts.get(row['artifact_path'])
         if body is None or sha256(body)!=row['artifact_digest']:raise SubnetExchangeError('INTEGRITY_FAILED')
@@ -319,20 +432,27 @@ def export_subnet(session, *, plan, destination):
     if verified.payload!=plan.payload or verified.materials!=plan.materials:
         raise SubnetExchangeError('PLAN_MISMATCH')
     session.authorize_export(tuple(_typed_ref(ref) for ref in document['included_refs']),destination=destination,at_cuts=cuts)
-    # Re-read every body before publication. A plan is not a byte cache that
-    # survives revocation or same-size legacy file corruption.
+    # Replanning above revalidates every source descriptor through its original
+    # producer proof. Reread resource bodies too; a plan is not an authority or
+    # byte cache that survives revocation or same-size legacy file corruption.
     for reference,raw in plan.materials:
-        if _material(session,json.loads(reference),cuts,plan.limits)!=raw:raise SubnetExchangeError('INTEGRITY_FAILED')
+        if wire_ref(json.loads(reference))[1]['entity_type'] == 'resource_version/v1':
+            if _material(session,json.loads(reference),cuts,plan.limits)!=raw:raise SubnetExchangeError('INTEGRITY_FAILED')
     data={key:value for key,value in plan.materials}
     records=document['records'];root=next(r for r in records if r['revision_ref']==document['root_revision_ref'])
     module=json.loads(data[canonical_bytes(root['definition_ref'])])
     host=json.loads(data[canonical_bytes(root['host_requirements_ref'])])
-    original=None;dependencies=()
-    if root.get('subnet_provenance_ref'):
-        provenance=json.loads(data[canonical_bytes(root['subnet_provenance_ref'])])
-        original=preview_package(base64.b64decode(provenance['root_archive_base64'],validate=True),limits=plan.limits)
-        dependencies=tuple(base64.b64decode(v,validate=True) for v in provenance['dependency_archives_base64'])
-        _selected_packages(original,dependencies,provenance['entry_id'],plan.limits)
+    original=None;dependencies=();origin_key=None
+    for record in records:
+        if not record.get('subnet_provenance_ref'): continue
+        provenance=json.loads(data[canonical_bytes(record['subnet_provenance_ref'])])
+        candidate=preview_package(base64.b64decode(provenance['root_archive_base64'],validate=True),limits=plan.limits)
+        candidates=tuple(base64.b64decode(v,validate=True) for v in provenance['dependency_archives_base64'])
+        _,_,lock=_selected_packages(candidate,candidates,provenance['entry_id'],plan.limits)
+        selected=(candidate.archive_digest,lock.package_lock_digest)
+        if origin_key is not None and selected != origin_key:
+            raise SubnetExchangeError('AMBIGUOUS_PACKAGE_ORIGIN')
+        original,dependencies,origin_key=candidate,candidates,selected
     # Preserve every inert original artifact, including non-entry environment
     # documents and all original license material; identity is digest+path.
     preserved=dict(original.artifacts) if original is not None else {}
@@ -343,7 +463,7 @@ def export_subnet(session, *, plan, destination):
             row=next(row for row in original.manifest['artifacts'] if row['path']==path)
             if row['media_type']=='application/json':
                 value=json.loads(raw)
-                if isinstance(value,dict) and value.get('schema_version')==EXCHANGE_SCHEMA:
+                if isinstance(value,dict) and value.get('schema_version') in EXCHANGE_SCHEMAS:
                     del preserved[path]
     allocator=_Paths(preserved)
     files=dict(preserved);roles={}
@@ -372,9 +492,9 @@ def export_subnet(session, *, plan, destination):
                     else:path=add('environment/'+preview.manifest_digest[:16]+'/'+row['path'].split('/')[-1],body)
                     env.append({'manifest_digest':preview.manifest_digest,'original_path':row['path'],
                         'artifact_path':path,'artifact_digest':sha256(body)})
-    exchange={'schema_version':EXCHANGE_SCHEMA,'root_revision_ref':document['root_revision_ref'],
+    exchange={'schema_version':MERGE_EXCHANGE_SCHEMA if any(len(r['parent_revision_refs']) == 2 for r in records) else EXCHANGE_SCHEMA,'root_revision_ref':document['root_revision_ref'],
         'source_cut_evidence':document['source_cut_evidence'],'records':records,'materials':closure,'preserved_environment_artifacts':env}
-    add('subnet-exchange.json',canonical_bytes(exchange))
+    exchange_path = add('subnet-exchange.json',canonical_bytes(exchange))
     license_path=add('licenses/UNSPECIFIED.txt',b'No license or disclosure permission is granted by this export. Retain source restrictions.\n','text/plain','license')
     requirements=[]
     for kind,items in sorted(host['registrations'].items()):
@@ -387,7 +507,23 @@ def export_subnet(session, *, plan, destination):
     for kind,key in sorted(needed-declared):
         requirements.append({'requirement_id':f'req{len(requirements):04d}','kind':kind,'contract_id':key,
             'required':True,'effects':[],'data_classes':[]})
-    if original:requirements=deepcopy(original.manifest['requirements'])
+    if original:
+        # Original environment mappings name these stable requirement IDs.
+        # Preserve them and append newly required HOST contracts explicitly;
+        # do not claim the old environment declaration satisfies new contracts.
+        generated=requirements;requirements=deepcopy(original.manifest['requirements'])
+        declared={(row['kind'],row['contract_id']):row for row in requirements}
+        occupied={row['requirement_id'] for row in requirements}
+        for row in generated:
+            key=(row['kind'],row['contract_id'])
+            if key in declared:
+                declared[key]['required']=True
+                continue
+            number=0
+            while f'exchange_req{number:04d}' in occupied: number+=1
+            row['requirement_id']=f'exchange_req{number:04d}';occupied.add(row['requirement_id'])
+            requirements.append(row)
+
     ports={(c['name'],p['name']):p for c in module['components'] for p in c['ports']}
     success=next((name for name,value in module['exit'].items() if value==module['terminal']['source']),None)
     if success is None:raise SubnetExchangeError('UNSUPPORTED_EXCHANGE_CONTRACT')
@@ -398,15 +534,17 @@ def export_subnet(session, *, plan, destination):
         'completion_contract':{'success_exit':success,'failure_exits':sorted(set(module['exit'])-{success}),
             'acceptor_requirement_ids':[],'open_obligations':[]}}
     version='rpnh/share_package/v1'
-    if original and original.manifest['schema_version']=='rpnh/share_package/v2':
+    if original and 'environment_requirements_path' in original.manifest['entries'][0]:
         version='rpnh/share_package/v2';entry['environment_requirements_path']=original.manifest['entries'][0]['environment_requirements_path']
+    if exchange['schema_version'] == MERGE_EXCHANGE_SCHEMA or (original and original.manifest['schema_version'] == 'rpnh/share_package/v3'):
+        version='rpnh/share_package/v3'
     licenses=deepcopy(original.manifest['licenses']) if original else []
     license_id='exchange-unspecified'
     while license_id in {row['license_id'] for row in licenses}:license_id+='-next'
     licenses.append({'license_id':license_id,'expression':'LicenseRef-Unspecified','text_paths':[license_path],'notice_paths':[]})
     artifacts=[];provenance=[]
     for path,raw in sorted(files.items()):
-        media,role=roles[path];original_row=original_rows.get(path)
+        media,role=roles[path];original_row=original_rows.get(path) if path in preserved else None
         artifacts.append({'path':path,'media_type':media,'role':role,'bytes':len(raw),'sha256':sha256(raw),
             'license_id':original_row['license_id'] if original_row else license_id,'disclosure':'named_recipients'})
         provenance.append({'artifact_path':path,'relation':'copied' if original_row else 'authored',
@@ -419,13 +557,15 @@ def export_subnet(session, *, plan, destination):
             'host_contracts':sorted({row['contract_id'] for row in requirements})},'requirements':requirements,'policy_surface':[],
         'licenses':licenses,'disclosure':{'classification':'named_recipients','intended_audience':str(destination),
             'excluded_categories':['runtime_history','checkpoints','results','credentials','leases','local_bindings']}}
+    if version == 'rpnh/share_package/v3':
+        manifest['subnet_exchange'] = {'artifact_path': exchange_path, 'schema_version': exchange['schema_version']}
     files['manifest.json']=canonical_bytes(manifest)
     if (len(files)>plan.limits.members or sum(map(len,files.values()))>plan.limits.expanded_bytes
             or any(len(raw)>plan.limits.artifact_bytes for raw in files.values())):
         raise SubnetExchangeError('LIMIT_EXCEEDED')
-    package=preview_package(_zip(files),limits=plan.limits)
+    package=preview_package(_zip(files, compression=zipfile.ZIP_DEFLATED if original is not None or exchange['schema_version'] == MERGE_EXCHANGE_SCHEMA else zipfile.ZIP_STORED),limits=plan.limits)
     _selected_packages(package,dependencies,entry['entry_id'],plan.limits)
-    _exchange(package) # Verify inner exchange closure, not only outer inventory.
+    _exchange(package, plan.limits) # Verify inner exchange closure, not only outer inventory.
     session.final_recheck(source_ids=tuple(cuts))
     session.authorize_export(tuple(_typed_ref(ref) for ref in document['included_refs']),destination=destination,at_cuts=cuts)
     return SubnetExportResult(package,dependencies,plan.plan_digest)
@@ -437,7 +577,12 @@ def plan_subnet_import(package, *, target, entry_id='main', local_packages=(), l
     root,selected,lock=_selected_packages(package,local_packages,entry_id,limits)
     manifest=root.manifest;entry=manifest['entries'][0]
     module=json.loads(dict(root.artifacts)[entry['declaration_path']]);_ordinary(module)
-    exchange=_exchange(root)
+    budget = {'archives': 0, 'bytes': 0, 'expanded': 0, 'members': 0, 'edges': 0, 'active': set()}
+    exchange = None
+    for selected_package in selected:
+        evidence = _exchange(selected_package, limits, _budget=budget)
+        if selected_package.manifest_digest == root.manifest_digest:
+            exchange = evidence
     target=target.to_dict() if isinstance(target,TargetRegistrySelection) else _dict(target)
     source,ref=wire_ref(target['source_ref'])
     if ref['entity_type']!='task/v1':raise SubnetExchangeError('INVALID_TARGET')
@@ -481,7 +626,7 @@ def import_subnet(target_owner_context, *, plan, command_id, expected_target_hea
         local_packages=plan.dependency_archives,limits=plan.limits)
     if verified.payload!=plan.payload:raise SubnetExchangeError('INTEGRITY_FAILED')
     preview=preview_package(plan.root_archive,limits=plan.limits);entry=preview.manifest['entries'][0]
-    exchange=_exchange(preview)
+    exchange=_exchange(preview, plan.limits)
     # Fail before any target fact if preserved material cannot fit the import
     # evidence envelope. The remainder is a bounded deterministic JSON map.
     if (len(plan.root_archive)+sum(map(len,plan.dependency_archives)))*4//3+len(plan.payload)>plan.limits.artifact_bytes//2:
@@ -497,6 +642,34 @@ def import_subnet(target_owner_context, *, plan, command_id, expected_target_hea
                 try:actual=author.registration.declaration(kind,name)
                 except RegistrationError as exc:raise SubnetExchangeError('HOST_REQUIREMENTS_NOT_SATISFIED') from exc
                 if canonical_bytes(actual)!=canonical_bytes(declared):raise SubnetExchangeError('HOST_REQUIREMENTS_MISMATCH')
+    # Validate source HOST schema bytes against the selected inert package
+    # closure before publishing even a command reservation. A same-$id package
+    # artifact is not allowed to replace the schema verified in source proof.
+    from ..registration import RegistrationError
+    from ..registry.schema_catalog import PROTECTED_SCHEMA_REFS
+    _, selected_packages, _ = _selected_packages(preview, plan.dependency_archives, entry['entry_id'], plan.limits)
+    schema_documents = {}
+    for selected_package in selected_packages:
+        for row in selected_package.manifest['artifacts']:
+            if row['role'] == 'schema':
+                schema = json.loads(dict(selected_package.artifacts)[row['path']])
+                prior = schema_documents.get(schema['$id'])
+                if prior is not None and canonical_bytes(prior) != canonical_bytes(schema):
+                    raise SubnetExchangeError('SCHEMA_ID_CONTENT_CONFLICT')
+                schema_documents[schema['$id']] = schema
+    if exchange:
+        for schema_id, declaration in host['registrations'].get('schema', {}).items():
+            if schema_id not in schema_documents:
+                raise SubnetExchangeError('HOST_REQUIREMENTS_NOT_SATISFIED')
+            if canonical_bytes(schema_documents[schema_id]) != canonical_bytes(declaration['schema']):
+                raise SubnetExchangeError('HOST_REQUIREMENTS_MISMATCH')
+    for schema_id, schema in sorted(schema_documents.items()):
+        try: existing = author.registration.declaration('schema', schema_id)['schema']
+        except RegistrationError: existing = None
+        if existing is not None and canonical_bytes(existing) != canonical_bytes(schema):
+            raise SubnetExchangeError('SCHEMA_ID_CONTENT_CONFLICT')
+        if existing is None and schema_id in PROTECTED_SCHEMA_REFS:
+            raise SubnetExchangeError('SCHEMA_ID_CONTENT_CONFLICT')
     if core.writer_epoch!=core.event_store.writer_epoch:raise StaleWriterError('stale subnet import owner')
     key='subnet-import:'+command_id
     reservation_ref=_material_ref(core,author.binding,key+':request')
@@ -524,23 +697,11 @@ def import_subnet(target_owner_context, *, plan, command_id, expected_target_hea
     # Imported inert schemas are installed in the existing owner Registration;
     # executable implementations still come exclusively from its trusted HOST.
     # Existing schema identities may never be overwritten by package bytes.
-    from ..registration import RegistrationError
-    from ..registry.schema_catalog import PROTECTED_SCHEMA_REFS
-    _,selected_packages,_=_selected_packages(preview,plan.dependency_archives,entry['entry_id'],plan.limits)
-    schema_documents={}
-    for selected_package in selected_packages:
-        for row in selected_package.manifest['artifacts']:
-            if row['role']=='schema':
-                schema=json.loads(dict(selected_package.artifacts)[row['path']]);schema_documents[schema['$id']]=schema
-    for schema_id,schema in sorted(schema_documents.items()):
-        try:existing=author.registration.declaration('schema',schema_id)['schema']
-        except RegistrationError:existing=None
-        if existing is not None:
-            if canonical_bytes(existing)!=canonical_bytes(schema):raise SubnetExchangeError('SCHEMA_ID_CONTENT_CONFLICT')
-        elif schema_id in PROTECTED_SCHEMA_REFS:raise SubnetExchangeError('SCHEMA_ID_CONTENT_CONFLICT')
-        else:author.registration.register_schema(schema_id,schema)
+    for schema_id, schema in sorted(schema_documents.items()):
+        try: author.registration.declaration('schema', schema_id)
+        except RegistrationError: author.registration.register_schema(schema_id, schema)
     value=author.publish(module=module,element_ids=identities,command_id=key+':author')
-    exchange=_exchange(preview)
+    exchange=_exchange(preview, plan.limits)
     old_elements={}
     if exchange:
         origin_record=next(row for row in exchange['records'] if row['revision_ref']==exchange['root_revision_ref'])

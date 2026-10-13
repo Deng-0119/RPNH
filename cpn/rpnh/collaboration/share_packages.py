@@ -22,6 +22,11 @@ PREVIEW_SCHEMA_V2 = "rpnh/package_preview/v2"
 LOCK_SCHEMA_V2 = "rpnh/package_resolution_lock/v2"
 PARSER_CONTRACT_V2 = "rpnh/package_preview_parser/v2"
 RESOLVER_CONTRACT_V2 = "rpnh/package_resolver/v2"
+PACKAGE_SCHEMA_V3 = "rpnh/share_package/v3"
+PREVIEW_SCHEMA_V3 = "rpnh/package_preview/v3"
+LOCK_SCHEMA_V3 = "rpnh/package_resolution_lock/v3"
+PARSER_CONTRACT_V3 = "rpnh/package_preview_parser/v3"
+RESOLVER_CONTRACT_V3 = "rpnh/package_resolver/v3"
 DRAFT7 = "http://json-schema.org/draft-07/schema#"
 MODULE_SCHEMA = "rpnh/module_declaration/v1"
 SCHEMA_ID = r"^[a-z][a-z0-9_]*(?:/[a-z][a-z0-9_]*)+/v[1-9][0-9]*$"
@@ -44,6 +49,7 @@ class PackageLimits:
     closure_expanded_bytes: int = 64 * 1024 * 1024
     dependency_edges: int = 256
     dependency_depth: int = 16
+    closure_members: int = 256
 
     def __post_init__(self):
         for field in self.__dataclass_fields__:
@@ -151,7 +157,7 @@ def manifest_schema(version=PACKAGE_SCHEMA) -> dict[str, Any]:
     Unsupported future features (policy mutation, optional features, multiple
     entries) cannot be silently interpreted as supported by this parser.
     """
-    if version not in (PACKAGE_SCHEMA, PACKAGE_SCHEMA_V2):
+    if version not in (PACKAGE_SCHEMA, PACKAGE_SCHEMA_V2, PACKAGE_SCHEMA_V3):
         raise PackageError("UNSUPPORTED_PACKAGE_SCHEMA", "unsupported manifest schema")
     text = {"type": "string", "minLength": 1, "maxLength": 1024}
     identity = {"type": "string", "pattern": r"^[a-z][a-z0-9_.-]*(?:/[a-z][a-z0-9_.-]*)+$", "maxLength": 160}
@@ -210,6 +216,11 @@ def manifest_schema(version=PACKAGE_SCHEMA) -> dict[str, Any]:
         entry = properties["entries"]["items"]
         entry["properties"]["environment_requirements_path"] = path
         entry["required"].append("environment_requirements_path")
+    if version == PACKAGE_SCHEMA_V3:
+        properties["schema_version"] = {"const": PACKAGE_SCHEMA_V3}
+        properties["entries"]["items"]["properties"]["environment_requirements_path"] = path
+        properties["subnet_exchange"] = _object({"artifact_path": path,
+            "schema_version": {"enum": ["rpnh/subnet_exchange/v1", "rpnh/subnet_exchange/v2"]}})
     return {"$schema": DRAFT7, "$id": version, **_object(properties)}
 
 
@@ -270,18 +281,20 @@ class PackageResolutionLock:
 
 def package_preview_schema(version=PREVIEW_SCHEMA_V2):
     """Closed wire schema for the new preview version; v1 stays unchanged."""
-    if version != PREVIEW_SCHEMA_V2:
+    if version not in (PREVIEW_SCHEMA_V2, PREVIEW_SCHEMA_V3):
         raise PackageError("UNSUPPORTED_PACKAGE_SCHEMA", "only the new preview schema is provided here")
-    m = manifest_schema(PACKAGE_SCHEMA_V2)["properties"]
+    is_v3 = version == PREVIEW_SCHEMA_V3
+    m = manifest_schema(PACKAGE_SCHEMA_V3 if is_v3 else PACKAGE_SCHEMA_V2)["properties"]
     properties = {key: m[key] for key in ("package_id", "version", "entries", "artifacts", "licenses",
         "requirements", "dependencies", "origin", "provenance")}
-    properties.update({"schema_version": {"const": PREVIEW_SCHEMA_V2},
-        "parser_contract": {"const": PARSER_CONTRACT_V2},
+    properties.update({"schema_version": {"const": version},
+        "parser_contract": {"const": PARSER_CONTRACT_V3 if is_v3 else PARSER_CONTRACT_V2},
         "manifest_digest": {"type": "string", "pattern": DIGEST},
         "archive_digest": {"type": "string", "pattern": DIGEST},
         "schema_inventory": _array(_schema_inventory_row(), maximum=8192),
         "checks": _array(_package_check_schema(), maximum=8192),
         "execution_permitted": {"const": False}})
+    if is_v3: properties["subnet_exchange"] = m["subnet_exchange"]
     return {"$schema": DRAFT7, "$id": version, **_object(properties)}
 
 
@@ -309,7 +322,7 @@ def _schema_inventory_row(*, locked=False):
 
 def package_resolution_lock_schema(version=LOCK_SCHEMA_V2):
     """Closed exact lock v2 schema; artifact hashes retain their raw domains."""
-    if version != LOCK_SCHEMA_V2:
+    if version not in (LOCK_SCHEMA_V2, LOCK_SCHEMA_V3):
         raise PackageError("UNSUPPORTED_PACKAGE_SCHEMA", "only the new lock schema is provided here")
     m = manifest_schema(PACKAGE_SCHEMA_V2)["properties"]
     digest = {"type": "string", "pattern": DIGEST}
@@ -326,7 +339,12 @@ def package_resolution_lock_schema(version=LOCK_SCHEMA_V2):
                                "environment_requirements": requirements}),
                        _object({**common_node, "manifest_schema": {"const": PACKAGE_SCHEMA},
                                "environment_requirements": {"const": "not_declared"}})]}
-    properties = {"schema_version": {"const": version}, "resolver_contract": {"const": RESOLVER_CONTRACT_V2},
+    if version == LOCK_SCHEMA_V3:
+        v3 = _object({**common_node, "manifest_schema": {"const": PACKAGE_SCHEMA_V3},
+            "environment_requirements": {"anyOf": [requirements, {"const": "not_declared"}]},
+            "subnet_exchange": manifest_schema(PACKAGE_SCHEMA_V3)["properties"]["subnet_exchange"]})
+        node["oneOf"].append(v3)
+    properties = {"schema_version": {"const": version}, "resolver_contract": {"const": RESOLVER_CONTRACT_V3 if version == LOCK_SCHEMA_V3 else RESOLVER_CONTRACT_V2},
         "root_manifest_digest": digest, "root_entry_id": key,
         "nodes": _array(node, minimum=1, maximum=64),
         "edges": _array(_object({"from_manifest_digest": digest, "dependency_id": key,

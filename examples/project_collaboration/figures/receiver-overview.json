@@ -1,0 +1,29 @@
+{
+  "label": "overview-handoff",
+  "project": "receiver",
+  "source": {
+    "mode": "registry_current",
+    "task_id": "task:0c6e443a9af74a5d87f745ca886b616a",
+    "net_ref": {
+      "entity_type": "net_instance/v1",
+      "entity_id": {
+        "kind": "net_instance",
+        "value": "08d8f7eebb5e5a868c8f47dbcf405bdc"
+      },
+      "version_id": {
+        "kind": "net_instance_version",
+        "value": "e43489c40ca955ac9b8c5b2d4bb0d0a1"
+      }
+    },
+    "verified_head_ordinal": 2441,
+    "writer_fencing_epoch": 4
+  },
+  "position": {
+    "mode": "live",
+    "cursor": 2386,
+    "at": "2026-10-13T07:58:24.221954+00:00",
+    "latest_head": 2441
+  },
+  "checkpoint": "#2441 \u00b7 marking_checkpoint_version:dee89818bf6d54a8a4a3421b22c7c8eb",
+  "panel_text": "R\nRPNH Run dashboard\nCurrent state\nLanguage\nEnglish\n\u4e2d\u6587\nRead-only observation\nGuide\nFull screen\nWORKFLOW OBSERVATORY\nRun workflow\n\nFollow the recorded workflow from task input to result output.\n\nOverview\nDetailed flow\nPetriNet\nExecutions\nLocate\nUser contributions\nCompare independent nets\nCompare checkpoints\nRecorded source queries\nWorksets\nLocate activity\nRefresh\nLive\nAgent overview \u00b7 Agent \u2192 Agent only\n2 Agents \u00b7 1 successor relations\nLine bridges\n0 independent crossings\nA bridge means crossing without joining. Connections exist only at node endpoints.\nAgent\nimplementer\nCarries out the declaredAgent task in this workfl\u2026\nAgent\nreviewer\nCarries out the declaredAgent task in this workfl\u2026\n\u2212\n\uff0b\nFit to view\nReset focus\nMinimap\nDrag to pan \u00b7 Scroll to zoom \u00b7 Select a step for details\nRun timelineCanonical checkpoints of this net version \u00b7 No unsettled-state replay\n\u25cf Live position\n\u25c0\nPlay\n\u25b6\n1\u00d7\n2\u00d7\n0.5\u00d7\n3 / 3 \u00b7 #2386\nSeeking changes the view only; it never pauses or reruns the task.\nAnimate changes\nLive observation \u00b7 5:05:58 PM \u00b7 Layouts: 1\nCheckpoint recorded: 10/13/2026, 3:58:24 PM"
+}

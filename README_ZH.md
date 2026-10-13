@@ -23,6 +23,14 @@ workspace 或恢复状态的独立所有者。
 | 查看 | 终端投影和本地只读 PetriNet 看板 |
 | 恢复 | owner-stop resume 与用户选择 checkpoint 的 reopen |
 
+当前协作入口是[复制、共创并复用同一 Agent 项目](examples/project_collaboration/README_ZH.md)。完整项目包含定义、输入、环境、原任务、验收器、来源与许可证；两个受控贡献者解决真实冲突并形成双 parent 修订 M。业务执行前依次采用 M → base 内容新后继 → M 内容新后继，再下载精确原 M，由新身份、独立授权的 receiver 导入。source 与 receiver 均由 implementer／reviewer 两个调用真实模型的 stock AgentLoop 职责执行同一原始多源合并任务；receiver 包不含 source 的业务答案。[操作指南](docs/guides/project-entry_ZH.md)给出导入、审核、接纳、采用、下载和运行步骤。
+
+![实际项目 source Overview：Implementer → Reviewer。](examples/project_collaboration/figures/source-overview.png)
+
+2026-10-13 的有界结果为 **43 次登记／42 次响应，上限 48**：source 23／22（保留 1 次 `NOT_SUBMITTED` 原失败、2 个完成业务 firing），receiver 20／20、2 个完成业务 firing。两端路径适配原断言均 **3/3 PASS**，独立完整 instruction 审阅为 **ACCEPT_BOTH**；原 `test.sh` **NOT_RUN**，grader **VISIBLE**，不称盲评官方容器成绩。全部四行／20 单元格和三项完整字段冲突经独立核对；可选 status 归一化歧义仍披露。
+
+业务 PN 建模两个 agent 的职责与交接；两端 Overview 均为 2 节点／1 边，完整业务 PN 为 5 节点／6 弧。文件物化与 workspace finalization 的真实下级执行 PN 在同一 Registry 内归属于精确业务 invocation/firing，具有分开的 token、firing 和 checkpoint；AgentLoop 日志不替代执行 PN。受支持范围是单一可信 OS 用户下的受控主体、普通 Module 贡献与显式 scoped 读取／owner 采用。业务前内容恢复不复活已消费或终态 token，也不回滚外部效果；不证明真人身份认证、活跃 token 热迁移或 graph／open-region／selected-change／assembly 的广泛交换。
+
 2026-10-06公开记录：freeze04首轮18题为5 PASS / 9 FAIL / 4 BLOCKED；独立repair四题为1 PASS / 3 FAIL。旧14道已评分题未重跑。 [结果与限制](examples/automationbench/PUBLIC_RESULTS_20261006_ZH.md).
 
 显式opt-in的[作者/graph接口](docs/reference/declarations_ZH.md)、[Workset与normal-child root](docs/reference/normal-child-root-contract_ZH.md)及[只读source查询](docs/guides/source-queries_ZH.md)已集成；[有限验收](docs/guides/release-validation_ZH.md)不等于全HOST/I00–I10/advanced25通过，历史 freeze04 的真实浏览器窗口为 BLOCKED。
@@ -31,9 +39,9 @@ workspace 或恢复状态的独立所有者。
 
 [受控 managed 工具](docs/controlled-managed-tools.zh.md)介绍精确结果分页、有界并发、隔离 Python 程序、只读结果证据与来源预检。新能力通过显式 HOST 策略选择；既有默认工具目录与基准对照条件保持原样。
 
-当前协作入口是[Agent 任务网共建](examples/user_collaboration/agent_cobuild/README_ZH.md)。`curator.run` 与 `auditor.run` 两个原生任务 agent 使用 stock `AgentStage`／default `AgentLoop`，由两份 stock 单 agent 声明组成同一普通 Module，连接为 `curator.result → auditor.request`。两个受控原 principal 的确定性 source 程序分别加强 curator 输入来源合同和 auditor 对账合同。原 HOST 审阅精确 revision、连续推进受保护 Branch，再由 owner 在 target 执行前采用。
+历史零 provider 协议入口是[Agent 任务网共建](examples/user_collaboration/agent_cobuild/README_ZH.md)。`curator.run` 与 `auditor.run` 两个原生任务 agent 使用 stock `AgentStage`／default `AgentLoop`，由两份 stock 单 agent 声明组成同一普通 Module，连接为 `curator.result → auditor.request`。两个受控原 principal 的确定性 source 程序分别加强 curator 输入来源合同和 auditor 对账合同。原 HOST 审阅精确 revision、连续推进受保护 Branch，再由 owner 在 target 执行前采用。
 
-source 程序、网外控制动作与 target agent 分层记录；单 parent 链不表示同 base 自动合并。`local_process` 脚本驱动从实际输入与工具返回计算，以已登记任务 agent 展示结构／协议，不声称真实模型调用或认知能力；运行结果、产物与 Viewer 证据以示例页记录为准。
+该历史窗口的 source 程序、网外控制动作与 target agent 分层记录；其单 parent 链不表示同 base 自动合并。`local_process` 脚本驱动从实际输入与工具返回计算，以已登记任务 agent 展示结构／协议，不声称真实模型调用或认知能力；运行结果、产物与 Viewer 证据以示例页记录为准。
 
 历史应用评分与零模型 runtime 验证见[精选结果](docs/results/README_ZH.md)。每项保留实际源码与条件；这些旧窗口不认证后续组合产品，也不代表已发布新的 rc2 二进制。
 
@@ -165,7 +173,8 @@ Registry／run 中从用户所选切面追加新的执行代次。详见
 
 | 类别 | 案例 | 展示的能力 | 说明 |
 | --- |---|---|---|
-| Agent／角色工作流 | Agent 任务网共建 | Curator → auditor 原生 AgentLoop 角色、合同贡献与原 HOST 采用；脚本协议边界 | [共建示例](examples/user_collaboration/agent_cobuild/README_ZH.md) |
+| Agent／角色工作流 | 项目协作 | 真实双 parent M、业务前 M/base/M 采用与 source／receiver 独立原任务执行 | [项目示例](examples/project_collaboration/README_ZH.md) |
+| 历史协议工作流 | Agent 任务网共建 | Curator → auditor 原生 AgentLoop 角色、合同贡献与原 HOST 采用；脚本协议边界 | [共建示例](examples/user_collaboration/agent_cobuild/README_ZH.md) |
 | 工具／SDK fixture | 原生计算 | 本地插件、登记输入输出、零模型调用 | [原生工具](examples/native_plugin/README_ZH.md) |
 | Agent／角色工作流 | 模型—程序—模型计算 | 原生汇总 operation 前后的 Agent 节点 | [混合汇总](examples/hybrid_summary/README_ZH.md) |
 | Agent／角色工作流 | 串行、并行、文档和长流程 | 多 Agent 拓扑、有界并行、join 与时间轴 checkpoint | [工作流案例库](examples/workflow_patterns/README_ZH.md) |

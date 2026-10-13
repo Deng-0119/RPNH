@@ -7,7 +7,8 @@ const keys = (value, names) => value && typeof value === 'object' && !Array.isAr
 const kinds = {'net_instance/v1': ['net_instance', 'net_instance_version'],
     'marking_checkpoint/v1': ['marking_checkpoint', 'marking_checkpoint_version'],
     'petri_token/v1': ['petri_token', 'petri_token_version'], 'task/v1': ['task', 'task_version'],
-    'native_run_identity/v1': ['run', 'run_version']};
+    'native_run_identity/v1': ['run', 'run_version'],
+    'node_declaration/v1': ['node', 'node_declaration_version']};
 export function checkpointReference(value, type, legacy = false) {
     if (legacy && value && value.entity_id) {
         if (!keys(value, ['entity_type', 'entity_id', 'version_id'])) invalid();

@@ -2,16 +2,26 @@
   "schema_version": "rpnh/rrsi-role-declaration-provenance/v1",
   "source_repository": "https://github.com/Deng-0119/RPNH",
   "source_base_commit": "e51591d9593b9cfda249a9645cdde412acbf3ca4",
+  "source_base_note": "Historical baseline before the explicitly attributed source overlays; not one commit containing all current source files. source_files_sha256 records exact current generation inputs; local_product_commit is a local product identity, not a public-repository commit claim.",
+  "source_overlays": [
+    {
+      "path": "cpn/frontend/dashboard.py",
+      "base_sha256": "7ef6fe342d772699cb9159e8e8d129003b97a74bed9297cb90ee5e8f9b174d03",
+      "sha256": "dd085921d883b3895c5e55a3449c317d90d8f0e745726ff583cef21e2a0c1c1f",
+      "source_kind": "reviewed_project_collaboration_local_product",
+      "local_product_commit": "c334e2c0802de35a6ebe468f25db764fcfede0ed"
+    }
+  ],
   "source_files_sha256": {
     "examples/rrsi_v06/src/rpnh_rrsi/formal_role.py": "70291ad5e972fb524c4f8758fc715c78e2ed58c3028a41e327fcf687ef52c56b",
     "cpn/rpnh/compiler.py": "ce1c82eb52b26fb57e17e1f10afb235b6f19e128f27c034974553bab44622215",
     "cpn/rpnh/executable_net.py": "8842d3dadde43d0d325b6c01b3a829169452566e919619ef2bfed86bd3d68441",
     "cpn/rpnh/inspection.py": "cbb5bebeadd1c3ea5915f300732d8078bc3ed5a6c8caef027e96b60d9cd68f74",
-    "cpn/frontend/dashboard.py": "7ef6fe342d772699cb9159e8e8d129003b97a74bed9297cb90ee5e8f9b174d03",
+    "cpn/frontend/dashboard.py": "dd085921d883b3895c5e55a3449c317d90d8f0e745726ff583cef21e2a0c1c1f",
     "examples/_support/declaration_identity.py": "a2fb6cc843939c3a23a702f821e5f021ff7b579c01062b328a4b13f95f645682"
   },
   "generator": "examples/rrsi_v06/declarations.py",
-  "generator_sha256": "fe7d76c039bc5fc98483d9ce1f248a966ae8643058214ba2e2c9c4b250f3a625",
+  "generator_sha256": "d21e73adddae331ad2006739bf78a8fdecdf167fedd8570e2234d430147f744d",
   "serialization": "UTF-8 json.dumps(ensure_ascii=False, indent=2, allow_nan=False) + LF",
   "source_mode": "initial_configured",
   "observation_head": null,

@@ -1125,8 +1125,16 @@
       "path": "rpnh/package_preview.v2.schema.json"
     },
     {
+      "schema_id": "rpnh/package_preview/v3",
+      "path": "rpnh/package_preview.v3.schema.json"
+    },
+    {
       "schema_id": "rpnh/package_resolution_lock/v2",
       "path": "rpnh/package_resolution_lock.v2.schema.json"
+    },
+    {
+      "schema_id": "rpnh/package_resolution_lock/v3",
+      "path": "rpnh/package_resolution_lock.v3.schema.json"
     },
     {
       "schema_id": "rpnh/package_target/v1",
@@ -1175,6 +1183,10 @@
     {
       "schema_id": "rpnh/share_package/v2",
       "path": "rpnh/share_package.v2.schema.json"
+    },
+    {
+      "schema_id": "rpnh/share_package/v3",
+      "path": "rpnh/share_package.v3.schema.json"
     },
     {
       "schema_id": "rpnh/typed_call/v1",

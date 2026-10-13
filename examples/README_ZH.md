@@ -15,8 +15,18 @@
 
 ## Agent 与角色工作流
 
+完整项目旅程从[复制、共创并复用同一 Agent 项目](project_collaboration/README_ZH.md)开始：
+解决两方贡献冲突形成原双 parent M，业务前三次采用内容后，下载精确 M 给独立 receiver。
+两端均运行 stock implementer/reviewer agent。注明日期的结果为 43 次登记请求／42 次响应，
+两端原路径适配断言均 3/3 PASS；grader 已可见，原 `test.sh` 未运行。
+查看[完整业务 PN](project_collaboration/figures/source-petri.png)、真实下级执行网及
+[图像来源](project_collaboration/figures/provenance.json)。
+
+![实际完成的项目概览：Implementer → Reviewer。](project_collaboration/figures/source-overview.png)
+
 | 目标 | 案例 | 图册或指南 | 默认模型边界 |
 |---|---|---|---|
+| 完整项目复制、冲突协调与精确 M 独立复用 | [项目共建](project_collaboration/README_ZH.md) | [实际业务与执行 PN](project_collaboration/README_ZH.md#实际-viewer项目与两层-pn) | 既有获准真实 profile；受控贡献者 |
 | 两项原主体贡献共建 curator → auditor 合同 | [Agent 任务网共建](user_collaboration/agent_cobuild/README_ZH.md) | 实际运行与证据见示例页 | 原生 AgentLoop；local_process 脚本协议演示 |
 | 模型—程序—模型计算 | [混合汇总](hybrid_summary/README_ZH.md) | [Detailed flow](hybrid_summary/README_ZH.md) | 脚本替身；可传入精确真实 profile |
 | 串行、并行、文档和长流程结构 | [工作流模式](workflow_patterns/README_ZH.md) | [PN 与简化视图图册](workflow_patterns/README_ZH.md) | 脚本替身；可传入精确真实 profile |

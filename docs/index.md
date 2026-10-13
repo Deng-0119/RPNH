@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: en
   counterpart: index_ZH.md
-  revision: "2026-10-12.4"
+  revision: "2026-10-13.2"
   status: maintained
   basis: "core; adapter differences explicitly labelled"
 ---
@@ -32,7 +32,8 @@ has a corresponding Chinese page.
 | Understand RPNH before trying or integrating it | [Technical report](technical-report.md) |
 | Install core/basic, source or wheel | [Installation](guides/installation.md) |
 | Run native, hybrid, task and installed cross-host examples | [Examples](guides/examples.md) |
-| Co-build agent input-lineage and reconciliation contracts | [Agent-network co-building](../examples/user_collaboration/agent_cobuild/README.md) |
+| Copy, co-create, adopt and independently reuse a complete agent project | [Project collaboration](../examples/project_collaboration/README.md), [operator guide](guides/project-entry.md) |
+| Inspect historical agent input-lineage and reconciliation protocol | [Agent-network co-building](../examples/user_collaboration/agent_cobuild/README.md) |
 | Approve a mock refund with two distinct native principals | [Controlled refund application](../examples/approval_workflow/README.md) |
 | Admit a synthetic external result to one original run | [External-result quote application](../examples/a2a_quote/README.md) |
 | Export and modify a dependency-complete example | [Reusable examples](guides/examples.md#export-an-example-and-make-it-yours) |
@@ -81,9 +82,15 @@ has a corresponding Chinese page.
 | Author ordinary descendants and independent copies of selective transplants | [Transplant descendants](reference/plain-transplant-descendants.md) |
 | Review historical scores, exact sources and unrun scope | [Curated results](results/README.md) |
 
-The current collaboration entry is [agent-network co-building](../examples/user_collaboration/agent_cobuild/README.md). Two native task-agent roles, `curator.run` and `auditor.run`, use stock `AgentStage`/default `AgentLoop` in an ordinary Module assembled from two stock single-agent declarations, with `curator.result → auditor.request`. Deterministic source programs from two controlled original principals strengthen the curator input-lineage contract and auditor reconciliation contract. The original HOST reviews exact revisions, advances a protected Branch sequentially and enables owner adoption before target execution.
+The current collaboration entry is [copy, co-create and reuse one agent project](../examples/project_collaboration/README.md). A complete project includes definitions, inputs, environment requirements, the original task, verifier, provenance and licenses. Two controlled contributors resolve real conflicts into a two-parent revision M. Before business execution, the source adopts M → a new successor with base content → a new successor with M content, then downloads exact original M for an independently authorized receiver with fresh identities. Source and receiver each run the original multi-source merge task through two provider-backed stock implementer/reviewer AgentLoop roles; the receiver package contains no source business answers. The [operator guide](guides/project-entry.md) covers import, review, acceptance, adoption, download and execution.
 
-Source programs, external control actions and target agents remain separate; this single-parent chain does not imply automatic same-base merging. A `local_process` scripted driver computes from actual inputs and tool returns. This demonstrates structure and protocol using registered task agents. It makes no live-model or cognition claim; execution results, artifacts and Viewer evidence are reported on the example page.
+The bounded **2026-10-13** result is **43 registered requests / 42 responses within a limit of 48**: source 23/22, retaining one original `NOT_SUBMITTED` failure and two completed business firings; receiver 20/20 and two completed business firings. Both path-adapted original assertion sets are **3/3 PASS**, and independent full-instruction review is **ACCEPT_BOTH**. Original `test.sh` is **NOT_RUN** and the grader was **VISIBLE**; these are not blind official-container scores. Independent checks cover all four rows/20 cells and three complete field conflicts; optional status normalization remains a disclosed instruction ambiguity.
+
+The business PN models the two agents' responsibilities and handoff: each Overview has two nodes/one edge, and each full business PN has five nodes/six arcs. Actual file-materialization and workspace-finalization child execution PNs belong to exact business invocations/firings in the same Registry, with separate tokens, firings and checkpoints; AgentLoop logs do not substitute for execution PNs. Supported scope is controlled principals under one trusted OS user, ordinary Module contributions, explicit scoped reads and owner adoption. Pre-business content restoration does not resurrect consumed or terminal tokens or roll back external effects. It does not establish real-human authentication, live-token hot migration or broad graph/open-region/selected-change/assembly exchange.
+
+The historical zero-provider protocol entry is [agent-network co-building](../examples/user_collaboration/agent_cobuild/README.md). Two native task-agent roles, `curator.run` and `auditor.run`, use stock `AgentStage`/default `AgentLoop` in an ordinary Module assembled from two stock single-agent declarations, with `curator.result → auditor.request`. Deterministic source programs from two controlled original principals strengthen the curator input-lineage contract and auditor reconciliation contract. The original HOST reviews exact revisions, advances a protected Branch sequentially and enables owner adoption before target execution.
+
+In that historical window, source programs, external control actions and target agents remain separate; its single-parent chain does not imply automatic same-base merging. A `local_process` scripted driver computes from actual inputs and tool returns. This demonstrates structure and protocol using registered task agents. It makes no live-model or cognition claim; execution results, artifacts and Viewer evidence are reported on the example page.
 
 ## Reading the reference
 Declaration contracts, advanced trusted-host interfaces and private implementation modules are explicitly separated. Source paths in each page are repository-relative navigation aids, not independent installation instructions. Optional APIs are labelled by capability; their availability must be checked in the selected source/artifact. A generated page does not grant SDK stability.

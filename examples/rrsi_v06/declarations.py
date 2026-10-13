@@ -23,6 +23,15 @@ ROLES = ("analyst", "proposer", "critic", "digester")
 ROOT = Path(__file__).resolve().parents[2]
 FIGURES = Path(__file__).resolve().parent / "figures"
 SOURCE_BASE_COMMIT = "e51591d9593b9cfda249a9645cdde412acbf3ca4"
+# Exact source overlay accepted for this combined source build. This is a local
+# product identity, not a claim that it is a commit in the public repository.
+SOURCE_OVERLAYS = ({
+    "path": "cpn/frontend/dashboard.py",
+    "base_sha256": "7ef6fe342d772699cb9159e8e8d129003b97a74bed9297cb90ee5e8f9b174d03",
+    "sha256": "dd085921d883b3895c5e55a3449c317d90d8f0e745726ff583cef21e2a0c1c1f",
+    "source_kind": "reviewed_project_collaboration_local_product",
+    "local_product_commit": "c334e2c0802de35a6ebe468f25db764fcfede0ed",
+},)
 SOURCE_PATHS = (
     "examples/rrsi_v06/src/rpnh_rrsi/formal_role.py",
     "cpn/rpnh/compiler.py",
@@ -75,6 +84,24 @@ def build_role_frame(role: str):
     return _frame_from_compiled(role, compile_role_declaration(role))[0]
 
 
+def _source_overlay_records(source_hashes):
+    """Attribute exact reviewed inputs; unknown generation inputs need new evidence.
+
+    This check is used only by the declaration artifact generator, not by the
+    Viewer or product runtime.
+    """
+    source_overlays = []
+    for overlay in SOURCE_OVERLAYS:
+        current = source_hashes[overlay["path"]]
+        if current == overlay["sha256"]:
+            source_overlays.append(dict(overlay))
+        elif current != overlay["base_sha256"]:
+            raise ValueError(
+                f"{overlay['path']}: unreviewed source hash; update source attribution explicitly"
+            )
+    return source_overlays
+
+
 def generated_files():
     """Return reproducible bytes, keeping historical screenshots/provenance intact."""
     historical_path = ROOT / "examples/rrsi_v06/results/figure-provenance.json"
@@ -97,11 +124,20 @@ def generated_files():
             "frame_sha256": digest(outputs[path]), "summary": projection["summary"],
             "identity_source": "declared_llm_executor",
         })
+    source_hashes = {path: digest((ROOT / path).read_bytes()) for path in SOURCE_PATHS}
+    source_overlays = _source_overlay_records(source_hashes)
     provenance = {
         "schema_version": "rpnh/rrsi-role-declaration-provenance/v1",
         "source_repository": "https://github.com/Deng-0119/RPNH",
         "source_base_commit": SOURCE_BASE_COMMIT,
-        "source_files_sha256": {path: digest((ROOT / path).read_bytes()) for path in SOURCE_PATHS},
+        "source_base_note": (
+            "Historical baseline before the explicitly attributed source overlays; "
+            "not one commit containing all current source files. source_files_sha256 "
+            "records exact current generation inputs; local_product_commit is a "
+            "local product identity, not a public-repository commit claim."
+        ),
+        "source_overlays": source_overlays,
+        "source_files_sha256": source_hashes,
         "generator": "examples/rrsi_v06/declarations.py",
         "generator_sha256": digest(Path(__file__).read_bytes()),
         "serialization": "UTF-8 json.dumps(ensure_ascii=False, indent=2, allow_nan=False) + LF",

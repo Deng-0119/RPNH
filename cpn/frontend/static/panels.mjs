@@ -1,4 +1,5 @@
 import { activityRequest, activityCards } from './firing-activity.mjs';
+import { selectorForFrame } from './checkpoint-view.mjs';
 import { stable } from './model.mjs';
 import { t as tr, messageError } from './i18n.mjs';
 import { referenceText, firingSummary, arcLabel } from './model.mjs';
@@ -12,7 +13,7 @@ function pairs(target, values) { const dl = element('dl', null, 'kv'); for (cons
     dl.append(element('dt', k), element('dd', v));
 } target.append(dl); }
 function json(target, label, value, opened = false) { const d = element('details'), summary = element('summary', label); d.append(summary, element('pre', JSON.stringify(value, null, 2))); d.open = opened; target.append(d); }
-export function renderInspector(target, frame, selection, tab = 'about', firingTarget = null, select = () => { }, graph = null, openFlow = () => {}, activity = null, resource = null) {
+export function renderInspector(target, frame, selection, tab = 'about', firingTarget = null, select = () => { }, graph = null, openFlow = () => {}, activity = null, resource = null, managed = null, execution = null) {
     target.replaceChildren();
     if (graph?.view_mode === 'overview') {
         const selected = selection && (selection.kind === 'node' ? graph.nodes : graph.edges)
@@ -111,11 +112,15 @@ export function renderInspector(target, frame, selection, tab = 'about', firingT
                 const f = row.firing ?? {}, box = element('details', null, 'info-card');
                 box.dataset.firingId = row.refKey ?? '';
                 box.dataset.memberId = item.id;
-                box.open = sameFiringTarget(row.target, firingTarget);
+                box.open = sameFiringTarget(row.target, firingTarget)
+                    || (managed?.state.open && stable(managed.state.params?.firing_ref) === stable(f.firing_ref))
+                    || (execution?.state.open && stable(execution.state.params?.firing_ref) === stable(f.firing_ref));
                 box.append(element('summary', tr("第 {0} 次 · {1}", f.attempt_index ?? '?', executionStatus(f.status))));
                 pairs(box, [[tr("业务结果"), f.business_outcome ?? tr("未提供")], [tr("准入位置"), f.admission_ordinal ?? tr("未提供")]]);
                 box.append(element('p', referenceText(f.firing_ref), 'mono'));
                 json(box, tr('完整 firing 引用'), f.firing_ref ?? null);
+                if (managed) renderManagedTools(box, frame, f, managed);
+                if (execution) renderExecutionNets(box, frame, f, execution);
                 if (row.reason) box.append(element('p', navigationReason(row.reason), 'muted'));
                 for (const event of f.events ?? [])
                     box.append(element('p', `#${event.ordinal} · ${event.type}`, 'muted'));
@@ -255,6 +260,226 @@ function renderActivity(target, frame, item, controls) {
             json(card,tr('完整 firing 引用'),f.firing_ref,true);
             for(const r of f.records) card.append(element('p',tr('记录 #{0} · {1} · 完整事务提交 #{2}',r.recorded_ordinal,r.event_type,r.transaction_commit_ordinal),'mono'));
             box.append(card);
+        }
+    }
+    target.append(box);
+}
+
+
+export function managedRequest(frame, firing) {
+    if (!firing?.firing_ref || firing.status !== 'settled') throw new Error('canonical firing required');
+    return {...selectorForFrame(frame), firing_ref: firing.firing_ref};
+}
+export function managedPath(params) {
+    return '/api/v2/managed-tools?' + new URLSearchParams(Object.entries(params).map(([k,v]) =>
+        [k, typeof v === 'object' ? JSON.stringify(v) : String(v)]));
+}
+export function normalizeManaged(value, params, frame) {
+    const selected = {...params}; delete selected.firing_ref;
+    if (value?.schema_version !== 'rpnh/managed_tools/v1' || value.read_only !== true
+        || value.coverage !== 'canonical_programs_at_checkpoint'
+        || stable(value.selector) !== stable(selected) || stable(value.firing_ref) !== stable(params.firing_ref)
+        || value.task_id !== frame.source.task_id
+        || !Number.isSafeInteger(value.capture?.head_ordinal) || value.capture.head_ordinal < params.cut
+        || !Number.isSafeInteger(value.capture.writer_fencing_epoch)
+        || !Array.isArray(value.records) || !Array.isArray(value.program_refs)) throw new Error('managed scope differs');
+    const records = new Map(value.records.map(r => [stable(r.ref), r]));
+    if (records.size !== value.records.length || value.program_refs.some(ref => !records.has(stable(ref)))
+        || value.records.some(r => !Array.isArray(r.links) || !r.value || r.links.some(l => !records.has(stable(l.ref)))))
+        throw new Error('managed exact links differ');
+    return value;
+}
+
+export function createManagedTools({request, getFrame, onChange, onOpen, onClose,
+    kind = 'managed'}) {
+    // Both opt-in evidence panels share cancellation and retained-frame lifetime.
+    const buildRequest = kind === 'execution' ? executionNetRequest : managedRequest;
+    const requestPath = kind === 'execution' ? executionNetPath : managedPath;
+    const normalize = kind === 'execution' ? normalizeExecutionNets : normalizeManaged;
+    let generation = 0, controller;
+    const control = {state: {open:false}, close(notify = true) {
+        const wasOpen = control.state.open;
+        ++generation; controller?.abort(); control.state = {open:false};
+        if (notify) onChange();
+        if (wasOpen) onClose();
+    }, async load(firing) {
+        const frame = getFrame(), params = buildRequest(frame, firing);
+        controller?.abort(); controller = new AbortController(); const id = ++generation;
+        control.state = {open:true, params, loading:true, value:null, selected:null, error:null};
+        onOpen(); onChange();
+        try {
+            const value = await request(requestPath(params), controller.signal);
+            if (id !== generation || frame !== getFrame()) return;
+            control.state.value = normalize(value, params, frame);
+        } catch (error) {
+            if (id !== generation || error.name === 'AbortError') return;
+            control.state.error = error.status === 403 ? 'access_changed' : error.status === 409 ? 'stale_observation' : error.status === 501 ? 'unsupported' : 'read_failed';
+        } finally {
+            if (id === generation && frame === getFrame()) {control.state.loading = false; onChange();}
+        }
+    }, select(ref) {
+        if (kind === 'execution') {
+            const child = control.state.value?.children.find(c => stable(c.execution_instance_ref) === stable(ref));
+            if (child) {control.state.selected = child.execution_instance_ref; onChange();}
+            return;
+        }
+        const record = control.state.value?.records.find(r => stable(r.ref) === stable(ref));
+        if (record) {control.state.selected = record.ref; onChange();}
+    }};
+    return control;
+}
+
+function el(tag, text, cls) {
+    const node = document.createElement(tag); if (text != null) node.textContent = text;
+    if (cls) node.className = cls; return node;
+}
+const version = ref => ref.version_id ?? ref.resource_version_id;
+export function renderManagedTools(target, frame, firing, control) {
+    let params; try {params = managedRequest(frame, firing);} catch {return;}
+    const box = el('section', null, 'managed-tools-section');
+    const open = el('button', tr('查看托管程序证据'), 'firing-row');
+    open.dataset.managedOpen = version(firing.firing_ref); open.onclick = () => control.load(firing); box.append(open);
+    const state = control.state;
+    if (!state.open || stable(state.params) !== stable(params)) {target.append(box); return;}
+    const close = el('button', tr('关闭托管程序证据')); close.dataset.managedClose = 'true';
+    close.onclick = () => control.close(); box.append(close); open.disabled = state.loading;
+    if (state.loading) box.append(el('p', tr('正在读取托管程序证据…'), 'muted'));
+    if (state.error) box.append(el('p', `${tr('托管程序证据未提供')} · ${state.error}`, 'muted'));
+    const value = state.value;
+    if (value) {
+        box.append(el('p', tr('只读托管记录 · 检查点 {0} · 捕获 H{1}/E{2}', params.cut, value.capture.head_ordinal, value.capture.writer_fencing_epoch), 'muted'),
+            el('p', tr('仅展示原记录的调用、收据和结果字段；子调用不是 PN 节点或 token。'), 'muted'));
+        const link = (label, ref, parent = box) => {
+            const b = el('button', `${label} · ${version(ref)}`, 'firing-row');
+            b.dataset.managedRef = version(ref); b.dataset.managedLabel = label;
+            b.onclick = () => control.select(ref); parent.append(b);
+        };
+        for (const ref of value.program_refs) link('parent', ref);
+        if (!value.program_refs.length) box.append(el('p', tr('此检查点的该 firing 没有正式托管程序记录。'), 'muted'));
+        const record = value.records.find(r => stable(r.ref) === stable(state.selected));
+        if (record) {
+            const detail = el('section', null, 'info-card'); detail.dataset.managedDetail = record.kind;
+            detail.append(el('h3', `${record.value.logical_key ?? record.kind} · ${record.value.status ?? record.value.state ?? ''}`));
+            const ref = el('pre', JSON.stringify(record.ref, null, 2)); ref.dataset.managedExactRef = 'true'; detail.append(ref);
+            for (const l of record.links) link(l.label, l.ref, detail);
+            const body = el('pre', JSON.stringify(record.value, null, 2)); body.dataset.managedValue = 'true'; detail.append(body);
+            for (const field of ['output', 'aggregate', 'error', 'setup_error']) if (Object.hasOwn(record.value, field)) {
+                const output = el('details'); output.dataset.managedOutput = field;
+                output.append(el('summary', field), el('pre', JSON.stringify(record.value[field], null, 2))); detail.append(output);
+            }
+            box.append(detail);
+        }
+    }
+    target.append(box);
+}
+
+export function executionNetRequest(frame, firing) {
+    if (frame?.position?.mode !== 'live' || !firing?.firing_ref
+        || !['admitted', 'started', 'settled'].includes(firing.status)) throw new Error('current firing required');
+    return {...selectorForFrame(frame), firing_ref:firing.firing_ref,
+        expected_source:{task_id:frame.source.task_id,run_dir:frame.source.run_dir},
+        expected_capture:{head_ordinal:frame.source.verified_head_ordinal,writer_fencing_epoch:frame.source.writer_fencing_epoch}};
+}
+export function executionNetPath(params) {
+    return '/api/v2/execution-nets?' + new URLSearchParams(Object.entries(params).map(([k,v]) =>
+        [k, typeof v === 'object' ? JSON.stringify(v) : String(v)]));
+}
+export function normalizeExecutionNets(value, params) {
+    const selected = Object.fromEntries(['net_ref','checkpoint_ref','cut'].map(k=>[k,params[k]]));
+    if (value?.schema_version !== 'rpnh/execution_nets/v1' || value.read_only !== true
+        || value.coverage !== 'current_attached_execution_nets' || value.instance_ref !== null
+        || stable(value.selector) !== stable(selected) || stable(value.source) !== stable(params.expected_source)
+        || stable(value.capture) !== stable(params.expected_capture) || stable(value.firing_ref) !== stable(params.firing_ref)
+        || !['PROVISIONAL','PUBLISHED'].includes(value.publication_state)
+        || stable(value.parent?.parent_business_firing_ref) !== stable(params.firing_ref)
+        || stable(value.parent?.parent_business_net_ref) !== stable(params.net_ref)
+        || !Array.isArray(value.children)) throw new Error('execution observation differs');
+    const ids = new Set();
+    for (const child of value.children) {
+        const ref = child.execution_instance_ref, d = child.definition;
+        if (ref?.entity_type !== 'execution_instance/v1' || ids.has(stable(ref))
+            || Object.entries(value.parent).some(([k,v])=>stable(child[k])!==stable(v))
+            || child.checkpoint_ref?.entity_type !== 'execution_checkpoint/v1'
+            || stable(d?.execution_net_definition_ref)!==stable(child.execution_net_definition_ref)
+            || !Array.isArray(d?.places) || !Array.isArray(d?.transitions)
+            || !Array.isArray(d?.input_arcs) || !Array.isArray(d?.output_arcs)
+            || !Array.isArray(child.tokens) || !Array.isArray(child.active_firings)
+            || !Array.isArray(child.evidence_refs) || typeof child.sealed !== 'boolean'
+            || child.map_ready !== (child.status === 'map_ready')
+            || (child.map_ready && stable(child.map_ready_checkpoint_ref)!==stable(child.checkpoint_ref))
+            || child.tokens.some(t=>!d.places.includes(t.place))
+            || [...d.input_arcs,...d.output_arcs].some(a=>!d.places.includes(a.place)
+                || !d.transitions.some(t=>t.transition_id===a.transition_id))) throw new Error('execution child differs');
+        ids.add(stable(ref));
+    }
+    return value;
+}
+export function createExecutionNets(options) {
+    return createManagedTools({...options,kind:'execution'});
+}
+
+/** Draw only registered places, transitions, arcs and checkpoint tokens. */
+export function renderExecutionDiagram(target, child) {
+    const d=child.definition, height=Math.max(d.places.length,d.transitions.length)*86+44;
+    const ns='http://www.w3.org/2000/svg';
+    const svg=document.createElementNS(ns,'svg');
+    svg.setAttribute('viewBox',`0 0 640 ${height}`);svg.setAttribute('width','640');svg.setAttribute('height',String(height));
+    svg.setAttribute('role','img');svg.setAttribute('aria-label',tr('已登记执行网与当前 token'));
+    const add=(tag,attrs,text,parent=svg)=>{const n=document.createElementNS(ns,tag);
+        for(const [k,v] of Object.entries(attrs))n.setAttribute(k,String(v));
+        if(text!=null)n.textContent=text;parent.append(n);return n;};
+    const placeY=new Map(d.places.map((p,i)=>[p,44+i*86])), transitionY=new Map(d.transitions.map((t,i)=>[t.transition_id,44+i*86]));
+    for(const [arcs,input] of [[d.input_arcs,true],[d.output_arcs,false]]) for(const arc of arcs) {
+        const start={x:input?155:485,y:input?placeY.get(arc.place):transitionY.get(arc.transition_id)};
+        const end={x:input?485:155,y:input?transitionY.get(arc.transition_id):placeY.get(arc.place)};
+        const line=add('line',{x1:start.x,y1:start.y,x2:end.x,y2:end.y,stroke:'currentColor','data-execution-arc':input?'input':'output'});
+        add('title',{},`${input?arc.place:arc.transition_id} → ${input?arc.transition_id:arc.place} × ${arc.weight}`,line);
+        const angle=Math.atan2(end.y-start.y,end.x-start.x), x=end.x-10*Math.cos(angle),y=end.y-10*Math.sin(angle);
+        add('path',{d:`M ${x+4*Math.sin(angle)} ${y-4*Math.cos(angle)} L ${end.x} ${end.y} L ${x-4*Math.sin(angle)} ${y+4*Math.cos(angle)}`,fill:'none',stroke:'currentColor'});
+        add('text',{x:(start.x+end.x)/2,y:(start.y+end.y)/2+(input?-7:15),'text-anchor':'middle'},String(arc.weight));
+    }
+    for(const p of d.places) {
+        const y=placeY.get(p),tokens=child.tokens.filter(t=>t.place===p),group=add('g',{'data-execution-place':p});
+        add('circle',{cx:133,cy:y,r:22,fill:'var(--panel, #fff)',stroke:'currentColor'},null,group);
+        add('text',{x:133,y:y+5,'text-anchor':'middle'},String(tokens.length),group);
+        add('text',{x:133,y:y+39,'text-anchor':'middle'},p,group);
+        add('title',{},JSON.stringify(tokens),group);
+    }
+    for(const t of d.transitions) {
+        const y=transitionY.get(t.transition_id),group=add('g',{'data-execution-transition':t.transition_id});
+        add('rect',{x:485,y:y-18,width:26,height:36,fill:'var(--panel, #fff)',stroke:'currentColor'},null,group);
+        add('text',{x:498,y:y+39,'text-anchor':'middle'},t.transition_id,group);
+        const active=child.active_firings.filter(f=>f.transition_id===t.transition_id);
+        if(active.length)add('text',{x:535,y:y+5},`active: ${active.length}`,group);
+        add('title',{},JSON.stringify({transition:t,active_firings:active}),group);
+    }
+    const wrap=element('div',null,'execution-net-diagram');wrap.append(svg);target.append(wrap);
+}
+
+export function renderExecutionNets(target, frame, firing, control) {
+    let params;try {params=executionNetRequest(frame,firing);} catch {return;}
+    const box=element('section',null,'execution-nets-section'),button=element('button',tr('查看执行子网'),'firing-row');
+    button.dataset.executionOpen=firing.firing_ref.version_id;button.onclick=()=>control.load(firing);box.append(button);
+    const state=control.state;
+    if(!state.open || stable(state.params)!==stable(params)){target.append(box);return;}
+    const close=element('button',tr('返回业务 firing'));close.onclick=()=>control.close();box.append(close);
+    if(state.loading)box.append(element('p',tr('正在读取执行子网…'),'muted'));
+    if(state.error)box.append(element('p',`${tr('执行子网未提供')} · ${state.error}`,'muted'));
+    if(state.value){
+        const value=state.value;
+        box.append(element('p',tr('执行网只读观察 H{0}/E{1}',value.capture.head_ordinal,value.capture.writer_fencing_epoch),'muted'));
+        json(box,tr('父业务精确引用'),value.parent);
+        if(!value.children.length)box.append(element('p',tr('此观察的父 firing 没有已附着执行子网。'),'muted'));
+        for(const child of value.children){
+            const open=element('button',`${child.definition.definition_key} · ${child.status} · sealed: ${child.sealed}`,'firing-row');
+            open.dataset.executionInstance=child.execution_instance_ref.version_id;
+            open.onclick=()=>control.select(child.execution_instance_ref);box.append(open);
+        }
+        const child=value.children.find(c=>stable(c.execution_instance_ref)===stable(state.selected));
+        if(child){
+            box.append(element('h3',child.definition.definition_key));renderExecutionDiagram(box,child);
+            const {definition,...facts}=child;json(box,tr('执行实例、检查点、token 与证据引用'),facts,true);
+            json(box,tr('已登记执行网定义'),definition);
         }
     }
     target.append(box);

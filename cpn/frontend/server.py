@@ -305,6 +305,55 @@ def handle_request(
                 response = _response(200, "application/json; charset=utf-8", json.dumps(payload, allow_nan=False).encode("utf8"))
             except (ValueError, RuntimeError):
                 response = _response(409, "application/json; charset=utf-8", b'{"error":"workset_unavailable"}')
+    elif path == "/api/v2/execution-nets":
+        from .execution_nets import parse_query, SCHEMA, ExecutionQueryError, ExecutionStale, ExecutionAccessChanged
+        import sqlite3
+        try:
+            params = parse_query(urlsplit(target).query)
+            action = getattr(provider, 'execution_nets', None)
+            if not callable(action):
+                raise NotImplementedError('unsupported')
+            payload = action(**params)
+            if (payload.get('schema_version') != SCHEMA
+                    or payload.get('selector') != {k: params[k] for k in ('net_ref', 'checkpoint_ref', 'cut')}
+                    or payload.get('firing_ref') != params['firing_ref']
+                    or payload.get('capture') != params['expected_capture']
+                    or payload.get('source') != params['expected_source']
+                    or payload.get('instance_ref') != params.get('instance_ref')):
+                raise ValueError('execution response identity differs')
+            response = _response(200, 'application/json; charset=utf-8', json.dumps(payload, ensure_ascii=False, allow_nan=False).encode('utf8'))
+        except NotImplementedError:
+            response = _response(501, 'application/json; charset=utf-8', b'{"error":"unsupported"}')
+        except ExecutionQueryError:
+            response = _response(400, 'application/json; charset=utf-8', b'{"error":"invalid_query"}')
+        except (ExecutionAccessChanged, PermissionError):
+            response = _response(403, 'application/json; charset=utf-8', b'{"error":"access_changed"}')
+        except ExecutionStale:
+            response = _response(409, 'application/json; charset=utf-8', b'{"error":"stale_observation"}')
+        except (ValueError, TypeError, KeyError, RuntimeError, OSError, sqlite3.Error):
+            response = _response(503, 'application/json; charset=utf-8', b'{"error":"read_failed"}')
+    elif path == "/api/v2/managed-tools":
+        from .managed_tools import parse_query, SCHEMA, ManagedQueryError, ManagedStale
+        import sqlite3
+        try:
+            params = parse_query(urlsplit(target).query)
+            action = getattr(provider, 'managed_tools', None)
+            if not callable(action):
+                raise NotImplementedError('unsupported')
+            payload = action(**params)
+            if (payload.get('schema_version') != SCHEMA
+                    or payload.get('selector') != {k: params[k] for k in ('net_ref', 'checkpoint_ref', 'cut')}
+                    or payload.get('firing_ref') != params['firing_ref']):
+                raise ValueError('managed response identity differs')
+            response = _response(200, 'application/json; charset=utf-8', json.dumps(payload, ensure_ascii=False, allow_nan=False).encode('utf8'))
+        except NotImplementedError:
+            response = _response(501, 'application/json; charset=utf-8', b'{"error":"unsupported"}')
+        except ManagedQueryError:
+            response = _response(400, 'application/json; charset=utf-8', b'{"error":"invalid_query"}')
+        except ManagedStale:
+            response = _response(409, 'application/json; charset=utf-8', b'{"error":"stale_observation"}')
+        except (ValueError, TypeError, KeyError, RuntimeError, OSError, sqlite3.Error):
+            response = _response(503, 'application/json; charset=utf-8', b'{"error":"read_failed"}')
     elif path == "/api/v2/firing-activity":
         from .firing_activity import parse_query, ActivityQueryError, ActivityStaleError, ActivityAccessChanged
         from cpn.rpnh.registry._event_store.views import ActivityCursorError

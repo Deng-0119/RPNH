@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: en
   counterpart: typed-registry-exchange_ZH.md
-  revision: "2026-10-07.1"
+  revision: "2026-10-13.1"
   status: source-reviewed-pre-release
 ---
 
@@ -24,7 +24,7 @@ before invoking a reader and rechecks before returning any result.
 | Entry | Exact public record | PN projection | Subnet exchange |
 | --- | --- | --- | --- |
 | Resource v1 | Header only; never payload | Not applicable | Required declared materials only |
-| Author revision v1 | Typed descriptor | Stored ordinary author and explicit plain transform producers | Ordinary closed, root/single-parent only |
+| Author revision v1 | Typed descriptor | Stored ordinary author, explicit plain transform and plain merge producers | Plain closed roots/single-parent history; verified ordered dual-parent plain merges |
 | Graph author revision v2/v3 | Typed descriptor | Explicitly unsupported | Explicitly unsupported |
 | Branch v1/v2/v3; SourceSet v1 | Typed descriptor | Not applicable | Not imported as a new branch/source selection |
 | Assembly v1–v8 | Typed descriptor | Explicitly unsupported | Explicitly unsupported |
@@ -42,7 +42,7 @@ source-qualified; an artifact digest is not a Registry reference.
 
 ## Stored projections and mappings
 
-`ClosedModuleAuthor`, `PlainModuleTransformAuthor` and `AssemblyAuthorV9` publish
+`ClosedModuleAuthor`, `PlainModuleTransformAuthor`, `PlainModuleMergeAuthor` and `AssemblyAuthorV9` publish
 a separate immutable projection resource before their revision success point.
 It records the compiler inventory actually used by that producer and checksums
 for the exact material dependencies. Public reads revalidate those bytes,
@@ -103,6 +103,77 @@ in addition to the outer portable manifest inventory. Deterministic ZIP member
 ordering/timestamps and a collision-free allocator cover both generated and
 preserved paths, including case collisions.
 
+## Plain merge exchange v2
+
+A closure containing an ordered two-parent plain merge uses the inner
+`rpnh/subnet_exchange/v2` inventory. The outer manifest is `rpnh/share_package/v3`, with a mandatory
+`subnet_exchange` artifact path and exact inner schema version. The v3 preview
+and resolution-lock contracts retain this marker; the ordinary v1/v2 schemas
+and their default API behavior are unchanged. Root/single-parent ordinary
+histories without preserved v3 origin keep their previous outer/inner versions.
+
+V3 is also retained when re-exporting a locally imported revision whose inert
+original package was v3, even though the new local history uses inner exchange
+v1. This prevents an older reader from silently treating the source proof as
+an unrelated generic document. The 4544cdc v1/v2 parser rejects outer v3 with
+`UNSUPPORTED_PACKAGE_SCHEMA` before import. Renaming the manifest version is
+not a supported compatibility conversion.
+
+An optional v3 `environment_requirements_path` keeps the existing exact v1
+environment contract. It is never synthesized from HOST declarations. A mixed
+v1/v2/v3 closure uses lock v3; a lower-version root cannot select v3 dependencies.
+When any selected entry lacks formal environment requirements, environment
+readiness remains undeclared. This version gate grants no execution authority.
+
+The existing `rpnh/plain_merge_public_pn/v1` fixed-cut producer verifier is
+required at export. Every exact proof dependency is included: source identity,
+owner/bootstrap/principal descriptors, frozen schema authority, ancestor
+revisions, original materials, analysis, caller choices, result command,
+compiled inventories and stored graph. Required descriptors are inert evidence;
+export permission is checked for them as well as every material and revision.
+No observer grant, participant/session authority or active runtime is copied.
+
+Import reuses the original pure merge verifier to reconstruct the exact base,
+ordered parents, normalized analysis, choices, result materials, HOST inventory
+and public graph. Outer ancestor records must match their proof descriptor
+bytes; duplicate/missing/unused proof pins, changed identities or unsupported
+producers fail closed. Source proof establishes internal historical consistency,
+not external-publisher authentication, current access, a new local merge,
+runtime continuity or permission for the receiving owner. New local revision
+and element identities retain only explicit copy-origin correspondence.
+
+Shared-ancestor depth counts the longest path, and all parent/proof edges count
+toward the same package budget on both export and import. Merge archives and re-exports with preserved original archives use
+deterministic member ordering/timestamps and DEFLATE to fit the existing inert
+provenance envelope; expanded-byte, artifact and compression-ratio limits still
+apply. Existing stored archive bytes remain pinned in provenance; generating a new compressed export produces a new archive digest and is not an in-place rewrite. Same-command import replay still requires its original exact plan. Oversized histories remain unsupported. Designer constraints, graph,
+Assembly, selected-change and other specialized contracts remain rejected.
+
+## Retained package ancestry
+
+The original package is found across the verified revision ancestry, not only
+on the selected merge root. An imported seed can therefore be edited, forked
+and merged without dropping its task fixtures, documents, licenses, environment
+artifacts or exact dependency archives. One unique original archive/lock is
+required; distinct incompatible origins return `AMBIGUOUS_PACKAGE_ORIGIN`.
+Original requirement IDs are preserved for environment mappings, and newly
+required HOST contracts are appended without claiming the prior environment
+satisfies them.
+
+Retained copy-origin evidence is recursively checked against its exact original
+archives and lock, source exchange, selected definition, import plan digest,
+copy command and complete newly allocated element map. Every archive is
+admitted before its expanded materials are parsed, including all supplied
+dependencies; extra/unselected archives are rejected. Nested package and revision
+ancestry depths compose, with one shared archive/expanded-byte/member/edge
+budget. These checks bind historical evidence only. They do not create source
+principals, grants, leases, branches, runtime facts or authority in the receiver.
+
+This also tightens older inner-v1 evidence acceptance: previously accepted
+malformed, inconsistent or oversized retained histories can now fail. Ordinary
+v1/v2 schema bytes are unchanged; this is not a promise that every older package
+will pass the strengthened semantic checks.
+
 ## Import
 
 `plan_subnet_import(package, target=TargetRegistrySelection(...),
@@ -128,7 +199,7 @@ Registry history is fabricated. Claims in portable provenance are historical
 package evidence, not transferable authority or proof of current source access.
 
 Inert schemas can be registered through the target's existing owner gateway;
-conflicting schema identities are rejected. Executable implementations must
+conflicting schema identities are rejected. Before the command reservation, every source HOST schema must be present with identical bytes in the exact selected package closure; changing a schema artifact under the same `$id` is rejected. Executable implementations must
 already exist in the trusted target Registration. A Registry export's recorded
 HOST declaration identities must match the target; this check is not proof of
 runtime behavior. No Branch is advanced or configuration overwritten.
@@ -158,3 +229,18 @@ runtime/checkpoint reads, stale-head/racing writes, replay/interruption recovery
 inner inventory tampering, missing dependencies and v2 path/byte preservation.
 These functional tests do not replace the separate independent authorization
 review, real browser acceptance or same-package business terminal acceptance.
+
+The merge-specific deterministic regression is
+`python -m unittest discover -s tests -p 'test_subnet_merge_exchange_unittest.py' -v`.
+It needs the declared runtime dependencies but not pytest. It checks real
+Registry/observer/session exchange and adversarial closure cases, not a complete
+multi-user project journey or post-import business execution.
+
+All lock-selected packages, including v3 dependencies, have their mandatory
+exchange evidence verified in the same traversal budget. Unselected candidates
+are bounded during preview but are not traversed for exchange semantics.
+`PackageLimits.members` remains 128 per archive; `closure_members` is 256 across
+selected and recursively retained archives (repeated archives are charged again).
+The complete 18-artifact seed measured 96 members at merged export and 195 after
+re-export, with no individual archive exceeding 99 members. Tight aggregate limits
+fail closed rather than widening the per-archive allowance.

@@ -1,5 +1,24 @@
 /** Built-in UI messages only. Never translate run data, IDs or user metadata. */
 export const EN = Object.freeze({
+  "查看执行子网": "View execution child nets",
+  "返回业务 firing": "Return to business firing",
+  "正在读取执行子网…": "Loading execution child nets…",
+  "执行子网未提供": "Execution child nets unavailable",
+  "执行网只读观察 H{0}/E{1}": "Read-only execution observation H{0}/E{1}",
+  "父业务精确引用": "Exact business parent references",
+  "此观察的父 firing 没有已附着执行子网。": "No execution child nets are attached to this firing at this observation.",
+  "已登记执行网与当前 token": "Registered execution net and current tokens",
+  "执行实例、检查点、token 与证据引用": "Execution instance, checkpoint, token and evidence references",
+  "已登记执行网定义": "Registered execution net definition",
+
+  "查看托管程序证据": "View managed program evidence",
+  "关闭托管程序证据": "Close managed program evidence",
+  "正在读取托管程序证据…": "Loading managed program evidence\u2026",
+  "托管程序证据未提供": "Managed program evidence unavailable",
+  "只读托管记录 · 检查点 {0} · 捕获 H{1}/E{2}": "Read-only managed records \u00b7 Checkpoint {0} \u00b7 Capture H{1}/E{2}",
+  "仅展示原记录的调用、收据和结果字段；子调用不是 PN 节点或 token。": "Only call, receipt and result fields from original records are shown; children are not PN nodes or tokens.",
+  "此检查点的该 firing 没有正式托管程序记录。": "No canonical managed program records for this firing at this checkpoint.",
+
   "暂停 · 贡献观察": "Paused · contribution observation",
   "保留当前主图观察；贡献证据绑定精确检查点": "Main graph retained; contribution evidence is bound to the exact checkpoint",
   "贡献记录的身份或范围无效": "Contribution record identity or scope is invalid",

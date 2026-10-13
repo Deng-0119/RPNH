@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: typed-registry-exchange.md
-  revision: "2026-10-07.1"
+  revision: "2026-10-13.1"
   status: source-reviewed-pre-release
 ---
 
@@ -23,7 +23,7 @@ exact 引用、当前权限和固定 cut，在结果交付前再次核验。
 | 条目 | exact 公共记录 | PN 投影 | 子网交换 |
 | --- | --- | --- | --- |
 | resource v1 | 仅 header，不含正文 | 不适用 | 仅必要声明材料 |
-| author revision v1 | 类型化 descriptor | 新普通作者与显式 plain transform 的存储投影 | 仅普通 closed、根/单亲历史 |
+| author revision v1 | 类型化 descriptor | 普通作者、显式 plain transform 与 plain merge 的存储投影 | plain closed 根/单亲历史；经验证的有序双亲 plain merge |
 | graph author v2/v3 | 类型化 descriptor | 明确不支持 | 明确不支持 |
 | Branch v1/v2/v3、SourceSet v1 | 类型化 descriptor | 不适用 | 不导入为新 Branch/来源选择 |
 | Assembly v1–v8 | 类型化 descriptor | 明确不支持 | 明确不支持 |
@@ -39,7 +39,7 @@ exact 引用、当前权限和固定 cut，在结果交付前再次核验。
 
 ## 存储投影与映射
 
-`ClosedModuleAuthor`、`PlainModuleTransformAuthor` 和 `AssemblyAuthorV9`
+`ClosedModuleAuthor`、`PlainModuleTransformAuthor`、`PlainModuleMergeAuthor` 和 `AssemblyAuthorV9`
 在 revision 成功出版前发布独立、不可变的投影资源，保存生产者实际消费的 compiler
 inventory，以及 exact 材料依赖摘要。公共读取复核这些字节、source/element/boundary/
 HOST 材料、投影、层级及映射，只用离线 verifier 重新读取 compiler wire，不调用
@@ -83,6 +83,56 @@ manifest inventory，还核验内层 exchange 的每份 byte count、digest、ex
 parent/material 闭包及存储依赖 pin。ZIP 排序和时间戳确定；统一路径分配器同时避开所有
 已保留及新生成路径，包括大小写碰撞。
 
+## Plain merge 交换 v2
+
+闭包包含有序双亲 plain merge 时使用内部 `rpnh/subnet_exchange/v2` 清单。
+外层采用 `rpnh/share_package/v3`，必填 `subnet_exchange` artifact 路径及 exact 内部 schema 版本。
+v3 preview 和 resolution-lock 合同保留这一标记；原 v1/v2 schema 及默认 API 行为不变。
+没有惰性 v3 来源的普通根/单亲历史继续使用原外层/内部版本。
+
+本地导入修订再次导出时，如果原始惰性包为 v3，外层也保留 v3；新本地历史仍为内部 exchange v1。
+这避免旧 reader 将来源证明静默解释为无关 generic document。4544cdc 的 v1/v2 parser 在导入前
+以 `UNSUPPORTED_PACKAGE_SCHEMA` 拒绝外层 v3。手动改 manifest 版本不是受支持的兼容转换。
+
+v3 可选 `environment_requirements_path` 沿用原 exact v1 环境合同，不从 HOST 声明编造环境。
+v1/v2/v3 混合闭包使用 lock v3，低版本 root 不能选择 v3 依赖。
+只要有一个所选 entry 缺正式环境要求，环境准备仍为未声明；版本门不授予执行权限。
+
+导出必须通过既有 `rpnh/plain_merge_public_pn/v1` 固定 cut 生产者验证器。
+完整收录每个 exact proof 依赖：来源身份、owner/bootstrap/principal descriptor、
+固定 schema 权威、祖先修订、原始材料、analysis、调用方 choices、result command、
+compiled inventory 与存储图。这些 descriptor 仅为惰性证据；每项都须单独具备导出权限，
+与材料、修订同样检查。不复制 observer grant、participant/session 授权或活跃运行态。
+
+导入复用原纯 merge verifier，重构 exact base、有序 parents、归一化 analysis、choices、
+结果材料、HOST inventory 和公共图。外层祖先记录必须与 proof descriptor 字节一致；
+重复、缺失、未消费的 proof pin、身份变化及不支持的 producer 均闭合拒绝。
+来源证明只建立历史内部一致性，不认证外部发布者，不证明当前访问权限，不生成新本地 merge、
+运行连续性或接收 owner 的授权。新本地 revision/element 身份只保留显式 copy-origin 对应。
+
+共享祖先深度按最长路径计，所有 parent/proof 边在导出和导入中累计到同一包预算。
+Merge archive 及保留原包的再次导出保持固定成员顺序和时间戳，并使用 DEFLATE 以适配既有惰性 provenance 大小限制；
+展开字节、单 artifact 和压缩比限制继续有效。原 archive 字节仍在 provenance 中精确固定；
+新压缩导出产生新的 archive digest，不改写原包。同 command 导入重试仍要求原 exact plan。超预算历史仍不支持。
+designer constraints、graph、Assembly、selected-change 及其它 specialized 合同继续拒绝。
+
+## 原包祖先与再次复用
+
+原始 package 从已验证修订祖先闭包查找，不只读取当前 merge root 的字段。
+导入的 seed 可以修改、fork、merge，而不丢原任务 fixture、文档、许可证、环境 artifact
+和 exact 依赖 archive。要求唯一原 archive/lock；不一致多来源以 `AMBIGUOUS_PACKAGE_ORIGIN`
+明确拒绝。保留原 requirement ID 供环境映射；新增 HOST requirement 另行附加，
+不声称原环境已经满足新合同。
+
+惰性 copy-origin 会递归核对原 archive/lock、source exchange、所选 definition、import plan digest、
+copy command 及全部新分配的 element 映射。逐个 archive 在展开材料解析前按剩余预算准入；
+所有传入依赖收费，未选入 lock 的多余 archive 拒绝。嵌套包与修订祖先深度共同计数，
+全程共享 archive/展开字节/member/edge 预算。历史验证不在接收方创建来源principal、grant、
+lease、Branch、运行事实或权限。
+
+这也收紧旧内部 v1 的惰性历史接纳：以前可能接受的不一致、损坏或超预算历史现在会失败。
+普通 v1/v2 schema 字节不变，不意味着所有旧包都会通过加强后的语义检查。
+
 ## 导入
 
 `plan_subnet_import(package, target=TargetRegistrySelection(...), local_packages=...)`
@@ -122,3 +172,17 @@ manifest 引用；依赖 archive 原字节继续用于确定性重导出/重导�
 导出和目标导入、撤权、split/fusion、上下文敏感 Assembly v9 重建、exact runtime/checkpoint
 读取、过期 head/竞争写、重试/中断恢复、内层 inventory 篡改、缺依赖及 v2 路径/字节保留。
 这些功能测试不替代独立权限审阅、真实浏览器验收或同一精确包的业务 terminal 验收。
+
+导入写入 command reservation 前，来源 HOST 每个 schema 都必须在 exact selected package
+闭包中有相同字节；同 `$id` 的 artifact 替换不能改变来源证明所选 schema。
+
+Merge 专项确定性回归命令为
+`python -m unittest discover -s tests -p 'test_subnet_merge_exchange_unittest.py' -v`。
+它需要已声明的 runtime 依赖，不需要 pytest；验证真实 Registry/observer/session 交换及对抗闭包案例，
+不代表整套多人项目旅程或导入后的业务执行已经完成。
+
+lock 选中的所有包（包括 v3 依赖）的 mandatory exchange 均在同一共享预算内验真；
+未选候选仅做有界 preview，不遍历其 exchange 语义。单 archive 的 members 仍为128；
+新增末尾参数 closure_members=256，累计所选及递归保留的 archives，重复 archive 仍收费。
+完整18-artifact seed 实测 M 导出总96 members，再导出195，单 archive 最大99；
+紧聚合限额会明确拒绝，不能扩大单包限额。

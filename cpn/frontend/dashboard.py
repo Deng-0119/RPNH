@@ -318,6 +318,14 @@ class RegistryDashboard:
         from .firing_activity import firing_activity
         return firing_activity(self, **kwargs)
 
+    def managed_tools(self, **kwargs):
+        from .managed_tools import managed_tools
+        return managed_tools(self, **kwargs)
+
+    def execution_nets(self, **kwargs):
+        from .execution_nets import execution_nets
+        return execution_nets(self, **kwargs)
+
     def worksets(self):
         from .worksets import workset_view
         self._bound()

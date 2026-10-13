@@ -1,0 +1,29 @@
+{
+  "label": "resource-1-1",
+  "project": "source",
+  "source": {
+    "mode": "registry_current",
+    "task_id": "task:2b38a57c0b3f485982db07afeffa2c42",
+    "net_ref": {
+      "entity_type": "net_instance/v1",
+      "entity_id": {
+        "kind": "net_instance",
+        "value": "21b28e3a7ae35ec7bd56214557a52e3e"
+      },
+      "version_id": {
+        "kind": "net_instance_version",
+        "value": "f48524699a4154dca7c94299fde043d1"
+      }
+    },
+    "verified_head_ordinal": 3474,
+    "writer_fencing_epoch": 8
+  },
+  "position": {
+    "mode": "live",
+    "cursor": 3401,
+    "at": "2026-10-13T08:29:56.817825+00:00",
+    "latest_head": 3474
+  },
+  "checkpoint": "#3474 \u00b7 marking_checkpoint_version:4645b59b19b4525887a4a07f2e6f35a4",
+  "panel_text": "EXACT TOKEN REFERENCES\n\nActive \u00b7 petri_token_version:915a4cd45e3a5bdb8e1bdfcfce5b556d\n\nToken resource reference (full JSON)\n{\n  \"resource_id\": \"resource:55e52f0d0502542aaff16866e5af02df\",\n  \"resource_version_id\": \"resource_version:fd36bb17848a5fb5b426390ee7bdd632\"\n}\nView resource registration\nClose resource registration\nRESOURCE REGISTRATION DETAILS\n\nSelected checkpoint C3401 \u00b7 Capture H3474/E8\n\nRegistered size (bytes)\n8833\nRegistered media type\napplication/json\nRegistered schema identifier\napplication/rpnh_agent_text/v1\nRegistration publication recorded ordinal\n3226\nContaining complete transaction commit ordinal\n3228\n\nevent:2d66f3a44d7c4474b949a64d66b0e063\n\nRegistration positions do not establish first canonical visibility, access, consumption, or delivery.\n\nThis metadata projection adds no body reads; content integrity was not validated. Registered values are not measured values."
+}
