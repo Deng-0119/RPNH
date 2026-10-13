@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: en
   counterpart: ARCHITECTURE_ZH.md
-  revision: "2026-09-29.2"
+  revision: "2026-10-13.1"
   status: source-reviewed-pre-release
 ---
 
@@ -84,6 +84,14 @@ ownership and does not pause, restart, or stop a child.
 
 ## Workflow graph and PetriNet lowering
 
+RPNH retains two PN layers. The **business PN** models agents' task
+responsibilities, work actions, and handoffs. Here, "business" refers to those
+agent operations, not the task domain's ERP, routing, or other business process.
+Domain processes do not replace agent operations as the PN's subject; domain
+materials are Registry-indexed PN resources. The **execution PN** is the subordinate
+harness-mechanism layer beneath an exact admitted business invocation/firing,
+with its own instances and evidence as described below.
+
 A workflow declares nodes, typed input/output ports, one or more ingress and
 egress ports, and arcs. The dependency subgraph must be an entry-to-exit DAG and
 defines first-generation activation, including fan-out, parallel branches, and
@@ -125,6 +133,10 @@ An admitted agent firing runs an agent loop with a Registry-defined tool
 catalog. Semantic output is written through declared output ports. Tool actions,
 provider attempts, response acceptance, and settlement are tied to the exact
 firing and invocation identities.
+
+Loop, turn, action, and managed-child call records do not automatically create
+additional PN nodes. Their exact firing and Registry relationships remain
+distinct from explicitly declared PN structure.
 
 Each firing receives a private workspace view derived from the current
 Registry workspace revision. A bounded, network-disabled workspace action may

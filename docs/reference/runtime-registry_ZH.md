@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: runtime-registry.md
-  revision: "2026-10-04.1"
+  revision: "2026-10-13.1"
   status: source-reviewed-v0.1.0rc1
   basis: "core; adapter differences explicitly labelled"
 ---
@@ -74,7 +74,11 @@ runtime policy，也不能阻止 checkpoint reopen。失败 action 保持可见�
 
 `_ResourceServiceKernel` 保留 live core、资源权威和 delivery/publication 边界。`RunOwner.access_resource(execution, resource_ref, *, access_mode, command_id)` 使用准入 execution 与精确资源版本。succeed 在已提交 firing success 之前准备 workspace 结算。文件存在或候选输出不能替代已确认访问和注册结算。
 
-下级执行 PetriNet 是同一 Registry 内、归属于一个精确业务 invocation/firing 的权威。其
+[两层 PN](../ARCHITECTURE_ZH.md#workflow-graph-与-petrinet-lowering) 区分 agent 的工作
+与其下级 harness 执行机制。“业务”指 agent 的职责、工作动作和交接，不是任务领域算法或流程。
+
+下级执行 PetriNet 是同一 Registry 内、归属于一个精确、已准入业务 invocation/firing 的权威，
+不会新建独立 child-task Registry。其
 definition、instance、加权 token、active/settled transition firing 与 checkpoint stream
 均独立于 `TeamNetMarking`；互不依赖的 transition 可以并行保持 active。内置文件物化与
 workspace-finalization 网只有在持有精确 Registry evidence 后才会达到 `map_ready`。业务

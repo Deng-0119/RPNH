@@ -6,7 +6,7 @@ metadata:
   audience: operator-and-developer
   language: zh-CN
   counterpart: ARCHITECTURE.md
-  revision: "2026-09-29.2"
+  revision: "2026-10-13.1"
   status: source-reviewed-pre-release
 ---
 
@@ -70,6 +70,11 @@ Basic CLI 只保存进程内的 task 焦点。`/switch TASK_ID` 改变后续控�
 
 ## Workflow graph 与 PetriNet lowering
 
+RPNH 保留两层 PN。**业务 PN** 建模 agent 的任务职责、工作动作与交接；这里的“业务”
+指这些 agent 操作，不是实际任务领域的 ERP、路线等业务流程。领域流程不能替代 agent
+操作成为 PN 主体；领域资料作为被 Registry 收录的 PN 资源。**执行 PN** 是归属于精确、已准入业务
+invocation/firing 的下级 harness 机制层，具有下文所述的独立 instance 与 evidence。
+
 Workflow 声明 nodes、typed input/output ports、一个或多个 ingress/egress ports 和 arcs。
 Dependency 子图必须是从入口到出口的 DAG，负责首次激活，包括 fan-out、并行分支和
 fan-in/join。用户任务会实体化为 ingress task-resource token。
@@ -102,6 +107,9 @@ marking。
 已 admission 的 agent firing 使用 Registry-defined tool catalog 运行 agent loop。语义
 输出通过声明的 output ports 写入。Tool action、provider attempt、response acceptance 和
 settlement 都绑定到精确 firing 与 invocation identity。
+
+Loop、turn、action 与 managed-child 调用记录不会自动新增 PN 节点；它们与精确 firing、
+Registry 的关联，应与显式声明的 PN 结构区分。
 
 每个 firing 获得由当前 Registry workspace revision 派生的私有 workspace view。有界、
 禁网的 workspace action 可以创建或修改普通文件。成功 settlement 会把这些文件登记为

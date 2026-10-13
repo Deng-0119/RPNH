@@ -6,7 +6,7 @@ metadata:
   audience: application-developer-and-researcher
   language: zh-CN
   counterpart: technical-report.md
-  revision: "2026-10-12.4"
+  revision: "2026-10-13.1"
   status: technical-report
   basis: "Deng-0119/RPNH at 6cec63ff5b7a0039611713961d00941767edaaf8"
 ---
@@ -17,7 +17,7 @@ metadata:
 
 ## 面向 Agent 与程序的可执行流程
 
-**更新日期：** 2026-10-12。**实现快照：**
+**更新日期：** 2026-10-13。**实现快照：**
 [`6cec63ff5b7a0039611713961d00941767edaaf8`][snapshot]。
 历史测试分别保留自己的源码身份，见[第 10 节](#10-历史结果及其限制)。
 下方原生案例分别保留自己的执行窗口；报告原快照和历史模型／benchmark 结果仍单独标识。
@@ -77,7 +77,7 @@ source 程序、网外控制动作与 target agent 分层记录；单 parent 链
 
 示例使用两份 stock 单 agent 声明组装普通 Module，保留既有 plain-proposal 约束、Registry 门、adapter 与调度器。
 
-Overview 是只读 agent 投影，不是简化后可执行 PN。`registered_agent_binding` 可追到精确 executable binding 与 agent 引用；`declared_llm_executor` 仅确认声明，不证明执行；`explicit_host_annotation` 是未确认显示注释，不建立 agent 身份。角色按显式 scoped identity 分组，不能凭同名、模型名或用户账号合并。边保留原路径依据，表示通往下一 agent 的结构路径，不证明已发生顺序、guard 通过或全输入 join 满足。完整 PetriNet 与所属 Registry 保留权限、guard、join 以及实际 loop／turn／action、工具和产物引用。managed child／action 不计为新增 PN transition，独立 child Registry 保持独立。
+Overview 是只读 agent 投影，不是简化后可执行 PN。`registered_agent_binding` 可追到精确 executable binding 与 agent 引用；`declared_llm_executor` 仅确认声明，不证明执行；`explicit_host_annotation` 是未确认显示注释，不建立 agent 身份。角色按显式 scoped identity 分组，不能凭同名、模型名或用户账号合并。边保留原路径依据，表示通往下一 agent 的结构路径，不证明已发生顺序、guard 通过或全输入 join 满足。完整 PetriNet 与所属 Registry 保留权限、guard、join 及关联的 loop／turn／action 记录、工具和产物引用。这些运行记录不会自动新增 PN 节点。managed child／action 不计为新增 PN transition，独立 child Registry 保持独立。
 
 静态声明与运行分别标识；空概览本身不否定源码中的真实 agent 工作流，声明或已登记身份也不证明本次任务已执行。
 
@@ -108,6 +108,11 @@ RPNH 适用于重视持久化输出、显式协作或受控流程变更的应用
 - **执行：** 同一 `RunOwner`/`Harness` 路径负责准入与结算。`Orchestrator` 使用 HOST 已有的 owner、
   event loop、worker 与 dispatch service。
 - **观察：** 选定的 Registry 投影和 read session 保持只读。
+
+两层 PN 各有范围：**业务 PN** 建模 agent 的任务职责、工作动作和交接，“业务”指这些
+agent 操作，不是任务领域算法或流程。**执行 PN** 在同一个 Registry 内，归属于精确、
+已准入的业务 invocation/firing，建模下级 harness 执行机制。领域流程不能替代 agent 操作成为
+PN 主体；领域资料作为被 Registry 收录的 PN 资源。详见[两层架构](ARCHITECTURE_ZH.md#workflow-graph-与-petrinet-lowering)。
 
 Basic、Codex 与 OpenCode 是同一直接主会话根的不同呈现，共享 lease 防止多个可写呈现竞争。
 DSH 是受注册管理的 HOST 接入。独立子任务各自拥有 Registry、net 和 owner；从属 execution net
@@ -337,7 +342,7 @@ Workset 记录 contribution、delivery 与 acceptance；首次验收要求真实
 
 ### 受控多用户协作
 
-这项历史记录的执行 PN 是 24 批次 ingest → plan → validate 加 aggregate／publish，共 74 个业务工具操作。模型在网外创作配置；这不是 74 个 agent，也不是当前共建网的运行证据。
+这项历史记录的工具流水线运行 PN 是 24 批次 ingest → plan → validate 加 aggregate／publish，共 74 个业务工具操作。模型在网外创作配置；这不是 74 个 agent，也不是当前共建网的运行证据。保留这项领域／工具 workflow，不意味着以它定义第 1 节的下级执行 PN 层。
 
 [2026 年 10 月 12 日实验](results/user-collaboration-20261012/README_ZH.md)由三个受控模拟 Registry 身份、两个真实模型，完成原生提案、审阅、明确 peer 协调、保护分支合并／采用、业务执行与独立评估。B 在同一身份与累计预算内切换模型。累计 22 次 logical call／provider-attempt spec 包含失败尝试，HTTP 尝试次数仍未知。
 

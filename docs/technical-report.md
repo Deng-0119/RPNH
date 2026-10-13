@@ -6,7 +6,7 @@ metadata:
   audience: application-developer-and-researcher
   language: en
   counterpart: technical-report_ZH.md
-  revision: "2026-10-12.4"
+  revision: "2026-10-13.1"
   status: technical-report
   basis: "Deng-0119/RPNH at 6cec63ff5b7a0039611713961d00941767edaaf8"
 ---
@@ -17,7 +17,7 @@ English | [中文](technical-report_ZH.md) | [Documentation](index.md)
 
 ## Executable processes for Agents and programs
 
-**Updated:** 2026-10-12. **Implementation snapshot:**
+**Updated:** 2026-10-13. **Implementation snapshot:**
 [`6cec63ff5b7a0039611713961d00941767edaaf8`][snapshot].
 Historical tests retain their own source identities in [§10](#10-historical-results-and-their-limits).
 The dated native examples below retain their own execution windows; the earlier report snapshot and historical model/benchmark results remain separate.
@@ -92,7 +92,7 @@ Source programs, external control actions and target agents remain separate; thi
 
 The example assembles two stock single-agent declarations into an ordinary Module, preserving the existing plain-proposal constraints, Registry gates, adapter and scheduler.
 
-Overview is a read-only agent projection, not a reduced executable PN. `registered_agent_binding` traces to the exact executable binding and agent reference; `declared_llm_executor` establishes a declaration only, not execution; `explicit_host_annotation` is an unconfirmed display annotation and cannot establish agent identity. Roles are grouped through explicit scoped identity, not equal names, model names or user accounts. An edge retains original path provenance and denotes a structural path to the next agent, not observed firing order or proof that a guard passes or an all-input join is satisfied. The full PetriNet and owning Registry retain authority, guards, joins and actual loop/turn/action, tool and product references. Managed children/actions are not additional PN transitions; independent child Registries remain independent.
+Overview is a read-only agent projection, not a reduced executable PN. `registered_agent_binding` traces to the exact executable binding and agent reference; `declared_llm_executor` establishes a declaration only, not execution; `explicit_host_annotation` is an unconfirmed display annotation and cannot establish agent identity. Roles are grouped through explicit scoped identity, not equal names, model names or user accounts. An edge retains original path provenance and denotes a structural path to the next agent, not observed firing order or proof that a guard passes or an all-input join is satisfied. The full PetriNet and owning Registry retain authority, guards and joins, together with the associated loop/turn/action records and tool/product references. Those runtime records do not automatically add PN nodes. Managed children/actions are not additional PN transitions; independent child Registries remain independent.
 
 Static declarations and runtime records are identified separately. An empty overview alone does not disprove a genuine agent workflow in source; declared or registered identity does not prove execution of this task.
 
@@ -132,6 +132,14 @@ and observation. The arrows show the relationship, not a separate execution engi
 - **Execution:** one `RunOwner`/`Harness` path admits and settles work. `Orchestrator`
   uses the host's existing owner, event loop, workers and dispatch services.
 - **Observation:** selected Registry projections and read sessions remain read-only.
+
+The two PN layers retain different scopes: the **business PN** models agent task
+responsibilities, work actions and handoffs; "business" refers to those agent
+operations, not the task domain's algorithms or processes. The **execution PN**
+models subordinate harness mechanics under an exact admitted business
+invocation/firing in the same Registry. Domain processes do not replace agent
+operations as the PN's subject; domain materials are Registry-indexed PN resources. See the
+[two-layer architecture](ARCHITECTURE.md#workflow-graph-and-petrinet-lowering).
 
 Basic, Codex and OpenCode are presentations of the same direct main-session root;
 its shared lease prevents competing writable presentations. DSH is a registered
@@ -429,7 +437,7 @@ reruns. Runtime completion does not replace original business acceptance.
 
 ### Controlled multi-user collaboration
 
-This historical execution PN is 24 ingest → plan → validate batches plus aggregate/publication: 74 business-tool operations. Models authored configurations outside the net. These are not 74 agents or execution evidence for the current co-building net.
+This historical tool-pipeline PN is 24 ingest → plan → validate batches plus aggregate/publication: 74 business-tool operations. Models authored configurations outside the net. These are not 74 agents or execution evidence for the current co-building net. This retained domain/tool workflow does not define the subordinate execution-PN layer described in §1.
 
 The [12 October 2026 study](results/user-collaboration-20261012/README.md) completed native proposals, review, explicit peer coordination, protected-branch merge/adoption, business execution and independent evaluation with three controlled simulated Registry identities and two real models. B switched models within its existing identity and cumulative budget. A total of 22 logical calls / provider-attempt specifications included failed attempts; HTTP-attempt counts remain unknown.
 
