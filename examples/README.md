@@ -2,18 +2,25 @@
 
 English | [中文](README_ZH.md)
 
-To take an example into your own project, start with
-[dependency-complete export and customization](../docs/guides/examples.md#export-an-example-and-make-it-yours).
-Named exports are `native_plugin`, `hybrid_summary`, `compose_serial`,
-`package_reuse` and the default `adapter_task`; the rest remain source examples.
-The [v2 native-add tutorial](../docs/guides/package-reuse-example.md) constructs a
-shareable package and walks through environment preparation and genuine execution.
-Use this source candidate's wheel, not the historical rc1 wheel, for these new
-exports. AutomationBench has its own Python 3.13+ and pinned-upstream setup.
+[Repository home](../README.md) · [First-run tutorial](../docs/guides/getting-started.md) · [Documentation hub](../docs/index.md) · [Viewer guide](../docs/guides/viewer.md)
+
+## Choose your first example
+
+New to RPNH? Complete [installation and a local run](../README.md#quick-start), then choose one example and follow its own README. Run source examples from the checkout root; installed wheels export only the named examples listed below.
+
+| What to check first | Start with | Models and dependencies |
+|---|---|---|
+| Installation, tool output and the Viewer | [Native plugin](native_plugin/README.md) | No model; install the example plugin |
+| Two-agent parallelism and an all-input join | [Workflow patterns](workflow_patterns/README.md) | Scripted by default; optional live profile |
+| Carry a project to another environment | [Package reuse](package_reuse/README.md) | No model; prepare receiver dependencies |
+| Co-create and independently run the original task | [Project collaboration](project_collaboration/README.md) | Authorized live profile; controlled contributors |
+| Inspect applied tasks and recorded scores | [Agent/role workflows](#agent-and-role-workflows) | Reading is offline; run requirements are per example |
+
+[Tools and SDK](#tool-sdk-and-validation-fixtures) · [Native input and authority](#native-input-and-authority-fixtures) · [Historical mechanisms](#historical-contribution-and-business-evidence) · [Obtain and run](#obtain-and-run-an-example) · [Read the figures](#read-the-figures-and-evidence)
 
 Choose by modeled object: agent workflows describe task responsibilities and handoffs; domain algorithms and business systems are tools or external environments. ERP, 3-DOF, JB, HarnessAudit, AutomationBench, SlopCodeBench and RRSI remain genuine agent/role workflows. RRSI custom registered-host role PNs can have genuine agent bindings without using stock AgentLoop. Pure-tool pipelines, native-input gates, author principals and annotations do not become agents merely through Registry lineage.
 
-Choose an example by the behavior you want to see:
+## Project preview: copy, co-create and reuse
 
 Start with [copy, co-create and reuse one agent project](project_collaboration/README.md)
 for the complete project journey: resolve two contributors' conflicts into original
@@ -38,8 +45,8 @@ real attached execution nets and [capture provenance](project_collaboration/figu
 | Serial, parallel, document and long workflow shapes | [Workflow patterns](workflow_patterns/README.md) | [PN and simplified-view gallery](workflow_patterns/README.md) | Scripted; optional exact live profile |
 | Two independently managed child tasks | [Task workspace](task_workspace/README.md) | [Child-task PetriNet](task_workspace/README.md) | Scripted |
 | Agent replacement; separate definition-only composition | [Native net operations](net_operations/README.md) | [Adopted replacement PetriNet](net_operations/README.md) | AgentStage replacement; compose_serial is definition-only |
-| Real clinical document/data packet | [JB steering packet](jb_steering_packet/README.md) | [Accepted workflow Overview](jb_steering_packet/README.md) | User-owned exact live profile |
-| Real numerical optimal-control task | [3-DOF powered descent](three_dof_powered_descent/README.md) | [Accepted workflow Overview](three_dof_powered_descent/README.md) | User-owned exact live profile |
+| Real clinical document/data packet | [JB steering packet](jb_steering_packet/README.md) | [Actual workflow PetriNet](jb_steering_packet/README.md) | User-owned exact live profile |
+| Real numerical optimal-control task | [3-DOF powered descent](three_dof_powered_descent/README.md) | [Actual workflow PetriNet](three_dof_powered_descent/README.md) | User-owned exact live profile |
 | Office benchmark integration and scored results | [HarnessAudit Office](harnessaudit_office/README.md) | [Run and viewer guide](harnessaudit_office/README.md) | Read results offline; run/score require explicit local profiles |
 | Two-round Policy evolution with independent child runs | [RRSI v0.6](rrsi_v06/README.md) | [Policy and role PetriNet declarations](rrsi_v06/README.md#petrinet-declarations) | User-owned exact live profile |
 | Business-workflow benchmark and host extensions | [AutomationBench](automationbench/README.md) | [Results, task boundaries and viewer guide](automationbench/README.md) | Read retained results offline; new live runs require an authorized profile |
@@ -72,7 +79,20 @@ real attached execution nets and [capture provenance](project_collaboration/figu
 | Historical route configuration contributions and business evaluation | [Route mechanisms and results](user_collaboration/README.md#historical-route-planning-mechanism-evidence) | Original 74-operation tool PN, versions and failures | Models proposed configuration outside the net; tools execute business |
 | Historical sequential revisions of ten-operation billing net | [Native billing mechanism fixture](user_collaboration/native_billing/README.md) | Original business PN, proposer and adoption evidence | Deterministic source programs and tools; no agent net |
 
+## Obtain and run an example
+
+To take an example into your own project, start with
+[dependency-complete export and customization](../docs/guides/examples.md#export-an-example-and-make-it-yours).
+Named exports are `native_plugin`, `hybrid_summary`, `compose_serial`,
+`package_reuse` and the default `adapter_task`; the rest remain source examples.
+The [v2 native-add tutorial](../docs/guides/package-reuse-example.md) constructs a
+shareable package and walks through environment preparation and genuine execution.
+Use this source candidate's wheel, not the historical rc1 wheel, for these new
+exports. AutomationBench has its own Python 3.13+ and pinned-upstream setup.
+
 Additional installed entry point: the [adapter task](../docs/guides/examples.md) runs one semantic task through every supported host; its retained illustration is the recorded task PN under the DSH host. See the [business and execution PN definitions](../docs/ARCHITECTURE.md#workflow-graph-and-petrinet-lowering).
+
+## Read the figures and evidence
 
 Galleries distinguish initial declarations from runtime records. **PetriNet** shows the full original net; pure-tool agent overviews may be empty, and their tools use **Detailed flow**. Node details are not simplified views. Overview is a read-only agent projection, not a reduced executable PN. `registered_agent_binding` traces to the exact executable binding and agent reference; `declared_llm_executor` establishes a declaration only, not execution; `explicit_host_annotation` is an unconfirmed display annotation and cannot establish agent identity. Roles are grouped through explicit scoped identity, not equal names, model names or user accounts. An edge retains original path provenance and denotes a structural path to the next agent, not observed firing order or proof that a guard passes or an all-input join is satisfied. The full PetriNet and owning Registry retain authority, guards, joins and actual loop/turn/action, tool and product references. Managed children/actions are not additional PN transitions; independent child Registries remain independent.
 

@@ -2,8 +2,8 @@
 
 [English](README.md) | 中文
 
-[查看实际图](#先看一次多-agent-运行) · [快速开始](#快速开始) ·
-[案例](#案例目录) · [前端](#前端与宿主集成) · [文档](#文档) · [技术报告](docs/technical-report_ZH.md)
+[快速开始](#快速开始) · [实际 PN](#先看一次多-agent-运行) · [案例](#案例目录) ·
+[前端](#前端与宿主集成) · [文档中心](docs/index_ZH.md) · [参与贡献](CONTRIBUTING_ZH.md)
 
 RPNH 是一个用于组合语言模型、原生工具和可复用工作流的 provider-neutral Agent 执行框架。
 持久化 **Registry** 记录执行与资源历史；类型化 **PetriNet** 决定任务何时具备执行条件，
@@ -23,75 +23,24 @@ workspace 或恢复状态的独立所有者。
 | 查看 | 终端投影和本地只读 PetriNet 看板 |
 | 恢复 | owner-stop resume 与用户选择 checkpoint 的 reopen |
 
-当前协作入口是[复制、共创并复用同一 Agent 项目](examples/project_collaboration/README_ZH.md)。完整项目包含定义、输入、环境、原任务、验收器、来源与许可证；两个受控贡献者解决真实冲突并形成双 parent 修订 M。业务执行前依次采用 M → base 内容新后继 → M 内容新后继，再下载精确原 M，由新身份、独立授权的 receiver 导入。source 与 receiver 均由 implementer／reviewer 两个调用真实模型的 stock AgentLoop 职责执行同一原始多源合并任务；receiver 包不含 source 的业务答案。[操作指南](docs/guides/project-entry_ZH.md)给出导入、审核、接纳、采用、下载和运行步骤。
+## 从这里开始
+
+- **第一次使用：**按下方[快速开始](#快速开始)安装、运行零模型工具并打开 Viewer；完整步骤见[入门教程](docs/guides/getting-started_ZH.md)。
+- **复制并共建项目：**看[项目协作示例](examples/project_collaboration/README_ZH.md)及[导入到执行的操作指南](docs/guides/project-entry_ZH.md)。
+- **开发应用或接入已有代码：**从[自定义与插件](docs/guides/customization_ZH.md)进入 [Python API 索引](docs/reference/api-index_ZH.md)、[CLI 参考](docs/reference/cli_ZH.md)和[源码目录](docs/guides/repository-layout_ZH.md)。
+- **先了解设计：**阅读[技术报告](docs/technical-report_ZH.md)；按任务查找文档用[文档中心](docs/index_ZH.md)，运行条件和成绩见[精选结果](docs/results/README_ZH.md)。
+
+### 项目预览：复制、共创与复用
+
+[项目协作示例](examples/project_collaboration/README_ZH.md)演示两个受控贡献者合并修订，再由 source 与独立 receiver 运行 implementer／reviewer agent。下面是原 source 完成态的真实业务 PN；该示例使用获准的真实模型，受控主体位于同一可信 OS 用户下。日期、成绩和完整适用范围见[项目与结果说明](#项目协作与结果范围)。
 
 [![source 完成态业务 PN：implementer／reviewer，五节点六弧。](examples/project_collaboration/figures/source-petri.png)](examples/project_collaboration/figures/source-petri.png)
 
 [原尺寸 PN](examples/project_collaboration/figures/source-petri.png) · [精确观察与来源](examples/project_collaboration/figures/source-petri.json) · [捕获记录](examples/project_collaboration/figures/provenance.json)
 
-2026-10-13 的有界结果为 **43 次登记／42 次响应，上限 48**：source 23／22（保留 1 次 `NOT_SUBMITTED` 原失败、2 个完成业务 firing），receiver 20／20、2 个完成业务 firing。两端路径适配原断言均 **3/3 PASS**，独立完整 instruction 审阅为 **ACCEPT_BOTH**；原 `test.sh` **NOT_RUN**，grader **VISIBLE**，不称盲评官方容器成绩。全部四行／20 单元格和三项完整字段冲突经独立核对；可选 status 归一化歧义仍披露。
-
-业务 PN 建模两个 agent 的职责与交接；两端 Overview 均为 2 节点／1 边，完整业务 PN 为 5 节点／6 弧。文件物化与 workspace finalization 的真实下级执行 PN 在同一 Registry 内归属于精确业务 invocation/firing，具有分开的 token、firing 和 checkpoint；AgentLoop 日志不替代执行 PN。受支持范围是单一可信 OS 用户下的受控主体、普通 Module 贡献与显式 scoped 读取／owner 采用。业务前内容恢复不复活已消费或终态 token，也不回滚外部效果；不证明真人身份认证、活跃 token 热迁移或 graph／open-region／selected-change／assembly 的广泛交换。
-
-2026-10-06公开记录：freeze04首轮18题为5 PASS / 9 FAIL / 4 BLOCKED；独立repair四题为1 PASS / 3 FAIL。旧14道已评分题未重跑。 [结果与限制](examples/automationbench/PUBLIC_RESULTS_20261006_ZH.md).
-
-显式opt-in的[作者/graph接口](docs/reference/declarations_ZH.md)、[Workset与normal-child root](docs/reference/normal-child-root-contract_ZH.md)及[只读source查询](docs/guides/source-queries_ZH.md)已集成；[有限验收](docs/guides/release-validation_ZH.md)不等于全HOST/I00–I10/advanced25通过，历史 freeze04 的真实浏览器窗口为 BLOCKED。
-
-离线准备与查看入口包括[可移植包预览和精确本地锁](docs/guides/portable-packages_ZH.md)、[HOST 声明诊断](docs/guides/host-readiness_ZH.md)和[checkpoint 比较](docs/guides/checkpoint-comparison_ZH.md)。包命令使用安装后的 `rpnh`；HOST 诊断是显式 Python API。这些入口检查材料和已记录事实，不授予执行权。
-
-[受控 managed 工具](docs/controlled-managed-tools.zh.md)介绍精确结果分页、有界并发、隔离 Python 程序、只读结果证据与来源预检。新能力通过显式 HOST 策略选择；既有默认工具目录与基准对照条件保持原样。
-
-历史零 provider 协议入口是[Agent 任务网共建](examples/user_collaboration/agent_cobuild/README_ZH.md)。`curator.run` 与 `auditor.run` 两个原生任务 agent 使用 stock `AgentStage`／default `AgentLoop`，由两份 stock 单 agent 声明组成同一普通 Module，连接为 `curator.result → auditor.request`。两个受控原 principal 的确定性 source 程序分别加强 curator 输入来源合同和 auditor 对账合同。原 HOST 审阅精确 revision、连续推进受保护 Branch，再由 owner 在 target 执行前采用。
-
-该历史窗口的 source 程序、网外控制动作与 target agent 分层记录；其单 parent 链不表示同 base 自动合并。`local_process` 脚本驱动从实际输入与工具返回计算，以已登记任务 agent 展示结构／协议，不声称真实模型调用或认知能力；运行结果、产物与 Viewer 证据以示例页记录为准。
-
-历史应用评分与零模型 runtime 验证见[精选结果](docs/results/README_ZH.md)。每项保留实际源码与条件；这些旧窗口不认证后续组合产品，也不代表已发布新的 rc2 二进制。
-
-两个受控本地应用把浏览器输入接入原 Registry 与 PN：
-[双主体模拟退款审批](examples/approval_workflow/README_ZH.md)和
-[外部结果接入报价](examples/a2a_quote/README_ZH.md)。每个案例开头都有实际 Viewer
-截图，并提供同一运行的查看与重开命令。业务输入和外部结果均为合成，不调用模型或金融服务。
-
-[历史路线](examples/user_collaboration/README_ZH.md#历史路线规划机制证据)与[原生电费](examples/user_collaboration/native_billing/README_ZH.md)保留原 74／10-operation 业务工具网、版本、结果、图像、贡献／采用回执与失败。其工具操作和作者不是任务 agent，历史结果不验证当前共建示例。
-
-## 先看一次多 Agent 运行
-
-下图来自仓库内 `parallel` 案例完成后的真实 Registry 看板。`prepare` 会同时启用两个独立
-Agent；只有两个登记产物都可用后，`join` 才具备执行条件。
-
-[![RPNH 并行流程的实际 PetriNet 投影](examples/workflow_patterns/assets/parallel-petrinet.png)](examples/workflow_patterns/assets/parallel-petrinet.png)
-
-完成[快速开始](#快速开始)后，无需 provider 或 API 凭据即可复现：
-
-```bash
-DEMO_ROOT="$(mktemp -d "${TMPDIR:-/tmp}/rpnh-readme.XXXXXX")"
-python -m examples.workflow_patterns.run \
-  --scenario parallel --run-dir "$DEMO_ROOT/parallel"
-rpnh net --run "$DEMO_ROOT/parallel" --view --no-open
-```
-
-上图为同一次运行的 PetriNet 视图，展示执行实际使用的 transition、交接 place、并行分叉弧和全输入 join。Viewer 支持缩放、平移、节点／弧细节与 checkpoint 查看；简要视图 Overview 用于查看承担任务的 Agent 及交接，见 [Viewer 指南](docs/guides/viewer_ZH.md)及[同次运行原 Overview](examples/workflow_patterns/assets/parallel-overview.png)。
-
-这些图片保留真实图投影、聚合执行状态和控件，只移除了 run 专属 checkpoint 身份及本地
-时间。看板始终只读；完成判定依赖 Registry 终态证据和已登记最终结果，不能用图片或
-进程退出替代。
-
-Overview 身份来自精确登记绑定或明确标注的声明；外部显示注释不确认 agent 身份。概览边保留结构路径来源，guard 与全输入 join 仍由完整 PN 决定，路径本身不证明实际 firing 顺序。
-
-## RPNH 提供什么
-
-- **在同一工作流中组合 Agent 与已有代码。** 模型节点负责推理与沟通，原生插件针对
-  已声明输入输出执行计算或已有业务逻辑。
-- **明确表达并行与 join。** PetriNet 的 place、arc 和 token 表达 fan-out、同步、资源读取
-  与完成条件，不把执行简化成串行聊天记录。
-- **通过统一入口管理独立工作。** 主会话可以创建、查看、发送消息、停止和 reopen 子任务；
-  每个子任务保留自己的 Registry、执行状态与结果。
-- **保留 workspace 版本证据。** 资源版本把输入和产物关联到具体执行。结算记录逐路径
-  create、update、delete 历史，并保留并发修订之间的冲突。
-- **统一 provider 与前端边界。** 用户自行配置模型 route；受支持的前端共用 RPNH 执行
-  语义，不重复实现 provider、Registry、workspace 或恢复逻辑。
-
 ## 快速开始
+
+目标：在 Linux／WSL2 的 Python 3.11+ 环境完成一次本地工具运行，并在 Viewer 中查看登记结果。安装和前两步不需要模型或 API 凭据；第三步再配置模型。遇到问题先看[入门检查点](docs/guides/getting-started_ZH.md)和[排障](docs/guides/troubleshooting_ZH.md)。
 
 请明确选择源码或发行产物：
 
@@ -105,6 +54,15 @@ Overview 身份来自精确登记绑定或明确标注的声明；外部显示�
 
 在 Linux 或 WSL2 中使用选定且已审查的源码 checkout，从根目录安装。普通的公开 `main`
 clone 不会取得尚未发布的候选变更。记录所选提交，并使用全新环境；wheel 和升级检查见[安装指南](docs/guides/installation_ZH.md)。
+
+首次获取源码时先执行：
+
+```bash
+git clone https://github.com/Deng-0119/RPNH.git
+cd RPNH
+```
+
+已有 checkout 时，直接从所选 checkout 根目录执行：
 
 ```bash
 git rev-parse HEAD
@@ -166,35 +124,54 @@ Registry／run 中从用户所选切面追加新的执行代次。详见
 [使用指南](docs/guides/usage_ZH.md)与
 [checkpoint 恢复流程](docs/guides/checkpoint-recovery_ZH.md)。
 
+## 先看一次多 Agent 运行
+
+下图来自仓库内 `parallel` 案例完成后的真实 Registry 看板。`prepare` 会同时启用两个独立
+Agent；只有两个登记产物都可用后，`join` 才具备执行条件。
+
+[![RPNH 并行流程的实际 PetriNet 投影](examples/workflow_patterns/assets/parallel-petrinet.png)](examples/workflow_patterns/assets/parallel-petrinet.png)
+
+完成[快速开始](#快速开始)后，无需 provider 或 API 凭据即可复现：
+
+```bash
+DEMO_ROOT="$(mktemp -d "${TMPDIR:-/tmp}/rpnh-readme.XXXXXX")"
+python -m examples.workflow_patterns.run \
+  --scenario parallel --run-dir "$DEMO_ROOT/parallel"
+rpnh net --run "$DEMO_ROOT/parallel" --view --no-open
+```
+
+上图为同一次运行的 PetriNet 视图，展示执行实际使用的 transition、交接 place、并行分叉弧和全输入 join。Viewer 支持缩放、平移、节点／弧细节与 checkpoint 查看；简要视图 Overview 用于查看承担任务的 Agent 及交接，见 [Viewer 指南](docs/guides/viewer_ZH.md)及[同次运行原 Overview](examples/workflow_patterns/assets/parallel-overview.png)。
+
+这些图片保留真实图投影、聚合执行状态和控件，只移除了 run 专属 checkpoint 身份及本地
+时间。看板始终只读；完成判定依赖 Registry 终态证据和已登记最终结果，不能用图片或
+进程退出替代。
+
+Overview 身份来自精确登记绑定或明确标注的声明；外部显示注释不确认 agent 身份。概览边保留结构路径来源，guard 与全输入 join 仍由完整 PN 决定，路径本身不证明实际 firing 顺序。
+
+## RPNH 提供什么
+
+- **在同一工作流中组合 Agent 与已有代码。** 模型节点负责推理与沟通，原生插件针对
+  已声明输入输出执行计算或已有业务逻辑。
+- **明确表达并行与 join。** PetriNet 的 place、arc 和 token 表达 fan-out、同步、资源读取
+  与完成条件，不把执行简化成串行聊天记录。
+- **通过统一入口管理独立工作。** 主会话可以创建、查看、发送消息、停止和 reopen 子任务；
+  每个子任务保留自己的 Registry、执行状态与结果。
+- **保留 workspace 版本证据。** 资源版本把输入和产物关联到具体执行。结算记录逐路径
+  create、update、delete 历史，并保留并发修订之间的冲突。
+- **统一 provider 与前端边界。** 用户自行配置模型 route；受支持的前端共用 RPNH 执行
+  语义，不重复实现 provider、Registry、workspace 或恢复逻辑。
+
 ## 案例目录
 
-按建模对象选择：agent 工作流描述任务职责与交接，领域算法和业务系统是工具或外部环境。ERP、3-DOF、JB、HarnessAudit、AutomationBench、SlopCodeBench 与 RRSI 保留为真实 agent／角色工作流。RRSI 自定义 registered-host role PN 也可具有真实 agent 绑定，不要求一律使用 stock AgentLoop。纯工具流水线、原生输入 gate、作者 principal 和显示注释不会仅因 Registry 来源链而变成 agent。
+先选一条路径；[完整源码案例索引](examples/README_ZH.md)按行为、图册和模型要求列出全部案例，包括包复用、原生输入、应用任务与 benchmark。
 
-| 类别 | 案例 | 展示的能力 | 说明 |
-| --- |---|---|---|
-| Agent／角色工作流 | 项目协作 | 真实双 parent M、业务前 M/base/M 采用与 source／receiver 独立原任务执行 | [项目示例](examples/project_collaboration/README_ZH.md) |
-| 历史协议工作流 | Agent 任务网共建 | Curator → auditor 原生 AgentLoop 角色、合同贡献与原 HOST 采用；脚本协议边界 | [共建示例](examples/user_collaboration/agent_cobuild/README_ZH.md) |
-| 工具／SDK fixture | 原生计算 | 本地插件、登记输入输出、零模型调用 | [原生工具](examples/native_plugin/README_ZH.md) |
-| Agent／角色工作流 | 模型—程序—模型计算 | 原生汇总 operation 前后的 Agent 节点 | [混合汇总](examples/hybrid_summary/README_ZH.md) |
-| Agent／角色工作流 | 串行、并行、文档和长流程 | 多 Agent 拓扑、有界并行、join 与时间轴 checkpoint | [工作流案例库](examples/workflow_patterns/README_ZH.md) |
-| Agent／角色工作流 | 独立任务 | 一个主会话控制多个相互隔离的子 Registry | [任务工作区](examples/task_workspace/README_ZH.md) |
-| Agent／纯声明 | 原生 PetriNet 操作 | 定义组合与真实 whole-net replacement | [网操作](examples/net_operations/README_ZH.md) |
-| 工具／SDK fixture | 可运行 v2 分享包 | 显式接收端准备、绑定与原生加法执行 | [分享包复用](examples/package_reuse/README_ZH.md) |
-| 工具／SDK fixture | 十步工具流水线 | 十个确定性工具 transition、join 与独立账单验证器 | [工具流水线](examples/tool_pipeline/README_ZH.md) |
-| 工具／SDK fixture | SQL 查询校验 | 固定 SQL 候选、只读执行与保留行序的精确结果比较 | [SQL 案例](examples/query_validation/README_ZH.md) |
-| 工具／SDK fixture | 多源数据合并 | 原 JSON、CSV 和真实 Parquet 输入、冲突及两件终态产物 | [多源案例](examples/tool_pipeline/multi_source/README_ZH.md) |
-| 原生输入 fixture | 双主体模拟退款审批 | 不同原生申请者与审批者、精确输入等待和登记模拟结果 | [退款审批](examples/approval_workflow/README_ZH.md) |
-| 原生输入 fixture | 外部结果接入报价 | 自定义本地 HTTP fixture、精确关联与一次登记报价 | [受控报价](examples/a2a_quote/README_ZH.md) |
-| 工具／SDK fixture | 有界合成迭代 | 同一 Registry 中的一至四轮流程，不宣称模型能力改进 | [合成迭代](examples/rsi_workflows/README_ZH.md) |
-| Agent／角色工作流 | Basic、Codex、DSH 与 OpenCode | 同一个 provider-neutral 语义任务经过四种宿主入口 | [安装版适配任务](docs/guides/examples_ZH.md) |
-| Agent／角色工作流 | JB 临床 packet | 公开临床来源、文档／数据分析和 Designer 自主设计图 | [复现 JB](examples/jb_steering_packet/README_ZH.md) |
-| Agent／角色工作流 | 3-DOF 动力下降 | 数值实现、独立验证和 Designer 自主设计图 | [复现 3-DOF](examples/three_dof_powered_descent/README_ZH.md) |
-| Agent／角色工作流 | HarnessAudit Office benchmark | 原生团队、登记业务工具、原始评分与完整结果边界 | [Office 示例](examples/harnessaudit_office/README_ZH.md) |
-| Agent／角色工作流 | RRSI v0.6 Policy 演化 | 独立 child Registry 驱动的两轮 Policy 演化与分数/成本选择 | [RRSI 示例](examples/rrsi_v06/README_ZH.md) |
-| Agent／角色工作流 | AutomationBench 公开业务任务 | 历史pilot、freeze04首轮18题与独立repair四题；按条件保留评分与限制 | [AutomationBench 示例](examples/automationbench/README_ZH.md) |
-| Agent／角色工作流 | ERP-Bench | 受管 ERP 动作与单独保留的原始 verifier 成绩 | [ERP 案例](examples/erp_bench/README_ZH.md) |
-| Agent／角色工作流 | SlopCodeBench pilot | 原生 Session 命令与有限编码任务前缀 | [编码试验](examples/slopcodebench/README_ZH.md) |
-| 工具／SDK fixture | 案例证据 | 只读校验结果文件与源码身份 | [证据契约](examples/example_validation/README_ZH.md) |
+| 想先做什么 | 建议入口 | 运行准备 |
+|---|---|---|
+| 确认本地安装可用 | [原生加法插件](examples/native_plugin/README_ZH.md) | 本地插件；不调用模型 |
+| 理解 agent 并行和交接 | [工作流模式](examples/workflow_patterns/README_ZH.md) | 默认脚本替身；不需要模型凭据 |
+| 共建并独立运行完整项目 | [项目协作](examples/project_collaboration/README_ZH.md) | 获准真实 profile；受控贡献者 |
+
+按建模对象选择：agent 工作流描述任务职责与交接，领域算法和业务系统是工具或外部环境。ERP、3-DOF、JB、HarnessAudit、AutomationBench、SlopCodeBench 与 RRSI 保留为真实 agent／角色工作流。RRSI 自定义 registered-host role PN 也可具有真实 agent 绑定，不要求一律使用 stock AgentLoop。纯工具流水线、原生输入 gate、作者 principal 和显示注释不会仅因 Registry 来源链而变成 agent。
 
 执行案例中的实际 dashboard 图注明其运行来源。Benchmark examples 提供成绩记录与新运行的
 viewer 命令，不宣称已归档运行截图。[完整案例指南](docs/guides/examples_ZH.md)记录计算、文档、串行、并行、长流程和
@@ -250,9 +227,45 @@ Basic、Codex 与 OpenCode 是同一个直接 MainSession root 的顺序展示�
 session surface 的 registered host 集成。所有情况下，模型选择与受管执行 authority 仍
 属于 RPNH。
 
+## 项目协作与结果范围
+
+当前项目示例、原始成绩及历史机制记录保留各自的版本和条件。首次运行可先使用上方[快速开始](#快速开始)；以下记录供核对数字与支持范围。
+
+### 当前项目与两层 PN
+
+当前协作入口是[复制、共创并复用同一 Agent 项目](examples/project_collaboration/README_ZH.md)。完整项目包含定义、输入、环境、原任务、验收器、来源与许可证；两个受控贡献者解决真实冲突并形成双 parent 修订 M。业务执行前依次采用 M → base 内容新后继 → M 内容新后继，再下载精确原 M，由新身份、独立授权的 receiver 导入。source 与 receiver 均由 implementer／reviewer 两个调用真实模型的 stock AgentLoop 职责执行同一原始多源合并任务；receiver 包不含 source 的业务答案。[操作指南](docs/guides/project-entry_ZH.md)给出导入、审核、接纳、采用、下载和运行步骤。
+
+2026-10-13 的有界结果为 **43 次登记／42 次响应，上限 48**：source 23／22（保留 1 次 `NOT_SUBMITTED` 原失败、2 个完成业务 firing），receiver 20／20、2 个完成业务 firing。两端路径适配原断言均 **3/3 PASS**，独立完整 instruction 审阅为 **ACCEPT_BOTH**；原 `test.sh` **NOT_RUN**，grader **VISIBLE**，不称盲评官方容器成绩。全部四行／20 单元格和三项完整字段冲突经独立核对；可选 status 归一化歧义仍披露。
+
+业务 PN 建模两个 agent 的职责与交接；两端 Overview 均为 2 节点／1 边，完整业务 PN 为 5 节点／6 弧。文件物化与 workspace finalization 的真实下级执行 PN 在同一 Registry 内归属于精确业务 invocation/firing，具有分开的 token、firing 和 checkpoint；AgentLoop 日志不替代执行 PN。受支持范围是单一可信 OS 用户下的受控主体、普通 Module 贡献与显式 scoped 读取／owner 采用。业务前内容恢复不复活已消费或终态 token，也不回滚外部效果；不证明真人身份认证、活跃 token 热迁移或 graph／open-region／selected-change／assembly 的广泛交换。
+
+### 其他公开记录与接口
+
+2026-10-06公开记录：freeze04首轮18题为5 PASS / 9 FAIL / 4 BLOCKED；独立repair四题为1 PASS / 3 FAIL。旧14道已评分题未重跑。 [结果与限制](examples/automationbench/PUBLIC_RESULTS_20261006_ZH.md).
+
+显式opt-in的[作者/graph接口](docs/reference/declarations_ZH.md)、[Workset与normal-child root](docs/reference/normal-child-root-contract_ZH.md)及[只读source查询](docs/guides/source-queries_ZH.md)已集成；[有限验收](docs/guides/release-validation_ZH.md)不等于全HOST/I00–I10/advanced25通过，历史 freeze04 的真实浏览器窗口为 BLOCKED。
+
+离线准备与查看入口包括[可移植包预览和精确本地锁](docs/guides/portable-packages_ZH.md)、[HOST 声明诊断](docs/guides/host-readiness_ZH.md)和[checkpoint 比较](docs/guides/checkpoint-comparison_ZH.md)。包命令使用安装后的 `rpnh`；HOST 诊断是显式 Python API。这些入口检查材料和已记录事实，不授予执行权。
+
+[受控 managed 工具](docs/controlled-managed-tools.zh.md)介绍精确结果分页、有界并发、隔离 Python 程序、只读结果证据与来源预检。新能力通过显式 HOST 策略选择；既有默认工具目录与基准对照条件保持原样。
+
+历史零 provider 协议入口是[Agent 任务网共建](examples/user_collaboration/agent_cobuild/README_ZH.md)。`curator.run` 与 `auditor.run` 两个原生任务 agent 使用 stock `AgentStage`／default `AgentLoop`，由两份 stock 单 agent 声明组成同一普通 Module，连接为 `curator.result → auditor.request`。两个受控原 principal 的确定性 source 程序分别加强 curator 输入来源合同和 auditor 对账合同。原 HOST 审阅精确 revision、连续推进受保护 Branch，再由 owner 在 target 执行前采用。
+
+该历史窗口的 source 程序、网外控制动作与 target agent 分层记录；其单 parent 链不表示同 base 自动合并。`local_process` 脚本驱动从实际输入与工具返回计算，以已登记任务 agent 展示结构／协议，不声称真实模型调用或认知能力；运行结果、产物与 Viewer 证据以示例页记录为准。
+
+历史应用评分与零模型 runtime 验证见[精选结果](docs/results/README_ZH.md)。每项保留实际源码与条件；这些旧窗口不认证后续组合产品，也不代表已发布新的 rc2 二进制。
+
+两个受控本地应用把浏览器输入接入原 Registry 与 PN：
+[双主体模拟退款审批](examples/approval_workflow/README_ZH.md)和
+[外部结果接入报价](examples/a2a_quote/README_ZH.md)。每个案例开头都有实际 Viewer
+截图，并提供同一运行的查看与重开命令。业务输入和外部结果均为合成，不调用模型或金融服务。
+
+[历史路线](examples/user_collaboration/README_ZH.md#历史路线规划机制证据)与[原生电费](examples/user_collaboration/native_billing/README_ZH.md)保留原 74／10-operation 业务工具网、版本、结果、图像、贡献／采用回执与失败。其工具操作和作者不是任务 agent，历史结果不验证当前共建示例。
+
 ## 文档
 
-[全部文档主题](docs/index_ZH.md) · [全部源码案例](examples/README_ZH.md) ·
+[按任务浏览文档](docs/index_ZH.md) · [入门教程](docs/guides/getting-started_ZH.md) ·
+[CLI 参考](docs/reference/cli_ZH.md) · [Python API 索引](docs/reference/api-index_ZH.md) · [全部源码案例](examples/README_ZH.md) ·
 [代码与安装包目录](docs/guides/repository-layout_ZH.md) ·
 [固定版本代码链接](docs/technical-report_ZH.md#源码索引) · [English index](docs/index.md)
 

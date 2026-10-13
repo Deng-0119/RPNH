@@ -1,131 +1,122 @@
 ---
 name: rpnh-documentation-index
-description: "Navigate the bilingual operator and developer documentation."
+description: "Choose a first-run route, operational guide, API contract or source-code entry point."
 metadata:
   document-kind: index
   audience: operator-and-developer
   language: en
   counterpart: index_ZH.md
-  revision: "2026-10-13.2"
-  status: maintained
-  basis: "core; adapter differences explicitly labelled"
+  revision: "2026-10-13.3"
+  status: source-reviewed
+  basis: "public source b16ecce83ba603b3c15f1c770bce172d4f44f88e; not a new runtime validation"
 ---
 
 [English](index.md) | [中文](index_ZH.md)
 
 # Documentation
 
-For a continuous introduction to the project's purpose, execution model and
-evaluation boundaries, read the [technical report](technical-report.md).
+[Repository home](../README.md) · [Examples](../examples/README.md) · [CLI](reference/cli.md) · [API](reference/api-index.md) · [Source map](guides/repository-layout.md)
 
-For runnable inputs and source ownership, use the [complete example index](../examples/README.md)
-and [code and package map](guides/repository-layout.md).
+RPNH uses Registry and PetriNet together to declare, execute, inspect and reuse
+agent work. Start with one small run, then choose the guide for your next task.
+These pages describe the selected public source; dated results identify the
+older exact revisions they tested.
 
-Start with installation and exact model configuration, then choose the example
-closest to the application you want to build. The guides describe this selected
-source snapshot; dated validation records preserve the exact older revision they tested
-and must not be read as automatic certification of later commits. Each topic
-has a corresponding Chinese page.
+## New to RPNH?
 
-| Need | Read |
+1. [First run](guides/getting-started.md): install one source, run a no-model
+   native operation, inspect its actual evidence, and optionally open a model session.
+2. [Choose an example](../examples/README.md): find an editable workflow, a
+   complete collaboration project or a bounded benchmark by task and prerequisites.
+3. [Operate and recover](guides/usage.md): keep session/task identity, inspect
+   results, stop safely and continue from an exact checkpoint.
+
+For a conceptual introduction before running anything, read the
+[technical report](technical-report.md). For Python integration, start with the
+[API map](reference/api-index.md) and [declaration tutorial](reference/declarations.md).
+
+## Install and configure
+
+| Need | Guide |
 |---|---|
-| Understand RPNH before trying or integrating it | [Technical report](technical-report.md) |
-| Install core/basic, source or wheel | [Installation](guides/installation.md) |
-| Run native, hybrid, task and installed cross-host examples | [Examples](guides/examples.md) |
-| Copy, co-create, adopt and independently reuse a complete agent project | [Project collaboration](../examples/project_collaboration/README.md), [operator guide](guides/project-entry.md) |
-| Inspect historical agent input-lineage and reconciliation protocol | [Agent-network co-building](../examples/user_collaboration/agent_cobuild/README.md) |
-| Approve a mock refund with two distinct native principals | [Controlled refund application](../examples/approval_workflow/README.md) |
-| Admit a synthetic external result to one original run | [External-result quote application](../examples/a2a_quote/README.md) |
-| Export and modify a dependency-complete example | [Reusable examples](guides/examples.md#export-an-example-and-make-it-yours) |
-| Build a runnable v2 package and prepare its receiver | [Native-add package tutorial](guides/package-reuse-example.md) |
-| Understand the source tree and packaged boundaries | [Repository map](guides/repository-layout.md) |
-| Configure routes, models and every supported runtime limit | [Configuration reference](guides/configuration.md), [models](guides/models.md) |
-| Operate sessions/tasks and recover | [Usage](guides/usage.md) |
-| Continue the same task from a checkpoint | [Checkpoint recovery](guides/checkpoint-recovery.md) |
-| Diagnose without losing evidence | [Troubleshooting](guides/troubleshooting.md) |
-| Add workflows, tools, skill resources or MCP bindings | [Customization](guides/customization.md) |
-| Extract, compose, instantiate or replace Petri-net definitions | [Native Petri-net operations](guides/net-operations.md) |
-| Use optional Codex/DSH and understand coexistence | [Adapters](guides/adapters.md) |
-| Use the pinned OpenCode presentation | [OpenCode frontend](guides/opencode.md) |
-| Operate the pinned DSH host | [DSH host adapter](guides/dsh.md) |
-| Inspect runs in the PetriNet dashboard | [PetriNet dashboard](guides/viewer.md) |
-| Query and inspect fixed source scopes | [SourceSet queries](guides/source-queries.md) |
-| Preview declaration packages and lock local dependencies offline | [Portable packages](guides/portable-packages.md) |
-| Prepare exact v2 package requirements without changing legacy package behavior | [Package environments](guides/package-environments.md) |
-| Check, resolve and prepare a selected receiver before authorized launch | [Receiver environment preparation](environment-preparation.md) |
-| Analyze supported finite nets and distinguish HOLDS, VIOLATED and UNKNOWN | [Finite PN validation](reference/pn-validation.md) |
-| Integrate local participants with exact review and protected Branch acceptance | [Controlled user collaboration](guides/user-collaboration.md) |
-| Open an independently authorized typed reader and cross-net comparison | [Independent Registry reader](guides/independent-registry-reader.md) |
-| Understand the fixed-cut typed read contract and authority checks | [Registry read sessions](reference/registry-read-sessions.md) |
-| Trace one exact product to its verified producer and optional Start inputs/claims | [Bounded product-origin query](reference/registry-read-sessions.md#fixed-product-origin-query) |
-| Inspect typed public projections and exchange a complete closed definition | [Typed Registry projections and subnet exchange](guides/typed-registry-exchange.md) |
-| Compare exact nets with four independent evidence axes | [Cross-net comparison](guides/comparison-context.md) |
-| Diagnose declarations against an already-prepared HOST snapshot | [HOST declaration diagnostics](guides/host-readiness.md) |
-| Compare two checkpoints from one Registry without execution | [Checkpoint comparison](guides/checkpoint-comparison.md) |
-| Page registered results, schedule managed calls and run isolated programs | [Controlled managed tools](controlled-managed-tools.md) |
-| Understand the closed execution design | [Architecture](architecture/design.md) |
-| Read the complete harness architecture overview | [Harness architecture](ARCHITECTURE.md) |
-| Compare RPNH authority with Codex presentation | [RPNH versus Codex](RPNH_VS_CODEX.md) |
-| Read the detailed provider catalog format | [Provider/model configuration](PROVIDER_MODEL_CONFIGURATION.md) |
-| Inspect viewer evidence limits | [Display observation](DISPLAY_OBSERVATION.md) |
-| Audit source integration and exclusions | [Source provenance](PROVENANCE.md) |
-| Author ordinary descendants and independent copies of adapted regions | [Open-region descendants](reference/open-region-descendants.md) |
-| Look up declaration/compile contracts | [Declarations](reference/declarations.md) |
-| Understand runtime, owner and atomic records | [Runtime and Registry](reference/runtime-registry.md) |
-| Locate session/AgentLoop/model boundaries | [Agents and models](reference/agents.md) |
-| Look up plugin, adapter and observer contracts | [Extensions and observation](reference/extensions-observation.md) |
-| Test, contribute and prepare a release | [Development and license status](guides/development.md) |
-| Review release changes and project policies | [Changelog](../CHANGELOG.md), [contributing](../CONTRIBUTING.md), [security](../SECURITY.md) |
-| Review the historical full offline baseline and current focused delta | [Release validation](guides/release-validation.md) |
-| Review dated focused/live example evidence | [Examples validation](guides/examples-validation.md) |
-| Import explicitly selected ordinary author changes | [Selective plain transplant](reference/plain-transplant.md) |
-| Author ordinary descendants and independent copies of selective transplants | [Transplant descendants](reference/plain-transplant-descendants.md) |
-| Review historical scores, exact sources and unrun scope | [Curated results](results/README.md) |
+| Install an approved source or wheel; choose a platform and artifact | [Installation and distribution scope](guides/installation.md) |
+| Set a provider, exact model and credentials environment | [Model setup](guides/models.md), [provider catalog fields](PROVIDER_MODEL_CONFIGURATION.md) |
+| Understand profile precedence, limits and runtime policy | [Configuration reference](guides/configuration.md) |
+| Choose Basic, Codex or another optional host | [Adapters and coexistence](guides/adapters.md), [OpenCode](guides/opencode.md), [DSH](guides/dsh.md) |
+| Prepare a receiver for a dependency-complete package | [Package environments](guides/package-environments.md), [check/plan/prepare flow](environment-preparation.md) |
 
-The current collaboration entry is [copy, co-create and reuse one agent project](../examples/project_collaboration/README.md). A complete project includes definitions, inputs, environment requirements, the original task, verifier, provenance and licenses. Two controlled contributors resolve real conflicts into a two-parent revision M. Before business execution, the source adopts M → a new successor with base content → a new successor with M content, then downloads exact original M for an independently authorized receiver with fresh identities. Source and receiver each run the original multi-source merge task through two provider-backed stock implementer/reviewer AgentLoop roles; the receiver package contains no source business answers. The [operator guide](guides/project-entry.md) covers import, review, acceptance, adoption, download and execution.
+## Run, inspect and recover
 
-The bounded **2026-10-13** result is **43 registered requests / 42 responses within a limit of 48**: source 23/22, retaining one original `NOT_SUBMITTED` failure and two completed business firings; receiver 20/20 and two completed business firings. Both path-adapted original assertion sets are **3/3 PASS**, and independent full-instruction review is **ACCEPT_BOTH**. Original `test.sh` is **NOT_RUN** and the grader was **VISIBLE**; these are not blind official-container scores. Independent checks cover all four rows/20 cells and three complete field conflicts; optional status normalization remains a disclosed instruction ambiguity.
+| Need | Guide |
+|---|---|
+| Start sessions, launch tasks and target workflow messages | [Usage](guides/usage.md), [CLI reference](reference/cli.md) |
+| Continue the same task or select an older checkpoint | [Checkpoint recovery](guides/checkpoint-recovery.md) |
+| Diagnose missing configuration, owner conflicts or unknown effects | [Troubleshooting and safe recovery](guides/troubleshooting.md) |
+| Inspect a full PN, agent Overview, firing, resource or checkpoint | [Viewer](guides/viewer.md), [display/evidence semantics](DISPLAY_OBSERVATION.md) |
+| Compare checkpoints in one Registry or exact nets across sources | [Checkpoint comparison](guides/checkpoint-comparison.md), [cross-net comparison](guides/comparison-context.md) |
+| Inspect actual controlled-user contributions | [Viewer contributions](guides/viewer-user-contributions.md) |
+| Check declaration compatibility with an already prepared HOST | [HOST readiness](guides/host-readiness.md) |
 
-The business PN models the two agents' responsibilities and handoff: each Overview has two nodes/one edge, and each full business PN has five nodes/six arcs. Actual file-materialization and workspace-finalization child execution PNs belong to exact business invocations/firings in the same Registry, with separate tokens, firings and checkpoints; AgentLoop logs do not substitute for execution PNs. Supported scope is controlled principals under one trusted OS user, ordinary Module contributions, explicit scoped reads and owner adoption. Pre-business content restoration does not resurrect consumed or terminal tokens or roll back external effects. It does not establish real-human authentication, live-token hot migration or broad graph/open-region/selected-change/assembly exchange.
+## Build, collaborate and reuse
 
-The historical zero-provider protocol entry is [agent-network co-building](../examples/user_collaboration/agent_cobuild/README.md). Two native task-agent roles, `curator.run` and `auditor.run`, use stock `AgentStage`/default `AgentLoop` in an ordinary Module assembled from two stock single-agent declarations, with `curator.result → auditor.request`. Deterministic source programs from two controlled original principals strengthen the curator input-lineage contract and auditor reconciliation contract. The original HOST reviews exact revisions, advances a protected Branch sequentially and enables owner adoption before target execution.
+| Need | Guide |
+|---|---|
+| Edit a shipped input, graph or plugin | [Examples and copy-and-change instructions](guides/examples.md), [customization](guides/customization.md) |
+| Copy, co-create, merge, adopt and independently run a complete agent project | [Complete project example](../examples/project_collaboration/README.md), [project operator/API guide](guides/project-entry.md) |
+| Understand controlled participants, scoped permissions and protected acceptance | [User collaboration](guides/user-collaboration.md) |
+| Extract, compose, instantiate, branch or replace definitions | [Native net operations](guides/net-operations.md) |
+| Read public projections and exchange a closed definition | [Typed Registry exchange](guides/typed-registry-exchange.md) |
+| Preview/resolve a portable package and run it on a prepared receiver | [Portable packages](guides/portable-packages.md), [native-add package tutorial](guides/package-reuse-example.md) |
+| Integrate selected tools, parallel managed calls or isolated programs | [Controlled managed tools](controlled-managed-tools.md), [plugin contracts](reference/extensions-observation.md) |
 
-In that historical window, source programs, external control actions and target agents remain separate; its single-parent chain does not imply automatic same-base merging. A `local_process` scripted driver computes from actual inputs and tool returns. This demonstrates structure and protocol using registered task agents. It makes no live-model or cognition claim; execution results, artifacts and Viewer evidence are reported on the example page.
+The current complete-project entry follows implementer/reviewer agents through
+controlled local collaboration, explicit conflict resolution, acceptance,
+owner adoption and independent receiver execution. Its example page retains
+exact evidence, limitations and original task verification. Historical
+[agent-network co-building](../examples/user_collaboration/agent_cobuild/README.md)
+is a separate deterministic protocol example.
+
+## Query and understand the system
+
+| Need | Guide |
+|---|---|
+| Open an independently authorized typed reader | [Independent Registry reader](guides/independent-registry-reader.md) |
+| Query fixed source scopes and read exact references | [SourceSet queries](guides/source-queries.md), [Registry read sessions](reference/registry-read-sessions.md) |
+| Trace an exact product to a verified producer | [Bounded product-origin query](reference/registry-read-sessions.md#fixed-product-origin-query) |
+| Understand Registry and the two PN layers | [Harness architecture](ARCHITECTURE.md), [closed execution design](architecture/design.md) |
+| Locate declarations, runtime, AgentLoop and extension contracts | [API reference map](reference/api-index.md), [source map](guides/repository-layout.md) |
+| Analyze a supported finite PN and interpret HOLDS / VIOLATED / UNKNOWN | [Finite PN validation](reference/pn-validation.md) |
+| Compare RPNH authority with presentation integrations | [RPNH versus Codex](RPNH_VS_CODEX.md), [source provenance](PROVENANCE.md) |
+
+## Maintain, contribute and track versions
+
+- [Development](guides/development.md): deterministic checks, package validation and contributor workflow
+- [Changelog](../CHANGELOG.md): changes by version/source; [installation](guides/installation.md) explains source candidates versus older releases
+- [Contributing](../CONTRIBUTING.md), [security](../SECURITY.md), [license](../LICENSE) and [third-party notices](../THIRD_PARTY_NOTICES.md)
+- [Release validation](guides/release-validation.md), [example validation](guides/examples-validation.md) and [curated results](results/README.md): dated evidence, tested inputs and unrun scope
 
 ## Reading the reference
-Declaration contracts, advanced trusted-host interfaces and private implementation modules are explicitly separated. Source paths in each page are repository-relative navigation aids, not independent installation instructions. Optional APIs are labelled by capability; their availability must be checked in the selected source/artifact. A generated page does not grant SDK stability.
 
-## Validation status
+Use [CLI reference](reference/cli.md) for operator commands and
+[API reference](reference/api-index.md) for exported symbols, explicit module
+interfaces, protocol entry points and source definitions. The detailed
+[declaration](reference/declarations.md), [runtime/Registry](reference/runtime-registry.md),
+[agent/model](reference/agents.md) and [extension/observation](reference/extensions-observation.md)
+pages describe arguments, identity, effects and failure boundaries.
 
-This tree unifies core, native plugins, Codex and OpenCode presentation, DSH,
-and the read-only viewer. Current interface documents cover checkpoint reopen,
-subordinate execution nets, versioned workspace deltas and the separation of
-Registry structural validation from application retry policy. Offline checks
-establish deterministic behavior and package completeness only; they do not
-prove that a user-owned provider route works. Raw live API evidence remains
-outside the source tree and requires separate authorization. Sanitized,
-non-secret acceptance summaries may be published with the relevant example.
-
-- [Local Worksets and acceptance](reference/worksets.md)
-
-## Current finite validation and public results
-
-[Finite integration and browser block](guides/release-validation.md) · [AutomationBench first18 + repair4](../examples/automationbench/PUBLIC_RESULTS_20261006.md)
+Public facades, trusted HOST interfaces and private implementation modules are
+separate. A documented import path or schema does not create execution
+permission or promise compatibility with every later release. Use the source
+revision matching your installed artifact.
 
 ## Integrated explicit contracts
 
-| Topic | Contract |
-|---|---|
-| Graph authoring | [graph-authoring](reference/graph-authoring.md) |
-| Graph source merge / P6 | [graph-source-merge](reference/graph-source-merge.md) |
-| Assembly full-history merge / P4 | [assembly-full-history-merge](reference/assembly-full-history-merge.md) |
-| Explicit split/fusion | [author-identity-transform-contract](reference/author-identity-transform-contract.md) |
-| Plain merge analysis | [plain-merge-analysis](reference/plain-merge-analysis.md) |
-| Plain merge result | [plain-merge-result](reference/plain-merge-result.md) |
-| Merge composition | [plain-merge-composition](reference/plain-merge-composition.md) |
-| Nested Assembly merge | [plain-merge-nested-assembly](reference/plain-merge-nested-assembly.md) |
-| Open-region authoring | [open-region-authoring](reference/open-region-authoring.md) |
-| Normal-child root closure | [normal-child-root-contract](reference/normal-child-root-contract.md) |
+Advanced authoring is grouped in the [API version-operation map](reference/api-index.md#authoring-and-version-contracts):
+
+- [Graph authoring](reference/graph-authoring.md), [graph-source merge](reference/graph-source-merge.md), [identity transforms](reference/author-identity-transform-contract.md)
+- [Plain merge analysis](reference/plain-merge-analysis.md), [resolved results](reference/plain-merge-result.md), [composition](reference/plain-merge-composition.md), [nested Assemblies](reference/plain-merge-nested-assembly.md), [full-history Assembly merge](reference/assembly-full-history-merge.md)
+- [Open-region authoring](reference/open-region-authoring.md), [open-region descendants](reference/open-region-descendants.md), [selective transplant](reference/plain-transplant.md), [transplant descendants](reference/plain-transplant-descendants.md)
+- [Worksets](reference/worksets.md), [normal-child root closure](reference/normal-child-root-contract.md)
 
 ## Exact reads and frontend protocol
 
@@ -133,3 +124,23 @@ non-secret acceptance summaries may be published with the relevant example.
 - [Main-thread history at a fixed cut](reference/main-thread-history.md)
 - [Codex history projection](reference/codex-history.md)
 - [Explicit Codex 0.161 protocol candidate](CODEX_0161_CANDIDATE.md)
+
+## Validation status
+
+A documentation/source check establishes what is declared and linked. Offline
+runtime checks, installed-artifact checks, browser checks and live-provider
+runs establish different things. The first-run commands are operator
+instructions, not a claim that this documentation revision re-ran them.
+
+Read each result's exact commit, inputs, environment, scorer, failures and
+unrun scope before reusing its conclusion. A readable graph is not proof of
+terminal success, and a historical pass does not certify a later source tree.
+Keep raw operational data and credentials private.
+
+## Current finite validation and public results
+
+[Release validation](guides/release-validation.md) · [Example validation](guides/examples-validation.md) · [Result archive](results/README.md) · [AutomationBench first18 + repair4](../examples/automationbench/PUBLIC_RESULTS_20261006.md)
+
+For native-input application examples, see [controlled mock refund](../examples/approval_workflow/README.md)
+and [synthetic external-result quote](../examples/a2a_quote/README.md), with their
+explicitly bounded evidence and external-protocol status.

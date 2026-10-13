@@ -1,128 +1,117 @@
 ---
 name: rpnh-documentation-index
-description: "Navigate the bilingual operator and developer documentation."
+description: "按首次运行、操作、API 契约或源码入口选择阅读路线。"
 metadata:
   document-kind: index
   audience: operator-and-developer
   language: zh-CN
   counterpart: index.md
-  revision: "2026-10-13.2"
-  status: maintained
-  basis: "core; adapter differences explicitly labelled"
+  revision: "2026-10-13.3"
+  status: source-reviewed
+  basis: "public source b16ecce83ba603b3c15f1c770bce172d4f44f88e; not a new runtime validation"
 ---
 
 [English](index.md) | [中文](index_ZH.md)
 
 # 文档导航
 
-需要先连续了解项目定位、执行模型和评估边界，可以从[技术报告](technical-report_ZH.md)开始。
+[仓库首页](../README_ZH.md) · [示例](../examples/README_ZH.md) · [CLI](reference/cli_ZH.md) · [API](reference/api-index_ZH.md) · [源码地图](guides/repository-layout_ZH.md)
 
-可运行输入与源码职责分别见[完整案例索引](../examples/README_ZH.md)和
-[代码与安装包目录](guides/repository-layout_ZH.md)。
+RPNH 以 Registry 和 PetriNet 共同声明、执行、检查和复用 agent 工作。先完成一个小运行，再按下一项任务选指南。文档描述所选公共源码；有日期的结果记录明确其实际测试过的旧版本。
 
-先读安装和精确模型配置，再选择最接近目标应用的案例。指南描述本次选定的源码快照；带日期的验证
-记录保留其实际测试的旧版本边界，不能自动作为后续提交的认证。每个主题都有对应英文页。
+## 第一次使用 RPNH？
 
-| 需求 | 阅读 |
+1. [第一次运行](guides/getting-started_ZH.md)：安装一份来源，运行无模型原生操作、检查实际证据，再按需打开模型会话。
+2. [选择示例](../examples/README_ZH.md)：按任务和前提找到可修改工作流、完整协作项目或有界 benchmark。
+3. [操作与恢复](guides/usage_ZH.md)：保留会话/任务身份、查看结果、安全停止，再从精确 checkpoint 继续。
+
+运行前想先理解概念，阅读[技术报告](technical-report_ZH.md)。接入 Python 则从 [API 地图](reference/api-index_ZH.md)及[声明教程](reference/declarations_ZH.md)开始。
+
+## 安装与配置
+
+| 需要 | 指南 |
 |---|---|
-| 首次了解 RPNH，再试用或集成 | [技术报告](technical-report_ZH.md) |
-| 安装 core/basic、源码或 wheel | [安装](guides/installation_ZH.md) |
-| 运行原生、混合、任务与安装版跨宿主案例 | [案例](guides/examples_ZH.md) |
-| 复制、共创、采用并独立复用完整 Agent 项目 | [项目协作](../examples/project_collaboration/README_ZH.md)、[操作指南](guides/project-entry_ZH.md) |
-| 查看历史 agent 输入来源与对账协议 | [Agent 任务网共建](../examples/user_collaboration/agent_cobuild/README_ZH.md) |
-| 由两个不同原生主体处理模拟退款 | [受控退款应用](../examples/approval_workflow/README_ZH.md) |
-| 将合成外部结果接入同一原生运行 | [外部结果接入报价应用](../examples/a2a_quote/README_ZH.md) |
-| 导出包含完整依赖的案例并修改 | [可复用案例](guides/examples_ZH.md#导出案例并改成自己的应用) |
-| 构建可运行 v2 包并准备接收端 | [原生加法分享包教程](guides/package-reuse-example_ZH.md) |
-| 理解源码目录与安装包边界 | [仓库目录图](guides/repository-layout_ZH.md) |
-| 配置 route、模型与全部受支持运行上限 | [配置总表](guides/configuration_ZH.md)、[模型配置](guides/models_ZH.md) |
-| 控制会话/任务并恢复 | [使用](guides/usage_ZH.md) |
-| 从 checkpoint 继续同一个任务 | [Checkpoint 恢复](guides/checkpoint-recovery_ZH.md) |
-| 不破坏证据地定位故障 | [排障](guides/troubleshooting_ZH.md) |
-| 扩展 workflow/tool/skill/MCP | [自定义](guides/customization_ZH.md) |
-| 提取、组合、实例化或替换 PetriNet 定义 | [原生 PetriNet 操作](guides/net-operations_ZH.md) |
-| 选用 Codex/DSH、理解共存 | [适配](guides/adapters_ZH.md) |
-| 使用固定版本 OpenCode 展示前端 | [OpenCode 前端](guides/opencode_ZH.md) |
-| 使用固定版本 DSH 宿主 | [DSH 宿主适配器](guides/dsh_ZH.md) |
-| 在 PetriNet 看板中查看 run | [PetriNet 看板](guides/viewer_ZH.md) |
-| 查询并查看固定来源范围 | [SourceSet 查询](guides/source-queries_ZH.md) |
-| 离线预览声明包并锁定本地依赖 | [可移植包](guides/portable-packages_ZH.md) |
-| 准备精确 v2 分享包环境，保留 v1 原语义 | [分享包环境声明](guides/package-environments_ZH.md) |
-| 检查、解析并准备所选接收端，随后单独授权启动 | [接收端环境准备](environment-preparation_ZH.md) |
-| 分析受支持的有限网并区分 HOLDS、VIOLATED 与 UNKNOWN | [有限 PN 验证](reference/pn-validation_ZH.md) |
-| 接入本地参与者，进行精确审核与受保护 Branch 接纳 | [受控用户协作](guides/user-collaboration_ZH.md) |
-| 打开独立合法类型化读取和跨网比较 | [独立 Registry 读取](guides/independent-registry-reader_ZH.md) |
-| 理解固定 cut 类型化读合同与权限校验 | [Registry 读会话](reference/registry-read-sessions_ZH.md) |
-| 从精确产物核对 producer 与可选 Start 输入、claim | [有界产物来源查询](reference/registry-read-sessions_ZH.md) |
-| 检查类型化公共投影与完整闭合定义交换 | [Registry 类型化投影与子网交换](guides/typed-registry-exchange_ZH.md) |
-| 按四个独立证据轴比较精确网图 | [跨网比较](guides/comparison-context_ZH.md) |
-| 对照已准备 HOST 的声明快照 | [HOST 声明诊断](guides/host-readiness_ZH.md) |
-| 只读比较同一 Registry 的两个 checkpoint | [Checkpoint 比较](guides/checkpoint-comparison_ZH.md) |
-| 回读已登记结果、调度 managed 调用与运行隔离程序 | [受控 managed 工具](controlled-managed-tools.zh.md) |
-| 理解执行闭环 | [架构](architecture/design_ZH.md) |
-| 阅读完整 harness 架构概览 | [Harness 架构](ARCHITECTURE_ZH.md) |
-| 比较 RPNH 权威与 Codex 展示 | [RPNH 与 Codex](RPNH_VS_CODEX_ZH.md) |
-| 查看 provider catalog 详细格式 | [Provider/model 配置](PROVIDER_MODEL_CONFIGURATION_ZH.md) |
-| 核对 viewer 证据边界 | [展示观察](DISPLAY_OBSERVATION_ZH.md) |
-| 审计源码整合与排除项 | [源码来源](PROVENANCE_ZH.md) |
-| 编写适配区域的普通后继与独立复制 | [开放区域普通后继](reference/open-region-descendants_ZH.md) |
-| 查询声明与编译契约 | [声明参考](reference/declarations_ZH.md) |
-| 理解 runtime/owner/原子记录 | [运行与 Registry](reference/runtime-registry_ZH.md) |
-| 定位会话/AgentLoop/模型边界 | [Agent 与模型](reference/agents_ZH.md) |
-| 查询插件/适配/观察接口 | [扩展与观察](reference/extensions-observation_ZH.md) |
-| 测试、贡献及发布准备 | [维护与许可状态](guides/development_ZH.md) |
-| 查看发布变更与项目规则 | [变更记录](../CHANGELOG_ZH.md)、[参与贡献](../CONTRIBUTING_ZH.md)、[安全报告](../SECURITY_ZH.md) |
-| 查看历史全量离线基线与当前定向增量 | [发布验收](guides/release-validation_ZH.md) |
-| 查看带日期的 focused／真实案例证据 | [案例验证](guides/examples-validation_ZH.md) |
-| 显式引入所选普通作者变化 | [普通作者选择性移植](reference/plain-transplant_ZH.md) |
-| 编写选择性移植的普通后继与独立复制 | [移植普通后继](reference/plain-transplant-descendants_ZH.md) |
-| 核对历史评分、源码与未运行范围 | [精选结果](results/README_ZH.md) |
+| 安装认可的源码或 wheel；选择平台与产物 | [安装及发行范围](guides/installation_ZH.md) |
+| 设置 provider、精确模型及凭据环境变量 | [模型设置](guides/models_ZH.md)、[provider catalog 字段](PROVIDER_MODEL_CONFIGURATION_ZH.md) |
+| 理解 profile 优先级、限制和 runtime policy | [配置参考](guides/configuration_ZH.md) |
+| 选择 Basic、Codex 或其他可选 host | [适配器及共存](guides/adapters_ZH.md)、[OpenCode](guides/opencode_ZH.md)、[DSH](guides/dsh_ZH.md) |
+| 为依赖完整的包准备接收端 | [包环境](guides/package-environments_ZH.md)、[检查/计划/准备流程](environment-preparation_ZH.md) |
 
-当前协作入口是[复制、共创并复用同一 Agent 项目](../examples/project_collaboration/README_ZH.md)。完整项目包含定义、输入、环境、原任务、验收器、来源与许可证；两个受控贡献者解决真实冲突并形成双 parent 修订 M。业务执行前依次采用 M → base 内容新后继 → M 内容新后继，再下载精确原 M，由新身份、独立授权的 receiver 导入。source 与 receiver 均由 implementer／reviewer 两个调用真实模型的 stock AgentLoop 职责执行同一原始多源合并任务；receiver 包不含 source 的业务答案。[操作指南](guides/project-entry_ZH.md)给出导入、审核、接纳、采用、下载和运行步骤。
+## 运行、检查与恢复
 
-2026-10-13 的有界结果为 **43 次登记／42 次响应，上限 48**：source 23／22（保留 1 次 `NOT_SUBMITTED` 原失败、2 个完成业务 firing），receiver 20／20、2 个完成业务 firing。两端路径适配原断言均 **3/3 PASS**，独立完整 instruction 审阅为 **ACCEPT_BOTH**；原 `test.sh` **NOT_RUN**，grader **VISIBLE**，不称盲评官方容器成绩。全部四行／20 单元格和三项完整字段冲突经独立核对；可选 status 归一化歧义仍披露。
+| 需要 | 指南 |
+|---|---|
+| 启动会话、创建任务、向 workflow 目标发送消息 | [使用](guides/usage_ZH.md)、[CLI 参考](reference/cli_ZH.md) |
+| 继续同一任务或选择旧 checkpoint | [Checkpoint 恢复](guides/checkpoint-recovery_ZH.md) |
+| 排查配置缺失、owner 冲突或未知副作用 | [排障与安全恢复](guides/troubleshooting_ZH.md) |
+| 查看完整 PN、agent Overview、firing、资源或 checkpoint | [Viewer](guides/viewer_ZH.md)、[展示/证据语义](DISPLAY_OBSERVATION_ZH.md) |
+| 比较同一 Registry 的 checkpoint 或跨来源精确网 | [Checkpoint 比较](guides/checkpoint-comparison_ZH.md)、[跨网比较](guides/comparison-context_ZH.md) |
+| 查看实际受控用户贡献 | [Viewer 贡献](guides/viewer-user-contributions_ZH.md) |
+| 对已准备 HOST 检查声明兼容性 | [HOST readiness](guides/host-readiness_ZH.md) |
 
-业务 PN 建模两个 agent 的职责与交接；两端 Overview 均为 2 节点／1 边，完整业务 PN 为 5 节点／6 弧。文件物化与 workspace finalization 的真实下级执行 PN 在同一 Registry 内归属于精确业务 invocation/firing，具有分开的 token、firing 和 checkpoint；AgentLoop 日志不替代执行 PN。受支持范围是单一可信 OS 用户下的受控主体、普通 Module 贡献与显式 scoped 读取／owner 采用。业务前内容恢复不复活已消费或终态 token，也不回滚外部效果；不证明真人身份认证、活跃 token 热迁移或 graph／open-region／selected-change／assembly 的广泛交换。
+## 构建、协作与复用
 
-历史零 provider 协议入口是[Agent 任务网共建](../examples/user_collaboration/agent_cobuild/README_ZH.md)。`curator.run` 与 `auditor.run` 两个原生任务 agent 使用 stock `AgentStage`／default `AgentLoop`，由两份 stock 单 agent 声明组成同一普通 Module，连接为 `curator.result → auditor.request`。两个受控原 principal 的确定性 source 程序分别加强 curator 输入来源合同和 auditor 对账合同。原 HOST 审阅精确 revision、连续推进受保护 Branch，再由 owner 在 target 执行前采用。
+| 需要 | 指南 |
+|---|---|
+| 修改随附输入、图或插件 | [示例及复制修改流程](guides/examples_ZH.md)、[定制](guides/customization_ZH.md) |
+| 复制、共创、合并、adopt 并独立运行完整 agent 项目 | [完整项目示例](../examples/project_collaboration/README_ZH.md)、[项目操作/API 指南](guides/project-entry_ZH.md) |
+| 理解受控参与者、范围权限和受保护接受 | [用户协作](guides/user-collaboration_ZH.md) |
+| 提取、组合、实例化、branch 或替换定义 | [原生网操作](guides/net-operations_ZH.md) |
+| 读取公共投影并交换完整封闭定义 | [类型化 Registry 交换](guides/typed-registry-exchange_ZH.md) |
+| 预览/解析可移植包，在准备好的接收端运行 | [可移植包](guides/portable-packages_ZH.md)、[native-add 包教程](guides/package-reuse-example_ZH.md) |
+| 接入所选工具、并行托管调用或隔离程序 | [受控托管工具](controlled-managed-tools.zh.md)、[插件契约](reference/extensions-observation_ZH.md) |
 
-该历史窗口的 source 程序、网外控制动作与 target agent 分层记录；其单 parent 链不表示同 base 自动合并。`local_process` 脚本驱动从实际输入与工具返回计算，以已登记任务 agent 展示结构／协议，不声称真实模型调用或认知能力；运行结果、产物与 Viewer 证据以示例页记录为准。
+当前完整项目入口让 implementer/reviewer agent 经历受控本地协作、显式冲突解决、接受、owner adoption 及独立接收端执行。示例页保留精确证据、限制和原任务验证。历史[agent-network 共建](../examples/user_collaboration/agent_cobuild/README_ZH.md)是单独的确定性协议示例。
+
+## 查询与理解系统
+
+| 需要 | 指南 |
+|---|---|
+| 打开独立授权的类型化 reader | [独立 Registry reader](guides/independent-registry-reader_ZH.md) |
+| 查询固定来源范围及精确引用 | [SourceSet 查询](guides/source-queries_ZH.md)、[Registry 读取会话](reference/registry-read-sessions_ZH.md) |
+| 从精确 product 追踪已核验 producer | [有界 product-origin 查询](reference/registry-read-sessions_ZH.md) |
+| 理解 Registry 与双层 PN | [Harness 架构](ARCHITECTURE_ZH.md)、[封闭执行设计](architecture/design_ZH.md) |
+| 定位声明、runtime、AgentLoop 及扩展契约 | [API 参考地图](reference/api-index_ZH.md)、[源码地图](guides/repository-layout_ZH.md) |
+| 分析受支持有限 PN，解读 HOLDS / VIOLATED / UNKNOWN | [有限 PN 验证](reference/pn-validation_ZH.md) |
+| 比较 RPNH 权威与展示集成 | [RPNH 与 Codex](RPNH_VS_CODEX_ZH.md)、[源码来源](PROVENANCE_ZH.md) |
+
+## 维护、贡献与版本
+
+- [开发](guides/development_ZH.md)：确定性检查、包验证和贡献流程
+- [Changelog](../CHANGELOG_ZH.md)：按版本/来源查看变化；[安装](guides/installation_ZH.md)解释源码候选与旧发布的区别
+- [贡献](../CONTRIBUTING_ZH.md)、[安全](../SECURITY_ZH.md)、[许可证](../LICENSE)及[第三方声明](../THIRD_PARTY_NOTICES.md)
+- [发布验证](guides/release-validation_ZH.md)、[示例验证](guides/examples-validation_ZH.md)、[精选结果](results/README_ZH.md)：有日期的证据、测试输入及未运行范围
 
 ## 如何阅读参考
-明确区分声明契约、高级可信宿主接口与私有模块。各页源码路径是仓库内定位信息，不是独立安装说明。可选 API 按能力标注，必须与所选源码/产物核对；自动生成页面不授予 SDK 稳定性承诺。
 
-## 验证状态
+[CLI 参考](reference/cli_ZH.md)定位操作命令，[API 参考](reference/api-index_ZH.md)定位导出符号、显式模块接口、协议入口和源码定义。[声明](reference/declarations_ZH.md)、[运行/Registry](reference/runtime-registry_ZH.md)、[agent/模型](reference/agents_ZH.md)、[扩展/观察](reference/extensions-observation_ZH.md)详述参数、身份、副作用及失败边界。
 
-当前代码树统一包含 core、原生插件、Codex/OpenCode 展示、DSH 和只读 viewer。当前接口
-文档覆盖 checkpoint reopen、下级执行网、版本化 workspace delta，以及 Registry 结构校验与
-应用重试策略的分离。离线检查只能证明确定性行为和打包完整性，不能证明用户自有 provider
-route 可用。原始真实 API 证据保存在源码树之外并需要单独授权；不含秘密的脱敏验收摘要可以
-随对应案例发布。
-
-- [本地 Workset 与接纳](reference/worksets_ZH.md)
-
-## 当前有限验收与公开结果
-
-[有限集成与浏览器阻断](guides/release-validation_ZH.md) · [AutomationBench first18 + repair4](../examples/automationbench/PUBLIC_RESULTS_20261006_ZH.md)
+公共 facade、可信 HOST 接口和私有实现模块应区分。已记录的导入路径或 schema 不产生执行权限，也不承诺兼容所有后续版本。请使用与已安装产物匹配的源码版本。
 
 ## 已集成的显式合同
 
-| 主题 | 合同 |
-|---|---|
-| Graph作者接口 | [graph-authoring](reference/graph-authoring_ZH.md) |
-| Graph source merge / P6 | [graph-source-merge](reference/graph-source-merge_ZH.md) |
-| Assembly完整历史merge / P4 | [assembly-full-history-merge](reference/assembly-full-history-merge_ZH.md) |
-| 显式split/fusion | [author-identity-transform-contract](reference/author-identity-transform-contract_ZH.md) |
-| Plain merge分析 | [plain-merge-analysis](reference/plain-merge-analysis_ZH.md) |
-| Plain merge结果 | [plain-merge-result](reference/plain-merge-result_ZH.md) |
-| Merge组合 | [plain-merge-composition](reference/plain-merge-composition_ZH.md) |
-| 嵌套Assembly merge | [plain-merge-nested-assembly](reference/plain-merge-nested-assembly_ZH.md) |
-| 开放区域作者接口 | [open-region-authoring](reference/open-region-authoring_ZH.md) |
-| Normal-child root闭合 | [normal-child-root-contract](reference/normal-child-root-contract_ZH.md) |
+高级作者操作汇总在 [API 版本操作地图](reference/api-index_ZH.md#作者与版本契约)：
+
+- [Graph 编写](reference/graph-authoring_ZH.md)、[graph-source 合并](reference/graph-source-merge_ZH.md)、[身份变换](reference/author-identity-transform-contract_ZH.md)
+- [Plain merge 分析](reference/plain-merge-analysis_ZH.md)、[解决结果](reference/plain-merge-result_ZH.md)、[组合](reference/plain-merge-composition_ZH.md)、[嵌套 Assembly](reference/plain-merge-nested-assembly_ZH.md)、[完整历史 Assembly 合并](reference/assembly-full-history-merge_ZH.md)
+- [Open-region 编写](reference/open-region-authoring_ZH.md)、[open-region 后代](reference/open-region-descendants_ZH.md)、[选择性 transplant](reference/plain-transplant_ZH.md)、[transplant 后代](reference/plain-transplant-descendants_ZH.md)
+- [Worksets](reference/worksets_ZH.md)、[normal-child root 闭合](reference/normal-child-root-contract_ZH.md)
 
 ## 精确读取与前端协议
 
-- [资源 lease 读取](guides/static-lease-reads_ZH.md)
-- [主线程固定截面历史](reference/main-thread-history_ZH.md)
+- [静态 resource-lease 读取](guides/static-lease-reads_ZH.md)
+- [固定切面的主线程历史](reference/main-thread-history_ZH.md)
 - [Codex 历史投影](reference/codex-history_ZH.md)
-- [Codex 0.161 显式协议候选](CODEX_0161_CANDIDATE_ZH.md)
+- [显式 Codex 0.161 协议候选](CODEX_0161_CANDIDATE_ZH.md)
+
+## 验证状态
+
+文档/源码核对证明所声明内容与链接。离线 runtime 检查、已安装产物检查、浏览器检查和真实 provider 运行分别证明不同事情。首次运行命令是操作说明，不代表此次文档修订重新执行过它们。
+
+复用结果前，先核对精确 commit、输入、环境、scorer、失败及未运行范围。图可读不证明终态成功，历史通过不证明后续源码树已通过。原始运行数据和凭据保持私有。
+
+## 当前有限验收与公开结果
+
+[发布验证](guides/release-validation_ZH.md) · [示例验证](guides/examples-validation_ZH.md) · [结果归档](results/README_ZH.md) · [AutomationBench first18 + repair4](../examples/automationbench/PUBLIC_RESULTS_20261006.md)
+
+Native-input 应用示例见[受控模拟退款](../examples/approval_workflow/README_ZH.md)和[合成外部结果报价](../examples/a2a_quote/README_ZH.md)，各自保留明确的证据范围与外部协议状态。

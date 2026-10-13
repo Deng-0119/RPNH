@@ -2,9 +2,8 @@
 
 English | [中文](README_ZH.md)
 
-[See the graph](#see-a-multi-agent-run) · [Quick start](#quick-start) ·
-[Examples](#example-catalog) · [Frontends](#frontends-and-host-integrations) ·
-[Documentation](#documentation) · [Technical report](docs/technical-report.md)
+[Quick start](#quick-start) · [Actual PN](#see-a-multi-agent-run) · [Examples](#example-catalog) ·
+[Frontends](#frontends-and-host-integrations) · [Documentation hub](docs/index.md) · [Contribute](CONTRIBUTING.md)
 
 RPNH is a provider-neutral agent execution framework for composing language
 models, native tools and reusable workflows. A durable **Registry** records
@@ -26,87 +25,24 @@ runtime—not separate owners of model, workspace or recovery state.
 | Observation | Terminal projections and a local read-only PetriNet dashboard |
 | Recovery | Owner-stop resume and user-selected checkpoint reopen |
 
-The current collaboration entry is [copy, co-create and reuse one agent project](examples/project_collaboration/README.md). A complete project includes definitions, inputs, environment requirements, the original task, verifier, provenance and licenses. Two controlled contributors resolve real conflicts into a two-parent revision M. Before business execution, the source adopts M → a new successor with base content → a new successor with M content, then downloads exact original M for an independently authorized receiver with fresh identities. Source and receiver each run the original multi-source merge task through two provider-backed stock implementer/reviewer AgentLoop roles; the receiver package contains no source business answers. The [operator guide](docs/guides/project-entry.md) covers import, review, acceptance, adoption, download and execution.
+## Start here
+
+- **Try RPNH for the first time:** follow [Quick start](#quick-start) to install, run a zero-model tool and open the Viewer. The [first-run tutorial](docs/guides/getting-started.md) walks through the full path.
+- **Copy and co-create a project:** use the [project collaboration example](examples/project_collaboration/README.md) and its [import-to-execution guide](docs/guides/project-entry.md).
+- **Build an application or integrate existing code:** start with [customization and plugins](docs/guides/customization.md), then use the [Python API index](docs/reference/api-index.md), [CLI reference](docs/reference/cli.md) and [source map](docs/guides/repository-layout.md).
+- **Understand the design first:** read the [technical report](docs/technical-report.md). Use the [documentation hub](docs/index.md) for task-based routes and [curated results](docs/results/README.md) for recorded conditions and scores.
+
+### Project preview: copy, co-create and reuse
+
+The [project collaboration example](examples/project_collaboration/README.md) merges two controlled contributors' revisions, then runs implementer/reviewer agents at the source and an independent receiver. This is the original source run's completed business PN. The example uses authorized live models and controlled principals under one trusted OS user; see [project and result scope](#project-collaboration-and-result-scope) for dates, scores and conditions.
 
 [![Completed source business PN: implementer/reviewer, five nodes and six arcs.](examples/project_collaboration/figures/source-petri.png)](examples/project_collaboration/figures/source-petri.png)
 
 [Full-size PN](examples/project_collaboration/figures/source-petri.png) · [Exact observation and provenance](examples/project_collaboration/figures/source-petri.json) · [Capture record](examples/project_collaboration/figures/provenance.json)
 
-The bounded **2026-10-13** result is **43 registered requests / 42 responses within a limit of 48**: source 23/22, retaining one original `NOT_SUBMITTED` failure and two completed business firings; receiver 20/20 and two completed business firings. Both path-adapted original assertion sets are **3/3 PASS**, and independent full-instruction review is **ACCEPT_BOTH**. Original `test.sh` is **NOT_RUN** and the grader was **VISIBLE**; these are not blind official-container scores. Independent checks cover all four rows/20 cells and three complete field conflicts; optional status normalization remains a disclosed instruction ambiguity.
-
-The business PN models the two agents' responsibilities and handoff: each Overview has two nodes/one edge, and each full business PN has five nodes/six arcs. Actual file-materialization and workspace-finalization child execution PNs belong to exact business invocations/firings in the same Registry, with separate tokens, firings and checkpoints; AgentLoop logs do not substitute for execution PNs. Supported scope is controlled principals under one trusted OS user, ordinary Module contributions, explicit scoped reads and owner adoption. Pre-business content restoration does not resurrect consumed or terminal tokens or roll back external effects. It does not establish real-human authentication, live-token hot migration or broad graph/open-region/selected-change/assembly exchange.
-
-Public record dated 2026-10-06: freeze04 first18 has 5 PASS / 9 FAIL / 4 BLOCKED; separate repair4 has 1 PASS / 3 FAIL. The old 14 scored tasks were not rerun. [Results and limits](examples/automationbench/PUBLIC_RESULTS_20261006.md).
-
-Explicit opt-in [author/graph interfaces](docs/reference/declarations.md), [Workset and normal-child roots](docs/reference/normal-child-root-contract.md), and [read-only source queries](docs/guides/source-queries.md) are integrated. [Finite validation](docs/guides/release-validation.md) is not full HOST/I00–I10/advanced25 acceptance; the historical freeze04 browser window was BLOCKED.
-
-Offline preparation and inspection are available through [portable package preview and exact local locks](docs/guides/portable-packages.md), [HOST declaration diagnostics](docs/guides/host-readiness.md), and [checkpoint comparison](docs/guides/checkpoint-comparison.md). Package commands use the installed `rpnh` entry; the HOST diagnostic is an explicit Python API. These interfaces inspect materials and recorded facts without granting execution authority.
-
-The historical zero-provider protocol entry is [agent-network co-building](examples/user_collaboration/agent_cobuild/README.md). Two native task-agent roles, `curator.run` and `auditor.run`, use stock `AgentStage`/default `AgentLoop` in an ordinary Module assembled from two stock single-agent declarations, with `curator.result → auditor.request`. Deterministic source programs from two controlled original principals strengthen the curator input-lineage contract and auditor reconciliation contract. The original HOST reviews exact revisions, advances a protected Branch sequentially and enables owner adoption before target execution.
-
-In that historical window, source programs, external control actions and target agents remain separate; its single-parent chain does not imply automatic same-base merging. A `local_process` scripted driver computes from actual inputs and tool returns. This demonstrates structure and protocol using registered task agents. It makes no live-model or cognition claim; execution results, artifacts and Viewer evidence are reported on the example page.
-
-See [curated results](docs/results/README.md) for historical application scores and zero-model runtime checks. Each record keeps its tested source and conditions; these older windows do not certify a later combined product or a new rc2 binary release.
-
-Two controlled local applications connect browser input to the original Registry
-and PN: [two-principal mock refund approval](examples/approval_workflow/README.md)
-and [external-result quote intake](examples/a2a_quote/README.md). Each opens with
-its actual Viewer capture and includes same-run inspection and reopen commands.
-Business inputs and external results are synthetic; no model or financial service is called.
-
-[Historical route](examples/user_collaboration/README.md#historical-route-planning-mechanism-evidence) and [native billing](examples/user_collaboration/native_billing/README.md) retain original 74/10-operation business-tool nets, versions, results, images, contribution/adoption receipts and failures. Their tool operations and authors are not task agents; historical results do not validate the current co-building example.
-
-## See a multi-agent run
-
-[Controlled managed tools](docs/controlled-managed-tools.md) covers exact result
-paging, bounded parallel calls, isolated Python programs, read-only result
-evidence and source preflight. These capabilities use explicit HOST policies;
-existing tool catalogs and benchmark comparison conditions retain their defaults.
-
-This dashboard comes from the checked-in `parallel` example after a completed
-Registry run. `prepare` enables two independent Agents; `join` becomes eligible
-only after both registered products are available.
-
-[![Actual RPNH parallel PetriNet projection](examples/workflow_patterns/assets/parallel-petrinet.png)](examples/workflow_patterns/assets/parallel-petrinet.png)
-
-After completing [Quick start](#quick-start), reproduce it without a provider or
-API credential:
-
-```bash
-DEMO_ROOT="$(mktemp -d "${TMPDIR:-/tmp}/rpnh-readme.XXXXXX")"
-python -m examples.workflow_patterns.run \
-  --scenario parallel --run-dir "$DEMO_ROOT/parallel"
-rpnh net --run "$DEMO_ROOT/parallel" --view --no-open
-```
-
-The PetriNet above shows the same run's transitions, handoff places, fan-out arcs and all-input join. The Viewer supports zoom, pan, node/arc details and checkpoint inspection. Its brief Overview shows task agents and handoffs; see the [Viewer guide](docs/guides/viewer.md) and [same-run original Overview](examples/workflow_patterns/assets/parallel-overview.png).
-
-Overview identities come from exact registered bindings or clearly marked declarations; an external display annotation does not confirm an agent. Overview edges retain structural path provenance. The full PN still determines guards and all-input joins; a path alone does not prove firing order.
-
-These are real graph projections with aggregate execution state and controls;
-only run-specific checkpoint identities and local timestamps were removed from
-the public images. The dashboard is read-only. Registry terminal evidence and a
-registered final result—not a picture or process exit—establish completion.
-
-## What RPNH provides
-
-- **Agents and existing code in one workflow.** Model nodes can reason and
-  communicate while native plugins perform calculations or existing business
-  logic against declared inputs and outputs.
-- **Explicit concurrency and joins.** Petri-net places, arcs and tokens express
-  fan-out, synchronization, resource reads and completion conditions without
-  reducing execution to a serial chat transcript.
-- **Independent work with one entry point.** The main session can create,
-  inspect, message, stop and reopen child tasks. Each child retains its own
-  Registry, execution state and result.
-- **Versioned workspace evidence.** Resource versions connect inputs and
-  products to their executions. Settlement records per-path create, update and
-  delete history while preserving conflicts between concurrent revisions.
-- **Provider- and frontend-neutral ownership.** Users configure their own model
-  routes. Supported frontends share RPNH execution semantics instead of
-  reimplementing provider, Registry, workspace or recovery behavior.
-
 ## Quick start
+
+Goal: run a local tool on Linux/WSL2 with Python 3.11+ and inspect its registered result in the Viewer. Installation and the first two steps need no model or API credential; model setup comes in step 3. For checkpoints and common fixes, use the [first-run tutorial](docs/guides/getting-started.md) and [troubleshooting](docs/guides/troubleshooting.md).
 
 Choose the source or release deliberately:
 
@@ -122,6 +58,15 @@ On Linux or WSL2, use the selected reviewed source checkout and run from its
 root. An ordinary clone of public `main` does not retrieve unpublished candidate
 changes. Record the selected commit and use a fresh environment; see
 [installation](docs/guides/installation.md) for wheel and upgrade checks.
+
+For a first checkout:
+
+```bash
+git clone https://github.com/Deng-0119/RPNH.git
+cd RPNH
+```
+
+If you already have a checkout, start here from its root:
 
 ```bash
 git rev-parse HEAD
@@ -188,35 +133,62 @@ a workflow, and `/tasks` to list children. `/switch` changes the selected task;
 same Registry/run. See [usage](docs/guides/usage.md) and the
 [checkpoint recovery procedure](docs/guides/checkpoint-recovery.md).
 
+## See a multi-agent run
+
+This dashboard comes from the checked-in `parallel` example after a completed
+Registry run. `prepare` enables two independent Agents; `join` becomes eligible
+only after both registered products are available.
+
+[![Actual RPNH parallel PetriNet projection](examples/workflow_patterns/assets/parallel-petrinet.png)](examples/workflow_patterns/assets/parallel-petrinet.png)
+
+After completing [Quick start](#quick-start), reproduce it without a provider or
+API credential:
+
+```bash
+DEMO_ROOT="$(mktemp -d "${TMPDIR:-/tmp}/rpnh-readme.XXXXXX")"
+python -m examples.workflow_patterns.run \
+  --scenario parallel --run-dir "$DEMO_ROOT/parallel"
+rpnh net --run "$DEMO_ROOT/parallel" --view --no-open
+```
+
+The PetriNet above shows the same run's transitions, handoff places, fan-out arcs and all-input join. The Viewer supports zoom, pan, node/arc details and checkpoint inspection. Its brief Overview shows task agents and handoffs; see the [Viewer guide](docs/guides/viewer.md) and [same-run original Overview](examples/workflow_patterns/assets/parallel-overview.png).
+
+Overview identities come from exact registered bindings or clearly marked declarations; an external display annotation does not confirm an agent. Overview edges retain structural path provenance. The full PN still determines guards and all-input joins; a path alone does not prove firing order.
+
+These are real graph projections with aggregate execution state and controls;
+only run-specific checkpoint identities and local timestamps were removed from
+the public images. The dashboard is read-only. Registry terminal evidence and a
+registered final result—not a picture or process exit—establish completion.
+
+## What RPNH provides
+
+- **Agents and existing code in one workflow.** Model nodes can reason and
+  communicate while native plugins perform calculations or existing business
+  logic against declared inputs and outputs.
+- **Explicit concurrency and joins.** Petri-net places, arcs and tokens express
+  fan-out, synchronization, resource reads and completion conditions without
+  reducing execution to a serial chat transcript.
+- **Independent work with one entry point.** The main session can create,
+  inspect, message, stop and reopen child tasks. Each child retains its own
+  Registry, execution state and result.
+- **Versioned workspace evidence.** Resource versions connect inputs and
+  products to their executions. Settlement records per-path create, update and
+  delete history while preserving conflicts between concurrent revisions.
+- **Provider- and frontend-neutral ownership.** Users configure their own model
+  routes. Supported frontends share RPNH execution semantics instead of
+  reimplementing provider, Registry, workspace or recovery behavior.
+
 ## Example catalog
 
-Choose by modeled object: agent workflows describe task responsibilities and handoffs; domain algorithms and business systems are tools or external environments. ERP, 3-DOF, JB, HarnessAudit, AutomationBench, SlopCodeBench and RRSI remain genuine agent/role workflows. RRSI custom registered-host role PNs can have genuine agent bindings without using stock AgentLoop. Pure-tool pipelines, native-input gates, author principals and annotations do not become agents merely through Registry lineage.
+Choose one path first. The [complete source example index](examples/README.md) lists every example by behavior, figures and model requirements, including package reuse, native input, applied tasks and benchmarks.
 
-| Category | Example | What it demonstrates | Instructions |
-| --- |---|---|---|
-| Agent/role workflow | Project collaboration | True two-parent M, pre-business M/base/M adoption and independent source/receiver original-task execution | [Project example](examples/project_collaboration/README.md) |
-| Historical protocol workflow | Agent-network co-building | Curator → auditor native AgentLoop roles, contract contributions and original HOST adoption; scripted protocol boundary | [Co-building example](examples/user_collaboration/agent_cobuild/README.md) |
-| Tool/SDK fixture | Native calculation | Local plugin, registered input/output and zero model calls | [Native tool](examples/native_plugin/README.md) |
-| Agent/role workflow | Model–program–model calculation | Agent nodes around a native summary operation | [Hybrid summary](examples/hybrid_summary/README.md) |
-| Agent/role workflow | Serial, parallel, document and long workflows | Multi-Agent topology, bounded parallelism, joins and timeline checkpoints | [Workflow gallery](examples/workflow_patterns/README.md) |
-| Agent/role workflow | Independent tasks | Separate child Registries controlled from one main session | [Task workspace](examples/task_workspace/README.md) |
-| Agent / definition-only | Native Petri-net operations | Definition composition and live whole-net replacement | [Net operations](examples/net_operations/README.md) |
-| Tool/SDK fixture | Runnable v2 package | Explicit receiver preparation, binding and native-add execution | [Package reuse](examples/package_reuse/README.md) |
-| Tool/SDK fixture | Ten-tool pipeline | Ten deterministic tool transitions, joins and an independent bill validator | [Tool pipeline](examples/tool_pipeline/README.md) |
-| Tool/SDK fixture | SQL query validation | Fixed SQL candidate, read-only execution and exact ordered results | [SQL example](examples/query_validation/README.md) |
-| Tool/SDK fixture | Multi-source merge | Original JSON, CSV and real Parquet inputs, conflicts and two output artifacts | [Multi-source example](examples/tool_pipeline/multi_source/README.md) |
-| Native-input fixture | Two-principal mock refund approval | Distinct native requester and approver, exact input waits and registered mock result | [Refund approval](examples/approval_workflow/README.md) |
-| Native-input fixture | External-result quote intake | Custom local HTTP fixtures, exact association and one registered quote | [Controlled quote](examples/a2a_quote/README.md) |
-| Tool/SDK fixture | Bounded synthetic iteration | One to four rounds in one Registry; no model-improvement claim | [Synthetic iteration](examples/rsi_workflows/README.md) |
-| Agent/role workflow | Basic, Codex, DSH and OpenCode | One provider-neutral semantic task through four host surfaces | [Installed adapter task](docs/guides/examples.md) |
-| Agent/role workflow | JB clinical packet | Public clinical sources, document/data analysis and a Designer-authored graph | [Reproduce JB](examples/jb_steering_packet/README.md) |
-| Agent/role workflow | 3-DOF powered descent | Numerical implementation, independent validation and a Designer-authored graph | [Reproduce 3-DOF](examples/three_dof_powered_descent/README.md) |
-| Agent/role workflow | HarnessAudit Office benchmark | Native agent teams, registered business tools, original scoring and retained results | [Office example](examples/harnessaudit_office/README.md) |
-| Agent/role workflow | RRSI v0.6 Policy evolution | Two-round Policy evolution with independent child Registries and score/cost selection | [RRSI example](examples/rrsi_v06/README.md) |
-| Agent/role workflow | AutomationBench public workflows | Historical pilot, freeze04 first18 and separate repair4 with condition-specific scores and limits | [AutomationBench example](examples/automationbench/README.md) |
-| Agent/role workflow | ERP-Bench | Managed ERP actions with separately retained original-verifier results | [ERP example](examples/erp_bench/README.md) |
-| Agent/role workflow | SlopCodeBench pilot | Native Session commands and a bounded coding-task prefix | [Coding pilot](examples/slopcodebench/README.md) |
-| Tool/SDK fixture | Example evidence | Read-only checks of evidence files and source identities | [Evidence contract](examples/example_validation/README.md) |
+| What to try | Start with | Run preparation |
+|---|---|---|
+| Check your local installation | [Native add plugin](examples/native_plugin/README.md) | Local plugin; no model calls |
+| Understand agent parallelism and handoffs | [Workflow patterns](examples/workflow_patterns/README.md) | Scripted by default; no model credentials |
+| Co-create and independently run a complete project | [Project collaboration](examples/project_collaboration/README.md) | Authorized live profile; controlled contributors |
+
+Choose by modeled object: agent workflows describe task responsibilities and handoffs; domain algorithms and business systems are tools or external environments. ERP, 3-DOF, JB, HarnessAudit, AutomationBench, SlopCodeBench and RRSI remain genuine agent/role workflows. RRSI custom registered-host role PNs can have genuine agent bindings without using stock AgentLoop. Pure-tool pipelines, native-input gates, author principals and annotations do not become agents merely through Registry lineage.
 
 Execution-gallery pages identify the origin of their actual dashboard images.
 Benchmark examples supply scored records and viewer commands for newly
@@ -286,9 +258,49 @@ writable presentations. DSH is a registered host integration with its own
 session surface. RPNH retains model selection and managed-execution authority in
 all cases.
 
+## Project collaboration and result scope
+
+The current project example, original scores and historical mechanism records each retain their own version and conditions. For a first run, use [Quick start](#quick-start) above; this record is for checking exact numbers and supported scope.
+
+### Current project and two PN layers
+
+The current collaboration entry is [copy, co-create and reuse one agent project](examples/project_collaboration/README.md). A complete project includes definitions, inputs, environment requirements, the original task, verifier, provenance and licenses. Two controlled contributors resolve real conflicts into a two-parent revision M. Before business execution, the source adopts M → a new successor with base content → a new successor with M content, then downloads exact original M for an independently authorized receiver with fresh identities. Source and receiver each run the original multi-source merge task through two provider-backed stock implementer/reviewer AgentLoop roles; the receiver package contains no source business answers. The [operator guide](docs/guides/project-entry.md) covers import, review, acceptance, adoption, download and execution.
+
+The bounded **2026-10-13** result is **43 registered requests / 42 responses within a limit of 48**: source 23/22, retaining one original `NOT_SUBMITTED` failure and two completed business firings; receiver 20/20 and two completed business firings. Both path-adapted original assertion sets are **3/3 PASS**, and independent full-instruction review is **ACCEPT_BOTH**. Original `test.sh` is **NOT_RUN** and the grader was **VISIBLE**; these are not blind official-container scores. Independent checks cover all four rows/20 cells and three complete field conflicts; optional status normalization remains a disclosed instruction ambiguity.
+
+The business PN models the two agents' responsibilities and handoff: each Overview has two nodes/one edge, and each full business PN has five nodes/six arcs. Actual file-materialization and workspace-finalization child execution PNs belong to exact business invocations/firings in the same Registry, with separate tokens, firings and checkpoints; AgentLoop logs do not substitute for execution PNs. Supported scope is controlled principals under one trusted OS user, ordinary Module contributions, explicit scoped reads and owner adoption. Pre-business content restoration does not resurrect consumed or terminal tokens or roll back external effects. It does not establish real-human authentication, live-token hot migration or broad graph/open-region/selected-change/assembly exchange.
+
+### Other public records and interfaces
+
+Public record dated 2026-10-06: freeze04 first18 has 5 PASS / 9 FAIL / 4 BLOCKED; separate repair4 has 1 PASS / 3 FAIL. The old 14 scored tasks were not rerun. [Results and limits](examples/automationbench/PUBLIC_RESULTS_20261006.md).
+
+Explicit opt-in [author/graph interfaces](docs/reference/declarations.md), [Workset and normal-child roots](docs/reference/normal-child-root-contract.md), and [read-only source queries](docs/guides/source-queries.md) are integrated. [Finite validation](docs/guides/release-validation.md) is not full HOST/I00–I10/advanced25 acceptance; the historical freeze04 browser window was BLOCKED.
+
+Offline preparation and inspection are available through [portable package preview and exact local locks](docs/guides/portable-packages.md), [HOST declaration diagnostics](docs/guides/host-readiness.md), and [checkpoint comparison](docs/guides/checkpoint-comparison.md). Package commands use the installed `rpnh` entry; the HOST diagnostic is an explicit Python API. These interfaces inspect materials and recorded facts without granting execution authority.
+
+The historical zero-provider protocol entry is [agent-network co-building](examples/user_collaboration/agent_cobuild/README.md). Two native task-agent roles, `curator.run` and `auditor.run`, use stock `AgentStage`/default `AgentLoop` in an ordinary Module assembled from two stock single-agent declarations, with `curator.result → auditor.request`. Deterministic source programs from two controlled original principals strengthen the curator input-lineage contract and auditor reconciliation contract. The original HOST reviews exact revisions, advances a protected Branch sequentially and enables owner adoption before target execution.
+
+In that historical window, source programs, external control actions and target agents remain separate; its single-parent chain does not imply automatic same-base merging. A `local_process` scripted driver computes from actual inputs and tool returns. This demonstrates structure and protocol using registered task agents. It makes no live-model or cognition claim; execution results, artifacts and Viewer evidence are reported on the example page.
+
+See [curated results](docs/results/README.md) for historical application scores and zero-model runtime checks. Each record keeps its tested source and conditions; these older windows do not certify a later combined product or a new rc2 binary release.
+
+Two controlled local applications connect browser input to the original Registry
+and PN: [two-principal mock refund approval](examples/approval_workflow/README.md)
+and [external-result quote intake](examples/a2a_quote/README.md). Each opens with
+its actual Viewer capture and includes same-run inspection and reopen commands.
+Business inputs and external results are synthetic; no model or financial service is called.
+
+[Historical route](examples/user_collaboration/README.md#historical-route-planning-mechanism-evidence) and [native billing](examples/user_collaboration/native_billing/README.md) retain original 74/10-operation business-tool nets, versions, results, images, contribution/adoption receipts and failures. Their tool operations and authors are not task agents; historical results do not validate the current co-building example.
+
+[Controlled managed tools](docs/controlled-managed-tools.md) covers exact result
+paging, bounded parallel calls, isolated Python programs, read-only result
+evidence and source preflight. These capabilities use explicit HOST policies;
+existing tool catalogs and benchmark comparison conditions retain their defaults.
+
 ## Documentation
 
-[All documentation topics](docs/index.md) · [All source examples](examples/README.md) ·
+[Browse documentation by task](docs/index.md) · [First-run tutorial](docs/guides/getting-started.md) ·
+[CLI reference](docs/reference/cli.md) · [Python API index](docs/reference/api-index.md) · [All source examples](examples/README.md) ·
 [Code and package map](docs/guides/repository-layout.md) ·
 [Versioned implementation links](docs/technical-report.md#source-map) · [中文文档](docs/index_ZH.md)
 
