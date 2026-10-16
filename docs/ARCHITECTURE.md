@@ -236,6 +236,13 @@ idempotent, so loss of the replacement owner after one parallel branch has
 closed resumes by draining only the remaining branches; it does not replay the
 abandoned physical calls or weaken ordinary stale-lease admission.
 
+Firings left by process loss without a completion or a declared interruption
+are instead superseded by the owner-selected reentry transaction after writer
+fencing. `SUPERSEDED` publication roots retain their temporary members without
+promoting them to business results. Their closure and the fresh checkpoint
+generation are atomic, including firings admitted before Start. Attempt
+high-water marks include those already-issued admissions.
+
 An owner stop is also propagated into the currently running provider or
 workspace boundary. The in-flight process/connection is cancelled, racing
 products are rejected, and the current semantic action is not committed. For

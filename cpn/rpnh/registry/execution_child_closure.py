@@ -70,8 +70,10 @@ class ClosureSnapshot:
                 or rows[0]["invocation_logical_id"] != parent["parent_invocation_ref"]["logical_id"]
                 or rows[0]["net_version_id"] != parent["parent_business_net_ref"]["version_id"]):
             fail("member is outside its exact parent firing")
-        expected = "PROVISIONAL" if self.provisional_parent is not None else "PUBLISHED"
-        if rows[0]["state"] != expected:
+        expected = {"PROVISIONAL"} if self.provisional_parent is not None else {"PUBLISHED"}
+        if self.provisional_parent is not None and self.event_store.read_only:
+            expected.add("SUPERSEDED")
+        if rows[0]["state"] not in expected:
             fail("member parent publication state differs")
 
     def event(self, row, *, parent=None):

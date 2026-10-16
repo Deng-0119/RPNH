@@ -225,6 +225,10 @@ def _active_claim_inputs(
         if len(rows) != 1:
             raise InvocationAdmissionError(
                 f"active firing has no unique immutable object: {firing_id}")
+        publication = lifecycle.service.event_store.firing_publication_for_member(
+            "object", rows[0]["version_id"])
+        if publication is not None and publication["state"] == "SUPERSEDED":
+            continue
         metadata = json.loads(rows[0]["metadata_json"])
         try:
             admission_ref = _ref_from_payload(metadata["firing_admission_ref"])

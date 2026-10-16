@@ -375,7 +375,7 @@ export function renderManagedTools(target, frame, firing, control) {
 
 export function executionNetRequest(frame, firing) {
     if (frame?.position?.mode !== 'live' || !firing?.firing_ref
-        || !['admitted', 'started', 'settled'].includes(firing.status)) throw new Error('current firing required');
+        || !['admitted', 'started', 'settled', 'superseded'].includes(firing.status)) throw new Error('current firing required');
     return {...selectorForFrame(frame), firing_ref:firing.firing_ref,
         expected_source:{task_id:frame.source.task_id,run_dir:frame.source.run_dir},
         expected_capture:{head_ordinal:frame.source.verified_head_ordinal,writer_fencing_epoch:frame.source.writer_fencing_epoch}};
@@ -390,7 +390,7 @@ export function normalizeExecutionNets(value, params) {
         || value.coverage !== 'current_attached_execution_nets' || value.instance_ref !== null
         || stable(value.selector) !== stable(selected) || stable(value.source) !== stable(params.expected_source)
         || stable(value.capture) !== stable(params.expected_capture) || stable(value.firing_ref) !== stable(params.firing_ref)
-        || !['PROVISIONAL','PUBLISHED'].includes(value.publication_state)
+        || !['PROVISIONAL','PUBLISHED','SUPERSEDED'].includes(value.publication_state)
         || stable(value.parent?.parent_business_firing_ref) !== stable(params.firing_ref)
         || stable(value.parent?.parent_business_net_ref) !== stable(params.net_ref)
         || !Array.isArray(value.children)) throw new Error('execution observation differs');

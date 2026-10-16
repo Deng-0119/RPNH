@@ -198,6 +198,8 @@ class TransactionValidationContext:
 
         from ..event_store import RegistryConflict
 
+        from .checkpoint_supersession import visibility_relations
+        supersession_relations = visibility_relations(self)
         referenced_versions: set[str] = set()
         referenced_relations: set[str] = set()
         from .source_identity import (
@@ -222,8 +224,27 @@ class TransactionValidationContext:
             referenced_relations.update(
                 self.referenced_relation_ids(item.metadata))
         for pending in self.events:
+            payload = pending.payload
+            if (pending.event_type == "relation_published/v1"
+                    and payload.get("relation_id") in supersession_relations):
+                relation = next(item for item in self.relations
+                                if str(item.relation_id) == payload["relation_id"])
+                target = {"entity_type": relation.target.entity_type,
+                          "entity_id": str(relation.target.entity_id),
+                          "version_id": str(relation.target.version_id)}
+                source = {"entity_type": relation.source.entity_type,
+                          "entity_id": str(relation.source.entity_id),
+                          "version_id": str(relation.source.version_id)}
+                if (payload.get("target") != target or payload.get("source") != source
+                        or payload.get("relation_type") != "supersedes"
+                        or payload.get("strength") != "strong"
+                        or payload.get("metadata") != relation.metadata):
+                    raise RegistryConflict("supersession relation fact differs from its edge")
+                # Exempt only this exact endpoint, never references embedded
+                # in metadata, other facts, or staged objects.
+                payload = {key: value for key, value in payload.items() if key != "target"}
             referenced_versions.update(
-                version_ids(pending.payload))
+                version_ids(payload))
             referenced_relations.update(
                 self.referenced_relation_ids(pending.payload))
         for version_id in referenced_versions - set(self.new_by_version):

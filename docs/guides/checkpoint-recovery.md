@@ -77,6 +77,14 @@ that cut's Petri marking and settled workspace; it does not delete later
 history, copy the Registry, or create a replacement task. External effects
 after the selected cut are not automatically undone.
 
+If the previous process exited unexpectedly, its unfinished temporary firings
+do not need a declared `interrupted` outcome. Explicit `reopen` fences that
+writer and atomically supersedes the remaining stale firings with the new
+checkpoint generation, retaining their unpublished evidence. This also covers
+exit before operation Start and owner-stopped runs with outstanding claims.
+Use a new command when deliberately abandoning work in an already-created
+successor generation; retrying its original command will not discard that work.
+
 ## Interrupted main turn
 
 Resume the owning `SESSION_DIR`. With main selected, `/resume` continues its

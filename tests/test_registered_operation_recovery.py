@@ -208,7 +208,8 @@ def test_nested_host_failure_is_not_a_parent_operation_terminal_conflict(
             and (not event_types or event.event_type in event_types))
 
     core = SimpleNamespace(event_store=SimpleNamespace(
-        list_events_by_aggregate=by_aggregate))
+        list_events_by_aggregate=by_aggregate,
+        firing_publication_for_invocation=lambda _ref: None))
 
     _reject_conflicting_lifecycle(
         core,

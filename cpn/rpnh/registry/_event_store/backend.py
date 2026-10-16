@@ -10,6 +10,55 @@ from ..event_store import RegistryConflict, RegistryCorruptError, StaleWriterErr
 from ..models import VersionRef
 from .accounting import _current_task_recovery_manifest_row
 
+_FIRING_PUBLICATIONS_SCHEMA = """
+CREATE TABLE IF NOT EXISTS firing_publications (
+    firing_version_id TEXT PRIMARY KEY,
+    firing_logical_id TEXT NOT NULL UNIQUE,
+    invocation_version_id TEXT NOT NULL UNIQUE,
+    invocation_logical_id TEXT NOT NULL UNIQUE,
+    net_version_id TEXT NOT NULL,
+    operation_binding_version_id TEXT NOT NULL,
+    admission_checkpoint_version_id TEXT NOT NULL,
+    state TEXT NOT NULL CHECK(state IN ('PROVISIONAL','PUBLISHED','SUPERSEDED')),
+    opened_transaction_id TEXT NOT NULL,
+    published_transaction_id TEXT,
+    operation_result_version_id TEXT,
+    workspace_lineage_id TEXT,
+    workspace_revision_version_id TEXT,
+    marking_checkpoint_version_id TEXT,
+    CHECK(
+        (state='PROVISIONAL'
+         AND published_transaction_id IS NULL
+         AND operation_result_version_id IS NULL
+         AND workspace_lineage_id IS NULL
+         AND workspace_revision_version_id IS NULL
+         AND marking_checkpoint_version_id IS NULL)
+        OR
+        (state='PUBLISHED'
+         AND published_transaction_id IS NOT NULL
+         AND operation_result_version_id IS NOT NULL
+         AND ((workspace_lineage_id IS NULL
+               AND workspace_revision_version_id IS NULL)
+              OR
+              (workspace_lineage_id IS NOT NULL
+               AND workspace_revision_version_id IS NOT NULL))
+         AND marking_checkpoint_version_id IS NOT NULL)
+        OR
+        (state='SUPERSEDED'
+         AND published_transaction_id IS NOT NULL
+         AND operation_result_version_id IS NULL
+         AND workspace_lineage_id IS NULL
+         AND workspace_revision_version_id IS NULL
+         AND marking_checkpoint_version_id IS NOT NULL)
+    ),
+    FOREIGN KEY(opened_transaction_id)
+        REFERENCES transactions(transaction_id),
+    FOREIGN KEY(published_transaction_id)
+        REFERENCES transactions(transaction_id)
+)
+"""
+
+
 def connect(store) -> sqlite3.Connection:
     if store.read_only:
         # A live monitor must see committed WAL growth without obtaining a
@@ -35,6 +84,8 @@ def connect(store) -> sqlite3.Connection:
 
 def _initialize(store) -> None:
     with store.connect() as db:
+        db.execute(_FIRING_PUBLICATIONS_SCHEMA)
+        _migrate_firing_publications(db)
         db.executescript("""
             CREATE TABLE IF NOT EXISTS registry_meta (
                 key TEXT PRIMARY KEY, value TEXT NOT NULL
@@ -70,44 +121,6 @@ def _initialize(store) -> None:
                 published_event_id TEXT NOT NULL,
                 UNIQUE(logical_id, version_id),
                 FOREIGN KEY(transaction_id) REFERENCES transactions(transaction_id)
-            );
-            CREATE TABLE IF NOT EXISTS firing_publications (
-                firing_version_id TEXT PRIMARY KEY,
-                firing_logical_id TEXT NOT NULL UNIQUE,
-                invocation_version_id TEXT NOT NULL UNIQUE,
-                invocation_logical_id TEXT NOT NULL UNIQUE,
-                net_version_id TEXT NOT NULL,
-                operation_binding_version_id TEXT NOT NULL,
-                admission_checkpoint_version_id TEXT NOT NULL,
-                state TEXT NOT NULL CHECK(state IN ('PROVISIONAL','PUBLISHED')),
-                opened_transaction_id TEXT NOT NULL,
-                published_transaction_id TEXT,
-                operation_result_version_id TEXT,
-                workspace_lineage_id TEXT,
-                workspace_revision_version_id TEXT,
-                marking_checkpoint_version_id TEXT,
-                CHECK(
-                    (state='PROVISIONAL'
-                     AND published_transaction_id IS NULL
-                     AND operation_result_version_id IS NULL
-                     AND workspace_lineage_id IS NULL
-                     AND workspace_revision_version_id IS NULL
-                     AND marking_checkpoint_version_id IS NULL)
-                    OR
-                    (state='PUBLISHED'
-                     AND published_transaction_id IS NOT NULL
-                     AND operation_result_version_id IS NOT NULL
-                     AND ((workspace_lineage_id IS NULL
-                           AND workspace_revision_version_id IS NULL)
-                          OR
-                          (workspace_lineage_id IS NOT NULL
-                           AND workspace_revision_version_id IS NOT NULL))
-                     AND marking_checkpoint_version_id IS NOT NULL)
-                ),
-                FOREIGN KEY(opened_transaction_id)
-                    REFERENCES transactions(transaction_id),
-                FOREIGN KEY(published_transaction_id)
-                    REFERENCES transactions(transaction_id)
             );
             CREATE TABLE IF NOT EXISTS firing_temporary_members (
                 firing_version_id TEXT NOT NULL,
@@ -303,6 +316,46 @@ def _initialize(store) -> None:
             );
         """)
         db.execute("INSERT OR IGNORE INTO registry_meta(key,value) VALUES('writer_epoch','1')")
+
+def _migrate_firing_publications(db: sqlite3.Connection) -> None:
+    """Extend only the native root-state constraint on writable initialization."""
+
+    schema = db.execute(
+        "SELECT sql FROM sqlite_master WHERE type='table' "
+        "AND name='firing_publications'").fetchone()
+    if schema is None or "'SUPERSEDED'" in schema["sql"]:
+        return
+    # SQLite ignores foreign_keys changes inside a transaction. Disable before
+    # taking the writer lock so dropping the old parent cannot delete children.
+    foreign_keys = int(db.execute("PRAGMA foreign_keys").fetchone()[0])
+    db.execute("PRAGMA foreign_keys=OFF")
+    try:
+        db.execute("BEGIN IMMEDIATE")
+        schema = db.execute(
+            "SELECT sql FROM sqlite_master WHERE type='table' "
+            "AND name='firing_publications'").fetchone()
+        if "'SUPERSEDED'" not in schema["sql"]:
+            dependent_sql = [row["sql"] for row in db.execute(
+                "SELECT sql FROM sqlite_master WHERE tbl_name='firing_publications' "
+                "AND type IN ('index','trigger') AND sql IS NOT NULL")]
+            db.execute(_FIRING_PUBLICATIONS_SCHEMA.replace(
+                "IF NOT EXISTS firing_publications",
+                "firing_publications_supersession_migration", 1))
+            db.execute(
+                "INSERT INTO firing_publications_supersession_migration "
+                "SELECT * FROM firing_publications")
+            db.execute("DROP TABLE firing_publications")
+            db.execute("ALTER TABLE firing_publications_supersession_migration "
+                       "RENAME TO firing_publications")
+            for statement in dependent_sql:
+                db.execute(statement)
+        db.commit()
+    except BaseException:
+        db.rollback()
+        raise
+    finally:
+        db.execute(f"PRAGMA foreign_keys={foreign_keys}")
+
 
 def writer_epoch(store) -> int:
     with store.connect() as db:

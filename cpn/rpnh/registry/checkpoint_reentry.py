@@ -311,9 +311,9 @@ def stage_checkpoint_reentry(
         return existing
 
     authority_ref, authority = current_run_execution_authority(core, kernel)
-    if authority["status"] not in {"terminal", "stopped_by_owner"}:
+    if authority["status"] not in {"terminal", "stopped_by_owner", "running"}:
         raise ResourceIntegrityFault(
-            "checkpoint reentry requires terminal or owner-stopped authority")
+            "checkpoint reentry requires one existing execution authority")
     if (authority.get("reopen_authorization_ref") is not None
             and authority["status"] == "stopped_by_owner"):
         _pending_row, pending = _registered(
@@ -321,13 +321,24 @@ def stage_checkpoint_reentry(
                 authority["reopen_authorization_ref"]),
             "run_reopen_authorization/v1")
         if (authority["latest_checkpoint_ref"]
-                == pending["reentry_checkpoint_ref"]):
+                == pending["reentry_checkpoint_ref"]
+                and _ref_payload(authority_ref) == pending["successor_run_authority_ref"]):
             raise ResourceIntegrityFault(
                 "another checkpoint reentry is already prepared")
     executable, _structure, current = hydrate_module_runtime(core)
-    if active_module_firings(core, executable.net_ref):
-        raise ResourceIntegrityFault(
-            "checkpoint reentry requires a drained current checkpoint")
+    active = active_module_firings(
+        core, executable.net_ref, require_current_writer=False)
+    for firing in active:
+        publication = core.event_store.firing_publication_for_invocation(
+            _version_from_payload(core.get_version(
+                firing.firing_admission_ref.version_id).metadata["invocation_ref"]).version_id)
+        with core.event_store.connect() as db:
+            opening = db.execute(
+                "SELECT writer_epoch FROM transactions WHERE transaction_id=?",
+                (publication["opened_transaction_id"],)).fetchone()
+        if opening is None or opening["writer_epoch"] >= core.writer_epoch:
+            raise ResourceIntegrityFault(
+                "checkpoint reentry cannot supersede the current writer's firing")
     if source_checkpoint_ref not in committed_checkpoint_refs(
             core, net_ref=executable.net_ref):
         raise ResourceIntegrityFault(
@@ -394,15 +405,17 @@ def stage_checkpoint_reentry(
         "reentry_superseded_token_refs": [
             _ref_payload(ref) for ref in current_token_refs],
     }
+    attempts = {item.transition_id: item.highest_issued for item in current.attempts}
+    for firing in active:
+        attempts[firing.transition_id] = max(
+            attempts.get(firing.transition_id, 0), firing.attempt_index)
     checkpoint = {
         "marking_checkpoint_ref": _ref_payload(checkpoint_ref),
         "net_instance_ref": _ref_payload(executable.net_ref),
         "team_design_root_ref": _ref_payload(executable.team_design_root_ref),
         "epoch": epoch, "next_token_id": next_token_id,
-        "attempts": [
-            {"transition_id": item.transition_id,
-             "highest_issued": item.highest_issued}
-            for item in current.attempts],
+        "attempts": [{"transition_id": name, "highest_issued": count}
+                     for name, count in sorted(attempts.items())],
         "token_refs": sorted(
             (_ref_payload(item[1]) for item in replacements),
             key=canonical_json),
@@ -470,6 +483,19 @@ def stage_checkpoint_reentry(
         payload=canonical_json(authorization), metadata=authorization,
         media_type="application/json",
         schema_ref="registry_v1/run_reopen_authorization/v1")
+    for firing in active:
+        _, admission = _registered(
+            core, firing.firing_admission_ref, "firing_admission/v1")
+        tx.supersede_firing(
+            firing_ref=firing.transition_firing_ref,
+            invocation_ref=_version_from_payload(admission["invocation_ref"]),
+            authorization_ref=authorization_ref, checkpoint_ref=checkpoint_ref)
+        tx.relate(TypedRelation(
+            _stable_id("relation", "owner-reopen-superseded-firing",
+                       command_id, firing.transition_firing_ref.version_id),
+            "supersedes", authorization_ref, firing.transition_firing_ref,
+            metadata={"authorization_role": "superseded_provisional_firing"}),
+            system_owned=True)
     for source_ref, replacement_ref, replacement in replacements:
         tx.prewrite(
             object_type="petri_token/v1", logical_id=replacement_ref.entity_id,

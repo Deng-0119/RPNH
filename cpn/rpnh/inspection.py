@@ -452,6 +452,10 @@ def _execution_projection(core, compiled, net_ref, marking, projection):
                         settlement_event_id=str(settled[0].event_id),
                         settlement_ordinal=settled[0].ordinal,
                         successor_checkpoint_ref=completion["successor_checkpoint_ref"])
+        elif record["state"] == "SUPERSEDED":
+            item["status"] = "superseded"
+            item["superseded_by_checkpoint_ref"] = record[
+                "successor_checkpoint"]["marking_checkpoint_ref"]
         elif record["state"] != "PROVISIONAL":
             item["status"] = "invalidated"
         nodes[transition]["runtime"]["firings"].append(item)

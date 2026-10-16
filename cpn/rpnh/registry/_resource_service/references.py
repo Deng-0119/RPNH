@@ -1254,6 +1254,10 @@ def _live_firing_resource_extension_allows(
         "transition_firing_superseded_by_growth_recovery/v1",
         "transition_firing_superseded_by_native_resume/v1",
     }
+    publication = self._ResourceServiceKernel__core.event_store.firing_publication_for_member(
+        "object", firing_ref.version_id)
+    if publication is not None and publication["state"] == "SUPERSEDED":
+        return False
     events = tuple(
         self._ResourceServiceKernel__core.event_store.list_events_by_aggregate(
             str(firing_ref.entity_id),

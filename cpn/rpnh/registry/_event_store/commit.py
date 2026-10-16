@@ -35,6 +35,7 @@ def publish_batch(event_store: "EventStore", *, task_id: TypedId, branch_id: str
                   expected_dependency_root_predecessor: Mapping[
                       str, str | None] | None = None,
                   firing_publications: Sequence[Mapping[str, object]] = (),
+                  firing_supersessions: Sequence[Mapping[str, object]] = (),
                   workspace_head_advances: Sequence[Mapping[str, object]] = (),
                   expected_registry_ordinal: int | None = None,
                   collaboration_action=None,
@@ -64,6 +65,9 @@ def publish_batch(event_store: "EventStore", *, task_id: TypedId, branch_id: str
         dict(expected_dependency_root_predecessor)
         if expected_dependency_root_predecessor is not None else None)
     publication_commands = tuple(dict(item) for item in firing_publications)
+    supersession_commands = tuple(dict(item) for item in firing_supersessions)
+    from . import checkpoint_supersession
+    checkpoint_supersession.validate_commands(supersession_commands)
     workspace_head_commands = tuple(
         dict(item) for item in workspace_head_advances)
     # HISTORICAL_INERT: no current caller can supply fault-mechanical
@@ -92,6 +96,11 @@ def publish_batch(event_store: "EventStore", *, task_id: TypedId, branch_id: str
     if publication_commands and workspace_head_commands:
         raise RegistryConflict(
             "workspace head advances cannot share a firing publication transaction")
+    if supersession_commands and (publication_commands or business_settlements
+                                  or removed_business_terminal_events
+                                  or dependency_root_predecessor is not None):
+        raise RegistryConflict(
+            "supersession cannot share an ordinary settlement or promotion")
     required_publication_fields = {
         "firing_version_id", "invocation_version_id",
         "admission_checkpoint_version_id",
@@ -435,6 +444,7 @@ def publish_batch(event_store: "EventStore", *, task_id: TypedId, branch_id: str
         expected_dependency_root_predecessor=(
             dependency_root_predecessor),
         workspace_head_advances=workspace_head_commands,
+        firing_supersessions=supersession_commands,
     )
     if run_input_command is not None:
         command_material["run_input"] = run_input_command.material()
@@ -506,7 +516,7 @@ def publish_batch(event_store: "EventStore", *, task_id: TypedId, branch_id: str
             objects=objects, events=events, relations=relations,
             command_material=command_material, existing=existing,
             extra_commands=bool(snapshot_predecessors or dependency_root_predecessor
-                or publication_commands or workspace_head_commands))
+                or publication_commands or supersession_commands or workspace_head_commands))
         from ..parent_child import validate_parent_child_commit
         validate_parent_child_commit(event_store, db,
             task_id=task_id, branch_id=branch_id, task_round_id=task_round_id,
@@ -514,14 +524,14 @@ def publish_batch(event_store: "EventStore", *, task_id: TypedId, branch_id: str
             idempotency_key=idempotency_key, writer_epoch=writer_epoch,
             objects=objects, events=events, relations=relations, existing=existing,
             extra_commands=bool(snapshot_predecessors or dependency_root_predecessor
-                or publication_commands or workspace_head_commands))
+                or publication_commands or supersession_commands or workspace_head_commands))
         from ..public_materials import validate_public_material_commit
         validate_public_material_commit(event_store, db, task_id=task_id, branch_id=branch_id,
             objects=objects, events=events, relations=relations, existing=existing,
             idempotency_key=idempotency_key, transaction_id=transaction_id,
             task_round_id=task_round_id, net_instance_id=net_instance_id,
             extra_commands=bool(snapshot_predecessors or dependency_root_predecessor
-                or publication_commands or workspace_head_commands))
+                or publication_commands or supersession_commands or workspace_head_commands))
         if existing is not None:
             if existing["status"] not in {"committed", "aborted"}:
                 db.rollback()
@@ -541,6 +551,10 @@ def publish_batch(event_store: "EventStore", *, task_id: TypedId, branch_id: str
                 command["firing_version_id"]
                 for command in publication_commands
             }
+            commanded_roots.update(
+                command["firing_version_id"] for command in supersession_commands)
+            checkpoint_supersession.validate_replay(
+                db, supersession_commands, existing["transaction_id"])
             if replay_roots != commanded_roots:
                 db.rollback()
                 raise RegistryConflict(
@@ -831,6 +845,28 @@ def publish_batch(event_store: "EventStore", *, task_id: TypedId, branch_id: str
                 raise RegistryConflict(
                     "current fault sidecar settlement is stale, duplicate, "
                     "or lacks its exact token/checkpoint closure")
+
+        supersession_relations = checkpoint_supersession.validate_commit(
+            event_store, db, task_id=task_id, net_instance_id=net_instance_id,
+            writer_epoch=writer_epoch, objects=objects, events=events,
+            relations=relations, commands=supersession_commands)
+
+        if supersession_commands:
+            authorization = next(item.metadata for item in objects
+                                 if item.object_type == "run_reopen_authorization/v1")
+            expected_authority = authorization["expected_run_authority_ref"]
+            planned_workspaces = authorization["workspace_reentry_revision_refs"]
+            if (len(workspace_head_commands) != len(planned_workspaces)
+                    or any({
+                        "entity_type": "workspace_revision/v1",
+                        "logical_id": command["workspace_lineage_id"],
+                        "version_id": command["workspace_revision_version_id"],
+                    } not in planned_workspaces or {
+                        "entity_type": command["authority_entity_type"],
+                        "logical_id": command["authority_logical_id"],
+                        "version_id": command["authority_version_id"],
+                    } != expected_authority for command in workspace_head_commands)):
+                raise RegistryConflict("supersession workspace CAS differs from reentry")
 
         # Lifecycle validation shares this BEGIN IMMEDIATE snapshot with the
         # ensuing append. Schema/object validation already ran above before
@@ -1164,6 +1200,11 @@ def publish_batch(event_store: "EventStore", *, task_id: TypedId, branch_id: str
                 relation.source)
             target_open, target_all = provisional_endpoint_roots(
                 relation.target)
+            if str(relation.relation_id) in supersession_relations:
+                # Only the proven owner authorization edge is canonical; the
+                # old root and all its temporary products remain noncanonical.
+                relation_firings[str(relation.relation_id)] = None
+                continue
             if relation.system_owned:
                 try:
                     owner = _closing_firing_owner_for_system_relation(
@@ -1810,6 +1851,10 @@ def publish_batch(event_store: "EventStore", *, task_id: TypedId, branch_id: str
             event_store._after_firing_authority_mutation(
                 db, firing_version_id=command["firing_version_id"],
                 transaction_id=str(transaction_id))
+
+        checkpoint_supersession.apply(
+            event_store, db, commands=supersession_commands,
+            transaction_id=transaction_id)
 
         for stream_id, sequence in stream_state.items():
             db.execute("""INSERT INTO stream_heads(stream_id,sequence,event_hash) VALUES(?,?,?)

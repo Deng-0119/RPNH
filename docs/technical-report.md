@@ -249,6 +249,8 @@ Implementation: [publication transaction][storage-commit], [checkpoint state and
 
 RPNH continuation reconstructs execution from committed Registry checkpoint state. An owner-stopped task resumes its latest committed cut in the same run. Explicit checkpoint reopen selects a committed cut in the active net lineage and appends a new execution generation: fresh token occurrences represent the selected state, corresponding workspace revisions restore the registered workspace, and attempt high-water marks prevent reuse of physical attempt identities. Later history remains available for audit.
 
+Owner-selected reopen also covers process exit that leaves unfinished provisional firings without a declared interruption outcome. The reentry transaction supersedes their temporary publication roots together with the new generation; it does not promote their products or resume the failed process. The selected checkpoint remains the source of business state. The current lifecycle and legacy-Registry migration contract is described in [durable completion and bounded recovery](reference/runtime-registry.md#durable-completion-and-bounded-recovery).
+
 ![Checkpoint restoration rebuilds Petri and registered workspace state, while external effects require their recorded reconciliation boundary.](assets/technical-report/11-checkpoint-resume-en.svg)
 
 **Figure 11.** The restart point is the checkpoint. The failed process location and its unsettled working files do not select the restored state. Registry evidence is reconciled under the recovery contract before dispatch; exact completed work is not blindly replayed. External services remain outside workspace restoration.

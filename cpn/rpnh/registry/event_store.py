@@ -861,6 +861,7 @@ def _transaction_command_material(
         expected_dependency_root_predecessor: Mapping[
             str, str | None] | None,
         workspace_head_advances: Sequence[Mapping[str, str]] = (),
+        firing_supersessions: Sequence[Mapping[str, object]] = (),
 ) -> Mapping[str, Any]:
     """Return the exact structural material for one Registry command."""
 
@@ -917,6 +918,9 @@ def _transaction_command_material(
     if workspace_head_advances:
         material["workspace_head_advances"] = [
             dict(item) for item in workspace_head_advances]
+    if firing_supersessions:
+        material["firing_supersessions"] = [
+            dict(item) for item in firing_supersessions]
     return material
 
 
@@ -1875,6 +1879,8 @@ class EventStore:
                           str, str | None] | None = None,
                       firing_publications: Sequence[
                           Mapping[str, object]] = (),
+                      firing_supersessions: Sequence[
+                          Mapping[str, object]] = (),
                       workspace_head_advances: Sequence[
                           Mapping[str, object]] = (),
                       expected_registry_ordinal: int | None = None,
@@ -1893,6 +1899,7 @@ class EventStore:
             expected_dependency_root_predecessor=(
                 expected_dependency_root_predecessor),
             firing_publications=firing_publications,
+            firing_supersessions=firing_supersessions,
             workspace_head_advances=workspace_head_advances,
             expected_registry_ordinal=expected_registry_ordinal,
             collaboration_action=collaboration_action,

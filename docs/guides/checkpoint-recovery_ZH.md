@@ -70,6 +70,12 @@ rpnh --frontend basic --resume "$SESSION_DIR"
 marking 与已结算 workspace。它不会删除后续历史、复制 Registry 或创建替代任务；所选
 切面之后已经发生的外部效果也不会自动撤销。
 
+如果旧进程意外退出，未完成的暂存 firing 不需要预先声明 `interrupted` outcome。
+显式 `reopen` 会隔离旧 writer，把剩余 stale firing 的取代与新的 checkpoint 代次
+原子提交，并保留其未发布证据。这也覆盖 operation Start 前退出，以及 owner-stopped
+但仍有占用的情况。如果需要主动放弃已经创建的新代次中的工作，应发出新命令；重试
+原命令不会丢弃该代次已经开始的工作。
+
 ## 主 turn 中断
 
 重开所属 `SESSION_DIR`。选中 main 时，`/resume` 继续暂停的主 turn；`/rollback` 返回

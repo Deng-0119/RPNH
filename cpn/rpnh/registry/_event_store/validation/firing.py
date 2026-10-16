@@ -1321,6 +1321,18 @@ def validate_firing_event(context, pending):
                     source.get("token_refs", [])
                     if isinstance(source, Mapping) else [])
                 checkpoint_token_refs = checkpoint.get("token_refs", [])
+                expected_attempts = {item["transition_id"]: item["highest_issued"]
+                    for item in (current_checkpoint or {}).get("attempts", [])}
+                orphan_rows = db.execute(
+                    "SELECT o.metadata_json FROM firing_publications p "
+                    "JOIN objects o ON o.version_id=p.firing_version_id "
+                    "WHERE p.state='PROVISIONAL' AND p.net_version_id=?",
+                    (str(net_ref.get("version_id", "")),)).fetchall()
+                for row in orphan_rows:
+                    orphan = json.loads(row["metadata_json"])
+                    name = orphan["transition_id"]
+                    expected_attempts[name] = max(
+                        expected_attempts.get(name, 0), orphan["attempt_index"])
                 if (source is None or current_checkpoint is None
                         or not committed_source
                         or source.get("net_instance_ref") != net_ref
@@ -1349,8 +1361,9 @@ def validate_firing_event(context, pending):
                             if isinstance(row, Mapping))
                         or checkpoint.get("epoch")
                         != current_checkpoint.get("epoch", -1) + 1
-                        or checkpoint.get("attempts")
-                        != current_checkpoint.get("attempts")
+                        or checkpoint.get("attempts") != [
+                            {"transition_id": name, "highest_issued": count}
+                            for name, count in sorted(expected_attempts.items())]
                         or checkpoint.get("next_token_id")
                         != current_checkpoint.get("next_token_id", 0)
                             + len(mapping_rows)
@@ -1472,7 +1485,7 @@ def validate_firing_event(context, pending):
                         or prior_authority.get("latest_checkpoint_ref")
                         != previous
                         or prior_authority.get("status")
-                        not in {"terminal", "stopped_by_owner"}
+                        not in {"terminal", "stopped_by_owner", "running"}
                         or payload.get("reentry_generation")
                         != expected_generation
                         or payload.get(

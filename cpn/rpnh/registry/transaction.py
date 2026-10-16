@@ -52,6 +52,7 @@ class RegistryTransaction:
             str, Mapping[str, Any] | None] = {}
         self._expected_dependency_root_predecessor: dict[str, str | None] | None = None
         self._firing_publications: list[dict[str, object]] = []
+        self._firing_supersessions: list[dict[str, str]] = []
         self._workspace_head_advances: list[dict[str, str]] = []
         self._initial_ordinal = event_store.max_ordinal()
         self._initial_heads: dict[str, int] = {}
@@ -283,7 +284,8 @@ class RegistryTransaction:
                 or not isinstance(marking_net_ref, VersionRef)
                 or marking_net_ref.entity_type != "net_instance/v1"
                 or self._firing_publications
-                or self._workspace_head_advances):
+                or self._workspace_head_advances
+                or self._firing_supersessions):
             raise RuntimeError(
                 "transaction permits exactly one firing publication root")
         self._firing_publications.append({
@@ -308,6 +310,38 @@ class RegistryTransaction:
             "marking_net_version_id": str(
                 marking_net_ref.version_id),
         })
+
+    def supersede_firing(
+            self, *, firing_ref: VersionRef, invocation_ref: VersionRef,
+            authorization_ref: VersionRef, checkpoint_ref: VersionRef) -> None:
+        """Close an orphan root only with an atomic owner checkpoint reentry."""
+
+        if self._closed or self._firing_publications:
+            raise RuntimeError("firing supersession cannot share success publication")
+        refs = (
+            (firing_ref, "transition_firing/v1"),
+            (invocation_ref, "invocation/v1"),
+            (authorization_ref, "run_reopen_authorization/v1"),
+            (checkpoint_ref, "marking_checkpoint/v1"),
+        )
+        if any(not isinstance(ref, VersionRef) or ref.entity_type != kind
+               for ref, kind in refs):
+            raise TypeError("firing supersession requires exact typed refs")
+        command = {
+            "firing_logical_id": str(firing_ref.entity_id),
+            "firing_version_id": str(firing_ref.version_id),
+            "invocation_logical_id": str(invocation_ref.entity_id),
+            "invocation_version_id": str(invocation_ref.version_id),
+            "authorization_logical_id": str(authorization_ref.entity_id),
+            "authorization_version_id": str(authorization_ref.version_id),
+            "marking_checkpoint_logical_id": str(checkpoint_ref.entity_id),
+            "marking_checkpoint_version_id": str(checkpoint_ref.version_id),
+        }
+        if any(item["firing_version_id"] == command["firing_version_id"]
+               or item["invocation_version_id"] == command["invocation_version_id"]
+               for item in self._firing_supersessions):
+            raise RuntimeError("duplicate or conflicting firing supersession")
+        self._firing_supersessions.append(command)
 
     def advance_workspace_head(
             self, *, lineage_ref: VersionRef, expected_head_ref: VersionRef,
@@ -416,6 +450,7 @@ class RegistryTransaction:
             expected_dependency_root_predecessor=(
                 self._expected_dependency_root_predecessor),
             firing_publications=tuple(self._firing_publications),
+            firing_supersessions=tuple(self._firing_supersessions),
             workspace_head_advances=tuple(self._workspace_head_advances),
             expected_registry_ordinal=self._expected_registry_ordinal,
             collaboration_action=self._collaboration_action,

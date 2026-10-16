@@ -208,6 +208,8 @@ Firing 的私有 workspace 是物化的工作视图。可变文件、文件写�
 
 RPNH 的续跑从已提交的 Registry checkpoint 状态重建执行。Owner 停止的任务在同一 run 中从最新已提交切面恢复；显式 checkpoint reopen 则在当前 net lineage 中选择一个已提交切面，并追加新的 execution generation：以新的 token occurrences 表示选定状态，以对应 workspace revisions 恢复已注册工作区，同时保留 attempt 高水位，避免复用物理尝试身份。后续历史仍保留供审查。
 
+Owner 选择的 reopen 也覆盖进程退出后遗留 provisional firing、且操作未声明中断 outcome 的情况。reentry 事务将其暂存 publication 根的取代与新代次一起提交，不提升暂存产物，也不恢复失败进程；业务状态仍来自所选 checkpoint。当前生命周期及旧 Registry 迁移合同见[持久完成与有界恢复](reference/runtime-registry_ZH.md#持久完成记录与有界恢复)。
+
 ![Checkpoint 恢复重建 Petri 状态和已注册 workspace；外部副作用遵循各自记录的核对边界。](assets/technical-report/11-checkpoint-resume-zh.svg)
 
 **图 11。** 重启基点是 checkpoint。失败进程的位置和未结算的工作文件不决定恢复状态。派发前，Registry 证据按恢复契约完成核对；准确完成的工作不会被盲目重放。外部服务位于 workspace 恢复边界之外。

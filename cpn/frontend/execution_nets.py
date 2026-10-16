@@ -101,13 +101,13 @@ def execution_nets(provider, *, net_ref, checkpoint_ref, cut, firing_ref,
                 raise ExecutionStale('execution observation changed')
             gate = db.execute('SELECT * FROM firing_publications WHERE firing_version_id=?',
                               (firing_ref['version_id'],)).fetchone()
-            if gate is None or gate['state'] not in {'PROVISIONAL', 'PUBLISHED'} or gate['net_version_id'] != net_ref['version_id']:
+            if gate is None or gate['state'] not in {'PROVISIONAL', 'PUBLISHED', 'SUPERSEDED'} or gate['net_version_id'] != net_ref['version_id']:
                 raise ExecutionQueryError('firing is not visible in this net')
             parent = {'parent_business_firing_ref': firing_ref, 'parent_business_net_ref': net_ref,
                       'parent_invocation_ref': {'entity_type': 'invocation/v1',
                           'logical_id': gate['invocation_logical_id'], 'version_id': gate['invocation_version_id']}}
             snapshot = ClosureSnapshot(core.event_store, db, core.task_id, cut=capture['head_ordinal'],
-                provisional_parent=parent if gate['state'] == 'PROVISIONAL' else None)
+                provisional_parent=parent if gate['state'] != 'PUBLISHED' else None)
             firing = snapshot.read(firing_ref, 'transition_firing/v1', parent=parent)
             parent['parent_business_checkpoint_ref'] = firing['admission_marking_checkpoint_ref']
             authority = ExecutionParentAuthority(*(_from_ref(parent[k]) for k in (

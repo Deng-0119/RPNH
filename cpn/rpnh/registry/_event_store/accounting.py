@@ -70,7 +70,7 @@ def _accountable_model_call_event_sql() -> str:
         "accountable_publication.published_transaction_id "
         "WHERE accountable_member.member_kind='event' "
         "AND accountable_member.member_identity=e.event_id AND ("
-        "(accountable_publication.state='PUBLISHED' "
+        "(accountable_publication.state IN ('PUBLISHED','SUPERSEDED') "
         "AND accountable_publication.published_transaction_id IS NOT NULL "
         "AND accountable_settlement.status='committed') OR "
         "(accountable_publication.state='PROVISIONAL' "
@@ -649,7 +649,7 @@ def _task_model_call_cap_handoff_member_publication_ordinal(
         "JOIN events cap_handoff_commit ON cap_handoff_commit.transaction_id="
         "cap_terminal.transaction_id AND cap_handoff_commit.event_type="
         "'transaction_committed/v1' WHERE m.member_kind=? "
-        "AND m.member_identity=? AND p.state='PROVISIONAL' "
+        "AND m.member_identity=? AND p.state IN ('PROVISIONAL','SUPERSEDED') "
         "AND cap_handoff_commit.ordinal<=? AND "
         + _task_model_call_cap_handoff_member_authority_sql(
             member_alias="m", publication_alias="p",

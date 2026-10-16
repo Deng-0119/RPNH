@@ -55,6 +55,8 @@ registered-operation 路径在核验精确输出 bundle 后、向 dispatcher 调
 
 同一 owner 明确选择的命令也可以从可恢复的 running 代次开始。在登记 reopen authorization 前，共享 Core 会按确定顺序枚举全部 active firing，并结算其精确 registered completion，或把未决调用闭合为 owner-interrupted。每个 firing 的闭合都独立幂等：replacement owner 若在闭合一个并行分支后退出，重试同一持久 reopen 命令只会排空其余 active firing，随后提交所选切面。窄化的一次性 stale-lease 证明精确绑定 task、run、invocation、firing、lease、result、transaction 与事件材料，不授权普通 stale settlement。
 
+进程意外退出也可能留下已经 admission 或 Start、却没有 registered completion 且未声明 `interrupted` 的 firing。显式 checkpoint reopen 不要求该业务 outcome：隔离旧 writer 后，reentry 事务把全部剩余 stale publication 根原子标记为 `SUPERSEDED`。暂存对象继续保持未发布，并保留为历史证据；不虚构 operation result 或成功 settlement。旧根取代、所选 checkpoint 的新 token／workspace revision 和新执行 authority 在同一事务提交。被放弃 admission 已发出的 attempt 仍进入高水位。旧 Registry 在写入打开时升级 publication 状态约束；只读访问不迁移。普通 resume 仍保留较窄的 completion 合同。同一 reopen 命令重试不能放弃已经创建的新代次中的活动工作；这需要另一个显式命令。
+
 registered-host LLM 边界还会在同一准入 execution 重入时分类精确 v3 call 事实。已登记响应可以完成处理或直接返回，而不再物理调用；已有 submission permit 却没有响应时为 `submission_unknown`。这种同一 execution 内的处理，**不等于** operation-completion 事件之前断点的跨进程恢复。部分传输观察、响应头、本地已写出均不能证明远端完成。provider 权威状态查询／幂等仍是具体 provider 契约的可选能力，不是所有 route 已实现的通用保证。
 
 owner stop 若与已验证且已返回 harness 的 registered products 竞态，先结算 products，再在下一安全边界停止。不能用 interrupted outcome 替换这些 products 并导致恢复重执行。checkpoint reopen 恢复已登记的 Petri/workspace 状态，但不会擦除或撤销所选切面之后发生的外部效果。provider 已提交却没有已登记 completion 时，先以 `submission_unknown` 阻塞。后续由 owner 明确选择 checkpoint reopen 时，可以把这一精确未决物理 attempt 持久闭合为 owner-interrupted，并用新身份从所选安全切面重新 firing；原 unknown 事实不可变，也绝不是自动重试。

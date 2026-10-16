@@ -694,21 +694,36 @@ def resume_run(
     checkpoint_recoveries = []
     selected_checkpoint = None
     if checkpoint_version_id is not None:
-        from .registry.checkpoint_reentry import resolve_committed_checkpoint
+        from .registry.checkpoint_reentry import (
+            _existing_reentry, resolve_committed_checkpoint,
+        )
+        from .registry.publication import _stable_id
         selected_checkpoint = resolve_committed_checkpoint(
             preflight, checkpoint_version_id)
+        existing_reentry = _existing_reentry(
+            preflight, _ResourceServiceKernel(preflight),
+            authorization_ref=VersionRef("run_reopen_authorization/v1",
+                _stable_id("run_reopen_authorization", reopen_command_id),
+                _stable_id("run_reopen_authorization_version", reopen_command_id)),
+            command_id=reopen_command_id, source_checkpoint_ref=selected_checkpoint,
+            reason=reopen_reason)
         if preflight_current["status"] not in {
                 "terminal", "stopped_by_owner", "running"}:
             from .registry.errors import ResourceIntegrityFault
             raise ResourceIntegrityFault(
                 "checkpoint reentry requires terminal, owner-stopped, or its recoverable running generation")
-        if preflight_current["status"] == "running":
+        if preflight_current["status"] in {"running", "stopped_by_owner"}:
             from .registry.module_execution import active_module_firings
-            preflight_executable, _structure, _marking = (
+            preflight_executable, preflight_structure, _marking = (
                 hydrate_module_runtime(preflight))
             active = active_module_firings(
                 preflight, preflight_executable.net_ref,
                 require_current_writer=False)
+            if existing_reentry is not None and active:
+                from .registry.errors import ResourceIntegrityFault
+                raise ResourceIntegrityFault(
+                    "checkpoint reopen command already has active successor work; "
+                    "select a new command to abandon that generation")
             if active:
                 from .registry.firing_recovery import (
                     classify_registered_operation_interruption,
@@ -719,6 +734,8 @@ def resume_run(
                 completion_events = (
                     preflight.event_store.list_events_by_type((
                         "registered_operation_completion_recorded/v1",)))
+                starts = preflight.event_store.list_events_by_type((
+                    "operation_execution_started/v1",))
                 for firing in active:
                     completions = tuple(
                         event for event in completion_events
@@ -734,6 +751,26 @@ def resume_run(
                             checkpoint_reentry=True)
                         checkpoint_recoveries.append(("completion", item))
                     elif not completions:
+                        # Reentry abandons unfinished temporary work. A declared
+                        # interruption can still close its normal operation
+                        # lifecycle, but is not required to supersede a crashed
+                        # generation (including admission before Start).
+                        transition = next(item for item in
+                            preflight_structure.compiled.symbolic.transitions
+                            if item.name == firing.transition_id)
+                        declared = next(item for item in
+                            preflight_structure.compiled.operations
+                            if item.declaration.name == transition.operation)
+                        interruption = tuple(item for item in
+                            declared.declaration.outcomes
+                            if item.name == "interrupted"
+                            and not item.products and not item.effects)
+                        started = any(event.payload.get("transition_firing_ref")
+                            == ref_payload(firing.transition_firing_ref)
+                            for event in starts)
+                        if (preflight_current["status"] != "running"
+                                or not interruption or not started):
+                            continue
                         item = classify_registered_operation_interruption(
                             preflight, preflight_kernel,
                             preflight_repository,

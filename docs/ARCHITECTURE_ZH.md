@@ -184,6 +184,11 @@ Registry 以单个原子事务追加 owner 授权、由该切面活跃 token 克
 某个并行分支闭合后丢失时，重启只排空剩余分支，不会重放已放弃的物理调用，也不会放宽
 普通 stale-lease 准入规则。
 
+因进程丢失而没有 completion、也未声明 interruption 的 firing，则在隔离旧 writer 后，
+由 owner 选择的 reentry 事务直接取代。`SUPERSEDED` publication 根保留其暂存成员，
+不会将它们提升为业务结果。旧根关闭与新的 checkpoint 代次原子提交，也覆盖 Start 前
+已经 admission 的 firing；attempt 高水位包含这些已经发出的 admission。
+
 Owner stop 也会传递到当前正在运行的 provider 或 workspace 边界。运行中的进程／连接会被
 取消，竞态返回的 products 会被拒绝，当前 semantic action 不会提交。对于 LLM input，
 Registry 会在同一事务中把 provider attempt、logical call 和 neutral invocation attempt

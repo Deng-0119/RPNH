@@ -433,10 +433,10 @@ def provisional_observation_view(
             "FROM firing_temporary_members WHERE firing_version_id=?",
             (firing_key,),
         ).fetchall()
-    if (root is None or root["state"] != "PROVISIONAL"
+    if (root is None or root["state"] not in {"PROVISIONAL", "SUPERSEDED"}
             or str(root["invocation_version_id"]) != invocation_key):
         raise RegistryConflict(
-            "provisional observation requires one matching active root")
+            "provisional observation requires one matching retained root")
     return ProvisionalObservationView(
         firing_version_id=firing_key,
         invocation_version_id=invocation_key,
@@ -534,7 +534,7 @@ def canonical_object_publication_ordinal(
                 (str(row["published_event_id"]),),
             ).fetchone()
             return int(event["ordinal"])
-        if publication["state"] == "PROVISIONAL":
+        if publication["state"] != "PUBLISHED":
             return _task_model_call_cap_handoff_member_publication_ordinal(
                 db, member_kind="object", member_identity=str(version_id),
                 through_ordinal=upper)
@@ -730,9 +730,9 @@ def provisional_firing_object_rows(
             "SELECT state FROM firing_publications WHERE firing_version_id=?",
             (str(firing_version_id),),
         ).fetchone()
-        if root is None or root["state"] != "PROVISIONAL":
+        if root is None or root["state"] not in {"PROVISIONAL", "SUPERSEDED"}:
             raise RegistryConflict(
-                "provisional object observation requires an active firing")
+                "provisional object observation requires a retained firing")
         return tuple(db.execute(
             "SELECT o.* FROM firing_temporary_members m JOIN objects o "
             "ON o.version_id=m.member_identity "
@@ -751,9 +751,9 @@ def provisional_firing_events(
             "SELECT state FROM firing_publications WHERE firing_version_id=?",
             (str(firing_version_id),),
         ).fetchone()
-        if root is None or root["state"] != "PROVISIONAL":
+        if root is None or root["state"] not in {"PROVISIONAL", "SUPERSEDED"}:
             raise RegistryConflict(
-                "provisional event observation requires an active firing")
+                "provisional event observation requires a retained firing")
         rows = db.execute(
             "SELECT e.* FROM firing_temporary_members m JOIN events e "
             "ON e.event_id=m.member_identity "
@@ -983,7 +983,7 @@ def firing_activity_page(store, *, catalog, object_store, scope, bindings,
                         'operation_binding_version_id','admission_checkpoint_version_id','state',
                         'opened_transaction_id','published_transaction_id'),
                         'firing_publications WHERE firing_version_id=?', (fid,))
-                    if root is None or root['state'] not in ('PROVISIONAL', 'PUBLISHED'):
+                    if root is None or root['state'] not in ('PROVISIONAL', 'PUBLISHED', 'SUPERSEDED'):
                         raise ValueError('activity publication root unavailable')
                     invocation_ref = activity_reference(p['invocation_ref'], 'invocation/v1')
                     if (root['firing_logical_id'] != ref['logical_id']
@@ -992,7 +992,12 @@ def firing_activity_page(store, *, catalog, object_store, scope, bindings,
                         raise ValueError('activity publication identity differs')
                     transaction(root['opened_transaction_id'])
                     member('transaction', root['opened_transaction_id'], fid, root['opened_transaction_id'])
-                    if root['state'] == 'PROVISIONAL':
+                    if root['state'] == 'SUPERSEDED':
+                        if not root['published_transaction_id']:
+                            raise ValueError('activity supersession has no commit')
+                        transaction(root['published_transaction_id'])
+                        visible = None
+                    elif root['state'] == 'PROVISIONAL':
                         if not _provisional_activity_root(root, invocation_ref['version_id']) or root['published_transaction_id'] is not None:
                             raise ValueError('activity diagnostic root differs')
                         visible = None

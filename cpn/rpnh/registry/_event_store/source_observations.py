@@ -26,7 +26,7 @@ def _load(db, catalog, task_id, reference, store, *, temporary_root=None):
     if len(roots) != 1:
         raise RegistryConflict('Observation requires one exact originating firing')
     root = roots[0]
-    if root['state'] == 'PROVISIONAL':
+    if root['state'] != 'PUBLISHED':
         if temporary_root != root['firing_version_id']:
             raise RegistryConflict('Observation is not canonically visible')
         row = db.execute("SELECT o.*,t.status,e.task_id,e.transaction_id AS event_transaction,e.payload_json,"
@@ -72,7 +72,7 @@ def _validate(db, catalog, task_id, document, store, *, temporary_root=None):
     if (root is None or root['invocation_version_id'] != invocation['version_id']
             or root['invocation_logical_id'] != invocation['logical_id'] or root['firing_logical_id'] != firing['logical_id']):
         raise RegistryConflict('Observation producer is not one exact registered firing')
-    if root['state'] == 'PROVISIONAL' and root['firing_version_id'] != temporary_root:
+    if root['state'] != 'PUBLISHED' and root['firing_version_id'] != temporary_root:
         raise RegistryConflict('Observation is outside the exact same-firing read/write scope')
     manifest = SourceSetVersion.from_dict(exact_source_set(db, catalog, task_id, document['observation']['source_set_ref'], store), catalog)
     observation = document['observation']

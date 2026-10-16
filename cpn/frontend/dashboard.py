@@ -267,6 +267,8 @@ class RegistryDashboard:
                     gate = core.event_store.firing_publication_row(ref['version_id'])
                     core.event_store.provisional_observation_view(
                         firing_version_id=ref['version_id'], invocation_version_id=gate['invocation_version_id'])
+                elif record['state'] == 'SUPERSEDED':
+                    item['status'] = 'superseded'
                 else:
                     item['status'] = 'invalidated'
                 item['events'] = [{'event_id': str(e.event_id), 'type': e.event_type,

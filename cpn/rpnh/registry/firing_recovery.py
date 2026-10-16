@@ -171,6 +171,9 @@ def _reject_conflicting_lifecycle(
         core: _RegistryCore, *, invocation_ref: VersionRef,
         firing_ref: VersionRef, lease_ref: VersionRef,
 ) -> None:
+    publication = core.event_store.firing_publication_for_invocation(invocation_ref.version_id)
+    if publication is not None and publication["state"] == "SUPERSEDED":
+        raise ResourceIntegrityFault("registered-operation recovery has a superseded firing")
     terminal_types = {
         "operation_terminal_ready/v1", "invocation_settled/v1",
         "transition_firing_settled/v1",
@@ -512,7 +515,8 @@ def classify_registered_operation_recovery(
     """Classify and fully hydrate recoverable material on a read-only writer."""
 
     if (not isinstance(core, _RegistryCore) or not core.read_only
-            or current_run.get("status") != "running"
+            or current_run.get("status") not in (
+                {"running", "stopped_by_owner"} if checkpoint_reentry else {"running"})
             or current_run.get("terminal_evidence_ref") is not None
             or not callable(historical_input)):
         raise ResourceIntegrityFault(
@@ -879,7 +883,8 @@ def recover_registered_operation_completion(
             or (not recovery.checkpoint_reentry
                 and _has_later_writer_events(
                     core, recovery.stale_writer_fencing_epoch))
-            or current_run.get("status") != "running"):
+            or current_run.get("status") not in (
+                {"running", "stopped_by_owner"} if recovery.checkpoint_reentry else {"running"})):
         raise ResourceIntegrityFault(
             "registered-operation recovery requires the immediate new writer")
     _firing, event, stale_epoch = _validate_recovery_shape(
