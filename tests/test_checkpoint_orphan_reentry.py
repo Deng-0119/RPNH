@@ -224,3 +224,33 @@ def test_new_reopen_command_can_supersede_stopped_successor(tmp_path):
     assert authority["execution_generation"] == 2
     assert _start(next_generation, "gate.inspect").operation.firing.attempt_index == 3
 
+
+def test_fixed_suffix_matches_uninterrupted_checkpoint_execution(tmp_path):
+    """Compare business products, rather than generation-specific audit IDs."""
+    observed = []
+    for crashed in (False, True):
+        directory = tmp_path / ("recovered" if crashed else "uninterrupted")
+        owner = _owner(directory)
+        selected = committed_checkpoint_refs(owner._core)[-1]
+        identity = owner.identity
+        if crashed:
+            abandoned = _products(owner, _start(owner, "gate.inspect"))
+            owner = _reopen(directory, selected)
+            assert owner.identity == identity
+            for output in abandoned.outputs:
+                assert owner._core.event_store.canonical_object_row(
+                    output.resource_ref.resource_version_id) is None
+        products = []
+        for transition in ("gate.inspect", "gate.execute"):
+            execution = _start(owner, transition)
+            outputs = _products(owner, execution)
+            owner.succeed(outputs, command_id="compare:" + transition)
+            products.extend(owner._core.object_store.read_registered(
+                owner._core.get_version(output.resource_ref.resource_version_id))
+                for output in outputs.outputs)
+        assert owner.terminal() is not None
+        assert owner.snapshot()["active_firings"] == []
+        assert owner._core.event_store.actual_model_call_counts() == (0, 0)
+        observed.append(products)
+    assert observed[0] == observed[1]
+
