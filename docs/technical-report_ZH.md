@@ -6,7 +6,7 @@ metadata:
   audience: application-developer-and-researcher
   language: zh-CN
   counterpart: technical-report.md
-  revision: "2026-10-13.2"
+  revision: "2026-10-16.1"
   status: technical-report
   basis: "Deng-0119/RPNH at 6cec63ff5b7a0039611713961d00941767edaaf8"
 ---
@@ -17,7 +17,7 @@ metadata:
 
 ## 面向 Agent 与程序的可执行流程
 
-**更新日期：** 2026-10-13。**实现快照：**
+**更新日期：** 2026-10-16。**实现快照：**
 [`6cec63ff5b7a0039611713961d00941767edaaf8`][snapshot]。
 历史测试分别保留自己的源码身份，见[第 10 节](#10-历史结果及其限制)。
 下方原生案例分别保留自己的执行窗口；报告原快照和历史模型／benchmark 结果仍单独标识。
@@ -103,7 +103,7 @@ ReAct 研究交替进行语言模型推理与动作的方法 [2]。此类 Agent 
 案例涉及的执行资格和结果规则见[第 2 节](#2-执行资格来自真实-token-与-claim)与
 [第 3 节](#3-settlement-将计算连接到持久状态)，受控变更见
 [第 4 节](#4-先创作修订再显式采用)，测得结果及失败见[第 10 节](#10-历史结果及其限制)。
-契约章节中的八张编号图是概念示意，不是运行截图或完整 schema；完整契约以链接中的专题为准。
+契约章节中的编号图是概念示意，不是运行截图或完整 schema；完整契约以链接中的专题为准。
 RPNH 适用于重视持久化输出、显式协作或受控流程变更的应用，也会增加声明和状态管理工作。
 
 ## 1. 将方法与实际执行分开
@@ -177,6 +177,51 @@ Workspace recovery 不会撤销外部消息或交易。未知 provider submissio
 
 详见：[checkpoint recovery](guides/checkpoint-recovery_ZH.md)、[ERP 生命周期](../examples/erp_bench/README_ZH.md#动作边界与生命周期)。
 代码：[owner][owner]、[发布关口][commit]、[run reader][run-reader]、[TaskControl][task-control]。
+
+### 3.1 永久保存的历史与持久化暂存区
+
+§§3.1–3.3 的保存区与 checkpoint 说明按公开源码 `3b3c9d63f3bcb74c241847f4147c4146491ecae5` 核对；其它源码链接与历史结果保留各自原有版本。
+
+RPNH 区分“已经保存的内容”与“能够支配执行的事实”。永久历史保留版本化 payload 和准确事件；每个活跃 firing 还有自己的**持久化暂存区**。“暂存”表示尚待该 firing 的发布边界，不表示只在内存中的缓存。实现通过同一 Registry 中的 `firing_publications` 和 `firing_temporary_members` 管理这一区分。因此，某个对象已经落盘，并不代表它已经成为权威的已完成产物。这里的永久历史指已提交的历史权威，并非另行承诺无限期的物理保留。
+
+![永久 canonical 历史与 firing 的持久化暂存记录共享 Registry 存储，但使用不同的权威视图。](assets/technical-report/09-storage-authority-zh.svg)
+
+**图 9。** 保存状态与权威可见性是两个维度。这是机制说明图，不是 Viewer 运行截图。Firing 作用域视图组合其获准使用的 canonical 基础和自己的暂存成员；诊断 observation 不授予执行权威。普通 canonical 读取在准确历史切面上应用发布规则；少数控制证据的例外也由同一规则限定。
+
+Firing 的私有 workspace 是物化的工作视图。可变文件、文件写入的 staging 路径、不可变归档候选分别服务于不同执行步骤，任何一项单独存在都不能确立已结算的共享 workspace revision。不可变对象预写也会先保存准确版本字节，再由 Registry 事务确认。Promotion 通过发布记录改变权威可见性，并非把一个可丢弃的临时目录搬入另一套存储。已发布与被后继执行取代的历史仍保留准确身份，可供检查。
+
+实现依据：[存储表][storage-tables]、[权威视图][storage-views]、[不可变预写][storage-objects]。操作细节见 [workspace 与资源架构](ARCHITECTURE_ZH.md#agent-执行workspace资源与委派)。
+
+### 3.2 Checkpoint 闭合一致的执行边界
+
+业务 marking checkpoint 标识准确的 net、活跃 token 引用、marking epoch、token 分配状态及 attempt 计数，同时关联对应的 workspace revisions、前驱和 settlement 引用。它是已注册的状态边界，不是程序行号或最后一条日志。从属 execution PN 拥有各自的 checkpoint；它们的进度通过原有 terminal mapping 与 settlement 契约进入业务执行证据。
+
+![同一次 firing 的结果、后继 marking checkpoint 与适用的 workspace revision 在同一个 Registry 事务中闭合。](assets/technical-report/10-checkpoint-commit-zh.svg)
+
+**图 10。** 成功结算核对准确结果及从属执行证据，再共同闭合 firing publication、后继业务 checkpoint 与适用的 workspace revision。Owner 通过 compare-and-swap 推进 workspace head。持久化 operation-completion 记录可以早于这一事务，它证明执行器已经注册返回，单独不代表业务结算完成。
+
+这一边界使后续工作依赖一致的已注册结果，避免把新文件和旧 marking 混合使用。在已支持的恢复契约内，准确的已注册完成证据，以及需要时经过验证、处于 `map_ready` 的不可变 workspace 候选，可以支持恢复完成结算而不重复物理操作；声明了 HOST effects 的 outcome 不适用这一路径。
+
+实现依据：[发布事务][storage-commit]、[checkpoint 状态与重新进入][storage-reentry]。完整契约见 [持久完成与恢复参考](reference/runtime-registry_ZH.md#持久完成记录与有界恢复)。
+
+### 3.3 从 checkpoint 续跑
+
+RPNH 的续跑从已提交的 Registry checkpoint 状态重建执行。Owner 停止的任务在同一 run 中从最新已提交切面恢复；显式 checkpoint reopen 则在当前 net lineage 中选择一个已提交切面，并追加新的 execution generation：以新的 token occurrences 表示选定状态，以对应 workspace revisions 恢复已注册工作区，同时保留 attempt 高水位，避免复用物理尝试身份。后续历史仍保留供审查。
+
+![Checkpoint 恢复重建 Petri 状态和已注册 workspace；外部副作用遵循各自记录的核对边界。](assets/technical-report/11-checkpoint-resume-zh.svg)
+
+**图 11。** 重启基点是 checkpoint。失败进程的位置和未结算的工作文件不决定恢复状态。派发前，Registry 证据按恢复契约完成核对；准确完成的工作不会被盲目重放。外部服务位于 workspace 恢复边界之外。
+
+一致性的关键是：从选定 checkpoint 获得相同的有效续跑状态，并遵循相同执行规则。使用相同输入、受控操作结果的干净参照执行，可以检验这一点。新的身份分配与保留的中断历史无需逐字节相同；新发起的模型调用也无需生成完全相同的文字。消息、远程写入等外部副作用需要各自的结果记录或幂等契约，恢复本地工作区不会撤销它们。
+
+操作方可依据 [checkpoint 恢复指南](guides/checkpoint-recovery_ZH.md) 列出已提交 checkpoint 并选择对应续跑方式。准确切面的检查见 [checkpoint 比较](guides/checkpoint-comparison_ZH.md)；完成证据与未知提交状态见 [runtime 恢复参考](reference/runtime-registry_ZH.md#持久完成记录与有界恢复)。
+
+[storage-tables]: https://github.com/Deng-0119/RPNH/blob/3b3c9d63f3bcb74c241847f4147c4146491ecae5/cpn/rpnh/registry/_event_store/backend.py#L74-L124
+[storage-views]: https://github.com/Deng-0119/RPNH/blob/3b3c9d63f3bcb74c241847f4147c4146491ecae5/cpn/rpnh/registry/_event_store/views.py#L386-L553
+[storage-objects]: https://github.com/Deng-0119/RPNH/blob/3b3c9d63f3bcb74c241847f4147c4146491ecae5/cpn/rpnh/registry/object_store.py#L43-L60
+[storage-commit]: https://github.com/Deng-0119/RPNH/blob/3b3c9d63f3bcb74c241847f4147c4146491ecae5/cpn/rpnh/registry/_event_store/commit.py#L1404-L1812
+[storage-reentry]: https://github.com/Deng-0119/RPNH/blob/3b3c9d63f3bcb74c241847f4147c4146491ecae5/cpn/rpnh/registry/checkpoint_reentry.py#L282-L428
+
 
 ## 4. 先创作修订，再显式采用
 
@@ -486,3 +531,4 @@ API 细节见各图旁边的专题链接。
 [parallel-scenario]: https://github.com/Deng-0119/RPNH/blob/6cec63ff5b7a0039611713961d00941767edaaf8/examples/workflow_patterns/scenarios/parallel.json
 [parallel-runner]: https://github.com/Deng-0119/RPNH/blob/6cec63ff5b7a0039611713961d00941767edaaf8/examples/workflow_patterns/run.py
 [parallel-validation]: https://github.com/Deng-0119/RPNH/blob/6cec63ff5b7a0039611713961d00941767edaaf8/examples/workflow_patterns/validation.json
+

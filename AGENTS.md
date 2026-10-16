@@ -26,3 +26,14 @@ Distinguish source candidates from released binaries and historical validation
 from checks of the current revision. Review distributed bytes before publication;
 a manifest or reviewer statement alone does not establish safety or execution.
 Do not add automatic GitHub Actions push triggers.
+
+## Read the design before changing behavior
+
+Before analyzing or changing a RPNH feature, read the technical report, the
+architecture documentation and the relevant topic reference first, then verify
+their contracts against the implementation and tests. Treat continuation as
+recovery from committed Registry checkpoint state. Preserve the distinction
+between durable provisional records, canonical publication, private workspaces
+and filesystem staging; do not infer execution authority from file existence.
+Document any discrepancy explicitly rather than silently redefining the contract.
+

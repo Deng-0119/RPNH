@@ -6,7 +6,7 @@ metadata:
   audience: application-developer-and-researcher
   language: en
   counterpart: technical-report_ZH.md
-  revision: "2026-10-13.2"
+  revision: "2026-10-16.1"
   status: technical-report
   basis: "Deng-0119/RPNH at 6cec63ff5b7a0039611713961d00941767edaaf8"
 ---
@@ -17,7 +17,7 @@ English | [中文](technical-report_ZH.md) | [Documentation](index.md)
 
 ## Executable processes for Agents and programs
 
-**Updated:** 2026-10-13. **Implementation snapshot:**
+**Updated:** 2026-10-16. **Implementation snapshot:**
 [`6cec63ff5b7a0039611713961d00941767edaaf8`][snapshot].
 Historical tests retain their own source identities in [§10](#10-historical-results-and-their-limits).
 The dated native examples below retain their own execution windows; the earlier report snapshot and historical model/benchmark results remain separate.
@@ -122,7 +122,7 @@ Read [§2](#2-eligibility-comes-from-actual-tokens-and-claims) and
 [§3](#3-settlement-connects-computation-to-durable-state) for the worked example's
 eligibility and result rules, [§4](#4-revise-definitions-before-explicitly-adopting-them)
 for controlled changes, and [§10](#10-historical-results-and-their-limits) for
-measured outcomes and failures. The eight numbered figures in the contract
+measured outcomes and failures. The numbered figures in the contract
 sections are conceptual sketches, not run screenshots or complete schemas.
 The linked references define the full contracts. RPNH is useful where persistent
 outputs, explicit coordination or controlled process changes matter; it also
@@ -218,6 +218,51 @@ controls, not an exactly-once ERP transaction guarantee.
 
 Details: [checkpoint recovery](guides/checkpoint-recovery.md), [ERP lifecycle](../examples/erp_bench/README.md#action-boundary-and-lifecycle).
 Code: [owner][owner], [publication gate][commit], [run reader][run-reader], [TaskControl][task-control].
+
+### 3.1 Permanent history and durable temporary records
+
+The storage and checkpoint explanations in §§3.1–3.3 are checked against public source `3b3c9d63f3bcb74c241847f4147c4146491ecae5`; the other source links and historical results retain their stated versions.
+
+RPNH separates **what has been stored** from **what may govern execution**. Its permanent history retains versioned payloads and exact events; each active firing also has a **durable temporary area**. Temporary means awaiting the firing's publication boundary, not an in-memory cache. The implementation tracks that area through `firing_publications` and `firing_temporary_members` in the same Registry. An object can therefore be durable without being an authoritative completed product. Here, permanent history names committed historical authority; it is not a separate promise of unlimited physical retention.
+
+![Permanent canonical history and a firing's durable temporary records share Registry storage, with distinct authority views.](assets/technical-report/09-storage-authority-en.svg)
+
+**Figure 9.** Storage and authority are separate dimensions. This mechanism diagram is not a Viewer capture. A firing-scoped view combines its permitted canonical basis with its own temporary members; a diagnostic observation grants no execution authority. Ordinary canonical reads apply the publication rules at an exact history cut. Narrow control-evidence exceptions remain governed by those same rules.
+
+A private firing workspace is a materialized working view. Its mutable files, file-write staging paths and immutable archive candidates serve different steps of execution; none alone establishes a settled shared workspace revision. Immutable object prewrites likewise preserve exact version bytes before the Registry transaction acknowledges them. Promotion changes authoritative visibility through the publication record; it does not mean moving a disposable temporary directory into another store. Published and superseded history retain their exact identities for inspection.
+
+Implementation: [storage tables][storage-tables], [authority views][storage-views], [immutable prewrites][storage-objects]. Operational detail: [workspace and resource architecture](ARCHITECTURE.md#agent-execution-workspace-resources-and-delegation).
+
+### 3.2 A checkpoint closes a consistent execution boundary
+
+A business marking checkpoint identifies the exact net, live token references, marking epoch, token-allocation state and attempt counters, with the corresponding workspace revisions and predecessor/settlement references. It is a registered state boundary, not a line number or a last log message. Subordinate execution PNs have their own checkpoints; their progress becomes business evidence only through the existing terminal-mapping and settlement contract.
+
+![One firing's result, successor marking checkpoint and applicable workspace revision close in one Registry transaction.](assets/technical-report/10-checkpoint-commit-en.svg)
+
+**Figure 10.** Successful settlement checks the exact result and subordinate evidence, then closes firing publication, the successor business checkpoint and the applicable workspace revision together. The owner advances the workspace head with compare-and-swap. A durable operation-completion record can precede this transaction; it proves the registered executor return, not business settlement by itself.
+
+This boundary lets later work rely on one consistent registered result instead of mixing new files with an older marking. Within the supported recovery contract, an exact registered completion and, when required, a validated immutable workspace candidate at `map_ready` let recovery finish settlement without repeating the physical operation; outcomes with declared HOST effects remain excluded.
+
+Implementation: [publication transaction][storage-commit], [checkpoint state and reentry][storage-reentry]. Full contract: [durable completion and bounded recovery](reference/runtime-registry.md#durable-completion-and-bounded-recovery).
+
+### 3.3 Continue from a checkpoint
+
+RPNH continuation reconstructs execution from committed Registry checkpoint state. An owner-stopped task resumes its latest committed cut in the same run. Explicit checkpoint reopen selects a committed cut in the active net lineage and appends a new execution generation: fresh token occurrences represent the selected state, corresponding workspace revisions restore the registered workspace, and attempt high-water marks prevent reuse of physical attempt identities. Later history remains available for audit.
+
+![Checkpoint restoration rebuilds Petri and registered workspace state, while external effects require their recorded reconciliation boundary.](assets/technical-report/11-checkpoint-resume-en.svg)
+
+**Figure 11.** The restart point is the checkpoint. The failed process location and its unsettled working files do not select the restored state. Registry evidence is reconciled under the recovery contract before dispatch; exact completed work is not blindly replayed. External services remain outside workspace restoration.
+
+The useful consistency criterion is the same valid continuation state and execution rules from the chosen checkpoint. A clean reference execution with the same inputs and controlled operation outcomes can test that criterion. Fresh identity allocation and retained interruption history need not be byte-identical, and new model calls need not reproduce identical text. Messages, remote writes and other external effects require their own recorded outcome/idempotency contract; restoring the local workspace does not reverse them.
+
+Operators can list committed checkpoints and select the appropriate continuation through the [checkpoint recovery guide](guides/checkpoint-recovery.md). See [checkpoint comparison](guides/checkpoint-comparison.md) to inspect exact cuts and [runtime recovery](reference/runtime-registry.md#durable-completion-and-bounded-recovery) for completion evidence and unknown submissions.
+
+[storage-tables]: https://github.com/Deng-0119/RPNH/blob/3b3c9d63f3bcb74c241847f4147c4146491ecae5/cpn/rpnh/registry/_event_store/backend.py#L74-L124
+[storage-views]: https://github.com/Deng-0119/RPNH/blob/3b3c9d63f3bcb74c241847f4147c4146491ecae5/cpn/rpnh/registry/_event_store/views.py#L386-L553
+[storage-objects]: https://github.com/Deng-0119/RPNH/blob/3b3c9d63f3bcb74c241847f4147c4146491ecae5/cpn/rpnh/registry/object_store.py#L43-L60
+[storage-commit]: https://github.com/Deng-0119/RPNH/blob/3b3c9d63f3bcb74c241847f4147c4146491ecae5/cpn/rpnh/registry/_event_store/commit.py#L1404-L1812
+[storage-reentry]: https://github.com/Deng-0119/RPNH/blob/3b3c9d63f3bcb74c241847f4147c4146491ecae5/cpn/rpnh/registry/checkpoint_reentry.py#L282-L428
+
 
 ## 4. Revise definitions before explicitly adopting them
 
@@ -599,3 +644,4 @@ For API detail, follow the topic links alongside each figure.
 [parallel-scenario]: https://github.com/Deng-0119/RPNH/blob/6cec63ff5b7a0039611713961d00941767edaaf8/examples/workflow_patterns/scenarios/parallel.json
 [parallel-runner]: https://github.com/Deng-0119/RPNH/blob/6cec63ff5b7a0039611713961d00941767edaaf8/examples/workflow_patterns/run.py
 [parallel-validation]: https://github.com/Deng-0119/RPNH/blob/6cec63ff5b7a0039611713961d00941767edaaf8/examples/workflow_patterns/validation.json
+

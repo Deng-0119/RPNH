@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="420" viewBox="0 0 1120 420" role="img">
+<title>一次 firing：持久证据闭合为一致 checkpoint</title>
+<defs><marker id="a" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0 0 L9 4.5 L0 9" fill="#536579"/></marker></defs>
+<rect width="1120" height="420" rx="18" fill="#f6f8fb"/>
+<g font-family="Arial, Noto Sans CJK SC, sans-serif">
+<text x="40" y="48" font-size="25" font-weight="700" fill="#14273a">一次 firing：持久证据闭合为一致 checkpoint</text>
+<rect x="40" y="105" width="320" height="208" rx="14" fill="white" stroke="#427aad" stroke-width="2"/>
+<text x="60" y="141" font-size="20" font-weight="700" fill="#18334a">已注册返回</text>
+<text x="60" y="180" font-size="17" fill="#33485c">已验证输出 bundle</text>
+<text x="60" y="210" font-size="17" fill="#33485c">有序输出资源引用</text>
+<text x="60" y="240" font-size="17" fill="#33485c">从属 execution 证据</text>
+<path d="M365 220 H393" stroke="#536579" stroke-width="2" marker-end="url(#a)"/>
+<rect x="400" y="105" width="320" height="208" rx="14" fill="white" stroke="#be8b34" stroke-width="2"/>
+<text x="420" y="141" font-size="20" font-weight="700" fill="#18334a">原子结算</text>
+<text x="420" y="180" font-size="17" fill="#33485c">Firing publication</text>
+<text x="420" y="210" font-size="17" fill="#33485c">后继 marking checkpoint</text>
+<text x="420" y="240" font-size="17" fill="#33485c">适用的 workspace revision</text>
+<path d="M725 220 H753" stroke="#536579" stroke-width="2" marker-end="url(#a)"/>
+<rect x="760" y="105" width="320" height="208" rx="14" fill="white" stroke="#488976" stroke-width="2"/>
+<text x="780" y="141" font-size="20" font-weight="700" fill="#18334a">后续可执行工作</text>
+<text x="780" y="180" font-size="17" fill="#33485c">读取已提交 token 状态</text>
+<text x="780" y="210" font-size="17" fill="#33485c">物化已注册 workspace 版本</text>
+<text x="780" y="240" font-size="17" fill="#33485c">继续按原 PN 规则判定</text>
+<text x="40" y="88" font-size="15" fill="#536579">执行器完成证据</text>
+<text x="400" y="88" font-size="15" fill="#536579">同一 Registry 事务</text>
+<text x="760" y="88" font-size="15" fill="#536579">提交完成之后</text>
+<text x="40" y="350" font-size="16" fill="#536579">机制说明图，不是运行截图。</text>
+<text x="40" y="377" font-size="16" fill="#536579">从属 execution checkpoint 通过 terminal mapping 关联，不能单独结算业务 token。</text>
+</g></svg>

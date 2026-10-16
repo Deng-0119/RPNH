@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="420" viewBox="0 0 1120 420" role="img">
+<title>One Registry: durable records, different authority views</title>
+<defs><marker id="a" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0 0 L9 4.5 L0 9" fill="#536579"/></marker></defs>
+<rect width="1120" height="420" rx="18" fill="#f6f8fb"/>
+<g font-family="Arial, Noto Sans CJK SC, sans-serif">
+<text x="40" y="48" font-size="25" font-weight="700" fill="#14273a">One Registry: durable records, different authority views</text>
+<rect x="40" y="105" width="320" height="208" rx="14" fill="white" stroke="#427aad" stroke-width="2"/>
+<text x="60" y="141" font-size="20" font-weight="700" fill="#18334a">Committed history</text>
+<text x="60" y="180" font-size="17" fill="#33485c">Exact versions and events</text>
+<text x="60" y="210" font-size="17" fill="#33485c">Canonical at a selected cut</text>
+<text x="60" y="240" font-size="17" fill="#33485c">Available to authorized readers</text>
+<path d="M365 220 H393" stroke-dasharray="4 4" stroke="#536579" stroke-width="2" marker-end="url(#a)"/>
+<rect x="400" y="105" width="320" height="208" rx="14" fill="white" stroke="#be8b34" stroke-width="2"/>
+<text x="420" y="141" font-size="20" font-weight="700" fill="#18334a">Durable temporary area</text>
+<text x="420" y="180" font-size="17" fill="#33485c">One active firing’s members</text>
+<text x="420" y="210" font-size="17" fill="#33485c">Objects · events · relations</text>
+<text x="420" y="240" font-size="17" fill="#33485c">Scoped use and diagnostics</text>
+<path d="M725 220 H753" stroke="#536579" stroke-width="2" marker-end="url(#a)"/>
+<rect x="760" y="105" width="320" height="208" rx="14" fill="white" stroke="#488976" stroke-width="2"/>
+<text x="780" y="141" font-size="20" font-weight="700" fill="#18334a">Publication boundary</text>
+<text x="780" y="180" font-size="17" fill="#33485c">Validate result and closure</text>
+<text x="780" y="210" font-size="17" fill="#33485c">Commit firing publication</text>
+<text x="780" y="240" font-size="17" fill="#33485c">Canonical visibility advances</text>
+<text x="40" y="88" font-size="15" fill="#536579">Existing authoritative basis</text>
+<text x="400" y="88" font-size="15" fill="#536579">Recorded before settlement</text>
+<text x="760" y="88" font-size="15" fill="#536579">Same Registry; no file move</text>
+<text x="40" y="350" font-size="16" fill="#536579">Mechanism illustration, not a runtime capture. Both areas can contain durable data.</text>
+<text x="40" y="377" font-size="16" fill="#536579">Filesystem prewrite/staging and private workspaces are separate implementation steps.</text>
+<text x="365" y="335" font-size="13" fill="#536579" text-anchor="middle">Firing basis</text></g></svg>
