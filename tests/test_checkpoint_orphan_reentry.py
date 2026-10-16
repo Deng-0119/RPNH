@@ -253,4 +253,3 @@ def test_fixed_suffix_matches_uninterrupted_checkpoint_execution(tmp_path):
         assert owner._core.event_store.actual_model_call_counts() == (0, 0)
         observed.append(products)
     assert observed[0] == observed[1]
-
