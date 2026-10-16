@@ -77,7 +77,9 @@ class ManagedExecutionMixin:
         service, policy = self._managed_call_scope(execution, loop, turn, call)
         return service.prepare(
             call.name, execution=execution, call_id=call.call_id,
-            arguments=call.arguments, registration_key=call.registration_key,
+            # Queue DTOs freeze nested JSON. Restore ordinary JSON at the
+            # service boundary, including for HOST pre-dispatch prepare hooks.
+            arguments=json_copy(call.arguments), registration_key=call.registration_key,
             allowed_effects=policy.admitted_effects, scheduling_policy=policy)
 
     def finish_managed_agent_call_v1(self, execution, loop, turn, call,
