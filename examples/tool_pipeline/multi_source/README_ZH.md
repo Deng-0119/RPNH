@@ -2,13 +2,13 @@
 
 [English](README.md)
 
-## 官方 Viewer 全景
+## 官方 Viewer 完整 PN
 
-这张官方 Viewer 原图展示已完成的七操作合并。Detailed flow 从完整的 25 节点／25 弧 PN 显示 18 节点／18 边，保留成功、拒绝与 blocked 分支。这是实际运行截图。
+[![完整初始声明 PN：25 节点／25 弧](figures/initial-petri.png)](figures/initial-petri.png)
 
-[![保留的合并运行：三个读取器、join、两个编码器与 finish](figures/recorded-run.png)](figures/recorded-run.png)
+官方 Viewer 展示真实声明的全部 25 个节点和 25 条弧，包括未执行分支。这是 `initial_configured` 静态结构，无运行状态；[来源与图像记录](figures/petri-provenance.json)标明精确输入／编译／Viewer 版本。原运行结果与[完成态 Detailed flow 原图](figures/recorded-run.png)保持不变，后者不是此图的状态来源。
 
-[本地 Viewer 与读图说明](#从真实冲突定位-viewer-来源) · 点击全景打开原始大图。
+[点击 PN 打开原尺寸；只读 Viewer 细节](#static-pn-viewer)
 
 使用 [Terminal-Bench multi-source-data-merger 原任务](https://github.com/harbor-framework/terminal-bench-2/tree/2fd12b88aafdd04a52c298e3940bcb189f9766d6/multi-source-data-merger) 的真实 JSON、CSV、Parquet 夹具，增强现有 `tool_pipeline`。这是确定性、零模型的 HOST 适配，不是 LLM benchmark 或 harness 性能对照。
 
@@ -84,6 +84,31 @@ optional status 对布尔 `is_active`/`active` 映射为 `active`/`inactive`；�
 
 ## 实际完成态 Viewer 图
 
-这是默认 AF_UNIX 的实际运行 head **765**：七步已结算、零未结算、一个最终报告 token。Detailed flow 显示 18 节点／18 边，原完整 PN 为 25 节点／25 弧。原图保留技术 checkpoint footer 和观察时间，无本机路径或用户身份映射；不是静态或初始声明图。
+另行链接的[完成态 Detailed flow 原图](figures/recorded-run.png)展示默认 AF_UNIX 的实际运行 head **765**：七步已结算、零未结算、一个最终报告 token。Detailed flow 显示 18 节点／18 边，原完整 PN 为 25 节点／25 弧。原图保留技术 checkpoint footer 和观察时间，无本机路径或用户身份映射；不是静态或初始声明图。
 
 实际浏览器已逐一定位七个原 operation、最终报告 token 登记和历史原输入 token 登记。按上面的冲突指南，把用户 101/email 的已保存选择与 `merge_users.run`、source A reader 和原 entry token 对照。Viewer 显示引用和登记元数据，字段正文来自实际产物／证据；不冒称看板直接展示 payload。查看前后 event head/count、writer epoch 及主数据库元数据不变，正常 WAL/SHM 辅助状态另列。捕获浏览器及临时服务器已关闭。
+
+<a id="static-pn-viewer"></a>
+
+### 只读静态 PN Viewer
+
+在已具备兼容 RPNH 环境的源码 checkout 根目录运行。此入口只读附带的静态 frame，不打开 Registry 或执行业务。
+
+```bash
+python - <<'PY'
+import json
+from pathlib import Path
+from cpn.frontend.server import serve_projection
+frame = json.loads(Path("examples/tool_pipeline/multi_source/figures/declaration-frame.json").read_text(encoding="utf-8"))
+class Snapshot:
+    def __call__(self):
+        return frame["net"]
+    def dashboard(self, cursor=None):
+        if cursor is not None:
+            raise ValueError("Static declaration has no execution history")
+        return frame
+serve_projection(Snapshot(), host="127.0.0.1", port=0, open_browser=False)
+PY
+```
+
+打开打印的 localhost URL，选择 **PetriNet → Fit to view**。滚轮缩放、拖动平移；点击节点或弧查看原生详情，长标签可在详情中读取。静态声明没有运行历史；关闭服务用 Ctrl+C。

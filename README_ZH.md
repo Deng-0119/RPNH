@@ -2,7 +2,7 @@
 
 [English](README.md) | 中文
 
-[快速开始](#快速开始) · [实际 PN](#先看一次多-agent-运行) · [案例](#案例目录) ·
+[快速开始](#快速开始) · [实际 PN](#先看一次多-agent-运行) · [案例](#案例目录) · [完整案例索引](examples/README_ZH.md) ·
 [前端](#前端与宿主集成) · [文档中心](docs/index_ZH.md) · [参与贡献](CONTRIBUTING_ZH.md)
 
 RPNH 是一个用于组合语言模型、原生工具和可复用工作流的 provider-neutral Agent 执行框架。
@@ -163,7 +163,9 @@ Overview 身份来自精确登记绑定或明确标注的声明；外部显示�
 
 ## 案例目录
 
-先选一条路径；[完整源码案例索引](examples/README_ZH.md)按行为、图册和模型要求列出全部案例，包括包复用、原生输入、应用任务与 benchmark。
+先从下方三个推荐入口中选一项，或直接浏览[全部源码案例](#全部源码案例)。[完整源码案例索引](examples/README_ZH.md)另列图册、模型要求与运行准备。
+
+### 推荐起点
 
 | 想先做什么 | 建议入口 | 运行准备 |
 |---|---|---|
@@ -171,15 +173,25 @@ Overview 身份来自精确登记绑定或明确标注的声明；外部显示�
 | 理解 agent 并行和交接 | [工作流模式](examples/workflow_patterns/README_ZH.md) | 默认脚本替身；不需要模型凭据 |
 | 共建并独立运行完整项目 | [项目协作](examples/project_collaboration/README_ZH.md) | 获准真实 profile；受控贡献者 |
 
+### 全部源码案例
+
+以下按完整索引分类，直接链接全部 24 项入口；各页保留自己的运行条件、图像来源与结果范围。
+
+- **Agent 与角色工作流：** [项目共建](examples/project_collaboration/README_ZH.md) · [Agent 任务网共建](examples/user_collaboration/agent_cobuild/README_ZH.md) · [混合汇总](examples/hybrid_summary/README_ZH.md) · [工作流模式](examples/workflow_patterns/README_ZH.md) · [任务工作区](examples/task_workspace/README_ZH.md) · [原生网操作](examples/net_operations/README_ZH.md) · [JB steering packet](examples/jb_steering_packet/README_ZH.md) · [3-DOF 动力下降](examples/three_dof_powered_descent/README_ZH.md) · [HarnessAudit Office](examples/harnessaudit_office/README_ZH.md) · [RRSI v0.6](examples/rrsi_v06/README_ZH.md) · [AutomationBench](examples/automationbench/README_ZH.md) · [ERP-Bench](examples/erp_bench/README_ZH.md) · [SlopCodeBench pilot](examples/slopcodebench/README_ZH.md)。
+- **工具、SDK 与校验 fixture：** [原生插件](examples/native_plugin/README_ZH.md) · [包复用](examples/package_reuse/README_ZH.md) · [原子工具流水线](examples/tool_pipeline/README_ZH.md) · [SQL 查询校验](examples/query_validation/README_ZH.md) · [多源数据合并](examples/tool_pipeline/multi_source/README_ZH.md) · [合成迭代](examples/rsi_workflows/README_ZH.md) · [示例证据约定](examples/example_validation/README_ZH.md)。
+- **原生输入与权限 fixture：** [模拟退款审批](examples/approval_workflow/README_ZH.md) · [受控报价](examples/a2a_quote/README_ZH.md)。
+- **历史贡献与业务证据：** [路线机制与结果](examples/user_collaboration/README_ZH.md#历史路线规划机制证据) · [原生电费机制 fixture](examples/user_collaboration/native_billing/README_ZH.md)。
+
 按建模对象选择：agent 工作流描述任务职责与交接，领域算法和业务系统是工具或外部环境。ERP、3-DOF、JB、HarnessAudit、AutomationBench、SlopCodeBench 与 RRSI 保留为真实 agent／角色工作流。RRSI 自定义 registered-host role PN 也可具有真实 agent 绑定，不要求一律使用 stock AgentLoop。纯工具流水线、原生输入 gate、作者 principal 和显示注释不会仅因 Registry 来源链而变成 agent。
 
-执行案例中的实际 dashboard 图注明其运行来源。Benchmark examples 提供成绩记录与新运行的
-viewer 命令，不宣称已归档运行截图。[完整案例指南](docs/guides/examples_ZH.md)记录计算、文档、串行、并行、长流程和
+各案例页分别注明图像来自实际运行还是初始声明，并保留相应来源与证据范围。声明图不证明已执行；
+已记录成绩与新运行的 Viewer 命令按各页说明查阅。[完整案例指南](docs/guides/examples_ZH.md)记录计算、文档、串行、并行、长流程和
 独立任务案例的命令、预期结果与证据边界；
 [源码案例索引](examples/README_ZH.md)提供仓库层级的完整目录。
 
 从本源码候选版构建的 wheel 可导出 `native_plugin`、`hybrid_summary`（含共享替身和插件）、
 `compose_serial`、`package_reuse`，以及默认的 provider-neutral `adapter_task`。
+安装版导出入口：[adapter_task](cpn/examples/adapter_task/README_ZH.md)；[compose_serial](examples/net_operations/README_ZH.md) 只创建声明，不执行工作流。它们是命名导出，不另计为上方源码目录项。
 详见[导出与修改](docs/guides/examples_ZH.md#导出案例并改成自己的应用)，或完整的
 [可运行 v2 分享包教程](docs/guides/package-reuse-example_ZH.md)。旧 rc1 wheel 只包含 adapter
 导出。导出操作不会配置 provider 或联系模型：
