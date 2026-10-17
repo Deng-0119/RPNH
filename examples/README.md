@@ -115,3 +115,9 @@ profiles, Registry directories and provider transcripts stay outside this tree.
 Public record dated 2026-10-06: freeze04 first18 has 5 PASS / 9 FAIL / 4 BLOCKED; separate repair4 has 1 PASS / 3 FAIL. The old 14 scored tasks were not rerun. [Results and limits](automationbench/PUBLIC_RESULTS_20261006.md).
 
 The Viewer supports zoom, pan and node/arc inspection; its brief Overview shows task agents and handoffs. See the [Viewer guide](../docs/guides/viewer.md).
+
+## Multi-user release handoff: independent agents and shared resources
+
+The [complete example](multiuser_release_handoff/README.md) follows four controlled participants with independent Tasks, Registries and private agent PNs, plus a separate fifth Source Registry for resource control. Native checkpoint restoration completed v2, SQL, the QA checklist, incident and final handoffs; the final read-only audit passed 98/98 required checks. Source is not an agent. Original failures and two optional UNKNOWN history-coverage checks remain explicit.
+
+[Actual role PNs and Source details](multiuser_release_handoff/figures/README.md) · [Original task and run prerequisites](multiuser_release_handoff/RUNNING.md) · [Exact historical results and limits](multiuser_release_handoff/RESULTS.md). New model runs require authorization; this is not an official benchmark score, deployment or executed rollback validation.

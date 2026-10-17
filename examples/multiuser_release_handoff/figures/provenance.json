@@ -1,0 +1,67 @@
+{
+  "capture": "Original episode run02; saved native Viewer; read-only capture",
+  "record_cut": {
+    "source": 4351,
+    "operations": 6125,
+    "developer": 1828,
+    "qa": 4645,
+    "support": 5505
+  },
+  "images": [
+    {
+      "file": "operations-petri.png",
+      "git_blob": "baf6dff483a98ce45c72815322828f7602be48c7",
+      "transformation": "none; exact original PNG bytes"
+    },
+    {
+      "file": "source-petri.png",
+      "git_blob": "4eb813542f38f5cde0b5c07a80408dc991a5ec40",
+      "transformation": "none; exact original PNG bytes"
+    },
+    {
+      "file": "developer-petri.png",
+      "git_blob": "4c1dcd87c33f25e740e62a9e2d8d3323ea512807",
+      "transformation": "none; exact original PNG bytes"
+    },
+    {
+      "file": "qa-petri.png",
+      "git_blob": "d3f69579fac0378e138f7604c1297cfe5cc59988",
+      "transformation": "none; exact original PNG bytes"
+    },
+    {
+      "file": "support-petri.png",
+      "git_blob": "5e4bd7e575bd6bc7fa7e90e7e461108c2cc1de04",
+      "transformation": "none; exact original PNG bytes"
+    },
+    {
+      "file": "operations-execution-finalization.png",
+      "git_blob": "1db19b035750a75bfe7a33564296cfb58f455f4f",
+      "transformation": "none; exact original PNG bytes"
+    },
+    {
+      "file": "operations-node.png",
+      "git_blob": "12cae083a7c362c397c5a2906d205d9093d2f5c4",
+      "transformation": "none; exact original PNG bytes"
+    },
+    {
+      "file": "source-write-node.png",
+      "git_blob": "2c203ab6c27424ed5c20bbc9cf97d020883e961a",
+      "transformation": "none; exact original PNG bytes"
+    },
+    {
+      "file": "source-resource.png",
+      "git_blob": "63655f0043b370849b5b8842cf741286c609b103",
+      "transformation": "none; exact original PNG bytes"
+    },
+    {
+      "file": "source-initial.png",
+      "git_blob": "d0fb772992d617c7ffab4e7cbd1aca0026492e92",
+      "transformation": "none; exact original PNG bytes"
+    },
+    {
+      "file": "source-last.png",
+      "git_blob": "2d940676628430f8363e12abf24ab25bb0caadd2",
+      "transformation": "none; exact original PNG bytes"
+    }
+  ]
+}

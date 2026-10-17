@@ -540,6 +540,12 @@ def test_pressure_projection_retry_identity_and_effective_history(
             == checkpoint_attempts[1].invocation_ref)
     assert (checkpoint_attempts[0].attempt_ref
             != checkpoint_attempts[1].attempt_ref)
+    # The first rejected response advances task accounting. The retry must
+    # retain its registered recipe, including the original allowance snapshot.
+    assert (checkpoint_attempts[0].canonical_request_bytes
+            == checkpoint_attempts[1].canonical_request_bytes)
+    assert "Authoritative allowance snapshot at request preparation" in (
+        json.loads(checkpoint_attempts[0].canonical_request_bytes)["messages"][0]["content"])
 
     core = _RegistryCore(
         run_dir, create=False, read_only=True, catalog=agent_task_catalog())

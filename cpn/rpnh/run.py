@@ -193,6 +193,7 @@ def _operation_services(core):
             delivery = kernel._exact_object(
                 delivery_ref, expected_type="resource_delivery/v1")
             if (delivery.metadata["context_ref"] == ref_payload(invocation_ref)
+                    and delivery.metadata["boundary"] == "petri_input"
                     and delivery.metadata["resource_ref"]
                     == _resource_payload(resource_ref)):
                 matches.append((event, delivery_ref))

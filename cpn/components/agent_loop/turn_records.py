@@ -1072,6 +1072,39 @@ class TurnRecordsMechanicsMixin:
             retain(authority)
         return authority
 
+    def _request_owner_messages(
+            self, invocation_ref: VersionRef, *,
+            read_resource: Callable[[ResourceVersionRef], bytes],
+    ) -> tuple[Mapping[str, Any], ...]:
+        """Recover only this ordinary request's newly delivered owner feedback."""
+        invocation = self.exact_object_document(
+            invocation_ref, expected_type="llm_invocation_spec/v1")
+        request_ref = _resource_from_payload(invocation["request_resource_ref"])
+        request = self.exact_object_document(
+            request_ref.as_version_ref(), expected_type="resource_version/v1")
+        feedback_count = 0
+        for ref in request.get("reference_provenance", {}).get(
+                "input_resource_refs", ()):
+            resource = self.exact_object_document(
+                _version_from_payload(ref), expected_type="resource_version/v1")
+            if (resource.get("content_schema_ref") == "rpnh/owner_control/v1"
+                    and resource.get("descriptors", {}).get(
+                        "owner_control_kind") == "message"):
+                feedback_count += 1
+        if not feedback_count:
+            return ()
+        # The ordinary envelope appends newly delivered owner messages last.
+        # Provenance counts only those new inputs, not feedback already in its
+        # history. Read the request to preserve order and equal-text commands.
+        messages = json.loads(read_resource(request_ref))["messages"][-feedback_count:]
+        if (len(messages) != feedback_count
+                or any(message.get("role") != "user"
+                       or not isinstance(message.get("content"), str)
+                       for message in messages)):
+            raise AgentLoopMechanicalLifecycleError(
+                "turn owner feedback differs from its immutable request")
+        return tuple(messages)
+
     def history_messages(
             self, loop: AgentLoopSnapshot, *,
             read_response: Callable[[ResourceVersionRef], bytes],
@@ -1089,6 +1122,8 @@ class TurnRecordsMechanicsMixin:
                 continue
             turn = self.hydrate_turn_event(
                 loop, event, read_response=read_response)
+            messages.extend(self._request_owner_messages(
+                turn.llm_invocation_ref, read_resource=read_response))
             response = json.loads(read_response(turn.response_resource_ref))
             assistant: dict[str, Any] = {
                 "role": "assistant", "content": response.get("text", "")}

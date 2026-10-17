@@ -38,6 +38,15 @@ workspace 或恢复状态的独立所有者。
 
 [原尺寸 PN](examples/project_collaboration/figures/source-petri.png) · [精确观察与来源](examples/project_collaboration/figures/source-petri.json) · [捕获记录](examples/project_collaboration/figures/provenance.json)
 
+
+## 多用户发布交接：独立智能体与共享资源
+
+[完整示例](examples/multiuser_release_handoff/README_ZH.md)展示四个受控参与者的独立 Task/Registry/私有智能体 PN，以及独立第五个 Source Registry 的资源控制 PN。原 episode 经原生检查点恢复完成 v2、SQL、QA 检查表、事件和最终交接；最终只读审计 98/98 必需检查通过。Source 不是智能体，原始故障和两项可选历史覆盖 UNKNOWN 保留。
+
+[实际角色 PN 与 Source 详情](examples/multiuser_release_handoff/figures/README_ZH.md) · [原任务及运行依赖](examples/multiuser_release_handoff/RUNNING_ZH.md) · [精确历史结果与边界](examples/multiuser_release_handoff/RESULTS_ZH.md)。新模型运行需授权；这不是官方基准分数、部署或实际回滚验证。
+
+[![Actual operations agent PN](examples/multiuser_release_handoff/figures/operations-petri.png)](examples/multiuser_release_handoff/figures/operations-petri.png)
+
 ## 快速开始
 
 目标：在 Linux／WSL2 的 Python 3.11+ 环境完成一次本地工具运行，并在 Viewer 中查看登记结果。安装和前两步不需要模型或 API 凭据；第三步再配置模型。遇到问题先看[入门检查点](docs/guides/getting-started_ZH.md)和[排障](docs/guides/troubleshooting_ZH.md)。

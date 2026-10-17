@@ -1,0 +1,95 @@
+{
+  "status": "PASS_SCOPED_RELEASE_VALIDATION",
+  "date": "2026-10-17",
+  "source_base": "798b4260e33cfb7f6476eee17e9f48de9ba998f2",
+  "input": {
+    "repository": "Kirito-Lab/EntCollabBench",
+    "revision": "df95c87317863d507f229df190b2c0a29c4e4afc",
+    "file": "mcp_multi_tasks_40.json",
+    "task": "mcp_multi_26",
+    "distribution": "Obtained separately from the official source; data and account configuration not bundled."
+  },
+  "guide_commands": {
+    "HF_download": "PASS",
+    "original_task_selection": "PASS",
+    "scripted_adapter_and_selection_generation": "PASS"
+  },
+  "native_source_entry": {
+    "status": "PASS",
+    "registered_tool_calls": 13,
+    "checks": {
+      "ops_actual_write": true,
+      "relative_index_actual_native_tool": true,
+      "same_token_actual_readread_overlap": true,
+      "wrong_role_native_tool_denied": "PluginError",
+      "actual_native_readwrite_denied": true,
+      "same_mutable_slot_new_version": true,
+      "old_read_not_new_confirmation": true,
+      "native_cross_private_handoff_body": true,
+      "fixture_lifecycle": "owner-stopped, no fabricated AgentLoop completion",
+      "actual_native_registered_file_allow_deny_and_workspace_completion": true,
+      "official_viewer_projection_export": true
+    },
+    "real_model_provider_calls": 0,
+    "scope": "Source-checkout preflight and scripted reader; fixture owners stop honestly, not four completed model agents. The preflight function was unchanged by the later fresh-driver fix."
+  },
+  "runtime_boundary_checks": {
+    "status": "PASS",
+    "passed": 80,
+    "skipped": 0,
+    "duration_seconds": 786.17,
+    "selection": [
+      "tests/test_canonical_head_projection.py",
+      "tests/test_optional_context_compaction.py",
+      "tests/test_owner_feedback_history.py",
+      "tests/test_registered_read_history_notice.py",
+      "tests/test_agent_context_budget_visibility.py",
+      "tests/test_agent_task_aggregate_call_cap.py::test_aggregate_requires_positive_integer",
+      "tests/test_agent_task_aggregate_call_cap.py::test_closed_worker_roundtrip_and_legacy_shape",
+      "tests/test_agent_task_aggregate_call_cap.py::test_registered_v13_remains_exclusive_and_closed",
+      "tests/test_agent_task_aggregate_call_cap.py::test_cap_worker_preserves_existing_authority_shapes",
+      "tests/test_agent_task_aggregate_call_cap.py::test_persisted_aggregate_below_local_twelve_enforced_natively",
+      "tests/test_agent_task_aggregate_call_cap.py::test_not_submitted_failure_is_registered_but_not_native_consumption",
+      "tests/test_agent_loop_task_cap_existing_output.py::test_local_turn_cap_existing_output_control",
+      "examples/multiuser_release_handoff/tests/test_world.py",
+      "examples/multiuser_release_handoff/tests/test_alias_binding.py",
+      "examples/multiuser_release_handoff/tests/test_delegation.py",
+      "examples/multiuser_release_handoff/tests/test_message_delivery.py",
+      "examples/multiuser_release_handoff/tests/test_source_recovery.py"
+    ],
+    "scope": "Head projection, context/retry/owner feedback, truthful read history, allowance/cap transport and enforcement, and example checks with the actual original input; not the whole product suite."
+  },
+  "fresh_driver_controls": {
+    "before": "3 FAIL",
+    "after": "3 PASS",
+    "parent_final_check": "3 PASS in 0.81s",
+    "covered": "Shared stop after nonterminal return; six native/HOST residual situations refuse completion; clean Source owner-stop precedes final capture.",
+    "scope": "Synthetic results and mocked Source snapshots over the real formal driver/ThreadPool; no Registry or provider execution in these unit checks."
+  },
+  "package": {
+    "wheel_build": "PASS",
+    "isolated_target_install": "PASS",
+    "installed_schema_catalog_and_CLI_help": "PASS",
+    "cap_transport": [
+      "v14",
+      "v15"
+    ],
+    "scope": "Existing runtime dependencies reused; no global installation changed. MUP remains a source example, not a named wheel-gallery export."
+  },
+  "source_entry_resource_window": {
+    "exit": 0,
+    "peak_bytes": 340320256,
+    "OOM": 0
+  },
+  "boundary_resource_window": {
+    "exit": 0,
+    "peak_bytes": 617598976,
+    "OOM": 0
+  },
+  "historical_business": "The completed original episode and unchanged actual Viewer screenshots are reused; release checks are separate.",
+  "not_run": [
+    "A new paid formal episode",
+    "Original upstream judge or official benchmark scoring",
+    "Unrelated whole-product suites"
+  ]
+}

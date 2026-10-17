@@ -497,6 +497,13 @@ freeze04 first18 的 **5 PASS / 9 FAIL / 4 BLOCKED**，以及单独 repair4 条�
 
 这些文献提供研究背景。RPNH 的实现与结果主张，以各节链接中的版本化源码和带日期证据为依据。
 
+
+## 多用户发布交接：独立智能体与共享资源
+
+[完整示例](../examples/multiuser_release_handoff/README_ZH.md)展示四个受控参与者的独立 Task/Registry/私有智能体 PN，以及独立第五个 Source Registry 的资源控制 PN。原 episode 经原生检查点恢复完成 v2、SQL、QA 检查表、事件和最终交接；最终只读审计 98/98 必需检查通过。Source 不是智能体，原始故障和两项可选历史覆盖 UNKNOWN 保留。
+
+[实际角色 PN 与 Source 详情](../examples/multiuser_release_handoff/figures/README_ZH.md) · [原任务及运行依赖](../examples/multiuser_release_handoff/RUNNING_ZH.md) · [精确历史结果与边界](../examples/multiuser_release_handoff/RESULTS_ZH.md)。新模型运行需授权；这不是官方基准分数、部署或实际回滚验证。
+
 ## 源码索引
 
 以下实现链接固定到本报告快照。历史结果页面分别标明不同的测试与发布版本。

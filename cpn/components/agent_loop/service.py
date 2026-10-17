@@ -839,6 +839,14 @@ class AgentLoopService:
             if (task_call_cap_reached
                     and segment_role in {
                         "actor", "critic", "finalization_reviewer"}):
+                # A task-cap handoff cannot publish provisional semantic output.
+                if waiting.written_resource_refs:
+                    return self._block_from_bottom_error(
+                        execution, waiting, TaskModelCallLimitExceeded(
+                            "registered task model-call cap is exhausted before dispatch"),
+                        block_kind="framework_repair",
+                        boundary="task_model_call_cap",
+                        idempotency_key=f"{idempotency_key}:task-call-cap:block")
                 loop = (
                     self._registry.handoff_agent_task_model_call_cap_v1(
                         execution, waiting,
@@ -978,6 +986,13 @@ class AgentLoopService:
                         or cap_loop.invocation_ref != waiting.invocation_ref
                         or cap_loop.tool_catalog_ref != waiting.tool_catalog_ref):
                     raise AgentLoopProtocolError("task cap crossed its exact loop")
+                # Compaction may have advanced the head while consuming the cap.
+                if cap_loop.written_resource_refs:
+                    return self._block_from_bottom_error(
+                        execution, cap_loop, exhausted,
+                        block_kind="framework_repair",
+                        boundary="task_model_call_cap",
+                        idempotency_key=f"{idempotency_key}:task-call-cap:block")
                 loop = (
                     self._registry.handoff_agent_task_model_call_cap_v1(
                         execution, cap_loop,

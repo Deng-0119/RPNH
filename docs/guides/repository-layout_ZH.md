@@ -79,3 +79,9 @@ Basic、Codex、OpenCode 顺序打开同一规范 MainSession 根目录，共用
 | 根目录规范 | [贡献](../../CONTRIBUTING_ZH.md)、[安全](../../SECURITY_ZH.md)、[Changelog](../../CHANGELOG_ZH.md)、[许可证](../../LICENSE)、[第三方声明](../../THIRD_PARTY_NOTICES.md) |
 
 生成的 profile、凭据、原始 provider transcript、Registry 数据库、运行目录、环境及构建依赖均留在公共仓库之外。运行输出写入调用方选定的私有目录。公开结果摘要保留其日期和验证范围。文档链接检查不是 runtime 或真实模型测试。
+
+## 多用户发布交接：独立智能体与共享资源
+
+[完整示例](../../examples/multiuser_release_handoff/README_ZH.md)展示四个受控参与者的独立 Task/Registry/私有智能体 PN，以及独立第五个 Source Registry 的资源控制 PN。原 episode 经原生检查点恢复完成 v2、SQL、QA 检查表、事件和最终交接；最终只读审计 98/98 必需检查通过。Source 不是智能体，原始故障和两项可选历史覆盖 UNKNOWN 保留。
+
+[实际角色 PN 与 Source 详情](../../examples/multiuser_release_handoff/figures/README_ZH.md) · [原任务及运行依赖](../../examples/multiuser_release_handoff/RUNNING_ZH.md) · [精确历史结果与边界](../../examples/multiuser_release_handoff/RESULTS_ZH.md)。新模型运行需授权；这不是官方基准分数、部署或实际回滚验证。

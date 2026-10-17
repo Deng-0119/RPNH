@@ -1,0 +1,18 @@
+{
+  "id": "c576433b180840b1bd1819f7e1c1c9ad",
+  "version": 1,
+  "fields": {
+    "caller_id": "USER_022",
+    "short_description": "Support readiness for SQL export null-handling",
+    "channel": "email",
+    "status": "new",
+    "category": "software",
+    "description": "Prepare support coverage for the engineering change on platform_admin/mini-seed-repo.",
+    "impact": "medium",
+    "urgency": "medium",
+    "priority": "moderate",
+    "assigned_to": "USER_022",
+    "assignment_group": "GROUP_002",
+    "worknotes": "Opened from collaboration coordination for SQL export null-handling."
+  }
+}

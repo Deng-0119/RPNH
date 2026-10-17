@@ -299,6 +299,19 @@ def build_agent_system_initialization(
     sections = [
         "### FRAMEWORK SYSTEM INITIALIZATION",
         f"Role: {role}",
+        "Authoritative allowance snapshot at request preparation; retries of the same call retain this snapshot.",
+        (f"Current role/segment ordinary-turn allowance: llm_turn_cap={llm_turn_cap if llm_turn_cap is not None else 'unbounded'}; "
+         f"llm_turns_used={llm_turns_used}; "
+         f"llm_turns_remaining={llm_turn_cap - llm_turns_used if llm_turn_cap is not None else 'unbounded'}. "
+         "Remaining includes the current ordinary turn."
+         + (" This is the last local ordinary turn in the current role/segment "
+            "under its current configured cap."
+            if llm_turn_cap is not None and llm_turn_cap - llm_turns_used == 1
+            else "")),
+        (f"Task ordinary-call allowance: task_call_cap={task_call_cap if task_call_cap is not None else 'unbounded'}; "
+         f"task_calls_used={task_calls_used}; "
+         f"task_calls_remaining={task_call_cap - task_calls_used if task_call_cap is not None else 'unbounded'}. "
+         "Usage follows native task accounting; it is not a count of all registered requests or billing."),
         "Actually available tools: " + ", ".join(names),
         ("Framework tool protocol: every provider response must contain one or "
          "more calls to the actually available tools; chat text alone is not a "

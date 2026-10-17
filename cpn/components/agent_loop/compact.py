@@ -450,12 +450,15 @@ def prior_tool_result_reference(
             "path": result_metadata["path"],
             "resource_ref": dict(result_metadata["resource_ref"]),
             "use_receipt_ref": dict(result_metadata["use_receipt_ref"]),
+            "model_visible_history": "reference_only",
             "body_replayed": False,
             "history_notice": (
-                "The complete registered file page was delivered on the "
-                "immediately following provider turn. It is not duplicated in "
-                "later history; call read_file with this exact path when the "
-                "body is needed again."),
+                "This is a reference-only record of a registered file read; "
+                "it does not establish that the complete page was delivered "
+                "as provider content. Earlier model-visible output may have "
+                "been bounded. Call read_file with this exact path and use "
+                "offset_chars and max_chars for pagination when needed text "
+                "is missing."),
         }
     raise ValueError("tool result kind has no reference-only history projection")
 

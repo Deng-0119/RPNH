@@ -163,7 +163,12 @@ def _historical_heads(
 def _canonical_heads(
         self, ordinals: Iterable[int | None],
 ) -> Mapping[int, RegistryHead]:
-    """Build each head from facts canonically visible at that exact cut."""
+    """Project head metadata from facts canonical at each exact cut.
+
+    This is not an envelope-integrity audit: unrelated payloads, parent lists,
+    and envelope identities are decoded only by the full-event read APIs.
+    Retain only the returned stream heads, never the canonical event history.
+    """
 
     requested_values = tuple(dict.fromkeys(ordinals))
     if any(value is not None and type(value) is not int
@@ -173,8 +178,20 @@ def _canonical_heads(
         return {}
     store = self._ResourceServiceKernel__core.event_store
     maximum_ordinal = store.max_ordinal()
-    current = store.canonical_events(through_ordinal=maximum_ordinal)
-    current_ordinal = current[-1].ordinal if current else 0
+    predicate = store._canonical_member_sql(
+        member_kind="event", member_identity_sql="e.event_id",
+        published_event_sql="e.ordinal")
+    canonical_where = (
+        "FROM events e WHERE e.ordinal>? AND e.ordinal<=? "
+        f"AND {predicate} ")
+    with store.connect() as db:
+        current = db.execute(
+            "SELECT e.ordinal " + canonical_where
+            + "ORDER BY e.ordinal DESC LIMIT 1",
+            (0, maximum_ordinal, maximum_ordinal, maximum_ordinal,
+             maximum_ordinal, maximum_ordinal),
+        ).fetchone()
+    current_ordinal = int(current["ordinal"]) if current is not None else 0
     requested = tuple(dict.fromkeys(
         current_ordinal if value is None else value
         for value in requested_values))
@@ -187,18 +204,27 @@ def _canonical_heads(
         # Promotion publishes earlier events at the Success commit, not at their
         # original event ordinals. A prefix of today's canonical events would
         # therefore rewrite a head captured before that promotion.
-        events = store.canonical_events(through_ordinal=ordinal)
-        if ordinal and (not events or events[-1].ordinal != ordinal):
-            raise StaleAuthorityHead(
-                "canonical Registry head snapshot changed during hydration")
         stream_heads: dict[str, int] = {}
         task_control_sequence = 0
-        for event in events:
-            stream_heads[event.stream_id] = event.stream_sequence
-            if (event.task_id == self._ResourceServiceKernel__core.task_id
-                    and event.task_control_sequence is not None):
-                task_control_sequence = max(
-                    task_control_sequence, event.task_control_sequence)
+        last_ordinal = 0
+        with store.connect() as db:
+            rows = db.execute(
+                "SELECT e.ordinal,e.stream_id,e.stream_sequence,e.task_id,"
+                "e.task_control_sequence " + canonical_where
+                + "ORDER BY e.ordinal",
+                (0, ordinal, ordinal, ordinal, ordinal, ordinal),
+            )
+            for row in rows:
+                last_ordinal = int(row["ordinal"])
+                stream_heads[row["stream_id"]] = row["stream_sequence"]
+                if (TypedId.parse(row["task_id"], expected="task")
+                        == self._ResourceServiceKernel__core.task_id
+                        and row["task_control_sequence"] is not None):
+                    task_control_sequence = max(
+                        task_control_sequence, row["task_control_sequence"])
+        if ordinal and last_ordinal != ordinal:
+            raise StaleAuthorityHead(
+                "canonical Registry head snapshot changed during hydration")
         heads[ordinal] = RegistryHead(
             ordinal=ordinal,
             writer_fencing_epoch=writer_epoch,

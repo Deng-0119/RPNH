@@ -436,23 +436,38 @@ class CompactionExecutionMixin:
             loop=loop, request_ref=ref, verify_replay=verify_replay)
         return ref
 
-    def _compaction_invocation_attempts(self, invocation_ref, envelope, target):
+    def _compaction_invocation_attempts(self, invocation_ref, loop):
         values = []
         for row in self.core.event_store.object_rows_by_type(
                 "llm_invocation_attempt/v1"):
             value = json.loads(str(row["metadata_json"]))
             if value.get("llm_invocation_ref") != _ref_payload(invocation_ref):
                 continue
-            ref = _version_from_payload(value["llm_invocation_attempt_ref"])
-            values.append((int(value["attempt_ordinal"]), LLMCallAttempt(
-                invocation_ref, ref, int(value["attempt_ordinal"]),
-                target.model_condition, envelope,
-                target.max_response_bytes)))
-        values.sort(key=lambda item: item[0])
-        return tuple(attempt for _ordinal, attempt in values)
+            values.append(value)
+        if not values:
+            return ()
+        # Hydration and retries belong to the already registered invocation.
+        # Live allowance observations may have changed since its first attempt.
+        invocation = self.mechanical_lifecycle.exact_object_document(
+            invocation_ref, expected_type="llm_invocation_spec/v1")
+        recipe = json.loads(self.kernel._read_firing_registered(
+            self._context(loop),
+            _resource_from_payload(invocation["request_resource_ref"])))
+        recipe.pop("schema_version")
+        recipe["protocol"] = "llm_request_envelope/v1"
+        recipe["model_condition"] = recipe.pop("model")
+        recipe["max_output_tokens"] = recipe.pop("max_tokens")
+        envelope = canonical_json(recipe)
+        return tuple(LLMCallAttempt(
+            invocation_ref,
+            _version_from_payload(value["llm_invocation_attempt_ref"]),
+            int(value["attempt_ordinal"]), invocation["model_condition"],
+            envelope, invocation["max_response_bytes"])
+            for value in sorted(values, key=lambda item: int(item["attempt_ordinal"])))
 
     def _compaction_envelope(
-            self, execution, loop, catalog, reduction_settings):
+            self, execution, loop, catalog, reduction_settings, *,
+            interruption=None):
         context = self._context(loop)
         initialization = self.prepare_agent_system_initialization_v1(
             execution, loop, catalog)
@@ -489,6 +504,14 @@ class CompactionExecutionMixin:
             read_response=lambda ref: self.kernel._read_firing_registered(
                 context, ref),
             render_tool_result=render_tool_result)
+        if interruption is not None:
+            # A length-interrupted request has no ordinary turn record. Carry
+            # only its new owner inputs into the existing summary/retained
+            # history, never its truncated assistant response or tool calls.
+            history += self.mechanical_lifecycle._request_owner_messages(
+                interruption.llm_invocation_ref,
+                read_resource=lambda ref: self.kernel._read_firing_registered(
+                    context, ref))
         history = reduce_tool_messages(
             history, byte_limit=reduction_settings.tool_output_byte_limit)
         history = bound_tool_result_groups(
@@ -567,7 +590,8 @@ class CompactionExecutionMixin:
 
         envelope, prompt_ref, initialization, target = (
             self._compaction_envelope(
-                execution, current, catalog, reduction_settings))
+                execution, current, catalog, reduction_settings,
+                interruption=interruption))
         context = self._context(current)
         binding, _, _ = self._declared(context)
         target_ref = _resource_from_payload(binding["llm_input_target_ref"])
@@ -579,9 +603,10 @@ class CompactionExecutionMixin:
             _stable_id("llm_invocation", lifecycle_id),
             _stable_id("llm_invocation_version", lifecycle_id))
         existing_attempts = self._compaction_invocation_attempts(
-            invocation_ref, envelope, target)
+            invocation_ref, current)
         if existing_attempts:
             prior_attempt = existing_attempts[-1]
+            envelope = prior_attempt.canonical_request_bytes
             terminals = tuple(
                 event for event in
                 self.core.event_store.list_events_by_aggregate(

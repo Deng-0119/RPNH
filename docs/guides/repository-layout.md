@@ -101,3 +101,9 @@ run directories, environments and build dependencies stay out of the public
 repository. Keep operational outputs in caller-selected private directories.
 Public result summaries retain their dated validation boundary. A documentation
 link check is not a runtime or live-model test.
+
+## Multi-user release handoff: independent agents and shared resources
+
+The [complete example](../../examples/multiuser_release_handoff/README.md) follows four controlled participants with independent Tasks, Registries and private agent PNs, plus a separate fifth Source Registry for resource control. Native checkpoint restoration completed v2, SQL, the QA checklist, incident and final handoffs; the final read-only audit passed 98/98 required checks. Source is not an agent. Original failures and two optional UNKNOWN history-coverage checks remain explicit.
+
+[Actual role PNs and Source details](../../examples/multiuser_release_handoff/figures/README.md) · [Original task and run prerequisites](../../examples/multiuser_release_handoff/RUNNING.md) · [Exact historical results and limits](../../examples/multiuser_release_handoff/RESULTS.md). New model runs require authorization; this is not an official benchmark score, deployment or executed rollback validation.

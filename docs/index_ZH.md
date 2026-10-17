@@ -115,3 +115,9 @@ RPNH 以 Registry 和 PetriNet 共同声明、执行、检查和复用 agent 工
 [发布验证](guides/release-validation_ZH.md) · [示例验证](guides/examples-validation_ZH.md) · [结果归档](results/README_ZH.md) · [AutomationBench first18 + repair4](../examples/automationbench/PUBLIC_RESULTS_20261006.md)
 
 Native-input 应用示例见[受控模拟退款](../examples/approval_workflow/README_ZH.md)和[合成外部结果报价](../examples/a2a_quote/README_ZH.md)，各自保留明确的证据范围与外部协议状态。
+
+## 多用户发布交接：独立智能体与共享资源
+
+[完整示例](../examples/multiuser_release_handoff/README_ZH.md)展示四个受控参与者的独立 Task/Registry/私有智能体 PN，以及独立第五个 Source Registry 的资源控制 PN。原 episode 经原生检查点恢复完成 v2、SQL、QA 检查表、事件和最终交接；最终只读审计 98/98 必需检查通过。Source 不是智能体，原始故障和两项可选历史覆盖 UNKNOWN 保留。
+
+[实际角色 PN 与 Source 详情](../examples/multiuser_release_handoff/figures/README_ZH.md) · [原任务及运行依赖](../examples/multiuser_release_handoff/RUNNING_ZH.md) · [精确历史结果与边界](../examples/multiuser_release_handoff/RESULTS_ZH.md)。新模型运行需授权；这不是官方基准分数、部署或实际回滚验证。

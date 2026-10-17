@@ -109,3 +109,9 @@ transcript 均保存在仓库之外。
 2026-10-06公开记录：freeze04首轮18题为5 PASS / 9 FAIL / 4 BLOCKED；独立repair四题为1 PASS / 3 FAIL。旧14道已评分题未重跑。 [结果与限制](automationbench/PUBLIC_RESULTS_20261006_ZH.md).
 
 Viewer 可缩放、平移并查看节点／弧细节；简要视图用于查看任务 agent 与交接，见 [Viewer 指南](../docs/guides/viewer_ZH.md)。
+
+## 多用户发布交接：独立智能体与共享资源
+
+[完整示例](multiuser_release_handoff/README_ZH.md)展示四个受控参与者的独立 Task/Registry/私有智能体 PN，以及独立第五个 Source Registry 的资源控制 PN。原 episode 经原生检查点恢复完成 v2、SQL、QA 检查表、事件和最终交接；最终只读审计 98/98 必需检查通过。Source 不是智能体，原始故障和两项可选历史覆盖 UNKNOWN 保留。
+
+[实际角色 PN 与 Source 详情](multiuser_release_handoff/figures/README_ZH.md) · [原任务及运行依赖](multiuser_release_handoff/RUNNING_ZH.md) · [精确历史结果与边界](multiuser_release_handoff/RESULTS_ZH.md)。新模型运行需授权；这不是官方基准分数、部署或实际回滚验证。

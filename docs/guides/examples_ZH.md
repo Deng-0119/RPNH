@@ -455,3 +455,9 @@ owner request，而不是假设这些文件已经存在。
 的 provider 调用和当前定向兼容检查，均不能替代用户对自有 route 的验证。
 
 2026-10-06公开记录：freeze04首轮18题为5 PASS / 9 FAIL / 4 BLOCKED；独立repair四题为1 PASS / 3 FAIL。旧14道已评分题未重跑。 [2026-10-06结果](../../examples/automationbench/PUBLIC_RESULTS_20261006_ZH.md).
+
+## 多用户发布交接：独立智能体与共享资源
+
+[完整示例](../../examples/multiuser_release_handoff/README_ZH.md)展示四个受控参与者的独立 Task/Registry/私有智能体 PN，以及独立第五个 Source Registry 的资源控制 PN。原 episode 经原生检查点恢复完成 v2、SQL、QA 检查表、事件和最终交接；最终只读审计 98/98 必需检查通过。Source 不是智能体，原始故障和两项可选历史覆盖 UNKNOWN 保留。
+
+[实际角色 PN 与 Source 详情](../../examples/multiuser_release_handoff/figures/README_ZH.md) · [原任务及运行依赖](../../examples/multiuser_release_handoff/RUNNING_ZH.md) · [精确历史结果与边界](../../examples/multiuser_release_handoff/RESULTS_ZH.md)。新模型运行需授权；这不是官方基准分数、部署或实际回滚验证。

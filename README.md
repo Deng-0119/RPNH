@@ -40,6 +40,15 @@ The [project collaboration example](examples/project_collaboration/README.md) me
 
 [Full-size PN](examples/project_collaboration/figures/source-petri.png) · [Exact observation and provenance](examples/project_collaboration/figures/source-petri.json) · [Capture record](examples/project_collaboration/figures/provenance.json)
 
+
+## Multi-user release handoff: independent agents and shared resources
+
+The [complete example](examples/multiuser_release_handoff/README.md) follows four controlled participants with independent Tasks, Registries and private agent PNs, plus a separate fifth Source Registry for resource control. Native checkpoint restoration completed v2, SQL, the QA checklist, incident and final handoffs; the final read-only audit passed 98/98 required checks. Source is not an agent. Original failures and two optional UNKNOWN history-coverage checks remain explicit.
+
+[Actual role PNs and Source details](examples/multiuser_release_handoff/figures/README.md) · [Original task and run prerequisites](examples/multiuser_release_handoff/RUNNING.md) · [Exact historical results and limits](examples/multiuser_release_handoff/RESULTS.md). New model runs require authorization; this is not an official benchmark score, deployment or executed rollback validation.
+
+[![Actual operations agent PN](examples/multiuser_release_handoff/figures/operations-petri.png)](examples/multiuser_release_handoff/figures/operations-petri.png)
+
 ## Quick start
 
 Goal: run a local tool on Linux/WSL2 with Python 3.11+ and inspect its registered result in the Viewer. Installation and the first two steps need no model or API credential; model setup comes in step 3. For checkpoints and common fixes, use the [first-run tutorial](docs/guides/getting-started.md) and [troubleshooting](docs/guides/troubleshooting.md).

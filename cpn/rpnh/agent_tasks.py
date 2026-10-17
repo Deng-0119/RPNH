@@ -9,7 +9,7 @@ loop.  It owns no second scheduler or Registry.
 from __future__ import annotations
 
 from concurrent.futures import ThreadPoolExecutor
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 import json
 import os
 from pathlib import Path, PurePosixPath
@@ -114,7 +114,15 @@ class AgentTaskSpec:
     tool_program_policy: Mapping[str, Any] | None = None
     registered_execution_sources: tuple[tuple[str, str], ...] = ()
 
+    # Tightens fresh native ordinary/total budgets, never node buckets.
+    # Registered requests and explicit reentry generations have separate accounting.
+    aggregate_call_cap: int | None = None
+
     def __post_init__(self) -> None:
+        if (self.aggregate_call_cap is not None
+                and (type(self.aggregate_call_cap) is not int
+                     or self.aggregate_call_cap < 1)):
+            raise ValueError("aggregate_call_cap must be null or a positive integer")
         if type(self.registered_execution_sources) is not tuple:
             raise TypeError('registered execution sources require immutable tuples')
         public = bool(self.registered_execution_sources)
@@ -131,7 +139,8 @@ class AgentTaskSpec:
                     or self.plugin_configuration is not None or self.plugin_catalog_digest is not None
                     or self.managed_bindings or self.managed_tool_policy is not None
                     or self.tool_program_policy is not None or self.max_parallel_nodes != 1
-                    or self.owner_socket_path is None):
+                    or self.owner_socket_path is None
+                    or self.aggregate_call_cap is not None):
                 raise ValueError('registered AgentTask requires exclusive single-stage public sources')
         if (not isinstance(self.run_dir, Path)
                 or not public and not isinstance(self.execution_config_path, Path)):
@@ -342,10 +351,13 @@ class AgentTaskSpec:
                     "owner socket must remain inside its child Registry")
             return {
                 "schema_version": (
+                    "rpnh/agent_task_spec/v15" if self.aggregate_call_cap is not None else
                     "rpnh/agent_task_spec/v12" if self.tool_program_policy is not None else
                     "rpnh/agent_task_spec/v10" if self.managed_tool_policy is not None else
                     "rpnh/agent_task_spec/v8" if self.managed_bindings
                     else "rpnh/agent_task_spec/v6"),
+                **({"aggregate_call_cap": self.aggregate_call_cap}
+                   if self.aggregate_call_cap is not None else {}),
                 **({"plugin_configuration": json_copy(self.plugin_configuration),
                     "plugin_catalog_digest": self.plugin_catalog_digest}
                    if self.plugin_configuration is not None else {}),
@@ -379,10 +391,13 @@ class AgentTaskSpec:
             }
         return {
             "schema_version": (
+                "rpnh/agent_task_spec/v14" if self.aggregate_call_cap is not None else
                 "rpnh/agent_task_spec/v11" if self.tool_program_policy is not None else
                 "rpnh/agent_task_spec/v9" if self.managed_tool_policy is not None else
                 "rpnh/agent_task_spec/v7" if self.managed_bindings
                 else "rpnh/agent_task_spec/v5"),
+            **({"aggregate_call_cap": self.aggregate_call_cap}
+               if self.aggregate_call_cap is not None else {}),
             **({"plugin_configuration": json_copy(self.plugin_configuration),
                 "plugin_catalog_digest": self.plugin_catalog_digest} if self.plugin_configuration is not None else {}),
             "run_dir": str(self.run_dir),
@@ -418,6 +433,23 @@ class AgentTaskSpec:
     def from_worker_document(
             cls, value: object, *, document_root: Path | None = None,
     ) -> "AgentTaskSpec":
+        if (isinstance(value, Mapping)
+                and value.get("schema_version") in {
+                    "rpnh/agent_task_spec/v14", "rpnh/agent_task_spec/v15"}):
+            # The cap-bearing absolute/relative formats extend exactly the
+            # corresponding closed legacy shape, including its authority fields.
+            cap = value.get("aggregate_call_cap")
+            if type(cap) is not int or cap < 1:
+                raise ValueError("aggregate_call_cap must be a positive integer")
+            relative = value["schema_version"] == "rpnh/agent_task_spec/v15"
+            base_version = (11 if "tool_program_policy" in value else
+                            9 if "managed_tool_policy" in value else
+                            7 if "managed_bindings" in value else 5)
+            legacy = {key: item for key, item in value.items()
+                      if key != "aggregate_call_cap"}
+            legacy["schema_version"] = f"rpnh/agent_task_spec/v{base_version + relative}"
+            return replace(cls.from_worker_document(
+                legacy, document_root=document_root), aggregate_call_cap=cap)
         if isinstance(value, Mapping) and value.get('schema_version') == 'rpnh/agent_task_spec/v13':
             from .public_material_contracts import validate
             if type(value) is not dict: raise TypeError('public Spec requires an exact JSON object')
@@ -1038,6 +1070,9 @@ def _execute_agent_task(
                             for bucket in bucket_documents)
                 else sum(bucket["max_attempts"]
                          for bucket in bucket_documents))
+    if spec.aggregate_call_cap is not None:
+        call_cap = (spec.aggregate_call_cap if call_cap is None
+                    else min(call_cap, spec.aggregate_call_cap))
     request = OwnerInput(
         TEXT_SCHEMA, canonical_json(spec.prompt), "RPNH agent task request")
     runner = None

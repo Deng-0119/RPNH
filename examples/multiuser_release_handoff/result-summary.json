@@ -1,0 +1,625 @@
+{
+  "schema": "mup_public_record/v1",
+  "status": "PASS",
+  "observed_at": "2026-10-16T20:18:43.213082+00:00",
+  "scope": "Required checks; unavailable optional historical cuts are disclosed separately.",
+  "required_checks": 98,
+  "required_pass": 98,
+  "all_checks": 108,
+  "pass": 106,
+  "unknown": 2,
+  "checks": [
+    {
+      "name": "designer.run02_baseline_offset",
+      "status": "PASS",
+      "required": true
+    },
+    {
+      "name": "designer.accounting_baseline_offset",
+      "status": "PASS",
+      "required": true
+    },
+    {
+      "name": "designer.zero_run02_model_calls",
+      "status": "PASS",
+      "required": true
+    },
+    {
+      "name": "designer.accounting_logs_readable",
+      "status": "PASS",
+      "required": false
+    },
+    {
+      "name": "designer.zero_incremental_model_calls",
+      "status": "PASS",
+      "required": true
+    },
+    {
+      "name": "operations.run02_baseline_offset",
+      "status": "PASS",
+      "required": true
+    },
+    {
+      "name": "operations.accounting_baseline_offset",
+      "status": "PASS",
+      "required": true
+    },
+    {
+      "name": "operations.accounting_logs_readable",
+      "status": "PASS",
+      "required": false
+    },
+    {
+      "name": "developer.run02_baseline_offset",
+      "status": "PASS",
+      "required": true
+    },
+    {
+      "name": "developer.accounting_baseline_offset",
+      "status": "PASS",
+      "required": true
+    },
+    {
+      "name": "developer.zero_run02_model_calls",
+      "status": "PASS",
+      "required": true
+    },
+    {
+      "name": "developer.accounting_logs_readable",
+      "status": "PASS",
+      "required": false
+    },
+    {
+      "name": "developer.zero_incremental_model_calls",
+      "status": "PASS",
+      "required": true
+    },
+    {
+      "name": "qa.run02_baseline_offset",
+      "status": "PASS",
+      "required": true
+    },
+    {
+      "name": "qa.accounting_baseline_offset",
+      "status": "PASS",
+      "required": true
+    },
+    {
+      "name": "qa.zero_run02_model_calls",
+      "status": "PASS",
+      "required": true
+    },
+    {
+      "name": "qa.accounting_logs_readable",
+      "status": "PASS",
+      "required": false
+    },
+    {
+      "name": "support.run02_baseline_offset",
+      "status": "PASS",
+      "required": true
+    },
+    {
+      "name": "support.accounting_baseline_offset",
+      "status": "PASS",
+      "required": true
+    },
+    {
+      "name": "support.accounting_logs_readable",
+      "status": "PASS",
+      "required": false
+    },
+    {
+      "name": "accounting.read",
+      "status": "PASS",
+      "required": true
+    },
+    {
+      "name": "operations.original_identity",
+      "status": "PASS",
+      "required": true
+    },
+    {
+      "name": "operations.source_binding_identity",
+      "status": "PASS",
+      "required": true
+    },
+    {
+      "name": "operations.authority_identity",
+      "status": "PASS",
+      "required": true
+    },
+    {
+      "name": "operations.complete",
+      "status": "PASS",
+      "required": true
+    },
+    {
+      "name": "operations.selected_reentry",
+      "status": "PASS",
+      "required": true
+    },
+    {
+      "name": "operations.original_declaration",
+      "status": "PASS",
+      "required": true
+    },
+    {
+      "name": "operations.original_task_contract",
+      "status": "PASS",
+      "required": true
+    },
+    {
+      "name": "operations.original_native_budgets",
+      "status": "PASS",
+      "required": true
+    },
+    {
+      "name": "native-operations.read",
+      "status": "PASS",
+      "required": true
+    },
+    {
+      "name": "developer.original_identity",
+      "status": "PASS",
+      "required": true
+    },
+    {
+      "name": "developer.source_binding_identity",
+      "status": "PASS",
+      "required": true
+    },
+    {
+      "name": "developer.authority_identity",
+      "status": "PASS",
+      "required": true
+    },
+    {
+      "name": "developer.complete",
+      "status": "PASS",
+      "required": true
+    },
+    {
+      "name": "developer.retained_6374_terminal",
+      "status": "PASS",
+      "required": true
+    },
+    {
+      "name": "developer.original_declaration",
+      "status": "PASS",
+      "required": true
+    },
+    {
+      "name": "developer.original_task_contract",
+      "status": "PASS",
+      "required": true
+    },
+    {
+      "name": "developer.original_native_budgets",
+      "status": "PASS",
+      "required": true
+    },
+    {
+      "name": "native-developer.read",
+      "status": "PASS",
+      "required": true
+    },
+    {
+      "name": "qa.original_identity",
+      "status": "PASS",
+      "required": true
+    },
+    {
+      "name": "qa.source_binding_identity",
+      "status": "PASS",
+      "required": true
+    },
+    {
+      "name": "qa.authority_identity",
+      "status": "PASS",
+      "required": true
+    },
+    {
+      "name": "qa.complete",
+      "status": "PASS",
+      "required": true
+    },
+    {
+      "name": "qa.retained_terminal",
+      "status": "PASS",
+      "required": true
+    },
+    {
+      "name": "qa.original_declaration",
+      "status": "PASS",
+      "required": true
+    },
+    {
+      "name": "qa.original_task_contract",
+      "status": "PASS",
+      "required": true
+    },
+    {
+      "name": "qa.original_native_budgets",
+      "status": "PASS",
+      "required": true
+    },
+    {
+      "name": "native-qa.read",
+      "status": "PASS",
+      "required": true
+    },
+    {
+      "name": "support.original_identity",
+      "status": "PASS",
+      "required": true
+    },
+    {
+      "name": "support.source_binding_identity",
+      "status": "PASS",
+      "required": true
+    },
+    {
+      "name": "support.authority_identity",
+      "status": "PASS",
+      "required": true
+    },
+    {
+      "name": "support.complete",
+      "status": "PASS",
+      "required": true
+    },
+    {
+      "name": "support.selected_reentry",
+      "status": "PASS",
+      "required": true
+    },
+    {
+      "name": "support.original_declaration",
+      "status": "PASS",
+      "required": true
+    },
+    {
+      "name": "support.original_task_contract",
+      "status": "PASS",
+      "required": true
+    },
+    {
+      "name": "support.original_native_budgets",
+      "status": "PASS",
+      "required": true
+    },
+    {
+      "name": "native-support.read",
+      "status": "PASS",
+      "required": true
+    },
+    {
+      "name": "canonical-source.original_identity",
+      "status": "PASS",
+      "required": true
+    },
+    {
+      "name": "canonical-source.source_binding_identity",
+      "status": "PASS",
+      "required": true
+    },
+    {
+      "name": "canonical-source.authority_identity",
+      "status": "PASS",
+      "required": true
+    },
+    {
+      "name": "canonical-source.selected_reentry",
+      "status": "PASS",
+      "required": true
+    },
+    {
+      "name": "canonical-source.original_declaration",
+      "status": "PASS",
+      "required": true
+    },
+    {
+      "name": "source.original_requester_editor_policy",
+      "status": "PASS",
+      "required": true
+    },
+    {
+      "name": "canonical-source.original_native_budgets",
+      "status": "PASS",
+      "required": true
+    },
+    {
+      "name": "native-canonical-source.read",
+      "status": "PASS",
+      "required": true
+    },
+    {
+      "name": "source.quiescent",
+      "status": "PASS",
+      "required": true
+    },
+    {
+      "name": "source.owner_stopped",
+      "status": "PASS",
+      "required": true
+    },
+    {
+      "name": "source.orphan_1c9a2eecddcd5f04807f92f1c288a262",
+      "status": "PASS",
+      "required": true
+    },
+    {
+      "name": "source.orphan_c7e40996d1cc5d45bee45ff0ae109a01",
+      "status": "PASS",
+      "required": true
+    },
+    {
+      "name": "source.body_matches_lease",
+      "status": "PASS",
+      "required": true
+    },
+    {
+      "name": "source.current_published_address",
+      "status": "PASS",
+      "required": true
+    },
+    {
+      "name": "source.read",
+      "status": "PASS",
+      "required": true
+    },
+    {
+      "name": "world.original_sql_commit",
+      "status": "PASS",
+      "required": true
+    },
+    {
+      "name": "world.final_branch_sql_checklist",
+      "status": "PASS",
+      "required": true
+    },
+    {
+      "name": "world.original_note_fields",
+      "status": "PASS",
+      "required": true
+    },
+    {
+      "name": "world.same_canonical_note",
+      "status": "PASS",
+      "required": true
+    },
+    {
+      "name": "world.revised_note_native_receipt",
+      "status": "PASS",
+      "required": true
+    },
+    {
+      "name": "world.checklist_native_receipt",
+      "status": "PASS",
+      "required": true
+    },
+    {
+      "name": "qa.observed_verification_timestamp",
+      "status": "PASS",
+      "required": true
+    },
+    {
+      "name": "qa.native_current_confirmation",
+      "status": "PASS",
+      "required": true
+    },
+    {
+      "name": "support.observed_verification_timestamp",
+      "status": "PASS",
+      "required": true
+    },
+    {
+      "name": "support.native_current_confirmation",
+      "status": "PASS",
+      "required": true
+    },
+    {
+      "name": "world.original_incident_fields",
+      "status": "PASS",
+      "required": true
+    },
+    {
+      "name": "world.original_world_objects",
+      "status": "PASS",
+      "required": true
+    },
+    {
+      "name": "business.read",
+      "status": "PASS",
+      "required": true
+    },
+    {
+      "name": "operations.viewer_actual_current_and_history",
+      "status": "PASS",
+      "required": true
+    },
+    {
+      "name": "operations.history_requested_cuts",
+      "status": "PASS",
+      "required": false
+    },
+    {
+      "name": "viewer-operations.read",
+      "status": "PASS",
+      "required": true
+    },
+    {
+      "name": "developer.viewer_actual_current_and_history",
+      "status": "PASS",
+      "required": true
+    },
+    {
+      "name": "developer.history_requested_cuts",
+      "status": "UNKNOWN",
+      "required": false
+    },
+    {
+      "name": "viewer-developer.read",
+      "status": "PASS",
+      "required": true
+    },
+    {
+      "name": "qa.viewer_actual_current_and_history",
+      "status": "PASS",
+      "required": true
+    },
+    {
+      "name": "qa.history_requested_cuts",
+      "status": "UNKNOWN",
+      "required": false
+    },
+    {
+      "name": "viewer-qa.read",
+      "status": "PASS",
+      "required": true
+    },
+    {
+      "name": "support.viewer_actual_current_and_history",
+      "status": "PASS",
+      "required": true
+    },
+    {
+      "name": "support.history_requested_cuts",
+      "status": "PASS",
+      "required": false
+    },
+    {
+      "name": "viewer-support.read",
+      "status": "PASS",
+      "required": true
+    },
+    {
+      "name": "source.viewer_actual_current_and_history",
+      "status": "PASS",
+      "required": true
+    },
+    {
+      "name": "source.history_requested_cuts",
+      "status": "PASS",
+      "required": false
+    },
+    {
+      "name": "viewer-canonical-source.read",
+      "status": "PASS",
+      "required": true
+    },
+    {
+      "name": "stable-operations.read",
+      "status": "PASS",
+      "required": true
+    },
+    {
+      "name": "stable-developer.read",
+      "status": "PASS",
+      "required": true
+    },
+    {
+      "name": "stable-qa.read",
+      "status": "PASS",
+      "required": true
+    },
+    {
+      "name": "stable-support.read",
+      "status": "PASS",
+      "required": true
+    },
+    {
+      "name": "stable-canonical-source.read",
+      "status": "PASS",
+      "required": true
+    },
+    {
+      "name": "all_five_original_registries_read",
+      "status": "PASS",
+      "required": true
+    },
+    {
+      "name": "business_independent_facts_available",
+      "status": "PASS",
+      "required": true
+    },
+    {
+      "name": "model_accounting_available",
+      "status": "PASS",
+      "required": true
+    }
+  ],
+  "official_judge": "NOT_RUN",
+  "official_score": "NOT_COMPARABLE_ADAPTED",
+  "current_canonical": {
+    "source_id": "release-source:task:fa26dca76b4f44d9b880f878acc914ed",
+    "task_ref": {
+      "entity_type": "task/v1",
+      "logical_id": "task:fa26dca76b4f44d9b880f878acc914ed",
+      "version_id": "task_version:513c496bfcec42918a6d1b64a403920d"
+    },
+    "net_ref": {
+      "entity_type": "net_instance/v1",
+      "logical_id": "net_instance:5a2770b1556b523c98839070ed7634af",
+      "version_id": "net_instance_version:fefbb498cf155c2cbc6d7537c1958702"
+    },
+    "slot_ref": {
+      "entity_type": "logical_artifact_slot/v1",
+      "logical_id": "logical_slot:7196b636140b5ac497f6c8aeec492412",
+      "version_id": "logical_slot_version:37a276cbbcf9533ab7b185389b8c6652"
+    },
+    "token_ref": {
+      "entity_type": "petri_token/v1",
+      "logical_id": "petri_token:e371cb3391535d99b6d9b248ac598eb9",
+      "version_id": "petri_token_version:172aa8ff29195fe8a3e0dcd2f8bd3f66"
+    },
+    "resource_ref": {
+      "resource_id": "resource:fd86078165c4518fb9b40fb38fc40375",
+      "resource_version_id": "resource_version:bf4afb66fee356dda64db05f85fbcca8"
+    },
+    "version": "resource_version:bf4afb66fee356dda64db05f85fbcca8"
+  },
+  "sql": {
+    "owner": "platform_admin",
+    "repo": "mini-seed-repo",
+    "commit": "961cbb286424a90892f8111f79ded17d0837c138",
+    "filePath": "sql/patches/sql_export_guard.sql",
+    "blob": "20b0cbebb9413c531df49159ece59ef78173dc44",
+    "content": "WITH normalized_export AS (\n  SELECT report_id, COALESCE(export_payload, '{}'::jsonb) AS export_payload, COALESCE(status, 'pending') AS status\n  FROM report_exports\n)\nSELECT * FROM normalized_export;\n",
+    "commit_message": "Document SQL export null-handling"
+  },
+  "checklist": {
+    "owner": "platform_admin",
+    "repo": "mini-seed-repo",
+    "commit": "4d68b6105fc7cbc3e2632ba75b5d590fbae0ae20",
+    "filePath": "qa/checklists/sql-export-guard_qa_checklist.md",
+    "blob": "200110045785ad8c4967de048e94cc205d0a538d",
+    "content": "# SQL export null-handling QA checklist\n- Verify the changed path on the target branch.\n- Confirm the rollback note is documented.\n- Capture the final validation timestamp for support.\n",
+    "commit_message": "Add QA checklist for SQL export null-handling"
+  },
+  "accounting": {
+    "incremental": {
+      "starts": 85,
+      "returned": 84
+    },
+    "run01": {
+      "starts": 72,
+      "returned": 71
+    },
+    "run02": {
+      "starts": 13,
+      "returned": 13
+    },
+    "cumulative": {
+      "starts": 152,
+      "returned": 148
+    }
+  },
+  "limitations": [
+    "Controlled local principals and adapted local business world; no external identity federation.",
+    "Database execution, deployment, executed rollback and downstream acceptance not verified.",
+    "Historical run runtime includes dependencies not in public source 798b4260e33cfb7f6476eee17e9f48de9ba998f2.",
+    "No new model calls or business execution in this packaging."
+  ]
+}
