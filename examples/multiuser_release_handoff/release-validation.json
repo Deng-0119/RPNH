@@ -91,5 +91,7 @@
     "A new paid formal episode",
     "Original upstream judge or official benchmark scoring",
     "Unrelated whole-product suites"
-  ]
+  ],
+  "publication_integration_base": "71c476eb959a4cc214f515668ca585b905a9bd9f",
+  "post_validation_changes": "Only navigation, existing route PNG/docs and release evidence. Runtime/example Python remains the checked version."
 }

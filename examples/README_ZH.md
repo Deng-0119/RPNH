@@ -37,6 +37,7 @@
 
 | 目标 | 案例 | 图册或指南 | 默认模型边界 |
 |---|---|---|---|
+| 四个私有 agent Task 与独立共享资源 Source | [多用户发布交接](multiuser_release_handoff/README_ZH.md) | [实际角色与 Source PN](multiuser_release_handoff/figures/README_ZH.md) | 无 provider 预检；新模型运行需获准 profile |
 | 完整项目复制、冲突协调与精确 M 独立复用 | [项目共建](project_collaboration/README_ZH.md) | [实际业务与执行 PN](project_collaboration/README_ZH.md#实际-viewer项目与两层-pn) | 既有获准真实 profile；受控贡献者 |
 | 两项原主体贡献共建 curator → auditor 合同 | [Agent 任务网共建](user_collaboration/agent_cobuild/README_ZH.md) | 实际运行与证据见示例页 | 原生 AgentLoop；local_process 脚本协议演示 |
 | 模型—程序—模型计算 | [混合汇总](hybrid_summary/README_ZH.md) | [Detailed flow](hybrid_summary/README_ZH.md) | 脚本替身；可传入精确真实 profile |

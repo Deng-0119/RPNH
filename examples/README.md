@@ -39,6 +39,7 @@ real attached execution nets and [capture provenance](project_collaboration/figu
 
 | Goal | Example | Figures or guide | Default model boundary |
 |---|---|---|---|
+| Four private agent Tasks and a separate shared-resource Source | [Multi-user release handoff](multiuser_release_handoff/README.md) | [Actual role and Source PNs](multiuser_release_handoff/figures/README.md) | No-provider preflight; fresh model runs require an authorized profile |
 | Copy a complete project, resolve conflicts and reuse exact M independently | [Project collaboration](project_collaboration/README.md) | [Actual business and execution PN views](project_collaboration/README.md#actual-viewer-project-and-two-pn-layers) | Existing authorized live profile; controlled contributors |
 | Two original-principal contributions to curator → auditor contracts | [Agent-network co-building](user_collaboration/agent_cobuild/README.md) | Actual execution and evidence on example page | Native AgentLoop; local_process scripted protocol demonstration |
 | Model–program–model calculation | [Hybrid summary](hybrid_summary/README.md) | [Detailed flow](hybrid_summary/README.md) | Scripted; optional exact live profile |

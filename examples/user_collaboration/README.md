@@ -51,9 +51,13 @@ Three independent controlled simulated Registry actors, A/B/C, contributed confi
 
 ### Original adopted business net in the official Viewer
 
-[![Original adopted-M2 runtime Detailed flow panorama: all 24 batch branches and final aggregation](figures/adopted-M2.png)](figures/adopted-M2.png)
+[![adopted-M2 complete static PN: 197 nodes / 220 arcs](figures/adopted-M2/petri-full.png)](figures/adopted-M2/petri-full.png)
 
-This unedited 4485 × 5000 capture shows the original **development adopted-M2 runtime**: admitted route inputs, all 24 ingest → plan → validate branches, aggregation, publication and the result. It has 74 settled firings and zero unsettled. Detailed flow folds 97 handoff places, displaying 100 nodes / 123 edges from the full 197-node / 220-arc Petri net. Open the original image to inspect the entire network.
+This is the complete PN of the real [initial_configured declaration](figures/adopted-M2/declaration-frame.json): 74 transitions, 123 places and 220 arcs, retaining all 24 batch branches and final aggregation. It has no historical tokens, firings or completion coloring and does not inherit the 74 settlements described below. [Image/exact-input provenance](figures/adopted-M2/petri-provenance.json) · [Official static Viewer](#static-route-pn-viewer) for zoom, pan and node/arc selection. Click the image for the 9000 × 7000 original.
+
+[Original adopted-M2 runtime Detailed flow](figures/adopted-M2.png)
+
+The linked historical runtime Detailed flow capture (unedited, 4485 × 5000) shows the original **development adopted-M2 runtime**: admitted route inputs, all 24 ingest → plan → validate branches, aggregation, publication and the result. It has 74 settled firings and zero unsettled. Detailed flow folds 97 handoff places, displaying 100 nodes / 123 edges from the full 197-node / 220-arc Petri net. Open the original image to inspect the entire network.
 
 The cards are business operations. A/B/C are the configuration authors recorded separately below; they are not three runtime Agent nodes in this tool-only PN. The screenshot shows execution state, without per-author coloring or author/revision badges.
 
@@ -73,13 +77,19 @@ This table is a document-level correspondence between the published module decla
 
 ### Original baseline for comparison
 
-[![Original baseline runtime Detailed flow panorama](figures/baseline.png)](figures/baseline.png)
+[![baseline complete static PN: 197 nodes / 220 arcs](figures/baseline/petri-full.png)](figures/baseline/petri-full.png)
 
-This second unedited 4485 × 5000 capture is the original **development baseline** with the same topology and `nearest_neighbor` in all 24 planning operations. It also has 74 settled firings and zero unsettled.
+This is the complete PN of the real [initial_configured declaration](figures/baseline/declaration-frame.json): 74 transitions, 123 places and 220 arcs, retaining all 24 batch branches and final aggregation. It has no historical tokens, firings or completion coloring and does not inherit the 74 settlements described below. [Image/exact-input provenance](figures/baseline/petri-provenance.json) · [Official static Viewer](#static-route-pn-viewer) for zoom, pan and node/arc selection. Click the image for the 9000 × 7000 original.
 
-Both images retain their original technical checkpoint identifiers and observation times. These identify recorded execution state, not a person or account, and are not access tokens. The PNGs contain no textual/EXIF metadata. Neither has been redrawn, relabeled or presented as a new run. Their exact byte identities are in [SOURCES.json](../../docs/results/user-collaboration-20261012/SOURCES.json). Completed execution does not imply all route business constraints passed.
+[Original baseline runtime Detailed flow](figures/baseline.png)
+
+The linked historical baseline Detailed flow capture (unedited, 4485 × 5000) is the original **development baseline** with the same topology and `nearest_neighbor` in all 24 planning operations. It also has 74 settled firings and zero unsettled.
+
+Both historical Detailed flow images retain their original technical checkpoint identifiers and observation times. These identify recorded execution state, not a person or account, and are not access tokens. The PNGs contain no textual/EXIF metadata. Neither has been redrawn, relabeled or presented as a new run. Their exact byte identities are in [SOURCES.json](../../docs/results/user-collaboration-20261012/SOURCES.json). Completed execution does not imply all route business constraints passed.
 
 Adopted M2 and baseline were evaluated on fixed development and evaluation sets of 512 routes each. Official sequence scores decrease by about **7.525% / 8.376%**, while mean travel cost increases by about **7.715% / 8.421%**. Time-window failures and unknowns remain. These outcomes do not measure a causal benefit from collaboration; see the [full results and tradeoffs](../../docs/results/user-collaboration-20261012/README.md).
+
+<a id="static-route-pn-viewer"></a>
 
 ### Open the static structure in the official Viewer
 
@@ -92,7 +102,7 @@ python examples/view_declaration.py collaboration-adopted
 
 Add `--no-open` to print the actual loopback URL instead of opening the browser. In the Viewer choose **PetriNet** for every place/transition/arc or **Detailed flow** for the pure-tool flow. Pan, zoom and node inspection use the existing official UI. No model, dataset, provider profile or retained runtime Registry is needed for these bundled frames.
 
-These commands show **initial_configured static declarations** compiled from the recorded baseline and adopted modules, with payloads and runtime identities excluded. Empty/unmarked state is declaration state, not the completed execution shown in the PNGs. There is no execution history, checkpoint replay or live run. Both declarations have the same topology; the candidate uses `deadline_first` on batches 0–10 and `zone_nearest` on 11–23, replacing baseline `nearest_neighbor` everywhere. The exact configuration declarations are [baseline](declarations/BASELINE_MODULE.json) and [adopted M2](declarations/ADOPTED_M2_MODULE.json).
+These commands show **initial_configured static declarations** compiled from the recorded baseline and adopted modules, with payloads and runtime identities excluded. Empty/unmarked state is declaration state, matching the new PN captures rather than the completed execution in the historical Detailed flow PNGs. There is no execution history, checkpoint replay or live run. Both declarations have the same topology; the candidate uses `deadline_first` on batches 0–10 and `zone_nearest` on 11–23, replacing baseline `nearest_neighbor` everywhere. The exact configuration declarations are [baseline](declarations/BASELINE_MODULE.json) and [adopted M2](declarations/ADOPTED_M2_MODULE.json).
 
 ### What is reproducible here
 

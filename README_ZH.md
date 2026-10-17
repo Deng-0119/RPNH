@@ -184,9 +184,9 @@ Overview 身份来自精确登记绑定或明确标注的声明；外部显示�
 
 ### 全部源码案例
 
-以下按完整索引分类，直接链接全部 24 项入口；各页保留自己的运行条件、图像来源与结果范围。
+以下按完整索引分类，直接链接全部 25 项入口；各页保留自己的运行条件、图像来源与结果范围。
 
-- **Agent 与角色工作流：** [项目共建](examples/project_collaboration/README_ZH.md) · [Agent 任务网共建](examples/user_collaboration/agent_cobuild/README_ZH.md) · [混合汇总](examples/hybrid_summary/README_ZH.md) · [工作流模式](examples/workflow_patterns/README_ZH.md) · [任务工作区](examples/task_workspace/README_ZH.md) · [原生网操作](examples/net_operations/README_ZH.md) · [JB steering packet](examples/jb_steering_packet/README_ZH.md) · [3-DOF 动力下降](examples/three_dof_powered_descent/README_ZH.md) · [HarnessAudit Office](examples/harnessaudit_office/README_ZH.md) · [RRSI v0.6](examples/rrsi_v06/README_ZH.md) · [AutomationBench](examples/automationbench/README_ZH.md) · [ERP-Bench](examples/erp_bench/README_ZH.md) · [SlopCodeBench pilot](examples/slopcodebench/README_ZH.md)。
+- **Agent 与角色工作流：** [多用户发布交接](examples/multiuser_release_handoff/README_ZH.md) · [项目共建](examples/project_collaboration/README_ZH.md) · [Agent 任务网共建](examples/user_collaboration/agent_cobuild/README_ZH.md) · [混合汇总](examples/hybrid_summary/README_ZH.md) · [工作流模式](examples/workflow_patterns/README_ZH.md) · [任务工作区](examples/task_workspace/README_ZH.md) · [原生网操作](examples/net_operations/README_ZH.md) · [JB steering packet](examples/jb_steering_packet/README_ZH.md) · [3-DOF 动力下降](examples/three_dof_powered_descent/README_ZH.md) · [HarnessAudit Office](examples/harnessaudit_office/README_ZH.md) · [RRSI v0.6](examples/rrsi_v06/README_ZH.md) · [AutomationBench](examples/automationbench/README_ZH.md) · [ERP-Bench](examples/erp_bench/README_ZH.md) · [SlopCodeBench pilot](examples/slopcodebench/README_ZH.md)。
 - **工具、SDK 与校验 fixture：** [原生插件](examples/native_plugin/README_ZH.md) · [包复用](examples/package_reuse/README_ZH.md) · [原子工具流水线](examples/tool_pipeline/README_ZH.md) · [SQL 查询校验](examples/query_validation/README_ZH.md) · [多源数据合并](examples/tool_pipeline/multi_source/README_ZH.md) · [合成迭代](examples/rsi_workflows/README_ZH.md) · [示例证据约定](examples/example_validation/README_ZH.md)。
 - **原生输入与权限 fixture：** [模拟退款审批](examples/approval_workflow/README_ZH.md) · [受控报价](examples/a2a_quote/README_ZH.md)。
 - **历史贡献与业务证据：** [路线机制与结果](examples/user_collaboration/README_ZH.md#历史路线规划机制证据) · [原生电费机制 fixture](examples/user_collaboration/native_billing/README_ZH.md)。
